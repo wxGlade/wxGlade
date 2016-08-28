@@ -3,6 +3,7 @@ wxNotebook objects
 
 @copyright: 2002-2007 Alberto Griggio
 @copyright: 2016 Carsten Grohmann
+@copyright: 2016 Dietmar Schwertberger
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
@@ -10,17 +11,17 @@ import wx
 import common, compat, misc
 import wcodegen
 from tree import Tree, Node, SlotNode
-from widget_properties import *
+import new_properties as np
 from edit_windows import ManagedBase, EditStylesMixin
 from edit_sizers.edit_sizers import Sizer, SizerSlot
 from wcodegen.taghandler import BaseXmlBuilderTagHandler
 from xml_parse import XmlParsingError
 
-try:
-    from panel import EditPanel
-    _has_panel = True
-except ImportError:
-    _has_panel = False # this case is not tested
+#try:
+from panel import EditPanel
+    #_has_panel = True
+#except ImportError:
+    #_has_panel = False # this case is not tested
 
 
 class NotebookVirtualSizer(Sizer):
@@ -30,14 +31,15 @@ class NotebookVirtualSizer(Sizer):
         Sizer.__init__(self, *args, **kwds)
         self._itempos = 0
 
-    def set_item(self, pos, option=None, flag=None, border=None, size=None, force_layout=True):
+    def set_item(self, pos, proportion=None, flag=None, border=None, size=None, force_layout=True):
         "Updates the layout of the item at the given pos; (re-)creates the notebook page if required"
         if not self.window.widget:
             return
         index = pos-1 # 0 based
-        label, item = self.window.tabs[index]
+        item = self.window.pages[index]
         if not item or not item.widget:
             return
+        label = self.window.tabs[index][0]
         if not (index < self.window.widget.GetPageCount()):
             self.window.widget.AddPage(item.widget, label) # this is e.g. for the first creation after loading a file
         elif self.window.widget.GetPage(index) is not item.widget:
@@ -58,7 +60,9 @@ class NotebookVirtualSizer(Sizer):
     # new implementation
     def insert_tab(self, index):
         "inserts or adds a page"
-        label, item = self.window.tabs[index]
+        #label, item = self.window.tabs[index]
+        label = self.window.tabs[index][0]
+        item = self.window.pages[index]
         if not (index < self.window.widget.GetPageCount()):
             self.window.widget.AddPage(item.widget, label)
         elif self.window.widget.GetPage(index) is not item.widget:
@@ -79,9 +83,12 @@ class NotebookVirtualSizer(Sizer):
 
     def add_item(self, item, pos=None, option=0, flag=0, border=0, size=None, force_layout=True):
         "Adds an item to self.window"
-        #self._logger.debug('pos: %s, item.name: %s', pos, item.name)
+        #if not self.window.pages:
+            ## during XML parsing, the tab names are set before
+            #page_count = len(self.window.properties["tabs"].value)
+            #self.window.pages.extend( [None]*page_count )
         try:
-            self.window.tabs[pos-1][1] = item
+            self.window.pages[pos-1] = item
         except IndexError:
             raise XmlParsingError( _('Notebook widget "%s" does not have any tabs!')%self.window.name )
         item._dont_destroy = True
@@ -109,21 +116,16 @@ class NotebookVirtualSizer(Sizer):
 
 
 
-class NotebookPagesProperty(GridProperty):
+class NotebookPagesProperty(np.GridProperty):
+    def __init__(self, value, cols):
+        np.GridProperty.__init__(self, value, cols, can_remove_last=False, with_index=True)
+
     def write(self, outfile, tabs):
         inner_xml = u''
-        value = self.get_value()
-        for i in range(len(value)):
-            val = value[i]
-            window = None
-            try:
-                t = self.owner.tabs[i]
-                if t[0] == val[0]:
-                    window = t[1]
-            except:
-                pass
+        for (name,), window in zip(self.owner.tabs, self.owner.pages):
+            # XXX what happens with empty pages?
             if window:
-                inner_xml += common.format_xml_tag(u'tab', val[0], tabs+1, window=window.name)
+                inner_xml += common.format_xml_tag(u'tab', name, tabs+1, window=window.name)
         stmt = common.format_xml_tag(u'tabs', inner_xml, tabs, is_xml=True)
         outfile.write(stmt)
 
@@ -133,16 +135,16 @@ class TabsHandler(BaseXmlBuilderTagHandler):
     def __init__(self, parent):
         super(TabsHandler, self).__init__()
         self.parent = parent
-        self.tab_names = []
+        self.tab_names = [] # a list of one-item lists; to be compatible to GridProperty
 
     def end_elem(self, name):
         if name == 'tabs':
-            self.parent.tabs = [ [misc.wxstr(name), None] for name in self.tab_names ]
-            self.parent.properties['tabs'].set_value( [[name] for name in self.tab_names] )
+            self.parent.properties['tabs'].set(self.tab_names)
+            self.parent.properties_changed(["tabs"])
             return True
         elif name == 'tab':
             char_data = self.get_char_data()
-            self.tab_names.append(char_data)
+            self.tab_names.append([misc.wxstr(char_data),])
         return False
 
 
@@ -153,95 +155,33 @@ class EditNotebook(ManagedBase, EditStylesMixin):
     _next_notebook_number = 1 # next free number for notebook names
     update_widget_style = False
 
-    def __init__(self, name, parent, id, style, sizer, pos, property_window, show=True):
-        # create new and (still) unused notebook name
-        if not name:
-            name = self.next_notebook_name()
+    _PROPERTIES = ["Widget", "no_custom_class", "style", "tabs"]
+    PROPERTIES = ManagedBase.PROPERTIES + _PROPERTIES + ManagedBase.EXTRA_PROPERTIES
 
-        # initialise parent classes
-        ManagedBase.__init__(self, name, 'wxNotebook', parent, id, sizer, pos, property_window, show=show)
+    def __init__(self, name, parent, id, style, sizer, pos, show=True):
+        name = name or self.next_notebook_name()  # create new and (still) unused notebook name
+        ManagedBase.__init__(self, name, 'wxNotebook', parent, id, sizer, pos, show=show)
         EditStylesMixin.__init__(self)
 
-        # initialise instance variables
-        self.set_style(style)
         self.virtual_sizer = NotebookVirtualSizer(self)
         self._is_removing_pages = False
 
-        # initialise properties remaining staff
-        self.tabs = [['tab1', None]]  # list of pages of this notebook (actually a list of 2-list label, window)
-        self.access_functions['style'] = (self.get_style, self.set_style)
-        self.properties['style'] = CheckListProperty(self, 'style', self.widget_writer)
-        self.access_functions['tabs'] = (self.get_tabs, self.set_tabs)
-        tab_cols = [('Tab label', GridProperty.STRING)]
-        self.properties['tabs'] = NotebookPagesProperty( self, 'tabs', None, tab_cols, label=_("Tabs"),
-                                                         can_remove_last=False, with_index=True)
-        del tab_cols
+        # initialise instance properties
+        self.pages = []  # the windows per page
+        tabs = []  # list of pages of this notebook (actually a list of 2-list label, window)
+        tab_cols = [('Tab label', np.GridProperty.STRING)]
+        self.tabs = NotebookPagesProperty(tabs, tab_cols)
+        self.no_custom_class = np.CheckBoxProperty(False, default_value=False)
+
         self.nb_sizer = None
-        self._create_slots = False
 
-        self.no_custom_class = False
-        self.access_functions['no_custom_class'] = (self.get_no_custom_class, self.set_no_custom_class)
-        self.properties['no_custom_class'] = CheckBoxProperty( self, 'no_custom_class',
-                                                               label=_("Don't generate code for this class") )
-
-        # first pane should have number 1
-        self.next_pane_number = 1
+        self.next_pane_number = 1  # first pane should have number 1
 
     def create_widget(self):
-        self.widget = wx.Notebook( self.parent.widget, self.id, style=self.get_int_style() )
-
-    def show_widget(self, yes):
-        ManagedBase.show_widget(self, yes)
-        if self._create_slots:
-            self._create_slots = False
-            for i in range(len(self.tabs)):
-                if self.tabs[i][1] is None:
-                    self.tabs = self.tabs[:i]
-                    self.properties['tabs'].set_value(self.get_tabs())
-
-    def finish_widget_creation(self):
-        ManagedBase.finish_widget_creation(self)
-        # replace 'self' with 'self.nb_sizer' in 'self.sizer'
-
-    def post_load(self):
-        wx.CallAfter(self._toggle_pages)
-
-    def _toggle_pages(self):
-        "workaround: toggle through all pages and toggle page size to ensure correct display"
-        if not self.widget: return
-        count = self.widget.PageCount
-        if count<=1: return
-        i0 = i = self.widget.GetSelection()
-        while True:
-            i += 1
-            if i==count: i = 0
-            #self.widget.SetSelection(i)
-            wx.CallAfter( self.widget.SetSelection, i )
-            if i==i0: break
-        # resize top level window
-        toplevel = self.widget.GetTopLevelParent()
-        size = toplevel.GetSize()
-        wx.CallAfter( toplevel.SetSize, (size[0]+20, size[1]+20) )
-        wx.CallAfter( toplevel.SetSize, size )
-
-    def create_properties(self):
-        ManagedBase.create_properties(self)
-        panel = wx.ScrolledWindow( self.notebook, wx.ID_ANY, style=wx.TAB_TRAVERSAL )
-        self.properties['no_custom_class'].display(panel)
-        self.properties['style'].display(panel)
-        self.properties['tabs'].display(panel)
-        sizer = wx.BoxSizer(wx.VERTICAL)
-        sizer.Add(self.properties['no_custom_class'].panel, 0, wx.ALL | wx.EXPAND, 3)
-        sizer.Add(self.properties['style'].panel, 0, wx.EXPAND)
-        sizer.Add(self.properties['tabs'].panel, 1, wx.ALL | wx.EXPAND, 3)
-        panel.SetAutoLayout(True)
-        panel.SetSizer(sizer)
-        sizer.Fit(panel)
-        self.notebook.AddPage(panel, _('Widget'))
-        self.properties['tabs'].set_col_sizes([-1])
+        self.widget = wx.Notebook( self.parent.widget, self.id, style=self.style )
 
     def on_set_focus(self, event):
-        self.show_properties()
+        # allow switching of pages
         event.Skip()
 
     def _add_tab(self, window, pos):
@@ -251,7 +191,7 @@ class EditNotebook(ManagedBase, EditStylesMixin):
             node = SlotNode(window) # XXX not tested
             window.node = node
             common.app_tree.add(node, self.node)
-            self.tabs[pos - 1][1] = window # if window is not None, it's an EditPanel which sets itself to tabs during it's __init__
+            self.tabs[pos-1][1] = window # if window is not None, it's an EditPanel which sets itself to tabs during it's __init__
         else:
             window._dont_destroy = True
             node = Node(window)
@@ -266,26 +206,6 @@ class EditNotebook(ManagedBase, EditStylesMixin):
                 #self._logger.exception(_('Internal Error'))
                 pass
 
-    def _remove_tab(self, index):
-        # XXX remove method if not used
-        self._is_removing_pages = True
-        window = self.tabs[index][1]
-        if self.widget:
-            self.widget.RemovePage(index) # remove the page
-        window.remove(False)          # delete the page content
-        del self.tabs[index:]             # delete from our list of tabs
-        self._is_removing_pages = False
-
-    def _set_tab_name(self, index, name):
-        # XXX remove method if not used
-        tt = misc.wxstr(name)
-        if self.widget:
-            self.widget.SetPageText(index, tt)
-        self.tabs[index][0] = tt
-
-    def get_tabs(self):
-        return [[n] for n, w in self.tabs]
-
     ####################################################################################################################
     # new implementation:
     # together with NotebookVirtualSizer insert_tab, remove_tab, free_tab
@@ -294,7 +214,7 @@ class EditNotebook(ManagedBase, EditStylesMixin):
 
         pos = index+1
         if _has_panel:
-            window = EditPanel( self.next_pane_name(), self, -1, self.virtual_sizer, pos, self.property_window )
+            window = EditPanel( self.next_pane_name(suggestion=label), self, -1, self.virtual_sizer, pos, self.property_window )
             window._dont_destroy = True
             node = Node(window)
         else: # a SizerSlot/SlotNode; not tested
@@ -313,15 +233,9 @@ class EditNotebook(ManagedBase, EditStylesMixin):
                 wx.CallAfter(window.sel_marker.update)
             except AttributeError:
                 #self._logger.exception(_('Internal Error'))
-                pass
-
-    def remove_tab(self, index):
-        self._is_removing_pages = True
-        window = self.tabs[index][1]
-        self.virtual_sizer.remove_tab(index) # 
-        window.remove(False)   # delete the page content
-        del self.tabs[index:]  # delete from our list of tabs
-        self._is_removing_pages = False
+                import os
+                if 'WINGDB_ACTIVE' in os.environ: raise
+        self.properties["tabs"].update_display()
 
     def set_tabs(self, tabs, indices):
         """tabs: list of strings
@@ -329,27 +243,56 @@ class EditNotebook(ManagedBase, EditStylesMixin):
         keep_indices = [i for i in indices if i is not None]
         if keep_indices != sorted(keep_indices):
             raise ValueError("Re-ordering is not yet implemented")
+        keep_indices = set(keep_indices)
+        old_names = self.properties["tabs"].get()
+        new_names = old_names[:]
 
-        # set tab labels if modified
+        # set tab labels of existing pages, if modified
         for (name,), index in zip(tabs, indices):
-            if index is not None and self.tabs[index][0] != name:
-                self._set_tab_name(index, name)
+            if index is not None and old_names[index]!=name:
+                new_names[index] = [name,]
+                if self.widget:
+                    self.widget.SetPageText(index, name)
 
         # remove tabs
-        for i in range(len(self.tabs)-1, -1, -1):
-            if not i in keep_indices:
-                self.remove_tab(i)
+        for index in range(len(old_names)-1, -1, -1):
+            if not index in keep_indices:
+                self._is_removing_pages = True
+                self.virtual_sizer.remove_tab(index)        # remove from sizer; does not delete window
+                self.pages[index].remove(False)             # delete the page content
+                del self.pages[index]                       # delete from page list
+                del new_names[index]                        # delete from list of names
+                self._is_removing_pages = False
 
         # insert/add tabs
         added = None
         for i, (name,) in enumerate(tabs):
             index = indices[i]
-            if index is not None:
-                # old tab to be kept
-                continue
+            if index is not None: continue                  # old tab to be kept
+
             # actually add/insert
-            self.insert_tab(i, name)
-            added = i
+            #self.insert_tab(i, name)
+
+            new_names.insert(i, [name,]) # this needs to be done before EditPanel calls self.virtual_sizer.add_item
+            # create panel and node, add to tree
+            pos = i+1
+            window = EditPanel( self.next_pane_name(name), self, -1, self.virtual_sizer, pos )
+            window._dont_destroy = True
+            node = window.node = Node(window)
+            common.app_tree.add(node, self.node)  # XXX check for add/insert
+            # add to widget
+            if self.widget:
+                window.show_widget(True)
+                self.virtual_sizer.insert_tab(i)
+    
+                try:
+                    wx.CallAfter(window.sel_marker.update)
+                except AttributeError:
+                    #self._logger.exception(_('Internal Error'))
+                    import os
+                    if 'WINGDB_ACTIVE' in os.environ: raise
+
+                added = i  # remember last added index for selection
 
         # select the last added tab
         if added is not None and self.widget:
@@ -366,24 +309,15 @@ class EditNotebook(ManagedBase, EditStylesMixin):
             return TabsHandler(self)
         return ManagedBase.get_property_handler(self, name)
 
-    def find_page(self, page):
-        "returns the index of the given page in the notebook, or -1 if the page cannot be found"
-        if not self.widget:
-            return -1
-        for i in range(len(self.tabs)):
-            if self.tabs[i][1] is page:
-                if i < self.widget.GetPageCount():
-                    return i
-                else:
-                    return -1
-        return -1
+    def properties_changed(self, modified):
+        if not modified or "tabs" in modified:
+            if not self.pages:
+                # during XML parsing, the tab names are set before
+                page_count = len(self.properties["tabs"].value)
+                self.pages.extend( [None]*page_count )
+        ManagedBase.properties_changed(self, modified)
 
-    def get_no_custom_class(self):
-        return self.no_custom_class
-
-    def set_no_custom_class(self, value):
-        self.no_custom_class = bool(int(value))
-
+    # helpers ##########################################################################################################
     def next_notebook_name(self):
         # return new and (still) unused notebook name
         while True:
@@ -393,8 +327,10 @@ class EditNotebook(ManagedBase, EditStylesMixin):
             EditNotebook._next_notebook_number += 1
         return name
 
-    def next_pane_name(self):
+    def next_pane_name(self, suggestion=None):
         # return new and (still) unused pane name
+        if suggestion is not None and not common.app_tree.has_name(suggestion):
+            return suggestion
         while True:
             pane_name = "%s_pane_%d" % (self.name, self.next_pane_number)
             self.next_pane_number += 1
@@ -402,7 +338,16 @@ class EditNotebook(ManagedBase, EditStylesMixin):
                 break
         return pane_name
 
-# end of class EditNotebook
+    def find_page(self, page):
+        "returns the index of the given page in the notebook, or -1 if the page cannot be found"
+        if not self.widget: return -1
+        for i,p in enumerate(self.pages):
+            if p is page:
+                if i < self.widget.GetPageCount():
+                    return i
+                else:
+                    return -1
+        return -1
 
 
 editor_class = EditNotebook
@@ -426,22 +371,16 @@ def builder(parent, sizer, pos, number=[1]):
         return
 
     widget = editor_class(None, parent, wx.ID_ANY, style, sizer, pos, common.property_panel, show=False)
-    #if _has_panel:
-    #    pane1 = EditPanel(widget.next_pane_name(), widget, wx.ID_ANY, widget.virtual_sizer, 1, common.property_panel)
 
     node = Node(widget)
     widget.node = node
     widget.virtual_sizer.node = node
-
-    widget.set_option(1)
-    widget.set_style("wxEXPAND")
+    widget.properties["proportion"].set(1)
+    widget.properties["flag"].set("wxEXPAND")
     widget.show_widget(True)
-    common.app_tree.insert(node, sizer.node, pos - 1)
+    common.app_tree.insert(node, sizer.node, pos-1)
 
-    #if _has_panel:
-    #    widget._add_tab(pane1, 1)
-    widget.insert_tab(0, widget.next_pane_name())
-
+    widget.insert_tab(0, widget.next_pane_name()) # next_pane_name will be used as label and as pane name, if possible
     sizer.set_item(widget.pos, 1, wx.EXPAND)
 
 
@@ -453,8 +392,8 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
         raise XmlParsingError(_("'name' attribute missing"))
     if sizer is None or sizeritem is None:
         raise XmlParsingError(_("sizer or sizeritem object cannot be None"))
-    widget = editor_class(name, parent, wx.ID_ANY, editor_style, sizer, pos, common.property_panel)
-    sizer.set_item(widget.pos, option=sizeritem.option, flag=sizeritem.flag, border=sizeritem.border)
+    widget = editor_class(name, parent, wx.ID_ANY, editor_style, sizer, pos)
+    sizer.set_item(widget.pos, proportion=sizeritem.proportion, flag=sizeritem.flag, border=sizeritem.border)
     node = Node(widget)
     widget.node = node
     if pos is None:

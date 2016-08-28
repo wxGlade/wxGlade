@@ -11,9 +11,7 @@ import logging, math, re
 import wx
 from wx.lib.buttons import GenButton
 
-# import project modules
-from layout_option_property import LayoutOptionProperty, LayoutPosProperty
-from widget_properties import *
+import new_properties as np
 from edit_windows import EditStylesMixin
 from tree import Tree, WidgetTree, Node, SlotNode
 import clipboard
@@ -21,55 +19,23 @@ import common, compat, config, misc
 
 
 class BaseSizerBuilder(object):
-    """\
-    Language independent base class for all sizer builders
+    "Language independent base class for all sizer builders"
 
-    @cvar klass: Sizer class
-    @type klass: str
+    tmpl = []                 # Statements to generate the sizer from, the stmt has to end with a newline character
 
-    @cvar language: Language to generate the code for
-    @type language: str
+    klass = ''                # klass: Sizer class name
+    language = None           # Language to generate the code for
 
-    @cvar tmpl: Statements to generate the sizer from, the stmt has to end with a newline character
-    @type tmpl: str
-
-    @cvar tmpl_AddGrowableRow: Template for wxFlexGridSizer to set growable rows
-    @type tmpl_AddGrowableRow: str
-
-    @cvar tmpl_AddGrowableCol: Template for wxFlexGridSizer to set growable columns
-    @type tmpl_AddGrowableCol: str
-
-    @cvar tmpl_SetSizer: Template to call SetSizer()
-    @type tmpl_SetSizer: str
-
-    @cvar tmpl_Fit: Template to call Fit()
-    @type tmpl_Fit: str
-
-    @cvar tmpl_SetSizeHints: Template to set the size hints
-    @type tmpl_SetSizeHints: str
-
-    @ivar codegen: Language specific code generator
-    @type codegen: codegen.BaseLangCodeWriter
-
-    @ivar props_get_code: Properties to replace in L{tmpl}
-    @type props_get_code: dict
-    """
-
-    tmpl = []
-
-    klass = ''
-    language = None
-
-    tmpl_SetSizer = ''
-    tmpl_Fit = ''
-    tmpl_SetSizeHints = ''
-    tmpl_AddGrowableRow = ''
-    tmpl_AddGrowableCol = ''
+    tmpl_SetSizer = ''        # Template to call SetSizer()
+    tmpl_Fit = ''             # Template to call Fit()
+    tmpl_SetSizeHints = ''    # Template to set the size hints
+    tmpl_AddGrowableRow = ''  # Template for wxFlexGridSizer to set growable rows
+    tmpl_AddGrowableCol = ''  # Template for wxFlexGridSizer to set growable columns
 
     def __init__(self):
         "Initialise sizer builder"
-        self.props_get_code = {}
-        self.codegen = common.code_writers[self.language]
+        self.props_get_code = {}                          # properties to replace in L{tmpl}
+        self.codegen = common.code_writers[self.language] #language specific code generator (codegen.BaseLangCodeWriter)
 
     def _get_wparent(self, obj):
         "Return the parent widget or a reference to it as string"
@@ -161,48 +127,28 @@ class BaseSizerBuilder(object):
 
 
 
-class SizerSlot(object):
+class SizerSlot(np.PropertyOwner):
     "A window to represent a slot in a sizer"
-
+    PROPERTIES = ["Slot", "pos"]
     def __init__(self, parent, sizer, pos=0):
+        np.PropertyOwner.__init__(self)
         # initialise instance logger
         self._logger = logging.getLogger(self.__class__.__name__)
+        self.klass = "SLOT"
 
-        # initialise instance
-        self.widget = None       # Reference to the widget resembling the slot (a wx.Window)
         self.sizer = sizer       # Sizer object (SizerBase instance)
-        self.parent = parent
-        self.pos = pos           # item's position in the sizer (1 based)
-        self._rmenu = None       # context menu and widget, when active
 
+        # initialise instance properties
+        self.parent = parent
+        self.pos =p = np.LayoutPosProperty(pos, sizer)  # position within the sizer, 1-based
+        p.readonly = True
+
+        self.widget = None       # Reference to the widget resembling the slot (a wx.Window)
+        self._rmenu = None       # context menu and widget, when active
         self.name = "SLOT"
-        self.property_window = None
 
     def post_load(self): # called from show_widget
         pass
-
-    def show_properties(self, *args):
-        # temporary solutiion: show properties of the sizer
-        # XXX to be done?  show index
-        self.sizer.show_properties(*args)
-        
-        # XXX this is from EditBase.show_properties
-        #     this should be centralised into something like common.set_focused_widget(widget)
-        if self.parent and self.parent.klass == 'wxPanel': # XXX centralize this code; delete here
-            # am I a widget under a wxPanel under a wxNotebook?
-            if self.parent.parent and self.parent.parent.klass == 'wxNotebook':
-                nb = self.parent.parent
-                if nb.widget:
-                    i = 0
-                    for tn, ep in nb.tabs:  # tn=tabname, ep = editpanel
-                        try:
-                            if ep and self.parent.name == ep.name:
-                                nb.widget.SetSelection(i)
-                        except AttributeError:
-                            pass
-                        i += 1
-
-        self.update_view(True)
 
     def update_view(self, selected):
         # we can ignore selected here, as the repainting only takes place later
@@ -221,6 +167,9 @@ class SizerSlot(object):
         self.widget.Bind(wx.EVT_ENTER_WINDOW, self.on_enter)
         self.widget.Bind(wx.EVT_LEAVE_WINDOW, self.on_leave)
         self.widget.Bind(wx.EVT_KEY_DOWN, misc.on_key_down_event)
+
+    def is_visible(self):
+        return False
 
     def show_widget(self, yes):
         if yes and not self.widget:
@@ -292,9 +241,9 @@ class SizerSlot(object):
 
         p = misc.get_toplevel_widget(self.sizer)
         if p is not None and p.preview_is_visible():
-            item = _('Close preview (%s)\tCtrl+P') % p.name
+            item = _('Close preview (%s)\tF5') % p.name
         else:
-            item = _('Preview (%s)\tCtrl+P') % p.name
+            item = _('Preview (%s)\tF5') % p.name
 
         i = misc.append_menu_item( menu, -1, item )
         misc.bind_menu_item_after(widget, i, self.preview_parent)
@@ -308,8 +257,16 @@ class SizerSlot(object):
         widget.Unbind(wx.EVT_MENU)
         menu.Destroy()
         self._rmenu = None
+
+    def preview_parent(self):
+        # context menu callback
+        self._destroy_popup_menu()
+        p = misc.get_toplevel_widget(self.sizer)
+        if p is not None:
+            p.preview(None)
+
     ####################################################################################################################
-    
+
     def remove(self, *args):
         self._destroy_popup_menu()
         if not self.sizer.is_virtual():
@@ -322,8 +279,9 @@ class SizerSlot(object):
         """replaces self with a widget in self.sizer. This method is called
         to add every non-toplevel widget or sizer, and in turn calls the
         appropriate builder function (found in the ``common.widgets'' dict)"""
-        if not common.adding_widget:
-            misc.focused_widget = self
+        if not common.adding_widget:  # widget focused/selecte
+            misc.set_focused_widget(self)
+            if self.widget: self.widget.Refresh()
             self.widget.SetFocus()
             return
         if common.adding_sizer and self.sizer.is_virtual():
@@ -385,18 +343,9 @@ class SizerSlot(object):
             self.widget = None
 
         if misc.focused_widget is self:
-            misc.focused_widget = None
+            misc.set_focused_widget(None)
         common.app_tree.app.saved = False
 
-    def update_pos(self, value):
-        "called by self.sizer.change_item_pos to update the item's position when another widget is moved"
-        self.pos = value
-
-    def preview_parent(self):
-        self._destroy_popup_menu()
-        p = misc.get_toplevel_widget(self.sizer)
-        if p is not None:
-            p.preview(None)
 
     def __getstate__(self):
         state = self.__dict__.copy()
@@ -422,7 +371,8 @@ class SizerHandleButton(GenButton):
         wx.EVT_SET_FOCUS(self, self.on_set_focus)
 
     def on_set_focus(self, event):
-        misc.focused_widget = self
+        #misc.focused_widget = self.sizer
+        misc.set_focused_widget(self.sizer)
         event.Skip()
 
 
@@ -432,7 +382,7 @@ class SizerItem(object):
     def __init__(self, item, pos, option=0, flag=0, border=0, size=None):
         self.item = item
         self.item.pos = pos
-        self.option = option
+        self.proportion = option
         self.flag = flag
         self.border = border
         self.size = size
@@ -440,7 +390,7 @@ class SizerItem(object):
 
 _change_sizer_panel = None  # reference to a hidden frame persistently shared between different calls of change_sizer
 
-def change_sizer(old, new, which_page=0):
+def change_sizer(old, new):
     """Replaces sizer instance 'old' with a new one; 'new' is the name of the new one.
     (which_page: index of the property windows notebook page; used only by set_growable_(rows|cols)"""
     constructors = {
@@ -453,8 +403,6 @@ def change_sizer(old, new, which_page=0):
         'wxGridSizer':     lambda: EditGridSizer(old.name, old.window, rows=0, cols=0, toplevel=old.toplevel),
         'wxFlexGridSizer': lambda: EditFlexGridSizer(old.name, old.window, rows=0, cols=0, toplevel=old.toplevel)
     }
-    if not new.startswith("wx"):
-        new = "wx" + new
 
     szr = constructors[new]()
     szr.children.extend(old.children[1:])
@@ -501,9 +449,7 @@ def change_sizer(old, new, which_page=0):
                 widget.widget.Reparent(_change_sizer_panel)
                 widget.widget.Reparent(p)
             if szr.widget is not None:
-                szr.widget.Insert(widget.pos, widget.widget,
-                                  int(widget.get_option()), widget.get_int_flag(),
-                                  int(widget.get_border()))
+                szr.widget.Insert(widget.pos, widget.widget, widget.proportion, widget.flag, widget.border)
 
     if old.widget is not None:
         # previously, this code was after compat.SizerItem_SetSizer(elem, szr.widget)
@@ -515,7 +461,7 @@ def change_sizer(old, new, which_page=0):
 
     if not szr.toplevel:
         szr.sizer = old.sizer
-        szr.option = old.option
+        szr.proportion = old.proportion
         szr.flag = old.flag
         szr.border = old.border
         szr.pos = old.pos
@@ -527,14 +473,14 @@ def change_sizer(old, new, which_page=0):
     common.app_tree.change_node(szr.node, szr)
 
     old.toplevel = False
-    szr.show_properties()
-    szr.notebook.SetSelection(which_page)
-
     old.children = old.children[:1]
     old.delete()
+
     if szr.toplevel:
         szr.window.set_sizer(szr)
     szr.layout(True)
+
+    misc.set_focused_widget(szr)
 
 
 
@@ -543,7 +489,6 @@ class Sizer(object):
 
     def __init__(self, window):
         self.window = window
-
         # initialise instance logger
         self._logger = logging.getLogger(self.__class__.__name__)
 
@@ -583,72 +528,94 @@ class Sizer(object):
 
     def __setstate__(self, state):
         self.__dict__.update(state)
-
         # re-initialise logger instance deleted from __getstate__
         self._logger = logging.getLogger(self.__class__.__name__)
 
 
 
-class SizerBase(Sizer):
-    """\
-    Base class for every non-virtual Sizer handled by wxGlade
+class OrientProperty(np.Property):
+    "orientation property for BoxSizers; hidden property to be set by the ClassOrientProperty"
+    ORIENTATION_to_STRING = {wx.HORIZONTAL: 'wxHORIZONTAL', wx.VERTICAL: 'wxVERTICAL'}
+    STRING_to_ORIENTATION = {'wxHORIZONTAL': wx.HORIZONTAL, 'wxVERTICAL': wx.VERTICAL}
 
-    @ivar _btn: A "handle" to activate a Sizer and to access its popup men
-    @type _btn: SizerHandleButton
+    def __init__(self, value, default_value=None, name=None):
+        np.Property.__init__(self, value, default_value, name)
+    def _set_converter(self, value):
+        if not value: return None
+        if isinstance(value, int): return value
+        return self.STRING_to_ORIENTATION.get(value, value)
+    def _write_converter(self, value):
+        if not value: return None
+        return self.ORIENTATION_to_STRING[value]
+    def get_str_value(self):
+        return self.ORIENTATION_to_STRING[self.value]
 
-    @ivar border: Widget border
-    @type border:  str | None
 
-    @ivar children: Widgets added to the sizer
-    @type children: list
+class ClassOrientProperty(np.RadioProperty):
+    # radio box: class name and orientation; will not be written to XML file, but will influence class and orient
+    CHOICES = [ ('wxBoxSizer (wxVERTICAL)', 'without box and label'),
+                ('wxBoxSizer (wxHORIZONTAL)', 'without box and label'),
+                ('wxStaticBoxSizer (wxVERTICAL)', 'with box and label'),
+                ('wxStaticBoxSizer (wxHORIZONTAL)', 'with box and label'),
+                ('wxGridSizer', None),
+                ('wxFlexGridSizer', "with columns/rows of different widths") ]
 
-    @ivar flag: Widget flags / styles
-    @type flag:  str | None
+    TOOLTIPS = [c[1] for c in CHOICES]
+    CHOICES  = [c[0] for c in CHOICES]
 
-    @ivar menu: List of popup menu entries
-    @type menu: list
+    def __init__(self, value=None):
+        np.RadioProperty.__init__(self, value, self.CHOICES, tooltips=self.TOOLTIP)
+    def write(self, outfile, tabs=0):
+        pass
 
-    @ivar notebook: Properties notebook pane
-    @type notebook: wx.Notebook
 
-    @ivar option: Widget layout proportions
-    @type option:  str | None
+class SizerBase(Sizer, np.PropertyOwner):
+    "Base class for every non-virtual Sizer handled by wxGlade"
+    PROPERTIES = ["Common", "name", "class", "orient", "class_orient", # class and orient are hidden
+   "attribute"]
+    EXTRA_PROPERTIES = []
+    
+    MANAGED_PROPERTIES  = ["pos", "proportion", "border", "flag"]
+    TOPLEVEL_PROPERTIES = ["fit"]
 
-    @ivar pos: for sub-sizers, the position inside the parent
-    @type pos: int
+    _PROPERTY_LABELS = {"fit":"Fit parent",
+                        "attribute":'Store as attribute'}
+    _PROPERTY_HELP = {"fit":'Sizes the window so that it fits around its subwindows'}
 
-    @ivar toplevel: if True, self is not inside another sizer, but it is the
-                    responsible of the layout of self.window
-    @type toplevel: bool
-
-    @ivar widget: actual wxSizer instance
-    @type widget: wx.Sizer
-    """
-
-    def __init__(self, name, klass, window, toplevel=True, show=True, menu=None):
+    def __init__(self, name, klass, orient, window, toplevel=True, show=True, menu=None):
+        np.PropertyOwner.__init__(self)
         Sizer.__init__(self, window)
-        self.attribute = 0
-        self.id = wx.NewId()
-        self.name = name
-        self.klass = klass
-        self.base = klass
-        self.pos = 0
-        self.properties = {}
-        self.property_window = window.property_window
-        self.widget = None
 
+        # if True, self is not inside another sizer, but it is the responsible of the layout of self.window
         self.toplevel = toplevel
-        if not self.toplevel:
-            self.option = 1
-            self.flag = wx.EXPAND
-            self.border = 0
-            self.sizer = None
 
-        self._btn = None
-        self._rmenu = None
-        self.notebook = None
-        self._property_setup()
-        self.children = []
+        self.id = wx.NewId()
+
+        # initialise instance properties
+        self.name         = np.TextProperty(name)
+        self.klass        = np.Property(klass, name="class")             # class and orient are hidden
+        self.orient       = OrientProperty(orient)                       # they will be set from the class_orient property
+        self.class_orient = ClassOrientProperty(self.get_class_orient()) # this will set the class and orient properties
+        self.base         = np.TextProperty(klass, "base")
+        self.attribute    = np.CheckBoxProperty(False, default_value=False)
+        self.fit          = np.ActionButtonProperty(self.fit_parent)
+
+        if not self.toplevel:
+            self.PROPERTIES = self.PROPERTIES + self.MANAGED_PROPERTIES + self.EXTRA_PROPERTIES
+            # if within another sizer: the arguments to sizer.Add(self, proportion, flag, border)
+            # same as for edit_windows.ManagedBase
+            self.pos    = np.LayoutPosProperty(0, None)  # the position within the sizer, 0-based
+            self.proportion = np.SpinProperty(1, name="option", immediate=True)
+            self.border = np.SpinProperty(0, immediate=True)
+            self.flag   = np.ManagedFlags(wx.EXPAND)
+            self.sizer = None  # the (parent) sizer instance
+        else:
+            self.PROPERTIES = self.PROPERTIES + self.TOPLEVEL_PROPERTIES + self.EXTRA_PROPERTIES
+
+        self.children = []    # widgets added to the sizer
+        self.widget = None    # actual wxSizer instance
+        self._btn = None      # "handle" to activate a Sizer and to access its popup menu (SizerHandleButton)
+        self._rmenu = None    # the popup menu
 
     def create_widget(self):
         "Creates the wxSizer self.widget"
@@ -659,7 +626,7 @@ class SizerBase(Sizer):
             return  # nothing to do if the sizer has already been created
         self._btn = SizerHandleButton(self.window, self.id, self ) # XXX handle the popupmenu creation in SizerHandleButton
         # ScreenToClient used by WidgetTree for the popup menu
-        wx.EVT_BUTTON(self._btn, self.id, self.show_properties)
+        wx.EVT_BUTTON(self._btn, self.id, self.on_selection)
         self.create_widget()
         self.widget.Refresh = self.refresh
         self.widget.GetBestSize = self.widget.GetMinSize
@@ -669,71 +636,21 @@ class SizerBase(Sizer):
         if not config.preferences.show_sizer_handle:
             self.widget.Show(self._btn, False)
         self.update_view(misc.focused_widget == self)
-
-    def _property_setup(self):
-        "Setup of the Properties of self."
-        border_styles = OrderedDict()
-        border_styles[_('Border')] = ['wxALL', 'wxLEFT', 'wxRIGHT', 'wxTOP', 'wxBOTTOM']
-        border_styles[_('Alignment')] = [
-            'wxEXPAND', 'wxALIGN_RIGHT', 'wxALIGN_BOTTOM', 'wxALIGN_CENTER',
-            'wxALIGN_CENTER_HORIZONTAL', 'wxALIGN_CENTER_VERTICAL',
-            'wxSHAPED', 'wxADJUST_MINSIZE', 'wxFIXED_MINSIZE']
-
-        # use 'wxDialog' as a functional dummy
-        self.esm_border = EditStylesMixin('wxDialog', border_styles)
-
-        self.access_functions = {
-            'name': (lambda: self.name, self.set_name),
-            'class': (lambda: self.klass, self.change),
-            'class_orient': (self.get_class_orient, self.change),
-            'attribute': (self.get_attribute, self.set_attribute),
-        }
-        if not self.toplevel:
-            self.access_functions['option'] = (self.get_option, self.set_option)
-            self.access_functions['flag'] = (self.esm_border.get_style, self.esm_border.set_style)
-            self.access_functions['border'] = (self.get_border, self.set_border)
-            self.access_functions['pos'] = (self.get_pos, self.set_pos)
-
-        self.name_prop = TextProperty(self, 'name', label=_('name'))
-
-        # radio box: class name and orientation
-        choices = [ ('wxBoxSizer (wxVERTICAL)', 'without box and label'),
-                    ('wxBoxSizer (wxHORIZONTAL)', 'without box and label'),
-                    ('wxStaticBoxSizer (wxVERTICAL)', 'with box and label'),
-                    ('wxStaticBoxSizer (wxHORIZONTAL)', 'with box and label'),
-                    ('wxGridSizer', None),
-                    ('wxFlexGridSizer', "with columns/rows of different widths") ]
-
-        tooltips = [c[1] for c in choices]
-        choices  = [c[0] for c in choices]
-        self.klass_prop = RadioProperty( self, 'class_orient', None, choices, label=_('Class'), tooltips=tooltips )
-
-        self.attr_prop = CheckBoxProperty(self, 'attribute', label=_('Store as attribute'))
-        self.properties['attribute'] = self.attr_prop
-
-        if not self.toplevel:
-            prop = self.sizer_properties = {}
-            prop['option'] = LayoutOptionProperty(self, self.sizer)
-            prop['flag']   = CheckListProperty(self, 'flag', styles=border_styles)
-            prop['border'] = SpinProperty(self, 'border', None, 0, (0, 1000), label=_('border'), immediate=True)
-            prop['pos']    = LayoutPosProperty(self, self.sizer)
+    def on_selection(self, event):
+        # button clicked -> set ourself as current widget
+        misc.set_focused_widget(self)
 
     def set_containing_sizer(self, sizer):
         self.sizer = sizer
-        self.sizer_properties['option'].set_sizer(sizer)
-        self.sizer_properties['pos'].set_sizer(sizer)
+        #self.properties['option'].set_sizer(sizer)  # XXX create a "SizerProportion property?"
+        self.properties['pos'].set_sizer(sizer)
+        #p = self.properties.get('pos')
+        #if p: p.set_sizer(sizer)
 
-    def get_pos(self):
-        return self.pos - 1
+
 
     def set_pos(self, value):
         wx.CallAfter( self.sizer.change_item_pos, self, min( value+1, len(self.sizer.children)-1 ) )
-
-    def get_attribute(self):
-        return self.attribute
-
-    def set_attribute(self, value):
-        self.attribute = int(value)
 
     def update_pos(self, value):
         # self._logger.debug('update pos: %s, %s', self.name, value)
@@ -744,52 +661,22 @@ class SizerBase(Sizer):
         # as string
         return self.WX_CLASS
 
-    def change(self, *args):
-        value = self.klass_prop.get_value()
-        classname = self.klass_prop.choices[value]
-        wx.CallAfter(change_sizer, self, classname)
-
-    def create_properties(self):
-        "Displays the Properties of self"
-        self.notebook = wx.Notebook(common.property_panel, -1)
-        self.notebook.sizer = None
-        self.notebook.SetAutoLayout(True)
-        panel = wx.ScrolledWindow(self.notebook, -1, style=wx.TAB_TRAVERSAL)
-        sizer_tmp = wx.BoxSizer(wx.VERTICAL)
-        self.name_prop.display(panel)
-        self.klass_prop.display(panel)
-        self.attr_prop.display(panel)
-        sizer_tmp.Add( self.name_prop.panel,  0, wx.EXPAND )
-        sizer_tmp.Add( self.klass_prop.panel,  0, wx.ALL|wx.EXPAND, 5)
-        sizer_tmp.Add( self.attr_prop.panel,  0, wx.EXPAND )
-        if not self.toplevel:
-            prop = self.sizer_properties
-            prop['pos'].display(panel)
-            prop['option'].display(panel)
-            prop['border'].display(panel)
-            prop['flag'].display(panel)
-            sizer_tmp.Add(prop['pos'].panel, 0, wx.EXPAND)
-            sizer_tmp.Add(prop['option'].panel, 0, wx.EXPAND)
-            sizer_tmp.Add(prop['border'].panel, 0, wx.EXPAND)
-            sizer_tmp.Add(prop['flag'].panel, 0, wx.EXPAND)
-        else:
-            # button to Fit parent
-            FIT_ID = wx.NewId()
-            self.fit_btn = wx.Button(panel, FIT_ID, _('Fit parent'))
-            self.fit_btn.SetToolTip( wx.ToolTip(_('Sizes the window so that it fits around its subwindows') ))
-            wx.EVT_BUTTON(self.fit_btn, FIT_ID, self.fit_parent)
-            sizer_tmp.Add(self.fit_btn, 0, wx.ALL | wx.EXPAND, 5)
-        panel.SetAutoLayout(True)
-        panel.SetSizer(sizer_tmp)
-        sizer_tmp.Fit(panel)
-
-        w, h = panel.GetClientSize()
-        self.notebook.AddPage(panel, _("Common"))
-        panel.SetScrollbars(1, 5, 1, int(math.ceil(h / 5.0)))
+    def properties_changed(self, modified):
+        # "class" and "orient" will only display; "class_orient" 
+        if not modified or "class" in modified:
+            self.properties["class_orient"].set(self.get_class_orient())
+        if not modified or "orient" in modified:
+            self.properties["class_orient"].set(self.get_class_orient())
+        if "class_orient" in modified:
+            # user has selected -> change
+            value = self.class_orient
+            wx.CallAfter(change_sizer, self, value)
+        np.PropertyOwner.properties_changed(self, modified)
 
     def check_compatibility(self, widget):
         return "AddSlot" # a slot is to be added before inserting/pasting
 
+    # popup menu #######################################################################################################
     def popup_menu(self, event):
         "pops up a menu to add or remove slots from self, or to remove self from the application."
         event_widget = event.GetEventObject()
@@ -830,9 +717,9 @@ class SizerBase(Sizer):
         menu.AppendSeparator()
         p = misc.get_toplevel_widget(self)
         if p is not None and p.preview_is_visible():
-            item = _('Close preview (%s)\tCtrl+P') % p.name
+            item = _('Close preview (%s)\tF5') % p.name
         else:
-            item = _('Preview (%s)\tCtrl+P') % p.name
+            item = _('Preview (%s)\tF5') % p.name
         i = misc.append_menu_item( menu, -1, item )
         misc.bind_menu_item_after(widget, i, self.preview_parent)
 
@@ -910,48 +797,6 @@ class SizerBase(Sizer):
     def __getitem__(self, value):
         return self.access_functions[value]
 
-    def show_properties(self, *args):
-        "Updates common.property_panel to show the notebook with the Properties of self"
-        #if not self.window.is_visible():
-            #return  # don't do anything if self is hidden
-        if not self.notebook:
-            self.create_properties()
-        sizer_tmp = self.property_window.GetSizer()
-        # sizer_tmp = wxPyTypeCast(sizer_tmp, "wxBoxSizer")
-        # child = wxPyTypeCast(sizer_tmp.GetChildren()[0], "wxSizerItem")
-        child = sizer_tmp.GetChildren()[0]
-        # w = wxPyTypeCast(child.GetWindow(), "wxWindow")
-        w = child.GetWindow()
-        if w is self.notebook:
-            return
-        try:
-            index = -1
-            title = w.GetPageText(w.GetSelection())
-            for i in range(self.notebook.GetPageCount()):
-                if self.notebook.GetPageText(i) == title:
-                    index = i
-                    break
-        except AttributeError:
-            # self._logger.exception(_('Internal Error'))
-            index = -1
-        w.Hide()
-        if 0 <= index < self.notebook.GetPageCount():
-            self.notebook.SetSelection(index)
-        self.notebook.Reparent(self.property_window)
-        compat.SizerItem_SetWindow(child, self.notebook)
-
-        self.notebook.Show()
-        self.notebook.SetSize(self.property_window.GetClientSize())
-
-        self.property_window.Layout()
-        self.property_window.SetTitle(_('Properties - <%s>') % self.name)
-        if hasattr(self, 'node'):
-            common.app_tree.select_item(self.node)
-        try:
-            self._btn.SetFocus()
-        except AttributeError:
-            pass
-
     def fit_parent(self, *args):
         "Tell the sizer to resize the window to match the sizer's minimal size"
         if self.widget and self.window.widget:
@@ -959,9 +804,9 @@ class SizerBase(Sizer):
             # self.widget.SetSizeHints(self.window.widget)
             self.window.widget.Layout()
 
-    def add_item(self, item, pos=None, option=0, flag=0, border=0, size=None, force_layout=True):
+    def add_item(self, item, pos=None, proportion=0, flag=0, border=0, size=None, force_layout=True):
         "Adds an item to self."
-        option = int(option)
+        proportion = int(proportion)
         flag = int(flag)
         border = int(border)
         if pos is None:
@@ -972,7 +817,7 @@ class SizerBase(Sizer):
             old_child = self.children[pos]
             if isinstance(old_child.item, SizerSlot):
                 old_child.item.delete()
-            self.children[pos] = SizerItem(item, pos, option, flag, border, size)
+            self.children[pos] = SizerItem(item, pos, proportion, flag, border, size)
         except IndexError:  # this shouldn't happen!
             self._logger.exception(_('Internal Error'))
             self._logger.error('%s, %s', self.children, pos)
@@ -982,11 +827,11 @@ class SizerBase(Sizer):
             item.set_containing_sizer(self)
         else:
             item.sizer = self
-        item.pos = pos
+        item.properties["pos"].set(pos)
 
-        self._add_item_widget(item, pos, option, flag, border, size, force_layout)
+        self._add_item_widget(item, pos, proportion, flag, border, size, force_layout)
 
-    def _add_item_widget(self, item, pos, option, flag, border, size, force_layout):
+    def _add_item_widget(self, item, pos, proportion, flag, border, size, force_layout):
         if not self.widget:
             return  # nothing more to do
         if not item.widget:
@@ -999,7 +844,7 @@ class SizerBase(Sizer):
             # able to detect (yet): if the width or height of a widget is -1,
             # the layout is messed up!
 
-            self.widget.Add(item.widget, option, flag, border)
+            self.widget.Add(item.widget, proportion, flag, border)
 
             if size:
                 w, h = size
@@ -1012,7 +857,7 @@ class SizerBase(Sizer):
             self.widget.SetItemMinSize(item.widget, w, h)
             return
 
-        self.widget.Insert(pos, item.widget, option, flag, border)
+        self.widget.Insert(pos, item.widget, proportion, flag, border)
         self.widget.Remove(pos + 1)
         # XXX
         #si = wx.SizerItem(item.widget, option, flag, border)
@@ -1027,9 +872,9 @@ class SizerBase(Sizer):
             if w == -1: w = item.widget.GetBestSize()[0]
             if h == -1: h = item.widget.GetBestSize()[1]
 
-            option = elem.GetProportion()
+            proportion = elem.GetProportion()
             flag = elem.GetFlag()
-            if not size or (option == 0 or not (flag & wx.EXPAND)):
+            if not size or (proportion == 0 or not (flag & wx.EXPAND)):
                 self.widget.SetItemMinSize(item.widget, w, h)
             elif hasattr(item.widget, "GetBestSize"):
                 w, h = item.widget.GetBestSize()
@@ -1055,32 +900,20 @@ class SizerBase(Sizer):
         if force_layout:
             self.layout()
 
-    def set_item(self, pos, option=None, flag=None, border=None, size=None, force_layout=True):
-        # XXX rename method to something more meaningful like 'set_item_layout' and option to proportion
-        """\
-        Updates the layout of the item at the given pos
-
-        @param pos: Widget position
-        @type pos: int
-        @param option: Widget layout proportions
-        @type option:  str | None
-        @param flag: Widget flags / styles
-        @type flag:  str | None
-        @param border: Widget border
-        @type border:  str | None
-        @param size: Widget width and height
-        @type size: list[int, int] | None
-        @param force_layout: Force layout update
-        @type force_layout: bool
-        """
+    def set_item(self, pos, proportion=None, flag=None, border=None, size=None, force_layout=True):
+        "Updates the layout of the item at the given pos"
+        # XXX rename method to something more meaningful like 'set_item_layout' or 'update_layout' and option to proportion#
+        # don't set the item properties; do this in the caller
+        # XXX for editing, the next method is used now
+        # XXX this is still used from the xml_builder and builder functions; maybe this can all be changed to the new implementation
         try:
             item = self.children[pos]
         except IndexError:  # this shouldn't happen
             self._logger.exception(_('Internal Error'))
             raise SystemExit
-        if option is not None:
-            option = int(option)
-            item.option = option
+        if proportion is not None:
+            proportion = int(proportion)
+            item.proportion = proportion
         if flag is not None:
             flag = int(flag)
             item.flag = flag
@@ -1098,8 +931,8 @@ class SizerBase(Sizer):
         except IndexError:  # this may happen during xml loading
             return
 
-        if option is not None:
-            elem.SetProportion(option)
+        if proportion is not None:
+            elem.SetProportion(proportion)
         if flag is not None:
             elem.SetFlag(flag)
         if border is not None:
@@ -1114,6 +947,52 @@ class SizerBase(Sizer):
             if w == -1: w = best_size[0]
             if h == -1: h = best_size[1]
             self.widget.SetItemMinSize(item, w, h)
+
+        if force_layout:
+            self.layout(True)
+
+    def item_layout_property_changed(self, pos, size=None, force_layout=True):
+        # called when a sizer layout related property (border, option/proportion, size) has changed
+        if not self.widget:
+            return
+
+        try:
+            sizer_item = self.children[pos]  # the SizerItem
+        except IndexError:  # this shouldn't happen
+            self._logger.exception(_('Internal Error'))
+            raise SystemExit
+        
+        item = sizer_item.item  # the ManagedBase or derived class instance
+
+        try:
+            elem = self.widget.GetChildren()[pos]
+        except IndexError:  # this may happen during xml loading
+            return
+
+        # XXX track modifications; if no modifications, including SetItemMinSize
+        if item.proportion != sizer_item.proportion or item.proportion != elem.GetProportion():
+            sizer_item.proportion = item.proportion
+            elem.SetProportion(sizer_item.proportion)
+        if item.flag != sizer_item.flag or item.flag != elem.GetFlag():
+            sizer_item.flag = item.flag
+            elem.SetFlag(sizer_item.flag)
+        if item.border != sizer_item.border or item.border != elem.GetBorder():
+            sizer_item.border = item.border
+            elem.SetBorder(sizer_item.border)
+
+        if size is None:
+            size = item.size
+
+        if elem.IsWindow():
+            if size is None:
+                size = elem.GetSize()
+            widget = elem.GetWindow()
+            w, h = size
+            if w==-1 or h==-1:
+                best_size = widget.GetBestSize()
+            if w == -1: w = best_size[0]
+            if h == -1: h = best_size[1]
+            self.widget.SetItemMinSize(widget, w, h)  # XXX store the min size as attribute to track modifications
 
         if force_layout:
             self.layout(True)
@@ -1198,7 +1077,7 @@ class SizerBase(Sizer):
         compat.SizerItem_SetWindow(elem, fake_win)
         self.widget.Remove(fake_win)
         fake_win.Destroy()
-        self.widget.Insert( new_pos, item.widget, int(item.get_option()), item.get_int_flag(), int(item.get_border()) )
+        self.widget.Insert( new_pos, item.widget, int(item.get_option()), item.flag, int(item.get_border()) )
         common.app_tree.change_node_pos(item.node, new_pos-1)
         common.app_tree.select_item(item.node)
 
@@ -1210,9 +1089,12 @@ class SizerBase(Sizer):
 
     def set_option(self, value):
         "If self is not a toplevel sizer, update the layout to reflect the value of the option property"
-        self.option = int(value)
+        value = int(value)
+        #if value==self.option: return
+        self.proportion = value
         try:
-            self.sizer.set_item(self.pos, option=self.option)
+            #self.sizer.set_item(self.pos, option=self.option)
+            self.sizer.item_layout_property_changed(self.pos)
             # self._logger.debug('%s set_option(%s)', self.name, self.option)
         except AttributeError:
             pass
@@ -1220,25 +1102,19 @@ class SizerBase(Sizer):
 
     def set_border(self, value):
         "If self is not a toplevel sizer, update the layout to reflect value of the border property"
-        self.border = int(value)
+        value = int(value)
+        #if value==self.border: return
+        self.border = value
         try:
-            self.sizer.set_item(self.pos, border=self.border)
+            #self.sizer.set_item(self.pos, border=self.border)
+            self.sizer.item_layout_property_changed(self.pos)
         except AttributeError:
             self._logger.exception(_('Internal Error'))
 
     def get_option(self):
         if not hasattr(self, 'sizer'):
             return '1'
-        return str(self.option)
-
-    def get_int_flag(self):
-        "@see: L{edit_windows.EditStylesMixin.get_int_style()}"
-        return self.esm_border.get_int_style()
-
-    def get_border(self):
-        if not hasattr(self, 'sizer'):
-            return '0'
-        return str(self.border)
+        return str(self.proportion)
 
     def delete(self):
         "Destructor"
@@ -1246,13 +1122,6 @@ class SizerBase(Sizer):
         if self._btn:
             self._btn.Destroy()
             self._btn = None
-        if self.notebook:
-            nb_szr = self.notebook.sizer
-            self.notebook.DeleteAllPages()
-            self.notebook.Destroy()
-            self.notebook = None
-            if nb_szr is not None:
-                nb_szr.Destroy()
         for c in self.children:
             if c.item and isinstance(c.item, SizerSlot):
                 c.item.delete()
@@ -1281,13 +1150,13 @@ class SizerBase(Sizer):
                     pass
 
     def update_view(self, selected):
-        if self._btn is not None:
-            if selected:
-                color = wx.RED
-            else:
-                color = compat.wx_SystemSettings_GetColour(wx.SYS_COLOUR_BTNFACE)
-            self._btn.SetBackgroundColour(color)
-            self._btn.Refresh(True)
+        if self._btn is None: return
+        if selected:
+            color = wx.RED
+        else:
+            color = compat.wx_SystemSettings_GetColour(wx.SYS_COLOUR_BTNFACE)
+        self._btn.SetBackgroundColour(color)
+        self._btn.Refresh(True)
 
     def add_slot(self, add_node=True, **kwds):
         "adds a slot to the sizer, i.e. a fake window that will accept the dropping of widgets"
@@ -1312,21 +1181,7 @@ class SizerBase(Sizer):
         common.app_tree.app.saved = False
 
     def insert_slot(self, pos=None, force_layout=True):
-        """\
-        Inserts a slot into the sizer
-
-        The user will be asked for a position before which to insert the
-        SizerSlot object
-
-        @param interactive: Open a dialog to ask to the position to insert
-        @type interactive: bool
-
-        @param pos: Position to insert a new slot
-        @type pos: int
-
-        @param force_layout: Force layout update
-        @type force_layout: bool
-        """
+        "Inserts a slot into the sizer at pos (1 based); optionally force layout update"
         # pos is 1 based here
         tmp = SizerSlot(self.window, self, pos)
         item = SizerItem(tmp, pos, 1, wx.EXPAND, 0)
@@ -1409,15 +1264,10 @@ class wxGladeBoxSizer(wx.BoxSizer):
 
 class BoxSizerBase(SizerBase):
     "orientation handling for BoxSizer and StaticBoxSizer"
-    ORIENTATION_to_STRING = {wx.HORIZONTAL: 'wxHORIZONTAL', wx.VERTICAL: 'wxVERTICAL'}
-    STRING_to_ORIENTATION = {'wxHORIZONTAL': wx.HORIZONTAL, 'wxVERTICAL': wx.VERTICAL}
+    
     def __init__(self, name, window, orient=wx.VERTICAL, elements=0, toplevel=True, show=True):
         # elements: number of slots
-        self.orient = orient
-        SizerBase.__init__(self, name, self.WX_CLASS, window, toplevel, show)
-
-        self.access_functions['orient'] = (self.get_orient, self.set_orient)
-        self.properties['orient'] = HiddenProperty( self, 'orient', self.ORIENTATION_to_STRING[orient] )
+        SizerBase.__init__(self, name, self.WX_CLASS, orient, window, toplevel, show)
 
         class Dummy(object):
             widget = None
@@ -1428,21 +1278,17 @@ class BoxSizerBase(SizerBase):
             self.add_slot()
             #tmp = SizerSlot(self.window, self, i) # XXX no node?
             #self.children.append(SizerItem(tmp, i, 1, wx.EXPAND))
-    
-    def get_orient(self):
-        return self.ORIENTATION_to_STRING.get(self.orient)
 
-    def set_orient(self, value):
-        self.orient = self.STRING_to_ORIENTATION.get(value, wx.VERTICAL)
-        if self.klass_prop:
-            classname = self.get_class_orient()
-            self.klass_prop.set_str_value(classname)
-        if self.node:
+    def get_class_orient(self):
+        return '%s (%s)'%( self.WX_CLASS, self.properties["orient"].get_str_value() )
+
+    def properties_changed(self, modified):
+        if not modified or "orient" in modified and self.node:
+            # update the image
             image = common.app_tree.get_image(self)
             common.app_tree.SetItemImage(self.node.item, image )
-    def get_class_orient(self):
-        return '%s (%s)'%(self.WX_CLASS, self.get_orient())
 
+        SizerBase.properties_changed(self, modified)
 
 
 class EditBoxSizer(BoxSizerBase):
@@ -1461,7 +1307,7 @@ class EditBoxSizer(BoxSizerBase):
             else:
                 sp = c.item.properties.get('size')
                 if sp and sp.is_active():
-                    if (c.option != 0 or (c.flag & wx.EXPAND)) and not (c.flag & wx.FIXED_MINSIZE):
+                    if (c.proportion != 0 or (c.flag & wx.EXPAND)) and not (c.flag & wx.FIXED_MINSIZE):
                         c.item.widget.Layout()
                         w, h = c.item.widget.GetBestSize()
                         # self._logger.debug("HERE: %d, %d", w, h)
@@ -1483,7 +1329,7 @@ class EditBoxSizer(BoxSizerBase):
         self.layout(True)
         if not self.toplevel and getattr(self, 'sizer'):
             # hasattr(self, 'sizer') is False only in case of a 'change_sizer' call
-            self.sizer.add_item( self, self.pos, self.option, self.flag, self.border, self.widget.GetMinSize() )
+            self.sizer.add_item( self, self.pos, self.proportion, self.flag, self.border, self.widget.GetMinSize() )
 
 
 
@@ -1503,9 +1349,11 @@ class wxGladeStaticBoxSizer(wx.StaticBoxSizer):
 class EditStaticBoxSizer(BoxSizerBase):
     "Class to handle wxStaticBoxSizer objects"
     WX_CLASS = "wxStaticBoxSizer"
+    EXTRA_PROPERTIES = ["label"]
+
     def __init__(self, name, window, orient=wx.VERTICAL, label='', elements=3, toplevel=True, show=True):
-        self.label = label
         BoxSizerBase.__init__(self, name, window, orient, elements, toplevel, show)
+        self.label = np.TextProperty(label)
 
     def create_widget(self):
         self.widget = wxGladeStaticBoxSizer( wx.StaticBox(self.window.widget, -1, self.label), self.orient )
@@ -1517,7 +1365,7 @@ class EditStaticBoxSizer(BoxSizerBase):
                 self.widget.SetItemMinSize(c.item.widget, 20, 20)
             else:
                 sp = c.item.properties.get('size')
-                if sp and sp.is_active() and ( c.option == 0 or not (c.flag & wx.EXPAND) ):
+                if sp and sp.is_active() and ( c.proportion == 0 or not (c.flag & wx.EXPAND) ):
                     size = sp.get_value().strip()
                     if size[-1] == 'd':
                         size = size[:-1]
@@ -1533,29 +1381,7 @@ class EditStaticBoxSizer(BoxSizerBase):
         self.layout()
         if not self.toplevel and getattr(self, 'sizer'):
             # getattr(self, 'sizer') is False only in case of a 'change_sizer' call
-            self.sizer.add_item(self, self.pos, self.option, self.flag, self.border, self.widget.GetMinSize())
-
-    def _property_setup(self):
-        SizerBase._property_setup(self)
-        self.access_functions['label'] = (self.get_label, self.set_label)
-        lbl = self.properties['label'] = TextProperty( self, 'label', None, label=_("label") )
-
-        def write(outfile, tabs):
-            stmt = common.format_xml_tag(u'label', self.get_label(), tabs)
-            outfile.write(stmt)
-
-        # we must consider also "" a valid value
-        lbl.write = write
-
-    def create_properties(self):
-        SizerBase.create_properties(self)
-        panel = self.notebook.GetPage(0)
-        sizer = panel.GetSizer()
-        self.properties['label'].display(panel)
-        sizer.Add(self.properties['label'].panel, 0, wx.EXPAND)
-        sizer.Layout()
-        w, h = sizer.GetMinSize()
-        panel.SetScrollbars(1, 5, 1, int(math.ceil(h / 5.0)))
+            self.sizer.add_item(self, self.pos, self.proportion, self.flag, self.border, self.widget.GetMinSize())
 
     def set_label(self, value):
         "Sets the label of the static box"
@@ -1564,9 +1390,6 @@ class EditStaticBoxSizer(BoxSizerBase):
         if self.widget:
             self.widget.GetStaticBox().SetLabel(self.label)
         self.layout()
-
-    def get_label(self):
-        return self.label
 
     def delete(self):
         if self.widget:
@@ -1633,11 +1456,14 @@ class CustomSizer(wx.BoxSizer):
 
 class GridSizerBase(SizerBase):
     "Base class for Grid sizers"
+    _PROPERTY_HELP = {"rows":'Numbers of sizer rows',
+                      "cols":'Numbers of sizer columns',
+                      "vgap":'Vertical extra space between all children',
+                      "hgap":'Horizontal extra space between all children'}
+
+    EXTRA_PROPERTIES = ["Grid", "rows", "cols", "vgap", "hgap"]
+
     def __init__(self, name, klass, window, rows=3, cols=3, vgap=0, hgap=0, toplevel=True, show=True):
-        self.rows = rows
-        self.cols = cols
-        self.vgap = vgap
-        self.hgap = hgap
         #if self.cols or self.rows:
             #if not self.rows:
                 #self.rows = 1
@@ -1649,7 +1475,12 @@ class GridSizerBase(SizerBase):
                 (_('Add column'), self.add_col),
                 (_('Insert row...'), self.insert_row),
                 (_('Insert column...'), self.insert_col)]
-        SizerBase.__init__(self, name, klass, window, toplevel, show, menu)
+        SizerBase.__init__(self, name, klass, None, window, toplevel, show, menu)
+
+        self.rows = np.SpinProperty(rows)
+        self.cols = np.SpinProperty(cols)
+        self.vgap = np.SpinProperty(vgap)
+        self.hgap = np.SpinProperty(hgap)
 
         class Dummy(object):
             widget = None
@@ -1672,7 +1503,7 @@ class GridSizerBase(SizerBase):
             else:
                 sp = c.item.properties.get('size')
                 if sp and sp.is_active():
-                    if (c.option != 0 or (c.flag & wx.EXPAND)) and not (c.flag & wx.FIXED_MINSIZE):
+                    if (c.proportion != 0 or (c.flag & wx.EXPAND)) and not (c.flag & wx.FIXED_MINSIZE):
                         c.item.widget.Layout()
                         w, h = c.item.widget.GetBestSize()
                         c.item.widget.SetMinSize((w, h))
@@ -1693,53 +1524,6 @@ class GridSizerBase(SizerBase):
             # self._logger.debug('set_item: %s, %s', pos, size)
             self.set_item(pos, size=size, force_layout=False)
         self.layout(True)
-
-    def _property_setup(self):
-        SizerBase._property_setup(self)
-        self.access_functions['rows'] = (self.get_rows, self.set_rows)
-        self.access_functions['cols'] = (self.get_cols, self.set_cols)
-        self.access_functions['hgap'] = (self.get_hgap, self.set_hgap)
-        self.access_functions['vgap'] = (self.get_vgap, self.set_vgap)
-        props = {'rows': SpinProperty(self, 'rows', None, label=_("rows")),
-                 'cols': SpinProperty(self, 'cols', None, label=_("cols")),
-                 'hgap': SpinProperty(self, 'hgap', None, label=_("hgap")),
-                 'vgap': SpinProperty(self, 'vgap', None, label=_("vgap"))}
-        props['rows'].set_tooltip(_('Numbers of sizer rows'))
-        props['cols'].set_tooltip(_('Numbers of sizer columns'))
-        props['vgap'].set_tooltip(_('Vertical extra space between all children'))
-        props['hgap'].set_tooltip(_('Horizontal extra space between all children'))
-
-        self.properties.update(props)
-
-    def create_properties(self):
-        SizerBase.create_properties(self)
-        page = wx.ScrolledWindow(self.notebook, -1, style=wx.TAB_TRAVERSAL)
-        sizer = wx.BoxSizer(wx.VERTICAL)
-        props = self.properties
-        props['rows'].display(page)
-        props['cols'].display(page)
-        props['vgap'].display(page)
-        props['hgap'].display(page)
-        sizer.Add(props['rows'].panel, 0, wx.EXPAND)
-        sizer.Add(props['cols'].panel, 0, wx.EXPAND)
-        sizer.Add(props['vgap'].panel, 0, wx.EXPAND)
-        sizer.Add(props['hgap'].panel, 0, wx.EXPAND)
-        page.SetAutoLayout(True)
-        page.SetSizer(sizer)
-        sizer.Fit(page)
-        self.notebook.AddPage(page, _("Grid"))
-
-    def get_rows(self):
-        return self.rows
-
-    def get_cols(self):
-        return self.cols
-
-    def get_vgap(self):
-        return self.vgap
-
-    def get_hgap(self):
-        return self.hgap
 
     def _set_rows_cols(self, rows, cols):
         self.rows = rows
@@ -1878,12 +1662,12 @@ class EditGridSizer(GridSizerBase):
         self.widget = CustomSizer(self, wx.GridSizer, self.rows, self.cols, self.vgap, self.hgap)
         if not self.toplevel and getattr(self, 'sizer', None):
             # getattr(self, 'sizer') is False only in case of a 'change_sizer' call
-            self.sizer.add_item(self, self.pos, self.option, self.flag,  self.border) # , self.widget.GetMinSize())
+            self.sizer.add_item(self, self.pos, self.proportion, self.flag,  self.border) # , self.widget.GetMinSize())
         GridSizerBase.create_widget(self)
 
 
 
-class CheckListDialogProperty(DialogProperty):
+class CheckListDialogProperty(np.DialogProperty):
     dialog = [None]
 
     def __init__(self, owner, name, parent, title, message, callback, can_disable=True):
@@ -1946,52 +1730,31 @@ class CheckListDialogProperty(DialogProperty):
 class EditFlexGridSizer(GridSizerBase):
     "Class to handle wxFlexGridSizer objects"
     WX_CLASS = "wxFlexGridSizer"
+
+    EXTRA_PROPERTIES = GridSizerBase.EXTRA_PROPERTIES + ["growable_rows", "growable_cols"]
+    _PROPERTY_HELP = {"growable_rows":'Select growable rows',
+                      "growable_cols":'Select growable columns'}
+
     def __init__(self, name, window, rows=3, cols=3, vgap=0, hgap=0, toplevel=True, show=True):
         GridSizerBase.__init__(self, name, 'wxFlexGridSizer', window, rows, cols, vgap, hgap, toplevel, show)
+        self.growable_rows = np.TextPropertyD("", default_value="")  # XXX modify CheckListDialog above and use this, with [] as value
+        self.growable_cols = np.TextPropertyD("", default_value="")
+        
 
     def create_widget(self):
         self.widget = CustomSizer(self, wx.FlexGridSizer, self.rows, self.cols, self.vgap, self.hgap)
         GridSizerBase.create_widget(self)
-        for r in self.grow_rows:
+        for r in self.growable_rows.split(","):
+            if not r.strip(): continue
+            r = int(r)
             self.widget.AddGrowableRow(r)
-        for c in self.grow_cols:
+        for c in self.growable_cols.split(","):
+            if not c.strip(): continue
+            c = int(c)
             self.widget.AddGrowableCol(c)
         if not self.toplevel and getattr(self, 'sizer', None) is not None:
             # hasattr(self, 'sizer') is False only in case of a 'change_sizer' call
-            self.sizer.add_item(self, self.pos, self.option, self.flag, self.border)
-
-    def _property_setup(self):
-        GridSizerBase._property_setup(self)
-        self.grow_rows = []
-        self.access_functions['growable_rows'] = (self.get_growable_rows, self.set_growable_rows)
-        self.grow_cols = []
-        self.access_functions['growable_cols'] = (self.get_growable_cols, self.set_growable_cols)
-
-        def rows_setter():
-            return map(str, range(self.get_rows()))
-
-        pr = CheckListDialogProperty( self, 'growable_rows', None,
-                                      _('Growable Rows'), _('Select growable rows'), rows_setter )
-        self.properties['growable_rows'] = pr
-
-        def cols_setter():
-            return map(str, range(self.get_cols()))
-
-        pr = CheckListDialogProperty( self, 'growable_cols', None,
-                                      _('Growable Columns'), _('Select growable columns'), cols_setter )
-        self.properties['growable_cols'] = pr
-
-    def create_properties(self):
-        GridSizerBase.create_properties(self)
-        page = self.notebook.GetPage(1)
-        sizer = page.GetSizer()
-        props = self.properties
-        props['growable_rows'].display(page)
-        props['growable_cols'].display(page)
-        sizer.Add(props['growable_rows'].panel, 0, wx.EXPAND)
-        sizer.Add(props['growable_cols'].panel, 0, wx.EXPAND)
-        sizer.Layout()
-        sizer.Fit(page)
+            self.sizer.add_item(self, self.pos, self.proportion, self.flag, self.border)
 
     def _recreate(self):
         # recreatea the sizer by calling change_sizer
@@ -2159,10 +1922,7 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
     except KeyError:
         raise XmlParsingError( _("'name' attribute missing") )
     orientation = wx.VERTICAL  # default value
-    if sizer is not None:
-        topl = False
-    else:
-        topl = True
+    topl = True  if sizer is None  else False
     if attrs['base'] == 'EditStaticBoxSizer':
         sz = EditStaticBoxSizer(name, parent, orientation, '', 0, topl)
     else:
@@ -2170,7 +1930,7 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
     if sizer is not None:
         if sizeritem is None:
             raise XmlParsingError( _("'sizeritem' object not found") )
-        sizer.add_item( sz, pos=pos, option=sizeritem.option, flag=sizeritem.flag, border=sizeritem.border )
+        sizer.add_item( sz, pos=pos, proportion=sizeritem.proportion, flag=sizeritem.flag, border=sizeritem.border )
         node = Node(sz)
         sz.node = node
         if pos is None:
@@ -2188,10 +1948,11 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
 class _GridBuilderDialog(wx.Dialog):
     def __init__(self, parent):
         wx.Dialog.__init__( self, misc.get_toplevel_parent(parent), -1, _('Select sizer attributes') )
-        self.rows = SpinProperty(self, 'rows', self, label=_("rows"))
-        self.cols = SpinProperty(self, 'cols', self, label=_("cols"))
-        self.vgap = SpinProperty(self, 'vgap', self, label=_("vgap"))
-        self.hgap = SpinProperty(self, 'hgap', self, label=_("hgap"))
+        import widget_properties as wp
+        self.rows = wp.SpinProperty(self, 'rows', self, label=_("rows"))
+        self.cols = wp.SpinProperty(self, 'cols', self, label=_("cols"))
+        self.vgap = wp.SpinProperty(self, 'vgap', self, label=_("vgap"))
+        self.hgap = wp.SpinProperty(self, 'hgap', self, label=_("hgap"))
         self.rows.set_tooltip(_('Numbers of sizer rows'))
         self.cols.set_tooltip(_('Numbers of sizer columns'))
         self.vgap.set_tooltip(_('Vertical extra space between all children'))
@@ -2199,7 +1960,7 @@ class _GridBuilderDialog(wx.Dialog):
         self.rows.spin.SetFocus()
         self.rows.spin.SetSelection(-1, -1)
 
-        self.flex = CheckBoxProperty( self, 'flex', self, _('Flexible'), write_always=True )
+        self.flex = wp.CheckBoxProperty( self, 'flex', self, _('Flexible'), write_always=True )
         self.flex.set_tooltip(_('Create a wxFlexGridSizer instead of a wxGridSizer'))
 
         self.rows.set_value(3)
@@ -2296,7 +2057,7 @@ def grid_xml_builder(attrs, parent, sizer, sizeritem, pos=None):
         sz = constructor(name, parent, rows=0, cols=0, toplevel=False)
         if sizeritem is None:
             raise XmlParsingError(_("'sizeritem' object not found"))
-        sizer.add_item(sz, pos=pos, option=sizeritem.option, flag=sizeritem.flag, border=sizeritem.border)
+        sizer.add_item(sz, pos=pos, proportion=sizeritem.proportion, flag=sizeritem.flag, border=sizeritem.border)
         node = Node(sz)
         sz.node = node
         if pos is None:

@@ -3,77 +3,34 @@ Spacers to use in sizers
 
 @copyright: 2002-2007 Alberto Griggio
 @copyright: 2014-2016 Carsten Grohmann
+@copyright: 2016 Dietmar Schwertberger
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
 import wx
 import common, misc
 from tree import Tree, Node
-from widget_properties import *
+import new_properties as np
 from edit_windows import ManagedBase
 
 
 class EditSpacer(ManagedBase):
-    def __init__(self, name, parent, id, width, height, sizer, pos, property_window, show=True):
-        "Class to handle spacers for sizers"
-        ManagedBase.__init__(self, name, 'spacer', parent, id, sizer, pos, property_window, show=show)
-        self.__size = [width, height]
+    "Class to handle spacers for sizers"
+    _PROPERTIES = ["Layout", "width", "height", "pos", "proportion", "border", "flag"]
+    PROPERTIES = _PROPERTIES + ManagedBase.EXTRA_PROPERTIES
 
-        self.access_functions['width'] = (self.get_width, self.set_width)
-        self.access_functions['height'] = (self.get_height, self.set_height)
+    def __init__(self, name, parent, id, width, height, sizer, pos, show=True):
+        ManagedBase.__init__(self, name, 'spacer', parent, id, sizer, pos, show=show)
 
-        self.properties['width'] = SpinProperty(self, 'width', None, label=_("width"), immediate=True)
-        self.properties['height'] = SpinProperty(self, 'height', None, label=_("height"), immediate=True)
+        # initialise instance properties
+        self.width  = np.SpinProperty(width,  immediate=True)
+        self.height = np.SpinProperty(height, immediate=True)
 
     def create_widget(self):
-        self.widget = wx.Window(self.parent.widget, self.id, size=self.__size, style=wx.SIMPLE_BORDER)
+        size = (self.width, self.height)
+        self.widget = wx.Window(self.parent.widget, self.id, size=size, style=wx.SIMPLE_BORDER)
         self.widget.GetBestSize = self.widget.GetSize
         wx.EVT_PAINT(self.widget, self.on_paint)
-
-    def create_properties(self):
-        ManagedBase.create_properties(self)
-        page = self.notebook.GetPage(1)
-        wp = self.properties['width']
-        hp = self.properties['height']
-        wp.display(page)
-        hp.display(page)
-        szr = page.GetSizer()
-        szr.Insert(0, hp.panel, 0, wx.EXPAND)
-        szr.Insert(0, wp.panel, 0, wx.EXPAND)
-        szr.Layout()
-        szr.Fit(page)
-        import math
-        w, h = page.GetClientSize()
-        page.SetScrollbars(1, 5, 1, int(math.ceil(h/5.0)))
-        common_page = self.notebook.GetPage(0)
-        common_page.Hide()
-        self.notebook.RemovePage(0)
-        self.notebook.SetSelection(0)
-
-    def get_width(self):
-        return self.__size[0]
-
-    def get_height(self):
-        return self.__size[1]
-
-    def set_width(self, value):
-        value = int(value)
-        self.__size[0] = value
-        if self.widget:
-            self.widget.SetSize(self.__size)
-        self.sizer.set_item(self.pos, size=self.__size)
-
-    def set_height(self, value):
-        value = int(value)
-        self.__size[1] = value
-        if self.widget:
-            self.widget.SetSize(self.__size)
-        self.sizer.set_item(self.pos, size=self.__size)
-
-    def set_flag(self, value):
-        self.esm_border.set_style(value)
-        if not (self.get_int_flag() & wx.EXPAND):
-            self.sizer.set_item(self.pos, size=self.__size)
 
     def on_paint(self, event):
         dc = wx.PaintDC(self.widget)
@@ -93,14 +50,21 @@ class EditSpacer(ManagedBase):
         dc.DrawRectangle(x-1, y-1, tw+2, th+2)
         dc.DrawText(text, x, y)
 
+    def properties_changed(self, modified):
+        if not modified or "width" in modified or "height" in modified:
+            size = (self.width, self.height)
+            if self.widget: self.widget.SetSize(size)
+            self.sizer.set_item(self.pos, size=size)
+        ManagedBase.properties_changed(self, modified)
 
 
 class _Dialog(wx.Dialog):
     def __init__(self, parent):
         wx.Dialog.__init__(self, misc.get_toplevel_parent(parent), -1, _("Enter size"))
 
-        self.width = SpinProperty(self, 'width', self, label=_("width"))
-        self.height = SpinProperty(self, 'height', self, label=_("height"))
+        import widget_properties as wp
+        self.width  = wp.SpinProperty(self, 'width', self, label=_("width"))
+        self.height = wp.SpinProperty(self, 'height', self, label=_("height"))
         self.width.set_value(20)
         self.width.spin.SetFocus()
         self.width.spin.SetSelection(-1, -1)
@@ -126,14 +90,14 @@ def builder(parent, sizer, pos):
     "factory function for EditSpacer objects"
     dialog = _Dialog(parent)
     res = dialog.ShowModal()
-    width = dialog.width.get_value()
+    width  = dialog.width.get_value()
     height = dialog.height.get_value()
     dialog.Destroy()
     if res != wx.ID_OK:
         return
 
     name = 'spacer'
-    spacer = EditSpacer( name, parent, wx.NewId(), width, height, sizer, pos, common.property_panel )
+    spacer = EditSpacer( name, parent, wx.NewId(), width, height, sizer, pos )
     node = Node(spacer)
     spacer.node = node
     spacer.show_widget(True)
@@ -145,8 +109,8 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
     from xml_parse import XmlParsingError
     if not sizer or not sizeritem:
         raise XmlParsingError(_("sizer or sizeritem object cannot be None"))
-    spacer = EditSpacer('spacer', parent, wx.NewId(), 1, 1, sizer, pos, common.property_panel, True)
-    sizer.set_item(spacer.pos, option=sizeritem.option, flag=sizeritem.flag, border=sizeritem.border)
+    spacer = EditSpacer('spacer', parent, wx.NewId(), 1, 1, sizer, pos, True)
+    sizer.set_item(spacer.pos, proportion=sizeritem.proportion, flag=sizeritem.flag, border=sizeritem.border)
     node = Node(spacer)
     spacer.node = node
     if pos is None:

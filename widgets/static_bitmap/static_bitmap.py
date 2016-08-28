@@ -13,38 +13,28 @@ import common, compat, config
 from edit_windows import ManagedBase, EditStylesMixin
 from gui_mixins import BitmapMixin
 from tree import Tree, Node
-from widget_properties import *
+import new_properties as np
 
 
 class EditStaticBitmap(ManagedBase, EditStylesMixin, BitmapMixin):
     "Class to handle wxStaticBitmap objects"
     update_widget_style = False
+    _PROPERTIES = ["Widget", "bitmap", "attribute", "style"]
+    PROPERTIES = ManagedBase.PROPERTIES + _PROPERTIES + ManagedBase.EXTRA_PROPERTIES
+    _PROPERTY_LABELS = {"attribute":'Store as attribute'}
 
-    def __init__(self, name, parent, id, bmp_file, sizer, pos, property_window, show=True):
-        # Initialise parent classes
-        ManagedBase.__init__(self, name, 'wxStaticBitmap', parent, id, sizer, pos, property_window, show=show)
+    def __init__(self, name, parent, id, bmp_file, sizer, pos, show=True):
+        ManagedBase.__init__(self, name, 'wxStaticBitmap', parent, id, sizer, pos, show=show)
         EditStylesMixin.__init__(self)
 
-        # initialise instance variables
-        self.attribute = True
+        # initialise instance properties
+        filedialog_style = wx.FD_OPEN | wx.FD_FILE_MUST_EXIST  # for the following two properties
+        self.bitmap    = np.FileNameProperty(bmp_file, style=filedialog_style)
+        self.attribute = np.CheckBoxProperty(True, default_value=False)
+
         if config.preferences.default_border:
-            self.border = config.preferences.default_border_size
-            self.flag = wx.ALL
-        self.set_bitmap(bmp_file)
-
-        # initialise properties remaining staff
-        access = self.access_functions
-        properties = self.properties
-
-        access['bitmap'] = (self.get_bitmap, self.set_bitmap)
-        properties['bitmap'] = FileDialogProperty(self, 'bitmap', style=wx.FD_OPEN | wx.FD_FILE_MUST_EXIST, can_disable=False, label=_("Bitmap"))
-        properties['bitmap'].set_tooltip(self.bitmap_tooltip_text)
-
-        access['attribute'] = (self.get_attribute, self.set_attribute)
-        properties['attribute'] = CheckBoxProperty(self, 'attribute', label=_('Store as attribute'), write_always=True)
-
-        access['style'] = (self.get_style, self.set_style)
-        properties['style'] = CheckListProperty(self, 'style', self.widget_writer)
+            self.properties["border"].set( config.preferences.default_border_size )
+            self.properties["flag"].set( wx.ALL )
 
     def create_widget(self):
         bmp = self.get_preview_obj_bitmap()
@@ -52,45 +42,20 @@ class EditStaticBitmap(ManagedBase, EditStylesMixin, BitmapMixin):
         if wx.Platform == '__WXMSW__':
             def get_best_size():
                 bmp = self.widget.GetBitmap()
-                if bmp and bmp.Ok():
+                if bmp and bmp.IsOk():
                     return bmp.GetWidth(), bmp.GetHeight()
                 return wx.StaticBitmap.GetBestSize(self.widget)
             self.widget.GetBestSize = get_best_size
 
-    def create_properties(self):
-        ManagedBase.create_properties(self)
-        panel = wx.ScrolledWindow(self.notebook, -1, style=wx.TAB_TRAVERSAL)
-        szr = wx.BoxSizer(wx.VERTICAL)
-        self.properties['bitmap'].display(panel)
-        self.properties['attribute'].display(panel)
-        self.properties['style'].display(panel)
-        szr.Add(self.properties['bitmap'].panel, 0, wx.EXPAND)
-        szr.Add(self.properties['attribute'].panel, 0, wx.EXPAND)
-        szr.Add(self.properties['style'].panel, 0, wx.EXPAND)
-        panel.SetAutoLayout(True)
-        panel.SetSizer(szr)
-        szr.Fit(panel)
-        w, h = panel.GetClientSize()
-        self.notebook.AddPage(panel, "Widget")
-        self.property_window.Layout()
-        panel.SetScrollbars(1, 5, 1, int(math.ceil(h / 5.0)))
-
-    def get_attribute(self):
-        return self.attribute
-
-    def set_attribute(self, value):
-        self.attribute = int(value)
-
-    def get_bitmap(self):
-        return self.bitmap
-
-    def set_bitmap(self, value):
-        self.bitmap = value
-        if self.widget:
-            bmp = self.get_preview_obj_bitmap()
+    def properties_changed(self, modified=None):
+        "update label (and size if label/stockitem have changed)"
+        if not modified or "bitmap" in modified and self.widget:
+            bmp = self.get_preview_obj_bitmap(self.bitmap)
             self.widget.SetBitmap(bmp)
-            self.set_size("%s, %s" % tuple(self.widget.GetBestSize()))
 
+            self._set_widget_best_size()
+
+        ManagedBase.properties_changed(self, modified)
 
 
 def builder(parent, sizer, pos, number=[1]):
@@ -100,7 +65,7 @@ def builder(parent, sizer, pos, number=[1]):
         number[0] += 1
         name = 'bitmap_%s' % number[0]
     bitmap = wx.FileSelector(_("Select the image"))
-    static_bitmap = EditStaticBitmap(name, parent, wx.NewId(), bitmap, sizer, pos, common.property_panel)
+    static_bitmap = EditStaticBitmap(name, parent, wx.NewId(), bitmap, sizer, pos)
     node = Node(static_bitmap)
     static_bitmap.node = node
     static_bitmap.show_widget(True)
@@ -116,8 +81,8 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
         raise XmlParsingError(_("'name' attribute missing"))
     if sizer is None or sizeritem is None:
         raise XmlParsingError(_("sizer or sizeritem object cannot be None"))
-    bitmap = EditStaticBitmap(label, parent, wx.NewId(), '', sizer, pos, common.property_panel)
-    sizer.set_item(bitmap.pos, option=sizeritem.option, flag=sizeritem.flag, border=sizeritem.border)
+    bitmap = EditStaticBitmap(label, parent, wx.NewId(), '', sizer, pos)
+    sizer.set_item(bitmap.pos, proportion=sizeritem.proportion, flag=sizeritem.flag, border=sizeritem.border)
     node = Node(bitmap)
     bitmap.node = node
     if pos is None:
