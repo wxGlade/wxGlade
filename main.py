@@ -22,33 +22,29 @@ from tree import WidgetTree
 from xml_parse import XmlWidgetBuilder, ProgressXmlWidgetBuilder, XmlParsingError
 
 
-class wxGladePropertyPanel(wx.Panel):
-    "Panel used to display the Properties of the various widgets"
-    def __init__(self, *args, **kw):
-        wx.Panel.__init__(self, *args, **kw)
 
-        self.current_widget = None        # Edit.. instance currently being edited
+class wxGladePropertyPanel(wx.Frame):
+    "Panel used to display the Properties of the various widgets"
+    def __init__(self, frame_style):
+        wx.Frame.__init__( self, None, -1, _('Properties - <%s>' % _('app')), style=frame_style, name='PropertyFrame' )
+
+        self.current_widget = None        # instance currently being edited
         self.next_widget = None           # the next one, will only be edited after a small delay
-        self.current_widget_class = None  # 
 
         self.notebook = wx.Notebook(self, -1)
-        self.notebook.sizer = None
-        self.notebook.SetAutoLayout(True)
-        self.notebook.Hide()
-        self.pagenames = []
-        
+        self.Bind(wx.EVT_CLOSE, self.hide_frame)
+
+    def hide_frame(self, event):
+        #menu_bar.Check(PROPS_ID, False)
+        self.Hide()
+
     def SetTitle(self, title):
         try: self.GetParent().SetTitle(title)
         except AttributeError: pass
 
-    def Layout(self):
-        if self.is_visible():
-            wx.Panel.Layout(self)
-            self.GetParent().Layout()
-
     def is_visible(self):
-        return self.GetParent().IsShown()
-    
+        return self.IsShown()
+
     ####################################################################################################################
     # new editor interface
     def set_widget(self, widget):
@@ -61,6 +57,7 @@ class wxGladePropertyPanel(wx.Panel):
                 editor.destroy_editor()
             self.current_widget = None   # delete the reference
         wx.CallLater( 150, self.edit_properties, widget )
+
     def edit_properties(self, edit_widget):
         # this will be called with a delay
         if edit_widget is not self.next_widget:
@@ -135,19 +132,9 @@ class wxGladePropertyPanel(wx.Panel):
         else:
             self.notebook.SetSelection(0)
 
-        #sizer = self.GetSizer()
-        #child = sizer.GetChildren()[0]
-        #w = child.GetWindow()
-
-        # XXX check whether the same code as here could replace the workaround Notebook._toggle_pages
-        #if w is self.notebook: return
-        #w.Hide() # XXX remove this once all properties are changed to new system
         self.notebook.Show()
-        self.notebook.SetSize(self.GetClientSize())
-
-        #compat.SizerItem_SetWindow(child, self.notebook)
-        self.notebook.Layout()
-        self.Layout()
+        #self.notebook.Layout()
+        #self.Layout()
 
     def start_page(self, name):
         panel = wx.ScrolledWindow( self.notebook, wx.ID_ANY, style=wx.TAB_TRAVERSAL | wx.FULL_REPAINT_ON_RESIZE,
@@ -243,7 +230,6 @@ class ToggleButtonBox(wx.Panel):
                 break
         self.SetValue(index)
 
-# end of class ToggleButtonBox
 
 
 class wxGladeArtProvider(wx.ArtProvider):
@@ -252,17 +238,10 @@ class wxGladeArtProvider(wx.ArtProvider):
             return wx.Bitmap(os.path.join(config.icons_path, 'closed_folder.xpm'), wx.BITMAP_TYPE_XPM)
         return wx.NullBitmap
 
-# end of class wxGladeArtProvider
 
 
 class wxGladeFrame(wx.Frame):
-    """Main frame of wxGlade (palette)
-    
-    @ivar cur_dir: Last visited directory, used for wxFileDialog and not for KDE dialogs
-    @type cur_dir: str
-
-    @ivar _logger: Instance specific logger
-    """
+    "Main frame of wxGlade (palette)"
 
     def __init__(self, parent=None):
         self._logger = logging.getLogger(self.__class__.__name__)
@@ -280,14 +259,152 @@ class wxGladeFrame(wx.Frame):
         self.SetIcon(icon)
         self.SetBackgroundColour( compat.wx_SystemSettings_GetColour(wx.SYS_COLOUR_BTNFACE) )
 
+        self.create_menu(parent)
+
+        # load the available code generators
+        core_buttons, local_buttons, sizer_buttons = common.init_codegen()
+
+        # layout of the palette window
+        # if there are custom components, add the toggle box...
+        if local_buttons:
+            main_sizer = wx.BoxSizer(wx.VERTICAL)
+            show_core_custom = ToggleButtonBox( self, -1, [_("Core components"), _("Custom components")], 0 )
+
+            core_sizer   = wx.FlexGridSizer( 0, config.preferences.buttons_per_row )
+            custom_sizer = wx.FlexGridSizer( 0, config.preferences.buttons_per_row )
+            self.SetAutoLayout(True)
+            # core components
+            for heading, buttons in core_buttons:
+                for b in buttons:
+                    core_sizer.Add(b)
+            for sb in sizer_buttons:
+                core_sizer.Add(sb)
+            # custom components
+            for b in local_buttons:
+                custom_sizer.Add(b)
+                custom_sizer.Show(b, False)
+            custom_sizer.Layout()
+            main_sizer.Add(show_core_custom, 0, wx.EXPAND)
+            main_sizer.Add(core_sizer, 0, wx.EXPAND)
+            main_sizer.Add(custom_sizer, 0, wx.EXPAND)
+            self.SetSizer(main_sizer)
+            main_sizer.Fit(self)
+
+            # events to display core/custom components
+            def on_show_core_custom(event):
+                show_core = True
+                show_custom = False
+                if event.GetValue() == 1:
+                    show_core = False
+                    show_custom = True
+                for b in local_buttons:
+                    custom_sizer.Show(b, show_custom)
+                for heading, buttons in core_buttons:
+                    for b in buttons:
+                        core_sizer.Show(b, show_core)
+                for b in sizer_buttons:
+                    core_sizer.Show(b, show_core)
+                core_sizer.Layout()
+                custom_sizer.Layout()
+                main_sizer.Layout()
+            EVT_TOGGLE_BOX(self, show_core_custom.GetId(), on_show_core_custom)
+        # ... otherwise (the common case), just add the palette of core buttons
+        else:
+            maxlen = max(len(heading_buttons[1]) for heading_buttons in core_buttons) + 1
+            if len(sizer_buttons)+1>maxlen: maxlen = len(sizer_buttons)+1
+            sizer = wx.FlexGridSizer(cols=maxlen+1)
+            sizer.AddGrowableCol(0)
+            self.SetAutoLayout(True)
+            # core components
+            for heading, buttons in core_buttons:
+                if heading:
+                    sizer.Add(wx.StaticText(self, -1, "%s:"%heading), 1, wx.ALIGN_CENTER_VERTICAL)
+                else:
+                    sizer.AddSpacer(0)
+                for b in buttons:
+                    sizer.Add(b, flag=wx.ALL, border=2)
+                # fill up the rest of the line
+                for i in range(maxlen-len(buttons)):
+                    sizer.AddSpacer(0)
+            sizer.Add(wx.StaticText(self, -1, "Sizers:"))
+            for sb in sizer_buttons:
+                sizer.Add(sb, flag=wx.ALL,border=2)
+            self.SetSizer(sizer)
+            sizer.Fit(self)
+
+        wx.EVT_CLOSE(self, self.cleanup)
+
+        # the style for the property and tree frames
+        frame_style = wx.DEFAULT_FRAME_STYLE
+        frame_tool_win = config.preferences.frame_tool_win
+        if frame_tool_win:
+            frame_style |= wx.FRAME_NO_TASKBAR | wx.FRAME_FLOAT_ON_PARENT
+            frame_style &= ~wx.MINIMIZE_BOX
+            if wx.Platform != '__WXGTK__':
+                frame_style |= wx.FRAME_TOOL_WINDOW
+
+        # create the property and the tree frame
+        self.create_property_panel(frame_style, icon)
+        self.create_tree_frame(frame_style, icon)
+        common.property_panel = self.property_frame
+
+        # set window geometry
+        if config.preferences.remember_geometry:
+            self_geometry = config.preferences.get_geometry('main')
+            if isinstance(self_geometry, tuple):
+                self_geometry = wx.Rect(*self_geometry)
+        else:
+            self_geometry = wx.Rect()
+            self_geometry.TopLeft = wx.Display().GetClientArea().GetTopLeft()
+            self_geometry.Size = (-1, -1)
+        self._set_geometry(self, self_geometry)
+        self.Show()
+        self_geometry.Size = self.GetSize()
+
+        # last visited directory, used on GTK for wxFileDialog
+        self.cur_dir = config.preferences.open_save_path
+
+        # set a drop target for us...
+        self._droptarget = clipboard.FileDropTarget(self)
+        self.SetDropTarget(self._droptarget)
+        #self.tree_frame.SetDropTarget(self._droptarget)
+        #self.property_frame.SetDropTarget(self._droptarget)
+
+        # ALB 2004-10-15, autosave support...
+        self.autosave_timer = None
+        if config.preferences.autosave:
+            self.autosave_timer = wx.Timer(self, -1)
+            self.autosave_timer.Bind(wx.EVT_TIMER, self.on_autosave_timer)
+            self.autosave_timer.Start( int(config.preferences.autosave_delay) * 1000 )
+        # ALB 2004-10-15
+        self.clear_sb_timer = wx.Timer(self, -1)
+        self.clear_sb_timer.Bind(wx.EVT_TIMER, self.on_clear_sb_timer)
+
+        self.property_frame.SetAcceleratorTable(self.accel_table)
+        self.tree_frame.SetAcceleratorTable(self.accel_table)
+
+        self.Raise()
+
+        # disable autosave checks during unittests
+        if not getattr(sys, '_called_from_test', False):
+            if common.check_autosaved(None):
+                res = wx.MessageBox(
+                    _('There seems to be auto saved data from last wxGlade session: do you want to restore it?'),
+                    _('Auto save detected'), style=wx.ICON_QUESTION | wx.YES_NO)
+                if res == wx.YES:
+                    if self._open_app(common.get_name_for_autosave(), add_to_history=False):
+                        common.app_tree.app.saved = False
+                        common.app_tree.app.filename = None
+                        self.user_message(_('Auto save loaded'))
+                common.remove_autosaved()
+
+    # menu and actions #################################################################################################
+    def create_menu(self, parent):
         menu_bar = wx.MenuBar()
         file_menu = wx.Menu(style=wx.MENU_TEAROFF)
         view_menu = wx.Menu(style=wx.MENU_TEAROFF)
         help_menu = wx.Menu(style=wx.MENU_TEAROFF)
         compat.wx_ToolTip_SetDelay(1000)
-
-        # load the available code generators
-        core_buttons, local_buttons, sizer_buttons = common.init_codegen()
 
         append_menu_item = misc.append_menu_item
         self.TREE_ID = TREE_ID = wx.NewId()
@@ -356,29 +473,7 @@ class wxGladeFrame(wx.Frame):
         for path in files:
             self.file_history.AddFileToHistory(path.strip())
 
-        def open_from_history(event):
-            if not self.ask_save():
-                return
-            pos = event.GetId() - wx.ID_FILE1
-            filename = self.file_history.GetHistoryFile(pos)
-            if not os.path.exists(filename):
-                wx.MessageBox( _("The file %s doesn't exist.") % filename,
-                               _('Information'), style=wx.CENTER | wx.ICON_INFORMATION | wx.OK )
-                self.file_history.RemoveFileFromHistory(pos)
-                common.remove_autosaved(filename)
-                return
-            if common.check_autosaved(filename):
-                res = wx.MessageBox( _('There seems to be auto saved data for this file: do you want to restore it?'),
-                                     _('Auto save detected'), style=wx.ICON_QUESTION | wx.YES_NO )
-                if res == wx.YES:
-                    common.restore_from_autosaved(filename)
-                else:
-                    common.remove_autosaved(filename)
-            else:
-                common.remove_autosaved(filename)
-            self._open_app(filename)
-
-        wx.EVT_MENU_RANGE(self, wx.ID_FILE1, wx.ID_FILE9, open_from_history)
+        wx.EVT_MENU_RANGE(self, wx.ID_FILE1, wx.ID_FILE9, self.open_from_history)
 
         wx.EVT_MENU(self, TREE_ID, self.show_tree)
         wx.EVT_MENU(self, PROPS_ID, self.show_props_window)
@@ -421,215 +516,81 @@ class wxGladeFrame(wx.Frame):
             (wx.ACCEL_CTRL, ord('P'), PREVIEW_ID),
             ])
 
-        # layout
-        # if there are custom components, add the toggle box...
-        if local_buttons:
-            main_sizer = wx.BoxSizer(wx.VERTICAL)
-            show_core_custom = ToggleButtonBox( self, -1, [_("Core components"), _("Custom components")], 0 )
-
-            core_sizer   = wx.FlexGridSizer( 0, config.preferences.buttons_per_row )
-            custom_sizer = wx.FlexGridSizer( 0, config.preferences.buttons_per_row )
-            self.SetAutoLayout(True)
-            # core components
-            for b in core_buttons:
-                core_sizer.Add(b)
-            for sb in sizer_buttons:
-                core_sizer.Add(sb)
-            # custom components
-            for b in local_buttons:
-                custom_sizer.Add(b)
-                custom_sizer.Show(b, False)
-            custom_sizer.Layout()
-            main_sizer.Add(show_core_custom, 0, wx.EXPAND)
-            main_sizer.Add(core_sizer, 0, wx.EXPAND)
-            main_sizer.Add(custom_sizer, 0, wx.EXPAND)
-            self.SetSizer(main_sizer)
-            main_sizer.Fit(self)
-            # events to display core/custom components
-
-            def on_show_core_custom(event):
-                show_core = True
-                show_custom = False
-                if event.GetValue() == 1:
-                    show_core = False
-                    show_custom = True
-                for b in local_buttons:
-                    custom_sizer.Show(b, show_custom)
-                for b in core_buttons:
-                    core_sizer.Show(b, show_core)
-                for b in sizer_buttons:
-                    core_sizer.Show(b, show_core)
-                core_sizer.Layout()
-                custom_sizer.Layout()
-                main_sizer.Layout()
-            EVT_TOGGLE_BOX(self, show_core_custom.GetId(), on_show_core_custom)
-        # ... otherwise (the common case), just add the palette of core buttons
+    def open_from_history(self, event):
+        if not self.ask_save():
+            return
+        pos = event.GetId() - wx.ID_FILE1
+        filename = self.file_history.GetHistoryFile(pos)
+        if not os.path.exists(filename):
+            wx.MessageBox( _("The file %s doesn't exist.") % filename,
+                           _('Information'), style=wx.CENTER | wx.ICON_INFORMATION | wx.OK )
+            self.file_history.RemoveFileFromHistory(pos)
+            common.remove_autosaved(filename)
+            return
+        if common.check_autosaved(filename):
+            res = wx.MessageBox( _('There seems to be auto saved data for this file: do you want to restore it?'),
+                                 _('Auto save detected'), style=wx.ICON_QUESTION | wx.YES_NO )
+            if res == wx.YES:
+                common.restore_from_autosaved(filename)
+            else:
+                common.remove_autosaved(filename)
         else:
-            maxlen = max(len(heading_buttons[1]) for heading_buttons in core_buttons) + 1
-            if len(sizer_buttons)+1>maxlen: maxlen = len(sizer_buttons)+1
-            sizer = wx.FlexGridSizer(cols=maxlen+1)
-            sizer.AddGrowableCol(0)
-            self.SetAutoLayout(True)
-            # core components
-            for heading, buttons in core_buttons:
-                if heading:
-                    sizer.Add(wx.StaticText(self, -1, "%s:"%heading), 1, wx.ALIGN_CENTER_VERTICAL)
-                else:
-                    sizer.AddSpacer(0)
-                for b in buttons:
-                    sizer.Add(b, flag=wx.ALL, border=2)
-                # fill up the rest of the line
-                for i in range(maxlen-len(buttons)):
-                    sizer.AddSpacer(0)
-            sizer.Add(wx.StaticText(self, -1, "Sizers:"))
-            for sb in sizer_buttons:
-                sizer.Add(sb, flag=wx.ALL,border=2)
-            self.SetSizer(sizer)
-            sizer.Fit(self)
+            common.remove_autosaved(filename)
+        self._open_app(filename)
 
-        # Properties window ############################################################################################
-        # the frame
-        frame_style = wx.DEFAULT_FRAME_STYLE
-        frame_tool_win = config.preferences.frame_tool_win
-        if frame_tool_win:
-            frame_style |= wx.FRAME_NO_TASKBAR | wx.FRAME_FLOAT_ON_PARENT
-            frame_style &= ~wx.MINIMIZE_BOX
-            if wx.Platform != '__WXGTK__':
-                frame_style |= wx.FRAME_TOOL_WINDOW
-
-        self.property_frame = wx.Frame( self, wx.ID_ANY, _('Properties - <%s>' % _('app')),
-                                        style=frame_style, name='PropertyFrame' )
+    # GUI elements: property frame, tree frame #########################################################################
+    def create_property_panel(self, frame_style, icon):
+        # create property editor frame
+        self.property_frame = wxGladePropertyPanel(frame_style)
         self.property_frame.SetBackgroundColour( compat.wx_SystemSettings_GetColour(wx.SYS_COLOUR_BTNFACE) )
         self.property_frame.SetIcon(icon)
-        # the panel (wxGladePropertyPanel instance)
-        property_panel = wxGladePropertyPanel(self.property_frame, -1)
-        sz = wx.BoxSizer(wx.VERTICAL)
-        sz.Add(property_panel, 1, wx.EXPAND)
-        self.property_frame.SetSizer(sz)
-        property_panel.SetAutoLayout(True)
-        self.property_frame.SetAutoLayout(True)
 
-        def hide_frame2(event):
-            #menu_bar.Check(PROPS_ID, False)
-            self.property_frame.Hide()
-        wx.EVT_CLOSE(self.property_frame, hide_frame2)
-        wx.EVT_CLOSE(self, self.cleanup)
-        common.property_panel = property_panel
+        # set geometry
+        property_geometry = None
+        if config.preferences.remember_geometry:
+            property_geometry = config.preferences.get_geometry('properties')
+            if isinstance(property_geometry, tuple):
+                property_geometry = wx.Rect(*property_geometry)
+        if not property_geometry:
+            property_geometry = wx.Rect()
+            property_geometry.Position = self_geometry.BottomLeft
+            property_geometry.Size = (345, 350)
+            # sometimes especially on GTK GetSize seems to ignore window decorations (bug still exists on wx3)
+            if wx.Platform != '__WXMSW__': property_geometry.Y += 40
+            # set size on Mac manually
+            if wx.Platform == '__WXMAC__': property_geometry.Size = (345, 384)
 
-        # Tree of widgets ##############################################################################################
+        self._set_geometry(self.property_frame, property_geometry)
+        self.property_frame.Show()
+
+    def create_tree_frame(self, frame_style, icon):
         self.tree_frame = wx.Frame(self, -1, _('wxGlade: Tree'), style=frame_style, name='TreeFrame')
         self.tree_frame.SetIcon(icon)
 
         app = application.Application()
         common.app_tree = WidgetTree(self.tree_frame, app)
         self.tree_frame.SetSize((300, 300))
-        #app.notebook.Show()
-
-        #sizer_tmp = wx.BoxSizer(wx.VERTICAL)
-        #sizer_tmp.Add(app.notebook, 1, wx.EXPAND)
-        #property_panel.SetSizer(sizer_tmp)
-        #sizer_tmp.Fit(property_panel)
 
         def on_tree_frame_close(event):
             #menu_bar.Check(TREE_ID, False)
             self.tree_frame.Hide()
         wx.EVT_CLOSE(self.tree_frame, on_tree_frame_close)
-        # check to see if there are some remembered values
-        prefs = config.preferences
 
-        self_geometry = None
-        property_geomentry = None
+        # set geometry
         tree_geometry = None
-
-        if prefs.remember_geometry:
-            self_geometry = prefs.get_geometry('main')
-            if isinstance(self_geometry, tuple):
-                self_geometry = wx.Rect(*self_geometry)
-
-            property_geomentry = prefs.get_geometry('properties')
-            if isinstance(property_geomentry, tuple):
-                property_geomentry = wx.Rect(*property_geomentry)
-
-            tree_geometry = prefs.get_geometry('tree')
+        if config.preferences.remember_geometry:
+            tree_geometry = config.preferences.get_geometry('tree')
             if isinstance(tree_geometry, tuple):
                 tree_geometry = wx.Rect(*tree_geometry)
-
-        if not self_geometry:
-            self_geometry = wx.Rect()
-            self_geometry.TopLeft = wx.Display().GetClientArea().GetTopLeft()
-            self_geometry.Size = (-1, -1)
-
-        self._set_geometry(self, self_geometry)
-        self.Show()
-        self_geometry.Size = self.GetSize()
-
-        if not property_geomentry:
-            property_geomentry = wx.Rect()
-            property_geomentry.Position = self_geometry.BottomLeft
-            property_geomentry.Size = (345, 350)
-            # sometimes especially on GTK GetSize seems to ignore window
-            # decorations (bug still exists on wx3)
-            if wx.Platform != '__WXMSW__':
-                property_geomentry.Y += 40
-
-            # set size on Mac manually
-            if wx.Platform == '__WXMAC__':
-                property_geomentry.Size = (345, 384)
-
-        self._set_geometry(self.property_frame, property_geomentry)
-        self.property_frame.Show()
-
         if not tree_geometry:
             tree_geometry = wx.Rect()
             tree_geometry.Position = self_geometry.TopRight
             tree_geometry.Size = (250, 350)
-            # sometimes especially on GTK GetSize seems to ignore window
-            # decorations (bug still exists on wx3)
+            # sometimes especially on GTK GetSize seems to ignore window decorations (bug still exists on wx3)
             if wx.Platform != '__WXMSW__':
                 tree_geometry.X += 10
-
         self._set_geometry(self.tree_frame, tree_geometry)
         self.tree_frame.Show()
-
-        # last visited directory, used on GTK for wxFileDialog
-        self.cur_dir = config.preferences.open_save_path
-
-        # set a drop target for us...
-        self._droptarget = clipboard.FileDropTarget(self)
-        self.SetDropTarget(self._droptarget)
-        #self.tree_frame.SetDropTarget(self._droptarget)
-        #self.property_frame.SetDropTarget(self._droptarget)
-
-        # ALB 2004-10-15, autosave support...
-        self.autosave_timer = None
-        if config.preferences.autosave:
-            TIMER_ID = wx.NewId()
-            self.autosave_timer = wx.Timer(self, TIMER_ID)
-            self.autosave_timer.Bind(wx.EVT_TIMER, self.on_autosave_timer)
-            #wx.EVT_TIMER(self, TIMER_ID, self.on_autosave_timer)
-            self.autosave_timer.Start( int(config.preferences.autosave_delay) * 1000 )
-        # ALB 2004-10-15
-        CLEAR_SB_TIMER_ID = wx.NewId()
-        self.clear_sb_timer = wx.Timer(self, CLEAR_SB_TIMER_ID)
-        self.clear_sb_timer.Bind(wx.EVT_TIMER, self.on_clear_sb_timer)
-
-        self.property_frame.SetAcceleratorTable(self.accel_table)
-        self.tree_frame.SetAcceleratorTable(self.accel_table)
-
-        self.Raise()
-
-        # disable autosave checks during unittests
-        if not getattr(sys, '_called_from_test', False):
-            if common.check_autosaved(None):
-                res = wx.MessageBox(
-                    _('There seems to be auto saved data from last wxGlade session: do you want to restore it?'),
-                    _('Auto save detected'), style=wx.ICON_QUESTION | wx.YES_NO)
-                if res == wx.YES:
-                    if self._open_app(common.get_name_for_autosave(), add_to_history=False):
-                        common.app_tree.app.saved = False
-                        common.app_tree.app.filename = None
-                        self.user_message(_('Auto save loaded'))
-                common.remove_autosaved()
 
     def on_autosave_timer(self, event):
         res = common.autosave_current()
@@ -693,6 +654,7 @@ class wxGladeFrame(wx.Frame):
             self.property_frame.SetFocus()
 
     def raise_all(self, event):
+        # when one window is raised, raise all
         children = self.GetChildren()
         for child in children:
             child = misc.get_toplevel_parent(child)
@@ -869,11 +831,8 @@ class wxGladeFrame(wx.Frame):
 
             if error_msg:
                 common.app_tree.clear()
-                common.property_panel.Reparent(self.property_frame)
                 common.app_tree.app.saved = True
-
-                # re-enable auto-expansion of nodes
-                common.app_tree.auto_expand = True
+                common.app_tree.auto_expand = True  # re-enable auto-expansion of nodes
 
                 os.chdir(old_dir)
 
@@ -881,14 +840,9 @@ class wxGladeFrame(wx.Frame):
 
                 return False
 
-        #common.app_tree.select_item(common.app_tree.root)
-        #common.app_tree.root.widget.show_properties()
-        common.property_panel.Reparent(self.property_frame)
-        #common.property_panel.set_widget(common.app_tree.root.widget)
         misc.set_focused_widget(common.app_tree.root.widget)
 
-        # re-enable auto-expansion of nodes
-        common.app_tree.auto_expand = True
+        common.app_tree.auto_expand = True  # re-enable auto-expansion of nodes
 
         common.app_tree.expand()
         if common.app_tree.app.is_template:
@@ -900,6 +854,7 @@ class wxGladeFrame(wx.Frame):
         self._logger.info(_('Loading time: %.5f'), end - start)
 
         common.app_tree.app.saved = True
+        common.property_panel.Raise()
 
         if hasattr(self, 'file_history') and filename is not None and add_to_history and \
            (not common.app_tree.app.is_template):
@@ -1077,19 +1032,9 @@ class wxGladeFrame(wx.Frame):
                            _("Information"), style=wx.OK|wx.ICON_INFORMATION )
 
     def _set_geometry(self, win, geometry):
-        """\
-        Set position and/or size of widget.
-
-        @param win: Frame to set position and/or size
-        @type win: wx.Frame
-
-        @param geometry: Position and Size
-        @type geometry: (int, int, int, int)
-        """
+        "Set position and/or size of widget; geometry must be wx.Point or wx.Rect"
         assert isinstance(geometry, (wx.Point, wx.Rect))
-
-        if not geometry:
-            return
+        if not geometry: return
 
         if isinstance(geometry, wx.Point):
             win.SetPosition(geometry)
@@ -1097,14 +1042,7 @@ class wxGladeFrame(wx.Frame):
             win.SetDimensions(*geometry.Get())
 
     def _get_geometry(self, widget):
-        """\
-        Return widgets position and size.
-
-        @param widget: Frame to return position and/or size
-        @type widget: wx.Frame
-
-        @rtype: wx.Rect | None
-        """
+        "Return widget position and size as wx.Rect"
         pos_size = widget.Rect
         client_area = wx.Display().ClientArea
         if client_area.Contains(pos_size.TopLeft):
