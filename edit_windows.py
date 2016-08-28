@@ -198,7 +198,7 @@ class EditBase(EventsMixin, np.PropertyOwner):
         self._destroy_popup_menu()
         widget = misc.get_toplevel_widget(self)
         if widget is not None:
-            widget.preview(None)
+            widget.on_preview()
 
     def _destroy_popup_menu(self):
         if self._rmenu is None: return
@@ -655,7 +655,7 @@ class ManagedBase(WindowBase):
         if size_prop.is_active():
             if self.proportion!=0 or (self.flag & wx.EXPAND):
                 size_prop.set(old)
-        self.sel_marker.update()
+        if self.sel_marker: self.sel_marker.update()
 
     def properties_changed(self, modified):
         WindowBase.properties_changed(self, modified)

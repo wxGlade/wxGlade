@@ -95,6 +95,7 @@ class EditFrame(TopLevelBase, EditStylesMixin, BitmapMixin):
             if self.widget: self._menubar.show_widget(True)
         else:
             # remove
+            if self._menubar is None: return
             self._menubar = self._menubar.remove()
 
     def _set_status_bar(self):
@@ -105,6 +106,7 @@ class EditFrame(TopLevelBase, EditStylesMixin, BitmapMixin):
             if self.widget: self._statusbar.show_widget(True)
         else:
             # remove
+            if self._statusbar is None: return
             self._statusbar = self._statusbar.remove()
         if self.widget:
             # this is needed at least on win32
@@ -121,6 +123,7 @@ class EditFrame(TopLevelBase, EditStylesMixin, BitmapMixin):
             if self.widget: self._toolbar.show_widget(True)
         else:
             # remove
+            if self._toolbar is None: return
             self._toolbar = self._toolbar.remove()
 
     def properties_changed(self, modified):
