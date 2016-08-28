@@ -12,15 +12,13 @@ import radio_box_base
 from ChoicesCodeHandler import *
 
 
-class PerlRadioBoxGenerator(radio_box_base.RadioBoxMixin,
-                            wcodegen.PerlWidgetCodeWriter):
+class PerlRadioBoxGenerator(radio_box_base.RadioBoxMixin, wcodegen.PerlWidgetCodeWriter):
     tmpl = '%(name)s = %(klass)s->new(%(parent)s, %(id)s, %(label)s, ' \
            'wxDefaultPosition, wxDefaultSize, [%(choices)s], ' \
            '%(majorDimension)s, %(style)s);\n'
 
     prefix_style = False
 
-# end of class PerlRadioBoxGenerator
 
 
 def initialize():

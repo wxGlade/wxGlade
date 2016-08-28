@@ -8,10 +8,7 @@ wxMenuBar objects
 
 import wx
 
-import common
-import compat
-import config
-import misc
+import common, compat, config, misc
 from MenuTree import *
 from tree import Tree, Node
 from wcodegen.taghandler import BaseXmlBuilderTagHandler
@@ -283,10 +280,8 @@ class MenuItemDialog(wx.Dialog):
                 self._enable_fields(False)
 
     def add_items(self, menus):
-        """\
-        adds the content of 'menus' to self.menu_items. menus is a sequence of
-        trees which describes the structure of the menus
-        """
+        """adds the content of 'menus' to self.menu_items. menus is a sequence of
+        trees which describes the structure of the menus"""
         indent = " " * 4
         set_item = self.menu_items.SetStringItem
         add_item = self.menu_items.InsertStringItem
@@ -319,11 +314,10 @@ class MenuItemDialog(wx.Dialog):
             self._enable_fields()
 
     def get_menus(self):
-        """\
-        returns the contents of self.menu_items as a list of trees which
-        describe the structure of the menus in the format used by EditMenuBar
-        """
-        def get(i, j): return self.menu_items.GetItem(i, j).m_text
+        """returns the contents of self.menu_items as a list of trees which
+        describe the structure of the menus in the format used by EditMenuBar"""
+        #def get(i, j): return self.menu_items.GetItem(i, j).GetText()
+        def get(i, j): return self.menu_items.GetItem(i, j).GetText()
         trees = []
 
         def add(node, index):
@@ -374,10 +368,8 @@ class MenuItemDialog(wx.Dialog):
                 self.menu_items.SetItemState(index, wx.LIST_STATE_SELECTED, wx.LIST_STATE_SELECTED)
 
     def move_item_left(self, event):
-        """\
-        moves the selected menu item one level up in the hierarchy, i.e.
-        shifts its label 4 spaces left in self.menu_items
-        """
+        """moves the selected menu item one level up in the hierarchy, i.e.
+        shifts its label 4 spaces left in self.menu_items"""
         self.menu_items.SetFocus()
         self._move_item_left(self.selected_index)
 
@@ -388,10 +380,8 @@ class MenuItemDialog(wx.Dialog):
             self.menu_items.SetItemState(index, wx.LIST_STATE_SELECTED, wx.LIST_STATE_SELECTED)
 
     def move_item_right(self, event):
-        """\
-        moves the selected menu item one level down in the hierarchy, i.e.
-        shifts its label 4 spaces right in self.menu_items
-        """
+        """moves the selected menu item one level down in the hierarchy, i.e.
+        shifts its label 4 spaces right in self.menu_items"""
         self.menu_items.SetFocus()
         self._move_item_right(self.selected_index)
 
@@ -404,10 +394,8 @@ class MenuItemDialog(wx.Dialog):
             self.menu_items.SetItemState(index, state, state)
 
     def _do_move_item(self, event, index, is_down):
-        """\
-        internal function used by move_item_up and move_item_down.
-        Returns the new index of the moved item, or None if no change occurred
-        """
+        """internal function used by move_item_up and move_item_down.
+        Returns the new index of the moved item, or None if no change occurred"""
         #index = self.selected_index
         if index <= 0: return None
 
@@ -479,7 +467,6 @@ class MenuItemDialog(wx.Dialog):
         self.owner.set_menus(self.get_menus())
         common.app_tree.app.saved = False
 
-#end of class MenuItemDialog
 
 
 class MenuProperty(Property):
@@ -519,7 +506,6 @@ class MenuProperty(Property):
         stmt = common.format_xml_tag( u'menus', inner_xml.getvalue(), tabs, is_xml=True )
         outfile.write(stmt)
 
-# end of class MenuProperty
 
 
 class MenuHandler(BaseXmlBuilderTagHandler):
@@ -585,7 +571,6 @@ class MenuHandler(BaseXmlBuilderTagHandler):
         char_data = self.get_char_data()
         setattr(self.curr_item, self.itemattrs[self.curr_index], char_data)
 
-# end of class MenuHandler
 
 
 class EditMenuBar(EditBase, PreviewMixin):

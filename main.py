@@ -8,27 +8,15 @@ widgets and initializes all the stuff (tree, frame_property, etc.)
 """
 
 # import general python modules
-import logging
-import os
-import os.path
-import sys
-import time
-import types
+import logging, os, os.path, sys, math, time
 import wx
 from xml.sax import SAXParseException
 
 # import project modules
-import about
 import application
-import bugdialog
-import clipboard
-import common
-import config
-import compat
-import preferencesdialog
+import common, config, compat, misc, clipboard
+import preferencesdialog, msgdialog, bugdialog, about
 import log
-import misc
-import msgdialog
 import template
 from tree import WidgetTree
 from xml_parse import XmlWidgetBuilder, ProgressXmlWidgetBuilder, XmlParsingError
@@ -73,7 +61,6 @@ class ToggleBoxEvent(wx.PyCommandEvent):
     def GetStringValue(self):
         return self.strval
 
-# end of class ToggleBoxEvent
 
 
 class ToggleButtonBox(wx.Panel):
@@ -322,7 +309,8 @@ class wxGladeFrame(wx.Frame):
         self.SetSizer(sizer)
         sizer.Fit(self)
 
-        # Properties window
+        # Properties window ############################################################################################
+        # the frame
         frame_style = wx.DEFAULT_FRAME_STYLE
         frame_tool_win = config.preferences.frame_tool_win
         if frame_tool_win:
@@ -335,7 +323,7 @@ class wxGladeFrame(wx.Frame):
                                         style=frame_style, name='PropertyFrame' )
         self.property_frame.SetBackgroundColour( compat.wx_SystemSettings_GetColour(wx.SYS_COLOUR_BTNFACE) )
         self.property_frame.SetIcon(icon)
-
+        # the panel (wxGladePropertyPanel instance)
         property_panel = wxGladePropertyPanel(self.property_frame, -1)
         sz = wx.BoxSizer(wx.VERTICAL)
         sz.Add(property_panel, 1, wx.EXPAND)
@@ -350,7 +338,7 @@ class wxGladeFrame(wx.Frame):
         wx.EVT_CLOSE(self, self.cleanup)
         common.property_panel = property_panel
 
-        # Tree of widgets
+        # Tree of widgets ##############################################################################################
         self.tree_frame = wx.Frame(self, -1, _('wxGlade: Tree'), style=frame_style, name='TreeFrame')
         self.tree_frame.SetIcon(icon)
 
@@ -589,8 +577,7 @@ class wxGladeFrame(wx.Frame):
         """\
         loads a wxGlade project from an xml file
         NOTE: this is very slow and needs optimisation efforts
-        NOTE2: the note above should not be True anymore :)
-        """
+        NOTE2: the note above should not be True anymore :) """
         if not self.ask_save():
             return
         infile = wx.FileSelector(_("Open file"),
@@ -936,7 +923,6 @@ class wxGladeFrame(wx.Frame):
             return pos_size.Get()
         return None
 
-# end of class wxGladeFrame
 
 
 class wxGlade(wx.App):

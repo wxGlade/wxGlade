@@ -7,100 +7,45 @@ Global functions and variables
 """
 
 import codecs
-import errno
-import ConfigParser
-import logging
-import md5
-import os
-import os.path
-import sys
-import tempfile
-import types
-from collections import OrderedDict
+try:
+    # Python 2
+    import ConfigParser
+    from md5 import new as md5
+except:
+    # Python 3
+    import configparser as ConfigParser
+    from hashlib import md5
+
+import errno, logging, os, os.path, sys, tempfile
 from xml.sax.saxutils import escape, quoteattr
 
-import config
-import plugins
+from collections import OrderedDict
+import config, compat, plugins
 
-widgets = {}
-"""\
-Widgets dictionary: each key is the name of some EditWidget class; the mapped
-value is a 'factory' function which actually builds the object. Each of these
-functions accept 3 parameters: the parent of the widget, the sizer by which
-such widget is controlled, and the position inside this sizer.
 
-@type: dict
-"""
+widgets = {}          # all widgets: EditWidget class name -> factory(parent, sizer, pos)
+widgets_from_xml = {} # Factory functions to build objects from a XML file
 
-widgets_from_xml = {}
-"""\
-Factory functions to build objects from a XML file
+class_names = {} # maps the name of the classes used by wxGlade to the correspondent classes of wxWindows
+toplevels = {}   # names of the Edit classes that can be toplevels, i.e. class declaration will be generated in the code
 
-@type: dict
-"""
+# references to windows:
+palette = None         # main window (the palette which contains the various buttons to add the different widgets)
+property_panel = None  # panel for editing the current widgets properties
+app_tree = None        # widget hierarchy of the application; root is application itself; a tree.WidgetTree instance
 
-property_panel = None
-"""\
-property_panel wxPanel: container inside which Properties of the current
-focused widget are displayed
-"""
+# these will be set when clicking an item on the palette window:
+adding_widget = False # If True, the user is adding a widget to some sizer
+adding_sizer = False  # "Needed to add toplevel sizers"
+widget_to_add = None  # widget class name that is being added
 
-app_tree = None
-"""\
-app_tree Tree: represents the widget hierarchy of the application; the
-root is the application itself
-"""
-
-adding_widget = False
-"""\
-If True, the user is adding a widget to some sizer
-"""
-
-adding_sizer = False
-"""\
-Needed to add toplevel sizers
-"""
-
-widget_to_add = None
-"""\
-Reference to the widget that is being added: this is a key in the
-'widgets' dictionary
-"""
-
-palette = None
-"""\
-Reference to the main window (the one which contains the various buttons to
-add the different widgets)
-"""
-
+# Dictionary which maps the ids used in the event handlers to the corresponding widgets:
+# used to call the appropriate builder function when a dropping of a widget occurs, knowing only the id of the event
 refs = {}
-"""\
-Dictionary which maps the ids used in the event handlers to the
-corresponding widgets: used to call the appropriate builder function
-when a dropping of a widget occurs, knowing only the id of the event
 
-@type: dict
-"""
-
-class_names = {}
-"""\
-Dictionary which maps the name of the classes used by wxGlade to the
-correspondent classes of wxWindows
-
-@type: dict
-"""
-
-toplevels = {}
-"""\
-Names of the Edit* classes that can be toplevels, i.e. widgets for which to
-generate a class declaration in the code
-
-@type: dict
-"""
 
 code_writers = {}
-"""\
-Dictionary of objects used to generate the code in a given language.
+"""Dictionary of language name -> BaseLangCodeWriter objects used to generate the code in a given language.
 
 @note: A code writer object must implement this interface:
  - initialize(out_path, multi_files)
@@ -113,18 +58,21 @@ Dictionary of objects used to generate the code in a given language.
  - add_sizeritem(toplevel, sizer, obj_name, option, flag, border)
  - add_app(app_attrs, top_win_class)
  - ...
-
-@type: dict[str, BaseLangCodeWriter]
 """
+
 
 
 def init_codegen():
     """\
     Load available code generators, built-in and user widgets as well as sizers
 
-    @return: In GUI-Mode: a dict with module sections as key and assigned list of wxBitmapButtons, the dict is empty
-             in batch mode.
-    @rtype:  OrderedDict
+    If wxGlade has been started in GUI mode, the function returns three lists
+    of wxBitmapButton objects to handle them. The first contains the
+    built-in widgets and the second one the user widgets and the third list
+    contains the sizers.
+
+    @return: List of core buttons, list of local buttons and list of sizer
+             buttons
 
     @see: L{load_config()}
     @see: L{load_code_writers()}
@@ -149,10 +97,7 @@ def init_codegen():
 
 
 def load_code_writers():
-    """\
-    Fills the common.code_writers dictionary: to do so, loads the modules
-    found in the 'codegen/' subdir
-    """
+    "Fills the common.code_writers dictionary: to do so, loads the modules found in the 'codegen/' subdir"
     logging.info('Load code generators:')
     codegen_path = os.path.join(config.wxglade_path, 'codegen')
     sys.path.insert(0, codegen_path)
@@ -173,55 +118,31 @@ def load_code_writers():
         # import file and initiate code writer
         try:
             writer = __import__(name).writer
-        except (AttributeError, ImportError, NameError, SyntaxError,
-                ValueError):
-            logging.exception(
-                _('"%s" is not a valid code generator module'), module
-            )
+        except (AttributeError, ImportError, NameError, SyntaxError, ValueError):
+            logging.exception( _('"%s" is not a valid code generator module'), module )
         else:
             code_writers[writer.language] = writer
             if config.use_gui:
-                logging.info(
-                    _('  %s generator loaded'),
-                    writer.language
-                )
+                logging.info( _('  %s generator loaded'), writer.language )
 
 
 def load_config():
-    """\
-    Load widget configuration.
-
-    @see: L{plugins.load_widgets_from_dir()}
-    """
-    # load the "built-in" widgets
-    plugins.load_widgets_from_dir(
-        config.widgets_path,
-        'wconfig'
-    )
-
-    # load the "user" widgets
-    plugins.load_widgets_from_dir(
-        config.preferences.local_widget_path,
-        'wconfig'
-    )
+    "Load widget configuration;  @see: L{plugins.load_widgets_from_dir()}"
+    # load the "built-in" and "user" widgets
+    plugins.load_widgets_from_dir( config.widgets_path,                  'wconfig' )
+    plugins.load_widgets_from_dir( config.preferences.local_widget_path, 'wconfig' )
 
     return
 
 
 def load_sizers():
-    """\
-    Load and initialise the sizer support modules.
-
-    @return: The initialise sizers like described in L{edit_sizers.edit_sizers.init_all}
-    @rtype: dict
-    """
+    """Load and initialise the sizer support modules; returns list of BitmapButton objects to handle sizer buttons
+    @see: L{edit_sizers}"""
     logging.info('Load sizer generators:')
     for lang in code_writers.keys():
-        module_name = 'edit_sizers.%s_sizers_codegen' % \
-                      code_writers[lang].lang_prefix
+        module_name = 'edit_sizers.%s_sizers_codegen' % code_writers[lang].lang_prefix
         try:
-            sizer_module = plugins.import_module(config.wxglade_path,
-                                                 module_name)
+            sizer_module = plugins.import_module(config.wxglade_path, module_name)
             if not sizer_module:
                 # error already logged
                 pass
@@ -229,21 +150,15 @@ def load_sizers():
                 sizer_module.initialize()
             else:
                 logging.warning(
-                    _('Missing function "initialize()" in imported '
-                      'module %s. Skip initialisation.'), module_name)
+                    _('Missing function "initialize()" in imported module %s. Skip initialisation.'), module_name)
 
             if config.use_gui:
                 logging.info(_('  for %s'), lang)
 
-        except (AttributeError, ImportError, NameError, SyntaxError,
-                ValueError):
-            logging.exception(
-                _('ERROR loading module "%s"'), module_name)
+        except (AttributeError, ImportError, NameError, SyntaxError, ValueError):
+            logging.exception( _('ERROR loading module "%s"'), module_name )
         except:
-            logging.exception(
-                _('Unexpected error during import of widget module %s'),
-                module_name
-            )
+            logging.exception( _('Unexpected error during import of widget module %s'), module_name )
 
     # initialise sizer GUI elements
     import edit_sizers
@@ -256,35 +171,20 @@ def load_widgets():
 
     Scans the built-in and user widget directories to find the installed widgets and loads it.
 
-    @rtype: OrderedDict
-
     @see: L{plugins.load_widgets_from_dir()} for more details e.g. the structure of the dictionary.
     """
-    # load the "built-in" widgets
-    core_buttons = plugins.load_widgets_from_dir(
-        config.widgets_path,
-        default_section=_('Core widgets')
-    )
-
-    # load the "user" widgets
-    local_buttons = plugins.load_widgets_from_dir(
-        config.preferences.local_widget_path,
-        default_section=_('Custom widgets')
-    )
+    # load the "built-in" and "user" widgets
+    core_buttons  = plugins.load_widgets_from_dir(config.widgets_path)
+    local_buttons = plugins.load_widgets_from_dir(config.preferences.local_widget_path)
 
     # load (remaining) widget code generators
-    # Python, C++ and XRC are often loaded via
-    # plugins.load_widgets_from_dir() above
-    for path in [config.widgets_path,
-                 config.preferences.local_widget_path]:
+    # Python, C++ and XRC are often loaded via plugins.load_widgets_from_dir() above
+    for path in [config.widgets_path, config.preferences.local_widget_path]:
         for lang in ['perl', 'lisp']:
             if lang not in code_writers:
                 continue
             codegen_name = '%s_codegen' % code_writers[lang].lang_prefix
-            plugins.load_widgets_from_dir(
-                path,
-                submodule=codegen_name,
-            )
+            plugins.load_widgets_from_dir(path, submodule=codegen_name)
 
     all_widgets = OrderedDict()
     all_widgets.update(core_buttons)
@@ -299,23 +199,22 @@ def load_widgets():
 
 
 def add_object(event):
-    """\
-    Adds a widget or a sizer to the current app.
-    """
+    "Adds a widget or a sizer to the current app"
     global adding_widget, adding_sizer, widget_to_add
     adding_widget = True
     adding_sizer = False
     tmp = event.GetId()
     widget_to_add = refs[tmp]
+
+    msg = "Adding %s; click on free (hatched) sizer slot to place it"
+    palette.user_message( msg%widget_to_add.lstrip("Edit") )
     # TODO: find a better way
     if widget_to_add.find('Sizer') != -1:
         adding_sizer = True
 
 
 def add_toplevel_object(event):
-    """\
-    Adds a toplevel widget (Frame or Dialog) to the current app.
-    """
+    "Adds a toplevel widget (Frame or Dialog) to the current app"
     widgets[refs[event.GetId()]](None, None, 0)
     app_tree.app.saved = False
 
@@ -386,33 +285,15 @@ def make_object_button(widget, icon_path, toplevel=False, tip=None):
 
 
 def encode_to_unicode(item, encoding=None):
-    """\
-    Decode the item to a Unicode string. The encoding to UTF-8 will be done
-    later.
+    """Decode the item to a Unicode string. The encoding to UTF-8 will be done later.
 
     Non-string items will be converted to string automatically.
-
-    If no encoding given, app_tree.app.encoding or 'UFT-8' will be used.
-
-    @param item: Item to convert
-    @type item:  str | Unicode
-
-    @param encoding: Codec to decode
-    @type encoding:  str | None
-
-    @rtype: unicode
-
-    @see: L{app_tree}
-    """
-    if isinstance(item, types.UnicodeType):
-        return item
-    if not isinstance(item, types.StringTypes):
+    If no encoding given, app_tree.app.encoding or 'UFT-8' will be used."""
+    if not isinstance(item, compat.basestring):
         item = str(item)
-    if not encoding:
-        if app_tree:
-            encoding = app_tree.app.encoding
-        else:
-            encoding = 'UTF-8'
+    if isinstance(item, compat.unicode):
+        return item
+    encoding = encoding or (app_tree and app_tree.app.encoding) or "UTF-8"
     item = item.decode(encoding)
     return item
 
@@ -420,8 +301,7 @@ def encode_to_unicode(item, encoding=None):
 def register(lang, klass_name, code_writer, property_name=None,
              property_handler=None, widget_name=None):
     """\
-    Initialise and register widget code generator instance. The property
-    handler will registered additionally.
+    Initialise and register widget code generator instance. The property handler will registered additionally.
 
     @param lang:             Code code_writer language
     @param klass_name:       wxWidget class name
@@ -437,8 +317,7 @@ def register(lang, klass_name, code_writer, property_name=None,
     if codegen:
         codegen.add_widget_handler(klass_name, code_writer)
         if property_name and property_handler:
-            codegen.add_property_handler(property_name, property_handler,
-                                         widget_name)
+            codegen.add_property_handler(property_name, property_handler, widget_name)
 
 
 def _smart_checksum(content):
@@ -454,19 +333,19 @@ def _smart_checksum(content):
 
     @rtype: str
     """
-    assert isinstance(content, types.StringTypes)
+    assert isinstance(content, compat.basestring)
     content_list = [x.rstrip() for x in content.splitlines()]
 
     # use md5 to be compatible with Python 2.4
-    chksum = md5.new()
+    chksum = md5()
 
     for line in content_list[:10]:
-        if 'generated by wxGlade' in line:
+        if b'generated by wxGlade' in line:
             content_list.remove(line)
             break
 
     for line in content_list:
-        if isinstance(line, types.UnicodeType):
+        if isinstance(line, compat.unicode):
             line = line.encode('utf-8')
         chksum.update(line)
 
@@ -480,8 +359,7 @@ def save_file(filename, content, which='wxg'):
 
     @note: The content of 'wxg' files must be Unicode always!
 
-    @note: Exceptions that may occur while performing the operations are not
-           handled.
+    @note: Exceptions that may occur while performing the operations are not handled.
 
     @see: L{config.backed_up}
 
@@ -493,21 +371,20 @@ def save_file(filename, content, which='wxg'):
     @type which:     str
     """
     if which == 'wxg':
-        assert isinstance(content, types.UnicodeType)
+        assert isinstance(content, compat.unicode)
+        content = content.encode('utf-8') # encode from unicode to utf-8
         do_backup = config.preferences.wxg_backup
     elif which == 'codegen':
         do_backup = config.preferences.codegen_backup
     else:
-        raise NotImplementedError(
-            'Unknown value "%s" for parameter "which"!' % which
-        )
+        raise NotImplementedError( 'Unknown value "%s" for parameter "which"!' % which )
 
     # read existing file to check content
     chksum_oldcontent = None
     if os.path.isfile(filename):
         oldfile = None
         try:
-            oldfile = open(filename)
+            oldfile = open(filename, "rb")
             oldcontent = oldfile.read()
             oldfile.close()
             chksum_oldcontent = _smart_checksum(oldcontent)
@@ -521,8 +398,7 @@ def save_file(filename, content, which='wxg'):
         return
 
     # create the backup file only with the first save
-    need_backup = do_backup and filename not in config.backed_up and \
-        os.path.isfile(filename)
+    need_backup = do_backup and filename not in config.backed_up and os.path.isfile(filename)
 
     outfile = None
     try:
@@ -538,10 +414,7 @@ def save_file(filename, content, which='wxg'):
         if directory and not os.path.isdir(directory):
             os.makedirs(directory)
 
-        outfile = open(filename, 'w')
-        if which == 'wxg':
-            # encode from unicode to utf-8
-            content = content.encode('utf-8')
+        outfile = open(filename, 'wb')
         outfile.write(content)
         outfile.close()
     finally:
@@ -550,14 +423,7 @@ def save_file(filename, content, which='wxg'):
 
 
 def get_name_for_autosave(filename=None):
-    """\
-    Return the filename for the automatic backup.
-
-    @param filename: File to generate a backup for
-    @type filename: str | None
-
-    @rtype: str
-    """
+    "Return filename for the automatic backup of named file or current file (app_tree.app.filename)"
     if not filename:
         filename = app_tree.app.filename
     if not filename:
@@ -569,12 +435,7 @@ def get_name_for_autosave(filename=None):
 
 
 def autosave_current():
-    """\
-    Generate a automatic backup for the current and un-saved design.
-
-    @return: 0: error; 1: no changes to save; 2: saved
-    @rtype: int
-    """
+    "Save automatic backup copy for the current and un-saved design;  returns 0: error; 1: no changes to save; 2: saved"
     if app_tree.app.saved:
         return 1            # do nothing in this case...
 
@@ -584,19 +445,13 @@ def autosave_current():
         app_tree.write(outfile)
         outfile.close()
     except EnvironmentError, details:
-        logging.warning(
-            _('Saving the autosave file "%s" failed: %s'),
-            autosave_name, details)
+        logging.warning(_('Saving the autosave file "%s" failed: %s'), autosave_name, details)
         return 0
     return 2
 
 
 def remove_autosaved(filename=None):
-    """\
-    Remove the automatic backup
-
-    @see: L{get_name_for_autosave()}
-    """
+    "Remove the automatic backup;  @see: L{get_name_for_autosave()}"
     autosave_name = get_name_for_autosave(filename)
     if os.path.exists(autosave_name):
         try:
@@ -606,11 +461,7 @@ def remove_autosaved(filename=None):
 
 
 def check_autosaved(filename):
-    """\
-    Returns True if there are an automatic backup for filename
-
-    @rtype: bool
-    """
+    "Returns True if there are an automatic backup for filename"
     if filename is not None and filename == app_tree.app.filename:
         # this happens when reloading, no auto-save-restoring in this case...
         return False
@@ -629,23 +480,17 @@ def check_autosaved(filename):
         # Security frameworks like SELinux may deny the write access even if
         # the check for write permissions was successful.
         elif inst.errno in [errno.EPERM, errno.EACCES]:
-            logging.info(
-                _('Ignore autosave permission error: %s'), str(inst))
+            logging.info(_('Ignore autosave permission error: %s'), str(inst))
         else:
             logging.exception(_('Internal Error'))
         return False
 
 
 def restore_from_autosaved(filename):
-    """\
-    Copy the content of an auto-saved file to the current file. The
-    auto-saved file will still remain as a kind of backup.
+    """Copy the content of an auto-saved file to the current file.
+    The auto-saved file will still remain as a kind of backup.
+    Returns True on success."""
 
-    @param filename: Original filename to restore to
-    @type filename:  str
-
-    @rtype: bool
-    """
     autosave_name = get_name_for_autosave(filename)
     if os.access(autosave_name, os.R_OK):
         try:
@@ -659,11 +504,7 @@ def restore_from_autosaved(filename):
 
 
 def init_paths():
-    """\
-    Set all wxGlade related paths.
-
-    The paths will be stored in L{config}.
-    """
+    "Set all wxGlade related paths; the paths will be stored in L{config}."
     # use directory of the exe in case of frozen packages e.g.
     # PyInstaller or py2exe
     if hasattr(sys, 'frozen'):
@@ -679,14 +520,13 @@ def init_paths():
 
     share_dir = _get_share_path()
     if _get_install_method() == 'single_directory':
-        config.docs_path = os.path.join(share_dir, 'docs')
-        config.icons_path = os.path.join(share_dir, 'icons')
+        config.docs_path      = os.path.join(share_dir, 'docs')
+        config.icons_path     = os.path.join(share_dir, 'icons')
         config.templates_path = os.path.join(share_dir, 'templates')
     else:
-        config.docs_path = os.path.join(share_dir, 'doc', 'wxglade')
-        config.icons_path = os.path.join(share_dir, 'wxglade', 'icons')
-        config.templates_path = os.path.join(share_dir, 'wxglade',
-                                             'templates')
+        config.docs_path      = os.path.join(share_dir, 'doc', 'wxglade')
+        config.icons_path     = os.path.join(share_dir, 'wxglade', 'icons')
+        config.templates_path = os.path.join(share_dir, 'wxglade', 'templates')
 
     _set_home_path()
     _set_appdata_path()
@@ -706,18 +546,15 @@ def _create_appdata_path():
     """
     if not os.path.isdir(config.appdata_path):
         try:
-            os.makedirs(config.appdata_path, 0700)
-        except EnvironmentError, e:
+            os.makedirs(config.appdata_path, 0o700)
+        except (IOError, OSError) as e:
             logging.error(_('Failed to create config directory: "%s"'), e)
 
 
 def _set_appdata_path():
-    """\
-    Set the path of the application data directory
-    """
+    "Set the path of the application data directory"
     if 'WXGLADE_CONFIG_PATH' in os.environ:
-        config.appdata_path = os.path.expandvars(
-            os.environ['WXGLADE_CONFIG_PATH'])
+        config.appdata_path = os.path.expandvars( os.environ['WXGLADE_CONFIG_PATH'] )
         return
 
     if os.name == 'nt' and 'APPDATA' in os.environ:
@@ -727,13 +564,11 @@ def _set_appdata_path():
         if os.path.isdir(new_name):
             path = new_name
         elif os.path.isdir(old_name):
-            logging.info(
-                _('Rename appdata path from "%s" to "%s"'),
-                old_name, new_name)
+            logging.info( _('Rename appdata path from "%s" to "%s"'), old_name, new_name)
             try:
                 os.rename(old_name, new_name)
                 path = new_name
-            except EnvironmentError, e:
+            except EnvironmentError as e:
                 # ignore rename errors and just write an info message
                 logging.info(_('Renaming failed: "%s"'), e)
                 logging.info(_('Using the old path "%s" instead'), old_name)
@@ -753,13 +588,10 @@ def _set_appdata_path():
 
 
 def _set_home_path():
-    """\
-    Set the path of the home directory
-    """
+    "Set the path of the home directory"
     home_path = os.path.expanduser('~')
 
-    # to prevent unexpanded "%HOMEDRIVE%%HOMEPATH%" as reported
-    # in SF Bug #185
+    # to prevent unexpanded "%HOMEDRIVE%%HOMEPATH%" as reported in SF Bug #185
     home_path = os.path.expandvars(home_path)
 
     if home_path == '~':
@@ -796,8 +628,7 @@ def _get_install_method():
     @rtype: str
     """
     # on Windows or installation in a single directory
-    if os.name == 'nt' or \
-            os.path.isdir(os.path.join(config.wxglade_path, 'icons')):
+    if os.name == 'nt' or os.path.isdir(os.path.join(config.wxglade_path, 'icons')):
         return 'single_directory'
     else:
         return 'filesystem_installation'
@@ -831,18 +662,15 @@ def _get_share_path():
             share_dir = os.path.join(*dir_list[:-4])
             share_dir = os.path.join(share_dir, 'share')
         else:
-            logging.error(
-                _('Unknown path structure %s'), config.wxglade_path)
+            logging.error(_('Unknown path structure %s'), config.wxglade_path)
             share_dir = ''
 
     if not share_dir:
         logging.error(_('Share directory not found'))
     elif not os.path.exists(share_dir):
-        logging.error(
-            _('Share directory "%s" does not exists'), share_dir)
+        logging.error(_('Share directory "%s" does not exists'), share_dir)
     elif not os.path.isdir(share_dir):
-        logging.error(
-            _('Share directory "%s" is not a directory'), share_dir)
+        logging.error(_('Share directory "%s" is not a directory'), share_dir)
 
     return share_dir
 
@@ -874,9 +702,7 @@ def split_path(path):
 
 
 def _normalise_paths():
-    """\
-    Normalise all paths stored in config module
-    """
+    "Normalise all paths stored in config module"
     for name in ['appdata_path', 'credits_file', 'docs_path',
                  'history_file', 'home_path', 'icons_path', 'license_file',
                  'manual_file', 'rc_file', 'templates_path',
@@ -888,22 +714,18 @@ def _normalise_paths():
 
 
 def _set_file_paths():
-    """\
-    Set the full path for all files (config.*_file except default_output_file)
-    """
+    "Set the full path for all files (config.*_file except default_output_file)"
     install_method = _get_install_method()
     if install_method == 'single_directory':
-        config.credits_file = os.path.join(config.wxglade_path, 'CREDITS.txt')
-        config.license_file = os.path.join(config.wxglade_path, 'LICENSE.txt')
-        config.manual_file = os.path.join(config.docs_path, 'html', 'index.html')
+        config.credits_file  = os.path.join(config.wxglade_path, 'CREDITS.txt')
+        config.license_file  = os.path.join(config.wxglade_path, 'LICENSE.txt')
+        config.manual_file   = os.path.join(config.docs_path, 'html', 'index.html')
         config.tutorial_file = os.path.join(config.docs_path, 'tutorial.html')
     else:
-        config.credits_file = os.path.join(config.docs_path, 'CREDITS.txt')
-        config.license_file = os.path.join(config.docs_path, 'LICENSE.txt')
-        config.manual_file = os.path.join(config.docs_path,
-                                          'manual_html', 'index.html')
-        config.tutorial_file = os.path.join(config.docs_path,
-                                            'tutorial', 'tutorial.html')
+        config.credits_file  = os.path.join(config.docs_path, 'CREDITS.txt')
+        config.license_file  = os.path.join(config.docs_path, 'LICENSE.txt')
+        config.manual_file   = os.path.join(config.docs_path, 'manual_html', 'index.html')
+        config.tutorial_file = os.path.join(config.docs_path, 'tutorial', 'tutorial.html')
 
     if not os.path.exists(config.credits_file):
         logging.error(_('Credits file "CREDITS.txt" not found!'))
@@ -919,16 +741,12 @@ def _set_file_paths():
         config.rc_file = os.path.join(config.appdata_path, 'wxglade.ini')
     else:
         config.rc_file = os.path.join(config.appdata_path, 'wxgladerc')
-    config.history_file = os.path.join(
-        config.appdata_path, 'file_history.txt'
-    )
+    config.history_file = os.path.join(config.appdata_path, 'file_history.txt')
     config.log_file = os.path.join(config.appdata_path, 'wxglade.log')
 
 
 def init_preferences():
-    """\
-    Load / initialise preferences
-    """
+    "Load / initialise preferences"
     if config.preferences is None:
         config.preferences = Preferences()
         config.preferences.read(config.rc_file)
@@ -937,12 +755,7 @@ def init_preferences():
 
 
 def save_preferences():
-    """\
-    Save current settings as well as the file history
-
-    @see: L{config.history_file}
-    @see: L{config.use_file_history}
-    """
+    "Save current settings as well as the file history;  @see: L{config.history_file} and L{config.use_file_history}"
     # let the exception be raised
     path = os.path.dirname(config.rc_file)
     if not os.path.isdir(path):
@@ -964,14 +777,7 @@ def save_preferences():
 
 
 def load_history():
-    """\
-    Loads the file history and returns a list of paths
-
-    @see: L{config.history_file}
-    @see: L{config.use_file_history}
-
-    @rtype: list[unicode]
-    """
+    "Loads the file history and returns a list of paths;  @see: L{config.history_file} and L{config.use_file_history}"
     try:
         infile = codecs.open(config.history_file, encoding='utf-8')
         lines = infile.readlines()
@@ -1019,9 +825,7 @@ class Preferences(ConfigParser.ConfigParser):
             self._defaults['open_save_path'] = config.home_path
             self._defaults['codegen_path'] = config.home_path
         if config.appdata_path and not self._defaults['local_widget_path']:
-            self._defaults['local_widget_path'] = os.path.join(
-                config.appdata_path, 'widgets'
-                )
+            self._defaults['local_widget_path'] = os.path.join( config.appdata_path, 'widgets' )
         self.def_vals = defaults
         if self.def_vals is None:
             self.def_vals = Preferences._defaults
@@ -1069,33 +873,18 @@ class Preferences(ConfigParser.ConfigParser):
         self.changed = True
 
     def set_geometry(self, name, geometry):
-        """\
-        Save the current widget position and size
-
-        @param name: Widget name
-        @type name: str
-
-        @param geometry: Position and Size
-        @type geometry: (int, int, int, int)
-        """
+        "Save the current widget position and size"
         if geometry is not None:
             section = 'geometry_%s' % name
             if not self.has_section(section):
                 self.add_section(section)
-            self.set(section, 'x', geometry[0])
-            self.set(section, 'y', geometry[1])
-            self.set(section, 'w', geometry[2])
-            self.set(section, 'h', geometry[3])
+            self.set(section, 'x', str(geometry[0]))
+            self.set(section, 'y', str(geometry[1]))
+            self.set(section, 'w', str(geometry[2]))
+            self.set(section, 'h', str(geometry[3]))
 
     def get_geometry(self, name):
-        """\
-        Return saved widget position and size.
-
-        @param name: Widget name
-        @type name: str
-
-        @rtype: (int, int, int, int) | None
-        """
+        "Return saved widget position and size (x,y,width,height)"
         section = 'geometry_%s' % name
         if not self.has_section(section):
             return None
@@ -1114,8 +903,7 @@ class Preferences(ConfigParser.ConfigParser):
 
 def style_attrs_to_sets(styles):
     """\
-    Convert the style attributes 'combination', 'exclude', 'include' and
-    'require' from string to a set.
+    Convert the style attributes 'combination', 'exclude', 'include' and 'require' from string to a set.
 
     @param styles: Style dictionary
     @type styles: dict
@@ -1126,8 +914,7 @@ def style_attrs_to_sets(styles):
     for style_name in styles.keys():
         for attr in ['combination', 'exclude', 'include', 'require', ]:
             try:
-                styles[style_name][attr] = \
-                    set(styles[style_name][attr].split('|'))
+                styles[style_name][attr] = set(styles[style_name][attr].split('|'))
             except (AttributeError, KeyError):
                 pass
 
@@ -1163,8 +950,8 @@ def format_xml_tag(tag, value, indentlevel=0, **kwargs):
 
     @see: L{format_xml_attrs()}
     """
-    assert isinstance(tag, types.StringTypes)
-    assert isinstance(indentlevel, types.IntType)
+    assert isinstance(tag, compat.basestring)
+    assert isinstance(indentlevel, int)
 
     is_xml = kwargs.get('is_xml', False)
     if 'is_xml' in kwargs:

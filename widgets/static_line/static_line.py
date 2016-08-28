@@ -7,8 +7,7 @@ wxStaticLine objects
 """
 
 import wx
-import common
-import compat
+import common, compat
 import wcodegen
 from edit_windows import ManagedBase, EditStylesMixin
 from tree import Tree, Node

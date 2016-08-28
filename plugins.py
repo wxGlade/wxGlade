@@ -22,13 +22,20 @@ rec_module = re.compile(r'^(?P<module>\w+)')
 """Regex to match modules"""
 
 
-def load_widgets_from_dir(widget_dir, submodule='',
-                          default_section='not_set'):
+def load_widgets_from_dir(widget_dir, submodule='', default_section='not_set'):
     """\
-    Load and initialise the all widgets listed in widgets.txt in the given directory.
+    Load and initialise the all widgets listed in widgets.txt in the given
+    directory.
 
-    If you need to import a submodule instead, just specify the name of the submodule and "<module name>.<submodule>"
-    will be imported. This is useful to import language specific code generators.
+    The names of the modules to import, are read from the file widgets.txt.
+
+    If you need to import a submodule instead, just specify the name of the
+    submodule and "<module name>.<submodule>" will be imported. This is
+    useful to import language specific code generators.
+
+    If wxGlade run in the GUI mode, the imported module returns a
+    wxBitmapButton object. A list of such objects will be returned. In batch
+    mode or if submodules are imported, an empty list will be returned.
 
     @param widget_dir: Directory to search for widgets
     @type widget_dir:  str
@@ -129,8 +136,7 @@ def _modulenames_from_file(filename, default_section):
         module_lines = widgets_file.readlines()
         widgets_file.close()
     except EnvironmentError, details:
-        logging.warning(
-            _("Can't read file %s file: %s"), filename, details)
+        logging.warning(_("Can't read file %s file: %s"), filename, details)
         return content
 
     cursect = default_section
@@ -203,8 +209,7 @@ def _process_widget_config(module):
 
 def _init_codegen_gui(widget_dir, widget_name):
     """\
-    Initialise Python code generator for the widget as well as widget
-    GUI parts.
+    Initialise Python code generator for the widget as well as widget GUI parts.
 
     @param widget_dir: Directory to search for widgets
     @type widget_dir:  str
@@ -293,7 +298,7 @@ def import_module(widget_dir, module_name):
             imported_module = __import__(module_name, {}, {}, ['just_not_empty'])
             return imported_module
         except ImportError:
-            logging.info(_('Module %s not found.'), module_name)
+            if 'WINGDB_ACTIVE' in os.environ and not module_name.endswith(".wconfig") and not "property_grid" in module_name and not "lisp" in module_name: raise
             return None
         except (AttributeError, NameError, SyntaxError, ValueError):
             if zip_filename:
@@ -380,19 +385,11 @@ def _get_zipfile_filelist(filename):
             zfile = zipfile.ZipFile(filename)
             namelist = zfile.namelist()
             zfile.close()
-        except zipfile.BadZipfile, inst:
-            logging.warning(
-                _('ZIP file %s is corrupt (%s). Ignoring ZIP file.'),
-                filename,
-                inst
-            )
+        except zipfile.BadZipfile as inst:
+            logging.warning( _('ZIP file %s is corrupt (%s). Ignoring ZIP file.'), filename, inst )
             return []
-        except zipfile.LargeZipFile, inst:
-            logging.warning(
-                _('ZIP file %s is bigger than 4GB (%s). Ignoring ZIP file.'),
-                filename,
-                inst
-            )
+        except zipfile.LargeZipFile as inst:
+            logging.warning( _('ZIP file %s is bigger than 4GB (%s). Ignoring ZIP file.'), filename, inst )
             return []
     finally:
         if zfile:

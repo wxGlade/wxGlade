@@ -102,7 +102,7 @@ def builder(parent, sizer, pos, number=[1]):
     node = Node(text)
     text.node = node
     text.show_widget(True)
-    common.app_tree.insert(node, sizer.node, pos - 1)
+    common.app_tree.insert(node, sizer.node, pos-1)
 
 
 def xml_builder(attrs, parent, sizer, sizeritem, pos=None):

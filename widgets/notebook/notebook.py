@@ -7,10 +7,8 @@ wxNotebook objects
 """
 
 import wx
-import common
-import compat
+import common, compat, misc
 import wcodegen
-import misc
 from tree import Tree, Node, SlotNode
 from widget_properties import *
 from edit_windows import ManagedBase, EditStylesMixin
@@ -109,7 +107,6 @@ class NotebookVirtualSizer(Sizer):
     def is_virtual(self):
         return True
 
-# end of class NotebookVirtualSizer
 
 
 class NotebookPagesProperty(GridProperty):
@@ -130,7 +127,6 @@ class NotebookPagesProperty(GridProperty):
         stmt = common.format_xml_tag(u'tabs', inner_xml, tabs, is_xml=True)
         outfile.write(stmt)
 
-# end of class NotebookPagesProperty
 
 
 class TabsHandler(BaseXmlBuilderTagHandler):
@@ -149,7 +145,6 @@ class TabsHandler(BaseXmlBuilderTagHandler):
             self.tab_names.append(char_data)
         return False
 
-# end of class TabsHandler
 
 
 class EditNotebook(ManagedBase, EditStylesMixin):
@@ -359,11 +354,11 @@ class EditNotebook(ManagedBase, EditStylesMixin):
         # select the last added tab
         if added is not None and self.widget:
             self.widget.SetSelection(added)
+
     ####################################################################################################################
 
     def delete(self):
-        if self.widget:
-            self.widget.DeleteAllPages()
+        if self.widget: self.widget.DeleteAllPages()
         ManagedBase.delete(self)
 
     def get_property_handler(self, name):
@@ -465,7 +460,7 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
     if pos is None:
         common.app_tree.add(node, sizer.node)
     else:
-        common.app_tree.insert(node, sizer.node, pos - 1)
+        common.app_tree.insert(node, sizer.node, pos-1)
     return widget
 
 

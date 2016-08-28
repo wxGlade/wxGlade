@@ -8,9 +8,7 @@ wxGrid objects
 
 import wx
 from wx.grid import *
-import common
-import compat
-import misc
+import common, compat, misc
 from edit_windows import ManagedBase
 from tree import Tree, Node
 from widget_properties import *
@@ -48,11 +46,10 @@ class GridColsProperty(GridProperty):
         self.grid.SetCellValue(self.cur_row, 0, label)
         self.grid.SetCellValue(self.cur_row, 1, '-1')
 
-# end of class GridColumnsProperty
 
 
 class ColsHandler(BaseXmlBuilderTagHandler):
-
+    # for XML import
     def __init__(self, parent):
         super(ColsHandler, self).__init__()
         self.parent = parent
@@ -74,7 +71,6 @@ class ColsHandler(BaseXmlBuilderTagHandler):
             self.columns.append([char_data, self.curr_size])
         return False
 
-# end of class ColsHandler
 
 
 class EditGrid(ManagedBase):
@@ -383,13 +379,10 @@ class EditGrid(ManagedBase):
         if name == 'columns': return ColsHandler(self)
         return ManagedBase.get_property_handler(self, name)
 
-# end of class EditGrid
 
 
 def builder(parent, sizer, pos, number=[1]):
-    """\
-    factory function for EditGrid objects.
-    """
+    "factory function for EditGrid objects"
     label = 'grid_%d' % number[0]
     while common.app_tree.has_name(label):
         number[0] += 1
@@ -403,13 +396,11 @@ def builder(parent, sizer, pos, number=[1]):
     node = Node(grid)
     grid.node = node
     grid.show_widget(True)
-    common.app_tree.insert(node, sizer.node, pos - 1)
+    common.app_tree.insert(node, sizer.node, pos-1)
 
 
 def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
-    """\
-    factory to build EditGrid objects from a XML file
-    """
+    "factory to build EditGrid objects from a XML file"
     from xml_parse import XmlParsingError
     try:
         label = attrs['name']
@@ -426,15 +417,12 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
     if pos is None:
         common.app_tree.add(node, sizer.node)
     else:
-        common.app_tree.insert(node, sizer.node, pos - 1)
+        common.app_tree.insert(node, sizer.node, pos-1)
     return grid
 
 
 def initialize():
-    """\
-    initialization function for the module: returns a wx.BitmapButton to be
-    added to the main palette.
-    """
+    "initialization function for the module: returns a wx.BitmapButton to be added to the main palette."
     common.widgets['EditGrid'] = builder
     common.widgets_from_xml['EditGrid'] = xml_builder
 

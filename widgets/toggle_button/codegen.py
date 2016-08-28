@@ -14,20 +14,17 @@ class PythonToggleButtonGenerator(wcodegen.PythonWidgetCodeWriter):
     tmpl = '%(name)s = %(klass)s(%(parent)s, %(id)s, %(label)s%(style)s)\n'
     has_setvalue = True
 
-# end of class PythonToggleButtonGenerator
 
 
 class CppToggleButtonGenerator(wcodegen.CppWidgetCodeWriter):
     import_modules = ['<wx/tglbtn.h>']
-    tmpl = '%(name)s = new %(klass)s(%(parent)s, %(id)s, %(label)s' \
-           '%(style)s);\n'
+    tmpl = '%(name)s = new %(klass)s(%(parent)s, %(id)s, %(label)s%(style)s);\n'
     has_setvalue = True
 
-# end of class CppToggleButtonGenerator
 
 
 def initialize():
     klass = 'wxToggleButton'
     common.class_names['EditToggleButton'] = klass
     common.register('python', klass, PythonToggleButtonGenerator(klass))
-    common.register('C++', klass, CppToggleButtonGenerator(klass))
+    common.register('C++',    klass, CppToggleButtonGenerator(klass))

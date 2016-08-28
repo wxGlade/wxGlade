@@ -7,18 +7,16 @@ wxChoice objects
 """
 
 import wx
-import common
-import compat
-import misc
+import common, compat, config, misc
 from edit_windows import ManagedBase
 from tree import Tree, Node
 from widget_properties import *
 
 from ChoicesProperty import *
 
+
 if wx.Platform == '__WXMSW__':
-    # On windows GetBestSize considers also the drop down menu, while we
-    # don't want it to be included.
+    # On windows GetBestSize considers also the drop down menu, while we don't want it to be included.
     class wxChoice2(wx.Choice):
         def GetBestSize(self):
             w, h = wx.Choice.GetBestSize(self)
@@ -112,7 +110,7 @@ def builder(parent, sizer, pos, number=[1]):
     #sizer.set_item(pos, size=choice.GetBestSize())
     choice.node = node
     choice.show_widget(True)
-    common.app_tree.insert(node, sizer.node, pos - 1)
+    common.app_tree.insert(node, sizer.node, pos-1)
 
 
 def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
@@ -131,7 +129,7 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
     if pos is None:
         common.app_tree.add(node, sizer.node)
     else:
-        common.app_tree.insert(node, sizer.node, pos - 1)
+        common.app_tree.insert(node, sizer.node, pos-1)
     return choice
 
 

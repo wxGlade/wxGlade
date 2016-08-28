@@ -10,9 +10,7 @@ from wcodegen.taghandler import BaseCodeWriterTagHandler
 
 
 class ChoicesCodeHandler(BaseCodeWriterTagHandler):
-    """\
-    handler for the 'choices' property of various elements
-    """
+    "handler for the 'choices' property of various elements"
 
     def __init__(self):
         super(ChoicesCodeHandler, self).__init__()
@@ -38,7 +36,6 @@ class ChoicesCodeHandler(BaseCodeWriterTagHandler):
             code_obj.properties['choices'] = self.choices
             return True
 
-# end of class ChoicesCodeHandler
 
 
 def xrc_write_choices_property(xrc_obj, outfile, tabs):

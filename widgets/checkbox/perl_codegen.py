@@ -11,10 +11,8 @@ import common
 import wcodegen
 
 
-class PerlCheckBoxGenerator(wcodegen.PerlWidgetCodeWriter,
-                            checkbox_base.CheckBoxMixin):
-    tmpl = '%(name)s = %(klass)s->new(%(parent)s, %(id)s, ' \
-           '%(label)s%(style)s);\n'
+class PerlCheckBoxGenerator(wcodegen.PerlWidgetCodeWriter, checkbox_base.CheckBoxMixin):
+    tmpl = '%(name)s = %(klass)s->new(%(parent)s, %(id)s, %(label)s%(style)s);\n'
     tmpl_set3statevalue = '%(name)s->Set3StateValue(%(value_3state)s);\n'
 
     def _prepare_tmpl_content(self, obj):
@@ -22,8 +20,7 @@ class PerlCheckBoxGenerator(wcodegen.PerlWidgetCodeWriter,
         self._prepare_checkbox_content(obj)
 
     def get_code(self, obj):
-        init_lines, prop_lines, layout_lines = \
-            super(PerlCheckBoxGenerator, self).get_code(obj)
+        init_lines, prop_lines, layout_lines = super(PerlCheckBoxGenerator, self).get_code(obj)
         self._get_checkbox_code(prop_lines)
         return init_lines, prop_lines, layout_lines
 

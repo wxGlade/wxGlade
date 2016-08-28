@@ -29,31 +29,20 @@ except:
     basestring = (str,)
 
 class FileDirDialog(object):
-    """\
-    Custom class which displays a FileDialog or a DirDialog, according to the
-    value of the L{Application.multiple_files} of its parent (instance of
-    L{Application}).
+    """Custom class which displays a FileDialog or a DirDialog, according to the value of the
+    L{Application.multiple_files} of its parent (instance of L{Application}).
 
-    @ivar default_extension: The default extension will be added to all
-                             file names without extension.
-    @type default_extension: str
-
+    @ivar default_extension: The default extension will be added to all file names without extension.
     @ivar file_message: Message to show on the file dialog
-    @type file_message: str
-
     @ivar dir_message: Message to show on the directory dialog
-    @type dir_message: str
 
     @ivar file_style: Style for the file dialog
     @ivar dir_style:  Style for the directory dialog
     @ivar value:      Value returned by file or directory dialog on success
     @ivar parent:     Parent instance of L{Application}
-    @ivar prev_dir:   Previous directory
-    """
+    @ivar prev_dir:   Previous directory"""
 
-    def __init__(self, parent, wildcard=_("All files|*"),
-                 file_message=_("Choose a file"), dir_message=None,
-                 file_style=0):
+    def __init__(self, parent, wildcard=_("All files|*"), file_message=_("Choose a file"),dir_message=None,file_style=0):
         self.prev_dir = config.preferences.codegen_path or ""
         self.wildcard = wildcard
         self.file_message = file_message
@@ -93,7 +82,6 @@ class FileDirDialog(object):
         "Return the dialog value returned during the last L{ShowModal()} call;  @see: L{value}"
         return self.value
 
-# end of class FileDirDialog
 
 
 class Application(object):
@@ -238,7 +226,7 @@ class Application(object):
         sizer.Add(self.encoding_prop.panel, 0, wx.EXPAND)
         sizer.Add(self.use_gettext_prop.panel, 0, wx.EXPAND)
         szr = wx.BoxSizer(wx.HORIZONTAL)
-        label = wx.StaticText( panel_application, -1, _("Top window"), size=(config.label_initial_width, -1) )
+        label = wx.StaticText( panel_application, -1, _("Top window"), size=(config.label_width, -1) )
         label.SetToolTip(wx.ToolTip(_("This widget is used as top window in the wxApp start code")))
         szr.Add(label, 2, wx.ALL | wx.ALIGN_CENTER, 3)
         szr.Add(self.top_win_prop, 5, wx.ALL | wx.ALIGN_CENTER, 3)

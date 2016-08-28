@@ -10,143 +10,73 @@ Configuration related stuff
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
-# import general python modules
-import os
-import sys
+import os, sys
 
-# default configuration values
-default_app_name = 'app'
-"Default value for the application name"
 
-default_cpp_app_name = 'main.cpp'
-"Default application name for C++ files; @see: L{default_header_extension}  and L{default_source_extension}"
+# default configuration values #########################################################################################
+default_app_name = 'app'           # application name
 
-default_encoding = 'UTF-8'
-"Default value for encoding; @see: L{encoding}"
+default_cpp_app_name = 'main.cpp'  # name for C++ application file
+default_header_extension = '.h'    # extension of C++ header files
+default_source_extension = '.cpp'  # extension of C++ source files
 
-default_header_extension = '.h'
-"Default extension of the header file; @see: L{default_cpp_app_name} and L{default_source_extension}"
+default_language = 'python'        # Default language if no specified
 
-default_indent_amount = 4
-"Default value for indentation; @type: int"
+default_output_file = './wxglade_out.py'  # output file
+default_output_path = './'                # output path"
 
-default_indent_symbol = ' '
-"Default value for indentation symbol"
+default_encoding = 'UTF-8'   # value for encoding; @see: L{encoding}"
 
-default_language = 'python'
-"Default language of no specified"
+default_indent_symbol = ' '  # value for indentation symbol
+default_indent_amount = 4    # value for indentation amount
 
-default_multiple_files = 0
-"Default value for writing multiple files (each class in a separate file); @type: int"
+default_multiple_files = 0   # value for writing multiple files (each class in a separate file)
+default_overwrite = 1        # value for overwriting existing sources
+default_use_gettext = 1      # value to usage of gettext
 
-default_overwrite = 1
-"Default value for overwriting existing sources; @type: int"
+for_version = (2, 8) # version to generate code for
 
-default_output_file = './wxglade_out.py'
-"Default output file"
 
-default_output_path = './'
-"Default output path"
+# these paths, file names and strings will be set during initialisation: ###############################################
+appdata_path = ''                    # wxGlades application data like file history and templates
+credits_file = ''                    # Path of the credits file "CREDITS.txt"
 
-default_source_extension = '.cpp'
-"Default extension of the source file; @see: L{default_cpp_app_name} and L{default_header_extension}"
+widgets_path = 'widgets'             # Path to wxGlade "built-in" widgets
+wxglade_path = '.'                   # Program path, set in wxglade.py
+docs_path = 'docs'                   # Path to wxGlade documentation (e.g. html manual, LICENSE.txt, CREDITS.txt)
+home_path = ''                       # Users home directory
+icons_path = 'icons'                 # Path to wxGlade icons
+templates_path = 'templates'         # System template path
+license_file = ''                    # Path of the license file "LICENSE.txt"
+manual_file = 'docs/html/index.html' # Path to wxGlade HTML manual
+tutorial_file = 'docs/tutorial.html' # Path to wxGlade HTML Tutorial
 
-default_use_gettext = 1
-"Default value to usage of gettext; @type: int"
+platform = 'not_set'                 # Current platform string (mostly wx.Platform)
+version = 'not_set'                  # wxGlade version string; see: get_version()
+py_version = sys.version.split()[0]  # Python version string
+wx_version = 'not_set'               # wxPython version string
 
-encoding = None
-"""\
-System default character encoding.
+rc_file = ''                         # Path to the rc / ini file to store user preferences in it
+history_file = ''                    # Path to the history file, if used
+log_file = ''                        # Path to wxGlade log file
 
-The default application L{default_encoding} is the fallback only.
+encoding = None                      # character encoding; see wxglade.init_localization(); fallback: 'default_encoding'
 
-@type: str | None
-@see: L{default_encoding}
-@see: L{wxglade.init_localization()}
-"""
 
-for_version = (2, 8)
-"Default version to generate code for; @type: (int, int)"
+use_gui = True                 # If True, wxGlade runs in "GUI" mode, if False, in "batch" mode for generating code only
+use_file_history = not use_gui # Flag to use a file history
 
-appdata_path = ''
-"Directory to wxGlades application data like file history and templates; will be set during initialisation"
 
-credits_file = ''
-'Path of the credits file "CREDITS.txt"'
+backed_up = {}      # Set of file names already backed up during this session (a dictionary);  see: common.save_file()
+preferences = None  # User preferences;  @type: common.Preferences   @see: L{common.Preferences}
 
-docs_path = 'docs'
-"Path to wxGlade documentation (e.g. html manual, LICENSE.txt, CREDITS.txt); will be set during initialisation"
 
-home_path = ''
-"Users home directory; will be set during initialisation"
+label_width = 110   # width of new created labels; new version
 
-icons_path = 'icons'
-"Path to wxGlade icons; will be set during initialisation"
+tooltip_time = 3    # Number of seconds a tooltip will be shown
+tooltip_width = 50  # Maximum width to split tooltips into
 
-license_file = ''
-'Path of the license file "LICENSE.txt"; will be set during initialisation'
-
-manual_file = 'docs/html/index.html'
-"Path to wxGlade HTML manual; will be set during initialisation"
-
-platform = 'not_set'
-"Current platform string (mostly wx.Platform); will be set during initialisation"
-
-version = 'not_set'
-"wxGlade version string; will be set during initialisation  @see: L{get_version()}"
-
-py_version = sys.version.split()[0]
-"Python version string"
-
-wx_version = 'not_set'
-"wxPython version string"
-
-templates_path = 'templates'
-"System template path; will be set during initialisation"
-
-tutorial_file = 'docs/tutorial.html'
-"Path to wxGlade HTML Tutorial; will be set during initialisation"
-
-use_gui = True
-"""If True, wxGlade runs in "GUI" mode. If False, the program is invoked
-from the command-line in "batch" mode for generating code only."""
-
-widgets_path = 'widgets'
-'Path to wxGlade "built-in" widgets; will be set during initialisation'
-
-wxglade_path = '.'
-"Program path, set in wxglade.py"
-
-backed_up = {}
-"Set of file names already backed up during this session (a dictionary);  @see: L{common.save_file()}"
-
-preferences = None
-"User preferences;  @type: common.Preferences   @see: L{common.Preferences}"
-
-rc_file = ''
-"Path to the rc / ini file to store user preferences in it; will be set during initialisation"
-
-history_file = ''
-"Path to the history file, if used; will be set during initialisation"
-
-use_file_history = False
-"Flag to use a file history"
-
-if use_gui:
-    use_file_history = True
-
-log_file = ''
-"Path to wxGlade log file; will be set during initialisation"
-
-label_initial_width = 5
-"Initial width of new created labels"
-
-tooltip_time = 3
-"Number of seconds a tooltip will be shown"
-
-tooltip_width = 50
-"Maximum width to split tooltips into"
-
+########################################################################################################################
 widget_config = {
     'generic_styles': {
 
@@ -166,7 +96,7 @@ widget_config = {
                             'rename_to': 'wxALIGN_CENTER',
                             'combination': 'wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL' },
         'wxALIGN_TOP':              {'desc': _('Align the item to the top.') },
-        'wxALIGN_BOTTOM':            {'desc': _('Align the item to the bottom.') },
+        'wxALIGN_BOTTOM':            { 'desc': _('Align the item to the bottom.') },
         'wxALIGN_CENTER_VERTICAL':   { 'desc': _('Centre the item vertically.') },
         'wxALIGN_CENTRE_VERTICAL':   { 'desc': _('Centre the item vertically.'),
                                        'synonym': 'wxALIGN_CENTER_VERTICAL',
@@ -407,11 +337,7 @@ __version__ = "%s"
 
 
 def get_hg_version():
-    """
-    Query the local hg repository to get the current release or return None.
-
-    @rtype: str | None
-    """
+    "Query the local hg repository to get the current release or return None"
     try:
         from mercurial.hg import repository
         from mercurial.ui import ui
@@ -462,8 +388,7 @@ def get_version(suffix=True):
      2. Queried from local hg repo (see L{get_hg_version()})
      3. Set to "not found"
 
-    The release string contains a suffix if wxGlade runs as standalone
-    edition.
+    The release string contains a suffix if wxGlade runs as standalone edition.
 
     @param suffix: Append suffix for standalone edition
     @type suffix:  bool

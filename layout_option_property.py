@@ -35,7 +35,7 @@ class LayoutOptionProperty(widget_properties.Property):
         "Actually builds the spin control to set the value of the property interactively"
         self.id = wx.NewId()
         self.val_range = (0, 1000)
-        size = (config.label_initial_width, -1)
+        size = (config.label_width, -1)
         label = wx.lib.stattext.GenStaticText( parent, wx.ID_ANY, _('Proportion'), size=size )
         self.spin = wx.SpinCtrl( parent, self.id, min=self.val_range[0], max=self.val_range[1] )
         val = int( self.owner[self.name][0]() )
@@ -51,7 +51,7 @@ class LayoutOptionProperty(widget_properties.Property):
 
     def _display_gridbag(self, parent):
         sizer = wx.BoxSizer(wx.VERTICAL)
-        size = (config.label_initial_width, -1)
+        size = (config.label_width, -1)
         val = self.owner[self.name][0]()
 
         szr = wx.BoxSizer(wx.HORIZONTAL)
