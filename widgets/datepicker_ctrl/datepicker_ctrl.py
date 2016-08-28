@@ -26,16 +26,13 @@ class EditDatePickerCtrl(ManagedBase, EditStylesMixin):
     "Class to handle wxDatePickerCtrl objects"
     # XXX unify with EditCalendarCtrl?
 
-    _PROPERTIES = ["Widget", "default", "style"]
+    _PROPERTIES = ["Widget", "style"]
     PROPERTIES = ManagedBase.PROPERTIES + _PROPERTIES + ManagedBase.EXTRA_PROPERTIES
 
     def __init__(self, name, parent, id, sizer, pos, show=True):
         # Initialise parent classes
         ManagedBase.__init__(self, name, 'wxDatePickerCtrl', parent, id, sizer, pos, show=show)
         EditStylesMixin.__init__(self)
-
-        # initialise instance properties
-        self.default = np.CheckBoxProperty(False)
 
         if config.preferences.default_border:
             self.border.set( config.preferences.default_border_size )

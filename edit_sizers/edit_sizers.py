@@ -770,7 +770,7 @@ class SizerBase(Sizer, np.PropertyOwner):
     def preview_parent(self):
         self._destroy_popup_menu()
         p = misc.get_toplevel_widget(self)
-        p.preview(None)
+        p.on_preview()
 
     def set_name(self, value):
         value = "%s" % value
