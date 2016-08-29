@@ -395,6 +395,7 @@ class WindowBase(EditBase):
 
     def on_size(self, event):
         "Update the value of the 'size' property"
+        event.Skip()  # skip first before doing something else
         if not self.widget: return  # this can happen on destruction
         try:
             prop_size = self.properties['size']
@@ -402,14 +403,9 @@ class WindowBase(EditBase):
             # try to preserve the user's choice
             size_prop = prop_size.value.strip()
 
-            if not prop_size.is_active():
-                try:
-                    use_dialog_units = size_prop and size_prop[-1] == 'd'
-                except IndexError:
-                    use_dialog_units = False
-
-                if use_dialog_units:
-                    size_prop = size_prop[:-1]
+            if prop_size.is_active():
+                use_dialog_units = size_prop and size_prop[-1] == 'd'
+                if use_dialog_units: size_prop = size_prop[:-1]  # drop the left 'd'
 
                 weidth_prop, height_prop = [int(t) for t in size_prop.split(',')]
             else:
@@ -421,35 +417,23 @@ class WindowBase(EditBase):
             else:
                 weidth_widget, height_widget = self.widget.GetSize()
 
-            if weidth_prop == -1:
-                weidth_widget = -1
-            if height_prop == -1:
-                height_widget = -1
+            if weidth_prop == -1: weidth_widget = -1
+            if height_prop == -1: height_widget = -1
 
             size_widget = "%s, %s" % (weidth_widget, height_widget)
-            if use_dialog_units:
-                size_widget += "d"
+            if use_dialog_units: size_widget += "d"
 
-            # There are an infinite loop of wxSizeEvents. All events have
-            # the same id. It looks currently like a bug in the underlaying
-            # wx libraries especially in the GTK part. The bug doesn't occur
-            # on Windows.
-            #
+            # There are an infinite loop of wxSizeEvents. All events have  the same id.
+            # It looks currently like a bug in the underlaying wx libraries especially in the GTK part.
+            # The bug doesn't occur on Windows.
             # The issue probably occur only within EditGrid.
-            #
-            # This is workaround prevents the propagation if the size hasn't
-            # changed.
-            #
+            # This is workaround prevents the propagation if the size hasn't changed.
             # Related SF bug report: #170
-            if size_prop == size_widget:
-                return
+            if size_prop == size_widget: return
 
-            #self.size = size_widget
-            prop_size.set(size_widget)
+            prop_size.set(size_widget)  # set to the actual value, either because wx forced it or just for displaying
         except KeyError:
             logging.exception(_('Internal Error'))
-
-        event.Skip()
 
     def _set_background(self):
         if not self.widget: return
@@ -602,6 +586,7 @@ class ManagedBase(WindowBase):
     PROPERTIES = WindowBase.PROPERTIES + _PROPERTIES
 
     _PROPERTY_HELP = { "border": _("Border width, if enabled below"),  "pos": _("Sizer slot") }
+    _PROPERTY_LABELS = {"option": "Proportion" }
 
     ####################################################################################################################
     
@@ -635,7 +620,7 @@ class ManagedBase(WindowBase):
         if self.sel_marker: self.sel_marker.Show(selected)
 
     def on_move(self, event):
-        self.sel_marker.update()
+        if self.sel_marker: self.sel_marker.update()
 
     def on_size(self, event):
         if not self.widget: return
