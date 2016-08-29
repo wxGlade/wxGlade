@@ -39,10 +39,6 @@ class wxGladePropertyPanel(wx.Frame):
         #menu_bar.Check(PROPS_ID, False)
         self.Hide()
 
-    def SetTitle(self, title):
-        try: self.GetParent().SetTitle(title)
-        except AttributeError: pass
-
     def is_visible(self):
         return self.IsShown()
 
@@ -68,7 +64,7 @@ class wxGladePropertyPanel(wx.Frame):
         self.current_widget = None
         self.create_editor(edit_widget)
         self.current_widget = edit_widget
-        self.SetTitle(_('Properties - <%s>') % edit_widget.name)
+        self.SetTitle(_('Properties - %s - <%s>') % (edit_widget.klass, edit_widget.name) )
 
     def create_editor(self, edit_widget):
         # fill the frame with a notebook of property editors
@@ -134,8 +130,6 @@ class wxGladePropertyPanel(wx.Frame):
             self.notebook.SetSelection(0)
 
         self.notebook.Show()
-        #self.notebook.Layout()
-        #self.Layout()
 
     def start_page(self, name):
         panel = wx.ScrolledWindow( self.notebook, wx.ID_ANY, style=wx.TAB_TRAVERSAL | wx.FULL_REPAINT_ON_RESIZE,
@@ -150,7 +144,6 @@ class wxGladePropertyPanel(wx.Frame):
     
         w, h = panel.GetClientSize()
         self.notebook.AddPage(panel, _(header),select=select)
-        #self.Layout()
         panel.SetScrollbars(1, 5, 1, int(math.ceil(h/5.0)))
 
 

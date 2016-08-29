@@ -782,7 +782,6 @@ class SizerBase(Sizer, np.PropertyOwner):
                 common.app_tree.refresh_name(self.node, oldname)
             except AttributeError:
                 self._logger.exception(_('Internal Error'))
-            self.property_window.SetTitle(_('Properties - <%s>') % self.name)
 
     set_name_pattern = re.compile(r'^[a-zA-Z_]+[\w0-9]*$')
 
