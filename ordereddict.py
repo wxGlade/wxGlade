@@ -65,11 +65,19 @@ class OrderedDict(dict):
         while curr is not end:
             yield curr[0]
             curr = curr[1]
+
     def values(self):
         end = self.__end
         curr = end[2]
         while curr is not end:
             yield self[curr[0]]
+            curr = curr[2]
+
+    def items(self):
+        end = self.__end
+        curr = end[2]
+        while curr is not end:
+            yield curr[0], self[curr[0]]
             curr = curr[2]
 
     def popitem(self, last=True):
