@@ -7,8 +7,8 @@ The custon tag handlers are called within the XML parsers in L{xml_parse}.
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
-import types
 import xml.sax.saxutils
+import compat
 
 
 class BaseTagHandler(object):
@@ -50,7 +50,7 @@ class BaseTagHandler(object):
         @see: L{self._content}
         see: L{xml_parse.XmlWidgetObject.add_property()}
         """
-        assert isinstance(data, types.UnicodeType)
+        assert isinstance(data, compat.unicode)
         if self.strip_char_data:
             data = data.strip()
         if data:
@@ -66,7 +66,7 @@ class BaseTagHandler(object):
         if not self._content:
             return u''
         data = "".join(self._content)
-        assert isinstance(data, types.UnicodeType)
+        assert isinstance(data, compat.unicode)
         data = xml.sax.saxutils.unescape(data)
         self._content = []
         return data

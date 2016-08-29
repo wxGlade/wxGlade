@@ -18,7 +18,6 @@ class PythonDatePickerCtrlGenerator(wcodegen.PythonWidgetCodeWriter):
         self.has_setdefault = obj.properties.get('default', False)
         return
 
-# end of class PythonDatePickerCtrlGenerator
 
 
 class CppDatePickerCtrlGenerator(wcodegen.CppWidgetCodeWriter):
@@ -35,7 +34,6 @@ class CppDatePickerCtrlGenerator(wcodegen.CppWidgetCodeWriter):
         self.has_setdefault = obj.properties.get('default', False)
         return
 
-# end of class CppDatePickerCtrlGenerator
 
 
 def xrc_code_generator(obj):
@@ -54,9 +52,7 @@ def xrc_code_generator(obj):
                         val = val2[:index] + '&&' + val2[index+2:]
                 else:
                     val = val2
-            xrcgen.DefaultXrcObject.write_property(self, name, val,
-                                                   outfile, tabs)
-    # end of class DatePickerCtrlXrcObject
+            xrcgen.DefaultXrcObject.write_property(self, name, val, outfile, tabs)
 
     return DatePickerCtrlXrcObject(obj)
 
@@ -65,5 +61,5 @@ def initialize():
     klass = 'wxDatePickerCtrl'
     common.class_names['EditDatePickerCtrl'] = klass
     common.register('python', klass, PythonDatePickerCtrlGenerator(klass))
-    common.register('C++', klass, CppDatePickerCtrlGenerator(klass))
-    common.register('XRC', klass, xrc_code_generator)
+    common.register('C++',    klass, CppDatePickerCtrlGenerator(klass))
+    common.register('XRC',    klass, xrc_code_generator)

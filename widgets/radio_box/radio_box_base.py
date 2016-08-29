@@ -7,9 +7,7 @@ Code shared between different language code generators
 
 
 class RadioBoxMixin(object):
-    """\
-    Generic code to handle wxRadioBox code in all language code generators
-    """
+    "Generic code to handle wxRadioBox code in all language code generators"
 
     default_style = 'wxRA_SPECIFY_COLS'
     set_default_style = True

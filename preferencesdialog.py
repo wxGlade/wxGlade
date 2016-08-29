@@ -19,8 +19,7 @@ class wxGladePreferences(wxGladePreferencesUI):
     def __init__(self, preferences):
         wxGladePreferencesUI.__init__(self, None, -1, "")
 
-        wx.EVT_BUTTON(self, self.choose_widget_path.GetId(),
-                      self.on_widget_path)
+        wx.EVT_BUTTON(self, self.choose_widget_path.GetId(), self.on_widget_path)
 
         self.preferences = preferences
         self.set_values()
@@ -31,45 +30,34 @@ class wxGladePreferences(wxGladePreferencesUI):
             self.frame_tool_win.SetValue(self.preferences.frame_tool_win)
             self.open_save_path.SetValue(self.preferences.open_save_path)
             self.codegen_path.SetValue(self.preferences.codegen_path)
-            self.use_dialog_units.SetValue(
-                self.preferences.use_dialog_units)
+            self.use_dialog_units.SetValue( self.preferences.use_dialog_units )
             self.number_history.SetValue(self.preferences.number_history)
             self.show_progress.SetValue(self.preferences.show_progress)
             self.wxg_backup.SetValue(self.preferences.wxg_backup)
             self.codegen_backup.SetValue(self.preferences.codegen_backup)
             self.default_border.SetValue(self.preferences.default_border)
-            self.default_border_size.SetValue(
-                self.preferences.default_border_size)
+            self.default_border_size.SetValue( self.preferences.default_border_size )
             if self.preferences.backup_suffix == '.bak':
                 self.backup_suffix.SetSelection(1)
             self.buttons_per_row.SetValue(self.preferences.buttons_per_row)
-            self.remember_geometry.SetValue(
-                self.preferences.remember_geometry)
-            self.local_widget_path.SetValue(
-                self.preferences.local_widget_path)
-            self.show_sizer_handle.SetValue(
-                self.preferences.show_sizer_handle)
-            self.allow_duplicate_names.SetValue(
-                self.preferences.allow_duplicate_names)
+            self.remember_geometry.SetValue( self.preferences.remember_geometry )
+            self.local_widget_path.SetValue( self.preferences.local_widget_path )
+            self.show_sizer_handle.SetValue( self.preferences.show_sizer_handle )
+            self.allow_duplicate_names.SetValue( self.preferences.allow_duplicate_names )
             self.autosave.SetValue(self.preferences.autosave)
             self.autosave_delay.SetValue(self.preferences.autosave_delay)
             self.show_completion.SetValue(self.preferences.show_completion)
             self.write_timestamp.SetValue(self.preferences.write_timestamp)
-            self.write_generated_from.SetValue(
-                self.preferences.write_generated_from
-                )
+            self.write_generated_from.SetValue( self.preferences.write_generated_from )
             self.log_debug_info.SetValue(self.preferences.log_debug_info)
             self._fix_spin_ctrls()
-        except Exception, inst:
+        except Exception as inst:
             bugdialog.Show(_('Read Configuration'), inst)
 
     def _fix_spin_ctrls(self):
-        """\
-        Workaround to a wxGTK 2.8.4.2 bug in wx.SpinCtrl.GetValue
-        """
+        "Workaround to a wxGTK 2.8.4.2 bug in wx.SpinCtrl.GetValue"
         done = {}
-        for name in ('buttons_per_row', 'autosave_delay', 'number_history',
-                     'default_border_size'):
+        for name in ('buttons_per_row', 'autosave_delay', 'number_history', 'default_border_size'):
             def fix(n):
                 done[n] = False
 
@@ -122,12 +110,8 @@ class wxGladePreferences(wxGladePreferencesUI):
         prefs['log_debug_info'] = self.log_debug_info.GetValue()
 
     def on_widget_path(self, event):
-        """\
-        Create a file choice dialog
-        """
-        pth = wx.DirSelector(_("Choose a directory:"), os.getcwd(),
-                             style=wx.DD_DEFAULT_STYLE |
-                             wx.DD_NEW_DIR_BUTTON)
+        "Create a file choice dialog"
+        pth = wx.DirSelector(_("Choose a directory:"), os.getcwd(), style=wx.DD_DEFAULT_STYLE | wx.DD_NEW_DIR_BUTTON)
         if pth:
             self.local_widget_path.SetValue(pth)
 

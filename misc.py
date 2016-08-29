@@ -3,57 +3,90 @@ Miscellaneous stuff, used in many parts of wxGlade
 
 @copyright: 2002-2007 Alberto Griggio
 @copyright: 2014-2016 Carsten Grohmann
+@copyright: 2016 Dietmar Schwertberger
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
-import common
-import config
-
-import StringIO
-import logging
-import os
-import re
-import types
+import common, config, compat
+import logging, os, re
 import wx
 
-focused_widget = None
-"""\
-If not None, this is the currently selected widget - This is different from
-tree.WidgetTree.cur_widget because it takes into account also SizerSlot
-objects
-
-this is an implementation hack, used to handle keyboard shortcuts for
-popup menus properly (for example, to ensure that the object to remove is
-the currently highlighted one, ecc...)
-"""
 
 use_menu_icons = None
 
 currently_under_mouse = None
 """\
 If not None, this is the SizerSlot wich has the "mouse focus": this is used
-to restore the mouse cursor if the user cancelled the addition of a widget
-"""
+to restore the mouse cursor if the user cancelled the addition of a widget"""
 
 _get_xpm_bitmap_re = re.compile(r'"(?:[^"]|\\")*"')
 
 _item_bitmaps = {}
 
 
+
+focused_widget = None  # the currently selected widget in GUI mode (for tree and property_panel)
+
+def set_focused_widget(widget):
+    if not config.use_gui: return
+    # set focused widget; tell tree and property panel
+    global focused_widget
+    if focused_widget:
+        focused_widget.update_view(selected=False)
+    focused_widget = widget
+    common.app_tree.set_current_widget(widget)
+    common.property_panel.set_widget(widget)
+    if widget and widget.widget:
+        # ensure that it is visible and selection is displayed, if applicable
+        show_widget(widget)
+        widget.update_view(selected=True)
+
+
+def show_widget(widget):
+    # ensure that notebook pages are selected such that widget is visible
+    if not widget.widget: return
+    while True:
+        if not widget.node or not widget.node.parent: break  # Application.node is None
+        parent = widget.node.parent.widget
+        if widget.klass == 'wxPanel':
+            # am I a wxPanel under a wxNotebook?
+            if parent.klass == 'wxNotebook':
+                if parent.widget:
+                    for i, editpanel in enumerate(parent.pages):
+                        try:
+                            if editpanel and widget.name == editpanel.name:
+                                # If I am under this tab...
+                                parent.widget.SetSelection(i)  # ...Show that tab.
+                        except AttributeError:
+                            pass
+        elif parent.klass == 'wxPanel':
+            # am I a widget under a wxPanel under a wxNotebook?
+            if parent.parent and parent.parent.klass == 'wxNotebook':
+                if parent.parent.widget:
+                    for i,editpanel in enumerate(parent.parent.pages):
+                        try:
+                            if editpanel and parent.name == editpanel.name:
+                                parent.parent.widget.SetSelection(i)
+                                break
+                        except AttributeError:
+                            pass
+                parent = parent.parent  # skip one level
+
+        widget = parent  # go up one level
+
+
+
+
 class wxMSWRadioButton(wx.RadioButton):
-    """\
-    Custom wxRadioButton class which tries to implement a better
-    GetBestSize than the default one for WXMSW (mostly copied from
-    wxCheckBox::DoGetBestSize in checkbox.cpp)
-    """
+    """Custom wxRadioButton class which tries to implement a better GetBestSize than the default one for WXMSW
+    (mostly copied from wxCheckBox::DoGetBestSize in checkbox.cpp)"""
     __radio_size = None
 
     def GetBestSize(self):
         if not self.__radio_size:
             dc = wx.ScreenDC()
-            dc.SetFont(wx.SystemSettings_GetFont(
-                wx.SYS_DEFAULT_GUI_FONT))
-            self.__radio_size = (3*dc.GetCharHeight())/2
+            dc.SetFont(compat.wx_SystemSettings_GetFont(wx.SYS_DEFAULT_GUI_FONT))
+            self.__radio_size = (3*dc.GetCharHeight())//2
         label = self.GetLabel()
         if label:
             w, h = self.GetTextExtent(label)
@@ -64,13 +97,10 @@ class wxMSWRadioButton(wx.RadioButton):
             w = h = self.__radio_size
         return w, h
 
-# end of class wxGladeRadioButton
 
 
 class wxGTKGladePopupMenu(wx.Menu):
-    """\
-    Default wxMenu seems to have probles with SetTitle on GTK
-    """
+    "Default wxMenu seems to have probles with SetTitle on GTK"
 
     def __init__(self, title):
         wx.Menu.__init__(self)
@@ -79,8 +109,7 @@ class wxGTKGladePopupMenu(wx.Menu):
         self.AppendSeparator()
         font = item.GetFont()
         font.SetWeight(wx.BOLD)
-        item.SetFont(wx.Font(font.GetPointSize(), font.GetFamily(),
-                             font.GetStyle(), wx.BOLD))
+        item.SetFont( wx.Font(font.GetPointSize(), font.GetFamily(), font.GetStyle(), wx.BOLD) )
 
     def SetTitle(self, title):
         self.SetLabel(self.TITLE_ID, title)
@@ -98,10 +127,7 @@ else:
 
 
 class SelectionTag(wx.Window):
-    """\
-    This is one of the small blue squares that appear at the corners of the
-    active widgets
-    """
+    "This is one of the small blue squares that appear at the corners of the active widgets"
 
     def __init__(self, parent):
         kwds = {'size': (7, 7)}
@@ -109,13 +135,10 @@ class SelectionTag(wx.Window):
         self.SetBackgroundColour(wx.BLUE)
         self.Hide()
 
-# end of class SelectionTag
 
 
 class SelectionMarker(object):
-    """\
-    Collection of the 4 SelectionTagS for each widget
-    """
+    "Collection of the 4 SelectionTagS for each widget"
 
     def __init__(self, owner, parent, visible=False):
         self.visible = visible
@@ -136,23 +159,13 @@ class SelectionMarker(object):
         else:
             x, y = self.owner.GetPosition()
         w, h = self.owner.GetClientSize()
-
-        def position(j):
-            if not j:
-                return x, y          # top-left
-            elif j == 1:
-                return x+w-7, y      # top-right
-            elif j == 2:
-                return x+w-7, y+h-7  # bottom-right
-            else:
-                return x, y+h-7      # bottom-left
-
-        self.tag_pos = [position(i) for i in range(4)]
+        self.tag_pos = [(x,y),          (x+w-7, y),  # top-left,     top-right
+                        (x+w-7, y+h-7), (x, y+h-7)]  # bottom-right, bottom-left
         if self.visible:
             if not self.tags:
                 self.tags = [SelectionTag(self.parent) for i in range(4)]
-            for i in range(4):
-                self.tags[i].SetPosition(self.tag_pos[i])
+            for i,pos in enumerate(self.tag_pos):
+                self.tags[i].SetPosition(pos)
         if event:
             event.Skip()
 
@@ -162,8 +175,8 @@ class SelectionMarker(object):
             if self.visible:
                 if not self.tags:
                     self.tags = [SelectionTag(self.parent) for i in range(4)]
-                for i in range(4):
-                    self.tags[i].SetPosition(self.tag_pos[i])
+                for i,pos in enumerate(self.tag_pos):
+                    self.tags[i].SetPosition(pos)
                     self.tags[i].Show()
             else:
                 for tag in self.tags:
@@ -171,68 +184,63 @@ class SelectionMarker(object):
                 self.tags = None
 
     def Destroy(self):
-        if self.tags:
-            for tag in self.tags:
-                tag.Destroy()
-            self.tags = None
+        if self.tags is None: return
+        for tag in self.tags:
+            tag.Destroy()
+        self.tags = None
 
     def Reparent(self, parent):
         self.parent = parent
-        if self.tags:
-            for tag in self.tags:
-                tag.Reparent(parent)
+        if self.tags is None: return
+        for tag in self.tags:
+            tag.Reparent(parent)
 
-# end of class SelectionMarker
 
 
 class UnicodeStringIO(object):
-    """\
-    Wrapper class to store data in Unicode
-    """
+    "Wrapper class to store data in Unicode"
 
     def __init__(self, encoding=None):
-        self.out = StringIO.StringIO()
+        #self.out = compat.StringIO()
+        self.out = compat.BytesIO()
         self.encoding = encoding
 
     def write(self, data):
-        if self.encoding is not None and isinstance(data, types.UnicodeType):
+        if self.encoding is not None and isinstance(data, compat.unicode):
             data = data.encode(self.encoding)
         self.out.write(data)
 
     def getvalue(self):
         return self.out.getvalue()
 
-# end of class UnicodeStringIO
 
 
-class AsciiStringIO(StringIO.StringIO):
+class AsciiStringIO(compat.StringIO):
     """\
     Wrapper class to store data in ASCII
 
-    @ivar isUnicode: True if the conversion to ASCII has failed at least
-                     one time
+    @ivar isUnicode: True if the conversion to ASCII has failed at least one time
     @type isUnicode: bool
     """
 
     def __init__(self, buf=''):
-        StringIO.StringIO.__init__(self, buf)
-        self.isUnicode = isinstance(buf, types.UnicodeType)
+        compat.StringIO.__init__(self, buf)
+        self.isUnicode = isinstance(buf, compat.unicode)
 
     def write(self, s):
         if not s:
             return
 
-        if not isinstance(s, types.StringTypes):
+        if not isinstance(s, compat.basestring):
             s = str(s)
 
-        if isinstance(s, types.UnicodeType):
+        if isinstance(s, compat.unicode):
             try:
                 s = s.encode('ascii')
             except UnicodeEncodeError:
                 self.isUnicode = True
-        StringIO.StringIO.write(self, s)
+        compat.StringIO.write(self, s)
 
-# end of class AsciiStringIO
 
 
 def bound(number, lower, upper):
@@ -240,16 +248,8 @@ def bound(number, lower, upper):
 
 
 def capitalize(string):
-    """\
-    Return string with first character capitalised. Some acronym like
-    XML, XRC.
-
-    @param string: String to convert
-    @type string:  str
-
-    @note: Be carefully it possibly breaks i18n.
-    @rtype: str
-    """
+    """Return string with first character capitalised. Some acronym like XML, XRC.
+    @note: Be carefully it possibly breaks i18n."""
     # Don't capitalise those terms
     if string.upper() in ['XML', 'XRC', 'URL']:
         return string.upper()
@@ -258,18 +258,8 @@ def capitalize(string):
 
 
 def color_to_string(color):
-    """\
-    returns the hexadecimal string representation of the given colour
-
-    Example::
-        >>> color_to_string(wx.Colour(255, 255, 255))
-       '#ffffff'
-
-    @rtype: str
-    """
-    import operator
-    return '#' + reduce(operator.add, ['%02x' % bound(c, 0, 255) for c in
-                                       color.Get()])
+    "returns the hexadecimal string representation of the given colour  '#RRGGBB'"
+    return '#%.2x%.2x%.2x'%(color.Red(), color.Green(), color.Blue())
 
 
 def string_to_color(color):
@@ -283,9 +273,11 @@ def string_to_color(color):
 
     @rtype: wx.Colour
     """
-    if len(color) != 7:
-        raise ValueError
-    return apply(wx.Colour, [int(color[i:i + 2], 16) for i in range(1, 7, 2)])
+    if len(color)==7:
+        return wx.Colour( *[int(color[i:i + 2], 16) for i in range(1, 7, 2)] )
+    if len(color)==9:
+        return wx.Colour( *[int(color[i:i + 2], 16) for i in range(1, 9, 2)] )
+    raise ValueError
 
 
 def format_for_version(version):
@@ -327,8 +319,7 @@ def format_supported_by(version):
     elif len(version) == 4:
         formatted = '%s.%s' % (version[2], version[3])
     else:
-        raise ValueError(_('Unknown version format for "%s"') %
-                         repr(version))
+        raise ValueError(_('Unknown version format for "%s"') % repr(version))
     return formatted
 
 
@@ -344,25 +335,22 @@ def get_toplevel_parent(obj):
 
 def get_toplevel_widget(widget):
     from edit_windows import EditBase, TopLevelBase
-    from edit_sizers import Sizer
+    from edit_sizers import Sizer, SizerSlot
     if isinstance(widget, Sizer):
         widget = widget.window
-    assert isinstance(widget, EditBase), \
-        _("EditBase or SizerBase object needed")
+    assert isinstance(widget, (EditBase,SizerSlot)), _("EditBase or SizerBase object needed")
     while widget and not isinstance(widget, TopLevelBase):
         widget = widget.parent
     return widget
 
 
 def check_wx_version(major, minor=0, release=0, revision=0):
-    """\
-    returns True if the current wxPython version is at least
-    major.minor.release
-    """
+    "returns True if the current wxPython version is at least major.minor.release"
     return wx.VERSION[:-1] >= (major, minor, release, revision)
 
 
-def append_item(menu, id, text, xpm_file_or_artid=None):
+
+def append_menu_item(menu, id, text, xpm_file_or_artid=None): # XXX change: move id to the end of the argument list?
     global use_menu_icons
     if use_menu_icons is None:
         use_menu_icons = config.preferences.use_menu_icons
@@ -374,26 +362,41 @@ def append_item(menu, id, text, xpm_file_or_artid=None):
     path = os.path.join(config.icons_path, path)
     if use_menu_icons and xpm_file_or_artid is not None:
         bmp = None
-        if not xpm_file_or_artid.startswith('wxART_'):
+        if not xpm_file_or_artid.startswith(b'wxART_'):
             try:
                 bmp = _item_bitmaps[xpm_file_or_artid]
             except KeyError:
                 f = os.path.join(path, xpm_file_or_artid)
                 if os.path.isfile(f):
-                    bmp = _item_bitmaps[xpm_file_or_artid] = \
-                        wx.Bitmap(f, wx.BITMAP_TYPE_XPM)
+                    bmp = _item_bitmaps[xpm_file_or_artid] = wx.Bitmap(f, wx.BITMAP_TYPE_XPM)
                 else:
                     bmp = None
         else:
             # xpm_file_or_artid is an id for wx.ArtProvider
-            bmp = wx.ArtProvider.GetBitmap(
-                xpm_file_or_artid, wx.ART_MENU, (16, 16))
+            bmp = wx.ArtProvider.GetBitmap( xpm_file_or_artid, wx.ART_MENU, (16, 16) )
         if bmp is not None:
             try:
                 item.SetBitmap(bmp)
             except AttributeError:
                 pass
     menu.AppendItem(item)
+    return item
+
+
+def bind_menu_item(widget, item, func, *args, **kwargs):
+    "Bind a menu handler with immediate callback"
+    def handler(event):
+        func( *args, **kwargs )
+    widget.Bind(wx.EVT_MENU, handler, item )
+
+def bind_menu_item_after(widget, item, func, *args, **kwargs):
+    "Bind a menu handler with later callback (via wxCallAfter)"
+    widget.Bind(wx.EVT_MENU, exec_after(func, *args, **kwargs), item )
+
+
+def exec_after(func, *args, **kwargs):
+    "Execute the function away from calling context forward to the event handling mechanism of wxWidgets."
+    return lambda e: wx.CallAfter(func, *args, **kwargs)
 
 
 def _remove():
@@ -415,6 +418,7 @@ def _cut():
 
 
 def _copy():
+    global focused_widget
     if focused_widget is not None:
         try:
             focused_widget.clipboard_copy()
@@ -423,6 +427,7 @@ def _copy():
 
 
 def _paste():
+    global focused_widget
     if focused_widget is not None:
         try:
             focused_widget.clipboard_paste()
@@ -430,24 +435,35 @@ def _paste():
             pass
 
 
+def _preview():
+    common.palette.preview(None)
+
+
+# accelerator table to enable keyboard shortcuts for the popup menus of the various widgets (remove, cut, copy, paste)
 accel_table = [
-    (0, wx.WXK_DELETE, _remove),
-    (wx.ACCEL_CTRL, ord('C'), _copy),
-    (wx.ACCEL_CTRL, ord('X'), _cut),
-    (wx.ACCEL_CTRL, ord('V'), _paste),
+    (0,             wx.WXK_DELETE, _remove),
+    (wx.ACCEL_CTRL, ord('C'),      _copy),
+    (wx.ACCEL_CTRL, ord('X'),      _cut),
+    (wx.ACCEL_CTRL, ord('V'),      _paste),
+    (0,             wx.WXK_F5,     _preview),
 ]
-"""\
-accelerator table to enable keyboard shortcuts for the popup menus of the
-various widgets (remove, cut, copy, paste)
-"""
+
+def on_key_down_event(event):
+    "centralized handler for Ctrl+C/X/V or Del key"
+    evt_flags = wx.ACCEL_CTRL  if event.ControlDown()  else  0
+    evt_key = event.GetKeyCode()
+    for flags, key, function in accel_table:
+        if evt_flags == flags and evt_key == key:
+            wx.CallAfter(function)
+            return
+    # not handled
+    event.Skip()
 
 
 def _reverse_dict(src):
-    """\
-    Returns a dictionary whose keys are 'src' values and values 'src' keys.
-    """
+    "Returns a dictionary whose keys are 'src' values and values 'src' keys."
     ret = {}
-    for key, val in src.iteritems():
+    for key, val in getattr(src, "iteritems", src.items)(): # Python 2/3
         ret[val] = key
     return ret
 
@@ -456,19 +472,13 @@ def _reverse_dict(src):
 # helper functions to work with a Unicode-enabled wxPython
 #-----------------------------------------------------------------------------
 
-
 def streq(s1, s2):
-    """\
-    Returns True if the strings or unicode objects s1 and s2 are equal, i.e.
-    contain the same text. Appropriate encoding/decoding are performed to
-    make the comparison
-
-    @rtype: bool
-    """
+    """Returns True if the strings or unicode objects s1 and s2 are equal, i.e. contain the same text.
+    Appropriate encoding/decoding are performed to make the comparison."""
     try:
         return s1 == s2
     except UnicodeError:
-        if isinstance(s1, types.UnicodeType):
+        if isinstance(s1, compat.unicode):
             s1 = s1.encode(common.app_tree.app.encoding)
         else:
             s2 = s2.encode(common.app_tree.app.encoding)
@@ -476,27 +486,16 @@ def streq(s1, s2):
 
 
 def wxstr(s, encoding=None):
-    """\
-    Converts the object s to str or unicode, according to what wxPython
-    expects.
-
-    @rtype: str
-    """
+    "Converts the object s to str or unicode, according to what wxPython expects"
     if encoding is None:
         if common.app_tree is None:
             return str(s)
         else:
             encoding = common.app_tree.app.encoding
-    if wx.USE_UNICODE:
-        if not isinstance(s, types.UnicodeType):
-            return unicode(str(s), encoding)
-        else:
-            return s
-    else:
-        if isinstance(s, types.UnicodeType):
-            return s.encode(encoding)
-        else:
-            return str(s)
+    if isinstance(s, compat.unicode): return s
+    s = str(s)
+    if isinstance(s, compat.unicode): return s
+    return compat.unicode(s, encoding)
 
 
 def design_title(title):
@@ -517,9 +516,6 @@ def get_xpm_bitmap(path):
                 try:
                     data = zipfile.ZipFile(archive).read(name)
                     data = [d[1:-1] for d in _get_xpm_bitmap_re.findall(data)]
-##                     logging.debug("DATA:")
-##                     for d in data:
-##                         logging.debug(d)
                     bmp = wx.BitmapFromXPMData(data)
                 except:
                     logging.exception(_('Internal Error'))
@@ -530,10 +526,7 @@ def get_xpm_bitmap(path):
 
 
 def get_relative_path(path, for_preview=False):
-    """\
-    Get an absolute path relative to the current output directory (where the
-    code is generated).
-    """
+    "Get an absolute path relative to the current output directory (where the code is generated)."
     if os.path.isabs(path):
         return path
     p = common.app_tree.app.output_path

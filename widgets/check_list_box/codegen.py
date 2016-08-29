@@ -13,10 +13,8 @@ from ChoicesCodeHandler import *
 
 
 class PythonCheckListBoxGenerator(wcodegen.PythonWidgetCodeWriter):
-    tmpl = '%(name)s = %(klass)s(%(parent)s, %(id)s, ' \
-           'choices=[%(choices)s]%(style)s)\n'
+    tmpl = '%(name)s = %(klass)s(%(parent)s, %(id)s, choices=[%(choices)s]%(style)s)\n'
 
-# end of class PythonCheckListBoxGenerator
 
 
 class CppCheckListBoxGenerator(wcodegen.CppWidgetCodeWriter):
@@ -27,7 +25,6 @@ class CppCheckListBoxGenerator(wcodegen.CppWidgetCodeWriter):
     prefix_style = False
     tmpl_flags = ', %s'
 
-# end of class CppCheckListBoxGenerator
 
 
 def xrc_code_generator(obj):
@@ -40,13 +37,9 @@ def xrc_code_generator(obj):
             elif name == 'selection':
                 choices = self.properties['choices']
                 if choices:
-                    xrcgen.DefaultXrcObject.write_property(self, name, val,
-                                                           outfile, tabs)
+                    xrcgen.DefaultXrcObject.write_property(self, name, val, outfile, tabs)
             else:
-                xrcgen.DefaultXrcObject.write_property(self, name, val,
-                                                       outfile, tabs)
-
-    # end of class CheckListBoxXrcObject
+                xrcgen.DefaultXrcObject.write_property(self, name, val, outfile, tabs)
 
     return CheckListBoxXrcObject(obj)
 
@@ -54,9 +47,6 @@ def xrc_code_generator(obj):
 def initialize():
     klass = 'wxCheckListBox'
     common.class_names['EditCheckListBox'] = klass
-    common.register('python', klass, PythonCheckListBoxGenerator(klass),
-                    'choices', ChoicesCodeHandler)
-    common.register('C++', klass, CppCheckListBoxGenerator(klass),
-                    'choices', ChoicesCodeHandler)
-    common.register('XRC', klass, xrc_code_generator,
-                    'choices', ChoicesCodeHandler)
+    common.register('python', klass, PythonCheckListBoxGenerator(klass), 'choices', ChoicesCodeHandler)
+    common.register('C++',    klass, CppCheckListBoxGenerator(klass),    'choices', ChoicesCodeHandler)
+    common.register('XRC',    klass, xrc_code_generator,                 'choices', ChoicesCodeHandler)

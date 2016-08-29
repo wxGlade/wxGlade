@@ -11,15 +11,14 @@ from tests import WXGladeBaseTest
 # import general python modules
 import glob
 import os.path
-import StringIO
 import sys
-import types
 import wx
 import wx.xrc
 
 # import project modules
 import config
 import common
+import compat
 import main
 import xrc2wxg
 
@@ -74,7 +73,7 @@ class TestGui(WXGladeBaseTest):
     def setUp(self):
         # redirect stdout
         self.orig_stdout = sys.stdout
-        sys.stdout = StringIO.StringIO()
+        sys.stdout = compat.StringIO()
 
         # initialise base class
         WXGladeBaseTest.setUp(self)
@@ -153,24 +152,18 @@ class TestGui(WXGladeBaseTest):
         @type filename:  str
         """
         self.failUnless(content or filename)
-        self.failUnless(
-            isinstance(content, (types.UnicodeType, types.NoneType, StringIO.StringIO))
-        )
-        if isinstance(content, StringIO.StringIO):
-            self.failUnless(
-                isinstance(content.getvalue(), types.UnicodeType))
+        self.failUnless( isinstance(content, (compat.unicode, None.__class__, compat.StringIO)) )
+        if isinstance(content, compat.StringIO):
+            self.failUnless( isinstance(content.getvalue(), compat.unicode) )
 
         if filename:
-            content = StringIO.StringIO(
-                self._load_file(filename))
-        elif isinstance(content, StringIO.StringIO):
-            self.failUnless(
-                isinstance(content.getvalue(), types.UnicodeType))
+            content = compat.StringIO(self._load_file(filename))
+        elif isinstance(content, compat.StringIO):
+            self.failUnless( isinstance(content.getvalue(), compat.unicode) )
         else:
-            content = StringIO.StringIO(content)
+            content = compat.StringIO(content)
 
-        self.frame._open_app(filename_or_filelike=content,
-                             use_progress_dialog=False, add_to_history=False)
+        self.frame._open_app(filename_or_filelike=content, use_progress_dialog=False, add_to_history=False)
         tree = common.app_tree
         root = tree.GetRootItem()
         first, cookie = tree.GetFirstChild(root)
@@ -184,17 +177,13 @@ class TestGui(WXGladeBaseTest):
         self._process_wx_events()
 
     def _process_wx_events(self):
-        """\
-        Process wx events, because we don't start the main loop
-        """
+        "Process wx events, because we don't start the main loop"
         for i in range(3):
             wx.SafeYield()
             self.app.ProcessPendingEvents()
 
     def test_NotebookWithoutTabs(self):
-        """\
-        Test loading Notebook without tabs
-        """
+        "Test loading Notebook without tabs"
         self._messageBox = None
         self._open_wxg_file(filename='Notebook_wo_tabs.wxg')
         err_msg = u'Error loading from a file-like object: Notebook ' \
@@ -213,16 +202,10 @@ class TestGui(WXGladeBaseTest):
         )
 
     def test_NotebookWithTabs(self):
-        """\
-        Test loading Notebook with tabs
-        """
+        "Test loading Notebook with tabs"
         self._messageBox = None
         self._open_wxg_file(filename='Notebook_w_tabs.wxg')
-        self.failIf(
-            self._messageBox,
-            'Loading test wxg file caused an error message: %s' %
-            self._messageBox
-        )
+        self.failIf( self._messageBox, 'Loading test wxg file caused an error message: %s' % self._messageBox )
 
     def load_and_generate(self, basename, excluded=None):
         """\
@@ -241,8 +224,7 @@ class TestGui(WXGladeBaseTest):
         self._generate_code()
 
         # first test should fail because no output file is given
-        err_msg = u'You must specify an output file\n' \
-                  'before generating any code'
+        err_msg = u'You must specify an output file\nbefore generating any code'
         err_caption = u'Error'
         self.failUnless(
             [err_msg, err_caption] == self._messageBox,
@@ -264,10 +246,7 @@ class TestGui(WXGladeBaseTest):
             filename = '%s%s' % (basename, ext)
 
             # check for language first
-            self.failUnless(
-                language in common.code_writers,
-                "No codewriter loaded for %s" % language
-            )
+            self.failUnless( language in common.code_writers, "No codewriter loaded for %s" % language )
 
             # prepare and open wxg
             source = self._prepare_wxg(language, source)
@@ -308,15 +287,11 @@ class TestGui(WXGladeBaseTest):
                 self._compare(expected, generated)
 
     def test_CodeGeneration_FontColour(self):
-        """\
-        Test GUI code generation using "FontColour.wxg"
-        """
+        'Test GUI code generation using "FontColour.wxg"'
         self.load_and_generate('FontColour')
 
     def test_StylelessDialog(self):
-        """\
-        Test code generation for a style less dialog
-        """
+        "Test code generation for a style less dialog"
         source = self._load_file('styleless-dialog.wxg')
 
         # now test full code generation
@@ -324,10 +299,7 @@ class TestGui(WXGladeBaseTest):
             filename = 'styleless-dialog%s' % ext
 
             # check for language first
-            self.failUnless(
-                language in common.code_writers,
-                "No codewriter loaded for %s" % language
-            )
+            self.failUnless( language in common.code_writers, "No codewriter loaded for %s" % language )
 
             # prepare and open wxg
             source = self._prepare_wxg(language, source)
@@ -537,7 +509,7 @@ class TestGui(WXGladeBaseTest):
         code
         """
         fullpath = os.path.join(self.caseDirectory, 'app_wo_attrs_gui.xrc')
-        obuffer = StringIO.StringIO()
+        obuffer = compat.StringIO()
 
         xrc2wxg.convert(fullpath, obuffer)
 
@@ -554,7 +526,7 @@ class TestGui(WXGladeBaseTest):
             self._messageBox
         )
 
-    def test_load_xrc(self):
+     def test_load_xrc(self):
         """\
         Test loading XRC files
         """

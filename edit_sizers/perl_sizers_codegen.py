@@ -8,13 +8,11 @@ Perl generator functions for the various wxSizerS
 
 
 import common
-from edit_sizers import BaseSizerBuilder
+from .edit_sizers import BaseSizerBuilder
 
 
 class BasePerlSizerBuilder(BaseSizerBuilder):
-    """\
-    Perl base class for all sizer code generators
-    """
+    "Perl base class for all sizer code generators"
 
     language = 'perl'
 

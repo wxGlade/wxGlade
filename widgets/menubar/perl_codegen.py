@@ -9,7 +9,7 @@ Perl generator functions for wxMenuBar objects
 import common
 import wcodegen
 from MenuTree import *
-from codegen import MenuHandler
+from .codegen import MenuHandler
 
 
 class PerlMenubarGenerator(wcodegen.PerlWidgetCodeWriter):
@@ -41,15 +41,14 @@ class PerlMenubarGenerator(wcodegen.PerlWidgetCodeWriter):
                         name = item.name
                     else:
                         name = '%s_sub' % menu
-                        if not tmpsused.has_key(name):
+                        if not name in tmpsused:
                             tmpsused[name] = 1
                             append('my %s;\n' % name)
 
                     append('%s = Wx::Menu->new();\n' % name)
                     append_items(name, item.children)
-                    append('%s->Append(%s, %s, %s, %s);\n' %
-                           (menu, id, self.codegen.quote_str(item.label),
-                            name, self.codegen.quote_str(item.help_str)))
+                    append( '%s->Append(%s, %s, %s, %s);\n' % (menu, id, self.codegen.quote_str(item.label),
+                                                               name, self.codegen.quote_str(item.help_str)) )
                 else:
                     item_type = 0
                     if item.checkable == '1':

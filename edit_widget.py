@@ -11,20 +11,16 @@ import common
 import compat
 import config
 from edit_windows import ManagedBase
-from tree import Tree
+from tree import Tree, Node
 from widget_properties import *
 
 
 class EditWidget(ManagedBase):
-    def __init__(self, name, klass, parent, id, label, sizer, pos,
-                 property_window, show=True):
-        """\
-        Class to handle wxFoo objects
-        """
+    def __init__(self, name, klass, parent, id, label, sizer, pos, show=True):
+        "Class to handle wxFoo objects"
         self.label = label
         self.default = False
-        ManagedBase.__init__(self, name, klass, parent, id, sizer, pos,
-                             property_window, show=show)
+        ManagedBase.__init__(self, name, klass, parent, id, sizer, pos, show=show)
 
         # introspect subclass looking for properties
         # and widgets
@@ -70,10 +66,9 @@ class EditWidget(ManagedBase):
         szr = wx.BoxSizer(wx.VERTICAL)
         for name in self.property_names:
             self.properties[name].display(panel)
-            szr.Add(self.properties[name].panel, self.property_proportion[name],
-                    wx.EXPAND)
+            szr.Add( self.properties[name].panel, self.property_proportion[name], wx.EXPAND )
         panel.SetAutoLayout(1)
-        compat.SizerItem_SetSizer(panel, szr)
+        panel.SetSizer(szr)
         szr.Fit(panel)
         w, h = panel.GetClientSize()
         self.notebook.AddPage(panel, 'Widget')
@@ -93,7 +88,7 @@ def increment_label(label, number=[1]):
 
 def add_widget_node(widget, sizer, pos, from_xml=False,
                     option=0, flag=0, border=0):
-    node = Tree.Node(widget)
+    node = Node(widget)
     widget.node = node
 
     if not border and config.preferences.default_border:

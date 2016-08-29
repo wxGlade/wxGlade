@@ -11,9 +11,7 @@ import wcodegen
 
 
 class PythonCodeGenerator(wcodegen.PythonWidgetCodeWriter):
-
     import_modules = ['import wx.propgrid\n']
-
     tmpl = '%(name)s = %(klass)s(%(parent)s, %(id)s%(style)s)\n'
 
     def cn(self, c):
@@ -27,23 +25,18 @@ class PythonCodeGenerator(wcodegen.PythonWidgetCodeWriter):
 
     def _prepare_tmpl_content(self, obj):
         wcodegen.PythonWidgetCodeWriter._prepare_tmpl_content(self, obj)
-
         return
 
-# end of class PythonCodeGenerator
 
 
 class CppCodeGenerator(wcodegen.CppWidgetCodeWriter):
     import_modules = ['<wx/propgrid/manager.h>']
-
     tmpl = '%(name)s = new %(klass)s(%(parent)s, %(id)s%(style)s);\n'
 
     def _prepare_tmpl_content(self, obj):
         wcodegen.CppWidgetCodeWriter._prepare_tmpl_content(self, obj)
-
         return
 
-# end of class CppCodeGenerator
 
 
 def xrc_code_generator(obj):
@@ -52,7 +45,6 @@ def xrc_code_generator(obj):
     class PropertyGridManagerXrcObject(xrcgen.DefaultXrcObject):
         def write_property(self, name, val, outfile, tabs):
             xrcgen.DefaultXrcObject.write_property(self, name, val, outfile, tabs)
-    # end of class ButtonXrcObject
 
     return PropertyGridManagerXrcObject(obj)
 
@@ -61,5 +53,5 @@ def initialize():
     klass = 'wxPropertyGridManager'
     common.class_names['EditPropertyGridManager'] = klass
     common.register('python', klass, PythonCodeGenerator(klass))
-    common.register('C++', klass, CppCodeGenerator(klass))
-    common.register('XRC', klass, xrc_code_generator)
+    common.register('C++',    klass, CppCodeGenerator(klass))
+    common.register('XRC',    klass, xrc_code_generator)

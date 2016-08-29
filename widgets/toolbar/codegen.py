@@ -9,7 +9,7 @@ Code generator functions for wxToolBar objects
 import common
 import wcodegen
 from wcodegen.taghandler import BaseCodeWriterTagHandler
-from tool import *
+from .tool import *
 
 
 class PythonCodeGenerator(wcodegen.PythonWidgetCodeWriter):
@@ -79,9 +79,7 @@ class PythonCodeGenerator(wcodegen.PythonWidgetCodeWriter):
         return ids + out
 
     def get_code(self, obj):
-        """\
-        function that generates Python code for the menubar of a wxFrame.
-        """
+        "function that generates Python code for the menubar of a wxFrame"
         style = obj.properties.get('style')
         if style:
             style = ', style=' + self.cn_f('wxTB_HORIZONTAL|' + style)
@@ -91,8 +89,7 @@ class PythonCodeGenerator(wcodegen.PythonWidgetCodeWriter):
         if klass == obj.base:
             klass = self.cn(klass)
         init = ['\n', '# Tool Bar\n', 'self.%s = %s(self, -1%s)\n' %
-                (obj.name, klass, style),
-                'self.SetToolBar(self.%s)\n' % obj.name]
+                                                      (obj.name, klass, style), 'self.SetToolBar(self.%s)\n' % obj.name]
         init.extend(self.get_init_code(obj))
         init.append('# Tool Bar end\n')
         return init, self.get_properties_code(obj), []
@@ -113,16 +110,12 @@ class PythonCodeGenerator(wcodegen.PythonWidgetCodeWriter):
             out.extend(do_get(tool))
         return out
 
-# end of class PythonCodeGenerator
 
 
 class ToolsHandler(BaseCodeWriterTagHandler):
-    """\
-    Handler for tools of a toolbar
-    """
+    "Handler for tools of a toolbar"
 
-    item_attrs = ('label', 'id', 'short_help', 'type', 'long_help',
-                  'bitmap1', 'bitmap2', 'handler')
+    item_attrs = ('label', 'id', 'short_help', 'type', 'long_help', 'bitmap1', 'bitmap2', 'handler')
 
     def __init__(self):
         super(ToolsHandler, self).__init__()
@@ -143,13 +136,10 @@ class ToolsHandler(BaseCodeWriterTagHandler):
             char_data = self.get_char_data()
             setattr(self.curr_tool, name, char_data)
 
-# end of class ToolsHandler
 
 
 def xrc_code_generator(obj):
-    """\
-    function that generates XRC code for a toolbar
-    """
+    "function that generates XRC code for a toolbar"
     from xml.sax.saxutils import escape, quoteattr
     xrcgen = common.code_writers['XRC']
 
@@ -162,8 +152,7 @@ def xrc_code_generator(obj):
                 if item.id:
                     name = item.id.split('=', 1)[0]
                     if name:
-                        write('    '*tabs + '<object class="tool" ' \
-                              'name=%s>\n' % quoteattr(name))
+                        write('    '*tabs + '<object class="tool" name=%s>\n' % quoteattr(name))
                     else:
                         write('    '*tabs + '<object class="tool">\n')
                 else:
@@ -171,67 +160,55 @@ def xrc_code_generator(obj):
                 # why XRC seems to ignore label??
                 # this has been fixed on CVS, so add it (it shouldn't hurt...)
                 if item.label:
-                    write('    '*(tabs+1) + '<label>%s</label>\n' %
-                          escape(item.label))
+                    write('    '*(tabs+1) + '<label>%s</label>\n' % escape(item.label))
                 if item.short_help:
-                    write('    '*(tabs+1) + '<tooltip>%s</tooltip>\n' % \
-                          escape(item.short_help))
+                    write('    '*(tabs+1) + '<tooltip>%s</tooltip>\n' % escape(item.short_help))
                 if item.long_help:
-                    write('    '*(tabs+1) + '<longhelp>%s</longhelp>\n' % \
-                          escape(item.long_help))
+                    write('    '*(tabs+1) + '<longhelp>%s</longhelp>\n' % escape(item.long_help))
                 if item.bitmap1:
-                    prop = self._format_bitmap_property(
-                            'bitmap', item.bitmap1)
+                    prop = self._format_bitmap_property( 'bitmap', item.bitmap1 )
                     if prop:
                         write('%s%s' % ('    ' * (tabs + 1), prop))
                 if item.bitmap2:
-                    prop = self._format_bitmap_property(
-                            'bitmap2', item.bitmap2)
+                    prop = self._format_bitmap_property('bitmap2', item.bitmap2)
                     if prop:
                         write('%s%s' % ('    ' * (tabs + 1), prop))
                 try:
                     # again, it seems that XRC doesn't support "radio" tools
                     if int(item.type) == 1:
                         write('    '*(tabs+1) + '<toggle>1</toggle>\n')
-                    # the above has been fixed on CVS, so add a radio if
-                    # it's there
+                    # the above has been fixed on CVS, so add a radio if it's there
                     elif int(item.type) == 2:
                         write('    '*(tabs+1) + '<radio>1</radio>\n')
                 except ValueError:
                     pass
                 write('    '*tabs + '</object>\n')
-
         def write(self, outfile, tabs):
             tools = self.code_obj.properties['toolbar']
             write = outfile.write
-            write('    '*tabs + '<object class="wxToolBar" name=%s>\n' % \
-                  quoteattr(self.name))
+            write('    '*tabs + '<object class="wxToolBar" name=%s>\n' % quoteattr(self.name))
             for prop_name in 'bitmapsize', 'margins':
                 prop = self.code_obj.properties.get(prop_name)
                 if prop:
                     try:
                         w, h = [int(i) for i in prop.split(',')]
-                        write('    ' * (tabs+1) + '<%s>%s, %s</%s>\n' \
-                              % (prop_name, w, h, prop_name))
+                        write('    ' * (tabs+1) + '<%s>%s, %s</%s>\n' % (prop_name, w, h, prop_name))
                     except:
                         pass
             for prop_name in 'packing', 'separation':
                 prop = self.code_obj.properties.get(prop_name)
                 if prop:
-                    write('    ' * (tabs+1) + '<%s>%s</%s>\n' % \
-                          (prop_name, escape(prop), prop_name))
+                    write('    ' * (tabs+1) + '<%s>%s</%s>\n' % (prop_name, escape(prop), prop_name))
             style = self.code_obj.properties.get('style')
             if style:
                 style = self.cn_f(style)
                 style = style.split('|')
                 style.append('wxTB_HORIZONTAL')
                 style.sort()
-                write('    '*(tabs+1) + '<style>%s</style>\n' %
-                      escape('|'.join(style)))
+                write('    '*(tabs+1) + '<style>%s</style>\n' % escape('|'.join(style)))
             for t in tools:
                 self.append_item(t, outfile, tabs+1)
             write('    '*tabs + '</object>\n')
-
     # end of class ToolBarXrcObject
 
     return ToolBarXrcObject(obj)
@@ -244,17 +221,13 @@ class CppCodeGenerator(wcodegen.CppWidgetCodeWriter):
                    ('long', 'style', 'wxTB_HORIZONTAL|wxNO_BORDER')]
 
     def get_code(self, obj):
-        """\
-        generates C++ code for the toolbar of a wxFrame.
-        """
+        "generates C++ code for the toolbar of a wxFrame."
         style = obj.properties.get('style')
         if style:
-            style = ', wxDefaultPosition, wxDefaultSize, wxTB_HORIZONTAL|' + \
-                    style
+            style = ', wxDefaultPosition, wxDefaultSize, wxTB_HORIZONTAL|' + style
         else:
             style = ''
-        init = ['%s = new %s(this, -1%s);\n' % (obj.name, obj.klass, style),
-                'SetToolBar(%s);\n' % obj.name]
+        init = ['%s = new %s(this, -1%s);\n' % (obj.name, obj.klass, style), 'SetToolBar(%s);\n' % obj.name]
         init.extend(self.get_properties_code(obj))
         ids = self.get_ids_code(obj)
         return init, ids, [], []
@@ -271,16 +244,14 @@ class CppCodeGenerator(wcodegen.CppWidgetCodeWriter):
         if bitmapsize:
             try:
                 w, h = [int(i) for i in bitmapsize.split(',')]
-                append('%sSetToolBitmapSize(wxSize(%s, %s));\n' % \
-                       (obj_name, w, h))
+                append('%sSetToolBitmapSize(wxSize(%s, %s));\n' % (obj_name, w, h))
             except:
                 pass
         margins = obj.properties.get('margins')
         if margins:
             try:
                 w, h = [int(i) for i in margins.split(',')]
-                append('%sSetMargins(wxSize(%s, %s));\n' % \
-                       (obj_name, w, h))
+                append('%sSetMargins(wxSize(%s, %s));\n' % (obj_name, w, h))
             except:
                 pass
         packing = prop.get('packing')
@@ -344,16 +315,12 @@ class CppCodeGenerator(wcodegen.CppWidgetCodeWriter):
             out.extend(do_get(tool))
         return out
 
-# end of class CppCodeGenerator
 
 
 def initialize():
     klass = 'wxToolBar'
     common.class_names['EditToolBar'] = klass
     common.toplevels['EditToolBar'] = 1
-    common.register('python', klass, PythonCodeGenerator(klass),
-                    'tools', ToolsHandler)
-    common.register('C++', klass, CppCodeGenerator(klass),
-                    'tools', ToolsHandler)
-    common.register('XRC', klass, xrc_code_generator,
-                    'tools', ToolsHandler)
+    common.register('python', klass, PythonCodeGenerator(klass), 'tools', ToolsHandler)
+    common.register('C++',    klass, CppCodeGenerator(klass),    'tools', ToolsHandler)
+    common.register('XRC',    klass, xrc_code_generator,         'tools', ToolsHandler)

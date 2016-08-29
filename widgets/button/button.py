@@ -3,181 +3,120 @@ wxButton objects
 
 @copyright: 2002-2007 Alberto Griggio
 @copyright: 2014-2016 Carsten Grohmann
+@copyright: 2016 Dietmar Schwertberger
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
 import wx
-import config
-import common
-import compat
-import misc
+import config, common, compat, misc
 from edit_windows import ManagedBase, EditStylesMixin
-from tree import Tree
-from widget_properties import *
-from button_stockitems import *
+from tree import Tree, Node
+import new_properties as np
+from .button_stockitems import *
 
 
 class EditButton(ManagedBase, EditStylesMixin):
-    """\
-    Class to handle wxButton objects
-    """
+    "Class to handle wxButton objects"
 
-    def __init__(self, name, parent, id, label, sizer, pos, property_window,
-                 show=True):
+    STOCKITEMS = sorted( ButtonStockItems.stock_ids.keys())
 
+    _PROPERTIES = ["Widget", "label", "stockitem", "default", "style"]
+    PROPERTIES = ManagedBase.PROPERTIES + _PROPERTIES + ManagedBase.EXTRA_PROPERTIES
+
+    _PROPERTY_HELP = {"default":"This sets the button to be the default item for the panel or dialog box.",
+                      "stockitem":"Standard IDs for button identifiers"}
+
+    def __init__(self, name, parent, id, label, sizer, pos, show=True):
         # Initialise parent classes
-        ManagedBase.__init__(self, name, 'wxButton', parent, id, sizer, pos,
-                             property_window, show=show)
+        ManagedBase.__init__(self, name, 'wxButton', parent, id, sizer, pos, show=show)
         EditStylesMixin.__init__(self)
 
-        # initialise instance variables
-        self.label = label
-        self.default = False
-        self.stockitem = "None"
+        # initialise instance properties
+        self.label     = np.TextProperty("", default_value="", multiline=True, fixed_height=True)
+        self.default   = np.CheckBoxProperty(False, default_value=False)
+        self.stockitem = np.ComboBoxPropertyD(self.STOCKITEMS[0], choices=self.STOCKITEMS)
+
         if config.preferences.default_border:
-            self.border = config.preferences.default_border_size
-            self.flag = wx.ALL
-
-        # initialise properties remaining staff
-        self.access_functions['label'] = (self.get_label, self.set_label)
-        self.properties['label'] = TextProperty(self, 'label', None,
-                                                multiline=True)
-        self.access_functions['stockitem'] = (self.get_stockitem,
-                                              self.set_stockitem)
-        self.access_functions['default'] = (self.get_default, self.set_default)
-        self.access_functions['style'] = (self.get_style, self.set_style)
-        self.properties['default'] = CheckBoxProperty(
-            self, 'default', None, label=_("Default"))
-        self.properties['default'].tooltip = \
-            _("This sets the button to be the default "
-              "item for the panel or dialog box.")
-
-        #Get the list of items, and add a 'None'
-        choices = ButtonStockItems.stock_ids.keys()
-        choices.sort()
-        choices[:0] = ['None']
-        self.properties['stockitem'] = ComboBoxProperty(
-            self, 'stockitem', choices, can_disable=True,
-            label=_("Stock item"))
-        self.properties['stockitem'].tooltip = \
-            _("Standard IDs for button identifiers")
-        self.properties['style'] = CheckListProperty(
-            self, 'style', self.widget_writer)
-
-    def create_properties(self):
-        ManagedBase.create_properties(self)
-        panel = wx.Panel(self.notebook, -1)
-        self.properties['label'].display(panel)
-        self.properties['stockitem'].display(panel)
-        self.properties['default'].display(panel)
-        self.properties['style'].display(panel)
-        szr = wx.BoxSizer(wx.VERTICAL)
-        szr.Add(self.properties['label'].panel, 0, wx.EXPAND)
-        szr.Add(self.properties['stockitem'].panel, 0, wx.EXPAND)
-        szr.Add(self.properties['default'].panel, 0, wx.EXPAND)
-        szr.Add(self.properties['style'].panel, 0, wx.EXPAND)
-        panel.SetAutoLayout(True)
-        compat.SizerItem_SetSizer(panel, szr)
-        szr.Fit(panel)
-        self.notebook.AddPage(panel, 'Widget')
-        if self.stockitem != "None":
-            s = common.app_tree.app.saved
-            self.set_stockitem(self.stockitem)
-            common.app_tree.app.saved = s
-
-    def get_label(self):
-        return self.label
-
-    def set_label(self, value):
-        value = misc.wxstr(value)
-        if not misc.streq(value, self.label):
-            if self.widget:
-                self.widget.SetLabel(value.replace('\\n', '\n'))
-                if not self.properties['size'].is_active():
-                    self.sizer.set_item(self.pos,
-                                        size=self.widget.GetBestSize())
-            self.label = value
+            self.border.set( config.preferences.default_border_size )
+            self.flag.set( wx.ALL )
 
     def create_widget(self):
-        label = self.label.replace('\\n', '\n')
-        try:
-            self.widget = wx.Button(self.parent.widget, self.id, label,
-                                    style=self.get_int_style())
-        except AttributeError:
-            self.widget = wx.Button(self.parent.widget, self.id, label)
-
-    def get_default(self):
-        return self.default
-
-    def set_default(self, value):
-        self.default = bool(int(value))
-
-    def get_stockitem(self):
-        return self.stockitem
-
-    def set_stockitem(self, value):
-        self.stockitem = misc.wxstr(value)
-        if self.stockitem != "None":
-            l = ButtonStockItems.stock_ids[self.stockitem]
-            self.set_label(l)
-            self.properties['label'].set_value(l)
-            if self.properties['label'].panel is not None:
-                self.properties['label'].text.Enable(False)
-            self.window_id = "wxID_" + self.stockitem
-            self.properties['id'].set_value(self.window_id)
-            self.properties['id'].toggle_active(False)
+        stockitem_p = self.properties["stockitem"]
+        if stockitem_p.is_active():
+            label = ButtonStockItems.stock_ids[stockitem_p.get()]
         else:
-            if self.properties['label'].panel is not None:
-                self.properties['label'].text.Enable(True)
+            label = self.label
+        self.widget = wx.Button(self.parent.widget, self.id, label, style=self.style)
 
-# end of class EditButton
+    def properties_changed(self, modified=None):
+        "update label (and size if label/stockitem have changed)"
+
+        label_modified = not modified or "label" in modified
+        resize = False
+
+        if not modified or "stockitem" in modified:
+            # if stockitem is set, label needs to be deactivated and window id is wxID_...
+            if self.properties["stockitem"].is_active():
+                self.properties["label"].set_blocked(True)
+                new_id = "wxID_" + self.stockitem
+                self.properties["id"].set( new_id, deactivate=True )
+                self.properties["id"].default_value = new_id  # avoid this value to be written to XML
+
+                l = ButtonStockItems.stock_ids[self.stockitem]
+                if self.widget:
+                    self.widget.SetLabel(l)
+                    resize = True
+            else:
+                self.properties["label"].set_blocked(False)
+                self.properties["id"].default_value = "wxID_ANY"
+                label_modified = True
+
+        if label_modified and self.properties["label"].is_active():
+            if self.widget:
+                self.widget.SetLabel(self.label)
+                resize = True
+
+        if resize and self.widget: self._set_widget_best_size()
+
+        ManagedBase.properties_changed(self, modified)
+
 
 
 def builder(parent, sizer, pos, number=[1]):
-    """\
-    factory function for EditButton objects.
-    """
+    "factory function for EditButton objects"
     name = u'button_%d' % number[0]
     while common.app_tree.has_name(name):
         number[0] += 1
         name = u'button_%d' % number[0]
-    button = EditButton(name, parent, wx.NewId(), name, sizer, pos,
-                        common.property_panel)
-    node = Tree.Node(button)
+    button = EditButton(name, parent, wx.NewId(), name, sizer, pos)
+    node = Node(button)
     button.node = node
     button.show_widget(True)
-    common.app_tree.insert(node, sizer.node, pos - 1)
+    common.app_tree.insert(node, sizer.node, pos-1)
 
 
 def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
-    """\
-    factory to build EditButton objects from a XML file
-    """
+    "factory to build EditButton objects from a XML file"
     from xml_parse import XmlParsingError
     try:
-        label = attrs['name']
+        name = attrs['name']
     except KeyError:
         raise XmlParsingError(_("'name' attribute missing"))
     if sizer is None or sizeritem is None:
         raise XmlParsingError(_("sizer or sizeritem object cannot be None"))
-    button = EditButton(label, parent, wx.NewId(), '', sizer, pos,
-                        common.property_panel, show=False)
-    sizer.set_item(button.pos, option=sizeritem.option, flag=sizeritem.flag,
-                   border=sizeritem.border)
-    node = Tree.Node(button)
+    button = EditButton(name, parent, wx.NewId(), '', sizer, pos, show=False)
+    sizer.set_item(button.pos, proportion=sizeritem.proportion, flag=sizeritem.flag, border=sizeritem.border)
+    node = Node(button)
     button.node = node
     if pos is None:
         common.app_tree.add(node, sizer.node)
     else:
-        common.app_tree.insert(node, sizer.node, pos - 1)
+        common.app_tree.insert(node, sizer.node, pos-1)
     return button
 
 
 def initialize():
-    """\
-    initialization function for the module: returns a wxBitmapButton to be
-    added to the main palette.
-    """
+    "initialization function for the module: returns a wxBitmapButton to be added to the main palette"
     common.widgets['EditButton'] = builder
     common.widgets_from_xml['EditButton'] = xml_builder
 

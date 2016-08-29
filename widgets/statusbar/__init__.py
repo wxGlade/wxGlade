@@ -5,14 +5,14 @@ Statusbar widget module initialization
 @copyright: 2014-2016 Carsten Grohmann
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
-
+from __future__ import absolute_import
 
 def initialize():
     import config
-    import codegen
+    from . import codegen
     codegen.initialize()
     if config.use_gui:
-        import statusbar
+        from . import statusbar
         global EditStatusBar
         EditStatusBar = statusbar.EditStatusBar
         return statusbar.initialize()

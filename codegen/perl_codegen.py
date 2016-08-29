@@ -18,15 +18,10 @@ Like all other perl parts, based on the pre-existing python generators
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
-import os
-import os.path
-import re
-import types
-
-from codegen import BaseLangCodeWriter, \
-                    BaseSourceFileContent, \
-                    BaseWidgetHandler
+import os, os.path, re
+from codegen import BaseLangCodeWriter, BaseSourceFileContent, BaseWidgetHandler
 import wcodegen
+import compat
 
 
 class SourceFileContent(BaseSourceFileContent):
@@ -437,13 +432,11 @@ unless(caller){
         # generate constructor code
         if is_new:
             write('package %s;\n\n' % code_obj.klass)
-            write('use Wx qw[:everything];\nuse base qw(%s);\nuse strict;\n\n'
-                    % code_obj.base.replace('wx', 'Wx::', 1))
+            write('use Wx qw[:everything];\nuse base qw(%s);\nuse strict;\n\n' % code_obj.base.replace('wx', 'Wx::', 1))
 
             if self._use_gettext:
                 if self.multiple_files:
-                    self.classes[code_obj.klass].dependencies[
-                        "use Wx::Locale gettext => '_T';\n"] = 1
+                    self.classes[code_obj.klass].dependencies["use Wx::Locale gettext => '_T';\n"] = 1
                 else:
                     write("use Wx::Locale gettext => '_T';\n")
 
@@ -465,22 +458,17 @@ unless(caller){
 
             if new_signature:
                 for k in new_signature:
-                    if self.new_defaults.has_key(k):
+                    if k in self.new_defaults:
                         write(self.new_defaults[k])
             else:
                 new_signature = ['@_[1 .. $#_]']  # shift(@_)->SUPER::new(@_);
-                self._logger.info(
-                    "%s did not declare self.new_defaults ", code_obj.klass
-                    )
+                self._logger.info( "%s did not declare self.new_defaults ", code_obj.klass )
 
         elif custom_base:
             # custom base classes set, but "overwrite existing sources" not
             # set. Issue a warning about this
-            self.warning(
-                '%s has custom base classes, but you are not overwriting '
-                'existing sources: please check that the resulting code is '
-                'correct!' % code_obj.name
-                )
+            self.warning( '%s has custom base classes, but you are not overwriting existing sources: '
+                          'please check that the resulting code is correct!' % code_obj.name )
 
         # __init__ begin tag
         write(self.tmpl_block_begin % {
@@ -495,10 +483,7 @@ unless(caller){
         style = prop.get("style", None)
         if style:
             stmt_style = self._format_style(style, code_obj)
-            write(stmt_style % {
-                'style': mycn_f(style),
-                'tab': tab,
-                })
+            write( stmt_style % {'style':mycn_f(style), 'tab':tab} )
 
         # class parent constructor
         write(tab + '$self = $self->SUPER::new( %s );\n' % ", ".join(new_signature))
@@ -618,7 +603,7 @@ unless(caller){
         s = s.replace('@', r'\@')
 
         # convert all strings to unicode first
-        if not isinstance(s, types.UnicodeType):
+        if not isinstance(s, compat.unicode):
             s = s.decode(self.app_encoding)
 
         # check if it's pure ascii

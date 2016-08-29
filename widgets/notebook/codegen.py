@@ -36,7 +36,6 @@ class TabsCodeHandler(BaseCodeWriterTagHandler):
                 self.tabs.append((tab_name, self.tab_window))
         return False
 
-# end of class TabsCodeHandler
 
 
 class PythonNotebookGenerator(wcodegen.PythonWidgetCodeWriter):
@@ -50,18 +49,14 @@ class PythonNotebookGenerator(wcodegen.PythonWidgetCodeWriter):
         layout_props = []
         tabs = prop.get('tabs', [])
         for label, tab_win in tabs:
-            layout_props.append('self.%s.AddPage(self.%s, %s)\n' %
-                                (window.name, tab_win,
-                                 self.codegen.quote_str(label)))
+            layout_props.append('self.%s.AddPage(self.%s, %s)\n'%(window.name, tab_win, self.codegen.quote_str(label)))
 
         parent = self.format_widget_access(window.parent)
         if window.is_toplevel:
             l = []
             if id_name:
                 l.append(id_name)
-            l.append('self.%s = %s(%s, %s)\n' %
-                     (window.name, self.codegen.get_class(window.klass),
-                      parent, id))
+            l.append('self.%s = %s(%s, %s)\n' % (window.name, self.codegen.get_class(window.klass), parent, id))
             return l, [], []
         klass = window.klass
         if window.preview:
@@ -69,8 +64,7 @@ class PythonNotebookGenerator(wcodegen.PythonWidgetCodeWriter):
         init = []
         if id_name:
             init.append(id_name)
-        init.append(('self.%s = ' + self.cn(klass) + '(%s, %s%s)\n') %
-                    (window.name, parent, id, self.tmpl_dict['style']))
+        init.append(('self.%s = ' + self.cn(klass) + '(%s, %s%s)\n')%(window.name, parent, id, self.tmpl_dict['style']))
 
         props_buf = self.codegen.generate_common_properties(window)
         return init, props_buf, layout_props
@@ -80,12 +74,10 @@ class PythonNotebookGenerator(wcodegen.PythonWidgetCodeWriter):
         props_buf = []
         tabs = prop.get('tabs', [])
         for label, window in tabs:
-            props_buf.append('self.AddPage(self.%s, %s)\n' %
-                             (window, self.codegen.quote_str(label)))
+            props_buf.append( 'self.AddPage(self.%s, %s)\n' % (window, self.codegen.quote_str(label)) )
         props_buf.extend(self.codegen.generate_common_properties(obj))
         return props_buf
 
-# end of class PythonNotebookGenerator
 
 
 def xrc_code_generator(obj):
@@ -98,7 +90,7 @@ def xrc_code_generator(obj):
             # the "tabs" property contains the pages of a notebook
             # be carefully: tabs in context of code generation are white
             # spaces used for indenting lines!!
-            if self.properties.has_key('tabs'):
+            if 'tabs' in self.properties:
                 self.pages = self.properties['tabs']
                 del self.properties['tabs']
             else:
@@ -113,9 +105,8 @@ def xrc_code_generator(obj):
         def write_child_prologue(self, child, outfile, ntabs):
             if self.pages:
                 tab_s = '    ' * ntabs
-                outfile.write(tab_s + '<object class="notebookpage">\n')
-                outfile.write(tab_s + '<label>%s</label>\n' %
-                              escape(self.pages[self.index][0]))
+                outfile.write( tab_s + '<object class="notebookpage">\n' )
+                outfile.write( tab_s + '<label>%s</label>\n' % escape(self.pages[self.index][0]) )
                 self.index += 1
 
         def write_child_epilogue(self, child, outfile, ntabs):
@@ -134,9 +125,7 @@ class CppNotebookGenerator(wcodegen.CppWidgetCodeWriter):
     import_modules = ['<wx/notebook.h>']
 
     def get_code(self, window):
-        """\
-        generates the C++ code for wxNotebook
-        """
+        "generates the C++ code for wxNotebook"
         self._reset_vars()
         wcodegen.CppWidgetCodeWriter._prepare_tmpl_content(self, window)
 
@@ -150,20 +139,16 @@ class CppNotebookGenerator(wcodegen.CppWidgetCodeWriter):
         layout_props = []
         tabs = prop.get('tabs', [])
         for label, tab_win in tabs:
-            layout_props.append('%s->AddPage(%s, %s);\n' %
-                                (window.name, tab_win,
-                                 self.codegen.quote_str(label)))
+            layout_props.append('%s->AddPage(%s, %s);\n' % (window.name, tab_win, self.codegen.quote_str(label)))
 
         if not window.parent.is_toplevel:
             parent = '%s' % window.parent.name
         else:
             parent = 'this'
         if window.is_toplevel:
-            l = ['%s = new %s(%s, %s);\n' %
-                 (window.name, window.klass, parent, id)]
+            l = ['%s = new %s(%s, %s);\n' % (window.name, window.klass, parent, id)]
             return l, ids, [], []
-        init = ['%s = new %s(%s, %s%s);\n' %
-                (window.name, window.klass, parent, id, self.tmpl_dict['style'])]
+        init = ['%s = new %s(%s, %s%s);\n' % (window.name, window.klass, parent, id, self.tmpl_dict['style'])]
 
         props_buf = self.codegen.generate_common_properties(window)
 
@@ -174,12 +159,10 @@ class CppNotebookGenerator(wcodegen.CppWidgetCodeWriter):
         props_buf = []
         tabs = prop.get('tabs', [])
         for label, window in tabs:
-            props_buf.append('AddPage(%s, %s);\n' %
-                             (window, self.codegen.quote_str(label)))
+            props_buf.append( 'AddPage(%s, %s);\n' % (window, self.codegen.quote_str(label)) )
         props_buf.extend(self.codegen.generate_common_properties(obj))
         return props_buf
 
-# end of class CppNotebookGenerator
 
 
 def initialize():
@@ -188,9 +171,6 @@ def initialize():
     common.class_names['NotebookPane'] = 'wxPanel'
     common.toplevels['EditNotebook'] = 1
     common.toplevels['NotebookPane'] = 1
-    common.register('python', klass, PythonNotebookGenerator(klass),
-                    'tabs', TabsCodeHandler, klass)
-    common.register('C++', klass, CppNotebookGenerator(klass),
-                    'tabs', TabsCodeHandler, klass)
-    common.register('XRC', klass, xrc_code_generator,
-                    'tabs', TabsCodeHandler, klass)
+    common.register('python', klass, PythonNotebookGenerator(klass), 'tabs', TabsCodeHandler, klass)
+    common.register('C++',    klass, CppNotebookGenerator(klass),    'tabs', TabsCodeHandler, klass)
+    common.register('XRC',    klass, xrc_code_generator,             'tabs', TabsCodeHandler, klass)

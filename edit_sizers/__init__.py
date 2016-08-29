@@ -9,31 +9,23 @@ Sizers module initialization
 import config
 
 Sizer = None
-"""\
-Shortcut for L{edit_sizers.Sizer}
-"""
+"Shortcut for L{edit_sizers.Sizer}"
 
 SizerSlot = None
-"""\
-Shortcut for L{edit_sizers.SizerSlot}
-"""
+"Shortcut for L{edit_sizers.SizerSlot}"
 
 SizerBase = None
-"""\
-Shortcut for L{edit_sizers.SizerBase}
-"""
+"Shortcut for L{edit_sizers.SizerBase}"
 
 _builder = None
-"""\
-Shortcut for L{edit_sizers._builder}
-"""
+"Shortcut for L{edit_sizers._builder}"
 
 
 def init_gui():
     if not config.use_gui:
         return {}
 
-    import edit_sizers
+    from . import edit_sizers
     global Sizer, SizerSlot, SizerBase, _builder
     Sizer = edit_sizers.Sizer
     SizerSlot = edit_sizers.SizerSlot
