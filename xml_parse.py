@@ -814,10 +814,7 @@ class CodeObject(object):
     def add_property(self, name, value):
         if hasattr(self, 'obj'):  # self is a sizeritem
             try:
-                if name == 'flag':
-                    self.obj.flag_s = value.strip()
-                else:
-                    setattr(self.obj, name, int(value))
+                self.obj.properties[name].set( value )
             except:
                 raise XmlParsingError(_("property '%s' not supported by '%s' objects") % (name, self.klass))
         self.properties[name] = value
