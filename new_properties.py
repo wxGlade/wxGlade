@@ -1021,7 +1021,7 @@ class SizePropertyD(TextPropertyD):
         if isinstance(value, compat.basestring):
             return value
         if isinstance(value, wx.Size):
-            value = value.asTuple()
+            return '%d, %d' % (value.x, value.y)
         return '%d, %d' % value
     def _convert_from_text(self, value):
         "normalize string to e.g. '-1, -1'; return None if invalid"
