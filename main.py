@@ -258,18 +258,19 @@ class wxGladeFrame(wx.Frame):
         # load the available code generators
         all_widgets = common.init_codegen()
 
-        sizer = wx.FlexGridSizer(0, 2)
+        sizer = wx.FlexGridSizer(0, 2, 0, 0)
         sizer.AddGrowableCol(0)
         self.SetAutoLayout(True)
 
+        maxlen = max([len(all_widgets[sect]) for sect in all_widgets])  # the maximum number of buttons in a section
         for section in all_widgets:
             if section:
                 sizer.Add(wx.StaticText(self, -1, "%s:" % section.replace('&', '&&')), 1, wx.ALIGN_CENTER_VERTICAL)
 
-            bsizer = wx.GridSizer(cols=config.preferences.buttons_per_row)
+            bsizer = wx.GridSizer(cols=maxlen)
             for button in all_widgets[section]:
                 bsizer.Add(button, flag=wx.ALL, border=1)
-            sizer.AddSizer(bsizer)
+            sizer.Add(bsizer)
 
         self.SetSizer(sizer)
         sizer.Fit(self)
@@ -1023,9 +1024,9 @@ class wxGlade(wx.App):
                 logging.info(_('Python faulthandler found and activated'))
             except ImportError:
                 logging.debug(_('Python faulthandler not found'))
-            except RuntimeError, details:
+            except RuntimeError as details:
                 logging.info(_('Python faulthandler found, but enabling failed: %s'), details)
-            except Exception, details:
+            except Exception as details:
                 logging.info(_('Generic error during faulthandler initialisation: %s'), details)
 
         compat.wx_ArtProviderPush(wxGladeArtProvider())

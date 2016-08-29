@@ -50,8 +50,7 @@ def load_widgets_from_dir(widget_dir, submodule='',
 
     # language code generators e.g. perl_codegen
     widgets_filename = os.path.join(widget_dir, 'widgets.txt')
-    module_info = _modulenames_from_file(widgets_filename,
-                                         default_section)
+    module_info = _modulenames_from_file(widgets_filename, default_section)
 
     if module_info and config.use_gui and not submodule.endswith('_codegen'):
         if submodule:
@@ -59,7 +58,7 @@ def load_widgets_from_dir(widget_dir, submodule='',
         else:
             logging.info(_('Loading widgets from %s:'), widgets_filename)
 
-    for section, module_names in module_info.iteritems():
+    for section, module_names in module_info.items():
         buttons[section] = []
 
         for module_name in module_names:
@@ -121,7 +120,7 @@ def _modulenames_from_file(filename, default_section):
         widgets_file = open(filename)
         module_lines = widgets_file.readlines()
         widgets_file.close()
-    except EnvironmentError, details:
+    except EnvironmentError as details:
         logging.warning( _("Can't read file %s file: %s"), filename, details )
         return content
 

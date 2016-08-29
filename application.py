@@ -360,9 +360,9 @@ class Application(np.PropertyOwner):
             if preview and language == 'python':
                 self.overwrite = overwrite_save
 
-        except errors.WxgBaseException, inst:
+        except errors.WxgBaseException as inst:
             wx.MessageBox(_("Error generating code:\n%s") % inst, _("Error"), wx.OK | wx.CENTRE | wx.ICON_ERROR)
-        except EnvironmentError, inst:
+        except EnvironmentError as inst:
             bugdialog.ShowEnvironmentError(_('An IO/OS related error is occurred:'), inst)
             bugdialog.Show(_('Generate Code'), inst)
         else:

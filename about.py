@@ -68,7 +68,7 @@ class wxGladeAboutBox(wx.Dialog):
                             license_file.close()
                             dlg.ShowModal()
                             dlg.Destroy()
-                        except EnvironmentError, inst:
+                        except EnvironmentError as inst:
                             bugdialog.ShowEnvironmentError(
                                 _('''Can't read the file "LICENSE.txt".\n\nYou can get a license copy at\n'''
                                   '''http://www.opensource.org/licenses/mit-license.php'''), inst)
@@ -80,17 +80,12 @@ class wxGladeAboutBox(wx.Dialog):
                     if config.credits_file:
                         from wx.lib.dialogs import ScrolledMessageDialog
                         try:
-                            credits_file = codecs.open(
-                                config.credits_file, encoding='UTF-8')
-                            dlg = ScrolledMessageDialog(
-                                self,
-                                credits_file.read(),
-                                _("wxGlade - Credits")
-                                )
+                            credits_file = codecs.open( config.credits_file, encoding='UTF-8' )
+                            dlg = ScrolledMessageDialog( self, credits_file.read(), _("wxGlade - Credits") )
                             credits_file.close()
                             dlg.ShowModal()
                             dlg.Destroy()
-                        except EnvironmentError, inst:
+                        except EnvironmentError as inst:
                             bugdialog.ShowEnvironmentError(_('''Can't read the file "CREDITS.txt"'''), inst)
                     else:
                         wx.MessageBox(_('File "CREDITS.txt" not found!'), _('Error'),
@@ -104,8 +99,7 @@ class wxGladeAboutBox(wx.Dialog):
             html.SetStandardFonts()
         bgcolor = misc.color_to_string(self.GetBackgroundColour())
         icon_path = os.path.join(config.icons_path, 'wxglade_small.png')
-        html.SetPage(self.text % (bgcolor, icon_path, config.version,
-                                  config.py_version, config.wx_version))
+        html.SetPage( self.text % (bgcolor, icon_path, config.version, config.py_version, config.wx_version) )
         ir = html.GetInternalRepresentation()
         ir.SetIndent(0, wx.html.HTML_INDENT_ALL)
         html.SetSize((ir.GetWidth(), ir.GetHeight()))
@@ -127,4 +121,3 @@ class wxGladeAboutBox(wx.Dialog):
         if parent: self.CenterOnParent()
         else: self.CenterOnScreen()
 
-# end of class wxGladeAboutBox
