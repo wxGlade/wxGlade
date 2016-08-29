@@ -324,8 +324,7 @@ class ProgressXmlWidgetBuilder(XmlWidgetBuilder):
                     where = self.locator.getLineNumber()
                     value = int(round(where * 20.0 / self.size))
                 else:
-                    # we don't have any information, so we update the progress
-                    # bar "randomly"
+                    # we don't have any information, so we update the progress bar "randomly"
                     value = (self.step * self.i) % 20
                     self.i += 1
                 self.progress.Update(value)
@@ -475,15 +474,14 @@ class ClipboardXmlWidgetBuilder(XmlWidgetBuilder):
             if not self.depth_level:
                 common.app_tree.auto_expand = True
                 import misc
-                misc.set_focused_widget(self.top_obj)
-#                try:
+                try:
                     # show the first object and update its layout
-                    #if self.top_obj.node.parent.widget.is_visible():
-                    #    common.app_tree.show_widget(self.top_obj.node)
-                    #self.top_obj.show_properties()
-                    #common.app_tree.select_item(self.top_obj.node)
-#                except AttributeError:
-#                    self._logger.exception( _('Exception caused by obj: %s'), self.top_obj )
+                    if self.top_obj.node.parent.widget.is_visible():
+                        common.app_tree.show_widget(self.top_obj.node)
+                except AttributeError:
+                    self._logger.exception( _('Exception caused by obj: %s'), self.top_obj )
+                misc.set_focused_widget(self.top_obj)
+
         XmlWidgetBuilder.endElement(self, name)
 
 
