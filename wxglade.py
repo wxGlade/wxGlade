@@ -38,16 +38,23 @@ if hasattr(sys, 'frozen') and not hasattr(sys.stderr, 'encoding'):
 t = gettext.translation(domain="wxglade", localedir="locale", fallback=True)
 t.install("wxglade")
 
+# avoid problems with "_" in __builtins__ being replaced:
+def my_displayhook(value):
+    if value is not None:
+        print(repr(value))
+
+sys.displayhook = my_displayhook 
+
+
 import common
 import config
+import compat
 import log
 import errors
 
 
 def parse_command_line():
-    """\
-    Parse command line
-    """
+    "Parse command line"
     # list of all available languages
     # don't load code generators at this point!!
     languages = ['C++', 'XRC', 'lisp', 'perl', 'python']
@@ -102,19 +109,30 @@ License MIT: The MIT License
     # print epilog because OptionParser.epilog isn't available to Python 2.3
     if options.help:
         parser.print_help()
-        print _("""
+        print( _("""
 Example: Generate Python code out of myapp.wxg
 
    wxglade -o output.py -g python myapp.wxg
 
 Report bugs to:    <wxglade-general@lists.sourceforge.net> or at
                    <https://sourceforge.net/projects/wxglade/>
-wxGlade home page: <http://wxglade.sourceforge.net/>""")
+wxGlade home page: <http://wxglade.sourceforge.net/>""") )
         sys.exit()
 
     # Make an absolute version of path.
     # According to the invoking dir of wxGlade (which can be different
     # from '.' if it is invoked from a shell script).
+    #args = [u'F:\\PythonInstallation\\wxGladeTest\\test.wxg']
+    args = [u"D:\\Python\\Sources35\\wxGladeTests\\Test_release_072_v2-TextCtrls.wxg"]
+    #args = [u"D:\\Python\\Sources35\\wxGladeTests\\Test_release_072_v3-SingleSizer.wxg"]
+    args = [os.getcwd() + u"\\tests\\casefiles\\AllWidgets_28.wxg"]
+    #args = [u"D:\\Python\\Sources35\\wxGladeTests\\AllWidgets_28_05.wxg"]
+    #args = [u"D:\\Python\\Sources35\\wxGladeTests\\AllWidgets_28_without_bitmaps.wxg"]
+    #args = ["C:\\Users\\dietmar\\text_ctrls_with_slot4.wxg"]
+    #args = ["C:\\Users\\dietmar\\4slots_1.wxg"]
+    #args = ["C:\\Users\\dietmar\\test2.wxg"]
+    args = ["C:\\Users\\dietmar\\AllWidgets_28min.wxg"]
+    args = ["C:\\Users\\dietmar\\slots_test.wxg"]
     if len(args) == 1:
         filename = args[0]
         if not os.path.isabs(filename):
@@ -153,16 +171,11 @@ wxGlade home page: <http://wxglade.sourceforge.net/>""")
 
 
 def command_line_code_generation(filename, language, out_path=None):
-    """\
-    Starts a code generator without starting the GUI.
+    """Starts a code generator without starting the GUI.
 
-    @param filename: Name of wxg file to generate code from
-    @type filename:  str
-    @param language: Code generator language
-    @type language:  str
-    @param out_path: output file / output directory
-    @type out_path:  str
-    """
+    filename: Name of wxg file to generate code from
+    language: Code generator language
+    out_path: output file / output directory"""
     from xml_parse import CodeWriter
 
     try:
@@ -170,20 +183,13 @@ def command_line_code_generation(filename, language, out_path=None):
             raise errors.WxgMissingCodeWriter(language)
 
         writer = common.code_writers[language]
-        CodeWriter(
-            writer=writer,
-            input=filename,
-            out_path=out_path,
-            )
-    except errors.WxgBaseException, inst:
+        CodeWriter( writer=writer, input=filename, out_path=out_path )
+    except errors.WxgBaseException as inst:
         logging.error(inst)
         sys.exit(inst)
     except Exception:
-        logging.error(
-            _("An exception occurred while generating the code for the "
-              "application.\n"
-              "If you think this is a wxGlade bug, please report it.")
-        )
+        logging.error( _("An exception occurred while generating the code for the application.\n"
+                         "If you think this is a wxGlade bug, please report it.") )
         logging.exception(_('Internal Error'))
         sys.exit(1)
     sys.exit(0)
@@ -207,11 +213,7 @@ def init_stage1():
     atexit.register(log.deinit)
 
     # print versions
-    logging.info(
-        _('Starting wxGlade version "%s" on Python %s'),
-        config.version,
-        config.py_version,
-        )
+    logging.info( _('Starting wxGlade version "%s" on Python %s'), config.version, config.py_version )
 
     # print used paths
     logging.info(_('Base directory:             %s'), config.wxglade_path)
@@ -235,13 +237,11 @@ def init_stage1():
 
 
 def init_localization():
-    """
-    Initialise localization
-    """
+    "Initialise localization"
     encoding = None
     try:
         locale.setlocale(locale.LC_ALL, '')
-    except locale.Error, e:
+    except locale.Error as e:
         # ignore problems by fallback to ascii
         logging.warning(_('Setting locale failed: %s'), str(e))
         logging.warning(_('Use "ascii" locale instead.'))
@@ -251,9 +251,8 @@ def init_localization():
     if not encoding and hasattr(locale, 'nl_langinfo'):
         try:
             encoding = locale.nl_langinfo(locale.CODESET)
-        except AttributeError, e:
-            logging.warning(
-                _('locale.nl_langinfo(locale.CODESET) failed: %s'), str(e))
+        except AttributeError as e:
+            logging.warning( _('locale.nl_langinfo(locale.CODESET) failed: %s'), str(e) )
 
     # try getdefaultlocale, it used environment variables
     if not encoding:
@@ -271,9 +270,7 @@ def init_localization():
     try:
         codecs.lookup(encoding)
     except LookupError:
-        logging.warning(
-            _('No codec for encoding "%s" found. Use "ascii" instead'),
-            encoding)
+        logging.warning( _('No codec for encoding "%s" found. Use "ascii" instead'), encoding)
         encoding = 'ascii'
 
     # store determined encoding and show current locale
@@ -294,15 +291,16 @@ def init_stage2(use_gui):
     """
     config.use_gui = use_gui
     if use_gui:
-        # import proper wx-module using wxversion
-        if not hasattr(sys, "frozen") and 'wx' not in sys.modules:
-            try:
-                import wxversion
-                wxversion.ensureMinimal('2.8')
-            except ImportError:
-                msg = _('Please install missing Python module "wxversion".')
-                logging.error(msg)
-                sys.exit(msg)
+        # import proper wx-module using wxversion, which is only available in Classic
+        if compat.IS_CLASSIC:
+            if not hasattr(sys, "frozen") and 'wx' not in sys.modules:
+                try:
+                    import wxversion
+                    wxversion.ensureMinimal('2.8')
+                except ImportError:
+                    msg = _('Please install missing Python module "wxversion".')
+                    logging.error(msg)
+                    sys.exit(msg)
 
         try:
             import wx
@@ -325,10 +323,7 @@ def init_stage2(use_gui):
 
 
 def run_main():
-    """\
-    This main procedure is started by calling either wxglade.py or
-    wxglade.pyw on windows.
-    """
+    "This main procedure is started by calling either wxglade.py or wxglade.pyw on windows."
     # check command line parameters first
     options = parse_command_line()
 

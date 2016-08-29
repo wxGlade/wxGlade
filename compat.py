@@ -5,6 +5,26 @@ Compatibility code to run with different versions of wxPython
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
+
+try:
+    # Python 2
+    basestring = basestring
+    unicode = unicode
+    from StringIO import StringIO
+    BytesIO = StringIO
+    import cPickle as pickle
+    PYTHON2 = True
+    PYTHON3 = False
+except:
+    # Python 3
+    basestring = (bytes,str)
+    unicode = str
+    from io import StringIO
+    from io import BytesIO
+    import pickle
+    PYTHON2 = False
+    PYTHON3 = True
+
 import wx
 
 
@@ -63,10 +83,14 @@ def SizerItem_SetSizer(item, sizer):
     @param item:  Instance of wxSizerItem
     @param sizer: Instance of wxSizer
     """
-#    if hasattr(item, 'AssignSizer'):
-#        item.AssignSizer(sizer)
-#    else:
+    # don't use for now, as this causes crashes in e.g. change_sizer
+    #if hasattr(item, 'AssignSizer'):
+        #item.AssignSizer(sizer)
+    #else:
     item.SetSizer(sizer)
+
+def SizerItem_SetSizerPhoenix(item, sizer):
+    item.AssignSizer(sizer)
 
 
 def GridSizer_GetRows28(sizer):
@@ -175,5 +199,36 @@ else:
     GridSizer_GetCols = GridSizer_GetCols28
     SizerItem_SetWindow = SizerItem_SetWindow28
     wxWindow_IsEnabled = wxWindow_IsEnabled28
-    SizerItem_SetWindow = SizerItem_SetWindow28
-    wxWindow_IsEnabled = wxWindow_IsEnabled28
+
+
+import wx.grid
+
+if len(wx.VERSION)==5:
+    # wxPython Classic
+    IS_CLASSIC = True
+    IS_PHOENIX = False
+
+    EVT_GRID_CELL_CHANGE = wx.grid.EVT_GRID_CELL_CHANGE
+    wx_SystemSettings_GetFont = wx.SystemSettings_GetFont
+    wx_SystemSettings_GetColour = wx.SystemSettings_GetColour
+    wx_ArtProviderPush = wx.ArtProvider.PushProvider
+    wx_ArtProvider_GetBitmap = wx.ArtProvider_GetBitmap
+    wx_ToolTip_SetDelay = wx.ToolTip_SetDelay
+    wx_Tree_InsertItemBefore = wx.TreeCtrl.InsertItemBefore
+    def SetToolTip(c, s):
+        c.SetToolTipString(s)
+else:
+    # wxPython Phoenix
+    IS_CLASSIC = False
+    IS_PHOENIX = True
+
+    EVT_GRID_CELL_CHANGE = wx.grid.EVT_GRID_CELL_CHANGED # uses CHANGING and CHANGED now; we only need the later
+    wx_SystemSettings_GetFont = wx.SystemSettings.GetFont
+    wx_SystemSettings_GetColour = wx.SystemSettings.GetColour
+    wx_ArtProviderPush = wx.ArtProvider.Push
+    wx_ArtProvider_GetBitmap = wx.ArtProvider.GetBitmap
+    wx_ToolTip_SetDelay = wx.ToolTip.SetDelay
+    wx_Tree_InsertItemBefore = wx.TreeCtrl.InsertItem # overloaded: index or item
+    SizerItem_SetSizer = SizerItem_SetSizerPhoenix    # uses AssignSizer
+    def SetToolTip(c, s):
+        c.SetToolTipString(s)

@@ -8,7 +8,7 @@ Perl generator functions for wxGrid objects
 
 import common
 import wcodegen
-from codegen import ColsCodeHandler, _check_label
+from .codegen import ColsCodeHandler, _check_label
 
 
 class PerlCodeGenerator(wcodegen.PerlWidgetCodeWriter):

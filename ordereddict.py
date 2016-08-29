@@ -20,10 +20,9 @@
 #     FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 #     OTHER DEALINGS IN THE SOFTWARE.
 
-from UserDict import DictMixin
 
 
-class OrderedDict(dict, DictMixin):
+class OrderedDict(dict):
 
     def __init__(self, *args, **kwds):
         if len(args) > 1:
@@ -32,7 +31,7 @@ class OrderedDict(dict, DictMixin):
             self.__end
         except AttributeError:
             self.clear()
-        self.update(*args, **kwds)
+        dict.update(self, *args, **kwds)
 
     def clear(self):
         self.__end = end = []
@@ -66,6 +65,12 @@ class OrderedDict(dict, DictMixin):
         while curr is not end:
             yield curr[0]
             curr = curr[1]
+    def values(self):
+        end = self.__end
+        curr = end[2]
+        while curr is not end:
+            yield self[curr[0]]
+            curr = curr[2]
 
     def popitem(self, last=True):
         if not self:
@@ -89,15 +94,10 @@ class OrderedDict(dict, DictMixin):
 
     def keys(self):
         return list(self)
-
-    setdefault = DictMixin.setdefault
-    update = DictMixin.update
-    pop = DictMixin.pop
-    values = DictMixin.values
-    items = DictMixin.items
-    iterkeys = DictMixin.iterkeys
-    itervalues = DictMixin.itervalues
-    iteritems = DictMixin.iteritems
+    
+    def update(self, d=None):
+        for k, v in d.items():
+            self[k] = v
 
     def __repr__(self):
         if not self:

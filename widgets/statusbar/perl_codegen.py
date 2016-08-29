@@ -8,7 +8,7 @@ Perl code generator functions for wxStatusBar objects
 
 import common
 import wcodegen
-from codegen import StatusFieldsHandler
+from .codegen import StatusFieldsHandler
 
 
 class PerlStatusBarCodeGenerator(wcodegen.PerlWidgetCodeWriter):

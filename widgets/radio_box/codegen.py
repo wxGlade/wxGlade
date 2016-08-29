@@ -8,28 +8,23 @@ Code generator functions for wxRadioBox objects
 
 import common
 import wcodegen
-import radio_box_base
+from . import radio_box_base
 from ChoicesCodeHandler import *
 
 
-class PythonRadioBoxGenerator(radio_box_base.RadioBoxMixin,
-                              wcodegen.PythonWidgetCodeWriter):
+class PythonRadioBoxGenerator(radio_box_base.RadioBoxMixin, wcodegen.PythonWidgetCodeWriter):
     tmpl = '%(name)s = %(klass)s(%(parent)s, %(id)s, %(label)s, ' \
-           'choices=[%(choices)s], majorDimension=%(majorDimension)s' \
-           '%(style)s)\n'
-
-# end of class PythonRadioBoxGenerator
+           'choices=[%(choices)s], majorDimension=%(majorDimension)s%(style)s)\n'
 
 
-class CppRadioBoxGenerator(radio_box_base.RadioBoxMixin,
-                           wcodegen.CppWidgetCodeWriter):
+
+class CppRadioBoxGenerator(radio_box_base.RadioBoxMixin, wcodegen.CppWidgetCodeWriter):
     tmpl = '%(name)s = new %(klass)s(%(parent)s, %(id)s, %(label)s, ' \
            'wxDefaultPosition, wxDefaultSize, %(choices_len)s, ' \
            '%(name)s_choices, %(majorDimension)s, %(style)s);\n'
 
     prefix_style = False
 
-# end of class CppRadioBoxGenerator
 
 
 def xrc_code_generator(obj):
@@ -40,10 +35,7 @@ def xrc_code_generator(obj):
             if name == 'choices':
                 xrc_write_choices_property(self, outfile, tabs)
             else:
-                xrcgen.DefaultXrcObject.write_property(self, name, val,
-                                                       outfile, tabs)
-
-    # end of class RadioBoxXrcObject
+                xrcgen.DefaultXrcObject.write_property(self, name, val, outfile, tabs)
 
     return RadioBoxXrcObject(obj)
 
@@ -51,9 +43,6 @@ def xrc_code_generator(obj):
 def initialize():
     klass = 'wxRadioBox'
     common.class_names['EditRadioBox'] = klass
-    common.register('python', klass, PythonRadioBoxGenerator(klass),
-                    'choices', ChoicesCodeHandler)
-    common.register('C++', klass, CppRadioBoxGenerator(klass),
-                    'choices', ChoicesCodeHandler)
-    common.register('XRC', klass, xrc_code_generator,
-                    'choices', ChoicesCodeHandler)
+    common.register('python', klass, PythonRadioBoxGenerator(klass), 'choices', ChoicesCodeHandler)
+    common.register('C++',    klass, CppRadioBoxGenerator(klass),    'choices', ChoicesCodeHandler)
+    common.register('XRC',    klass, xrc_code_generator,             'choices', ChoicesCodeHandler)

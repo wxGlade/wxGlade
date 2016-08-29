@@ -20,9 +20,7 @@ import os
 import os.path
 import re
 
-from codegen import BaseLangCodeWriter, \
-                    BaseSourceFileContent, \
-                    BaseWidgetHandler
+from codegen import BaseLangCodeWriter, BaseSourceFileContent, BaseWidgetHandler
 import errors
 import wcodegen
 

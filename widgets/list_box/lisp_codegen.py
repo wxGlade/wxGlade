@@ -22,5 +22,4 @@ class LispListBoxGenerator(wcodegen.LispWidgetCodeWriter):
 def initialize():
     klass = 'wxListBox'
     common.class_names['EditListBox'] = klass
-    common.register('lisp', klass, LispListBoxGenerator(klass),
-                    'choices', ChoicesCodeHandler)
+    common.register('lisp', klass, LispListBoxGenerator(klass), 'choices', ChoicesCodeHandler)

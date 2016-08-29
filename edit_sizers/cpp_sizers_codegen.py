@@ -6,13 +6,11 @@ C++ generator functions for the various wxSizerS
 """
 
 import common
-from edit_sizers import BaseSizerBuilder
+from .edit_sizers import BaseSizerBuilder
 
 
 class BaseCPPSizerBuilder(BaseSizerBuilder):
-    """\
-    C++ base class for all sizer code generators
-    """
+    "C++ base class for all sizer code generators"
 
     language = 'C++'
 

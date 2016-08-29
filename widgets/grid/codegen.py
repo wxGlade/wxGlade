@@ -26,21 +26,19 @@ class ColsCodeHandler(BaseCodeWriterTagHandler):
 
     def end_elem(self, name, code_obj):
         if name == 'columns':
-            code_obj.properties['columns'] = self.columns
+            code_obj.properties['columns'].set(self.columns)
+            code_obj.properties_changed(properties_changed(["columns"]))
             return True
         elif name == 'column':
             char_data = self.get_char_data()
             self.columns.append([char_data, self.col_size])
         return False
 
-# end of class ColsCodeHandler
 
 
 def _check_label(label, col):
-    """\
-    Checks if 'label' is not the default one for the columns 'col': returns
-    True if the label is a custom one, False otherwise
-    """
+    """Checks if 'label' is not the default one for the columns 'col':
+    returns True if the label is a custom one, False otherwise"""
     # build the default value
     s = []
     while True:
@@ -74,8 +72,7 @@ class PythonCodeGenerator(wcodegen.PythonWidgetCodeWriter):
         klass = obj.klass
         if klass == obj.base:
             klass = self.cn(klass)
-        init.append('self.%s = %s(%s, %s, size=(1, 1))\n' %
-                    (obj.name, klass, parent, id))
+        init.append('self.%s = %s(%s, %s, size=(1, 1))\n' % (obj.name, klass, parent, id))
         props_buf = self.get_properties_code(obj)
         return init, props_buf, []
 
@@ -91,14 +88,11 @@ class PythonCodeGenerator(wcodegen.PythonWidgetCodeWriter):
         if not create_grid: return []
 
         columns = prop.get('columns', [['A', '-1']])
-        out.append('%s.CreateGrid(%s, %s)\n' %
-                   (name, prop.get('rows_number', '1'), len(columns)))
+        out.append('%s.CreateGrid(%s, %s)\n' % (name, prop.get('rows_number', '1'), len(columns)))
         if prop.get('row_label_size'):
-            out.append('%s.SetRowLabelSize(%s)\n' %
-                       (name, prop['row_label_size']))
+            out.append('%s.SetRowLabelSize(%s)\n' % (name, prop['row_label_size']))
         if prop.get('col_label_size'):
-            out.append('%s.SetColLabelSize(%s)\n' %
-                       (name, prop['col_label_size']))
+            out.append('%s.SetColLabelSize(%s)\n' % (name, prop['col_label_size']))
         enable_editing = prop.get('enable_editing', '1')
         if enable_editing != '1':
             out.append('%s.EnableEditing(0)\n' % name)
@@ -115,48 +109,37 @@ class PythonCodeGenerator(wcodegen.PythonWidgetCodeWriter):
         if enable_grid_resize != '1':
             out.append('%s.EnableDragGridSize(0)\n' % name)
         if prop.get('lines_color', False):
-            out.append(('%s.SetGridLineColour(' + self.cn('wxColour') +
-                        '(%s))\n') %
+            out.append(('%s.SetGridLineColour(' + self.cn('wxColour') + '(%s))\n') %
                        (name, self.codegen._string_to_colour(prop['lines_color'])))
         if prop.get('label_bg_color', False):
-            out.append(('%s.SetLabelBackgroundColour(' + self.cn('wxColour') +
-                        '(%s))\n') %
+            out.append(('%s.SetLabelBackgroundColour(' + self.cn('wxColour') + '(%s))\n') %
                        (name, self.codegen._string_to_colour(prop['label_bg_color'])))
         sel_mode = prop.get('selection_mode')
         if sel_mode and sel_mode != 'wxGrid.wxGridSelectCells':
-            out.append('%s.SetSelectionMode(%s)\n' % \
-                       (name, self.cn('wxGrid') + sel_mode[6:]))
+            out.append('%s.SetSelectionMode(%s)\n' % (name, self.cn('wxGrid') + sel_mode[6:]))
 
         i = 0
         for label, size in columns:
             if _check_label(label, i):
-                out.append('%s.SetColLabelValue(%s, %s)\n' % \
-                           (name, i, self.codegen.quote_str(label)))
+                out.append('%s.SetColLabelValue(%s, %s)\n' % (name, i, self.codegen.quote_str(label)))
             try:
                 if int(size) > 0:
-                    out.append('%s.SetColSize(%s, %s)\n' % \
-                               (name, i, size))
+                    out.append('%s.SetColSize(%s, %s)\n' % (name, i, size))
             except ValueError: pass
             i += 1
 
         out.extend(self.codegen.generate_common_properties(obj))
         return out
 
-# end of class PythonCodeGenerator
 
 
 class CppCodeGenerator(wcodegen.CppWidgetCodeWriter):
     import_modules = ['<wx/grid.h>']
 
     def get_code(self, obj):
-        """\
-        generates C++ code for wxGrid objects.
-        """
+        "generates C++ code for wxGrid objects."
         id_name, id = self.codegen.generate_code_id(obj)
-        if id_name:
-            ids = [id_name]
-        else:
-            ids = []
+        ids = [id_name]  if id_name else  []
         parent = self.format_widget_access(obj.parent)
         init = ['%s = new %s(%s, %s);\n' % (obj.name, obj.klass, parent, id)]
         props_buf = self.get_properties_code(obj)
@@ -176,15 +159,11 @@ class CppCodeGenerator(wcodegen.CppWidgetCodeWriter):
             return []
 
         columns = prop.get('columns', [['A', '-1']])
-        out.append('%s->CreateGrid(%s, %s);\n' % (name,
-                                                  prop.get('rows_number', '1'),
-                                                  len(columns)))
+        out.append('%s->CreateGrid(%s, %s);\n' % (name, prop.get('rows_number', '1'), len(columns)))
         if prop.get('row_label_size'):
-            out.append('%s->SetRowLabelSize(%s);\n' % \
-                       (name, prop['row_label_size']))
+            out.append('%s->SetRowLabelSize(%s);\n' % (name, prop['row_label_size']))
         if prop.get('col_label_size'):
-            out.append('%s->SetColLabelSize(%s);\n' % \
-                       (name, prop['col_label_size']))
+            out.append('%s->SetColLabelSize(%s);\n' % (name, prop['col_label_size']))
         enable_editing = prop.get('enable_editing', '1')
         if enable_editing != '1':
             out.append('%s->EnableEditing(false);\n' % name)
@@ -205,8 +184,7 @@ class CppCodeGenerator(wcodegen.CppWidgetCodeWriter):
                        (name, self.codegen._string_to_colour(prop['lines_color'])))
         if prop.get('label_bg_color', False):
             out.append('%s->SetLabelBackgroundColour(wxColour(%s));\n' %
-                       (name,
-                        self.codegen._string_to_colour(prop['label_bg_color'])))
+                       (name, self.codegen._string_to_colour(prop['label_bg_color'])))
         sel_mode = prop.get('selection_mode', '').replace('.', '::')
         if sel_mode and sel_mode != 'wxGrid::wxGridSelectCells':
             out.append('%s->SetSelectionMode(%s);\n' % (name, sel_mode))
@@ -214,12 +192,10 @@ class CppCodeGenerator(wcodegen.CppWidgetCodeWriter):
         i = 0
         for label, size in columns:
             if _check_label(label, i):
-                out.append('%s->SetColLabelValue(%s, %s);\n' % \
-                           (name, i, self.codegen.quote_str(label)))
+                out.append('%s->SetColLabelValue(%s, %s);\n' % (name, i, self.codegen.quote_str(label)))
             try:
                 if int(size) > 0:
-                    out.append('%s->SetColSize(%s, %s);\n' % \
-                               (name, i, size))
+                    out.append('%s->SetColSize(%s, %s);\n' % (name, i, size))
             except ValueError:
                 pass
             i += 1
@@ -227,32 +203,25 @@ class CppCodeGenerator(wcodegen.CppWidgetCodeWriter):
         out.extend(self.codegen.generate_common_properties(obj))
         return out
 
-# end of class CppCodeGenerator
 
 
 def xrc_code_generator(obj):
     xrcgen = common.code_writers['XRC']
 
     class GridXrcObject(xrcgen.DefaultXrcObject):
-        unsupported = set(['column', 'create_grid', 'rows_number',
-                           'row_label_size', 'col_label_size',
-                           'enable_editing', 'enable_grid_lines',
-                           'enable_col_resize', 'enable_row_resize',
-                           'enable_grid_resize', 'lines_color',
-                           'label_bg_color', 'selection_mode'])
+        unsupported = set(['column', 'create_grid', 'rows_number', 'row_label_size', 'col_label_size',
+                           'enable_editing', 'enable_grid_lines', 'enable_col_resize', 'enable_row_resize',
+                           'enable_grid_resize', 'lines_color', 'label_bg_color', 'selection_mode'])
 
         def write_property(self, name, val, outfile, tabs):
             if name not in self.unsupported:
-                xrcgen.DefaultXrcObject.write_property(self, name, val,
-                                                       outfile, tabs)
+                xrcgen.DefaultXrcObject.write_property(self, name, val, outfile, tabs)
     return GridXrcObject(obj)
 
 
 def initialize():
     klass = 'wxGrid'
     common.class_names['EditGrid'] = klass
-    common.register('python', klass, PythonCodeGenerator(klass),
-                    'columns', ColsCodeHandler, klass)
-    common.register('C++', klass, CppCodeGenerator(klass),
-                    'columns', ColsCodeHandler, klass)
-    common.register('XRC', klass, xrc_code_generator)
+    common.register('python', klass, PythonCodeGenerator(klass), 'columns', ColsCodeHandler, klass)
+    common.register('C++',    klass, CppCodeGenerator(klass),    'columns', ColsCodeHandler, klass)
+    common.register('XRC',    klass, xrc_code_generator)

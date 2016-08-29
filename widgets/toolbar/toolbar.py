@@ -5,39 +5,34 @@ wxToolBar objects
 @copyright: 2014-2016 Carsten Grohmann
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
+from __future__ import absolute_import
 
-import re
-import StringIO
 import wx
 from wx.lib.filebrowsebutton import FileBrowseButton
 
-import common
-import compat
-import config
-import math
-import misc
-import os
-from tree import Tree
-from tool import *
-from widget_properties import *
+import common, compat, config, misc
+import math, os, re
+from tree import Tree, Node
+from .tool import *
+import new_properties as np
 from edit_windows import EditBase, PreviewMixin, EditStylesMixin
-from gui_mixins import BitmapMixin, ExecAfterMixin
+from gui_mixins import BitmapMixin
 from wcodegen.taghandler import BaseXmlBuilderTagHandler
 
 
 class _MyBrowseButton(FileBrowseButton):
     def createBrowseButton( self):
-        """Create the browse-button control"""
+        "Create the browse-button control"
         ID = wx.NewId()
         button =wx.Button(self, ID, misc.wxstr(self.buttonText))
-        button.SetToolTipString(misc.wxstr(self.toolTip))
+        compat.SetToolTip(button, self.toolTip)
         w = button.GetTextExtent(self.buttonText)[0] + 10
         button.SetMinSize((w, -1))
         wx.EVT_BUTTON(button, ID, self.OnBrowse)
         return button
 
     def OnBrowse(self, event=None):
-        """ Going to browse for file... """
+        " Going to browse for file... "
         current = self.GetValue()
         directory = os.path.split(current)
         if os.path.isdir(current):
@@ -48,18 +43,15 @@ class _MyBrowseButton(FileBrowseButton):
             directory = directory [0]
         else:
             directory = self.startDirectory
-        value = wx.FileSelector(self.dialogTitle, directory, current,
-                                wildcard=self.fileMask, flags=self.fileMode)
+        value = wx.FileSelector(self.dialogTitle, directory, current, wildcard=self.fileMask, flags=self.fileMode)
         if value:
             self.SetValue(value)
 
-# end of class _MyBrowseButton
 
 
 class ToolsDialog(wx.Dialog):
     def __init__(self, parent, owner, items=None):
-        wx.Dialog.__init__(self, parent, -1, _("Toolbar editor"),
-                          style=wx.DEFAULT_DIALOG_STYLE|wx.RESIZE_BORDER)
+        wx.Dialog.__init__(self, parent, -1, _("Toolbar editor"), style=wx.DEFAULT_DIALOG_STYLE|wx.RESIZE_BORDER)
         ADD_ID, REMOVE_ID, LABEL_ID, ID_ID, CHECK_RADIO_ID, LIST_ID, \
                 ADD_SEP_ID, MOVE_UP_ID, MOVE_DOWN_ID, HELP_STR_ID, \
                 LONG_HELP_STR_ID, BITMAP1_ID, BITMAP2_ID \
@@ -69,9 +61,7 @@ class ToolsDialog(wx.Dialog):
 
         self.owner = owner
 
-        self.tool_items = wx.ListCtrl(self, LIST_ID, style=wx.LC_REPORT | \
-                                     wx.LC_SINGLE_SEL|wx.BORDER_SUNKEN,
-                                     size=(300, -1))
+        self.tool_items = wx.ListCtrl(self, LIST_ID, style=wx.LC_REPORT|wx.LC_SINGLE_SEL|wx.BORDER_SUNKEN, size=(300, -1) )
         self.selected_index = -1  # index of the selected element in the
                                  # wxListCtrl
         self.tool_items.InsertColumn(0, _("Label"))
@@ -99,15 +89,12 @@ class ToolsDialog(wx.Dialog):
         self.event_handler = wx.TextCtrl(self, -1)
         self.handler_re = re.compile(r'^\s*\w*\s*$')
 
-        self.bitmap1 = _MyBrowseButton(
-            self, BITMAP1_ID, labelText=_('Primary Bitmap'), buttonText='...',
-            changeCallback=self.update_tool)
-        self.bitmap2 = _MyBrowseButton(
-            self, BITMAP2_ID, labelText=_('Disabled Bitmap'), buttonText='...',
-            changeCallback=self.update_tool)
-        self.check_radio = wx.RadioBox(
-            self, CHECK_RADIO_ID, _("Type"),
-            choices=['Normal', 'Checkable', 'Radio'], majorDimension=3)
+        self.bitmap1 = _MyBrowseButton( self, BITMAP1_ID, labelText=_('Primary Bitmap'), buttonText='...',
+                                        changeCallback=self.update_tool)
+        self.bitmap2 = _MyBrowseButton( self, BITMAP2_ID, labelText=_('Disabled Bitmap'), buttonText='...',
+                                        changeCallback=self.update_tool)
+        self.check_radio = wx.RadioBox( self, CHECK_RADIO_ID, _("Type"),
+                                        choices=['Normal', 'Checkable', 'Radio'], majorDimension=3 )
 
         self.add = wx.Button(self, ADD_ID, _("Add"))
         self.remove = wx.Button(self, REMOVE_ID, _("Remove"))
@@ -157,7 +144,7 @@ class ToolsDialog(wx.Dialog):
         self.help_str.SetSize((150, -1))
         self.long_help_str.SetSize((150, -1))
         self.event_handler.SetSize((150, -1))
-        szr = wx.FlexGridSizer(0, 2)
+        szr = wx.FlexGridSizer(2,0,0)
         flag = wx.FIXED_MINSIZE
         label_flag = wx.ALIGN_CENTER_VERTICAL
         szr.Add(wx.StaticText(self, -1, _("Id   ")), flag=label_flag)
@@ -202,14 +189,11 @@ class ToolsDialog(wx.Dialog):
         self.CenterOnScreen()
 
     def add_tool(self, event):
-        """\
-        Event handler called when the Add button is clicked
-        """
+        "Event handler called when the Add button is clicked"
         index = self.selected_index = self.selected_index + 1
         if not self.tool_items.GetItemCount():
             for s in (self.label, self.id, self.help_str, self.long_help_str,
-                      self.bitmap1, self.bitmap2, self.check_radio,
-                      self.event_handler):
+                      self.bitmap1, self.bitmap2, self.check_radio, self.event_handler):
                 s.Enable(True)
         if index < 0:
             index = self.tool_items.GetItemCount()
@@ -222,8 +206,7 @@ class ToolsDialog(wx.Dialog):
         self.tool_items.SetStringItem(index, 4, help_str)
         self.tool_items.SetStringItem(index, 5, long_help_str)
         self.tool_items.SetStringItem(index, 6, check_radio)
-        self.tool_items.SetItemState(index, wx.LIST_STATE_SELECTED,
-                                     wx.LIST_STATE_SELECTED)
+        self.tool_items.SetItemState(index, wx.LIST_STATE_SELECTED, wx.LIST_STATE_SELECTED)
         self.label.SetValue(label)
         self.id.SetValue(wid)
         self.check_radio.SetSelection(int(check_radio))
@@ -234,48 +217,38 @@ class ToolsDialog(wx.Dialog):
         self.event_handler.SetValue("")
 
     def add_separator(self, event):
-        """\
-        Event handler called when the Add Separator button is clicked
-        """
+        "Event handler called when the Add Separator button is clicked"
         index = self.selected_index+1
         if not self.tool_items.GetItemCount():
             for s in (self.label, self.id, self.help_str, self.long_help_str,
-                      self.bitmap1, self.bitmap2, self.check_radio,
-                      self.event_handler):
+                      self.bitmap1, self.bitmap2, self.check_radio, self.event_handler):
                 s.Enable(True)
         if index < 0: index = self.tool_items.GetItemCount()
         self.tool_items.InsertStringItem(index, '---')
         for i in range(1, 5):
             self.tool_items.SetStringItem(index, i, '---')
-        self.tool_items.SetItemState(index, wx.LIST_STATE_SELECTED,
-                                     wx.LIST_STATE_SELECTED)
+        self.tool_items.SetItemState(index, wx.LIST_STATE_SELECTED, wx.LIST_STATE_SELECTED)
 
     def show_tool(self, event):
-        """\
-        Event handler called when a tool in the list is selected
-        """
+        "Event handler called when a tool in the list is selected"
         self.selected_index = index = event.GetIndex()
         get_item = self.tool_items.GetItem
-        if not self.tool_items.GetItem(index, 2).m_text == '---':
+        if not self.tool_items.GetItem(index, 2).GetText() == '---':
             # skip if the selected item is a separator
             for (s, i) in ((self.label, 0), (self.id, 1),
                            (self.help_str, 4), (self.long_help_str, 5),
                            (self.event_handler, 7)):
-                s.SetValue(get_item(index, i).m_text)
-            self.bitmap1.SetValue(get_item(index, 2).m_text, False)
-            self.bitmap2.SetValue(get_item(index, 3).m_text, False)
+                s.SetValue(get_item(index, i).GetText())
+            self.bitmap1.SetValue(get_item(index, 2).GetText(), False)
+            self.bitmap2.SetValue(get_item(index, 3).GetText(), False)
             try:
-                self.check_radio.SetSelection(
-                    int(self.tool_items.GetItem(index, 6).m_text))
+                self.check_radio.SetSelection( int(self.tool_items.GetItem(index, 6).GetText()) )
             except:
                 self.check_radio.SetSelection(0)
         event.Skip()
 
     def update_tool(self, event):
-        """\
-        Event handler called when some of the properties of the current tool
-        changes
-        """
+        "Event handler called when some of the properties of the current tool changes"
         set_item = self.tool_items.SetStringItem
         index = self.selected_index
         handler = self.event_handler.GetValue()
@@ -306,29 +279,22 @@ class ToolsDialog(wx.Dialog):
             self.bitmap2.startDirectory = directory
 
     def remove_tool(self, event):
-        """\
-        Event handler called when the Remove button is clicked
-        """
+        "Event handler called when the Remove button is clicked"
         if self.selected_index >= 0:
-            for s in (self.id, self.label, self.help_str, self.long_help_str,
-                      self.event_handler):
+            for s in (self.id, self.label, self.help_str, self.long_help_str, self.event_handler):
                 s.SetValue("")
             for s in (self.bitmap1, self.bitmap2):
                 s.SetValue("", False)
             self.check_radio.SetSelection(0)
             self.tool_items.DeleteItem(self.selected_index)
             if not self.tool_items.GetItemCount():
-                for s in (self.id, self.label, self.help_str,
-                          self.long_help_str, self.bitmap1, self.bitmap2,
+                for s in (self.id, self.label, self.help_str, self.long_help_str, self.bitmap1, self.bitmap2,
                           self.check_radio, self.event_handler):
                     s.Enable(False)
 
     def add_tools(self, tools):
-        """\
-        adds the content of 'tools' to self.tool_items. tools is a sequence of
-        (simple) tool items for the toolbar. At the moment there is no control
-        support, but I hope to add it soon
-        """
+        """adds the content of 'tools' to self.tool_items. tools is a sequence of (simple) tool items for the toolbar.
+        At the moment there is no control support, but I hope to add it soon"""
         set_item = self.tool_items.SetStringItem
         add_item = self.tool_items.InsertStringItem
         index = [0]
@@ -349,17 +315,13 @@ class ToolsDialog(wx.Dialog):
             add(tool)
         if self.tool_items.GetItemCount():
             for s in (self.id, self.label, self.help_str, self.long_help_str,
-                      self.bitmap1, self.bitmap2, self.check_radio,
-                      self.event_handler):
+                      self.bitmap1, self.bitmap2, self.check_radio, self.event_handler):
                 s.Enable(True)
 
     def get_tools(self):
-        """\
-        returns the contents of self.tool_items as a list of tools that
-        describes the contents of the ToolBar
-        """
+        "returns the contents of self.tool_items as a list of tools that describes the contents of the ToolBar"
         def get(i, j):
-            return self.tool_items.GetItem(i, j).m_text
+            return self.tool_items.GetItem(i, j).GetText()
         tools = []
 
         def add(index):
@@ -374,27 +336,20 @@ class ToolsDialog(wx.Dialog):
                 item_type = int(get(index, 6))
             except ValueError:
                 item_type = 0
-            tools.append(Tool(label=label, id=id, type=item_type,
-                              short_help=short_help, long_help=long_help,
-                              bitmap1=bitmap1, bitmap2=bitmap2,
-                              handler=event_handler))
-        for index in range(self.tool_items.GetItemCount()):
+            tools.append( Tool( label=label, id=id, type=item_type, short_help=short_help, long_help=long_help,
+                                bitmap1=bitmap1, bitmap2=bitmap2, handler=event_handler ) )
+        for index in range( self.tool_items.GetItemCount() ):
             add(index)
 
         return tools
 
     def move_item_up(self, event):
-        """\
-        moves the selected tool before the previous one at the same level
-        in self.tool_items
-        """
+        "moves the selected tool before the previous one at the same level in self.tool_items"
         self.tool_items.SetFocus()
         if self.selected_index > 0:
             index = self.selected_index - 1
-            vals1 = [ self.tool_items.GetItem(self.selected_index, i).m_text \
-                      for i in range(8) ]
-            vals2 = [ self.tool_items.GetItem(index, i).m_text \
-                      for i in range(8) ]
+            vals1 = [ self.tool_items.GetItem(self.selected_index, i).GetText() for i in range(8) ]
+            vals2 = [ self.tool_items.GetItem(index, i).GetText() for i in range(8) ]
             for i in range(8):
                 self.tool_items.SetStringItem(index, i, vals1[i])
                 self.tool_items.SetStringItem(self.selected_index, i, vals2[i])
@@ -403,17 +358,12 @@ class ToolsDialog(wx.Dialog):
             self.selected_index = index
 
     def move_item_down(self, event):
-        """\
-        moves the selected tool after the next one at the same level
-        in self.tool_items
-        """
+        "moves the selected tool after the next one at the same level in self.tool_items"
         self.tool_items.SetFocus()
         if self.selected_index < self.tool_items.GetItemCount()-1:
             index = self.selected_index + 1
-            vals1 = [ self.tool_items.GetItem(self.selected_index, i).m_text \
-                      for i in range(8) ]
-            vals2 = [ self.tool_items.GetItem(index, i).m_text \
-                      for i in range(8) ]
+            vals1 = [ self.tool_items.GetItem(self.selected_index, i).GetText() for i in range(8) ]
+            vals2 = [ self.tool_items.GetItem(index, i).GetText() for i in range(8) ]
             for i in range(8):
                 self.tool_items.SetStringItem(index, i, vals1[i])
                 self.tool_items.SetStringItem(self.selected_index, i, vals2[i])
@@ -425,56 +375,37 @@ class ToolsDialog(wx.Dialog):
         self.owner.set_tools(self.get_tools())
         common.app_tree.app.saved = False
 
-# end of class ToolsDialog
 
 
-class ToolsProperty(Property):
-    """\
-    Property to edit the tools of an EditToolBar instance.
-    """
+class ToolsProperty(np.Property):
+    "Property to edit the tools of an EditToolBar instance"
 
-    def __init__(self, owner, name, parent):
-        Property.__init__(self, owner, name, parent)
-        self.panel = None
+    def __init__(self):
+        np.Property.__init__(self, None)
         self.tools = {}
-        if parent is not None: self.display(parent)
 
-    def display(self, parent):
-        self.panel = wx.Panel(parent, -1)
-        edit_btn_id = wx.NewId()
-        self.edit_btn = wx.Button(self.panel, edit_btn_id, _("Edit tools..."))
-        sizer = wx.BoxSizer(wx.HORIZONTAL)
-        sizer.Add(self.edit_btn, 1,
-                  wx.EXPAND | wx.ALIGN_CENTER | wx.TOP | wx.BOTTOM, 4)
-        self.panel.SetAutoLayout(1)
-        compat.SizerItem_SetSizer(self.panel, sizer)
-        self.panel.SetSize(sizer.GetMinSize())
-        wx.EVT_BUTTON(self.panel, edit_btn_id, self.edit_tools)
-
-    def bind_event(self, function):
-        pass
+    def create_editor(self, panel, sizer):
+        self.edit_btn = wx.Button(panel, -1, _("Edit tools..."))
+        sizer.Add(self.edit_btn, 1, wx.EXPAND|wx.ALIGN_CENTER|wx.TOP|wx.BOTTOM, 4)
+        self.edit_btn.Bind(wx.EVT_BUTTON, self.edit_tools)
 
     def edit_tools(self, event):
-        dialog = ToolsDialog(self.panel, self.owner,
-                             items=self.owner.get_tools())
+        dialog = ToolsDialog( self.edit_btn.GetTopLevelParent(), self.owner, items=self.value )
         if dialog.ShowModal() == wx.ID_OK:
-            self.owner.set_tools(dialog.get_tools())
-            common.app_tree.app.saved = False  # update the status of the app
+            self.on_value_edited(dialog.get_tools())
+        dialog.Destroy()
 
     def write(self, outfile, tabs):
-        inner_xml = StringIO.StringIO()
-        for tool in self.owner[self.name][0]():
-            tool.write(inner_xml, tabs + 1)
-        stmt = common.format_xml_tag(
-            u'tools', inner_xml.getvalue(), tabs, is_xml=True)
+        inner_xml = compat.StringIO()
+        for tool in self.get():
+            tool.write(inner_xml, tabs+1)
+        stmt = common.format_xml_tag( u'tools', inner_xml.getvalue(), tabs, is_xml=True) 
         outfile.write(stmt)
 
-# end of class ToolsProperty
 
 
 class ToolsHandler(BaseXmlBuilderTagHandler):
-    itemattrs = ['label', 'id', 'short_help', 'long_help',
-                 'bitmap1', 'bitmap2', 'type', 'handler']
+    itemattrs = ['label', 'id', 'short_help', 'long_help', 'bitmap1', 'bitmap2', 'type', 'handler']
 
     def __init__(self, owner):
         super(ToolsHandler, self).__init__()
@@ -499,7 +430,8 @@ class ToolsHandler(BaseXmlBuilderTagHandler):
         if name == 'tool':
             self.tools.append(self.curr_tool)
         if name == 'tools':
-            self.owner.set_tools(self.tools)
+            self.owner.properties["tools"].set(self.tools)
+            self.owner.properties_changed(["tools"])
             return True
 
     def char_data(self, data):
@@ -509,71 +441,36 @@ class ToolsHandler(BaseXmlBuilderTagHandler):
             setattr(self.curr_tool,
                     self.itemattrs[self.curr_index], char_data)
 
-# end of class ToolsHandler
 
 
-class EditToolBar(EditBase, PreviewMixin, EditStylesMixin, BitmapMixin,
-                  ExecAfterMixin):
-    """\
-    Class to handle wxToolBar objects
+class EditToolBar(EditBase, PreviewMixin, EditStylesMixin, BitmapMixin):
+    "Class to handle wxToolBar objects"
 
-    @ivar pwidget: Parent widget
-    @type pwidget: wxToolBar | wxFrame
+    _PROPERTIES = ["bitmapsize", "margins", "packing", "separation", "tools", "preview"]
+    PROPERTIES = EditBase.PROPERTIES + _PROPERTIES + EditBase.EXTRA_PROPERTIES
 
-    @ivar tools: List of Tool objects
-    @type tools: list[Tool]
-    """
-
-    def __init__(self, name, klass, parent, property_window):
-
-        # Initialise parent classes
+    def __init__(self, name, klass, parent):
         custom_class = parent is None
-        EditBase.__init__(self, name, 'wxToolBar', parent, wx.NewId(),
-                          property_window, custom_class=custom_class,
-                          show=False)
+        EditBase.__init__( self, name, 'wxToolBar', parent, wx.NewId(), custom_class=custom_class,
+                           show=False)
         EditStylesMixin.__init__(self)
-        PreviewMixin.__init__(self)
 
-        # initialise instance variables
-        self.tools = []
-        self.pwidget = None
-        self.widget = None
+        # initialise instance properties
+        self.bitmapsize = np.ScrollRatePropertyD('16, 15', default_value='16, 15')
+        self.margins    = np.ScrollRatePropertyD('0, 0',   default_value='0, 0')
+        self.packing    = np.SpinPropertyD(1, val_range=(0,100), default_value=1, immediate=True)
+        self.separation = np.SpinPropertyD(5, val_range=(0,100), default_value=5, immediate=True)
+        self.tools = ToolsProperty()  # the Edit button
 
-        # initialise properties remaining staff
-        access = self.access_functions
-        properties = self.properties
+        self.pwidget = self.widget = None  # a panel and the actual ToolBar
 
-        access['style'] = (self.get_style, self.set_style)
-        properties['style'] = CheckListProperty(
-            self, 'style', self.widget_writer)
-
-        self.bitmapsize = '16, 15'
-        access['bitmapsize'] = (self.get_bitmapsize, self.set_bitmapsize)
-        properties['bitmapsize'] = TextProperty(
-            self, 'bitmapsize', can_disable=True,label=_("Bitmap size"))
-
-        self.margins = '0, 0'
-        access['margins'] = (self.get_margins, self.set_margins)
-        properties['margins'] = TextProperty(
-            self, 'margins', can_disable=True, label=_("Margins"))
-
-        access['tools'] = (self.get_tools, self.set_tools)
-        properties['tools'] = ToolsProperty(self, 'tools', None)
-
-        self.packing = 1
-        access['packing'] = (self.get_packing, self.set_packing)
-        properties['packing'] = SpinProperty(
-            self, 'packing', r=(0, 100), can_disable=True,
-            label=_("Packing"))
-
-        self.separation = 5
-        access['separation'] = (self.get_separation, self.set_separation)
-        properties['separation'] = SpinProperty(
-            self, 'separation', r=(0, 100), can_disable=True,
-            label=_("Separation"))
+        if not self.parent:
+            PreviewMixin.__init__(self)  # add a preview button
+        else:
+            self.preview = None
 
     def create_widget(self):
-        tb_style = wx.TB_HORIZONTAL | self.get_int_style()
+        tb_style = wx.TB_HORIZONTAL | self.style
         if wx.Platform == '__WXGTK__':
             tb_style |= wx.TB_DOCKABLE | wx.TB_FLAT
         if self.parent:
@@ -598,124 +495,46 @@ class EditToolBar(EditBase, PreviewMixin, EditStylesMixin, BitmapMixin,
                 # at least move it away from the 3 wxGlade frames
                 self.pwidget.CenterOnScreen()
         wx.EVT_LEFT_DOWN(self.pwidget, self.on_set_focus)
+
         # set the various property values
-        prop = self.properties
-        if prop['bitmapsize'].is_active():
-            self.set_bitmapsize(self.bitmapsize, refresh=False)
-        if prop['margins'].is_active():
-            self.set_margins(self.margins, refresh=False)
-        if prop['packing'].is_active():
-            self.set_packing(self.packing, refresh=False)
-        if prop['separation'].is_active():
-            self.set_separation(self.separation, refresh=False)
-        self.set_tools(self.tools)  # show the menus
+        self._set_bitmapsize()
+        self._set_margins()
+        self._set_packing()
+        self._set_separation()
 
-    def create_properties(self):
-        EditBase.create_properties(self)
-        page = self._common_panel
-        sizer = page.GetSizer()
-        self.properties['bitmapsize'].display(page)
-        self.properties['margins'].display(page)
-        self.properties['packing'].display(page)
-        self.properties['separation'].display(page)
-        self.properties['style'].display(page)
-        self.properties['tools'].display(page)
-        if not sizer:
-            sizer = wx.BoxSizer(wx.VERTICAL)
-            sizer.Add(self.name_prop.panel, 0, wx.EXPAND)
-            sizer.Add(self.klass_prop.panel, 0, wx.EXPAND)
-            page.SetAutoLayout(1)
-            compat.SizerItem_SetSizer(page, sizer)
-        sizer.Add(self.properties['bitmapsize'].panel, 0, wx.EXPAND)
-        sizer.Add(self.properties['margins'].panel, 0, wx.EXPAND)
-        sizer.Add(self.properties['packing'].panel, 0, wx.EXPAND)
-        sizer.Add(self.properties['separation'].panel, 0, wx.EXPAND)
-        sizer.Add(self.properties['style'].panel, 0, wx.EXPAND)
-        sizer.Add(self.properties['tools'].panel, 0, wx.ALL|wx.EXPAND, 3)
-        sizer.Layout()
-        sizer.Fit(page)
-        h = page.GetClientSize()[1]
-        self.notebook.AddPage(page, _("Common"))
-        if self.parent is not None:
-            self.property_window.Layout()
-            page.SetScrollbars(1, 5, 1, int(math.ceil(h / 5.0)))
-        else:
-            PreviewMixin.create_properties(self)
-
-    def __getitem__(self, key):
-        return self.access_functions[key]
+        self._set_tools()  # show the menus
 
     def set_style(self, value):
         EditStylesMixin.set_style(self, value)
         self._refresh_widget()
 
-    def get_margins(self):
-        return self.margins
+    # update widget ####################################################################################################
+    def _set_margins(self):
+        if not self.widget: return
+        margins_p = self.properties["margins"]
+        if not margins_p.is_active(): return
+        self.widget.SetMargins(margins_p.get_tuple())
 
-    def set_margins(self, value, refresh=True):
-        try:
-            margins = [int(t.strip()) for t in value.split(',')]
-        except:
-            self.properties['margins'].set_value(self.margins)
-        else:
-            self.margins = value
-            if self.widget:
-                self.widget.SetMargins(margins)
-                if refresh:
-                    self._refresh_widget()
+    def _set_bitmapsize(self):
+        if not self.widget: return
+        bitmapsize_p = self.properties["bitmapsize"]
+        if not bitmapsize_p.is_active(): return
+        self.widget.SetToolBitmapSize(bitmapsize_p.get_tuple())
 
-    def get_packing(self):
-        return self.packing
+    def _set_packing(self):
+        if not self.widget: return
+        packing_p = self.properties["packing"]
+        if not packing_p.is_active(): return
+        self.widget.SetToolPacking(packing_p.get())
 
-    def set_packing(self, value, refresh=True):
-        try:
-            value = int(value)
-        except:
-            self.properties['packing'].set_value(self.packing)
-        else:
-            self.packing = value
-            if self.widget:
-                self.widget.SetToolPacking(self.packing)
-                if refresh:
-                    self._refresh_widget()
+    def _set_separation(self):
+        if not self.widget: return
+        separation_p = self.properties["separation"]
+        if not separation_p.is_active(): return
+        self.widget.SetToolSeparation(separation_p.get())
 
-    def get_separation(self):
-        return self.separation
-
-    def set_separation(self, value, refresh=True):
-        try:
-            value = int(value)
-        except:
-            self.properties['separation'].set_value(self.separation)
-        else:
-            self.separation = value
-            if self.widget:
-                self.widget.SetToolSeparation(self.separation)
-                if refresh:
-                    self._refresh_widget()
-
-    def get_bitmapsize(self):
-        return self.bitmapsize
-
-    def set_bitmapsize(self, value, refresh=True):
-        try:
-            size = [int(t.strip()) for t in value.split(',')]
-        except:
-            self.properties['bitmapsize'].set_value(self.bitmapsize)
-        else:
-            self.bitmapsize = value
-            if self.widget:
-                self.widget.SetToolBitmapSize(size)
-                if refresh:
-                    self._refresh_widget()
-
-    def get_tools(self):
-        return self.tools
-
-    def set_tools(self, tools):
-        self.tools = tools
-        if not self.widget:
-            return  # nothing left to do
+    def _set_tools(self):
+        if not self.widget: return  # nothing left to do
         self.widget.ClearTools()
         # now add all the tools
         for tool in self.tools:
@@ -729,10 +548,8 @@ class EditToolBar(EditBase, PreviewMixin, EditStylesMixin, BitmapMixin,
                     kind = kinds[int(tool.type)]
                 except (ValueError, IndexError):
                     kind = wx.ITEM_NORMAL
-                self.widget.AddLabelTool(wx.NewId(), misc.wxstr(tool.label),
-                                         bmp1, bmp2, kind,
-                                         misc.wxstr(tool.short_help),
-                                         misc.wxstr(tool.long_help))
+                self.widget.AddLabelTool( wx.NewId(), misc.wxstr(tool.label), bmp1, bmp2, kind,
+                                          misc.wxstr(tool.short_help), misc.wxstr(tool.long_help) )
         # this is required to refresh the toolbar properly
         self._refresh_widget()
 
@@ -742,17 +559,19 @@ class EditToolBar(EditBase, PreviewMixin, EditStylesMixin, BitmapMixin,
         if self.parent:
             widget = self.parent.widget
             w, h = widget.GetClientSize()
-            widget.SetClientSize((w, h + 1))
+            widget.SetClientSize((w, h+1))
             widget.SetClientSize((w, h))
         else:
             widget = self.pwidget
             w = widget.GetClientSize()[0]
-            h = self.widget.GetSize()[1] / 2
+            h = self.widget.GetSize()[1] // 2
             widget.SetClientSize((w, h))
+    ####################################################################################################################
 
     def remove(self, *args, **kwds):
         if self.parent is not None:
-            self.parent.properties['toolbar'].set_value(0)
+            self.parent.properties['toolbar'].set(False)
+            self.parent._toolbar = None
             if kwds.get('do_nothing', False):
                 # this probably leaks memory, but avoids segfaults
                 self.pwidget = None
@@ -774,12 +593,14 @@ class EditToolBar(EditBase, PreviewMixin, EditStylesMixin, BitmapMixin,
         REMOVE_ID = wx.NewId()
         HIDE_ID = wx.NewId()
         self._rmenu = misc.wxGladePopupMenu(self.name)
-        misc.append_item(self._rmenu, REMOVE_ID, _('Remove\tDel'),
-                         wx.ART_DELETE)
-        misc.append_item(self._rmenu, HIDE_ID, _('Hide'))
+        misc.append_menu_item(self._rmenu, REMOVE_ID, _('Remove\tDel'), wx.ART_DELETE)
+        misc.append_menu_item(self._rmenu, HIDE_ID, _('Hide'))
 
-        wx.EVT_MENU(self.pwidget, REMOVE_ID, self.exec_after(self.remove))
-        wx.EVT_MENU(self.pwidget, HIDE_ID, self.exec_after(self.hide_widget))
+        wx.EVT_MENU(self.pwidget, REMOVE_ID, misc.exec_after(self.remove))
+        wx.EVT_MENU(self.pwidget, HIDE_ID, misc.exec_after(self.hide_widget))
+
+        self._rmenu = (menu, widget) # store for destryoing and unbinding
+        return menu
 
     def hide_widget(self, *args):
         if self.pwidget and self.pwidget is not self.widget:
@@ -788,94 +609,71 @@ class EditToolBar(EditBase, PreviewMixin, EditStylesMixin, BitmapMixin,
             common.app_tree.select_item(self.node.parent)
             common.app_tree.app.show_properties()
 
-    def set_name(self, name):
-        EditBase.set_name(self, name)
-        if self.pwidget is not self.widget:
-            self.pwidget.SetTitle(misc.design_title(misc.wxstr(self.name)))
-
     def get_property_handler(self, name):
         if name == 'tools':
             return ToolsHandler(self)
         return None
+    
+    def properties_changed(self, modified):
+        if not modified or "name" in modified and self.pwidget is not self.widget:
+            self.pwidget.SetTitle(misc.design_title(misc.wxstr(self.name)))
+        refresh = False
+        if not modified or "margins" in modified and self.widget:
+            self._set_margins()
+            refresh = True
+        if not modified or "bitmapsize" in modified and self.widget:
+            self._set_bitmapsize()
+            refresh = True
+        if not modified or "packing" in modified and self.widget:
+            self._set_packing()
+            refresh = True
+        if not modified or "separation" in modified and self.widget:
+            self._set_separation()
+            refresh = True
+        if not modified or "tools" in modified and self.widget:
+            self._set_tools()
+            refresh = True
+            
+        if refresh: self._refresh_widget()
 
-# end of class EditToolBar
+        EditBase.properties_changed(self, modified)
 
 
-def builder(parent, sizer, pos, number=[0]):
-    """\
-    factory function for EditToolBar objects.
-    """
-    class Dialog(wx.Dialog):
-        def __init__(self):
-            wx.Dialog.__init__(self, None, -1, _('Select toolbar class'))
-            if common.app_tree.app.get_language().lower() == 'xrc':
-                self.klass = 'wxToolBar'
-            else:
-                if not number[0]: self.klass = 'MyToolBar'
-                else: self.klass = 'MyToolBar%s' % number[0]
-                number[0] += 1
-            klass_prop = TextProperty(self, 'class', self)
-            szr = wx.BoxSizer(wx.VERTICAL)
-            szr.Add(klass_prop.panel, 0, wx.EXPAND)
-            sz2 = wx.BoxSizer(wx.HORIZONTAL)
-            sz2.Add(wx.Button(self, wx.ID_OK, _('OK')), 0, wx.ALL, 3)
-            sz2.Add(wx.Button(self, wx.ID_CANCEL, _('Cancel')), 0, wx.ALL, 3)
-            szr.Add(sz2, 0, wx.ALL|wx.ALIGN_CENTER, 3)
-            self.SetAutoLayout(True)
-            self.SetSizer(szr)
-            szr.Fit(self)
-            #self.SetSize((150, -1))
 
-        def __getitem__(self, value):
-            if value == 'class':
-                def set_klass(c): self.klass = c
-                return lambda : self.klass, set_klass
-    # end of inner class
-
-    dialog = Dialog()
-    res = dialog.ShowModal()
-    klass = dialog.klass
+def builder(parent, sizer, pos):
+    "factory function for EditToolBar objects"
+    import window_dialog
+    klass = 'wxToolBar' if common.app_tree.app.language.lower()=='xrc' else 'MyToolBar'
+    dialog = window_dialog.WindowDialog(klass, None, 'Select toolbar class', True)
+    klass = dialog.show()
     dialog.Destroy()
-    if res != wx.ID_OK:
-        if number[0] > 0:
-            number[0] -= 1
-        return
+    if klass is None: return
+    name = dialog.get_next_name("toolbar")
 
-    name = 'toolbar_%d' % (number[0] or 1)
-    while common.app_tree.has_name(name):
-        number[0] += 1
-        name = 'toolbar_%d' % number[0]
-
-    tb = EditToolBar(name, klass, parent, common.property_panel)
-    tb.node = Tree.Node(tb)
+    tb = EditToolBar(name, klass, parent)
+    tb.node = Node(tb)
     common.app_tree.add(tb.node)
-    tb.show_widget(True)
-    tb.show_properties()
+    #tb.show_widget(True)
+
 
 
 def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
-    """\
-    factory to build EditMenuBar objects from a XML file
-    """
+    "factory to build EditMenuBar objects from a XML file"
     name = attrs.get('name')
     if parent is not None:
         if name:
-            parent.toolbar.set_name(name)
-            parent.toolbar.name_prop.set_value(name)
-        return parent.toolbar
+            parent._toolbar.properties["name"].set(name)
+            parent._toolbar.properties_changed(["name"])
+        return parent._toolbar
     else:
-        tb = EditToolBar(name, attrs.get('class', 'wxMenuBar'), None,
-                         common.property_panel)
-        tb.node = Tree.Node(tb)
+        tb = EditToolBar(name, attrs.get('class', 'wxMenuBar'), None)
+        tb.node = Node(tb)
         common.app_tree.add(tb.node)
         return tb
 
 
 def initialize():
-    """\
-    initialization function for the module: returns a wxBitmapButton to be
-    added to the main palette.
-    """
+    "initialization function for the module: returns a wxBitmapButton to be added to the main palette"
     common.widgets_from_xml['EditToolBar'] = xml_builder
     common.widgets['EditToolBar'] = builder
 

@@ -8,13 +8,11 @@ Perl generator functions for wxNotebook objects
 
 import common
 import wcodegen
-from codegen import TabsCodeHandler
+from .codegen import TabsCodeHandler
 
 
 class PerlNotebookGenerator(wcodegen.PerlWidgetCodeWriter):
-    new_signature = [
-        '$parent', '$id', '$pos', '$size', '$style', '$name'
-    ]
+    new_signature = ['$parent', '$id', '$pos', '$size', '$style', '$name']
 
     def get_code(self, window):
         self._reset_vars()
@@ -27,8 +25,7 @@ class PerlNotebookGenerator(wcodegen.PerlWidgetCodeWriter):
         tabs = prop.get('tabs', [])
         for label, tab_win in tabs:
             layout_props.append('$self->{%s}->AddPage($self->{%s}, %s);\n' %
-                                (window.name, tab_win,
-                                 self.codegen.quote_str(label)))
+                                (window.name, tab_win, self.codegen.quote_str(label)))
 
         parent = self.format_widget_access(window.parent)
 
@@ -43,16 +40,13 @@ class PerlNotebookGenerator(wcodegen.PerlWidgetCodeWriter):
             if id_name:
                 l.append(id_name)
             l.append(
-                '$self->{%s} = %s->new(%s, %s);\n' % (
-                    window.name, klass, parent, id)
-                )
+                '$self->{%s} = %s->new(%s, %s);\n' % ( window.name, klass, parent, id) )
             return l, [], []
         init = []
         if id_name:
             init.append(id_name)
         init.append('$self->{%s} = %s->new(%s, %s%s);\n' % (
-            window.name, self.cn(window.klass), parent, id,
-            self.tmpl_dict['style']))
+            window.name, self.cn(window.klass), parent, id, self.tmpl_dict['style']))
 
         props_buf = self.codegen.generate_common_properties(window)
         return init, props_buf, layout_props

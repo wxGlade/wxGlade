@@ -11,23 +11,20 @@ import wcodegen
 
 
 class PythonSpinCtrlGenerator(wcodegen.PythonWidgetCodeWriter):
-    tmpl = '%(name)s = %(klass)s(%(parent)s, %(id)s, "%(value)s", ' \
-           'min=%(minValue)s, max=%(maxValue)s%(style)s)\n'
+    tmpl = '%(name)s = %(klass)s(%(parent)s, %(id)s, "%(value)s", min=%(minValue)s, max=%(maxValue)s%(style)s)\n'
 
     def _prepare_tmpl_content(self, obj):
         wcodegen.PythonWidgetCodeWriter._prepare_tmpl_content(self, obj)
         prop = obj.properties
         self.tmpl_dict['value'] = prop.get('value', '')
         try:
-            minValue, maxValue = [s.strip() for s in
-                                  prop.get('range', '0, 100').split(',')]
+            minValue, maxValue = [s.strip() for s in prop.get('range', '0, 100').split(',')]
         except:
             minValue, maxValue = '0', '100'
         self.tmpl_dict['minValue'] = minValue
         self.tmpl_dict['maxValue'] = maxValue
         return
 
-# end of class PythonSpinCtrlGenerator
 
 
 class CppSpinCtrlGenerator(wcodegen.CppWidgetCodeWriter):
@@ -43,15 +40,13 @@ class CppSpinCtrlGenerator(wcodegen.CppWidgetCodeWriter):
         prop = obj.properties
         self.tmpl_dict['value'] = prop.get('value', '')
         try:
-            minValue, maxValue = [s.strip() for s in
-                                  prop.get('range', '0, 100').split(',')]
+            minValue, maxValue = [s.strip() for s in prop.get('range', '0, 100').split(',')]
         except:
             minValue, maxValue = '0', '100'
         self.tmpl_dict['minValue'] = minValue
         self.tmpl_dict['maxValue'] = maxValue
         return
 
-# end of class CppSpinCtrlGenerator
 
 
 def xrc_code_generator(obj):
@@ -69,10 +64,7 @@ def xrc_code_generator(obj):
                     outfile.write(tab_s + '<min>%s</min>\n' % minValue)
                     outfile.write(tab_s + '<max>%s</max>\n' % maxValue)
             else:
-                xrcgen.DefaultXrcObject.write_property(self, name, val,
-                                                       outfile, tabs)
-
-    # end of class SpinCtrlXrcObject
+                xrcgen.DefaultXrcObject.write_property(self, name, val, outfile, tabs)
 
     return SpinCtrlXrcObject(obj)
 
@@ -81,5 +73,5 @@ def initialize():
     klass = 'wxSpinCtrl'
     common.class_names['EditSpinCtrl'] = klass
     common.register('python', klass, PythonSpinCtrlGenerator(klass))
-    common.register('C++', klass, CppSpinCtrlGenerator(klass))
-    common.register('XRC', klass, xrc_code_generator)
+    common.register('C++',    klass, CppSpinCtrlGenerator(klass))
+    common.register('XRC',    klass, xrc_code_generator)

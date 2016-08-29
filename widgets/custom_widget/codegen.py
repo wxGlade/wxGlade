@@ -28,7 +28,6 @@ class ArgumentsCodeHandler(BaseCodeWriterTagHandler):
             self.arguments.append(tab_name)
         return False
 
-# end of class ArgumentsCodeHandler
 
 
 def format_ctor_arguments(arguments, parent, id, size):
@@ -81,8 +80,7 @@ class PythonCustomWidgetGenerator(wcodegen.PythonWidgetCodeWriter):
             ctor = cust_ctor
         else:
             ctor = widget.klass
-        init.append('self.%s = %s(%s)\n' % (widget.name, ctor,
-                                            ", ".join(arguments)))
+        init.append( 'self.%s = %s(%s)\n' % (widget.name, ctor, ", ".join(arguments)) )
         props_buf = self.codegen.generate_common_properties(widget)
         return init, props_buf, []
 
@@ -95,7 +93,6 @@ class PythonCustomWidgetGenerator(wcodegen.PythonWidgetCodeWriter):
 def self_%s_on_paint(event):
     widget = self.%s
     dc = wx.PaintDC(widget)
-    dc.BeginDrawing()
     dc.SetBrush(wx.WHITE_BRUSH)
     dc.SetPen(wx.BLACK_PEN)
     dc.SetBackground(wx.WHITE_BRUSH)
@@ -110,15 +107,12 @@ def self_%s_on_paint(event):
     dc.SetPen(wx.ThePenList.FindOrCreatePen(wx.BLACK, 0, wx.TRANSPARENT))
     dc.DrawRectangle(x-1, y-1, tw+2, th+2)
     dc.DrawText(text, x, y)
-    dc.EndDrawing()    
 """ % ((widget.name,) * 3)
         for line in on_paint_code.splitlines():
             append(line + '\n')
-        append('wx.EVT_PAINT(self.%s, self_%s_on_paint)\n' %
-               (widget.name, widget.name))
+        append( 'wx.EVT_PAINT(self.%s, self_%s_on_paint)\n' % (widget.name, widget.name) )
         return init, [], []
 
-# end of class PythonCustomWidgetGenerator
 
 
 class CppCustomWidgetGenerator(wcodegen.CppWidgetCodeWriter):
@@ -133,26 +127,23 @@ class CppCustomWidgetGenerator(wcodegen.CppWidgetCodeWriter):
             parent = '%s' % widget.parent.name
         else:
             parent = 'this'
-        arguments = format_ctor_arguments(
-            prop.get('arguments', []), parent, id,
-            prop.get('size', '-1, -1').strip())
+        arguments = format_ctor_arguments( prop.get('arguments', []), parent, id, prop.get('size', '-1, -1').strip() )
         cust_ctor = prop.get('custom_ctor', '').strip()
         if cust_ctor:
             ctor = cust_ctor
         else:
             ctor = 'new ' + widget.klass
-        init = ['%s = %s(%s);\n' % (widget.name, ctor,
-                                    ", ".join(arguments)) ]
+        init = [ '%s = %s(%s);\n' % (widget.name, ctor, ", ".join(arguments)) ]
         props_buf = self.codegen.generate_common_properties(widget)
         return init, ids, props_buf, []
 
-# end of class CppCustomWidgetGenerator
 
 
 def xrc_code_generator(obj):
     xrcgen = common.code_writers['XRC']
 
     class CustomXrcObject(xrcgen.DefaultXrcObject):
+        # return value for xrc_code_generator
         def write(self, outfile, ntabs):
             # first, fix the class:
             self.klass = obj.klass
@@ -168,16 +159,11 @@ def xrc_code_generator(obj):
                         name, val = [s.strip() for s in arg.split(':', 1)]
                     except Exception:
                         # show malformed arguments
-                        logging.warning(
-                            'Ignore malformed argument "%s" for "%s". '
-                            'Argument format should be: name:value',
-                            arg, self.klass
-                        )
+                        logging.warning('Ignore malformed argument "%s" for "%s". Argument format should be: name:value',
+                                        arg, self.klass )
                         continue
                     self.properties[name] = val
             xrcgen.DefaultXrcObject.write(self, outfile, ntabs)
-
-    # end of class CustomXrcObject
 
     return CustomXrcObject(obj)
 
@@ -185,9 +171,6 @@ def xrc_code_generator(obj):
 def initialize():
     klass = 'CustomWidget'
     common.class_names[klass] = klass
-    common.register('python', klass, PythonCustomWidgetGenerator(klass),
-                    'arguments', ArgumentsCodeHandler, klass)
-    common.register('C++', klass, CppCustomWidgetGenerator(klass),
-                    'arguments', ArgumentsCodeHandler, klass)
-    common.register('XRC', klass, xrc_code_generator,
-                    'arguments', ArgumentsCodeHandler, klass)
+    common.register('python', klass, PythonCustomWidgetGenerator(klass), 'arguments', ArgumentsCodeHandler, klass)
+    common.register('C++',    klass, CppCustomWidgetGenerator(klass),    'arguments', ArgumentsCodeHandler, klass)
+    common.register('XRC',    klass, xrc_code_generator,                 'arguments', ArgumentsCodeHandler, klass)

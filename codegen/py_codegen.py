@@ -14,19 +14,14 @@ methods of the parent object.
 @copyright: John Dubery
 @copyright: 2002-2007 Alberto Griggio
 @copyright: 2012-2016 Carsten Grohmann
+@copyright: 2016 Dietmar Schwertberger
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
-import os
-import os.path
-import random
-import re
-import types
-
-from codegen import BaseLangCodeWriter, \
-                    BaseSourceFileContent, \
-                    BaseWidgetHandler
+import os, os.path, random, re
+from codegen import BaseLangCodeWriter, BaseSourceFileContent, BaseWidgetHandler
 import wcodegen
+import compat
 
 
 class SourceFileContent(BaseSourceFileContent):
@@ -85,9 +80,8 @@ class SourceFileContent(BaseSourceFileContent):
                     quote_index = triple_squote_index
                     tmp_quote_str = "'''"
                 else:
-                    quote_index, tmp_quote_str = min(
-                        (triple_squote_index, "'''"),
-                        (triple_dquote_index, '"""'))
+                    quote_index, tmp_quote_str = min( (triple_squote_index, "'''"),
+                                                      (triple_dquote_index, '"""') )
 
             if not inside_triple_quote and quote_index != -1:
                 inside_triple_quote = True
@@ -103,13 +97,11 @@ class SourceFileContent(BaseSourceFileContent):
                 if not self.class_name:
                     # this is the first class declared in the file: insert the
                     # new ones before this
-                    out_lines.append('<%swxGlade insert new_classes>' %
-                                     self.nonce)
+                    out_lines.append('<%swxGlade insert new_classes>' % self.nonce)
                     self.new_classes_inserted = True
                 self.class_name = result.group(1)
                 self.class_name = self.format_classname(self.class_name)
-                self.classes[self.class_name] = 1  # add the found class to the list
-                                              # of classes of this module
+                self.classes[self.class_name] = 1  # add the found class to the list of classes of this module
                 out_lines.append(line)
             elif not inside_block:
                 result = self.rec_block_start.match(line)
@@ -120,8 +112,7 @@ class SourceFileContent(BaseSourceFileContent):
 ##                         result.group('classname'),
 ##                         result.group('block'),
 ##                         )
-                    # replace the lines inside a wxGlade block with a tag that
-                    # will be used later by add_class
+                    # replace the lines inside a wxGlade block with a tag that  will be used later by add_class
                     spaces = result.group('spaces')
                     which_class = result.group('classname')
                     which_block = result.group('block')
@@ -132,27 +123,22 @@ class SourceFileContent(BaseSourceFileContent):
                     self.spaces[which_class] = spaces
                     inside_block = True
                     if not self.class_name:
-                        out_lines.append('<%swxGlade replace %s>' % \
-                                         (self.nonce, which_block))
+                        out_lines.append('<%swxGlade replace %s>' % (self.nonce, which_block))
                     else:
-                        out_lines.append('<%swxGlade replace %s %s>' % \
-                                         (self.nonce, which_class, which_block))
+                        out_lines.append('<%swxGlade replace %s %s>' % (self.nonce, which_class, which_block))
                 else:
                     result = self.rec_event_handler.match(line)
                     if not inside_triple_quote and result:
                         which_handler = result.group('handler')
                         which_class = self.format_classname(result.group('class'))
-                        self.event_handlers.setdefault(
-                            which_class, {})[which_handler] = 1
+                        self.event_handlers.setdefault(which_class, {})[which_handler] = 1
                     if self.class_name and self.is_end_of_class(line):
                         # add extra event handlers here...
-                        out_lines.append('<%swxGlade event_handlers %s>'
-                                         % (self.nonce, self.class_name))
+                        out_lines.append('<%swxGlade event_handlers %s>' % (self.nonce, self.class_name))
                     out_lines.append(line)
                     if self.is_import_line(line):
                         # add a tag to allow extra modules
-                        out_lines.append('<%swxGlade extra_modules>\n'
-                                         % self.nonce)
+                        out_lines.append('<%swxGlade extra_modules>\n' % self.nonce)
             else:
                 # ignore all the lines inside a wxGlade block
                 if self.rec_block_end.match(line):
@@ -204,11 +190,7 @@ class WidgetHandler(BaseWidgetHandler):
 
 
 class PythonCodeWriter(BaseLangCodeWriter, wcodegen.PythonMixin):
-    """\
-    Code writer class for writing Python code out of the designed GUI elements
-
-    @see: L{BaseLangCodeWriter}
-    """
+    "Code writer class for writing Python code out of the designed GUI elements"
 
     _code_statements = {
         'backgroundcolour': "%(objname)s.SetBackgroundColour(%(value)s)\n",
@@ -244,22 +226,12 @@ class PythonCodeWriter(BaseLangCodeWriter, wcodegen.PythonMixin):
 
     tmpl_name_do_layout = '__do_layout'
     tmpl_name_set_properties = '__set_properties'
-
     tmpl_encoding = "# -*- coding: %s -*-\n#\n"
-
-    tmpl_class_end = '\n' \
-                     '%(comment)s end of class %(klass)s\n'
-
-    tmpl_ctor_call_layout = '\n' \
-                            '%(tab)sself.__set_properties()\n' \
-                            '%(tab)sself.__do_layout()\n'
-
+    tmpl_class_end = '\n%(comment)s end of class %(klass)s\n'
+    tmpl_ctor_call_layout = '\n%(tab)sself.__set_properties()\n%(tab)sself.__do_layout()\n'
     tmpl_func_empty = '%(tab)spass\n'
-
     tmpl_sizeritem = '%s.Add(%s, %s, %s, %s)\n'
-
     tmpl_style = '%(tab)skwds["style"] = %(style)s\n'
-
     tmpl_appfile = """\
 %(overwrite)s\
 %(header_lines)s\
@@ -347,8 +319,7 @@ if __name__ == "__main__":
         fmt_klass = self.cn_class(code_obj.klass)
 
         # custom base classes support
-        custom_base = getattr(code_obj, 'custom_base',
-                              code_obj.properties.get('custom_base', None))
+        custom_base = getattr(code_obj, 'custom_base', code_obj.properties.get('custom_base', None))
         if code_obj.preview or (custom_base and not custom_base.strip()):
             custom_base = None
 
@@ -358,39 +329,26 @@ if __name__ == "__main__":
             if custom_base:
                 base = ", ".join([b.strip() for b in custom_base.split(',')])
             if code_obj.preview and code_obj.klass == base:
-                klass = code_obj.klass + \
-                    ('_%d' % random.randrange(10 ** 8, 10 ** 9))
+                klass = code_obj.klass + ('_%d' % random.randrange(10 ** 8, 10 ** 9))
             else:
                 klass = code_obj.klass
-            write('\nclass %s(%s):\n' % (
-                self.get_class(fmt_klass), base))
+            write('\nclass %s(%s):\n' % (self.get_class(fmt_klass), base))
             write(self.tabs(1) + 'def __init__(self, *args, **kwds):\n')
         elif custom_base:
             # custom base classes set, but "overwrite existing sources" not
             # set. Issue a warning about this
-            self.warning(
-                '%s has custom base classes, but you are not overwriting '
-                'existing sources: please check that the resulting code is '
-                'correct!' % code_obj.name
-                )
+            self.warning( '%s has custom base classes, but you are not overwriting '
+                          'existing sources: please check that the resulting code is correct!' % code_obj.name )
 
         # __init__ begin tag
-        write(self.tmpl_block_begin % {
-            'class_separator': self.class_separator,
-            'comment_sign': self.comment_sign,
-            'function': self.name_ctor,
-            'klass': fmt_klass,
-            'tab': tab,
-            })
+        write(self.tmpl_block_begin % {'class_separator': self.class_separator, 'comment_sign': self.comment_sign,
+                                       'function':self.name_ctor, 'klass':fmt_klass, 'tab':tab} )
 
         prop = code_obj.properties
         style = prop.get("style", None)
         if style:
             stmt_style = self._format_style(style, code_obj)
-            write(stmt_style % {
-                'style': mycn_f(style),
-                'tab': tab,
-                })
+            write(stmt_style % {'style': mycn_f(style), 'tab': tab} )
 
         # initialise custom base class
         if custom_base:
@@ -401,8 +359,7 @@ if __name__ == "__main__":
                 else:
                     write(tab + '%s.__init__(self)\n' % b)
         else:
-            write(tab + '%s.__init__(self, *args, **kwds)\n' % \
-                  mycn(code_obj.base))
+            write(tab + '%s.__init__(self, *args, **kwds)\n' % mycn(code_obj.base))
 
         # classes[code_obj.klass].deps now contains a mapping of child to
         # parent for all children we processed...
@@ -438,17 +395,8 @@ if __name__ == "__main__":
         # Python has two indentation levels
         #  1st) for function declaration
         #  2nd) for function body
-        self.tmpl_func_do_layout = '\n' + \
-                              self.tabs(1) + 'def __do_layout(self):\n' + \
-                              '%(content)s' + \
-                              ''
-        return BaseLangCodeWriter.generate_code_do_layout(
-            self,
-            builder,
-            code_obj,
-            is_new,
-            tab,
-            )
+        self.tmpl_func_do_layout = '\n' + self.tabs(1) + 'def __do_layout(self):\n%(content)s'
+        return BaseLangCodeWriter.generate_code_do_layout( self, builder, code_obj, is_new, tab )
 
     def generate_code_event_bind(self, code_obj, tab, event_handlers):
         code_lines = []
@@ -466,14 +414,8 @@ if __name__ == "__main__":
             if 'EVT_NAVIGATION_KEY' in event:
                 tmpl = '%(tab)sself.Bind(%(event)s, self.%(handler)s)\n'
             else:
-                tmpl = '%(tab)sself.Bind(%(event)s, self.%(handler)s, ' \
-                       '%(win_id)s)\n'
-            details = {
-                'tab': tab,
-                'event': self.cn(event),
-                'handler': handler,
-                'win_id': win_id,
-                }
+                tmpl = '%(tab)sself.Bind(%(event)s, self.%(handler)s, %(win_id)s)\n'
+            details = {'tab':tab, 'event':self.cn(event), 'handler':handler, 'win_id':win_id}
             write(tmpl % details)
 
         return code_lines
@@ -485,17 +427,10 @@ if __name__ == "__main__":
         #  2nd) for function body
         self.tmpl_func_event_stub = self.tabs(1) + """\
 def %(handler)s(self, event):  # wxGlade: %(klass)s.<event_handler>
-%(tab)sprint "Event handler '%(handler)s' not implemented!"
+%(tab)sprint( "Event handler '%(handler)s' not implemented!" )
 %(tab)sevent.Skip()
 """
-        return BaseLangCodeWriter.generate_code_event_handler(
-            self,
-            code_obj,
-            is_new,
-            tab,
-            prev_src,
-            event_handlers,
-            )
+        return BaseLangCodeWriter.generate_code_event_handler( self, code_obj, is_new, tab, prev_src, event_handlers )
 
     def generate_code_id(self, obj, id=None):
         if obj and obj.preview:
@@ -526,12 +461,9 @@ def %(handler)s(self, event):  # wxGlade: %(klass)s.<event_handler>
         # Python has two indentation levels
         #  1st) for function declaration
         #  2nd) for function body
-        self.tmpl_func_set_properties = '\n' + self.tabs(1) + \
-                                        'def __set_properties(self):\n' + \
-                                        '%(content)s' + ''
+        self.tmpl_func_set_properties = '\n' + self.tabs(1) + 'def __set_properties(self):\n%(content)s'
 
-        return BaseLangCodeWriter.generate_code_set_properties(
-            self, builder, code_obj, is_new, tab)
+        return BaseLangCodeWriter.generate_code_set_properties( self, builder, code_obj, is_new, tab )
 
     def generate_code_size(self, obj):
         objname = self.format_generic_access(obj)
@@ -542,13 +474,7 @@ def %(handler)s(self, event):  # wxGlade: %(klass)s.<event_handler>
         else:
             method = 'SetMinSize'
         if use_dialog_units:
-            return '%s.%s(%s(%s, (%s)))\n' % (
-                objname,
-                method,
-                self.cn('wxDLG_SZE'),
-                objname,
-                size[:-1]
-                )
+            return '%s.%s(%s(%s, (%s)))\n' % ( objname, method, self.cn('wxDLG_SZE'), objname, size[:-1] )
         else:
             return '%s.%s((%s))\n' % (objname, method, size)
 
@@ -568,7 +494,7 @@ def %(handler)s(self, event):  # wxGlade: %(klass)s.<event_handler>
         @see: L{_recode_x80_xff()}
         """
         # convert all strings to unicode first
-        if not isinstance(s, types.UnicodeType):
+        if not isinstance(s, compat.unicode):
             s = s.decode(self.app_encoding)
 
         # check if it's pure ascii
@@ -587,9 +513,9 @@ def %(handler)s(self, event):  # wxGlade: %(klass)s.<event_handler>
         s = s.encode('raw-unicode-escape')
         s = self._recode_x80_xff(s)
         if self._use_gettext:
-            return '_(u"%s")' % s
+            return '_(u"%s")' % s.decode("ASCII") # XXX omit u for Python 3
         else:
-            return 'u"%s"' % s
+            return 'u"%s"' % s.decode("ASCII") # XXX omit u for Python 3
 
     def add_object_format_name(self, name):
         return '#self.%s' % name
@@ -613,10 +539,7 @@ def %(handler)s(self, event):  # wxGlade: %(klass)s.<event_handler>
         return stmt
 
     def _get_class_filename(self, klass):
-        filename = os.path.join(
-            self.out_dir,
-            klass.replace('.', os.sep) + '.py'
-            )
+        filename = os.path.join( self.out_dir, klass.replace('.', os.sep) + '.py' )
         return filename
 
     def format_generic_access(self, obj):
@@ -628,11 +551,7 @@ def %(handler)s(self, event):  # wxGlade: %(klass)s.<event_handler>
 # end of class PythonCodeWriter
 
 writer = PythonCodeWriter()
-"""\
-The code writer is an instance of L{PythonCodeWriter}.
-"""
+"The code writer is an instance of L{PythonCodeWriter}."
 
 language = writer.language
-"""\
-Language generated by this code generator
-"""
+"Language generated by this code generator"

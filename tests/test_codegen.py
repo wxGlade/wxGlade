@@ -7,7 +7,6 @@ Code genera Commandline / non-graphical tests
 """
 
 import os
-import StringIO
 
 # import test base class
 from tests import WXGladeBaseTest
@@ -15,6 +14,7 @@ from tests import WXGladeBaseTest
 # import project modules
 import common
 import config
+import compat
 import errors
 import misc
 import xrc2wxg
@@ -682,7 +682,7 @@ class TestCodeGen(WXGladeBaseTest):
         # clear output_file
         if codewriter.output_file:
             codewriter.output_file.close()
-        codewriter.output_file = StringIO.StringIO()
+        codewriter.output_file = compat.StringIO()
 
         # generate application start code
         codewriter.add_app({'class': klass,
@@ -1597,11 +1597,9 @@ class TestCodeGen(WXGladeBaseTest):
             )
 
     def test_xrc2wxg(self):
-        """\
-        Test converting XRC files into WXG files
-        """
+        "Test converting XRC files into WXG files"
         fullpath = os.path.join(self.caseDirectory, 'import_test.xrc')
-        obuffer = StringIO.StringIO()
+        obuffer = compat.StringIO()
 
         xrc2wxg.convert(fullpath, obuffer)
 
@@ -1611,15 +1609,11 @@ class TestCodeGen(WXGladeBaseTest):
         self._compare(expected, generated, "wxg")
 
     def test_Statusbar_wo_labels(self):
-        """\
-        Test code generation for a wxStatusBar with fields but w/o labels
-        """
+        "Test code generation for a wxStatusBar with fields but w/o labels"
         self._test_all('Statusbar_wo_labels')
 
     def test_Format_flags(self):
-        """\
-        Test code cn_f() for XRC code generator
-        """
+        "Test code cn_f() for XRC code generator"
         self._generate_and_compare(
             'XRC',
             'Format_flags.wxg',
@@ -1627,9 +1621,7 @@ class TestCodeGen(WXGladeBaseTest):
         )
 
     def test_get_bitmap_code(self):
-        """\
-        Test bitmap code generation
-        """
+        "Test bitmap code generation"
         details = {}
         details['C++'] = [
             (None, 'wxNullBitmap'),
@@ -1708,21 +1700,15 @@ class TestCodeGen(WXGladeBaseTest):
                 )
 
     def test_CustomWidget(self):
-        """\
-        Test code generation for CustomWidget
-        """
+        "Test code generation for CustomWidget"
         self._test_all('CustomWidget')
 
     def test_missing_application_attributes(self):
-        """\
-        Test code generation w/ missing <application> attributes
-        """
+        "Test code generation w/ missing <application> attributes"
         self._test_all('app_wo_attrs')
 
     def test_get_scope(self):
-        """\
-        Test splitting scope (get_class() and get_scope())
-        """
+        "Test splitting scope (get_class() and get_scope())"
         details = {}
         details['C++'] = [
             ('wxALL',           '',         'wxALL'),

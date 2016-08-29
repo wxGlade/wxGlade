@@ -8,141 +8,90 @@ wxBitmapButton objects
 
 import wx
 
-import config
-import common
-import compat
+import common, compat, config
 from edit_windows import ManagedBase, EditStylesMixin
 from gui_mixins import BitmapMixin
-from tree import Tree
-from widget_properties import *
+from tree import Tree, Node, Node
+import new_properties as np
 
 
 class EditBitmapButton(ManagedBase, EditStylesMixin, BitmapMixin):
-    """\
-    Class to handle wxBitmapButton objects
-    """
+    "Class to handle wxBitmapButton objects"
 
-    def __init__(self, name, parent, id, bmp_file, sizer, pos,
-                 property_window, show=True):
+    _PROPERTIES = ["Widget", "bitmap", "disabled_bitmap", "default", "style"]
+    PROPERTIES = ManagedBase.PROPERTIES + _PROPERTIES + ManagedBase.EXTRA_PROPERTIES
 
-        # Initialise parent classes
-        ManagedBase.__init__(self, name, 'wxBitmapButton', parent, id, sizer,
-                             pos, property_window, show=show)
+    _PROPERTY_HELP = {"bitmap": BitmapMixin.bitmap_tooltip_text,
+                      "disabled_bitmap": BitmapMixin.bitmap_tooltip_text}
+
+    def __init__(self, name, parent, id, bmp_file, sizer, pos, show=True):
+        ManagedBase.__init__(self, name, 'wxBitmapButton', parent, id, sizer, pos, show=show)
         EditStylesMixin.__init__(self)
         BitmapMixin.__init__(self)
 
-        # initialise instance variables
-        self.default = False
-        self.disabled_bitmap = ""
+        # initialise instance properties
+        filedialog_style = wx.FD_OPEN | wx.FD_FILE_MUST_EXIST  # for the following two properties
+        self.bitmap          = np.FileNameProperty(bmp_file, style=filedialog_style)
+        self.disabled_bitmap = np.FileNamePropertyD("", default_value="", style=filedialog_style)
+        self.default         = np.CheckBoxProperty(False)
+
         if config.preferences.default_border:
-            self.border = config.preferences.default_border_size
-            self.flag = wx.ALL
-        self.set_bitmap(bmp_file)
+            self.border.set( config.preferences.default_border_size )
+            self.flag.set( wx.ALL )
 
-        # initialise properties remaining staff
-        access = self.access_functions
-        properties = self.properties
-
-        access['bitmap'] = (self.get_bitmap, self.set_bitmap)
-        properties['bitmap'] = FileDialogProperty(
-            self, 'bitmap', style=wx.FD_OPEN | wx.FD_FILE_MUST_EXIST,
-            can_disable=False, label=_("bitmap"))
-        properties['bitmap'].set_tooltip(self.bitmap_tooltip_text)
-
-        access['default'] = (self.get_default, self.set_default)
-        properties['default'] = CheckBoxProperty(
-            self, 'default', label=_("Default"))
-
-        access['disabled_bitmap'] = (self.get_disabled_bitmap,
-                                     self.set_disabled_bitmap)
-        properties['disabled_bitmap'] = FileDialogProperty(
-            self, 'disabled_bitmap',
-            style=wx.FD_OPEN | wx.FD_FILE_MUST_EXIST,
-            label=_("Disabled bitmap"))
-        properties['disabled_bitmap'].set_tooltip(self.bitmap_tooltip_text)
-
-        access['style'] = (self.get_style, self.set_style)
-        properties['style'] = CheckListProperty(
-            self, 'style', self.widget_writer)
-
-    def create_properties(self):
-        ManagedBase.create_properties(self)
-        panel = wx.Panel(self.notebook, -1)
-        self.properties['bitmap'].display(panel)
-        self.properties['disabled_bitmap'].display(panel)
-        self.properties['default'].display(panel)
-        self.properties['style'].display(panel)
-        szr = wx.BoxSizer(wx.VERTICAL)
-        szr.Add(self.properties['bitmap'].panel, 0, wx.EXPAND)
-        szr.Add(self.properties['disabled_bitmap'].panel, 0, wx.EXPAND)
-        szr.Add(self.properties['default'].panel, 0, wx.EXPAND)
-        szr.Add(self.properties['style'].panel, 0, wx.EXPAND)
-        panel.SetAutoLayout(True)
-        compat.SizerItem_SetSizer(panel, szr)
-        szr.Fit(panel)
-        self.notebook.AddPage(panel, 'Widget')
-
-    def get_bitmap(self):
-        return self.bitmap
-
-    def set_bitmap(self, value):
-        self.bitmap = value
-        if self.widget:
-            bmp = self.get_preview_obj_bitmap()
-            self.widget.SetBitmapLabel(bmp)
-            self.widget.SetBitmapSelected(bmp)
-            self.widget.SetBitmapFocus(bmp)
-            self.set_size("%s, %s" % tuple(self.widget.GetBestSize()))
-
-    def get_disabled_bitmap(self):
-        return self.disabled_bitmap
-
-    def set_disabled_bitmap(self, value):
-        self.disabled_bitmap = value
-        if self.widget:
-            bmp = self.get_preview_obj_bitmap(self.disabled_bitmap)
-            self.widget.SetBitmapDisabled(bmp)
-            self.set_size("%s, %s" % tuple(self.widget.GetBestSize()))
 
     def create_widget(self):
         bmp = self.get_preview_obj_bitmap()
-        try:
-            self.widget = wx.BitmapButton(self.parent.widget, self.id, bmp,
-                                          style=self.get_int_style())
-        except AttributeError:
-            self.widget = wx.BitmapButton(self.parent.widget, self.id, bmp)
+        #try:
+        self.widget = wx.BitmapButton(self.parent.widget, self.id, bmp, style=self.style)
+        if self.disabled_bitmap:
+            bmp = self.get_preview_obj_bitmap(self.disabled_bitmap)
+            self.widget.SetBitmapDisabled(bmp)
 
-    def get_default(self):
-        return self.default
+        #except AttributeError:
+            #self.widget = wx.BitmapButton(self.parent.widget, self.id, bmp)
 
-    def set_default(self, value):
-        self.default = bool(int(value))
+    def properties_changed(self, modified=None):
+        "update label (and size if label/stockitem have changed)"
+        if self.widget:
+            resize = False
+            if not modified or "bitmap" in modified:
+                bmp = self.get_preview_obj_bitmap(self.bitmap)
+                self.widget.SetBitmapLabel(bmp)
+                self.widget.SetBitmapSelected(bmp)
+                self.widget.SetBitmapFocus(bmp)
+                resize = True
+            if not modified or "disabled_bitmap" in modified:
+                bmp = self.get_preview_obj_bitmap(self.disabled_bitmap)
+                self.widget.SetBitmapDisabled(bmp)
+                resize = True
 
-# end of class EditBitmapButton
+            if resize: self._set_widget_best_size()
+            #size_p = self.properties["size"]
+            #if resize and size_p.get()=="-1, -1":
+                #self.sizer.set_item(self.pos, size=self.widget.GetBestSize())
+                #if not size_p.is_active():
+                    #size_p.set( self.widget.GetBestSize() )
+
+        ManagedBase.properties_changed(self, modified)
 
 
 def builder(parent, sizer, pos, number=[1]):
-    """\
-    factory function for EditBitmapButton objects.
-    """
-
+    "factory function for EditBitmapButton objects"
     name = 'bitmap_button_%s' % number[0]
     while common.app_tree.has_name(name):
         number[0] += 1
         name = 'bitmap_button_%s' % number[0]
     bitmap = wx.FileSelector(_("Select the image for the button"))
-    button = EditBitmapButton(name, parent, wx.NewId(), bitmap, sizer, pos,
-                              common.property_panel)
-    node = Tree.Node(button)
+    button = EditBitmapButton(name, parent, wx.NewId(), bitmap, sizer, pos)
+    node = Node(button)
     button.node = node
     button.show_widget(True)
-    common.app_tree.insert(node, sizer.node, pos - 1)
+    common.app_tree.insert(node, sizer.node, pos-1)
 
 
 def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
-    """\
-    factory to build EditBitmapButton objects from a XML file
-    """
+    "factory to build EditBitmapButton objects from a XML file"
     from xml_parse import XmlParsingError
     try:
         label = attrs['name']
@@ -150,24 +99,19 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
         raise XmlParsingError(_("'name' attribute missing"))
     if sizer is None or sizeritem is None:
         raise XmlParsingError(_("sizer or sizeritem object cannot be None"))
-    button = EditBitmapButton(label, parent, wx.NewId(), '', sizer, pos,
-                              common.property_panel, show=False)
-    sizer.set_item(button.pos, option=sizeritem.option, flag=sizeritem.flag,
-                   border=sizeritem.border)
-    node = Tree.Node(button)
+    button = EditBitmapButton(label, parent, wx.NewId(), '', sizer, pos, show=False)
+    sizer.set_item(button.pos, proportion=sizeritem.proportion, flag=sizeritem.flag, border=sizeritem.border)
+    node = Node(button)
     button.node = node
     if pos is None:
         common.app_tree.add(node, sizer.node)
     else:
-        common.app_tree.insert(node, sizer.node, pos - 1)
+        common.app_tree.insert(node, sizer.node, pos-1)
     return button
 
 
 def initialize():
-    """\
-    initialization function for the module: returns a wxBitmapButton to be
-    added to the main palette.
-    """
+    "initialization function for the module: returns a wxBitmapButton to be added to the main palette"
     common.widgets['EditBitmapButton'] = builder
     common.widgets_from_xml['EditBitmapButton'] = xml_builder
 

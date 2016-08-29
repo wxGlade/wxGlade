@@ -11,17 +11,13 @@ import wcodegen
 
 
 class PythonStaticTextGenerator(wcodegen.PythonWidgetCodeWriter):
-    tmpl = '%(name)s = %(klass)s(%(parent)s, %(id)s, ' \
-           '%(label)s%(style)s)\n'
+    tmpl = '%(name)s = %(klass)s(%(parent)s, %(id)s, %(label)s%(style)s)\n'
 
-# end of class PythonStaticTextGenerator
 
 
 class CppStaticTextGenerator(wcodegen.CppWidgetCodeWriter):
-    tmpl = '%(name)s = new %(klass)s(%(parent)s, %(id)s, ' \
-           '%(label)s%(style)s);\n'
+    tmpl = '%(name)s = new %(klass)s(%(parent)s, %(id)s, %(label)s%(style)s);\n'
 
-# end of class CppStaticTextGenerator
 
 
 def xrc_code_generator(obj):
@@ -42,5 +38,5 @@ def initialize():
     klass = 'wxStaticText'
     common.class_names['EditStaticText'] = klass
     common.register('python', klass, PythonStaticTextGenerator(klass))
-    common.register('C++', klass, CppStaticTextGenerator(klass))
-    common.register('XRC', klass, xrc_code_generator)
+    common.register('C++',    klass, CppStaticTextGenerator(klass))
+    common.register('XRC',    klass, xrc_code_generator)

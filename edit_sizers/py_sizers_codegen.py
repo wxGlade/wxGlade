@@ -8,13 +8,11 @@ Python generator functions for the various wxSizerS
 
 
 import common
-from edit_sizers import BaseSizerBuilder
+from .edit_sizers import BaseSizerBuilder
 
 
 class BasePythonSizerBuilder(BaseSizerBuilder):
-    """\
-    Python base class for all sizer code generators
-    """
+    "Python base class for all sizer code generators"
 
     language = 'python'
 

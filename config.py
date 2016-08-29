@@ -10,555 +10,192 @@ Configuration related stuff
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
-# import general python modules
-import os
-import sys
+import os, sys
 
-# default configuration values
-default_app_name = 'app'
-"""\
-Default value for the application name
 
-@type: str
-"""
+# default configuration values #########################################################################################
+default_app_name = 'app'           # application name
 
-default_cpp_app_name = 'main.cpp'
-"""\
-Default application name for C++ files
+default_cpp_app_name = 'main.cpp'  # name for C++ application file
+default_header_extension = '.h'    # extension of C++ header files
+default_source_extension = '.cpp'  # extension of C++ source files
 
-@type: str
-@see: L{default_header_extension}
-@see: L{default_source_extension}
-"""
+default_language = 'python'        # Default language if no specified
 
-default_encoding = 'UTF-8'
-"""\
-Default value for encoding
+default_output_file = './wxglade_out.py'  # output file
+default_output_path = './'                # output path"
 
-@type: str
-@see: L{encoding}
-"""
+default_encoding = 'UTF-8'   # value for encoding; @see: L{encoding}"
 
-default_header_extension = '.h'
-"""\
-Default extension of the header file
+default_indent_symbol = ' '  # value for indentation symbol
+default_indent_amount = 4    # value for indentation amount
 
-@type: str
-@see: L{default_cpp_app_name}
-@see: L{default_source_extension}
-"""
+default_multiple_files = 0   # value for writing multiple files (each class in a separate file)
+default_overwrite = 1        # value for overwriting existing sources
+default_use_gettext = 1      # value to usage of gettext
 
-default_indent_amount = 4
-"""\
-Default value for indentation
+for_version = (2, 8) # version to generate code for
 
-@type: int
-"""
 
-default_indent_symbol = ' '
-"""\
-Default value for indentation symbol
+# these paths, file names and strings will be set during initialisation: ###############################################
+appdata_path = ''                    # wxGlades application data like file history and templates
+credits_file = ''                    # Path of the credits file "CREDITS.txt"
 
-@type: str
-"""
+widgets_path = 'widgets'             # Path to wxGlade "built-in" widgets
+wxglade_path = '.'                   # Program path, set in wxglade.py
+docs_path = 'docs'                   # Path to wxGlade documentation (e.g. html manual, LICENSE.txt, CREDITS.txt)
+home_path = ''                       # Users home directory
+icons_path = 'icons'                 # Path to wxGlade icons
+templates_path = 'templates'         # System template path
+license_file = ''                    # Path of the license file "LICENSE.txt"
+manual_file = 'docs/html/index.html' # Path to wxGlade HTML manual
+tutorial_file = 'docs/tutorial.html' # Path to wxGlade HTML Tutorial
 
-default_language = 'python'
-"""\
-Default language of no specified
+platform = 'not_set'                 # Current platform string (mostly wx.Platform)
+version = 'not_set'                  # wxGlade version string; see: get_version()
+py_version = sys.version.split()[0]  # Python version string
+wx_version = 'not_set'               # wxPython version string
 
-@type: str
-"""
+rc_file = ''                         # Path to the rc / ini file to store user preferences in it
+history_file = ''                    # Path to the history file, if used
+log_file = ''                        # Path to wxGlade log file
 
-default_multiple_files = 0
-"""\
-Default value for writing multiple files (each class in a separate file)
+encoding = None                      # character encoding; see wxglade.init_localization(); fallback: 'default_encoding'
 
-@type: int
-"""
 
-default_overwrite = 1
-"""\
-Default value for overwriting existing sources
+use_gui = True                 # If True, wxGlade runs in "GUI" mode, if False, in "batch" mode for generating code only
+use_file_history = not use_gui # Flag to use a file history
 
-@type: int
-"""
 
-default_output_file = './wxglade_out.py'
-"""\
-Default output file
+backed_up = {}      # Set of file names already backed up during this session (a dictionary);  see: common.save_file()
+preferences = None  # User preferences;  @type: common.Preferences   @see: L{common.Preferences}
 
-@type: str
-"""
 
-default_output_path = './'
-"""\
-Default output path
+label_width = 110   # width of new created labels; new version
 
-@type: str
-"""
-
-default_source_extension = '.cpp'
-"""\
-Default extension of the source file
-
-@type: str
-@see: L{default_cpp_app_name}
-@see: L{default_header_extension}
-"""
-
-default_use_gettext = 1
-"""\
-Default value to usage of gettext
-
-@type: int
-"""
-
-encoding = None
-"""\
-System default character encoding.
-
-The default application L{default_encoding} is the fallback only.
-
-@type: str | None
-@see: L{default_encoding}
-@see: L{wxglade.init_localization()}
-"""
-
-for_version = (2, 8)
-"""\
-Default version to generate code for
-
-@type: (int, int)
-"""
-
-appdata_path = ''
-"""\
-Directory to wxGlades application data like file history and templates
-
-@type: str
-@note: This path will be set during initialisation
-"""
-
-credits_file = ''
-"""\
-Path of the credits file "CREDITS.txt"
-
-@type: str
-"""
-
-docs_path = 'docs'
-"""\
-Path to wxGlade documentation (e.g. html manual, LICENSE.txt, CREDITS.txt)
-
-@type: str
-@note: This path will be set during initialisation
-"""
-
-home_path = ''
-"""\
-Users home directory
-
-@type: str
-@note: This path will be set during initialisation
-"""
-
-icons_path = 'icons'
-"""\
-Path to wxGlade icons
-
-@type: str
-@note: This path will be set during initialisation
-"""
-
-license_file = ''
-"""\
-Path of the license file "LICENSE.txt"
-
-@type: str
-@note: This path will be set during initialisation
-"""
-
-manual_file = 'docs/html/index.html'
-"""\
-Path to wxGlade HTML manual
-
-@type: str
-@note: This path will be set during initialisation
-"""
-
-platform = 'not_set'
-"""\
-Current platform (mostly wx.Platform)
-
-@type: str
-@note: This path will be set during initialisation
-"""
-
-version = 'not_set'
-"""\
-wxGlade version string
-
-@type: str
-@note: This path will be set during initialisation
-@see: L{get_version()}
-"""
-
-py_version = sys.version.split()[0]
-"""\
-Python version
-
-@type: str
-"""
-
-wx_version = 'not_set'
-"""\
-wxPython version
-
-@type: str
-"""
-
-templates_path = 'templates'
-"""\
-System template path
-
-@type: str
-@note: This path will be set during initialisation
-"""
-
-tutorial_file = 'docs/tutorial.html'
-"""\
-Path to wxGlade HTML Tutorial
-
-@type: str
-@note: This path will be set during initialisation
-"""
-
-use_gui = True
-"""\
-If True, wxGlade runs in "GUI" mode. If False, the program is invoked
-from the command-line in "batch" mode for generating code only.
-
-@type: bool
-"""
-
-widgets_path = 'widgets'
-"""\
-Path to wxGlade "built-in" widgets
-
-@type: str
-@note: This path will be set during initialisation
-"""
-
-wxglade_path = '.'
-"""\
-Program path, set in wxglade.py
-
-@type: str
-"""
-
-backed_up = {}
-"""\
-Set of file names already backed up during this session
-
-@type: dict
-@see: L{common.save_file()}
-"""
-
-preferences = None
-"""\
-User preferences
-
-@type: common.Preferences
-@see: L{common.Preferences}
-"""
-
-rc_file = ''
-"""\
-Path to the rc / ini file to store user preferences in it
-
-@type: str
-@note: This path will be set during initialisation
-"""
-
-history_file = ''
-"""\
-Path to the history file, if used
-
-@type: str
-@note: This path will be set during initialisation
-"""
-
-use_file_history = False
-"""\
-Flag to use a file history
-
-@type: bool
-"""
-if use_gui:
-    use_file_history = True
-
-log_file = ''
-"""\
-Path to wxGlade log file
-
-@type: str
-@note: This path will be set during initialisation
-"""
-
-label_initial_width = 5
-"""\
-Initial width of new created labels
-"""
-
-tooltip_time = 3
-"""\
-Number of seconds a tooltip will be shown
-
-@type: int
-"""
-
-tooltip_width = 50
-"""\
-Maximum width to split tooltips into
-
-@type: int
-"""
-
+########################################################################################################################
 widget_config = {
     'generic_styles': {
 
         # generic styles from wxSizer
-        'wxALL': {
-            'desc': _('from wxSizer'),
-            'combination': 'wxLEFT|wxRIGHT|wxTOP|wxBOTTOM',
-        },
-        'wxTOP': {
-            'desc': _('Apply the border to the top.'),
-        },
-        'wxBOTTOM': {
-            'desc': _('Apply the border to the bottom.'),
-        },
-        'wxLEFT': {
-            'desc': _('Apply the border to the left.'),
-        },
-        'wxRIGHT': {
-            'desc': _('Apply the border to the right.'),
-        },
-        'wxALIGN_LEFT': {
-            'desc': _('Align the item to the left.'),
-        },
-        'wxALIGN_RIGHT': {
-            'desc': _('Align the item to the right.'),
-        },
-        'wxALIGN_CENTER': {
-            'desc': _('Centre the item (horizontally).'),
-            'combination': 'wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL',
-        },
-        'wxALIGN_CENTRE': {
-            'desc': _('Centre the item (horizontally).'),
-            'synonym': 'wxALIGN_CENTER',
-            'rename_to': 'wxALIGN_CENTER',
-            'combination': 'wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL',
-        },
-        'wxALIGN_TOP': {
-            'desc': _('Align the item to the top.'),
-        },
-        'wxALIGN_BOTTOM': {
-            'desc': _('Align the item to the bottom.'),
-        },
-        'wxALIGN_CENTER_VERTICAL': {
-            'desc': _('Centre the item vertically.'),
-        },
-        'wxALIGN_CENTRE_VERTICAL': {
-            'desc': _('Centre the item vertically.'),
-            'synonym': 'wxALIGN_CENTER_VERTICAL',
-            'rename_to': 'wxALIGN_CENTER_VERTICAL',
-        },
-        'wxALIGN_CENTER_HORIZONTAL': {
-            'desc': _('Centre the item horizontally.'),
-        },
-        'wxALIGN_CENTRE_HORIZONTAL': {
-            'desc': _('Centre the item horizontally.'),
-            'synonym': 'wxALIGN_CENTER_HORIZONTAL',
-            'rename_to': 'wxALIGN_CENTER_HORIZONTAL',
-        },
-        'wxEXPAND': {
-            'desc': _('The item will be expanded to fill the space '
-                      'assigned to the item.'),
-        },
-        'wxSHAPED': {
-            'desc': _('The item will be expanded as much as possible while '
-                      'also maintaining its aspect ratio.'),
-        },
-        'wxADJUST_MINSIZE': {
-            'desc': _('This style was used in wxWidgets 2.4. Since wxWidgets '
-                      '2.6 the behaviour is default. Select wxFIXED_MINSIZE '
-                      'to use the old behaviour.'),
-            'supported_by': ('wx2',)
-        },
-        'wxFIXED_MINSIZE': {
-            'desc': _('Normally wxSizers will use GetAdjustedBestSize() '
-                      'to determine what the minimal size of window items '
-                      'should be, and will use that size to calculate the '
-                      'layout. This allows layouts to adjust when an item '
-                      'changes and its best size becomes different. If you '
-                      'would rather have a window item stay the size it '
-                      'started with then use wxFIXED_MINSIZE.'),
-        },
-        'wxRESERVE_SPACE_EVEN_IF_HIDDEN': {
-            'desc': _("Normally wxSizers don't allocate space for hidden "
-                      "windows or other items. This flag overrides this "
-                      "behaviour so that sufficient space is allocated for "
-                      "the window even if it isn't visible. This makes it "
-                      "possible to dynamically show and hide controls "
-                      "without resizing parent dialog, for example. "
-                      "This function is new since wxWidgets version 2.8."),
-            'supported_by': ('wx3',),
-        },
+        'wxALL':    { 'desc': _('from wxSizer'),
+                      'combination': 'wxLEFT|wxRIGHT|wxTOP|wxBOTTOM' },
+        'wxTOP':    { 'desc': _('Apply the border to the top.') },
+        'wxBOTTOM': { 'desc': _('Apply the border to the bottom.') },
+        'wxLEFT':   { 'desc': _('Apply the border to the left.') },
+        'wxRIGHT':  { 'desc': _('Apply the border to the right.') },
+        'wxALIGN_LEFT':   {'desc': _('Align the item to the left.') },
+        'wxALIGN_RIGHT':  {'desc': _('Align the item to the right.') },
+        'wxALIGN_CENTER': { 'desc': _('Centre the item (horizontally).'),
+                            'combination': 'wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL' },
+        'wxALIGN_CENTRE': { 'desc': _('Centre the item (horizontally).'),
+                            'synonym': 'wxALIGN_CENTER',
+                            'rename_to': 'wxALIGN_CENTER',
+                            'combination': 'wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL' },
+        'wxALIGN_TOP':              {'desc': _('Align the item to the top.') },
+        'wxALIGN_BOTTOM':            { 'desc': _('Align the item to the bottom.') },
+        'wxALIGN_CENTER_VERTICAL':   { 'desc': _('Centre the item vertically.') },
+        'wxALIGN_CENTRE_VERTICAL':   { 'desc': _('Centre the item vertically.'),
+                                       'synonym': 'wxALIGN_CENTER_VERTICAL',
+                                       'rename_to': 'wxALIGN_CENTER_VERTICAL' },
+        'wxALIGN_CENTER_HORIZONTAL': { 'desc': _('Centre the item horizontally.') },
+        'wxALIGN_CENTRE_HORIZONTAL': { 'desc': _('Centre the item horizontally.'),
+                                       'synonym': 'wxALIGN_CENTER_HORIZONTAL',
+                                       'rename_to': 'wxALIGN_CENTER_HORIZONTAL' },
+        'wxEXPAND': { 'desc': _('The item will be expanded to fill the space assigned to the item.') },
+        'wxSHAPED':{'desc':_('The item will be expanded as much as possible while also maintaining its aspect ratio.')},
+        'wxADJUST_MINSIZE': { 'desc': _('This style was used in wxWidgets 2.4. Since wxWidgets 2.6 the behaviour is '
+                                        'default. Select wxFIXED_MINSIZE to use the old behaviour.'),
+                              'supported_by': ('wx2',) },
+        'wxFIXED_MINSIZE':  { 'desc': _('Normally wxSizers will use GetAdjustedBestSize() to determine what the '
+                                        'minimal size of window items should be, and will use that size to calculate '
+                                        'the layout. This allows layouts to adjust when an item changes and its best '
+                                        'size becomes different. If you would rather have a window item stay '
+                                        'the size it started with then use wxFIXED_MINSIZE.') },
+        'wxRESERVE_SPACE_EVEN_IF_HIDDEN': { 'desc': _("Normally wxSizers don't allocate space for hidden "
+                                                      "windows or other items. This flag overrides this "
+                                                      "behaviour so that sufficient space is allocated for "
+                                                      "the window even if it isn't visible. This makes it "
+                                                      "possible to dynamically show and hide controls "
+                                                      "without resizing parent dialog, for example. "
+                                                      "This function is new since wxWidgets version 2.8."),
+                                            'supported_by': ('wx3',) },
 
         # generic styles from wxWindow
-        'wxTAB_TRAVERSAL': {
-            'desc': _('Use this to enable tab traversal for non-dialog '
-                      'windows.'),
-        },
-        'wxFULL_REPAINT_ON_RESIZE': {
-            'desc': _('Use this style to force a complete redraw of the '
-                      'window whenever it is resized instead of redrawing '
-                      'just the part of the window affected by resizing. '),
-        },
-        'wxNO_FULL_REPAINT_ON_RESIZE': {
-            'desc': _('On Windows, this style used to disable repainting '
-                      'the window completely when its size is changed. '
-                      'Since this behaviour is now the default, the style '
-                      'is now obsolete and no longer has an effect.'),
-        },
-        'wxCLIP_CHILDREN': {
-            'desc': _('Use this style to eliminate flicker caused by the '
-                      'background being repainted, then children being '
-                      'painted over them. Windows only.'),
-        },
-        'wxWANTS_CHARS': {
-            'desc': _("Use this to indicate that the window wants to get "
-                      "all char/key events for all keys - even for keys "
-                      "like TAB or ENTER which are usually used for "
-                      "dialog navigation and which wouldn't be generated "
-                      "without this style. If you need to use this style "
-                      "in order to get the arrows or etc., but would still "
-                      "like to have normal keyboard navigation take place, "
-                      "you should call Navigate in response to the key "
-                      "events for Tab and Shift-Tab."),
-        },
+        'wxTAB_TRAVERSAL': { 'desc': _('Use this to enable tab traversal for non-dialog windows.'), },
+        'wxFULL_REPAINT_ON_RESIZE':    { 'desc': _('Use this style to force a complete redraw of the '
+                                                   'window whenever it is resized instead of redrawing '
+                                                   'just the part of the window affected by resizing. ') },
+        'wxNO_FULL_REPAINT_ON_RESIZE': { 'desc': _('On Windows, this style used to disable repainting '
+                                                   'the window completely when its size is changed. '
+                                                   'Since this behaviour is now the default, the style '
+                                                   'is now obsolete and no longer has an effect.') },
+        'wxCLIP_CHILDREN': { 'desc': _('Use this style to eliminate flicker caused by the '
+                                       'background being repainted, then children being '
+                                       'painted over them. Windows only.') },
+        'wxWANTS_CHARS': { 'desc': _("Use this to indicate that the window wants to get "
+                                     "all char/key events for all keys - even for keys "
+                                     "like TAB or ENTER which are usually used for "
+                                     "dialog navigation and which wouldn't be generated "
+                                     "without this style. If you need to use this style "
+                                     "in order to get the arrows or etc., but would still "
+                                     "like to have normal keyboard navigation take place, "
+                                     "you should call Navigate in response to the key "
+                                     "events for Tab and Shift-Tab.") },
 
         # Generic border styles
-        'wxBORDER_DEFAULT': {
-            'desc': _('The window class will decide the kind of border to '
-                      'show, if any.'),
-            'supported_by': ('wx3',)
+        'wxBORDER_DEFAULT': { 'desc': _('The window class will decide the kind of border to show, if any.'),
+                              'supported_by': ('wx3',) },
+        'wxSIMPLE_BORDER':  { 'desc': _('Displays a thin border around the window. '
+                                        'wxSIMPLE_BORDER is the old name for this style.'),
+                              'rename_to': 'wxBORDER_SIMPLE' },
+        'wxBORDER_SIMPLE':  { 'desc': _('Displays a thin border around the window. '
+                                        'wxSIMPLE_BORDER is the old name for this style.') },
+        'wxSUNKEN_BORDER':  { 'desc': _('Displays a sunken border. wxSUNKEN_BORDER is the old name for this style.'),
+                              'rename_to': 'wxBORDER_SUNKEN' },
+        'wxBORDER_SUNKEN':  { 'desc': _('Displays a sunken border. wxSUNKEN_BORDER is the old name for this style.') },
+        'wxRAISED_BORDER':  { 'desc': _('Displays a raised border. wxRAISED_BORDER is the old name for this style.'),
+                              'rename_to': 'wxBORDER_RAISED' },
+        'wxBORDER_RAISED':  { 'desc': _('Displays a raised border. wxRAISED_BORDER is the old name for this style.') },
+        'wxSTATIC_BORDER':  { 'desc': _('Displays a border suitable for a static control. '
+                                        'wxSTATIC_BORDER is the old name for this style. Windows only.'),
+                              'rename_to': 'wxBORDER_STATIC' },
+        'wxBORDER_STATIC':  { 'desc': _('Displays a border suitable for a static control. '
+                                        'wxSTATIC_BORDER is the old name for this style. Windows only.'),
+                              'rename_to': '' },
+        'wxBORDER_THEME':   { 'desc': _('Displays a native border suitable for a control, on the current platform. '
+                                        'On Windows XP or Vista, this will be a themed border; '
+                                        'on most other platforms a sunken border will be used. '
+                                        'For more information for themed borders on Windows, please see Themed borders '
+                                        'on Windows.') },
+        'wxNO_BORDER': { 'desc': _('Displays no border, overriding the default border '
+                                   'style for the window. wxNO_BORDER is the old name for this style.'),
+                         'rename_to': 'wxBORDER_NONE' },
+        'wxBORDER_NONE': { 'desc': _('Displays no border, overriding the default border style for the window.'
+                                     ' wxNO_BORDER is the old name for this style.'),
         },
-        'wxSIMPLE_BORDER': {
-            'desc': _('Displays a thin border around the window. '
-                      'wxSIMPLE_BORDER is the old name for this style.'),
-            'rename_to': 'wxBORDER_SIMPLE',
-        },
-        'wxBORDER_SIMPLE': {
-            'desc': _('Displays a thin border around the window. '
-                      'wxSIMPLE_BORDER is the old name for this style.'),
-        },
-        'wxSUNKEN_BORDER': {
-            'desc': _('Displays a sunken border. wxSUNKEN_BORDER is the '
-                      'old name for this style.'),
-            'rename_to': 'wxBORDER_SUNKEN'
-        },
-        'wxBORDER_SUNKEN': {
-            'desc': _('Displays a sunken border. wxSUNKEN_BORDER is the '
-                      'old name for this style.'),
-        },
-        'wxRAISED_BORDER': {
-            'desc': _('Displays a raised border. wxRAISED_BORDER is the '
-                      'old name for this style.'),
-            'rename_to': 'wxBORDER_RAISED',
-        },
-        'wxBORDER_RAISED': {
-            'desc': _('Displays a raised border. wxRAISED_BORDER is the '
-                      'old name for this style.'),
-        },
-        'wxSTATIC_BORDER': {
-            'desc': _('Displays a border suitable for a static control. '
-                      'wxSTATIC_BORDER is the old name for this style. '
-                      'Windows only.'),
-            'rename_to': 'wxBORDER_STATIC',
-        },
-        'wxBORDER_STATIC': {
-            'desc': _('Displays a border suitable for a static control. '
-                      'wxSTATIC_BORDER is the old name for this style. '
-                      'Windows only.'),
-            'rename_to': '',
-        },
-        'wxBORDER_THEME': {
-            'desc': _('Displays a native border suitable for a control, on '
-                      'the current platform. On Windows XP or Vista, this '
-                      'will be a themed border; on most other platforms a '
-                      'sunken border will be used. For more information for '
-                      'themed borders on Windows, please see Themed borders '
-                      'on Windows.'),
-        },
-        'wxNO_BORDER': {
-            'desc': _('Displays no border, overriding the default border '
-                      'style for the window. wxNO_BORDER is the old name '
-                      'for this style.'),
-            'rename_to': 'wxBORDER_NONE',
-        },
-        'wxBORDER_NONE': {
-            'desc': _('Displays no border, overriding the default border '
-                      'style for the window. wxNO_BORDER is the old name '
-                      'for this style.'),
-        },
-        'wxDOUBLE_BORDER': {
-            'desc': _('Displays a double border. wxDOUBLE_BORDER is the '
-                      'old name for this style. Windows and Mac only.'),
-            'rename_to': 'wxBORDER_DOUBLE',
-        },
-        'wxBORDER_DOUBLE': {
-            'desc': _('Displays a double border. wxDOUBLE_BORDER is the '
-                      'old name for this style. Windows and Mac only.'),
-            'obsolete': _('since wx3.0'),
-        },
+        'wxDOUBLE_BORDER': { 'desc':_('Displays a double border. wxDOUBLE_BORDER is the old name for this style. '
+                                      'Windows and Mac only.'),
+                             'rename_to': 'wxBORDER_DOUBLE' },
+        'wxBORDER_DOUBLE': { 'desc':_('Displays a double border. wxDOUBLE_BORDER is the old name for this style. '
+                                      'Windows and Mac only.'),
+                             'obsolete': _('since wx3.0') },
 
         # wxDialog styles
-        'wxNO_3D': {
-            'desc': _('Under Windows, specifies that the child '
-                      'controls should not have 3D borders unless '
-                      'specified in the control.'),
-            'obsolete': _("This style is obsolete and doesn't do anything "
-                          "any more, don't use it in any new code."),
-            'supported_by': ('wx2',),
-        },
-        'wxCAPTION': {
-            'desc': _('Puts a caption on the dialog box.'),
-        },
-        'wxCLOSE_BOX': {
-            'desc': _('Displays a close box on the frame.'),
-        },
-        'wxMAXIMIZE_BOX': {
-            'desc': _('Displays a maximize box on the dialog.'),
-        },
-        'wxMINIMIZE_BOX': {
-            'desc': _('Displays a minimize box on the dialog.'),
-        },
-        'wxRESIZE_BORDER': {
-            'desc': _('Display a thick frame around the window.'),
-        },
-        'wxSTAY_ON_TOP': {
-            'desc': _('The dialog stays on top of all other windows.'),
-        },
-        'wxSYSTEM_MENU': {
-            'desc': _('Display a system menu.'),
-        },
+        'wxNO_3D': { 'desc': _('Under Windows, specifies that the child controls should not have 3D borders unless '
+                               'specified in the control.'),
+                     'obsolete': _("This style is obsolete and doesn't do anything any more, don't use it in any new code."),
+                     'supported_by': ('wx2',) },
+        'wxCAPTION': { 'desc': _('Puts a caption on the dialog box.') },
+        'wxCLOSE_BOX':    { 'desc': _('Displays a close box on the frame.') },
+        'wxMAXIMIZE_BOX': { 'desc': _('Displays a maximize box on the dialog.') },
+        'wxMINIMIZE_BOX': { 'desc': _('Displays a minimize box on the dialog.') },
+        'wxRESIZE_BORDER': { 'desc': _('Display a thick frame around the window.') },
+        'wxSTAY_ON_TOP': { 'desc': _('The dialog stays on top of all other windows.') },
+        'wxSYSTEM_MENU': { 'desc': _('Display a system menu.') },
     }
 }
-"""\
-Dictionary to store widget generic widget details like tooltips, different
-names, ...
+"""Dictionary to store widget generic widget details like tooltips, different names, ...
 
 Example::
     config = {
@@ -665,15 +302,9 @@ The style processing is described in L{gui_mixins.StylesMixin.cn_f()}.
 
 
 def read_version_file():
-    """\
-    Read the version information from file "RELEASE-VERSION".
+    """Read the version information from file "RELEASE-VERSION".
 
-    @rtype: str | None
-
-    @see: L{write_version_file()}
-    @see: L{get_version()}
-    """
-
+    @see: L{write_version_file()} and L{get_version()}"""
     try:
         import version
         return version.__version__.strip()
@@ -682,8 +313,7 @@ def read_version_file():
 
 
 def write_version_file(release):
-    """\
-    Write the given version string into file "version.py".
+    """Write the given version string into file "version.py".
 
     @param release: version string to write
     @type release:  str
@@ -704,11 +334,7 @@ __version__ = "%s"
 
 
 def get_hg_version():
-    """
-    Query the local hg repository to get the current release or return None.
-
-    @rtype: str | None
-    """
+    "Query the local hg repository to get the current release or return None"
     try:
         from mercurial.hg import repository
         from mercurial.ui import ui
@@ -759,8 +385,7 @@ def get_version(suffix=True):
      2. Queried from local hg repo (see L{get_hg_version()})
      3. Set to "not found"
 
-    The release string contains a suffix if wxGlade runs as standalone
-    edition.
+    The release string contains a suffix if wxGlade runs as standalone edition.
 
     @param suffix: Append suffix for standalone edition
     @type suffix:  bool

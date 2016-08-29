@@ -9,7 +9,7 @@ Lisp generator functions for CustomWidget objects
 
 import common
 import wcodegen
-from codegen import ArgumentsCodeHandler, format_ctor_arguments
+from .codegen import ArgumentsCodeHandler, format_ctor_arguments
 
 
 class LispCustomWidgetGenerator(wcodegen.LispWidgetCodeWriter):
@@ -26,11 +26,8 @@ class LispCustomWidgetGenerator(wcodegen.LispWidgetCodeWriter):
 
         if id_name:
             init.append(id_name)
-        arguments = format_ctor_arguments(prop.get(
-            'arguments', []), parent, id, prop.get('size', "-1, -1"))
-        init.append(
-            '(setf %s (%s_Create %s))\n' %
-            (widget.name, widget.klass, " ".join(arguments)))
+        arguments = format_ctor_arguments( prop.get('arguments', []), parent, id, prop.get('size', "-1, -1") )
+        init.append( '(setf %s (%s_Create %s))\n' % (widget.name, widget.klass, " ".join(arguments)) )
         props_buf = self.codegen.generate_common_properties(widget)
 
         return init, props_buf, []
