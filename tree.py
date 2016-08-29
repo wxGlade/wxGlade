@@ -355,7 +355,6 @@ class WidgetTree(wx.TreeCtrl, Tree):
 
         # use cut and paste functionality from clipboard to do the actual work #########################################
         import clipboard
-
         data = clipboard.get_copy(src_widget)
         if not copy:
             src_widget.remove()
@@ -591,30 +590,13 @@ class WidgetTree(wx.TreeCtrl, Tree):
         if not self.title: self.title = ' '
         return self.title
 
-    #def show_widget(self, node):
-        #"Shows the widget of the given node and all its children"
-        ## go up all the tree, if there are notebooks, select the appropriate page
-        ## XXX this should be centralized
-        #n = node
-        #while True:
-            #if n.parent.widget and hasattr(n.parent.widget, "virtual_sizer") and n.parent.widget.widget:
-                ## a notebook or splitter window; only these have a virtual_sizer
-                #if hasattr(n.parent.widget.widget, "GetSelection"):
-                    #selected_pos = n.parent.widget.widget.GetSelection() + 1
-                    #if selected_pos!=n.widget.pos:
-                        #n.parent.widget.widget.SetSelection(n.widget.pos-1)
-            #n = n.parent
-            #if n.parent is None: break
-        ## show the widget
-        #self._show_widget(node)
-
-    def _show_widget(self, node):
-        # creates/shows node's widget, expand node; do the same recursively on its children
+    def show_widget(self, node):
+        "Shows the widget of the given node and all its children"
         node.widget.show_widget(True)
         self.expand(node, True)
         if node.children:
             for c in node.children:
-                self._show_widget(c)
+                self.show_widget(c)
         node.widget.post_load()
 
     def _show_widget_toplevel(self, node):
@@ -625,7 +607,7 @@ class WidgetTree(wx.TreeCtrl, Tree):
             node.widget.finish_widget_creation()
         if node.children:
             for c in node.children:
-                self._show_widget(c)
+                self.show_widget(c)
         node.widget.post_load()
         node.widget.show_widget(True)
         misc.set_focused_widget(node.widget)
@@ -654,10 +636,8 @@ class WidgetTree(wx.TreeCtrl, Tree):
                 self._show_widget_toplevel(node)
             else:
                 node.widget.show_widget(False)
-                #self.select_item(self.root)
                 # added by rlawson to collapse only the toplevel node, not collapse back to root node
                 self.select_item(node)
-                #self.app.show_properties()
                 misc.set_focused_widget(node.widget)
                 event.Skip()
         #event.Skip()
