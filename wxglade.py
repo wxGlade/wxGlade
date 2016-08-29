@@ -125,13 +125,14 @@ wxGlade home page: <http://wxglade.sourceforge.net/>""") )
     #args = [u'F:\\PythonInstallation\\wxGladeTest\\test.wxg']
     args = [u"D:\\Python\\Sources35\\wxGladeTests\\Test_release_072_v2-TextCtrls.wxg"]
     #args = [u"D:\\Python\\Sources35\\wxGladeTests\\Test_release_072_v3-SingleSizer.wxg"]
-    ##args = [os.getcwd() + u"\\tests\\casefiles\\AllWidgets_28.wxg"]
+    args = [os.getcwd() + u"\\tests\\casefiles\\AllWidgets_28.wxg"]
     #args = [u"D:\\Python\\Sources35\\wxGladeTests\\AllWidgets_28_05.wxg"]
     #args = [u"D:\\Python\\Sources35\\wxGladeTests\\AllWidgets_28_without_bitmaps.wxg"]
     #args = ["C:\\Users\\dietmar\\text_ctrls_with_slot4.wxg"]
     #args = ["C:\\Users\\dietmar\\4slots_1.wxg"]
     #args = ["C:\\Users\\dietmar\\test2.wxg"]
-    #args = ["C:\\Users\\dietmar\\buttons_release.wxg"]
+    args = ["C:\\Users\\dietmar\\AllWidgets_28min.wxg"]
+    args = ["C:\\Users\\dietmar\\slots_test.wxg"]
     if len(args) == 1:
         filename = args[0]
         if not os.path.isabs(filename):
