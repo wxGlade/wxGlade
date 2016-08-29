@@ -1018,9 +1018,11 @@ class SizePropertyD(TextPropertyD):
     normalization = "%s, %s" # for normalization % valiation_re.match(...).groups()
     def _set_converter(self, value):
         # value can be a tuple
-        if not isinstance(value, compat.basestring):
-            return '%d, %d' % value
-        return value
+        if isinstance(value, compat.basestring):
+            return value
+        if isinstance(value, wx.Size):
+            value = value.asTuple()
+        return '%d, %d' % value
     def _convert_from_text(self, value):
         "normalize string to e.g. '-1, -1'; return None if invalid"
         match = self.validation_re.match(value)
