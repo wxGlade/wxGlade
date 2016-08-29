@@ -4,6 +4,7 @@ widgets and initializes all the stuff (tree, frame_property, etc.)
 
 @copyright: 2002-2007 Alberto Griggio
 @copyright: 2011-2016 Carsten Grohmann
+@copyright: 2016 Dietmar Schwertberger
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
@@ -785,9 +786,8 @@ class wxGladeFrame(wx.Frame):
         try:
             try:
                 if isinstance(filename_or_filelike, compat.StringIO):
-                    # convert filename_or_filelike to UTF-8 and write back
-                    # as lines, because ProgressXmlWidgetBuilder uses lines
-                    # to calculate and show the position
+                    # convert filename_or_filelike to UTF-8 and write back as lines, because
+                    # ProgressXmlWidgetBuilder uses lines to calculate and show the position
                     tmp = filename_or_filelike.getvalue()
                     tmp = tmp.encode('UTF-8')
                     infile = compat.StringIO()
@@ -987,7 +987,7 @@ class wxGladeFrame(wx.Frame):
 
     def show_and_raise(self):
         self.property_frame.Show()  # self.GetMenuBar().IsChecked(self.PROPS_ID))
-        self.tree_frame.Show()  # self.GetMenuBar().IsChecked(self.TREE_ID))
+        self.tree_frame.Show()      # self.GetMenuBar().IsChecked(self.TREE_ID))
         self.property_frame.Raise()
         self.tree_frame.Raise()
         self.Raise()
@@ -1169,22 +1169,11 @@ class wxGlade(wx.App):
         bugdialog.ShowEI(exc_type, exc_value, exc_tb, msg)
         sys.exc_clear()
 
-# end of class wxGlade
 
 
 def main(filename=None):
     "if filename is not None, loads it"
     logging.info(_("Using wxPython %s"), config.wx_version)
-
-#    # now, silence a deprecation warning for py2.3
-#    import warnings
-#    warnings.filterwarnings(
-#        "ignore",
-#        "integer",
-#        DeprecationWarning,
-#        "wxPython.gdi",
-#        )
-
     app = wxGlade()
     if filename is not None:
         app.GetTopWindow()._open_app(filename, False)
