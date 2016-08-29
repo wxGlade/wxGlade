@@ -17,31 +17,20 @@ methods of the parent object.
 """
 
 
-import os.path
-import re
+import os.path, re
 
-from codegen import BaseLangCodeWriter, BaseSourceFileContent, BaseWidgetHandler
-import config
-import compat
-import misc
+from codegen import BaseLangCodeWriter, BaseSourceFileContent, BaseWidgetHandler, ClassLines
+import config, compat, misc
 import wcodegen
 
 
 class SourceFileContent(BaseSourceFileContent):
-    """\
-    Keeps info about an existing file that has to be updated, to replace only
-    the lines inside a wxGlade block, an to keep the rest of the file as it
-    was.
+    """Keeps info about an existing file that has to be updated, to replace only the lines inside a wxGlade block,
+    and to keep the rest of the file as it was.
 
-    @ivar event_handlers: List of event handlers for each class
-    @type event_handlers: dict
-
+    @ivar event_handlers: dictionary of event handlers for each class
     @ivar header_content: Content of the header file
-    @type header_content: str
-
-    @ivar source_content: Content of the source file
-    @type source_content: str
-    """
+    @ivar source_content: Content of the source file"""
 
     rec_block_start = re.compile(
         r'^(?P<spaces>\s*)'                     # leading spaces
@@ -73,12 +62,10 @@ class SourceFileContent(BaseSourceFileContent):
         r'class\s+([a-zA-Z_]\w*)'                # "class <name>" statement
         r'\s*'                                   # tailing spaces
         )
-    """\
-    Regexp to match class declarations
+    """Regexp to match class declarations
 
     This isn't very accurate - doesn't match template classes, nor virtual
-    inheritance, but should be enough for most cases
-    """
+    inheritance, but should be enough for most cases"""
 
     rec_decl_event_table = re.compile(
         r'^\s*'                                       # leading spaces
@@ -252,14 +239,10 @@ class SourceFileContent(BaseSourceFileContent):
             self.source_content = "".join(out_lines)
 
     def is_end_of_class(self, line):
-        """\
-        Return True if the line is the last line of a class
-
-        Not really, but for wxglade-generated code it should work...
-        """
+        """Returns True if the line is the last line of a class
+        Not really, but for wxglade-generated code it should work..."""
         return self.rec_class_end.match(line)
 
-# end of class SourceFileContent
 
 
 class WidgetHandler(BaseWidgetHandler):
@@ -284,7 +267,26 @@ class WidgetHandler(BaseWidgetHandler):
         """
         return []
 
-# end of class WidgetHandler
+class ClassLines(ClassLines):
+    """\
+    Stores the lines of C++ code for a custom class
+
+    @ivar ids:             Ids declared in the source (to use for Event
+                           handling): these are grouped together into a
+                           public enum in the custom class
+    @ivar sub_objs:        List of 2-tuples (type, name) of the sub-objects
+                           which are attributes of the toplevel object
+    @ivar extra_code_h:    Extra header code to output
+    @ivar extra_code_cpp:  Extra source code to output
+    """
+
+    def __init__(self):
+        ClassLines.__init__(self)
+        self.ids = []
+        self.sub_objs = []
+        self.extra_code_h = []
+        self.extra_code_cpp = []
+        self.dependencies = []     # List not dictionary
 
 
 class CPPCodeWriter(BaseLangCodeWriter, wcodegen.CppMixin):
@@ -490,29 +492,6 @@ bool MyApp::OnInit()
 
     tmpl_empty_string = 'wxEmptyString'
 
-    class ClassLines(BaseLangCodeWriter.ClassLines):
-        """\
-        Stores the lines of C++ code for a custom class
-
-        @ivar ids:             Ids declared in the source (to use for Event
-                               handling): these are grouped together into a
-                               public enum in the custom class
-        @ivar sub_objs:        List of 2-tuples (type, name) of the sub-objects
-                               which are attributes of the toplevel object
-        @ivar extra_code_h:    Extra header code to output
-        @ivar extra_code_cpp:  Extra source code to output
-        """
-
-        def __init__(self):
-            BaseLangCodeWriter.ClassLines.__init__(self)
-            self.ids = []
-            self.sub_objs = []
-            self.extra_code_h = []
-            self.extra_code_cpp = []
-            self.dependencies = []     # List not dictionary
-
-    # end of class ClassLines
-
     def init_lang(self, app_attrs):
         self.last_generated_id = 1000
 
@@ -704,7 +683,7 @@ bool MyApp::OnInit()
 
         if not klass in self.classes:
             # if the class body was empty, create an empty ClassLines
-            self.classes[klass] = self.ClassLines()
+            self.classes[klass] = ClassLines()
 
         # collect all event handlers
         event_handlers = self.classes[klass].event_handlers
