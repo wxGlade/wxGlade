@@ -16,7 +16,7 @@ import os.path
 import sys
 import tempfile
 import types
-from ordereddict import OrderedDict
+from collections import OrderedDict
 from xml.sax.saxutils import escape, quoteattr
 
 import config

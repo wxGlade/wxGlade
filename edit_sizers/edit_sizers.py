@@ -7,7 +7,7 @@ Hierarchy of Sizers supported by wxGlade
 """
 
 # import general python modules
-from ordereddict import OrderedDict
+from collections import OrderedDict
 import logging
 import math
 import re
