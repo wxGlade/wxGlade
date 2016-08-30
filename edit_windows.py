@@ -11,15 +11,12 @@ from ordereddict import OrderedDict
 import logging, math, re, copy
 import wx
 
-# import project modules
-from widget_properties import *
 import new_properties as np
 import code_property as cp
 import misc, common, compat, config, clipboard
 import decorators
 from wcodegen.taghandler import BaseXmlBuilderTagHandler
 
-# event handling support
 from events_mixin import EventsMixin
 
 
@@ -198,7 +195,7 @@ class EditBase(EventsMixin, np.PropertyOwner):
         self._destroy_popup_menu()
         widget = misc.get_toplevel_widget(self)
         if widget is not None:
-            widget.on_preview()
+            widget.preview()
 
     def _destroy_popup_menu(self):
         if self._rmenu is None: return
@@ -345,7 +342,7 @@ class WindowBase(EditBase):
         # background, foreground, font properties
         # their actual values will be stored/modified after widget creation in 'finish_widget_creation'
         # before that, the actual values will be stored in this dict from the actual values of the widget:
-        self._original = {'background': None, 'foreground': None, 'font': None}
+        self._original = {'font': None}
         # colors
         self.background = np.ColorPropertyD(None)
         self.foreground = np.ColorPropertyD(None)
@@ -363,10 +360,10 @@ class WindowBase(EditBase):
         self.hidden     = np.CheckBoxProperty(False, default_value=False)
 
     def finish_widget_creation(self, *args, **kwds):
-        # store the actual values of foreground, background and font from the actual widget
-        # if the corresponding property editor is deactivated, the value from here will be restored
-        self._original['background'] = self.widget.GetBackgroundColour()
-        self._original['foreground'] = self.widget.GetForegroundColour()
+        # store the actual values of foreground, background and font as default, if the property is deactivated later
+        self.properties["background"].set_default( self.widget.GetBackgroundColour() )
+        self.properties["foreground"].set_default( self.widget.GetForegroundColour() )
+
         fnt = self.widget.GetFont()
         if not fnt.IsOk():
             fnt = wx.SystemSettings_GetFont(wx.SYS_DEFAULT_GUI_FONT)
@@ -379,8 +376,9 @@ class WindowBase(EditBase):
             self.set_size(size_p.get())
         else:
             size_p.set('%s, %s' % tuple(self.widget.GetSize()))
-        self._set_background()
-        self._set_foreground()
+        self.widget.SetBackgroundColour(self.background)  # active or default
+        self.widget.SetForegroundColour(self.foreground)  # active or default
+
         font_p = prop.get('font')
         if font_p and font_p.is_active():
             self.set_font(font_p.get())
@@ -435,52 +433,10 @@ class WindowBase(EditBase):
         except KeyError:
             logging.exception(_('Internal Error'))
 
-    def _set_background(self):
-        if not self.widget: return
-        prop = self.properties['background']
-        if not prop.is_active():
-            c = self.widget.GetBackgroundColour().GetAsString()
-            prop.set(c)
-            return
-
-        value = prop.get()
-        if value in ColorDialogProperty.str_to_colors:
-            self.widget.SetBackgroundColour(wx.SystemSettings_GetColour(ColorDialogProperty.str_to_colors[value]))
-        else:
-            try:
-                color = misc.string_to_color(value)
-                self.widget.SetBackgroundColour(color)
-            except:
-                c = self.widget.GetBackgroundColour().GetAsString()
-                prop.set(c)
-                return
-        self.widget.Refresh()
-
-    def _set_foreground(self):
-        if not self.widget: return
-        prop = self.properties['foreground']
-        if not prop.is_active():
-            c = self.widget.GetForegroundColour().GetAsString()
-            prop.set(c)
-            return
-        
-        value = prop.get()
-        if value in ColorDialogProperty.str_to_colors:
-            self.widget.SetForegroundColour(wx.SystemSettings_GetColour(ColorDialogProperty.str_to_colors[value]))
-        else:
-            try:
-                color = misc.string_to_color(value)
-                self.widget.SetForegroundColour(color)
-            except:
-                c = self.widget.GetForegroundColour().GetAsString()
-                prop.set(c)
-                return
-        self.widget.Refresh()
-
     def _build_from_font(self, font):
-        families = FontDialogProperty.font_families_from
-        styles = FontDialogProperty.font_styles_from
-        weights = FontDialogProperty.font_weights_from
+        families = np.FontProperty.font_families_from
+        styles   = np.FontProperty.font_styles_from
+        weights  = np.FontProperty.font_weights_from
         return [ str(font.GetPointSize()),
                  families.get(font.GetFamily(), 'default'),
                  styles.get(font.GetStyle(), 'normal'),
@@ -565,7 +521,16 @@ class WindowBase(EditBase):
 
     def properties_changed(self, modified=None):
         # XXX check whether actions are required
-        return
+        refresh = False
+        if not modified or "background" in modified and self.widget:
+            self.widget.SetBackgroundColour(self.properties["background"].get_color())
+            refresh = True
+        if not modified or "foreground" in modified and self.widget:
+            self.widget.SetForegroundColour(self.properties["foreground"].get_color())
+            refresh = True
+        if refresh: self.widget.Refresh()
+
+        EditBase.properties_changed(self, modified)
 
     def get_properties(self, without=set()):
         if not self.properties["foreground"].is_active(): without.add("foreground")
@@ -598,7 +563,7 @@ class ManagedBase(WindowBase):
 
         self.sel_marker = None  # selection markers (a SelectionMarker instance)
 
-        # attributes to keep the values of the sizer_properties
+        # attributes to keep the values of the sizer properties
         self.pos        = np.LayoutPosProperty(pos, sizer)                  # position within the sizer, 1-based
         self.proportion = np.SpinProperty(0, name="option", immediate=True) # item growth in sizer main direction
         self.border     = np.SpinProperty(0, immediate=True)                # border width
@@ -694,10 +659,10 @@ class ManagedBase(WindowBase):
         "setter for the 'pos' property: calls self.sizer.change_item_pos"
         self.sizer.change_item_pos( self, min( value+1, len(self.sizer.children)-1 ) )
 
-    def update_pos(self, value):
+    def update_pos(self, pos):
         "called by self.sizer.change_item_pos to update the item's position when another widget is moved"
-        self.sizer_properties['pos'].set_value(value-1)
-        self.pos = value
+        # XXX currently not used; make np.LayoutPosProperty editable again
+        self.properties['pos'].set_value(pos)
 
 
 
@@ -710,13 +675,15 @@ class PreviewMixin(object):
         "True if the preview_widget was created"
         return self.preview_widget is not None
 
-    def on_preview(self):
+    def on_preview(self, refresh=False):
         if self.preview_widget is None:
             self.preview_widget = common.app_tree.app.preview(self)
             label = _('Close Preview')
         else:
             self.preview_widget.Close()
+            self.preview_widget = None
             label = _('Preview')
+            if refresh: wx.CallAfter(self.on_preview)
         self.properties["preview"].set_label(label)
 
 

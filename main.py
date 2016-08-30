@@ -148,84 +148,6 @@ class wxGladePropertyPanel(wx.Frame):
 
 
 
-TOGGLE_BOX_EVENT = wx.NewEventType()
-
-
-def EVT_TOGGLE_BOX(win, id, func):
-    win.Connect(id, -1, TOGGLE_BOX_EVENT, func)
-
-
-class ToggleBoxEvent(wx.PyCommandEvent):
-    def __init__(self, id, value, strval):
-        wx.PyCommandEvent.__init__(self)
-        self.SetId(id)
-        self.SetEventType(TOGGLE_BOX_EVENT)
-        self.value = value
-        self.strval = strval
-
-    def GetValue(self):
-        return self.value
-
-    def GetStringValue(self):
-        return self.strval
-
-
-
-class ToggleButtonBox(wx.Panel):
-    def __init__(self, parent, id, choices=None, value=0):
-        wx.Panel.__init__(self, parent, id)
-        if choices is None:
-            choices = []
-        self.buttons = [wx.ToggleButton(self, -1, c) for c in choices]
-        self.selected = None
-        self.SetValue(value)
-        for b in self.buttons:
-            def handler(event, b=b):
-                self.on_toggle(b, event)
-            wx.EVT_TOGGLEBUTTON(self, b.GetId(), handler)
-        sizer = wx.BoxSizer(wx.VERTICAL)
-        for b in self.buttons:
-            sizer.Add(b, 0, wx.ALL|wx.EXPAND, 1)
-        self.SetAutoLayout(True)
-        self.SetSizer(sizer)
-        sizer.Fit(self)
-        sizer.SetSizeHints(self)
-
-    def on_toggle(self, button, event):
-        if self.selected is button:
-            self.selected.SetValue(True)
-            return
-        if self.selected is not None:
-            self.selected.SetValue(False)
-        self.selected = button
-        wx.PostEvent( self, ToggleBoxEvent(self.GetId(), self.GetValue(), self.GetStringValue()) )
-
-    def GetValue(self):
-        if self.selected is not None:
-            return self.buttons.index(self.selected)
-        return -1
-
-    def GetStringValue(self):
-        if self.selected is None: return None
-        return self.selected.GetLabel()
-
-    def SetValue(self, index):
-        if self.selected is not None:
-            self.selected.SetValue(False)
-        if -1 < index < len(self.buttons):
-            self.selected = self.buttons[index]
-            self.selected.SetValue(True)
-
-    def SetStringValue(self, strval):
-        index = -1
-        for i in range(len(self.buttons)):
-            if self.buttons[i].GetLabel() == strval:
-                index = i
-                break
-        self.SetValue(index)
-
-
-
 class wxGladeArtProvider(wx.ArtProvider):
     def CreateBitmap(self, artid, client, size):
         if wx.Platform == '__WXGTK__' and artid == wx.ART_FOLDER:
@@ -242,7 +164,6 @@ class wxGladeFrame(wx.Frame):
         style = wx.SYSTEM_MENU | wx.CAPTION | wx.MINIMIZE_BOX
         style |= wx.RESIZE_BORDER | wx.CLOSE_BOX
         wx.Frame.__init__(self, parent, -1, "wxGlade v%s" % config.version, style=style, name='MainFrame')
-        self.CreateStatusBar(1)
 
         if parent is None:
             parent = self
@@ -257,21 +178,19 @@ class wxGladeFrame(wx.Frame):
 
         # load the available code generators
         all_widgets = common.init_codegen()
-
+        # build the palette for all_widgets
         sizer = wx.FlexGridSizer(0, 2, 0, 0)
         sizer.AddGrowableCol(0)
         self.SetAutoLayout(True)
-
         maxlen = max([len(all_widgets[sect]) for sect in all_widgets])  # the maximum number of buttons in a section
         for section in all_widgets:
             if section:
                 sizer.Add(wx.StaticText(self, -1, "%s:" % section.replace('&', '&&')), 1, wx.ALIGN_CENTER_VERTICAL)
 
-            bsizer = wx.GridSizer(cols=maxlen)
+            bsizer = wx.GridSizer(cols=maxlen, hgap=2, vgap=2)
             for button in all_widgets[section]:
                 bsizer.Add(button, flag=wx.ALL, border=1)
             sizer.Add(bsizer)
-
         self.SetSizer(sizer)
         sizer.Fit(self)
 
@@ -319,9 +238,8 @@ class wxGladeFrame(wx.Frame):
             self.autosave_timer = wx.Timer(self, -1)
             self.autosave_timer.Bind(wx.EVT_TIMER, self.on_autosave_timer)
             self.autosave_timer.Start( int(config.preferences.autosave_delay) * 1000 )
-        # ALB 2004-10-15
-        self.clear_sb_timer = wx.Timer(self, -1)
-        self.clear_sb_timer.Bind(wx.EVT_TIMER, self.on_clear_sb_timer)
+
+        self.create_statusbar()  # create statusbar for display of messages
 
         self.property_frame.SetAcceleratorTable(self.accel_table)
         self.tree_frame.SetAcceleratorTable(self.accel_table)
@@ -604,7 +522,15 @@ class wxGladeFrame(wx.Frame):
             if child.IsShown() and child.GetTitle(): child.Raise()
         self.Raise()
 
+    # status bar for message display ###################################################################################
+    def create_statusbar(self):
+        self.CreateStatusBar(1)
+        # ALB 2004-10-15  statusbar timer: delete user message after some time
+        self.clear_sb_timer = wx.Timer(self, -1)
+        self.clear_sb_timer.Bind(wx.EVT_TIMER, self.on_clear_sb_timer)
+
     def user_message(self, msg):
+        # display a message, but clear it after a few seconds again
         sb = self.GetStatusBar()
         if sb:
             sb.SetStatusText(msg)
@@ -614,6 +540,7 @@ class wxGladeFrame(wx.Frame):
         sb = self.GetStatusBar()
         if sb:
             sb.SetStatusText("")
+    ####################################################################################################################
 
     def ask_save(self):
         """checks whether the current app has changed and needs to be saved:
@@ -646,19 +573,8 @@ class wxGladeFrame(wx.Frame):
             self._open_app(infile, add_to_history=False)
             common.app_tree.app.template_data = None
 
-    #def reload_app(self, event):
-        #self.ask_save()
-        #if not common.app_tree.app.filename:
-            #wx.MessageBox(_("Impossible to reload an unsaved application"),
-                          #_("Alert"), style=wx.OK|wx.ICON_INFORMATION)
-            #return
-        #path = common.app_tree.get_selected_path()
-        #self._open_app(common.app_tree.app.filename, add_to_history=False)
-        #common.app_tree.select_path(path)
-
     def open_app(self, event_unused):
-        """\
-        loads a wxGlade project from an xml file
+        """loads a wxGlade project from an xml file
         NOTE: this is very slow and needs optimisation efforts
         NOTE2: the note above should not be True anymore :) """
         if not self.ask_save():
