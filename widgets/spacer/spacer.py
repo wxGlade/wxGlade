@@ -81,8 +81,6 @@ class _Dialog(wx.Dialog):
         szr.Fit(self)
         self.CenterOnScreen()
 
-    def __getitem__(self, name):
-        return lambda : 0, lambda v: None
 
 
 
