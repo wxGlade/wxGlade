@@ -3,21 +3,21 @@
     described from the point of view of the application, to (hopefully)
     understand what's happening behind the scenes.</p><p>These notes are <span class="emphasis"><em>absolutely</em></span> incomplete and in
     some cases they might be outdated or not completely correct: the best
-    reference is always the source code.</p><div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="idm140596859508688"></a>Installing and Designing own Widget Plugins</h2></div></div></div><p>wxGlade supports a simple plugin system for widgets to load all
+    reference is always the source code.</p><div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="idm139900190941904"></a>Installing and Designing own Widget Plugins</h2></div></div></div><p>wxGlade supports a simple plugin system for widgets to load all
       widgets at the application startup dynamically. The plugin system loads
       all built-in widgets like <span class="quote">“<span class="quote">Static Text</span>”</span> widget or the
       <span class="quote">“<span class="quote">Gauge</span>”</span> widget. It also loads widgets installed by
-      users.</p><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="idm140596859506624"></a>Widgets Packages</h3></div></div></div><p>The wxGlade plugin system supports two different types of widget
+      users.</p><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="idm139900190939840"></a>Widgets Packages</h3></div></div></div><p>The wxGlade plugin system supports two different types of widget
         packages:</p><div class="orderedlist"><ol class="orderedlist" type="1"><li class="listitem"><p><span class="quote">“<span class="quote">directory package</span>”</span> - a single directory with
               all necessary files inside</p></li><li class="listitem"><p><span class="quote">“<span class="quote">ZIP package</span>”</span> - a zipped version of a
-              "directory" package</p></li></ol></div><div class="example"><a name="idm140596859502304"></a><p class="title"><b>Example 7.1. Directory package</b></p><div class="example-contents"><pre class="screen">static_text          &lt;- Directory named after the widget name
+              "directory" package</p></li></ol></div><div class="example"><a name="idm139900190935520"></a><p class="title"><b>Example 7.1. Directory package</b></p><div class="example-contents"><pre class="screen">static_text          &lt;- Directory named after the widget name
 |-- __init__.py      &lt;- Mostly an empty file or a file with just a comment
 |-- codegen.py       &lt;- Python and C++ code generators
 |-- wconfig.py       &lt;- Widget configuration
 |-- lisp_codegen.py  &lt;- Lisp code generator
 |-- perl_codegen.py  &lt;- Perl code generator
 `-- static_text.py   &lt;- wxGlade GUI code
-</pre></div></div><br class="example-break"><div class="example"><a name="idm140596859500336"></a><p class="title"><b>Example 7.2. ZIP package</b></p><div class="example-contents"><pre class="screen"># unzip -l static_text.zip 
+</pre></div></div><br class="example-break"><div class="example"><a name="idm139900190933552"></a><p class="title"><b>Example 7.2. ZIP package</b></p><div class="example-contents"><pre class="screen"># unzip -l static_text.zip 
 Archive:  static_text.zip
   Length      Date    Time    Name
 ---------  ---------- -----   ----
@@ -29,7 +29,7 @@ Archive:  static_text.zip
      1841  2013-12-09 10:02   static_text/perl_codegen.py
      5917  2013-12-09 10:02   static_text/static_text.py
 ---------                     -------
-    13079                     6 files</pre></div></div><br class="example-break"></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="idm140596859498096"></a>Create a ZIP Package</h3></div></div></div><p>Creating a ZIP package is quite simple. Just create a ZIP
+    13079                     6 files</pre></div></div><br class="example-break"></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="idm139900190931312"></a>Create a ZIP Package</h3></div></div></div><p>Creating a ZIP package is quite simple. Just create a ZIP
         package from widgets directory with all Python and additional files.
         Don't include Python bytecode files because they are not platform
         independent.</p><pre class="programlisting"># tree static_text/
@@ -50,13 +50,13 @@ static_text/
   adding: static_text/perl_codegen.py (deflated 56%)
   adding: static_text/static_text.py (deflated 69%)
 </pre><p>Check the integrity of the created ZIP archive:</p><pre class="programlisting"># zip -T static_text.zip 
-test of static_text.zip OK</pre></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="idm140596859494544"></a>Installing Widget Plugins Locally</h3></div></div></div><p>The installation of local plugins is a two-step process:</p><div class="orderedlist"><ol class="orderedlist" type="1"><li class="listitem"><p>Place the widget package in the <span class="guilabel">Local widget
+test of static_text.zip OK</pre></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="idm139900190927760"></a>Installing Widget Plugins Locally</h3></div></div></div><p>The installation of local plugins is a two-step process:</p><div class="orderedlist"><ol class="orderedlist" type="1"><li class="listitem"><p>Place the widget package in the <span class="guilabel">Local widget
             path</span> (see <a class="xref" href="configure_wxglade.html#preferences" title="Preferences Dialog">the section called “Preferences Dialog”</a>).
             Create this directory if it doesn't exist.</p></li><li class="listitem"><p>Add widget name to the text file named
             <code class="filename">widgets.txt</code>. This file is also located in the
             directory specified in <span class="guilabel">Local widget path</span>.
             Just create a simple text file, if the file doesn't exists.</p></li></ol></div><p>The new widget will be available after wxGlade has been
-        restarted.</p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="idm140596859487808"></a>Designing own Widget Plugins</h3></div></div></div><div class="note" style="margin-left: 0.5in; margin-right: 0.5in;"><h3 class="title">Note</h3><p>This section is under construction! Please use this
+        restarted.</p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="idm139900190921024"></a>Designing own Widget Plugins</h3></div></div></div><div class="note" style="margin-left: 0.5in; margin-right: 0.5in;"><h3 class="title">Note</h3><p>This section is under construction! Please use this
           information carefully.</p></div><div class="orderedlist"><ol class="orderedlist" type="1"><li class="listitem"><p>Create a new directory named like the widget and change in
             this directory</p></li><li class="listitem"><p>Place an empty file <code class="filename">__init__.py</code> in that
             directory</p></li><li class="listitem"><p>Create a file <code class="filename">wconfig.py</code> in the widget
@@ -108,7 +108,7 @@ def initialize():
 |-- __init__.py
 |-- codegen.py
 |-- myctrl.py
-`-- wconfig.py</pre></li></ol></div><div class="section"><div class="titlepage"><div><div><h4 class="title"><a name="idm140596859473520"></a>Widget Initialisation</h4></div></div></div><div class="note" style="margin-left: 0.5in; margin-right: 0.5in;"><h3 class="title">Note</h3><p>This section is incomplete.</p></div><div class="orderedlist"><ol class="orderedlist" type="1"><li class="listitem"><p>Load generic and language independent widget configuration
+`-- wconfig.py</pre></li></ol></div><div class="section"><div class="titlepage"><div><div><h4 class="title"><a name="idm139900190906736"></a>Widget Initialisation</h4></div></div></div><div class="note" style="margin-left: 0.5in; margin-right: 0.5in;"><h3 class="title">Note</h3><p>This section is incomplete.</p></div><div class="orderedlist"><ol class="orderedlist" type="1"><li class="listitem"><p>Load generic and language independent widget configuration
               from <code class="filename">wconfig.py</code>
               (<code class="function">common.load_config()</code>)</p></li><li class="listitem"><p>Load and initialise language code writers
               (<code class="function">common.load_code_writers()</code>)</p></li><li class="listitem"><p>Load and initialise widgets
