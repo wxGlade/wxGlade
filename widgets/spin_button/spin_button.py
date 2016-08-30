@@ -22,8 +22,8 @@ class EditSpinButton(ManagedBase, EditStylesMixin):
     _PROPERTIES = ["Widget", "range", "value", "style"]
     PROPERTIES = ManagedBase.PROPERTIES + _PROPERTIES + ManagedBase.EXTRA_PROPERTIES
 
-    def __init__(self, name, parent, id, sizer, pos, show=True):
-        ManagedBase.__init__(self, name, 'wxSpinButton', parent, id, sizer, pos, show=show)
+    def __init__(self, name, parent, id, sizer, pos):
+        ManagedBase.__init__(self, name, 'wxSpinButton', parent, id, sizer, pos)
         EditStylesMixin.__init__(self)
 
         # initialise instance properties

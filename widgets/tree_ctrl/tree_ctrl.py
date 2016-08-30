@@ -21,8 +21,8 @@ class EditTreeCtrl(ManagedBase, EditStylesMixin):
     _PROPERTIES = ["Widget", "style"]
     PROPERTIES = ManagedBase.PROPERTIES + _PROPERTIES + ManagedBase.EXTRA_PROPERTIES
 
-    def __init__(self, name, parent, id, sizer, pos, show=True, style=wx.TR_HAS_BUTTONS|wx.BORDER_SUNKEN):
-        ManagedBase.__init__(self, name, 'wxTreeCtrl', parent, id, sizer, pos, show=show)
+    def __init__(self, name, parent, id, sizer, pos, style=wx.TR_HAS_BUTTONS|wx.BORDER_SUNKEN):
+        ManagedBase.__init__(self, name, 'wxTreeCtrl', parent, id, sizer, pos)
         EditStylesMixin.__init__(self)
 
         # initialise instance properties

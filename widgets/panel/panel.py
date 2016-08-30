@@ -135,8 +135,8 @@ class EditPanel(PanelBase, ManagedBase):
 
     PROPERTIES = ManagedBase.PROPERTIES + PanelBase._PROPERTIES + ManagedBase.EXTRA_PROPERTIES
 
-    def __init__(self, name, parent, id, sizer, pos, show=True, style='wxTAB_TRAVERSAL'):
-        ManagedBase.__init__(self, name, 'wxPanel', parent, id, sizer, pos, show=show)
+    def __init__(self, name, parent, id, sizer, pos, style='wxTAB_TRAVERSAL'):
+        ManagedBase.__init__(self, name, 'wxPanel', parent, id, sizer, pos)
         PanelBase.__init__(self, style)
 
     def create_widget(self):
@@ -232,8 +232,8 @@ class EditTopLevelPanel(PanelBase, TopLevelBase):
 
     PROPERTIES = TopLevelBase.PROPERTIES + PanelBase._PROPERTIES + TopLevelBase.EXTRA_PROPERTIES
 
-    def __init__(self, name, parent, id, klass='wxPanel', show=True, style='wxTAB_TRAVERSAL'):
-        TopLevelBase.__init__(self, name, klass, parent, id, show=show)
+    def __init__(self, name, parent, id, klass='wxPanel', style='wxTAB_TRAVERSAL'):
+        TopLevelBase.__init__(self, name, klass, parent, id)
         PanelBase.__init__(self, style)
         self.base = 'wxPanel'
         self.skip_on_size = False
@@ -339,7 +339,7 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
         raise XmlParsingError(_("'name' attribute missing"))
     if not sizer or not sizeritem:
         raise XmlParsingError(_("sizer or sizeritem object cannot be None"))
-    panel = EditPanel(name, parent, wx.NewId(), sizer, pos, True, style='')
+    panel = EditPanel(name, parent, wx.NewId(), sizer, pos, style='')
     sizer.set_item(panel.pos, proportion=sizeritem.proportion, flag=sizeritem.flag, border=sizeritem.border)
     node = Node(panel)
     panel.node = node
@@ -356,7 +356,7 @@ def xml_toplevel_builder(attrs, parent, sizer, sizeritem, pos=None):
         label = attrs['name']
     except KeyError:
         raise XmlParsingError(_("'name' attribute missing"))
-    panel = EditTopLevelPanel( label, parent, wx.NewId(), show=False, style='' )
+    panel = EditTopLevelPanel( label, parent, wx.NewId(), style='' )
     node = Node(panel)
     panel.node = node
     common.app_tree.add(node)

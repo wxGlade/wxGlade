@@ -20,8 +20,8 @@ class EditGauge(ManagedBase, EditStylesMixin):
     _PROPERTIES = ["Widget", "range", "style"]
     PROPERTIES = ManagedBase.PROPERTIES + _PROPERTIES + ManagedBase.EXTRA_PROPERTIES
 
-    def __init__(self, name, parent, id, style, sizer, pos, show=True):
-        ManagedBase.__init__(self, name, 'wxGauge', parent, id, sizer, pos, show=show)
+    def __init__(self, name, parent, id, style, sizer, pos):
+        ManagedBase.__init__(self, name, 'wxGauge', parent, id, sizer, pos)
         EditStylesMixin.__init__(self)
 
         # initialise instance properties

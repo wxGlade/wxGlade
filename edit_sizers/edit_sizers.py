@@ -396,31 +396,28 @@ def change_sizer(old, new):
         'wxFlexGridSizer': lambda: EditFlexGridSizer(old.name, old.window, rows=0, cols=0, toplevel=old.toplevel)
     }
 
+    # construct without children, take then the children from the old sizer
     szr = constructors[new]()
     szr.children.extend(old.children[1:])
     szr.node = old.node
 
     if isinstance(szr, GridSizerBase):
-        szr.set_rows(getattr(old, 'rows', 1))
-        szr.set_cols(getattr(old, 'cols', len(szr.children) - 1))
-        szr.set_hgap(getattr(old, 'hgap', 0))
-        szr.set_vgap(getattr(old, 'vgap', 0))
-        if isinstance(szr, EditFlexGridSizer):
-            try:
-                grow_r = old.grow_rows
-                grow_c = old.grow_cols
-                if grow_r:
-                    szr.grow_rows = grow_r
-                    szr.properties['growable_rows'].toggle_active(True)
-                    szr.properties['growable_rows'].set_value(szr.get_growable_rows())
-                if grow_c:
-                    szr.grow_cols = grow_c
-                    szr.properties['growable_cols'].toggle_active(True)
-                    szr.properties['growable_cols'].set_value(szr.get_growable_cols())
-            except (AttributeError, KeyError):
-                pass
-    # XXX replace old sizer in parent.children;
-    #     also check for tree
+        # take rows, cols, hgap, vgap from old sizer, if applicable
+        szr.properties["rows"].set( getattr(old, "rows", 1) )
+        szr.properties["cols"].set( getattr(old, "cols", len(szr.children)-1) )
+        szr.properties["hgap"].set( getattr(old, "hgap", 0) )
+        szr.properties["vgap"].set( getattr(old, "vgap", 0) )
+        szr.properties_changed( ["rows","cols","hgap","vgap"] )
+
+    if isinstance(szr, EditFlexGridSizer) and isinstance(old, EditFlexGridSizer):
+        # take growable rows and cols from old sizer
+        grow_r_p = old.properties["growable_rows"]
+        grow_c_p = old.properties["growable_cols"]
+        if grow_r_p.is_active(): szr.properties['growable_rows'].set(grow_r_p.get(), activate=True)
+        if grow_c_p.is_active(): szr.properties['growable_cols'].set(grow_c_p.get(), activate=True)
+    # XXX keep rows, cols, growable_rows, growable_cols in attributes of new sizer if it's not a (Flex)GridSizer
+    #     and re-use them if user switches back
+
     global _change_sizer_panel
     if old.widget is not None:
         szr.show_widget(True, dont_set=True)
@@ -471,6 +468,10 @@ def change_sizer(old, new):
     if szr.toplevel:
         szr.window.set_sizer(szr)
     szr.layout(True)
+    
+    for node in szr.node.children:
+        if isinstance(node, SlotNode):
+            common.app_tree.refresh_name(node)
 
     misc.set_focused_widget(szr)
 
@@ -572,9 +573,11 @@ class SizerBase(Sizer, np.PropertyOwner):
 
     _PROPERTY_LABELS = {"fit":"Fit parent",
                         "attribute":'Store as attribute'}
-    _PROPERTY_HELP = {"fit":'Sizes the window so that it fits around its subwindows'}
+    _PROPERTY_HELP = {"fit":'Sizes the window so that it fits around its subwindows',
+                      "attribute":'Store instance as attribute of window class; e.g. self.sizer_1 = wx.BoxSizer(...)\n'
+                                  'Without this, you can not access the sizer from your program'}
 
-    def __init__(self, name, klass, orient, window, toplevel=True, show=True, menu=None):
+    def __init__(self, name, klass, orient, window, toplevel=True):
         np.PropertyOwner.__init__(self)
         Sizer.__init__(self, window)
 
@@ -634,10 +637,7 @@ class SizerBase(Sizer, np.PropertyOwner):
 
     def set_containing_sizer(self, sizer):
         self.sizer = sizer
-        #self.properties['option'].set_sizer(sizer)  # XXX create a "SizerProportion property?"
         self.properties['pos'].set_sizer(sizer)
-        #p = self.properties.get('pos')
-        #if p: p.set_sizer(sizer)
 
     def set_pos(self, value):
         # XXX currently not used; make np.LayoutPosProperty editable again
@@ -699,12 +699,6 @@ class SizerBase(Sizer, np.PropertyOwner):
         i = misc.append_menu_item( menu, -1, _('Cut\tCtrl+X'), wx.ART_CUT )
         misc.bind_menu_item_after(widget, i, self.clipboard_cut)
 
-        ## for testing without property window: change sizer orientation
-        #if hasattr(self, "orient"):
-            #menu.AppendSeparator()
-            #i = misc.append_menu_item( menu, -1, 'Change orientation' )
-            #misc.bind_menu_item_after(widget, i, self.change_orientation)
-
         # preview (create or close?)
         menu.AppendSeparator()
         p = misc.get_toplevel_widget(self)
@@ -717,13 +711,6 @@ class SizerBase(Sizer, np.PropertyOwner):
 
         self._rmenu = (menu, widget) # store for destryoing and unbinding
         return menu
-
-    #def change_orientation(self):
-        ## for testing without property window
-        #current = self.ORIENTATION_to_STRING[self.orient]
-        #other = [v for v in self.ORIENTATION_to_STRING.values() if v!=current][0]
-        #new = "%s (%s)"%( self.WX_CLASS, other)
-        #change_sizer(self, new)
 
     def _destroy_popup_menu(self):
         if self._rmenu is None: return
@@ -764,30 +751,6 @@ class SizerBase(Sizer, np.PropertyOwner):
         self._destroy_popup_menu()
         p = misc.get_toplevel_widget(self)
         p.preview()
-
-    def set_name(self, value):
-        value = "%s" % value
-        if ( not config.preferences.allow_duplicate_names
-             and (self.widget and common.app_tree.has_name(value, self.node)) ):
-            wx.CallAfter( wx.MessageBox, _('Name "%s" is already in use.\nPlease enter a different one.') % value,
-                                         _("Error"), wx.OK | wx.ICON_ERROR)
-            self.name_prop.set_value(self.name)
-            return
-        if not re.match(self.set_name_pattern, value):
-            self.name_prop.set_value(self.name)
-        else:
-            oldname = self.name
-            self.name = value
-            #self.set_menu_title(value)
-            try:
-                common.app_tree.refresh_name(self.node, oldname)
-            except AttributeError:
-                self._logger.exception(_('Internal Error'))
-
-    set_name_pattern = re.compile(r'^[a-zA-Z_]+[\w0-9]*$')
-
-    def __getitem__(self, value):
-        return self.access_functions[value]
 
     def fit_parent(self, *args):
         "Tell the sizer to resize the window to match the sizer's minimal size"
@@ -1077,36 +1040,6 @@ class SizerBase(Sizer, np.PropertyOwner):
             self.layout()
             if wx.Platform == '__WXMSW__':
                 self.window.widget.Refresh()
-                # self._logger.debug('%s', [c.item.name for c in self.children])
-
-    def set_option(self, value):
-        "If self is not a toplevel sizer, update the layout to reflect the value of the option property"
-        value = int(value)
-        #if value==self.option: return
-        self.proportion = value
-        try:
-            #self.sizer.set_item(self.pos, option=self.option)
-            self.sizer.item_layout_property_changed(self.pos)
-            # self._logger.debug('%s set_option(%s)', self.name, self.option)
-        except AttributeError:
-            pass
-        self.finish_set()
-
-    def set_border(self, value):
-        "If self is not a toplevel sizer, update the layout to reflect value of the border property"
-        value = int(value)
-        #if value==self.border: return
-        self.border = value
-        try:
-            #self.sizer.set_item(self.pos, border=self.border)
-            self.sizer.item_layout_property_changed(self.pos)
-        except AttributeError:
-            self._logger.exception(_('Internal Error'))
-
-    def get_option(self):
-        if not hasattr(self, 'sizer'):
-            return '1'
-        return str(self.proportion)
 
     def delete(self):
         "Destructor"
@@ -1159,10 +1092,8 @@ class SizerBase(Sizer, np.PropertyOwner):
         if add_node:
             # insert node into tree
             tmp.node = node = SlotNode(tmp)
-            common.app_tree.add(node, self.node, image=None)
-        
-        #if not self.widget:
-            #return
+            common.app_tree.add(node, self.node)
+
         if self.widget:
             tmp.show_widget(True)  # create the actual SizerSlot widget
             self.widget.Add(tmp.widget, 1, wx.EXPAND)
@@ -1253,23 +1184,21 @@ class wxGladeBoxSizer(wx.BoxSizer):
         wx.BoxSizer.SetItemMinSize(self, item, w, h)
 
 
+class Dummy(object):
+    "dummy item for SizerItem that contains the sizer handle button sizer._btn"
+    widget = None
+
 
 class BoxSizerBase(SizerBase):
     "orientation handling for BoxSizer and StaticBoxSizer"
     
-    def __init__(self, name, window, orient=wx.VERTICAL, elements=0, toplevel=True, show=True):
+    def __init__(self, name, window, orient=wx.VERTICAL, elements=0, toplevel=True):
         # elements: number of slots
-        SizerBase.__init__(self, name, self.WX_CLASS, orient, window, toplevel, show)
+        SizerBase.__init__(self, name, self.WX_CLASS, orient, window, toplevel)
 
-        class Dummy(object):
-            widget = None
-
-        # add to self.children the SizerItem for self._btn
-        self.children = [SizerItem(Dummy(), 0, 0, wx.EXPAND)]
+        self.children = [SizerItem(Dummy(), 0, 0, wx.EXPAND)]  # add to self.children the SizerItem for self._btn
         for i in range(1, elements + 1):
             self.add_slot()
-            #tmp = SizerSlot(self.window, self, i) # XXX no node?
-            #self.children.append(SizerItem(tmp, i, 1, wx.EXPAND))
 
     def get_class_orient(self):
         return '%s (%s)'%( self.WX_CLASS, self.properties["orient"].get_str_value() )
@@ -1277,8 +1206,7 @@ class BoxSizerBase(SizerBase):
     def properties_changed(self, modified):
         if not modified or "orient" in modified and self.node:
             # update the image
-            image = common.app_tree.get_image(self)
-            common.app_tree.SetItemImage(self.node.item, image )
+            common.app_tree.SetItemImage(self.node.item, self.node.get_image() )
 
         SizerBase.properties_changed(self, modified)
 
@@ -1343,8 +1271,8 @@ class EditStaticBoxSizer(BoxSizerBase):
     WX_CLASS = "wxStaticBoxSizer"
     EXTRA_PROPERTIES = ["label"]
 
-    def __init__(self, name, window, orient=wx.VERTICAL, label='', elements=3, toplevel=True, show=True):
-        BoxSizerBase.__init__(self, name, window, orient, elements, toplevel, show)
+    def __init__(self, name, window, orient=wx.VERTICAL, label='', elements=3, toplevel=True):
+        BoxSizerBase.__init__(self, name, window, orient, elements, toplevel)
         self.label = np.TextProperty(label)
 
     def create_widget(self):
@@ -1455,34 +1383,18 @@ class GridSizerBase(SizerBase):
 
     EXTRA_PROPERTIES = ["Grid", "rows", "cols", "vgap", "hgap"]
 
-    def __init__(self, name, klass, window, rows=3, cols=3, vgap=0, hgap=0, toplevel=True, show=True):
-        #if self.cols or self.rows:
-            #if not self.rows:
-                #self.rows = 1
-            #elif not self.cols:
-                #self.cols = 1
-        menu = [(_('Add slot'), self.add_slot),
-                (_('Insert slot...'), self.insert_slot),
-                (_('Add row'), self.add_row),
-                (_('Add column'), self.add_col),
-                (_('Insert row...'), self.insert_row),
-                (_('Insert column...'), self.insert_col)]
-        SizerBase.__init__(self, name, klass, None, window, toplevel, show, menu)
+    def __init__(self, name, klass, window, rows=3, cols=3, vgap=0, hgap=0, toplevel=True):
+        SizerBase.__init__(self, name, klass, None, window, toplevel)
 
-        self.rows = np.SpinProperty(rows)
-        self.cols = np.SpinProperty(cols)
-        self.vgap = np.SpinProperty(vgap)
-        self.hgap = np.SpinProperty(hgap)
+        self.rows = np.SpinProperty(rows, immediate=True)
+        self.cols = np.SpinProperty(cols, immediate=True)
+        self.vgap = np.SpinProperty(vgap, immediate=True)
+        self.hgap = np.SpinProperty(hgap, immediate=True)
 
-        class Dummy(object):
-            widget = None
-
-        # add to self.children the SizerItem for self._btn
-        self.children = [SizerItem(Dummy(), 0, 0, wx.EXPAND)]
+        self.children = [SizerItem(Dummy(), 0, 0, wx.EXPAND)]  # add to self.children the SizerItem for self._btn
         for i in range(1, self.rows * self.cols + 1):
             tmp = SizerSlot(self.window, self, i) # XXX no node?
             self.children.append(SizerItem(tmp, i, 1, wx.EXPAND))
-
 
     def create_widget(self):
         "This must be overriden and called at the end of the overriden version"
@@ -1516,40 +1428,6 @@ class GridSizerBase(SizerBase):
             # self._logger.debug('set_item: %s, %s', pos, size)
             self.set_item(pos, size=size, force_layout=False)
         self.layout(True)
-
-    def _set_rows_cols(self, rows, cols):
-        self.rows = rows
-        self.cols = cols
-        self.properties['rows'].set_value(rows)
-        self.properties['cols'].set_value(cols)
-        if self.widget:
-            self.widget.SetRows(self.rows)
-            self.widget.SetCols(self.cols)
-            self.layout(True)
-
-    def set_rows(self, rows):
-        self.rows = int(rows)
-        if self.widget:
-            self.widget.SetRows(self.rows)
-            self.layout(True)
-
-    def set_cols(self, cols):
-        self.cols = int(cols)
-        if self.widget:
-            self.widget.SetCols(self.cols)
-            self.layout(True)
-
-    def set_hgap(self, hgap):
-        self.hgap = int(hgap)
-        if self.widget:
-            self.widget.SetHGap(self.hgap)
-            self.layout()
-
-    def set_vgap(self, vgap):
-        self.vgap = int(vgap)
-        if self.widget:
-            self.widget.SetVGap(self.vgap)
-            self.layout()
 
     def fit_parent(self, *args):
         "Tell the sizer to resize the window to match the sizer's minimal size"
@@ -1626,10 +1504,9 @@ class GridSizerBase(SizerBase):
         if pos >= len(self.children):
             # fix the out of bounds index...
             tot = len(self.children) - 1
-            cols = tot / rows
+            cols = tot // rows
             if tot % rows:
                 cols += 1
-            # self._logger.debug('fixed cols: %s', cols)
             if rows * cols > tot:
                 for i in range(rows * cols - tot):
                     self.insert_slot( tot+i+1, force_layout=False)
@@ -1641,14 +1518,37 @@ class GridSizerBase(SizerBase):
         self.layout(True)
         common.app_tree.app.saved = False
 
+    def properties_changed(self, modified):
+        layout = False
+        if not modified or "rows" in modified and self.widget:
+            if self.widget.GetRows()!=self.rows:
+                self.widget.SetRows(self.rows)
+                layout = True
+        if not modified or "cols" in modified and self.widget:
+            if self.widget.GetCols()!=self.cols:
+                self.widget.SetCols(self.cols)
+                layout = True
+        if not modified or "hgap" in modified and self.widget:
+            if self.widget.GetHGap()!=self.hgap:
+                self.widget.SetHGap(self.hgap)
+                layout = True
+        if not modified or "vgap" in modified and self.widget:
+            if self.widget.GetVGap()!=self.vgap:
+                self.widget.SetVGap(self.vgap)
+                layout = True
+
+        if layout:
+            self.layout(True)
+
+        SizerBase.properties_changed(self, modified)
 
 
 class EditGridSizer(GridSizerBase):
     "Class to handle wxGridSizer objects"
     
     WX_CLASS = "wxGridSizer"
-    def __init__(self, name, window, rows=3, cols=3, vgap=0, hgap=0, toplevel=True, show=True):
-        GridSizerBase.__init__(self, name, 'wxGridSizer', window, rows, cols, vgap, hgap, toplevel, show)
+    def __init__(self, name, window, rows=3, cols=3, vgap=0, hgap=0, toplevel=True):
+        GridSizerBase.__init__(self, name, 'wxGridSizer', window, rows, cols, vgap, hgap, toplevel)
 
     def create_widget(self):
         self.widget = CustomSizer(self, wx.GridSizer, self.rows, self.cols, self.vgap, self.hgap)
@@ -1727,8 +1627,8 @@ class EditFlexGridSizer(GridSizerBase):
     _PROPERTY_HELP = {"growable_rows":'Select growable rows',
                       "growable_cols":'Select growable columns'}
 
-    def __init__(self, name, window, rows=3, cols=3, vgap=0, hgap=0, toplevel=True, show=True):
-        GridSizerBase.__init__(self, name, 'wxFlexGridSizer', window, rows, cols, vgap, hgap, toplevel, show)
+    def __init__(self, name, window, rows=3, cols=3, vgap=0, hgap=0, toplevel=True):
+        GridSizerBase.__init__(self, name, 'wxFlexGridSizer', window, rows, cols, vgap, hgap, toplevel)
         self.growable_rows = np.TextPropertyD("", default_value="")  # XXX modify CheckListDialog above and use this, with [] as value
         self.growable_cols = np.TextPropertyD("", default_value="")
         
@@ -1798,7 +1698,7 @@ class EditFlexGridSizer(GridSizerBase):
 
 
 
-def _builder(parent, sizer, pos, orientation=wx.VERTICAL, slots=1, is_static=False, label="", number=[1], show=True):
+def _builder(parent, sizer, pos, orientation=wx.VERTICAL, slots=1, is_static=False, label="", number=[1]):
     num = slots
     name = 'sizer_%d' % number[0]
     while common.app_tree.has_name(name):
@@ -1889,7 +1789,7 @@ class _SizerDialog(wx.Dialog):
 
 
 
-def builder(parent, sizer, pos, number=[1], show=True):
+def builder(parent, sizer, pos, number=[1]):
     "factory function for box sizers"
 
     dialog = _SizerDialog(parent)
@@ -1981,7 +1881,7 @@ class _GridBuilderDialog(wx.Dialog):
         return lambda: 0, lambda v: None
 
 
-def grid_builder(parent, sizer, pos, number=[1], show=True):
+def grid_builder(parent, sizer, pos, number=[1]):
     "factory function for grid sizers"
     dialog = _GridBuilderDialog(parent)
     dialog.ShowModal()

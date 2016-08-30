@@ -23,8 +23,8 @@ class EditListCtrl(ManagedBase, EditStylesMixin):
     _PROPERTIES = ["Widget", "style"]
     PROPERTIES = ManagedBase.PROPERTIES + _PROPERTIES + ManagedBase.EXTRA_PROPERTIES
 
-    def __init__(self, name, parent, id, sizer, pos, show=True, style=wx.LC_REPORT | wx.BORDER_SUNKEN):
-        ManagedBase.__init__(self, name, 'wxListCtrl', parent, id, sizer, pos, show=show)
+    def __init__(self, name, parent, id, sizer, pos, style=wx.LC_REPORT | wx.BORDER_SUNKEN):
+        ManagedBase.__init__(self, name, 'wxListCtrl', parent, id, sizer, pos)
         EditStylesMixin.__init__(self)
         if style: self.properties["style"].set(style)
 

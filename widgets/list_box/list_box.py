@@ -19,8 +19,8 @@ class EditListBox(ManagedBase, EditStylesMixin):
     _PROPERTIES = ["Widget", "style", "selection", "choices"]
     PROPERTIES = ManagedBase.PROPERTIES + _PROPERTIES + ManagedBase.EXTRA_PROPERTIES
 
-    def __init__(self, name, parent, id, choices, sizer, pos, show=True):
-        ManagedBase.__init__(self, name, 'wxListBox', parent, id, sizer, pos, show=show)
+    def __init__(self, name, parent, id, choices, sizer, pos):
+        ManagedBase.__init__(self, name, 'wxListBox', parent, id, sizer, pos)
         EditStylesMixin.__init__(self)
 
         # initialise instance properties

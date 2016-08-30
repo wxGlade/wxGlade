@@ -93,9 +93,9 @@ class EditGrid(ManagedBase):
     #_SELECTION_MODES = { 'wxGrid.wxGridSelectCells':0, 'wxGrid.wxGridSelectRows':1, 'wxGrid.wxGridSelectColumns':2 }
     _SELECTION_MODES = ('wxGrid.wxGridSelectCells', 'wxGrid.wxGridSelectRows', 'wxGrid.wxGridSelectColumns')
 
-    def __init__(self, name, parent, id, sizer, pos, show=True):
+    def __init__(self, name, parent, id, sizer, pos):
         "Class to handle wxGrid objects"
-        ManagedBase.__init__(self, name, 'wxGrid', parent, id, sizer, pos, show=show)
+        ManagedBase.__init__(self, name, 'wxGrid', parent, id, sizer, pos)
 
         # instance properties
         self.create_grid = np.CheckBoxProperty(True)
@@ -225,7 +225,7 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
         raise XmlParsingError(_("'name' attribute missing"))
     if sizer is None or sizeritem is None:
         raise XmlParsingError(_("sizer or sizeritem object cannot be None"))
-    grid = EditGrid(label, parent, wx.NewId(), sizer, pos, show=False)
+    grid = EditGrid(label, parent, wx.NewId(), sizer, pos)
     sizer.set_item(grid.pos, proportion=sizeritem.proportion, flag=sizeritem.flag, border=sizeritem.border)
     node = Node(grid)
     grid.node = node

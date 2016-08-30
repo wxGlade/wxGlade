@@ -86,8 +86,8 @@ class EditSplitterWindow(ManagedBase, EditStylesMixin):
     _PROPERTY_LABELS = {'no_custom_class':"Don't generate code for this class",
                         'sash_pos':"Sash position"}
 
-    def __init__(self, name, parent, id, style, win_1, win_2, orientation, sizer, pos, show=True):
-        ManagedBase.__init__(self, name, 'wxSplitterWindow', parent, id, sizer, pos, show=show)
+    def __init__(self, name, parent, id, style, win_1, win_2, orientation, sizer, pos):
+        ManagedBase.__init__(self, name, 'wxSplitterWindow', parent, id, sizer, pos)
         EditStylesMixin.__init__(self)
 
         # initialise instance properties
@@ -210,7 +210,7 @@ def builder(parent, sizer, pos, number=[1]):
 
     pane1 = EditPanel(label + '_pane_1', widget, wx.NewId(), widget.virtual_sizer, 1)
     pane2 = EditPanel(label + '_pane_2', widget, wx.NewId(), widget.virtual_sizer, 2)
-    widget = editor_class(label, parent, -1, None, panel1, panel2, orientation, sizer, pos, show=False)
+    widget = editor_class(label, parent, -1, None, panel1, panel2, orientation, sizer, pos)
 
     node = Node(widget)
     widget.node = node
