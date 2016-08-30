@@ -20,7 +20,7 @@ import compat
 import config
 import misc
 from misc import _reverse_dict
-from ordereddict import OrderedDict
+from collections import OrderedDict
 
 try:
     basestring

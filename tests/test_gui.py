@@ -435,7 +435,7 @@ class TestGui(WXGladeBaseTest):
         )
 
         # test setting styles via style dictionary
-        from ordereddict import OrderedDict
+        from collections import OrderedDict
         styles = OrderedDict()
         styles[_('Border')] = ['wxALL', 'wxLEFT']
         styles[_('Alignment')] = ['wxEXPAND', 'wxALIGN_RIGHT']

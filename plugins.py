@@ -10,7 +10,7 @@ import os
 import re
 import sys
 import zipfile
-from ordereddict import OrderedDict
+from collections import OrderedDict
 
 import common
 import config
