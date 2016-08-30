@@ -200,7 +200,7 @@ class SizerSlot(np.PropertyOwner):
         dc.SetBackground(wx.Brush(wx.LIGHT_GREY))
         dc.Clear()
         # draw the hatches (red if selected)
-        color = wx.RED  if misc.focused_widget is self  else  wx.BLACK
+        color = wx.BLUE  if misc.focused_widget is self  else  wx.BLACK
         if self.pos % 2:
             brush = wx.Brush(color, wx.FDIAGONAL_HATCH)
         else:
@@ -263,7 +263,7 @@ class SizerSlot(np.PropertyOwner):
         self._destroy_popup_menu()
         p = misc.get_toplevel_widget(self.sizer)
         if p is not None:
-            p.preview(None)
+            p.preview()
 
     ####################################################################################################################
 
@@ -639,12 +639,12 @@ class SizerBase(Sizer, np.PropertyOwner):
         #p = self.properties.get('pos')
         #if p: p.set_sizer(sizer)
 
-
-
     def set_pos(self, value):
+        # XXX currently not used; make np.LayoutPosProperty editable again
         wx.CallAfter( self.sizer.change_item_pos, self, min( value+1, len(self.sizer.children)-1 ) )
 
     def update_pos(self, value):
+        # XXX currently not used; make np.LayoutPosProperty editable again
         # self._logger.debug('update pos: %s, %s', self.name, value)
         self.sizer_properties['pos'].set_value(value-1)
         self.pos = value
@@ -760,9 +760,10 @@ class SizerBase(Sizer, np.PropertyOwner):
             misc.focused_widget = None
 
     def preview_parent(self):
+        # context menu callback
         self._destroy_popup_menu()
         p = misc.get_toplevel_widget(self)
-        p.on_preview()
+        p.preview()
 
     def set_name(self, value):
         value = "%s" % value
@@ -1838,8 +1839,8 @@ def _builder(parent, sizer, pos, orientation=wx.VERTICAL, slots=1, is_static=Fal
     if parent.is_visible():
         sz.show_widget(show)
     if sizer is not None:
-        sz.sizer_properties['flag'].set_value('wxEXPAND')
-        sz.sizer_properties['pos'].set_value(pos-1)
+        sz.properties['flag'].set('wxEXPAND')
+        sz.properties['pos'].set(pos)
 
 
 class _SizerDialog(wx.Dialog):
@@ -2028,8 +2029,8 @@ def grid_builder(parent, sizer, pos, number=[1], show=True):
         sz.show_widget(show)  # True)
 
     if sizer is not None:
-        sz.sizer_properties['flag'].set_value('wxEXPAND')
-        sz.sizer_properties['pos'].set_value(pos - 1)
+        sz.properties['flag'].set_value('wxEXPAND')
+        sz.properties['pos'].set_value(pos)
 
 
 def grid_xml_builder(attrs, parent, sizer, sizeritem, pos=None):

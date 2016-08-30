@@ -927,14 +927,6 @@ class TextProperty(Property):
         if not compat.wxWindow_IsEnabled(self.text): return
         self._check_for_user_modification()
 
-    def _check_for_user_modification(self):
-        new_value = self._escape( self.text.GetValue() )
-        if misc.streq(new_value, self.value): return
-        self.modified = True
-        self.value = new_value
-        common.app_tree.app.saved = False
-        self.owner.properties_changed([self.name])
-
     def _check_for_user_modification(self, new_value=None, force=False):
         if new_value is None:
             new_value = self._convert_from_text(self.text.GetValue())
@@ -1133,20 +1125,15 @@ class DialogProperty(TextProperty):
     CONTROLNAMES = ["enabler", "text", "button"]
     def __init__(self, value="", multiline=False, strip=True, default_value=_DefaultArgument, name=None):
         TextProperty.__init__(self, value, multiline, strip, default_value, name)
-        self.dialog = None
+        self.dialog = self.button = None
     def create_additional_controls(self, panel, sizer, hsizer):
         # used e.g. by DialogProperty to create the button
-        #self.button = wx.Button(panel, -1, " ... ", size=(config.label_width, -1))
         self.button = wx.Button(panel, -1, " ... ")
         if self.deactivated is not None:
             self.button.Enable(not self.deactivated)
         self.button.Bind(wx.EVT_BUTTON, self.display_dialog)
-        #hsizer.Add(self.button, 1, wx.ALL | wx.ALIGN_CENTER, 3)
         hsizer.Add(self.button, 0, wx.ALL | wx.ALIGN_CENTER, 3)
-        ## reduce text control width
-        #delta_w = self.button.GetBestSize()[0] - 2*3
-        #w, h = self.text.GetSize()
-        #self.text.SetSize( w-delta_w, h )
+        self._update_button()
         return [self.button]
 
     def set_dialog(self, dialog):
@@ -1154,14 +1141,24 @@ class DialogProperty(TextProperty):
     def _create_dialog(self):
         # create or update
         return self.dialog
+
     def display_dialog(self, event):
         dialog = self._create_dialog()
         if dialog is None or dialog.ShowModal()!=wx.ID_OK: return
         value = dialog.get_value()
         self.text.SetValue(misc.wxstr(value))
         self._check_for_user_modification()
+        self.update_display()
         #self.text.ProcessEvent( wx.FocusEvent(wx.wxEVT_KILL_FOCUS, self.text.GetId()) )
 
+    def _update_button(self):
+        # update e.g. color or font
+        pass
+
+    def update_display(self, start_editing=False):
+        TextProperty.update_display(self, start_editing)
+        self._update_button()
+        
 
 class DialogPropertyD(DialogProperty):
     deactivated = True
@@ -1250,6 +1247,40 @@ class ColorProperty(DialogProperty):
             self.dialog = wxGladeColorDialog(self.str_to_colors)
         self.dialog.set_value(self.value or "")
         return self.dialog
+
+    def _set_converter(self, value):
+        if not isinstance(value, compat.basestring):
+            value = misc.color_to_string(value)
+        return value
+
+    def get_color(self):
+        # return a wx.Colour instance
+        color = self.get()
+        if color is _DefaultArgument: return None
+        if color in self.str_to_colors:
+            # e.g. 'wxSYS_COLOUR_SCROLLBAR'
+            return wx.SystemSettings_GetColour(self.str_to_colors[color])
+        elif color.startswith("#"):
+            return misc.string_to_color(color)
+        ret = wx.NamedColour(color)
+        if ret.IsOk():
+            return ret
+        return None
+
+    def _update_button(self):
+        if not self.button: return
+        if self.is_active():
+            color = self.get_color()
+        else:
+            color = None
+        if color is None:
+            self.set_active(False)  # invalid colour
+            self.button.SetBackgroundColour(None) # wx.NullColor)
+        else:
+            self.button.SetBackgroundColour(color)
+
+
+
 
 class ColorPropertyD(ColorProperty):
     deactivated = True
@@ -1665,11 +1696,15 @@ class ActionButtonProperty(Property):
     CONTROLNAMES = ["button"]
     def __init__(self, callback):
         self.callback = callback
+        self.label = None  # set to None; when creating an editor, self.set_label() may have been called
         Property.__init__(self, None)
 
+    def get(self):
+        return self
+
     def create_editor(self, panel, sizer):
-        label = self._find_label()
-        self.button = wx.Button( panel, -1, label )
+        if self.label is None: self.label = self._find_label()
+        self.button = wx.Button( panel, -1, self.label )
         sizer.Add(self.button, 0, wx.EXPAND)
         tooltip = self._find_tooltip()
         if tooltip: compat.SetToolTip(self.button, tooltip)
@@ -1677,11 +1712,14 @@ class ActionButtonProperty(Property):
         self.editing = True
 
     def set_label(self, label):
-        if not self.editing: return
-        self.button.SetLabel(label)
+        self.label = label
+        if self.editing: self.button.SetLabel(label)
 
     def on_button(self, event):
         self.callback()
+
+    def __call__(self, *args, **kwargs):
+        self.callback(*args, **kwargs)
 
     def write(self, outfile, tabs=0):
         return
