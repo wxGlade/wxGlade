@@ -24,8 +24,8 @@ class EditBitmapButton(ManagedBase, EditStylesMixin, BitmapMixin):
     _PROPERTY_HELP = {"bitmap": BitmapMixin.bitmap_tooltip_text,
                       "disabled_bitmap": BitmapMixin.bitmap_tooltip_text}
 
-    def __init__(self, name, parent, id, bmp_file, sizer, pos, show=True):
-        ManagedBase.__init__(self, name, 'wxBitmapButton', parent, id, sizer, pos, show=show)
+    def __init__(self, name, parent, id, bmp_file, sizer, pos):
+        ManagedBase.__init__(self, name, 'wxBitmapButton', parent, id, sizer, pos)
         EditStylesMixin.__init__(self)
         BitmapMixin.__init__(self)
 
@@ -99,7 +99,7 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
         raise XmlParsingError(_("'name' attribute missing"))
     if sizer is None or sizeritem is None:
         raise XmlParsingError(_("sizer or sizeritem object cannot be None"))
-    button = EditBitmapButton(label, parent, wx.NewId(), '', sizer, pos, show=False)
+    button = EditBitmapButton(label, parent, wx.NewId(), '', sizer, pos)
     sizer.set_item(button.pos, proportion=sizeritem.proportion, flag=sizeritem.flag, border=sizeritem.border)
     node = Node(button)
     button.node = node

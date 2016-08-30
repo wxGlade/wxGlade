@@ -56,8 +56,8 @@ class CustomWidget(ManagedBase):
     _PROPERTY_LABELS = { 'custom_constructor':'Custom constructor' }
     _PROPERTY_HELP   = { 'custom_constructor':'Specify a custom constructor like a factory method' }
 
-    def __init__(self, name, klass, parent, id, sizer, pos, show=True):
-        ManagedBase.__init__(self, name, klass, parent, id, sizer, pos, show)
+    def __init__(self, name, klass, parent, id, sizer, pos):
+        ManagedBase.__init__(self, name, klass, parent, id, sizer, pos)
 
         # initialise instance properties
         arguments = [['$parent'], ['$id']]  # ,['$width'],['$height']]

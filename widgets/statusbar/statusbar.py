@@ -62,7 +62,7 @@ class EditStatusBar(EditBase, EditStylesMixin):
     PROPERTIES = EditBase.PROPERTIES + _PROPERTIES + EditBase.EXTRA_PROPERTIES
 
     def __init__(self, name, klass, parent):
-        EditBase.__init__( self, name, klass, parent, wx.NewId(), custom_class=False, show=False )
+        EditBase.__init__( self, name, klass, parent, wx.NewId(), custom_class=False )
         EditStylesMixin.__init__(self)
 
         # for the statusbar fields

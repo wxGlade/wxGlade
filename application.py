@@ -231,7 +231,7 @@ class Application(np.PropertyOwner):
         if ext and ext[1:] in common.code_writers[language].default_extensions:
             return
         new_name = "%s.%s" % (base, common.code_writers[language].default_extensions[0])
-        self.properties["outpath_prop"].set(new_name)
+        self.properties["output_path"].set(new_name)
 
         blocked = self.language!="C++"
         self.properties["source_extension"].set_blocked(blocked)
@@ -339,7 +339,7 @@ class Application(np.PropertyOwner):
             # generate the code from the xml buffer
             language = self.language
 
-            # save and overwrite some code generation settings
+            # save and overwrite some code generation settings; to be restored below
             if preview and language == 'python':
                 overwrite_save = self.overwrite
                 self.overwrite = True

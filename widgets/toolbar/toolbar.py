@@ -451,8 +451,7 @@ class EditToolBar(EditBase, PreviewMixin, EditStylesMixin, BitmapMixin):
 
     def __init__(self, name, klass, parent):
         custom_class = parent is None
-        EditBase.__init__( self, name, 'wxToolBar', parent, wx.NewId(), custom_class=custom_class,
-                           show=False)
+        EditBase.__init__( self, name, 'wxToolBar', parent, wx.NewId(), custom_class=custom_class )
         EditStylesMixin.__init__(self)
 
         # initialise instance properties

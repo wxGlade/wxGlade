@@ -23,8 +23,8 @@ class EditFrame(TopLevelBase, EditStylesMixin, BitmapMixin):
     _PROPERTY_LABELS = { "sizehints":'Set Size Hints', "menubar":'Has MenuBar', "toolbar":'Has ToolBar',
                          "statusbar":'Has StatusBar' }
 
-    def __init__(self, name, parent, id, title, style=wx.DEFAULT_FRAME_STYLE, show=True, klass='wxFrame'): #XXX style is not used
-        TopLevelBase.__init__(self, name, klass, parent, id, show=show, title=title)
+    def __init__(self, name, parent, id, title, style=wx.DEFAULT_FRAME_STYLE, klass='wxFrame'): #XXX style is not used
+        TopLevelBase.__init__(self, name, klass, parent, id, title=title)
         self.properties["base"].set('wxFrame')
         EditStylesMixin.__init__(self)
 
@@ -188,7 +188,7 @@ def _make_builder(base_class):
             label = attrs['name']
         except KeyError:
             raise XmlParsingError(_("'name' attribute missing"))
-        frame = base_class(label, parent, wx.NewId(), "", show=False, style=0)
+        frame = base_class(label, parent, wx.NewId(), "", style=0)
         node = Node(frame)
         frame.node = node
         common.app_tree.add(node)

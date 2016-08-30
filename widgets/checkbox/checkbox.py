@@ -24,9 +24,9 @@ class EditCheckBox(ManagedBase, EditStylesMixin):
     # Convert the position of "checked" RadioProperty to wxCheckBoxState
     index2state = { 0: wx.CHK_UNCHECKED, 1: wx.CHK_CHECKED, 2: wx.CHK_UNDETERMINED }
 
-    def __init__(self, name, parent, id, label, sizer, pos, show=True):
+    def __init__(self, name, parent, id, label, sizer, pos):
         "Class to handle wxCheckBox objects"
-        ManagedBase.__init__(self, name, 'wxCheckBox', parent, id, sizer, pos, show=show)
+        ManagedBase.__init__(self, name, 'wxCheckBox', parent, id, sizer, pos)
         EditStylesMixin.__init__(self)
 
         # initialise instance properties
@@ -102,7 +102,7 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
         raise XmlParsingError(_("'name' attribute missing"))
     if sizer is None or sizeritem is None:
         raise XmlParsingError(_("sizer or sizeritem object cannot be None"))
-    checkbox = EditCheckBox( label, parent, wx.NewId(), "", sizer, pos, show=False)
+    checkbox = EditCheckBox( label, parent, wx.NewId(), "", sizer, pos)
     sizer.set_item(checkbox.pos, proportion=sizeritem.proportion, flag=sizeritem.flag, border=sizeritem.border)
     node = Node(checkbox)
     checkbox.node = node

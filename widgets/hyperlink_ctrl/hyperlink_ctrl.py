@@ -26,11 +26,13 @@ class EditHyperlinkCtrl(ManagedBase, EditStylesMixin):
     _PROPERTIES = ["Widget", "label", "style", "url", "attribute"]
     PROPERTIES = ManagedBase.PROPERTIES + _PROPERTIES + ManagedBase.EXTRA_PROPERTIES
     _PROPERTY_HELP = { 'label':"Label of the hyperlink",
-                       'url':"URL associated with the given label" }
+                       'url':"URL associated with the given label",
+                       "attribute":'Store instance as attribute of window class; e.g. self.bitmap_1 = wx.wxStaticBitmap'
+                                   '(...)\nWithout this, you can not access the bitmap from your program.'}
 
-    def __init__(self, name, parent, id, label, sizer, pos, show=True):
+    def __init__(self, name, parent, id, label, sizer, pos):
         # Initialise parent classes
-        ManagedBase.__init__(self, name, 'wxHyperlinkCtrl', parent, id, sizer, pos, show=show)
+        ManagedBase.__init__(self, name, 'wxHyperlinkCtrl', parent, id, sizer, pos)
         EditStylesMixin.__init__(self)
 
         # initialise instance properties

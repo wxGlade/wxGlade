@@ -24,8 +24,8 @@ class EditComboBox(ManagedBase, EditStylesMixin):
 
     update_widget_style = False
 
-    def __init__(self, name, parent, id, choices, sizer, pos, show=True):
-        ManagedBase.__init__(self, name, 'wxComboBox', parent, id, sizer, pos, show=show)
+    def __init__(self, name, parent, id, choices, sizer, pos):
+        ManagedBase.__init__(self, name, 'wxComboBox', parent, id, sizer, pos)
         EditStylesMixin.__init__(self)
 
         # initialise instance properties

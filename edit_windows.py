@@ -73,7 +73,7 @@ class EditBase(EventsMixin, np.PropertyOwner):
                                       "overwrite existing sources is not set.") }
     _PROPERTY_LABELS = {"custom_base":'Base class(es)'}
 
-    def __init__(self, name, klass, parent, id, show=True, custom_class=True):
+    def __init__(self, name, klass, parent, id, custom_class=True):
         np.PropertyOwner.__init__(self)
         # initialise instance logger
         self._logger = logging.getLogger(self.__class__.__name__)
@@ -107,7 +107,6 @@ class EditBase(EventsMixin, np.PropertyOwner):
         self._rmenu = None  # popup menu
         self._dont_destroy = False
 
-        if show: self.show_widget(True)
         EventsMixin.__init__(self)
 
     def show_widget(self, yes):
@@ -239,19 +238,14 @@ class EditBase(EventsMixin, np.PropertyOwner):
         misc.set_focused_widget(self)
         #if wxPlatform != '__WXMSW__': event.Skip()
 
-    #def update_properties_display(self):
-        #for name, property in self.properties.items():
-            #property.update_display()
-
     def get_property_handler(self, prop_name):
         """Returns a custom handler function for the property 'prop_name', used when loading this object from a XML file.
         handler must provide three methods: 'start_elem', 'end_elem' and 'char_data'"""
         return EventsMixin.get_property_handler(self, prop_name)
 
     def properties_changed(self, modified):
-        if not modified or "class" in modified:
+        if not modified or "class" in modified or "name" in modified:
             common.app_tree.refresh_name(self.node)
-            common.app_tree.refresh_name(self.node, oldname)
 
     # clipboard ########################################################################################################
     def check_compatibility(self, widget):
@@ -329,12 +323,13 @@ class WindowBase(EditBase):
     
     The pattern of a variable assignment is always "variable=value". The \
     value could be again a numeric value, a predefined identifier, \
-    another predefined variable or "?" a shortcut for "wxNewId()".""" }
+    another predefined variable or "?" a shortcut for "wxNewId()"."""}
 
     _PROPERTY_LABELS = {"attribute":'Store as attribute'}  # used in many derived widget editors
+    
 
-    def __init__(self, name, klass, parent, id, show=True):
-        EditBase.__init__(self, name, klass, parent, id, show=False)
+    def __init__(self, name, klass, parent, id):
+        EditBase.__init__(self, name, klass, parent, id)
 
         self.window_id = np.TextPropertyD( "wxID_ANY", default_value="wxID_ANY", name="id" )
         self.size      = np.SizePropertyD( "-1, -1", default_value="-1, -1" )
@@ -555,8 +550,8 @@ class ManagedBase(WindowBase):
 
     ####################################################################################################################
     
-    def __init__(self, name, klass, parent, id, sizer, pos, show=True):
-        WindowBase.__init__(self, name, klass, parent, id, show=show)
+    def __init__(self, name, klass, parent, id, sizer, pos):
+        WindowBase.__init__(self, name, klass, parent, id)
         # if True, the user is able to control the layout of the widget
         # inside the sizer (proportion, borders, alignment...)
         self._has_layout = not sizer.is_virtual()
@@ -694,8 +689,8 @@ class TopLevelBase(WindowBase, PreviewMixin):
     _custom_base_classes = True
     PROPERTIES = WindowBase.PROPERTIES + ["preview"]
 
-    def __init__(self, name, klass, parent, id, show=True, title=None):
-        WindowBase.__init__(self, name, klass, parent, id, show=show)
+    def __init__(self, name, klass, parent, id, title=None):
+        WindowBase.__init__(self, name, klass, parent, id)
         self.has_title = "title" in self.PROPERTIES
         if self.has_title:
             self.title = np.TextProperty(title or self.name)

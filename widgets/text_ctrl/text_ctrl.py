@@ -22,9 +22,9 @@ class EditTextCtrl(ManagedBase, EditStylesMixin):
     _PROPERTIES = ["Widget", "value", "style"]
     PROPERTIES = ManagedBase.PROPERTIES + _PROPERTIES + ManagedBase.EXTRA_PROPERTIES
 
-    def __init__(self, name, parent, id, sizer, pos, show=True):
+    def __init__(self, name, parent, id, sizer, pos):
         # initialize base classes
-        ManagedBase.__init__(self, name, 'wxTextCtrl', parent, id, sizer, pos, show=show)
+        ManagedBase.__init__(self, name, 'wxTextCtrl', parent, id, sizer, pos)
         EditStylesMixin.__init__(self)
 
         # initialize instance properties

@@ -104,6 +104,40 @@ class Node(object):
                 child.write(outfile, tabs+1, class_names)
         fwrite(u'%s</object>\n' % outer_tabs)
 
+    def get_image(self, image=None):
+        # get an image for this node
+        if image is not None:
+            return image
+
+        #if child.widget:
+        if isinstance(self, Node):
+            name = self.widget.__class__.__name__
+            widget = self.widget
+            if name=="SizerSlot":
+                sizer_orient = getattr(self.parent.widget, "orient", None)
+        else:
+            name = self.__class__.__name__
+            widget = self
+            if name=="SizerSlot":
+                sizer_orient = getattr(self.sizer, "orient", None)
+
+        if name=="SizerSlot":
+            if sizer_orient==wx.VERTICAL:
+                name = "EditVerticalSizerSlot"
+            elif sizer_orient==wx.HORIZONTAL:
+                name = "EditHorizontalSizerSlot"
+            else:
+                name = "EditSizerSlot"
+        elif name in ("EditStaticBoxSizer", "EditBoxSizer"):
+            # with or without label, horizontal/vertical
+            if widget.orient & wx.VERTICAL:
+                name = "EditVerticalSizer"
+            elif widget.orient & wx.HORIZONTAL:
+                name = "EditHorizontalSizer"
+            else:
+                name = "EditSpacer"
+        index = WidgetTree.images.get(name, -1)
+        return index
 
 
 class SlotNode(Node):
@@ -364,13 +398,14 @@ class WidgetTree(wx.TreeCtrl, Tree):
 
     def begin_edit_label(self, evt):
         # Begin editing a label. This can be prevented by calling Veto()
-        pass
+        widget = self.GetPyData( evt.Item ).widget
+        if "name" not in widget.properties: evt.Veto()
 
     def end_edit_label(self, evt):
         # Finish editing a label. This can be prevented by calling Veto()
         if evt.IsEditCancelled(): return
         item = evt.Item
-        node = self.GetPyData( evt.Item )
+        node = self.GetPyData( item )
         widget = node.widget
         # XXX split user input into name and label/title (reverse of self._build_label)
         old_label = self.GetItemText(item)
@@ -382,9 +417,18 @@ class WidgetTree(wx.TreeCtrl, Tree):
         name_p.set(new_label, notify=True)
 
     def _build_label(self, node):
+        # get a lable for node
         import edit_sizers
         if isinstance(node.widget, edit_sizers.SizerSlot):
-            return "SLOT"
+            pos = node.widget.pos
+            if node.widget.sizer and isinstance(node.widget.sizer, edit_sizers.GridSizerBase):
+                # row/col
+                sizer = node.widget.sizer
+                row = (pos-1) // sizer.cols + 1  # 1 based at the moment
+                col = (pos-1) %  sizer.cols + 1
+                return "SLOT  %d/%d"%(row, col)
+            else:
+                return "SLOT %d"%(pos)
         s = node.widget.name
         if node.widget.klass != node.widget.base and node.widget.klass != 'wxScrolledWindow':
             # special case...
@@ -397,46 +441,12 @@ class WidgetTree(wx.TreeCtrl, Tree):
             s += ': "%s"'%node.widget.title
         return s
 
-    def get_image(self, child, image=None):
-        if image is not None:
-            return image
-
-        #if child.widget:
-        if isinstance(child, Node):
-            name = child.widget.__class__.__name__
-            widget = child.widget
-            if name=="SizerSlot":
-                sizer_orient = getattr(child.parent.widget, "orient", None)
-        else:
-            name = child.__class__.__name__
-            widget = child
-            if name=="SizerSlot":
-                sizer_orient = getattr(child.sizer, "orient", None)
-
-        if name=="SizerSlot":
-            if sizer_orient==wx.VERTICAL:
-                name = "EditVerticalSizerSlot"
-            elif sizer_orient==wx.HORIZONTAL:
-                name = "EditHorizontalSizerSlot"
-            else:
-                name = "EditSizerSlot"
-        elif name in ("EditStaticBoxSizer", "EditBoxSizer"):
-            # with or without label, horizontal/vertical
-            if widget.orient & wx.VERTICAL:
-                name = "EditVerticalSizer"
-            elif widget.orient & wx.HORIZONTAL:
-                name = "EditHorizontalSizer"
-            else:
-                name = "EditSpacer"
-        index = WidgetTree.images.get(name, -1)
-        return index
-
-    def add(self, child, parent=None, image=None):  # is image still used?
+    def add(self, child, parent=None):
         "appends child to the list of parent's children"
         assert isinstance(child, Node)
 
         Tree.add(self, child, parent)
-        image = self.get_image(child, image)
+        image = child.get_image()
         if parent is None: parent = parent.item = self.GetRootItem()
         child.item = self.AppendItem(parent.item, self._build_label(child), image)
         self.SetPyData(child.item, child)
@@ -447,7 +457,7 @@ class WidgetTree(wx.TreeCtrl, Tree):
         if not isinstance(child.widget, edit_sizers.SizerSlot):
             self.app.check_codegen(child.widget)
 
-    def insert(self, child, parent, index, image=None):
+    def insert(self, child, parent, index):
         "inserts child to the list of parent's children, before pos"
         assert isinstance(child, Node)
         # pos is index
@@ -458,7 +468,7 @@ class WidgetTree(wx.TreeCtrl, Tree):
 
         # parent is a Node, i.e. Dummy or Button are not in parent.children
         if parent.children is None or index>=len(parent.children):
-            self.add(child, parent, image)
+            self.add(child, parent)
             return
 
         if isinstance( parent.children[index], SlotNode ):
@@ -466,7 +476,7 @@ class WidgetTree(wx.TreeCtrl, Tree):
                 self.remove( parent.children[index] )
 
         Tree.insert(self, child, parent, index)
-        image = self.get_image(child, image)
+        image = child.get_image()
         child.item = compat.wx_Tree_InsertItemBefore(self, parent.item, index, self._build_label(child), image)
         self.SetPyData(child.item, child)
         if self.auto_expand:
@@ -499,12 +509,7 @@ class WidgetTree(wx.TreeCtrl, Tree):
         self.skip_select = False
         self.app.reset()
 
-    def refresh_name(self, node, oldname=None):  # , name=None):
-        if oldname is not None:
-            try:
-                del self.names[self._find_toplevel(node)][oldname]
-            except KeyError:
-                pass
+    def refresh_name(self, node):
         self.names.setdefault(self._find_toplevel(node), {})[node.widget.name] = 1
         self.SetItemText(node.item, self._build_label(node))
 
@@ -513,7 +518,7 @@ class WidgetTree(wx.TreeCtrl, Tree):
         if refresh_label:
             self.SetItemText(node.item, self._build_label(node))
         if refresh_image:
-            image = self.get_image(node, image=None)
+            image = node.get_image()
             self.SetItemImage(node.item, image)
 
     def select_item(self, node):
@@ -663,8 +668,8 @@ class WidgetTree(wx.TreeCtrl, Tree):
             node = new_node
             self.names.setdefault(Tree._find_toplevel(self, node), {})[str(node.widget.name)] = 1
         Tree.change_node(self, node, widget)
-        self.SetItemImage(node.item, self.get_image(widget) )
-        self.SetItemText(node.item, self._build_label(node))  # widget.name)
+        self.SetItemImage(node.item, node.get_image() )
+        self.SetItemText(node.item, self._build_label(node))
 
     def _append_rec(self, parent, node):
         # helper for the next method

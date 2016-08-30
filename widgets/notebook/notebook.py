@@ -159,9 +159,9 @@ class EditNotebook(ManagedBase, EditStylesMixin):
     _PROPERTIES = ["Widget", "no_custom_class", "style", "tabs"]
     PROPERTIES = ManagedBase.PROPERTIES + _PROPERTIES + ManagedBase.EXTRA_PROPERTIES
 
-    def __init__(self, name, parent, id, style, sizer, pos, show=True):
+    def __init__(self, name, parent, id, style, sizer, pos):
         name = name or self.next_notebook_name()  # create new and (still) unused notebook name
-        ManagedBase.__init__(self, name, 'wxNotebook', parent, id, sizer, pos, show=show)
+        ManagedBase.__init__(self, name, 'wxNotebook', parent, id, sizer, pos)
         EditStylesMixin.__init__(self)
 
         self.virtual_sizer = NotebookVirtualSizer(self)
@@ -378,7 +378,7 @@ def builder(parent, sizer, pos, number=[1]):
     if res != wx.ID_OK:
         return
 
-    widget = editor_class(None, parent, wx.ID_ANY, style, sizer, pos, show=False)
+    widget = editor_class(None, parent, wx.ID_ANY, style, sizer, pos)
 
     node = Node(widget)
     widget.node = node

@@ -19,9 +19,11 @@ class EditStaticText(ManagedBase, EditStylesMixin):
     "Class to handle wxStaticText objects"
     _PROPERTIES = ["Widget", "label", "style", "attribute"]
     PROPERTIES = ManagedBase.PROPERTIES + _PROPERTIES + ManagedBase.EXTRA_PROPERTIES
+    _PROPERTY_HELP ={"attribute":'Store instance as attribute of window class; e.g. self.label_1 = wx.StaticText(...)\n'
+                                 'Without this, you can not access the label from your program.'}
 
-    def __init__(self, name, parent, id, label, sizer, pos, show=True):
-        ManagedBase.__init__(self, name, 'wxStaticText', parent, id, sizer, pos, show=show)
+    def __init__(self, name, parent, id, label, sizer, pos):
+        ManagedBase.__init__(self, name, 'wxStaticText', parent, id, sizer, pos)
         EditStylesMixin.__init__(self)
 
         # initialise instance properties
