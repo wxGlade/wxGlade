@@ -210,7 +210,7 @@ class EditPanel(PanelBase, ManagedBase):
     def set_scrollable(self, *args, **kwargs):
         raise ValueError("XXX change") # -> properties_modified
 
-    def properties_modified(self, modified):
+    def properties_changed(self, modified):
         if not modified or "scrollable" in modified:
             if self.scrollable:
                 # 2003-06-26 ALB: change the "class name", to allow code generation
@@ -218,8 +218,8 @@ class EditPanel(PanelBase, ManagedBase):
                 self._classname = 'EditScrolledWindow'
             else:
                 self._classname = self.__class__.__name__
-        PanelBase.properties_modified(self, modified)
-        ManagedBase.properties_modified(self, modified)
+        PanelBase.properties_changed(self, modified)
+        ManagedBase.properties_changed(self, modified)
 
     def get_properties(self, without=set()):
         # return list of properties to be written to XML file
