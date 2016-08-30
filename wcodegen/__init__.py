@@ -1238,7 +1238,7 @@ class BaseWidgetWriter(StylesMixin, BaseCodeWriter):
         @see: L{config.widget_config}
         """
         assert isinstance(major, int)
-        assert isinstance(minor, (int,None))
+        assert isinstance(minor, (int, None.__class__))
 
         # no restrictions exists
         if 'supported_by' not in self.config:
