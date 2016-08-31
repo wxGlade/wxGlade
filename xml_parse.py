@@ -658,9 +658,7 @@ class CodeWriter(XmlParser):
             return
 
         if not self._appl_started:
-            raise XmlParsingError(
-                _("the root of the tree must be <application>")
-                )
+            raise XmlParsingError( _("the root of the tree must be <application>") )
         if name == 'object':
             # create the object and push it on the appropriate stacks
             CodeObject(attrs, self, preview=self.preview)
@@ -803,8 +801,7 @@ class CodeObject(object):
                 if not self.parser._sizers.count():
                     self.is_toplevel = True
                 else:
-                    # the sizer is a toplevel one if its parent has not a
-                    # sizer yet
+                    # the sizer is a toplevel one if its parent has not a sizer yet
                     sz = self.parser._sizers.top()
                     if sz.parent != self.parent:
                         self.is_toplevel = True

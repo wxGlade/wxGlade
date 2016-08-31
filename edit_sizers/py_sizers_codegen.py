@@ -27,28 +27,24 @@ class BasePythonSizerBuilder(BaseSizerBuilder):
             parent = 'self'
         return parent
 
-# end of class BasePythonSizerBuilder
 
 
 class PythonBoxSizerBuilder(BasePythonSizerBuilder):
     klass = 'wxBoxSizer'
     tmpl = '%(sizer_name)s = %(klass)s(%(orient)s)\n'
 
-# end of class PythonBoxSizerBuilder
 
 
 class PythonStaticBoxSizerBuilder(BasePythonSizerBuilder):
     klass = 'wxStaticBoxSizer'
     tmpl = '%(sizer_name)s = %(klass)s(wx.StaticBox(%(parent_widget)s, %(wxIDANY)s, %(label)s), %(orient)s)\n'
 
-# end of class PythonStaticBoxSizerBuilder
 
 
 class PythonGridSizerBuilder(BasePythonSizerBuilder):
     klass = 'wxGridSizer'
     tmpl = '%(sizer_name)s = %(klass)s(%(rows)s, %(cols)s, %(vgap)s, %(hgap)s)\n'
 
-# end of class PythonGridSizerBuilder
 
 
 class PythonFlexGridSizerBuilder(PythonGridSizerBuilder):

@@ -44,7 +44,7 @@ class BaseSizerBuilder(object):
     def _get_code(self, obj):
         "Generates the language specific code for sizer specified in L{klass}"
         if not self.tmpl:
-            return [], [], []
+            return [], [], []  # init, props, layout
 
         init = []
         layout = []
@@ -68,7 +68,7 @@ class BaseSizerBuilder(object):
             if obj.parent.properties.get('sizehints', False):
                 layout.append(self.tmpl_SetSizeHints % self.props_get_code)
 
-        return init, [], layout
+        return init, [], layout  # init, props, layout
 
     def get_code(self, obj):
         "Generates the language specific code for sizer specified in L{klass}"
