@@ -1127,7 +1127,7 @@ class SizerBase(Sizer, np.PropertyOwner):
 
         # insert node into tree
         tmp.node = node = SlotNode(tmp)
-        common.app_tree.insert(node, self.node, pos-1, image=None)
+        common.app_tree.insert(node, self.node, pos-1)
 
         if self.widget:
             tmp.show_widget(True)  # create the actual SizerSlot
