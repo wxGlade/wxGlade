@@ -158,9 +158,10 @@ class SizerSlot(np.PropertyOwner):
     def create_widget(self):
         style = wx.FULL_REPAINT_ON_RESIZE
         self.widget = wx.Window(self.parent.widget, -1, size=(20, 20), style=style)
-        self.widget.SetBackgroundColour(wx.LIGHT_GREY)
+        self.widget.SetBackgroundStyle(wx.BG_STYLE_CUSTOM)
         self.widget.SetAutoLayout(True)
         self.widget.Bind(wx.EVT_PAINT, self.on_paint)
+        self.widget.Bind(wx.EVT_ERASE_BACKGROUND, self.on_erase_background)
         self.widget.Bind(wx.EVT_RIGHT_DOWN, self.popup_menu)
         self.widget.Bind(wx.EVT_LEFT_DOWN, self.on_drop_widget)
         self.widget.Bind(wx.EVT_MIDDLE_DOWN, misc.exec_after(self.on_select_and_paste))
@@ -196,10 +197,22 @@ class SizerSlot(np.PropertyOwner):
     def on_paint(self, event):
         "Handle paint request and draw hatched lines onto the window"
         dc = wx.PaintDC(self.widget)
-        # fill background first
-        dc.SetBackground(wx.Brush(wx.LIGHT_GREY))
-        dc.Clear()
-        # draw the hatches (red if selected)
+        self._draw_background(dc)
+
+    def on_erase_background(self, event):
+        dc = event.GetDC()
+        if not dc:
+            dc = wx.ClientDC(self)
+            rect = self.widget.GetUpdateRegion().GetBox()
+            dc.SetClippingRect(rect)
+        self._draw_background(dc, clear=False)
+
+    def _draw_background(self, dc, clear=True):
+        "draw the hatches on device context dc (red if selected)"
+        # fill background first; propably needed only on MSW and not for on_erase_background
+        if clear:
+            dc.SetBackground(wx.Brush(wx.LIGHT_GREY))
+            dc.Clear()
         color = wx.BLUE  if misc.focused_widget is self  else  wx.BLACK
         if self.pos % 2:
             brush = wx.Brush(color, wx.FDIAGONAL_HATCH)
