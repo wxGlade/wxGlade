@@ -940,11 +940,7 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
             write(code)
 
             # insert the extra code of this class
-            code = self._tagcontent(
-                'extracode',
-                self.classes[klass].extra_code[::-1],
-                True
-                )
+            code = self._tagcontent( 'extracode', self.classes[klass].extra_code[::-1], True )
             write(code)
 
             # write the class body
@@ -1015,7 +1011,6 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
                     if not self.multiple_files and self.previous_source:
                         self.warning( '%s has extra code, but you are not overwriting existing sources: please check '
                                       'that the resulting code is correct!' % sub_obj.name )
-
         else:  # the object is a sizer
             klass.sizers_init.extend(init)
 
@@ -1049,8 +1044,8 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
             builder = self.obj_builders[sub_obj.base]
         except KeyError:
             # no code generator found: write a comment about it
-            msg = _('Code for instance "%s" of "%s" not generated: no suitable writer found') % (
-                                                                                           sub_obj.name, sub_obj.klass )
+            name = getattr(sub_obj, "name", "None")
+            msg = _('Code for instance "%s" of "%s" not generated: no suitable writer found') % (name, sub_obj.klass )
             self._source_warning(klass, msg, sub_obj)
             self.warning(msg)
             # ignore widget later too

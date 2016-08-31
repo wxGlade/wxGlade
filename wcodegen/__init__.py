@@ -844,6 +844,11 @@ class BaseWidgetWriter(StylesMixin, BaseCodeWriter):
             obj.name = '%s, %s' % (width, height)
             return [], [], []
 
+        if obj.klass == 'sizerslot':
+            obj.name = '0, 0'
+            return [], [], []
+
+
         self._prepare_tmpl_content(obj)
 
         # generate choices automatically if the template contains '%(choices)s' or '%(choices_len)s'
