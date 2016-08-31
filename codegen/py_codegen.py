@@ -528,7 +528,7 @@ def %(handler)s(self, event):  # wxGlade: %(klass)s.<event_handler>
             return obj.name
         # spacer.name is "<width>, <height>" already, but wxPython expect
         # a tuple instead of two single values
-        elif obj.klass == 'spacer':
+        elif obj.klass in ('spacer','sizerslot'):
             return '(%s)' % obj.name
         elif self.test_attribute(obj):
             return 'self.%s' % obj.name

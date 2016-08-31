@@ -501,6 +501,8 @@ class Application(np.PropertyOwner):
         if language is None:
             language = self.language
         if widget is not None:
+            if widget.__class__.__name__=="SizerSlot":
+                return
             cname = common.class_names[widget.__class__.__name__]
             if language != 'XRC':
                 ok = cname in common.code_writers[language].obj_builders
