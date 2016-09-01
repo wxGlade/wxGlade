@@ -707,6 +707,14 @@ class SizerBase(Sizer, np.PropertyOwner):
         # other menu items: add/insert slot, copy, cut
         i = misc.append_menu_item( menu, -1, _('Add slot') )
         misc.bind_menu_item_after(widget, i, self.add_slot)
+
+        if "cols" in self.PROPERTIES:  # a grid sizer
+            i = misc.append_menu_item( menu, -1, _('Add row') )
+            misc.bind_menu_item_after(widget, i, self.insert_row, -1)
+            i = misc.append_menu_item( menu, -1, _('Add column') )
+            misc.bind_menu_item_after(widget, i, self.insert_col, -1)
+            menu.AppendSeparator()
+
         i = misc.append_menu_item( menu, -1, _('Copy\tCtrl+C'), wx.ART_COPY )
         misc.bind_menu_item_after(widget, i, self.clipboard_copy)
         i = misc.append_menu_item( menu, -1, _('Cut\tCtrl+X'), wx.ART_CUT )
@@ -740,7 +748,7 @@ class SizerBase(Sizer, np.PropertyOwner):
             common.app_tree.remove(self.node)
             window.set_sizer(None)
             return
-        # XXX as of now: remove old and then create a new slot
+        # XXX as of now: remove old and then create a new slot; maybe there's a better way to change the node directly
         common.app_tree.remove(self.node)
         sizer = self.sizer
         self.sizer.remove_item(self)
@@ -774,22 +782,21 @@ class SizerBase(Sizer, np.PropertyOwner):
 
     def add_item(self, item, pos=None, proportion=0, flag=0, border=0, size=None, force_layout=True):
         "Adds an item to self."
+        # called from ManagedBase.__init__ when adding an item to the end from XML parser
+        # or interactively when adding an item to an empty sizer slot
         proportion = int(proportion)
         flag = int(flag)
         border = int(border)
         if pos is None:
             pos = len(self.children)
         if pos==len(self.children):
-            self.add_slot(add_node=False)
-        try:
+            self.children.append(None)
+        else:
             old_child = self.children[pos]
             if isinstance(old_child.item, SizerSlot):
                 old_child.item.delete()
-            self.children[pos] = SizerItem(item, pos, proportion, flag, border, size)
-        except IndexError:  # this shouldn't happen!
-            self._logger.exception(_('Internal Error'))
-            self._logger.error('%s, %s', self.children, pos)
-            raise SystemExit
+        if "rows" in self.PROPERTIES: self._adjust_rows_cols()  # for GridSizer
+        self.children[pos] = SizerItem(item, pos, proportion, flag, border, size)
 
         if hasattr(item, 'set_containing_sizer'):
             item.set_containing_sizer(self)
@@ -800,6 +807,7 @@ class SizerBase(Sizer, np.PropertyOwner):
         self._add_item_widget(item, pos, proportion, flag, border, size, force_layout)
 
     def _add_item_widget(self, item, pos, proportion, flag, border, size, force_layout):
+        # add item.widget to self.widget, i.e. the wxWidget to the wxSizer
         if not self.widget:
             return  # nothing more to do
         if not item.widget:
@@ -967,10 +975,12 @@ class SizerBase(Sizer, np.PropertyOwner):
 
     def remove_item(self, elem, force_layout=True):
         "Removes elem from self"
+        # called e.g. from context menu of SizerSlot
         if elem:
             for c in self.children[elem.pos + 1:]:
                 c.item.pos -= 1
             del self.children[elem.pos]
+        if "rows" in self.PROPERTIES: self._adjust_rows_cols()  # for GridSizer
         if self.widget and elem.widget:
             self.widget.Detach(elem.pos)
             elem.sizer = None
@@ -979,13 +989,19 @@ class SizerBase(Sizer, np.PropertyOwner):
                 # if not self.toplevel: self.sizer.Layout()
 
     def layout(self, recursive=True):
-        # if not self.widget or not self.window.is_visible(): return
+        # update slot labels in tree view
+        for c in self.children:
+            if isinstance(c.item, SizerSlot):
+                common.app_tree.refresh_name( c.item.node )
+
         if not self.widget:
             return
+        
+        #from edit_windows import TopLevelBase
 
-        from edit_windows import TopLevelBase
-
-        if self.toplevel and not isinstance(self.window, TopLevelBase) and hasattr(self.window.sizer, 'widget'):
+        # layout
+        #if self.toplevel and not isinstance(self.window, TopLevelBase) and hasattr(self.window.sizer, 'widget'):
+        if self.toplevel and not self.window._is_toplevel and hasattr(self.window.sizer, 'widget'):
             if not self.window.properties['size'].is_active():
                 szr = self.window.sizer.widget
                 w, h = self.window.widget.GetBestSize()
@@ -995,7 +1011,8 @@ class SizerBase(Sizer, np.PropertyOwner):
             else:
                 szr.Layout()
             return
-        elif self.toplevel and isinstance(self.window, TopLevelBase):
+        #elif self.toplevel and isinstance(self.window, TopLevelBase):
+        elif self.toplevel and self.window._is_toplevel:
             # self.window.widget.Layout()
             self.widget.Layout()
             evt = wx.SizeEvent( self.window.widget.GetSize(), self.window.widget.GetId() )
@@ -1067,7 +1084,7 @@ class SizerBase(Sizer, np.PropertyOwner):
             self.window.set_sizer(None)
 
     if wx.Platform == '__WXMSW__':
-        def finish_set(self):
+        def finish_set(self):  # previously called after self.set_option(...)
             for c in self.children:
                 if c.item.widget:
                     try:
@@ -1096,12 +1113,17 @@ class SizerBase(Sizer, np.PropertyOwner):
         self._btn.SetBackgroundColour(color)
         self._btn.Refresh(True)
 
-    def add_slot(self, add_node=True, **kwds):
-        "adds a slot to the sizer, i.e. a fake window that will accept the dropping of widgets"
+    # add/insert/free slots; interface mainly from context menus #######################################################
+    def add_slot(self, add_node=True, force_layout=True):
+        "adds an empty slot to the sizer, i.e. a fake window that will accept the dropping of widgets"
+        # called from "add slot" context menu of sizer                          with add_node=True
+        # called from XML parser for adding empty 'sizerslot': sizer.add_slot() with add_node=True
+        #(called from ManagedBase.__init__ -> sizer.add_item -> self.add_slot   with add_node=False) no longer
         tmp = SizerSlot(self.window, self, len(self.children))
         item = SizerItem(tmp, len(self.children), 1, wx.EXPAND)
         self.children.append(item)
-        
+        if "rows" in self.PROPERTIES: self._adjust_rows_cols()  # for GridSizer
+
         if add_node:
             # insert node into tree
             tmp.node = node = SlotNode(tmp)
@@ -1111,23 +1133,27 @@ class SizerBase(Sizer, np.PropertyOwner):
             tmp.show_widget(True)  # create the actual SizerSlot widget
             self.widget.Add(tmp.widget, 1, wx.EXPAND)
             self.widget.SetItemMinSize(tmp.widget, 20, 20)
-            force_layout = kwds.get('force_layout', True)
             if force_layout:
                 self.layout(True)
-        common.app_tree.app.saved = False
 
     def insert_slot(self, pos=None, force_layout=True):
-        "Inserts a slot into the sizer at pos (1 based); optionally force layout update"
+        "Inserts an empty slot into the sizer at pos (1 based); optionally force layout update"
+        # called from EditBase context menu; multiple times if applicable; layout will be called there
+        # also called from SizerBase._remove after a sizer has removed itself and inserts an empty slot instead
         # pos is 1 based here
         tmp = SizerSlot(self.window, self, pos)
         item = SizerItem(tmp, pos, 1, wx.EXPAND, 0)
         for c in self.children[pos:]: # self.children[0] is a Dummy
             c.item.pos += 1
         self.children.insert(pos, item)
+        if "rows" in self.PROPERTIES: self._adjust_rows_cols()  # for GridSizer
 
         # insert node into tree
         tmp.node = node = SlotNode(tmp)
         common.app_tree.insert(node, self.node, pos-1)
+        for c in self.children:
+            if isinstance(c.item, SizerSlot):
+                common.app_tree.refresh_name( c.item.node )
 
         if self.widget:
             tmp.show_widget(True)  # create the actual SizerSlot
@@ -1135,10 +1161,10 @@ class SizerBase(Sizer, np.PropertyOwner):
             self.widget.SetItemMinSize(tmp.widget, 20, 20)
             if force_layout:
                 self.layout(True)
-        common.app_tree.app.saved = False
 
     def free_slot(self, pos, force_layout=True):
         "Replaces the element at pos with an empty slot"
+        # called from ManagedBase context menu when removing an item
         old_node = self.children[pos].item.node
 
         tmp = SizerSlot(self.window, self, pos)
@@ -1157,7 +1183,7 @@ class SizerBase(Sizer, np.PropertyOwner):
             #self.widget.Detach(pos-1) # does only remove from sizer, but not destroy item
             if force_layout:
                 self.layout()
-
+    ####################################################################################################################
     def is_visible(self):
         return self.window.is_visible()
 
@@ -1172,6 +1198,7 @@ class SizerBase(Sizer, np.PropertyOwner):
     def post_load(self):
         """Called after loading of an app from a XML file, before showing the hierarchy of widget for the first time.
         This is used only for container widgets, to adjust their size appropriately."""
+        if "rows" in self.PROPERTIES: self._adjust_rows_cols()  # for GridSizer
         if not self.toplevel:
             return
         if not self.window.properties['size'].is_active():
@@ -1448,110 +1475,95 @@ class GridSizerBase(SizerBase):
             self.widget.Fit(self.window.widget)
             self.widget.SetSizeHints(self.window.widget)
 
-    def insert_slot(self, pos=0, force_layout=True):
-        "Inserts a slot into the sizer at 'pos'; optionally force a layout update"
-        if not self.widget: return
+    def _adjust_rows_cols(self):
+        # adjust rows and cols properties; set slot names
+        cols_p = self.properties["cols"]
+        rows_p = self.properties["rows"]
+        if cols_p.get()==0:
+            rows_new = len(self.children)-1
+        else:
+            rows_new = (len(self.children)-1) // cols_p.get()
+            if (len(self.children)-1) % cols_p.get(): rows_new += 1
+        if rows_new!=rows_p.value: rows_p.set(rows_new)
 
-        new_slot = SizerSlot(self.window, self, pos)
-        for c in self.children[pos:]:
-            c.item.pos += 1
-        self.children.insert(pos, SizerItem(new_slot, pos, 1, wx.EXPAND, 0))
-        new_slot.show_widget(True)  # create the actual SizerSlot
-        self.widget.Insert(pos, new_slot.widget, 1, wx.EXPAND)
-        self.widget.SetItemMinSize(new_slot.widget, 20, 20)
-        if force_layout:
+    # context menu actions #############################################################################################
+    def insert_row(self, pos=-1):
+        "inserts slots for a new row"
+        rows = self.rows
+        cols = self.cols
+
+        # calculate the row (0 based) to be inserted
+        if pos==-1:
+            add_row = rows
+            # ensure that the last row is full
+            for n in range( len(self.children) -rows*cols - 1 ):
+                self.insert_slot( len(self.children), force_layout=False)
+        else:
+            add_row = pos // cols
+            if pos%cols == 0: add_row -= 1
+
+        self.properties["rows"].set( rows+1 )
+
+        for n in range(cols):
+            self.insert_slot( n+1 + add_row*cols, force_layout=False)
+
+        self.layout(True)
+        common.app_tree.app.saved = False
+
+    def insert_col(self, pos=-1):
+        "inserts slots for a new column"
+        rows = self.rows
+        cols = self.cols
+
+        # calculate the column (0 based) to be added
+        if pos==-1:
+            add_col = cols
+        else:
+            add_col = pos%cols - 1 # -1 for insert before
+            if add_col == -1: add_col = cols-1 # last col
+
+        # calculate the column index of the last child (0 based)
+        last_pos = len(self.children)-1
+        last_pos_col = (last_pos % cols) - 1
+        if last_pos_col == -1: last_pos_col = cols-1
+        # fill up the last row up to the insertion position if required
+        if last_pos_col < min(add_col,cols-1):
+            for i in range(min(add_col,cols-1)-last_pos_col):
+                self.insert_slot( last_pos+1+i, force_layout=False)
+
+        # insert the new colum
+        self.properties["cols"].set( cols+1 )
+        for r in range(rows-1,-1,-1):
+            self.insert_slot( add_col+1 + r*cols, force_layout=False)
+
+        if self.widget:
+            if self.widget.GetCols()!=cols+1: self.widget.SetCols(cols+1)
             self.layout(True)
         common.app_tree.app.saved = False
 
-    def add_row(self, *args, **kwds):
-        if not self.widget:
-            return
-        self._insert_row(compat.GridSizer_GetRows(self.widget) + 1)
-
-    def insert_row(self, *args):
-        if not self.widget:
-            return
-        dialog = InsertDialog(compat.GridSizer_GetRows(self.widget))
-        if dialog.ShowModal() == wx.ID_OK:
-            self._insert_row(dialog.pos + 1)
-        dialog.Destroy()
-
-    def _insert_row(self, pos):
-        rows = compat.GridSizer_GetRows(self.widget)
-        cols = compat.GridSizer_GetCols(self.widget)
-        pos = (pos - 1) * cols + 1
-        if pos >= len(self.children):
-            # fix the out of bounds index...
-            tot = len(self.children) - 1
-            rows = tot // cols
-            if tot % cols:
-                rows += 1
-            # self._logger.debug('fixed rows: %s', rows)
-            if rows * cols > tot:
-                for i in range(rows * cols - tot):
-                    self.insert_slot( tot+i+1, force_layout=False )
-            pos = rows * cols + 1
-        self.set_rows(rows + 1)
-        for i in range(cols):
-            self.insert_slot( pos + i, force_layout=False )
-        self.properties['rows'].set_value(self.rows)
-        self.layout(True)
-        common.app_tree.app.saved = False
-
-    def add_col(self, *args, **kwds):
-        if not self.widget:
-            return
-        self._insert_col( compat.GridSizer_GetCols(self.widget) + 1 )
-
-    def insert_col(self, *args):
-        if not self.widget:
-            return
-        dialog = InsertDialog(compat.GridSizer_GetCols(self.widget))
-        if dialog.ShowModal() == wx.ID_OK:
-            self._insert_col(dialog.pos + 1)
-        dialog.Destroy()
-
-    def _insert_col(self, pos):
-        rows = compat.GridSizer_GetRows(self.widget)
-        cols = compat.GridSizer_GetCols(self.widget)
-        if pos >= len(self.children):
-            # fix the out of bounds index...
-            tot = len(self.children) - 1
-            cols = tot // rows
-            if tot % rows:
-                cols += 1
-            if rows * cols > tot:
-                for i in range(rows * cols - tot):
-                    self.insert_slot( tot+i+1, force_layout=False)
-            pos = rows*cols + 1
-        self.set_cols(cols+1)
-        for i in range(rows):
-            self.insert_slot( pos + self.cols*i, force_layout=False )
-        self.properties['cols'].set_value(self.cols)
-        self.layout(True)
-        common.app_tree.app.saved = False
-
+    ####################################################################################################################
     def properties_changed(self, modified):
-        layout = False
-        if not modified or "rows" in modified and self.widget:
-            if self.widget.GetRows()!=self.rows:
-                self.widget.SetRows(self.rows)
-                layout = True
-        if not modified or "cols" in modified and self.widget:
-            if self.widget.GetCols()!=self.cols:
-                self.widget.SetCols(self.cols)
-                layout = True
-        if not modified or "hgap" in modified and self.widget:
-            if self.widget.GetHGap()!=self.hgap:
-                self.widget.SetHGap(self.hgap)
-                layout = True
-        if not modified or "vgap" in modified and self.widget:
-            if self.widget.GetVGap()!=self.vgap:
-                self.widget.SetVGap(self.vgap)
-                layout = True
-
-        if layout:
-            self.layout(True)
+        if not "class_orient" in modified:  # otherwise, change_sizer will be called and we can skip the following
+            layout = False
+            if not modified or "rows" in modified and self.widget:
+                if self.widget.GetRows()!=self.rows:
+                    self.widget.SetRows(self.rows)
+                    layout = True
+            if not modified or "cols" in modified and self.widget:
+                if self.widget.GetCols()!=self.cols:
+                    self.widget.SetCols(self.cols)
+                    layout = True
+            if not modified or "hgap" in modified and self.widget:
+                if self.widget.GetHGap()!=self.hgap:
+                    self.widget.SetHGap(self.hgap)
+                    layout = True
+            if not modified or "vgap" in modified and self.widget:
+                if self.widget.GetVGap()!=self.vgap:
+                    self.widget.SetVGap(self.vgap)
+                    layout = True
+    
+            if layout:
+                self.layout(True)
 
         SizerBase.properties_changed(self, modified)
 
@@ -1689,25 +1701,39 @@ class EditFlexGridSizer(GridSizerBase):
                 return
         self._recreate()
 
-    def get_growable_rows(self):
-        return ','.join( str(r) for r in self.grow_rows )
-
-    def get_growable_cols(self):
-        return ','.join( str(c) for c in self.grow_cols )
 
     def _insert_row(self, pos):
+        
+        # adjust growable_rows by adding 1 to the rows above pos
         for row in self.grow_rows:
             if row >= pos-1:
                 row += 1
+        # actually insert the row
         GridSizerBase._insert_row(self, pos)
+        # update the old property
         self.set_growable_rows(self.get_growable_rows())
 
     def _insert_col(self, pos):
-        for column in self.grow_cols:
+        for column in self.grow_cols:                      # adjust growable_rows by adding 1 to the rows above pos
             if column >= pos-1:
                 column += 1
-        GridSizerBase._insert_col(self, pos)
-        self.set_growable_cols(self.get_growable_cols())
+        GridSizerBase._insert_col(self, pos)               # insert slots, call layout
+        self.set_growable_cols(self.get_growable_cols())   # update old style property, _recreate
+
+    def properties_changed(self, modified):
+        # XXX unify recreate with the other methods called in GridSizerBase, SizerBase
+        # if recreate is required, it's not necessary to call layout
+        # EditFlexGridSizer: calls _recreate, which later calls change_sizer
+        # GridSizerBase: calls layout (when rows, cols, hgap, vgap are modified)
+        # SizerBase: calls change_sizer if class_orient is modified
+
+        recreate = False
+        if not modified or "growable_rows" in modified or "growable_cols" in modified:
+            recreate = True
+        if recreate:
+            self._recreate()
+            return # the sizer is re-created, so we need not consider other modifications
+        GridSizerBase.properties_changed(self, modified)
 
 
 
@@ -1936,7 +1962,8 @@ def grid_builder(parent, sizer, pos, number=[1]):
 
     # add the slots
     for i in range(rows*cols):
-        sz.add_slot()
+        sz.add_slot(force_layout=False)
+    sz.layout()
 
     if parent.is_visible():
         sz.show_widget(show)  # True)

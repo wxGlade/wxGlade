@@ -151,17 +151,34 @@ class EditBase(EventsMixin, np.PropertyOwner):
 
     def _create_popup_menu(self, widget):
         self._destroy_popup_menu()
-
         menu = misc.wxGladePopupMenu(self.name)
 
         # remove/copy/cut
-        i = misc.append_menu_item(menu, -1, _('Remove\tDel'), wx.ART_DELETE)
+        widgetclass = self.__class__.__name__.lstrip("Edit")
+        i = misc.append_menu_item(menu, -1, _('Remove %s\tDel')%widgetclass, wx.ART_DELETE)
         misc.bind_menu_item_after(widget, i, self.remove)
         i = misc.append_menu_item( menu, -1, _('Copy\tCtrl+C'), wx.ART_COPY )
         misc.bind_menu_item_after(widget, i, self.clipboard_copy)
         i = misc.append_menu_item( menu, -1, _('Cut\tCtrl+X'), wx.ART_CUT )
         misc.bind_menu_item_after(widget, i, self.clipboard_cut)
         menu.AppendSeparator()
+
+
+        # rows/cols if inside a grid sizer
+        if "rows" in self.sizer.PROPERTIES:  
+            i = misc.append_menu_item(menu, -1, _('Insert Row before') )
+            misc.bind_menu_item_after(widget, i, self.sizer.insert_row, self.pos)
+            i = misc.append_menu_item(menu, -1, _('Insert Column before') )
+            misc.bind_menu_item_after(widget, i, self.sizer.insert_col, self.pos)
+            if  (self.pos-1)//self.sizer.cols + 1 >= self.sizer.rows:
+                # last row
+                i = misc.append_menu_item(menu, -1, _('Add Row') )
+                misc.bind_menu_item_after(widget, i, self.sizer.insert_row, -1)
+            if self.pos % self.sizer.cols == 0:
+                # last col
+                i = misc.append_menu_item(menu, -1, _('Add Column') )
+                misc.bind_menu_item_after(widget, i, self.sizer.insert_col, -1)
+            menu.AppendSeparator()
 
         # slots
         i = misc.append_menu_item(menu, -1, _('Insert Slot before') )
@@ -218,13 +235,18 @@ class EditBase(EventsMixin, np.PropertyOwner):
         # insert before current
         count = self._ask_count() if multiple else 1
         for n in range(count):
-            self.sizer.insert_slot( self.pos, force_layout=True )
+            self.sizer.insert_slot( self.pos, force_layout=False )
+        self.sizer.layout()
+        common.app_tree.app.saved = False
 
     def add_slot(self, multiple=False):
         # add to the end
         count = self._ask_count(insert=False) if multiple else 1
         for n in range(count):
-            self.sizer.add_slot()
+            self.sizer.add_slot(force_layout=False)
+        self.sizer.layout()
+        common.app_tree.app.saved = False
+
     ####################################################################################################################
 
     def remove(self, *args):
