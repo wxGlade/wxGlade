@@ -75,11 +75,8 @@ class wxGladePropertyPanel(wx.Frame):
         self.notebook.Hide()
 
         # remember the notebook page to be selected
-        select_page = None
-        if self.notebook is not None:
-            selection = self.notebook.GetSelection()
-            if selection!=-1:
-                select_page = self.pagenames[selection]  if selection!=-1  else Non
+        selection = self.notebook.GetSelection()
+        select_page = self.pagenames[selection]  if selection!=-1  else None
 
         # clear notebook pages
         if self.notebook.PageCount:
