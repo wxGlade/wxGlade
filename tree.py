@@ -634,6 +634,14 @@ class WidgetTree(wx.TreeCtrl, Tree):
         else:
             node = self._find_item_by_pos(x, y, True)
 
+        if node is not None and node.widget.widget:
+            # window widget has been created already; just show it
+            if not node.widget.is_visible():
+                node.widget.widget.Show()
+            else:
+                node.widget.widget.Hide()
+            return
+
         if node is not None:
             if not node.widget.is_visible():
                 # added by rlawson to expand node on showing top level widget
