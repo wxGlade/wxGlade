@@ -525,12 +525,8 @@ class WidgetTree(wx.TreeCtrl, Tree):
         self.skip_select = True
         self.SelectItem(node.item)
         self.skip_select = False
-        #if self.cur_widget: self.cur_widget.update_view(False)
         self.cur_widget = node.widget
-        #self.cur_widget.update_view(True)
-        #self.cur_widget.show_properties()
         misc.set_focused_widget(self.cur_widget)
-        #misc.focused_widget = self.cur_widget
 
     def set_current_widget(self, widget):
         # interface from common.set_focused_widget
