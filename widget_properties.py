@@ -852,7 +852,7 @@ class SpinProperty(Property, _activator):
         lbl = getattr(self, 'label', None)
         if lbl is None:
             lbl = self._mangle(self.dispName)
-        label = wx.lib.stattext.GenStaticText( parent, wx.ID_ANY, lbl, size=(config.label_initial_width, -1) )
+        label = wx.lib.stattext.GenStaticText( parent, wx.ID_ANY, lbl, size=(config.label_width, -1) )
         self.spin = wx.SpinCtrl( parent, wx.ID_ANY, min=self.val_range[0], max=self.val_range[1] )
         val = int(self.owner[self.name][0]())
         if not val:
