@@ -1758,7 +1758,9 @@ class PropertyOwner(object):
         # copy named properties from other
         pass
     def properties_changed(self, modified):
-        # properties edited; trigger actions like widget or sizer update
+        """properties edited; trigger actions like widget or sizer update;
+        'modified' is None or a list of property names;
+        the properties_changed method of a derived class may add properties to 'modified' before calling base classes"""
         pass
     def get_properties(self, without=set()):
         # return list of properties to be written to XML file

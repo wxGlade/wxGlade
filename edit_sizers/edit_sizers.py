@@ -1612,15 +1612,33 @@ class GridSizerBase(SizerBase):
 
     ####################################################################################################################
     def properties_changed(self, modified):
+        cols = self.cols
+        rows = self.rows
+        if rows*cols < len(self.children) + 1:
+            # number of rows/cols too low
+            if not modified or "cols" in modified:
+                # adjust number of rows if required
+                if rows*cols < len(self.children) + 1:
+                    # more rows required
+                    rows = (len(self.children)-1) // (cols or 1)
+                    if (len(self.children)-1) % (cols or 1): rows += 1
+                self.properties["rows"].set(rows)
+                if modified and not "rows" in modified: modified.append("rows")
+            elif "rows" in modified:
+                cols = (len(self.children)-1) // (rows or 1)
+                if (len(self.children)-1) % (rows or 1): cols += 1
+                self.properties["cols"].set(cols)
+                if modified and not "cols" in modified: modified.append("cols")
+
         if not "class_orient" in modified:  # otherwise, change_sizer will be called and we can skip the following
             layout = False
             if not modified or "rows" in modified and self.widget:
-                if self.widget.GetRows()!=self.rows:
-                    self.widget.SetRows(self.rows)
+                if self.widget.GetRows()!=rows:
+                    self.widget.SetRows(rows)
                     layout = True
             if not modified or "cols" in modified and self.widget:
-                if self.widget.GetCols()!=self.cols:
-                    self.widget.SetCols(self.cols)
+                if self.widget.GetCols()!=cols:
+                    self.widget.SetCols(cols)
                     layout = True
             if not modified or "hgap" in modified and self.widget:
                 if self.widget.GetHGap()!=self.hgap:
