@@ -18,6 +18,17 @@ import clipboard
 import common, compat, config, misc
 
 
+def _grid_row_col(pos, cols):
+    "calculate the 0-based row and column for an item at pos (1-based)"
+    row = pos // cols
+    col = pos%cols - 1
+    if pos%cols == 0:
+        # last col
+        row -= 1  
+        col = cols-1
+    return (row, col)
+
+
 class BaseSizerBuilder(object):
     "Language independent base class for all sizer builders"
 
@@ -243,11 +254,38 @@ class SizerSlot(np.PropertyOwner):
     def _create_popup_menu(self, widget):
         self._destroy_popup_menu()
         menu = wx.Menu(_("Slot %d"%self.pos))
-        
+
         if not self.sizer.is_virtual():
             # we cannot remove items from virtual sizers
-            i = misc.append_menu_item(menu, -1, _('Remove\tDel'), wx.ART_DELETE)
+            i = misc.append_menu_item(menu, -1, _('Remove Slot\tDel'), wx.ART_DELETE)
             misc.bind_menu_item_after(widget, i, self.remove)
+
+            # if inside a grid sizer: allow removal of empty rows/cols
+            if isinstance(self.sizer, GridSizerBase):
+                rows = self.sizer.rows
+                cols = self.sizer.cols
+                # calculate row and pos of our slot
+                row,col = _grid_row_col(self.pos, cols)
+                # check whether all slots in same row/col are empty
+                row_is_empty = col_is_empty = True
+                for pos,child in enumerate(self.sizer.children):
+                    if pos==0: continue
+                    child_row, child_col = _grid_row_col(pos, cols)
+                    if child_row==row and not isinstance(child.item, SizerSlot):
+                        row_is_empty = False
+                    if child_col==col and not isinstance(child.item, SizerSlot):
+                        col_is_empty = False
+
+                if row_is_empty and rows>1:
+                    # allow removal of empty row
+                    i = misc.append_menu_item(menu, -1, _('Remove Row') )
+                    misc.bind_menu_item_after(widget, i, self.sizer.remove_row, self.pos)
+                if col_is_empty and cols>1:
+                    # allow removal of empty col
+                    i = misc.append_menu_item(menu, -1, _('Remove Column') )
+                    misc.bind_menu_item_after(widget, i, self.sizer.remove_col, self.pos)
+                menu.AppendSeparator()
+
         i = misc.append_menu_item(menu, -1, _('Paste\tCtrl+V'), wx.ART_PASTE)
         misc.bind_menu_item_after(widget, i, self.clipboard_paste)
         menu.AppendSeparator()
@@ -1499,8 +1537,7 @@ class GridSizerBase(SizerBase):
             for n in range( len(self.children) -rows*cols - 1 ):
                 self.insert_slot( len(self.children), force_layout=False)
         else:
-            add_row = pos // cols
-            if pos%cols == 0: add_row -= 1
+            add_row, dummy = _grid_row_col(pos, cols)
 
         self.properties["rows"].set( rows+1 )
 
@@ -1519,8 +1556,7 @@ class GridSizerBase(SizerBase):
         if pos==-1:
             add_col = cols
         else:
-            add_col = pos%cols - 1 # -1 for insert before
-            if add_col == -1: add_col = cols-1 # last col
+            dummy, add_col = _grid_row_col(pos, cols)
 
         # calculate the column index of the last child (0 based)
         last_pos = len(self.children)-1
@@ -1540,6 +1576,39 @@ class GridSizerBase(SizerBase):
             if self.widget.GetCols()!=cols+1: self.widget.SetCols(cols+1)
             self.layout(True)
         common.app_tree.app.saved = False
+
+    def remove_row(self, pos):
+        rows = self.rows
+        cols = self.cols
+        # calculate row and pos of the slot
+        row,col = _grid_row_col(pos, rows)
+        # find the slots that are in the same row
+        slots = []
+        for pos,child in enumerate(self.children):
+            if pos==0: continue
+            child_row, child_col = _grid_row_col(pos, cols)
+            if child_row==row: slots.append(child.item)
+        self.properties["rows"].set( rows-1 )
+        # actually remove the slots
+        for slot in reversed(slots): slot.remove()
+        if self.widget: self.layout(True)
+
+    def remove_col(self, pos):
+        cols = self.cols
+        # calculate row and pos of the slot
+        row,col = _grid_row_col(pos, cols)
+        # find the slots that are in the same row
+        slots = []
+        for pos,child in enumerate(self.children):
+            if pos==0: continue
+            child_row, child_col = _grid_row_col(pos, cols)
+            if child_col==col: slots.append(child.item)
+        self.properties["cols"].set( cols-1 )
+        # actually remove the slots
+        for slot in reversed(slots): slot.remove()
+        if self.widget:
+            self.widget.SetCols(cols-1)
+            self.layout(True)
 
     ####################################################################################################################
     def properties_changed(self, modified):

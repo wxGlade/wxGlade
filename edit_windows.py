@@ -163,7 +163,6 @@ class EditBase(EventsMixin, np.PropertyOwner):
         misc.bind_menu_item_after(widget, i, self.clipboard_cut)
         menu.AppendSeparator()
 
-
         # rows/cols if inside a grid sizer
         if "rows" in self.sizer.PROPERTIES:  
             i = misc.append_menu_item(menu, -1, _('Insert Row before') )
