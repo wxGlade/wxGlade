@@ -527,7 +527,7 @@ class TestGui(WXGladeBaseTest):
             self._messageBox
         )
 
-     def test_load_xrc(self):
+    def test_load_xrc(self):
         """\
         Test loading XRC files
         """
