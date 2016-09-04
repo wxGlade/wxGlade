@@ -174,8 +174,6 @@ class EditNotebook(ManagedBase, EditStylesMixin):
         self.tabs = NotebookPagesProperty(tabs, tab_cols)
         self.no_custom_class = np.CheckBoxProperty(False, default_value=False)
 
-        self.nb_sizer = None
-
         self.next_pane_number = 1  # first pane should have number 1
 
     def create_widget(self):

@@ -663,12 +663,17 @@ class WidgetTree(wx.TreeCtrl, Tree):
 
     def change_node(self, node, widget, new_node=None):
         if new_node is not None:
+            # this is a bit of a hack to replace the old widget node with a SlotNode
+            # XXX probably it would be better to modify the Node class to take care of SizerSlot instances
             parent = new_node.parent = node.parent
             index = parent.children.index(node)
             parent.children[index] = new_node
             new_node.item = node.item
             self.SetPyData(node.item, new_node)
-            self.remove(node, delete=False)
+            old_children = node.children
+            self.remove(node, delete=False)  # don't delete the node, as we just want to modify it
+            for c in old_children:           # but the children
+                self.Delete(c.item)
             node = new_node
             self.names.setdefault(Tree._find_toplevel(self, node), {})[str(node.widget.name)] = 1
         Tree.change_node(self, node, widget)

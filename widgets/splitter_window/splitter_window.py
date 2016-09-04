@@ -15,12 +15,8 @@ from tree import Tree, Node
 import new_properties as np
 from edit_windows import ManagedBase, EditStylesMixin
 from edit_sizers.edit_sizers import Sizer, SizerSlot
+from panel import EditPanel
 
-#try:
-    #from panel import EditPanel
-    #_has_panel = True
-#except ImportError:
-    #_has_panel = False
 
 
 class SplitterWindowSizer(Sizer):
@@ -28,7 +24,6 @@ class SplitterWindowSizer(Sizer):
 
     def set_item(self, pos, proportion=None, flag=None, border=None, size=None, force_layout=True):
         "Updates the layout of the item at the given pos"
-        #self._logger.debug('set_item()')
         if self.window.widget and self.window.window_old and self.window.window_old.widget:
             self.window.widget.Unsplit(self.window.window_old.widget)
             self.window.window_old = None
@@ -37,7 +32,6 @@ class SplitterWindowSizer(Sizer):
 
     def add_item(self, item, pos=None, proportion=0, flag=0, border=0, size=None, force_layout=True):
         "Adds an item to self.window"
-        #self._logger.debug('add_item(): %s', item.name)
         if pos == 1:
             self.window.window_old = self.window._window_1
             self.window._window_1 = item
