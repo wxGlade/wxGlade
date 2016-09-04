@@ -464,8 +464,12 @@ def change_sizer(old, new):
         # take growable rows and cols from old sizer
         grow_r_p = old.properties["growable_rows"]
         grow_c_p = old.properties["growable_cols"]
-        if grow_r_p.is_active(): szr.properties['growable_rows'].set(grow_r_p.get(), activate=True)
-        if grow_c_p.is_active(): szr.properties['growable_cols'].set(grow_c_p.get(), activate=True)
+        if grow_r_p.is_active():
+            szr.properties['growable_rows'].value = grow_r_p.value
+            szr.properties['growable_rows'].deactivated = False
+        if grow_c_p.is_active():
+            szr.properties['growable_cols'].value = grow_c_p.value
+            szr.properties['growable_cols'].deactivated = False
     # XXX keep rows, cols, growable_rows, growable_cols in attributes of new sizer if it's not a (Flex)GridSizer
     #     and re-use them if user switches back
 
@@ -713,6 +717,7 @@ class SizerBase(Sizer, np.PropertyOwner):
         if "class_orient" in modified:
             # user has selected -> change
             value = self.class_orient
+            if misc.focused_widget is self: misc.set_focused_widget(None)
             wx.CallAfter(change_sizer, self, value)
         np.PropertyOwner.properties_changed(self, modified)
 
@@ -1670,65 +1675,85 @@ class EditGridSizer(GridSizerBase):
         GridSizerBase.create_widget(self)
 
 
+class _GrowableDialog(wx.Dialog):
+    def __init__(self, parent, title):
+        wx.Dialog.__init__(self, parent, -1, title)
+        self.sizer = sizer = wx.BoxSizer(wx.VERTICAL)
+        self.message = wx.StaticText(self, -1, "")
+        sizer.Add(self.message, 0, wx.TOP | wx.LEFT | wx.RIGHT | wx.EXPAND, 10)
+        self.choices = wx.CheckListBox(self, -1, choices=[])
+        sizer.Add(self.choices, 1, wx.EXPAND | wx.LEFT | wx.RIGHT, 10)
+        sizer.Add(wx.StaticLine(self, -1), 0, wx.EXPAND | wx.ALL, 10)
+        sz2 = wx.BoxSizer(wx.HORIZONTAL)
+        sz2.Add(wx.Button(self, wx.ID_OK, ""), 0, wx.ALL, 10)
+        sz2.Add(wx.Button(self, wx.ID_CANCEL, ""), 0, wx.ALL, 10)
+        sizer.Add(sz2, 0, wx.ALIGN_CENTER)
+        self.SetAutoLayout(True)
+        self.SetSizer(sizer)
+        sizer.Fit(self)
+        self.CenterOnScreen()
 
-class CheckListDialogProperty(np.DialogProperty):
-    dialog = [None]
+    def get_value(self):
+        ret = []
+        for c,choice in enumerate(self._choices):
+            #in range(self.choices.GetCount()):
+            if self.choices.IsChecked(c):
+                ret.append(choice)
+        return ",".join(ret)
 
-    def __init__(self, owner, name, parent, title, message, callback, can_disable=True):
-        self.title = title
-        self.message = message
-        if not self.dialog[0]:
-            class Dialog(wx.Dialog):
-                def __init__(self):
-                    wx.Dialog.__init__(self, parent, -1, title)
-                    sizer = wx.BoxSizer(wx.VERTICAL)
-                    self.message = wx.StaticText(self, -1, "")
-                    sizer.Add(self.message, 0, wx.TOP | wx.LEFT | wx.RIGHT | wx.EXPAND, 10)
-                    self.choices = wx.CheckListBox(self, -1, choices=['dummy'])
-                    sizer.Add(self.choices, 1, wx.EXPAND | wx.LEFT | wx.RIGHT, 10)
-                    sizer.Add(wx.StaticLine(self, -1), 0, wx.EXPAND | wx.ALL, 10)
-                    sz2 = wx.BoxSizer(wx.HORIZONTAL)
-                    sz2.Add(wx.Button(self, wx.ID_OK, ""), 0, wx.ALL, 10)
-                    sz2.Add(wx.Button(self, wx.ID_CANCEL, ""), 0, wx.ALL, 10)
-                    sizer.Add(sz2, 0, wx.ALIGN_CENTER)
-                    self.SetAutoLayout(True)
-                    self.SetSizer(sizer)
-                    sizer.Fit(self)
-                    self.CenterOnScreen()
+    def set_choices(self, choices, values):
+        if wx.Platform != '__WXGTK__':
+            self.choices.Set(choices)
+        else:
+            self.choices.Clear()
+            for v in values:
+                self.choices.Append(v)
+        self._choices = choices
+        for i,value in enumerate(choices):
+            if value in values: self.choices.Check(i)
 
-                def get_value(self):
-                    ret = []
-                    for c in range(self.choices.GetCount()):
-                        if self.choices.IsChecked(c):
-                            ret.append(str(c))
-                    return ",".join(ret)
+    def set_descriptions(self, title, message):
+        self.SetTitle(title)
+        self.message.SetLabel(message)
 
-                def set_choices(self, values):
-                    if wx.Platform != '__WXGTK__':
-                        self.choices.Set(values)
-                    else:
-                        self.choices.Clear()
-                        for v in values:
-                            self.choices.Append(v)
 
-                def set_descriptions(self, title, message):
-                    self.SetTitle(title)
-                    self.message.SetLabel(message)
 
-            # end of class Dialog
-            self.dialog[0] = Dialog()
+class _GrowablePropertyD(np.DialogPropertyD):
+    def _create_dialog(self):
+        if self.dialog is None:
+            parent = self.text.GetTopLevelParent()
+            self.dialog = _GrowableDialog(parent, self.title)
+        row_or_col_count = getattr(self.owner, self.name.split("_")[-1])
+        choices = [ str(n) for n in range(1, row_or_col_count+1) ]
+        selected = self.get_list()
+        self.dialog.set_choices(choices, selected)
+        self.dialog.sizer.Fit(self.dialog)
+        return self.dialog
 
-        DialogProperty.__init__(self, owner, name, parent, self.dialog[0], can_disable, label=title)
-        self.choices_setter = callback
+    def _set_converter(self, value):
+        # 0-based -> 1 based
+        ret = [str(int(n)+1) for n in value.split(",")]
+        return ",".join(ret)
 
-    def display_dialog(self, event):
-        self.set_choices(self.choices_setter())
-        self.dialog.set_descriptions(self.title, self.message)
-        DialogProperty.display_dialog(self, event)
+    def _convert_from_text(self, value=None):
+        if value is None: value = self.text.GetValue()
+        row_or_col_count = getattr(self.owner, self.name.split("_")[-1])
+        try:
+            numbers = [int(n) for n in value.split(",")]
+            if len(numbers)!=len(set(numbers)):  return None                 # double numbers
+            if numbers and not row_or_col_count: return None                 # no rows/cols
+            if min(numbers)<1 or max(numbers)>row_or_col_count: return None  # number out of range
+        except:
+            return None
+        return value
 
-    def set_choices(self, values):
-        self.dialog.set_choices(values)
+    def get_list(self):
+        return self.value.split(",")
 
+    def get_str_value(self):
+        # for XML file writing; 0-based
+        ret = [str(int(n)-1) for n in self.get_list()]
+        return ",".join(ret)
 
 
 class EditFlexGridSizer(GridSizerBase):
@@ -1741,56 +1766,31 @@ class EditFlexGridSizer(GridSizerBase):
 
     def __init__(self, name, window, rows=3, cols=3, vgap=0, hgap=0, toplevel=True):
         GridSizerBase.__init__(self, name, 'wxFlexGridSizer', window, rows, cols, vgap, hgap, toplevel)
-        self.growable_rows = np.TextPropertyD("", default_value="")  # XXX modify CheckListDialog above and use this, with [] as value
-        self.growable_cols = np.TextPropertyD("", default_value="")
-        
+        self.growable_rows = _GrowablePropertyD("", default_value="")
+        self.growable_cols = _GrowablePropertyD("", default_value="")
+        self.properties["growable_rows"].title = 'Select growable rows'
+        self.properties["growable_cols"].title = 'Select growable cols'
 
     def create_widget(self):
         self.widget = CustomSizer(self, wx.FlexGridSizer, self.rows, self.cols, self.vgap, self.hgap)
         GridSizerBase.create_widget(self)
         for r in self.growable_rows.split(","):
             if not r.strip(): continue
-            r = int(r)
-            self.widget.AddGrowableRow(r)
+            self.widget.AddGrowableRow( int(r)-1 )  # the text property is 1-based
         for c in self.growable_cols.split(","):
             if not c.strip(): continue
-            c = int(c)
-            self.widget.AddGrowableCol(c)
+            self.widget.AddGrowableCol( int(c)-1 )
         if not self.toplevel and getattr(self, 'sizer', None) is not None:
             # hasattr(self, 'sizer') is False only in case of a 'change_sizer' call
             self.sizer.add_item(self, self.pos, self.proportion, self.flag, self.border)
 
     def _recreate(self):
-        # recreatea the sizer by calling change_sizer
+        # recreate the sizer by calling change_sizer
         if self.widget is None: return
-        page = self.notebook.GetSelection()  if self.notebook  else 0
-        wx.CallAfter(change_sizer, self, self.get_class_orient(), page)
-
-    def set_growable_rows(self, value):
-        try:
-            self.grow_rows = [int(i) for i in value.split(',')]
-        except:
-            if not value.strip():
-                self.grow_rows = []
-            else:
-                self.properties['growable_rows'].set_value( self.get_growable_rows() )
-                return
-        self._recreate()
-
-    def set_growable_cols(self, value):
-        try:
-            self.grow_cols = [int(i) for i in value.split(',')]
-        except:
-            if not value.strip():
-                self.grow_cols = []
-            else:
-                self.properties['growable_cols'].set_value( self.get_growable_cols() )
-                return
-        self._recreate()
-
+        if misc.focused_widget is self: misc.set_focused_widget(None)
+        wx.CallAfter(change_sizer, self, self.get_class_orient())
 
     def _insert_row(self, pos):
-        
         # adjust growable_rows by adding 1 to the rows above pos
         for row in self.grow_rows:
             if row >= pos-1:
