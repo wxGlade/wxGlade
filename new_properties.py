@@ -1348,16 +1348,18 @@ class FontPropertyD(FontProperty):
 class GridProperty(Property):
     """Property whose values are modified through a wxGrid table.
 
-    can_add:         Add Button to add a new entry
-    can_insert:      Add Button to insert a new entry
-    can_remove:      Add Button to remove a new entry
-    can_remove_last: Allow to remove last entry
-    cols:            Number of columns
-    col_defs:        List of column labels and column types (GridProperty.STRING, INT, FLOAT, BOOL)
+    value:           list of lists
+    cols:            List of column labels and column types (GridProperty.STRING, INT, FLOAT, BOOL)
+    default_row:     default values for inserted entries/rows
+    can_add:         Add Button to add a new entry/row
+    can_remove:      Add Button to remove a new entry/row
+    can_insert:      Add Button to insert a new entry/row
+    can_remove_last: Allow to remove last entry/row
     col_sizes:       List of column widths
-    rows:            Number of rows
-    col_format:      List of functions to set the column format."""
+    with_index:      if True, the owner's method 'set_%s'%self.attributename will be called with new value and indices
+    """
     STRING, INT, FLOAT, BOOL = 0, 1, 2, 3
+    # List of functions to set the column format:
     col_format = [lambda g, c: None,
                   lambda g, c: g.SetColFormatNumber(c),
                   lambda g, c: g.SetColFormatFloat(c),
@@ -1374,13 +1376,9 @@ class GridProperty(Property):
         Property.__init__(self, value, name) # , label=label)
         if default_row is None:
             default_row = [self._DEFAULT_VALUES[col_def[1]] for col_def in cols]
-        else:
-            print()
-        self.default_row = default_row # when a row is inserted, these values will be taken
+        self.default_row = default_row  # when a row is inserted, these values will be taken
         self.with_index = with_index # display index; also provide the original indices to the owner when updating value
-        #self._changing_value = False
         self.col_defs = cols
-        self.cols = len(self.col_defs)
         self.can_add = can_add
         self.can_remove = can_remove
         self.can_insert = can_insert
@@ -1431,7 +1429,7 @@ class GridProperty(Property):
 
         # the grid #####################################################################################################
         self.grid = wx.grid.Grid(panel, -1)
-        self.grid.CreateGrid(len(self.value), self.cols)
+        self.grid.CreateGrid( len(self.value), len(self.col_defs) )
         self.grid.SetMargins(0, 0)
 
         for i, (label,datatype) in enumerate(self.col_defs):
@@ -1442,7 +1440,7 @@ class GridProperty(Property):
         self.grid.SetRowLabelSize(20 if self.with_index else 0)
         self.grid.SetColLabelSize(20)
         if self.col_sizes:
-            self.set_col_sizes(self.col_sizes)
+            self._set_col_sizes(self.col_sizes)
 
         # add the button sizer and the grid to the sizer ###############################################################
         if self.buttons:
@@ -1497,8 +1495,8 @@ class GridProperty(Property):
 
     def apply(self, event):
         """Apply the edited value; called by Apply button.
-        
-        If self.with_index and self.owner.set_... exists, thi will be called with values and indices.
+
+        If self.with_index and self.owner.set_... exists, this will be called with values and indices.
         In this case, self.owner.properties_modified will not be called additionally.
         Otherwise, the standard mechanism will be used."""
         self.grid.SaveEditControlValue() # end editing of the current cell
@@ -1544,7 +1542,7 @@ class GridProperty(Property):
         for i,row in enumerate(ret):
             if row is None:
                 # empty row
-                ret[i] = [""]*self.cols
+                ret[i] = [""]*len(self.col_defs)
                 modified = True
             if not modified:
                 for j, col in enumerate(row):
@@ -1664,7 +1662,7 @@ class GridProperty(Property):
         self.buttons[0].Enable( self.editing_values is not None)
 
     # helpers ##########################################################################################################
-    def set_col_sizes(self, sizes):
+    def _set_col_sizes(self, sizes):
         """sets the width of the columns.
         sizes is a list of integers with the size of each column: a value of 0 stands for a default size,
         while -1 means to expand the column to fitthe available space (at most one column can have size -1)"""
