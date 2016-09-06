@@ -169,12 +169,12 @@ class TestGui(WXGladeBaseTest):
         root = tree.GetRootItem()
         first, cookie = tree.GetFirstChild(root)
         if first.IsOk():
-            tree.ExpandAllChildren(first)
+            tree.expand()
             self._process_wx_events()
             tree.SelectItem(first)
             self._process_wx_events()
-            tree.show_toplevel(None)
-            tree.SelectItem(root)
+            node = tree.GetPyData(first)
+            tree.show_widget(node)
         self._process_wx_events()
 
     def _process_wx_events(self):
