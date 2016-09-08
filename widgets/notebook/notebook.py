@@ -184,28 +184,6 @@ class EditNotebook(ManagedBase, EditStylesMixin):
         event.Skip()
         misc.exec_after(self.widget.Refresh())
 
-    def _add_tab(self, window, pos):
-        # XXX remove method if not used
-        if window is None:
-            window = SizerSlot(self, self.virtual_sizer, pos)
-            node = SlotNode(window) # XXX not tested
-            window.node = node
-            common.app_tree.add(node, self.node)
-            self.tabs[pos-1][1] = window # if window is not None, it's an EditPanel which sets itself to tabs during it's __init__
-        else:
-            window._dont_destroy = True
-            node = Node(window)
-            window.node = node
-            common.app_tree.add(node, self.node)
-        if self.widget:
-            window.show_widget(True)
-            self.virtual_sizer.set_item(pos)
-            try:
-                wx.CallAfter(window.sel_marker.update)
-            except AttributeError:
-                #self._logger.exception(_('Internal Error'))
-                pass
-
     ####################################################################################################################
     # new implementation:
     # together with NotebookVirtualSizer insert_tab, remove_tab, free_tab
@@ -217,6 +195,10 @@ class EditNotebook(ManagedBase, EditStylesMixin):
         tabs.insert(index, [label,])
         tabs_p.set(tabs)
         self.pages.insert(index, None)
+        # adjust pos of the following pages
+        for i, page in enumerate(self.pages[index+1:]):
+            pos_p = page.properties["pos"]
+            pos_p.set(index+2+i)
 
         pos = index+1
         window = EditPanel( self.next_pane_name(suggestion=label), self, -1, self.virtual_sizer, pos )
@@ -285,7 +267,17 @@ class EditNotebook(ManagedBase, EditStylesMixin):
             window = EditPanel( self.next_pane_name(name), self, -1, self.virtual_sizer, pos )
             window._dont_destroy = True
             node = window.node = Node(window)
-            common.app_tree.add(node, self.node)  # XXX check for add/insert
+
+            # adjust pos of the following pages
+            for p, page in enumerate(self.pages[i+1:]):
+                pos_p = page.properties["pos"]
+                pos_p.set(i+2+p)
+
+            self.virtual_sizer.add_item(window, pos)
+            #if pos==len(self.pages):
+            #common.app_tree.add(node, self.node)  # added to the end
+            #else:
+            common.app_tree.insert(node, self.node, i)
             # add to widget
             if self.widget:
                 window.show_widget(True)

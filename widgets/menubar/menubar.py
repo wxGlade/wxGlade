@@ -608,10 +608,9 @@ class EditMenuBar(EditBase, PreviewMixin):
             self.widget.SetIcon(icon)
             wx.EVT_CLOSE(self.widget, lambda e: self.hide_widget())
         wx.EVT_LEFT_DOWN(self.widget, self.on_set_focus)
-        self.set_menus(self.menus)  # show the menus
+        self.set_menus()  # show the menus
 
-    def set_menus(self, menus):
-        self.menus = menus
+    def set_menus(self):
         if not self._mb: return  # nothing left to do
         for i in range(self._mb.GetMenuCount()):
             self._mb.Remove(0)
@@ -639,7 +638,7 @@ class EditMenuBar(EditBase, PreviewMixin):
                             check_radio = 0
                     menu.Append( wx.NewId(), misc.wxstr(item.label), misc.wxstr(item.help_str), check_radio )
         first = self._mb.GetMenuCount()
-        for menu in self.menus:
+        for menu in self.menus or []:
             m = wx.Menu()
             append(m, menu.root.children)
             if first:
@@ -674,13 +673,14 @@ class EditMenuBar(EditBase, PreviewMixin):
 
     def _create_popup_menu(self, widget=None):
         REMOVE_ID, HIDE_ID = [wx.NewId() for i in range(2)]
-        self._rmenu = misc.wxGladePopupMenu(self.name)
-        misc.append_menu_item(self._rmenu, REMOVE_ID, _('Remove\tDel'), wx.ART_DELETE)
-        misc.append_menu_item(self._rmenu, HIDE_ID, _('Hide'))
+        menu = misc.wxGladePopupMenu(self.name)
+        misc.append_menu_item(menu, REMOVE_ID, _('Remove\tDel'), wx.ART_DELETE)
+        misc.append_menu_item(menu, HIDE_ID, _('Hide'))
 
         if widget is None: widget = self.widget
         wx.EVT_MENU(widget, REMOVE_ID, misc.exec_after(self.remove))
         wx.EVT_MENU(widget, HIDE_ID, misc.exec_after(self.hide_widget))
+        self._rmenu = (menu, widget)
 
     def hide_widget(self, *args):
         self._destroy_popup_menu()
@@ -705,7 +705,8 @@ class EditMenuBar(EditBase, PreviewMixin):
 def builder(parent, sizer, pos, number=[0]):
     "factory function for EditMenuBar objects"
     klass = 'wxMenuBar' if common.app_tree.app.language.lower()=='xrc' else 'MyMenuBar'
-    dialog = window_dialog.WindowDialog(klass, base_classes, 'Select menubar class', True)
+    import window_dialog
+    dialog = window_dialog.WindowDialog(klass, None, 'Select menubar class', True)
     klass = dialog.show()
     dialog.Destroy()
     if klass is None: return

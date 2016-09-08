@@ -941,6 +941,10 @@ class TextProperty(Property):
         Derived classes may return None to indicate a validation fail."""
         if value is None: value = self.text.GetValue()
         return value
+    def check(self, value):
+        "checks whether the string value matches the validation regular expression"
+        if not self.validation_re: return True
+        return bool( self.validation_re.match(value) )
 
 
 

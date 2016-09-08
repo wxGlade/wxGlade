@@ -364,7 +364,10 @@ class WidgetTree(wx.TreeCtrl, Tree):
         if src_widget==dst_widget: return
         
         if not copy and src_widget is misc.focused_widget:
-            misc.set_focused_widget(src_widget.parent)
+            if hasattr(src_widget, "parent"):
+                misc.set_focused_widget(src_widget.parent)
+            elif hasattr(src_widget, "window"):  # a sizer
+                misc.set_focused_widget(src_widget.window)
 
         # do some checks before cutting ################################################################################
         # avoid dragging of an item on it's child
@@ -672,7 +675,7 @@ class WidgetTree(wx.TreeCtrl, Tree):
             self.SetPyData(node.item, new_node)
             old_children = node.children
             self.remove(node, delete=False)  # don't delete the node, as we just want to modify it
-            for c in old_children:           # but the children
+            for c in old_children or []:           # but the children
                 self.Delete(c.item)
             node = new_node
             self.names.setdefault(Tree._find_toplevel(self, node), {})[str(node.widget.name)] = 1
