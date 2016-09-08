@@ -52,7 +52,8 @@ def get_copy(widget):
     xml_unicode = compat.StringIO()
     widget.node.write(xml_unicode, 0)
     flag = option = border = None
-    flag = widget.properties["flag"].get_string_value()
+    flag = widget.properties.get("flag")
+    if flag is not None: flag = flag.get_string_value()
     #if isinstance(widget, edit_windows.ManagedBase):
         ## an element in a sizer
         
@@ -60,7 +61,9 @@ def get_copy(widget):
         #flag = widget.esm_border.get_string_style()
     #option = widget.get_option()
     #border = widget.get_border()
-    clipboard_data = widget2clipboard( widget.proportion, flag, widget.border, xml_unicode.getvalue() )
+    proportion = getattr(widget, "proportion", 0)
+    border  = getattr(widget, "border", 0)
+    clipboard_data = widget2clipboard( proportion, flag, border, xml_unicode.getvalue() )
     return clipboard_data
 
 

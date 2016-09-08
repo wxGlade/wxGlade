@@ -390,7 +390,14 @@ class WindowBase(EditBase):
             #self.widget.SetSize([int(s) for s in size.split(',')])
             self.set_size(size_p.get())
         else:
+            # this is a dirty hack: in previous versions <=0.7.2 self.set_size is practically always called
+            # set_size then calls self.sizer.set_item(item, pos)
+            # without calling this here, e.g. an empty notebook page is not created!
+            # XXX this should be made more straightforward
+            if "pos" in self.properties:
+                self.sizer.set_item(self.pos)
             size_p.set('%s, %s' % tuple(self.widget.GetSize()))
+
         self.widget.SetBackgroundColour(self.background)  # active or default
         self.widget.SetForegroundColour(self.foreground)  # active or default
 

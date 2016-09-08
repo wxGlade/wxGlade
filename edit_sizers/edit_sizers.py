@@ -259,6 +259,7 @@ class SizerSlot(np.PropertyOwner):
             # we cannot remove items from virtual sizers
             i = misc.append_menu_item(menu, -1, _('Remove Slot\tDel'), wx.ART_DELETE)
             misc.bind_menu_item_after(widget, i, self.remove)
+            if self.pos<=1: i.Enable(False)
 
             # if inside a grid sizer: allow removal of empty rows/cols
             if isinstance(self.sizer, GridSizerBase):
@@ -320,11 +321,12 @@ class SizerSlot(np.PropertyOwner):
 
     def remove(self, *args):
         self._destroy_popup_menu()
-        if not self.sizer.is_virtual():
-            node = self.sizer.children[self.pos].item.node
-            self.sizer.remove_item(self)
-            self.delete()
-            common.app_tree.remove(node)
+        if self.sizer.is_virtual() or self.pos<=1: return
+
+        node = self.sizer.children[self.pos].item.node
+        self.sizer.remove_item(self)
+        self.delete()
+        common.app_tree.remove(node)
 
     def on_drop_widget(self, event):
         """replaces self with a widget in self.sizer. This method is called
@@ -357,12 +359,11 @@ class SizerSlot(np.PropertyOwner):
     def clipboard_paste(self, event=None, clipboard_data=None):
         "Insert a widget from the clipboard to the current destination"
         self._destroy_popup_menu()
-        if self.widget:
-            self.widget.Hide()
+        if self.widget: self.widget.Hide()
         if clipboard.paste(self.parent, self.sizer, self.pos, clipboard_data):
             common.app_tree.app.saved = False
         else:
-            self.widget.Show()
+            if self.widget: self.widget.Show()
 
     def on_select_and_paste(self, *args):
         "Middle-click event handler: selects the slot and, if the clipboard is not empty, pastes its content here"
