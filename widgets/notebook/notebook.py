@@ -99,7 +99,7 @@ class NotebookVirtualSizer(Sizer):
             return
         slot = SizerSlot(self.window, self, pos) # XXX node handling?
         #self._logger.debug('free: %s, %s, %s', slot, slot.pos, pos)
-        slot.show_widget(True)
+        slot.create()
         pos -= 1
         label, item = self.window.tabs[pos]
         self.window.widget.RemovePage(pos)
@@ -213,7 +213,7 @@ class EditNotebook(ManagedBase, EditStylesMixin):
         common.app_tree.add(node, self.node)
 
         if self.widget:
-            window.show_widget(True)
+            window.create()
             self.virtual_sizer.insert_tab(index)
 
             try:
@@ -280,7 +280,7 @@ class EditNotebook(ManagedBase, EditStylesMixin):
             common.app_tree.insert(node, self.node, i)
             # add to widget
             if self.widget:
-                window.show_widget(True)
+                window.create()
                 self.virtual_sizer.insert_tab(i)
     
                 try:
@@ -375,7 +375,7 @@ def builder(parent, sizer, pos, number=[1]):
     widget.virtual_sizer.node = node
     widget.properties["proportion"].set(1)
     widget.properties["flag"].set("wxEXPAND")
-    widget.show_widget(True)
+    if parent.widget: widget.create()
     common.app_tree.insert(node, sizer.node, pos-1)
 
     widget.insert_tab(0, widget.next_pane_name()) # next_pane_name will be used as label and as pane name, if possible

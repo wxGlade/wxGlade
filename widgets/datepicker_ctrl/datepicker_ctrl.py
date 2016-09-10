@@ -59,7 +59,7 @@ def builder(parent, sizer, pos, number=[1]):
     datepicker_ctrl = EditDatePickerCtrl(label, parent, wx.NewId(), sizer, pos)
     node = Node(datepicker_ctrl)
     datepicker_ctrl.node = node
-    datepicker_ctrl.show_widget(True)
+    if parent.widget: datepicker_ctrl.create()
     common.app_tree.insert(node, sizer.node, pos-1)
 
 

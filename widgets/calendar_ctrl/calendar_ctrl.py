@@ -67,7 +67,7 @@ def builder(parent, sizer, pos, number=[1]):
     calendar_ctrl = EditCalendarCtrl(label, parent, wx.NewId(), sizer, pos)
     node = Node(calendar_ctrl)
     calendar_ctrl.node = node
-    calendar_ctrl.show_widget(True)
+    if parent.widget: calendar_ctrl.create()
     common.app_tree.insert(node, sizer.node, pos-1)
 
 

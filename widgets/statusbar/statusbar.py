@@ -173,8 +173,8 @@ def builder(parent, sizer, pos):
     widget = EditStatusBar(name, klass, parent)
     widget.node = Node(widget)
     common.app_tree.add(widget.node)
-    widget.show_widget(True)
-    widget.show_properties()
+    if parent.widget: widget.create()
+
 
 
 def xml_builder(attrs, parent, sizer, sizeritem, pos=None):

@@ -70,7 +70,7 @@ def builder(parent, sizer, pos, number=[1]):
     static_bitmap = EditStaticBitmap(name, parent, wx.NewId(), bitmap, sizer, pos)
     node = Node(static_bitmap)
     static_bitmap.node = node
-    static_bitmap.show_widget(True)
+    if parent.widget: static_bitmap.create()
     common.app_tree.insert(node, sizer.node, pos-1)
 
 

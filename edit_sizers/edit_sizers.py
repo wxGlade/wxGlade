@@ -183,12 +183,9 @@ class SizerSlot(np.PropertyOwner):
     def is_visible(self):
         return False
 
-    def show_widget(self, yes):
-        if yes and not self.widget:
-            self.create_widget()
-        if self.widget:
-            self.widget.Show(yes)
-            self.widget.Refresh()
+    def create(self):
+        if self.widget: return
+        self.create_widget()
 
     def on_enter(self, event):
         # hack. definitely. but...
@@ -476,7 +473,12 @@ def change_sizer(old, new):
 
     global _change_sizer_panel
     if old.widget is not None:
-        szr.show_widget(True, dont_set=True)
+        for c in old.widget.GetChildren():
+            if c and c.IsSizer():
+                compat.SizerItem_SetSizer(c, None)
+        old.widget.Clear()  # without deleting window items; but sets the sizer of the windows to NULL
+
+        szr.create(dont_set=True)
         if _change_sizer_panel is None:
             _change_sizer_panel = wx.Frame(None, -1, _("HIDDEN FRAME FOR CHANGE SIZER"))
 
@@ -496,14 +498,6 @@ def change_sizer(old, new):
             if szr.widget is not None:
                 szr.widget.Insert(widget.pos, widget.widget, widget.proportion, widget.flag, widget.border)
 
-    if old.widget is not None:
-        # previously, this code was after compat.SizerItem_SetSizer(elem, szr.widget)
-        # but this does not work any longer w. Phoenix, as probably AssignSizer deletes the old widget already
-        for c in old.widget.GetChildren():
-            if c and c.IsSizer():
-                compat.SizerItem_SetSizer(c, None)
-        old.widget.Clear()  # without deleting window items
-
     if not szr.toplevel:
         szr.sizer = old.sizer
         szr.proportion = old.proportion
@@ -513,7 +507,7 @@ def change_sizer(old, new):
         szr.sizer.children[szr.pos].item = szr
         if szr.sizer.widget:
             elem = szr.sizer.widget.GetChildren()[szr.pos]
-            compat.SizerItem_SetSizer(elem, szr.widget)  # old.widget will be deleted here
+            compat.SizerItem_SetSizer(elem, szr.widget)
 
     common.app_tree.change_node(szr.node, szr)
 
@@ -524,10 +518,6 @@ def change_sizer(old, new):
     if szr.toplevel:
         szr.window.set_sizer(szr)
     szr.layout(True)
-    
-    for node in szr.node.children:
-        if isinstance(node, SlotNode):
-            common.app_tree.refresh_name(node)
 
     misc.set_focused_widget(szr)
 
@@ -672,9 +662,8 @@ class SizerBase(Sizer, np.PropertyOwner):
         "Creates the wxSizer self.widget"
         raise NotImplementedError
 
-    def show_widget(self, yes, dont_set=False):
-        if not yes or self.widget:
-            return  # nothing to do if the sizer has already been created
+    def create(self, dont_set=False):
+        if self.widget: return  # nothing to do if the sizer has already been created
         self._btn = SizerHandleButton(self.window, self.id, self ) # XXX handle the popupmenu creation in SizerHandleButton
         # ScreenToClient used by WidgetTree for the popup menu
         wx.EVT_BUTTON(self._btn, self.id, self.on_selection)
@@ -686,7 +675,7 @@ class SizerBase(Sizer, np.PropertyOwner):
             self.window.set_sizer(self)
         if not config.preferences.show_sizer_handle:
             self.widget.Show(self._btn, False)
-        self.update_view(misc.focused_widget == self)
+
     def on_selection(self, event):
         # button clicked -> set ourself as current widget
         misc.set_focused_widget(self)
@@ -1174,7 +1163,7 @@ class SizerBase(Sizer, np.PropertyOwner):
             common.app_tree.add(node, self.node)
 
         if self.widget:
-            tmp.show_widget(True)  # create the actual SizerSlot widget
+            tmp.create()  # create the actual SizerSlot widget
             self.widget.Add(tmp.widget, 1, wx.EXPAND)
             self.widget.SetItemMinSize(tmp.widget, 20, 20)
             if force_layout:
@@ -1200,7 +1189,7 @@ class SizerBase(Sizer, np.PropertyOwner):
                 common.app_tree.refresh_name( c.item.node )
 
         if self.widget:
-            tmp.show_widget(True)  # create the actual SizerSlot
+            tmp.create()  # create the actual SizerSlot
             self.widget.Insert(pos, tmp.widget, 1, wx.EXPAND)
             self.widget.SetItemMinSize(tmp.widget, 20, 20)
             if force_layout:
@@ -1220,7 +1209,7 @@ class SizerBase(Sizer, np.PropertyOwner):
         common.app_tree.change_node( old_node, tmp, node )
 
         if self.widget:
-            tmp.show_widget(True)  # create the actual SizerSlot as wx.Window with hatched background
+            tmp.create()  # create the actual SizerSlot as wx.Window with hatched background
             # pos is 1 based, Insert/Detach are 0 based, but item at 0 is the handle button
             self.widget.Insert(pos, tmp.widget, 1, wx.EXPAND)
             # detach is not needed here any more, as change_node does this already
@@ -1304,7 +1293,7 @@ class EditBoxSizer(BoxSizerBase):
         self.widget.Add(self._btn, 0, wx.EXPAND)
         to_lay_out = []
         for c in self.children[1:]:  # we've already added self._btn
-            c.item.show_widget(True)
+            c.item.create()
             if isinstance(c.item, SizerSlot):
                 self.widget.Add(c.item.widget, 1, wx.EXPAND)
                 self.widget.SetItemMinSize(c.item.widget, 20, 20)
@@ -1314,7 +1303,6 @@ class EditBoxSizer(BoxSizerBase):
                     if (c.proportion != 0 or (c.flag & wx.EXPAND)) and not (c.flag & wx.FIXED_MINSIZE):
                         c.item.widget.Layout()
                         w, h = c.item.widget.GetBestSize()
-                        # self._logger.debug("HERE: %d, %d", w, h)
                         c.item.widget.SetMinSize((w, h))
                     else:
                         size = sp.get_value().strip()
@@ -1363,7 +1351,7 @@ class EditStaticBoxSizer(BoxSizerBase):
         self.widget = wxGladeStaticBoxSizer( wx.StaticBox(self.window.widget, -1, self.label), self.orient )
         self.widget.Add(self._btn, 0, wx.EXPAND)
         for c in self.children[1:]:  # we've already added self._btn
-            c.item.show_widget(True)
+            c.item.create()
             if isinstance(c.item, SizerSlot):
                 self.widget.Add(c.item.widget, 1, wx.EXPAND)
                 self.widget.SetItemMinSize(c.item.widget, 20, 20)
@@ -1484,7 +1472,7 @@ class GridSizerBase(SizerBase):
         "This must be overriden and called at the end of the overriden version"
         to_lay_out = []
         for c in self.children[1:]:  # we've already added self._btn
-            c.item.show_widget(True)
+            c.item.create()
             if isinstance(c.item, SizerSlot):
                 self.widget.Add(c.item.widget, 1, wx.EXPAND)
                 self.widget.SetItemMinSize(c.item.widget, 20, 20)
@@ -1791,23 +1779,6 @@ class EditFlexGridSizer(GridSizerBase):
         if misc.focused_widget is self: misc.set_focused_widget(None)
         wx.CallAfter(change_sizer, self, self.get_class_orient())
 
-    def _insert_row(self, pos):
-        # adjust growable_rows by adding 1 to the rows above pos
-        for row in self.grow_rows:
-            if row >= pos-1:
-                row += 1
-        # actually insert the row
-        GridSizerBase._insert_row(self, pos)
-        # update the old property
-        self.set_growable_rows(self.get_growable_rows())
-
-    def _insert_col(self, pos):
-        for column in self.grow_cols:                      # adjust growable_rows by adding 1 to the rows above pos
-            if column >= pos-1:
-                column += 1
-        GridSizerBase._insert_col(self, pos)               # insert slots, call layout
-        self.set_growable_cols(self.get_growable_cols())   # update old style property, _recreate
-
     def properties_changed(self, modified):
         # XXX unify recreate with the other methods called in GridSizerBase, SizerBase
         # if recreate is required, it's not necessary to call layout
@@ -1842,7 +1813,6 @@ def _builder(parent, sizer, pos, orientation=wx.VERTICAL, slots=1, is_static=Fal
     else:
         sz = EditBoxSizer(name, parent, orientation, 0, topl)
 
-
     if sizer is not None:
         sizer.add_item(sz, pos, 1, wx.EXPAND)
         node = Node(sz)
@@ -1863,8 +1833,7 @@ def _builder(parent, sizer, pos, orientation=wx.VERTICAL, slots=1, is_static=Fal
     for i in range(num):
         sz.add_slot()
 
-    if parent.is_visible():
-        sz.show_widget(show)
+    if parent.widget: sz.create()
     if sizer is not None:
         sz.properties['flag'].set('wxEXPAND')
         sz.properties['pos'].set(pos)
@@ -2053,8 +2022,7 @@ def grid_builder(parent, sizer, pos, number=[1]):
         sz.add_slot(force_layout=False)
     sz.layout()
 
-    if parent.is_visible():
-        sz.show_widget(show)  # True)
+    if parent.widget: sz.create()
 
     if sizer is not None:
         sz.properties['flag'].set_value('wxEXPAND')

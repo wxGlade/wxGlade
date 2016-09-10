@@ -75,7 +75,7 @@ def builder(parent, sizer, pos, number=[1]):
     widget = editor_class(label, parent, wx.ID_ANY, style, sizer, pos)
     node = Node(widget)
     widget.node = node
-    widget.show_widget(True)
+    if parent.widget: widget.create()
     common.app_tree.insert(node, sizer.node, pos-1)
 
 

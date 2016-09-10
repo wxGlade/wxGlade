@@ -229,7 +229,7 @@ class Tree(object):
     def remove(self, node=None):
         if node is not None:
             self.clear_name_rec(node)
-            if node.parent is self.root:
+            if node.parent is self.root and node.widget._is_toplevel:
                 self.app.remove_top_window(node.widget.name)
             node.remove()
         elif self.root.children:
@@ -563,10 +563,13 @@ class WidgetTree(wx.TreeCtrl, Tree):
             return
         item = node.widget
         import edit_sizers
-        if not isinstance(item, edit_sizers.SizerSlot):
-            event.Skip()
+        if isinstance(item, edit_sizers.SizerSlot):
+            item.on_drop_widget(None)
             return
-        item.on_drop_widget(None)
+        if common.adding_sizer:
+            item.drop_sizer()
+            return
+        event.Skip()
 
     def popup_menu(self, event):
         node = self._find_item_by_pos(*event.GetPosition())
@@ -594,13 +597,13 @@ class WidgetTree(wx.TreeCtrl, Tree):
         if not self.title: self.title = ' '
         return self.title
 
-    def show_widget(self, node):
+    def create_widgets(self, node):
         "Shows the widget of the given node and all its children"
-        node.widget.show_widget(True)
+        node.widget.create()
         self.expand(node, True)
         if node.children:
             for c in node.children:
-                self.show_widget(c)
+                self.create_widgets(c)
         node.widget.post_load()
 
     def _show_widget_toplevel(self, node):
@@ -611,9 +614,10 @@ class WidgetTree(wx.TreeCtrl, Tree):
             node.widget.finish_widget_creation()
         if node.children:
             for c in node.children:
-                self.show_widget(c)
+                self.create_widgets(c)
         node.widget.post_load()
-        node.widget.show_widget(True)
+        node.widget.create()
+        node.widget.widget.Show()
         misc.set_focused_widget(node.widget)
 
         node.widget.widget.Raise()
@@ -647,7 +651,8 @@ class WidgetTree(wx.TreeCtrl, Tree):
                 self.expand(node)
                 self._show_widget_toplevel(node)
             else:
-                node.widget.show_widget(False)
+                node.widget.create()
+                node.widget.widget.Show()
                 # added by rlawson to collapse only the toplevel node, not collapse back to root node
                 self.select_item(node)
                 misc.set_focused_widget(node.widget)

@@ -50,7 +50,7 @@ def builder(parent, sizer, pos, number=[1]):
     property_grid_manager.esm_border.set_style("wxEXPAND")
     node = Node(property_grid_manager)
     property_grid_manager.node = node
-    property_grid_manager.show_widget(True)
+    if parent.widget: property_grid_manager.create()
     common.app_tree.insert(node, sizer.node, pos-1)
 
 

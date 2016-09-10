@@ -92,7 +92,7 @@ class EditFrame(TopLevelBase, EditStylesMixin, BitmapMixin):
             self._menubar = EditMenuBar(self.name + '_menubar', 'wxMenuBar', self)
             self._menubar.node = Node(self._menubar)
             common.app_tree.add(self._menubar.node, self.node)
-            if self.widget: self._menubar.show_widget(True)
+            if self.widget: self._menubar.create()
         else:
             # remove
             if self._menubar is None: return
@@ -103,7 +103,7 @@ class EditFrame(TopLevelBase, EditStylesMixin, BitmapMixin):
             # create a StatusBar
             from statusbar import EditStatusBar
             self._statusbar = EditStatusBar(self.name + '_statusbar', 'wxStatusBar', self)
-            if self.widget: self._statusbar.show_widget(True)
+            if self.widget: self._statusbar.create()
         else:
             # remove
             if self._statusbar is None: return
@@ -120,7 +120,7 @@ class EditFrame(TopLevelBase, EditStylesMixin, BitmapMixin):
             self._toolbar.node = Node(self._toolbar)
             common.app_tree.add(self._toolbar.node, self.node)
 
-            if self.widget: self._toolbar.show_widget(True)
+            if self.widget: self._toolbar.create()
         else:
             # remove
             if self._toolbar is None: return
@@ -156,7 +156,7 @@ def builder(parent, sizer, pos):
     dialog = window_dialog.WindowDialog(klass, base_classes, 'Select frame class', True)
     res = dialog.show()
     dialog.Destroy()
-    if res is None: return
+    if res is None: return None
     klass, base = res
     name = dialog.get_next_name("frame")
 
@@ -168,7 +168,8 @@ def builder(parent, sizer, pos):
     node = Node(frame)
     frame.node = node
     common.app_tree.add(node)
-    frame.show_widget(True)
+    frame.create()
+    frame.widget.Show()
 
     # add a default vertical sizer to the frame
     import edit_sizers

@@ -777,7 +777,7 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
 
         if not klass in self.classes:
             # if the class body was empty, create an empty ClassLines
-            self.classes[klass] = self.ClassLines()
+            self.classes[klass] = ClassLines()
 
         # collect all event handlers
         event_handlers = self.classes[klass].event_handlers
@@ -1099,7 +1099,7 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
         if toplevel.klass in self.classes:
             klass = self.classes[toplevel.klass]
         else:
-            klass = self.classes[toplevel.klass] = self.ClassLines()
+            klass = self.classes[toplevel.klass] = ClassLines()
 
         # check if sizer has to store as a class attribute
         sizer_name = self._format_classattr(sizer)

@@ -146,7 +146,7 @@ def builder(parent, sizer, pos, number=[1]):
 
     win.properties["proportion"].set(1)
     win.properties["flag"].set("wxEXPAND")
-    win.show_widget(True)
+    if parent.widget: win.create()
 
     common.app_tree.insert(node, sizer.node, pos-1)
     sizer.set_item(win.pos, 1, wx.EXPAND)

@@ -714,8 +714,9 @@ def builder(parent, sizer, pos, number=[0]):
     mb = EditMenuBar(name, klass, parent)
     mb.node = Node(mb)
     common.app_tree.add(mb.node)
-    mb.show_widget(True)
-    mb.show_properties()
+    mb.create()
+    mb.widget.Show()
+
 
 
 def xml_builder(attrs, parent, sizer, sizeritem, pos=None):

@@ -89,7 +89,7 @@ def builder(parent, sizer, pos, number=[1]):
     checkbox = EditCheckBox(label, parent, wx.NewId(), label, sizer, pos)
     node = Node(checkbox)
     checkbox.node = node
-    checkbox.show_widget(True)
+    if parent.widget: checkbox.create()
     common.app_tree.insert(node, sizer.node, pos-1)
 
 

@@ -90,7 +90,7 @@ def builder(parent, sizer, pos, number=[1]):
     node = Node(widget)
     widget.node = node
     widget.properties["flag"].set("wxEXPAND")
-    widget.show_widget(True)
+    if parent.widget: widget.create()
     common.app_tree.insert(node, sizer.node, pos-1)
 
 
