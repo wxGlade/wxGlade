@@ -76,7 +76,7 @@ def builder(parent, sizer, pos, number=[1]):
     hyperlink_ctrl = EditHyperlinkCtrl(name, parent, wx.NewId(), name, sizer, pos)
     node = Node(hyperlink_ctrl)
     hyperlink_ctrl.node = node
-    hyperlink_ctrl.show_widget(True)
+    if parent.widget: hyperlink_ctrl.create()
     common.app_tree.insert(node, sizer.node, pos-1)
 
 

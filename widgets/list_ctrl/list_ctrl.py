@@ -62,7 +62,7 @@ def builder(parent, sizer, pos, number=[1]):
     list_ctrl.node = node
     list_ctrl.properties["proportion"].set(1)
     list_ctrl.properties["flag"].set("wxEXPAND")
-    list_ctrl.show_widget(True)
+    if parent.widget: list_ctrl.create()
     common.app_tree.insert(node, sizer.node, pos-1)
     sizer.set_item(list_ctrl.pos, 1, wx.EXPAND)
 

@@ -90,6 +90,7 @@ def SizerItem_SetSizer(item, sizer):
     item.SetSizer(sizer)
 
 def SizerItem_SetSizerPhoenix(item, sizer):
+    if sizer is None: item.DetachSizer()
     item.AssignSizer(sizer)
 
 

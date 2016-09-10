@@ -59,7 +59,7 @@ def builder(parent, sizer, pos, number=[1]):
     button = EditToggleButton(label, parent, wx.NewId(), label, sizer, pos)
     node = Node(button)
     button.node = node
-    button.show_widget(True)
+    if parent.widget: button.create()
     common.app_tree.insert(node, sizer.node, pos-1)
 
 

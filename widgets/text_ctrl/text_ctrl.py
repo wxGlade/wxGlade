@@ -83,8 +83,7 @@ def builder(parent, sizer, pos, number=[1]):
     text = EditTextCtrl(name, parent, wx.NewId(), sizer, pos)
     node = Node(text)
     text.node = node
-    if parent.is_visible():
-        text.show_widget(True)
+    if parent.widget: text.create()
     common.app_tree.insert(node, sizer.node, pos-1)
 
 

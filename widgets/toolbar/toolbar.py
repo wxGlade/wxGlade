@@ -652,7 +652,7 @@ def builder(parent, sizer, pos):
     tb = EditToolBar(name, klass, parent)
     tb.node = Node(tb)
     common.app_tree.add(tb.node)
-    #tb.show_widget(True)
+    if parent.widget: tb.create()
 
 
 

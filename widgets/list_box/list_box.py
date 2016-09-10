@@ -77,7 +77,7 @@ def builder(parent, sizer, pos, number=[1]):
     node = Node(list_box)
 ##     sizer.set_item(pos, size=list_box.GetBestSize())
     list_box.node = node
-    list_box.show_widget(True)
+    if parent.widget: list_box.create()
     common.app_tree.insert(node, sizer.node, pos-1)
 
 

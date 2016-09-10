@@ -128,8 +128,8 @@ class EditSplitterWindow(ManagedBase, EditStylesMixin):
 
     def split(self):
         if not self.widget or not self._window_1 or not self._window_2: return
-        self._window_1.show_widget(True)
-        self._window_2.show_widget(True)
+        self._window_1.create()
+        self._window_2.create()
         
         orientation = self.orientation
         sash_pos_p = self.properties['sash_pos']
@@ -212,7 +212,7 @@ def builder(parent, sizer, pos, number=[1]):
 
     widget.properties["proportion"].set(1)
     widget.properties["flag"].set("wxEXPAND")
-    widget.show_widget(True)
+    if parent.widget: widget.create()
 
     common.app_tree.insert(node, sizer.node, pos-1)
 

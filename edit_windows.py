@@ -108,13 +108,12 @@ class EditBase(EventsMixin, np.PropertyOwner):
 
         EventsMixin.__init__(self)
 
-    def show_widget(self, yes):
-        if self.parent is not None and self.parent.widget is None:
-            return
-        if yes and self.widget is None:
-            self.create_widget()
-            self.finish_widget_creation()
-        if self.widget: self.widget.Show(yes)
+    def create(self):
+        "create the wx widget"
+        if self.parent is not None and self.parent.widget is None: return
+        if self.widget: return
+        self.create_widget()
+        self.finish_widget_creation()
 
     def create_widget(self):
         "Initializes self.widget and shows it"
@@ -740,9 +739,9 @@ class TopLevelBase(WindowBase, PreviewMixin):
         # ALB 2004-10-15
         self.widget.SetAcceleratorTable(common.palette.accel_table)
 
-    def show_widget(self, yes):
-        WindowBase.show_widget(self, yes)
-        if yes and wx.Platform == '__WXMSW__':
+    def create(self):
+        WindowBase.create(self)
+        if wx.Platform == '__WXMSW__':
             # more than ugly, but effective hack to properly layout the window on Win32
             if self.properties['size'].is_active():
                 w, h = self.widget.GetSize()

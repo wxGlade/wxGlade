@@ -56,7 +56,7 @@ def builder(parent, sizer, pos, number=[1]):
     static_text = EditStaticText(label, parent, wx.NewId(), label, sizer, pos)
     node = Node(static_text)
     static_text.node = node
-    static_text.show_widget(True)
+    if parent.widget: static_text.create()
     common.app_tree.insert(node, sizer.node, pos-1)
 
 

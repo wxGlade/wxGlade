@@ -98,7 +98,7 @@ def builder(parent, sizer, pos):
     spacer = EditSpacer( name, parent, wx.NewId(), width, height, sizer, pos )
     node = Node(spacer)
     spacer.node = node
-    spacer.show_widget(True)
+    if parent.widget: spacer.create()
     common.app_tree.insert(node, sizer.node, pos-1)
 
 

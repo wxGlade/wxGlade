@@ -83,7 +83,7 @@ def builder(parent, sizer, pos, number=[1]):
     node = Node(choice)
 #    sizer.set_item(pos, size=choice.GetBestSize())
     choice.node = node
-    choice.show_widget(True)
+    if parent.widget: choice.create()
     common.app_tree.insert(node, sizer.node, pos-1)
 
 

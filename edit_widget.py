@@ -102,7 +102,7 @@ def add_widget_node(widget, sizer, pos, from_xml=False,
     if border:
         widget.set_border(border)
     if not from_xml:
-        widget.show_widget(True)
+        widget.create()
     sizer.set_item(widget.pos, option, flag, border)
 
     if pos is None: common.app_tree.add(node, sizer.node)

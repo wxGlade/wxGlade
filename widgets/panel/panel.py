@@ -80,7 +80,7 @@ class PanelBase(EditStylesMixin):
         elif self.top_sizer is None and self.widget:
             self.widget.SetSizer(None)
 
-    def drop_sizer(self, event):
+    def drop_sizer(self, event=None):
         if self.top_sizer or not common.adding_sizer:
             self.on_set_focus(event)  # default behaviour: call show_properties
             return
@@ -254,13 +254,12 @@ class EditTopLevelPanel(PanelBase, TopLevelBase):
         if wx.Platform == '__WXMSW__':
             win.CentreOnScreen()
 
-    def show_widget(self, yes):
+    def create(self):
         oldval = self.size
-        super(EditTopLevelPanel, self).show_widget(yes)
+        super(EditTopLevelPanel, self).create()
         if self.widget:
-            if yes and not self.properties['size'].is_active() and self.top_sizer:
+            if not self.properties['size'].is_active() and self.top_sizer:
                 self.top_sizer.fit_parent()
-            self.widget.GetParent().Show(yes)
         self.set_size(oldval)
 
     def hide_widget(self, *args):
@@ -325,7 +324,7 @@ def builder(parent, sizer, pos, number=[1]):
     panel.node = node
     panel.properties["proportion"].set(1)
     panel.properties["flag"].set("wxEXPAND")
-    panel.show_widget(True)
+    if parent.widget: panel.create()
     common.app_tree.insert(node, sizer.node, pos-1)
     sizer.set_item(panel.pos, 1, wx.EXPAND)
 

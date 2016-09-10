@@ -91,7 +91,7 @@ def builder(parent, sizer, pos, number=[1]):
     button = EditButton(name, parent, wx.NewId(), name, sizer, pos)
     node = Node(button)
     button.node = node
-    button.show_widget(True)
+    if parent.widget: button.create()
     common.app_tree.insert(node, sizer.node, pos-1)
 
 

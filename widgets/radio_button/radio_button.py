@@ -66,7 +66,7 @@ def builder(parent, sizer, pos, number=[1]):
     radio = EditRadioButton(label, parent, wx.NewId(), label, sizer, pos)
     node = Node(radio)
     radio.node = node
-    radio.show_widget(True)
+    if parent.widget: radio.create()
     common.app_tree.insert(node, sizer.node, pos-1)
 
 

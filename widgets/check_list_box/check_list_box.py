@@ -80,7 +80,7 @@ def builder(parent, sizer, pos, number=[1]):
     node = Node(check_list_box)
 ##     sizer.set_item(pos, size=check_list_box.GetBestSize())
     check_list_box.node = node
-    check_list_box.show_widget(True)
+    if parent.widget: check_list_box.create()
     common.app_tree.insert(node, sizer.node, pos-1)
 
 

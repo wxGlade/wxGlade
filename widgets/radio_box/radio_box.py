@@ -198,7 +198,7 @@ def builder(parent, sizer, pos, number=[1]):
     radio_box = EditRadioBox(label, parent, wx.NewId(), label, [u'choice 1'], 1, 0, sizer, pos)
     node = Node(radio_box)
     radio_box.node = node
-    radio_box.show_widget(True)
+    if parent.widget: radio_box.create()
     common.app_tree.insert(node, sizer.node, pos-1)
 
 

@@ -86,7 +86,7 @@ def builder(parent, sizer, pos, number=[1]):
     button = EditBitmapButton(name, parent, wx.NewId(), bitmap, sizer, pos)
     node = Node(button)
     button.node = node
-    button.show_widget(True)
+    if parent.widget: button.create()
     common.app_tree.insert(node, sizer.node, pos-1)
 
 
