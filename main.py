@@ -233,7 +233,7 @@ class wxGladeFrame(wx.Frame):
         self.autosave_timer = None
         if config.preferences.autosave:
             self.autosave_timer = wx.Timer(self, -1)
-            self.autosave_timer.Bind(wx.EVT_TIMER, self.on_autosave_timer)
+            self.Bind(wx.EVT_TIMER, self.on_autosave_timer, self.autosave_timer)
             self.autosave_timer.Start( int(config.preferences.autosave_delay) * 1000 )
 
         self.create_statusbar()  # create statusbar for display of messages
@@ -285,7 +285,7 @@ class wxGladeFrame(wx.Frame):
         append_menu_item(file_menu, SAVE_TEMPLATE_ID, _("Save As Template..."))
         file_menu.AppendSeparator()
         
-        append_menu_item(file_menu, wx.ID_REFRESH, _("&Refresh Preview\tf5"))
+        append_menu_item(file_menu, wx.ID_REFRESH, _("&Refresh Preview\tF5"))
 
         GENERATE_CODE_ID = wx.NewId()
         append_menu_item(file_menu, GENERATE_CODE_ID, _("&Generate Code\tCtrl+G"), wx.ART_EXECUTABLE_FILE)
@@ -524,7 +524,7 @@ class wxGladeFrame(wx.Frame):
         self.CreateStatusBar(1)
         # ALB 2004-10-15  statusbar timer: delete user message after some time
         self.clear_sb_timer = wx.Timer(self, -1)
-        self.clear_sb_timer.Bind(wx.EVT_TIMER, self.on_clear_sb_timer)
+        self.Bind(wx.EVT_TIMER, self.on_clear_sb_timer, self.clear_sb_timer)
 
     def user_message(self, msg):
         # display a message, but clear it after a few seconds again
@@ -535,8 +535,7 @@ class wxGladeFrame(wx.Frame):
 
     def on_clear_sb_timer(self, event):
         sb = self.GetStatusBar()
-        if sb:
-            sb.SetStatusText("")
+        if sb: sb.SetStatusText("")
     ####################################################################################################################
 
     def ask_save(self):
