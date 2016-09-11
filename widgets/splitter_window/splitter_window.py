@@ -18,6 +18,24 @@ from edit_sizers.edit_sizers import Sizer, SizerSlot
 from panel import EditPanel
 
 
+class ChildWidgetNameProperty(np.Property):
+    def __init__(self, child_att_name):
+        self.child_att_name = child_att_name
+        np.Property.__init__(self, None, default_value=None, name=None)
+
+    def get(self):
+        child = getattr(self.owner, self.child_att_name)
+        if child is None: return self.value
+        if isinstance(child, SizerSlot): return None
+        return child.name
+
+    def write(self, outfile, tabs=0):
+        value = self.get()
+        if value is not None:
+            stmt = common.format_xml_tag(self.name, value, tabs)
+            outfile.write(stmt)
+
+
 
 class SplitterWindowSizer(Sizer):
     "'Virtual sizer' responsible for the management of a SplitterWindow"
@@ -35,11 +53,9 @@ class SplitterWindowSizer(Sizer):
         if pos == 1:
             self.window.window_old = self.window._window_1
             self.window._window_1 = item
-            self.window.properties['window_1'].set(item.name)
         else:
             self.window.window_old = self.window._window_2
             self.window._window_2 = item
-            self.window.properties['window_2'].set(item.name)
 
     def free_slot(self, pos, force_layout=True):
         "Replaces the element at pos with an empty slot"
@@ -66,10 +82,10 @@ class SplitterWindowSizer(Sizer):
 
     def get_itempos(self, attrs):
         "Get position of sizer item (used in xml_parse)"
-        if attrs['name']==self.window.window_1:
-            pos = 1
-        else:
-            pos = 2
+        if attrs['name']==self.window.properties["window_1"].value:
+            return 1
+        if attrs['name']==self.window.properties["window_2"].value:
+            return 2
         return pos
 
     def is_virtual(self):
@@ -99,9 +115,9 @@ class EditSplitterWindow(ManagedBase, EditStylesMixin):
 
         # hidden properties: orientation string, window_1, window_2
         self.orientation = np.Property(orientation)
-        self.window_1 = np.Property(win_1 and win_1.name or "")  # these string properties hold the window names
-        self.window_2 = np.Property(win_2 and win_2.name or "")  # or empty strings for slots
-        
+        self.window_1 = ChildWidgetNameProperty("_window_1")
+        self.window_2 = ChildWidgetNameProperty("_window_2")
+
         self.virtual_sizer = SplitterWindowSizer(self)
         labels = ("SLOT Left","SLOT Right") if orientation=="wxSPLIT_VERTICAL" else ("SLOT Top","SLOT Bottom")
         self._window_1 = win_1 or SizerSlot(self, self.virtual_sizer, 1, labels[0])
@@ -221,8 +237,8 @@ def builder(parent, sizer, pos, number=[1]):
         label = '%s_%d' % (tmpl_label, number[0])
 
     widget = editor_class(label, parent, -1, None, None,None, orientation, sizer, pos)
-    widget.window_1 = pane1 = EditPanel(label + '_pane_1', widget, wx.NewId(), widget.virtual_sizer, 1)
-    widget.window_2 = pane2 = EditPanel(label + '_pane_2', widget, wx.NewId(), widget.virtual_sizer, 2)
+    widget._window_1 = pane1 = EditPanel(label + '_pane_1', widget, wx.NewId(), widget.virtual_sizer, 1)
+    widget._window_2 = pane2 = EditPanel(label + '_pane_2', widget, wx.NewId(), widget.virtual_sizer, 2)
 
     node = Node(widget)
     widget.node = node
