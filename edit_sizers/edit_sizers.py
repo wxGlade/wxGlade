@@ -1376,13 +1376,14 @@ class EditStaticBoxSizer(BoxSizerBase):
             # getattr(self, 'sizer') is False only in case of a 'change_sizer' call
             self.sizer.add_item(self, self.pos, self.proportion, self.flag, self.border, self.widget.GetMinSize())
 
-    def set_label(self, value):
-        "Sets the label of the static box"
-        self.label = misc.wxstr(value)
-        common.app_tree.refresh_name(self.node)
-        if self.widget:
-            self.widget.GetStaticBox().SetLabel(self.label)
-        self.layout()
+    def properties_changed(self, modified):
+        if not modified or "label" in modified and self.widget:
+            self.widget.GetStaticBox().SetLabel(self.label or "")
+            #self.layout()
+        if not modified or "label" in modified or "name" in modified and self.node:
+            common.app_tree.refresh_name(self.node)
+
+        BoxSizerBase.properties_changed(self, modified)
 
     def delete(self):
         if self.widget:
