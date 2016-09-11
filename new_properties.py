@@ -876,6 +876,7 @@ class TextProperty(Property):
         style = 0
         if self.readonly:               style = wx.TE_READONLY
         if self.multiline:              style |= wx.TE_MULTILINE
+        else:                           style |= wx.TE_PROCESS_ENTER
         if not self._HORIZONTAL_LAYOUT: style |= wx.HSCROLL
 
         text = wx.TextCtrl( panel, -1, str(value) or "", style=style )#, size=(1,-1) )
@@ -916,8 +917,9 @@ class TextProperty(Property):
             #self.text.SetValue(self._unescape(self.value))
             self.text.SetValue(self.value)
             self.text.SetInsertionPointEnd()
-        if not self.multiline:
-            pass
+        if not self.multiline and keycode==13:
+            # enter
+            self._check_for_user_modification()
         event.Skip()
 
     def on_kill_focus(self, event):
