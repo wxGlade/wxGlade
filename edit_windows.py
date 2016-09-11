@@ -178,17 +178,18 @@ class EditBase(EventsMixin, np.PropertyOwner):
                 misc.bind_menu_item_after(widget, i, self.sizer.insert_col, -1)
             menu.AppendSeparator()
 
-        # slots
-        i = misc.append_menu_item(menu, -1, _('Insert Slot before') )
-        misc.bind_menu_item_after(widget, i, self.insert_slot)
-        i = misc.append_menu_item(menu, -1, _('Insert Slots before...') )
-        misc.bind_menu_item_after(widget, i, self.insert_slot, True)
-
-        if self.pos==len(self.sizer.children)-1: # last slot -> allow to add
-            i = misc.append_menu_item(menu, -1, _('Add Slot') )
-            misc.bind_menu_item_after(widget, i, self.add_slot)
-            i = misc.append_menu_item(menu, -1, _('Add Slots...') )
-            misc.bind_menu_item_after(widget, i, self.add_slot, True)
+        if not self.sizer.is_virtual():
+            # slots
+            i = misc.append_menu_item(menu, -1, _('Insert Slot before') )
+            misc.bind_menu_item_after(widget, i, self.insert_slot)
+            i = misc.append_menu_item(menu, -1, _('Insert Slots before...') )
+            misc.bind_menu_item_after(widget, i, self.insert_slot, True)
+    
+            if self.pos==len(self.sizer.children)-1: # last slot -> allow to add
+                i = misc.append_menu_item(menu, -1, _('Add Slot') )
+                misc.bind_menu_item_after(widget, i, self.add_slot)
+                i = misc.append_menu_item(menu, -1, _('Add Slots...') )
+                misc.bind_menu_item_after(widget, i, self.add_slot, True)
 
         # preview (create or close?)
         menu.AppendSeparator()
@@ -673,7 +674,7 @@ class ManagedBase(WindowBase):
 
     def remove(self, *args):
         self.sizer.free_slot(self.pos)
-        if self.sizer.is_virtual():
+        if self.sizer.is_virtual() and hasattr(self.sizer, "children"):
             WindowBase.remove(self)
 
     def set_pos(self, value):
