@@ -141,11 +141,12 @@ class BaseSizerBuilder(object):
 class SizerSlot(np.PropertyOwner):
     "A window to represent a slot in a sizer"
     PROPERTIES = ["Slot", "pos"]
-    def __init__(self, parent, sizer, pos=0):
+    def __init__(self, parent, sizer, pos=0, label=None):
         np.PropertyOwner.__init__(self)
         # initialise instance logger
         self._logger = logging.getLogger(self.__class__.__name__)
         self.klass = "SLOT"
+        self.label = label
 
         self.sizer = sizer       # Sizer object (SizerBase instance)
 

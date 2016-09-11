@@ -115,11 +115,20 @@ class Node(object):
             widget = self.widget
             if name=="SizerSlot":
                 sizer_orient = getattr(self.parent.widget, "orient", None)
+                if sizer_orient is None:
+                    sizer_orient = getattr(self.parent.widget, "orientation", None)
+                    if sizer_orient is not None:
+                        sizer_orient = wx.HORIZONTAL if sizer_orient=="wxSPLIT_VERTICAL" else wx.VERTICAL
         else:
             name = self.__class__.__name__
             widget = self
             if name=="SizerSlot":
                 sizer_orient = getattr(self.sizer, "orient", None)
+                if sizer_orient is None:
+                    sizer_orient = getattr(self.parent.widget, "orientation", None)
+                    if sizer_orient is not None:
+                        sizer_orient = wx.HORIZONTAL if sizer_orient=="wxSPLIT_VERTICAL" else wx.VERTICAL
+
 
         if name=="SizerSlot":
             if sizer_orient==wx.VERTICAL:
@@ -142,7 +151,8 @@ class Node(object):
 
 class SlotNode(Node):
     "Placeholder for an empty sizer slot"
-    def write(self, outfile, tabs):
+    def write(self, outfile, tabs, class_names=None):
+        if self.widget.sizer.is_virtual(): return
         stmt = common.format_xml_tag( u'object', '', tabs, **{'class': 'sizerslot'})
         outfile.write(stmt)
 
@@ -423,6 +433,7 @@ class WidgetTree(wx.TreeCtrl, Tree):
         # get a lable for node
         import edit_sizers
         if isinstance(node.widget, edit_sizers.SizerSlot):
+            if node.widget.label: return node.widget.label
             pos = node.widget.pos
             if node.widget.sizer and isinstance(node.widget.sizer, edit_sizers.GridSizerBase):
                 # row/col

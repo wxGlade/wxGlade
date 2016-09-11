@@ -268,7 +268,6 @@ class Application(np.PropertyOwner):
 
     # interface from tree ##############################################################################################
     def add_top_window(self, name):
-        
         p = self.properties["top_window"]
         p.add_choice(name)
         if not p.get():
