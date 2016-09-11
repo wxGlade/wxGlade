@@ -9,9 +9,9 @@ wxSplitterWindow objects
 
 import wx
 
-import common, compat, misc
+import common, compat, config, misc
 import wcodegen
-from tree import Tree, Node, SlotNode
+from tree import Tree, Node, SlotNode, WidgetTree
 import new_properties as np
 from edit_windows import ManagedBase, EditStylesMixin
 from edit_sizers.edit_sizers import Sizer, SizerSlot
@@ -43,7 +43,10 @@ class SplitterWindowSizer(Sizer):
 
     def free_slot(self, pos, force_layout=True):
         "Replaces the element at pos with an empty slot"
-        labels = "SLOT Left","SLOT Right" if self.window.orientation=="wxSPLIT_VERTICAL" else "SLOT Top","SLOT Bottom"
+        if self.window.orientation=="wxSPLIT_VERTICAL":
+            labels = ("SLOT Left","SLOT Right")
+        else:
+            labels = ("SLOT Top","SLOT Bottom")
         if pos == 1:
             if self.window.widget and self.window._window_1 and self.window._window_1.widget:
                 self.window.widget.Unsplit(self.window._window_1.widget)
@@ -83,6 +86,7 @@ class EditSplitterWindow(ManagedBase, EditStylesMixin):
     PROPERTIES = ManagedBase._PROPERTIES + _PROPERTIES + ManagedBase._EXTRA_PROPERTIES
     _PROPERTY_LABELS = {'no_custom_class':"Don't generate code for this class",
                         'sash_pos':"Sash position"}
+    _PROPERTY_HELP = {'no_custom_class':"Don't generate code for this class"}
 
     def __init__(self, name, parent, id, style, win_1, win_2, orientation, sizer, pos):
         ManagedBase.__init__(self, name, 'wxSplitterWindow', parent, id, sizer, pos)
@@ -99,7 +103,7 @@ class EditSplitterWindow(ManagedBase, EditStylesMixin):
         self.window_2 = np.Property(win_2 and win_2.name or "")  # or empty strings for slots
         
         self.virtual_sizer = SplitterWindowSizer(self)
-        labels = "SLOT Left","SLOT Right" if orientation=="wxSPLIT_VERTICAL" else "SLOT Top","SLOT Bottom"
+        labels = ("SLOT Left","SLOT Right") if orientation=="wxSPLIT_VERTICAL" else ("SLOT Top","SLOT Bottom")
         self._window_1 = win_1 or SizerSlot(self, self.virtual_sizer, 1, labels[0])
         self._window_2 = win_2 or SizerSlot(self, self.virtual_sizer, 2, labels[1])
 
@@ -193,7 +197,6 @@ class EditSplitterWindow(ManagedBase, EditStylesMixin):
 
 
 editor_class = EditSplitterWindow
-editor_icon = 'splitter_window.xpm'
 editor_name = 'EditSplitterWindow'
 editor_style = 'wxSPLIT_VERTICAL'
 
@@ -274,4 +277,12 @@ def initialize():
     "initialization function for the module: returns a wxBitmapButton to be added to the main palette"
     common.widgets[editor_name] = builder
     common.widgets_from_xml[editor_name] = xml_builder
-    return common.make_object_button(editor_name, editor_icon)
+
+    import os.path
+    WidgetTree.images['EditSplitterSlot-Left']   = os.path.join( config.icons_path, 'splitter_slot-left.xpm' )
+    WidgetTree.images['EditSplitterSlot-Right']  = os.path.join( config.icons_path, 'splitter_slot-right.xpm' )
+    WidgetTree.images['EditSplitterSlot-Top']    = os.path.join( config.icons_path, 'splitter_slot-top.xpm' )
+    WidgetTree.images['EditSplitterSlot-Bottom'] = os.path.join( config.icons_path, 'splitter_slot-bottom.xpm' )
+    WidgetTree.images['EditSplitterWindow-h']    = os.path.join( config.icons_path, 'splitter_window-h.xpm' )
+
+    return common.make_object_button(editor_name, 'splitter_window.xpm')

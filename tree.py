@@ -109,34 +109,24 @@ class Node(object):
         if image is not None:
             return image
 
-        #if child.widget:
-        if isinstance(self, Node):
-            name = self.widget.__class__.__name__
-            widget = self.widget
-            if name=="SizerSlot":
-                sizer_orient = getattr(self.parent.widget, "orient", None)
-                if sizer_orient is None:
-                    sizer_orient = getattr(self.parent.widget, "orientation", None)
-                    if sizer_orient is not None:
-                        sizer_orient = wx.HORIZONTAL if sizer_orient=="wxSPLIT_VERTICAL" else wx.VERTICAL
-        else:
-            name = self.__class__.__name__
-            widget = self
-            if name=="SizerSlot":
-                sizer_orient = getattr(self.sizer, "orient", None)
-                if sizer_orient is None:
-                    sizer_orient = getattr(self.parent.widget, "orientation", None)
-                    if sizer_orient is not None:
-                        sizer_orient = wx.HORIZONTAL if sizer_orient=="wxSPLIT_VERTICAL" else wx.VERTICAL
-
+        name = self.widget.__class__.__name__
+        widget = self.widget
 
         if name=="SizerSlot":
-            if sizer_orient==wx.VERTICAL:
-                name = "EditVerticalSizerSlot"
-            elif sizer_orient==wx.HORIZONTAL:
-                name = "EditHorizontalSizerSlot"
-            else:
-                name = "EditSizerSlot"
+            name = "EditSizerSlot"
+            if hasattr(self.parent.widget, "orient"):
+                sizer_orient = self.parent.widget.orient
+                if sizer_orient is not None:
+                    if sizer_orient==wx.VERTICAL:
+                        name = "EditVerticalSizerSlot"
+                    elif sizer_orient==wx.HORIZONTAL:
+                        name = "EditHorizontalSizerSlot"
+            elif hasattr(self.parent.widget, "orientation"):
+                if self.parent.widget.orientation=="wxSPLIT_VERTICAL":
+                    name = 'EditSplitterSlot-Left'  if widget.pos==1 else  'EditSplitterSlot-Right'
+                else:
+                    name = 'EditSplitterSlot-Top'   if widget.pos==1 else  'EditSplitterSlot-Bottom'
+
         elif name in ("EditStaticBoxSizer", "EditBoxSizer"):
             # with or without label, horizontal/vertical
             if widget.orient & wx.VERTICAL:
@@ -145,6 +135,11 @@ class Node(object):
                 name = "EditHorizontalSizer"
             else:
                 name = "EditSpacer"
+
+        elif name == "EditSplitterWindow":
+            if widget.orientation=="wxSPLIT_HORIZONTAL":
+                name = 'EditSplitterWindow-h'
+
         index = WidgetTree.images.get(name, -1)
         return index
 
