@@ -558,6 +558,7 @@ class WidgetTree(wx.TreeCtrl, Tree):
         widget = self.GetPyData(item).widget
         self.cur_widget = widget
         misc.set_focused_widget(widget)
+        self.SetFocus()
 
     def on_left_click(self, event):
         if not common.adding_widget:
