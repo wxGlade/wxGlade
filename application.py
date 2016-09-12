@@ -279,20 +279,12 @@ class Application(np.PropertyOwner):
 
     def update_top_window_name(self, oldname, newname):
         p = self.properties["top_window"]
-        index = self.top_win_prop.FindString(oldname)
-        if index != -1:
-            if self.top_window == oldname:
-                self.top_window = newname
-            if wx.Platform == '__WXGTK__':
-                sel_index = self.top_win_prop.GetSelection()
-                choices = [ self.top_win_prop.GetString(i) for i in range(self.top_win_prop.GetCount()) ]
-                choices[index] = newname
-                self.top_win_prop.Clear()
-                for c in choices:
-                    self.top_win_prop.Append(c)
-                self.top_win_prop.SetSelection(sel_index)
-            else:
-                self.top_win_prop.SetString(index, newname)
+        if not oldname in p.choices: return
+        if p.get() == oldname:
+            p.value = newname
+        p.choices[p.choices.index(oldname)] = newname
+        p.set_choices()
+
     ####################################################################################################################
     def properties_changed(self, modified):
         # ['encoding', 'output_path', 'class', 'name', 'multiple_files', 'language', 'top_window', 'use_gettext',

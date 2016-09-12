@@ -718,6 +718,7 @@ class TopLevelBase(WindowBase, PreviewMixin):
 
     def __init__(self, name, klass, parent, id, title=None):
         WindowBase.__init__(self, name, klass, parent, id)
+        self._oldname = name
         self.has_title = "title" in self.PROPERTIES
         if self.has_title:
             self.title = np.TextProperty(title or self.name)
@@ -840,8 +841,8 @@ class TopLevelBase(WindowBase, PreviewMixin):
                 self.widget.SetTitle(misc.design_title(self.title))
             common.app_tree.refresh(self.node)
 
-        if not modified or "name" in modified:
-            common.app_tree.app.update_top_window_name(oldname, self.name)
+        if not modified or "name" in modified and (self.name!=self._oldname):
+            common.app_tree.app.update_top_window_name(self._oldname, self.name)
 
         WindowBase.properties_changed(self, modified)
 
