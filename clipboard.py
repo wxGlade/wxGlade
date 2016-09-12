@@ -7,7 +7,7 @@ Support for cut & paste of wxGlade widgets
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
-import logging
+import logging, os.path
 import compat
 
 import wx
@@ -146,6 +146,7 @@ class FileDropTarget(wx.FileDropTarget):
             wx.MessageBox( _("Please only drop one file at a time"), "wxGlade", wx.ICON_ERROR )
         elif filenames:
             path = filenames[0]
-            if self.parent.ask_save():
+            if os.path.exists(path) and self.parent.ask_save():
                 self.parent._open_app(path)
+                self.parent.cur_dir = os.path.dirname(path)
 
