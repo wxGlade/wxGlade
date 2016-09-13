@@ -22,8 +22,8 @@ class EditCheckListBox(ManagedBase, EditStylesMixin):
     _PROPERTIES = ["Widget", "style", "selection", "choices"]
     PROPERTIES = ManagedBase.PROPERTIES + _PROPERTIES + ManagedBase.EXTRA_PROPERTIES
 
-    def __init__(self, name, parent, id, choices, sizer, pos, show=True):
-        ManagedBase.__init__(self, name, 'wxCheckListBox', parent, id, sizer, pos, show=show)
+    def __init__(self, name, parent, id, choices, sizer, pos):
+        ManagedBase.__init__(self, name, 'wxCheckListBox', parent, id, sizer, pos)
         EditStylesMixin.__init__(self)
 
         # initialise instance properties
@@ -80,7 +80,7 @@ def builder(parent, sizer, pos, number=[1]):
     node = Node(check_list_box)
 ##     sizer.set_item(pos, size=check_list_box.GetBestSize())
     check_list_box.node = node
-    check_list_box.show_widget(True)
+    if parent.widget: check_list_box.create()
     common.app_tree.insert(node, sizer.node, pos-1)
 
 

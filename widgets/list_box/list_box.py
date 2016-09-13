@@ -19,8 +19,8 @@ class EditListBox(ManagedBase, EditStylesMixin):
     _PROPERTIES = ["Widget", "style", "selection", "choices"]
     PROPERTIES = ManagedBase.PROPERTIES + _PROPERTIES + ManagedBase.EXTRA_PROPERTIES
 
-    def __init__(self, name, parent, id, choices, sizer, pos, show=True):
-        ManagedBase.__init__(self, name, 'wxListBox', parent, id, sizer, pos, show=show)
+    def __init__(self, name, parent, id, choices, sizer, pos):
+        ManagedBase.__init__(self, name, 'wxListBox', parent, id, sizer, pos)
         EditStylesMixin.__init__(self)
 
         # initialise instance properties
@@ -77,7 +77,7 @@ def builder(parent, sizer, pos, number=[1]):
     node = Node(list_box)
 ##     sizer.set_item(pos, size=list_box.GetBestSize())
     list_box.node = node
-    list_box.show_widget(True)
+    if parent.widget: list_box.create()
     common.app_tree.insert(node, sizer.node, pos-1)
 
 

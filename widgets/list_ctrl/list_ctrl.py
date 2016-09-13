@@ -23,8 +23,8 @@ class EditListCtrl(ManagedBase, EditStylesMixin):
     _PROPERTIES = ["Widget", "style"]
     PROPERTIES = ManagedBase.PROPERTIES + _PROPERTIES + ManagedBase.EXTRA_PROPERTIES
 
-    def __init__(self, name, parent, id, sizer, pos, show=True, style=wx.LC_REPORT | wx.BORDER_SUNKEN):
-        ManagedBase.__init__(self, name, 'wxListCtrl', parent, id, sizer, pos, show=show)
+    def __init__(self, name, parent, id, sizer, pos, style=wx.LC_REPORT | wx.BORDER_SUNKEN):
+        ManagedBase.__init__(self, name, 'wxListCtrl', parent, id, sizer, pos)
         EditStylesMixin.__init__(self)
         if style: self.properties["style"].set(style)
 
@@ -62,7 +62,7 @@ def builder(parent, sizer, pos, number=[1]):
     list_ctrl.node = node
     list_ctrl.properties["proportion"].set(1)
     list_ctrl.properties["flag"].set("wxEXPAND")
-    list_ctrl.show_widget(True)
+    if parent.widget: list_ctrl.create()
     common.app_tree.insert(node, sizer.node, pos-1)
     sizer.set_item(list_ctrl.pos, 1, wx.EXPAND)
 

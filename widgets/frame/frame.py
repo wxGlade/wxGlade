@@ -23,8 +23,8 @@ class EditFrame(TopLevelBase, EditStylesMixin, BitmapMixin):
     _PROPERTY_LABELS = { "sizehints":'Set Size Hints', "menubar":'Has MenuBar', "toolbar":'Has ToolBar',
                          "statusbar":'Has StatusBar' }
 
-    def __init__(self, name, parent, id, title, style=wx.DEFAULT_FRAME_STYLE, show=True, klass='wxFrame'): #XXX style is not used
-        TopLevelBase.__init__(self, name, klass, parent, id, show=show, title=title)
+    def __init__(self, name, parent, id, title, style=wx.DEFAULT_FRAME_STYLE, klass='wxFrame'): #XXX style is not used
+        TopLevelBase.__init__(self, name, klass, parent, id, title=title)
         self.properties["base"].set('wxFrame')
         EditStylesMixin.__init__(self)
 
@@ -92,7 +92,7 @@ class EditFrame(TopLevelBase, EditStylesMixin, BitmapMixin):
             self._menubar = EditMenuBar(self.name + '_menubar', 'wxMenuBar', self)
             self._menubar.node = Node(self._menubar)
             common.app_tree.add(self._menubar.node, self.node)
-            if self.widget: self._menubar.show_widget(True)
+            if self.widget: self._menubar.create()
         else:
             # remove
             if self._menubar is None: return
@@ -103,7 +103,7 @@ class EditFrame(TopLevelBase, EditStylesMixin, BitmapMixin):
             # create a StatusBar
             from statusbar import EditStatusBar
             self._statusbar = EditStatusBar(self.name + '_statusbar', 'wxStatusBar', self)
-            if self.widget: self._statusbar.show_widget(True)
+            if self.widget: self._statusbar.create()
         else:
             # remove
             if self._statusbar is None: return
@@ -120,7 +120,7 @@ class EditFrame(TopLevelBase, EditStylesMixin, BitmapMixin):
             self._toolbar.node = Node(self._toolbar)
             common.app_tree.add(self._toolbar.node, self.node)
 
-            if self.widget: self._toolbar.show_widget(True)
+            if self.widget: self._toolbar.create()
         else:
             # remove
             if self._toolbar is None: return
@@ -156,7 +156,7 @@ def builder(parent, sizer, pos):
     dialog = window_dialog.WindowDialog(klass, base_classes, 'Select frame class', True)
     res = dialog.show()
     dialog.Destroy()
-    if res is None: return
+    if res is None: return None
     klass, base = res
     name = dialog.get_next_name("frame")
 
@@ -168,7 +168,8 @@ def builder(parent, sizer, pos):
     node = Node(frame)
     frame.node = node
     common.app_tree.add(node)
-    frame.show_widget(True)
+    frame.create()
+    frame.widget.Show()
 
     # add a default vertical sizer to the frame
     import edit_sizers
@@ -188,7 +189,7 @@ def _make_builder(base_class):
             label = attrs['name']
         except KeyError:
             raise XmlParsingError(_("'name' attribute missing"))
-        frame = base_class(label, parent, wx.NewId(), "", show=False, style=0)
+        frame = base_class(label, parent, wx.NewId(), "", style=0)
         node = Node(frame)
         frame.node = node
         common.app_tree.add(node)

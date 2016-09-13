@@ -79,7 +79,7 @@ class Property(object):
                 self.owner[self.name][1](val)
             self.val = self.get_value()
         event.Skip()
-        
+
     def retrieve_value(self):
         "get current value from object"
         if self.getter:
@@ -938,9 +938,9 @@ class DialogProperty(Property, _activator):
         the property interactively"""
         val = misc.wxstr(self.owner[self.name][0]())
         label = wx.lib.stattext.GenStaticText( parent, wx.ID_ANY, self._mangle(self.dispName),
-                                               size=(config.label_width, -1) )
+                                               size=(config.label_initial_width, -1) )
         self.text = wx.TextCtrl(parent, wx.ID_ANY, val, size=(1, -1))
-        self.btn = wx.Button(parent, wx.ID_ANY, " ... ", size=(config.label_width, -1))
+        self.btn = wx.Button(parent, wx.ID_ANY, " ... ", size=(config.label_initial_width, -1))
         enabler = None
         if self.can_disable:
             enabler = wx.CheckBox(parent, wx.ID_ANY, '', size=(1, -1))

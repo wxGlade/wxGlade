@@ -34,7 +34,7 @@ class Property(object):
         self.modified = False
         # this can be set to True by the owner, depending on another property value; value will still be written to XML
         self.blocked = False
-        self.default_value = default_value 
+        self.default_value = default_value
         self.controls = None
         self.editing = False
     def set_owner(self, owner, attributename=None):
@@ -116,7 +116,7 @@ class Property(object):
 
     def _check_for_user_modification(self, new_value, force=False):
         # force: set to True when e.g. called from self.toggle_activate
-        #new_value = 
+        #new_value =
         if new_value == self.value and not force: return False
         self.value = new_value
         self._notify()
@@ -174,7 +174,7 @@ class Property(object):
     def create_editor(self, panel, sizer):
         # when done, call self.update_display(start_editing=True)
         return None  # default implementation: no editor (hidden property, not user editable)
-    
+
     def destroy_editor(self):
         # delete e.g. references to controls
         for att in self.CONTROLNAMES:
@@ -186,7 +186,7 @@ class Property(object):
         # if start_editing: self.editing = True
         # if not self.editing: return
         pass
-    
+
     def activate_controls(self):
         if not self.editing: return
         if self.blocked:
@@ -217,7 +217,7 @@ class Property(object):
         "check self.LABEL; then go through base classes and check the _PROPERTY_LABELS dictionaries"
         if self.LABEL: return self.LABEL
         import inspect
-        
+
         classes = inspect.getmro(self.owner.__class__)
         for cls in classes:
             if not hasattr(cls, "_PROPERTY_LABELS"): continue
@@ -228,7 +228,7 @@ class Property(object):
         "go through base classes and check the _PROPERTY_HELP dictionaries"
         if self.TOOLTIP: return self.TOOLTIP
         import inspect
-        
+
         classes = inspect.getmro(self.owner.__class__)
         for cls in classes:
             if not hasattr(cls, "_PROPERTY_HELP"): continue
@@ -247,7 +247,7 @@ class Property(object):
 class PropertyA(Property):
     # can be activated/deactivated; active by default
     deactivated = False
-    
+
 class PropertyD(Property):
     # can be activated/deactivated; deactivated by default
     deactivated = True
@@ -390,7 +390,8 @@ class CheckBoxProperty(Property):
         self.checkbox = wx.CheckBox(panel, -1, '')
         self.checkbox.SetValue( bool(self.value) )
         label = self._find_label()
-        label = wx.lib.stattext.GenStaticText(panel, -1, label, size=(config.label_width, -1))
+        label_width = max(config.label_width, panel.GetTextExtent(label)[0])
+        label = wx.lib.stattext.GenStaticText(panel, -1, label, size=(label_width, -1))
         hsizer = wx.BoxSizer(wx.HORIZONTAL)
         #hsizer.Add(label, 2, wx.ALIGN_CENTER_VERTICAL | wx.ALL, 3)
         hsizer.Add(label, 0, wx.ALIGN_CENTER_VERTICAL | wx.ALL, 3)
@@ -407,7 +408,7 @@ class CheckBoxProperty(Property):
         if start_editing: self.editing = True
         if not self.editing: return
         self.checkbox.SetValue(self.value)
-        
+
     def on_change_val(self, event):
         new_value = event.IsChecked()
         if new_value==self.value: return
@@ -666,7 +667,7 @@ class _CheckListProperty(Property):
 
 
 class ManagedFlags(_CheckListProperty):
-    # for ManagedBase.flags; e.g. wxEXPAND, wxALIGN_RIGHT,...,wxALL, 
+    # for ManagedBase.flags; e.g. wxEXPAND, wxALIGN_RIGHT,...,wxALL,
     # XXX handle combinations and exclusions
     # XXX support wxRESERVE_SPACE_EVEN_IF_HIDDEN for 3.x
 
@@ -678,7 +679,7 @@ class ManagedFlags(_CheckListProperty):
     remove = set( ['wxADJUST_MINSIZE',] )
     renames =  {'wxALIGN_CENTRE':'wxALIGN_CENTER',
                 'wxALIGN_CENTRE_VERTICAL':'wxALIGN_CENTER_VERTICAL'}
-    
+
     combinations = { "wxALL":set( 'wxLEFT|wxRIGHT|wxTOP|wxBOTTOM'.split("|") ),
                      "wxALIGN_CENTER":set( 'wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL'.split("|") ) }
 
@@ -876,6 +877,7 @@ class TextProperty(Property):
         style = 0
         if self.readonly:               style = wx.TE_READONLY
         if self.multiline:              style |= wx.TE_MULTILINE
+        else:                           style |= wx.TE_PROCESS_ENTER
         if not self._HORIZONTAL_LAYOUT: style |= wx.HSCROLL
 
         text = wx.TextCtrl( panel, -1, str(value) or "", style=style )#, size=(1,-1) )
@@ -916,8 +918,9 @@ class TextProperty(Property):
             #self.text.SetValue(self._unescape(self.value))
             self.text.SetValue(self.value)
             self.text.SetInsertionPointEnd()
-        if not self.multiline:
-            pass
+        if not self.multiline and keycode==13:
+            # enter
+            self._check_for_user_modification()
         event.Skip()
 
     def on_kill_focus(self, event):
@@ -941,6 +944,10 @@ class TextProperty(Property):
         Derived classes may return None to indicate a validation fail."""
         if value is None: value = self.text.GetValue()
         return value
+    def check(self, value):
+        "checks whether the string value matches the validation regular expression"
+        if not self.validation_re: return True
+        return bool( self.validation_re.match(value) )
 
 
 
@@ -1158,7 +1165,7 @@ class DialogProperty(TextProperty):
     def update_display(self, start_editing=False):
         TextProperty.update_display(self, start_editing)
         self._update_button()
-        
+
 
 class DialogPropertyD(DialogProperty):
     deactivated = True
@@ -1348,39 +1355,37 @@ class FontPropertyD(FontProperty):
 class GridProperty(Property):
     """Property whose values are modified through a wxGrid table.
 
-    can_add:         Add Button to add a new entry
-    can_insert:      Add Button to insert a new entry
-    can_remove:      Add Button to remove a new entry
-    can_remove_last: Allow to remove last entry
-    cols:            Number of columns
-    col_defs:        List of column labels and column types (GridProperty.STRING, INT, FLOAT, BOOL)
+    value:           list of lists
+    cols:            List of column labels and column types (GridProperty.STRING, INT, FLOAT, BOOL)
+    default_row:     default values for inserted entries/rows
+    can_add:         Add Button to add a new entry/row
+    can_remove:      Add Button to remove a new entry/row
+    can_insert:      Add Button to insert a new entry/row
+    can_remove_last: Allow to remove last entry/row
     col_sizes:       List of column widths
-    rows:            Number of rows
-    col_format:      List of functions to set the column format."""
+    with_index:      if True, the owner's method 'set_%s'%self.attributename will be called with new value and indices
+    """
     STRING, INT, FLOAT, BOOL = 0, 1, 2, 3
+    # List of functions to set the column format:
     col_format = [lambda g, c: None,
                   lambda g, c: g.SetColFormatNumber(c),
                   lambda g, c: g.SetColFormatFloat(c),
                   lambda g, c: g.SetColFormatBool(c)]
     _DEFAULT_VALUES = {STRING:"",  INT:0, FLOAT:0.0, BOOL:False}
-    
+
     CONTROLNAMES = ["btn", "buttons", "grid"]
     GROW = True
     validation_res = None # one per column
     def __init__(self, value, cols, default_row=None,
-                 can_add=True, can_remove=True, can_insert=True, can_remove_last=True, 
+                 can_add=True, can_remove=True, can_insert=True, can_remove_last=True,
                  col_sizes=None, with_index=False, name=None):
 
         Property.__init__(self, value, name) # , label=label)
         if default_row is None:
             default_row = [self._DEFAULT_VALUES[col_def[1]] for col_def in cols]
-        else:
-            print()
-        self.default_row = default_row # when a row is inserted, these values will be taken
+        self.default_row = default_row  # when a row is inserted, these values will be taken
         self.with_index = with_index # display index; also provide the original indices to the owner when updating value
-        #self._changing_value = False
         self.col_defs = cols
-        self.cols = len(self.col_defs)
         self.can_add = can_add
         self.can_remove = can_remove
         self.can_insert = can_insert
@@ -1431,7 +1436,7 @@ class GridProperty(Property):
 
         # the grid #####################################################################################################
         self.grid = wx.grid.Grid(panel, -1)
-        self.grid.CreateGrid(len(self.value), self.cols)
+        self.grid.CreateGrid( len(self.value), len(self.col_defs) )
         self.grid.SetMargins(0, 0)
 
         for i, (label,datatype) in enumerate(self.col_defs):
@@ -1442,7 +1447,7 @@ class GridProperty(Property):
         self.grid.SetRowLabelSize(20 if self.with_index else 0)
         self.grid.SetColLabelSize(20)
         if self.col_sizes:
-            self.set_col_sizes(self.col_sizes)
+            self._set_col_sizes(self.col_sizes)
 
         # add the button sizer and the grid to the sizer ###############################################################
         if self.buttons:
@@ -1497,8 +1502,8 @@ class GridProperty(Property):
 
     def apply(self, event):
         """Apply the edited value; called by Apply button.
-        
-        If self.with_index and self.owner.set_... exists, thi will be called with values and indices.
+
+        If self.with_index and self.owner.set_... exists, this will be called with values and indices.
         In this case, self.owner.properties_modified will not be called additionally.
         Otherwise, the standard mechanism will be used."""
         self.grid.SaveEditControlValue() # end editing of the current cell
@@ -1544,7 +1549,7 @@ class GridProperty(Property):
         for i,row in enumerate(ret):
             if row is None:
                 # empty row
-                ret[i] = [""]*self.cols
+                ret[i] = [""]*len(self.col_defs)
                 modified = True
             if not modified:
                 for j, col in enumerate(row):
@@ -1569,7 +1574,7 @@ class GridProperty(Property):
         # XXX validate; event.Veto if not valid
         if not self.validation_res: return
         row,col = event.Row, event.Col
-        
+
 
     def on_cell_changed(self, event):
         # user has entered a value
@@ -1664,7 +1669,7 @@ class GridProperty(Property):
         self.buttons[0].Enable( self.editing_values is not None)
 
     # helpers ##########################################################################################################
-    def set_col_sizes(self, sizes):
+    def _set_col_sizes(self, sizes):
         """sets the width of the columns.
         sizes is a list of integers with the size of each column: a value of 0 stands for a default size,
         while -1 means to expand the column to fitthe available space (at most one column can have size -1)"""
@@ -1758,7 +1763,9 @@ class PropertyOwner(object):
         # copy named properties from other
         pass
     def properties_changed(self, modified):
-        # properties edited; trigger actions like widget or sizer update
+        """properties edited; trigger actions like widget or sizer update;
+        'modified' is None or a list of property names;
+        the properties_changed method of a derived class may add properties to 'modified' before calling base classes"""
         pass
     def get_properties(self, without=set()):
         # return list of properties to be written to XML file

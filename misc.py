@@ -57,6 +57,7 @@ def show_widget(widget):
                             if editpanel and widget.name == editpanel.name:
                                 # If I am under this tab...
                                 parent.widget.SetSelection(i)  # ...Show that tab.
+                                break
                         except AttributeError:
                             pass
         elif parent.klass == 'wxPanel':

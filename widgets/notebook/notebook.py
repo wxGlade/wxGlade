@@ -17,11 +17,8 @@ from edit_sizers.edit_sizers import Sizer, SizerSlot
 from wcodegen.taghandler import BaseXmlBuilderTagHandler
 from xml_parse import XmlParsingError
 
-#try:
 from panel import EditPanel
-    #_has_panel = True
-#except ImportError:
-    #_has_panel = False # this case is not tested
+
 
 
 class NotebookVirtualSizer(Sizer):
@@ -99,9 +96,9 @@ class NotebookVirtualSizer(Sizer):
             return
         slot = SizerSlot(self.window, self, pos) # XXX node handling?
         #self._logger.debug('free: %s, %s, %s', slot, slot.pos, pos)
-        slot.show_widget(True)
+        slot.create()
         pos -= 1
-        label, item = self.window.tabs[pos]
+        label = self.window.tabs[pos][0]
         self.window.widget.RemovePage(pos)
         self.window.widget.InsertPage(pos, slot.widget, label)
         self.window.widget.SetSelection(pos)
@@ -159,9 +156,9 @@ class EditNotebook(ManagedBase, EditStylesMixin):
     _PROPERTIES = ["Widget", "no_custom_class", "style", "tabs"]
     PROPERTIES = ManagedBase.PROPERTIES + _PROPERTIES + ManagedBase.EXTRA_PROPERTIES
 
-    def __init__(self, name, parent, id, style, sizer, pos, show=True):
+    def __init__(self, name, parent, id, style, sizer, pos):
         name = name or self.next_notebook_name()  # create new and (still) unused notebook name
-        ManagedBase.__init__(self, name, 'wxNotebook', parent, id, sizer, pos, show=show)
+        ManagedBase.__init__(self, name, 'wxNotebook', parent, id, sizer, pos)
         EditStylesMixin.__init__(self)
 
         self.virtual_sizer = NotebookVirtualSizer(self)
@@ -174,8 +171,6 @@ class EditNotebook(ManagedBase, EditStylesMixin):
         self.tabs = NotebookPagesProperty(tabs, tab_cols)
         self.no_custom_class = np.CheckBoxProperty(False, default_value=False)
 
-        self.nb_sizer = None
-
         self.next_pane_number = 1  # first pane should have number 1
 
     def create_widget(self):
@@ -183,30 +178,9 @@ class EditNotebook(ManagedBase, EditStylesMixin):
 
     def on_set_focus(self, event):
         # allow switching of pages
+        misc.set_focused_widget(self)
         event.Skip()
-        misc.exec_after(self.widget.Refresh())
-
-    def _add_tab(self, window, pos):
-        # XXX remove method if not used
-        if window is None:
-            window = SizerSlot(self, self.virtual_sizer, pos)
-            node = SlotNode(window) # XXX not tested
-            window.node = node
-            common.app_tree.add(node, self.node)
-            self.tabs[pos-1][1] = window # if window is not None, it's an EditPanel which sets itself to tabs during it's __init__
-        else:
-            window._dont_destroy = True
-            node = Node(window)
-            window.node = node
-            common.app_tree.add(node, self.node)
-        if self.widget:
-            window.show_widget(True)
-            self.virtual_sizer.set_item(pos)
-            try:
-                wx.CallAfter(window.sel_marker.update)
-            except AttributeError:
-                #self._logger.exception(_('Internal Error'))
-                pass
+        #misc.exec_after(self.widget.Refresh())
 
     ####################################################################################################################
     # new implementation:
@@ -219,21 +193,22 @@ class EditNotebook(ManagedBase, EditStylesMixin):
         tabs.insert(index, [label,])
         tabs_p.set(tabs)
         self.pages.insert(index, None)
+        # adjust pos of the following pages
+        for i, page in enumerate(self.pages[index+1:]):
+            pos_p = page.properties["pos"]
+            pos_p.set(index+2+i)
 
         pos = index+1
         window = EditPanel( self.next_pane_name(suggestion=label), self, -1, self.virtual_sizer, pos )
         window._dont_destroy = True
         node = Node(window)
-        #else: # a SizerSlot/SlotNode; not tested
-            #window = SizerSlot(self, self.virtual_sizer, pos)
-            #node = SlotNode(window) # XXX not tested
-            #self.tabs[index][1] = window # the EditPanel above sets itself to tabs during it's __init__
 
         window.node = node
         common.app_tree.add(node, self.node)
 
         if self.widget:
-            window.show_widget(True)
+            window.create()
+            compat.SetToolTip(window.widget, _("Notebook page pane:\nAdd a sizer here") )
             self.virtual_sizer.insert_tab(index)
 
             try:
@@ -251,7 +226,6 @@ class EditNotebook(ManagedBase, EditStylesMixin):
         if keep_indices != sorted(keep_indices):
             raise ValueError("Re-ordering is not yet implemented")
         keep_indices = set(keep_indices)
-        #old_names = self.properties["tabs"].get()
         new_names = old_names[:]
 
         # set tab labels of existing pages, if modified
@@ -278,8 +252,6 @@ class EditNotebook(ManagedBase, EditStylesMixin):
             if index is not None: continue                  # old tab to be kept
 
             # actually add/insert
-            #self.insert_tab(i, name)
-
             new_names.insert(i, [name,]) # this needs to be done before EditPanel calls self.virtual_sizer.add_item
             self.pages.insert(i, None)
             # create panel and node, add to tree
@@ -287,16 +259,23 @@ class EditNotebook(ManagedBase, EditStylesMixin):
             window = EditPanel( self.next_pane_name(name), self, -1, self.virtual_sizer, pos )
             window._dont_destroy = True
             node = window.node = Node(window)
-            common.app_tree.add(node, self.node)  # XXX check for add/insert
+
+            # adjust pos of the following pages
+            for p, page in enumerate(self.pages[i+1:]):
+                pos_p = page.properties["pos"]
+                pos_p.set(i+2+p)
+
+            self.virtual_sizer.add_item(window, pos)
+            common.app_tree.insert(node, self.node, i)
             # add to widget
             if self.widget:
-                window.show_widget(True)
+                window.create()
+                compat.SetToolTip(window.widget, _("Notebook page pane:\nAdd a sizer here") )
                 self.virtual_sizer.insert_tab(i)
     
                 try:
                     wx.CallAfter(window.sel_marker.update)
                 except AttributeError:
-                    #self._logger.exception(_('Internal Error'))
                     import os
                     if 'WINGDB_ACTIVE' in os.environ: raise
 
@@ -378,14 +357,14 @@ def builder(parent, sizer, pos, number=[1]):
     if res != wx.ID_OK:
         return
 
-    widget = editor_class(None, parent, wx.ID_ANY, style, sizer, pos, show=False)
+    widget = editor_class(None, parent, wx.ID_ANY, style, sizer, pos)
 
     node = Node(widget)
     widget.node = node
     widget.virtual_sizer.node = node
     widget.properties["proportion"].set(1)
     widget.properties["flag"].set("wxEXPAND")
-    widget.show_widget(True)
+    if parent.widget: widget.create()
     common.app_tree.insert(node, sizer.node, pos-1)
 
     widget.insert_tab(0, widget.next_pane_name()) # next_pane_name will be used as label and as pane name, if possible
