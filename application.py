@@ -156,6 +156,7 @@ class Application(np.PropertyOwner):
 
         self.widget = None  # always None, just to keep interface to Tree similar to other editors
         self.node = None
+        self._rmenu = None
 
     def set_for_version(self, value):
         self.for_version = self.for_version_prop.get_str_value()
@@ -529,9 +530,40 @@ class Application(np.PropertyOwner):
         prop.default_extension = '.%s' % ext[0]  if ext else  None
 
     def popup_menu(self, event):
-        # right click event -> expand all
-        # XXX add other actions?
-        common.app_tree.ExpandAll()
+        # right click event -> expand all or show context menu
+        self._destroy_popup_menu()
+        expanded = True
+        for child_node in common.app_tree.root.children:
+            if not common.app_tree.IsExpanded(child_node.item):
+                expanded = False
+                break
+        if not expanded:
+            #  -> expand all
+            common.app_tree.ExpandAll()
+            return
+        # already expanded -> show context menu
+        event_widget = event.GetEventObject()
+        menu = self._create_popup_menu(widget=event_widget)
+        # convert relative event position to relative widget position
+        event_pos  = event.GetPosition()
+        screen_pos = event_widget.ClientToScreen(event_pos)
+        client_pos = event_widget.ScreenToClient(screen_pos)
+        event_widget.PopupMenu(menu, pos=client_pos)
+
+    def _create_popup_menu(self, widget):
+        self._destroy_popup_menu()
+        menu = misc.wxGladePopupMenu("Application")
+        i = misc.append_menu_item( menu, -1, _('Generate Code') )
+        misc.bind_menu_item_after(widget, i, self.generate_code)  # a property, but it can be called
+        self._rmenu = (menu, widget) # store for destryoing and unbinding
+        return menu
+
+    def _destroy_popup_menu(self):
+        if self._rmenu is None: return
+        menu, widget = self._rmenu
+        widget.Unbind(wx.EVT_MENU)
+        menu.Destroy()
+        self._rmenu = None
 
     def check_compatibility(self, widget):
         # for now, we don't have a clipboard_paste method; XXX this should be changed
