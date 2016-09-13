@@ -674,7 +674,7 @@ class EditMenuBar(EditBase, PreviewMixin):
     def _create_popup_menu(self, widget=None):
         REMOVE_ID, HIDE_ID = [wx.NewId() for i in range(2)]
         menu = misc.wxGladePopupMenu(self.name)
-        misc.append_menu_item(menu, REMOVE_ID, _('Remove\tDel'), wx.ART_DELETE)
+        misc.append_menu_item(menu, REMOVE_ID, _('Remove MenuBar\tDel'), wx.ART_DELETE)
         misc.append_menu_item(menu, HIDE_ID, _('Hide'))
 
         if widget is None: widget = self.widget

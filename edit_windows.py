@@ -674,8 +674,12 @@ class ManagedBase(WindowBase):
 
     def remove(self, *args):
         self.sizer.free_slot(self.pos)
-        if self.sizer.is_virtual() and hasattr(self.sizer, "children"):
-            WindowBase.remove(self)
+        if self.sizer.is_virtual():
+            if hasattr(self.sizer, "children"):
+                WindowBase.remove(self)
+        else:
+            # focus the freed slot
+            misc.set_focused_widget(self.sizer.children[self.pos].item)
 
     def set_pos(self, value):
         "setter for the 'pos' property: calls self.sizer.change_item_pos"
@@ -755,7 +759,8 @@ class TopLevelBase(WindowBase, PreviewMixin):
     def _create_popup_menu(self, widget):
         # remove, hide
         menu = misc.wxGladePopupMenu(self.name)
-        i = misc.append_menu_item(menu, -1, _('Remove\tDel'), wx.ART_DELETE)
+        widgetclass = self.__class__.__name__.lstrip("Edit")
+        i = misc.append_menu_item(menu, -1, _('Remove %s\tDel')%widgetclass, wx.ART_DELETE)
         misc.bind_menu_item_after(widget, i, self.remove)
         i = misc.append_menu_item(menu, -1, _('Hide'))
         misc.bind_menu_item_after(widget, i, self.hide_widget)

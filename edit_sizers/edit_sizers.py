@@ -251,20 +251,25 @@ class SizerSlot(np.PropertyOwner):
 
     def _create_popup_menu(self, widget):
         self._destroy_popup_menu()
-        menu = wx.Menu(_("Slot %d"%self.pos))
+        
 
         if not self.sizer.is_virtual():
             # we cannot remove items from virtual sizers
-            i = misc.append_menu_item(menu, -1, _('Remove Slot\tDel'), wx.ART_DELETE)
-            misc.bind_menu_item_after(widget, i, self.remove)
-            if self.pos<=1: i.Enable(False)
-
-            # if inside a grid sizer: allow removal of empty rows/cols
             if isinstance(self.sizer, GridSizerBase):
                 rows = self.sizer.rows
                 cols = self.sizer.cols
                 # calculate row and pos of our slot
                 row,col = _grid_row_col(self.pos, cols)
+                menu = wx.Menu(_("Slot %d/%d"%(row+1,col+1)))
+            else:
+                menu = wx.Menu(_("Slot %d"%self.pos))
+
+            i = misc.append_menu_item(menu, -1, _('Remove Slot\tDel'), wx.ART_DELETE)
+            misc.bind_menu_item_after(widget, i, self.remove)
+            if len(self.sizer.children)<=2: i.Enable(False)
+
+            # if inside a grid sizer: allow removal of empty rows/cols
+            if isinstance(self.sizer, GridSizerBase):
                 # check whether all slots in same row/col are empty
                 row_is_empty = col_is_empty = True
                 for pos,child in enumerate(self.sizer.children):
@@ -275,15 +280,18 @@ class SizerSlot(np.PropertyOwner):
                     if child_col==col and not isinstance(child.item, SizerSlot):
                         col_is_empty = False
 
-                if row_is_empty and rows>1:
-                    # allow removal of empty row
-                    i = misc.append_menu_item(menu, -1, _('Remove Row') )
-                    misc.bind_menu_item_after(widget, i, self.sizer.remove_row, self.pos)
-                if col_is_empty and cols>1:
-                    # allow removal of empty col
-                    i = misc.append_menu_item(menu, -1, _('Remove Column') )
-                    misc.bind_menu_item_after(widget, i, self.sizer.remove_col, self.pos)
+                # allow removal of empty row
+                i = misc.append_menu_item(menu, -1, _('Remove Row %d'%(row+1)) )
+                misc.bind_menu_item_after(widget, i, self.sizer.remove_row, self.pos)
+                if not row_is_empty or rows<=1: i.Enable(False)
+
+                # allow removal of empty col
+                i = misc.append_menu_item(menu, -1, _('Remove Column %d'%(col+1)) )
+                misc.bind_menu_item_after(widget, i, self.sizer.remove_col, self.pos)
+                if not col_is_empty or cols<=1: i.Enable(False)
                 menu.AppendSeparator()
+        else:
+            menu = wx.Menu(_("Slot %d"%self.pos))
 
         i = misc.append_menu_item(menu, -1, _('Paste\tCtrl+V'), wx.ART_PASTE)
         misc.bind_menu_item_after(widget, i, self.clipboard_paste)
@@ -319,12 +327,18 @@ class SizerSlot(np.PropertyOwner):
 
     def remove(self, *args):
         self._destroy_popup_menu()
-        if self.sizer.is_virtual() or self.pos<=1: return
+        if self.sizer.is_virtual() or len(self.sizer.children)<=2: return
 
+        sizer = self.sizer
         node = self.sizer.children[self.pos].item.node
         self.sizer.remove_item(self)
         self.delete()
         common.app_tree.remove(node)
+        # set focused widget
+        pos = (self.pos - 1) or 1
+        if pos >= len(sizer.children):
+            pos -= 1  # the deleted slot was the last one; the check above ensures that at least one more slot is left
+        misc.set_focused_widget(sizer.children[pos].item)
 
     def on_drop_widget(self, event):
         """replaces self with a widget in self.sizer. This method is called
@@ -504,10 +518,10 @@ def change_sizer(old, new):
 
     if not szr.toplevel:
         szr.sizer = old.sizer
-        szr.proportion = old.proportion
-        szr.flag = old.flag
-        szr.border = old.border
-        szr.pos = old.pos
+        szr.properties["proportion"].set(old.proportion)
+        szr.properties["flag"].set(old.flag)
+        szr.properties["border"].set(old.border)
+        szr.properties["pos"].set(old.pos)
         szr.sizer.children[szr.pos].item = szr
         if szr.sizer.widget:
             elem = szr.sizer.widget.GetChildren()[szr.pos]
@@ -734,7 +748,8 @@ class SizerBase(Sizer, np.PropertyOwner):
         self._destroy_popup_menu()
         menu = misc.wxGladePopupMenu(self.name)
 
-        i = misc.append_menu_item(menu, -1, _('Remove\tDel'), wx.ART_DELETE)
+        widgetclass = self.__class__.__name__.lstrip("Edit")
+        i = misc.append_menu_item(menu, -1, _('Remove %s\tDel')%widgetclass, wx.ART_DELETE)
         misc.bind_menu_item_after(widget, i, self._remove)
 
         if not self.toplevel and self.sizer:
@@ -1015,7 +1030,7 @@ class SizerBase(Sizer, np.PropertyOwner):
         # called e.g. from context menu of SizerSlot
         if elem:
             for c in self.children[elem.pos + 1:]:
-                c.item.pos -= 1
+                c.item.properties["pos"].value -= 1
             del self.children[elem.pos]
         if "rows" in self.PROPERTIES: self._adjust_rows_cols()  # for GridSizer
         if self.widget and elem.widget:
@@ -1181,7 +1196,7 @@ class SizerBase(Sizer, np.PropertyOwner):
         tmp = SizerSlot(self.window, self, pos)
         item = SizerItem(tmp, pos, 1, wx.EXPAND, 0)
         for c in self.children[pos:]: # self.children[0] is a Dummy
-            c.item.pos += 1
+            c.item.properties["pos"].value += 1
         self.children.insert(pos, item)
         if "rows" in self.PROPERTIES: self._adjust_rows_cols()  # for GridSizer
 
