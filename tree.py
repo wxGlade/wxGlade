@@ -645,7 +645,9 @@ class WidgetTree(wx.TreeCtrl, Tree):
         else:
             node = self._find_item_by_pos(x, y, True)
 
-        if node is not None and node.widget.widget:
+        if node is None or node is self.root: return
+
+        if node.widget.widget:
             # window widget has been created already; just show it
             if not node.widget.is_visible():
                 node.widget.widget.Show()
@@ -653,18 +655,17 @@ class WidgetTree(wx.TreeCtrl, Tree):
                 node.widget.widget.Hide()
             return
 
-        if node is not None:
-            if not node.widget.is_visible():
-                # added by rlawson to expand node on showing top level widget
-                self.expand(node)
-                self._show_widget_toplevel(node)
-            else:
-                node.widget.create()
-                node.widget.widget.Show()
-                # added by rlawson to collapse only the toplevel node, not collapse back to root node
-                self.select_item(node)
-                misc.set_focused_widget(node.widget)
-                event.Skip()
+        if not node.widget.is_visible():
+            # added by rlawson to expand node on showing top level widget
+            self.expand(node)
+            self._show_widget_toplevel(node)
+        else:
+            node.widget.create()
+            node.widget.widget.Show()
+            # added by rlawson to collapse only the toplevel node, not collapse back to root node
+            self.select_item(node)
+            misc.set_focused_widget(node.widget)
+            event.Skip()
         #event.Skip()
 
     def _find_item_by_pos(self, x, y, toplevels_only=False):
