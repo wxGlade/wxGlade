@@ -402,9 +402,9 @@ def exec_after(func, *args, **kwargs):
 
 def _remove():
     global focused_widget
-    if focused_widget is not None:
-        focused_widget.remove()
-        focused_widget = None
+    if focused_widget is None or not hasattr(focused_widget, "remove"): return
+    focused_widget.remove()
+    #focused_widget = None  # should be done by the remove() already
 
 
 def _cut():

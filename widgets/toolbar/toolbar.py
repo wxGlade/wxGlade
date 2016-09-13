@@ -592,7 +592,7 @@ class EditToolBar(EditBase, PreviewMixin, EditStylesMixin, BitmapMixin):
         REMOVE_ID = wx.NewId()
         HIDE_ID = wx.NewId()
         self._rmenu = misc.wxGladePopupMenu(self.name)
-        misc.append_menu_item(self._rmenu, REMOVE_ID, _('Remove\tDel'), wx.ART_DELETE)
+        misc.append_menu_item(self._rmenu, REMOVE_ID, _('Remove ToolBar\tDel'), wx.ART_DELETE)
         misc.append_menu_item(self._rmenu, HIDE_ID, _('Hide'))
 
         wx.EVT_MENU(self.pwidget, REMOVE_ID, misc.exec_after(self.remove))

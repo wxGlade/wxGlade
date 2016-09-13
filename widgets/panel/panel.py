@@ -159,7 +159,7 @@ class EditPanel(PanelBase, ManagedBase):
     def _create_popup_menu(self, widget=None):
         COPY_ID, REMOVE_ID, CUT_ID = [wx.NewId() for i in range(3)]
         menu = misc.wxGladePopupMenu(self.name)
-        misc.append_menu_item(menu, REMOVE_ID, _('Remove\tDel'),  wx.ART_DELETE)
+        misc.append_menu_item(menu, REMOVE_ID, _('Remove Panel\tDel'),  wx.ART_DELETE)
         misc.append_menu_item(menu, COPY_ID,   _('Copy\tCtrl+C'), wx.ART_COPY)
         misc.append_menu_item(menu, CUT_ID,    _('Cut\tCtrl+X'),  wx.ART_CUT)
 

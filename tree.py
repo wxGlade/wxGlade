@@ -499,11 +499,12 @@ class WidgetTree(wx.TreeCtrl, Tree):
         self.app.saved = False  # update the status of the app
         Tree.remove(self, node)
         if node is not None:
-            try:
-                self.cur_widget = None
-                self.SelectItem(node.parent.item)
-            except: self.SelectItem(self.GetRootItem())
             if delete:
+                try:
+                    self.cur_widget = None
+                    self.SelectItem(node.parent.item)
+                except:
+                    self.SelectItem(self.GetRootItem())
                 self.Delete(node.item)
         else:
             wx.TreeCtrl.Destroy(self)
