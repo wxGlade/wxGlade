@@ -635,15 +635,18 @@ class WidgetTree(wx.TreeCtrl, Tree):
             node.widget.sizer.fit_parent()
         if wx.IsBusy(): wx.EndBusyCursor()
 
-    def show_toplevel(self, event):
+    def show_toplevel(self, event, widget=None):
         "Event handler for left double-clicks: if the click is above a toplevel widget and this is hidden, shows it"
-        try: x, y = event.GetPosition()
-        except AttributeError:
-            # if we are here, event is a CommandEvent and not a MouseEvent
-            node = self.GetPyData(self.GetSelection())
-            self.expand(node)  # if we are here, the widget must be shown
+        if widget is None:
+            try: x, y = event.GetPosition()
+            except AttributeError:
+                # if we are here, event is a CommandEvent and not a MouseEvent
+                node = self.GetPyData(self.GetSelection())
+                self.expand(node)  # if we are here, the widget must be shown
+            else:
+                node = self._find_item_by_pos(x, y, True)
         else:
-            node = self._find_item_by_pos(x, y, True)
+            node = widget.node
 
         if node is None or node is self.root: return
 
