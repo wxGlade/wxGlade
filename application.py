@@ -333,7 +333,7 @@ class Application(np.PropertyOwner):
             # save and overwrite some code generation settings; to be restored below
             if preview and language == 'python':
                 overwrite_save = self.overwrite
-                self.overwrite = True
+                self.properties["overwrite"].set(True)
 
             class_names = common.app_tree.write(tmp_xml)
 
@@ -349,7 +349,7 @@ class Application(np.PropertyOwner):
 
             # restore saved settings
             if preview and language == 'python':
-                self.overwrite = overwrite_save
+                self.properties["overwrite"].set(overwrite_save)
 
         except errors.WxgBaseException as inst:
             wx.MessageBox(_("Error generating code:\n%s") % inst, _("Error"), wx.OK | wx.CENTRE | wx.ICON_ERROR)
@@ -383,26 +383,24 @@ class Application(np.PropertyOwner):
                 out_name = "C:\\Users\\Dietmar\\wxg_tmp.py"
         widget_class_name = widget.klass
 
-        # make a valid name for the class (this can be invalid for
-        # some sensible reasons...)
-        widget.klass = widget.klass[widget.klass.rfind('.') + 1:]
-        widget.klass = widget.klass[widget.klass.rfind(':') + 1:]
-
-        # ALB 2003-11-08: always randomize the class name: this is to make
-        # preview work even when there are multiple classes with the same name
-        # (which makes sense for XRC output...)
-        widget.klass = '_%d_%s' % (random.randrange(10 ** 8, 10 ** 9), widget.klass)
+        # make a valid name for the class (this can be invalid for some sensible reasons...)
+        widget_class = widget.klass[widget.klass.rfind('.') + 1:]
+        widget_class = widget.klass[widget.klass.rfind(':') + 1:]
+        # ALB 2003-11-08: always randomize the class name: this is to make preview work even when there are multiple
+        # classes with the same name (which makes sense for XRC output...)
+        widget_class = '_%d_%s' % (random.randrange(10 ** 8, 10 ** 9), widget_class)
+        widget.properties["class"].set(widget_class)
 
         self.real_output_path = self.output_path
-        self.output_path = out_name
+        self.properties["output_path"].set(out_name)
         real_multiple_files = self.multiple_files
         real_language = self.language
         real_use_gettext = self.use_gettext
-        self.use_gettext = False
-        self.language = 'python'
-        self.multiple_files = 0
+        self.properties["use_gettext"].set(False)
+        self.properties["language"].set('python')
+        self.properties["multiple_files"].set(False)
         overwrite = self.overwrite
-        self.overwrite = 0
+        self.properties["overwrite"].set(False)
 
         frame = None
         try:
@@ -475,13 +473,13 @@ class Application(np.PropertyOwner):
             bugdialog.Show(_("Generate Preview"), inst)
 
         # restore app state
-        widget.klass = widget_class_name
-        self.output_path = self.real_output_path
+        widget.properties["class"].set(widget_class_name)
+        self.properties["output_path"].set(self.real_output_path)
         del self.real_output_path
-        self.multiple_files = real_multiple_files
-        self.language = real_language
-        self.use_gettext = real_use_gettext
-        self.overwrite = overwrite
+        self.properties["multiple_files"].set(real_multiple_files)
+        self.properties["language"].set(real_language)
+        self.properties["use_gettext"].set(real_use_gettext)
+        self.properties["overwrite"].set(overwrite)
         return frame
     def update_view(self, selected=False):
         pass

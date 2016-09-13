@@ -507,10 +507,10 @@ class WindowBase(EditBase):
         try:
             size = [int(t.strip()) for t in value.split(',', 1)]
         except:
-            self.properties['size'].set_value(self.size)
+            self.properties['size'].set(self.size)
         else:
             if use_dialog_units and value[-1] != 'd': value += 'd'
-            self.size = value
+            self.properties['size'].set(value)
             if self.widget:
                 if use_dialog_units: size = wx.DLG_SZE(self.widget, size)
                 self.widget.SetMinSize(size)
