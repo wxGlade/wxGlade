@@ -169,8 +169,9 @@ class EditPanel(PanelBase, ManagedBase):
         wx.EVT_MENU(widget, CUT_ID, misc.exec_after(self.clipboard_cut))
 
         PASTE_ID = wx.NewId()
-        misc.append_menu_item(menu, PASTE_ID, _('Paste\tCtrl+V'), wx.ART_PASTE)
+        i = misc.append_menu_item(menu, PASTE_ID, _('Paste Sizer\tCtrl+V'), wx.ART_PASTE)
         wx.EVT_MENU(widget, PASTE_ID, misc.exec_after(self.clipboard_paste))
+        if self.top_sizer is not None: i.Enable(False)
 
         PREVIEW_ID = wx.NewId()
         menu.AppendSeparator()

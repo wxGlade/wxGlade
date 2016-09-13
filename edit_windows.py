@@ -762,11 +762,21 @@ class TopLevelBase(WindowBase, PreviewMixin):
         widgetclass = self.__class__.__name__.lstrip("Edit")
         i = misc.append_menu_item(menu, -1, _('Remove %s\tDel')%widgetclass, wx.ART_DELETE)
         misc.bind_menu_item_after(widget, i, self.remove)
-        i = misc.append_menu_item(menu, -1, _('Hide'))
-        misc.bind_menu_item_after(widget, i, self.hide_widget)
+        
+        
+        if self.widget and self.is_visible():
+            # hide window
+            i = misc.append_menu_item(menu, -1, _('Hide'))
+            misc.bind_menu_item_after(widget, i, self.hide_widget)
+        else:
+            i = misc.append_menu_item(menu, -1, _('Show'))
+            misc.bind_menu_item_after(widget, i, common.app_tree.show_toplevel, None, self)
+
         # paste
-        i = misc.append_menu_item(menu, -1, _('Paste\tCtrl+V'), wx.ART_PASTE)
+        i = misc.append_menu_item(menu, -1, _('Paste Sizer\tCtrl+V'), wx.ART_PASTE)
         misc.bind_menu_item_after(widget, i, self.clipboard_paste)
+        if self.sizer is not None: i.Enable(False)
+        
         # preview
         menu.AppendSeparator()
         i = misc.append_menu_item(menu, -1, _('Preview'))
