@@ -202,11 +202,6 @@ class wxGladeFrame(wx.Frame):
             if wx.Platform != '__WXGTK__':
                 frame_style |= wx.FRAME_TOOL_WINDOW
 
-        # create the property and the tree frame
-        self.create_property_panel(frame_style, icon)
-        self.create_tree_frame(frame_style, icon)
-        common.property_panel = self.property_frame
-
         # set window geometry
         if config.preferences.remember_geometry:
             self_geometry = config.preferences.get_geometry('main')
@@ -219,6 +214,11 @@ class wxGladeFrame(wx.Frame):
         self._set_geometry(self, self_geometry)
         self.Show()
         self_geometry.Size = self.GetSize()
+
+        # create the property and the tree frame
+        self.create_property_panel(frame_style, icon, self_geometry)
+        self.create_tree_frame(frame_style, icon, self_geometry)
+        common.property_panel = self.property_frame
 
         # last visited directory, used on GTK for wxFileDialog
         self.cur_dir = config.preferences.open_save_path
@@ -400,7 +400,7 @@ class wxGladeFrame(wx.Frame):
         self.cur_dir = os.path.dirname(filename)
 
     # GUI elements: property frame, tree frame #########################################################################
-    def create_property_panel(self, frame_style, icon):
+    def create_property_panel(self, frame_style, icon, self_geometry):
         # create property editor frame
         self.property_frame = wxGladePropertyPanel(self, frame_style)
         self.property_frame.SetBackgroundColour( compat.wx_SystemSettings_GetColour(wx.SYS_COLOUR_BTNFACE) )
@@ -424,7 +424,7 @@ class wxGladeFrame(wx.Frame):
         self._set_geometry(self.property_frame, property_geometry)
         self.property_frame.Show()
 
-    def create_tree_frame(self, frame_style, icon):
+    def create_tree_frame(self, frame_style, icon, self_geometry):
         self.tree_frame = wx.Frame(self, -1, _('wxGlade: Tree'), style=frame_style, name='TreeFrame')
         self.tree_frame.SetIcon(icon)
 
