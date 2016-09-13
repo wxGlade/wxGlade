@@ -423,7 +423,10 @@ class SizerItem(object):
     "Represents a child of a sizer"
     def __init__(self, item, pos, option=0, flag=0, border=0, size=None):
         self.item = item
-        self.item.pos = pos
+        if isinstance(item, np.PropertyOwner):
+            self.item.properties["pos"].set(pos)
+        else:
+            self.item.pos = pos
         self.proportion = option
         self.flag = flag
         self.border = border
