@@ -1,0 +1,38 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><title>Command Line Invocation</title><meta name="generator" content="DocBook XSL Stylesheets V1.79.1"><link rel="home" href="index.html" title="wxGlade manual"><link rel="up" href="running_wxglade.html" title="Chapter 3. Running wxGlade"><link rel="prev" href="languages.html" title="Languages"><link rel="next" href="configure_wxglade.html" title="Configuring wxGlade"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="navheader"><table width="100%" summary="Navigation header"><tr><th colspan="3" align="center">Command Line Invocation</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="languages.html">Prev</a> </td><th width="60%" align="center">Chapter 3. Running wxGlade</th><td width="20%" align="right"> <a accesskey="n" href="configure_wxglade.html">Next</a></td></tr></table><hr></div><div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="invocation_cmdline"></a>Command Line Invocation</h2></div></div></div><p>You can run wxGlade without parameters to start the GUI with an
+      empty project as follows:</p><p><span class="command"><strong>wxglade</strong></span></p><p>Run wxGlade GUI on an existing project specifying the
+      <code class="filename">.wxg</code> file as follow:</p><p><span class="command"><strong>wxglade &lt;WXG File&gt;</strong></span></p><p>If you only want to generate the code without starting the GUI,
+      use the <code class="option">-g</code> or <code class="option">--generate-code</code> option
+      with the language as argument as follows:</p><p><span class="command"><strong>wxglade -g &lt;LANGUAGE&gt; &lt;WXG
+      File&gt;</strong></span></p><p><span class="command"><strong>wxglade --generate-code=&lt;LANGUAGE&gt; &lt;WXG
+      File&gt;</strong></span></p><p>Possible values for LANGUAGE are "XRC", "python", "perl", "lisp"
+      or "C++".</p><p>You can also specify the destination of the generated code with
+      <code class="option">-o</code> or <code class="option">--output</code> option:</p><p><span class="command"><strong>wxglade -g &lt;LANGUAGE&gt; -o &lt;DESTINATION&gt;
+      &lt;WXG File&gt;</strong></span></p><p>The DESTINATION argument can be a file or a directory.</p><p>Complete command line description:</p><pre class="screen"># wxglade --help
+Usage: wxglade &lt;WXG File&gt;             start the wxGlade GUI
+ or:   wxglade &lt;Options&gt; &lt;WXG File&gt;   generate code from command line
+ or:   wxglade --version              show programs version number and exit
+ or:   wxglade -h|--help              show this help message and exit
+
+Options:
+  --version             show program's version number and exit
+  -h, --help            show this help message and exit
+  -g LANG, --generate-code=LANG
+                        (required) output language, valid languages are: C++,
+                        XRC, lisp, perl, python
+  -o PATH, --output=PATH
+                        (optional) output file in single-file mode or output
+                        directory in multi-file mode
+
+Example: Generate Python code out of myapp.wxg
+
+   wxglade -o output.py -g python myapp.wxg
+
+Report bugs to:    &lt;wxglade-general@lists.sourceforge.net&gt; or at
+                   &lt;https://sourceforge.net/projects/wxglade/&gt;
+wxGlade home page: &lt;http://wxglade.sourceforge.net/&gt;
+</pre><div class="note" style="margin-left: 0.5in; margin-right: 0.5in;"><h3 class="title">Note</h3><p>Use <span class="command"><strong>wxglade.pyw</strong></span> instead of
+        <span class="command"><strong>wxglade</strong></span> on Microsoft Windows.</p><p>Parameters shown in angle brackets (e.g.,
+        <span class="quote">“<span class="quote"><em class="parameter"><code>&lt;parameter&gt;</code></em></span>”</span>) are
+        required.</p><p>Parameters shown in angle brackets (e.g.,
+        <span class="quote">“<span class="quote"><em class="parameter"><code>&lt;parameter&gt;</code></em></span>”</span>) are
+        required.</p></div></div><div class="navfooter"><hr><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="languages.html">Prev</a> </td><td width="20%" align="center"><a accesskey="u" href="running_wxglade.html">Up</a></td><td width="40%" align="right"> <a accesskey="n" href="configure_wxglade.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">Languages </td><td width="20%" align="center"><a accesskey="h" href="index.html">Home</a></td><td width="40%" align="right" valign="top"> Configuring wxGlade</td></tr></table></div></body></html>

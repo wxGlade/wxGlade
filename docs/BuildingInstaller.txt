@@ -1,0 +1,63 @@
+Building a wxGlade Installer HOWTO
+----------------------------------
+
+Alberto Griggio  2007/04/20
+Carsten Grohmann 2015/08/04
+
+1. Setup PyInstaller
+--------------------
+
+Install the current version of PyInstaller from http://www.pyinstaller.org.
+Follow the instruction published at PyInstallers homepage.
+
+This procedure is tested using PyInstaller versions 2.1
+
+Check if pyinstaller well configured
+Type:
+pyinstaller --version
+
+The result should be 2.n
+
+2. Generate an executable
+-------------------------
+
+- Open a command prompt and change into source base directory
+
+- To generate the version file "version.py" manually with content below:
+  #
+  # This is an automatically generated file. Manual changes will be
+  # overwritten without warning.
+  #
+
+  __version__ = "<release version>"
+
+- Generate binary for standalone edition
+  Type:
+  install\pyinstaller\build.bat
+
+  If everything works, you should now have two new subdirectories
+  "build" and "dist".
+
+- Now you should have a working executable in "dist/bdist", called
+  "wxglade.exe".
+
+  If it works, you can move on to the next step
+
+3. Generate an installer
+------------------------
+
+- Download and install Inno Setup from here:
+  http://www.jrsoftware.org/isinfo.php
+
+- To create the installer for the Standalone Edition open
+  "wxglade-SAE-installer.iss" with Inno Setup and run it.
+
+- To create the regular installer open "wxglade-installer.iss" with Inno
+  Setup and run it.
+
+- If everything works, you should have the installer executables in the
+  "dist" directory. "wxGlade-SAE-<version>-setup.exe" is the installer of the
+  Standalone Edition. And "wxGlade-<version>-setup.exe" is the regular
+  installer.
+
+- All done!
