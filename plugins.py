@@ -22,20 +22,13 @@ rec_module = re.compile(r'^(?P<module>\w+)')
 """Regex to match modules"""
 
 
-def load_widgets_from_dir(widget_dir, submodule='', default_section='not_set'):
+def load_widgets_from_dir(widget_dir, submodule='',
+                          default_section='not_set'):
     """\
-    Load and initialise the all widgets listed in widgets.txt in the given
-    directory.
+    Load and initialise the all widgets listed in widgets.txt in the given directory.
 
-    The names of the modules to import, are read from the file widgets.txt.
-
-    If you need to import a submodule instead, just specify the name of the
-    submodule and "<module name>.<submodule>" will be imported. This is
-    useful to import language specific code generators.
-
-    If wxGlade run in the GUI mode, the imported module returns a
-    wxBitmapButton object. A list of such objects will be returned. In batch
-    mode or if submodules are imported, an empty list will be returned.
+    If you need to import a submodule instead, just specify the name of the submodule and "<module name>.<submodule>"
+    will be imported. This is useful to import language specific code generators.
 
     @param widget_dir: Directory to search for widgets
     @type widget_dir:  str
@@ -57,8 +50,7 @@ def load_widgets_from_dir(widget_dir, submodule='', default_section='not_set'):
 
     # language code generators e.g. perl_codegen
     widgets_filename = os.path.join(widget_dir, 'widgets.txt')
-    module_info = _modulenames_from_file(widgets_filename,
-                                         default_section)
+    module_info = _modulenames_from_file(widgets_filename, default_section)
 
     if module_info and config.use_gui and not submodule.endswith('_codegen'):
         if submodule:
@@ -66,7 +58,7 @@ def load_widgets_from_dir(widget_dir, submodule='', default_section='not_set'):
         else:
             logging.info(_('Loading widgets from %s:'), widgets_filename)
 
-    for section, module_names in module_info.iteritems():
+    for section, module_names in module_info.items():
         buttons[section] = []
 
         for module_name in module_names:
@@ -114,17 +106,10 @@ def load_widgets_from_dir(widget_dir, submodule='', default_section='not_set'):
 
 
 def _modulenames_from_file(filename, default_section):
-    """\
-    Return a dict with module sections as key and assigned list of module names read from given file.
+    """Return OrderedDict with module sections as key and assigned list of module names read from given file.
 
     @param filename: Absolute filename of the widgets.txt file
-    @type filename:  str
-
-    @param default_section: Section name to group all widgets, if no section has been found
-    @type default_section: str
-
-    @rtype: OrderedDict
-    """
+    @param default_section: Section name to group all widgets, if no section has been found"""
     content = OrderedDict()
 
     # test if the "widgets.txt" file exists
@@ -135,8 +120,8 @@ def _modulenames_from_file(filename, default_section):
         widgets_file = open(filename)
         module_lines = widgets_file.readlines()
         widgets_file.close()
-    except EnvironmentError, details:
-        logging.warning(_("Can't read file %s file: %s"), filename, details)
+    except EnvironmentError as details:
+        logging.warning( _("Can't read file %s file: %s"), filename, details )
         return content
 
     cursect = default_section

@@ -22,9 +22,9 @@ class EditRadioBox(ManagedBase):
     _PROPERTIES = ["Widget", "label", "style", "dimension", "selection", "choices"]
     PROPERTIES = ManagedBase.PROPERTIES + _PROPERTIES + ManagedBase.EXTRA_PROPERTIES
 
-    def __init__(self, name, parent, id, label, choices, major_dim, style, sizer, pos, show=True):
+    def __init__(self, name, parent, id, label, choices, major_dim, style, sizer, pos):
         "Class to handle wxRadioBox objects"
-        ManagedBase.__init__(self, name, 'wxRadioBox', parent, id, sizer, pos, show=show)
+        ManagedBase.__init__(self, name, 'wxRadioBox', parent, id, sizer, pos)
         self.static_box = None
         
         # initialise instance properties
@@ -198,7 +198,7 @@ def builder(parent, sizer, pos, number=[1]):
     radio_box = EditRadioBox(label, parent, wx.NewId(), label, [u'choice 1'], 1, 0, sizer, pos)
     node = Node(radio_box)
     radio_box.node = node
-    radio_box.show_widget(True)
+    if parent.widget: radio_box.create()
     common.app_tree.insert(node, sizer.node, pos-1)
 
 

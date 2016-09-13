@@ -22,8 +22,8 @@ class EditToggleButton(ManagedBase, EditStylesMixin):
     PROPERTIES = ManagedBase.PROPERTIES + _PROPERTIES + ManagedBase.EXTRA_PROPERTIES
     _PROPERTY_LABELS = {"value":"Clicked"}
 
-    def __init__(self, name, parent, id, label, sizer, pos, show=True):
-        ManagedBase.__init__(self, name, 'wxToggleButton', parent, id, sizer, pos, show=show)
+    def __init__(self, name, parent, id, label, sizer, pos):
+        ManagedBase.__init__(self, name, 'wxToggleButton', parent, id, sizer, pos)
         EditStylesMixin.__init__(self)
 
         # initialise instance variable
@@ -59,7 +59,7 @@ def builder(parent, sizer, pos, number=[1]):
     button = EditToggleButton(label, parent, wx.NewId(), label, sizer, pos)
     node = Node(button)
     button.node = node
-    button.show_widget(True)
+    if parent.widget: button.create()
     common.app_tree.insert(node, sizer.node, pos-1)
 
 

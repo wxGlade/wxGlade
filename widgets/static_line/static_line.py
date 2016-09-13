@@ -21,9 +21,10 @@ class EditStaticLine(ManagedBase, EditStylesMixin):
     PROPERTIES = ManagedBase.PROPERTIES + _PROPERTIES + ManagedBase.EXTRA_PROPERTIES
     PROPERTIES.remove("font")
     _PROPERTY_LABELS = {"attribute":'Store as attribute'}
-
-    def __init__(self, name, parent, id, style, sizer, pos, show=True):
-        ManagedBase.__init__(self, name, 'wxStaticLine', parent, id, sizer, pos, show=show)
+    _PROPERTY_HELP={"attribute":'Store instance as attribute of window class; e.g. self.line_1 = wx.wxStaticLine(...)\n'
+                                'Without this, you can not access the line from your program.'}
+    def __init__(self, name, parent, id, style, sizer, pos):
+        ManagedBase.__init__(self, name, 'wxStaticLine', parent, id, sizer, pos)
         EditStylesMixin.__init__(self)
 
         # initialise instance properties
@@ -74,7 +75,7 @@ def builder(parent, sizer, pos, number=[1]):
     widget = editor_class(label, parent, wx.ID_ANY, style, sizer, pos)
     node = Node(widget)
     widget.node = node
-    widget.show_widget(True)
+    if parent.widget: widget.create()
     common.app_tree.insert(node, sizer.node, pos-1)
 
 

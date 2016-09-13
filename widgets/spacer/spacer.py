@@ -19,8 +19,8 @@ class EditSpacer(ManagedBase):
     _PROPERTIES = ["Layout", "width", "height", "pos", "proportion", "border", "flag"]
     PROPERTIES = _PROPERTIES + ManagedBase.EXTRA_PROPERTIES
 
-    def __init__(self, name, parent, id, width, height, sizer, pos, show=True):
-        ManagedBase.__init__(self, name, 'spacer', parent, id, sizer, pos, show=show)
+    def __init__(self, name, parent, id, width, height, sizer, pos):
+        ManagedBase.__init__(self, name, 'spacer', parent, id, sizer, pos)
 
         # initialise instance properties
         self.width  = np.SpinProperty(width,  immediate=True)
@@ -81,8 +81,6 @@ class _Dialog(wx.Dialog):
         szr.Fit(self)
         self.CenterOnScreen()
 
-    def __getitem__(self, name):
-        return lambda : 0, lambda v: None
 
 
 
@@ -100,7 +98,7 @@ def builder(parent, sizer, pos):
     spacer = EditSpacer( name, parent, wx.NewId(), width, height, sizer, pos )
     node = Node(spacer)
     spacer.node = node
-    spacer.show_widget(True)
+    if parent.widget: spacer.create()
     common.app_tree.insert(node, sizer.node, pos-1)
 
 
@@ -109,7 +107,7 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
     from xml_parse import XmlParsingError
     if not sizer or not sizeritem:
         raise XmlParsingError(_("sizer or sizeritem object cannot be None"))
-    spacer = EditSpacer('spacer', parent, wx.NewId(), 1, 1, sizer, pos, True)
+    spacer = EditSpacer('spacer', parent, wx.NewId(), 1, 1, sizer, pos)
     sizer.set_item(spacer.pos, proportion=sizeritem.proportion, flag=sizeritem.flag, border=sizeritem.border)
     node = Node(spacer)
     spacer.node = node

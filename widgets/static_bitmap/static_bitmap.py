@@ -22,9 +22,11 @@ class EditStaticBitmap(ManagedBase, EditStylesMixin, BitmapMixin):
     _PROPERTIES = ["Widget", "bitmap", "attribute", "style"]
     PROPERTIES = ManagedBase.PROPERTIES + _PROPERTIES + ManagedBase.EXTRA_PROPERTIES
     _PROPERTY_LABELS = {"attribute":'Store as attribute'}
+    _PROPERTY_HELP = {"attribute":'Store instance as attribute of window class; e.g. self.bitmap_1 = wx.wxStaticBitmap'
+                                  '(...)\nWithout this, you can not access the bitmap from your program.'}
 
-    def __init__(self, name, parent, id, bmp_file, sizer, pos, show=True):
-        ManagedBase.__init__(self, name, 'wxStaticBitmap', parent, id, sizer, pos, show=show)
+    def __init__(self, name, parent, id, bmp_file, sizer, pos):
+        ManagedBase.__init__(self, name, 'wxStaticBitmap', parent, id, sizer, pos)
         EditStylesMixin.__init__(self)
 
         # initialise instance properties
@@ -68,7 +70,7 @@ def builder(parent, sizer, pos, number=[1]):
     static_bitmap = EditStaticBitmap(name, parent, wx.NewId(), bitmap, sizer, pos)
     node = Node(static_bitmap)
     static_bitmap.node = node
-    static_bitmap.show_widget(True)
+    if parent.widget: static_bitmap.create()
     common.app_tree.insert(node, sizer.node, pos-1)
 
 

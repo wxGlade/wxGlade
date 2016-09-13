@@ -27,28 +27,24 @@ class BasePythonSizerBuilder(BaseSizerBuilder):
             parent = 'self'
         return parent
 
-# end of class BasePythonSizerBuilder
 
 
 class PythonBoxSizerBuilder(BasePythonSizerBuilder):
     klass = 'wxBoxSizer'
     tmpl = '%(sizer_name)s = %(klass)s(%(orient)s)\n'
 
-# end of class PythonBoxSizerBuilder
 
 
 class PythonStaticBoxSizerBuilder(BasePythonSizerBuilder):
     klass = 'wxStaticBoxSizer'
     tmpl = '%(sizer_name)s = %(klass)s(wx.StaticBox(%(parent_widget)s, %(wxIDANY)s, %(label)s), %(orient)s)\n'
 
-# end of class PythonStaticBoxSizerBuilder
 
 
 class PythonGridSizerBuilder(BasePythonSizerBuilder):
     klass = 'wxGridSizer'
     tmpl = '%(sizer_name)s = %(klass)s(%(rows)s, %(cols)s, %(vgap)s, %(hgap)s)\n'
 
-# end of class PythonGridSizerBuilder
 
 
 class PythonFlexGridSizerBuilder(PythonGridSizerBuilder):
@@ -57,7 +53,14 @@ class PythonFlexGridSizerBuilder(PythonGridSizerBuilder):
     tmpl_AddGrowableRow = '%(sizer_name)s.AddGrowableRow(%(row)s)\n'
     tmpl_AddGrowableCol = '%(sizer_name)s.AddGrowableCol(%(col)s)\n'
 
-# end of class PythonFlexGridSizerBuilder
+
+import wcodegen
+
+class PythonSizerSlotGenerator(wcodegen.PythonWidgetCodeWriter):
+    # spacers and empty sizer slots are generally handled by a hack:
+    # The the implementations of add_sizeritem() contains more details.
+    # The code generation code is already implemented in base class.
+    pass
 
 
 def initialize():
@@ -74,3 +77,7 @@ def initialize():
         awh('wxStaticBoxSizer', PythonStaticBoxSizerBuilder())
         awh('wxGridSizer', PythonGridSizerBuilder())
         awh('wxFlexGridSizer', PythonFlexGridSizerBuilder())
+
+    # handle SizerSlot
+    #common.class_names['EditSpacer'] = klass
+    common.register('python', "sizerslot", PythonSizerSlotGenerator("sizerslot"))

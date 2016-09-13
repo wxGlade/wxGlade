@@ -20,6 +20,7 @@ import unittest
 import codegen
 import common
 import config
+import compat
 import log
 from xml_parse import CodeWriter
 
@@ -295,7 +296,7 @@ class WXGladeBaseTest(unittest.TestCase):
         @type filename:  str
         """
         self.failUnless( language in common.code_writers, "No codewriter loaded for %s" % language )
-        self.failUnless(isinstance(document, types.UnicodeType), 'Expected unicode document, got "%s"'%type(document))
+        self.failUnless(isinstance(document, compat.unicode), 'Expected unicode document, got "%s"'%type(document))
 
         document = self._prepare_wxg(language, document)
 
@@ -454,19 +455,13 @@ class WXGladeBaseTest(unittest.TestCase):
         @param content:  String to store into 'filename'
         @param which:    Kind of backup: 'wxg' or 'codegen'
         """
-        self.failIf(
-            filename in self.vFiles,
-            "Virtual file %s already exists" % filename
-            )
-        self.failUnless(
-            filename,
-            "No filename given",
-            )
+        self.failIf( filename in self.vFiles, "Virtual file %s already exists" % filename )
+        self.failUnless( filename, "No filename given" )
         if self.non_accessible_files and \
            filename.startswith(self.non_accessible_files):
             raise IOError(errno.EACCES, os.strerror(errno.EACCES), filename)
         else:
-            outfile = StringIO.StringIO()
+            outfile = compat.StringIO()
             outfile.write(content)
             self.vFiles[filename] = outfile
 

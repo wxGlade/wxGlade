@@ -16,11 +16,11 @@ from widget_properties import *
 
 
 class EditWidget(ManagedBase):
-    def __init__(self, name, klass, parent, id, label, sizer, pos, show=True):
+    def __init__(self, name, klass, parent, id, label, sizer, pos):
         "Class to handle wxFoo objects"
         self.label = label
         self.default = False
-        ManagedBase.__init__(self, name, klass, parent, id, sizer, pos, show=show)
+        ManagedBase.__init__(self, name, klass, parent, id, sizer, pos)
 
         # introspect subclass looking for properties
         # and widgets
@@ -102,7 +102,7 @@ def add_widget_node(widget, sizer, pos, from_xml=False,
     if border:
         widget.set_border(border)
     if not from_xml:
-        widget.show_widget(True)
+        widget.create()
     sizer.set_item(widget.pos, option, flag, border)
 
     if pos is None: common.app_tree.add(node, sizer.node)

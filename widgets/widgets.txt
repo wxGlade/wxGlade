@@ -1,7 +1,7 @@
 # List of widget modules
 #
-# List all available widget modules - each on a own line. 
-# 
+# List all available widget modules - each on a own line.
+#
 # The modules can optionally be grouped by preceding section headers.
 # A section header is the name of the section enclosed in square brackets.
 #

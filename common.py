@@ -7,7 +7,7 @@ Global functions and variables
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
-import codecs
+import codecs, errno
 try:
     # Python 2
     import ConfigParser
@@ -16,11 +16,11 @@ except:
     # Python 3
     import configparser as ConfigParser
     from hashlib import md5
+from collections import OrderedDict
 
-import errno, logging, os, os.path, sys, tempfile
+import logging, os, os.path, sys, tempfile
 from xml.sax.saxutils import escape, quoteattr
 
-from collections import OrderedDict
 import config, compat, plugins
 
 
@@ -67,13 +67,9 @@ def init_codegen():
     """\
     Load available code generators, built-in and user widgets as well as sizers
 
-    If wxGlade has been started in GUI mode, the function returns three lists
-    of wxBitmapButton objects to handle them. The first contains the
-    built-in widgets and the second one the user widgets and the third list
-    contains the sizers.
-
-    @return: List of core buttons, list of local buttons and list of sizer
-             buttons
+    @return: In GUI-Mode: a dict with module sections as key and assigned list of wxBitmapButtons, the dict is empty
+             in batch mode.
+    @rtype:  OrderedDict
 
     @see: L{load_config()}
     @see: L{load_code_writers()}
@@ -137,8 +133,12 @@ def load_config():
 
 
 def load_sizers():
-    """Load and initialise the sizer support modules; returns list of BitmapButton objects to handle sizer buttons
-    @see: L{edit_sizers}"""
+    """\
+    Load and initialise the sizer support modules.
+
+    @return: The initialise sizers like described in L{edit_sizers.edit_sizers.init_all}
+    @rtype: dict
+    """
     logging.info('Load sizer generators:')
     for lang in code_writers.keys():
         module_name = 'edit_sizers.%s_sizers_codegen' % code_writers[lang].lang_prefix
@@ -172,11 +172,14 @@ def load_widgets():
 
     Scans the built-in and user widget directories to find the installed widgets and loads it.
 
+    @rtype: OrderedDict
+
     @see: L{plugins.load_widgets_from_dir()} for more details e.g. the structure of the dictionary.
     """
     # load the "built-in" and "user" widgets
-    core_buttons  = plugins.load_widgets_from_dir(config.widgets_path)
-    local_buttons = plugins.load_widgets_from_dir(config.preferences.local_widget_path)
+    core_buttons  = plugins.load_widgets_from_dir(config.widgets_path, default_section=_('Core widgets'))
+    local_buttons = plugins.load_widgets_from_dir(config.preferences.local_widget_path,
+                                                  default_section=_('Custom widgets'))
 
     # load (remaining) widget code generators
     # Python, C++ and XRC are often loaded via plugins.load_widgets_from_dir() above
@@ -185,7 +188,7 @@ def load_widgets():
             if lang not in code_writers:
                 continue
             codegen_name = '%s_codegen' % code_writers[lang].lang_prefix
-            plugins.load_widgets_from_dir(path, submodule=codegen_name)
+            plugins.load_widgets_from_dir( path, submodule=codegen_name )
 
     all_widgets = OrderedDict()
     all_widgets.update(core_buttons)
@@ -445,8 +448,8 @@ def autosave_current():
         outfile = codecs.open(autosave_name, 'w', 'utf-8')
         app_tree.write(outfile)
         outfile.close()
-    except EnvironmentError, details:
-        logging.warning(_('Saving the autosave file "%s" failed: %s'), autosave_name, details)
+    except EnvironmentError as details:
+        logging.warning( _('Saving the autosave file "%s" failed: %s'), autosave_name, details )
         return 0
     return 2
 
@@ -474,14 +477,15 @@ def check_autosaved(filename):
             return orig.st_mtime < auto.st_mtime
         else:
             return os.path.exists(autosave_name)
-    except EnvironmentError, inst:
+    except EnvironmentError as inst:
         # File doesn't exists
         if inst.errno == errno.ENOENT:
             pass
         # Security frameworks like SELinux may deny the write access even if
         # the check for write permissions was successful.
         elif inst.errno in [errno.EPERM, errno.EACCES]:
-            logging.info(_('Ignore autosave permission error: %s'), str(inst))
+            logging.info(
+                _('Ignore autosave permission error: %s'), str(inst))
         else:
             logging.exception(_('Internal Error'))
         return False
@@ -548,7 +552,7 @@ def _create_appdata_path():
     if not os.path.isdir(config.appdata_path):
         try:
             os.makedirs(config.appdata_path, 0o700)
-        except (IOError, OSError) as e:
+        except EnvironmentError as e:
             logging.error(_('Failed to create config directory: "%s"'), e)
 
 

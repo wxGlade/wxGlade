@@ -22,8 +22,8 @@ class EditSpinButton(ManagedBase, EditStylesMixin):
     _PROPERTIES = ["Widget", "range", "value", "style"]
     PROPERTIES = ManagedBase.PROPERTIES + _PROPERTIES + ManagedBase.EXTRA_PROPERTIES
 
-    def __init__(self, name, parent, id, sizer, pos, show=True):
-        ManagedBase.__init__(self, name, 'wxSpinButton', parent, id, sizer, pos, show=show)
+    def __init__(self, name, parent, id, sizer, pos):
+        ManagedBase.__init__(self, name, 'wxSpinButton', parent, id, sizer, pos)
         EditStylesMixin.__init__(self)
 
         # initialise instance properties
@@ -72,7 +72,7 @@ def builder(parent, sizer, pos, number=[1]):
     text = EditSpinButton(name, parent, wx.NewId(), sizer, pos)
     node = Node(text)
     text.node = node
-    text.show_widget(True)
+    if parent.widget: text.create()
     common.app_tree.insert(node, sizer.node, pos-1)
 
 

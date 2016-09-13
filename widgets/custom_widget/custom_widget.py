@@ -56,8 +56,8 @@ class CustomWidget(ManagedBase):
     _PROPERTY_LABELS = { 'custom_constructor':'Custom constructor' }
     _PROPERTY_HELP   = { 'custom_constructor':'Specify a custom constructor like a factory method' }
 
-    def __init__(self, name, klass, parent, id, sizer, pos, show=True):
-        ManagedBase.__init__(self, name, klass, parent, id, sizer, pos, show)
+    def __init__(self, name, klass, parent, id, sizer, pos):
+        ManagedBase.__init__(self, name, klass, parent, id, sizer, pos)
 
         # initialise instance properties
         arguments = [['$parent'], ['$id']]  # ,['$width'],['$height']]
@@ -146,7 +146,7 @@ def builder(parent, sizer, pos, number=[1]):
 
     win.properties["proportion"].set(1)
     win.properties["flag"].set("wxEXPAND")
-    win.show_widget(True)
+    if parent.widget: win.create()
 
     common.app_tree.insert(node, sizer.node, pos-1)
     sizer.set_item(win.pos, 1, wx.EXPAND)

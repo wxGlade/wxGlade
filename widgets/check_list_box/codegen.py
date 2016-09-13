@@ -25,7 +25,6 @@ class CppCheckListBoxGenerator(wcodegen.CppWidgetCodeWriter):
     prefix_style = False
     tmpl_flags = ', %s'
 
-# end of class CppCheckListBoxGenerator
 
 
 def xrc_code_generator(obj):

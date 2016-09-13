@@ -29,9 +29,9 @@ class EditDatePickerCtrl(ManagedBase, EditStylesMixin):
     _PROPERTIES = ["Widget", "style"]
     PROPERTIES = ManagedBase.PROPERTIES + _PROPERTIES + ManagedBase.EXTRA_PROPERTIES
 
-    def __init__(self, name, parent, id, sizer, pos, show=True):
+    def __init__(self, name, parent, id, sizer, pos):
         # Initialise parent classes
-        ManagedBase.__init__(self, name, 'wxDatePickerCtrl', parent, id, sizer, pos, show=show)
+        ManagedBase.__init__(self, name, 'wxDatePickerCtrl', parent, id, sizer, pos)
         EditStylesMixin.__init__(self)
 
         if config.preferences.default_border:
@@ -59,7 +59,7 @@ def builder(parent, sizer, pos, number=[1]):
     datepicker_ctrl = EditDatePickerCtrl(label, parent, wx.NewId(), sizer, pos)
     node = Node(datepicker_ctrl)
     datepicker_ctrl.node = node
-    datepicker_ctrl.show_widget(True)
+    if parent.widget: datepicker_ctrl.create()
     common.app_tree.insert(node, sizer.node, pos-1)
 
 
@@ -72,7 +72,7 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
         raise XmlParsingError(_("'name' attribute missing"))
     if sizer is None or sizeritem is None:
         raise XmlParsingError(_("sizer or sizeritem object cannot be None"))
-    datepicker_ctrl = EditDatePickerCtrl(label, parent, wx.NewId(), sizer, pos, show=False)
+    datepicker_ctrl = EditDatePickerCtrl(label, parent, wx.NewId(), sizer, pos)
     sizer.set_item(datepicker_ctrl.pos, proportion=sizeritem.proportion, flag=sizeritem.flag, border=sizeritem.border)
     node = Node(datepicker_ctrl)
     datepicker_ctrl.node = node

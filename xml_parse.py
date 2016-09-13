@@ -476,8 +476,10 @@ class ClipboardXmlWidgetBuilder(XmlWidgetBuilder):
                 import misc
                 try:
                     # show the first object and update its layout
-                    if self.top_obj.node.parent.widget.is_visible():
-                        common.app_tree.show_widget(self.top_obj.node)
+                    #if self.top_obj.node.parent.widget.is_visible():
+                    #    common.app_tree.show_widget(self.top_obj.node)
+                    if self.top_obj.node.parent.widget.widget:
+                        self.top_obj.create()
                 except AttributeError:
                     self._logger.exception( _('Exception caused by obj: %s'), self.top_obj )
                 misc.set_focused_widget(self.top_obj)
@@ -658,9 +660,7 @@ class CodeWriter(XmlParser):
             return
 
         if not self._appl_started:
-            raise XmlParsingError(
-                _("the root of the tree must be <application>")
-                )
+            raise XmlParsingError( _("the root of the tree must be <application>") )
         if name == 'object':
             # create the object and push it on the appropriate stacks
             CodeObject(attrs, self, preview=self.preview)
@@ -693,8 +693,17 @@ class CodeWriter(XmlParser):
         if name == 'object':
             # remove last object from Stack
             obj = self.pop()
-            if obj.klass in ('sizeritem', 'sizerslot'):
+            if obj.klass=='sizeritem':
+                # nothing to do; the object inside was added already
                 return
+
+            if obj.klass=='sizerslot':  # no sizeritem required
+                topl = self._toplevels.top()
+                self.code_writer.add_object(topl, obj)
+                szr = self._sizers.top()
+                self.code_writer.add_sizeritem(topl, szr, obj, 0, "", 0)  # XXX maybe, grow and expand would be better
+                return
+
             # at the end of the object, we have all the information to add it to its toplevel parent,
             # or to generate the code for the custom class
             if obj.is_toplevel and not obj.in_sizers:
@@ -794,8 +803,7 @@ class CodeObject(object):
                 if not self.parser._sizers.count():
                     self.is_toplevel = True
                 else:
-                    # the sizer is a toplevel one if its parent has not a
-                    # sizer yet
+                    # the sizer is a toplevel one if its parent has not a sizer yet
                     sz = self.parser._sizers.top()
                     if sz.parent != self.parent:
                         self.is_toplevel = True
@@ -803,8 +811,12 @@ class CodeObject(object):
             else:
                 self.parser._windows.push(self)
                 self.in_windows = True
-        else:  # the object is a sizeritem
+        else:  # the object is a sizeritem or a slot
             self.obj = Sizeritem()
+            if self.klass == "sizerslot":
+                self.base = "sizerslot"
+                self.name = "sizerslot"
+                self.is_slot = True
             self.obj.flag_s = '0'
             self.parser._sizer_item.push(self)
 

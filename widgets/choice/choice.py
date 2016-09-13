@@ -35,8 +35,8 @@ class EditChoice(ManagedBase):
     _PROPERTIES = ["Widget", "selection", "choices"]
     PROPERTIES = ManagedBase.PROPERTIES + _PROPERTIES + ManagedBase.EXTRA_PROPERTIES
 
-    def __init__(self, name, parent, id, choices, sizer, pos, show=True):
-        ManagedBase.__init__(self, name, 'wxChoice', parent, id, sizer, pos, show=show)
+    def __init__(self, name, parent, id, choices, sizer, pos):
+        ManagedBase.__init__(self, name, 'wxChoice', parent, id, sizer, pos)
 
         # initialise instance properties
         self.selection = np.SpinProperty(0, val_range=len(choices)-1, immediate=True )
@@ -95,7 +95,7 @@ def builder(parent, sizer, pos, number=[1]):
     node = Node(choice)
     #sizer.set_item(pos, size=choice.GetBestSize())
     choice.node = node
-    choice.show_widget(True)
+    if parent.widget: choice.create()
     common.app_tree.insert(node, sizer.node, pos-1)
 
 

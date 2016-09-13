@@ -273,7 +273,7 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
      app_name:                Application name
      app_encoding:            Encoding of the application; will be initialised with L{config.default_encoding}
      app_filename:            File name to store the application start code within multi file projects
-     
+
      app_mapping:             Default mapping of template variables for substituting in templates
                                (see L{lang_mapping}, L{add_app()})
      lang_mapping:            Language specific mapping of template variables for substituting in templates
@@ -350,7 +350,7 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
     """
 
     classattr_always = [] # List of classes to store always as class attributes; see test_attribute()
-    class_separator = '' # Separator between class and attribute or between different name space elements; 
+    class_separator = '' # Separator between class and attribute or between different name space elements;
     # E.g "." for Python or "->" for Perl.
 
     global_property_writers = {} # Custom handlers for widget properties
@@ -359,7 +359,7 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
     name_ctor = '' # Name of the constructor. E.g. "__init__" in Python or "new" in Perl.
     shebang = None # Shebang line, the first line of the generated main files; newline sequence at the end; see save_file
     SourceFileContent = None # Just a reference to the language specific instance of SourceFileContent
-    
+
     ####################################################################################################################
     # code generation templates
 
@@ -376,7 +376,7 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
     tmpl_empty_string = '""'       # Template for an empty string.
 
     tmpl_name_do_layout = ''       # Name of the function __do_layout() in wxGlade begin tag
-    tmpl_func_do_layout = ''       # Statement for the    __do_layout() function; 
+    tmpl_func_do_layout = ''       # Statement for the    __do_layout() function;
                                    #  -> see generate_code_do_layout():
 
     tmpl_func_event_stub = ''      # Statement for a event handler stub -> see generate_code_event_handler()_
@@ -395,7 +395,7 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
 
     tmpl_sizeritem = ''   # Template for adding a widget to a sizer; see add_sizeritem()
     tmpl_style = ''       # Template for setting style in constructor; see _format_style()
-    
+
     # templates used by add_app():
     tmpl_appfile = None           # file header for standalone files with application start code
     tmpl_detailed = None          # detailed application start code without gettext support
@@ -777,7 +777,7 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
 
         if not klass in self.classes:
             # if the class body was empty, create an empty ClassLines
-            self.classes[klass] = self.ClassLines()
+            self.classes[klass] = ClassLines()
 
         # collect all event handlers
         event_handlers = self.classes[klass].event_handlers
@@ -940,11 +940,7 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
             write(code)
 
             # insert the extra code of this class
-            code = self._tagcontent(
-                'extracode',
-                self.classes[klass].extra_code[::-1],
-                True
-                )
+            code = self._tagcontent( 'extracode', self.classes[klass].extra_code[::-1], True )
             write(code)
 
             # write the class body
@@ -1015,7 +1011,6 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
                     if not self.multiple_files and self.previous_source:
                         self.warning( '%s has extra code, but you are not overwriting existing sources: please check '
                                       'that the resulting code is correct!' % sub_obj.name )
-
         else:  # the object is a sizer
             klass.sizers_init.extend(init)
 
@@ -1049,8 +1044,8 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
             builder = self.obj_builders[sub_obj.base]
         except KeyError:
             # no code generator found: write a comment about it
-            msg = _('Code for instance "%s" of "%s" not generated: no suitable writer found') % (
-                                                                                           sub_obj.name, sub_obj.klass )
+            name = getattr(sub_obj, "name", "None")
+            msg = _('Code for instance "%s" of "%s" not generated: no suitable writer found') % (name, sub_obj.klass )
             self._source_warning(klass, msg, sub_obj)
             self.warning(msg)
             # ignore widget later too
@@ -1104,7 +1099,7 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
         if toplevel.klass in self.classes:
             klass = self.classes[toplevel.klass]
         else:
-            klass = self.classes[toplevel.klass] = self.ClassLines()
+            klass = self.classes[toplevel.klass] = ClassLines()
 
         # check if sizer has to store as a class attribute
         sizer_name = self._format_classattr(sizer)
@@ -1136,7 +1131,7 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
         return nonce
 
     def get_property_handler(self, property_name, widget_name):
-        """Return the widget specific property handler; 
+        """Return the widget specific property handler;
         @see: L{add_property_handler}, L{global_property_writers}, L{_property_writers}"""
         try:
             cls = self._property_writers[widget_name][property_name]
@@ -1498,7 +1493,7 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
                 os.chmod(filename, 0o755)
             except OSError as e:
                 # this isn't necessarily a bad error
-                self.warning( _('Changing permission of main file "%s" failed: %s') % ( filename, str(e) ) )
+                self.warning(_('Changing permission of file "%s" failed: %s') % (filename, str(e)))
 
     def test_attribute(self, obj):
         """Returns True if 'obj' should be added as an attribute of its parent's class,
