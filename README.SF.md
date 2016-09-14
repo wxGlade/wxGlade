@@ -11,7 +11,7 @@ THIS PROGRAM COMES WITH NO WARRANTY
 
 Requirements
 ------------
-- Python (http://www.python.org) >= 2.4
+- Python (http://www.python.org) 2.7, 3.1 or later
 - wxPython (http://www.wxpython.org) >= 2.8
 
 Files

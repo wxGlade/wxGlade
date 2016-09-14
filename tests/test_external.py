@@ -19,7 +19,7 @@ class TestExternal(unittest.TestCase):
         """\
         Test deep copying OrderedDict
         """
-        from ordereddict import OrderedDict
+        from collections import OrderedDict
         a = OrderedDict([('A', 'A'), ('B', 'B'), (1, 2)])
         a[2] = {'a': 1}
         b = deepcopy(a)

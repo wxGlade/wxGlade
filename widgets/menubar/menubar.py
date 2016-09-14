@@ -29,7 +29,7 @@ class MenuItemDialog(wx.Dialog):
         self.menu_items = wx.ListCtrl( self, LIST_ID,
                                        style=wx.LC_REPORT|wx.LC_SINGLE_SEL|wx.BORDER_SUNKEN|wx.LC_EDIT_LABELS )
         self.menu_items.Bind(wx.EVT_LIST_END_LABEL_EDIT, self.on_label_edited)
-        
+
         # ALB 2004-09-26: workaround to make the scroll wheel work...
         wx.EVT_MOUSEWHEEL(self.menu_items, lambda e: e.Skip())
 
@@ -106,12 +106,12 @@ class MenuItemDialog(wx.Dialog):
             return
 
         index = event.GetIndex()
-        
+
         #set_item = self.menu_items.SetStringItem
         if index == self.selected_index:
             # update edit field
             self.label.SetValue(label)
-        
+
         #val = self.event_handler.GetValue()
         #if not self.handler_re.match(val):
             #event.GetEventObject().SetFocus()

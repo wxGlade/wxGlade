@@ -20,7 +20,7 @@ import compat
 import config
 import misc
 from misc import _reverse_dict
-from ordereddict import OrderedDict
+from collections import OrderedDict
 
 try:
     basestring
@@ -79,7 +79,7 @@ class Property(object):
                 self.owner[self.name][1](val)
             self.val = self.get_value()
         event.Skip()
-        
+
     def retrieve_value(self):
         "get current value from object"
         if self.getter:

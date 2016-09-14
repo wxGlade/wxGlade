@@ -7,7 +7,7 @@ Base classes for windows used by wxGlade
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
-from ordereddict import OrderedDict
+from collections import OrderedDict
 import logging, math, re, copy
 import wx
 
@@ -55,11 +55,11 @@ class EditBase(EventsMixin, np.PropertyOwner):
     can_preview = False
     _PROPERTIES = ["Common", "name","class", "custom_base"] # "custom_base" will be set to None or a property
     PROPERTIES = _PROPERTIES
-    
+
     # the following will be placed on the last tab
     _EXTRA_PROPERTIES = ["Events", "events", "Code", "extracode", "extraproperties"]
     EXTRA_PROPERTIES = _EXTRA_PROPERTIES
-    
+
     _PROPERTY_HELP={ "class": _("If you change the default value, it will be interpreted as the name "
                                 "of the subclass of the widget. How this name affects code generation "
                                 "depends on the kind (i.e. language) of output. See the docs for more details."),
@@ -163,7 +163,7 @@ class EditBase(EventsMixin, np.PropertyOwner):
         menu.AppendSeparator()
 
         # rows/cols if inside a grid sizer
-        if "rows" in self.sizer.PROPERTIES:  
+        if "rows" in self.sizer.PROPERTIES:
             i = misc.append_menu_item(menu, -1, _('Insert Row before') )
             misc.bind_menu_item_after(widget, i, self.sizer.insert_row, self.pos)
             i = misc.append_menu_item(menu, -1, _('Insert Column before') )
@@ -184,7 +184,7 @@ class EditBase(EventsMixin, np.PropertyOwner):
             misc.bind_menu_item_after(widget, i, self.insert_slot)
             i = misc.append_menu_item(menu, -1, _('Insert Slots before...') )
             misc.bind_menu_item_after(widget, i, self.insert_slot, True)
-    
+
             if self.pos==len(self.sizer.children)-1: # last slot -> allow to add
                 i = misc.append_menu_item(menu, -1, _('Add Slot') )
                 misc.bind_menu_item_after(widget, i, self.add_slot)
@@ -335,18 +335,18 @@ class WindowBase(EditBase):
     _PROPERTIES = ["id", "size", "background", "foreground", "font", "tooltip", "disabled", "focused", "hidden"]
     PROPERTIES = EditBase.PROPERTIES + _PROPERTIES
 
-    _PROPERTY_HELP = { "id":"""The "Id" property could be 
+    _PROPERTY_HELP = { "id":"""The "Id" property could be
     1) a constant numeric value
     2) a predefined identifier e.g. wxID_ANY
     3) a predefined variable like a class member e.g. self.myButtonID
     4) a variable assignment e.g. self.myButtonID=?
-    
+
     The pattern of a variable assignment is always "variable=value". The \
     value could be again a numeric value, a predefined identifier, \
     another predefined variable or "?" a shortcut for "wxNewId()"."""}
 
     _PROPERTY_LABELS = {"attribute":'Store as attribute'}  # used in many derived widget editors
-    
+
 
     def __init__(self, name, klass, parent, id):
         EditBase.__init__(self, name, klass, parent, id)
@@ -367,7 +367,7 @@ class WindowBase(EditBase):
             font = self._build_from_font( compat.wx_SystemSettings_GetFont(wx.SYS_DEFAULT_GUI_FONT) )
             font[1] = 'default'
             self.font = np.FontPropertyD(font)
-        
+
         # tooltip, focused, hiden
         self.tooltip    = np.TextPropertyD()
         self.disabled   = np.CheckBoxProperty(False, default_value=False)
@@ -576,7 +576,7 @@ class ManagedBase(WindowBase):
     _PROPERTY_LABELS = {"option": "Proportion" }
 
     ####################################################################################################################
-    
+
     def __init__(self, name, klass, parent, id, sizer, pos):
         WindowBase.__init__(self, name, klass, parent, id)
         # if True, the user is able to control the layout of the widget
@@ -970,7 +970,7 @@ class EditStylesMixin(np.PropertyOwner):
         cn = self.codegen.get_class(self.codegen.cn(name))
         attr = getattr(wx, cn)
         return attr
-    
+
     def properties_changed(self, modified):
         # XXX add style modfication handling
         pass
