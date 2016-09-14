@@ -696,7 +696,7 @@ class CodeWriter(XmlParser):
             if obj.klass=='sizeritem':
                 # nothing to do; the object inside was added already
                 return
-            
+
             if obj.klass=='sizerslot':  # no sizeritem required
                 topl = self._toplevels.top()
                 self.code_writer.add_object(topl, obj)

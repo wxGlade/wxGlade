@@ -102,7 +102,7 @@ class wxGladePropertyPanel(wx.Frame):
                 # start new page
                 current_pagename = prop
                 if prop=="Layout" and not edit_widget._has_layout:continue
-                
+
                 current_page = self.start_page(prop)
                 current_sizer = wx.BoxSizer(wx.VERTICAL)
                 self.sizers.append(current_sizer)
@@ -138,7 +138,7 @@ class wxGladePropertyPanel(wx.Frame):
         panel.SetSizer(sizer)
         sizer.Layout()
         sizer.Fit(panel)
-    
+
         w, h = panel.GetClientSize()
         self.notebook.AddPage(panel, _(header),select=select)
         panel.SetScrollbars(1, 5, 1, int(math.ceil(h/5.0)))
@@ -286,7 +286,7 @@ class wxGladeFrame(wx.Frame):
         SAVE_TEMPLATE_ID = wx.NewId()
         append_menu_item(file_menu, SAVE_TEMPLATE_ID, _("Save As Template..."))
         file_menu.AppendSeparator()
-        
+
         append_menu_item(file_menu, wx.ID_REFRESH, _("&Refresh Preview\tF5"))
 
         GENERATE_CODE_ID = wx.NewId()

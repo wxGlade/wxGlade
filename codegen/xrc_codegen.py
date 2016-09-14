@@ -12,7 +12,7 @@ return an instance of XrcObject
 
 from xml.sax.saxutils import escape, quoteattr
 from codegen import BaseLangCodeWriter, EventsPropertyHandler, ExtraPropertiesPropertyHandler
-from ordereddict import OrderedDict
+from collections import OrderedDict
 import common, compat, errors
 import wcodegen
 from wcodegen.taghandler import BaseCodeWriterTagHandler

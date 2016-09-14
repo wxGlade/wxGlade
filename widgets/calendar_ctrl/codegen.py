@@ -19,6 +19,11 @@ class PythonCalendarCtrlGenerator(wcodegen.PythonWidgetCodeWriter):
     #else:
         #import_modules = ['import wx.adv\n']  # XXX is wx.adv.CalendarCtrl
 
+    #if compat.IS_CLASSIC:
+        #import_modules = ['import wx.calendar\n']  # XXX is wx.adv.CalendarCtrl
+    #else:
+        #import_modules = ['import wx.adv\n']  # XXX is wx.adv.CalendarCtrl
+
     def cn(self, c):
         # TODO remove ugly hack for wxColour
         if c == 'wxColour':

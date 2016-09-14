@@ -486,7 +486,7 @@ class Application(np.PropertyOwner):
         pass
 
     def check_codegen(self, widget=None, language=None):
-        """Checks whether widget has a suitable code generator for the given language 
+        """Checks whether widget has a suitable code generator for the given language
         (default: the current active language). If not, the user is informed with a message."""
         if language is None:
             language = self.language
