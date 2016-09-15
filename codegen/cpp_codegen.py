@@ -19,7 +19,7 @@ methods of the parent object.
 
 import os.path, re
 
-from codegen import BaseLangCodeWriter, BaseSourceFileContent, BaseWidgetHandler, ClassLines
+from codegen import BaseLangCodeWriter, BaseSourceFileContent, BaseWidgetHandler
 import config, compat, misc
 import wcodegen
 
@@ -267,27 +267,6 @@ class WidgetHandler(BaseWidgetHandler):
         """
         return []
 
-class ClassLines(ClassLines):
-    """\
-    Stores the lines of C++ code for a custom class
-
-    @ivar ids:             Ids declared in the source (to use for Event
-                           handling): these are grouped together into a
-                           public enum in the custom class
-    @ivar sub_objs:        List of 2-tuples (type, name) of the sub-objects
-                           which are attributes of the toplevel object
-    @ivar extra_code_h:    Extra header code to output
-    @ivar extra_code_cpp:  Extra source code to output
-    """
-
-    def __init__(self):
-        ClassLines.__init__(self)
-        self.ids = []
-        self.sub_objs = []
-        self.extra_code_h = []
-        self.extra_code_cpp = []
-        self.dependencies = []     # List not dictionary
-
 
 class CPPCodeWriter(BaseLangCodeWriter, wcodegen.CppMixin):
     """\
@@ -492,6 +471,29 @@ bool MyApp::OnInit()
 
     tmpl_empty_string = 'wxEmptyString'
 
+    class ClassLines(BaseLangCodeWriter.ClassLines):
+        """\
+        Stores the lines of C++ code for a custom class
+
+        @ivar ids:             Ids declared in the source (to use for Event
+                               handling): these are grouped together into a
+                               public enum in the custom class
+        @ivar sub_objs:        List of 2-tuples (type, name) of the sub-objects
+                               which are attributes of the toplevel object
+        @ivar extra_code_h:    Extra header code to output
+        @ivar extra_code_cpp:  Extra source code to output
+        """
+
+        def __init__(self):
+            BaseLangCodeWriter.ClassLines.__init__(self)
+            self.ids = []
+            self.sub_objs = []
+            self.extra_code_h = []
+            self.extra_code_cpp = []
+            self.dependencies = []     # List not dictionary
+
+    # end of class ClassLines
+
     def init_lang(self, app_attrs):
         self.last_generated_id = 1000
 
@@ -683,7 +685,7 @@ bool MyApp::OnInit()
 
         if not klass in self.classes:
             # if the class body was empty, create an empty ClassLines
-            self.classes[klass] = ClassLines()
+            self.classes[klass] = self.ClassLines()
 
         # collect all event handlers
         event_handlers = self.classes[klass].event_handlers
