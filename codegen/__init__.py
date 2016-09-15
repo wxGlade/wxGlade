@@ -220,25 +220,6 @@ class BaseWidgetHandler(object):
         return []
 
 
-
-class ClassLines(object):
-    "Stores the lines of source code for a custom class"
-    def __init__(self):
-        self.child_order = []
-        self.dependencies = {}    # Names of the modules this class depends on
-        self.deps = []
-        self.event_handlers = []  # Lines to bind events (see L{wcodegen.BaseWidgetWriter.get_event_handlers()})
-        self.extra_code = []      # Extra code to output before this class
-        self.done = False         # If True, the code for this class has already been generated
-        self.init = []            # Lines of code to insert in the __init__ method (for children widgets)
-        self.init_lines = {}
-        self.layout = []          # Lines to insert in the __do_layout method
-        self.parents_init = []    # Lines to insert in the __init__ for container widgets (panels, splitters, ...)
-        self.props = []           # Lines to insert in the __set_properties method
-        self.sizers_init = []     # Lines related to sizer objects declarations
-
-
-
 class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
     """\
     Dictionary of objects used to generate the code in a given language.
@@ -404,6 +385,22 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
     tmpl_gettext_simple = None    # simplified application start code with gettext support
 
     _show_warnings = True  # Enable or disable printing of warning messages; see self.warning()
+
+    class ClassLines(object):
+        "Stores the lines of source code for a custom class"
+        def __init__(self):
+            self.child_order = []
+            self.dependencies = {}    # Names of the modules this class depends on
+            self.deps = []
+            self.event_handlers = []  # Lines to bind events (see L{wcodegen.BaseWidgetWriter.get_event_handlers()})
+            self.extra_code = []      # Extra code to output before this class
+            self.done = False         # If True, the code for this class has already been generated
+            self.init = []            # Lines of code to insert in the __init__ method (for children widgets)
+            self.init_lines = {}
+            self.layout = []          # Lines to insert in the __do_layout method
+            self.parents_init = []    # Lines to insert in the __init__ for container widgets (panels, splitters, ...)
+            self.props = []           # Lines to insert in the __set_properties method
+            self.sizers_init = []     # Lines related to sizer objects declarations
 
     DummyPropertyHandler = DummyPropertyHandler
     EventsPropertyHandler = EventsPropertyHandler
@@ -777,7 +774,7 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
 
         if not klass in self.classes:
             # if the class body was empty, create an empty ClassLines
-            self.classes[klass] = ClassLines()
+            self.classes[klass] = self.ClassLines()
 
         # collect all event handlers
         event_handlers = self.classes[klass].event_handlers
@@ -1037,7 +1034,7 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
         if top_obj.klass in self.classes:
             klass = self.classes[top_obj.klass]
         else:
-            klass = self.classes[top_obj.klass] = ClassLines()
+            klass = self.classes[top_obj.klass] = self.ClassLines()
 
         # Check for widget builder object
         try:
@@ -1099,7 +1096,7 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
         if toplevel.klass in self.classes:
             klass = self.classes[toplevel.klass]
         else:
-            klass = self.classes[toplevel.klass] = ClassLines()
+            klass = self.classes[toplevel.klass] = self.ClassLines()
 
         # check if sizer has to store as a class attribute
         sizer_name = self._format_classattr(sizer)
