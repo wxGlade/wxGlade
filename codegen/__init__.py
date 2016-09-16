@@ -1085,6 +1085,7 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
     def add_sizeritem(self, toplevel, sizer, obj, option, flag, border):
         """Writes the code to add the object 'obj' to the sizer 'sizer' in the 'toplevel' object.
         All widgets in L{blacklisted_widgets} are ignored; template is self.tmpl_sizeritem"""
+
         # don't process widgets listed in blacklisted_widgets
         if obj in self.blacklisted_widgets:
             return
@@ -1101,7 +1102,11 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
         # check if sizer has to store as a class attribute
         sizer_name = self._format_classattr(sizer)
 
-        stmt = self.tmpl_sizeritem % ( sizer_name, obj_name, option, self.cn_f(flag), border )
+        flag = self.cn_f(flag)
+        if not flag:
+            flag = '0'
+
+        stmt = self.tmpl_sizeritem % ( sizer_name, obj_name, option, flag, border )
 
         klass.layout.append(stmt)
 
