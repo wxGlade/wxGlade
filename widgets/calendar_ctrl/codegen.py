@@ -14,6 +14,8 @@ class PythonCalendarCtrlGenerator(wcodegen.PythonWidgetCodeWriter):
 
     tmpl = '%(name)s = %(klass)s(%(parent)s, %(id)s%(style)s)\n'
 
+    import_modules = ['import wx.calendar\n']
+
     #if compat.IS_CLASSIC:
         #import_modules = ['import wx.calendar\n']  # XXX is wx.adv.CalendarCtrl
     #else:
