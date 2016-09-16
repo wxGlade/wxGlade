@@ -68,7 +68,6 @@ class StylesMixin(object):
         @see: L{config.widget_config}
         """
         assert isinstance(flags, basestring)
-        if not flags: return '0'
         if flags.isdigit():
             return flags
 
