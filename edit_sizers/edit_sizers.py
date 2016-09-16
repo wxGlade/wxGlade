@@ -240,14 +240,15 @@ class SizerSlot(np.PropertyOwner):
             dc.Clear()
 
     # context menu #####################################################################################################
-    def popup_menu(self, event):
+    def popup_menu(self, event, pos=None):
         event_widget = event.GetEventObject()
         menu = self._create_popup_menu(widget=event_widget)
-        # convert relative event position to relative widget position
-        event_pos  = event.GetPosition()
-        screen_pos = event_widget.ClientToScreen(event_pos)
-        client_pos = event_widget.ScreenToClient(screen_pos)
-        event_widget.PopupMenu(menu, client_pos)
+        if pos is None:
+            # convert relative event position to relative widget position
+            event_pos  = event.GetPosition()
+            screen_pos = event_widget.ClientToScreen(event_pos)
+            pos        = event_widget.ScreenToClient(screen_pos)
+        event_widget.PopupMenu(menu, pos)
 
     def _create_popup_menu(self, widget):
         self._destroy_popup_menu()
@@ -733,15 +734,16 @@ class SizerBase(Sizer, np.PropertyOwner):
         return "AddSlot" # a slot is to be added before inserting/pasting
 
     # popup menu #######################################################################################################
-    def popup_menu(self, event):
+    def popup_menu(self, event, pos=None):
         "pops up a menu to add or remove slots from self, or to remove self from the application."
         event_widget = event.GetEventObject()
         menu = self._create_popup_menu(widget=event_widget)
-        # convert relative event position to relative widget position
-        event_pos  = event.GetPosition()
-        screen_pos = event_widget.ClientToScreen(event_pos)
-        client_pos = event_widget.ScreenToClient(screen_pos)
-        event_widget.PopupMenu(menu, client_pos)
+        if pos is None:
+            # convert relative event position to relative widget position
+            event_pos  = event.GetPosition()
+            screen_pos = event_widget.ClientToScreen(event_pos)
+            pos        = event_widget.ScreenToClient(screen_pos)
+        event_widget.PopupMenu(menu, pos)
 
     def _create_popup_menu(self, widget):
         # provide popup menu for removal

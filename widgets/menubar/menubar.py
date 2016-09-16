@@ -666,10 +666,10 @@ class EditMenuBar(EditBase, PreviewMixin):
                 self.widget = None
         EditBase.remove(self)
 
-    def popup_menu(self, event):
+    def popup_menu(self, event, pos=None):
         if self.parent is not None:
             return  # do nothing in this case
-        super(EditMenuBar, self).popup_menu(event)
+        super(EditMenuBar, self).popup_menu(event, pos)
 
     def _create_popup_menu(self, widget=None):
         REMOVE_ID, HIDE_ID = [wx.NewId() for i in range(2)]

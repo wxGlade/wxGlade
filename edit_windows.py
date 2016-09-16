@@ -138,15 +138,16 @@ class EditBase(EventsMixin, np.PropertyOwner):
             misc.focused_widget = None
 
     # context menu #####################################################################################################
-    def popup_menu(self, event):
+    def popup_menu(self, event, pos=None):
         self._destroy_popup_menu()
         event_widget = event.GetEventObject()
         menu = self._create_popup_menu(widget=event_widget)
-        # convert relative event position to relative widget position
-        event_pos  = event.GetPosition()
-        screen_pos = event_widget.ClientToScreen(event_pos)
-        client_pos = event_widget.ScreenToClient(screen_pos)
-        event_widget.PopupMenu(menu, pos=client_pos)
+        if pos is None:
+            # convert relative event position to relative widget position
+            event_pos  = event.GetPosition()                     # event position
+            screen_pos = event_widget.ClientToScreen(event_pos)  # screen position
+            pos        = event_widget.ScreenToClient(screen_pos)        # client position
+        event_widget.PopupMenu(menu, pos=pos)
 
     def _create_popup_menu(self, widget):
         self._destroy_popup_menu()

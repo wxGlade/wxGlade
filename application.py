@@ -529,7 +529,7 @@ class Application(np.PropertyOwner):
         prop.wildcards = '|'.join(wildcards)
         prop.default_extension = '.%s' % ext[0]  if ext else  None
 
-    def popup_menu(self, event):
+    def popup_menu(self, event, pos=None):
         # right click event -> expand all or show context menu
         self._destroy_popup_menu()
         expanded = True
@@ -544,11 +544,12 @@ class Application(np.PropertyOwner):
         # already expanded -> show context menu
         event_widget = event.GetEventObject()
         menu = self._create_popup_menu(widget=event_widget)
-        # convert relative event position to relative widget position
-        event_pos  = event.GetPosition()
-        screen_pos = event_widget.ClientToScreen(event_pos)
-        client_pos = event_widget.ScreenToClient(screen_pos)
-        event_widget.PopupMenu(menu, pos=client_pos)
+        if pos is None:
+            # convert relative event position to relative widget position
+            event_pos  = event.GetPosition()
+            screen_pos = event_widget.ClientToScreen(event_pos)
+            pos        = event_widget.ScreenToClient(screen_pos)
+        event_widget.PopupMenu(menu, pos=pos)
 
     def _create_popup_menu(self, widget):
         self._destroy_popup_menu()

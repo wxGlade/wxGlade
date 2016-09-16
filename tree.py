@@ -338,7 +338,24 @@ class WidgetTree(wx.TreeCtrl, Tree):
         
         self.Bind(wx.EVT_TREE_BEGIN_LABEL_EDIT, self.begin_edit_label)
         self.Bind(wx.EVT_TREE_END_LABEL_EDIT, self.end_edit_label)
-        self.Bind(wx.EVT_KEY_DOWN, misc.on_key_down_event)
+        #self.Bind(wx.EVT_KEY_DOWN, misc.on_key_down_event)
+        self.Bind(wx.EVT_KEY_DOWN, self.on_key_down_event)
+
+    def on_key_down_event(self, event):
+        #if event.GetKeyCode()==13:
+            ## go to property editor
+            #common.property_panel.SetFocus()
+            #return
+        if event.GetKeyCode()==wx.WXK_WINDOWS_MENU and self.cur_widget:
+            # windows menu key pressed -> display context menu for selected item
+            item = self.RootItem  if self.cur_widget is self.app else  self.cur_widget.node.item
+            if item:
+                rect = self.GetBoundingRect(item, textOnly=True)
+                if rect is not None:
+                    pos = (rect.right, (rect.top+rect.bottom)//2)
+                    self.cur_widget.popup_menu(event, pos=pos)
+                    return
+        misc.on_key_down_event(event)
 
     def begin_drag(self, evt):
         # inhibit drag start or remember the dragged item
@@ -579,13 +596,13 @@ class WidgetTree(wx.TreeCtrl, Tree):
             return
         event.Skip()
 
-    def popup_menu(self, event):
+    def popup_menu(self, event, pos=None):
         node = self._find_item_by_pos(*event.GetPosition())
         if not node:
             return
         self.select_item(node)
         item = node.widget
-        item.popup_menu(event)
+        item.popup_menu(event, pos)
 
     def expand(self, node=None, yes=True):
         "expands or collapses the given node"

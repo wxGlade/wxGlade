@@ -583,10 +583,10 @@ class EditToolBar(EditBase, PreviewMixin, EditStylesMixin, BitmapMixin):
                 self.pwidget = None
         EditBase.remove(self)
 
-    def popup_menu(self, event):
+    def popup_menu(self, event, pos=None):
         if self.parent is not None:
             return  # do nothing in this case
-        super(EditToolBar, self).popup_menu(event)
+        super(EditToolBar, self).popup_menu(event, pos)
 
     def _create_popup_menu(self):
         REMOVE_ID = wx.NewId()
