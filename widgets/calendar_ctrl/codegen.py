@@ -14,17 +14,11 @@ class PythonCalendarCtrlGenerator(wcodegen.PythonWidgetCodeWriter):
 
     tmpl = '%(name)s = %(klass)s(%(parent)s, %(id)s%(style)s)\n'
 
-    import_modules = ['import wx.calendar\n']
-
-    #if compat.IS_CLASSIC:
-        #import_modules = ['import wx.calendar\n']  # XXX is wx.adv.CalendarCtrl
-    #else:
-        #import_modules = ['import wx.adv\n']  # XXX is wx.adv.CalendarCtrl
-
-    #if compat.IS_CLASSIC:
-        #import_modules = ['import wx.calendar\n']  # XXX is wx.adv.CalendarCtrl
-    #else:
-        #import_modules = ['import wx.adv\n']  # XXX is wx.adv.CalendarCtrl
+    # XXX the following needs to depend on the code generator when Phoenix is about to be supported fully:
+    if compat.IS_CLASSIC:
+        import_modules = ['import wx.calendar\n']
+    else:
+        import_modules = ['import wx.adv\n']
 
     def cn(self, c):
         # TODO remove ugly hack for wxColour

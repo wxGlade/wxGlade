@@ -576,7 +576,7 @@ class EditMenuBar(EditBase, PreviewMixin):
     def __init__(self, name, klass, parent):
         custom_class = parent is None
         EditBase.__init__(self, name, klass, parent, wx.NewId(), custom_class=custom_class)
-        self.base = 'wxMenuBar'
+        self.properties["base"].set('wxMenuBar')
 
         self.menus = MenuProperty()
         self._mb = None  # the real menubar
