@@ -925,7 +925,8 @@ class EditStylesMixin(np.PropertyOwner):
                 self.style_names = styles
         else:
             self.style_names = self.widget_writer.style_list
-        self.style = np.WidgetStyleProperty(0) # this will use below methods
+        #self.style = np.WidgetStyleProperty(0) # this will use below methods
+        self.style = np.WidgetStyleProperty()  # this will read it's default value
 
     def _set_widget_style(self):
         """\

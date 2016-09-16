@@ -722,6 +722,10 @@ class ManagedFlags(_CheckListProperty):
 
 class WidgetStyleProperty(_CheckListProperty):
     # for widget style flags; XXX handle combinations and exclusions
+    def __init__(self):
+        # the value will be set later in set_owner()
+        _CheckListProperty.__init__(self, value=0)
+
     def set_owner(self, owner, attname):
         "style information is taken from self.owner.widget_writer"
         _CheckListProperty.set_owner(self, owner, attname)
@@ -731,6 +735,7 @@ class WidgetStyleProperty(_CheckListProperty):
         self.styles[widget_writer.box_label] = widget_writer.style_list
         self._names = sum( self.styles.values(), [] )
         self._values = None
+        self.set(widget_writer.default_style)
 
     def _ensure_values(self):
         self._values = []  # the associated flag values

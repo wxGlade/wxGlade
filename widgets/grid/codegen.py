@@ -26,7 +26,7 @@ class ColsCodeHandler(BaseCodeWriterTagHandler):
 
     def end_elem(self, name, code_obj):
         if name == 'columns':
-            code_obj.columns = self.columns
+            code_obj.properties['columns'] = self.columns
             return True
         elif name == 'column':
             char_data = self.get_char_data()

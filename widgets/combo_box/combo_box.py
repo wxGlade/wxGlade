@@ -19,7 +19,7 @@ from ChoicesProperty import *
 class EditComboBox(ManagedBase, EditStylesMixin):
     "Class to handle wxComboBox objects"
 
-    _PROPERTIES = ["Widget", "selection", "choices"]
+    _PROPERTIES = ["Widget", "style", "selection", "choices"]
     PROPERTIES = ManagedBase.PROPERTIES + _PROPERTIES + ManagedBase.EXTRA_PROPERTIES
 
     update_widget_style = False
