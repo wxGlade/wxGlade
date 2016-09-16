@@ -1,0 +1,68 @@
+# List of widget modules
+#
+# List all available widget modules - each on a own line.
+#
+# The modules can optionally be grouped by preceding section headers.
+# A section header is the name of the section enclosed in square brackets.
+#
+# Empty lines will be ignored. Lines beginning with hash sign ('#') are
+# ignored too and may be used to provide comments.
+#
+# Comments can also entered after modules or sections. Use the hash sign
+# ('#') preceded by a whitespace character for such cases.
+
+
+[Forms]
+frame
+dialog
+panel
+
+[Containers]
+notebook
+splitter_window
+
+[Buttons]
+button
+toggle_button
+bitmap_button
+spin_button
+
+[Inputs]
+text_ctrl
+choice
+combo_box
+list_box
+check_list_box
+checkbox
+radio_button
+radio_box
+
+[Numeric & Dates]
+spin_ctrl
+slider
+gauge
+calendar_ctrl
+generic_calendar_ctrl
+datepicker_ctrl
+
+[Data]
+list_ctrl
+tree_ctrl
+grid
+
+[Static]
+static_text
+hyperlink_ctrl
+static_line
+static_bitmap
+spacer
+
+[Misc]
+property_grid_manager
+custom_widget
+
+[Menu & Bars]
+menubar
+toolbar
+statusbar
+
