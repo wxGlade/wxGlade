@@ -529,19 +529,6 @@ class WindowBase(EditBase):
             return code_property.ExtraPropertiesPropertyHandler(self)
         return EditBase.get_property_handler(self, name)
 
-    def copy_properties(self, obj, properties):
-        # XXX implement short cut for properties with values_set
-        modified = set()
-        for p in properties:
-            new = getattr(obj, p)
-            prop = self.properties[p]
-            old = prop.get()
-            if new!=old:
-                modified.add(p)
-                prop.set(new)
-        if modified:
-            self.properties_changed(modified)
-
     def properties_changed(self, modified=None):
         # XXX check whether actions are required
         refresh = False

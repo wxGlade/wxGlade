@@ -200,15 +200,13 @@ class EditSplitterWindow(ManagedBase, EditStylesMixin):
             self.properties['sash_pos'].set_range(-max_pos, max_pos)
             if not self.properties['sash_pos'].is_active():
                 self.widget.SetSashPosition(max_pos // 2)
-                self.sash_pos = self.widget.GetSashPosition()
-                self.properties['sash_pos'].set(self.sash_pos)
+                self.properties['sash_pos'].set( self.widget.GetSashPosition() )
         except (AttributeError, KeyError):
             pass
         ManagedBase.on_size(self, event)
 
     def on_sash_pos_changed(self, event):
-        self.sash_pos = self.widget.GetSashPosition()
-        self.properties['sash_pos'].set(self.sash_pos)
+        self.properties['sash_pos'].set( self.widget.GetSashPosition() )
         event.Skip()
 
 
