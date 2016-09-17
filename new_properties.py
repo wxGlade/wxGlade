@@ -1765,8 +1765,25 @@ class PropertyOwner(object):
             return
         object.__setattr__(self, name, value)
     def copy_properties(self, other, properties):
-        # copy named properties from other
-        pass
+        "copy named properties from other"
+        # with short cut for properties with 'values_set'
+        modified = set()
+        for p in properties:
+            if hasattr(other, "properties"):
+                o_prop = other.properties[p]
+                new = o_prop.value_set  if hasattr(o_prop, "value_set") else  o_prop.value
+            else:
+                new = getattr(other, p)
+            prop = self.properties[p]
+            if hasattr(prop, "value_set") and isinstance(new, set):
+                old = prop.value_set
+            else:
+                old = prop.get()
+            if new!=old:
+                modified.add(p)
+                prop.set(new)
+        if modified:
+            self.properties_changed(modified)
     def properties_changed(self, modified):
         """properties edited; trigger actions like widget or sizer update;
         'modified' is None or a list of property names;
