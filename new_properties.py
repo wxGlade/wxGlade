@@ -482,6 +482,7 @@ class IntRadioProperty(RadioProperty):
 class _CheckListProperty(Property):
     # common base class for Flags and WidgetStyleFlags; keeps self.value_set as a set of strings
     CONTROLNAMES = ["enabler", "_choices"]
+    excludes = None
 
     def __init__(self, value, default_value=_DefaultArgument, name=None, names=None, values=None):
         self._names = names
@@ -527,6 +528,11 @@ class _CheckListProperty(Property):
 
         if new_value_set!=self.value_set:
             self.value_set = new_value_set
+        Property.set(self, None, activate, deactivate)  # with value=None, as this is to be calculated on demand only
+
+    def add(self, value, activate=False, deactivate=False):
+        if value in self.value_set: return
+        self.value_set.add(value)
         Property.set(self, None, activate, deactivate)  # with value=None, as this is to be calculated on demand only
 
     def get_list_value(self):
@@ -582,7 +588,11 @@ class _CheckListProperty(Property):
         if checked:
             if value in self.value_set: return
             self.value_set.add(value)
-            self.value_set.difference_update( self.style_defs[value].get("exclude",[]) )
+            if self.excludes:
+                excludes = self.excludes.get(value, [])
+            else:
+                excludes = self.style_defs[value].get("exclude",[])
+            self.value_set.difference_update( excludes )
         else:
             if value in self.value_set:
                 self.value_set.remove(value)
@@ -618,9 +628,13 @@ class _CheckListProperty(Property):
             elif not checked[i] and checkbox.GetValue():
                 checkbox.SetValue(False)
             # display included flags in grey and excluded flags red
+            if self.excludes:
+                excludes = self.excludes.get(name, [])
+            else:
+                excludes = self.style_defs[name].get("exclude",[])
             if checked[i] and not name in self.value_set:
                 checkbox.SetForegroundColour(wx.Colour(120,120,100))  # grey
-            elif self.value_set.intersection( self.style_defs[name].get("exclude",[]) ):
+            elif self.value_set.intersection( excludes ):
                 checkbox.SetForegroundColour(wx.RED)
             else:
                 checkbox.SetForegroundColour(wx.BLACK)
@@ -703,16 +717,21 @@ class ManagedFlags(_CheckListProperty):
     # XXX support wxRESERVE_SPACE_EVEN_IF_HIDDEN for 3.x
 
     FLAG_DESCRIPTION = OrderedDict()
-    FLAG_DESCRIPTION[_('Border')   ] = ['wxALL', 'wxLEFT', 'wxRIGHT', 'wxTOP', 'wxBOTTOM']
-    FLAG_DESCRIPTION[_('Alignment')] = ['wxEXPAND', 'wxALIGN_RIGHT', 'wxALIGN_BOTTOM', 'wxALIGN_CENTER',
-                                        'wxALIGN_CENTER_HORIZONTAL', 'wxALIGN_CENTER_VERTICAL',
-                                        'wxSHAPED', 'wxFIXED_MINSIZE']
+    FLAG_DESCRIPTION['Border'   ] = ['wxALL', 'wxLEFT', 'wxRIGHT', 'wxTOP', 'wxBOTTOM']
+    FLAG_DESCRIPTION['Alignment'] = ['wxEXPAND', 'wxALIGN_RIGHT', 'wxALIGN_BOTTOM', 'wxALIGN_CENTER',
+                                     'wxALIGN_CENTER_HORIZONTAL', 'wxALIGN_CENTER_VERTICAL',
+                                     'wxSHAPED', 'wxFIXED_MINSIZE']
     remove = set( ['wxADJUST_MINSIZE',] )
     renames =  {'wxALIGN_CENTRE':'wxALIGN_CENTER',
                 'wxALIGN_CENTRE_VERTICAL':'wxALIGN_CENTER_VERTICAL'}
     
     combinations = { "wxALL":set( 'wxLEFT|wxRIGHT|wxTOP|wxBOTTOM'.split("|") ),
                      "wxALIGN_CENTER":set( 'wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL'.split("|") ) }
+    excludes = {'wxALIGN_RIGHT':            set(['wxALIGN_CENTER","wxALIGN_CENTER_HORIZONTAL']),
+                'wxALIGN_BOTTOM':           set(['wxALIGN_CENTER","wxALIGN_CENTER_VERTICAL']),
+                'wxALIGN_CENTER_HORIZONTAL':set(["wxALIGN_RIGHT"]),
+                'wxALIGN_CENTER_VERTICAL':  set(["wxALIGN_BOTTOM"]),
+                'wxALIGN_CENTER':           set(["wxALIGN_BOTTOM","wxALIGN_RIGHT"]) }
 
     FLAG_NAMES  = sum( FLAG_DESCRIPTION.values(), [] )
     FLAG_VALUES = [getattr(wx, name[2:]) for name in FLAG_NAMES]
