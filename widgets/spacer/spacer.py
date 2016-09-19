@@ -61,24 +61,30 @@ class EditSpacer(ManagedBase):
 class _Dialog(wx.Dialog):
     def __init__(self, parent):
         wx.Dialog.__init__(self, misc.get_toplevel_parent(parent), -1, _("Enter size"))
+        # the controls
+        self.width  = wx.SpinCtrl(self, -1, "20")
+        self.height = wx.SpinCtrl(self, -1, "20")
+        self.width.SetFocus()
+        self.width.SetSelection(-1, -1)
+        # the main sizer
+        sizer = wx.BoxSizer(wx.VERTICAL)
+        # grid sizer with the controls
+        gsizer = wx.FlexGridSizer(cols=2)
+        for label, control in [("Width", self.width), ("Height", self.height)]:
+            gsizer.Add(wx.StaticText(self, -1, _(label)), 0, wx.ALL | wx.ALIGN_CENTER_VERTICAL, 5)
+            gsizer.Add(control, 0, wx.ALL | wx.EXPAND | wx.ALIGN_CENTER_VERTICAL, 3)
+        sizer.Add(gsizer)
+        # horizontal sizer for action buttons
+        hsizer = wx.BoxSizer(wx.HORIZONTAL)
+        hsizer.Add( wx.Button(self, wx.ID_CANCEL, _('Cancel')), 1, wx.ALL, 5)
+        btn = wx.Button(self, wx.ID_OK, _('OK') )
+        btn.SetDefault()
+        hsizer.Add(btn, 1, wx.ALL, 5)
+        sizer.Add(hsizer, 0, wx.EXPAND|wx.ALIGN_CENTER )
 
-        import widget_properties as wp
-        self.width  = wp.SpinProperty(self, 'width', self, label=_("width"))
-        self.height = wp.SpinProperty(self, 'height', self, label=_("height"))
-        self.width.set_value(20)
-        self.width.spin.SetFocus()
-        self.width.spin.SetSelection(-1, -1)
-        self.height.set_value(20)
-
-        szr = wx.BoxSizer(wx.VERTICAL)
-        szr.Add(self.width.panel, 0, wx.EXPAND)
-        szr.Add(self.height.panel, 0, wx.EXPAND)
-        sz = wx.BoxSizer(wx.HORIZONTAL)
-        sz.Add(wx.Button(self, wx.ID_OK, _('OK')))
-        szr.Add(sz, 0, wx.ALL|wx.ALIGN_CENTER, 4)
         self.SetAutoLayout(True)
-        self.SetSizer(szr)
-        szr.Fit(self)
+        self.SetSizer(sizer)
+        sizer.Fit(self)
         self.CenterOnScreen()
 
 
@@ -88,8 +94,8 @@ def builder(parent, sizer, pos):
     "factory function for EditSpacer objects"
     dialog = _Dialog(parent)
     res = dialog.ShowModal()
-    width  = dialog.width.get_value()
-    height = dialog.height.get_value()
+    width  = dialog.width.GetValue()
+    height = dialog.height.GetValue()
     dialog.Destroy()
     if res != wx.ID_OK:
         return
