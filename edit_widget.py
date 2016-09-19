@@ -12,7 +12,7 @@ import compat
 import config
 from edit_windows import ManagedBase
 from tree import Tree, Node
-from widget_properties import *
+
 
 
 class EditWidget(ManagedBase):
@@ -60,22 +60,6 @@ class EditWidget(ManagedBase):
                 self.properties[name] = prop
                 self.property_proportion[name] = proportion
 
-    def create_properties(self):
-        ManagedBase.create_properties(self)
-        panel = wx.ScrolledWindow(self.notebook, -1, style=wx.TAB_TRAVERSAL)
-        szr = wx.BoxSizer(wx.VERTICAL)
-        for name in self.property_names:
-            self.properties[name].display(panel)
-            szr.Add( self.properties[name].panel, self.property_proportion[name], wx.EXPAND )
-        panel.SetAutoLayout(1)
-        panel.SetSizer(szr)
-        szr.Fit(panel)
-        w, h = panel.GetClientSize()
-        self.notebook.AddPage(panel, 'Widget')
-        import math
-        panel.SetScrollbars(1, 5, 1, int(math.ceil(h/5.0)))
-
-# end of class EditWidget
 
 
 def increment_label(label, number=[1]):
@@ -86,8 +70,7 @@ def increment_label(label, number=[1]):
     return _label
 
 
-def add_widget_node(widget, sizer, pos, from_xml=False,
-                    option=0, flag=0, border=0):
+def add_widget_node(widget, sizer, pos, from_xml=False, option=0, flag=0, border=0):
     node = Node(widget)
     widget.node = node
 
@@ -118,10 +101,7 @@ def get_label_from_xml(attrs):
 
 
 def initialize(edit_klass, builder, xml_builder, icon_path):
-    """\
-    initialization function for the module: returns a wx.BitmapButton to be
-    added to the main palette.
-    """
+    "initialization function for the module: returns a wx.BitmapButton to be added to the main palette."
     common.widgets[edit_klass] = builder
     common.widgets_from_xml[edit_klass] = xml_builder
 

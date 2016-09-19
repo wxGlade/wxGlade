@@ -1958,57 +1958,57 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
 class _GridBuilderDialog(wx.Dialog):
     def __init__(self, parent):
         wx.Dialog.__init__( self, misc.get_toplevel_parent(parent), -1, _('Select sizer attributes') )
-        import widget_properties as wp
-        self.rows = wp.SpinProperty(self, 'rows', self, label=_("rows"))
-        self.cols = wp.SpinProperty(self, 'cols', self, label=_("cols"))
-        self.vgap = wp.SpinProperty(self, 'vgap', self, label=_("vgap"))
-        self.hgap = wp.SpinProperty(self, 'hgap', self, label=_("hgap"))
-        self.rows.set_tooltip(_('Numbers of sizer rows'))
-        self.cols.set_tooltip(_('Numbers of sizer columns'))
-        self.vgap.set_tooltip(_('Vertical extra space between all children'))
-        self.hgap.set_tooltip(_('Horizontal extra space between all children'))
-        self.rows.spin.SetFocus()
-        self.rows.spin.SetSelection(-1, -1)
-
-        self.flex = wp.CheckBoxProperty( self, 'flex', self, _('Flexible'), write_always=True )
-        self.flex.set_tooltip(_('Create a wxFlexGridSizer instead of a wxGridSizer'))
-
-        self.rows.set_value(3)
-        self.cols.set_value(3)
-        self.vgap.set_value(0)
-        self.hgap.set_value(0)
-
+        self.rows = wx.SpinCtrl(self, -1, "3")
+        self.cols = wx.SpinCtrl(self, -1, "3")
+        self.vgap = wx.SpinCtrl(self, -1, "0")
+        self.hgap = wx.SpinCtrl(self, -1, "0")
+        # the main sizer
         sizer = wx.BoxSizer(wx.VERTICAL)
-        sizer.Add(self.rows.panel, 0, wx.LEFT | wx.RIGHT | wx.TOP | wx.EXPAND, 10)
-        sizer.Add(self.cols.panel, 0, wx.LEFT | wx.RIGHT | wx.EXPAND, 10)
-        sizer.Add(self.vgap.panel, 0, wx.LEFT | wx.RIGHT | wx.EXPAND, 10)
-        sizer.Add(self.hgap.panel, 0, wx.LEFT | wx.RIGHT | wx.EXPAND, 10)
-        sizer.Add(self.flex.panel, 0, wx.LEFT | wx.RIGHT | wx.EXPAND, 10)
-        szr = wx.BoxSizer(wx.HORIZONTAL)
-        btn = wx.Button(self, wx.ID_OK, _('OK'))
+        # grid sizer with the controls
+        gsizer = wx.FlexGridSizer(cols=2)
+        for label, control, tooltip in [("Rows", self.rows, 'Numbers of sizer rows'),
+                                        ("Cols", self.cols, 'Numbers of sizer colums'),
+                                        ("Vgap", self.vgap, 'Vertical extra space between all children'),
+                                        ("Hgap", self.hgap, 'Horizontal extra space between all children')]:
+            gsizer.Add(wx.StaticText(self, -1, _(label)), 0, wx.ALL | wx.ALIGN_CENTER_VERTICAL, 5)
+            gsizer.Add(control, 0, wx.ALL | wx.EXPAND | wx.ALIGN_CENTER_VERTICAL, 3)
+            compat.SetToolTip( control, tooltip )
+        self.rows.SetFocus()
+        self.rows.SetSelection(-1, -1)
+
+        gsizer.Add(wx.StaticText(self, -1, _('Flexible')), 0, wx.ALL | wx.ALIGN_CENTER_VERTICAL, 5)
+        self.flex = wx.CheckBox(self, -1)
+        compat.SetToolTip(self.flex, _('Create a wxFlexGridSizer instead of a wxGridSizer') )
+        gsizer.Add(self.flex, 0, wx.TOP|wx.BOTTOM, 10)
+        sizer.Add(gsizer)
+        # horizontal sizer for action buttons
+        hsizer = wx.BoxSizer(wx.HORIZONTAL)
+        hsizer.Add( wx.Button(self, wx.ID_CANCEL, _('Cancel')), 1, wx.ALL, 5)
+        btn = wx.Button(self, wx.ID_OK, _('OK') )
         btn.SetDefault()
-        szr.Add(btn)
-        sizer.Add(szr, 0, wx.ALL | wx.ALIGN_CENTER, 10)
+        hsizer.Add(btn, 1, wx.ALL, 5)
+        sizer.Add(hsizer, 0, wx.EXPAND|wx.ALIGN_CENTER )
+
         self.SetAutoLayout(True)
         self.SetSizer(sizer)
+
         sizer.Fit(self)
         self.Layout()
         self.CentreOnParent()
 
-    def __getitem__(self, name):
-        return lambda: 0, lambda v: None
 
 
 def grid_builder(parent, sizer, pos, number=[1]):
     "factory function for grid sizers"
     dialog = _GridBuilderDialog(parent)
-    dialog.ShowModal()
-    rows = int(dialog.rows.get_value())
-    cols = int(dialog.cols.get_value())
-    vgap = int(dialog.vgap.get_value())
-    hgap = int(dialog.hgap.get_value())
-    is_flexible = dialog.flex.get_value()
+    res = dialog.ShowModal()
+    rows = dialog.rows.GetValue()
+    cols = dialog.cols.GetValue()
+    vgap = dialog.vgap.GetValue()
+    hgap = dialog.hgap.GetValue()
+    is_flexible = dialog.flex.GetValue()
     dialog.Destroy()
+    if res != wx.ID_OK: return
 
     name = 'grid_sizer_%d' % number[0]
     while common.app_tree.has_name(name):
@@ -2047,8 +2047,8 @@ def grid_builder(parent, sizer, pos, number=[1]):
     if parent.widget: sz.create()
 
     if sizer is not None:
-        sz.properties['flag'].set_value('wxEXPAND')
-        sz.properties['pos'].set_value(pos)
+        sz.properties['flag'].set('wxEXPAND')
+        sz.properties['pos'].set(pos)
 
 
 def grid_xml_builder(attrs, parent, sizer, sizeritem, pos=None):

@@ -68,7 +68,6 @@ class wxGladePropertyPanel(wx.Frame):
 
     def create_editor(self, edit_widget):
         # fill the frame with a notebook of property editors
-        import widget_properties
         # not called yet
         self.current_widget_class = edit_widget.__class__
 

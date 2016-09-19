@@ -102,39 +102,53 @@ class CustomWidget(ManagedBase):
 
 
 class Dialog(wx.Dialog):
+    import re
+    validation_re  = re.compile(r'^[a-zA-Z_]+[\w-]*(\[\w*\])*$')
     def __init__(self, number=[0]):
         title = _('Select widget class')
         wx.Dialog.__init__(self, None, -1, title)
-        self.klass = 'CustomWidget'
+        klass = 'CustomWidget'
         if number[0]:
-            self.klass = 'CustomWidget%s' % (number[0] - 1)
+            klass = 'CustomWidget%s' % (number[0] - 1)
         number[0] += 1
-        import widget_properties
-        klass_prop = widget_properties.TextProperty(self, 'class', self, label=_("class"))
-        szr = wx.BoxSizer(wx.VERTICAL)
-        szr.Add(klass_prop.panel, 0, wx.ALL | wx.EXPAND, 5)
-        szr.Add(wx.Button(self, wx.ID_OK, _('OK')), 0, wx.ALL | wx.ALIGN_CENTER, 5)
+
+        self.classname = wx.TextCtrl(self, -1, klass)
+        sizer = wx.BoxSizer(wx.VERTICAL)
+        hsizer = wx.BoxSizer(wx.HORIZONTAL)
+        hsizer.Add(wx.StaticText(self, -1, _('class')), 0, wx.ALL | wx.ALIGN_CENTER_VERTICAL, 5)
+        hsizer.Add(self.classname)
+        sizer.Add(hsizer)
+
+        # horizontal sizer for action buttons
+        hsizer = wx.BoxSizer(wx.HORIZONTAL)
+        hsizer.Add( wx.Button(self, wx.ID_CANCEL, _('Cancel')), 1, wx.ALL, 5)
+        self.OK_button = btn = wx.Button(self, wx.ID_OK, _('OK') )
+        btn.SetDefault()
+        hsizer.Add(btn, 1, wx.ALL, 5)
+        sizer.Add(hsizer, 0, wx.EXPAND|wx.ALIGN_CENTER )
+
         self.SetAutoLayout(True)
-        self.SetSizer(szr)
-        szr.Fit(self)
+        self.SetSizer(sizer)
+        sizer.Fit(self)
         w = self.GetTextExtent(title)[0] + 50
         if self.GetSize()[0] < w:
             self.SetSize((w, -1))
         self.CenterOnScreen()
+        self.classname.Bind(wx.EVT_TEXT, self.validate)
 
-    def __getitem__(self, value):
-        def set_klass(c):
-            self.klass = c
-        return lambda: self.klass, set_klass
+    def validate(self, event):
+        OK = self.validation_re.match(self.classname.GetValue())
+        self.OK_button.Enable( bool(OK) )
 
 
 def builder(parent, sizer, pos, number=[1]):
     "factory function for CustomWidget objects"
 
     dialog = Dialog()
-    dialog.ShowModal()
-    klass = dialog.klass
+    res = dialog.ShowModal()
+    klass = dialog.classname.GetValue().strip()
     dialog.Destroy()
+    if res != wx.ID_OK: return
 
     name = 'window_%d' % number[0]
     while common.app_tree.has_name(name):
@@ -161,7 +175,7 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
         raise XmlParsingError(_("'name' attribute missing"))
     if not sizer or not sizeritem:
         raise XmlParsingError(_("sizer or sizeritem object cannot be None"))
-    win = CustomWidget(name, 'CustomWidget', parent, wx.NewId(), sizer, pos, True)
+    win = CustomWidget(name, 'CustomWidget', parent, wx.NewId(), sizer, pos)
     sizer.set_item(win.pos, proportion=sizeritem.proportion, flag=sizeritem.flag, border=sizeritem.border)
     node = Node(win)
     win.node = node
