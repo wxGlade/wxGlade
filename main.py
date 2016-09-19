@@ -265,6 +265,7 @@ class wxGladeFrame(wx.Frame):
         view_menu = wx.Menu(style=wx.MENU_TEAROFF)
         help_menu = wx.Menu(style=wx.MENU_TEAROFF)
         compat.wx_ToolTip_SetDelay(1000)
+        compat.wx_ToolTip_SetAutoPop(30000)
 
         append_menu_item = misc.append_menu_item
         self.TREE_ID = TREE_ID = wx.NewId()

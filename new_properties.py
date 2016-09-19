@@ -531,7 +531,11 @@ class _CheckListProperty(Property):
 
     def get_list_value(self):
         """Convert the current style in a list of boolean values."""
-        ret = [name in self.value_set for name in self._names]
+        combined_values = set()
+        for name in self.value_set:
+            combined_values.add(name)
+            combined_values.update( self.style_defs[name].get("combination",[]) )
+        ret = [(name in combined_values) for name in self._names]
         return ret
 
     def get_string_value(self):
@@ -578,9 +582,26 @@ class _CheckListProperty(Property):
         if checked:
             if value in self.value_set: return
             self.value_set.add(value)
+            self.value_set.difference_update( self.style_defs[value].get("exclude",[]) )
         else:
-            if not value in self.value_set: return
-            self.value_set.remove(value)
+            if value in self.value_set:
+                self.value_set.remove(value)
+                self.value_set.difference_update( self.style_defs[value].get("combination",[]) )
+            else:
+                # check if it was set due to a combination
+                for name in self._names:
+                    combination = self.style_defs[name].get("combination",[])
+                    if value in combination and name in self.value_set:
+                        self.value_set.remove(name)
+                        self.value_set.update(c for c in combination if c!=value)
+
+        # check for combinations: if all flags of a combination are in value_set, we need only the combination
+        for name in self._names:
+            combination = self.style_defs[name].get("combination",[])
+            if combination and self.value_set.issuperset(combination):
+                self.value_set.difference_update( combination )
+                self.value_set.add(name)
+
         self.value = None  # to be calculated on demand
         self._notify()
         self.update_display()
@@ -591,10 +612,19 @@ class _CheckListProperty(Property):
         if not self.editing: return
         checked = self.get_list_value()
         for i,checkbox in enumerate(self._choices):
+            name = self._names[i]
             if checked[i] and not checkbox.GetValue():
                 checkbox.SetValue(True)
             elif not checked[i] and checkbox.GetValue():
                 checkbox.SetValue(False)
+            # display included flags in grey and excluded flags red
+            if checked[i] and not name in self.value_set:
+                checkbox.SetForegroundColour(wx.Colour(120,120,100))  # grey
+            elif self.value_set.intersection( self.style_defs[name].get("exclude",[]) ):
+                checkbox.SetForegroundColour(wx.RED)
+            else:
+                checkbox.SetForegroundColour(wx.BLACK)
+            checkbox.Refresh()
 
     ####################################################################################################################
     # helpers for CheckBox tooltips
@@ -658,7 +688,8 @@ class _CheckListProperty(Property):
             if style_name in self._names:
                 # add a string with decimal, hexadecimal and binary values
                 flag_value = self._values[self._names.index(style_name)]
-                text.append( "%d 0x%x %s"%(flag_value, flag_value, bin(flag_value)) )
+                if flag_value is not None:
+                    text.append( "%d 0x%x %s"%(flag_value, flag_value, bin(flag_value)) )
 
             tooltips[style_name] = "\n".join( text )
 
@@ -754,24 +785,16 @@ class WidgetStyleProperty(_CheckListProperty):
 
     def create_editor(self, panel, sizer):
         self._choices = [] # the checkboxes
-        self._values = []  # the associated flag values
+        self._ensure_values()
 
         widget_writer = self.owner.widget_writer
+
+        tooltips = self._create_tooltip_text()
 
         box_label = _(widget_writer.box_label)
         static_box = wx.StaticBox(panel, -1, box_label, style=wx.FULL_REPAINT_ON_RESIZE)
         box_sizer = wx.StaticBoxSizer(static_box, wx.VERTICAL)
-        for name in self._names:
-            wx_name = widget_writer.cn_f(name)
-            if not wx_name:  # cn_f() returns an empty string if the given styles are not supported
-                flag_value = None
-            else:
-                try:
-                    flag_value = self.owner.wxname2attr(wx_name)
-                    flag_string = "%d 0x%x %s"%(flag_value, flag_value, bin(flag_value))
-                except:
-                    flag_value = flag_string = None
-
+        for name, flag_value in zip(self._names, self._values):
             if name in widget_writer.style_defs:
                 style_def = widget_writer.style_defs[name]
             else:
@@ -779,20 +802,11 @@ class WidgetStyleProperty(_CheckListProperty):
                 style_def = config.widget_config["generic_styles"][name]
             checkbox = wx.CheckBox(panel, -1, name)
 
-            # set the tooltips for the properties
-            tooltip = style_def.get("desc")
-            if tooltip and flag_string:
-                compat.SetToolTip(checkbox, tooltip + "\n\n" + flag_string)
-            elif tooltip:
-                compat.SetToolTip(checkbox, tooltip)
-            elif flag_string:
-                compat.SetToolTip(checkbox, flag_string)
+            if name in tooltips:
+                compat.SetToolTip( checkbox, tooltips[name] )
 
             self._choices.append(checkbox)
-            self._values.append(flag_value)
             box_sizer.Add(checkbox)
-            # flags with value 0 don't have an effect
-            if flag_value in (0,None): checkbox.Enable(False)
 
         sizer.Add(box_sizer, 0, wx.ALL | wx.EXPAND, 5)
 
