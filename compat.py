@@ -215,6 +215,7 @@ if len(wx.VERSION)==5:
     wx_ArtProviderPush = wx.ArtProvider.PushProvider
     wx_ArtProvider_GetBitmap = wx.ArtProvider_GetBitmap
     wx_ToolTip_SetDelay = wx.ToolTip_SetDelay
+    wx_ToolTip_SetAutoPop = wx.ToolTip_SetAutoPop
     wx_Tree_InsertItemBefore = wx.TreeCtrl.InsertItemBefore
     def SetToolTip(c, s):
         c.SetToolTipString(s)
@@ -229,6 +230,7 @@ else:
     wx_ArtProviderPush = wx.ArtProvider.Push
     wx_ArtProvider_GetBitmap = wx.ArtProvider.GetBitmap
     wx_ToolTip_SetDelay = wx.ToolTip.SetDelay
+    wx_ToolTip_SetAutoPop = wx.ToolTip.SetAutoPop
     wx_Tree_InsertItemBefore = wx.TreeCtrl.InsertItem # overloaded: index or item
     SizerItem_SetSizer = SizerItem_SetSizerPhoenix    # uses AssignSizer
     def SetToolTip(c, s):
