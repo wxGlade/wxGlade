@@ -728,6 +728,9 @@ class SizerBase(Sizer, np.PropertyOwner):
             value = self.class_orient
             if misc.focused_widget is self: misc.set_focused_widget(None)
             wx.CallAfter(change_sizer, self, value)
+        if (not modified or "flag" in modified or "proportion" in modified or "border" in modified) and self.widget:
+            if not self.toplevel:
+                self.sizer.set_item(self.pos, self.proportion, self.flag, self.border)
         np.PropertyOwner.properties_changed(self, modified)
 
     def check_compatibility(self, widget):
