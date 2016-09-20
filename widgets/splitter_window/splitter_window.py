@@ -91,6 +91,10 @@ class SplitterWindowSizer(Sizer):
     def is_virtual(self):
         return True
 
+    def is_fixed(self):
+        "exactly two slots"
+        return True
+
 
 
 class EditSplitterWindow(ManagedBase, EditStylesMixin):

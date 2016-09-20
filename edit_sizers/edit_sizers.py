@@ -571,8 +571,11 @@ class Sizer(object):
         pass
 
     def is_virtual(self):
-        "Return true if sizer is virtual (f.e. SplitterWindowSizer)"
+        "Return true if sizer is virtual (e.g. SplitterWindowSizer or NotebookSizer)"
         return False
+
+    def is_fixed(self):
+        "Return True if sizer has a fixed number of slots (e.g. SplitterWindowSizer)"
 
     def get_itempos(self, attrs):
         """For virtual sizers only, returns the position of the item in the parent:
