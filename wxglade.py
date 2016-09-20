@@ -122,25 +122,6 @@ wxGlade home page: <http://wxglade.sourceforge.net/>""") )
     # Make an absolute version of path.
     # According to the invoking dir of wxGlade (which can be different
     # from '.' if it is invoked from a shell script).
-    #args = [u'F:\\PythonInstallation\\wxGladeTest\\test.wxg']
-    # XXX cleanup
-    args = [u"D:\\Python\\Sources35\\wxGladeTests\\Test_release_072_v2-TextCtrls.wxg"]
-    #args = [u"D:\\Python\\Sources35\\wxGladeTests\\Test_release_072_v3-SingleSizer.wxg"]
-    ##args = [os.getcwd() + u"\\tests\\casefiles\\AllWidgets_28.wxg"]
-    #args = [u"D:\\Python\\Sources35\\wxGladeTests\\AllWidgets_28_05.wxg"]
-    #args = [u"D:\\Python\\Sources35\\wxGladeTests\\AllWidgets_28_without_bitmaps.wxg"]
-    #args = ["C:\\Users\\dietmar\\text_ctrls_with_slot4.wxg"]
-    #args = ["C:\\Users\\dietmar\\4slots_1.wxg"]
-    #args = ["C:\\Users\\dietmar\\test2.wxg"]
-    ##args = ["C:\\Users\\dietmar\\AllWidgets_28min.wxg"]
-    ##args = ["C:\\Users\\dietmar\\slots_test.wxg"]
-    ##args = ["C:\\Users\\dietmar\\single_tab.wxg"]
-    #args = ["C:\\Users\\dietmar\\grid_test.wxg"]
-    #args = ["C:\\Users\\dietmar\\sizer_min.wxg"]
-    #args = ["C:\\Users\\dietmar\\nested_sizers.wxg"]
-    args = ["C:\\Users\\dietmar\\test_splitter.wxg"]
-    args = ["C:\\Users\\dietmar\\class_names.wxg"]
-
     if len(args) == 1:
         filename = args[0]
         if not os.path.isabs(filename):
