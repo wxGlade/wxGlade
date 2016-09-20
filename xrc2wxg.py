@@ -646,7 +646,7 @@ OPTIONS:
 
 If WXG_FILE is not given, it defaults to INPUT_FILE.wxg
     """ % _name
-    print msg
+    print( msg)
     sys.exit(1)
 
 
