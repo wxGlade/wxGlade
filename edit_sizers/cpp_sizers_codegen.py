@@ -41,28 +41,24 @@ class BaseCPPSizerBuilder(BaseSizerBuilder):
         result.insert(2, [])
         return result
 
-# end of class BaseCPPSizerBuilder
 
 
 class CppBoxSizerBuilder(BaseCPPSizerBuilder):
     klass = 'wxBoxSizer'
     tmpl = '%(klass)s* %(sizer_name)s = new %(klass)s(%(orient)s);\n'
 
-# end of class CppBoxSizerBuilder
 
 
 class CppStaticBoxSizerBuilder(BaseCPPSizerBuilder):
     klass = 'wxStaticBoxSizer'
     tmpl = '%(klass)s* %(sizer_name)s = new %(klass)s(new wxStaticBox(%(parent_widget)s, wxID_ANY, %(label)s), %(orient)s);\n'
 
-# end of class CppStaticBoxSizerBuilder
 
 
 class CppGridSizerBuilder(BaseCPPSizerBuilder):
     klass = 'wxGridSizer'
     tmpl = '%(klass)s* %(sizer_name)s = new %(klass)s(%(rows)s, %(cols)s, %(vgap)s, %(hgap)s);\n'
 
-# end of class CppGridSizerBuilder
 
 
 class CppFlexGridSizerBuilder(CppGridSizerBuilder):
@@ -71,7 +67,15 @@ class CppFlexGridSizerBuilder(CppGridSizerBuilder):
     tmpl_AddGrowableRow = '%(sizer_name)s->AddGrowableRow(%(row)s);\n'
     tmpl_AddGrowableCol = '%(sizer_name)s->AddGrowableCol(%(col)s);\n'
 
-# end of class CppFlexGridSizerBuilder
+
+
+import wcodegen
+
+class CppSizerSlotGenerator(wcodegen.CppWidgetCodeWriter):
+    # spacers and empty sizer slots are generally handled by a hack:
+    # The the implementations of add_sizeritem() contains more details.
+    # The code generation code is already implemented in base class.
+    pass
 
 
 def initialize():
@@ -88,3 +92,5 @@ def initialize():
         awh('wxStaticBoxSizer', CppStaticBoxSizerBuilder())
         awh('wxGridSizer', CppGridSizerBuilder())
         awh('wxFlexGridSizer', CppFlexGridSizerBuilder())
+
+#    common.register('C++', "sizerslot", CppSizerSlotGenerator("sizerslot"))
