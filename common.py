@@ -16,7 +16,7 @@ except:
     # Python 3
     import configparser as ConfigParser
     from hashlib import md5
-from ordereddict import OrderedDict
+from collections import OrderedDict
 
 import logging, os, os.path, sys, tempfile
 from xml.sax.saxutils import escape, quoteattr

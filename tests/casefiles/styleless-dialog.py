@@ -52,6 +52,7 @@ class StylelessFrame(wx.Frame):
     def __do_layout(self):
         # begin wxGlade: StylelessFrame.__do_layout
         sizer_1 = wx.BoxSizer(wx.VERTICAL)
+        sizer_1.Add((0, 0), 0, 0, 0)
         self.SetSizer(sizer_1)
         sizer_1.Fit(self)
         self.Layout()

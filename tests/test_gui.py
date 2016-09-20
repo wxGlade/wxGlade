@@ -168,12 +168,12 @@ class TestGui(WXGladeBaseTest):
         root = tree.GetRootItem()
         first, cookie = tree.GetFirstChild(root)
         if first.IsOk():
-            tree.ExpandAllChildren(first)
+            tree.expand()
             self._process_wx_events()
             tree.SelectItem(first)
             self._process_wx_events()
-            tree.show_toplevel(None)
-            tree.SelectItem(root)
+            node = tree.GetPyData(first)
+            tree.show_widget(node)
         self._process_wx_events()
 
     def _process_wx_events(self):
@@ -434,7 +434,7 @@ class TestGui(WXGladeBaseTest):
         )
 
         # test setting styles via style dictionary
-        from ordereddict import OrderedDict
+        from collections import OrderedDict
         styles = OrderedDict()
         styles[_('Border')] = ['wxALL', 'wxLEFT']
         styles[_('Alignment')] = ['wxEXPAND', 'wxALIGN_RIGHT']

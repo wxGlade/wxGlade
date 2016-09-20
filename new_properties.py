@@ -10,7 +10,7 @@ Interface to owner modified; see below for class PropertyOwner
 """
 
 import common, misc, config, compat
-from ordereddict import OrderedDict
+from collections import OrderedDict
 import wx
 
 class _DefaultArgument(object):
@@ -34,7 +34,7 @@ class Property(object):
         self.modified = False
         # this can be set to True by the owner, depending on another property value; value will still be written to XML
         self.blocked = False
-        self.default_value = default_value 
+        self.default_value = default_value
         self.controls = None
         self.editing = False
     def set_owner(self, owner, attributename=None):
@@ -116,7 +116,7 @@ class Property(object):
 
     def _check_for_user_modification(self, new_value, force=False):
         # force: set to True when e.g. called from self.toggle_activate
-        #new_value = 
+        #new_value =
         if new_value == self.value and not force: return False
         self.value = new_value
         self._notify()
@@ -174,7 +174,7 @@ class Property(object):
     def create_editor(self, panel, sizer):
         # when done, call self.update_display(start_editing=True)
         return None  # default implementation: no editor (hidden property, not user editable)
-    
+
     def destroy_editor(self):
         # delete e.g. references to controls
         for att in self.CONTROLNAMES:
@@ -186,7 +186,7 @@ class Property(object):
         # if start_editing: self.editing = True
         # if not self.editing: return
         pass
-    
+
     def activate_controls(self):
         if not self.editing: return
         if self.blocked:
@@ -217,7 +217,7 @@ class Property(object):
         "check self.LABEL; then go through base classes and check the _PROPERTY_LABELS dictionaries"
         if self.LABEL: return self.LABEL
         import inspect
-        
+
         classes = inspect.getmro(self.owner.__class__)
         for cls in classes:
             if not hasattr(cls, "_PROPERTY_LABELS"): continue
@@ -228,7 +228,7 @@ class Property(object):
         "go through base classes and check the _PROPERTY_HELP dictionaries"
         if self.TOOLTIP: return self.TOOLTIP
         import inspect
-        
+
         classes = inspect.getmro(self.owner.__class__)
         for cls in classes:
             if not hasattr(cls, "_PROPERTY_HELP"): continue
@@ -247,7 +247,7 @@ class Property(object):
 class PropertyA(Property):
     # can be activated/deactivated; active by default
     deactivated = False
-    
+
 class PropertyD(Property):
     # can be activated/deactivated; deactivated by default
     deactivated = True
@@ -408,7 +408,7 @@ class CheckBoxProperty(Property):
         if start_editing: self.editing = True
         if not self.editing: return
         self.checkbox.SetValue(self.value)
-        
+
     def on_change_val(self, event):
         new_value = event.IsChecked()
         if new_value==self.value: return
@@ -712,7 +712,7 @@ class _CheckListProperty(Property):
 
 
 class ManagedFlags(_CheckListProperty):
-    # for ManagedBase.flags; e.g. wxEXPAND, wxALIGN_RIGHT,...,wxALL, 
+    # for ManagedBase.flags; e.g. wxEXPAND, wxALIGN_RIGHT,...,wxALL,
     # XXX handle combinations and exclusions
     # XXX support wxRESERVE_SPACE_EVEN_IF_HIDDEN for 3.x
 
@@ -724,7 +724,7 @@ class ManagedFlags(_CheckListProperty):
     remove = set( ['wxADJUST_MINSIZE',] )
     renames =  {'wxALIGN_CENTRE':'wxALIGN_CENTER',
                 'wxALIGN_CENTRE_VERTICAL':'wxALIGN_CENTER_VERTICAL'}
-    
+
     combinations = { "wxALL":set( 'wxLEFT|wxRIGHT|wxTOP|wxBOTTOM'.split("|") ),
                      "wxALIGN_CENTER":set( 'wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL'.split("|") ) }
     excludes = {'wxALIGN_RIGHT':            set(['wxALIGN_CENTER","wxALIGN_CENTER_HORIZONTAL']),
@@ -1203,7 +1203,7 @@ class DialogProperty(TextProperty):
     def update_display(self, start_editing=False):
         TextProperty.update_display(self, start_editing)
         self._update_button()
-        
+
 
 class DialogPropertyD(DialogProperty):
     deactivated = True
@@ -1410,12 +1410,12 @@ class GridProperty(Property):
                   lambda g, c: g.SetColFormatFloat(c),
                   lambda g, c: g.SetColFormatBool(c)]
     _DEFAULT_VALUES = {STRING:"",  INT:0, FLOAT:0.0, BOOL:False}
-    
+
     CONTROLNAMES = ["btn", "buttons", "grid"]
     GROW = True
     validation_res = None # one per column
     def __init__(self, value, cols, default_row=None,
-                 can_add=True, can_remove=True, can_insert=True, can_remove_last=True, 
+                 can_add=True, can_remove=True, can_insert=True, can_remove_last=True,
                  col_sizes=None, with_index=False, name=None):
 
         Property.__init__(self, value, name) # , label=label)
@@ -1612,7 +1612,7 @@ class GridProperty(Property):
         # XXX validate; event.Veto if not valid
         if not self.validation_res: return
         row,col = event.Row, event.Col
-        
+
 
     def on_cell_changed(self, event):
         # user has entered a value
