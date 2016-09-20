@@ -28,28 +28,24 @@ class BasePerlSizerBuilder(BaseSizerBuilder):
             parent = '$self'
         return parent
 
-# end of class BasePerlSizerBuilder
 
 
 class PerlBoxSizerBuilder(BasePerlSizerBuilder):
     klass = 'wxBoxSizer'
     tmpl = '%(sizer_name)s = %(klass)s->new(%(orient)s);\n'
 
-# end of class PerlBoxSizerBuilder
 
 
 class PerlStaticBoxSizerBuilder(BasePerlSizerBuilder):
     klass = 'wxStaticBoxSizer'
     tmpl = '%(sizer_name)s = %(klass)s->new(Wx::StaticBox->new(%(parent_widget)s, wxID_ANY, %(label)s), %(orient)s);\n'
 
-# end of class PerlStaticBoxSizerBuilder
 
 
 class PerlGridSizerBuilder(BasePerlSizerBuilder):
     klass = 'wxGridSizer'
     tmpl = '%(sizer_name)s = %(klass)s->new(%(rows)s, %(cols)s, %(vgap)s, %(hgap)s);\n'
 
-# end of class PerlGridSizerBuilder
 
 
 class PerlFlexGridSizerBuilder(PerlGridSizerBuilder):
@@ -58,7 +54,14 @@ class PerlFlexGridSizerBuilder(PerlGridSizerBuilder):
     tmpl_AddGrowableRow = '%(sizer_name)s->AddGrowableRow(%(row)s);\n'
     tmpl_AddGrowableCol = '%(sizer_name)s->AddGrowableCol(%(col)s);\n'
 
-# end of class PerlFlexGridSizerBuilder
+
+import wcodegen
+
+class PerlSizerSlotGenerator(wcodegen.PerlWidgetCodeWriter):
+    # spacers and empty sizer slots are generally handled by a hack:
+    # The the implementations of add_sizeritem() contains more details.
+    # The code generation code is already implemented in base class.
+    pass
 
 
 def initialize():
@@ -75,3 +78,5 @@ def initialize():
         awh('wxStaticBoxSizer', PerlStaticBoxSizerBuilder())
         awh('wxGridSizer', PerlGridSizerBuilder())
         awh('wxFlexGridSizer', PerlFlexGridSizerBuilder())
+
+    common.register('perl', "sizerslot", PerlSizerSlotGenerator("sizerslot"))

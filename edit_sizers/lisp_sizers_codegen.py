@@ -43,7 +43,6 @@ class BaseLispSizerBuilder(BaseSizerBuilder):
             parent = self.tmpl_wparent
         return parent
 
-# end of class BaseLispSizerBuilder
 
 
 class LispBoxSizerBuilder(BaseLispSizerBuilder):
@@ -53,32 +52,33 @@ class LispBoxSizerBuilder(BaseLispSizerBuilder):
 
     tmpl_wparent = '(slot-top-window obj)'
 
-# end of class LispBoxSizerBuilder
 
 
 class LispStaticBoxSizerBuilder(BaseLispSizerBuilder):
     klass = 'wxStaticBoxSizer'
     tmpl = '(setf (%(sizer_name)s obj) (StaticBoxSizer_Create (wxStaticBox:wxStaticBox_Create %(parent_widget)s %(label)s) %(orient)s))\n'
 
-# end of class LispStaticBoxSizerBuilder
 
 
 class LispGridSizerBuilder(BaseLispSizerBuilder):
     klass = 'wxGridSizer'
     tmpl = '(setf (%(sizer_name)s obj) (wxGridSizer_Create %(rows)s %(cols)s %(vgap)s %(hgap)s))\n'
 
-# end of class LispGridSizerBuilder
 
 
 class LispFlexGridSizerBuilder(LispGridSizerBuilder):
     klass = 'wxFlexGridSizer'
 
-    tmpl_AddGrowableRow = '(wxFlexGridSizer_AddGrowableRow ' \
-                          '(%(sizer_name)s obj) %(row)s)\n'
-    tmpl_AddGrowableCol = '(wxFlexGridSizer_AddGrowableCol ' \
-                          '(%(sizer_name)s obj) %(col)s)\n'
+    tmpl_AddGrowableRow = '(wxFlexGridSizer_AddGrowableRow (%(sizer_name)s obj) %(row)s)\n'
+    tmpl_AddGrowableCol = '(wxFlexGridSizer_AddGrowableCol (%(sizer_name)s obj) %(col)s)\n'
 
-# end of class LispFlexGridSizerBuilder
+import wcodegen
+
+class LispSizerSlotGenerator(wcodegen.LispWidgetCodeWriter):
+    # spacers and empty sizer slots are generally handled by a hack:
+    # The the implementations of add_sizeritem() contains more details.
+    # The code generation code is already implemented in base class.
+    pass
 
 
 def initialize():
@@ -95,3 +95,5 @@ def initialize():
         awh('wxStaticBoxSizer', LispStaticBoxSizerBuilder())
         awh('wxGridSizer', LispGridSizerBuilder())
         awh('wxFlexGridSizer', LispFlexGridSizerBuilder())
+        
+    common.register('lisp', "sizerslot", LispSizerSlotGenerator("sizerslot"))
