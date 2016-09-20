@@ -220,25 +220,6 @@ class BaseWidgetHandler(object):
         return []
 
 
-
-class ClassLines(object):
-    "Stores the lines of source code for a custom class"
-    def __init__(self):
-        self.child_order = []
-        self.dependencies = {}    # Names of the modules this class depends on
-        self.deps = []
-        self.event_handlers = []  # Lines to bind events (see L{wcodegen.BaseWidgetWriter.get_event_handlers()})
-        self.extra_code = []      # Extra code to output before this class
-        self.done = False         # If True, the code for this class has already been generated
-        self.init = []            # Lines of code to insert in the __init__ method (for children widgets)
-        self.init_lines = {}
-        self.layout = []          # Lines to insert in the __do_layout method
-        self.parents_init = []    # Lines to insert in the __init__ for container widgets (panels, splitters, ...)
-        self.props = []           # Lines to insert in the __set_properties method
-        self.sizers_init = []     # Lines related to sizer objects declarations
-
-
-
 class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
     """\
     Dictionary of objects used to generate the code in a given language.
@@ -273,7 +254,7 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
      app_name:                Application name
      app_encoding:            Encoding of the application; will be initialised with L{config.default_encoding}
      app_filename:            File name to store the application start code within multi file projects
-     
+
      app_mapping:             Default mapping of template variables for substituting in templates
                                (see L{lang_mapping}, L{add_app()})
      lang_mapping:            Language specific mapping of template variables for substituting in templates
@@ -350,7 +331,7 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
     """
 
     classattr_always = [] # List of classes to store always as class attributes; see test_attribute()
-    class_separator = '' # Separator between class and attribute or between different name space elements; 
+    class_separator = '' # Separator between class and attribute or between different name space elements;
     # E.g "." for Python or "->" for Perl.
 
     global_property_writers = {} # Custom handlers for widget properties
@@ -359,7 +340,7 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
     name_ctor = '' # Name of the constructor. E.g. "__init__" in Python or "new" in Perl.
     shebang = None # Shebang line, the first line of the generated main files; newline sequence at the end; see save_file
     SourceFileContent = None # Just a reference to the language specific instance of SourceFileContent
-    
+
     ####################################################################################################################
     # code generation templates
 
@@ -376,7 +357,7 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
     tmpl_empty_string = '""'       # Template for an empty string.
 
     tmpl_name_do_layout = ''       # Name of the function __do_layout() in wxGlade begin tag
-    tmpl_func_do_layout = ''       # Statement for the    __do_layout() function; 
+    tmpl_func_do_layout = ''       # Statement for the    __do_layout() function;
                                    #  -> see generate_code_do_layout():
 
     tmpl_func_event_stub = ''      # Statement for a event handler stub -> see generate_code_event_handler()_
@@ -395,7 +376,7 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
 
     tmpl_sizeritem = ''   # Template for adding a widget to a sizer; see add_sizeritem()
     tmpl_style = ''       # Template for setting style in constructor; see _format_style()
-    
+
     # templates used by add_app():
     tmpl_appfile = None           # file header for standalone files with application start code
     tmpl_detailed = None          # detailed application start code without gettext support
@@ -404,6 +385,22 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
     tmpl_gettext_simple = None    # simplified application start code with gettext support
 
     _show_warnings = True  # Enable or disable printing of warning messages; see self.warning()
+
+    class ClassLines(object):
+        "Stores the lines of source code for a custom class"
+        def __init__(self):
+            self.child_order = []
+            self.dependencies = {}    # Names of the modules this class depends on
+            self.deps = []
+            self.event_handlers = []  # Lines to bind events (see L{wcodegen.BaseWidgetWriter.get_event_handlers()})
+            self.extra_code = []      # Extra code to output before this class
+            self.done = False         # If True, the code for this class has already been generated
+            self.init = []            # Lines of code to insert in the __init__ method (for children widgets)
+            self.init_lines = {}
+            self.layout = []          # Lines to insert in the __do_layout method
+            self.parents_init = []    # Lines to insert in the __init__ for container widgets (panels, splitters, ...)
+            self.props = []           # Lines to insert in the __set_properties method
+            self.sizers_init = []     # Lines related to sizer objects declarations
 
     DummyPropertyHandler = DummyPropertyHandler
     EventsPropertyHandler = EventsPropertyHandler
@@ -777,7 +774,7 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
 
         if not klass in self.classes:
             # if the class body was empty, create an empty ClassLines
-            self.classes[klass] = ClassLines()
+            self.classes[klass] = self.ClassLines()
 
         # collect all event handlers
         event_handlers = self.classes[klass].event_handlers
@@ -1037,7 +1034,7 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
         if top_obj.klass in self.classes:
             klass = self.classes[top_obj.klass]
         else:
-            klass = self.classes[top_obj.klass] = ClassLines()
+            klass = self.classes[top_obj.klass] = self.ClassLines()
 
         # Check for widget builder object
         try:
@@ -1088,6 +1085,7 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
     def add_sizeritem(self, toplevel, sizer, obj, option, flag, border):
         """Writes the code to add the object 'obj' to the sizer 'sizer' in the 'toplevel' object.
         All widgets in L{blacklisted_widgets} are ignored; template is self.tmpl_sizeritem"""
+
         # don't process widgets listed in blacklisted_widgets
         if obj in self.blacklisted_widgets:
             return
@@ -1099,12 +1097,16 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
         if toplevel.klass in self.classes:
             klass = self.classes[toplevel.klass]
         else:
-            klass = self.classes[toplevel.klass] = ClassLines()
+            klass = self.classes[toplevel.klass] = self.ClassLines()
 
         # check if sizer has to store as a class attribute
         sizer_name = self._format_classattr(sizer)
 
-        stmt = self.tmpl_sizeritem % ( sizer_name, obj_name, option, self.cn_f(flag), border )
+        flag = self.cn_f(flag)
+        if not flag:
+            flag = '0'
+
+        stmt = self.tmpl_sizeritem % ( sizer_name, obj_name, option, flag, border )
 
         klass.layout.append(stmt)
 
@@ -1131,7 +1133,7 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
         return nonce
 
     def get_property_handler(self, property_name, widget_name):
-        """Return the widget specific property handler; 
+        """Return the widget specific property handler;
         @see: L{add_property_handler}, L{global_property_writers}, L{_property_writers}"""
         try:
             cls = self._property_writers[widget_name][property_name]
@@ -1196,7 +1198,7 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
             for l in extra_layout_lines:
                 write(l)
 
-        code_lines = self._generate_function( code_obj, is_new, tab, self.tmpl_name_do_layout, 
+        code_lines = self._generate_function( code_obj, is_new, tab, self.tmpl_name_do_layout,
                                               self.tmpl_func_do_layout, code_lines )
 
         return code_lines

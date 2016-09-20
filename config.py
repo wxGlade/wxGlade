@@ -73,6 +73,9 @@ preferences = None  # User preferences;  @type: common.Preferences   @see: L{com
 
 label_width = 110   # width of new created labels; new version
 
+tooltip_time = 3    # Number of seconds a tooltip will be shown
+tooltip_width = 50  # Maximum width to split tooltips into
+
 ########################################################################################################################
 widget_config = {
     'generic_styles': {

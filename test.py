@@ -56,7 +56,7 @@ def run_tests():
 
     # disable logging first because the initialisation logs path details and
     # other details
-    logging.disable(999)
+    logging.disable(logging.WARNING)
     wxglade.init_stage1()
     wxglade.init_localization()
     wxglade.init_stage2(options.kind == 'gui')

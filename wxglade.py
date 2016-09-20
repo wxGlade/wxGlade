@@ -43,7 +43,7 @@ def my_displayhook(value):
     if value is not None:
         print(repr(value))
 
-sys.displayhook = my_displayhook 
+sys.displayhook = my_displayhook
 
 
 import common
@@ -123,6 +123,7 @@ wxGlade home page: <http://wxglade.sourceforge.net/>""") )
     # According to the invoking dir of wxGlade (which can be different
     # from '.' if it is invoked from a shell script).
     #args = [u'F:\\PythonInstallation\\wxGladeTest\\test.wxg']
+    # XXX cleanup
     args = [u"D:\\Python\\Sources35\\wxGladeTests\\Test_release_072_v2-TextCtrls.wxg"]
     #args = [u"D:\\Python\\Sources35\\wxGladeTests\\Test_release_072_v3-SingleSizer.wxg"]
     ##args = [os.getcwd() + u"\\tests\\casefiles\\AllWidgets_28.wxg"]
@@ -139,7 +140,7 @@ wxGlade home page: <http://wxglade.sourceforge.net/>""") )
     #args = ["C:\\Users\\dietmar\\nested_sizers.wxg"]
     args = ["C:\\Users\\dietmar\\test_splitter.wxg"]
     args = ["C:\\Users\\dietmar\\class_names.wxg"]
-    
+
     if len(args) == 1:
         filename = args[0]
         if not os.path.isabs(filename):

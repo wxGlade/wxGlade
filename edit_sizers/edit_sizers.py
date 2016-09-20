@@ -6,7 +6,7 @@ Hierarchy of Sizers supported by wxGlade
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
-from ordereddict import OrderedDict
+from collections import OrderedDict
 import logging, math, re
 import wx
 from wx.lib.buttons import GenButton
@@ -24,7 +24,7 @@ def _grid_row_col(pos, cols):
     col = pos%cols - 1
     if pos%cols == 0:
         # last col
-        row -= 1  
+        row -= 1
         col = cols-1
     return (row, col)
 
@@ -632,7 +632,7 @@ class SizerBase(Sizer, np.PropertyOwner):
     PROPERTIES = ["Common", "name", "class", "orient", "class_orient", # class and orient are hidden
    "attribute"]
     EXTRA_PROPERTIES = []
-    
+
     MANAGED_PROPERTIES  = ["pos", "proportion", "border", "flag"]
     TOPLEVEL_PROPERTIES = ["fit"]
 
@@ -718,7 +718,7 @@ class SizerBase(Sizer, np.PropertyOwner):
         return self.WX_CLASS
 
     def properties_changed(self, modified):
-        # "class" and "orient" will only display; "class_orient" 
+        # "class" and "orient" will only display; "class_orient"
         if not modified or "class" in modified:
             self.properties["class_orient"].set(self.get_class_orient())
         if not modified or "orient" in modified:
@@ -994,7 +994,7 @@ class SizerBase(Sizer, np.PropertyOwner):
         except IndexError:  # this shouldn't happen
             self._logger.exception(_('Internal Error'))
             raise SystemExit
-        
+
         item = sizer_item.item  # the ManagedBase or derived class instance
 
         try:
@@ -1053,7 +1053,7 @@ class SizerBase(Sizer, np.PropertyOwner):
 
         if not self.widget:
             return
-        
+
         #from edit_windows import TopLevelBase
 
         # layout
@@ -1288,7 +1288,7 @@ class Dummy(object):
 
 class BoxSizerBase(SizerBase):
     "orientation handling for BoxSizer and StaticBoxSizer"
-    
+
     def __init__(self, name, window, orient=wx.VERTICAL, elements=0, toplevel=True):
         # elements: number of slots
         SizerBase.__init__(self, name, self.WX_CLASS, orient, window, toplevel)
@@ -1667,7 +1667,7 @@ class GridSizerBase(SizerBase):
                 if self.widget.GetVGap()!=self.vgap:
                     self.widget.SetVGap(self.vgap)
                     layout = True
-    
+
             if layout:
                 self.layout(True)
 
@@ -1676,7 +1676,7 @@ class GridSizerBase(SizerBase):
 
 class EditGridSizer(GridSizerBase):
     "Class to handle wxGridSizer objects"
-    
+
     WX_CLASS = "wxGridSizer"
     def __init__(self, name, window, rows=3, cols=3, vgap=0, hgap=0, toplevel=True):
         GridSizerBase.__init__(self, name, 'wxGridSizer', window, rows, cols, vgap, hgap, toplevel)
@@ -2103,10 +2103,10 @@ def init_all():
 
     WidgetTree.images['EditStaticBoxSizer'] = os.path.join( config.icons_path, 'sizer.xpm')
     WidgetTree.images['EditFlexGridSizer']  = os.path.join( config.icons_path, 'grid_sizer.xpm' )
-    
+
     WidgetTree.images['EditVerticalSizer']   = os.path.join( config.icons_path, 'sizer_v.xpm' )
     WidgetTree.images['EditHorizontalSizer'] = os.path.join( config.icons_path, 'sizer_h.xpm' )
-    
+
     WidgetTree.images['EditVerticalSizerSlot']   = os.path.join( config.icons_path, 'sizer_slot_v.xpm' )
     WidgetTree.images['EditHorizontalSizerSlot'] = os.path.join( config.icons_path, 'sizer_slot_h.xpm' )
     WidgetTree.images['EditSizerSlot'] = os.path.join( config.icons_path, 'sizer_slot.xpm' )
