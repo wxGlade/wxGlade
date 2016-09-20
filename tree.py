@@ -484,7 +484,7 @@ class WidgetTree(wx.TreeCtrl, Tree):
             self.app.check_codegen(child.widget)
 
     def insert(self, child, parent, index):
-        "inserts child to the list of parent's children, before pos"
+        "inserts child to the list of parent's children at index; a SlotNode at index is overwritten"
         assert isinstance(child, Node)
         # pos is index
         if parent is None:
@@ -517,11 +517,12 @@ class WidgetTree(wx.TreeCtrl, Tree):
         Tree.remove(self, node)
         if node is not None:
             if delete:
-                try:
-                    self.cur_widget = None
-                    self.SelectItem(node.parent.item)
-                except:
-                    self.SelectItem(self.GetRootItem())
+                if self.cur_widget:
+                    try:
+                        self.cur_widget = None
+                        self.SelectItem(node.parent.item)
+                    except:
+                        self.SelectItem(self.GetRootItem())
                 self.Delete(node.item)
         else:
             wx.TreeCtrl.Destroy(self)
