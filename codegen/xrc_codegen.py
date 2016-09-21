@@ -390,6 +390,9 @@ class XRCCodeWriter(BaseLangCodeWriter, wcodegen.XRCMixin):
             h = obj.properties.get('height', '0')
             obj_xrc = SpacerXrcObject( '%s, %s' % (w, h), str(option), str(flag), str(border) )
             sizer.xrc.children.append(obj_xrc)
+        elif obj.klass == 'sizerslot':
+            obj_xrc = SpacerXrcObject( '0, 0', '0', '0', '0' )
+            sizer.xrc.children.append(obj_xrc)
         else:
             sizeritem_xrc = SizerItemXrcObject( obj_xrc, str(option), str(flag), str(border) )
             sizer.xrc.children.append(sizeritem_xrc)

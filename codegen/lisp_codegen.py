@@ -348,7 +348,7 @@ class LispCodeWriter(BaseLangCodeWriter, wcodegen.LispMixin):
         if not klass or not builder:
             return
 
-        if sub_obj.name != "spacer":
+        if sub_obj.name not in ("spacer","sizerslot"):
             self.class_lines.append(sub_obj.name)
         if (sub_obj.klass == "wxBoxSizer" or
                     sub_obj.klass == "wxStaticBoxSizer" or
@@ -356,7 +356,7 @@ class LispCodeWriter(BaseLangCodeWriter, wcodegen.LispMixin):
                     sub_obj.klass == "wxFlexGridSizer"):
             self.dependencies['(use-package :wxSizer)'] = 1
         else:
-            if sub_obj.klass != "spacer":
+            if sub_obj.klass not in ("spacer", "sizerslot"):
                 key = '(use-package :%s)' % sub_obj.klass
                 self.dependencies[key] = 1
 
@@ -569,7 +569,7 @@ class LispCodeWriter(BaseLangCodeWriter, wcodegen.LispMixin):
             return obj.name
         # spacer.name is "<width>, <height>" already, but wxLisp expect
         # a tuple instead of two single values
-        elif obj.klass == 'spacer':
+        elif obj.klass in ('spacer','sizerslot'):
             return '(%s)' % obj.name
         # wxList use class attributes always (unfortunately)
 #        elif self.test_attribute(obj):
