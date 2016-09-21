@@ -50,7 +50,7 @@ class MyFrame(wx.Frame):
         # end wxGlade
 
     def myEVT_GRID_CELL_LEFT_CLICK(self, event):  # wxGlade: MyFrame.<event_handler>
-        print "Event handler 'myEVT_GRID_CELL_LEFT_CLICK' not implemented!"
+        print("Event handler 'myEVT_GRID_CELL_LEFT_CLICK' not implemented!")
         event.Skip()
 
 # end of class MyFrame

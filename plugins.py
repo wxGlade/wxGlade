@@ -149,7 +149,7 @@ def _modulenames_from_file(filename, default_section):
             content[cursect].append(mo.group('module'))
 
     # remove empty sections
-    for section in content.keys():
+    for section in list(content.keys()):
         if not content[section]:
             del content[section]
 

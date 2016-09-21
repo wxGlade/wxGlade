@@ -210,7 +210,7 @@ class EditBase(EventsMixin, np.PropertyOwner):
         self._destroy_popup_menu()
         widget = misc.get_toplevel_widget(self)
         if widget is not None:
-            widget.preview()
+            wx.CallAfter( widget.preview )  # direct call would result in crash
 
     def _destroy_popup_menu(self):
         if self._rmenu is None: return

@@ -776,7 +776,7 @@ class wxGladeFrame(wx.Frame):
 
         common.app_tree.app.filename = fn
         #remove the template flag so we can save the file.
-        common.app_tree.app.is_template = False
+        common.app_tree.app.properties["is_template"].set(False)
 
         self.save_app(event)
         self.cur_dir = os.path.dirname(fn)
@@ -787,7 +787,7 @@ class wxGladeFrame(wx.Frame):
         data = getattr(common.app_tree.app, 'template_data', None)
         outfile, data = template.save_template(data)
         if outfile:
-            common.app_tree.app.is_template = True
+            common.app_tree.app.properties["is_template"].set(True)
             common.app_tree.app.template_data = data
             self._save_app(outfile)
 

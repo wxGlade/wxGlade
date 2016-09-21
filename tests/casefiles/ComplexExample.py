@@ -141,19 +141,19 @@ class PyOgg2_MyFrame(wx.Frame):
         # end wxGlade
 
     def OnOpen(self, event):  # wxGlade: PyOgg2_MyFrame.<event_handler>
-        print "Event handler 'OnOpen' not implemented!"
+        print("Event handler 'OnOpen' not implemented!")
         event.Skip()
 
     def OnClose(self, event):  # wxGlade: PyOgg2_MyFrame.<event_handler>
-        print "Event handler 'OnClose' not implemented!"
+        print("Event handler 'OnClose' not implemented!")
         event.Skip()
 
     def OnAboutDialog(self, event):  # wxGlade: PyOgg2_MyFrame.<event_handler>
-        print "Event handler 'OnAboutDialog' not implemented!"
+        print("Event handler 'OnAboutDialog' not implemented!")
         event.Skip()
 
     def startConverting(self, event):  # wxGlade: PyOgg2_MyFrame.<event_handler>
-        print "Event handler 'startConverting' not implemented!"
+        print("Event handler 'startConverting' not implemented!")
         event.Skip()
 
 # end of class PyOgg2_MyFrame

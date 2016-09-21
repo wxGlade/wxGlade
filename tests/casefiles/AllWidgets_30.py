@@ -404,35 +404,35 @@ class All_Widgets_Frame(wx.Frame):
         # end wxGlade
 
     def onSelectUnix(self, event):  # wxGlade: All_Widgets_Frame.<event_handler>
-        print "Event handler 'onSelectUnix' not implemented!"
+        print("Event handler 'onSelectUnix' not implemented!")
         event.Skip()
 
     def onSelectWindows(self, event):  # wxGlade: All_Widgets_Frame.<event_handler>
-        print "Event handler 'onSelectWindows' not implemented!"
+        print("Event handler 'onSelectWindows' not implemented!")
         event.Skip()
 
     def onRemoveTabs(self, event):  # wxGlade: All_Widgets_Frame.<event_handler>
-        print "Event handler 'onRemoveTabs' not implemented!"
+        print("Event handler 'onRemoveTabs' not implemented!")
         event.Skip()
 
     def onShowManual(self, event):  # wxGlade: All_Widgets_Frame.<event_handler>
-        print "Event handler 'onShowManual' not implemented!"
+        print("Event handler 'onShowManual' not implemented!")
         event.Skip()
 
     def OnBitmapButtonPanelNavigationKey(self, event):  # wxGlade: All_Widgets_Frame.<event_handler>
-        print "Event handler 'OnBitmapButtonPanelNavigationKey' not implemented!"
+        print("Event handler 'OnBitmapButtonPanelNavigationKey' not implemented!")
         event.Skip()
 
     def OnNotebookPageChanged(self, event):  # wxGlade: All_Widgets_Frame.<event_handler>
-        print "Event handler 'OnNotebookPageChanged' not implemented!"
+        print("Event handler 'OnNotebookPageChanged' not implemented!")
         event.Skip()
 
     def OnNotebookPageChanging(self, event):  # wxGlade: All_Widgets_Frame.<event_handler>
-        print "Event handler 'OnNotebookPageChanging' not implemented!"
+        print("Event handler 'OnNotebookPageChanging' not implemented!")
         event.Skip()
 
     def onStartConverting(self, event):  # wxGlade: All_Widgets_Frame.<event_handler>
-        print "Event handler 'onStartConverting' not implemented!"
+        print("Event handler 'onStartConverting' not implemented!")
         event.Skip()
 
 # end of class All_Widgets_Frame
