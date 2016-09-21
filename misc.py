@@ -350,6 +350,8 @@ def check_wx_version(major, minor=0, release=0, revision=0):
     return wx.VERSION[:-1] >= (major, minor, release, revision)
 
 
+########################################################################################################################
+# menu helpers
 
 def append_menu_item(menu, id, text, xpm_file_or_artid=None): # XXX change: move id to the end of the argument list?
     global use_menu_icons
@@ -400,6 +402,9 @@ def exec_after(func, *args, **kwargs):
     return lambda e: wx.CallAfter(func, *args, **kwargs)
 
 
+########################################################################################################################
+# key handlers
+
 def _remove():
     global focused_widget
     if focused_widget is None or not hasattr(focused_widget, "remove"): return
@@ -440,22 +445,44 @@ def _preview():
     common.palette.preview(None)
 
 
+def _insert():
+    global focused_widget
+    if not focused_widget: return
+    if not hasattr(focused_widget, "sizer") or not hasattr(focused_widget, "pos"): return
+    method = getattr(focused_widget.sizer, "insert_slot", None)
+    if method: method(focused_widget.pos)
+
+
+def _add():
+    global focused_widget
+    if not focused_widget: return
+    method = getattr(focused_widget, "add_slot", None)
+    if not method:
+        if not hasattr(focused_widget, "sizer"): return
+        method = getattr(focused_widget.sizer, "add_slot", None)
+    if method: method()
+
+
 # accelerator table to enable keyboard shortcuts for the popup menus of the various widgets (remove, cut, copy, paste)
 accel_table = [
-    (0,             wx.WXK_DELETE, _remove),
-    (wx.ACCEL_CTRL, ord('C'),      _copy),
-    (wx.ACCEL_CTRL, ord('X'),      _cut),
-    (wx.ACCEL_CTRL, ord('V'),      _paste),
-    (0,             wx.WXK_F5,     _preview),
+    (0,                            wx.WXK_DELETE, _remove, ()),
+    (wx.ACCEL_CTRL,                ord('C'),      _copy, ()),
+    (wx.ACCEL_CTRL,                ord('X'),      _cut, ()),
+    (wx.ACCEL_CTRL,                ord('V'),      _paste, ()),
+    (wx.ACCEL_CTRL,                ord('I'),      _insert, ()),
+    (wx.ACCEL_CTRL,                ord('A'),      _add, ()),
+    (0,                            wx.WXK_F5,     _preview, ()),
 ]
 
 def on_key_down_event(event):
     "centralized handler for Ctrl+C/X/V or Del key"
-    evt_flags = wx.ACCEL_CTRL  if event.ControlDown()  else  0
+    evt_flags = 0
+    if event.ControlDown(): evt_flags |= wx.ACCEL_CTRL
+    if event.ShiftDown():   evt_flags |= wx.ACCEL_SHIFT
     evt_key = event.GetKeyCode()
-    for flags, key, function in accel_table:
+    for flags, key, function, args in accel_table:
         if evt_flags == flags and evt_key == key:
-            wx.CallAfter(function)
+            wx.CallAfter(function, *args)
             return
     # not handled
     event.Skip()

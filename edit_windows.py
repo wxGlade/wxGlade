@@ -153,7 +153,7 @@ class EditBase(EventsMixin, np.PropertyOwner):
         self._destroy_popup_menu()
         menu = misc.wxGladePopupMenu(self.name)
 
-        # remove/copy/cut
+        # edit: remove/copy/cut
         widgetclass = self.__class__.__name__.lstrip("Edit")
         i = misc.append_menu_item(menu, -1, _('Remove %s\tDel')%widgetclass, wx.ART_DELETE)
         misc.bind_menu_item_after(widget, i, self.remove)
@@ -181,19 +181,19 @@ class EditBase(EventsMixin, np.PropertyOwner):
 
         if not self.sizer.is_virtual():
             # slots
-            i = misc.append_menu_item(menu, -1, _('Insert Slot before') )
-            misc.bind_menu_item_after(widget, i, self.insert_slot)
-            i = misc.append_menu_item(menu, -1, _('Insert Slots before...') )
-            misc.bind_menu_item_after(widget, i, self.insert_slot, True)
+            i = misc.append_menu_item(menu, -1, _('Insert Slot before\tCtrl+I') )
+            misc.bind_menu_item_after(widget, i, self.sizer.insert_slot, self.pos)
+            i = misc.append_menu_item(menu, -1, _('Insert Slots before...\tCtrl+Shift+I') )
+            misc.bind_menu_item_after(widget, i, self.sizer.insert_slot, self.pos, True)
 
             if self.pos==len(self.sizer.children)-1: # last slot -> allow to add
-                i = misc.append_menu_item(menu, -1, _('Add Slot') )
-                misc.bind_menu_item_after(widget, i, self.add_slot)
-                i = misc.append_menu_item(menu, -1, _('Add Slots...') )
-                misc.bind_menu_item_after(widget, i, self.add_slot, True)
+                i = misc.append_menu_item(menu, -1, _('Add Slot\tCtrl+A') )
+                misc.bind_menu_item_after(widget, i, self.sizer.add_slot)
+                i = misc.append_menu_item(menu, -1, _('Add Slots...\tCtrl+Shift+A') )
+                misc.bind_menu_item_after(widget, i, self.sizer.add_slot, True)
+            menu.AppendSeparator()
 
         # preview (create or close?)
-        menu.AppendSeparator()
         p = misc.get_toplevel_widget(self)
         if p is not None and p.preview_is_visible():
             item = _('Close preview (%s)\tF5') % p.name
@@ -218,35 +218,6 @@ class EditBase(EventsMixin, np.PropertyOwner):
         widget.Unbind(wx.EVT_MENU)
         menu.Destroy()
         self._rmenu = None
-
-    # slots ############################################################################################################
-    def _ask_count(self, insert=True):
-        # helper for next method (insertion/adding of multiple slots)
-        choices = [str(n) for n in range(1,11)]
-        if insert:
-            dlg = wx.SingleChoiceDialog(None, "Select number of slots to be inserted", "Insert Slots", choices)
-        else:
-            dlg = wx.SingleChoiceDialog(None, "Select number of slots to be added", "Add Slots", choices)
-        ret = 0  if dlg.ShowModal()==wx.ID_CANCEL  else   int(dlg.GetStringSelection())
-        dlg.Destroy()
-        return ret
-
-    def insert_slot(self, multiple=False):
-        # insert before current
-        count = self._ask_count() if multiple else 1
-        for n in range(count):
-            self.sizer.insert_slot( self.pos, force_layout=False )
-        self.sizer.layout()
-        common.app_tree.app.saved = False
-
-    def add_slot(self, multiple=False):
-        # add to the end
-        count = self._ask_count(insert=False) if multiple else 1
-        for n in range(count):
-            self.sizer.add_slot(force_layout=False)
-        self.sizer.layout()
-        common.app_tree.app.saved = False
-
     ####################################################################################################################
 
     def remove(self, *args):
@@ -772,7 +743,7 @@ class TopLevelBase(WindowBase, PreviewMixin):
         
         # preview
         menu.AppendSeparator()
-        i = misc.append_menu_item(menu, -1, _('Preview'))
+        i = misc.append_menu_item(menu, -1, _('Preview %s\tF5'%widgetclass))
         misc.bind_menu_item(widget, i, self.preview_parent)
 
         self._rmenu = (menu, widget)

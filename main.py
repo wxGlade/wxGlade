@@ -294,7 +294,7 @@ class wxGladeFrame(wx.Frame):
 
         file_menu.AppendSeparator()
         IMPORT_ID = wx.NewId()
-        append_menu_item(file_menu, IMPORT_ID, _("&Import from XRC...\tCtrl+I"))
+        append_menu_item(file_menu, IMPORT_ID, _("&Import from XRC..."))
 
         EXIT_ID = wx.NewId()
         file_menu.AppendSeparator()
@@ -366,7 +366,7 @@ class wxGladeFrame(wx.Frame):
             (wx.ACCEL_CTRL, ord('S'), SAVE_ID),
             (wx.ACCEL_CTRL|wx.ACCEL_SHIFT, ord('S'), SAVE_AS_ID),
             (wx.ACCEL_CTRL, ord('G'), GENERATE_CODE_ID),
-            (wx.ACCEL_CTRL, ord('I'), IMPORT_ID),
+            #(wx.ACCEL_CTRL, ord('I'), IMPORT_ID),
             (0, wx.WXK_F1, MANUAL_ID),
             (wx.ACCEL_CTRL, ord('Q'), EXIT_ID),
             (0, wx.WXK_F5, wx.ID_REFRESH),
