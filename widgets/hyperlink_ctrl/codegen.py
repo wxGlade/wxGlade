@@ -5,13 +5,27 @@ Code generator functions for wxHyperlinkCtrl objects
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
-import common
+import common, compat
 import wcodegen
 
 
 class PythonHyperlinkCtrlGenerator(wcodegen.PythonWidgetCodeWriter):
 
     tmpl = '%(name)s = %(klass)s(%(parent)s, %(id)s, %(label)s, %(url)s%(style)s)\n'
+
+    if compat.IS_PHOENIX:
+        import_modules = ['import wx.adv\n']
+
+    if compat.IS_PHOENIX:
+        def cn(self, name):
+            # don't process already formatted items again
+            if name.startswith('wx.'):
+                return name
+            if name.startswith('wx'):
+                return 'wx.adv.' + name[2:]
+            elif name.startswith('EVT_'):
+                return 'wx.adv' + name
+            return name
 
     def _prepare_tmpl_content(self, obj):
         wcodegen.PythonWidgetCodeWriter._prepare_tmpl_content(self, obj)

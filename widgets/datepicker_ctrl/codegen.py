@@ -3,15 +3,31 @@ Code generator functions for wxDatePickerCtrl objects
 
 @copyright: 2002-2007 Alberto Griggio
 @copyright: 2014-2016 Carsten Grohmann
+@copyright: 2016 Dietmar Schwertberger
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
-import common
+import common, compat
 import wcodegen
 
 
 class PythonDatePickerCtrlGenerator(wcodegen.PythonWidgetCodeWriter):
     tmpl = '%(name)s = %(klass)s(%(parent)s, %(id)s%(style)s)\n'
+
+    # XXX the following needs to depend on the code generator when Phoenix is about to be supported fully:
+    if compat.IS_PHOENIX:
+        import_modules = ['import wx.adv\n']
+
+    if compat.IS_PHOENIX:
+        def cn(self, name):
+            # don't process already formatted items again
+            if name.startswith('wx.'):
+                return name
+            if name.startswith('wx'):
+                return 'wx.adv.' + name[2:]
+            elif name.startswith('EVT_'):
+                return 'wx.adv' + name
+            return name
 
     def _prepare_tmpl_content(self, obj):
         wcodegen.PythonWidgetCodeWriter._prepare_tmpl_content(self, obj)

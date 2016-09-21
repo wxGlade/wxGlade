@@ -1141,7 +1141,8 @@ bool MyApp::OnInit()
                 # or as a local variable in the do_layout method
                 if self.test_attribute(sub_obj):
                     klass.sub_objs.append((sub_obj.klass, sub_obj.name))
-        else:  # the object is a sizer
+        elif sub_obj.klass != "sizerslot":
+            # the object is a sizer
             if self.test_attribute(sub_obj):
                 klass.sub_objs.append((sub_obj.klass, sub_obj.name))
             klass.sizers_init.extend(init)

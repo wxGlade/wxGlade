@@ -93,4 +93,4 @@ def initialize():
         awh('wxGridSizer', CppGridSizerBuilder())
         awh('wxFlexGridSizer', CppFlexGridSizerBuilder())
 
-#    common.register('C++', "sizerslot", CppSizerSlotGenerator("sizerslot"))
+    common.register('C++', "sizerslot", CppSizerSlotGenerator("sizerslot"))

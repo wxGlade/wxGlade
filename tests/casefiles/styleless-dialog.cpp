@@ -66,6 +66,7 @@ void StylelessFrame::do_layout()
 {
     // begin wxGlade: StylelessFrame::do_layout
     wxBoxSizer* sizer_1 = new wxBoxSizer(wxVERTICAL);
+    sizer_1->Add(0, 0, 0, 0, 0);
     SetSizer(sizer_1);
     sizer_1->Fit(this);
     Layout();
