@@ -9,6 +9,9 @@
         <title>Style-less Frame</title>
         <object class="wxBoxSizer">
             <orient>wxVERTICAL</orient>
+            <object class="spacer">
+                <size>0, 0</size>
+            </object>
         </object>
     </object>
 </resource>
