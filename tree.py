@@ -401,12 +401,13 @@ class WidgetTree(wx.TreeCtrl, Tree):
             return
         if compatible=="AddSlot":
             # dropped on a sizer -> add slot
-            dst_widget.add_slot(force_layout=True)
+            dst_widget._add_slot()
+            dst_widget.layout()
             dst_widget = dst_widget.children[-1].item # the slot
         elif compatible=="Slot":
-            # insert a slot
+            # insert a slot or fill empty slot
             pos = dst_widget.pos
-            dst_widget.sizer.insert_slot( pos, force_layout=False )
+            dst_widget.sizer._insert_slot(pos)
             dst_widget = dst_widget.sizer.children[pos].item # the slot
 
         if not hasattr(dst_widget, "clipboard_paste"):
@@ -577,6 +578,8 @@ class WidgetTree(wx.TreeCtrl, Tree):
         widget = self.GetPyData(item).widget
         self.cur_widget = widget
         misc.set_focused_widget(widget)
+        if not self.IsExpanded(item):
+            self.Expand(item)
         self.SetFocus()
 
     def on_left_click(self, event):

@@ -253,18 +253,25 @@ class SizerSlot(np.PropertyOwner):
     def _create_popup_menu(self, widget):
         self._destroy_popup_menu()
         
+        # menu title
+        if isinstance(self.sizer, GridSizerBase):
+            rows = self.sizer.rows
+            cols = self.sizer.cols
+            # calculate row and pos of our slot
+            row,col = _grid_row_col(self.pos, cols)
+            menu = wx.Menu(_("Slot %d/%d"%(row+1,col+1)))
+        else:
+            menu = wx.Menu(_("Slot %d"%self.pos))
 
+        # edit: paste
+        i = misc.append_menu_item(menu, -1, _('Paste\tCtrl+V'), wx.ART_PASTE)
+        misc.bind_menu_item_after(widget, i, self.clipboard_paste)
+        menu.AppendSeparator()
+
+
+        # slot actions
         if not self.sizer.is_virtual():
-            # we cannot remove items from virtual sizers
-            if isinstance(self.sizer, GridSizerBase):
-                rows = self.sizer.rows
-                cols = self.sizer.cols
-                # calculate row and pos of our slot
-                row,col = _grid_row_col(self.pos, cols)
-                menu = wx.Menu(_("Slot %d/%d"%(row+1,col+1)))
-            else:
-                menu = wx.Menu(_("Slot %d"%self.pos))
-
+            # we can add/remove items only from non-virtual sizers
             i = misc.append_menu_item(menu, -1, _('Remove Slot\tDel'), wx.ART_DELETE)
             misc.bind_menu_item_after(widget, i, self.remove)
             if len(self.sizer.children)<=2: i.Enable(False)
@@ -291,12 +298,20 @@ class SizerSlot(np.PropertyOwner):
                 misc.bind_menu_item_after(widget, i, self.sizer.remove_col, self.pos)
                 if not col_is_empty or cols<=1: i.Enable(False)
                 menu.AppendSeparator()
-        else:
-            menu = wx.Menu(_("Slot %d"%self.pos))
 
-        i = misc.append_menu_item(menu, -1, _('Paste\tCtrl+V'), wx.ART_PASTE)
-        misc.bind_menu_item_after(widget, i, self.clipboard_paste)
-        menu.AppendSeparator()
+            # for all sizers: insert/add slots
+            i = misc.append_menu_item(menu, -1, _('Insert Slot before\tCtrl+I') )
+            misc.bind_menu_item_after(widget, i, self.sizer.insert_slot, self.pos)
+            i = misc.append_menu_item(menu, -1, _('Insert Slots before...\tCtrl+Shift+I') )
+            misc.bind_menu_item_after(widget, i, self.sizer.insert_slot, self.pos, True)
+
+            if self.pos==len(self.sizer.children)-1: # last slot -> allow to add
+                i = misc.append_menu_item(menu, -1, _('Add Slot\tCtrl+A') )
+                misc.bind_menu_item_after(widget, i, self.sizer.add_slot)
+                i = misc.append_menu_item(menu, -1, _('Add Slots...\tCtrl+Shift+A') )
+                misc.bind_menu_item_after(widget, i, self.sizer.add_slot, True)
+            menu.AppendSeparator()
+
 
         p = misc.get_toplevel_widget(self.sizer)
         if p is not None and p.preview_is_visible():
@@ -761,11 +776,11 @@ class SizerBase(Sizer, np.PropertyOwner):
         misc.bind_menu_item_after(widget, i, self._remove)
 
         if not self.toplevel and self.sizer:
-            i = misc.append_menu_item( menu, -1, _('Insert slot before...') )
+            i = misc.append_menu_item( menu, -1, _('Insert slot before\tCtrl+I') )
             misc.bind_menu_item_after(widget, i, self.sizer.insert_slot, self.pos)
             menu.AppendSeparator()
         # other menu items: add/insert slot, copy, cut
-        i = misc.append_menu_item( menu, -1, _('Add slot') )
+        i = misc.append_menu_item( menu, -1, _('Add slot\tCtrl+A') )
         misc.bind_menu_item_after(widget, i, self.add_slot)
 
         if "cols" in self.PROPERTIES:  # a grid sizer
@@ -1174,31 +1189,27 @@ class SizerBase(Sizer, np.PropertyOwner):
         self._btn.Refresh(True)
 
     # add/insert/free slots; interface mainly from context menus #######################################################
-    def add_slot(self, add_node=True, force_layout=True):
+    def _add_slot(self):
         "adds an empty slot to the sizer, i.e. a fake window that will accept the dropping of widgets"
-        # called from "add slot" context menu of sizer                          with add_node=True
-        # called from XML parser for adding empty 'sizerslot': sizer.add_slot() with add_node=True
-        #(called from ManagedBase.__init__ -> sizer.add_item -> self.add_slot   with add_node=False) no longer
+        # called from "add slot" context menu handler of sizer
+        # called from XML parser for adding empty 'sizerslot': sizer.add_slot()
         tmp = SizerSlot(self.window, self, len(self.children))
         item = SizerItem(tmp, len(self.children), 1, wx.EXPAND)
         self.children.append(item)
         if "rows" in self.PROPERTIES: self._adjust_rows_cols()  # for GridSizer
 
-        if add_node:
-            # insert node into tree
-            tmp.node = node = SlotNode(tmp)
-            common.app_tree.add(node, self.node)
+        # insert node into tree
+        tmp.node = node = SlotNode(tmp)
+        common.app_tree.add(node, self.node)
 
         if self.widget:
             tmp.create()  # create the actual SizerSlot widget
             self.widget.Add(tmp.widget, 1, wx.EXPAND)
             self.widget.SetItemMinSize(tmp.widget, 20, 20)
-            if force_layout:
-                self.layout(True)
 
-    def insert_slot(self, pos=None, force_layout=True):
+    def _insert_slot(self, pos=None):
         "Inserts an empty slot into the sizer at pos (1 based); optionally force layout update"
-        # called from EditBase context menu; multiple times if applicable; layout will be called there
+        # called from context menu handler; multiple times if applicable; layout will be called there
         # also called from SizerBase._remove after a sizer has removed itself and inserts an empty slot instead
         # pos is 1 based here
         tmp = SizerSlot(self.window, self, pos)
@@ -1219,8 +1230,34 @@ class SizerBase(Sizer, np.PropertyOwner):
             tmp.create()  # create the actual SizerSlot
             self.widget.Insert(pos, tmp.widget, 1, wx.EXPAND)
             self.widget.SetItemMinSize(tmp.widget, 20, 20)
-            if force_layout:
-                self.layout(True)
+
+    # insert/add slot callbacks for context menus ######################################################################
+    def _ask_count(self, insert=True):
+        # helper for next method (insertion/adding of multiple slots)
+        choices = [str(n) for n in range(1,11)]
+        if insert:
+            dlg = wx.SingleChoiceDialog(None, "Select number of slots to be inserted", "Insert Slots", choices)
+        else:
+            dlg = wx.SingleChoiceDialog(None, "Select number of slots to be added", "Add Slots", choices)
+        ret = 0  if dlg.ShowModal()==wx.ID_CANCEL  else   int(dlg.GetStringSelection())
+        dlg.Destroy()
+        return ret
+
+    def insert_slot(self, pos, multiple=False):
+        # insert before current
+        count = self._ask_count() if multiple else 1
+        for n in range(count):
+            self._insert_slot(pos)
+        if self.widget: self.layout(True)
+        common.app_tree.app.saved = False
+
+    def add_slot(self, multiple=False):
+        # add to the end
+        count = self._ask_count(insert=False) if multiple else 1
+        for n in range(count):
+            self._add_slot()
+        if self.widget: self.layout()
+        common.app_tree.app.saved = False
 
     def free_slot(self, pos, force_layout=True):
         "Replaces the element at pos with an empty slot"
@@ -1298,7 +1335,8 @@ class BoxSizerBase(SizerBase):
 
         self.children = [SizerItem(Dummy(), 0, 0, wx.EXPAND)]  # add to self.children the SizerItem for self._btn
         for i in range(1, elements + 1):
-            self.add_slot()
+            self._add_slot()
+        self.layout()
 
     def get_class_orient(self):
         return '%s (%s)'%( self.WX_CLASS, self.properties["orient"].get_str_value() )
@@ -1557,14 +1595,14 @@ class GridSizerBase(SizerBase):
             add_row = rows
             # ensure that the last row is full
             for n in range( len(self.children) -rows*cols - 1 ):
-                self.insert_slot( len(self.children), force_layout=False)
+                self._insert_slot( len(self.children) )
         else:
             add_row, dummy = _grid_row_col(pos, cols)
 
         self.properties["rows"].set( rows+1 )
 
         for n in range(cols):
-            self.insert_slot( n+1 + add_row*cols, force_layout=False)
+            self._insert_slot( n+1 + add_row*cols )
 
         self.layout(True)
         common.app_tree.app.saved = False
@@ -1587,12 +1625,12 @@ class GridSizerBase(SizerBase):
         # fill up the last row up to the insertion position if required
         if last_pos_col < min(add_col,cols-1):
             for i in range(min(add_col,cols-1)-last_pos_col):
-                self.insert_slot( last_pos+1+i, force_layout=False)
+                self._insert_slot( last_pos+1+i )
 
         # insert the new colum
         self.properties["cols"].set( cols+1 )
         for r in range(rows-1,-1,-1):
-            self.insert_slot( add_col+1 + r*cols, force_layout=False)
+            self._insert_slot( add_col+1 + r*cols )
 
         if self.widget:
             if self.widget.GetCols()!=cols+1: self.widget.SetCols(cols+1)
@@ -1859,7 +1897,8 @@ def _builder(parent, sizer, pos, orientation=wx.VERTICAL, slots=1, is_static=Fal
 
     # add the slots
     for i in range(num):
-        sz.add_slot()
+        sz._add_slot()
+    sz.layout()
 
     if parent.widget: sz.create()
     if sizer is not None:
@@ -2047,7 +2086,7 @@ def grid_builder(parent, sizer, pos, number=[1]):
 
     # add the slots
     for i in range(rows*cols):
-        sz.add_slot(force_layout=False)
+        sz._add_slot()
     sz.layout()
 
     if parent.widget: sz.create()
