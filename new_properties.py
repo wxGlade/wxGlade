@@ -946,7 +946,7 @@ class TextProperty(Property):
         # when the value has changed
         if start_editing: self.editing = True
         if not self.editing: return
-        self.text.SetValue(self.value)
+        self.text.SetValue(str(self.value))
 
     def on_char(self, event):
         if self.text is None: return
