@@ -27,7 +27,7 @@ class FontHandler(BaseXmlBuilderTagHandler):
     def __init__(self, owner):
         super(FontHandler, self).__init__()
         self.owner = owner
-        self.props = ['' for i in range(6)]
+        self.props = [8, 'default', 'normal', 'normal', 0, 'Tahoma'] # size, family, style, weight, underlined, face
         self.index = 0
 
     def start_elem(self, name, attrs):
@@ -35,15 +35,16 @@ class FontHandler(BaseXmlBuilderTagHandler):
 
     def end_elem(self, name):
         if name == 'font':
-            self.owner.properties['font'].set_value(repr(self.props))
-            self.owner.properties['font'].toggle_active(True)
-            self.owner.set_font(repr(self.props))
+            self.owner.properties['font'].set(tuple(self.props), activate=True)
             return True  # to remove this handler
 
     def char_data(self, data):
         super(FontHandler, self).char_data(data)
         char_data = self.get_char_data()
-        self.props[self.index] = char_data
+        if self.index in (0,4):
+            self.props[self.index] = int(char_data)
+        else:
+            self.props[self.index] = char_data
 
 
 
@@ -338,7 +339,7 @@ class WindowBase(EditBase):
             self._font_changed = False # this is True if the user has selected a custom font
             font = self._build_from_font( compat.wx_SystemSettings_GetFont(wx.SYS_DEFAULT_GUI_FONT) )
             font[1] = 'default'
-            self.font = np.FontPropertyD(font)
+            self.font = np.FontPropertyD(tuple(font))
 
         # tooltip, focused, hiden
         self.tooltip    = np.TextPropertyD()
@@ -375,7 +376,7 @@ class WindowBase(EditBase):
 
         font_p = prop.get('font')
         if font_p and font_p.is_active():
-            self.set_font(font_p.get())
+            self._set_font()
 
         EditBase.finish_widget_creation(self)
 
@@ -431,31 +432,27 @@ class WindowBase(EditBase):
         families = np.FontProperty.font_families_from
         styles   = np.FontProperty.font_styles_from
         weights  = np.FontProperty.font_weights_from
-        return [ str(font.GetPointSize()),
-                 families.get(font.GetFamily(), 'default'),
-                 styles.get(font.GetStyle(), 'normal'),
-                 weights.get(font.GetWeight(), 'normal'),
-                 str(int(font.GetUnderlined())), font.GetFaceName() ]
+        return [font.GetPointSize(), families.get(font.GetFamily(), 'default'), styles.get(font.GetStyle(), 'normal'),
+                 weights.get(font.GetWeight(), 'normal'), int(font.GetUnderlined()), font.GetFaceName()]
 
-    def set_font(self, value):
-        #if not self.widget: return
-        families = FontDialogProperty.font_families_to
-        styles = FontDialogProperty.font_styles_to
-        weights = FontDialogProperty.font_weights_to
-        try:
-            value = eval(value)
-            f = wx.Font(int(value[0]), families[value[1]], styles[value[2]], weights[value[3]], int(value[4]), value[5])
-        except:
-            #self._logger.exception(_('Internal Error'))
-            self.properties['font'].set_value(self.get_font())
+    def _set_font(self):
+        if not self.widget: return
+        font_p = self.properties["font"]
+        if not font_p.is_active(): 
+            font = self._original["font"]
         else:
-            self.font = value
-            if self.widget:
-                old_size = self.widget.GetSize()
-                self.widget.SetFont(f)
-                size = self.widget.GetSize()
-                if size != old_size:
-                    self.sizer.set_item(self.pos, size=size)
+            font = font_p.value
+            families = np.FontProperty.font_families_to
+            styles = np.FontProperty.font_styles_to
+            weights = np.FontProperty.font_weights_to
+            font = wx.Font( font[0], families[font[1]], styles[font[2]], weights[font[3]], font[4], font[5])
+
+        old_size = self.widget.GetSize()
+        self.widget.SetFont(font)
+        if not self.properties["size"].is_active():
+            size = self.widget.GetSize()
+            if size != old_size:
+                self.sizer.set_item(self.pos, size=size)
 
     def set_width(self, value):
         self.set_size((int(value), -1))
@@ -509,6 +506,8 @@ class WindowBase(EditBase):
         if not modified or "foreground" in modified and self.widget:
             self.widget.SetForegroundColour(self.properties["foreground"].get_color())
             refresh = True
+        if "font" in modified and self.widget:
+            self._set_font()
         if refresh: self.widget.Refresh()
 
         EditBase.properties_changed(self, modified)

@@ -11,6 +11,7 @@ Interface to owner modified; see below for class PropertyOwner
 
 import common, misc, config, compat
 from collections import OrderedDict
+import re
 import wx
 
 class _DefaultArgument(object):
@@ -881,7 +882,7 @@ class TextProperty(Property):
         if value is None:
             value = ""
         elif not isinstance(value, compat.basestring):
-            value = str(value)
+            value = self._value_to_str(value)
         self.text = self.create_text_ctrl(panel, value)
         if self.blocked:
             self.text.Enable(False)
@@ -946,7 +947,11 @@ class TextProperty(Property):
         # when the value has changed
         if start_editing: self.editing = True
         if not self.editing: return
-        self.text.SetValue(str(self.value))
+        self.text.SetValue(self._value_to_str(self.value))
+
+    def _value_to_str(self, value):
+        # change in derived classes where value might be a tuple or similar
+        return value
 
     def on_char(self, event):
         if self.text is None: return
@@ -973,7 +978,7 @@ class TextProperty(Property):
             new_value = self._convert_from_text(self.text.GetValue())
         if new_value is None:  # e.g. validation failed
             wx.Bell()
-            self.text.SetValue(str(self.value))
+            self.text.SetValue( self._value_to_str(self.value))
             return
         Property._check_for_user_modification(self, new_value)
 
@@ -982,6 +987,7 @@ class TextProperty(Property):
         Derived classes may return None to indicate a validation fail."""
         if value is None: value = self.text.GetValue()
         return value
+
     def check(self, value):
         "checks whether the string value matches the validation regular expression"
         if not self.validation_re: return True
@@ -1000,8 +1006,6 @@ class TextPropertyRO(TextProperty):
 
 ########################################################################################################################
 # some text properties with validation:
-
-import re
 
 class NameProperty(TextProperty):
     validation_re  = re.compile(r'^[a-zA-Z_]+[\w-]*(\[\w*\])*$')
@@ -1060,6 +1064,7 @@ class SizePropertyD(TextPropertyD):
         if isinstance(value, wx.Size):
             return '%d, %d' % (value.x, value.y)
         return '%d, %d' % value
+
     def _convert_from_text(self, value):
         "normalize string to e.g. '-1, -1'; return None if invalid"
         match = self.validation_re.match(value)
@@ -1190,9 +1195,10 @@ class DialogProperty(TextProperty):
     def display_dialog(self, event):
         dialog = self._create_dialog()
         if dialog is None or dialog.ShowModal()!=wx.ID_OK: return
+        # the dialog needs to return a valid value!
         value = dialog.get_value()
-        self.text.SetValue(misc.wxstr(value))
-        self._check_for_user_modification()
+        self.text.SetValue( self._value_to_str(value) )
+        self._check_for_user_modification(value)
         self.update_display()
         #self.text.ProcessEvent( wx.FocusEvent(wx.wxEVT_KILL_FOCUS, self.text.GetId()) )
 
@@ -1343,6 +1349,9 @@ class FontProperty(DialogProperty):
     font_families_to['teletype'] = wx.TELETYPE
     font_families_from[wx.TELETYPE] = 'teletype'
 
+    validation_re = re.compile(" *\[(\d+), *'(default|decorative|roman|swiss|script|modern)', *"
+                               "'(normal|slant|italic)', *'(normal|light|bold)', *(0|1), *'([a-zA-Z _]*)'] *")
+    normalization = "[%s, '%s', '%s', '%s', %s, '%s']"
     def write(self, outfile, tabs=0):
         if not self.is_active(): return
         try:
@@ -1353,12 +1362,12 @@ class FontProperty(DialogProperty):
         if len(props) < 6:
             self._logger.error( _('error in the value of the property "%s"'), self.name )
             return
-        inner_xml = common.format_xml_tag(u'size', props[0], tabs + 1)
-        inner_xml += common.format_xml_tag(u'family', props[1], tabs + 1)
-        inner_xml += common.format_xml_tag(u'style', props[2], tabs + 1)
-        inner_xml += common.format_xml_tag(u'weight', props[3], tabs + 1)
-        inner_xml += common.format_xml_tag(u'underlined', props[4], tabs + 1)
-        inner_xml += common.format_xml_tag(u'face', props[5], tabs + 1)
+        inner_xml =  common.format_xml_tag(u'size',       props[0], tabs+1)
+        inner_xml += common.format_xml_tag(u'family',     props[1], tabs+1)
+        inner_xml += common.format_xml_tag(u'style',      props[2], tabs+1)
+        inner_xml += common.format_xml_tag(u'weight',     props[3], tabs+1)
+        inner_xml += common.format_xml_tag(u'underlined', props[4], tabs+1)
+        inner_xml += common.format_xml_tag(u'face',       props[5], tabs+1)
         stmt = common.format_xml_tag( self.name, inner_xml, tabs, is_xml=True )
         outfile.write(stmt)
 
@@ -1371,18 +1380,20 @@ class FontProperty(DialogProperty):
         return self.dialog
 
     def _convert_from_text(self, value=None):
+        if isinstance(value, list): return value
         if value is None:
             value = self.text.GetValue()
-        new_value = self.text.GetValue()
-        new_value = [s.strip(' "').strip(" '") for s in self.text.GetValue().lstrip(" [").rstrip("] ").split(",")]
-        if len(new_value)!=6:
-            return False
-        try:
-            new_value[0] = int(new_value[0])
-            new_value[4] = int(new_value[4])
-        except ValueError:
-            return False
-        return new_value
+        match = self.validation_re.match(value)
+        if not match: return None
+        groups = match.groups()
+        return (int(groups[0]), groups[1], groups[2], groups[3], int(groups[4]), groups[5])
+
+    def _set_converter(self, value):
+        if isinstance(value, basestring): value = self._convert_from_text(value)
+        return value
+
+    def _value_to_str(self, value):
+        return self.normalization%tuple(value)
 
 
 class FontPropertyD(FontProperty):
