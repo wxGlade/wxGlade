@@ -1,0 +1,201 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><title>Properties Window</title><meta name="generator" content="DocBook XSL Stylesheets V1.79.1"><link rel="home" href="index.html" title="wxGlade manual"><link rel="up" href="ui.html" title="Chapter 5. wxGlade User Interface"><link rel="prev" href="ui_design_window.html" title="Design Window"><link rel="next" href="ui_menu.html" title="The wxGlade Menu"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="navheader"><table width="100%" summary="Navigation header"><tr><th colspan="3" align="center">Properties Window</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="ui_design_window.html">Prev</a> </td><th width="60%" align="center">Chapter 5. wxGlade User Interface</th><td width="20%" align="right"> <a accesskey="n" href="ui_menu.html">Next</a></td></tr></table><hr></div><div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="ui_properties_window"></a>Properties Window</h2></div></div></div><p>The <span class="quote">“<span class="quote"><span class="guilabel">Properties</span></span>”</span> window lets you
+      see and edit the properties that apply to the selected element. This
+      window consists up to six different tabs. All six tabs are not always
+      present. The visibility of the single tabs depends on the widget type.
+      Most widgets have a <span class="quote">“<span class="quote"><span class="guilabel">Common</span></span>”</span> tab and a
+      <span class="quote">“<span class="quote"><span class="guilabel">Code</span></span>”</span> tab. The combination of
+      presented tabs depends on the widget type.</p><p>For example:</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p><code class="classname">wxFrame</code> widgets have
+          <span class="quote">“<span class="quote"><span class="guilabel">Common</span></span>”</span>,
+          <span class="quote">“<span class="quote"><span class="guilabel">Widget</span></span>”</span> and
+          <span class="quote">“<span class="quote"><span class="guilabel">Code</span></span>”</span> tabs</p></li><li class="listitem"><p>Spacers have the tabs
+          <span class="quote">“<span class="quote"><span class="guilabel">Layout</span></span>”</span> and
+          <span class="quote">“<span class="quote"><span class="guilabel">Code</span></span>”</span></p></li><li class="listitem"><p><code class="classname">wxGridSizer</code> widgets have
+          <span class="quote">“<span class="quote"><span class="guilabel">Common</span></span>”</span> and
+          <span class="quote">“<span class="quote"><span class="guilabel">Grid</span></span>”</span></p></li><li class="listitem"><p><code class="classname">wxBoxSizer</code> widgets only have the
+          <span class="quote">“<span class="quote"><span class="guilabel">Common</span></span>”</span> tab</p></li></ul></div><p>Editing properties is quite simple; Properties are represented by
+      buttons, text boxes, checks and other controls. Usually they are
+      referenced by the same name or symbol that you find writing C++
+      code.</p><p>Usually you get the changes in the design window in real time. In
+      some cases you have to push the
+      <span class="quote">“<span class="quote"><span class="guibutton">Apply</span></span>”</span> button. For example, the
+      <code class="classname">wxNotebook</code> widget shows in its
+      <span class="quote">“<span class="quote"><span class="guilabel">Properties</span></span>”</span> window a list of child
+      <code class="classname">wxPanel</code>s. You have to press the
+      <span class="quote">“<span class="quote"><span class="guibutton">Apply</span></span>”</span> button to show changes you
+      make when you add or remove panels.</p><p>You can show or hide the
+      <span class="quote">“<span class="quote"><span class="guilabel">Properties</span></span>”</span> window by the menu item
+      <span class="guimenu">View</span> → <span class="guimenuitem">Show Properties</span>.</p><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="ui_application_properties"></a>Application Properties</h3></div></div></div><p>The page <span class="quote">“<span class="quote"><span class="guilabel">Application</span></span>”</span>
+        contains the general settings of the active wxGlade project.</p><div class="figure"><a name="properties_window_application.fig"></a><p class="title"><b>Figure 5.6. Project Properties - Application settings</b></p><div class="figure-contents"><div class="mediaobject"><img src="properties_window_application.png" width="283" alt="Project Properties - Application settings"></div></div></div><p><br class="figure-break"></p><div class="glosslist"><dl><dt><span class="glossterm"><span class="quote">“<span class="quote"><span class="guilabel">Name</span></span>”</span></span></dt><dd class="glossdef"><p>Name of the instance created from
+                <span class="quote">“<span class="quote"><span class="guilabel">Class</span></span>”</span></p><p><a class="xref" href="next_steps.html#automatically.created.wxapp.instance.section" title="Automatically Created wxApp Instances">the section called “Automatically Created <code class="classname">wxApp</code>
+          Instances”</a>
+                provides more information</p></dd><dt><span class="glossterm"><span class="quote">“<span class="quote"><span class="guilabel">Class</span></span>”</span></span></dt><dd class="glossdef"><p>Name of the automatically generated class derived from
+                <code class="classname">wxApp</code></p><p><a class="xref" href="next_steps.html#automatically.created.wxapp.instance.section" title="Automatically Created wxApp Instances">the section called “Automatically Created <code class="classname">wxApp</code>
+          Instances”</a>
+                provides more information</p></dd><dt><span class="glossterm"><span class="quote">“<span class="quote"><span class="guilabel">Encoding</span></span>”</span></span></dt><dd class="glossdef"><p>Encoding of the generated source files.</p><p>The encoding to use with new projects will be determined
+                automatically based on the machine settings.
+                <span class="quote">“<span class="quote">UTF-8</span>”</span> will be used if the automatic detection
+                fails.</p></dd><dt><span class="glossterm"><span class="quote">“<span class="quote"><span class="guilabel">Enable gettext
+              support</span></span>”</span></span></dt><dd class="glossdef"><p>Enable internationalisation and localisation for the
+                generated source files</p><p><a class="xref" href="next_steps.html#automatically.created.wxapp.instance.section" title="Automatically Created wxApp Instances">the section called “Automatically Created <code class="classname">wxApp</code>
+          Instances”</a>
+                provides more information</p></dd><dt><span class="glossterm"><span class="quote">“<span class="quote"><span class="guilabel">Top
+              window</span></span>”</span></span></dt><dd class="glossdef"><p>This widget is used as top window in the
+                <code class="classname">wxApp</code> start code</p><p><a class="xref" href="next_steps.html#automatically.created.wxapp.instance.section" title="Automatically Created wxApp Instances">the section called “Automatically Created <code class="classname">wxApp</code>
+          Instances”</a>
+                provides more information</p></dd><dt><span class="glossterm"><span class="quote">“<span class="quote"><span class="guilabel">Code
+              Generation</span></span>”</span></span></dt><dd class="glossdef"><p>Write all source code in one file or split the source
+                into one file per class / widget</p><p><a class="xref" href="next_steps.html#using.source.code.section" title="Using the Source Code">the section called “Using the Source Code”</a> provides
+                more information</p></dd><dt><span class="glossterm"><span class="quote">“<span class="quote"><span class="guilabel">Language</span></span>”</span></span></dt><dd class="glossdef"><p>Programming language to generate the source files
+                in</p></dd><dt><span class="glossterm"><span class="quote">“<span class="quote"><span class="guilabel">wxWidgets
+              compatibility</span></span>”</span></span></dt><dd class="glossdef"><p>Generate source files for the selected wxWidgets
+                version</p></dd><dt><span class="glossterm"><span class="quote">“<span class="quote"><span class="guilabel">Overwrite existing
+              sources</span></span>”</span></span></dt><dd class="glossdef"><p>Overwrite existing source files or modify the code
+                sequences generated by wxGlade in place</p><p><a class="xref" href="next_steps.html#using.source.code.section" title="Using the Source Code">the section called “Using the Source Code”</a> provides
+                more information</p><div class="warning" style="margin-left: 0.5in; margin-right: 0.5in;"><h3 class="title">Warning</h3><p>This feature is deprecated and will be removed from
+                    a future version of wxGlade. Thereby it's advised not to
+                    use this feature for new projects. Details about all
+                    deprecated features are shown in <a class="xref" href="deprecated_features.html" title="Deprecated Features">the section called “Deprecated Features”</a>.</p></div></dd><dt><span class="glossterm"><span class="quote">“<span class="quote"><span class="guilabel">Output
+              path</span></span>”</span></span></dt><dd class="glossdef"><p>Output file or directory</p><p><a class="xref" href="next_steps.html#output.path.filenames.section" title="Output Path and Filenames">the section called “Output Path and Filenames”</a> provides
+                more information</p></dd><dt><span class="glossterm"><span class="quote">“<span class="quote"><span class="guilabel">Generate
+              code</span></span>”</span></span></dt><dd class="glossdef"><p>Start generating source files</p></dd></dl></div><p>The page <span class="quote">“<span class="quote"><span class="guilabel">Settings</span></span>”</span>
+        contains the language specific settings of the active wxGlade
+        project.</p><div class="figure"><a name="idm139900191349904"></a><p class="title"><b>Figure 5.7. Project Properties - Language settings</b></p><div class="figure-contents"><div class="mediaobject"><img src="properties_window_settings.png" width="283" alt="Project Properties - Language settings"></div></div></div><p><br class="figure-break"></p><div class="glosslist"><dl><dt><span class="glossterm"><span class="quote">“<span class="quote"><span class="guilabel">Indentation
+              mode</span></span>”</span></span></dt><dd class="glossdef"><p>Use spaces or tabs for indentation within the generated
+                source files.</p></dd><dt><span class="glossterm"><span class="quote">“<span class="quote"><span class="guilabel">Indentation
+              amount</span></span>”</span></span></dt><dd class="glossdef"><p>Number of spaces or tabs used for one indentation
+                level.</p></dd><dt><span class="glossterm"><span class="quote">“<span class="quote"><span class="guilabel">Source
+              ext</span></span>”</span></span></dt><dd class="glossdef"><p>Extension of the source file.</p><p>The extension doesn't has a leading dot.</p></dd><dt><span class="glossterm"><span class="quote">“<span class="quote"><span class="guilabel">Header
+              ext</span></span>”</span></span></dt><dd class="glossdef"><p>Extension of the header file.</p><p>The extension doesn't has a leading dot.</p></dd></dl></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="idm139900191337920"></a>Common Properties</h3></div></div></div><p>The first tab contains the common properties that apply to all
+        widgets. As shown in <a class="xref" href="ui_properties_window.html#properties_window_tab_1.fig" title="Figure 5.8. Common Properties">Figure 5.8, “Common Properties”</a> the
+        common properties are related to name, class, size, colors, fonts and
+        tooltip.</p><div class="figure"><a name="properties_window_tab_1.fig"></a><p class="title"><b>Figure 5.8. Common Properties</b></p><div class="figure-contents"><div><img src="properties_window_tab_1.png" width="283" alt="Common Properties"></div></div></div><br class="figure-break"><p>The property name is a mangled version of the wxWidgets property
+        name. The property input field is disabled by default. wxGlade won't
+        use disabled properties for code generation. wxWidgets defaults are
+        used instead.</p><p>Enable the property in the wxGlade GUI to set non-default values
+        (see <a class="xref" href="ui_properties_window.html#properties_window_tab_1_change.fig" title="Figure 5.9. Changing Common Properties">Figure 5.9, “Changing Common Properties”</a>).</p><div class="figure"><a name="properties_window_tab_1_change.fig"></a><p class="title"><b>Figure 5.9. Changing Common Properties</b></p><div class="figure-contents"><div><img src="properties_window_tab_1_change.png" width="283" alt="Changing Common Properties"></div></div></div><br class="figure-break"><div class="glosslist"><dl><dt><span class="glossterm"><span class="quote">“<span class="quote"><span class="guilabel">Name</span></span>”</span></span></dt><dd class="glossdef"><p>Name of the instance created from
+              <span class="quote">“<span class="quote"><span class="guilabel">Class</span></span>”</span></p></dd><dt><span class="glossterm"><span class="quote">“<span class="quote"><span class="guilabel">Class</span></span>”</span></span></dt><dd class="glossdef"><p>Name of the subclass of the widget. How this name affects
+              code generation depends on the output language.</p><div class="figure"><a name="idm139900191325776"></a><p class="title"><b>Figure 5.10. Common Properties - A subclassed widget (default
+                behaviour)</b></p><div class="figure-contents"><div class="mediaobject"><img src="example_subclassed.png" width="283" alt="Common Properties - A subclassed widget (default behaviour)"></div></div></div><br class="figure-break"><div class="example"><a name="idm139900191323168"></a><p class="title"><b>Example 5.1. Generated Python code of a subclassed widget</b></p><div class="example-contents"><pre class="programlisting">class MyDialog(wxDialog):
+
+    def __init__(self, *args, **kwds):
+        kwds["style"] = wxDEFAULT_DIALOG_STYLE
+        wxDialog.__init__(self, *args, **kwds)
+</pre></div></div><br class="example-break"></dd><dt><span class="glossterm"><span class="quote">“<span class="quote"><span class="guilabel">Base
+            class(es)</span></span>”</span></span></dt><dd class="glossdef"><p>A comma-separated list of custom base classes. The first
+              class will be invoked with the same parameters as this class,
+              while for the others the default constructor will be used. This
+              property will be shown only for non-managed widgets for instance
+              <code class="classname">wxFrame</code>, <code class="classname">wxDialog</code>,
+              <code class="classname">wxNotebook</code>,
+              <code class="classname">wxPanel</code> and
+              <code class="classname">wxSplitterWindow</code>. You should probably not
+              use this if <span class="quote">“<span class="quote"><span class="guilabel">Overwrite existing
+              sources</span></span>”</span> is not set.</p><div class="figure"><a name="example_baseclasses.fig"></a><p class="title"><b>Figure 5.11. Common Properties - Base class(es) entry</b></p><div class="figure-contents"><div><img src="example_baseclasses.png" width="283" alt="Common Properties - Base class(es) entry"></div></div></div><br class="figure-break"><div class="example"><a name="idm139900191313984"></a><p class="title"><b>Example 5.2. Generated Python code of a widget with two base
+                classes</b></p><div class="example-contents"><pre class="programlisting">class MyFrame(myFrameMixin, wxFrame):
+
+    def __init__(self, *args, **kwds):
+        kwds["style"] = wx.DEFAULT_FRAME_STYLE
+        myFrameMixin.__init__(self, *args, **kwds)
+        wxFrame.__init__(self)
+</pre></div></div><br class="example-break"></dd><dt><span class="glossterm"><span class="quote">“<span class="quote"><span class="guilabel">Id</span></span>”</span></span></dt><dd class="glossdef"><p>This property could be</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>a constant numeric value</p></li><li class="listitem"><p>a predefined identifier e.g.
+                  <code class="constant">wxID_ANY</code></p></li><li class="listitem"><p>a predefined variable like a class member e.g.
+                  <span class="command"><strong>self.myButtonID</strong></span></p></li><li class="listitem"><p>a variable assignment e.g.
+                  <span class="quote">“<span class="quote"><span class="command"><strong>self.myButtonID=?</strong></span></span>”</span> The
+                  pattern of a variable assignment is always
+                  <span class="quote">“<span class="quote"><span class="command"><strong>variable=value</strong></span></span>”</span>. The value
+                  could be again a numeric value, a predefined identifier,
+                  another predefined variable or
+                  <span class="quote">“<span class="quote"><span class="command"><strong>?</strong></span></span>”</span> a shortcut for
+                  <span class="quote">“<span class="quote"><span class="command"><strong>wxNewId()</strong></span></span>”</span></p></li></ul></div><div class="figure"><a name="idm139900191302336"></a><p class="title"><b>Figure 5.12. Common Properties - Variable assignment</b></p><div class="figure-contents"><div class="mediaobject"><img src="example_variableassigment.png" width="283" alt="Common Properties - Variable assignment"></div></div></div><br class="figure-break"><div class="example"><a name="idm139900191299824"></a><p class="title"><b>Example 5.3. Generated Python code for a variable assignment</b></p><div class="example-contents"><pre class="programlisting">class MyFrame(wx.Frame):
+
+    def __init__(self, *args, **kwds):
+        # begin wxGlade: MyFrame.__init__
+        kwds["style"] = wx.DEFAULT_FRAME_STYLE
+        wx.Frame.__init__(self, *args, **kwds)
+        self.myButtonID = wx.NewId()
+        self.button_1 = wx.Button(self, self.myButtonID, "button_1")
+        self.__set_properties()
+        self.__do_layout()
+        # end wxGlade
+</pre></div></div><br class="example-break"></dd><dt><span class="glossterm"><span class="quote">“<span class="quote"><span class="guilabel">Size</span></span>”</span></span></dt><dd class="glossdef"><p>Set the widget size in pixels.</p></dd><dt><span class="glossterm"><span class="quote">“<span class="quote"><span class="guilabel">Background</span></span>”</span></span></dt><dd class="glossdef"><p>Set the background colour of the widget.</p></dd><dt><span class="glossterm"><span class="quote">“<span class="quote"><span class="guilabel">Foreground</span></span>”</span></span></dt><dd class="glossdef"><p>Set the foreground colour of the widget.</p></dd><dt><span class="glossterm"><span class="quote">“<span class="quote"><span class="guilabel">Font</span></span>”</span></span></dt><dd class="glossdef"><p>Set the font for widgets text elements.</p></dd><dt><span class="glossterm"><span class="quote">“<span class="quote"><span class="guilabel">Tooltip</span></span>”</span></span></dt><dd class="glossdef"><p>Set a tooltip for this widget.</p></dd><dt><span class="glossterm"><span class="quote">“<span class="quote"><span class="guilabel">Disabled</span></span>”</span></span></dt><dd class="glossdef"><p>Disable the widget.</p></dd><dt><span class="glossterm"><span class="quote">“<span class="quote"><span class="guilabel">Focused</span></span>”</span></span></dt><dd class="glossdef"><p>Set the widget to receive keyboard input.</p></dd><dt><span class="glossterm"><span class="quote">“<span class="quote"><span class="guilabel">Hidden</span></span>”</span></span></dt><dd class="glossdef"><p>Hide the widget.</p></dd></dl></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="layout_properties"></a>Layout Properties</h3></div></div></div><p>The second tab is related to layout properties that control
+        position and resizing within the sizer. </p><div class="figure"><a name="properties_window_tab_2.fig"></a><p class="title"><b>Figure 5.13. Layout Properties</b></p><div class="figure-contents"><div><img src="properties_window_tab_2.png" width="283" alt="Layout Properties"></div></div></div><p><br class="figure-break">These properties apply to any widget. You can check or
+        uncheck any option related to the placement in the sizer. Many widgets
+        may have a default value of 3 in the
+        <span class="quote">“<span class="quote"><span class="guilabel">Border</span></span>”</span> property in the Preferences
+        Dialog (see <a class="xref" href="configure_wxglade.html#preferences" title="Preferences Dialog">the section called “Preferences Dialog”</a>). If you let a
+        widget have a default border, the <code class="constant">wxAll</code> option is
+        also checked.</p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="idm139900191275232"></a>Widget Properties</h3></div></div></div><p>The third tab, named <span class="quote">“<span class="quote"><span class="guilabel">Widget</span></span>”</span>
+        is different for each widget, and lets you edit properties for the
+        specific element you have selected. </p><div class="figure"><a name="properties_window_tab_3.fig"></a><p class="title"><b>Figure 5.14. Widget Properties</b></p><div class="figure-contents"><div><img src="properties_window_tab_3.png" width="283" alt="Widget Properties"></div></div></div><p><br class="figure-break">The set of options may also be quite complex in the case of
+        widgets that have a great deal of methods and properties (such as
+        grids and tree views). In this case, wxGlade greatly simplifies the
+        process of designing forms.</p><p><span class="quote">“<span class="quote"><span class="guilabel">Store as attribute</span></span>”</span> stores
+        the widget as an attribute of the top-level class.</p><p>Select <span class="quote">“<span class="quote"><span class="guilabel">Don't generate code for this
+        class</span></span>”</span> to prevent generating code for subwidgets of
+        <code class="classname">wxNotebook</code>, <code class="classname">wxPanel</code> and
+        <code class="classname">wxSplitterWindow</code>.</p><div class="figure"><a name="idm139900191267696"></a><p class="title"><b>Figure 5.15. Widget Properties - Don't generate code for this
+          class</b></p><div class="figure-contents"><div class="mediaobject"><img src="properties_window_tab_3_dont_generate_code.png" width="283" alt="Widget Properties - Don't generate code for this class"></div></div></div><br class="figure-break"><p>You can use this feature to:</p><div class="orderedlist"><ol class="orderedlist" type="1"><li class="listitem"><p>Split complex designs into smaller pieces. The correlation
+            in such a setup based on the widget name.</p></li><li class="listitem"><p>Prevent generation of stubs, if using custom base
+            classes.</p></li></ol></div><p>Some widgets have an <span class="quote">“<span class="quote"><span class="guibutton">Apply</span></span>”</span>
+        button onhe <span class="quote">“<span class="quote"><span class="guilabel">Widget</span></span>”</span> tabs. Click on
+        the <span class="quote">“<span class="quote"><span class="guibutton">Apply</span></span>”</span> button to consolidate
+        your changes. Otherwise they will lost.</p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="idm139900191259264"></a>Styles</h3></div></div></div><p>The most of the styles as shown in the <a class="xref" href="ui_properties_window.html#layout_properties" title="Layout Properties">the section called “Layout Properties”</a> and <a class="xref" href="ui_properties_window.html" title="Properties Window">the section called “Properties Window”</a> have a tooltip with additional
+        information about the style.</p><p>The tooltips show a short description as well as additional
+        information.</p><div class="figure"><a name="idm139900191256560"></a><p class="title"><b>Figure 5.16. Widget Properties - Styles Tooltip</b></p><div class="figure-contents"><div><img src="tooltip_styles.png" width="213" alt="Widget Properties - Styles Tooltip"></div></div></div><p><br class="figure-break"></p><p>The style details will be used also to compute the styles in the
+        generated source code.</p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="idm139900191254192"></a>Events Properties</h3></div></div></div><p>The fourth tab, named <span class="quote">“<span class="quote"><span class="guilabel">Events</span></span>”</span>
+        lists the widgets events. wxGlade generates an event handler stub and
+        binds the event for each added handler name.</p><div class="figure"><a name="idm139900191252272"></a><p class="title"><b>Figure 5.17. Events Properties</b></p><div class="figure-contents"><div class="mediaobject"><img src="properties_window_tab_4.png" width="283" alt="Events Properties"></div></div></div><br class="figure-break"><div class="figure"><a name="idm139900191249760"></a><p class="title"><b>Figure 5.18. Events Properties - Event handler name added</b></p><div class="figure-contents"><div class="mediaobject"><img src="example_eventhandler.png" width="283" alt="Events Properties - Event handler name added"></div></div></div><br class="figure-break"><div class="example"><a name="idm139900191247248"></a><p class="title"><b>Example 5.4. Generated Python code of an <span class="command">EVT_TEXT</span> event
+          handler stub at line 12</b></p><div class="example-contents"><pre class="programlisting">class MyFrame(wx.Frame):
+
+    def __init__(self, *args, **kwds):
+        # begin wxGlade: MyFrame.__init__
+        kwds["style"] = wx.DEFAULT_FRAME_STYLE
+        wx.Frame.__init__(self, *args, **kwds)
+        self.text_ctrl_1 = wx.TextCtrl(self, -1, "")
+        self.__set_properties()
+        self.__do_layout()
+        self.Bind(wx.EVT_TEXT, self.myEVTTEXT, self.text_ctrl_1)
+        # end wxGlade
+
+    def myEVTTEXT(self, event):  # wxGlade: MyFrame.&lt;event_handler&gt;
+        print "Event handler `myEVTTEXT' not implemented!"
+        event.Skip()
+</pre></div></div><br class="example-break"></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="ui_code_properties"></a>Code Properties</h3></div></div></div><p>The fifth and last tab is named
+        <span class="quote">“<span class="quote"><span class="guilabel">Code</span></span>”</span> and has two parts.</p><div class="figure"><a name="idm139900191241680"></a><p class="title"><b>Figure 5.19. Code Properties - Extra code and extra properties</b></p><div class="figure-contents"><div class="mediaobject"><img src="properties_window_tab_5.png" width="283" alt="Code Properties - Extra code and extra properties"></div></div></div><br class="figure-break"><p>wxGlade never declares or assigns variable or function names or
+        import for non-default base classes and custom widgets.</p><p>If you use non-default base classes, <code class="code">var:</code> or
+        <code class="code">code:</code> statements, you have to manually assign the
+        variables, declare used functions as well as to include resp. to
+        import of additional code need by your widget in
+        <span class="quote">“<span class="quote"><span class="guilabel">Extra code for this widget</span></span>”</span>. This
+        <span class="quote">“<span class="quote"><span class="guilabel">Extra code</span></span>”</span> will be added to the
+        context of the source file and not to the context of the class.</p><p>The lower part simplifies setting of additional widget
+        properties. Add the property name to the
+        <span class="quote">“<span class="quote"><span class="guilabel">Property</span></span>”</span> field and not the name of
+        the setter function. For instance add
+        <span class="quote">“<span class="quote"><span class="command"><strong>MaxLength</strong></span></span>”</span> and not
+        <span class="quote">“<span class="quote"><span class="command"><strong>SetMaxLength</strong></span></span>”</span>. The
+        <span class="quote">“<span class="quote"><span class="guilabel">Value</span></span>”</span> field is just a text field.
+        You can enter e.g. a simple number only as well as a complex statement
+        e.g. <span class="command"><strong>0, 0, "1"</strong></span> or a function call. But be
+        carefully! Your entered sequence will be inserted in the source
+        without any changes - one to one.</p><div class="note" style="margin-left: 0.5in; margin-right: 0.5in;"><h3 class="title">Note</h3><p><span class="quote">“<span class="quote"><span class="guilabel">Extra code</span></span>”</span> and
+          <span class="quote">“<span class="quote"><span class="guilabel">Extra properties</span></span>”</span> won't be
+          processed for the widget preview.</p></div><div class="figure"><a name="idm139900191228992"></a><p class="title"><b>Figure 5.20. Code Properties - Set extra property</b></p><div class="figure-contents"><div class="mediaobject"><img src="example_setproperty.png" width="283" alt="Code Properties - Set extra property"></div></div></div><br class="figure-break"><div class="example"><a name="idm139900191226480"></a><p class="title"><b>Example 5.5. Generated Python code for setting property
+          <span class="command">MaxLength</span> to <span class="command">10</span> at line
+          14</b></p><div class="example-contents"><pre class="programlisting">class MyFrame(wx.Frame):
+
+    def __init__(self, *args, **kwds):
+        # begin wxGlade: MyFrame.__init__
+        kwds["style"] = wx.DEFAULT_FRAME_STYLE
+        wx.Frame.__init__(self, *args, **kwds)
+        self.text_ctrl_1 = wx.TextCtrl(self, -1, "")
+        self.__set_properties()
+        self.__do_layout()
+        # end wxGlade
+
+    def __set_properties(self):
+        # begin wxGlade: MyFrame.__set_properties
+        self.SetTitle("frame_1")
+        self.text_ctrl_1.SetMaxLength(10)
+        # end wxGlade
+</pre></div></div><br class="example-break"></div></div><div class="navfooter"><hr><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="ui_design_window.html">Prev</a> </td><td width="20%" align="center"><a accesskey="u" href="ui.html">Up</a></td><td width="40%" align="right"> <a accesskey="n" href="ui_menu.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">Design Window </td><td width="20%" align="center"><a accesskey="h" href="index.html">Home</a></td><td width="40%" align="right" valign="top"> The wxGlade Menu</td></tr></table></div></body></html>

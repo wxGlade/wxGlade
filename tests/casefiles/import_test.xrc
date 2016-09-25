@@ -1,0 +1,93 @@
+<?xml version="1.0" ?>
+<resource class="wxDialog" version="2.5.3.0" xmlns="http://www.wxwidgets.org/wxxrc">
+  <object class="wxFrame" name="appFrame">
+    <object class="wxMenuBar" name="MyMenuBar">
+      <object class="wxMenu" name="MyFileMenu">
+        <object class="wxMenuItem" name="mnOpen">
+          <label>Open</label>
+          <help>Open a file</help>
+        </object>
+        <object class="separator"/>
+        <object class="wxMenuItem" name="mnExit">
+          <label>Exit</label>
+          <help>Leave the application</help>
+        </object>
+        <label>File</label>
+        <help>File menu</help>
+      </object>
+      <object class="wxMenu" name="MyHelpMenu">
+        <object class="wxMenuItem" name="mnAbout">
+          <label>About</label>
+          <help>Show the about dialog</help>
+        </object>
+        <label>Help</label>
+        <help>Help Menu</help>
+      </object>
+    </object>
+    <object class="wxToolBar" name="MyToolBar">
+      <object class="tool" name="toolOpen">
+        <bitmap stock_id="wxART_MISSING_IMAGE"/>
+        <bitmap2 stock_id="wxART_MISSING_IMAGE"/>
+        <radio>1</radio>
+        <tooltip>Open a existing file</tooltip>
+        <longhelp>Open a existing file</longhelp>
+        <label>Open</label>
+      </object>
+      <object class="separator"/>
+      <object class="tool" name="toolClose">
+        <bitmap stock_id="wxART_MISSING_IMAGE"/>
+        <bitmap2 stock_id="wxART_MISSING_IMAGE"/>
+        <tooltip>Close the active file</tooltip>
+        <longhelp>Close the active file</longhelp>
+        <label>Close</label>
+      </object>
+      <style>wxTB_TEXT</style>
+    </object>
+    <object class="wxStatusBar" name="MyStatusBar">
+      <fields>3</fields>
+      <widths>-2,-1</widths>
+      <style>wxST_SIZEGRIP</style>
+    </object>
+    <size>200,200</size>
+    <title>XRC Import test</title>
+    <centered>1</centered>
+    <style>wxDEFAULT_DIALOG_STYLE|wxCAPTION|wxSYSTEM_MENU|wxRESIZE_BORDER</style>
+    <object class="wxFlexGridSizer">
+      <object class="sizeritem">
+        <object class="wxStaticLine"/>
+        <border>5</border>
+      </object>
+      <object class="sizeritem">
+        <object class="wxGridSizer">
+          <object class="sizeritem">
+            <object class="wxButton" name="bu_Cancel">
+              <label>Cancel</label>
+            </object>
+            <option>1</option>
+            <border>5</border>
+          </object>
+          <object class="sizeritem">
+            <object class="wxButton" name="bu_OK">
+              <label>OK</label>
+              <focused>1</focused>
+            </object>
+            <option>1</option>
+            <border>5</border>
+          </object>
+          <object class="sizeritem">
+            <object class="wxButton" name="bu_Help">
+              <label>Help</label>
+              <enabled>0</enabled>
+            </object>
+            <option>1</option>
+            <border>5</border>
+          </object>
+          <cols>3</cols>
+          <rows>1</rows>
+        </object>
+      </object>
+      <cols>1</cols>
+      <rows>3</rows>
+    </object>
+  </object>
+</resource>
