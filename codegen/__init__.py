@@ -8,6 +8,7 @@ Common code used by all code generators
 import copy, logging, os, os.path, random, re, sys, time
 
 import common, config, compat, errors, misc
+import new_properties as np
 import wcodegen
 from wcodegen.taghandler import BaseCodeWriterTagHandler
 from xml_parse import XmlParsingError
@@ -1395,20 +1396,15 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
         @note: Please check the test case  L{tests.test_codegen.TestCodeGen.test_quote_str()} for additional
         details about the different cases to quote and to escape.
 
-        @note: The language specific implementations are in L{_quote_str()}.
-
-        @see: L{_do_replace_backslashes}, L{_do_replace_doublequotes}, L{tmpl_empty_string}"""
+        @note: The language specific implementations are in L{_quote_str()}."""
         if not s:
             return self.tmpl_empty_string
-
-        # find and escape backslashes
-        s = re.sub( r'\\\\+', self._do_replace_backslashes, s )
-        # the string will be embedded within double quotes, thereby double
-        # quotes inside have to escape
-        s = re.sub( r'\\?"', self._do_replace_doublequotes, s )
-        # a single tailing backslash breaks the quotation
-        s = re.sub( r'(?<!\\)\\$', r'\\', s)
-
+        # this is called from the Codewriter which is fed with XML
+        # here newlines are escaped already as '\n' and '\n' two-character sequences as '\\n'
+        # so we start by unescaping these
+        s = np.TextProperty._unescape(s)
+        # then escape as required
+        s = s.replace("\\", "\\\\").replace("\n", "\\n").replace("\t", "\\t").replace('"', '\\"')
         return self._quote_str(s)
 
     def _quote_str(self, s):

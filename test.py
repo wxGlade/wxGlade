@@ -20,13 +20,13 @@ from optparse import OptionParser
 t = gettext.translation(domain="wxglade", localedir="locale", fallback=True)
 t.install("wxglade")
 
-import wxglade
+import wxglade, compat
 
+sys.path.append(r"C:\Program Files (x86)\Wing IDE 5.1")
+import wingdbstub
 
 def run_tests():
-    """\
-    Create test suites and run all tests
-    """
+    "Create test suites and run all tests"
 
     # evaluate command line options first
     parser = OptionParser(
@@ -62,26 +62,28 @@ def run_tests():
     wxglade.init_stage2(options.kind == 'gui')
 
     # select proper wxversion
-    if options.kind == 'gui':
+    if options.kind == 'gui' and compat.IS_CLASSIC:
         # import proper wx-module using wxversion
         if not hasattr(sys, "frozen") and 'wx' not in sys.modules:
             try:
                 import wxversion
                 wxversion.ensureMinimal('2.8')
             except ImportError:
-                print _('Please install missing Python module "wxversion".')
+                print(_('Please install missing Python module "wxversion".'))
                 sys.exit(1)
             except wxversion.VersionError:
-                print _('The requested wxPython version is not found. '
-                        'Disable GUI tests.')
+                print(_('The requested wxPython version is not found. Disable GUI tests.'))
                 sys.exit()
 
     if options.kind == 'gui':
         modules = ['test_gui.py']
+        import wx
+        i = wx.Locale(wx.LANGUAGE_DEFAULT)
     elif options.kind == 'compile':
         modules = ['test_compile.py']
     else:                               # options.kind == 'cli'
         modules = ['test_external.py', 'test_codegen.py', 'test_bugs.py', ]
+
 
     # try to import all files as modules
     for module_name in modules:

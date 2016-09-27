@@ -72,6 +72,12 @@ class Property(object):
             self.update_display()
         if notify: self._notify()
 
+    def load(self, value, activate=None, deactivate=None, notify=False):
+        # called from xml_parse ... add_property(self, name, val)
+        # a derived class like TextProperty may implement a load method, e.g. to unescape strings
+        # (this should actually handled by xml_parse itself, but this might have side effects)
+        self.set(value, activate, deactivate, notify)
+
     def set_default(self, default_value):
         default_value = self._set_converter(default_value)
         if default_value==self.default_value: return
@@ -524,12 +530,12 @@ class _CheckListProperty(Property):
                     if value is not None: self.value |= value
         return Property.get(self)
 
-    def set(self, value, activate=False, deactivate=False):
+    def set(self, value, activate=False, deactivate=False, notify=False):
         new_value_set = self._decode_value(value)
 
         if new_value_set!=self.value_set:
             self.value_set = new_value_set
-        Property.set(self, None, activate, deactivate)  # with value=None, as this is to be calculated on demand only
+        Property.set(self, None, activate, deactivate, notify)  # with None, as this is to be calculated on demand only
 
     def add(self, value, activate=False, deactivate=False):
         if value in self.value_set: return
@@ -850,13 +856,52 @@ class TextProperty(Property):
         Property.__init__(self, value, default_value, name)
 
     def _set_converter(self, value):
+        # used by set()
         if self.STRIP or self.strip:
             value = value.strip()
-        return value.replace("\\n", "\n")
+        return value
 
     def get_str_value(self):
-        # for XML file writing
-        return self.value.replace("\n", "\\n")
+        # for XML file writing: escape newline, \\n and tab
+        return self.value.replace("\\n", "\\\\n").replace("\n", "\\n").replace("\t", "\\t")
+
+    @staticmethod
+    def _unescape(value):
+        "unescape \t \n and \\n into newline and \n"
+        splitted = value.split("\\")
+        if len(splitted)==1: return value
+        ret = []
+        i = 0
+        while i<len(splitted):
+            s = splitted[i]
+            more = len(splitted)-i-1
+            if i==0:
+                ret.append(s)
+                i += 1
+            elif not s and more>=1 and (splitted[i+1].startswith("n") or splitted[i+1].startswith("t")):
+                # escaped \n sequence, i.e. backslash plus n
+                ret.append("\\")
+                ret.append(splitted[i+1])
+                i += 2
+            elif s.startswith("n"):
+                # escaped newline character
+                ret.append('\n')
+                ret.append(s[1:])
+                i += 1
+            elif s.startswith("t"):
+                # escaped tab character
+                ret.append('\t')
+                ret.append(s[1:])
+                i += 1
+            else:
+                ret.append('\\')
+                if s: ret.append(s)
+                i+=1
+        return "".join(ret)
+
+    def load(self, value, activate=None, deactivate=None, notify=False):
+        if value: value = self._unescape(value)
+        self.set(value, activate, deactivate, notify)
 
     def create_editor(self, panel, sizer):
         "Actually builds the text control to set the value of the property interactively"
