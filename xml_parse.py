@@ -578,7 +578,7 @@ class XmlWidgetObject(object):
             return
         prop = self.obj.properties[name]
         try:
-            prop.set(val, activate=True)
+            prop.load(val, activate=True)
         except KeyError:
             # unknown property for this object; issue a warning and ignore the property
             import os
