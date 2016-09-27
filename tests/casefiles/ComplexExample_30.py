@@ -54,7 +54,7 @@ class PyOgg2_MyFrame(wx.Frame):
         self.button_4 = wx.Button(self.notebook_1_pane_4, wx.ID_OPEN, "")
         self.checkbox_1 = wx.CheckBox(self.notebook_1_pane_4, wx.ID_ANY, _("Overwrite existing file"))
         self.notebook_1_pane_5 = wx.Panel(self.notebook_1, wx.ID_ANY)
-        self.label_1 = wx.StaticText(self.notebook_1_pane_5, wx.ID_ANY, _("Please check the format of those lines manually:\n\nSingle line without any special characters.\n\na line break between new and line: new\nline\na tab character between new and line: new\tline\ntwo backslash characters: \\\\ \nthree backslash characters: \\\\\\ \na double quote: \"\nan escaped new line sequence: \\\\n"))
+        self.label_1 = wx.StaticText(self.notebook_1_pane_5, wx.ID_ANY, _("Please check the format of those lines manually:\n\nSingle line without any special characters.\n\na line break between new and line: new\nline\na tab character between new and line: new\tline\ntwo backslash characters: \\\\ \nthree backslash characters: \\\\\\ \na double quote: \"\nan escaped new line sequence: \\n"))
         self.static_line_1 = wx.StaticLine(self, wx.ID_ANY)
         self.button_5 = wx.Button(self, wx.ID_CLOSE, "")
         self.button_2 = wx.Button(self, wx.ID_CANCEL, "", style=wx.BU_TOP)

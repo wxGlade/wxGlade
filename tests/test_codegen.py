@@ -1260,16 +1260,16 @@ class TestCodeGen(WXGladeBaseTest):
             (r'double quote: "',             '_("double quote: \\"")'),
             (r'newline \n',                  '_("newline \\n")'),
             (r'tab \t',                      '_("tab \\t")'),
-            ( 'tailing single backslash \\', '_("tailing single backslash \\")'),
+            ( 'tailing single backslash \\', '_("tailing single backslash \\\\")'),
 
-            (r'escaped newline \\n',      r'_("escaped newline \\\\n")'),
-            (r'escaped tab \\t',          r'_("escaped tab \\\\t")'),
-            (r'escaped double quote \"',  r'_("escaped double quote \"")'),
+            (r'escaped newline \\n',      r'_("escaped newline \\n")'),
+            (r'escaped tab \\t',          r'_("escaped tab \\t")'),
+            (r'escaped double quote "',   r'_("escaped double quote \"")'),
 
-            ('euro \xe2\x82\xac and newline \\\\n',        '_(u"euro \\u20ac and newline \\\\\\\\n")'),
-            ('euro \xe2\x82\xac and tab \\\\t',            '_(u"euro \\u20ac and tab \\\\\\\\t")'),
-            ('euro \xe2\x82\xac and quoted newline \\\\n', '_(u"euro \u20ac and quoted newline \\\\\\\\n")'),
-            ('euro \xe2\x82\xac and quoted tab \\\\t',     '_(u"euro \u20ac and quoted tab \\\\\\\\t")'),
+            ('euro \xe2\x82\xac and newline \\n',          '_(u"euro \\u20ac and newline \\n")'),
+            ('euro \xe2\x82\xac and tab \\t',              '_(u"euro \\u20ac and tab \\t")'),
+            ('euro \xe2\x82\xac and quoted newline \\\\n', '_(u"euro \u20ac and quoted newline \\\\n")'),
+            ('euro \xe2\x82\xac and quoted tab \\\\t',     '_(u"euro \u20ac and quoted tab \\\\t")'),
 
             ('rom\xc3\xa2n\xc4\x83', '_(u"rom\\u00e2n\\u0103")')
         ]
@@ -1286,16 +1286,16 @@ class TestCodeGen(WXGladeBaseTest):
             (r'double quote: "',             '_T("double quote: \\"")'),
             (r'newline \n',                  '_T("newline \\n")'),
             (r'tab \t',                      '_T("tab \\t")'),
-            ( 'tailing single backslash \\', '_T("tailing single backslash \\")'),
+            ( 'tailing single backslash \\', '_T("tailing single backslash \\\\")'),
 
-            (r'escaped newline \\n',      r'_T("escaped newline \\\\n")'),
-            (r'escaped tab \\t',          r'_T("escaped tab \\\\t")'),
-            (r'escaped double quote \"',  r'_T("escaped double quote \"")'),
+            (r'escaped newline \\n',      r'_T("escaped newline \\n")'),
+            (r'escaped tab \\t',          r'_T("escaped tab \\t")'),
+            (r'escaped double quote \"',  r'_T("escaped double quote \\\"")'),
 
-            ('euro \xe2\x82\xac and newline \\\\n',        '_T("euro \N{U+20ac} and newline \\\\\\\\n")'),
-            ('euro \xe2\x82\xac and tab \\\\t',            '_T("euro \N{U+20ac} and tab \\\\\\\\t")'),
-            ('euro \xe2\x82\xac and quoted newline \\\\n', '_T("euro \N{U+20ac} and quoted newline \\\\\\\\n")'),
-            ('euro \xe2\x82\xac and quoted tab \\\\t',     '_T("euro \N{U+20ac} and quoted tab \\\\\\\\t")'),
+            ('euro \xe2\x82\xac and newline \\n',          '_T("euro \N{U+20ac} and newline \\n")'),
+            ('euro \xe2\x82\xac and tab \\t',              '_T("euro \N{U+20ac} and tab \\t")'),
+            ('euro \xe2\x82\xac and quoted newline \\\\n', '_T("euro \N{U+20ac} and quoted newline \\\\n")'),
+            ('euro \xe2\x82\xac and quoted tab \\\\t',     '_T("euro \N{U+20ac} and quoted tab \\\\t")'),
         ]
 
         # Lisp doesn't support unicode!
@@ -1306,11 +1306,11 @@ class TestCodeGen(WXGladeBaseTest):
             (r'double quote: "',             '(_"double quote: \\"")'),
             (r'newline \n',                  '(_"newline \\n")'),
             (r'tab \t',                      '(_"tab \\t")'),
-            ( 'tailing single backslash \\', '(_"tailing single backslash \\")'),
+            ( 'tailing single backslash \\', '(_"tailing single backslash \\\\")'),
 
-            (r'escaped newline \\n',     r'(_"escaped newline \\\\n")'),
-            (r'escaped tab \\t',         r'(_"escaped tab \\\\t")'),
-            (r'escaped double quote \"', r'(_"escaped double quote \"")'),
+            (r'escaped newline \\n',     r'(_"escaped newline \\n")'),
+            (r'escaped tab \\t',         r'(_"escaped tab \\t")'),
+            (r'escaped double quote "',  r'(_"escaped double quote \"")'),
         ]
         details[('UTF-8', 'C++')] = [
             (None, 'wxEmptyString'),
@@ -1325,16 +1325,16 @@ class TestCodeGen(WXGladeBaseTest):
             (r'double quote: "',             '_("double quote: \\"")'),
             (r'newline \n',                  '_("newline \\n")'),
             (r'tab \t',                      '_("tab \\t")'),
-            ( 'tailing single backslash \\', '_("tailing single backslash \\")'),
+            ( 'tailing single backslash \\', '_("tailing single backslash \\\\")'),
 
-            (r'escaped newline \\n',      r'_("escaped newline \\\\n")'),
-            (r'escaped tab \\t',          r'_("escaped tab \\\\t")'),
-            (r'escaped double quote \"',  r'_("escaped double quote \"")'),
+            (r'escaped newline \\n',      r'_("escaped newline \\n")'),
+            (r'escaped tab \\t',          r'_("escaped tab \\t")'),
+            (r'escaped double quote "',   r'_("escaped double quote \"")'),
 
-            ('euro \xe2\x82\xac and newline \\\\n',        '_("euro \xe2\x82\xac and newline \\\\\\\\n")'),
-            ('euro \xe2\x82\xac and tab \\\\t',            '_("euro \xe2\x82\xac and tab \\\\\\\\t")'),
-            ('euro \xe2\x82\xac and quoted newline \\\\n', '_("euro \xe2\x82\xac and quoted newline \\\\\\\\n")'),
-            ('euro \xe2\x82\xac and quoted tab \\\\t',     '_("euro \xe2\x82\xac and quoted tab \\\\\\\\t")'),
+            ('euro \xe2\x82\xac and newline \\n',          '_("euro \xe2\x82\xac and newline \\n")'),
+            ('euro \xe2\x82\xac and tab \\t',              '_("euro \xe2\x82\xac and tab \\t")'),
+            ('euro \xe2\x82\xac and quoted newline \\\\n', '_("euro \xe2\x82\xac and quoted newline \\\\n")'),
+            ('euro \xe2\x82\xac and quoted tab \\\\t',     '_("euro \xe2\x82\xac and quoted tab \\\\t")'),
         ]
         details[('ISO-8859-1', 'python')] = [
             ('\xc4nderung', '_(u"\u00c4nderung")'),
@@ -1349,18 +1349,16 @@ class TestCodeGen(WXGladeBaseTest):
             codegen.app_encoding = encoding
             codegen._use_gettext = True
             for unformatted, formatted in details[(encoding, language)]:
+                # XXX quote_str expects a string as from an XML file/string
                 ret = codegen.quote_str(unformatted)
-                self.failUnlessEqual(
-                    formatted, ret,
-                    '%s: Unexpected result got: "%s" expect: "%s"' % (
-                        language, ret, formatted,))
+                self.failUnlessEqual( formatted, ret, 
+                                      '%s: Unexpected result got: "%s" expect: "%s"' % (language, ret, formatted) )
 
                 if language in ['python', 'perl']:
                     try:
                         formatted.encode('ascii')
                     except UnicodeDecodeError:
-                        self.fail('%s: ASCII string expected for "%s"' % (
-                            language, formatted))
+                        self.fail( '%s: ASCII string expected for "%s"' % (language, formatted) )
 
     def test_is_supported(self):
         """\

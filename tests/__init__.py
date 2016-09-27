@@ -5,7 +5,6 @@
 """
 
 # import general python modules
-import StringIO
 import difflib
 import errno
 import fnmatch
@@ -17,11 +16,7 @@ import types
 import unittest
 
 # import project modules
-import codegen
-import common
-import config
-import compat
-import log
+import codegen, common, config, compat, log
 from xml_parse import CodeWriter
 
 

@@ -56,7 +56,7 @@ class TestGui(WXGladeBaseTest):
 
         # create an simply application
         cls.app = wx.PySimpleApp()
-        wx.ArtProvider.PushProvider(main.wxGladeArtProvider())
+        compat.wx_ArtProviderPush(main.wxGladeArtProvider())
         cls.frame = main.wxGladeFrame()
 
         # suppress wx error messages
@@ -173,7 +173,7 @@ class TestGui(WXGladeBaseTest):
             tree.SelectItem(first)
             self._process_wx_events()
             node = tree.GetPyData(first)
-            tree.show_widget(node)
+            tree.show_toplevel(node)
         self._process_wx_events()
 
     def _process_wx_events(self):
@@ -366,8 +366,14 @@ class TestGui(WXGladeBaseTest):
         """\
         StyleMixin: Test converting of styles
         """
-        import edit_windows
-        esm = edit_windows.EditStylesMixin('wxHyperlinkCtrl')
+        import edit_windows, new_properties
+        class ESM(edit_windows.EditStylesMixin):
+            def __init__(self, klass='', styles=[]):
+                new_properties.PropertyOwner.__init__(self)
+                edit_windows.EditStylesMixin.__init__(self, klass, styles)
+
+        #esm = edit_windows.EditStylesMixin('wxHyperlinkCtrl')
+        esm = ESM('wxHyperlinkCtrl')
 
         # test converting of a combined attribute
         style_names = ['wxHL_DEFAULT_STYLE', 'wxHL_ALIGN_LEFT',
@@ -377,15 +383,11 @@ class TestGui(WXGladeBaseTest):
         ret.sort()
         expected = style_names
         expected.sort()
-        self.failUnlessEqual(
-            ret,
-            expected,
-            'EditStylesMixin.__init__() failed: got "%s" expect: "%s"' % (
-                ret, expected)
-        )
+        self.failUnlessEqual(ret, expected, 'EditStylesMixin.__init__() failed: got "%s" expect: "%s"'%(ret, expected))
 
         # test setting new styles
-        esm.set_style('|'.join(style_names))
+        #esm.set_style('|'.join(style_names))
+        esm.properties["style"].set('|'.join(style_names))
         ret = esm.style_set
         expected = set(['wxHL_DEFAULT_STYLE', 'wxHL_ALIGN_LEFT',
                         'wxHL_ALIGN_RIGHT'])
@@ -526,7 +528,7 @@ class TestGui(WXGladeBaseTest):
             self._messageBox
         )
 
-     def test_load_xrc(self):
+    def test_load_xrc(self):
         """\
         Test loading XRC files
         """
