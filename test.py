@@ -9,12 +9,7 @@ Create a test suites and run all tests
 """
 
 # import general python modules
-import gettext
-import logging
-import imp
-import os
-import sys
-import unittest
+import gettext, logging, imp, os, sys, unittest
 from optparse import OptionParser
 
 t = gettext.translation(domain="wxglade", localedir="locale", fallback=True)
