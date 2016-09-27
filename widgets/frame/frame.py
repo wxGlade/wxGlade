@@ -30,7 +30,7 @@ class EditFrame(TopLevelBase, EditStylesMixin, BitmapMixin):
 
         # initialise instance properties
         self.icon      = np.FileNamePropertyD("", default_value="")
-        self.centered  = np.CheckBoxProperty(False)
+        self.centered  = np.CheckBoxProperty(False, default_value=False)
         self.sizehints = np.CheckBoxProperty(False)
         self.menubar   = np.CheckBoxProperty(False)
         self.toolbar   = np.CheckBoxProperty(False)

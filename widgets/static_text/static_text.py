@@ -28,7 +28,7 @@ class EditStaticText(ManagedBase, EditStylesMixin):
 
         # initialise instance properties
         self.label     = np.TextProperty(label, multiline=True)
-        self.attribute = np.CheckBoxProperty(True, default_value=False)
+        self.attribute = np.CheckBoxProperty(False, default_value=False)
 
         if config.preferences.default_border:
             self.properties["border"].set( config.preferences.default_border_size )
