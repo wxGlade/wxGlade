@@ -32,7 +32,7 @@ class Property(object):
         self.owner = None
         self.name = name
         self.attributename = None
-        self.modified = False
+        self.modified = False  # either by the user or from loaded file; WidgetStyleProperty.write uses it
         # this can be set to True by the owner, depending on another property value; value will still be written to XML
         self.blocked = False
         self.default_value = default_value
@@ -59,6 +59,7 @@ class Property(object):
         updates display if editor is visible; doesn't notify owner or application!
         optionally, the property will be activated or deactivated"""
         self.value = self._set_converter(value)
+        self.modified = True
         if activate is None and deactivate is None:
             self.update_display()
             if notify: self._notify()
@@ -418,12 +419,7 @@ class CheckBoxProperty(Property):
 
     def on_change_val(self, event):
         new_value = event.IsChecked()
-        if new_value==self.value: return
-        self.value = new_value
-        self.modified = True
-        common.app_tree.app.saved = False
-        self.owner.properties_changed([self.name])
-
+        self._check_for_user_modification(new_value)
 
 
 class RadioProperty(Property):
@@ -793,6 +789,8 @@ class WidgetStyleProperty(_CheckListProperty):
         self._names = sum( self.styles.values(), [] )
         self._values = None
         self.set(widget_writer.default_style)
+        self.modified = False
+        self.default_value = set(self.value_set)
 
     def _ensure_values(self):
         self._values = []  # the associated flag values
@@ -839,6 +837,14 @@ class WidgetStyleProperty(_CheckListProperty):
         self.update_display(True)
         for checkbox in self._choices:
             checkbox.Bind(wx.EVT_CHECKBOX, self.on_checkbox)
+
+    def write(self, outfile, tabs=0):
+        if isinstance(self.default_value, set) and self.value_set==self.default_value and not self.modified: return
+        value = self.get_string_value()
+        if value:
+            stmt = common.format_xml_tag(self.name, value, tabs)
+            outfile.write(stmt)
+
 
 
 
