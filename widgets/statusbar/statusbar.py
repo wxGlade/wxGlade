@@ -46,6 +46,7 @@ class FieldsProperty(np.GridProperty):
             cols = [("Text", np.GridProperty.STRING), ("Size", np.GridProperty.INT)]
             col_sizes = [190, 0]
             np.GridProperty.__init__(self, value, cols, col_sizes=col_sizes)
+
         def write(self, outfile, tabs):
             inner_xml = u''
             for label, width in self.value:
@@ -58,7 +59,7 @@ class EditStatusBar(EditBase, EditStylesMixin):
     _hidden_frame = None
     update_widget_style = False
 
-    _PROPERTIES = ["fields"]
+    _PROPERTIES = ["Widget", "fields"]
     PROPERTIES = EditBase.PROPERTIES + _PROPERTIES + EditBase.EXTRA_PROPERTIES
 
     def __init__(self, name, klass, parent):
@@ -66,7 +67,7 @@ class EditStatusBar(EditBase, EditStylesMixin):
         EditStylesMixin.__init__(self)
 
         # for the statusbar fields
-        fields = [self.name, "-1"]  # list of 2-lists label, size
+        fields = [[self.name, "-1"]]  # list of 2-lists label, size
         self.fields = FieldsProperty(fields)
 
         self.node = Node(self)
