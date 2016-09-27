@@ -1516,6 +1516,7 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
         except (KeyError, ValueError):
             if obj.in_sizers:
                 return False
+            if obj.klass in ("wxStaticText","wxHyperlinkCtrl","wxStaticBitmap","wxStaticLine"): return False
             return True  # this is the default
 
     def tabs(self, number):
