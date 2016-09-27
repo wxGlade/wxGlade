@@ -28,7 +28,7 @@ class EditStaticLine(ManagedBase, EditStylesMixin):
         EditStylesMixin.__init__(self)
 
         # initialise instance properties
-        self.attribute = np.CheckBoxProperty(True, default_value=False)
+        self.attribute = np.CheckBoxProperty(False, default_value=False)
         if style: self.properties["style"].set(style)
 
     def create_widget(self):
