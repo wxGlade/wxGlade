@@ -381,7 +381,7 @@ class ToolsProperty(np.Property):
     "Property to edit the tools of an EditToolBar instance"
 
     def __init__(self):
-        np.Property.__init__(self, None)
+        np.Property.__init__(self, [])
         self.tools = {}
 
     def create_editor(self, panel, sizer):

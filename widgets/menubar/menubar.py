@@ -473,8 +473,8 @@ class MenuProperty(np.Property):
     "Property to edit the menus of an EditMenuBar instance"
 
     def __init__(self):
-        np.Property.__init__(self, None)
-        self.menu_items = {}
+        np.Property.__init__(self, [])
+        #self.menu_items = {}
 
     def create_editor(self, panel, sizer):
         self.edit_btn = wx.Button(panel, -1, _("Edit menus..."))
