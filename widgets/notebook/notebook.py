@@ -41,8 +41,9 @@ class NotebookVirtualSizer(Sizer):
             self.window.widget.AddPage(item.widget, label) # this is e.g. for the first creation after loading a file
         elif self.window.widget.GetPage(index) is not item.widget:
             # XXX delete this part if it's not called; insert_tab and remove_tab should handle this now
-            #self.window.widget.RemovePage(index) # deletes the specified page, without deleting the associated window
-            self.window.widget.DeletePage(index)  # deletes the specified page, and the associated window
+            if self.window.widget.GetPageCount()==len(self.window.pages):
+                #self.window.widget.RemovePage(index) # deletes the specified page, without deleting the associated window
+                self.window.widget.DeletePage(index)  # deletes the specified page, and the associated window
             self.window.widget.InsertPage(index, item.widget, label)
             self.window.widget.SetSelection(index)
             try:
@@ -316,7 +317,7 @@ class EditNotebook(ManagedBase, EditStylesMixin):
 
     def next_pane_name(self, suggestion=None):
         # return new and (still) unused pane name
-        if suggestion is not None and not common.app_tree.has_name(suggestion):
+        if suggestion and not common.app_tree.has_name(suggestion):
             return suggestion
         while True:
             pane_name = "%s_pane_%d" % (self.name, self.next_pane_number)
