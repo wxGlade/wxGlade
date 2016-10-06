@@ -9,7 +9,7 @@ Property class for the 'code' and 'extraproperties' property of toplevel widgets
 
 import wx
 
-import common, compat
+import common
 from new_properties import TextPropertyD, GridProperty
 
 from wcodegen.taghandler import BaseXmlBuilderTagHandler

@@ -10,7 +10,7 @@ import wx
 
 import common, compat, config, misc
 from MenuTree import *
-from tree import Tree, Node
+from tree import Node
 from wcodegen.taghandler import BaseXmlBuilderTagHandler
 import new_properties as np
 from edit_windows import EditBase, PreviewMixin

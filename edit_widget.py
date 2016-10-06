@@ -8,10 +8,9 @@ Base class for EditFoo objects
 
 import wx
 import common
-import compat
 import config
 from edit_windows import ManagedBase
-from tree import Tree, Node
+from tree import Node
 
 
 

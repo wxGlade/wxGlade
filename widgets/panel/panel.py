@@ -10,8 +10,8 @@ wxPanel objects
 import logging
 import wx
 import clipboard
-import common, compat, config, misc
-from tree import Tree, Node, Node
+import common, config, misc
+from tree import Node
 import new_properties as np
 from edit_windows import ManagedBase, TopLevelBase, EditStylesMixin
 

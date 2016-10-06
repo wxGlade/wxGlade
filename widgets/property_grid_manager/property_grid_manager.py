@@ -10,10 +10,9 @@ wxPropertyGridManager objects
 
 import wx
 from wx.propgrid import *
-import common, compat
+import common
 from edit_windows import ManagedBase, EditStylesMixin
-from tree import Tree, Node
-import new_properties as np
+from tree import Node
 
 
 class EditPropertyGridManager(ManagedBase, EditStylesMixin):

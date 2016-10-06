@@ -6,13 +6,12 @@ Mixin class for 'events' property
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
-import logging
 import wx
 import wx.grid
 import re
 
 import common
-import config, compat
+import config
 from wcodegen.taghandler import BaseXmlBuilderTagHandler
 import new_properties as np
 

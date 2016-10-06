@@ -11,7 +11,7 @@ Application class to store properties of the application being created
 import os, random, re, logging, math
 import wx
 
-import common, compat, config, misc, plugins, errors
+import common, config, misc, plugins, errors
 import bugdialog
 import new_properties as np
 

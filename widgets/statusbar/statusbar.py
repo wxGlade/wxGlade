@@ -8,8 +8,8 @@ wxFrame and wxStatusBar objects
 """
 
 import wx
-import common, compat, misc
-from tree import Tree, Node
+import common
+from tree import Node
 from wcodegen.taghandler import BaseXmlBuilderTagHandler
 import new_properties as np
 from edit_windows import EditBase, EditStylesMixin
