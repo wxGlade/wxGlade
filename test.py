@@ -17,8 +17,6 @@ t.install("wxglade")
 
 import wxglade, compat
 
-sys.path.append(r"C:\Program Files (x86)\Wing IDE 5.1")
-import wingdbstub
 
 def run_tests():
     "Create test suites and run all tests"
