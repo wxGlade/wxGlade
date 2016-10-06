@@ -138,7 +138,7 @@ class Application(np.PropertyOwner):
 
         # output language
         languages = sorted( common.code_writers.keys() )
-        labels = [s.capitalize() for s in languages]
+        labels = [misc.capitalize(s) for s in languages]
         self.language = np.RadioProperty('python', languages, labels, columns=3)
 
         # gettext?

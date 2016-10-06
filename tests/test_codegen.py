@@ -988,7 +988,7 @@ class TestCodeGen(WXGladeBaseTest):
                 '',
                 ret,
                 '%s: Unexpected result got: "%s" expect: "%s"' % (
-                    lang.capitalize(),
+                    misc.capitalize(lang),
                     ret,
                     ''
                     )
@@ -1005,7 +1005,7 @@ class TestCodeGen(WXGladeBaseTest):
                     expected,
                     ret,
                     '%s: Unexpected result got: "%s" expect: "%s"' % (
-                        lang.capitalize(),
+                        misc.capitalize(lang),
                         ret,
                         expected,
                         )
@@ -1691,7 +1691,7 @@ class TestCodeGen(WXGladeBaseTest):
                     expected,
                     stmt,
                     '%s: Unexpected result got: "%s" expect: "%s"' % (
-                        lang.capitalize(),
+                        misc.capitalize(lang),
                         stmt,
                         expected,
                     )
