@@ -7,9 +7,9 @@ wxListBox objects
 """
 
 import wx
-import common, compat, misc
+import common
 from edit_windows import ManagedBase, EditStylesMixin
-from tree import Tree, Node
+from tree import Node
 import new_properties as np
 from ChoicesProperty import *
 

@@ -8,9 +8,9 @@ wxButton objects
 """
 
 import wx
-import config, common, compat, misc
+import config, common
 from edit_windows import ManagedBase, EditStylesMixin
-from tree import Tree, Node
+from tree import Node
 import new_properties as np
 from .button_stockitems import *
 

@@ -13,7 +13,7 @@ import logging
 from xml.sax import SAXException, make_parser
 from xml.sax.handler import ContentHandler
 
-import common, config, compat, misc
+import common, config, compat
 import edit_sizers
 
 if config.use_gui:

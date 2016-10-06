@@ -7,11 +7,11 @@ wxDialog objects (incl. wxMenuBar, wxToolBar and wxStatusBar)
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
-import math, os
+import os
 import wx
 
 import common, compat, config, misc
-from tree import Tree, Node
+from tree import Node
 import new_properties as np
 from edit_windows import TopLevelBase, EditStylesMixin
 from gui_mixins import BitmapMixin

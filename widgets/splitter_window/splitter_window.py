@@ -11,7 +11,7 @@ import wx
 
 import common, compat, config, misc
 import wcodegen
-from tree import Tree, Node, SlotNode, WidgetTree
+from tree import Node, SlotNode, WidgetTree
 import new_properties as np
 from edit_windows import ManagedBase, EditStylesMixin
 from edit_sizers.edit_sizers import Sizer, SizerSlot
