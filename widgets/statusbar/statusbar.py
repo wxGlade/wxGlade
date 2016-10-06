@@ -41,18 +41,18 @@ class FieldsHandler(BaseXmlBuilderTagHandler):
 
 
 class FieldsProperty(np.GridProperty):
-        # replace the default 'write' method of 'prop' with a custom one
-        def __init__(self, value):
-            cols = [("Text", np.GridProperty.STRING), ("Size", np.GridProperty.INT)]
-            col_sizes = [190, 0]
-            np.GridProperty.__init__(self, value, cols, col_sizes=col_sizes)
+    # replace the default 'write' method of 'prop' with a custom one
+    def __init__(self, value):
+        cols = [("Text", np.GridProperty.STRING), ("Size", np.GridProperty.INT)]
+        col_sizes = [190, 0]
+        np.GridProperty.__init__(self, value, cols, col_sizes=col_sizes)
 
-        def write(self, outfile, tabs):
-            inner_xml = u''
-            for label, width in self.value:
-                inner_xml += common.format_xml_tag( u'field', label, tabs+1, width=width )
-            stmt = common.format_xml_tag( u'fields', inner_xml, tabs, is_xml=True )
-            outfile.write(stmt)
+    def write(self, outfile, tabs):
+        inner_xml = u''
+        for label, width in self.value:
+            inner_xml += common.format_xml_tag( u'field', label, tabs+1, width=width )
+        stmt = common.format_xml_tag( u'fields', inner_xml, tabs, is_xml=True )
+        outfile.write(stmt)
 
 
 class EditStatusBar(EditBase, EditStylesMixin):

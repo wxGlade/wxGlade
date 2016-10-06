@@ -587,11 +587,11 @@ class wxGladeFrame(wx.Frame):
                                    default_path=default_path)
         if not infile: return
         if common.check_autosaved(infile):
-                if wx.MessageBox( _("There seems to be auto saved data for this file: do you want to restore it?"),
-                                 _("Auto save detected"), style=wx.ICON_QUESTION|wx.YES_NO ) == wx.YES:
-                    common.restore_from_autosaved(infile)
-                else:
-                    common.remove_autosaved(infile)
+            if wx.MessageBox( _("There seems to be auto saved data for this file: do you want to restore it?"),
+                              _("Auto save detected"), style=wx.ICON_QUESTION|wx.YES_NO ) == wx.YES:
+                common.restore_from_autosaved(infile)
+            else:
+                common.remove_autosaved(infile)
         if infile == common.app_tree.app.filename:
             # if we are re-loading the file, go the the previous position
             path = common.app_tree.get_selected_path()
