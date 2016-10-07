@@ -331,7 +331,7 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
     @see: L{generate_code_extraproperties()}
     """
 
-    classattr_always = [] # List of classes to store always as class attributes; see test_attribute()
+    classattr_always = [] # List of classes to store always as class attributes; see store_as_attr()
     class_separator = '' # Separator between class and attribute or between different name space elements;
     # E.g "." for Python or "->" for Perl.
 
@@ -1494,7 +1494,7 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
                 # this isn't necessarily a bad error
                 self.warning(_('Changing permission of file "%s" failed: %s') % (filename, str(e)))
 
-    def test_attribute(self, obj):
+    def store_as_attr(self, obj):
         """Returns True if 'obj' should be added as an attribute of its parent's class,
         False if it should be created as a local variable of C{__do_layout}.
         

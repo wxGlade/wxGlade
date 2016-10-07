@@ -572,7 +572,7 @@ class LispCodeWriter(BaseLangCodeWriter, wcodegen.LispMixin):
         elif obj.klass in ('spacer','sizerslot'):
             return '(%s)' % obj.name
         # wxList use class attributes always (unfortunately)
-#        elif self.test_attribute(obj):
+#        elif self.store_as_attr(obj):
 #            return "slot-%s" % self._format_name(obj.name)
 #        return self._format_name(obj.name)
         return 'slot-%s' % self._format_name(obj.name)
@@ -614,7 +614,7 @@ class LispCodeWriter(BaseLangCodeWriter, wcodegen.LispMixin):
         if obj.is_toplevel:
             return '(slot-top-window obj)'
         else:
-            if self.test_attribute(obj):
+            if self.store_as_attr(obj):
                 return '(slot-%s obj)' % obj.name
             else:
                 return obj.name
