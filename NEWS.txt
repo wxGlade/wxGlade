@@ -28,6 +28,7 @@ Bugs:
   - Fix wrong CheckListBox C++ statement if styles are selected
   - Add excludes for wxCheckListBox mutual styles
   - LB_EXTENDED for ListBox never show up in generated code (sf bug #194)
+  - Assert isinstance(geometry, (wx.Point,  wx.Rect)) (sf bug #196)
   - ...
 
 Deprecation

@@ -202,11 +202,12 @@ class wxGladeFrame(wx.Frame):
                 frame_style |= wx.FRAME_TOOL_WINDOW
 
         # set window geometry
+        self_geometry = None
         if config.preferences.remember_geometry:
             self_geometry = config.preferences.get_geometry('main')
             if isinstance(self_geometry, tuple):
                 self_geometry = wx.Rect(*self_geometry)
-        else:
+        if not self_geometry:
             self_geometry = wx.Rect()
             self_geometry.TopLeft = wx.Display().GetClientArea().GetTopLeft()
             self_geometry.Size = (-1, -1)
