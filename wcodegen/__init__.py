@@ -689,7 +689,7 @@ class BaseWidgetWriter(StylesMixin, BaseCodeWriter):
         """
         self.tmpl_dict['comment'] = self.codegen.comment_sign
         self.tmpl_dict['tab'] = self.codegen.tabs(1)
-        self.tmpl_dict['store_as_attr'] = self.codegen.test_attribute(obj)
+        self.tmpl_dict['store_as_attr'] = self.codegen.store_as_attr(obj)
         self.tmpl_dict['id_name'], self.tmpl_dict['id_number'] = self.codegen.generate_code_id(obj)
         self.tmpl_dict['id'] = self.tmpl_dict['id_number']
         self.tmpl_dict['obj_name'] = obj.name
@@ -701,7 +701,7 @@ class BaseWidgetWriter(StylesMixin, BaseCodeWriter):
             klass = self.cn_class(klass)
         self.tmpl_dict['klass'] = klass
 
-        self.tmpl_dict['store_as_attr'] = self.codegen.test_attribute(obj)
+        self.tmpl_dict['store_as_attr'] = self.codegen.store_as_attr(obj)
 
         prop = obj.properties
 

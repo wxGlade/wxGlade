@@ -530,7 +530,7 @@ def %(handler)s(self, event):  # wxGlade: %(klass)s.<event_handler>
         # a tuple instead of two single values
         elif obj.klass in ('spacer','sizerslot'):
             return '(%s)' % obj.name
-        elif self.test_attribute(obj):
+        elif self.store_as_attr(obj):
             return 'self.%s' % obj.name
         return obj.name
 
