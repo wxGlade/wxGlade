@@ -229,7 +229,7 @@ class PerlCodeWriter(BaseLangCodeWriter, wcodegen.PerlMixin):
 
     new_defaults = []
     """\
-    Default class members, will be initialised during L{initialize()}
+    Default class members, will be initialised during L{new_project()}
     """
 
     shebang = '#!/usr/bin/perl -w -- \n#\n'
