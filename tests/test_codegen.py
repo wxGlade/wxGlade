@@ -669,16 +669,8 @@ class TestCodeGen(WXGladeBaseTest):
         else:
             path = 'myoutputfile'
 
-        codewriter.new_project({
-            'indent_amount': '4',
-            'indent_symbol': 'space',
-            'language': language,
-            'name': appname,
-            'option': multiple_files,
-            'overwrite': 1,
-            'path': path,
-            'use_gettext': use_gettext,
-        })
+        codewriter.new_project(indent_amount='4', indent_symbol='space', language=language, name=appname,
+                               option=multiple_files, overwrite=1, path=path, use_gettext=use_gettext)
         # clear output_file
         if codewriter.output_file:
             codewriter.output_file.close()
