@@ -656,7 +656,7 @@ class CodeWriter(XmlParser):
                 raise XmlParsingError( _("'path' attribute empty: could not generate code") )
 
             # Initialize the writer, thereby a logical check will be performed
-            self.code_writer.initialize(attrs)
+            self.code_writer.new_project(attrs)
 
             return
 

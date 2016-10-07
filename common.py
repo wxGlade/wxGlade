@@ -49,7 +49,7 @@ code_writers = {}
 """Dictionary of language name -> BaseLangCodeWriter objects used to generate the code in a given language.
 
 @note: A code writer object must implement this interface:
- - initialize(out_path, multi_files)
+ - new_project(out_path, multi_files)
  - language
  - setup
  - add_widget_handler(widget_name, handler[, properties_handler])

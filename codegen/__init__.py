@@ -418,7 +418,7 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
 
     def _init_vars(self):
         """Set instance variables (back) to default values during class instantiation (L{__init__}) and before
-        loading new data (L{initialize()})."""
+        loading new data (L{new_project()})."""
         self.app_encoding = config.default_encoding
         self.app_filename = None
         self.app_mapping = {}
@@ -450,8 +450,9 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
         self._use_gettext = config.default_use_gettext
         self._widget_extra_modules = {}
 
-    def initialize(self, app_attrs):
+    def new_project(self, app_attrs):
         "Initialise generic and language independent code generator settings; see init_lang(), init_files()"
+
         # set (most of) instance variables back to default values
         self._init_vars()
 
@@ -1835,11 +1836,11 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
 
     def __setstate__(self, state):
         """Update the instance using values from dict 'state'.
-        The code generator will be reinitialised after the state has been updated; see initialize()"""
+        The code generator will be reinitialised after the state has been updated; see L{new_project()}"""
 
         self.__dict__.update(state)
 
         # re-initialise logger instance deleted from __getstate__ and instance variables
         self._logger = logging.getLogger(self.__class__.__name__)
-        self.initialize({})
+        self.new_project({})
 

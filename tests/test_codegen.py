@@ -669,7 +669,7 @@ class TestCodeGen(WXGladeBaseTest):
         else:
             path = 'myoutputfile'
 
-        codewriter.initialize({
+        codewriter.new_project({
             'indent_amount': '4',
             'indent_symbol': 'space',
             'language': language,
