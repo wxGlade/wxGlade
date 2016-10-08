@@ -971,7 +971,7 @@ class TextProperty(Property):
         else:                           style |= wx.TE_PROCESS_ENTER
         if not self._HORIZONTAL_LAYOUT: style |= wx.HSCROLL
 
-        text = wx.TextCtrl( panel, -1, str(value) or "", style=style )#, size=(1,-1) )
+        text = wx.TextCtrl( panel, -1, value or "", style=style )
         # bind KILL_FOCUS and Enter for non-multilines
         text.Bind(wx.EVT_KILL_FOCUS, self.on_kill_focus)
         # XXX
