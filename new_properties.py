@@ -9,7 +9,7 @@ Interface to owner modified; see below for class PropertyOwner
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
-import common, misc, config, compat
+import common, config, compat, logging, misc
 from collections import OrderedDict
 import re
 import wx
@@ -27,6 +27,7 @@ class Property(object):
     CONTROLNAMES = ["enabler"]  # for activation; also these attributes will be set to None when the editor is destroyed
     GROW = False # if this is True, no spacer is added after the control, so it may grow down to the lower edge
     def __init__(self, value, default_value=_DefaultArgument, name=None):#, write_always=False):
+        self._logger = logging.getLogger(self.__class__.__name__)
         self.value = value
         # when the property is assigned to an instance property, these will be set:
         self.owner = None
