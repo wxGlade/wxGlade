@@ -1139,11 +1139,11 @@ bool MyApp::OnInit()
                 # attribute is a special property which control whether
                 # sub_obj must be accessible as an attribute of top_obj,
                 # or as a local variable in the do_layout method
-                if self.test_attribute(sub_obj):
+                if self.store_as_attr(sub_obj):
                     klass.sub_objs.append((sub_obj.klass, sub_obj.name))
         elif sub_obj.klass != "sizerslot":
             # the object is a sizer
-            if self.test_attribute(sub_obj):
+            if self.store_as_attr(sub_obj):
                 klass.sub_objs.append((sub_obj.klass, sub_obj.name))
             klass.sizers_init.extend(init)
 

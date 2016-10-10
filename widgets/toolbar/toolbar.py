@@ -5,14 +5,15 @@ wxToolBar objects
 @copyright: 2014-2016 Carsten Grohmann
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
+
 from __future__ import absolute_import
 
 import wx
 from wx.lib.filebrowsebutton import FileBrowseButton
 
 import common, compat, config, misc
-import math, os, re
-from tree import Tree, Node
+import os, re
+from tree import Node
 from .tool import *
 import new_properties as np
 from edit_windows import EditBase, PreviewMixin, EditStylesMixin

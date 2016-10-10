@@ -6,14 +6,12 @@ Hierarchy of Sizers supported by wxGlade
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
-from collections import OrderedDict
-import logging, math, re
+import logging
 import wx
 from wx.lib.buttons import GenButton
 
 import new_properties as np
-from edit_windows import EditStylesMixin
-from tree import Tree, WidgetTree, Node, SlotNode
+from tree import WidgetTree, Node, SlotNode
 import clipboard
 import common, compat, config, misc
 

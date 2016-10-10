@@ -9,7 +9,7 @@ wxCalendarCtrl objects
 
 import wx
 from edit_windows import ManagedBase, EditStylesMixin
-from tree import Tree, Node
+from tree import Node
 import common, compat, config
 import new_properties as np
 import decorators

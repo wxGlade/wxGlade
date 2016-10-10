@@ -11,7 +11,7 @@ Application class to store properties of the application being created
 import os, random, re, logging, math
 import wx
 
-import common, compat, config, misc, plugins, errors
+import common, config, misc, plugins, errors
 import bugdialog
 import new_properties as np
 
@@ -138,7 +138,7 @@ class Application(np.PropertyOwner):
 
         # output language
         languages = sorted( common.code_writers.keys() )
-        labels = [s.capitalize() for s in languages]
+        labels = [misc.capitalize(s) for s in languages]
         self.language = np.RadioProperty('python', languages, labels, columns=3)
 
         # gettext?

@@ -229,7 +229,7 @@ class PerlCodeWriter(BaseLangCodeWriter, wcodegen.PerlMixin):
 
     new_defaults = []
     """\
-    Default class members, will be initialised during L{initialize()}
+    Default class members, will be initialised during L{new_project()}
     """
 
     shebang = '#!/usr/bin/perl -w -- \n#\n'
@@ -644,7 +644,7 @@ unless(caller){
         elif obj.klass == 'spacer':
             return obj.name
         # Perl stores sizers always in class attributes
-        elif self.test_attribute(obj) or obj.in_sizers:
+        elif self.store_as_attr(obj) or obj.in_sizers:
             return '$self->{%s}' % obj.name
         return '$%s' % obj.name
 

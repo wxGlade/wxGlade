@@ -7,12 +7,10 @@ wxListCtrl objects
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
-import math
 import wx
 from edit_windows import ManagedBase, EditStylesMixin
-from tree import Tree, Node
-import common, compat
-import new_properties as np
+from tree import Node
+import common
 
 
 class EditListCtrl(ManagedBase, EditStylesMixin):

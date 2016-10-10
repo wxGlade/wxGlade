@@ -9,7 +9,7 @@ Spacers to use in sizers
 
 import wx
 import common, misc
-from tree import Tree, Node
+from tree import Node
 import new_properties as np
 from edit_windows import ManagedBase
 

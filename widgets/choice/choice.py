@@ -8,9 +8,9 @@ wxChoice objects
 """
 
 import wx
-import common, compat, config, misc
+import common, config
 from edit_windows import ManagedBase
-from tree import Tree, Node
+from tree import Node
 import new_properties as np
 
 from ChoicesProperty import *

@@ -7,8 +7,7 @@ Base classes for windows used by wxGlade
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
-from collections import OrderedDict
-import logging, math, re, copy
+import logging, re
 import wx
 
 import new_properties as np
