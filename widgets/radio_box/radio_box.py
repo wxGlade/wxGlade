@@ -73,7 +73,7 @@ class EditRadioBox(ManagedBase):
             else:
                 cols = 0
                 rows = self.dimension
-            sizer = wx.GridSizer(rows, cols)
+            sizer = wx.GridSizer(rows, cols, 0)
             if wx.Platform == '__WXGTK__':
                 # we need to reorder self.buttons 'cos wxRadioBox lays out its
                 # elements by colums, while wxGridSizer by rows
@@ -105,7 +105,7 @@ class EditRadioBox(ManagedBase):
     def _set_label(self):
         if not self.widget or not self.static_box: return
         label = self.label
-        self.static_box.SetLabel(value)
+        self.static_box.SetLabel(label)
         if not self.properties['size'].is_active():
             self.sizer.set_item(self.pos, size=self.widget.GetBestSize())
 
@@ -195,7 +195,7 @@ def builder(parent, sizer, pos, number=[1]):
     while common.app_tree.has_name(label):
         number[0] += 1
         label = u'radio_box_%d' % number[0]
-    radio_box = EditRadioBox(label, parent, wx.NewId(), label, [u'choice 1'], 1, 0, sizer, pos)
+    radio_box = EditRadioBox(label, parent, wx.NewId(), label, [[u'choice 1'],], 1, 0, sizer, pos)
     node = Node(radio_box)
     radio_box.node = node
     if parent.widget: radio_box.create()
