@@ -342,7 +342,7 @@ class WindowBase(EditBase):
             self.font = np.FontPropertyD(tuple(font))
 
         # tooltip, focused, hiden
-        self.tooltip    = np.TextPropertyD()
+        self.tooltip    = np.TextPropertyD(multiline=True)
         self.disabled   = np.CheckBoxProperty(False, default_value=False)
         self.focused    = np.CheckBoxProperty(False, default_value=False)
         self.hidden     = np.CheckBoxProperty(False, default_value=False)
