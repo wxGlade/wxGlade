@@ -32,6 +32,8 @@ class wxGladePropertyPanel(wx.Frame):
         self.current_widget = None        # instance currently being edited
         self.next_widget = None           # the next one, will only be edited after a small delay
 
+        self.pagenames = None
+
         self.notebook = wx.Notebook(self, -1)
         self.Bind(wx.EVT_CLOSE, self.hide_frame)
 
@@ -87,7 +89,7 @@ class wxGladePropertyPanel(wx.Frame):
 
         self.pagenames = pagenames = []
         self.sizers = []
-        current_page = current_sizer = None
+        current_page = current_sizer = current_pagename = None
         property_instance = None
         for prop in edit_widget.PROPERTIES:
             if prop[0].isupper():
@@ -117,7 +119,8 @@ class wxGladePropertyPanel(wx.Frame):
             if property_instance is not None:
                 property_instance.create_editor(current_page, current_sizer)
 
-        self.end_page(current_page, current_sizer, current_pagename)
+        if current_page is not None:
+            self.end_page(current_page, current_sizer, current_pagename)
 
         if select_page and select_page in pagenames:
             index = pagenames.index(select_page)
