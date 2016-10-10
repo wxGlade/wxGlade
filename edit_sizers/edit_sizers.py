@@ -1641,7 +1641,7 @@ class GridSizerBase(SizerBase):
         rows = self.rows
         cols = self.cols
         # calculate row and pos of the slot
-        row,col = _grid_row_col(pos, rows)
+        row,col = _grid_row_col(pos, cols)
         # find the slots that are in the same row
         slots = []
         for pos,child in enumerate(self.children):
