@@ -1,0 +1,106 @@
+"""
+Dialog to select a color
+
+@copyright: 2007 Marcello Semboli
+@copyright: 2016 Carsten Grohmann
+@copyright: 2016 Dietmar Schwertberger
+@license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
+"""
+
+import wx
+from wx.lib.colourchooser import PyColourChooser
+import misc
+
+
+class wxGladeColorDialog(wx.Dialog):
+    def __init__(self, colors_dict, parent=None):
+        wx.Dialog.__init__(self, parent, -1, "")
+        self.colors_dict = colors_dict
+        choices = list( self.colors_dict.keys() )
+        choices.sort()
+        # begin wxGlade: wxGladeColorDialog.__init__
+        self.panel_1 = wx.Panel(self, -1)
+        self.use_sys_color = wx.RadioButton( self.panel_1, -1, _("System Color"), style=wx.RB_GROUP )
+        self.sys_color = wx.ComboBox( self.panel_1, -1, choices=choices, style=wx.CB_DROPDOWN | wx.CB_READONLY)
+        self.use_chooser = wx.RadioButton(self.panel_1, -1, _("Custom Color"))
+        self.color_chooser = PyColourChooser(self, -1)
+        self.ok = wx.Button(self, wx.ID_OK, _("OK"))
+        self.cancel = wx.Button(self, wx.ID_CANCEL, _("Cancel"))
+
+        self.__set_properties()
+        self.__do_layout()
+        # end wxGlade
+
+        wx.EVT_RADIOBUTTON(self, self.use_sys_color.GetId(), self.on_use_sys_color)
+        wx.EVT_RADIOBUTTON(self, self.use_chooser.GetId(),   self.on_use_chooser)
+
+    def on_use_sys_color(self, event):
+        self.sys_color.Enable(True)
+        self.color_chooser.Enable(False)
+        self.use_chooser.SetValue(0)
+
+    def on_use_chooser(self, event):
+        self.sys_color.Enable(False)
+        self.color_chooser.Enable(True)
+        self.use_sys_color.SetValue(0)
+
+    def get_value(self):
+        if self.use_sys_color.GetValue():
+            return self.sys_color.GetStringSelection()
+        else:
+            return misc.color_to_string(self.color_chooser.GetValue())
+
+    def set_value(self, value):
+        value = value.strip()
+        if value in self.colors_dict:
+            self.use_sys_color.SetValue(1)
+            self.use_chooser.SetValue(0)
+            self.sys_color.SetValue(value)
+            self.sys_color.Enable(True)
+            self.color_chooser.Enable(False)
+        else:
+            self.use_chooser.SetValue(1)
+            self.use_sys_color.SetValue(0)
+            try: self.color_chooser.SetValue(misc.string_to_color(value))
+            except: pass
+            self.sys_color.Enable(False)
+            self.color_chooser.Enable(True)
+
+    def __set_properties(self):
+        # begin wxGlade: wxGladeColorDialog.__set_properties
+        self.SetTitle(_("Select widget colour"))
+        self.use_sys_color.SetValue(1)
+        self.sys_color.SetSelection(0)
+        self.ok.SetDefault()
+        # end wxGlade
+        self.use_chooser.SetValue(0)
+        self.color_chooser.Enable(False)
+
+    def __do_layout(self):
+        # begin wxGlade: wxGladeColorDialog.__do_layout
+        sizer_1 = wx.BoxSizer(wx.VERTICAL)
+        sizer_3 = wx.BoxSizer(wx.HORIZONTAL)
+        sizer_2 = wx.BoxSizer(wx.VERTICAL)
+        sizer_2.Add(self.use_sys_color, 0, wx.LEFT|wx.RIGHT|wx.TOP|wx.EXPAND, 5)
+        sizer_2.Add(self.sys_color, 0, wx.ALL|wx.EXPAND, 5)
+        static_line_1 = wx.StaticLine(self.panel_1, -1)
+        sizer_2.Add(static_line_1, 0, wx.ALL|wx.EXPAND, 5)
+        sizer_2.Add(self.use_chooser, 0, wx.LEFT|wx.RIGHT|wx.TOP|wx.EXPAND, 5)
+        self.panel_1.SetAutoLayout(1)
+        self.panel_1.SetSizer(sizer_2)
+        sizer_2.Fit(self.panel_1)
+        sizer_2.SetSizeHints(self.panel_1)
+        sizer_1.Add(self.panel_1, 0, wx.EXPAND, 0)
+        sizer_1.Add(self.color_chooser, 0, wx.ALL, 5)
+        static_line_1_copy = wx.StaticLine(self, -1)
+        sizer_1.Add(static_line_1_copy, 0, wx.ALL|wx.EXPAND, 5)
+        sizer_3.Add(self.ok, 0, wx.RIGHT, 13)
+        sizer_3.Add(self.cancel, 0, 0, 5)
+        sizer_1.Add(sizer_3, 0, wx.ALL|wx.ALIGN_RIGHT, 10)
+        self.SetAutoLayout(1)
+        self.SetSizer(sizer_1)
+        sizer_1.Fit(self)
+        sizer_1.SetSizeHints(self)
+        self.Layout()
+        # end wxGlade
+        self.CenterOnScreen()
