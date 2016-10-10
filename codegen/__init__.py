@@ -331,7 +331,7 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
     @see: L{generate_code_extraproperties()}
     """
 
-    classattr_always = [] # List of classes to store always as class attributes; see test_attribute()
+    classattr_always = [] # List of classes to store always as class attributes; see store_as_attr()
     class_separator = '' # Separator between class and attribute or between different name space elements;
     # E.g "." for Python or "->" for Perl.
 
@@ -418,7 +418,7 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
 
     def _init_vars(self):
         """Set instance variables (back) to default values during class instantiation (L{__init__}) and before
-        loading new data (L{initialize()})."""
+        loading new data (L{new_project()})."""
         self.app_encoding = config.default_encoding
         self.app_filename = None
         self.app_mapping = {}
@@ -450,22 +450,23 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
         self._use_gettext = config.default_use_gettext
         self._widget_extra_modules = {}
 
-    def initialize(self, app_attrs):
+    def new_project(self, **kwargs):
         "Initialise generic and language independent code generator settings; see init_lang(), init_files()"
+
         # set (most of) instance variables back to default values
         self._init_vars()
 
-        self.multiple_files = app_attrs.get('option', config.default_multiple_files)
+        self.multiple_files = kwargs.get('option', config.default_multiple_files)
 
         # application name
-        self.app_name = app_attrs.get('name')
+        self.app_name = kwargs.get('name')
         if self.app_name:
             self.app_filename = '%s.%s' % ( self.app_name, self.default_extensions[0] )
             self._textdomain = self.app_name
 
         # file encoding
         try:
-            self.app_encoding = app_attrs['encoding'].upper()
+            self.app_encoding = kwargs['encoding'].upper()
             # wx doesn't like latin-1
             if self.app_encoding == 'latin-1':
                 self.app_encoding = 'ISO-8859-1'
@@ -475,7 +476,7 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
 
         # Indentation level based on the project options
         try:
-            self.indent_symbol = app_attrs['indent_symbol']
+            self.indent_symbol = kwargs['indent_symbol']
             if self.indent_symbol == 'tab':
                 self.indent_symbol = '\t'
             elif self.indent_symbol == 'space':
@@ -486,38 +487,38 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
             self.indent_symbol = config.default_indent_symbol
 
         try:
-            self.indent_amount = int(app_attrs['indent_amount'])
+            self.indent_amount = int(kwargs['indent_amount'])
         except (KeyError, ValueError):
             self.indent_amount = config.default_indent_amount
 
         try:
-            self._use_gettext = int(app_attrs['use_gettext'])
+            self._use_gettext = int(kwargs['use_gettext'])
         except (KeyError, ValueError):
             self._use_gettext = config.default_use_gettext
 
         try:
-            self._overwrite = int(app_attrs['overwrite'])
+            self._overwrite = int(kwargs['overwrite'])
         except (KeyError, ValueError):
             self._overwrite = config.default_overwrite
 
         try:
-            self.for_version = tuple([int(t) for t in app_attrs['for_version'].split('.')[:2]])
+            self.for_version = tuple([int(t) for t in kwargs['for_version'].split('.')[:2]])
         except (KeyError, ValueError):
             if common.app_tree is not None:
                 self.for_version = tuple([int(t) for t in common.app_tree.app.for_version.split('.')])
 
         try:
-            self.is_template = int(app_attrs['is_template'])
+            self.is_template = int(kwargs['is_template'])
         except (KeyError, ValueError):
             self.is_template = 0
 
         if self.multiple_files:
-            self.out_dir = app_attrs.get('path', config.default_output_path)
+            self.out_dir = kwargs.get('path', config.default_output_path)
         else:
-            self.out_dir = app_attrs.get('path', config.default_output_file)
+            self.out_dir = kwargs.get('path', config.default_output_file)
         self.out_dir = os.path.normpath( os.path.expanduser(self.out_dir.strip()) )
 
-        self.init_lang(app_attrs)      # call initialisation of language specific settings
+        self.init_lang(kwargs)      # call initialisation of language specific settings
         self.check_values()            # check the validity of the set values
         self.init_files(self.out_dir)  # call initialisation of the file handling
 
@@ -1493,7 +1494,7 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
                 # this isn't necessarily a bad error
                 self.warning(_('Changing permission of file "%s" failed: %s') % (filename, str(e)))
 
-    def test_attribute(self, obj):
+    def store_as_attr(self, obj):
         """Returns True if 'obj' should be added as an attribute of its parent's class,
         False if it should be created as a local variable of C{__do_layout}.
         
@@ -1835,11 +1836,11 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
 
     def __setstate__(self, state):
         """Update the instance using values from dict 'state'.
-        The code generator will be reinitialised after the state has been updated; see initialize()"""
+        The code generator will be reinitialised after the state has been updated; see L{new_project()}"""
 
         self.__dict__.update(state)
 
         # re-initialise logger instance deleted from __getstate__ and instance variables
         self._logger = logging.getLogger(self.__class__.__name__)
-        self.initialize({})
+        self.new_project()
 

@@ -11,12 +11,8 @@ import logging
 import wx
 
 import config
+import compat
 import misc
-
-try:
-    basestring
-except:
-    basestring = (str,)
 
 
 class StylesMixin(object):
@@ -67,7 +63,7 @@ class StylesMixin(object):
         @see: tmpl_flag_join
         @see: L{config.widget_config}
         """
-        assert isinstance(flags, basestring)
+        assert isinstance(flags, compat.basestring)
         if flags.isdigit():
             return flags
 

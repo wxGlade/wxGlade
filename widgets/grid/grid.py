@@ -9,9 +9,9 @@ wxGrid objects
 
 import wx
 from wx.grid import *
-import common, compat, misc
+import common, misc
 from edit_windows import ManagedBase
-from tree import Tree, Node
+from tree import Node
 import new_properties as np
 from wcodegen.taghandler import BaseXmlBuilderTagHandler
 

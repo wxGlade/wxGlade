@@ -13,7 +13,7 @@ import logging
 from xml.sax import SAXException, make_parser
 from xml.sax.handler import ContentHandler
 
-import common, config, compat, misc
+import common, config, compat
 import edit_sizers
 
 if config.use_gui:
@@ -656,7 +656,7 @@ class CodeWriter(XmlParser):
                 raise XmlParsingError( _("'path' attribute empty: could not generate code") )
 
             # Initialize the writer, thereby a logical check will be performed
-            self.code_writer.initialize(attrs)
+            self.code_writer.new_project(**attrs)
 
             return
 

@@ -669,16 +669,8 @@ class TestCodeGen(WXGladeBaseTest):
         else:
             path = 'myoutputfile'
 
-        codewriter.initialize({
-            'indent_amount': '4',
-            'indent_symbol': 'space',
-            'language': language,
-            'name': appname,
-            'option': multiple_files,
-            'overwrite': 1,
-            'path': path,
-            'use_gettext': use_gettext,
-        })
+        codewriter.new_project(indent_amount='4', indent_symbol='space', language=language, name=appname,
+                               option=multiple_files, overwrite=1, path=path, use_gettext=use_gettext)
         # clear output_file
         if codewriter.output_file:
             codewriter.output_file.close()
@@ -988,7 +980,7 @@ class TestCodeGen(WXGladeBaseTest):
                 '',
                 ret,
                 '%s: Unexpected result got: "%s" expect: "%s"' % (
-                    lang.capitalize(),
+                    misc.capitalize(lang),
                     ret,
                     ''
                     )
@@ -1005,7 +997,7 @@ class TestCodeGen(WXGladeBaseTest):
                     expected,
                     ret,
                     '%s: Unexpected result got: "%s" expect: "%s"' % (
-                        lang.capitalize(),
+                        misc.capitalize(lang),
                         ret,
                         expected,
                         )
@@ -1691,7 +1683,7 @@ class TestCodeGen(WXGladeBaseTest):
                     expected,
                     stmt,
                     '%s: Unexpected result got: "%s" expect: "%s"' % (
-                        lang.capitalize(),
+                        misc.capitalize(lang),
                         stmt,
                         expected,
                     )

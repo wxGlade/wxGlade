@@ -152,7 +152,7 @@ class TestGui(WXGladeBaseTest):
         @type filename:  str
         """
         self.failUnless(content or filename)
-        self.failUnless( isinstance(content, (compat.unicode, None.__class__, compat.StringIO)) )
+        self.failUnless(isinstance(content, (compat.unicode, compat.StringIO)) or content is None)
         if isinstance(content, compat.StringIO):
             self.failUnless( isinstance(content.getvalue(), compat.unicode) )
 

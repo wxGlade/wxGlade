@@ -11,7 +11,7 @@ import new_properties as np
 import common
 from wcodegen.taghandler import BaseXmlBuilderTagHandler
 
-
+__all__ = ['ChoicesProperty', 'ChoicesHandler']
 
 class ChoicesProperty(np.GridProperty):
     def write(self, outfile, tabs):

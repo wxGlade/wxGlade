@@ -205,21 +205,22 @@ class wxGladeFrame(wx.Frame):
                 frame_style |= wx.FRAME_TOOL_WINDOW
 
         # set window geometry
+        main_geometry = None
         if config.preferences.remember_geometry:
-            self_geometry = config.preferences.get_geometry('main')
-            if isinstance(self_geometry, tuple):
-                self_geometry = wx.Rect(*self_geometry)
-        else:
-            self_geometry = wx.Rect()
-            self_geometry.TopLeft = wx.Display().GetClientArea().GetTopLeft()
-            self_geometry.Size = (-1, -1)
-        self._set_geometry(self, self_geometry)
+            main_geometry = config.preferences.get_geometry('main')
+            if isinstance(main_geometry, tuple):
+                main_geometry = wx.Rect(*main_geometry)
+        if not main_geometry:
+            main_geometry = wx.Rect()
+            main_geometry.TopLeft = wx.Display().GetClientArea().GetTopLeft()
+            main_geometry.Size = (-1, -1)
+        self._set_geometry(self, main_geometry)
         self.Show()
-        self_geometry.Size = self.GetSize()
+        main_geometry.Size = self.GetSize()
 
         # create the property and the tree frame
-        self.create_property_panel(frame_style, icon, self_geometry)
-        self.create_tree_frame(frame_style, icon, self_geometry)
+        self.create_property_panel(frame_style, icon, main_geometry)
+        self.create_tree_frame(frame_style, icon, main_geometry)
         common.property_panel = self.property_frame
 
         # last visited directory, used on GTK for wxFileDialog
@@ -403,7 +404,7 @@ class wxGladeFrame(wx.Frame):
         self.cur_dir = os.path.dirname(filename)
 
     # GUI elements: property frame, tree frame #########################################################################
-    def create_property_panel(self, frame_style, icon, self_geometry):
+    def create_property_panel(self, frame_style, icon, main_geometry):
         # create property editor frame
         self.property_frame = wxGladePropertyPanel(self, frame_style)
         self.property_frame.SetBackgroundColour( compat.wx_SystemSettings_GetColour(wx.SYS_COLOUR_BTNFACE) )
@@ -417,7 +418,7 @@ class wxGladeFrame(wx.Frame):
                 property_geometry = wx.Rect(*property_geometry)
         if not property_geometry:
             property_geometry = wx.Rect()
-            property_geometry.Position = self_geometry.BottomLeft
+            property_geometry.Position = main_geometry.BottomLeft
             property_geometry.Size = (345, 350)
             # sometimes especially on GTK GetSize seems to ignore window decorations (bug still exists on wx3)
             if wx.Platform != '__WXMSW__': property_geometry.Y += 40
@@ -427,7 +428,7 @@ class wxGladeFrame(wx.Frame):
         self._set_geometry(self.property_frame, property_geometry)
         self.property_frame.Show()
 
-    def create_tree_frame(self, frame_style, icon, self_geometry):
+    def create_tree_frame(self, frame_style, icon, main_geometry):
         self.tree_frame = wx.Frame(self, -1, _('wxGlade: Tree'), style=frame_style, name='TreeFrame')
         self.tree_frame.SetIcon(icon)
 
@@ -448,7 +449,7 @@ class wxGladeFrame(wx.Frame):
                 tree_geometry = wx.Rect(*tree_geometry)
         if not tree_geometry:
             tree_geometry = wx.Rect()
-            tree_geometry.Position = self_geometry.TopRight
+            tree_geometry.Position = main_geometry.TopRight
             tree_geometry.Size = (250, 350)
             # sometimes especially on GTK GetSize seems to ignore window decorations (bug still exists on wx3)
             if wx.Platform != '__WXMSW__':
@@ -590,11 +591,11 @@ class wxGladeFrame(wx.Frame):
                                    default_path=default_path)
         if not infile: return
         if common.check_autosaved(infile):
-                if wx.MessageBox( _("There seems to be auto saved data for this file: do you want to restore it?"),
-                                 _("Auto save detected"), style=wx.ICON_QUESTION|wx.YES_NO ) == wx.YES:
-                    common.restore_from_autosaved(infile)
-                else:
-                    common.remove_autosaved(infile)
+            if wx.MessageBox( _("There seems to be auto saved data for this file: do you want to restore it?"),
+                              _("Auto save detected"), style=wx.ICON_QUESTION|wx.YES_NO ) == wx.YES:
+                common.restore_from_autosaved(infile)
+            else:
+                common.remove_autosaved(infile)
         if infile == common.app_tree.app.filename:
             # if we are re-loading the file, go the the previous position
             path = common.app_tree.get_selected_path()

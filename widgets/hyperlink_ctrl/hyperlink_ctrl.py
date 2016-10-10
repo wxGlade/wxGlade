@@ -8,9 +8,9 @@ wxHyperlinkCtrl objects
 
 
 import wx
-import common, compat, config, misc
+import common, compat, config
 from edit_windows import ManagedBase, EditStylesMixin
-from tree import Tree, Node
+from tree import Node
 import new_properties as np
 import decorators
 

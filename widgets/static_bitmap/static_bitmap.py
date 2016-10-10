@@ -6,13 +6,12 @@ wxStaticBitmap objects
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
-import math
 import wx
 
-import common, compat, config
+import common, config
 from edit_windows import ManagedBase, EditStylesMixin
 from gui_mixins import BitmapMixin
-from tree import Tree, Node
+from tree import Node
 import new_properties as np
 
 

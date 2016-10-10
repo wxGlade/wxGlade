@@ -8,9 +8,9 @@ wxFrame objects (incl. wxMenuBar, wxToolBar and wxStatusBar)
 """
 
 import wx
-import os, math
-import common, compat, config, misc
-from tree import Tree, Node, Node
+import os
+import common, config, misc
+from tree import Node
 import new_properties as np
 from edit_windows import TopLevelBase, EditStylesMixin
 from gui_mixins import BitmapMixin
