@@ -648,7 +648,8 @@ class ClassOrientProperty(np.RadioProperty):
 class SizerBase(Sizer, np.PropertyOwner):
     "Base class for every non-virtual Sizer handled by wxGlade"
     PROPERTIES = ["Common", "name", "class", "orient", "class_orient", # class and orient are hidden
-   "attribute"]
+                  "attribute",
+                  "Layout"]  # not a property, just start the next page in the editor
     EXTRA_PROPERTIES = []
 
     MANAGED_PROPERTIES  = ["pos", "proportion", "border", "flag"]
@@ -687,7 +688,9 @@ class SizerBase(Sizer, np.PropertyOwner):
             self.border = np.SpinProperty(0, immediate=True)
             self.flag   = np.ManagedFlags(wx.EXPAND)
             self.sizer = None  # the (parent) sizer instance
+            self._has_layout = True
         else:
+            self._has_layout = False
             self.PROPERTIES = self.PROPERTIES + self.TOPLEVEL_PROPERTIES + self.EXTRA_PROPERTIES
 
         self.children = []    # widgets added to the sizer
