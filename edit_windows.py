@@ -584,8 +584,9 @@ class ManagedBase(WindowBase):
             if not p.value_set.intersection(p.FLAG_DESCRIPTION["Border"]):
                 p.add("wxALL")
 
-        if "proportion" in modified or "flag" in modified or "border" in modified or "size" in modified:
-            self._update_sizer_item()
+        if "option" in modified or "flag" in modified or "border" in modified or "size" in modified:
+            if not self.sizer.is_virtual():
+                self._update_sizer_item()
 
     def _update_sizer_item(self):
         # update the widget by calling self.sizer.set_item (again)

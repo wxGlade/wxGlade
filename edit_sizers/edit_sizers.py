@@ -654,7 +654,8 @@ class SizerBase(Sizer, np.PropertyOwner):
     TOPLEVEL_PROPERTIES = ["fit"]
 
     _PROPERTY_LABELS = {"fit":"Fit parent",
-                        "attribute":'Store as attribute'}
+                        "attribute":'Store as attribute',
+                        "option": "Proportion"}
     _PROPERTY_HELP = {"fit":'Sizes the window so that it fits around its subwindows',
                       "attribute":'Store instance as attribute of window class; e.g. self.sizer_1 = wx.BoxSizer(...)\n'
                                   'Without this, you can not access the sizer from your program'}
@@ -747,8 +748,13 @@ class SizerBase(Sizer, np.PropertyOwner):
             value = self.class_orient
             if misc.focused_widget is self: misc.set_focused_widget(None)
             wx.CallAfter(change_sizer, self, value)
-        if (not modified or "flag" in modified or "proportion" in modified or "border" in modified) and self.widget:
+        if (not modified or "flag" in modified or "option" in modified or "border" in modified) and self.widget:
             if not self.toplevel:
+                if "border" in modified and self.border:
+                    # enable border flags if not yet done
+                    p = self.properties["flag"]
+                    if not p.value_set.intersection(p.FLAG_DESCRIPTION["Border"]):
+                        p.add("wxALL")
                 self.sizer.set_item(self.pos, self.proportion, self.flag, self.border)
         np.PropertyOwner.properties_changed(self, modified)
 
