@@ -259,6 +259,7 @@ def builder(parent, sizer, pos, number=[1]):
     widget._window_2.node = node3
     common.app_tree.add(node3, widget.node)
 
+    if parent.widget: widget.create()
     sizer.set_item(widget.pos, 1, wx.EXPAND)
 
 
