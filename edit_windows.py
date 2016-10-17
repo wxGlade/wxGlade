@@ -638,8 +638,10 @@ class ManagedBase(WindowBase):
 
     def remove(self, *args):
         self.sizer.free_slot(self.pos)
-        if self.sizer.is_virtual() and not self.sizer.is_fixed():
-            WindowBase.remove(self)
+        if self.sizer.is_virtual():
+            #if not self.sizer.is_fixed():
+            #    WindowBase.remove(self)
+            pass
         else:
             # focus the freed slot
             misc.set_focused_widget(self.sizer.children[self.pos].item)
