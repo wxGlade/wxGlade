@@ -543,8 +543,11 @@ class WidgetTree(wx.TreeCtrl, Tree):
         self.skip_select = False
         self.app.reset()
 
-    def refresh_name(self, node):
-        self.names.setdefault(self._find_toplevel(node), {})[node.widget.name] = 1
+    def refresh_name(self, node, previous_name=None):
+        names = self.names.setdefault(self._find_toplevel(node), {})
+        if previous_name is not None and previous_name in names:
+            del names[previous_name]
+        names[node.widget.name] = 1
         self.SetItemText(node.item, self._build_label(node))
 
     def refresh(self, node, refresh_label=True, refresh_image=True):
