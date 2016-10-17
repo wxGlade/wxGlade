@@ -445,7 +445,7 @@ class WidgetTree(wx.TreeCtrl, Tree):
 
     def _build_label(self, node):
         # get a label for node
-        import edit_sizers, notebook
+        import edit_sizers, notebook, static_text
         if isinstance(node.widget, edit_sizers.SizerSlot):
             if node.widget.label: return node.widget.label
             pos = node.widget.pos
@@ -463,7 +463,9 @@ class WidgetTree(wx.TreeCtrl, Tree):
         if node.widget.klass != node.widget.base and node.widget.klass != 'wxScrolledWindow':
             # special case...
             s += ' (%s)' % node.widget.klass
-        if isinstance(node.widget, edit_sizers.edit_sizers.EditStaticBoxSizer):
+        if isinstance(node.widget, static_text.static_text.EditStaticText):
+            s += ' "%s"' % node.widget.label
+        elif isinstance(node.widget, edit_sizers.edit_sizers.EditStaticBoxSizer):
             # include label of static box sizer
             s += ': "%s"'%node.widget.label
         elif getattr(node.widget, "has_title", None):
