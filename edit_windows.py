@@ -236,7 +236,10 @@ class EditBase(EventsMixin, np.PropertyOwner):
         return EventsMixin.get_property_handler(self, prop_name)
 
     def properties_changed(self, modified):
-        if not modified or "class" in modified or "name" in modified:
+        if modified and "name" in modified:
+            previous_name = self.properties["name"].previous_value
+            common.app_tree.refresh_name(self.node, previous_name)
+        elif not modified or "class" in modified or "name" in modified:
             common.app_tree.refresh_name(self.node)
 
     # clipboard ########################################################################################################

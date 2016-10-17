@@ -1032,6 +1032,7 @@ class TextProperty(Property):
             wx.Bell()
             self.text.SetValue( self._value_to_str(self.value))
             return
+        self.previous_value = self.value
         Property._check_for_user_modification(self, new_value)
 
     def _convert_from_text(self, value=None):

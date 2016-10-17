@@ -1451,7 +1451,10 @@ class EditStaticBoxSizer(BoxSizerBase):
         if not modified or "label" in modified and self.widget:
             self.widget.GetStaticBox().SetLabel(self.label or "")
             #self.layout()
-        if not modified or "label" in modified or "name" in modified and self.node:
+        if modified and "name" in modified:
+            previous_name = self.properties["name"].previous_value
+            common.app_tree.refresh_name(self.node, previous_name)
+        elif not modified or "label" in modified or "name" in modified and self.node:
             common.app_tree.refresh_name(self.node)
 
         BoxSizerBase.properties_changed(self, modified)
