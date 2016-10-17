@@ -10,7 +10,7 @@ wxNotebook objects
 import wx
 import common, compat, misc
 import wcodegen
-from tree import Node
+from tree import Node, SlotNode
 import new_properties as np
 from edit_windows import ManagedBase, EditStylesMixin
 from edit_sizers.edit_sizers import Sizer, SizerSlot
@@ -23,7 +23,7 @@ from panel import EditPanel
 
 class NotebookVirtualSizer(Sizer):
     '"Virtual sizer" responsible for the management of the pages of a Notebook'
-
+    PROPERTIES = [] # no editable properties
     def __init__(self, *args, **kwds):
         Sizer.__init__(self, *args, **kwds)
         self._itempos = 0
@@ -98,11 +98,17 @@ class NotebookVirtualSizer(Sizer):
         slot = SizerSlot(self.window, self, pos) # XXX node handling?
         #self._logger.debug('free: %s, %s, %s', slot, slot.pos, pos)
         slot.create()
-        pos -= 1
-        label = self.window.tabs[pos][0]
-        self.window.widget.RemovePage(pos)
-        self.window.widget.InsertPage(pos, slot.widget, label)
-        self.window.widget.SetSelection(pos)
+        label = self.window.tabs[pos-1][0]
+        self.window.widget.RemovePage(pos-1)
+
+        w = self.window.pages[pos-1]
+        old_node = w.node
+        self.window.pages[pos-1] = slot
+        slot.node = node = SlotNode(slot)
+        common.app_tree.change_node( old_node, slot, node )
+
+        self.window.widget.InsertPage(pos-1, slot.widget, label)
+        self.window.widget.SetSelection(pos-1)
 
     def get_itempos(self, attrs):
         "Get position of sizer item (used in xml_parse)"
