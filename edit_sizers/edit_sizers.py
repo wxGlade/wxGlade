@@ -749,7 +749,7 @@ class SizerBase(Sizer, np.PropertyOwner):
             if misc.focused_widget is self: misc.set_focused_widget(None)
             wx.CallAfter(change_sizer, self, value)
         if (not modified or "flag" in modified or "option" in modified or "border" in modified) and self.widget:
-            if not self.toplevel:
+            if not self.toplevel and self.sizer is not None:
                 if "border" in modified and self.border:
                     # enable border flags if not yet done
                     p = self.properties["flag"]
