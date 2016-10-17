@@ -433,6 +433,7 @@ class WidgetTree(wx.TreeCtrl, Tree):
         item = evt.Item
         node = self.GetPyData( item )
         widget = node.widget
+        if "name" not in widget.properties: return
         # XXX split user input into name and label/title (reverse of self._build_label)
         old_label = self.GetItemText(item)
         new_label = evt.Label
@@ -443,8 +444,8 @@ class WidgetTree(wx.TreeCtrl, Tree):
         name_p.set(new_label, notify=True)
 
     def _build_label(self, node):
-        # get a lable for node
-        import edit_sizers
+        # get a label for node
+        import edit_sizers, notebook
         if isinstance(node.widget, edit_sizers.SizerSlot):
             if node.widget.label: return node.widget.label
             pos = node.widget.pos
@@ -454,6 +455,8 @@ class WidgetTree(wx.TreeCtrl, Tree):
                 row = (pos-1) // sizer.cols + 1  # 1 based at the moment
                 col = (pos-1) %  sizer.cols + 1
                 return "SLOT  %d/%d"%(row, col)
+            elif isinstance(node.widget.sizer, notebook.notebook.NotebookVirtualSizer):
+                return "Notebook Page %d"%(pos)
             else:
                 return "SLOT %d"%(pos)
         s = node.widget.name
