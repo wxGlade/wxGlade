@@ -39,7 +39,6 @@ class wxGladePreferences(wxGladePreferencesUI):
             self.default_border_size.SetValue( self.preferences.default_border_size )
             if self.preferences.backup_suffix == '.bak':
                 self.backup_suffix.SetSelection(1)
-            self.buttons_per_row.SetValue(self.preferences.buttons_per_row)
             self.remember_geometry.SetValue( self.preferences.remember_geometry )
             self.local_widget_path.SetValue( self.preferences.local_widget_path )
             self.show_sizer_handle.SetValue( self.preferences.show_sizer_handle )
@@ -57,7 +56,7 @@ class wxGladePreferences(wxGladePreferencesUI):
     def _fix_spin_ctrls(self):
         "Workaround to a wxGTK 2.8.4.2 bug in wx.SpinCtrl.GetValue"
         done = {}
-        for name in ('buttons_per_row', 'autosave_delay', 'number_history', 'default_border_size'):
+        for name in ('autosave_delay', 'number_history', 'default_border_size'):
             def fix(n):
                 done[n] = False
 
@@ -95,7 +94,6 @@ class wxGladePreferences(wxGladePreferencesUI):
             prefs['backup_suffix'] = '.bak'
         else:
             prefs['backup_suffix'] = '~'
-        prefs['buttons_per_row'] = self.buttons_per_row.GetValue()
         prefs['remember_geometry'] = self.remember_geometry.GetValue()
         prefs['local_widget_path'] = self.local_widget_path.GetValue()
         prefs['show_sizer_handle'] = self.show_sizer_handle.GetValue()

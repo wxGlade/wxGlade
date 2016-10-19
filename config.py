@@ -64,7 +64,7 @@ encoding = None                      # character encoding; see wxglade.init_loca
 
 
 use_gui = True                 # If True, wxGlade runs in "GUI" mode, if False, in "batch" mode for generating code only
-use_file_history = not use_gui # Flag to use a file history
+use_file_history =  True       # Flag to use a file history
 
 
 backed_up = {}      # Set of file names already backed up during this session (a dictionary);  see: common.save_file()
