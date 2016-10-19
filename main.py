@@ -115,8 +115,9 @@ class wxGladePropertyPanel(wx.Frame):
             if current_pagename=="Layout" and not edit_widget._has_layout: continue
 
             # a property or None
-            property_instance = edit_widget.properties.get(prop)
-            if property_instance is not None:
+            property_instance_ = edit_widget.properties.get(prop)
+            if property_instance_ is not None:
+                property_instance = property_instance_
                 property_instance.create_editor(current_page, current_sizer)
 
         if current_page is not None:
