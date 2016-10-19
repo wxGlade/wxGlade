@@ -807,7 +807,6 @@ class Preferences(ConfigParser.ConfigParser):
         'wxg_backup': True,
         'codegen_backup': True,
         'backup_suffix': sys.platform == 'win32' and '.bak' or '~',
-        'buttons_per_row': 5,
         'remember_geometry': True,
         'local_widget_path': '',
         'default_border': False,
