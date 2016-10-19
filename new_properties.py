@@ -857,7 +857,7 @@ class TextProperty(Property):
     STRIP = False
     def __init__(self, value="", multiline=False, strip=False, default_value=_DefaultArgument, name=None, fixed_height=False):
         self.multiline = multiline
-        self.text = None
+        self.text = self.previous_value = None
         self.strip = strip
         self.fixed_height = fixed_height  # don't grow the edit field in vertical
         Property.__init__(self, value, default_value, name)
