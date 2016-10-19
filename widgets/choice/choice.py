@@ -91,7 +91,7 @@ def builder(parent, sizer, pos, number=[1]):
     while common.app_tree.has_name(name):
         number[0] += 1
         name = 'choice_%d' % number[0]
-    choice = EditChoice(name, parent, wx.NewId(), [u'choice 1'], sizer, pos)
+    choice = EditChoice(name, parent, wx.NewId(), [(u'choice 1',)], sizer, pos)
     node = Node(choice)
     #sizer.set_item(pos, size=choice.GetBestSize())
     choice.node = node
