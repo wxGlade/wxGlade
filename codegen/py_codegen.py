@@ -406,6 +406,7 @@ if __name__ == "__main__":
             write('\n')
 
         for win_id, event, handler, unused in event_handlers:
+            if win_id is None: continue  # bound already, the entry is just for creation of the method stub
             if win_id.startswith('#'):
                 win_id = win_id[1:]
             else:
