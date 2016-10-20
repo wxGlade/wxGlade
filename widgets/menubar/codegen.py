@@ -20,6 +20,7 @@ class PythonMenubarGenerator(wcodegen.PythonWidgetCodeWriter):
         cn = self.cn
         out = []
         append = out.append
+        quote_str = self.codegen.quote_str
         menus = obj.properties['menubar']
         ids = []
 
@@ -35,31 +36,12 @@ class PythonMenubarGenerator(wcodegen.PythonWidgetCodeWriter):
                     if name: ids.append(name)
                     id = val
                 if item.children:
-                    if item.name: name = item.name
-                    else: name = '%s_sub' % menu
+                    name = item.name or '%s_sub' % menu
                     append(('%s = ' + cn('wxMenu') + '()\n') % name)
-##                     if not obj.preview and item.id: # generating id
-##                         tokens = item.id.split('=')
-##                         if len(tokens) > 1:
-##                             id = tokens[0]
-##                             ids.append(' = '.join(tokens) + '\n')
-##                         else:
-##                             id = item.id
-##                     else: id = 'wxNewId()'
                     append_items(name, item.children)
-                    append('%s.AppendMenu(%s, %s, %s, %s)\n' %
-                           (menu, id, self.codegen.quote_str(item.label),
-                            name, self.codegen.quote_str(item.help_str)))
+                    args = (menu, id, quote_str(item.label), name, quote_str(item.help_str))
+                    append('%s.AppendMenu(%s, %s, %s, %s)\n' % args)
                 else:
-##                     if not obj.preview and item.id: # no ids for preview
-##                         tokens = item.id.split('=')
-##                         if len(tokens) > 1:
-##                             id = tokens[0]
-##                             ids.append(' = '.join(tokens) + '\n')
-##                         else:
-##                             id = item.id
-##                     else: id = 'wxNewId()'
-
                     item_type = cn('wxITEM_NORMAL')
                     if item.checkable == '1':
                         item_type = cn('wxITEM_CHECK')
@@ -68,33 +50,24 @@ class PythonMenubarGenerator(wcodegen.PythonWidgetCodeWriter):
                     if item.name:
                         # create MenuItem and assign to property, then append to menu
                         name = 'self.%s' % item.name
+                        args = ( name, cn('wxMenuItem'), menu, id, quote_str(item.label), quote_str(item.help_str) )
                         if item_type:
-                            append('%s = %s(%s, %s, %s, %s, %s)\n' %
-                                   (name, cn('wxMenuItem'), menu, id,
-                                    self.codegen.quote_str(item.label),
-                                    self.codegen.quote_str(item.help_str), item_type))
+                            append( '%s = %s(%s, %s, %s, %s, %s)\n' % (args + (item_type,)) )
                         else:
-                            append('%s = %s(%s, %s, %s, %s)\n' %
-                                   (name, cn('wxMenuItem'), menu,
-                                    id, self.codegen.quote_str(item.label),
-                                    self.codegen.quote_str(item.help_str)))
+                            append( '%s = %s(%s, %s, %s, %s)\n' % args)
                         append('%s.AppendItem(%s)\n' % (menu, name))
                     else:
                         # just append and assign the returned item to a temporary variable
                         name = 'item'
+                        args = ( menu, id, quote_str(item.label), quote_str(item.help_str) )
                         if item_type:
-                            append('item = %s.Append(%s, %s, %s, %s)\n' %
-                                   (menu, id, self.codegen.quote_str(item.label),
-                                    self.codegen.quote_str(item.help_str), item_type))
+                            append( 'item = %s.Append(%s, %s, %s, %s)\n' % (args + (item_type,)) )
                         else:
-                            append('item = %s.Append(%s, %s, %s)\n' %
-                                   (menu, id, self.codegen.quote_str(item.label),
-                                    self.codegen.quote_str(item.help_str)))
+                            append( 'item = %s.Append(%s, %s, %s)\n' % args)
 
                     if item.handler:
-                        append( "self.Bind(wx.EVT_MENU, %s, id=%s.GetId())\n"%(item.handler, name) )
-
-        #self._logger.debug('menus = %s', menus)
+                        handler = item.handler if "." in item.handler else "self.%s"%item.handler
+                        append( "self.Bind(wx.EVT_MENU, %s, id=%s.GetId())\n"%(handler, name) )
 
         obj_name = self.format_widget_access(obj)
 
@@ -105,7 +78,7 @@ class PythonMenubarGenerator(wcodegen.PythonWidgetCodeWriter):
             append(('%s = ' + cn('wxMenu') + '()\n') % name)
             if menu.children:
                 append_items(name, menu.children)
-            append('%s.Append(%s, %s)\n' % (obj_name, name, self.codegen.quote_str(menu.label)))
+            append('%s.Append(%s, %s)\n' % (obj_name, name, quote_str(menu.label)))
 
         return ids + out
 
@@ -121,19 +94,13 @@ class PythonMenubarGenerator(wcodegen.PythonWidgetCodeWriter):
         return init, [], []
 
     def get_event_handlers(self, obj):
-        return []
         out = []
 
         def do_get(item):
             ret = []
-            if item.name:
-                val = '#self.%s' % item.name  # see py_codegen.py, ~480
-            else:
-                val = self.codegen.generate_code_id(None, item.id)[1]
-                if not val:
-                    val = '-1'  # but this is wrong anyway...
             if item.handler:
-                ret.append((val, 'EVT_MENU', item.handler, 'wxCommandEvent'))
+                # first item is None -> just generate stub for item.handler, do not bind again
+                ret.append((None, 'EVT_MENU', item.handler, 'wxCommandEvent'))
             if item.children:
                 for c in item.children:
                     ret.extend(do_get(c))
@@ -261,6 +228,7 @@ class CppMenubarGenerator(wcodegen.CppWidgetCodeWriter):
         menus = obj.properties['menubar']
         out = []
         append = out.append
+        quote_str = self.codegen.quote_str
 
         def append_items(menu, items):
             for item in items:
@@ -278,22 +246,19 @@ class CppMenubarGenerator(wcodegen.CppWidgetCodeWriter):
                     else: name = '%s_sub' % menu
                     append('wxMenu* %s = new wxMenu();\n' % name)
                     append_items(name, item.children)
-                    append('%s->Append(%s, %s, %s, %s);\n' %
-                            (menu, id, self.codegen.quote_str(item.label), name, self.codegen.quote_str(item.help_str)))
+                    args = (menu, id, quote_str(item.label), name, quote_str(item.help_str))
+                    append('%s->Append(%s, %s, %s, %s);\n' % args)
                 else:
                     item_type = 'wxITEM_NORMAL'
                     if item.checkable == '1':
                         item_type = 'wxITEM_CHECK'
                     elif item.radio == '1':
                         item_type = 'wxITEM_RADIO'
+                    args = (menu, id, quote_str(item.label), quote_str(item.help_str))
                     if item_type:
-                        append('%s->Append(%s, %s, %s, %s);\n' %
-                               (menu, id, self.codegen.quote_str(item.label),
-                                self.codegen.quote_str(item.help_str), item_type))
+                        append( '%s->Append(%s, %s, %s, %s);\n' % (args+(item_type,)) )
                     else:
-                        append('%s->Append(%s, %s, %s);\n' %
-                               (menu, id, self.codegen.quote_str(item.label),
-                                self.codegen.quote_str(item.help_str)))
+                        append( '%s->Append(%s, %s, %s);\n' % args )
 
         obj_name = self.codegen.format_generic_access(obj)
 
@@ -308,7 +273,7 @@ class CppMenubarGenerator(wcodegen.CppWidgetCodeWriter):
             append('wxMenu* %s = new wxMenu();\n' % name)
             if menu.children:
                 append_items(name, menu.children)
-            append('%sAppend(%s, %s);\n' % (obj_name, name, self.codegen.quote_str(menu.label)))
+            append('%sAppend(%s, %s);\n' % (obj_name, name, quote_str(menu.label)))
 
         return out
 
