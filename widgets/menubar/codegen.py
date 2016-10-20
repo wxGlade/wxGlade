@@ -66,7 +66,7 @@ class PythonMenubarGenerator(wcodegen.PythonWidgetCodeWriter):
                     elif item.radio == '1':
                         item_type = cn('wxITEM_RADIO')
                     if item.name:
-                        # ALB 2004-18-07
+                        # create MenuItem and assign to property, then append to menu
                         name = 'self.%s' % item.name
                         if item_type:
                             append('%s = %s(%s, %s, %s, %s, %s)\n' %
@@ -80,14 +80,20 @@ class PythonMenubarGenerator(wcodegen.PythonWidgetCodeWriter):
                                     self.codegen.quote_str(item.help_str)))
                         append('%s.AppendItem(%s)\n' % (menu, name))
                     else:
+                        # just append and assign the returned item to a temporary variable
+                        name = 'item'
                         if item_type:
-                            append('%s.Append(%s, %s, %s, %s)\n' %
+                            append('item = %s.Append(%s, %s, %s, %s)\n' %
                                    (menu, id, self.codegen.quote_str(item.label),
                                     self.codegen.quote_str(item.help_str), item_type))
                         else:
-                            append('%s.Append(%s, %s, %s)\n' %
+                            append('item = %s.Append(%s, %s, %s)\n' %
                                    (menu, id, self.codegen.quote_str(item.label),
                                     self.codegen.quote_str(item.help_str)))
+
+                    if item.handler:
+                        append( "self.Bind(wx.EVT_MENU, %s, id=%s.GetId())\n"%(item.handler, name) )
+
         #self._logger.debug('menus = %s', menus)
 
         obj_name = self.format_widget_access(obj)
@@ -99,8 +105,7 @@ class PythonMenubarGenerator(wcodegen.PythonWidgetCodeWriter):
             append(('%s = ' + cn('wxMenu') + '()\n') % name)
             if menu.children:
                 append_items(name, menu.children)
-            append('%s.Append(%s, %s)\n' %
-                   (obj_name, name, self.codegen.quote_str(menu.label)))
+            append('%s.Append(%s, %s)\n' % (obj_name, name, self.codegen.quote_str(menu.label)))
 
         return ids + out
 
@@ -109,14 +114,14 @@ class PythonMenubarGenerator(wcodegen.PythonWidgetCodeWriter):
             klass = self.cn(obj.klass)
         else:
             klass = obj.klass
-        init = [ '\n', '# Menu Bar\n', 'self.%s = %s()\n' %
-                 (obj.name, klass) ]
+        init = [ '\n', '# Menu Bar\n', 'self.%s = %s()\n' % (obj.name, klass) ]
         init.extend(self.get_init_code(obj))
         init.append('self.SetMenuBar(self.%s)\n' % obj.name)
         init.append('# Menu Bar end\n')
         return init, [], []
 
     def get_event_handlers(self, obj):
+        return []
         out = []
 
         def do_get(item):
@@ -138,15 +143,11 @@ class PythonMenubarGenerator(wcodegen.PythonWidgetCodeWriter):
             out.extend(do_get(menu.root))
         return out
 
-# end of class PythonMenubarGenerator
 
 
 class MenuHandler(BaseCodeWriterTagHandler):
-    """\
-    Handler for menus and menu items of a menubar
-    """
-    item_attrs = ('label', 'id', 'name', 'help_str', 'checkable', 'radio',
-                  'handler')
+    "Handler for menus and menu items of a menubar"
+    item_attrs = ('label', 'id', 'name', 'help_str', 'checkable', 'radio', 'handler')
 
     def __init__(self):
         super(MenuHandler, self).__init__()
@@ -166,8 +167,7 @@ class MenuHandler(BaseCodeWriterTagHandler):
                 return
             id = attrs.get('itemid', '')
             handler = attrs.get('handler', '')
-            node = MenuTree.Node(label=label, name=attrs['name'], id=id,
-                                 handler=handler)
+            node = MenuTree.Node(label=label, name=attrs['name'], id=id, handler=handler)
             node.parent = self.curr_menu
             self.curr_menu.children.append(node)
             self.curr_menu = node
@@ -188,13 +188,10 @@ class MenuHandler(BaseCodeWriterTagHandler):
             char_data = self.get_char_data()
             setattr(self.curr_item, name, char_data)
 
-# end of class MenuHandler
 
 
 def xrc_code_generator(obj):
-    """\
-    function that generates XRC code for the menubar of a wxFrame.
-    """
+    "function that generates XRC code for the menubar of a wxFrame."
     from xml.sax.saxutils import escape, quoteattr
     xrcgen = common.code_writers['XRC']
 
@@ -207,25 +204,21 @@ def xrc_code_generator(obj):
                 if item.children:
                     name = self.get_name(item)
                     if name:
-                        write('    '*tabs + '<object class="wxMenu" ' \
-                              'name=%s>\n' % quoteattr(name))
+                        write('    '*tabs + '<object class="wxMenu" name=%s>\n' % quoteattr(name))
                     else:
                         write('    '*tabs + '<object class="wxMenu">\n')
                 else:
                     name = self.get_name(item)
                     if name:
-                        write('    '*tabs + '<object class="wxMenuItem" ' \
-                              'name=%s>\n' % quoteattr(name))
+                        write('    '*tabs + '<object class="wxMenuItem" name=%s>\n' % quoteattr(name))
                     else:
                         write('    '*tabs + '<object class="wxMenuItem">\n')
                 if item.label:
                     # translate & into _ as accelerator marker
                     val = item.label.replace('&', '_')
-                    write('    '*(tabs+1) + '<label>%s</label>\n' % \
-                          escape(val))
+                    write('    '*(tabs+1) + '<label>%s</label>\n' % escape(val))
                 if item.help_str:
-                    write('    '*(tabs+1) + '<help>%s</help>\n' % \
-                          escape(item.help_str))
+                    write('    '*(tabs+1) + '<help>%s</help>\n' % escape(item.help_str))
                 if item.children:
                     for c in item.children:
                         self.append_item(c, outfile, tabs+1)
@@ -286,8 +279,7 @@ class CppMenubarGenerator(wcodegen.CppWidgetCodeWriter):
                     append('wxMenu* %s = new wxMenu();\n' % name)
                     append_items(name, item.children)
                     append('%s->Append(%s, %s, %s, %s);\n' %
-                           (menu, id, self.codegen.quote_str(item.label),
-                            name, self.codegen.quote_str(item.help_str)))
+                            (menu, id, self.codegen.quote_str(item.label), name, self.codegen.quote_str(item.help_str)))
                 else:
                     item_type = 'wxITEM_NORMAL'
                     if item.checkable == '1':
@@ -316,8 +308,7 @@ class CppMenubarGenerator(wcodegen.CppWidgetCodeWriter):
             append('wxMenu* %s = new wxMenu();\n' % name)
             if menu.children:
                 append_items(name, menu.children)
-            append('%sAppend(%s, %s);\n' %
-                   (obj_name, name, self.codegen.quote_str(menu.label)))
+            append('%sAppend(%s, %s);\n' % (obj_name, name, self.codegen.quote_str(menu.label)))
 
         return out
 
@@ -360,16 +351,12 @@ class CppMenubarGenerator(wcodegen.CppWidgetCodeWriter):
             out.extend(do_get(menu.root))
         return out
 
-# end of class CppMenubarGenerator
 
 
 def initialize():
     klass = 'wxMenuBar'
     common.class_names['EditMenuBar'] = klass
     common.toplevels['EditMenuBar'] = 1
-    common.register('python', klass, PythonMenubarGenerator(klass),
-                    'menus', MenuHandler)
-    common.register('C++', klass, CppMenubarGenerator(klass),
-                    'menus', MenuHandler)
-    common.register('XRC', klass, xrc_code_generator,
-                    'menus', MenuHandler)
+    common.register('python', klass, PythonMenubarGenerator(klass), 'menus', MenuHandler)
+    common.register('C++',    klass, CppMenubarGenerator(klass),    'menus', MenuHandler)
+    common.register('XRC',    klass, xrc_code_generator,            'menus', MenuHandler)
