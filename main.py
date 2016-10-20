@@ -265,61 +265,91 @@ class wxGladeFrame(wx.Frame):
     # menu and actions #################################################################################################
     def create_menu(self, parent):
         menu_bar = wx.MenuBar()
-        file_menu = wx.Menu(style=wx.MENU_TEAROFF)
-        view_menu = wx.Menu(style=wx.MENU_TEAROFF)
-        help_menu = wx.Menu(style=wx.MENU_TEAROFF)
+
         compat.wx_ToolTip_SetDelay(1000)
         compat.wx_ToolTip_SetAutoPop(30000)
 
         append_menu_item = misc.append_menu_item
-        self.TREE_ID = TREE_ID = wx.NewId()
-        append_menu_item(view_menu, TREE_ID, _("Show &Tree\tF2"))
-        self.PROPS_ID = PROPS_ID = wx.NewId()
-        self.RAISE_ID = RAISE_ID = wx.NewId()
-        append_menu_item(view_menu, PROPS_ID, _("Show &Properties\tF3"))
-        append_menu_item(view_menu, RAISE_ID, _("&Raise All\tF4"))
-        NEW_ID = wx.NewId()
-        append_menu_item(file_menu, NEW_ID, _("&New\tCtrl+N"), wx.ART_NEW)
-        NEW_FROM_TEMPLATE_ID = wx.NewId()
-        append_menu_item(file_menu, NEW_FROM_TEMPLATE_ID, _("New from &Template...\tShift+Ctrl+N"))
-        OPEN_ID = wx.NewId()
-        append_menu_item(file_menu, OPEN_ID, _("&Open...\tCtrl+O"), wx.ART_FILE_OPEN)
-        SAVE_ID = wx.NewId()
-        append_menu_item(file_menu, SAVE_ID, _("&Save\tCtrl+S"), wx.ART_FILE_SAVE)
-        SAVE_AS_ID = wx.NewId()
-        append_menu_item(file_menu, SAVE_AS_ID, _("Save As...\tShift+Ctrl+S"), wx.ART_FILE_SAVE_AS)
-        SAVE_TEMPLATE_ID = wx.NewId()
-        append_menu_item(file_menu, SAVE_TEMPLATE_ID, _("Save As Template..."))
-        file_menu.AppendSeparator()
 
-        append_menu_item(file_menu, wx.ID_REFRESH, _("&Refresh Preview\tF5"))
+        # File menu
+        file_menu = wx.Menu(style=wx.MENU_TEAROFF)
 
-        GENERATE_CODE_ID = wx.NewId()
-        append_menu_item(file_menu, GENERATE_CODE_ID, _("&Generate Code\tCtrl+G"), wx.ART_EXECUTABLE_FILE)
+        NEW = append_menu_item(file_menu, -1, _("&New\tCtrl+N"), wx.ART_NEW)
+        self.Bind(wx.EVT_MENU, self.new_app, NEW)
+
+        NEW_FROM_TEMPLATE = append_menu_item(file_menu, -1, _("New from &Template...\tShift+Ctrl+N"))
+        self.Bind(wx.EVT_MENU, self.new_app_from_template, NEW_FROM_TEMPLATE)
+
+        OPEN = append_menu_item(file_menu, -1, _("&Open...\tCtrl+O"), wx.ART_FILE_OPEN)
+        self.Bind(wx.EVT_MENU, self.open_app, OPEN)
+
+        SAVE = append_menu_item(file_menu, -1, _("&Save\tCtrl+S"), wx.ART_FILE_SAVE)
+        self.Bind(wx.EVT_MENU, self.save_app, SAVE)
+
+        SAVE_AS = append_menu_item(file_menu, -1, _("Save As...\tShift+Ctrl+S"), wx.ART_FILE_SAVE_AS)
+        self.Bind(wx.EVT_MENU, self.save_app_as, SAVE_AS)
+
+        SAVE_TEMPLATE = append_menu_item(file_menu, -1, _("Save As Template..."))
+        self.Bind(wx.EVT_MENU, self.save_app_as_template, SAVE_TEMPLATE)
 
         file_menu.AppendSeparator()
-        IMPORT_ID = wx.NewId()
-        append_menu_item(file_menu, IMPORT_ID, _("&Import from XRC..."))
 
-        EXIT_ID = wx.NewId()
+        REFRESH = append_menu_item(file_menu, wx.ID_REFRESH, _("&Refresh Preview\tF5"))
+        self.Bind(wx.EVT_MENU, self.preview, REFRESH)
+
+        GENERATE_CODE = append_menu_item(file_menu, -1, _("&Generate Code\tCtrl+G"), wx.ART_EXECUTABLE_FILE)
+        def generate_code(event):
+            common.app_tree.app.generate_code()
+        self.Bind(wx.EVT_MENU, generate_code, GENERATE_CODE)
+
         file_menu.AppendSeparator()
-        append_menu_item(file_menu, EXIT_ID, _('E&xit\tCtrl+Q'), wx.ART_QUIT)
-        PREFS_ID = wx.ID_PREFERENCES
-        view_menu.AppendSeparator()
-        MANAGE_TEMPLATES_ID = wx.NewId()
-        append_menu_item(view_menu, MANAGE_TEMPLATES_ID, _('Template Manager...'))
-        view_menu.AppendSeparator()
-        append_menu_item(view_menu, PREFS_ID, _('Preferences...'))
+
+        IMPORT = append_menu_item(file_menu, -1, _("&Import from XRC..."))
+        self.Bind(wx.EVT_MENU, self.import_xrc, IMPORT)
+
+        file_menu.AppendSeparator()
+        EXIT = append_menu_item(file_menu, -1, _('E&xit\tCtrl+Q'), wx.ART_QUIT)
+        self.Bind(wx.EVT_MENU, lambda e: self.Close(), EXIT)
+
         menu_bar.Append(file_menu, _("&File"))
+
+        # View menu
+        view_menu = wx.Menu(style=wx.MENU_TEAROFF)
+
+        TREE = append_menu_item(view_menu, -1, _("Show &Tree\tF2"))
+        self.Bind(wx.EVT_MENU, self.show_tree, TREE )
+    
+        PROPS = append_menu_item(view_menu, -1, _("Show &Properties\tF3"))
+        self.Bind(wx.EVT_MENU, self.show_props_window, PROPS)
+    
+        RAISE = append_menu_item(view_menu, -1, _("&Raise All\tF4"))
+        self.Bind(wx.EVT_MENU, self.raise_all, RAISE)
+
+        view_menu.AppendSeparator()
+
+        MANAGE_TEMPLATES = append_menu_item(view_menu, -1, _('Template Manager...'))
+        self.Bind(wx.EVT_MENU, self.manage_templates, MANAGE_TEMPLATES)
+
+        view_menu.AppendSeparator()
+
+        PREFS = append_menu_item(view_menu, wx.ID_PREFERENCES, _('Preferences...'))
+        self.Bind(wx.EVT_MENU, self.edit_preferences, PREFS)
+
         menu_bar.Append(view_menu, _("&View"))
 
-        MANUAL_ID = wx.NewId()
-        append_menu_item(help_menu, MANUAL_ID, _('Manual\tF1'), wx.ART_HELP)
-        TUTORIAL_ID = wx.NewId()
-        append_menu_item(help_menu, TUTORIAL_ID, _('Tutorial'))
+        # Help menu
+        help_menu = wx.Menu(style=wx.MENU_TEAROFF)
+
+        MANUAL = append_menu_item(help_menu, -1, _('Manual\tF1'), wx.ART_HELP)
+        self.Bind(wx.EVT_MENU, self.show_manual, MANUAL)
+        TUTORIAL = append_menu_item(help_menu, -1, _('Tutorial'))
+        self.Bind(wx.EVT_MENU, self.show_tutorial, TUTORIAL)
+
         help_menu.AppendSeparator()
-        ABOUT_ID = wx.ID_ABOUT
-        append_menu_item(help_menu, ABOUT_ID, _('About'))
+
+        ABOUT = append_menu_item(help_menu, wx.ID_ABOUT, _('About'))
+        self.Bind(wx.EVT_MENU, self.show_about_box, ABOUT)
+
         menu_bar.Append(help_menu, _('&Help'))
 
         parent.SetMenuBar(menu_bar)
@@ -340,45 +370,19 @@ class wxGladeFrame(wx.Frame):
 
         wx.EVT_MENU_RANGE(self, wx.ID_FILE1, wx.ID_FILE9, self.open_from_history)
 
-        wx.EVT_MENU(self, TREE_ID, self.show_tree)
-        wx.EVT_MENU(self, PROPS_ID, self.show_props_window)
-        wx.EVT_MENU(self, RAISE_ID, self.raise_all)
-        wx.EVT_MENU(self, NEW_ID, self.new_app)
-        wx.EVT_MENU(self, NEW_FROM_TEMPLATE_ID, self.new_app_from_template)
-        wx.EVT_MENU(self, OPEN_ID, self.open_app)
-        wx.EVT_MENU(self, SAVE_ID, self.save_app)
-        wx.EVT_MENU(self, SAVE_AS_ID, self.save_app_as)
-        wx.EVT_MENU(self, SAVE_TEMPLATE_ID, self.save_app_as_template)
-
-        def generate_code(event):
-            common.app_tree.app.generate_code()
-        wx.EVT_MENU(self, GENERATE_CODE_ID, generate_code)
-        wx.EVT_MENU(self, EXIT_ID, lambda e: self.Close())
-        wx.EVT_MENU(self, MANUAL_ID, self.show_manual)
-        wx.EVT_MENU(self, TUTORIAL_ID, self.show_tutorial)
-        wx.EVT_MENU(self, ABOUT_ID, self.show_about_box)
-        wx.EVT_MENU(self, PREFS_ID, self.edit_preferences)
-        wx.EVT_MENU(self, MANAGE_TEMPLATES_ID, self.manage_templates)
-        wx.EVT_MENU(self, IMPORT_ID, self.import_xrc)
-        wx.EVT_MENU(self, wx.ID_REFRESH, self.preview) # self.reload_app)
-
-        PREVIEW_ID = wx.NewId()
-        wx.EVT_MENU(self, PREVIEW_ID, self.preview)
-
         self.accel_table = wx.AcceleratorTable([
-            (wx.ACCEL_CTRL, ord('N'), NEW_ID),
-            (wx.ACCEL_CTRL, ord('O'), OPEN_ID),
-            (wx.ACCEL_CTRL, ord('S'), SAVE_ID),
-            (wx.ACCEL_CTRL|wx.ACCEL_SHIFT, ord('S'), SAVE_AS_ID),
-            (wx.ACCEL_CTRL, ord('G'), GENERATE_CODE_ID),
+            (wx.ACCEL_CTRL, ord('N'), NEW.GetId()),
+            (wx.ACCEL_CTRL, ord('O'), OPEN.GetId()),
+            (wx.ACCEL_CTRL, ord('S'), SAVE.GetId()),
+            (wx.ACCEL_CTRL|wx.ACCEL_SHIFT, ord('S'), SAVE_AS.GetId()),
+            (wx.ACCEL_CTRL, ord('G'), GENERATE_CODE.GetId()),
             #(wx.ACCEL_CTRL, ord('I'), IMPORT_ID),
-            (0, wx.WXK_F1, MANUAL_ID),
-            (wx.ACCEL_CTRL, ord('Q'), EXIT_ID),
+            (0, wx.WXK_F1, MANUAL.GetId()),
+            (wx.ACCEL_CTRL, ord('Q'), EXIT.GetId()),
             (0, wx.WXK_F5, wx.ID_REFRESH),
-            (0, wx.WXK_F2, TREE_ID),
-            (0, wx.WXK_F3, PROPS_ID),
-            (0, wx.WXK_F4, RAISE_ID),
-            (wx.ACCEL_CTRL, ord('P'), PREVIEW_ID),
+            (0, wx.WXK_F2, TREE.GetId()),
+            (0, wx.WXK_F3, PROPS.GetId()),
+            (0, wx.WXK_F4, RAISE.GetId()),
             ])
 
     def open_from_history(self, event):
