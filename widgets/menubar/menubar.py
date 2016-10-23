@@ -152,15 +152,21 @@ class MenuItemDialog(wx.Dialog):
         sizer_1.Fit(self)
         sizer_1.SetSizeHints(self)
         self.Layout()
+
         # set tooltips
         for c in (label_6, self.label):
-            compat.SetToolTip(c, "The menu entry text; append e.g. \\tCtrl-X for keyboard shortcut")
+            compat.SetToolTip(c, "The menu entry text;\nenter & for access keys (using ALT key)\nappend e.g. \\tCtrl-X for keyboard shortcut")
         for c in (label_7, self.event_handler):
             compat.SetToolTip(c, "Enter the name of an event handler method; this will be created as stub")
         for c in (label_8, self.name):
             compat.SetToolTip(c, "optional: enter a name to store the menu item as attribute of the menu bar")
         for c in (label_10, self.id):
             compat.SetToolTip(c, "optional: enter wx ID")
+        compat.SetToolTip( self.move_up, "Move selected item up" )
+        compat.SetToolTip( self.move_down, "Move selected item down" )
+        compat.SetToolTip( self.menu_items, "For navigation use the mouse or the up/down arrows" )
+        compat.SetToolTip( self.move_left,  "Move the selected item up by one menu level" )
+        compat.SetToolTip( self.move_right, "Move the selected item down by one menu level" )
 
     def _enable_fields(self, enable=True):
         for s in (self.event_handler, self.id, self.name, self.help_str, self.check_radio, self.label):
@@ -231,7 +237,17 @@ class MenuItemDialog(wx.Dialog):
             for c in (self.label, self.event_handler, self.name, self.help_str, self.id):
                 c.SetValue("")
             self._enable_fields(False)
+        self._enable_buttons()
 
+    def _enable_buttons(self):
+        # activate the left/right/up/down buttons
+        index = self.selected_index
+        item_level = self.item_level(index)
+        item_count = self.menu_items.GetItemCount()
+        self.move_left.Enable( not (index+1<item_count and (item_level < self.item_level(index+1)) ))
+        self.move_right.Enable( index>=1 and item_level <= self.item_level(index-1) )
+        self.move_up.Enable( index>0 )
+        self.move_down.Enable( index<item_count-1 )
         self._ignore_events = False
 
     def on_label_edited(self, event):
@@ -397,6 +413,7 @@ class MenuItemDialog(wx.Dialog):
             if misc.streq(label[:4], " " * 4):
                 self.menu_items.SetStringItem(index, 0, label[4:])
                 self.menu_items.SetItemState(index, wx.LIST_STATE_SELECTED, wx.LIST_STATE_SELECTED)
+            self._enable_buttons()
 
     def move_item_left(self, event):
         """moves the selected menu item one level up in the hierarchy, i.e.
@@ -409,6 +426,7 @@ class MenuItemDialog(wx.Dialog):
             label = self.menu_items.GetItem(index, 0).GetText()
             self.menu_items.SetStringItem(index, 0, misc.wxstr(" "*4) + label)
             self.menu_items.SetItemState(index, wx.LIST_STATE_SELECTED, wx.LIST_STATE_SELECTED)
+            self._enable_buttons()
 
     def move_item_right(self, event):
         """moves the selected menu item one level down in the hierarchy, i.e.
