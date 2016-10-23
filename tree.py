@@ -477,6 +477,7 @@ class WidgetTree(wx.TreeCtrl, Tree):
         name_p = widget.properties["name"]
         old_name = name_p.get()
 
+        # check
         name_OK = name_p.check(new_name)
         if not name_OK:
             wx.Bell()
@@ -484,11 +485,14 @@ class WidgetTree(wx.TreeCtrl, Tree):
             evt.Veto()
             return
 
+        # actually modify the values
         modified = set()
         if new_name!=old_name:
+            name_p.previous_value = name_p.value
             name_p.set(new_name, notify=False)
             modified.add("name")
         if label_modified:
+            label_p.previous_value = label_p.value
             label_p.set(new_label, notify=False)
             modified.add("label")
         widget.properties_changed(modified)
