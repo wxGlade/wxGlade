@@ -98,7 +98,7 @@ class PythonMenubarGenerator(wcodegen.PythonWidgetCodeWriter):
 
         def do_get(item):
             ret = []
-            if item.handler:
+            if item.handler and item.handler!="---":
                 # first item is None -> just generate stub for item.handler, do not bind again
                 ret.append((None, 'EVT_MENU', item.handler, 'wxCommandEvent'))
             if item.children:
