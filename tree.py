@@ -342,8 +342,19 @@ class WidgetTree(wx.TreeCtrl, Tree):
         self.Bind(wx.EVT_KEY_DOWN, self.on_key_down_event)
         self.Bind(wx.EVT_CHAR_HOOK, self.on_char)
 
+    def _label_editable(self, widget=None):
+        if widget is None: widget = self.cur_widget
+        if widget is None: return False
+        if not "name" in widget.properties: return False
+        if not "label" in widget.properties: return True
+        label = widget.label
+        # no editing in case of special characters
+        if "\n" in label or "\t" in label or "'" in label or '"' in label: return False
+        if len(label)>24: return False
+        return True
+
     def on_char(self, event):
-        if event.GetKeyCode()==wx.WXK_F2 and self.cur_widget and "name" in self.cur_widget.properties:
+        if event.GetKeyCode()==wx.WXK_F2 and self.cur_widget and self._label_editable():
             # start label editing
             self.EditLabel( self.cur_widget.node.item )
             return
@@ -433,7 +444,8 @@ class WidgetTree(wx.TreeCtrl, Tree):
     def begin_edit_label(self, evt):
         # Begin editing a label. This can be prevented by calling Veto()
         widget = self.GetPyData( evt.Item ).widget
-        if "name" not in widget.properties: evt.Veto()
+        #if "name" not in widget.properties: evt.Veto()
+        if not self._label_editable(widget): evt.Veto()
 
     def end_edit_label(self, evt):
         # Finish editing a label. This can be prevented by calling Veto()
@@ -442,18 +454,48 @@ class WidgetTree(wx.TreeCtrl, Tree):
         node = self.GetPyData( item )
         widget = node.widget
         if "name" not in widget.properties: return
-        # XXX split user input into name and label/title (reverse of self._build_label)
-        old_label = self.GetItemText(item)
-        new_label = evt.Label
+
+        new_value = evt.Label
+        if "label" in widget.properties and self._label_editable(widget):
+            # split user input into name and label
+            new_value = new_value.strip()
+            if new_value.endswith("'") and ": '" in new_value:
+                new_name, new_label = new_value.split(": '", 1)
+            elif new_value.endswith('"') and ': "' in new_value:
+                new_name, new_label = new_value.split(': "', 1)
+            else:
+                wx.Bell()
+                evt.Veto()
+                return
+            new_label = new_label[:-1]
+            label_p = widget.properties["label"]
+            label_modified = new_label!=label_p.get()
+        else:
+            new_name = new_value
+            label_modified = False
+
         name_p = widget.properties["name"]
-        if new_label==old_label or not name_p.check(new_label):
+        old_name = name_p.get()
+
+        name_OK = name_p.check(new_name)
+        if not name_OK:
+            wx.Bell()
+        if not name_OK or (new_value==old_name and not label_modified):
             evt.Veto()
             return
-        name_p.set(new_label, notify=True)
+
+        modified = set()
+        if new_name!=old_name:
+            name_p.set(new_name, notify=False)
+            modified.add("name")
+        if label_modified:
+            label_p.set(new_label, notify=False)
+            modified.add("label")
+        widget.properties_changed(modified)
 
     def _build_label(self, node):
         # get a label for node
-        import edit_sizers, notebook, static_text
+        import notebook
         if isinstance(node.widget, edit_sizers.SizerSlot):
             if node.widget.label: return node.widget.label
             pos = node.widget.pos
@@ -471,11 +513,20 @@ class WidgetTree(wx.TreeCtrl, Tree):
         if node.widget.klass != node.widget.base and node.widget.klass != 'wxScrolledWindow':
             # special case...
             s += ' (%s)' % node.widget.klass
-        if isinstance(node.widget, static_text.static_text.EditStaticText):
-            s += ' "%s"' % node.widget.label
-        elif isinstance(node.widget, edit_sizers.edit_sizers.EditStaticBoxSizer):
-            # include label of static box sizer
-            s += ': "%s"'%node.widget.label
+        elif "label" in node.widget.properties and node.widget.properties["label"].is_active():
+            # include label of control
+            label = node.widget.label
+            label = label.replace("\n","\\n").replace("\t","\\t")
+            if '"' in label:
+                if len(label)>24:
+                    s += ": '%s..."%(label[:18])
+                else:
+                    s += ": '%s'"%label
+            else:
+                if len(label)>24:
+                    s += ': "%s...'%(label[:18])
+                else:
+                    s += ': "%s"'%label
         elif getattr(node.widget, "has_title", None):
             # include title
             s += ': "%s"'%node.widget.title
