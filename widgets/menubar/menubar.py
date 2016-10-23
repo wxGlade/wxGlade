@@ -184,16 +184,12 @@ class MenuItemDialog(wx.Dialog):
             indent = "    " * self.item_level(index-1)
         name, label, id, check_radio = "", "item", "", "0"
         self.menu_items.InsertStringItem(index, indent + label)
-        self.menu_items.SetStringItem(index, 1, id)
         self.menu_items.SetStringItem(index, 2, name)
-        self.menu_items.SetStringItem(index, 4, check_radio)
+        self.menu_items.SetStringItem(index, 3, check_radio)
+        self.menu_items.SetStringItem(index, 5, id)
         # fix bug 698074
         self.menu_items.SetItemState(index, wx.LIST_STATE_SELECTED, wx.LIST_STATE_SELECTED)
-        self.name.SetValue(name)
-        self.label.SetValue(label)
-        self.id.SetValue(id)
-        self.check_radio.SetSelection(int(check_radio))
-        self.label.SetValue("")
+        self._select_menu_item(index, force=True)
 
     def add_separator(self, event):
         "Event handler called when the Add Separator button is clicked"
@@ -217,8 +213,8 @@ class MenuItemDialog(wx.Dialog):
             self._select_menu_item(event.GetIndex())
         event.Skip()
 
-    def _select_menu_item(self, index):
-        if index >= self.menu_items.GetItemCount() or index<0 or index==self.selected_index: return
+    def _select_menu_item(self, index, force=False):
+        if index >= self.menu_items.GetItemCount() or index<0 or (index==self.selected_index and not force): return
         self._ignore_events = True
         self.menu_items.Select(index)
         self.selected_index = index
