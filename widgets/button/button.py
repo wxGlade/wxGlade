@@ -76,6 +76,9 @@ class EditButton(ManagedBase, EditStylesMixin):
                 self.widget.SetLabel(self.label)
                 resize = True
 
+        if label_modified:
+            common.app_tree.refresh(self.node, refresh_label=True)
+
         if resize and self.widget: self._set_widget_best_size()
 
         ManagedBase.properties_changed(self, modified)

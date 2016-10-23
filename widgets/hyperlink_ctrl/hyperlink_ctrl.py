@@ -52,6 +52,7 @@ class EditHyperlinkCtrl(ManagedBase, EditStylesMixin):
             if self.widget:
                 self.widget.SetLabel(self.label)
                 self._set_widget_best_size()
+            common.app_tree.refresh(self.node, refresh_label=True)
 
         if not modified or "url" in modified:
             if self.widget:

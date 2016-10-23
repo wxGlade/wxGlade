@@ -65,6 +65,7 @@ class EditCheckBox(ManagedBase, EditStylesMixin):
             if self.widget:
                 self.widget.SetLabel(self.label)
                 resize = True
+            common.app_tree.refresh(self.node, refresh_label=True)
 
         if not modified or "checked" in modified:
             if self.widget:

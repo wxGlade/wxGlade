@@ -43,9 +43,11 @@ class EditToggleButton(ManagedBase, EditStylesMixin):
         if not modified or "value" in modified and self.widget:
             self.widget.SetValue(self.value)
 
-        if not modified or "label" in modified and self.widget:
-            self.widget.SetLabel(self.label)
-            self._set_widget_best_size()
+        if not modified or "label" in modified:
+            if self.widget:
+                self.widget.SetLabel(self.label)
+                self._set_widget_best_size()
+            common.app_tree.refresh(self.node, refresh_label=True)
 
         ManagedBase.properties_changed(self, modified)
 
