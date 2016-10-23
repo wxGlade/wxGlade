@@ -340,6 +340,14 @@ class WidgetTree(wx.TreeCtrl, Tree):
         self.Bind(wx.EVT_TREE_END_LABEL_EDIT, self.end_edit_label)
         #self.Bind(wx.EVT_KEY_DOWN, misc.on_key_down_event)
         self.Bind(wx.EVT_KEY_DOWN, self.on_key_down_event)
+        self.Bind(wx.EVT_CHAR_HOOK, self.on_char)
+
+    def on_char(self, event):
+        if event.GetKeyCode()==wx.WXK_F2 and self.cur_widget and "name" in self.cur_widget.properties:
+            # start label editing
+            self.EditLabel( self.cur_widget.node.item )
+            return
+        event.Skip()
 
     def on_key_down_event(self, event):
         #if event.GetKeyCode()==13:
