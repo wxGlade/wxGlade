@@ -24,6 +24,8 @@ class PythonMenubarGenerator(wcodegen.PythonWidgetCodeWriter):
         menus = obj.properties['menubar']
         ids = []
 
+        obj_name = self.format_widget_access(obj)
+
         def append_items(menu, items):
             for item in items:
                 if item.name == '---':  # item is a separator
@@ -36,6 +38,7 @@ class PythonMenubarGenerator(wcodegen.PythonWidgetCodeWriter):
                     if name: ids.append(name)
                     id = val
                 if item.children:
+                    # a submenu
                     name = item.name or '%s_sub' % menu
                     append(('%s = ' + cn('wxMenu') + '()\n') % name)
                     append_items(name, item.children)
@@ -49,16 +52,15 @@ class PythonMenubarGenerator(wcodegen.PythonWidgetCodeWriter):
                         item_type = cn('wxITEM_RADIO')
                     if item.name:
                         # create MenuItem and assign to property, then append to menu
-                        name = 'self.%s' % item.name
+                        name = '%s.%s' % (obj_name, item.name)
                         args = ( name, cn('wxMenuItem'), menu, id, quote_str(item.label), quote_str(item.help_str) )
                         if item_type:
-                            append( '%s = %s(%s, %s, %s, %s, %s)\n' % (args + (item_type,)) )
+                            append( 'item = %s = %s(%s, %s, %s, %s, %s)\n' % (args + (item_type,)) )
                         else:
-                            append( '%s = %s(%s, %s, %s, %s)\n' % args)
+                            append( 'item = %s = %s(%s, %s, %s, %s)\n' % args)
                         append('%s.AppendItem(%s)\n' % (menu, name))
                     else:
                         # just append and assign the returned item to a temporary variable
-                        name = 'item'
                         args = ( menu, id, quote_str(item.label), quote_str(item.help_str) )
                         if item_type:
                             append( 'item = %s.Append(%s, %s, %s, %s)\n' % (args + (item_type,)) )
@@ -67,9 +69,7 @@ class PythonMenubarGenerator(wcodegen.PythonWidgetCodeWriter):
 
                     if item.handler:
                         handler = item.handler if "." in item.handler else "self.%s"%item.handler
-                        append( "self.Bind(wx.EVT_MENU, %s, id=%s.GetId())\n"%(handler, name) )
-
-        obj_name = self.format_widget_access(obj)
+                        append( "self.Bind(wx.EVT_MENU, %s, id=item.GetId())\n"%handler )
 
         for m in menus:
             menu = m.root
