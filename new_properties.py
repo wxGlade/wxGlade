@@ -1571,6 +1571,20 @@ class GridProperty(Property):
 
         self._set_tooltip(self.grid.GetGridWindow(), *self.buttons)
 
+        self.grid.Bind(wx.EVT_SIZE, self.on_size)
+        self._width_delta = None
+
+    def on_size(self, event):
+        # resize last column to fill the space
+        if self._width_delta is None:
+            self._width_delta = self.grid.GetParent().GetSize()[0] - self.grid.GetSize()[0]
+        self.grid.SetColSize(1, 10)
+        col_widths = 0
+        for n in range(len(self.col_defs)-1):
+            col_widths += self.grid.GetColSize(n)
+        remaining_width = self.grid.GetParent().GetSize()[0] - col_widths - self._width_delta - self.grid.GetRowLabelSize()
+        self.grid.SetColSize( len(self.col_defs)-1, max(remaining_width, 100) )
+
     def on_select_cell(self, event):
         self.cur_row = event.GetRow()
         event.Skip()
