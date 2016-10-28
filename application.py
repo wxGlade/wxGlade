@@ -378,10 +378,28 @@ class Application(np.PropertyOwner):
         if out_name is None:
             import warnings
             warnings.filterwarnings("ignore", "tempnam", RuntimeWarning, "application")
-            try:
+            import compat
+            if compat.PYTHON2:
                 out_name = os.tempnam(None, 'wxg') + '.py'
-            except AttributeError: # XXX use a different name; e.g. the project file name with "_temp"
-                out_name = "C:\\Users\\Dietmar\\wxg_tmp.py"
+            else:
+                # create a temporary file at either the output path or the project path
+                error = None
+                if not self.filename:
+                    error = "Save project first; a temporary file will be created in the same directory."
+                else:
+                    dirname, basename = os.path.split(self.filename)
+                    basename, extension = os.path.splitext(basename)
+                    if not os.path.exists(dirname):
+                        error = "Directory '%s' not found"%dirname
+                    elif not os.path.isdir(dirname):
+                        error = "'%s' is not a directory"%dirname
+                if error:
+                    wx.MessageBox( error, _('Error'), wx.OK | wx.CENTRE | wx.ICON_EXCLAMATION )
+                    return
+                while True:
+                    out_name = os.path.join(dirname, "_%s_%d.py"%(basename,random.randrange(10**8, 10**9)))
+                    if not os.path.exists(out_name): break
+
         widget_class_name = widget.klass
 
         # make a valid name for the class (this can be invalid for some sensible reasons...)
