@@ -19,7 +19,7 @@ class wxGladePreferences(wxGladePreferencesUI):
     def __init__(self, preferences):
         wxGladePreferencesUI.__init__(self, None, -1, "")
 
-        wx.EVT_BUTTON(self, self.choose_widget_path.GetId(), self.on_widget_path)
+        self.choose_widget_path.Bind(wx.EVT_BUTTON, self.on_widget_path)
 
         self.preferences = preferences
         self.set_values()

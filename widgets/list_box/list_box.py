@@ -31,7 +31,7 @@ class EditListBox(ManagedBase, EditStylesMixin):
         choices = [c[0] for c in self.choices]
         self.widget = wx.ListBox(self.parent.widget, self.id, choices=choices)
         if self.selection>=0: self.widget.SetSelection(self.selection)
-        wx.EVT_LEFT_DOWN(self.widget, self.on_set_focus)
+        self.widget.Bind(wx.EVT_LEFT_DOWN, self.on_set_focus)
 
     def get_property_handler(self, prop_name):
         if prop_name == 'choices':

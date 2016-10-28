@@ -47,8 +47,8 @@ class wxGladeFontDialog(wx.Dialog):
         self.__set_properties()
         self.__do_layout()
         self.value = None
-        wx.EVT_BUTTON(self, self.font_btn.GetId(), self.choose_specific_font)
-        wx.EVT_BUTTON(self, self.ok_btn.GetId(), self.on_ok)
+        self.font_btn.Bind(wx.EVT_BUTTON, self.choose_specific_font)
+        self.ok_btn.Bind(wx.EVT_BUTTON, self.on_ok)
 
     def choose_specific_font(self, event):
         dialog = wx.FontDialog(self, wx.FontData())

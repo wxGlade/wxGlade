@@ -37,7 +37,7 @@ class EditToggleButton(ManagedBase, EditStylesMixin):
     def create_widget(self):
         self.widget = wx.ToggleButton(self.parent.widget, self.id, self.label)
         self.widget.SetValue(self.value)
-        wx.EVT_TOGGLEBUTTON(self.widget, self.id, self.on_set_focus)
+        self.widget.Bind(wx.EVT_TOGGLEBUTTON, self.on_set_focus, id=self.id)
 
     def properties_changed(self, modified):
         if not modified or "value" in modified and self.widget:
