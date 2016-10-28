@@ -301,6 +301,11 @@ def init_stage2(use_gui):
         # store current version and platform ('not_set' is default)
         config.platform = wx.Platform
         config.wx_version = wx.__version__
+        
+        if sys.platform=="win32":
+            # register ".wxg" extension
+            import msw
+            msw.register_extensions(["wxg"], "wxGlade")
 
         # codewrites, widgets and sizers are loaded in class main.wxGladeFrame
     else:
@@ -327,11 +332,7 @@ def run_main():
         import main
         main.main(options.filename)
     else:
-        command_line_code_generation(
-            filename=options.filename,
-            language=options.language,
-            out_path=options.output,
-            )
+        command_line_code_generation( filename=options.filename, language=options.language, out_path=options.output )
 
 if __name__ == "__main__":
     run_main()
