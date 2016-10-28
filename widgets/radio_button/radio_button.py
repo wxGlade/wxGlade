@@ -37,7 +37,7 @@ class EditRadioButton(ManagedBase, EditStylesMixin):
     def create_widget(self):
         self.widget = wxGladeRadioButton(self.parent.widget, self.id, self.label)
         self.widget.SetValue(self.clicked)
-        wx.EVT_CHECKBOX(self.widget, self.id, lambda e: self.widget.SetValue(self.value))
+        self.widget.Bind(wx.EVT_CHECKBOX, lambda e: self.widget.SetValue(self.value))
 
     def _set_label(self):
         if not self.widget: return

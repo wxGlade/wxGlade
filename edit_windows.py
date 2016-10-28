@@ -121,7 +121,7 @@ class EditBase(EventsMixin, np.PropertyOwner):
 
     def finish_widget_creation(self, *args, **kwds):
         "Creates the popup menu and connects some event handlers to self.widgets"
-        wx.EVT_RIGHT_DOWN(self.widget, self.popup_menu)
+        self.widget.Bind(wx.EVT_RIGHT_DOWN, self.popup_menu)
 
     def delete(self):
         """Destructor. deallocates the popup menu, the notebook and all the properties.
@@ -382,11 +382,11 @@ class WindowBase(EditBase):
 
         EditBase.finish_widget_creation(self)
 
-        wx.EVT_SIZE(self.widget, self.on_size)
+        self.widget.Bind(wx.EVT_SIZE, self.on_size)
         # after setting various Properties, we must Refresh widget in order to see changes
         self.widget.Refresh()
-        wx.EVT_KEY_DOWN(self.widget, misc.on_key_down_event)
-        wx.EVT_KEY_UP(self.widget, misc.on_key_down_event)
+        self.widget.Bind(wx.EVT_KEY_DOWN, misc.on_key_down_event)
+        self.widget.Bind(wx.EVT_KEY_UP, misc.on_key_down_event)
 
     def on_size(self, event):
         "Update the value of the 'size' property"
@@ -704,9 +704,9 @@ class TopLevelBase(WindowBase, PreviewMixin):
             self.widget.SetTitle( misc.design_title(self.title) )
         elif hasattr(self.widget, 'SetTitle'):
             self.widget.SetTitle(misc.design_title(self.name))
-        wx.EVT_LEFT_DOWN(self.widget, self.drop_sizer)
-        wx.EVT_ENTER_WINDOW(self.widget, self.on_enter)
-        wx.EVT_CLOSE(self.widget, self.hide_widget)
+        self.widget.Bind(wx.EVT_LEFT_DOWN, self.drop_sizer)
+        self.widget.Bind(wx.EVT_ENTER_WINDOW, self.on_enter)
+        self.widget.Bind(wx.EVT_CLOSE, self.hide_widget)
         if wx.Platform == '__WXMSW__':
             # MSW isn't smart enough to avoid overlapping windows, so at least move it away from the 3 wxGlade frames
             self.widget.Center()

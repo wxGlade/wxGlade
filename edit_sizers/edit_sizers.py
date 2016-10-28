@@ -445,8 +445,8 @@ class SizerHandleButton(GenButton):
         GenButton.__init__(self, parent.widget, id, '', size=(5, 5))
         self.sizer = sizer
         self.SetUseFocusIndicator(False)
-        wx.EVT_RIGHT_DOWN(self, self.sizer.popup_menu )
-        wx.EVT_KEY_DOWN(self, misc.on_key_down_event)
+        self.Bind(wx.EVT_RIGHT_DOWN, self.sizer.popup_menu )
+        self.Bind(wx.EVT_KEY_DOWN, misc.on_key_down_event)
 
 
 
@@ -708,7 +708,7 @@ class SizerBase(Sizer, np.PropertyOwner):
         if self.widget: return  # nothing to do if the sizer has already been created
         self._btn = SizerHandleButton(self.window, self.id, self ) # XXX handle the popupmenu creation in SizerHandleButton
         # ScreenToClient used by WidgetTree for the popup menu
-        wx.EVT_BUTTON(self._btn, self.id, self.on_selection)
+        self._btn.Bind(wx.EVT_BUTTON, self.on_selection, id=self.id)
         self.create_widget()
         self.widget.Refresh = self.refresh
         self.widget.GetBestSize = self.widget.GetMinSize
@@ -1933,11 +1933,10 @@ class _SizerDialog(wx.Dialog):
         szr = wx.BoxSizer(wx.VERTICAL)
         szr.Add(self.orientation, 0, wx.ALL | wx.EXPAND, 4)
         szr.Add(tmp, 0, wx.EXPAND)
-        CHECK_ID = wx.NewId()
-        self.check = wx.CheckBox(self, CHECK_ID, _('Has a Static Box'))
+        self.check = wx.CheckBox(self, -1, _('Has a Static Box'))
         self.label = wx.TextCtrl(self, -1, "")
         self.label.Enable(False)
-        wx.EVT_CHECKBOX(self, CHECK_ID, self.on_check_statbox)
+        self.check.Bind(wx.EVT_CHECKBOX, self.on_check_statbox)
         szr.Add(self.check, 0, wx.ALL | wx.EXPAND, 4)
         tmp = wx.BoxSizer(wx.HORIZONTAL)
         tmp.Add(wx.StaticText(self, -1, _("Label: ")), 0, wx.ALIGN_CENTER)

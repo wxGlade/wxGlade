@@ -75,7 +75,7 @@ class EditStatusBar(EditBase, EditStylesMixin):
 
     def create_widget(self):
         self.widget = wx.StatusBar(self.parent.widget, -1)
-        wx.EVT_LEFT_DOWN(self.widget, self.on_set_focus)
+        self.widget.Bind(wx.EVT_LEFT_DOWN, self.on_set_focus)
         self._set_fields()
         if self.parent.widget:
             self.parent.widget.SetStatusBar(self.widget)

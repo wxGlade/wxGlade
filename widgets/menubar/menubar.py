@@ -69,7 +69,7 @@ class MenuItemDialog(wx.Dialog):
         self.owner = owner
 
         # ALB 2004-09-26: workaround to make the scroll wheel work...
-        wx.EVT_MOUSEWHEEL(self.menu_items, lambda e: e.Skip())
+        self.menu_items.Bind(wx.EVT_MOUSEWHEEL, lambda e: e.Skip())
 
         self.menu_items.InsertColumn(0, _("Label"))
         self.menu_items.InsertColumn(1, _("Event Handler"))
@@ -653,8 +653,8 @@ class EditMenuBar(EditBase, PreviewMixin):
             xpm = os.path.join(config.icons_path, 'menubar.xpm')
             icon.CopyFromBitmap(misc.get_xpm_bitmap(xpm))
             self.widget.SetIcon(icon)
-            wx.EVT_CLOSE(self.widget, lambda e: self.hide_widget())
-        wx.EVT_LEFT_DOWN(self.widget, self.on_set_focus)
+            self.widget.Bind(wx.EVT_CLOSE, lambda e: self.hide_widget())
+        self.widget.Bind(wx.EVT_LEFT_DOWN, self.on_set_focus)
         self.set_menus()  # show the menus
 
     def set_menus(self):
@@ -719,14 +719,14 @@ class EditMenuBar(EditBase, PreviewMixin):
         super(EditMenuBar, self).popup_menu(event, pos)
 
     def _create_popup_menu(self, widget=None):
-        REMOVE_ID, HIDE_ID = [wx.NewId() for i in range(2)]
-        menu = misc.wxGladePopupMenu(self.name)
-        misc.append_menu_item(menu, REMOVE_ID, _('Remove MenuBar\tDel'), wx.ART_DELETE)
-        misc.append_menu_item(menu, HIDE_ID, _('Hide'))
-
         if widget is None: widget = self.widget
-        wx.EVT_MENU(widget, REMOVE_ID, misc.exec_after(self.remove))
-        wx.EVT_MENU(widget, HIDE_ID, misc.exec_after(self.hide_widget))
+        menu = misc.wxGladePopupMenu(self.name)
+        item = misc.append_menu_item(menu, REMOVE_ID, _('Remove MenuBar\tDel'), wx.ART_DELETE)
+        misc.bind_menu_item_after(widget, item, self.remove)
+
+        item = misc.append_menu_item(menu, HIDE_ID, _('Hide'))
+        misc.bind_menu_item_after(widget, item, self.hide_widget)
+
         self._rmenu = (menu, widget)
 
     def hide_widget(self, *args):

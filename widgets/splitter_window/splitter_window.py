@@ -148,7 +148,7 @@ class EditSplitterWindow(ManagedBase, EditStylesMixin):
         else:
             min_pane_size.set_value( self.widget.GetMinimumPaneSize() )
 
-        wx.EVT_SPLITTER_SASH_POS_CHANGED( self.widget, self.widget.GetId(), self.on_sash_pos_changed )
+        self.widget.Bind(wx.EVT_SPLITTER_SASH_POS_CHANGED, self.on_sash_pos_changed )
         if self._window_1 and self._window_1.widget:
             if self.orientation=="wxSPLIT_VERTICAL":
                 compat.SetToolTip(self._window_1.widget, _("Left splitter pane:\nAdd a sizer here") )

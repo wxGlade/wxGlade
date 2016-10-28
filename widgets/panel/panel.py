@@ -51,7 +51,7 @@ class PanelBase(EditStylesMixin):
         # this must be done here since ManagedBase.finish_widget_creation normally sets EVT_LEFT_DOWN to update_view
         if not self.widget.Disconnect(-1, -1, wx.wxEVT_LEFT_DOWN):
             self._logger.warning( _("EditPanel: Unable to disconnect the event handler") )
-        wx.EVT_LEFT_DOWN(self.widget, self.drop_sizer)
+        self.widget.Bind(wx.EVT_LEFT_DOWN, self.drop_sizer)
 
     def _update_markers(self, event):
         def get_pos():
@@ -141,7 +141,7 @@ class EditPanel(PanelBase, ManagedBase):
 
     def create_widget(self):
         self.widget = wx.ScrolledWindow(self.parent.widget, self.id, style=0)
-        wx.EVT_ENTER_WINDOW(self.widget, self.on_enter)
+        self.widget.Bind(wx.EVT_ENTER_WINDOW, self.on_enter)
         self.widget.GetBestSize = self.get_widget_best_size
         if self.sizer.is_virtual():
             def GetBestSize():
@@ -157,27 +157,23 @@ class EditPanel(PanelBase, ManagedBase):
             self.sizer.set_item(self.pos, size=self.widget.GetBestSize())
 
     def _create_popup_menu(self, widget=None):
-        COPY_ID, REMOVE_ID, CUT_ID = [wx.NewId() for i in range(3)]
-        menu = misc.wxGladePopupMenu(self.name)
-        misc.append_menu_item(menu, REMOVE_ID, _('Remove Panel\tDel'),  wx.ART_DELETE)
-        misc.append_menu_item(menu, COPY_ID,   _('Copy\tCtrl+C'), wx.ART_COPY)
-        misc.append_menu_item(menu, CUT_ID,    _('Cut\tCtrl+X'),  wx.ART_CUT)
-
         if widget is None: widget = self.widget
-        wx.EVT_MENU(widget, REMOVE_ID, misc.exec_after(self.remove))
-        wx.EVT_MENU(widget, COPY_ID, misc.exec_after(self.clipboard_copy))
-        wx.EVT_MENU(widget, CUT_ID, misc.exec_after(self.clipboard_cut))
+        menu = misc.wxGladePopupMenu(self.name)
+        i = misc.append_menu_item(menu, -1, _('Remove Panel\tDel'),  wx.ART_DELETE)
+        misc.bind_menu_item_after(widget, i, self.remove)
+        i = misc.append_menu_item(menu, -1,   _('Copy\tCtrl+C'), wx.ART_COPY)
+        misc.bind_menu_item_after(widget, i, self.clipboard_copy)
+        i = misc.append_menu_item(menu, -1,    _('Cut\tCtrl+X'),  wx.ART_CUT)
+        misc.bind_menu_item_after(widget, i, self.clipboard_cut)
 
-        PASTE_ID = wx.NewId()
         i = misc.append_menu_item(menu, PASTE_ID, _('Paste Sizer\tCtrl+V'), wx.ART_PASTE)
-        wx.EVT_MENU(widget, PASTE_ID, misc.exec_after(self.clipboard_paste))
+        misc.bind_menu_item_after(widget, i, self.clipboard_paste)
         if self.top_sizer is not None: i.Enable(False)
 
-        PREVIEW_ID = wx.NewId()
         menu.AppendSeparator()
-        misc.append_menu_item(menu, PREVIEW_ID, _('Preview'))
-        wx.EVT_MENU(widget, PREVIEW_ID, misc.exec_after(self.preview_parent))
-        
+        i = misc.append_menu_item(menu, PREVIEW_ID, _('Preview'))
+        misc.bind_menu_item_after(widget, i, self.preview_parent)
+
         self._rmenu = (menu, widget) # store for destryoing and unbinding
         return menu
 
@@ -248,10 +244,10 @@ class EditTopLevelPanel(PanelBase, TopLevelBase):
         win.SetIcon(icon)
         #self.widget = wx.Panel(win, self.id, style=0)
         self.widget = wx.ScrolledWindow(win, self.id, style=0)
-        wx.EVT_ENTER_WINDOW(self.widget, self.on_enter)
+        self.widget.Bind(wx.EVT_ENTER_WINDOW, self.on_enter)
         self.widget.GetBestSize = self.get_widget_best_size
         #self.widget.SetSize = win.SetSize
-        wx.EVT_CLOSE(win, self.hide_widget)
+        win.Bind(wx.EVT_CLOSE, self.hide_widget)
         if wx.Platform == '__WXMSW__':
             win.CentreOnScreen()
 
