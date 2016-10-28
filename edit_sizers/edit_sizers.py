@@ -380,6 +380,9 @@ class SizerSlot(np.PropertyOwner):
         "check whether widget can be pasted here"
         if getattr(widget, "_is_toplevel", False):
             return False
+        if self.sizer.is_virtual() and isinstance(widget, Sizer):
+            # e.g. a sizer dropped on a splitter window slot; instead, a panel would be required
+            return False
         return True
 
     def clipboard_paste(self, event=None, clipboard_data=None):
