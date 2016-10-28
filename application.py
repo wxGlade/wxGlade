@@ -316,12 +316,12 @@ class Application(np.PropertyOwner):
         preview = kwds.get('preview', False)
         if not self.output_path:
             return wx.MessageBox( _("You must specify an output file\nbefore generating any code"),
-                                  _("Error"), wx.OK | wx.CENTRE | wx.ICON_EXCLAMATION, self.notebook )
+                                  _("Error"), wx.OK | wx.CENTRE | wx.ICON_EXCLAMATION, common.palette )
         name_p = self.properties["name"]
         class_p = self.properties["class"]
         if not preview and ( name_p.is_active() or class_p.is_active() ) and not self.top_window:
             return wx.MessageBox( _("Please select a top window for the application"), _("Error"),
-                                  wx.OK | wx.CENTRE | wx.ICON_EXCLAMATION, self.notebook )
+                                  wx.OK | wx.CENTRE | wx.ICON_EXCLAMATION, common.palette )
 
         # temporary buffer for XML
         tmp_xml = misc.UnicodeStringIO('utf-8')
