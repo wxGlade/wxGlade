@@ -558,8 +558,8 @@ class ManagedBase(WindowBase):
         if sel_marker_parent is None: sel_marker_parent = self.parent.widget
         self.sel_marker = misc.SelectionMarker(self.widget, sel_marker_parent)
         WindowBase.finish_widget_creation(self)
-        wx.EVT_LEFT_DOWN(self.widget, self.on_set_focus)
-        wx.EVT_MOVE(self.widget, self.on_move)
+        self.widget.Bind(wx.EVT_LEFT_DOWN, self.on_set_focus)
+        self.widget.Bind(wx.EVT_MOVE, self.on_move)
         # re-add the item to update it
         self.sizer.add_item( self, self.pos, self.proportion, self.flag, self.border, self.widget.GetSize() )
 

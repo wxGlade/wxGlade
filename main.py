@@ -194,7 +194,7 @@ class wxGladeFrame(wx.Frame):
         self.SetSizer(sizer)
         sizer.Fit(self)
 
-        wx.EVT_CLOSE(self, self.cleanup)
+        self.Bind(wx.EVT_CLOSE, self.cleanup)
 
         # the style for the property and tree frames
         frame_style = wx.DEFAULT_FRAME_STYLE
@@ -444,7 +444,7 @@ class wxGladeFrame(wx.Frame):
         def on_tree_frame_close(event):
             #menu_bar.Check(TREE_ID, False)
             self.tree_frame.Hide()
-        wx.EVT_CLOSE(self.tree_frame, on_tree_frame_close)
+        self.tree_frame.Bind(wx.EVT_CLOSE, on_tree_frame_close)
 
         # set geometry
         tree_geometry = None
@@ -962,7 +962,7 @@ class wxGlade(wx.App):
         self.SetTopWindow(frame)
         self.SetExitOnFrameDelete(True)
 
-        wx.EVT_IDLE(self, self.OnIdle)
+        self.Bind(wx.EVT_IDLE, self.OnIdle)
 
         return True
 

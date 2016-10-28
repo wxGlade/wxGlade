@@ -458,7 +458,7 @@ class Application(np.PropertyOwner):
                 widget.preview_widget = None
                 widget.properties["preview"].set_label(_('Preview'))
 
-            wx.EVT_CLOSE(frame, on_close)
+            frame.Bind(wx.EVT_CLOSE, on_close)
             frame.SetTitle(_('<Preview> - %s') % frame.GetTitle())
             # raise the frame
             frame.CenterOnScreen()
