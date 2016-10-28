@@ -246,10 +246,11 @@ class EditNotebook(ManagedBase, EditStylesMixin):
         for index in range(len(old_names)-1, -1, -1):
             if not index in keep_indices:
                 self._is_removing_pages = True
-                self.virtual_sizer.remove_tab(index)        # remove from sizer; does not delete window
-                self.pages[index].remove(False)             # delete the page content
-                del self.pages[index]                       # delete from page list
-                del new_names[index]                        # delete from list of names
+                self.virtual_sizer.remove_tab(index)            # remove from sizer; does not delete window
+                self.pages[index].remove(False)                 # delete the page content
+                common.app_tree.remove(self.pages[index].node)  # remove from tree
+                del self.pages[index]                           # delete from page list
+                del new_names[index]                            # delete from list of names
                 self._is_removing_pages = False
 
         # insert/add tabs
