@@ -802,10 +802,12 @@ class TopLevelBase(WindowBase, PreviewMixin):
         if self.sizer or not common.adding_sizer:
             self.on_set_focus(event)  # default behaviour: call show_properties
             return
-        common.adding_widget = common.adding_sizer = False
         self.widget.SetCursor(wx.STANDARD_CURSOR)
         common.widgets[common.widget_to_add](self, None, None)
-        common.widget_to_add = None
+        if event is None or not event.ControlDown():
+            common.adding_widget = common.adding_sizer = False
+            common.widget_to_add = None
+        common.app_tree.app.saved = False
 
     def hide_widget(self, *args):
         self._destroy_popup_menu()

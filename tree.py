@@ -664,7 +664,7 @@ class WidgetTree(wx.TreeCtrl, Tree):
         item = node.widget
         import edit_sizers
         if isinstance(item, edit_sizers.SizerSlot):
-            item.on_drop_widget(None)
+            item.on_drop_widget(event)
             return
         if common.adding_sizer:
             item.drop_sizer()
