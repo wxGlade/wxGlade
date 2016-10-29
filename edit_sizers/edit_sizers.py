@@ -1416,7 +1416,10 @@ class wxGladeStaticBoxSizer(wx.StaticBoxSizer):
 class EditStaticBoxSizer(BoxSizerBase):
     "Class to handle wxStaticBoxSizer objects"
     WX_CLASS = "wxStaticBoxSizer"
-    EXTRA_PROPERTIES = ["label"]
+    PROPERTIES = ["Common", "name", "class", "orient", "class_orient", # class and orient are hidden
+                  "label", "attribute",
+                  "Layout"]  # not a property, just start the next page in the editor
+    EXTRA_PROPERTIES = []
 
     def __init__(self, name, window, orient=wx.VERTICAL, label='', elements=3, toplevel=True):
         BoxSizerBase.__init__(self, name, window, orient, elements, toplevel)
