@@ -205,16 +205,13 @@ def load_widgets():
 def add_object(event):
     "Adds a widget or a sizer to the current app"
     global adding_widget, adding_sizer, widget_to_add
-    adding_widget = True
-    adding_sizer = False
     tmp = event.GetId()
     widget_to_add = refs[tmp]
+    adding_widget = True
+    adding_sizer = "Sizer" in widget_to_add
 
     msg = "Adding %s; click on free (hatched) sizer slot to place it"
     palette.user_message( msg%widget_to_add.lstrip("Edit") )
-    # TODO: find a better way
-    if widget_to_add.find('Sizer') != -1:
-        adding_sizer = True
 
 
 def add_toplevel_object(event):

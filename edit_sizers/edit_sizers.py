@@ -365,14 +365,14 @@ class SizerSlot(np.PropertyOwner):
             return
         if common.adding_sizer and self.sizer.is_virtual():
             return
-        common.adding_widget = False
-        common.adding_sizer = False
         if self.widget:
             self.widget.SetCursor(wx.NullCursor)
             self.widget.Hide()
         # call the appropriate builder
         common.widgets[common.widget_to_add](self.parent, self.sizer, self.pos)
-        common.widget_to_add = None
+        if event is None or not event.ControlDown():
+            common.adding_widget = common.adding_sizer = False
+            common.widget_to_add = None
         common.app_tree.app.saved = False
 
     # clipboard handling ###############################################################################################

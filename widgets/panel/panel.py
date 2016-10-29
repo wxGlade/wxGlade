@@ -86,8 +86,9 @@ class PanelBase(EditStylesMixin):
             return
         if self.widget: self.widget.SetCursor(wx.NullCursor)
         common.widgets[common.widget_to_add](self, None, None)
-        common.adding_widget = common.adding_sizer = False
-        common.widget_to_add = None
+        if event is None or not event.ControlDown():
+            common.adding_widget = common.adding_sizer = False
+            common.widget_to_add = None
         common.app_tree.app.saved = False
 
     def get_widget_best_size(self):
