@@ -167,12 +167,12 @@ class EditPanel(PanelBase, ManagedBase):
         i = misc.append_menu_item(menu, -1,    _('Cut\tCtrl+X'),  wx.ART_CUT)
         misc.bind_menu_item_after(widget, i, self.clipboard_cut)
 
-        i = misc.append_menu_item(menu, PASTE_ID, _('Paste Sizer\tCtrl+V'), wx.ART_PASTE)
+        i = misc.append_menu_item(menu, -1, _('Paste Sizer\tCtrl+V'), wx.ART_PASTE)
         misc.bind_menu_item_after(widget, i, self.clipboard_paste)
-        if self.top_sizer is not None: i.Enable(False)
+        if self.top_sizer is not None or not clipboard.check("sizer"): i.Enable(False)
 
         menu.AppendSeparator()
-        i = misc.append_menu_item(menu, PREVIEW_ID, _('Preview'))
+        i = misc.append_menu_item(menu, -1, _('Preview'))
         misc.bind_menu_item_after(widget, i, self.preview_parent)
 
         self._rmenu = (menu, widget) # store for destryoing and unbinding
