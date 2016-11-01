@@ -306,12 +306,11 @@ class WidgetTree(wx.TreeCtrl, Tree):
     _logger = None # Class specific logging instance
     def __init__(self, parent, application):
         self._logger = logging.getLogger(self.__class__.__name__)
-        id = wx.NewId()
         style = wx.TR_DEFAULT_STYLE|wx.TR_HAS_VARIABLE_ROW_HEIGHT
         style |= wx.TR_EDIT_LABELS
         if wx.Platform == '__WXGTK__':    style |= wx.TR_NO_LINES|wx.TR_FULL_ROW_HIGHLIGHT
         elif wx.Platform == '__WXMAC__':  style &= ~wx.TR_ROW_LINES
-        wx.TreeCtrl.__init__(self, parent, id, style=style)
+        wx.TreeCtrl.__init__(self, parent, -1, style=style)
         root_node = Node(application)
         self.cur_widget = None  # reference to the selected widget
         Tree.__init__(self, root_node, application)

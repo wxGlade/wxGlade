@@ -53,9 +53,11 @@ class SplitterWindowSizer(Sizer):
         if pos == 1:
             self.window.window_old = self.window._window_1
             self.window._window_1 = item
+            self.window.properties["window_1"].set(item.name)
         else:
             self.window.window_old = self.window._window_2
             self.window._window_2 = item
+            self.window.properties["window_2"].set(item.name)
 
     def free_slot(self, pos, force_layout=True):
         "Replaces the element at pos with an empty slot"
@@ -82,9 +84,11 @@ class SplitterWindowSizer(Sizer):
 
     def get_itempos(self, attrs):
         "Get position of sizer item (used in xml_parse)"
-        if attrs['name']==self.window.properties["window_1"].value:
+        name= attrs.get("original_name", None)
+        if name is None: name = attrs['name']
+        if name==self.window.properties["window_1"].value:
             return 1
-        if attrs['name']==self.window.properties["window_2"].value:
+        if name==self.window.properties["window_2"].value:
             return 2
         return pos
 
