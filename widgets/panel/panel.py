@@ -97,17 +97,15 @@ class PanelBase(EditStylesMixin):
             return self.widget.GetSize()
         return wx.ScrolledWindow.GetBestSize(self.widget)
 
-    def properties_modified(self, modified):
+    def properties_changed(self, modified):
         if not modified or "scrollable" in modified:
             if self.scrollable:
                 if self.klass == 'wxPanel':
-                    self.klass = 'wxScrolledWindow'
-                    self.klass_prop.set_value(self.klass)
+                    self.properties["class"].set('wxScrolledWindow')
                 self.properties['scroll_rate'].toggle_active(True)
             else:
                 if self.klass == 'wxScrolledWindow':
-                    self.klass = 'wxPanel'
-                    self.klass_prop.set_value(self.klass)
+                    self.properties["class"].set('wxPanel')
                 self.properties['scroll_rate'].toggle_active(False)
 
         if not modified or "scroll_rate" in modified or "scrollable" in modified:
@@ -116,7 +114,7 @@ class PanelBase(EditStylesMixin):
                     self.widget.SetScrollRate( *self.properties["scroll_rate"].get_tuple() )
                 else:
                     self.widget.SetScrollRate(0, 0)
-        EditStylesMixin.properties_modified(self, modified)
+        EditStylesMixin.properties_changed(self, modified)
 
     def __getstate__(self):
         state = self.__dict__.copy()
@@ -178,7 +176,7 @@ class EditPanel(PanelBase, ManagedBase):
         self._rmenu = (menu, widget) # store for destryoing and unbinding
         return menu
 
-    def check_compatibility(self, widget):
+    def check_compatibility(self, widget, typename=None, report=True):
         "check whether widget can be pasted"
         import edit_sizers
         if not isinstance(widget, edit_sizers.Sizer):
@@ -204,9 +202,6 @@ class EditPanel(PanelBase, ManagedBase):
             import os
             if 'WINGDB_ACTIVE' in os.environ: raise
             self._logger.warning(_('Only sizers can be pasted here'))
-
-    def set_scrollable(self, *args, **kwargs):
-        raise ValueError("XXX change") # -> properties_modified
 
     def properties_changed(self, modified):
         if not modified or "scrollable" in modified:
@@ -287,10 +282,7 @@ class EditTopLevelPanel(PanelBase, TopLevelBase):
         if self.widget.GetParent().GetClientSize() != (w, h):
             self.widget.GetParent().SetClientSize((w+2, h+2))
 
-    def set_scrollable(self, value):
-        raise ValueError("XXX change") # -> properties_modified
-
-    def properties_modified(self, modified):
+    def properties_changed(self, modified):
         if not modified or "scrollable" in modified:
             if self.scrollable:
                 # 2003-06-26 ALB: change the "class name", to allow code generation
@@ -302,8 +294,8 @@ class EditTopLevelPanel(PanelBase, TopLevelBase):
             if self.widget:
                 self.widget.GetParent().SetTitle(misc.design_title(self.name))
 
-        PanelBase.properties_modified(self, modified)
-        TopLevelBase.properties_modified(self, modified)
+        PanelBase.properties_changed(self, modified)
+        TopLevelBase.properties_changed(self, modified)
 
     def get_properties(self, without=set()):
         # return list of properties to be written to XML file
