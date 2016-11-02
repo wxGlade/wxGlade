@@ -217,6 +217,9 @@ class EditSplitterWindow(ManagedBase, EditStylesMixin):
         self.properties['sash_pos'].set( self.widget.GetSashPosition() )
         event.Skip()
 
+    def on_mouse_events(self, event):
+        # resize instead of drag & drop
+        event.Skip()
 
 editor_class = EditSplitterWindow
 editor_name = 'EditSplitterWindow'

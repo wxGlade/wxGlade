@@ -584,22 +584,18 @@ class Application(np.PropertyOwner):
         menu.Destroy()
         self._rmenu = None
 
-    def check_compatibility(self, widget):
-        # for now, we don't have a clipboard_paste method; XXX this should be changed
+    def check_drop_compatibility(self):
         return False
 
-    # experimental #####################################################################################################
-    def check_compatibility(self, widget):
-        return widget._is_toplevel
+    def check_compatibility(self, widget, report=False):
+        return getattr(widget, "_is_toplevel", False)
+
     def clipboard_paste(self, event=None, clipboard_data=None):
         "Insert a widget from the clipboard to the current destination"
         import xml_parse
-        #size = self.widget.GetSize()
         import clipboard
         try:
-            #if clipboard.paste(self, None, 0, clipboard_data):
             if clipboard.paste(None, None, 0, clipboard_data):
                 common.app_tree.app.saved = False
-                #self.widget.SetSize(size)
         except xml_parse.XmlParsingError:
-            self._logger.warning( _('WARNING: Only sizers can be pasted here') )
+            self._logger.warning( _('WARNING: paste failed') )

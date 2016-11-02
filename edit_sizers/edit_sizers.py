@@ -264,6 +264,7 @@ class SizerSlot(np.PropertyOwner):
         # edit: paste
         i = misc.append_menu_item(menu, -1, _('Paste\tCtrl+V'), wx.ART_PASTE)
         misc.bind_menu_item_after(widget, i, self.clipboard_paste)
+        if not clipboard.check("widget","sizer"): i.Enable(False)
         menu.AppendSeparator()
 
 
@@ -375,9 +376,24 @@ class SizerSlot(np.PropertyOwner):
             common.widget_to_add = None
         common.app_tree.app.saved = False
 
+    def check_drop_compatibility(self):
+        """replaces self with a widget in self.sizer. This method is called
+        to add every non-toplevel widget or sizer, and in turn calls the
+        appropriate builder function (found in the ``common.widgets'' dict)"""
+        if common.adding_sizer and self.sizer.is_virtual():
+            return False
+        return True
+
     # clipboard handling ###############################################################################################
-    def check_compatibility(self, widget):
+    def check_compatibility(self, widget, typename=None, report=False):
         "check whether widget can be pasted here"
+        if typename is not None:
+            if typename=="sizer" and self.sizer.is_virtual():
+                return False
+            if typename=="window":
+                return False
+            return True
+
         if getattr(widget, "_is_toplevel", False):
             return False
         if self.sizer.is_virtual() and isinstance(widget, Sizer):
@@ -709,6 +725,7 @@ class SizerBase(Sizer, np.PropertyOwner):
         self._btn = SizerHandleButton(self.window, self.id, self ) # XXX handle the popupmenu creation in SizerHandleButton
         # ScreenToClient used by WidgetTree for the popup menu
         self._btn.Bind(wx.EVT_BUTTON, self.on_selection, id=self.id)
+        self._btn.Bind(wx.EVT_MOUSE_EVENTS, self.on_mouse_events, id=self.id)
         self.create_widget()
         self.widget.Refresh = self.refresh
         self.widget.GetBestSize = self.widget.GetMinSize
@@ -717,6 +734,14 @@ class SizerBase(Sizer, np.PropertyOwner):
             self.window.set_sizer(self)
         if not config.preferences.show_sizer_handle:
             self.widget.Show(self._btn, False)
+
+    def on_mouse_events(self, event):
+        if event.Dragging():
+            # start drag & drop
+            window = misc.get_toplevel_parent(self._btn)
+            clipboard.begin_drag(window, self)
+            return
+        event.Skip()
 
     def on_selection(self, event):
         # button clicked -> set ourself as current widget
@@ -761,7 +786,15 @@ class SizerBase(Sizer, np.PropertyOwner):
                 self.sizer.set_item(self.pos, self.proportion, self.flag, self.border)
         np.PropertyOwner.properties_changed(self, modified)
 
-    def check_compatibility(self, widget):
+    def check_drop_compatibility(self):
+        return False
+
+    def check_compatibility(self, widget, typename=None, report=False):
+        if typename is not None:
+            if typename in ("widget","sizer"):
+                return "AddSlot"
+            return False
+        if getattr(widget, "_is_toplevel", False): return False
         return "AddSlot" # a slot is to be added before inserting/pasting
 
     # popup menu #######################################################################################################
