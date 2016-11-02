@@ -1621,7 +1621,7 @@ class GridProperty(Property):
         """Apply the edited value; called by Apply button.
 
         If self.with_index and self.owner.set_... exists, this will be called with values and indices.
-        In this case, self.owner.properties_modified will not be called additionally.
+        In this case, self.owner.properties_changed will not be called additionally.
         Otherwise, the standard mechanism will be used."""
         self.grid.SaveEditControlValue() # end editing of the current cell
         new_value = self._get_new_value()
