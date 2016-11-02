@@ -747,6 +747,11 @@ class EditMenuBar(EditBase, PreviewMixin):
             return MenuHandler(self)
         return None
 
+    def check_compatibility(self, widget, typename=None, report=False):
+        return False
+    def check_drop_compatibility(self):
+        return False
+
 
 
 def builder(parent, sizer, pos, number=[0]):

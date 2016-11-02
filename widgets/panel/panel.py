@@ -91,6 +91,11 @@ class PanelBase(EditStylesMixin):
             common.widget_to_add = None
         common.app_tree.app.saved = False
 
+    def check_drop_compatibility(self):
+        if self.top_sizer:
+            return False
+        return common.adding_sizer
+
     def get_widget_best_size(self):
         if self.top_sizer and self.widget.GetSizer():
             self.top_sizer.fit_parent()
@@ -178,16 +183,29 @@ class EditPanel(PanelBase, ManagedBase):
 
     def check_compatibility(self, widget, typename=None, report=True):
         "check whether widget can be pasted"
+        if typename is not None:
+            if typename!="sizer":
+                if report:
+                    self._logger.warning(_('Only sizers can be pasted here'))
+                return False
+            if self.top_sizer:
+                if report:
+                    self._logger.warning(_('Sizer set already'))
+                return False
+            return True
+
         import edit_sizers
         if not isinstance(widget, edit_sizers.Sizer):
-            self._logger.warning(_('Only sizers can be pasted here'))
+            if report:
+                self._logger.warning(_('Only sizers can be pasted here'))
             return False
         #if self.sizer is not None:
         if self.top_sizer:
-            self._logger.warning(_('Sizer set already'))
+            if report:
+                self._logger.warning(_('Sizer set already'))
             return False
         return True
-        
+
     def clipboard_paste(self, event=None, clipboard_data=None):
         "Insert a widget from the clipboard to the current destination"
         import xml_parse

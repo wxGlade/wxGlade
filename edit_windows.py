@@ -243,8 +243,10 @@ class EditBase(EventsMixin, np.PropertyOwner):
             common.app_tree.refresh_name(self.node)
 
     # clipboard ########################################################################################################
-    def check_compatibility(self, widget):
+    def check_compatibility(self, widget, typename=None, report=False):
         # only with slots before/after
+        if typename is not None and typename=="window" or getattr(widget, "_is_toplevel",False):
+            return False
         return "Slot"
 
     def clipboard_copy(self, event=None):
@@ -256,6 +258,11 @@ class EditBase(EventsMixin, np.PropertyOwner):
         "Store a copy of self into the clipboard and delete the widget;  @see: L{clipboard.cut()}"
         self._destroy_popup_menu()
         clipboard.cut(self)
+
+    def check_drop_compatibility(self):
+        # checks whether a widget can be dropped here
+        return False
+
     ####################################################################################################################
 
     def is_visible(self):
@@ -559,6 +566,7 @@ class ManagedBase(WindowBase):
         self.sel_marker = misc.SelectionMarker(self.widget, sel_marker_parent)
         WindowBase.finish_widget_creation(self)
         self.widget.Bind(wx.EVT_LEFT_DOWN, self.on_set_focus)
+        self.widget.Bind(wx.EVT_MOUSE_EVENTS, self.on_mouse_events)
         self.widget.Bind(wx.EVT_MOVE, self.on_move)
         # re-add the item to update it
         self.sizer.add_item( self, self.pos, self.proportion, self.flag, self.border, self.widget.GetSize() )
@@ -657,6 +665,14 @@ class ManagedBase(WindowBase):
         "called by self.sizer.change_item_pos to update the item's position when another widget is moved"
         # XXX currently not used; make np.LayoutPosProperty editable again
         self.properties['pos'].set_value(pos)
+        
+    def on_mouse_events(self, event):
+        if event.Dragging():
+            # start drag & drop
+            window = misc.get_toplevel_parent(self)
+            clipboard.begin_drag(window, self)
+            return
+        event.Skip()
 
 
 
@@ -743,8 +759,8 @@ class TopLevelBase(WindowBase, PreviewMixin):
         # paste
         i = misc.append_menu_item(menu, -1, _('Paste Sizer\tCtrl+V'), wx.ART_PASTE)
         misc.bind_menu_item_after(widget, i, self.clipboard_paste)
-        if self.sizer is not None: i.Enable(False)
-        
+        if self.sizer is not None or not clipboard.check("sizer"): i.Enable(False)
+
         # preview
         menu.AppendSeparator()
         i = misc.append_menu_item(menu, -1, _('Preview %s\tF5'%widgetclass))
@@ -754,16 +770,23 @@ class TopLevelBase(WindowBase, PreviewMixin):
         return menu
 
     ####################################################################################################################
-    def check_compatibility(self, widget):
+    def check_compatibility(self, widget, typename=None, report=True):
         "check in advance whether widget can be pasted"
 
         if self.sizer is not None:
-            self._logger.warning( _('WARNING: Sizer already set for this window') )
+            if report:
+                self._logger.warning( _('WARNING: Sizer already set for this window') )
             return False
 
+        if typename is not None:
+            if typename!="sizer":
+                if report:
+                    self._logger.warning(_('Only sizers can be pasted here'))
+            return False
         import edit_sizers
         if not isinstance(widget, edit_sizers.Sizer):
-            self._logger.warning(_('Only sizers can be pasted here'))
+            if report:
+                self._logger.warning(_('Only sizers can be pasted here'))
             return False
         return True
 
@@ -809,6 +832,11 @@ class TopLevelBase(WindowBase, PreviewMixin):
             common.widget_to_add = None
         common.app_tree.app.saved = False
 
+    def check_drop_compatibility(self):
+        if self.sizer:
+            return False
+        return common.adding_sizer
+
     def hide_widget(self, *args):
         self._destroy_popup_menu()
         self.widget.Hide()
@@ -836,6 +864,35 @@ class TopLevelBase(WindowBase, PreviewMixin):
             self.preview_widget.Destroy()
             self.preview_widget = None
         WindowBase.delete(self)
+
+    def _find_widget_by_pos(self, w, x,y, level=1):
+        "helper for find_widget_by_pos; w is the parent window/widget"
+        if w.HasMultiplePages():
+            page = w.GetPage(w.GetSelection())
+            x0,y0,width,height = page.GetRect() # c.GetClientRect()
+            return self._find_widget_by_pos(page, x-x0,y-y0, level+1)
+        ret = []
+        for c in w.GetChildren():
+            x0,y0,width,height = c.GetRect() # c.GetClientRect()
+            if x0 <= x <= x0+width and y0 <= y <= y0+height:
+                ret.append(c)
+            if isinstance(c, wx.ScrolledWindow):
+                ret += self._find_widget_by_pos(c, x-x0,y-y0, level+1)
+            else:
+                ret += self._find_widget_by_pos(c, x,y, level+1)
+        return ret
+
+    def find_widget_by_pos(self, x,y):
+        "find the widget at a given position"
+        if self.widget is None: return None
+        x0,y0,width,height = self.widget.ClientRect
+        found = self._find_widget_by_pos(self.widget, x-x0,y-y0)
+        if not found: return None
+        node = None
+        while found and node is None:
+            node = common.app_tree.find_widget(found.pop(-1))
+        if node is None: return None
+        return node.widget
 
 
 
