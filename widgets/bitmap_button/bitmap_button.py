@@ -8,7 +8,7 @@ wxBitmapButton objects
 
 import wx
 
-import common, config
+import common, config, compat
 from edit_windows import ManagedBase, EditStylesMixin
 from gui_mixins import BitmapMixin
 from tree import Node
@@ -58,7 +58,10 @@ class EditBitmapButton(ManagedBase, EditStylesMixin, BitmapMixin):
             if not modified or "bitmap" in modified:
                 bmp = self.get_preview_obj_bitmap(self.bitmap)
                 self.widget.SetBitmapLabel(bmp)
-                self.widget.SetBitmapSelected(bmp)
+                if compat.IS_CLASSIC:
+                    self.widget.SetBitmapSelected(bmp)
+                else:
+                    self.widget.SetBitmapPressed(bmp)
                 self.widget.SetBitmapFocus(bmp)
                 resize = True
             if not modified or "disabled_bitmap" in modified:
