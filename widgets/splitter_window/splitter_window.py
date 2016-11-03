@@ -90,7 +90,7 @@ class SplitterWindowSizer(Sizer):
             return 1
         if name==self.window.properties["window_2"].value:
             return 2
-        return pos
+        return None
 
     def is_virtual(self):
         return True
