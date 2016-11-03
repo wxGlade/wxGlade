@@ -89,31 +89,22 @@ class PythonCodeGenerator(wcodegen.PythonWidgetCodeWriter):
 
         columns = prop.get('columns', [['A', '-1']])
         out.append('%s.CreateGrid(%s, %s)\n' % (name, prop.get('rows_number', '1'), len(columns)))
-        if prop.get('row_label_size'):
-            out.append('%s.SetRowLabelSize(%s)\n' % (name, prop['row_label_size']))
-        if prop.get('col_label_size'):
-            out.append('%s.SetColLabelSize(%s)\n' % (name, prop['col_label_size']))
-        enable_editing = prop.get('enable_editing', '1')
-        if enable_editing != '1':
-            out.append('%s.EnableEditing(0)\n' % name)
-        enable_grid_lines = prop.get('enable_grid_lines', '1')
-        if enable_grid_lines != '1':
-            out.append('%s.EnableGridLines(0)\n' % name)
-        enable_col_resize = prop.get('enable_col_resize', '1')
-        if enable_col_resize != '1':
-            out.append('%s.EnableDragColSize(0)\n' % name)
-        enable_row_resize = prop.get('enable_row_resize', '1')
-        if enable_row_resize != '1':
-            out.append('%s.EnableDragRowSize(0)\n' % name)
-        enable_grid_resize = prop.get('enable_grid_resize', '1')
-        if enable_grid_resize != '1':
-            out.append('%s.EnableDragGridSize(0)\n' % name)
+
+        if prop.get('row_label_size'): out.append( '%s.SetRowLabelSize(%s)\n' % (name, prop['row_label_size']) )
+        if prop.get('col_label_size'): out.append( '%s.SetColLabelSize(%s)\n' % (name, prop['col_label_size']) )
+
+        if prop.get('enable_editing',     '1') != '1': out.append('%s.EnableEditing(0)\n' % name)
+        if prop.get('enable_grid_lines',  '1') != '1': out.append('%s.EnableGridLines(0)\n' % name)
+        if prop.get('enable_col_resize',  '1') != '1': out.append('%s.EnableDragColSize(0)\n' % name)
+        if prop.get('enable_row_resize',  '1') != '1': out.append('%s.EnableDragRowSize(0)\n' % name)
+        if prop.get('enable_grid_resize', '1') != '1': out.append('%s.EnableDragGridSize(0)\n' % name)
+
         if prop.get('lines_color', False):
-            out.append(('%s.SetGridLineColour(' + self.cn('wxColour') + '(%s))\n') %
-                       (name, self.codegen._string_to_colour(prop['lines_color'])))
+            fmt = '%s.SetGridLineColour(' + self.cn('wxColour') + '(%s))\n'
+            out.append( fmt % (name, self.codegen._string_to_colour(prop['lines_color']) ) )
         if prop.get('label_bg_color', False):
-            out.append(('%s.SetLabelBackgroundColour(' + self.cn('wxColour') + '(%s))\n') %
-                       (name, self.codegen._string_to_colour(prop['label_bg_color'])))
+            fmt = '%s.SetLabelBackgroundColour(' + self.cn('wxColour') + '(%s))\n'
+            out.append( fmt % (name, self.codegen._string_to_colour(prop['label_bg_color']) ) )
         sel_mode = prop.get('selection_mode')
         if sel_mode and sel_mode != 'wxGrid.wxGridSelectCells':
             sel_mode = sel_mode[9:] if compat.IS_PHOENIX else sel_mode[7:]
@@ -122,10 +113,10 @@ class PythonCodeGenerator(wcodegen.PythonWidgetCodeWriter):
         i = 0
         for label, size in columns:
             if _check_label(label, i):
-                out.append('%s.SetColLabelValue(%s, %s)\n' % (name, i, self.codegen.quote_str(label)))
+                out.append( '%s.SetColLabelValue(%s, %s)\n' % (name, i, self.codegen.quote_str(label)) )
             try:
                 if int(size) > 0:
-                    out.append('%s.SetColSize(%s, %s)\n' % (name, i, size))
+                    out.append( '%s.SetColSize(%s, %s)\n' % (name, i, size) )
             except ValueError: pass
             i += 1
 
