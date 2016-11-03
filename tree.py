@@ -671,9 +671,6 @@ class WidgetTree(wx.TreeCtrl, Tree):
             x,y = event.GetPosition()
             item = self._find_node_by_pos(x, y, toplevels_only=False)
             if item is not None:
-                path = self.get_selected_path(item.widget)
-                print("on_mouse_move", item, path)
-
                 if not common.adding_widget:
                     self.SetCursor(wx.STANDARD_CURSOR)
                 else:
