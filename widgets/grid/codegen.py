@@ -2,10 +2,11 @@
 Code generator functions for wxGrid objects
 
 @copyright: 2002-2007 Alberto Griggio
+@copyright: 2016 Dietmar Schwertberger
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
-import common
+import common, compat
 import wcodegen
 from wcodegen.taghandler import BaseCodeWriterTagHandler
 
@@ -115,7 +116,8 @@ class PythonCodeGenerator(wcodegen.PythonWidgetCodeWriter):
                        (name, self.codegen._string_to_colour(prop['label_bg_color'])))
         sel_mode = prop.get('selection_mode')
         if sel_mode and sel_mode != 'wxGrid.wxGridSelectCells':
-            out.append('%s.SetSelectionMode(%s)\n' % (name, self.cn('wxGrid') + sel_mode[6:]))
+            sel_mode = sel_mode[9:] if compat.IS_PHOENIX else sel_mode[7:]
+            out.append('%s.SetSelectionMode(%s)\n' % (name, self.cn('wxGrid') + "." + sel_mode))
 
         i = 0
         for label, size in columns:

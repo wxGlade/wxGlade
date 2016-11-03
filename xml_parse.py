@@ -525,14 +525,14 @@ class XmlWidgetObject(object):
                 else:
                     sizer = sizer.obj
 
+            pos = getattr(sizeritem, 'pos', None)
             if parent and hasattr(parent, 'virtual_sizer') and parent.virtual_sizer:
                 # virtual sizers don't use sizeritem objects around their items in XML
                 sizer = parent.virtual_sizer
                 sizer.node = parent.node
                 sizeritem = Sizeritem()
-                pos = sizer.get_itempos(attrs)
-            else:
-                pos = getattr(sizeritem, 'pos', None)
+                pos_ = sizer.get_itempos(attrs)
+                if pos_: pos = pos_  # when loading from a file, the names are set already and pos_ is not None
 
             # build the widget
             if pos is not None: pos = int(pos)
