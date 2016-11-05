@@ -443,7 +443,7 @@ class ToolsHandler(BaseXmlBuilderTagHandler):
 class EditToolBar(EditBase, PreviewMixin, EditStylesMixin, BitmapMixin):
     "Class to handle wxToolBar objects"
 
-    _PROPERTIES = ["bitmapsize", "margins", "packing", "separation", "tools", "preview"]
+    _PROPERTIES = ["bitmapsize", "margins", "packing", "separation", "style", "tools", "preview"]
     PROPERTIES = EditBase.PROPERTIES + _PROPERTIES + EditBase.EXTRA_PROPERTIES
 
     def __init__(self, name, klass, parent):
