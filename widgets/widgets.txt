@@ -12,7 +12,7 @@
 # ('#') preceded by a whitespace character for such cases.
 
 
-[Forms]
+[Windows]
 frame
 dialog
 panel
