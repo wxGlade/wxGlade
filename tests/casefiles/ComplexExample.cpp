@@ -217,8 +217,8 @@ void MyFrameGrid::set_properties()
 void MyFrameGrid::do_layout()
 {
     // begin wxGlade: MyFrameGrid::do_layout
-    wxBoxSizer* _szr_frame = new wxBoxSizer(wxVERTICAL);
-    wxFlexGridSizer* grid_sizer = new wxFlexGridSizer(3, 1, 0, 0);
+    _szr_frame = new wxBoxSizer(wxVERTICAL);
+    grid_sizer = new wxFlexGridSizer(3, 1, 0, 0);
     grid_sizer->Add(grid, 1, wxEXPAND, 0);
     grid_sizer->Add(static_line, 0, wxALL|wxEXPAND, 5);
     grid_sizer->Add(button, 0, wxALIGN_RIGHT|wxALL, 5);
