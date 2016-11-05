@@ -3,6 +3,7 @@ Code generator functions for wxFrame objects
 
 @copyright: 2002-2007 Alberto Griggio
 @copyright: 2014-2016 Carsten Grohmann
+@copyright: 2016 Dietmar Schwertberger
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
@@ -36,16 +37,15 @@ class PythonFrameCodeGenerator(wcodegen.PythonWidgetCodeWriter):
                 ret.append('self.Centre()\n')
         except (KeyError, ValueError):
             pass
+        if 'size' in obj.properties:
+            ret.append( self.codegen.generate_code_size(obj) )
         return ret
 
-# end of class PythonFrameCodeGenerator
 
 
 # property handlers for code generation
 class StatusFieldsHandler(BaseCodeWriterTagHandler):
-    """\
-    Handler for statusbar fields
-    """
+    "Handler for statusbar fields"
 
     def __init__(self):
         super(StatusFieldsHandler, self).__init__()
@@ -64,7 +64,6 @@ class StatusFieldsHandler(BaseCodeWriterTagHandler):
         char_data = self.get_char_data()
         self.labels.append(char_data)
 
-# end of class StatusFieldsHandler
 
 
 def xrc_frame_code_generator(obj):
@@ -138,6 +137,8 @@ class CppFrameCodeGenerator(wcodegen.CppWidgetCodeWriter):
                 ret.append('Centre();\n')
         except (KeyError, ValueError):
             pass
+        if 'size' in obj.properties:
+            ret.append( self.codegen.generate_code_size(obj) )
         return ret
 
 # end of class CppFrameCodeGenerator
