@@ -137,8 +137,8 @@ class Node(object):
                 name = "EditSpacer"
 
         elif name == "EditSplitterWindow":
-            if widget.orientation=="wxSPLIT_HORIZONTAL":
-                name = 'EditSplitterWindow-h'
+            if widget.orientation=="wxSPLIT_VERTICAL":
+                name = 'EditSplitterWindow-v'
 
         index = WidgetTree.images.get(name, -1)
         return index
