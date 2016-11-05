@@ -11,7 +11,7 @@ Application class to store properties of the application being created
 import os, random, re, logging, math
 import wx
 
-import common, config, misc, plugins, errors
+import common, config, misc, plugins, errors, compat
 import bugdialog
 import new_properties as np
 
@@ -375,10 +375,18 @@ class Application(np.PropertyOwner):
     def preview(self, widget, out_name=None):
         """Generate and instantiate preview widget.
         None will be returned in case of errors. The error details are written to the application log file."""
+        # some checks
+        if compat.IS_PHOENIX:
+            found = common.app_tree.find_widgets_by_classnames(widget.node, "EditPropertyGridManager")
+            if found:
+                error = ("Preview with PropertyGridManager controls is currently deactivated as it causes crashes "
+                         "with wxPython Phoenix")
+                wx.MessageBox( error, _('Error'), wx.OK | wx.CENTRE | wx.ICON_EXCLAMATION )
+                return
+
         if out_name is None:
             import warnings
             warnings.filterwarnings("ignore", "tempnam", RuntimeWarning, "application")
-            import compat
             if compat.PYTHON2:
                 out_name = os.tempnam(None, 'wxg') + '.py'
             else:
