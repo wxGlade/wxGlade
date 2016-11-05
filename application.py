@@ -210,10 +210,10 @@ class Application(np.PropertyOwner):
         if language == 'lisp':
             for_version = self.for_version
             if for_version == '3.0':
-                self.properties["for_version"].set('2.8')
                 wx.MessageBox( _('Generating Lisp code for wxWidgets version %s is not supported.\n'
                                  'Set version to "2.8" instead.') % self.for_version,
                                _("Warning"), wx.OK | wx.CENTRE | wx.ICON_EXCLAMATION )
+                self.properties["for_version"].set('2.8')
             self.properties["for_version"].set_blocked(True)
         else:
             self.properties["for_version"].set_blocked(False)
