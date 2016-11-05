@@ -1,0 +1,32 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><title>Configuring wxGlade</title><meta name="generator" content="DocBook XSL Stylesheets V1.79.1"><link rel="home" href="index.html" title="wxGlade manual"><link rel="up" href="running_wxglade.html" title="Chapter 3. Running wxGlade"><link rel="prev" href="invocation_cmdline.html" title="Command Line Invocation"><link rel="next" href="deprecated_features.html" title="Deprecated Features"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="navheader"><table width="100%" summary="Navigation header"><tr><th colspan="3" align="center">Configuring wxGlade</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="invocation_cmdline.html">Prev</a> </td><th width="60%" align="center">Chapter 3. Running wxGlade</th><td width="20%" align="right"> <a accesskey="n" href="deprecated_features.html">Next</a></td></tr></table><hr></div><div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="configure_wxglade"></a>Configuring wxGlade</h2></div></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="preferences"></a>Preferences Dialog</h3></div></div></div><p>You can access the Preferences Dialog with the menu <span class="guimenu">View</span> → <span class="guimenuitem">Preferences</span>. You can choose some decoration options, like whether
+        to show icons in menus or not. For example, you can modify the number
+        of buttons in the Main Palette. If you type a value of 15 or 30, you
+        get a long toolbar-like Main Palette. You can also choose the default
+        path where you save wxGlade files or generate source code.</p><p>Another useful option is to enable a default border of 3 around
+        some widgets. In many cases this can be useful to have set.</p><p>You need to restart wxGlade for changes to take effect.</p><div class="figure"><a name="idm139900191680864"></a><p class="title"><b>Figure 3.1. wxGlade preferences dialog</b></p><div class="figure-contents"><div class="mediaobject"><img src="preferences.png" width="531" alt="wxGlade preferences dialog"></div></div></div><br class="figure-break"></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="idm139900191678224"></a>Environment Variables</h3></div></div></div><p>wxGlade supports only one environment variable
+        <span class="quote">“<span class="quote">WXGLADE_CONFIG_PATH</span>”</span>.</p><p>If you want to store the whole configuration data inclusive user
+        generated templates and log files in a non-default directory, then
+        store the full path of the alternative directory in the environment
+        variable <span class="quote">“<span class="quote">WXGLADE_CONFIG_PATH</span>”</span> and start wxGlade with the
+        new environment.</p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="config_files"></a>Configuration Files</h3></div></div></div><p>wxGlade stores several internal information like configuration
+        settings and log files in an own directory. The location of this
+        directory varies between different operating systems. On Unix wxGlade
+        uses <code class="filename">~/.wxglade</code>. On Microsoft Windows the
+        information will be stored in
+        <code class="filename">C:/Users/&lt;username&gt;/AppData/Roaming</code>.</p><div class="note" style="margin-left: 0.5in; margin-right: 0.5in;"><h3 class="title">Note</h3><p>Some components of the path will be translated to the users'
+          language on Microsoft Windows automatically and transparently in the
+          Windows Explorer and other graphical applications. Other
+          applications show the original names. The translation behaviour
+          depends on the API used by the application developer.</p></div><p>The configuration file is a simple text file and contains user
+        settings. It's named <code class="filename">.wxgladerc</code> on Unix or
+        <code class="filename">wxglade.ini</code> on Microsoft Windows. Be careful with
+        manual changes.</p><p>The configuration directory contains also a list of recently
+        used files in <code class="filename">file_history.txt</code>.</p><p>wxGlade writes always a small error log file
+        <code class="filename">wxglade.log</code>. It's also stored inside this
+        directory. The file size is limited to 100 KB and wxGlade will keep at
+        most two log files <code class="filename">wxglade.log</code> and
+        <code class="filename">wxglade.log.1</code>. The roll over from
+        <code class="filename">wxglade.log</code> to <code class="filename">wxglade.log.1</code>
+        will occur if the file size limit is reached. An already existing file
+        <code class="filename">wxglade.log.1</code> will be deleted automatically. The
+        log file is an UTF-8 encoded text file.</p></div></div><div class="navfooter"><hr><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="invocation_cmdline.html">Prev</a> </td><td width="20%" align="center"><a accesskey="u" href="running_wxglade.html">Up</a></td><td width="40%" align="right"> <a accesskey="n" href="deprecated_features.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">Command Line Invocation </td><td width="20%" align="center"><a accesskey="h" href="index.html">Home</a></td><td width="40%" align="right" valign="top"> Deprecated Features</td></tr></table></div></body></html>

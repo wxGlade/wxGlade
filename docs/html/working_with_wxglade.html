@@ -1,0 +1,44 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><title>Chapter 4. Working with wxGlade</title><meta name="generator" content="DocBook XSL Stylesheets V1.79.1"><link rel="home" href="index.html" title="wxGlade manual"><link rel="up" href="index.html" title="wxGlade manual"><link rel="prev" href="troubleshooting.html" title="Troubleshooting and Error Handling"><link rel="next" href="next_steps.html" title="Next Steps"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="navheader"><table width="100%" summary="Navigation header"><tr><th colspan="3" align="center">Chapter 4. Working with wxGlade</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="troubleshooting.html">Prev</a> </td><th width="60%" align="center"> </th><td width="20%" align="right"> <a accesskey="n" href="next_steps.html">Next</a></td></tr></table><hr></div><div class="chapter"><div class="titlepage"><div><div><h1 class="title"><a name="working_with_wxglade"></a>Chapter 4. Working with wxGlade</h1></div></div></div><p>The program wxGlade is a tool for designing Graphical User
+    Interfaces (GUI). It is intended to be used with the wxWidgets framework
+    in all its flavors: C++, Lisp, Perl, Python and XRC.</p><p>You use a visual editor for creating forms, menus and toolbars with
+    the mouse.</p><p>Your design is saved in a <code class="filename">.wxg</code> file, which is
+    the wxGlade file format. Then you generate source code or XRC by using
+    visual tools or invoking wxGlade on the command line. You can also use
+    wxGlade in your makefile by generating source code only when the
+    <code class="filename">.wxg</code> file changes.</p><p>A <code class="filename">.wxg</code> file can contain multiple forms, panels,
+    menus and toolbars and generate either a single file containing all
+    classes or multiple files containing one class each.</p><p>wxGlade does not manage events, file inclusion, function names,
+    stubs or anything else but graphic interface code.</p><div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="idm139900191581312"></a>First Steps</h2></div></div></div><p>These sections provided you a short introduction into wxGlade.
+      Advanced topics like escaping special characters or naming convention
+      will be discussed in <a class="xref" href="next_steps.html" title="Next Steps">the section called “Next Steps”</a>.</p><p>The used abbreviations are described in <a class="xref" href="abbreviations.html" title="Appendix A. Glossary of Terms, Abbreviations, and Acronyms">Appendix A, <i>Glossary of Terms, Abbreviations, and Acronyms</i></a>.</p><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="idm139900191578736"></a>Quick Example</h3></div></div></div><p>We will design a simple form.</p><p>Start wxGlade by running the <span class="command"><strong>wxglade</strong></span> program
+        on Unix or the <span class="command"><strong>wxglade.pyw</strong></span> program on Microsoft
+        Windows.</p><p>You will see a Main Palette with several buttons, and a Tree
+        Window with an icon marked <span class="guiicon">Application</span>. A
+        Properties Window shows the properties of the Application. If you move
+        the mouse over a button in the Main Palette, a tooltip will display
+        its function.</p><p>To add a frame in the design window, from the Main Palette
+        choose the first button: <span class="quote">“<span class="quote"><span class="guibutton">Add a
+        frame</span></span>”</span> and choose <code class="classname">wxFrame</code> as
+        the base class.</p><p>Look at the tree window and see that two icons are generated
+        under the application icon, a frame icon and a sizer icon.</p><p>If you double click on the frame icon, the designer window
+        appears. Notice that the sizer is displayed as a set of gray hatched
+        boxes: they are the <span class="quote">“<span class="quote">slots</span>”</span> of the sizer where you will
+        place the widgets.</p><p>You place a widget on a sizer by selecting it on the Main
+        Palette, then click on an empty slot on the frame on the designer
+        window. Try adding a static text, a text control and a button.</p><p>If you want to add something else, add empty slots on the sizer
+        by right-clicking on the sizer on the Tree Window and selecting
+        <span class="quote">“<span class="quote"><span class="guilabel">Add slot</span></span>”</span>.</p><p>Play around, adding four or five widgets on the frame.</p><p>Now look at the properties form; there are three tabs. In the
+        <span class="quote">“<span class="quote"><span class="guilabel">Common</span></span>”</span> tab you can specify the
+        name, size and color of the widget.</p><p>In the <span class="quote">“<span class="quote"><span class="guilabel">Layout</span></span>”</span> tab you can
+        adjust borders and alignments and the
+        <span class="quote">“<span class="quote"><span class="guilabel">Widget</span></span>”</span> tab enables you to change
+        the properties of the widget.</p><p>You can select the properties of a widget by clicking on the
+        designer window or the corresponding icon on the tree window.</p><p>Try adjusting widgets with the properties form until you know
+        you have played enough.</p><p>Now let's generate the code.</p><p>Select the Application icon on the tree window and go to the
+        <span class="quote">“<span class="quote"><span class="guilabel">Properties</span></span>”</span> window.</p><p>Check <span class="quote">“<span class="quote"><span class="guilabel">Name</span></span>”</span> and
+        <span class="quote">“<span class="quote"><span class="guilabel">Class</span></span>”</span>, choose a
+        <span class="quote">“<span class="quote"><span class="guilabel">Top window</span></span>”</span>, check
+        <span class="quote">“<span class="quote"><span class="guilabel">Single file</span></span>”</span> and choose the
+        language and set the <span class="quote">“<span class="quote"><span class="guilabel">Output path</span></span>”</span>
+        by pushing the button for selecting a path and a filename.</p><p>Finally press the <span class="quote">“<span class="quote"><span class="guibutton">Generate
+        code</span></span>”</span> button, and the code is generated.</p><p>Compile and enjoy.</p></div></div></div><div class="navfooter"><hr><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="troubleshooting.html">Prev</a> </td><td width="20%" align="center"> </td><td width="40%" align="right"> <a accesskey="n" href="next_steps.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">Troubleshooting and Error Handling </td><td width="20%" align="center"><a accesskey="h" href="index.html">Home</a></td><td width="40%" align="right" valign="top"> Next Steps</td></tr></table></div></body></html>
