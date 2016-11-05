@@ -324,6 +324,20 @@ class Tree(object):
             if found is not None:
                 return found
 
+    def _find_widgets_by_classnames(self, node, classnames):
+        ret = []
+        if node.widget.__class__.__name__ in classnames:
+            ret.append(node.widget)
+        if node.children:
+            for c in node.children:
+                ret += self._find_widgets_by_classnames(c,classnames)
+        return ret
+
+    def find_widgets_by_classnames(self, node, classnames):
+        if isinstance(classnames, str):
+            classnames = set([classnames])
+        return self._find_widgets_by_classnames(node, classnames)
+
     def _prn(self, node, level):
         if isinstance(node, SlotNode):
             print("  "*level, "SLOT")

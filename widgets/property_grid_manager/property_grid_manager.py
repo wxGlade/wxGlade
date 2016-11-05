@@ -10,7 +10,7 @@ wxPropertyGridManager objects
 
 import wx
 from wx.propgrid import *
-import common
+import common, compat
 from edit_windows import ManagedBase, EditStylesMixin
 from tree import Node
 
@@ -25,12 +25,18 @@ class EditPropertyGridManager(ManagedBase, EditStylesMixin):
         EditStylesMixin.__init__(self)
 
     def create_widget(self):
-        self.widget = PropertyGridManager(self.parent.widget, self.id, (200, 200))
+        if compat.IS_CLASSIC:
+            self.widget = PropertyGridManager(self.parent.widget, self.id, (200, 200))
+            # following two events are to permit select grid from designer frame
+            self.widget.Bind(EVT_PG_SELECTED, self.on_set_focus)
+            # these are to show the popup menu on right click
+            self.widget.Bind(EVT_PG_RIGHT_CLICK, self.popup_menu)
+        else:
+            # workaround: this is not yet working on Phoenix
+            self.widget = wx.Panel(self.parent.widget, self.id, (200, 200))
+            self.widget.Bind(wx.EVT_LEFT_DOWN, self.on_set_focus)
+            self.widget.SetToolTip("PropertyGridManager crashes on Phoenix, so you see just a panel")
 
-        # following two events are to permit select grid from designer frame
-        self.widget.Bind(EVT_PG_SELECTED, self.on_set_focus)
-        # these are to show the popup menu on right click
-        self.widget.Bind(EVT_PG_RIGHT_CLICK, self.popup_menu)
 
     def get_property_handler(self, name):
         return ManagedBase.get_property_handler(self, name)
