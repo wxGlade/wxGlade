@@ -237,7 +237,7 @@ class Tree(object):
     def remove(self, node=None):
         if node is not None:
             self.clear_name_rec(node)
-            if node.parent is self.root and node.widget._is_toplevel:
+            if node.parent is self.root and getattr(node.widget, "_is_toplevel", False):
                 self.app.remove_top_window(node.widget.name)
             node.remove()
         elif self.root.children:
@@ -577,11 +577,7 @@ class WidgetTree(wx.TreeCtrl, Tree):
         if node is not None:
             if delete:
                 if self.cur_widget:
-                    try:
-                        self.cur_widget = None
-                        self.SelectItem(node.parent.item)
-                    except:
-                        self.SelectItem(self.GetRootItem())
+                    misc.set_focused_widget(node.parent and node.parent.widget or None)
                 self.Delete(node.item)
         else:
             wx.TreeCtrl.Destroy(self)

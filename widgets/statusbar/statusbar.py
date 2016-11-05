@@ -199,10 +199,8 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
 
 
 def initialize():
-    """\
-    initialization function for the module: returns a wxBitmapButton to be
-    added to the main palette.
-    """
+    "initialization function for the module: returns a wxBitmapButton to be added to the main palette."
     common.widgets_from_xml['EditStatusBar'] = xml_builder
     common.widgets['EditStatusBar'] = builder
-    return common.make_object_button('EditStatusBar', 'statusbar.xpm')
+    #return common.make_object_button('EditStatusBar', 'statusbar.xpm')
+    return []  # no standalone status bar
