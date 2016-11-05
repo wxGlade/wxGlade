@@ -9,7 +9,7 @@ wxFrame and wxStatusBar objects
 
 import wx
 import common
-from tree import Node
+from tree import Node, WidgetTree
 from wcodegen.taghandler import BaseXmlBuilderTagHandler
 import new_properties as np
 from edit_windows import EditBase, EditStylesMixin
@@ -59,7 +59,7 @@ class EditStatusBar(EditBase, EditStylesMixin):
     _hidden_frame = None
     update_widget_style = False
 
-    _PROPERTIES = ["Widget", "fields"]
+    _PROPERTIES = ["Widget", "style", "fields"]
     PROPERTIES = EditBase.PROPERTIES + _PROPERTIES + EditBase.EXTRA_PROPERTIES
 
     def __init__(self, name, klass, parent):
@@ -203,4 +203,7 @@ def initialize():
     common.widgets_from_xml['EditStatusBar'] = xml_builder
     common.widgets['EditStatusBar'] = builder
     #return common.make_object_button('EditStatusBar', 'statusbar.xpm')
-    return []  # no standalone status bar
+    # no standalone status bar any more
+    import config, os
+    WidgetTree.images['EditStatusBar'] = os.path.join(config.icons_path, 'statusbar.xpm')
+    return []
