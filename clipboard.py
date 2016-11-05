@@ -287,9 +287,12 @@ class FileDropTarget(wx.FileDropTarget):
     def OnDropFiles(self, x, y, filenames):
         if len(filenames) > 1:
             wx.MessageBox( _("Please only drop one file at a time"), "wxGlade", wx.ICON_ERROR )
+            return False
         elif filenames:
             path = filenames[0]
             if os.path.exists(path) and self.parent.ask_save():
                 self.parent._open_app(path)
                 self.parent.cur_dir = os.path.dirname(path)
+            return True
+        return False
 
