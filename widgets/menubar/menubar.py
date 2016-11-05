@@ -528,8 +528,15 @@ class MenuProperty(np.Property):
         sizer.Add(self.edit_btn, 0, wx.EXPAND|wx.ALIGN_CENTER|wx.TOP|wx.BOTTOM, 4)
         self.edit_btn.Bind(wx.EVT_BUTTON, self.edit_menus)
 
-    def edit_menus(self, event):
-        dialog = MenuItemDialog( self.edit_btn.GetTopLevelParent(), self.owner, items=self.value )
+    def edit_menus(self, event=None):
+        if hasattr(self, "edit_btn"):
+            parent = self.edit_btn.GetTopLevelParent()
+        elif self.owner.widget:
+            parent = self.owner.widget.GetTopLevelParent()
+        else:
+            parent = None
+        dialog = MenuItemDialog( parent, self.owner, items=self.value )
+        if not self.value: dialog.add_menu_item(None)
         if dialog.ShowModal() == wx.ID_OK:
             self.on_value_edited(dialog.get_menus())
         dialog.Destroy()
@@ -721,13 +728,17 @@ class EditMenuBar(EditBase, PreviewMixin):
     def _create_popup_menu(self, widget=None):
         if widget is None: widget = self.widget
         menu = misc.wxGladePopupMenu(self.name)
-        item = misc.append_menu_item(menu, REMOVE_ID, _('Remove MenuBar\tDel'), wx.ART_DELETE)
+        item = misc.append_menu_item(menu, -1, _('Remove MenuBar\tDel'), wx.ART_DELETE)
         misc.bind_menu_item_after(widget, item, self.remove)
 
-        item = misc.append_menu_item(menu, HIDE_ID, _('Hide'))
+        item = misc.append_menu_item(menu, -1, _('Edit menus ...'))
+        misc.bind_menu_item_after(widget, item, self.properties["menus"].edit_menus)
+
+        item = misc.append_menu_item(menu, -1, _('Hide'))
         misc.bind_menu_item_after(widget, item, self.hide_widget)
 
         self._rmenu = (menu, widget)
+        return menu
 
     def hide_widget(self, *args):
         self._destroy_popup_menu()
@@ -735,7 +746,6 @@ class EditMenuBar(EditBase, PreviewMixin):
             self.widget.Hide()
             common.app_tree.expand(self.node, False)
             common.app_tree.select_item(self.node.parent)
-            common.app_tree.app.show_properties()
 
     def set_name(self, name):
         EditBase.set_name(self, name)
@@ -746,6 +756,11 @@ class EditMenuBar(EditBase, PreviewMixin):
         if name == 'menus':
             return MenuHandler(self)
         return None
+
+    def properties_changed(self, modified):
+        if not modified or "menus" in modified:
+            self.set_menus()
+        EditBase.properties_changed(self, modified)
 
     def check_compatibility(self, widget, typename=None, report=False):
         return False

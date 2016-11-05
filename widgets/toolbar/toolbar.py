@@ -585,15 +585,10 @@ class EditToolBar(EditBase, PreviewMixin, EditStylesMixin, BitmapMixin):
             return  # do nothing in this case
         super(EditToolBar, self).popup_menu(event, pos)
 
-    def _create_popup_menu(self):
-        REMOVE_ID = wx.NewId()
-        HIDE_ID = wx.NewId()
-        self._rmenu = misc.wxGladePopupMenu(self.name)
-        misc.append_menu_item(self._rmenu, REMOVE_ID, _('Remove ToolBar\tDel'), wx.ART_DELETE)
-        misc.append_menu_item(self._rmenu, HIDE_ID, _('Hide'))
-
-        wx.EVT_MENU(self.pwidget, REMOVE_ID, misc.exec_after(self.remove))
-        wx.EVT_MENU(self.pwidget, HIDE_ID, misc.exec_after(self.hide_widget))
+    def _create_popup_menu(self, widget):
+        menu = misc.wxGladePopupMenu(self.name)
+        i = misc.append_menu_item(menu, -1, _('Remove ToolBar\tDel'), wx.ART_DELETE)
+        misc.bind_menu_item_after(widget, i, self.remove)
 
         self._rmenu = (menu, widget) # store for destryoing and unbinding
         return menu
@@ -603,7 +598,7 @@ class EditToolBar(EditBase, PreviewMixin, EditStylesMixin, BitmapMixin):
             self.pwidget.Hide()
             common.app_tree.expand(self.node, False)
             common.app_tree.select_item(self.node.parent)
-            common.app_tree.app.show_properties()
+            #common.app_tree.app.show_properties()
 
     def get_property_handler(self, name):
         if name == 'tools':
@@ -654,7 +649,7 @@ def builder(parent, sizer, pos):
     tb = EditToolBar(name, klass, parent)
     tb.node = Node(tb)
     common.app_tree.add(tb.node)
-    if parent.widget: tb.create()
+    if parent and parent.widget: tb.create()
 
 
 

@@ -168,7 +168,7 @@ def get_data_object(widget):
     # make a data object
     if isinstance(widget, edit_sizers.Sizer):
         do = wx.CustomDataObject(sizer_data_format)
-    elif widget._is_toplevel:
+    elif getattr(widget, "_is_toplevel", False):
         do = wx.CustomDataObject(window_data_format)
     else:
         do = wx.CustomDataObject(widget_data_format)
