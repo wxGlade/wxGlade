@@ -51,14 +51,7 @@ class BaseSizerBuilder(object):
         raise NotImplementedError
 
     def _prepare_tmpl_content(self, obj):
-        """\
-        Prepare template variables
-
-        @param obj: Instance of L{xml_parse.CodeObject}
-
-        @rtype: dict
-        @see: L{get_code()}
-        """
+        """Prepare template variables"""
         self.tmpl_dict.clear()
         self.tmpl_dict['klass'] = self.codegen.cn(self.klass)
         self.tmpl_dict['wxIDANY'] = self.codegen.cn('wxID_ANY')
