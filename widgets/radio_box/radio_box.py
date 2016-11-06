@@ -73,7 +73,7 @@ class EditRadioBox(ManagedBase):
             else:
                 cols = 0
                 rows = self.dimension
-            sizer = wx.GridSizer(rows, cols, 0)
+            sizer = wx.GridSizer(rows, cols, 0, 0)
             if wx.Platform == '__WXGTK__':
                 # we need to reorder self.buttons 'cos wxRadioBox lays out its
                 # elements by colums, while wxGridSizer by rows
@@ -166,12 +166,6 @@ class EditRadioBox(ManagedBase):
             self.properties['selection'].set_range(0, max_selection)
             if self.selection>max_selection:
                 set_selection = True
-            if self.widget:
-                # update widget
-                self.widget.Clear()
-                for c in choices: self.widget.Append(c[0])
-                if not self.properties['size'].is_active():
-                    self.sizer.set_item(self.pos, size=self.widget.GetBestSize())
 
         if not modified or "selection" in modified or set_selection:
             if self.selection>max_selection:
