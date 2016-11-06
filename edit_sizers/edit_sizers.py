@@ -1806,12 +1806,7 @@ class _GrowableDialog(wx.Dialog):
         return ",".join(ret)
 
     def set_choices(self, choices, values):
-        if wx.Platform != '__WXGTK__':
-            self.choices.Set(choices)
-        else:
-            self.choices.Clear()
-            for v in values:
-                self.choices.Append(v)
+        self.choices.Set(choices)
         self._choices = choices
         for i,value in enumerate(choices):
             if value in values: self.choices.Check(i)
