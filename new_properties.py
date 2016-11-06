@@ -1443,7 +1443,7 @@ class FontProperty(DialogProperty):
         return (int(groups[0]), groups[1], groups[2], groups[3], int(groups[4]), groups[5])
 
     def _set_converter(self, value):
-        if isinstance(value, basestring): value = self._convert_from_text(value)
+        if isinstance(value, compat.basestring): value = self._convert_from_text(value)
         return value
 
     def _value_to_str(self, value):
