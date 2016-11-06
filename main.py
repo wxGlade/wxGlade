@@ -1059,7 +1059,7 @@ class wxGlade(wx.App):
 
         (exc_type, exc_value, exc_tb) = sys.exc_info()
         bugdialog.ShowEI(exc_type, exc_value, exc_tb, msg)
-        sys.exc_clear()
+        if compat.PYTHON2: sys.exc_clear()
 
 
 
