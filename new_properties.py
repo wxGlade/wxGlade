@@ -511,7 +511,7 @@ class _CheckListProperty(Property):
                 for name, flag_value in zip(self._names, self._values):
                     if flag_value is not None and value & flag_value == flag_value:
                         new_value.add(name)
-        elif isinstance(value, set):
+        elif isinstance(value, (set,tuple,list)):
             new_value = set(value)  # avoid side effects
         return new_value
 
