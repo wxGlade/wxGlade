@@ -122,48 +122,7 @@ wxGlade home page: <http://wxglade.sourceforge.net/>""") )
     # Make an absolute version of path.
     # According to the invoking dir of wxGlade (which can be different
     # from '.' if it is invoked from a shell script).
-    #args = [u'F:\\PythonInstallation\\wxGladeTest\\test.wxg']
-    # XXX cleanup
-    if not args:
-        args = [u"D:\\Python\\Sources35\\wxGladeTests\\Test_release_072_v2-TextCtrls.wxg"]
-        args = [u"D:\\Python\\Sources35\\wxGladeTests\\Test_release_072_v2-TextCtrls_font.wxg"]
-        args = [u"D:\\Python\\Sources35\\wxGladeTests\\Test_release_072_v2-TextCtrls_font_tabs.wxg"]
-        args = [u"D:\\Python\\Sources35\\wxglade_dev_temp\\saved.wxg"]
-        #args = [u"D:\\Python\\Sources35\\wxGladeTests\\Test_release_072_v3-SingleSizer.wxg"]
-        args = [os.getcwd() + u"\\tests\\casefiles\\AllWidgets_28.wxg"]
-        #args = [os.getcwd() + u"\\tests\\casefiles\\AllWidgets_30.wxg"]
-        #args = [os.getcwd() + u"\\tests\\casefiles\\AllWidgets_28_01.wxg"] # crash on creating preview
-        #args = [os.getcwd() + u"\\tests\\casefiles\\AllWidgets_28_02.wxg"] # crash on closing preview
-        ##args = [os.getcwd() + u"\\tests\\casefiles\\AllWidgets_28_03.wxg"] # OK, pages up to list control
-        ##args = [os.getcwd() + u"\\tests\\casefiles\\AllWidgets_28_02-2.wxg"] # pages after list control -> crash
-        #args = [os.getcwd() + u"\\tests\\casefiles\\AllWidgets_28_02-2.wxg"] # bottom buttons removed
-        #args = [os.getcwd() + u"\\tests\\casefiles\\AllWidgets_28_02-3.wxg"] # splitters and spin control removed -> crash on close with 2.7, OK 3.5
-        #args = [os.getcwd() + u"\\tests\\casefiles\\AllWidgets_28_02-4.wxg"]   # only slider and spin button left -> OK
-        #args = [os.getcwd() + u"\\tests\\casefiles\\AllWidgets_28_02-5.wxg"]  # radio box and button instead -> 
-        #args = [os.getcwd() + u"\\tests\\casefiles\\AllWidgets_28_02-6.wxg"]  # radio box tab only -> crash
-        #args = [os.getcwd() + u"\\tests\\casefiles\\AllWidgets_28_02-7.wxg"]  # radio_box_empty_1 only -> crash on close
-        #args = [os.getcwd() + u"\\tests\\casefiles\\AllWidgets_28_02-7-1.wxg"]  # radio box empty 1 on frame, not notebook -> crash on close
-        
-        #args = [u"D:\\Python\\Sources35\\wxGladeTests\\AllWidgets_28_05.wxg"]
-        #args = [u"D:\\Python\\Sources35\\wxGladeTests\\AllWidgets_28_without_bitmaps.wxg"]
-        #args = ["C:\\Users\\dietmar\\text_ctrls_with_slot4.wxg"]
-        #args = ["C:\\Users\\dietmar\\4slots_1.wxg"]
-        #args = ["C:\\Users\\dietmar\\test2.wxg"]
-        #args = ["C:\\Users\\dietmar\\AllWidgets_28min.wxg"]
-        ##args = ["C:\\Users\\dietmar\\slots_test.wxg"]
-        ##args = ["C:\\Users\\dietmar\\single_tab.wxg"]
-        #args = ["C:\\Users\\dietmar\\grid_test.wxg"]
-        #args = ["C:\\Users\\dietmar\\sizer_min.wxg"]
-        #args = ["C:\\Users\\dietmar\\nested_sizers.wxg"]
-        #args = ["C:\\Users\\dietmar\\test_splitter.wxg"]
-        #args = ["C:\\Users\\dietmar\\test_splitter_copy.wxg"]
-        #args = ["C:\\Users\\dietmar\\class_names.wxg"]
-        #args = ["D:\\Python\\Sources35\\wxglade_dev\\tests\\casefiles\\ComplexExample.wxg"]
-        #args = ["C:\\Users\\dietmar\\test_splitter.wxg"]
-        #args = [u"D:\\Python\\Sources35\\wxGladeTests\\Calculator2.wxg"]
-        #args = [u"D:\\Python\\Sources35\\wxGladeTests\\Calculator3.wxg"]
-        args = [u"D:\\Python\\Sources35\\wxGladeTests\\Calculator4.wxg"]
-        #args = []
+
     if len(args) == 1:
         filename = args[0]
         if not os.path.isabs(filename):
