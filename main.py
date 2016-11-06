@@ -559,7 +559,7 @@ class wxGladeFrame(wx.Frame):
             ok = wx.MessageBox(_("Save changes to the current app?"),
                                _("Confirm"), wx.YES_NO|wx.CANCEL|wx.CENTRE|wx.ICON_QUESTION)
             if ok == wx.YES:
-                self.save_app(None)
+                self.save_app()
             return ok != wx.CANCEL
         return True
 
