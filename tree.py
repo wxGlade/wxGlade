@@ -897,7 +897,7 @@ class WidgetTree(wx.TreeCtrl, Tree):
         itemok = None
         parent = None
         pos = None
-        while item.Ok() and index < len(path):
+        while item.IsOk() and index < len(path):
             widget = self.GetPyData(item).widget
             name = path[index]
             if index == 0 and isinstance(name, tuple):

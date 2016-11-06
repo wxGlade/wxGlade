@@ -406,8 +406,17 @@ class wxGladeFrame(wx.Frame):
                 common.remove_autosaved(filename)
         else:
             common.remove_autosaved(filename)
+
+        if filename == common.app_tree.app.filename:
+            # if we are re-loading the file, go the the previous position
+            path = common.app_tree.get_selected_path()
+        else:
+            path = None
+
         self._open_app(filename)
         self.cur_dir = os.path.dirname(filename)
+        if path is not None:
+            common.app_tree.select_path(path)  # re-loaded file -> go to previous position
 
     # GUI elements: property frame, tree frame #########################################################################
     def create_property_panel(self, frame_style, icon, main_geometry):
