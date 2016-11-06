@@ -689,7 +689,7 @@ class SizerBase(Sizer, np.PropertyOwner):
         self.id = wx.NewId()
 
         # initialise instance properties
-        self.name         = np.TextProperty(name)
+        self.name         = np.NameProperty(name)
         self.klass        = np.Property(klass, name="class")             # class and orient are hidden
         self.orient       = OrientProperty(orient)                       # they will be set from the class_orient property
         self.class_orient = ClassOrientProperty(self.get_class_orient()) # this will set the class and orient properties
@@ -776,14 +776,15 @@ class SizerBase(Sizer, np.PropertyOwner):
             value = self.class_orient
             if misc.focused_widget is self: misc.set_focused_widget(None)
             wx.CallAfter(change_sizer, self, value)
-        if (not modified or "flag" in modified or "option" in modified or "border" in modified) and self.widget:
+        if (not modified or "flag" in modified or "option" in modified or "border" in modified):
             if not self.toplevel and self.sizer is not None:
                 if "border" in modified and self.border:
                     # enable border flags if not yet done
                     p = self.properties["flag"]
                     if not p.value_set.intersection(p.FLAG_DESCRIPTION["Border"]):
                         p.add("wxALL")
-                self.sizer.set_item(self.pos, self.proportion, self.flag, self.border)
+                if self.widget:
+                    self.sizer.set_item(self.pos, self.proportion, self.flag, self.border)
         np.PropertyOwner.properties_changed(self, modified)
 
     def check_drop_compatibility(self):
