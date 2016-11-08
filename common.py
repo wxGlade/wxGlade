@@ -415,6 +415,8 @@ def save_file(filename, content, which='wxg'):
             os.makedirs(directory)
 
         outfile = open(filename, 'wb')
+        if sys.platform.startswith("win"):
+            content = content.replace(b"\n", b"\r\n")
         outfile.write(content)
         outfile.close()
     finally:
