@@ -861,7 +861,8 @@ bool MyApp::OnInit()
         style = prop.get("style", None)
         if style:
             style = mycn_f(style)
-            sign_inst = sign_inst.replace('style', '%s' % style)
+            if style:
+                sign_inst = sign_inst.replace('style', '%s' % style)
 
         # constructor
         if is_new:
