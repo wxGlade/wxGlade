@@ -78,6 +78,7 @@ void Frame194::do_layout()
     sizer_1->Add(check_list_box_extended, 1, wxALL|wxEXPAND, 5);
     SetSizer(sizer_1);
     Layout();
+    SetSize(wxSize(800, 600));
     // end wxGlade
 }
 

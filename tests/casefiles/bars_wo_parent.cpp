@@ -97,6 +97,7 @@ void MyFrame::do_layout()
     sizer_1->Add(label_1, 1, wxALIGN_CENTER|wxALL|wxEXPAND, 0);
     SetSizer(sizer_1);
     Layout();
+    SetSize(wxSize(200, 200));
     // end wxGlade
 }
 
