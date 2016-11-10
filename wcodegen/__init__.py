@@ -270,6 +270,7 @@ class PerlMixin(BaseLanguageMixin):
            name.startswith('wxGA_') or \
            name.startswith('wxICON_') or \
            name.startswith('wxID_') or \
+           name.startswith('wxITEM_') or \
            name.startswith('wxK_') or \
            name.startswith('wxLANGUAGE_') or \
            name.startswith('wxLB_') or \
