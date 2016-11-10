@@ -56,6 +56,7 @@ void Frame192::do_layout()
     sizer_as_attr->AddGrowableRow(0);
     sizer_as_attr->AddGrowableCol(0);
     Layout();
+    SetSize(wxSize(300, 300));
     // end wxGlade
 }
 

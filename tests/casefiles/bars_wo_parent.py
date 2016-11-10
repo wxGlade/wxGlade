@@ -79,6 +79,7 @@ class MyFrame(wx.Frame):
         sizer_1.Add(self.label_1, 1, wx.ALIGN_CENTER | wx.ALL | wx.EXPAND, 0)
         self.SetSizer(sizer_1)
         self.Layout()
+        self.SetSize((200, 200))
         # end wxGlade
 
 # end of class MyFrame

@@ -61,6 +61,7 @@ void Frame186::do_layout()
     sizer_1->Add(sizer_2, 1, wxEXPAND, 0);
     SetSizer(sizer_1);
     Layout();
+    SetSize(wxSize(300, 300));
     // end wxGlade
 }
 
