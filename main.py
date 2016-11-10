@@ -32,6 +32,8 @@ class wxGladePropertyPanel(wx.Frame):
         self.current_widget = None        # instance currently being edited
         self.next_widget = None           # the next one, will only be edited after a small delay
 
+        self.pagenames = None
+
         self.notebook = wx.Notebook(self, -1)
         self.Bind(wx.EVT_CLOSE, self.hide_frame)
 
@@ -87,7 +89,7 @@ class wxGladePropertyPanel(wx.Frame):
 
         self.pagenames = pagenames = []
         self.sizers = []
-        current_page = current_sizer = None
+        current_page = current_sizer = current_pagename = None
         property_instance = None
         for prop in edit_widget.PROPERTIES:
             if prop[0].isupper():
@@ -113,11 +115,13 @@ class wxGladePropertyPanel(wx.Frame):
             if current_pagename=="Layout" and not edit_widget._has_layout: continue
 
             # a property or None
-            property_instance = edit_widget.properties.get(prop)
-            if property_instance is not None:
+            property_instance_ = edit_widget.properties.get(prop)
+            if property_instance_ is not None:
+                property_instance = property_instance_
                 property_instance.create_editor(current_page, current_sizer)
 
-        self.end_page(current_page, current_sizer, current_pagename)
+        if current_page is not None:
+            self.end_page(current_page, current_sizer, current_pagename)
 
         if select_page and select_page in pagenames:
             index = pagenames.index(select_page)
@@ -190,7 +194,7 @@ class wxGladeFrame(wx.Frame):
         self.SetSizer(sizer)
         sizer.Fit(self)
 
-        wx.EVT_CLOSE(self, self.cleanup)
+        self.Bind(wx.EVT_CLOSE, self.cleanup)
 
         # the style for the property and tree frames
         frame_style = wx.DEFAULT_FRAME_STYLE
@@ -261,61 +265,92 @@ class wxGladeFrame(wx.Frame):
     # menu and actions #################################################################################################
     def create_menu(self, parent):
         menu_bar = wx.MenuBar()
-        file_menu = wx.Menu(style=wx.MENU_TEAROFF)
-        view_menu = wx.Menu(style=wx.MENU_TEAROFF)
-        help_menu = wx.Menu(style=wx.MENU_TEAROFF)
+
         compat.wx_ToolTip_SetDelay(1000)
         compat.wx_ToolTip_SetAutoPop(30000)
 
         append_menu_item = misc.append_menu_item
-        self.TREE_ID = TREE_ID = wx.NewId()
-        append_menu_item(view_menu, TREE_ID, _("Show &Tree\tF2"))
-        self.PROPS_ID = PROPS_ID = wx.NewId()
-        self.RAISE_ID = RAISE_ID = wx.NewId()
-        append_menu_item(view_menu, PROPS_ID, _("Show &Properties\tF3"))
-        append_menu_item(view_menu, RAISE_ID, _("&Raise All\tF4"))
-        NEW_ID = wx.NewId()
-        append_menu_item(file_menu, NEW_ID, _("&New\tCtrl+N"), wx.ART_NEW)
-        NEW_FROM_TEMPLATE_ID = wx.NewId()
-        append_menu_item(file_menu, NEW_FROM_TEMPLATE_ID, _("New from &Template...\tShift+Ctrl+N"))
-        OPEN_ID = wx.NewId()
-        append_menu_item(file_menu, OPEN_ID, _("&Open...\tCtrl+O"), wx.ART_FILE_OPEN)
-        SAVE_ID = wx.NewId()
-        append_menu_item(file_menu, SAVE_ID, _("&Save\tCtrl+S"), wx.ART_FILE_SAVE)
-        SAVE_AS_ID = wx.NewId()
-        append_menu_item(file_menu, SAVE_AS_ID, _("Save As...\tShift+Ctrl+S"), wx.ART_FILE_SAVE_AS)
-        SAVE_TEMPLATE_ID = wx.NewId()
-        append_menu_item(file_menu, SAVE_TEMPLATE_ID, _("Save As Template..."))
-        file_menu.AppendSeparator()
 
-        append_menu_item(file_menu, wx.ID_REFRESH, _("&Refresh Preview\tF5"))
+        # File menu
+        file_menu = wx.Menu(style=wx.MENU_TEAROFF)
 
-        GENERATE_CODE_ID = wx.NewId()
-        append_menu_item(file_menu, GENERATE_CODE_ID, _("&Generate Code\tCtrl+G"), wx.ART_EXECUTABLE_FILE)
+        NEW = append_menu_item(file_menu, -1, _("&New\tCtrl+N"), wx.ART_NEW)
+        misc.bind_menu_item(self, NEW, self.new_app)
 
-        file_menu.AppendSeparator()
-        IMPORT_ID = wx.NewId()
-        append_menu_item(file_menu, IMPORT_ID, _("&Import from XRC..."))
+        item = append_menu_item(file_menu, -1, _("New from &Template...\tShift+Ctrl+N"))
+        misc.bind_menu_item(self, item, self.new_app_from_template)
 
-        EXIT_ID = wx.NewId()
-        file_menu.AppendSeparator()
-        append_menu_item(file_menu, EXIT_ID, _('E&xit\tCtrl+Q'), wx.ART_QUIT)
-        PREFS_ID = wx.ID_PREFERENCES
-        view_menu.AppendSeparator()
-        MANAGE_TEMPLATES_ID = wx.NewId()
-        append_menu_item(view_menu, MANAGE_TEMPLATES_ID, _('Template Manager...'))
-        view_menu.AppendSeparator()
-        append_menu_item(view_menu, PREFS_ID, _('Preferences...'))
+        OPEN = append_menu_item(file_menu, -1, _("&Open...\tCtrl+O"), wx.ART_FILE_OPEN)
+        misc.bind_menu_item(self, OPEN, self.open_app)
+
+        SAVE = append_menu_item(file_menu, -1, _("&Save\tCtrl+S"), wx.ART_FILE_SAVE)
+        misc.bind_menu_item(self, SAVE, self.save_app)
+
+        SAVE_AS = append_menu_item(file_menu, -1, _("Save As...\tShift+Ctrl+S"), wx.ART_FILE_SAVE_AS)
+        misc.bind_menu_item(self, SAVE_AS, self.save_app_as)
+
+        item = append_menu_item(file_menu, -1, _("Save As Template..."))
+        misc.bind_menu_item(self, item, self.save_app_as_template)
+
+        file_menu.AppendSeparator() # ----------------------------------------------------------------------------------
+
+        item = append_menu_item(file_menu, wx.ID_REFRESH, _("&Refresh Preview\tF5"))
+        misc.bind_menu_item(self, item, self.preview)
+
+        GENERATE_CODE = append_menu_item(file_menu, -1, _("&Generate Code\tCtrl+G"), wx.ART_EXECUTABLE_FILE)
+        def generate_code(event):
+            common.app_tree.app.generate_code()
+        misc.bind_menu_item(self, GENERATE_CODE, generate_code)
+
+        file_menu.AppendSeparator() # ----------------------------------------------------------------------------------
+
+        item = append_menu_item(file_menu, -1, _("&Import from XRC..."))
+        misc.bind_menu_item(self, item, self.import_xrc)
+
+        file_menu.AppendSeparator() # ----------------------------------------------------------------------------------
+
+        EXIT = append_menu_item(file_menu, -1, _('E&xit\tCtrl+Q'), wx.ART_QUIT)
+        misc.bind_menu_item(self, EXIT, self.Close)
+
         menu_bar.Append(file_menu, _("&File"))
+
+        # View menu
+        view_menu = wx.Menu(style=wx.MENU_TEAROFF)
+
+        TREE = append_menu_item(view_menu, -1, _("Show &Tree\tF2"))
+        misc.bind_menu_item(self, TREE, self.show_tree)
+
+        PROPS = append_menu_item(view_menu, -1, _("Show &Properties\tF3"))
+        misc.bind_menu_item(self, PROPS, self.show_props_window)
+
+        RAISE = append_menu_item(view_menu, -1, _("&Raise All\tF4"))
+        misc.bind_menu_item(self, RAISE, self.raise_all)
+
+        view_menu.AppendSeparator() # ----------------------------------------------------------------------------------
+
+        item = append_menu_item(view_menu, -1, _('Template Manager...'))
+        misc.bind_menu_item(self, item, self.manage_templates)
+
+        view_menu.AppendSeparator() # ----------------------------------------------------------------------------------
+
+        item = append_menu_item(view_menu, wx.ID_PREFERENCES, _('Preferences...'))
+        misc.bind_menu_item(self, item, self.edit_preferences)
+
         menu_bar.Append(view_menu, _("&View"))
 
-        MANUAL_ID = wx.NewId()
-        append_menu_item(help_menu, MANUAL_ID, _('Manual\tF1'), wx.ART_HELP)
-        TUTORIAL_ID = wx.NewId()
-        append_menu_item(help_menu, TUTORIAL_ID, _('Tutorial'))
-        help_menu.AppendSeparator()
-        ABOUT_ID = wx.ID_ABOUT
-        append_menu_item(help_menu, ABOUT_ID, _('About'))
+        # Help menu
+        help_menu = wx.Menu(style=wx.MENU_TEAROFF)
+
+        MANUAL = append_menu_item(help_menu, -1, _('Manual\tF1'), wx.ART_HELP)
+        misc.bind_menu_item(self, MANUAL, self.show_manual)
+        item = append_menu_item(help_menu, -1, _('Tutorial'))
+        misc.bind_menu_item(self, item, self.show_tutorial)
+
+        help_menu.AppendSeparator() # ----------------------------------------------------------------------------------
+
+        item = append_menu_item(help_menu, wx.ID_ABOUT, _('About'))
+        misc.bind_menu_item(self, item, self.show_about_box)
+
         menu_bar.Append(help_menu, _('&Help'))
 
         parent.SetMenuBar(menu_bar)
@@ -334,47 +369,21 @@ class wxGladeFrame(wx.Frame):
         for path in files:
             self.file_history.AddFileToHistory(path.strip())
 
-        wx.EVT_MENU_RANGE(self, wx.ID_FILE1, wx.ID_FILE9, self.open_from_history)
-
-        wx.EVT_MENU(self, TREE_ID, self.show_tree)
-        wx.EVT_MENU(self, PROPS_ID, self.show_props_window)
-        wx.EVT_MENU(self, RAISE_ID, self.raise_all)
-        wx.EVT_MENU(self, NEW_ID, self.new_app)
-        wx.EVT_MENU(self, NEW_FROM_TEMPLATE_ID, self.new_app_from_template)
-        wx.EVT_MENU(self, OPEN_ID, self.open_app)
-        wx.EVT_MENU(self, SAVE_ID, self.save_app)
-        wx.EVT_MENU(self, SAVE_AS_ID, self.save_app_as)
-        wx.EVT_MENU(self, SAVE_TEMPLATE_ID, self.save_app_as_template)
-
-        def generate_code(event):
-            common.app_tree.app.generate_code()
-        wx.EVT_MENU(self, GENERATE_CODE_ID, generate_code)
-        wx.EVT_MENU(self, EXIT_ID, lambda e: self.Close())
-        wx.EVT_MENU(self, MANUAL_ID, self.show_manual)
-        wx.EVT_MENU(self, TUTORIAL_ID, self.show_tutorial)
-        wx.EVT_MENU(self, ABOUT_ID, self.show_about_box)
-        wx.EVT_MENU(self, PREFS_ID, self.edit_preferences)
-        wx.EVT_MENU(self, MANAGE_TEMPLATES_ID, self.manage_templates)
-        wx.EVT_MENU(self, IMPORT_ID, self.import_xrc)
-        wx.EVT_MENU(self, wx.ID_REFRESH, self.preview) # self.reload_app)
-
-        PREVIEW_ID = wx.NewId()
-        wx.EVT_MENU(self, PREVIEW_ID, self.preview)
+        self.Bind(wx.EVT_MENU_RANGE, self.open_from_history, id=wx.ID_FILE1, id2=wx.ID_FILE9)
 
         self.accel_table = wx.AcceleratorTable([
-            (wx.ACCEL_CTRL, ord('N'), NEW_ID),
-            (wx.ACCEL_CTRL, ord('O'), OPEN_ID),
-            (wx.ACCEL_CTRL, ord('S'), SAVE_ID),
-            (wx.ACCEL_CTRL|wx.ACCEL_SHIFT, ord('S'), SAVE_AS_ID),
-            (wx.ACCEL_CTRL, ord('G'), GENERATE_CODE_ID),
+            (wx.ACCEL_CTRL, ord('N'), NEW.GetId()),
+            (wx.ACCEL_CTRL, ord('O'), OPEN.GetId()),
+            (wx.ACCEL_CTRL, ord('S'), SAVE.GetId()),
+            (wx.ACCEL_CTRL|wx.ACCEL_SHIFT, ord('S'), SAVE_AS.GetId()),
+            (wx.ACCEL_CTRL, ord('G'), GENERATE_CODE.GetId()),
             #(wx.ACCEL_CTRL, ord('I'), IMPORT_ID),
-            (0, wx.WXK_F1, MANUAL_ID),
-            (wx.ACCEL_CTRL, ord('Q'), EXIT_ID),
+            (0, wx.WXK_F1, MANUAL.GetId()),
+            (wx.ACCEL_CTRL, ord('Q'), EXIT.GetId()),
             (0, wx.WXK_F5, wx.ID_REFRESH),
-            (0, wx.WXK_F2, TREE_ID),
-            (0, wx.WXK_F3, PROPS_ID),
-            (0, wx.WXK_F4, RAISE_ID),
-            (wx.ACCEL_CTRL, ord('P'), PREVIEW_ID),
+            (0, wx.WXK_F2, TREE.GetId()),
+            (0, wx.WXK_F3, PROPS.GetId()),
+            (0, wx.WXK_F4, RAISE.GetId()),
             ])
 
     def open_from_history(self, event):
@@ -397,8 +406,17 @@ class wxGladeFrame(wx.Frame):
                 common.remove_autosaved(filename)
         else:
             common.remove_autosaved(filename)
+
+        if filename == common.app_tree.app.filename:
+            # if we are re-loading the file, go the the previous position
+            path = common.app_tree.get_selected_path()
+        else:
+            path = None
+
         self._open_app(filename)
         self.cur_dir = os.path.dirname(filename)
+        if path is not None:
+            common.app_tree.select_path(path)  # re-loaded file -> go to previous position
 
     # GUI elements: property frame, tree frame #########################################################################
     def create_property_panel(self, frame_style, icon, main_geometry):
@@ -436,7 +454,7 @@ class wxGladeFrame(wx.Frame):
         def on_tree_frame_close(event):
             #menu_bar.Check(TREE_ID, False)
             self.tree_frame.Hide()
-        wx.EVT_CLOSE(self.tree_frame, on_tree_frame_close)
+        self.tree_frame.Bind(wx.EVT_CLOSE, on_tree_frame_close)
 
         # set geometry
         tree_geometry = None
@@ -472,7 +490,7 @@ class wxGladeFrame(wx.Frame):
                   ),
                 _('Autosave Failed'), wx.OK | wx.CENTRE | wx.ICON_ERROR )
 
-    def edit_preferences(self, event):
+    def edit_preferences(self):
         dialog = preferencesdialog.wxGladePreferences(config.preferences)
         if dialog.ShowModal() == wx.ID_OK:
             wx.MessageBox( _('Changes will take effect after wxGlade is restarted'),
@@ -480,7 +498,7 @@ class wxGladeFrame(wx.Frame):
             dialog.set_preferences()
         dialog.Destroy()
 
-    def preview(self, event):
+    def preview(self):
         """Generate preview of the current loaded project.
         
         A preview can be triggered by keyboard shortcut or by pressing the preview button.
@@ -501,12 +519,12 @@ class wxGladeFrame(wx.Frame):
         else:
             preview_widget.preview(None)
 
-    def show_tree(self, event):
+    def show_tree(self):
         self.tree_frame.Show()
         self.tree_frame.Raise()
         common.app_tree.SetFocus()
 
-    def show_props_window(self, event):
+    def show_props_window(self):
         self.property_frame.Show()
         self.property_frame.Raise()
         try:
@@ -515,7 +533,7 @@ class wxGladeFrame(wx.Frame):
         except (AttributeError, TypeError):
             self.property_frame.SetFocus()
 
-    def raise_all(self, event):
+    def raise_all(self):
         # when one window is raised, raise all
         children = self.GetChildren()
         for child in children:
@@ -550,11 +568,11 @@ class wxGladeFrame(wx.Frame):
             ok = wx.MessageBox(_("Save changes to the current app?"),
                                _("Confirm"), wx.YES_NO|wx.CANCEL|wx.CENTRE|wx.ICON_QUESTION)
             if ok == wx.YES:
-                self.save_app(None)
+                self.save_app()
             return ok != wx.CANCEL
         return True
 
-    def new_app(self, event):
+    def new_app(self):
         "creates a new wxGlade project"
         if self.ask_save():
             common.app_tree.clear()
@@ -565,7 +583,7 @@ class wxGladeFrame(wx.Frame):
             if config.preferences.autosave and self.autosave_timer is not None:
                 self.autosave_timer.Start()
 
-    def new_app_from_template(self, event):
+    def new_app_from_template(self):
         "creates a new wxGlade project from an existing template file"
         if not self.ask_save(): return
         infile = template.select_template()
@@ -573,7 +591,7 @@ class wxGladeFrame(wx.Frame):
             self._open_app(infile, add_to_history=False)
             common.app_tree.app.template_data = None
 
-    def open_app(self, event_unused):
+    def open_app(self):
         """loads a wxGlade project from an xml file
         NOTE: this is very slow and needs optimisation efforts
         NOTE2: the note above should not be True anymore :) """
@@ -730,10 +748,10 @@ class wxGladeFrame(wx.Frame):
 
         return True
 
-    def save_app(self, event):
+    def save_app(self):
         "saves a wxGlade project onto an xml file"
         if not common.app_tree.app.filename or common.app_tree.app.is_template:
-            self.save_app_as(event)
+            self.save_app_as()
         else:
             # check whether we are saving a template
             ext = os.path.splitext(common.app_tree.app.filename)[1].lower()
@@ -760,7 +778,7 @@ class wxGladeFrame(wx.Frame):
                 self.autosave_timer.Start()
             self.user_message( _("Saved %s") % os.path.basename(filename) )
 
-    def save_app_as(self, event):
+    def save_app_as(self):
         "saves a wxGlade project onto an xml file chosen by the user"
         # both flags occurs several times
         fn = wx.FileSelector( _("Save project as..."),
@@ -779,11 +797,11 @@ class wxGladeFrame(wx.Frame):
         #remove the template flag so we can save the file.
         common.app_tree.app.properties["is_template"].set(False)
 
-        self.save_app(event)
+        self.save_app()
         self.cur_dir = os.path.dirname(fn)
         self.file_history.AddFileToHistory(fn)
 
-    def save_app_as_template(self, event):
+    def save_app_as_template(self):
         "save a wxGlade project as a template"
         data = getattr(common.app_tree.app, 'template_data', None)
         outfile, data = template.save_template(data)
@@ -816,17 +834,17 @@ class wxGladeFrame(wx.Frame):
             common.remove_autosaved()  # ALB 2004-10-15
             wx.CallAfter(wx.GetApp().ExitMainLoop)
 
-    def show_about_box(self, event):
+    def show_about_box(self):
         "show the about dialog;  @see: L{about.wxGladeAboutBox}"
         about_box = about.wxGladeAboutBox()
         about_box.ShowModal()
         about_box.Destroy()
 
-    def show_manual(self, event):
+    def show_manual(self):
         "Show the wxGlade user manual"
         self._show_html(config.manual_file)
 
-    def show_tutorial(self, event):
+    def show_tutorial(self):
         "Show the wxGlade tutorial"
         self._show_html(config.tutorial_file)
 
@@ -857,7 +875,7 @@ class wxGladeFrame(wx.Frame):
         self.tree_frame.Hide()
         self.property_frame.Hide()
 
-    def import_xrc(self, event):
+    def import_xrc(self):
         import xrc2wxg
 
         if not self.ask_save():
@@ -882,7 +900,7 @@ class wxGladeFrame(wx.Frame):
                 fn = os.path.basename(infilename).encode('ascii', 'replace')
                 bugdialog.Show(_('Import File "%s"') % fn, inst)
 
-    def manage_templates(self, event):
+    def manage_templates(self):
         to_edit = template.manage_templates()
         if to_edit is not None and self.ask_save():
             # edit the template
@@ -896,19 +914,20 @@ class wxGladeFrame(wx.Frame):
         "Set position and/or size of widget; geometry must be wx.Point or wx.Rect"
         assert isinstance(geometry, (wx.Point, wx.Rect))
         if not geometry: return
+        client_area = wx.Display().ClientArea
 
         if isinstance(geometry, wx.Point):
-            win.SetPosition(geometry)
+            if client_area.Contains(geometry):
+                win.SetPosition(geometry)
         else:
-            win.SetDimensions(*geometry.Get())
+            if client_area.Contains(geometry.TopLeft):
+                win.SetDimensions(*geometry.Get())
 
     def _get_geometry(self, widget):
         "Return widget position and size as wx.Rect"
         pos_size = widget.Rect
-        client_area = wx.Display().ClientArea
-        if client_area.Contains(pos_size.TopLeft):
-            return pos_size.Get()
-        return None
+        return pos_size.Get()  # a tuple
+
 
 
 
@@ -954,7 +973,7 @@ class wxGlade(wx.App):
         self.SetTopWindow(frame)
         self.SetExitOnFrameDelete(True)
 
-        wx.EVT_IDLE(self, self.OnIdle)
+        self.Bind(wx.EVT_IDLE, self.OnIdle)
 
         return True
 
@@ -1040,7 +1059,7 @@ class wxGlade(wx.App):
 
         (exc_type, exc_value, exc_tb) = sys.exc_info()
         bugdialog.ShowEI(exc_type, exc_value, exc_tb, msg)
-        sys.exc_clear()
+        if compat.PYTHON2: sys.exc_clear()
 
 
 

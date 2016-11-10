@@ -42,6 +42,7 @@ class EditStaticText(ManagedBase, EditStylesMixin):
             if self.widget:
                 self.widget.SetLabel(self.label)
                 self._set_widget_best_size()
+            common.app_tree.refresh(self.node, refresh_label=True)
 
         ManagedBase.properties_changed(self, modified)
 

@@ -37,7 +37,7 @@ class EditRadioButton(ManagedBase, EditStylesMixin):
     def create_widget(self):
         self.widget = wxGladeRadioButton(self.parent.widget, self.id, self.label)
         self.widget.SetValue(self.clicked)
-        wx.EVT_CHECKBOX(self.widget, self.id, lambda e: self.widget.SetValue(self.value))
+        self.widget.Bind(wx.EVT_CHECKBOX, lambda e: self.widget.SetValue(self.value))
 
     def _set_label(self):
         if not self.widget: return
@@ -48,7 +48,9 @@ class EditRadioButton(ManagedBase, EditStylesMixin):
     def properties_changed(self, modified):
         resize = False
 
-        if not modified or "label" in modified: self._set_label()
+        if not modified or "label" in modified:
+            self._set_label()
+            common.app_tree.refresh(self.node, refresh_label=True)
 
         if not modified or "clicked" in modified and self.widget:
             self.widget.SetValue(self.clicked)

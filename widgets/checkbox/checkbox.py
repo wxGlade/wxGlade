@@ -47,7 +47,7 @@ class EditCheckBox(ManagedBase, EditStylesMixin):
         def on_checkbox(event):
             value = 1 if event.IsChecked() else 0
             self.properties["checked"].set(value)
-        wx.EVT_CHECKBOX(self.widget, self.id, on_checkbox)
+        self.widget.Bind(wx.EVT_CHECKBOX, on_checkbox, id=self.id)
 
     def properties_changed(self, modified):
         resize = False
@@ -65,6 +65,7 @@ class EditCheckBox(ManagedBase, EditStylesMixin):
             if self.widget:
                 self.widget.SetLabel(self.label)
                 resize = True
+            common.app_tree.refresh(self.node, refresh_label=True)
 
         if not modified or "checked" in modified:
             if self.widget:

@@ -441,11 +441,10 @@ class LispCodeWriter(BaseLangCodeWriter, wcodegen.LispMixin):
         prop = code_obj.properties
         style = prop.get("style", None)
         if style:
-            stmt_style = self._format_style(style, code_obj)
-            write(stmt_style % {
-                'style': mycn_f(style),
-                'tab': tab,
-                })
+            m_style = mycn_f(style)
+            if m_style:
+                stmt_style = self._format_style(style, code_obj)
+                write(stmt_style % {'style': m_style, 'tab': tab} )
 
         # classes[code_obj.klass].deps now contains a mapping of child to
         # parent for all children we processed...
@@ -585,10 +584,9 @@ class LispCodeWriter(BaseLangCodeWriter, wcodegen.LispMixin):
         builder = self.obj_builders[code_obj.base]
         mycn_f = getattr(builder, 'cn_f', self.cn_f)
 
-        if not style:
-            return ''
-
+        if not style: return ''
         style = mycn_f(style)
+        if not style: return ''
         style = style.strip().replace('.', '')
 
         if code_obj.base == "wxFrame":

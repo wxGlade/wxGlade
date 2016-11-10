@@ -205,16 +205,13 @@ def load_widgets():
 def add_object(event):
     "Adds a widget or a sizer to the current app"
     global adding_widget, adding_sizer, widget_to_add
-    adding_widget = True
-    adding_sizer = False
     tmp = event.GetId()
     widget_to_add = refs[tmp]
+    adding_widget = True
+    adding_sizer = "Sizer" in widget_to_add
 
     msg = "Adding %s; click on free (hatched) sizer slot to place it"
     palette.user_message( msg%widget_to_add.lstrip("Edit") )
-    # TODO: find a better way
-    if widget_to_add.find('Sizer') != -1:
-        adding_sizer = True
 
 
 def add_toplevel_object(event):
@@ -247,7 +244,6 @@ def make_object_button(widget, icon_path, toplevel=False, tip=None):
     import misc
     from tree import WidgetTree
 
-    widget_id = wx.NewId()
     if not os.path.isabs(icon_path):
         icon_path = os.path.join(config.icons_path, icon_path)
     if wx.Platform == '__WXGTK__':
@@ -255,12 +251,12 @@ def make_object_button(widget, icon_path, toplevel=False, tip=None):
     else:
         style = wx.BU_AUTODRAW
     bmp = misc.get_xpm_bitmap(icon_path)
-    tmp = wx.BitmapButton(palette, widget_id, bmp, size=(31, 31), style=style)
+    tmp = wx.BitmapButton(palette, -1, bmp, size=(31, 31), style=style)
     if not toplevel:
-        wx.EVT_BUTTON(tmp, widget_id, add_object)
+        tmp.Bind(wx.EVT_BUTTON, add_object)
     else:
-        wx.EVT_BUTTON(tmp, widget_id, add_toplevel_object)
-    refs[widget_id] = widget
+        tmp.Bind(wx.EVT_BUTTON, add_toplevel_object)
+    refs[tmp.GetId()] = widget
     if not tip:
         tip = _('Add a %s') % widget.replace(_('Edit'), '')
     tmp.SetToolTip(wx.ToolTip(tip))
@@ -283,7 +279,7 @@ def make_object_button(widget, icon_path, toplevel=False, tip=None):
             misc.currently_under_mouse.SetCursor(wx.STANDARD_CURSOR)
         event.Skip()
 
-    wx.EVT_CHAR(tmp, on_char)
+    tmp.Bind(wx.EVT_CHAR, on_char)
 
     return tmp
 
@@ -419,6 +415,8 @@ def save_file(filename, content, which='wxg'):
             os.makedirs(directory)
 
         outfile = open(filename, 'wb')
+        if sys.platform.startswith("win"):
+            content = content.replace(b"\n", b"\r\n")
         outfile.write(content)
         outfile.close()
     finally:
@@ -807,7 +805,6 @@ class Preferences(ConfigParser.ConfigParser):
         'wxg_backup': True,
         'codegen_backup': True,
         'backup_suffix': sys.platform == 'win32' and '.bak' or '~',
-        'buttons_per_row': 5,
         'remember_geometry': True,
         'local_widget_path': '',
         'default_border': False,

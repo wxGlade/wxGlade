@@ -482,8 +482,10 @@ unless(caller){
         prop = code_obj.properties
         style = prop.get("style", None)
         if style:
-            stmt_style = self._format_style(style, code_obj)
-            write( stmt_style % {'style':mycn_f(style), 'tab':tab} )
+            m_style = mycn_f(style)
+            if m_style:
+                stmt_style = self._format_style(style, code_obj)
+                write( stmt_style % {'style':m_style, 'tab':tab} )
 
         # class parent constructor
         write(tab + '$self = $self->SUPER::new( %s );\n' % ", ".join(new_signature))

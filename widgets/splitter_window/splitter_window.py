@@ -53,9 +53,11 @@ class SplitterWindowSizer(Sizer):
         if pos == 1:
             self.window.window_old = self.window._window_1
             self.window._window_1 = item
+            self.window.properties["window_1"].set(item.name)
         else:
             self.window.window_old = self.window._window_2
             self.window._window_2 = item
+            self.window.properties["window_2"].set(item.name)
 
     def free_slot(self, pos, force_layout=True):
         "Replaces the element at pos with an empty slot"
@@ -82,11 +84,13 @@ class SplitterWindowSizer(Sizer):
 
     def get_itempos(self, attrs):
         "Get position of sizer item (used in xml_parse)"
-        if attrs['name']==self.window.properties["window_1"].value:
+        name= attrs.get("original_name", None)
+        if name is None: name = attrs['name']
+        if name==self.window.properties["window_1"].value:
             return 1
-        if attrs['name']==self.window.properties["window_2"].value:
+        if name==self.window.properties["window_2"].value:
             return 2
-        return pos
+        return None
 
     def is_virtual(self):
         return True
@@ -148,7 +152,7 @@ class EditSplitterWindow(ManagedBase, EditStylesMixin):
         else:
             min_pane_size.set_value( self.widget.GetMinimumPaneSize() )
 
-        wx.EVT_SPLITTER_SASH_POS_CHANGED( self.widget, self.widget.GetId(), self.on_sash_pos_changed )
+        self.widget.Bind(wx.EVT_SPLITTER_SASH_POS_CHANGED, self.on_sash_pos_changed )
         if self._window_1 and self._window_1.widget:
             if self.orientation=="wxSPLIT_VERTICAL":
                 compat.SetToolTip(self._window_1.widget, _("Left splitter pane:\nAdd a sizer here") )
@@ -213,6 +217,9 @@ class EditSplitterWindow(ManagedBase, EditStylesMixin):
         self.properties['sash_pos'].set( self.widget.GetSashPosition() )
         event.Skip()
 
+    def on_mouse_events(self, event):
+        # resize instead of drag & drop
+        event.Skip()
 
 editor_class = EditSplitterWindow
 editor_name = 'EditSplitterWindow'
@@ -259,6 +266,7 @@ def builder(parent, sizer, pos, number=[1]):
     widget._window_2.node = node3
     common.app_tree.add(node3, widget.node)
 
+    if parent.widget: widget.create()
     sizer.set_item(widget.pos, 1, wx.EXPAND)
 
 
@@ -301,6 +309,6 @@ def initialize():
     WidgetTree.images['EditSplitterSlot-Right']  = os.path.join( config.icons_path, 'splitter_slot-right.xpm' )
     WidgetTree.images['EditSplitterSlot-Top']    = os.path.join( config.icons_path, 'splitter_slot-top.xpm' )
     WidgetTree.images['EditSplitterSlot-Bottom'] = os.path.join( config.icons_path, 'splitter_slot-bottom.xpm' )
-    WidgetTree.images['EditSplitterWindow-h']    = os.path.join( config.icons_path, 'splitter_window-h.xpm' )
+    WidgetTree.images['EditSplitterWindow-v']    = os.path.join( config.icons_path, 'splitter_window-v.xpm' )
 
     return common.make_object_button(editor_name, 'splitter_window.xpm')

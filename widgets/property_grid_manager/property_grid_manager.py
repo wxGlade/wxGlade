@@ -10,7 +10,7 @@ wxPropertyGridManager objects
 
 import wx
 from wx.propgrid import *
-import common
+import common, compat
 from edit_windows import ManagedBase, EditStylesMixin
 from tree import Node
 
@@ -25,12 +25,18 @@ class EditPropertyGridManager(ManagedBase, EditStylesMixin):
         EditStylesMixin.__init__(self)
 
     def create_widget(self):
-        self.widget = PropertyGridManager(self.parent.widget, self.id, (200, 200))
+        if compat.IS_CLASSIC:
+            self.widget = PropertyGridManager(self.parent.widget, self.id, (200, 200))
+            # following two events are to permit select grid from designer frame
+            self.widget.Bind(EVT_PG_SELECTED, self.on_set_focus)
+            # these are to show the popup menu on right click
+            self.widget.Bind(EVT_PG_RIGHT_CLICK, self.popup_menu)
+        else:
+            # workaround: this is not yet working on Phoenix
+            self.widget = wx.Panel(self.parent.widget, self.id, (200, 200))
+            self.widget.Bind(wx.EVT_LEFT_DOWN, self.on_set_focus)
+            self.widget.SetToolTip("PropertyGridManager crashes on Phoenix, so you see just a panel")
 
-        # following two events are to permit select grid from designer frame
-        self.widget.Bind(EVT_PG_SELECTED, self.on_set_focus)
-        # these are to show the popup menu on right click
-        self.widget.Bind(EVT_PG_RIGHT_CLICK, self.popup_menu)
 
     def get_property_handler(self, name):
         return ManagedBase.get_property_handler(self, name)
@@ -45,8 +51,8 @@ def builder(parent, sizer, pos, number=[1]):
         label = 'property_grid_%d' % number[0]
     property_grid_manager = EditPropertyGridManager(label, parent, wx.NewId(), sizer, pos)
     # A grid should be wx.EXPANDed and 'option' should be 1, or you can't see it.
-    property_grid_manager.set_option(1)
-    property_grid_manager.esm_border.set_style("wxEXPAND")
+    property_grid_manager.properties["proportion"].set(1)
+    property_grid_manager.properties["flag"].set("wxEXPAND")
     node = Node(property_grid_manager)
     property_grid_manager.node = node
     if parent.widget: property_grid_manager.create()

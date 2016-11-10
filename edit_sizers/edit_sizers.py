@@ -262,6 +262,7 @@ class SizerSlot(np.PropertyOwner):
         # edit: paste
         i = misc.append_menu_item(menu, -1, _('Paste\tCtrl+V'), wx.ART_PASTE)
         misc.bind_menu_item_after(widget, i, self.clipboard_paste)
+        if not clipboard.check("widget","sizer"): i.Enable(False)
         menu.AppendSeparator()
 
 
@@ -363,20 +364,38 @@ class SizerSlot(np.PropertyOwner):
             return
         if common.adding_sizer and self.sizer.is_virtual():
             return
-        common.adding_widget = False
-        common.adding_sizer = False
         if self.widget:
             self.widget.SetCursor(wx.NullCursor)
             self.widget.Hide()
         # call the appropriate builder
         common.widgets[common.widget_to_add](self.parent, self.sizer, self.pos)
-        common.widget_to_add = None
+        if event is None or not event.ControlDown():
+            common.adding_widget = common.adding_sizer = False
+            common.widget_to_add = None
         common.app_tree.app.saved = False
 
+    def check_drop_compatibility(self):
+        """replaces self with a widget in self.sizer. This method is called
+        to add every non-toplevel widget or sizer, and in turn calls the
+        appropriate builder function (found in the ``common.widgets'' dict)"""
+        if common.adding_sizer and self.sizer.is_virtual():
+            return False
+        return True
+
     # clipboard handling ###############################################################################################
-    def check_compatibility(self, widget):
+    def check_compatibility(self, widget, typename=None, report=False):
         "check whether widget can be pasted here"
+        if typename is not None:
+            if typename=="sizer" and self.sizer.is_virtual():
+                return False
+            if typename=="window":
+                return False
+            return True
+
         if getattr(widget, "_is_toplevel", False):
+            return False
+        if self.sizer.is_virtual() and isinstance(widget, Sizer):
+            # e.g. a sizer dropped on a splitter window slot; instead, a panel would be required
             return False
         return True
 
@@ -440,8 +459,8 @@ class SizerHandleButton(GenButton):
         GenButton.__init__(self, parent.widget, id, '', size=(5, 5))
         self.sizer = sizer
         self.SetUseFocusIndicator(False)
-        wx.EVT_RIGHT_DOWN(self, self.sizer.popup_menu )
-        wx.EVT_KEY_DOWN(self, misc.on_key_down_event)
+        self.Bind(wx.EVT_RIGHT_DOWN, self.sizer.popup_menu )
+        self.Bind(wx.EVT_KEY_DOWN, misc.on_key_down_event)
 
 
 
@@ -644,14 +663,16 @@ class ClassOrientProperty(np.RadioProperty):
 class SizerBase(Sizer, np.PropertyOwner):
     "Base class for every non-virtual Sizer handled by wxGlade"
     PROPERTIES = ["Common", "name", "class", "orient", "class_orient", # class and orient are hidden
-   "attribute"]
+                  "attribute",
+                  "Layout"]  # not a property, just start the next page in the editor
     EXTRA_PROPERTIES = []
 
     MANAGED_PROPERTIES  = ["pos", "proportion", "border", "flag"]
     TOPLEVEL_PROPERTIES = ["fit"]
 
     _PROPERTY_LABELS = {"fit":"Fit parent",
-                        "attribute":'Store as attribute'}
+                        "attribute":'Store as attribute',
+                        "option": "Proportion"}
     _PROPERTY_HELP = {"fit":'Sizes the window so that it fits around its subwindows',
                       "attribute":'Store instance as attribute of window class; e.g. self.sizer_1 = wx.BoxSizer(...)\n'
                                   'Without this, you can not access the sizer from your program'}
@@ -666,7 +687,7 @@ class SizerBase(Sizer, np.PropertyOwner):
         self.id = wx.NewId()
 
         # initialise instance properties
-        self.name         = np.TextProperty(name)
+        self.name         = np.NameProperty(name)
         self.klass        = np.Property(klass, name="class")             # class and orient are hidden
         self.orient       = OrientProperty(orient)                       # they will be set from the class_orient property
         self.class_orient = ClassOrientProperty(self.get_class_orient()) # this will set the class and orient properties
@@ -683,7 +704,9 @@ class SizerBase(Sizer, np.PropertyOwner):
             self.border = np.SpinProperty(0, immediate=True)
             self.flag   = np.ManagedFlags(wx.EXPAND)
             self.sizer = None  # the (parent) sizer instance
+            self._has_layout = True
         else:
+            self._has_layout = False
             self.PROPERTIES = self.PROPERTIES + self.TOPLEVEL_PROPERTIES + self.EXTRA_PROPERTIES
 
         self.children = []    # widgets added to the sizer
@@ -699,7 +722,8 @@ class SizerBase(Sizer, np.PropertyOwner):
         if self.widget: return  # nothing to do if the sizer has already been created
         self._btn = SizerHandleButton(self.window, self.id, self ) # XXX handle the popupmenu creation in SizerHandleButton
         # ScreenToClient used by WidgetTree for the popup menu
-        wx.EVT_BUTTON(self._btn, self.id, self.on_selection)
+        self._btn.Bind(wx.EVT_BUTTON, self.on_selection, id=self.id)
+        self._btn.Bind(wx.EVT_MOUSE_EVENTS, self.on_mouse_events, id=self.id)
         self.create_widget()
         self.widget.Refresh = self.refresh
         self.widget.GetBestSize = self.widget.GetMinSize
@@ -708,6 +732,14 @@ class SizerBase(Sizer, np.PropertyOwner):
             self.window.set_sizer(self)
         if not config.preferences.show_sizer_handle:
             self.widget.Show(self._btn, False)
+
+    def on_mouse_events(self, event):
+        if event.Dragging():
+            # start drag & drop
+            window = misc.get_toplevel_parent(self._btn)
+            clipboard.begin_drag(window, self)
+            return
+        event.Skip()
 
     def on_selection(self, event):
         # button clicked -> set ourself as current widget
@@ -742,12 +774,26 @@ class SizerBase(Sizer, np.PropertyOwner):
             value = self.class_orient
             if misc.focused_widget is self: misc.set_focused_widget(None)
             wx.CallAfter(change_sizer, self, value)
-        if (not modified or "flag" in modified or "proportion" in modified or "border" in modified) and self.widget:
-            if not self.toplevel:
-                self.sizer.set_item(self.pos, self.proportion, self.flag, self.border)
+        if (not modified or "flag" in modified or "option" in modified or "border" in modified):
+            if not self.toplevel and self.sizer is not None:
+                if "border" in modified and self.border:
+                    # enable border flags if not yet done
+                    p = self.properties["flag"]
+                    if not p.value_set.intersection(p.FLAG_DESCRIPTION["Border"]):
+                        p.add("wxALL")
+                if self.widget:
+                    self.sizer.set_item(self.pos, self.proportion, self.flag, self.border)
         np.PropertyOwner.properties_changed(self, modified)
 
-    def check_compatibility(self, widget):
+    def check_drop_compatibility(self):
+        return False
+
+    def check_compatibility(self, widget, typename=None, report=False):
+        if typename is not None:
+            if typename in ("widget","sizer"):
+                return "AddSlot"
+            return False
+        if getattr(widget, "_is_toplevel", False): return False
         return "AddSlot" # a slot is to be added before inserting/pasting
 
     # popup menu #######################################################################################################
@@ -1402,7 +1448,10 @@ class wxGladeStaticBoxSizer(wx.StaticBoxSizer):
 class EditStaticBoxSizer(BoxSizerBase):
     "Class to handle wxStaticBoxSizer objects"
     WX_CLASS = "wxStaticBoxSizer"
-    EXTRA_PROPERTIES = ["label"]
+    PROPERTIES = ["Common", "name", "class", "orient", "class_orient", # class and orient are hidden
+                  "label", "attribute",
+                  "Layout"]  # not a property, just start the next page in the editor
+    EXTRA_PROPERTIES = []
 
     def __init__(self, name, window, orient=wx.VERTICAL, label='', elements=3, toplevel=True):
         BoxSizerBase.__init__(self, name, window, orient, elements, toplevel)
@@ -1440,7 +1489,10 @@ class EditStaticBoxSizer(BoxSizerBase):
         if not modified or "label" in modified and self.widget:
             self.widget.GetStaticBox().SetLabel(self.label or "")
             #self.layout()
-        if not modified or "label" in modified or "name" in modified and self.node:
+        if modified and "name" in modified:
+            previous_name = self.properties["name"].previous_value
+            common.app_tree.refresh_name(self.node, previous_name)
+        elif not modified or "label" in modified or "name" in modified and self.node:
             common.app_tree.refresh_name(self.node)
 
         BoxSizerBase.properties_changed(self, modified)
@@ -1637,7 +1689,7 @@ class GridSizerBase(SizerBase):
         rows = self.rows
         cols = self.cols
         # calculate row and pos of the slot
-        row,col = _grid_row_col(pos, rows)
+        row,col = _grid_row_col(pos, cols)
         # find the slots that are in the same row
         slots = []
         for pos,child in enumerate(self.children):
@@ -1753,12 +1805,7 @@ class _GrowableDialog(wx.Dialog):
         return ",".join(ret)
 
     def set_choices(self, choices, values):
-        if wx.Platform != '__WXGTK__':
-            self.choices.Set(choices)
-        else:
-            self.choices.Clear()
-            for v in values:
-                self.choices.Append(v)
+        self.choices.Set(choices)
         self._choices = choices
         for i,value in enumerate(choices):
             if value in values: self.choices.Check(i)
@@ -1916,11 +1963,10 @@ class _SizerDialog(wx.Dialog):
         szr = wx.BoxSizer(wx.VERTICAL)
         szr.Add(self.orientation, 0, wx.ALL | wx.EXPAND, 4)
         szr.Add(tmp, 0, wx.EXPAND)
-        CHECK_ID = wx.NewId()
-        self.check = wx.CheckBox(self, CHECK_ID, _('Has a Static Box'))
+        self.check = wx.CheckBox(self, -1, _('Has a Static Box'))
         self.label = wx.TextCtrl(self, -1, "")
         self.label.Enable(False)
-        wx.EVT_CHECKBOX(self, CHECK_ID, self.on_check_statbox)
+        self.check.Bind(wx.EVT_CHECKBOX, self.on_check_statbox)
         szr.Add(self.check, 0, wx.ALL | wx.EXPAND, 4)
         tmp = wx.BoxSizer(wx.HORIZONTAL)
         tmp.Add(wx.StaticText(self, -1, _("Label: ")), 0, wx.ALIGN_CENTER)

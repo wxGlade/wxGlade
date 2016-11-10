@@ -11,7 +11,7 @@ Application class to store properties of the application being created
 import os, random, re, logging, math
 import wx
 
-import common, config, misc, plugins, errors
+import common, config, misc, plugins, errors, compat
 import bugdialog
 import new_properties as np
 
@@ -316,12 +316,12 @@ class Application(np.PropertyOwner):
         preview = kwds.get('preview', False)
         if not self.output_path:
             return wx.MessageBox( _("You must specify an output file\nbefore generating any code"),
-                                  _("Error"), wx.OK | wx.CENTRE | wx.ICON_EXCLAMATION, self.notebook )
+                                  _("Error"), wx.OK | wx.CENTRE | wx.ICON_EXCLAMATION, common.palette )
         name_p = self.properties["name"]
         class_p = self.properties["class"]
         if not preview and ( name_p.is_active() or class_p.is_active() ) and not self.top_window:
             return wx.MessageBox( _("Please select a top window for the application"), _("Error"),
-                                  wx.OK | wx.CENTRE | wx.ICON_EXCLAMATION, self.notebook )
+                                  wx.OK | wx.CENTRE | wx.ICON_EXCLAMATION, common.palette )
 
         # temporary buffer for XML
         tmp_xml = misc.UnicodeStringIO('utf-8')
@@ -375,13 +375,39 @@ class Application(np.PropertyOwner):
     def preview(self, widget, out_name=None):
         """Generate and instantiate preview widget.
         None will be returned in case of errors. The error details are written to the application log file."""
+        # some checks
+        if compat.IS_PHOENIX:
+            found = common.app_tree.find_widgets_by_classnames(widget.node, "EditPropertyGridManager")
+            if found:
+                error = ("Preview with PropertyGridManager controls is currently deactivated as it causes crashes "
+                         "with wxPython Phoenix")
+                wx.MessageBox( error, _('Error'), wx.OK | wx.CENTRE | wx.ICON_EXCLAMATION )
+                return
+
         if out_name is None:
             import warnings
             warnings.filterwarnings("ignore", "tempnam", RuntimeWarning, "application")
-            try:
+            if compat.PYTHON2:
                 out_name = os.tempnam(None, 'wxg') + '.py'
-            except AttributeError: # XXX use a different name; e.g. the project file name with "_temp"
-                out_name = "C:\\Users\\Dietmar\\wxg_tmp.py"
+            else:
+                # create a temporary file at either the output path or the project path
+                error = None
+                if not self.filename:
+                    error = "Save project first; a temporary file will be created in the same directory."
+                else:
+                    dirname, basename = os.path.split(self.filename)
+                    basename, extension = os.path.splitext(basename)
+                    if not os.path.exists(dirname):
+                        error = "Directory '%s' not found"%dirname
+                    elif not os.path.isdir(dirname):
+                        error = "'%s' is not a directory"%dirname
+                if error:
+                    wx.MessageBox( error, _('Error'), wx.OK | wx.CENTRE | wx.ICON_EXCLAMATION )
+                    return
+                while True:
+                    out_name = os.path.join(dirname, "_%s_%d.py"%(basename,random.randrange(10**8, 10**9)))
+                    if not os.path.exists(out_name): break
+
         widget_class_name = widget.klass
 
         # make a valid name for the class (this can be invalid for some sensible reasons...)
@@ -458,7 +484,7 @@ class Application(np.PropertyOwner):
                 widget.preview_widget = None
                 widget.properties["preview"].set_label(_('Preview'))
 
-            wx.EVT_CLOSE(frame, on_close)
+            frame.Bind(wx.EVT_CLOSE, on_close)
             frame.SetTitle(_('<Preview> - %s') % frame.GetTitle())
             # raise the frame
             frame.CenterOnScreen()
@@ -566,22 +592,18 @@ class Application(np.PropertyOwner):
         menu.Destroy()
         self._rmenu = None
 
-    def check_compatibility(self, widget):
-        # for now, we don't have a clipboard_paste method; XXX this should be changed
+    def check_drop_compatibility(self):
         return False
 
-    # experimental #####################################################################################################
-    def check_compatibility(self, widget):
-        return widget._is_toplevel
+    def check_compatibility(self, widget, report=False):
+        return getattr(widget, "_is_toplevel", False)
+
     def clipboard_paste(self, event=None, clipboard_data=None):
         "Insert a widget from the clipboard to the current destination"
         import xml_parse
-        #size = self.widget.GetSize()
         import clipboard
         try:
-            #if clipboard.paste(self, None, 0, clipboard_data):
             if clipboard.paste(None, None, 0, clipboard_data):
                 common.app_tree.app.saved = False
-                #self.widget.SetSize(size)
         except xml_parse.XmlParsingError:
-            self._logger.warning( _('WARNING: Only sizers can be pasted here') )
+            self._logger.warning( _('WARNING: paste failed') )
