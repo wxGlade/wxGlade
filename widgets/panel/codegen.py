@@ -22,9 +22,7 @@ class PythonPanelGenerator(wcodegen.PythonWidgetCodeWriter):
         if panel.is_toplevel:
             l = []
             if id_name: l.append(id_name)
-            l.append('self.%s = %s(%s, %s)\n' %
-                     (panel.name, self.codegen.get_class(panel.klass),
-                      parent, id))
+            l.append('self.%s = %s(%s, %s)\n' % (panel.name, self.codegen.get_class(panel.klass), parent, id))
             return l, [], []
         init = []
         if id_name:
@@ -44,8 +42,7 @@ class PythonPanelGenerator(wcodegen.PythonWidgetCodeWriter):
             klass = panel.klass
             if klass in ('wxPanel', 'wxScrolledWindow'):
                 klass = self.cn(klass)
-        init.append('self.%s = %s(%s, %s%s)\n' % \
-                    (panel.name, klass, parent, id, style))
+        init.append( 'self.%s = %s(%s, %s%s)\n' % (panel.name, klass, parent, id, style) )
         props_buf = self.codegen.generate_common_properties(panel)
         if scrollable:
             sr = prop.get('scroll_rate', '0, 0')
@@ -72,7 +69,6 @@ class PythonPanelGenerator(wcodegen.PythonWidgetCodeWriter):
             pass
         return ret
 
-# end of class PythonPanelGenerator
 
 
 class CppPanelGenerator(wcodegen.CppWidgetCodeWriter):
@@ -82,9 +78,7 @@ class CppPanelGenerator(wcodegen.CppWidgetCodeWriter):
                    ('long', 'style', '0')]
 
     def get_code(self, panel):
-        """\
-        generates the C++ code for wxPanel objects
-        """
+        "generates the C++ code for wxPanel objects"
         prop = panel.properties
         try:
             scrollable = int(prop['scrollable'])
@@ -100,8 +94,7 @@ class CppPanelGenerator(wcodegen.CppWidgetCodeWriter):
         else:
             parent = 'this'
         if panel.is_toplevel:
-            l = ['%s = new %s(%s, %s);\n' %
-                 (panel.name, panel.klass, parent, id)]
+            l = [ '%s = new %s(%s, %s);\n' % (panel.name, panel.klass, parent, id) ]
             return l, ids, [], []
         extra = ''
         style = prop.get("style", 'wxTAB_TRAVERSAL')
@@ -114,8 +107,7 @@ class CppPanelGenerator(wcodegen.CppWidgetCodeWriter):
                 klass = 'wxPanel'
         else:
             klass = panel.klass
-        init = ['%s = new %s(%s, %s%s);\n' %
-                (panel.name, klass, parent, id, extra) ]
+        init = [ '%s = new %s(%s, %s%s);\n' % (panel.name, klass, parent, id, extra) ]
         props_buf = self.codegen.generate_common_properties(panel)
         if scrollable:
             sr = prop.get('scroll_rate', '0, 0')
@@ -133,7 +125,6 @@ class CppPanelGenerator(wcodegen.CppWidgetCodeWriter):
             props_buf.append('SetScrollRate(%s);\n' % sr)
         return props_buf
 
-# end of class CppPanelGenerator
 
 
 def xrc_code_generator(obj):
@@ -168,9 +159,9 @@ def initialize():
     common.toplevels['EditScrolledWindow'] = 1
     common.toplevels['EditTopLevelScrolledWindow'] = 1
 
-    common.register('python', klass, PythonPanelGenerator(klass))
+    common.register('python', klass,              PythonPanelGenerator(klass))
     common.register('python', 'wxScrolledWindow', PythonPanelGenerator(klass))
-    common.register('C++', klass, CppPanelGenerator(klass))
-    common.register('C++', 'wxScrolledWindow', CppPanelGenerator(klass))
-    common.register('XRC', klass, xrc_code_generator)
-    common.register('XRC', 'wxScrolledWindow', xrc_code_generator)
+    common.register('C++',    klass,              CppPanelGenerator(klass))
+    common.register('C++',    'wxScrolledWindow', CppPanelGenerator(klass))
+    common.register('XRC',    klass,              xrc_code_generator)
+    common.register('XRC',    'wxScrolledWindow', xrc_code_generator)

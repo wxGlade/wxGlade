@@ -51,14 +51,14 @@ class EditRadioBox(ManagedBase):
 
     def _create_button(self, label):
         r = wxGladeRadioButton(self.widget, -1, label)
-        wx.EVT_LEFT_DOWN(r, self.on_set_focus)
-        wx.EVT_RIGHT_DOWN(r, self.popup_menu)
+        r.Bind(wx.EVT_LEFT_DOWN, self.on_set_focus)
+        r.Bind(wx.EVT_RIGHT_DOWN, self.popup_menu)
         return r
 
     def _create_static_box(self):
         sb = wx.StaticBox(self.widget, -1, self.label)
-        wx.EVT_LEFT_DOWN(sb, self.on_set_focus)
-        wx.EVT_RIGHT_DOWN(sb, self.popup_menu)
+        sb.Bind(wx.EVT_LEFT_DOWN, self.on_set_focus)
+        sb.Bind(wx.EVT_RIGHT_DOWN, self.popup_menu)
         return sb
 
     def _do_layout(self):
@@ -73,7 +73,7 @@ class EditRadioBox(ManagedBase):
             else:
                 cols = 0
                 rows = self.dimension
-            sizer = wx.GridSizer(rows, cols)
+            sizer = wx.GridSizer(rows, cols, 0, 0)
             if wx.Platform == '__WXGTK__':
                 # we need to reorder self.buttons 'cos wxRadioBox lays out its
                 # elements by colums, while wxGridSizer by rows
@@ -105,7 +105,7 @@ class EditRadioBox(ManagedBase):
     def _set_label(self):
         if not self.widget or not self.static_box: return
         label = self.label
-        self.static_box.SetLabel(value)
+        self.static_box.SetLabel(label)
         if not self.properties['size'].is_active():
             self.sizer.set_item(self.pos, size=self.widget.GetBestSize())
 
@@ -166,12 +166,6 @@ class EditRadioBox(ManagedBase):
             self.properties['selection'].set_range(0, max_selection)
             if self.selection>max_selection:
                 set_selection = True
-            if self.widget:
-                # update widget
-                self.widget.Clear()
-                for c in choices: self.widget.Append(c[0])
-                if not self.properties['size'].is_active():
-                    self.sizer.set_item(self.pos, size=self.widget.GetBestSize())
 
         if not modified or "selection" in modified or set_selection:
             if self.selection>max_selection:
@@ -182,6 +176,7 @@ class EditRadioBox(ManagedBase):
             self._set_choices()  # does also update label
         elif not modified or "label" in modified:
             self._set_label()
+            common.app_tree.refresh(self.node, refresh_label=True)
 
         if self.widget and set_selection:
             self._set_selection()
@@ -195,7 +190,7 @@ def builder(parent, sizer, pos, number=[1]):
     while common.app_tree.has_name(label):
         number[0] += 1
         label = u'radio_box_%d' % number[0]
-    radio_box = EditRadioBox(label, parent, wx.NewId(), label, [u'choice 1'], 1, 0, sizer, pos)
+    radio_box = EditRadioBox(label, parent, wx.NewId(), label, [[u'choice 1'],], 1, 0, sizer, pos)
     node = Node(radio_box)
     radio_box.node = node
     if parent.widget: radio_box.create()

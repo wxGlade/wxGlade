@@ -9,7 +9,7 @@ Classes to handle and display the structure of a wxGlade app
 
 import logging, os.path, sys, time
 import wx
-import misc, common, compat, config
+import misc, common, compat, config, clipboard
 import edit_sizers, application
 
 
@@ -137,8 +137,8 @@ class Node(object):
                 name = "EditSpacer"
 
         elif name == "EditSplitterWindow":
-            if widget.orientation=="wxSPLIT_HORIZONTAL":
-                name = 'EditSplitterWindow-h'
+            if widget.orientation=="wxSPLIT_VERTICAL":
+                name = 'EditSplitterWindow-v'
 
         index = WidgetTree.images.get(name, -1)
         return index
@@ -223,6 +223,9 @@ class Tree(object):
             self.app.add_top_window(child.widget.name)
 
     def clear_name_rec(self, n):
+        if n.parent is self.root:
+            del self.names[n]
+            return
         try:
             del self.names[self._find_toplevel(n)][str(n.widget.name)]
         except (KeyError, AttributeError):
@@ -234,7 +237,7 @@ class Tree(object):
     def remove(self, node=None):
         if node is not None:
             self.clear_name_rec(node)
-            if node.parent is self.root and node.widget._is_toplevel:
+            if node.parent is self.root and getattr(node.widget, "_is_toplevel", False):
                 self.app.remove_top_window(node.widget.name)
             node.remove()
         elif self.root.children:
@@ -298,6 +301,57 @@ class Tree(object):
             del node.parent.children[index]
             node.parent.children.insert(new_pos+1, node)
 
+    def _find_widget(self, widget, node):
+        if node.widget is None or node.widget.widget is None:
+            return
+        if widget is node.widget.widget: return node
+        button = getattr(node.widget.widget, "_btn", None)
+        if button is not None and widget is button: return node
+        if hasattr(node.widget.widget, "GetStaticBox"):
+            if widget is node.widget.widget.GetStaticBox(): return node
+        if node.children:
+            for child in node.children:
+                found = self._find_widget(widget, child)
+                if found is not None:
+                    return found
+        return None
+
+    def find_widget(self, widget, node=None):
+        # returns node
+        nodes = [node] if node is not None else self.root.children
+        for node in nodes:
+            found = self._find_widget(widget, node)
+            if found is not None:
+                return found
+
+    def _find_widgets_by_classnames(self, node, classnames):
+        ret = []
+        if node.widget.__class__.__name__ in classnames:
+            ret.append(node.widget)
+        if node.children:
+            for c in node.children:
+                ret += self._find_widgets_by_classnames(c,classnames)
+        return ret
+
+    def find_widgets_by_classnames(self, node, classnames):
+        if isinstance(classnames, str):
+            classnames = set([classnames])
+        return self._find_widgets_by_classnames(node, classnames)
+
+    def _prn(self, node, level):
+        if isinstance(node, SlotNode):
+            print("  "*level, "SLOT")
+        else:
+            print("  "*level, node.widget)
+            if node.children:
+                for c in node.children:
+                    self._prn(c, level+1)
+
+    def prn(self, start_node=None):
+        "print structure to stdout for debugging"
+        if start_node is None: start_node = self.root
+        self._prn(start_node, 0)
+
 
 
 class WidgetTree(wx.TreeCtrl, Tree):
@@ -306,13 +360,13 @@ class WidgetTree(wx.TreeCtrl, Tree):
     _logger = None # Class specific logging instance
     def __init__(self, parent, application):
         self._logger = logging.getLogger(self.__class__.__name__)
-        id = wx.NewId()
         style = wx.TR_DEFAULT_STYLE|wx.TR_HAS_VARIABLE_ROW_HEIGHT
         style |= wx.TR_EDIT_LABELS
         if wx.Platform == '__WXGTK__':    style |= wx.TR_NO_LINES|wx.TR_FULL_ROW_HIGHLIGHT
         elif wx.Platform == '__WXMAC__':  style &= ~wx.TR_ROW_LINES
-        wx.TreeCtrl.__init__(self, parent, id, style=style)
+        wx.TreeCtrl.__init__(self, parent, -1, style=style)
         root_node = Node(application)
+        application.node = root_node
         self.cur_widget = None  # reference to the selected widget
         Tree.__init__(self, root_node, application)
         image_list = wx.ImageList(21, 21)
@@ -327,6 +381,9 @@ class WidgetTree(wx.TreeCtrl, Tree):
         self.title = ' '
         self.set_title(self.title)
 
+        self.drop_target = clipboard.DropTarget(self, toplevel=True)
+        self.SetDropTarget(self.drop_target)
+        self._drag_ongoing = False
         self.auto_expand = True  # this control the automatic expansion of  nodes: it is set to False during xml loading
         self.Bind(wx.EVT_TREE_SEL_CHANGED, self.on_change_selection)
         self.Bind(wx.EVT_RIGHT_DOWN, self.popup_menu)
@@ -334,12 +391,32 @@ class WidgetTree(wx.TreeCtrl, Tree):
         self.Bind(wx.EVT_LEFT_DOWN, self.on_left_click) # allow direct placement of widgets
         self.Bind(wx.EVT_MENU, self.show_toplevel)
         self.Bind(wx.EVT_TREE_BEGIN_DRAG, self.begin_drag)
-        self.Bind(wx.EVT_TREE_END_DRAG, self.end_drag)
+        self.Bind(wx.EVT_LEAVE_WINDOW, self.on_leave_window)
+        self.Bind(wx.EVT_MOUSE_EVENTS, self.on_mouse_events)
         
         self.Bind(wx.EVT_TREE_BEGIN_LABEL_EDIT, self.begin_edit_label)
         self.Bind(wx.EVT_TREE_END_LABEL_EDIT, self.end_edit_label)
         #self.Bind(wx.EVT_KEY_DOWN, misc.on_key_down_event)
         self.Bind(wx.EVT_KEY_DOWN, self.on_key_down_event)
+        self.Bind(wx.EVT_CHAR_HOOK, self.on_char)
+
+    def _label_editable(self, widget=None):
+        if widget is None: widget = self.cur_widget
+        if widget is None: return False
+        if not "name" in widget.properties: return False
+        if not "label" in widget.properties: return True
+        label = widget.label
+        # no editing in case of special characters
+        if "\n" in label or "\t" in label or "'" in label or '"' in label: return False
+        if len(label)>24: return False
+        return True
+
+    def on_char(self, event):
+        if event.GetKeyCode()==wx.WXK_F2 and self.cur_widget and self._label_editable():
+            # start label editing
+            self.EditLabel( self.cur_widget.node.item )
+            return
+        event.Skip()
 
     def on_key_down_event(self, event):
         #if event.GetKeyCode()==13:
@@ -358,74 +435,21 @@ class WidgetTree(wx.TreeCtrl, Tree):
         misc.on_key_down_event(event)
 
     def begin_drag(self, evt):
-        # inhibit drag start or remember the dragged item
+        # start drag & drop
         item = evt.GetItem()
         node = self.GetPyData(item)
         if node is self.root or isinstance(node, SlotNode):  # application and slots can't be dragged
             return
-        evt.Allow()
-        self._dragged_item = item
-        msg = "Move control/sizer to empty or populated slot to insert, to a sizer to append; hold Ctrl to copy"
-        common.palette.user_message( msg )
-        return True
-
-    def end_drag(self, evt):
-        # move or copy a node including children; re-uses clipboard functionality
-        copy = wx.GetKeyState(wx.WXK_CONTROL)  # if Ctrl key is pressed, we will copy
-
-        src = self._dragged_item  # was set in begin_drag
-        dst = evt.GetItem()
-        self._dragged_item = None
-        if src is dst: return
-        # from tree items to nodes to widgets
-        src_node = self.GetPyData( src )
-        dst_node = self.GetPyData( dst )
-        if dst_node is None: return
-        src_widget = src_node.widget
-        dst_widget = dst_node.widget
-        if src_widget==dst_widget: return
-        
-        if not copy and src_widget is misc.focused_widget:
-            if hasattr(src_widget, "parent"):
-                misc.set_focused_widget(src_widget.parent)
-            elif hasattr(src_widget, "window"):  # a sizer
-                misc.set_focused_widget(src_widget.window)
-
-        # do some checks before cutting ################################################################################
-        # avoid dragging of an item on it's child
-        if dst_node.has_ancestor(src_node):
-            return
-        # possible to paste here?
-        compatible = dst_widget.check_compatibility(src_widget)
-        if not compatible:
-            return
-        if compatible=="AddSlot":
-            # dropped on a sizer -> add slot
-            dst_widget._add_slot()
-            dst_widget.layout()
-            dst_widget = dst_widget.children[-1].item # the slot
-        elif compatible=="Slot":
-            # insert a slot or fill empty slot
-            pos = dst_widget.pos
-            dst_widget.sizer._insert_slot(pos)
-            dst_widget = dst_widget.sizer.children[pos].item # the slot
-
-        if not hasattr(dst_widget, "clipboard_paste"):
-            return
-
-        # use cut and paste functionality from clipboard to do the actual work #########################################
-        import clipboard
-        data = clipboard.get_copy(src_widget)
-        if not copy:
-            src_widget.remove()
-
-        dst_widget.clipboard_paste(None, data)
-        self.expand(dst_node)
+        widget = node.widget
+        self._drag_ongoing = True
+        clipboard.begin_drag(self, widget)
+        self._drag_ongoing = False
 
     def begin_edit_label(self, evt):
         # Begin editing a label. This can be prevented by calling Veto()
         widget = self.GetPyData( evt.Item ).widget
-        if "name" not in widget.properties: evt.Veto()
+        #if "name" not in widget.properties: evt.Veto()
+        if not self._label_editable(widget): evt.Veto()
 
     def end_edit_label(self, evt):
         # Finish editing a label. This can be prevented by calling Veto()
@@ -433,18 +457,53 @@ class WidgetTree(wx.TreeCtrl, Tree):
         item = evt.Item
         node = self.GetPyData( item )
         widget = node.widget
-        # XXX split user input into name and label/title (reverse of self._build_label)
-        old_label = self.GetItemText(item)
-        new_label = evt.Label
+        if "name" not in widget.properties: return
+
+        new_value = evt.Label
+        if "label" in widget.properties and self._label_editable(widget):
+            # split user input into name and label
+            new_value = new_value.strip()
+            if new_value.endswith("'") and ": '" in new_value:
+                new_name, new_label = new_value.split(": '", 1)
+            elif new_value.endswith('"') and ': "' in new_value:
+                new_name, new_label = new_value.split(': "', 1)
+            else:
+                wx.Bell()
+                evt.Veto()
+                return
+            new_label = new_label[:-1]
+            label_p = widget.properties["label"]
+            label_modified = new_label!=label_p.get()
+        else:
+            new_name = new_value
+            label_modified = False
+
         name_p = widget.properties["name"]
-        if new_label==old_label or not name_p.check(new_label):
+        old_name = name_p.get()
+
+        # check
+        name_OK = name_p.check(new_name)
+        if not name_OK:
+            wx.Bell()
+        if not name_OK or (new_value==old_name and not label_modified):
             evt.Veto()
             return
-        name_p.set(new_label, notify=True)
+
+        # actually modify the values
+        modified = set()
+        if new_name!=old_name:
+            name_p.previous_value = name_p.value
+            name_p.set(new_name, notify=False)
+            modified.add("name")
+        if label_modified:
+            label_p.previous_value = label_p.value
+            label_p.set(new_label, notify=False)
+            modified.add("label")
+        widget.properties_changed(modified)
 
     def _build_label(self, node):
-        # get a lable for node
-        import edit_sizers
+        # get a label for node
+        import notebook
         if isinstance(node.widget, edit_sizers.SizerSlot):
             if node.widget.label: return node.widget.label
             pos = node.widget.pos
@@ -454,15 +513,28 @@ class WidgetTree(wx.TreeCtrl, Tree):
                 row = (pos-1) // sizer.cols + 1  # 1 based at the moment
                 col = (pos-1) %  sizer.cols + 1
                 return "SLOT  %d/%d"%(row, col)
+            elif isinstance(node.widget.sizer, notebook.notebook.NotebookVirtualSizer):
+                return "Notebook Page %d"%(pos)
             else:
                 return "SLOT %d"%(pos)
         s = node.widget.name
         if node.widget.klass != node.widget.base and node.widget.klass != 'wxScrolledWindow':
             # special case...
             s += ' (%s)' % node.widget.klass
-        if isinstance(node.widget, edit_sizers.edit_sizers.EditStaticBoxSizer):
-            # include label of static box sizer
-            s += ': "%s"'%node.widget.label
+        elif "label" in node.widget.properties and node.widget.properties["label"].is_active():
+            # include label of control
+            label = node.widget.label
+            label = label.replace("\n","\\n").replace("\t","\\t")
+            if '"' in label:
+                if len(label)>24:
+                    s += ": '%s..."%(label[:18])
+                else:
+                    s += ": '%s'"%label
+            else:
+                if len(label)>24:
+                    s += ': "%s...'%(label[:18])
+                else:
+                    s += ': "%s"'%label
         elif getattr(node.widget, "has_title", None):
             # include title
             s += ': "%s"'%node.widget.title
@@ -519,11 +591,7 @@ class WidgetTree(wx.TreeCtrl, Tree):
         if node is not None:
             if delete:
                 if self.cur_widget:
-                    try:
-                        self.cur_widget = None
-                        self.SelectItem(node.parent.item)
-                    except:
-                        self.SelectItem(self.GetRootItem())
+                    misc.set_focused_widget(node.parent and node.parent.widget or None)
                 self.Delete(node.item)
         else:
             wx.TreeCtrl.Destroy(self)
@@ -538,8 +606,11 @@ class WidgetTree(wx.TreeCtrl, Tree):
         self.skip_select = False
         self.app.reset()
 
-    def refresh_name(self, node):
-        self.names.setdefault(self._find_toplevel(node), {})[node.widget.name] = 1
+    def refresh_name(self, node, previous_name=None):
+        names = self.names.setdefault(self._find_toplevel(node), {})
+        if previous_name is not None and previous_name in names:
+            del names[previous_name]
+        names[node.widget.name] = 1
         self.SetItemText(node.item, self._build_label(node))
 
     def refresh(self, node, refresh_label=True, refresh_image=True):
@@ -586,22 +657,44 @@ class WidgetTree(wx.TreeCtrl, Tree):
         if not common.adding_widget:
             event.Skip()
             return
-        node = self._find_item_by_pos(*event.GetPosition())
+        node = self._find_node_by_pos(*event.GetPosition())
         if not node:
             event.Skip()
             return
         item = node.widget
         import edit_sizers
         if isinstance(item, edit_sizers.SizerSlot):
-            item.on_drop_widget(None)
+            item.on_drop_widget(event)
             return
         if common.adding_sizer:
             item.drop_sizer()
             return
         event.Skip()
 
+    def on_leave_window(self, event):
+        self.SetCursor(wx.STANDARD_CURSOR)
+        event.Skip()
+
+    def on_mouse_events(self, event):
+        if not self._drag_ongoing and not event.IsButton():
+            # set cursor to indicate a possible drop
+            x,y = event.GetPosition()
+            item = self._find_node_by_pos(x, y, toplevels_only=False)
+            if item is not None:
+                if not common.adding_widget:
+                    self.SetCursor(wx.STANDARD_CURSOR)
+                else:
+                    # check whether the item can be dropped here
+                    if item.widget.check_drop_compatibility():
+                        self.SetCursor(wx.CROSS_CURSOR)
+                    else:
+                        self.SetCursor(wx.StockCursor(wx.CURSOR_NO_ENTRY)) # https://wxpython.org/docs/api/wx.Cursor-class.html
+            else:
+                self.SetCursor(wx.STANDARD_CURSOR)
+        event.Skip()
+
     def popup_menu(self, event, pos=None):
-        node = self._find_item_by_pos(*event.GetPosition())
+        node = self._find_node_by_pos(*event.GetPosition())
         if not node:
             return
         self.select_item(node)
@@ -641,6 +734,9 @@ class WidgetTree(wx.TreeCtrl, Tree):
         if not node.widget.widget:
             node.widget.create_widget()
             node.widget.finish_widget_creation()
+            node.widget.drop_target = clipboard.DropTarget(node.widget)
+            node.widget.widget.SetDropTarget(node.widget.drop_target)
+    
         if node.children:
             for c in node.children:
                 self.create_widgets(c)
@@ -665,7 +761,7 @@ class WidgetTree(wx.TreeCtrl, Tree):
                 node = self.GetPyData(self.GetSelection())
                 self.expand(node)  # if we are here, the widget must be shown
             else:
-                node = self._find_item_by_pos(x, y, True)
+                node = self._find_node_by_pos(x, y, True)
         else:
             node = widget.node
 
@@ -692,7 +788,7 @@ class WidgetTree(wx.TreeCtrl, Tree):
             event.Skip()
         #event.Skip()
 
-    def _find_item_by_pos(self, x, y, toplevels_only=False):
+    def _find_node_by_pos(self, x, y, toplevels_only=False):
         """Finds the node which is displayed at the given coordinates. Returns None if there's no match.
         If toplevels_only is True, scans only root's children"""
         item, flags = self.HitTest((x, y))
@@ -701,6 +797,15 @@ class WidgetTree(wx.TreeCtrl, Tree):
             if not toplevels_only or node.parent is self.root:
                 return node
         return None
+
+    def find_widget_by_pos(self, x, y, toplevels_only=False):
+        node = self._find_node_by_pos(x, y, toplevels_only)
+        if node is None: return None
+        # expand node if user remains at position
+        last_pos = getattr(self, "_last_find_widget_pos", None)
+        self._last_find_widget_pos = (x,y)
+        if last_pos and last_pos==(x,y) and not self.IsExpanded(node.item): self.Expand(node.item)
+        return node.widget
 
     def change_node(self, node, widget, new_node=None):
         if new_node is not None:
@@ -752,16 +857,19 @@ class WidgetTree(wx.TreeCtrl, Tree):
         self.Delete(old_item)
         self.Thaw()
 
-    def get_selected_path(self):
+    def get_selected_path(self, w=None):
         """returns a list of widget names, from the toplevel to the selected one
         Example: ['frame_1', 'sizer_1', 'panel_1', 'sizer_2', 'button_1']
                  if button_1 is the currently selected widget"""
         ret = []
-        w = self.cur_widget
+        if w is None: w = self.cur_widget
         oldw = None
         while w is not None:
             oldw = w
-            ret.append(w.name)
+            if isinstance(w, edit_sizers.SizerSlot):
+                ret.append("SLOT %d"%w.pos)
+            else:
+                ret.append(w.name)
             sizer = getattr(w, 'sizer', None)
             if getattr(w, 'parent', "") is None:
                 w = w.parent
@@ -789,7 +897,7 @@ class WidgetTree(wx.TreeCtrl, Tree):
         itemok = None
         parent = None
         pos = None
-        while item.Ok() and index < len(path):
+        while item.IsOk() and index < len(path):
             widget = self.GetPyData(item).widget
             name = path[index]
             if index == 0 and isinstance(name, tuple):

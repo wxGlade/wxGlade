@@ -31,7 +31,7 @@ class EditListCtrl(ManagedBase, EditStylesMixin):
         # add a couple of columns just for a better appearance (for now)
         self.widget.InsertColumn(0, _('List Control:'))
         self.widget.InsertColumn(1, self.name)
-        wx.EVT_LIST_COL_CLICK(self.widget, self.widget.GetId(), self.on_set_focus)
+        self.widget.Bind(wx.EVT_LIST_COL_CLICK, self.on_set_focus)
 
     def finish_widget_creation(self):
         ManagedBase.finish_widget_creation(self, sel_marker_parent=self.widget)

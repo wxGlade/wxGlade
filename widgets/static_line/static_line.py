@@ -33,7 +33,7 @@ class EditStaticLine(ManagedBase, EditStylesMixin):
 
     def create_widget(self):
         self.widget = wx.StaticLine(self.parent.widget, self.id, style=self.style)
-        wx.EVT_LEFT_DOWN(self.widget, self.on_set_focus)
+        self.widget.Bind(wx.EVT_LEFT_DOWN, self.on_set_focus)
 
     def finish_widget_creation(self):
         ManagedBase.finish_widget_creation(self)
@@ -73,6 +73,11 @@ def builder(parent, sizer, pos, number=[1]):
         number[0] += 1
         label = '%s_%d' % (tmpl_label, number[0])
     widget = editor_class(label, parent, wx.ID_ANY, style, sizer, pos)
+    import edit_sizers
+    if isinstance(sizer, edit_sizers.edit_sizers.BoxSizerBase):
+        if ( (sizer.orient & wx.VERTICAL   and style=="wxLI_HORIZONTAL") or 
+             (sizer.orient & wx.HORIZONTAL and style=="wxLI_VERTICAL") ):
+            widget.properties["flag"].add("wxEXPAND")
     node = Node(widget)
     widget.node = node
     if parent.widget: widget.create()

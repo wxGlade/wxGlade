@@ -121,7 +121,7 @@ class EditBase(EventsMixin, np.PropertyOwner):
 
     def finish_widget_creation(self, *args, **kwds):
         "Creates the popup menu and connects some event handlers to self.widgets"
-        wx.EVT_RIGHT_DOWN(self.widget, self.popup_menu)
+        self.widget.Bind(wx.EVT_RIGHT_DOWN, self.popup_menu)
 
     def delete(self):
         """Destructor. deallocates the popup menu, the notebook and all the properties.
@@ -236,12 +236,17 @@ class EditBase(EventsMixin, np.PropertyOwner):
         return EventsMixin.get_property_handler(self, prop_name)
 
     def properties_changed(self, modified):
-        if not modified or "class" in modified or "name" in modified:
+        if modified and "name" in modified:
+            previous_name = self.properties["name"].previous_value
+            common.app_tree.refresh_name(self.node, previous_name)
+        elif not modified or "class" in modified or "name" in modified:
             common.app_tree.refresh_name(self.node)
 
     # clipboard ########################################################################################################
-    def check_compatibility(self, widget):
+    def check_compatibility(self, widget, typename=None, report=False):
         # only with slots before/after
+        if typename is not None and typename=="window" or getattr(widget, "_is_toplevel",False):
+            return False
         return "Slot"
 
     def clipboard_copy(self, event=None):
@@ -253,6 +258,11 @@ class EditBase(EventsMixin, np.PropertyOwner):
         "Store a copy of self into the clipboard and delete the widget;  @see: L{clipboard.cut()}"
         self._destroy_popup_menu()
         clipboard.cut(self)
+
+    def check_drop_compatibility(self):
+        # checks whether a widget can be dropped here
+        return False
+
     ####################################################################################################################
 
     def is_visible(self):
@@ -341,7 +351,7 @@ class WindowBase(EditBase):
             self.font = np.FontPropertyD(tuple(font))
 
         # tooltip, focused, hiden
-        self.tooltip    = np.TextPropertyD()
+        self.tooltip    = np.TextPropertyD(multiline=True)
         self.disabled   = np.CheckBoxProperty(False, default_value=False)
         self.focused    = np.CheckBoxProperty(False, default_value=False)
         self.hidden     = np.CheckBoxProperty(False, default_value=False)
@@ -379,11 +389,11 @@ class WindowBase(EditBase):
 
         EditBase.finish_widget_creation(self)
 
-        wx.EVT_SIZE(self.widget, self.on_size)
+        self.widget.Bind(wx.EVT_SIZE, self.on_size)
         # after setting various Properties, we must Refresh widget in order to see changes
         self.widget.Refresh()
-        wx.EVT_KEY_DOWN(self.widget, misc.on_key_down_event)
-        wx.EVT_KEY_UP(self.widget, misc.on_key_down_event)
+        self.widget.Bind(wx.EVT_KEY_DOWN, misc.on_key_down_event)
+        self.widget.Bind(wx.EVT_KEY_UP, misc.on_key_down_event)
 
     def on_size(self, event):
         "Update the value of the 'size' property"
@@ -555,8 +565,9 @@ class ManagedBase(WindowBase):
         if sel_marker_parent is None: sel_marker_parent = self.parent.widget
         self.sel_marker = misc.SelectionMarker(self.widget, sel_marker_parent)
         WindowBase.finish_widget_creation(self)
-        wx.EVT_LEFT_DOWN(self.widget, self.on_set_focus)
-        wx.EVT_MOVE(self.widget, self.on_move)
+        self.widget.Bind(wx.EVT_LEFT_DOWN, self.on_set_focus)
+        self.widget.Bind(wx.EVT_MOUSE_EVENTS, self.on_mouse_events)
+        self.widget.Bind(wx.EVT_MOVE, self.on_move)
         # re-add the item to update it
         self.sizer.add_item( self, self.pos, self.proportion, self.flag, self.border, self.widget.GetSize() )
 
@@ -584,8 +595,9 @@ class ManagedBase(WindowBase):
             if not p.value_set.intersection(p.FLAG_DESCRIPTION["Border"]):
                 p.add("wxALL")
 
-        if "proportion" in modified or "flag" in modified or "border" in modified or "size" in modified:
-            self._update_sizer_item()
+        if "option" in modified or "flag" in modified or "border" in modified or "size" in modified:
+            if not self.sizer.is_virtual():
+                self._update_sizer_item()
 
     def _update_sizer_item(self):
         # update the widget by calling self.sizer.set_item (again)
@@ -637,8 +649,10 @@ class ManagedBase(WindowBase):
 
     def remove(self, *args):
         self.sizer.free_slot(self.pos)
-        if self.sizer.is_virtual() and not self.sizer.is_fixed():
-            WindowBase.remove(self)
+        if self.sizer.is_virtual():
+            #if not self.sizer.is_fixed():
+            #    WindowBase.remove(self)
+            pass
         else:
             # focus the freed slot
             misc.set_focused_widget(self.sizer.children[self.pos].item)
@@ -651,6 +665,14 @@ class ManagedBase(WindowBase):
         "called by self.sizer.change_item_pos to update the item's position when another widget is moved"
         # XXX currently not used; make np.LayoutPosProperty editable again
         self.properties['pos'].set_value(pos)
+        
+    def on_mouse_events(self, event):
+        if event.Dragging():
+            # start drag & drop
+            window = misc.get_toplevel_parent(self)
+            clipboard.begin_drag(window, self)
+            return
+        event.Skip()
 
 
 
@@ -698,9 +720,9 @@ class TopLevelBase(WindowBase, PreviewMixin):
             self.widget.SetTitle( misc.design_title(self.title) )
         elif hasattr(self.widget, 'SetTitle'):
             self.widget.SetTitle(misc.design_title(self.name))
-        wx.EVT_LEFT_DOWN(self.widget, self.drop_sizer)
-        wx.EVT_ENTER_WINDOW(self.widget, self.on_enter)
-        wx.EVT_CLOSE(self.widget, self.hide_widget)
+        self.widget.Bind(wx.EVT_LEFT_DOWN, self.drop_sizer)
+        self.widget.Bind(wx.EVT_ENTER_WINDOW, self.on_enter)
+        self.widget.Bind(wx.EVT_CLOSE, self.hide_widget)
         if wx.Platform == '__WXMSW__':
             # MSW isn't smart enough to avoid overlapping windows, so at least move it away from the 3 wxGlade frames
             self.widget.Center()
@@ -724,8 +746,7 @@ class TopLevelBase(WindowBase, PreviewMixin):
         widgetclass = self.__class__.__name__.lstrip("Edit")
         i = misc.append_menu_item(menu, -1, _('Remove %s\tDel')%widgetclass, wx.ART_DELETE)
         misc.bind_menu_item_after(widget, i, self.remove)
-        
-        
+
         if self.widget and self.is_visible():
             # hide window
             i = misc.append_menu_item(menu, -1, _('Hide'))
@@ -737,8 +758,8 @@ class TopLevelBase(WindowBase, PreviewMixin):
         # paste
         i = misc.append_menu_item(menu, -1, _('Paste Sizer\tCtrl+V'), wx.ART_PASTE)
         misc.bind_menu_item_after(widget, i, self.clipboard_paste)
-        if self.sizer is not None: i.Enable(False)
-        
+        if self.sizer is not None or not clipboard.check("sizer"): i.Enable(False)
+
         # preview
         menu.AppendSeparator()
         i = misc.append_menu_item(menu, -1, _('Preview %s\tF5'%widgetclass))
@@ -748,16 +769,23 @@ class TopLevelBase(WindowBase, PreviewMixin):
         return menu
 
     ####################################################################################################################
-    def check_compatibility(self, widget):
+    def check_compatibility(self, widget, typename=None, report=True):
         "check in advance whether widget can be pasted"
 
         if self.sizer is not None:
-            self._logger.warning( _('WARNING: Sizer already set for this window') )
+            if report:
+                self._logger.warning( _('WARNING: Sizer already set for this window') )
             return False
 
+        if typename is not None:
+            if typename!="sizer":
+                if report:
+                    self._logger.warning(_('Only sizers can be pasted here'))
+            return False
         import edit_sizers
         if not isinstance(widget, edit_sizers.Sizer):
-            self._logger.warning(_('Only sizers can be pasted here'))
+            if report:
+                self._logger.warning(_('Only sizers can be pasted here'))
             return False
         return True
 
@@ -796,10 +824,17 @@ class TopLevelBase(WindowBase, PreviewMixin):
         if self.sizer or not common.adding_sizer:
             self.on_set_focus(event)  # default behaviour: call show_properties
             return
-        common.adding_widget = common.adding_sizer = False
         self.widget.SetCursor(wx.STANDARD_CURSOR)
         common.widgets[common.widget_to_add](self, None, None)
-        common.widget_to_add = None
+        if event is None or not event.ControlDown():
+            common.adding_widget = common.adding_sizer = False
+            common.widget_to_add = None
+        common.app_tree.app.saved = False
+
+    def check_drop_compatibility(self):
+        if self.sizer:
+            return False
+        return common.adding_sizer
 
     def hide_widget(self, *args):
         self._destroy_popup_menu()
@@ -828,6 +863,35 @@ class TopLevelBase(WindowBase, PreviewMixin):
             self.preview_widget.Destroy()
             self.preview_widget = None
         WindowBase.delete(self)
+
+    def _find_widget_by_pos(self, w, x,y, level=1):
+        "helper for find_widget_by_pos; w is the parent window/widget"
+        if w.HasMultiplePages():
+            page = w.GetPage(w.GetSelection())
+            x0,y0,width,height = page.GetRect() # c.GetClientRect()
+            return self._find_widget_by_pos(page, x-x0,y-y0, level+1)
+        ret = []
+        for c in w.GetChildren():
+            x0,y0,width,height = c.GetRect() # c.GetClientRect()
+            if x0 <= x <= x0+width and y0 <= y <= y0+height:
+                ret.append(c)
+            if isinstance(c, wx.ScrolledWindow):
+                ret += self._find_widget_by_pos(c, x-x0,y-y0, level+1)
+            else:
+                ret += self._find_widget_by_pos(c, x,y, level+1)
+        return ret
+
+    def find_widget_by_pos(self, x,y):
+        "find the widget at a given position"
+        if self.widget is None: return None
+        x0,y0,width,height = self.widget.ClientRect
+        found = self._find_widget_by_pos(self.widget, x-x0,y-y0)
+        if not found: return None
+        node = None
+        while found and node is None:
+            node = common.app_tree.find_widget(found.pop(-1))
+        if node is None: return None
+        return node.widget
 
 
 

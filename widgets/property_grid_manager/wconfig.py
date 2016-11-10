@@ -28,7 +28,7 @@ config = {
         'wxPG_TOOLTIPS': {
             'desc': _('Display tool tips for cell text that cannot be shown completely.'),
         },
-        'wxPG_HIDE_MARGIN ': {
+        'wxPG_HIDE_MARGIN': {
             'desc': _('Disables margin and hides all expand/collapse buttons that would appear outside the margin (for sub-properties).'),
         },
         'wxPG_STATIC_SPLITTER': {

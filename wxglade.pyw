@@ -40,7 +40,7 @@ try:
     # run the main function and exit on success
     wxglade.run_main()
 
-except SystemExit, details:
+except SystemExit as details:
     code = details.code
     title = u'Abnormal Termination of wxGlade'
     if isinstance(code, types.IntType) and code != 0:

@@ -511,7 +511,7 @@ class _CheckListProperty(Property):
                 for name, flag_value in zip(self._names, self._values):
                     if flag_value is not None and value & flag_value == flag_value:
                         new_value.add(name)
-        elif isinstance(value, set):
+        elif isinstance(value, (set,tuple,list)):
             new_value = set(value)  # avoid side effects
         return new_value
 
@@ -636,12 +636,13 @@ class _CheckListProperty(Property):
                 excludes = self.excludes.get(name, [])
             else:
                 excludes = self.style_defs[name].get("exclude",[])
+            default_color = wx.BLACK if not "rename_to" in self.style_defs[name] else wx.Colour(130,130,130)
             if checked[i] and not name in self.value_set:
                 checkbox.SetForegroundColour(wx.Colour(120,120,100))  # grey
             elif self.value_set.intersection( excludes ):
                 checkbox.SetForegroundColour(wx.RED)
             else:
-                checkbox.SetForegroundColour(wx.BLACK)
+                checkbox.SetForegroundColour(default_color)
             checkbox.Refresh()
 
     ####################################################################################################################
@@ -857,7 +858,7 @@ class TextProperty(Property):
     STRIP = False
     def __init__(self, value="", multiline=False, strip=False, default_value=_DefaultArgument, name=None, fixed_height=False):
         self.multiline = multiline
-        self.text = None
+        self.text = self.previous_value = None
         self.strip = strip
         self.fixed_height = fixed_height  # don't grow the edit field in vertical
         Property.__init__(self, value, default_value, name)
@@ -1032,6 +1033,7 @@ class TextProperty(Property):
             wx.Bell()
             self.text.SetValue( self._value_to_str(self.value))
             return
+        self.previous_value = self.value
         Property._check_for_user_modification(self, new_value)
 
     def _convert_from_text(self, value=None):
@@ -1441,7 +1443,7 @@ class FontProperty(DialogProperty):
         return (int(groups[0]), groups[1], groups[2], groups[3], int(groups[4]), groups[5])
 
     def _set_converter(self, value):
-        if isinstance(value, basestring): value = self._convert_from_text(value)
+        if isinstance(value, compat.basestring): value = self._convert_from_text(value)
         return value
 
     def _value_to_str(self, value):
@@ -1570,6 +1572,20 @@ class GridProperty(Property):
 
         self._set_tooltip(self.grid.GetGridWindow(), *self.buttons)
 
+        self.grid.Bind(wx.EVT_SIZE, self.on_size)
+        self._width_delta = None
+
+    def on_size(self, event):
+        # resize last column to fill the space
+        if self._width_delta is None:
+            self._width_delta = self.grid.GetParent().GetSize()[0] - self.grid.GetSize()[0]
+        self.grid.SetColSize(1, 10)
+        col_widths = 0
+        for n in range(len(self.col_defs)-1):
+            col_widths += self.grid.GetColSize(n)
+        remaining_width = self.grid.GetParent().GetSize()[0] - col_widths - self._width_delta - self.grid.GetRowLabelSize()
+        self.grid.SetColSize( len(self.col_defs)-1, max(remaining_width, 100) )
+
     def on_select_cell(self, event):
         self.cur_row = event.GetRow()
         event.Skip()
@@ -1605,7 +1621,7 @@ class GridProperty(Property):
         """Apply the edited value; called by Apply button.
 
         If self.with_index and self.owner.set_... exists, this will be called with values and indices.
-        In this case, self.owner.properties_modified will not be called additionally.
+        In this case, self.owner.properties_changed will not be called additionally.
         Otherwise, the standard mechanism will be used."""
         self.grid.SaveEditControlValue() # end editing of the current cell
         new_value = self._get_new_value()

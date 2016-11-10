@@ -347,8 +347,10 @@ if __name__ == "__main__":
         prop = code_obj.properties
         style = prop.get("style", None)
         if style:
-            stmt_style = self._format_style(style, code_obj)
-            write(stmt_style % {'style': mycn_f(style), 'tab': tab} )
+            m_style = mycn_f(style)
+            if m_style:
+                stmt_style = self._format_style(style, code_obj)
+                write(stmt_style % {'style': m_style, 'tab': tab} )
 
         # initialise custom base class
         if custom_base:
@@ -406,6 +408,7 @@ if __name__ == "__main__":
             write('\n')
 
         for win_id, event, handler, unused in event_handlers:
+            if win_id is None: continue  # bound already, the entry is just for creation of the method stub
             if win_id.startswith('#'):
                 win_id = win_id[1:]
             else:

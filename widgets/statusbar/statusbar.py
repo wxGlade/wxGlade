@@ -9,7 +9,7 @@ wxFrame and wxStatusBar objects
 
 import wx
 import common
-from tree import Node
+from tree import Node, WidgetTree
 from wcodegen.taghandler import BaseXmlBuilderTagHandler
 import new_properties as np
 from edit_windows import EditBase, EditStylesMixin
@@ -59,7 +59,7 @@ class EditStatusBar(EditBase, EditStylesMixin):
     _hidden_frame = None
     update_widget_style = False
 
-    _PROPERTIES = ["Widget", "fields"]
+    _PROPERTIES = ["Widget", "style", "fields"]
     PROPERTIES = EditBase.PROPERTIES + _PROPERTIES + EditBase.EXTRA_PROPERTIES
 
     def __init__(self, name, klass, parent):
@@ -75,7 +75,7 @@ class EditStatusBar(EditBase, EditStylesMixin):
 
     def create_widget(self):
         self.widget = wx.StatusBar(self.parent.widget, -1)
-        wx.EVT_LEFT_DOWN(self.widget, self.on_set_focus)
+        self.widget.Bind(wx.EVT_LEFT_DOWN, self.on_set_focus)
         self._set_fields()
         if self.parent.widget:
             self.parent.widget.SetStatusBar(self.widget)
@@ -124,6 +124,11 @@ class EditStatusBar(EditBase, EditStylesMixin):
         if not modified or "fields" in modified:
             self._set_fields()
         EditBase.properties_changed(self, modified)
+
+    def check_compatibility(self, widget, typename=None, report=False):
+        return False
+    def check_drop_compatibility(self):
+        return False
 
 
 _NUMBER = 0
@@ -194,10 +199,11 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
 
 
 def initialize():
-    """\
-    initialization function for the module: returns a wxBitmapButton to be
-    added to the main palette.
-    """
+    "initialization function for the module: returns a wxBitmapButton to be added to the main palette."
     common.widgets_from_xml['EditStatusBar'] = xml_builder
     common.widgets['EditStatusBar'] = builder
-    return common.make_object_button('EditStatusBar', 'statusbar.xpm')
+    #return common.make_object_button('EditStatusBar', 'statusbar.xpm')
+    # no standalone status bar any more
+    import config, os
+    WidgetTree.images['EditStatusBar'] = os.path.join(config.icons_path, 'statusbar.xpm')
+    return []

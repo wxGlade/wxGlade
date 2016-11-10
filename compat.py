@@ -234,4 +234,4 @@ else:
     wx_Tree_InsertItemBefore = wx.TreeCtrl.InsertItem # overloaded: index or item
     SizerItem_SetSizer = SizerItem_SetSizerPhoenix    # uses AssignSizer
     def SetToolTip(c, s):
-        c.SetToolTipString(s)
+        c.SetToolTip(s)

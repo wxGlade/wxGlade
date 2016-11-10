@@ -457,6 +457,7 @@ class ClipboardXmlWidgetBuilder(XmlWidgetBuilder):
             newname = self._get_new_name(oldname)
             attrs = dict(attrs)
             attrs['name'] = newname
+            if newname!=oldname: attrs['original_name'] = oldname  # for finding position in a virtual sizer
         XmlWidgetBuilder.startElement(self, name, attrs)
         if name == 'object':
             if not self.depth_level:
@@ -525,13 +526,13 @@ class XmlWidgetObject(object):
                     sizer = sizer.obj
 
             pos = getattr(sizeritem, 'pos', None)
-
             if parent and hasattr(parent, 'virtual_sizer') and parent.virtual_sizer:
+                # virtual sizers don't use sizeritem objects around their items in XML
                 sizer = parent.virtual_sizer
                 sizer.node = parent.node
                 sizeritem = Sizeritem()
-                if pos is None:
-                    pos = sizer.get_itempos(attrs)
+                pos_ = sizer.get_itempos(attrs)
+                if pos_: pos = pos_  # when loading from a file, the names are set already and pos_ is not None
 
             # build the widget
             if pos is not None: pos = int(pos)

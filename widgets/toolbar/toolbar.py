@@ -29,7 +29,7 @@ class _MyBrowseButton(FileBrowseButton):
         compat.SetToolTip(button, self.toolTip)
         w = button.GetTextExtent(self.buttonText)[0] + 10
         button.SetMinSize((w, -1))
-        wx.EVT_BUTTON(button, ID, self.OnBrowse)
+        button.Bind(wx.EVT_BUTTON, self.OnBrowse, id=ID)
         return button
 
     def OnBrowse(self, event=None):
@@ -53,16 +53,12 @@ class _MyBrowseButton(FileBrowseButton):
 class ToolsDialog(wx.Dialog):
     def __init__(self, parent, owner, items=None):
         wx.Dialog.__init__(self, parent, -1, _("Toolbar editor"), style=wx.DEFAULT_DIALOG_STYLE|wx.RESIZE_BORDER)
-        ADD_ID, REMOVE_ID, LABEL_ID, ID_ID, CHECK_RADIO_ID, LIST_ID, \
-                ADD_SEP_ID, MOVE_UP_ID, MOVE_DOWN_ID, HELP_STR_ID, \
-                LONG_HELP_STR_ID, BITMAP1_ID, BITMAP2_ID \
-                = [wx.NewId() for i in range(13)]
 
         self._staticbox = wx.StaticBox(self, -1, _("Tool:"))
 
         self.owner = owner
 
-        self.tool_items = wx.ListCtrl(self, LIST_ID, style=wx.LC_REPORT|wx.LC_SINGLE_SEL|wx.BORDER_SUNKEN, size=(300, -1) )
+        self.tool_items = wx.ListCtrl(self, -1, style=wx.LC_REPORT|wx.LC_SINGLE_SEL|wx.BORDER_SUNKEN, size=(300, -1) )
         self.selected_index = -1  # index of the selected element in the
                                  # wxListCtrl
         self.tool_items.InsertColumn(0, _("Label"))
@@ -83,27 +79,27 @@ class ToolsDialog(wx.Dialog):
         self.tool_items.SetColumnWidth(7, 150)
 
         # tool fields
-        self.id = wx.TextCtrl(self, ID_ID)
-        self.label = wx.TextCtrl(self, LABEL_ID)
-        self.help_str = wx.TextCtrl(self, HELP_STR_ID)
-        self.long_help_str = wx.TextCtrl(self, LONG_HELP_STR_ID)
+        self.id = wx.TextCtrl(self, -1)
+        self.label = wx.TextCtrl(self, -1)
+        self.help_str = wx.TextCtrl(self, -1)
+        self.long_help_str = wx.TextCtrl(self, -1)
         self.event_handler = wx.TextCtrl(self, -1)
         self.handler_re = re.compile(r'^\s*\w*\s*$')
 
-        self.bitmap1 = _MyBrowseButton( self, BITMAP1_ID, labelText=_('Primary Bitmap'), buttonText='...',
+        self.bitmap1 = _MyBrowseButton( self, -1, labelText=_('Primary Bitmap'), buttonText='...',
                                         changeCallback=self.update_tool)
-        self.bitmap2 = _MyBrowseButton( self, BITMAP2_ID, labelText=_('Disabled Bitmap'), buttonText='...',
+        self.bitmap2 = _MyBrowseButton( self, -1, labelText=_('Disabled Bitmap'), buttonText='...',
                                         changeCallback=self.update_tool)
-        self.check_radio = wx.RadioBox( self, CHECK_RADIO_ID, _("Type"),
+        self.check_radio = wx.RadioBox( self, -1, _("Type"),
                                         choices=['Normal', 'Checkable', 'Radio'], majorDimension=3 )
 
-        self.add = wx.Button(self, ADD_ID, _("Add"))
-        self.remove = wx.Button(self, REMOVE_ID, _("Remove"))
-        self.add_sep = wx.Button(self, ADD_SEP_ID, _("Add separator"))
+        self.add = wx.Button(self, -1, _("Add"))
+        self.remove = wx.Button(self, -1, _("Remove"))
+        self.add_sep = wx.Button(self, -1, _("Add separator"))
 
         # tools navigation
-        self.move_up = wx.Button(self, MOVE_UP_ID, _("Up"))
-        self.move_down = wx.Button(self, MOVE_DOWN_ID, _("Down"))
+        self.move_up = wx.Button(self, -1, _("Up"))
+        self.move_down = wx.Button(self, -1, _("Down"))
 
         self.ok = wx.Button(self, wx.ID_OK, _("OK"))
         self.apply = wx.Button(self, wx.ID_APPLY, _("Apply"))
@@ -112,19 +108,19 @@ class ToolsDialog(wx.Dialog):
         self.do_layout()
 
         # event handlers
-        wx.EVT_BUTTON(self, ADD_ID, self.add_tool)
-        wx.EVT_BUTTON(self, REMOVE_ID, self.remove_tool)
-        wx.EVT_BUTTON(self, ADD_SEP_ID, self.add_separator)
-        wx.EVT_BUTTON(self, MOVE_UP_ID, self.move_item_up)
-        wx.EVT_BUTTON(self, MOVE_DOWN_ID, self.move_item_down)
-        wx.EVT_BUTTON(self, wx.ID_APPLY, self.on_apply)
-        wx.EVT_KILL_FOCUS(self.label, self.update_tool)
-        wx.EVT_KILL_FOCUS(self.id, self.update_tool)
-        wx.EVT_KILL_FOCUS(self.help_str, self.update_tool)
-        wx.EVT_KILL_FOCUS(self.long_help_str, self.update_tool)
-        wx.EVT_KILL_FOCUS(self.event_handler, self.update_tool)
-        wx.EVT_RADIOBOX(self, CHECK_RADIO_ID, self.update_tool)
-        wx.EVT_LIST_ITEM_SELECTED(self, LIST_ID, self.show_tool)
+        self.add.Bind(wx.EVT_BUTTON, self.add_tool)
+        self.remove.Bind(wx.EVT_BUTTON, self.remove_tool)
+        self.add_sep.Bind(wx.EVT_BUTTON, self.add_separator)
+        self.move_up.Bind(wx.EVT_BUTTON, self.move_item_up)
+        self.move_down.Bind(wx.EVT_BUTTON, self.move_item_down)
+        self.apply.Bind(wx.EVT_BUTTON, self.on_apply)
+        self.label.Bind(wx.EVT_KILL_FOCUS, self.update_tool)
+        self.id.Bind(wx.EVT_KILL_FOCUS, self.update_tool)
+        self.help_str.Bind(wx.EVT_KILL_FOCUS, self.update_tool)
+        self.long_help_str.Bind(wx.EVT_KILL_FOCUS, self.update_tool)
+        self.event_handler.Bind(wx.EVT_KILL_FOCUS, self.update_tool)
+        self.check_radio.Bind(wx.EVT_RADIOBOX, self.update_tool)
+        self.tool_items.Bind(wx.EVT_LIST_ITEM_SELECTED, self.show_tool)
         if items:
             self.add_tools(items)
 
@@ -447,7 +443,7 @@ class ToolsHandler(BaseXmlBuilderTagHandler):
 class EditToolBar(EditBase, PreviewMixin, EditStylesMixin, BitmapMixin):
     "Class to handle wxToolBar objects"
 
-    _PROPERTIES = ["bitmapsize", "margins", "packing", "separation", "tools", "preview"]
+    _PROPERTIES = ["bitmapsize", "margins", "packing", "separation", "style", "tools", "preview"]
     PROPERTIES = EditBase.PROPERTIES + _PROPERTIES + EditBase.EXTRA_PROPERTIES
 
     def __init__(self, name, klass, parent):
@@ -589,15 +585,10 @@ class EditToolBar(EditBase, PreviewMixin, EditStylesMixin, BitmapMixin):
             return  # do nothing in this case
         super(EditToolBar, self).popup_menu(event, pos)
 
-    def _create_popup_menu(self):
-        REMOVE_ID = wx.NewId()
-        HIDE_ID = wx.NewId()
-        self._rmenu = misc.wxGladePopupMenu(self.name)
-        misc.append_menu_item(self._rmenu, REMOVE_ID, _('Remove ToolBar\tDel'), wx.ART_DELETE)
-        misc.append_menu_item(self._rmenu, HIDE_ID, _('Hide'))
-
-        wx.EVT_MENU(self.pwidget, REMOVE_ID, misc.exec_after(self.remove))
-        wx.EVT_MENU(self.pwidget, HIDE_ID, misc.exec_after(self.hide_widget))
+    def _create_popup_menu(self, widget):
+        menu = misc.wxGladePopupMenu(self.name)
+        i = misc.append_menu_item(menu, -1, _('Remove ToolBar\tDel'), wx.ART_DELETE)
+        misc.bind_menu_item_after(widget, i, self.remove)
 
         self._rmenu = (menu, widget) # store for destryoing and unbinding
         return menu
@@ -607,7 +598,7 @@ class EditToolBar(EditBase, PreviewMixin, EditStylesMixin, BitmapMixin):
             self.pwidget.Hide()
             common.app_tree.expand(self.node, False)
             common.app_tree.select_item(self.node.parent)
-            common.app_tree.app.show_properties()
+            #common.app_tree.app.show_properties()
 
     def get_property_handler(self, name):
         if name == 'tools':
@@ -638,6 +629,11 @@ class EditToolBar(EditBase, PreviewMixin, EditStylesMixin, BitmapMixin):
 
         EditBase.properties_changed(self, modified)
 
+    def check_compatibility(self, widget, typename=None, report=False):
+        return False
+    def check_drop_compatibility(self):
+        return False
+
 
 
 def builder(parent, sizer, pos):
@@ -653,7 +649,7 @@ def builder(parent, sizer, pos):
     tb = EditToolBar(name, klass, parent)
     tb.node = Node(tb)
     common.app_tree.add(tb.node)
-    if parent.widget: tb.create()
+    if parent and parent.widget: tb.create()
 
 
 

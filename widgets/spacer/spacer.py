@@ -30,7 +30,7 @@ class EditSpacer(ManagedBase):
         size = (self.width, self.height)
         self.widget = wx.Window(self.parent.widget, self.id, size=size, style=wx.SIMPLE_BORDER)
         self.widget.GetBestSize = self.widget.GetSize
-        wx.EVT_PAINT(self.widget, self.on_paint)
+        self.widget.Bind(wx.EVT_PAINT, self.on_paint)
 
     def on_paint(self, event):
         dc = wx.PaintDC(self.widget)

@@ -50,7 +50,7 @@ class EditChoice(ManagedBase):
         choices = [c[0] for c in self.choices]
         self.widget = wxChoice2(self.parent.widget, self.id, choices=choices)
         self.widget.SetSelection(self.selection)
-        wx.EVT_LEFT_DOWN(self.widget, self.on_set_focus)
+        self.widget.Bind(wx.EVT_LEFT_DOWN, self.on_set_focus)
 
     def get_property_handler(self, prop_name):
         if prop_name == 'choices':
@@ -91,7 +91,7 @@ def builder(parent, sizer, pos, number=[1]):
     while common.app_tree.has_name(name):
         number[0] += 1
         name = 'choice_%d' % number[0]
-    choice = EditChoice(name, parent, wx.NewId(), [u'choice 1'], sizer, pos)
+    choice = EditChoice(name, parent, wx.NewId(), [(u'choice 1',)], sizer, pos)
     node = Node(choice)
     #sizer.set_item(pos, size=choice.GetBestSize())
     choice.node = node
