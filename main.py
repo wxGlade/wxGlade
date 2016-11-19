@@ -967,6 +967,7 @@ class wxGlade(wx.App):
             except Exception as details:
                 logging.info(_('Generic error during faulthandler initialisation: %s'), details)
 
+        self.locale = wx.Locale(wx.LANGUAGE_DEFAULT)  # avoid PyAssertionErrors
         compat.wx_ArtProviderPush(wxGladeArtProvider())
 
         frame = wxGladeFrame()
@@ -1031,7 +1032,7 @@ class wxGlade(wx.App):
         @see: L{bugdialog.Show()}
         """
         bugdialog.ShowEI(exc_type, exc_value, exc_tb)
-        sys.exc_clear()
+        if compat.PYTHON2: sys.exc_clear()
 
     def exception(self, msg, *args, **kwargs):
         """\
