@@ -23,7 +23,7 @@ class Frame186(wx.Frame):
         self.Bug186_Frame_menubar = wx.MenuBar()
         global myMagicMenu; myMagicMenu = wx.NewId()
         self.File = wx.Menu()
-        item = self.File.Append(myMagicMenu, _("Magic"), "", wx.ITEM_NORMAL)
+        self.File.Append(myMagicMenu, _("Magic"), "", wx.ITEM_NORMAL)
         self.Bug186_Frame_menubar.Append(self.File, _("File"))
         self.SetMenuBar(self.Bug186_Frame_menubar)
         # Menu Bar end
