@@ -34,7 +34,7 @@ class EditGenericCalendarCtrl(ManagedBase, EditStylesMixin):
         EditStylesMixin.__init__(self)
 
         # initialise instance properties
-        self.default = np.CheckBoxProperty(False)
+        self.default = np.CheckBoxProperty(False, default_value=False)
 
         if config.preferences.default_border:
             self.border.set( config.preferences.default_border_size )

@@ -8,7 +8,7 @@ Lisp generator functions for wxRadioBox objects
 
 import common
 import wcodegen
-import radio_box_base
+from . import radio_box_base
 from ChoicesCodeHandler import *
 
 

@@ -587,13 +587,12 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
                 code = ""
             self.previous_source.content = self.previous_source.content.replace(tag, code)
             tag = '<%swxGlade extra_modules>\n' % self.nonce
-            code = "".join(self._current_extra_modules.keys())
+            code = "".join(sorted(self._current_extra_modules.keys()))
             self.previous_source.content = self.previous_source.content.replace(tag, code)
 
             # module dependencies of all classes
             tag = '<%swxGlade replace dependencies>' % self.nonce
-            dep_list = self.dependencies.keys()
-            dep_list.sort()
+            dep_list = sorted( self.dependencies.keys() )
             code = self._tagcontent('dependencies', dep_list)
             self.previous_source.content = self.previous_source.content.replace(tag, code)
 
@@ -614,7 +613,7 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
             self.save_file( self.previous_source.name, self.previous_source.content, content_only=True )
 
         elif not self.multiple_files:
-            em = "".join(self._current_extra_modules.keys())
+            em = "".join(sorted(self._current_extra_modules.keys()))
             content = self.output_file.getvalue().replace( '<%swxGlade extra_modules>\n' % self.nonce, em )
 
             # module dependencies of all classes

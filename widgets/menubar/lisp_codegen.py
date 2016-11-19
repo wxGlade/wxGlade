@@ -8,7 +8,7 @@ Lisp generator functions for wxMenuBar objects
 import common
 import wcodegen
 from MenuTree import *
-from codegen import MenuHandler
+from .codegen import MenuHandler
 
 
 class LispMenubarGenerator(wcodegen.LispWidgetCodeWriter):
@@ -84,5 +84,4 @@ def initialize():
     klass = 'wxMenuBar'
     common.class_names['EditMenuBar'] = klass
     common.toplevels['EditMenuBar'] = 1
-    common.register('lisp', klass, LispMenubarGenerator(klass),
-                    'menus', MenuHandler)
+    common.register('lisp', klass, LispMenubarGenerator(klass), 'menus', MenuHandler)

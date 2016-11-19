@@ -8,7 +8,7 @@ Code generator functions for wxStatusBar objects
 
 import common
 import wcodegen
-from codegen import StatusFieldsHandler
+from .codegen import StatusFieldsHandler
 
 
 class LispStatusBarCodeGenerator(wcodegen.LispWidgetCodeWriter):

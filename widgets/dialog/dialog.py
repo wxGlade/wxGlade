@@ -29,7 +29,7 @@ class EditDialog(TopLevelBase, EditStylesMixin, BitmapMixin):
 
         # initialise instance properties
         self.icon      = np.FileNamePropertyD("", default_value="")
-        self.centered  = np.CheckBoxProperty(False)
+        self.centered  = np.CheckBoxProperty(False, default_value=False)
         self.sizehints = np.CheckBoxProperty(False)
 
     def create_widget(self):

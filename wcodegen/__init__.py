@@ -938,7 +938,8 @@ class BaseWidgetWriter(StylesMixin, BaseCodeWriter):
         except KeyError:
             default_event = 'wxCommandEvent'
 
-        for event, handler in obj.properties['events'].items():
+        for event in sorted( obj.properties['events'].keys() ):
+            handler = obj.properties['events'][event]
             if event not in self.config['events']:
                 self._logger.warn( _('Ignore unknown event %s for %s'), (event, obj.klass) )
                 continue
