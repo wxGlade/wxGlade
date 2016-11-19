@@ -40,7 +40,7 @@ class PythonMenubarGenerator(wcodegen.PythonWidgetCodeWriter):
                 if item.children:
                     # a submenu
                     name = item.name or '%s_sub' % menu
-                    append(('%s = ' + cn('wxMenu') + '()\n') % name)
+                    append('%s = %s()\n' % (name, cn('wxMenu')))
                     append_items(name, item.children)
                     args = (menu, id, quote_str(item.label), name, quote_str(item.help_str))
                     append('%s.AppendMenu(%s, %s, %s, %s)\n' % args)
@@ -50,32 +50,44 @@ class PythonMenubarGenerator(wcodegen.PythonWidgetCodeWriter):
                         item_type = cn('wxITEM_CHECK')
                     elif item.radio == '1':
                         item_type = cn('wxITEM_RADIO')
+
                     if item.name:
                         # create MenuItem and assign to property, then append to menu
                         name = '%s.%s' % (obj_name, item.name)
+                        menu_item = name
                         args = ( name, cn('wxMenuItem'), menu, id, quote_str(item.label), quote_str(item.help_str) )
                         if item_type:
-                            append( 'item = %s = %s(%s, %s, %s, %s, %s)\n' % (args + (item_type,)) )
+                            args += (item_type,)
+                            tmpl= '%s = %s(%s, %s, %s, %s, %s)\n'
                         else:
-                            append( 'item = %s = %s(%s, %s, %s, %s)\n' % args)
+                            tmpl = '%s = %s(%s, %s, %s, %s)\n'
+                        append(tmpl % args)
                         append('%s.AppendItem(%s)\n' % (menu, name))
                     else:
-                        # just append and assign the returned item to a temporary variable
+                        # just append
                         args = ( menu, id, quote_str(item.label), quote_str(item.help_str) )
                         if item_type:
-                            append( 'item = %s.Append(%s, %s, %s, %s)\n' % (args + (item_type,)) )
+                            args += (item_type,)
+                            tmpl = '%s.Append(%s, %s, %s, %s)\n'
                         else:
-                            append( 'item = %s.Append(%s, %s, %s)\n' % args)
+                            tmpl = '%s.Append(%s, %s, %s)\n'
+
+                        # assign the returned item to a temporary variable to use to Bind() the handler
+                        if item.handler:
+                            tmpl = 'item = %s' % tmpl
+                            menu_item = 'item'
+
+                        append(tmpl % args)
 
                     if item.handler:
-                        handler = item.handler if "." in item.handler else "self.%s"%item.handler
-                        append( "self.Bind(wx.EVT_MENU, %s, id=item.GetId())\n"%handler )
+                        handler = item.handler if "." in item.handler else "self.%s" % item.handler
+                        append( "self.Bind(wx.EVT_MENU, %s, id=%s.GetId())\n" % (handler, menu_item) )
 
         for m in menus:
             menu = m.root
             if menu.name: name = 'self.' + menu.name
             else: name = 'wxglade_tmp_menu'
-            append(('%s = ' + cn('wxMenu') + '()\n') % name)
+            append('%s = %s()\n' % (name, cn('wxMenu')))
             if menu.children:
                 append_items(name, menu.children)
             append('%s.Append(%s, %s)\n' % (obj_name, name, quote_str(menu.label)))
