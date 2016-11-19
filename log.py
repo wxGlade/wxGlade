@@ -399,7 +399,8 @@ def init(filename='wxglade.log', encoding='utf-8', level=None):
     # StreamHandler if no log handler exists.
     # There is a period of time with no log handler during this log
     # initialisation.
-    installExceptionHandler()
+    if not 'WINGDB_ACTIVE' in os.environ:
+        installExceptionHandler()
 
 
 def deinit():
@@ -488,7 +489,7 @@ def exceptionHandler(exc_type, exc_value, exc_tb):
     @param exc_tb:    Call stack of the exception
     """
     logging.error( _("An unhandled exception occurred"), exc_info=(exc_type, exc_value, exc_tb) )
-    sys.exc_clear()
+    if compat.PYTHON2: sys.exc_clear()
 
 
 def getMessage(self):
