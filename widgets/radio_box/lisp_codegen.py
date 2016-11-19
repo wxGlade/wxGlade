@@ -12,17 +12,14 @@ from . import radio_box_base
 from ChoicesCodeHandler import *
 
 
-class LispRadioBoxGenerator(radio_box_base.RadioBoxMixin,
-                            wcodegen.LispWidgetCodeWriter):
+class LispRadioBoxGenerator(radio_box_base.RadioBoxMixin, wcodegen.LispWidgetCodeWriter):
     tmpl = '(setf %(name)s (%(klass)s_Create %(parent)s %(id)s %(label)s ' \
            '-1 -1 -1 -1 %(choices_len)s (vector %(choices)s) ' \
            '%(majorDimension)s %(style)s))\n'
 
-# end of class LispRadioBoxGenerator
 
 
 def initialize():
     klass = 'wxRadioBox'
     common.class_names['EditRadioBox'] = klass
-    common.register('lisp', klass, LispRadioBoxGenerator(klass),
-                    'choices', ChoicesCodeHandler)
+    common.register('lisp', klass, LispRadioBoxGenerator(klass), 'choices', ChoicesCodeHandler)

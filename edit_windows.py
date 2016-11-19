@@ -26,7 +26,7 @@ class FontHandler(BaseXmlBuilderTagHandler):
     def __init__(self, owner):
         super(FontHandler, self).__init__()
         self.owner = owner
-        self.props = [8, 'default', 'normal', 'normal', 0, 'Tahoma'] # size, family, style, weight, underlined, face
+        self.props = [8, 'default', 'normal', 'normal', 0, ''] # size, family, style, weight, underlined, face
         self.index = 0
 
     def start_elem(self, name, attrs):
