@@ -33,23 +33,19 @@ class SourceFileContent(BaseSourceFileContent):
         r'(?P<classname>[a-zA-Z_]+\w*)??'       # class or function name (non-greedy)
         r'[.]?'                                 # separator between class and function / block (non-greedy)
         r'(?P<block>\w+)'                       # function / block name
-        r'\s*$'                                 # tailing spaces
-        )
+        r'\s*$' )                               # tailing spaces
 
     rec_block_end = re.compile(
         r'^\s*'                                 # leading spaces
         r'#\s*'                                 # comment sign
         r'end\s+wxGlade'                        # "end exGlade" statement
-        r'\s*$'                                 # tailing spaces
-        )
+        r'\s*$' )                               # tailing spaces
 
-    # Less precise regex, but matches definitions with base classes having
-    # module qualified names.
+    # Less precise regex, but matches definitions with base classes having module qualified names.
     rec_class_decl = re.compile(
-        r'^\s*'                                       # leading spaces
+        r'^\s*'                                        # leading spaces
         r'class\s+([a-zA-Z_]\w*)\s*(\([\s\w.,]*\))?:'  # "class <name>" statement
-        r'\s*$'                                       # tailing spaces
-        )
+        r'\s*$' )                                      # tailing spaces
 
     rec_event_handler = re.compile(
         r'^\s+'                                            # leading spaces (mandatory)
@@ -58,8 +54,7 @@ class SourceFileContent(BaseSourceFileContent):
         r'\(.*\):'                                         # function parameters
         r'\s*'                                             # optional spaces
         r'#\s*wxGlade:\s*(?P<class>\w+)\.<event_handler>'  # wxGlade event handler statement with class name
-        r'\s*$'                                            # tailing spaces
-        )
+        r'\s*$' )                                          # tailing spaces
 
     def build_untouched_content(self):
         BaseSourceFileContent.build_untouched_content(self)
@@ -93,7 +88,6 @@ class SourceFileContent(BaseSourceFileContent):
 
             result = self.rec_class_decl.match(line)
             if not inside_triple_quote and not inside_block and result:
-##                self._logger.debug(">> class %r", result.group(1))
                 if not self.class_name:
                     # this is the first class declared in the file: insert the
                     # new ones before this
@@ -106,12 +100,6 @@ class SourceFileContent(BaseSourceFileContent):
             elif not inside_block:
                 result = self.rec_block_start.match(line)
                 if not inside_triple_quote and result:
-##                     self._logger.debug(
-##                         ">> block %r %r %r",
-##                         result.group('spaces'),
-##                         result.group('classname'),
-##                         result.group('block'),
-##                         )
                     # replace the lines inside a wxGlade block with a tag that  will be used later by add_class
                     spaces = result.group('spaces')
                     which_class = result.group('classname')
@@ -142,12 +130,10 @@ class SourceFileContent(BaseSourceFileContent):
             else:
                 # ignore all the lines inside a wxGlade block
                 if self.rec_block_end.match(line):
-##                     self._logger.debug('end block')
                     inside_block = False
         if not self.new_classes_inserted:
-            # if we are here, the previous ``version'' of the file did not
-            # contain any class, so we must add the new_classes tag at the
-            # end of the file
+            # if we are here, the previous ``version'' of the file did not  contain any class,
+            # so we must add the new_classes tag at the end of the file
             out_lines.append('<%swxGlade insert new_classes>' % self.nonce)
         # set the ``persistent'' content of the file
         self.content = "".join(out_lines)
@@ -156,17 +142,8 @@ class SourceFileContent(BaseSourceFileContent):
         return line.startswith('import wx')
 
     def format_classname(self, class_name):
-        """\
-        Format class name read from existing source file.
-
-        If we're in a subpackage, we should include the package name in the
-        class name.
-
-        @param class_name: Class name
-        @type class_name:  String
-
-        @rtype: String
-        """
+        """Format class name read from existing source file.
+        If we're in a subpackage, we should include the package name in the class name."""
         if not self.multiple_files:
             return class_name
         name = self.name
@@ -180,41 +157,35 @@ class SourceFileContent(BaseSourceFileContent):
         else:
             return class_name
 
-# end of class SourceFileContent
 
 
 class WidgetHandler(BaseWidgetHandler):
     pass
 
-# end of class WidgetHandler
 
 
 class PythonCodeWriter(BaseLangCodeWriter, wcodegen.PythonMixin):
     "Code writer class for writing Python code out of the designed GUI elements"
 
-    _code_statements = {
-        'backgroundcolour': "%(objname)s.SetBackgroundColour(%(value)s)\n",
-        'contentnotfound':  "pass",
-        'disabled':         "%(objname)s.Enable(False)\n",
-        'extraproperties':  "%(objname)s.Set%(propname_cap)s(%(value)s)\n",
-        'focused':          "%(objname)s.SetFocus()\n",
-        'foregroundcolour': "%(objname)s.SetForegroundColour(%(value)s)\n",
-        'hidden':           "%(objname)s.Hide()\n",
-        'setfont':          "%(objname)s.SetFont(%(cnfont)s(%(size)s, %(family)s, "
-                            "%(style)s, %(weight)s, %(underlined)s, %(face)s))\n",
-        'tooltip':          "%(objname)s.SetToolTipString(%(tooltip)s)\n",
-        'tooltip_3':        "%(objname)s.SetToolTip(wx.ToolTip(%(tooltip)s))\n",
-        'wxcolour':         "wxColour(%(value)s)",
-        'wxsystemcolour':   "wxSystemSettings_GetColour(%(value)s)",
-        }
+    _code_statements = {'backgroundcolour': "%(objname)s.SetBackgroundColour(%(value)s)\n",
+                        'contentnotfound':  "pass",
+                        'disabled':         "%(objname)s.Enable(False)\n",
+                        'extraproperties':  "%(objname)s.Set%(propname_cap)s(%(value)s)\n",
+                        'focused':          "%(objname)s.SetFocus()\n",
+                        'foregroundcolour': "%(objname)s.SetForegroundColour(%(value)s)\n",
+                        'hidden':           "%(objname)s.Hide()\n",
+                        'setfont':          "%(objname)s.SetFont(%(cnfont)s(%(size)s, %(family)s, "
+                                            "%(style)s, %(weight)s, %(underlined)s, %(face)s))\n",
+                        'tooltip':          "%(objname)s.SetToolTipString(%(tooltip)s)\n",
+                        'tooltip_3':        "%(objname)s.SetToolTip(wx.ToolTip(%(tooltip)s))\n",
+                        'wxcolour':         "wxColour(%(value)s)",
+                        'wxsystemcolour':   "wxSystemSettings_GetColour(%(value)s)"}
 
     class_separator = '.'
 
-    global_property_writers = {
-        'font':            BaseLangCodeWriter.FontPropertyHandler,
-        'events':          BaseLangCodeWriter.EventsPropertyHandler,
-        'extraproperties': BaseLangCodeWriter.ExtraPropertiesPropertyHandler,
-        }
+    global_property_writers = { 'font':            BaseLangCodeWriter.FontPropertyHandler,
+                                'events':          BaseLangCodeWriter.EventsPropertyHandler,
+                                'extraproperties': BaseLangCodeWriter.ExtraPropertiesPropertyHandler }
 
     indent_level_func_body = 2
 
@@ -363,8 +334,7 @@ if __name__ == "__main__":
         else:
             write(tab + '%s.__init__(self, *args, **kwds)\n' % mycn(code_obj.base))
 
-        # classes[code_obj.klass].deps now contains a mapping of child to
-        # parent for all children we processed...
+        # classes[code_obj.klass].deps now contains a mapping of child to parent for all children we processed...
         object_order = []
         for obj in self.classes[code_obj.klass].child_order:
             # Don't add it again if already present
@@ -511,8 +481,7 @@ def %(handler)s(self, event):  # wxGlade: %(klass)s.<event_handler>
             pass
 
         # convert unicode strings to pure ascii
-        # use "raw-unicode-escape" just escaped unicode characters and not
-        # default escape sequences
+        # use "raw-unicode-escape" just escaped unicode characters and not default escape sequences
         s = s.encode('raw-unicode-escape')
         s = self._recode_x80_xff(s)
         if self._use_gettext:
@@ -551,10 +520,6 @@ def %(handler)s(self, event):  # wxGlade: %(klass)s.<event_handler>
         else:
             return self._format_classattr(obj)
 
-# end of class PythonCodeWriter
 
-writer = PythonCodeWriter()
-"The code writer is an instance of L{PythonCodeWriter}."
-
-language = writer.language
-"Language generated by this code generator"
+writer = PythonCodeWriter()  # The code writer is an instance of L{PythonCodeWriter}.
+language = writer.language   # Language generated by this code generator

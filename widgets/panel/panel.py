@@ -239,14 +239,13 @@ class EditPanel(PanelBase, ManagedBase):
 
 
 class EditTopLevelPanel(PanelBase, TopLevelBase):
-    _is_toplevel = False  # used to avoid to appear in the "Top Window" property of the app
+    _is_toplevel_window = False  # avoid to appear in the "Top Window" property of the app
 
     PROPERTIES = TopLevelBase.PROPERTIES + PanelBase._PROPERTIES + TopLevelBase.EXTRA_PROPERTIES
 
     def __init__(self, name, parent, id, klass='wxPanel', style='wxTAB_TRAVERSAL'):
         TopLevelBase.__init__(self, name, klass, parent, id)
         PanelBase.__init__(self, style)
-        self.base = 'wxPanel'
         self.skip_on_size = False
 
     def create_widget(self):
@@ -261,7 +260,7 @@ class EditTopLevelPanel(PanelBase, TopLevelBase):
         self.widget.Bind(wx.EVT_ENTER_WINDOW, self.on_enter)
         self.widget.GetBestSize = self.get_widget_best_size
         #self.widget.SetSize = win.SetSize
-        win.Bind(wx.EVT_CLOSE, self.hide_widget)
+        win.Bind(wx.EVT_CLOSE, self.hide_widget)  # CLOSE event of the frame, not the panel
         if wx.Platform == '__WXMSW__':
             win.CentreOnScreen()
 
@@ -274,6 +273,7 @@ class EditTopLevelPanel(PanelBase, TopLevelBase):
         self.set_size(oldval)
 
     def hide_widget(self, *args):
+        # this is called from the context menu and from the EVT_CLOSE of the Frame
         super(EditTopLevelPanel, self).hide_widget(*args)
         self.widget.GetParent().Hide()
 

@@ -207,7 +207,7 @@ class Tree(object):
         child.parent = parent
         self.current = child
         self.names.setdefault(self._find_toplevel(child), {})[str(child.widget.name)] = 1
-        if parent is self.root and getattr(child.widget.__class__, '_is_toplevel', False):
+        if parent is self.root and getattr(child.widget.__class__, '_is_toplevel_window', False):
             self.app.add_top_window(child.widget.name)
 
     def insert(self, child, parent, index):
@@ -237,7 +237,7 @@ class Tree(object):
     def remove(self, node=None):
         if node is not None:
             self.clear_name_rec(node)
-            if node.parent is self.root and getattr(node.widget, "_is_toplevel", False):
+            if node.parent is self.root and getattr(node.widget, "_is_toplevel_window", False):
                 self.app.remove_top_window(node.widget.name)
             node.remove()
         elif self.root.children:
@@ -742,7 +742,11 @@ class WidgetTree(wx.TreeCtrl, Tree):
                 self.create_widgets(c)
         node.widget.post_load()
         node.widget.create()
-        node.widget.widget.Show()
+        if node.widget.widget.TopLevel:
+            node.widget.widget.Show()
+        else:
+            node.widget.widget.GetParent().Show()
+
         misc.set_focused_widget(node.widget)
 
         node.widget.widget.Raise()
@@ -767,21 +771,20 @@ class WidgetTree(wx.TreeCtrl, Tree):
 
         if node is None or node is self.root: return
 
-        if node.widget.widget:
-            # window widget has been created already; just show it
-            if not node.widget.is_visible():
-                node.widget.widget.Show()
-            else:
-                node.widget.widget.Hide()
-            return
+        if not node.widget.widget:
+            node.widget.create()
+
+        # the actual toplevel widget may be one level higher, e.g. for a Panel, which is embedded in a Frame
+        toplevel_widget = node.widget.widget if node.widget.widget.TopLevel else node.widget.widget.GetParent()
 
         if not node.widget.is_visible():
+            toplevel_widget.Show()
             # added by rlawson to expand node on showing top level widget
             self.expand(node)
             self._show_widget_toplevel(node)
         else:
-            node.widget.create()
-            node.widget.widget.Show()
+            toplevel_widget.Hide()
+
             # added by rlawson to collapse only the toplevel node, not collapse back to root node
             self.select_item(node)
             misc.set_focused_widget(node.widget)

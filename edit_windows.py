@@ -272,7 +272,7 @@ class EditBase(EventsMixin, np.PropertyOwner):
             return self.widget.IsShown()
         parent = self.parent
         if parent: return parent.is_visible()
-        return self.widget.IsShown()
+        return self.widget.GetParent().IsShown()
 
     def update_view(self, selected):
         """Updates the widget's view to reflect its state, i.e. shows which
@@ -699,8 +699,9 @@ class PreviewMixin(object):
 
 
 class TopLevelBase(WindowBase, PreviewMixin):
-    "Base class for every non-managed window (i.e. Frames and Dialogs)"
+    "Base class for every non-managed window (i.e. Frames, Dialogs and TopLevelPanel)"
     _is_toplevel = True
+    _is_toplevel_window = True  # will be False for TopLevelPanel and MDIChildFrame
     _custom_base_classes = True
     PROPERTIES = WindowBase.PROPERTIES + ["preview"]
 
@@ -796,11 +797,11 @@ class TopLevelBase(WindowBase, PreviewMixin):
             self._logger.warning( _('WARNING: Sizer already set for this window') )
             return
         import xml_parse
-        size = self.widget.GetSize()
+        if self.widget: size = self.widget.GetSize()
         try:
             if clipboard.paste(self, None, 0, clipboard_data):
                 common.app_tree.app.saved = False
-                self.widget.SetSize(size)
+                if self.widget: self.widget.SetSize(size)
         except xml_parse.XmlParsingError:
             import os
             if 'WINGDB_ACTIVE' in os.environ: raise
