@@ -115,7 +115,7 @@ class XmlParser(ContentHandler):
             indent_amount = config.default_indent_amount
         res['indent_amount'] = indent_amount
 
-        res['indent_symbol'] = attrs.get('indent_symbol', config.default_indent_symbol)
+        res['indent_symbol'] = attrs.get('indent_symbol', {" ":"space","\t":":tab"}[config.default_indent_symbol])
 
         if 'language' in attrs:
             res['language'] = attrs['language']
@@ -196,12 +196,12 @@ class XmlWidgetBuilder(XmlParser):
             p = app.properties
 
             p["encoding"].set( attrs['encoding'] )
-            p["output_path"].set( attrs['path'] )
-            p["class"].set( attrs['class'], activate=bool(attrs.get("class")) )
-            p["name"].set( attrs['name'], activate=bool(attrs.get("name")) )
+            p["output_path"].set( attrs['path'] or "" )
+            p["class"].set( attrs['class'] or "", activate=bool(attrs.get("class")) )
+            p["name"].set( attrs['name'] or "", activate=bool(attrs.get("name")) )
             p["multiple_files"].set( attrs['option'] )
             p["language"].set( attrs['language'] )
-            p["top_window"].set( attrs['top_window'] )
+            p["top_window"].set( attrs['top_window'] or "" )
             p["use_gettext"].set( attrs['use_gettext'] )
             p["is_template"].set( attrs['is_template'] )
             p["overwrite"].set( attrs['overwrite'] )

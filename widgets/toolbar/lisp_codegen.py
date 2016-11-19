@@ -9,9 +9,9 @@ Lisp generator functions for wxToolBar objects
 
 import common
 import wcodegen
-from tool import *
+from .tool import *
 
-from codegen import ToolsHandler
+from .codegen import ToolsHandler
 
 
 class LispCodeGenerator(wcodegen.LispWidgetCodeWriter):

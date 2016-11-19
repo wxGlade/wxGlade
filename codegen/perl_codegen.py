@@ -446,8 +446,7 @@ unless(caller){
             # TODO: Don't add dependencies twice with Perl
 
             # write the module dependencies for this class (package)
-            dep_list = self.classes[code_obj.klass].dependencies.keys()
-            dep_list.sort()
+            dep_list = sorted( self.classes[code_obj.klass].dependencies.keys() )
             if dep_list:
                 code = self._tagcontent('dependencies', dep_list, True)
                 write(code)

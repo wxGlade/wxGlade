@@ -6,7 +6,7 @@ Lisp generator functions for wxCheckBox objects
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
-import checkbox_base
+from . import checkbox_base
 import common
 import wcodegen
 
