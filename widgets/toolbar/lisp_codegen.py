@@ -26,8 +26,7 @@ class LispCodeGenerator(wcodegen.LispWidgetCodeWriter):
         if bitmapsize:
             try:
                 w, h = [int(i) for i in bitmapsize.split(',')]
-                append('(wxToolBar_SetToolBitmapSize %s %s %s)\n' % \
-                       (obj_name, w, h))
+                append('(wxToolBar_SetToolBitmapSize %s %s %s)\n' % (obj_name, w, h))
             except:
                 pass
 
@@ -35,8 +34,7 @@ class LispCodeGenerator(wcodegen.LispWidgetCodeWriter):
         if margins:
             try:
                 w, h = [int(i) for i in margins.split(',')]
-                append('(wxToolBar_SetMargins %s %s %s)\n'
-                       % (obj_name, w, h))
+                append( '(wxToolBar_SetMargins %s %s %s)\n' % (obj_name, w, h) )
             except:
                 pass
 
@@ -87,9 +85,7 @@ class LispCodeGenerator(wcodegen.LispWidgetCodeWriter):
         return ids + out
 
     def get_code(self, obj):
-        """\
-        function that generates Lisp code for the toolbar of a wxFrame.
-        """
+        "function that generates Lisp code for the toolbar of a wxFrame"
         prop = obj.properties
 
         style = prop.get("style")
@@ -101,21 +97,17 @@ class LispCodeGenerator(wcodegen.LispWidgetCodeWriter):
 
         parent = self.format_widget_access(obj.parent)
 
-        init = [
-            '\n\t;;; Tool Bar\n',
-            '(setf (slot-%s obj) (wxToolBar_Create %s -1 -1 -1 -1 -1 %s))\n' % (obj.name, parent, style),
-                 '(wxFrame_SetToolBar (slot-top-window obj) (slot-%s obj))\n' % obj.name
-            ]
+        init = [ '\n\t;;; Tool Bar\n',
+                 '(setf (slot-%s obj) (wxToolBar_Create %s -1 -1 -1 -1 -1 %s))\n' % (obj.name, parent, style),
+                      '(wxFrame_SetToolBar (slot-top-window obj) (slot-%s obj))\n' % obj.name ]
         init.extend(self.get_init_code(obj))
         init.append(';;; Tool Bar end\n')
         return init, self.get_properties_code(obj), []
 
-# end of class LispCodeGenerator
 
 
 def initialize():
     klass = 'wxToolBar'
     common.class_names['EditToolBar'] = klass
     common.toplevels['EditToolBar'] = 1
-    common.register('lisp', klass, LispCodeGenerator(klass),
-                    'tools', ToolsHandler)
+    common.register('lisp', klass, LispCodeGenerator(klass), 'tools', ToolsHandler)

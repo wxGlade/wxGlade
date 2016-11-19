@@ -17,10 +17,8 @@ class PythonStaticBitmapGenerator(wcodegen.PythonWidgetCodeWriter):
 
 
 class CppStaticBitmapGenerator(wcodegen.CppWidgetCodeWriter):
-    tmpl = '%(name)s = new %(klass)s(%(parent)s, %(id)s, ' \
-           '%(bitmap)s%(style)s);\n'
+    tmpl = '%(name)s = new %(klass)s(%(parent)s, %(id)s, %(bitmap)s%(style)s);\n'
     tmpl_SetBestSize = ''
-
 
 
 def xrc_code_generator(obj):
@@ -41,5 +39,5 @@ def initialize():
     klass = 'wxStaticBitmap'
     common.class_names['EditStaticBitmap'] = klass
     common.register('python', klass, PythonStaticBitmapGenerator(klass))
-    common.register('C++', klass, CppStaticBitmapGenerator(klass))
-    common.register('XRC', klass, xrc_code_generator)
+    common.register('C++',    klass, CppStaticBitmapGenerator(klass))
+    common.register('XRC',    klass, xrc_code_generator)

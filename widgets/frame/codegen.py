@@ -81,10 +81,7 @@ def xrc_frame_code_generator(obj):
 
         def write_property(self, name, val, outfile, ntabs):
             if name != 'sizehints':
-                xrcgen.DefaultXrcObject.write_property(
-                    self, name, val, outfile, ntabs)
-
-    # end of class FrameXrcObject
+                xrcgen.DefaultXrcObject.write_property(self, name, val, outfile, ntabs)
 
     return FrameXrcObject(obj)
 
@@ -100,8 +97,6 @@ def xrc_statusbar_code_generator(obj):
                 self.properties['widths'] = ', '.join([str(w) for w in widths])
                 del self.properties['statusbar']
             xrcgen.DefaultXrcObject.write(self, outfile, tabs)
-
-    # end of class StatusbarXrcObject
 
     return StatusbarXrcObject(obj)
 
