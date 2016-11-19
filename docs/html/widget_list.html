@@ -1,0 +1,177 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><title>Widget List</title><meta name="generator" content="DocBook XSL Stylesheets V1.79.1"><link rel="home" href="index.html" title="wxGlade manual"><link rel="up" href="supported_widgets.html" title="Chapter 6. Supported widgets"><link rel="prev" href="star_bars.html" title="Menubar, Statusbar and Toolbar"><link rel="next" href="technical_notes.html" title="Chapter 7. wxGlade technical notes"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="navheader"><table width="100%" summary="Navigation header"><tr><th colspan="3" align="center">Widget List</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="star_bars.html">Prev</a> </td><th width="60%" align="center">Chapter 6. Supported widgets</th><td width="20%" align="right"> <a accesskey="n" href="technical_notes.html">Next</a></td></tr></table><hr></div><div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="widget_list"></a>Widget List</h2></div></div></div><p>Follow the widget list as it appears in the wxGlade main
+      window.</p><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="idm139900191061664"></a>Frame</h3></div></div></div><p>This prompts for a <code class="classname">wxFrame</code> or a
+        <code class="classname">wxMDIChildFrame</code>. A vertical
+        <code class="classname">wxBoxSizer</code> is appended. In the properties
+        window you can choose the styles and you can add an icon.</p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="idm139900191059248"></a>Dialog or Panel</h3></div></div></div><p>This prompts for a <code class="classname">wxDialog</code> or a
+        <code class="classname">wxPanel</code> in top-level. In the
+        <span class="quote">“<span class="quote"><span class="guilabel">Properties</span></span>”</span> window you can choose
+        the styles and, for the dialog, you can add an icon.</p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="idm139900191056480"></a>Panel</h3></div></div></div><p>This allows you to add a panel to a sizer. In the
+        <span class="quote">“<span class="quote"><span class="guilabel">Properties</span></span>”</span> window you can choose
+        the styles.</p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="idm139900191054496"></a>Splitter Window</h3></div></div></div><p>This produces a <code class="classname">wxSplitterWindow</code> and two
+        associated panels as well. You can choose vertical or horizontal
+        splitting. In the <span class="quote">“<span class="quote"><span class="guilabel">Properties</span></span>”</span>
+        window you can choose the styles and the sash position.</p><p>Be careful not to put too large a widget in a splitter panel,
+        because while it might appear normal in the design window, when you
+        run your program one of two panels will take all the available space
+        and the other will shrink to the minimum size possible.</p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="idm139900191051328"></a>Notebook</h3></div></div></div><p>This produces a <code class="classname">wxNotebook</code> and one panel
+        for each tab. In the <span class="quote">“<span class="quote"><span class="guilabel">Properties</span></span>”</span>
+        window you can add and remove tabs, which appear in a list.</p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="idm139900191048960"></a>Buttons</h3></div></div></div><div class="section"><div class="titlepage"><div><div><h4 class="title"><a name="idm139900191048320"></a>Button</h4></div></div></div><p>This produces a <code class="classname">wxButton</code>. You can enter
+          a caption and the <span class="quote">“<span class="quote">default</span>”</span> flag. If you want to add an
+          image you need a bitmap button (see <a class="xref" href="widget_list.html#widgets.bitmap_button.section" title="Bitmap Button">the section called “Bitmap Button”</a>).</p></div><div class="section"><div class="titlepage"><div><div><h4 class="title"><a name="widgets.bitmap_button.section"></a>Bitmap Button</h4></div></div></div><p>This produces a <code class="classname">wxBitmapButton</code>. You can
+          set the <span class="quote">“<span class="quote">default</span>”</span> flag on or off. You also can choose
+          the bitmap for the button and, optionally, the bitmap for the
+          disabled status. Refer to <a class="xref" href="codegen_bitmap_path.html" title="Specifying the Path of Bitmaps">the section called “Specifying the Path of Bitmaps”</a> for
+          bitmap path specifications.</p></div><div class="section"><div class="titlepage"><div><div><h4 class="title"><a name="idm139900191042992"></a>Radio Button</h4></div></div></div><p>This produces a <code class="classname">wxRadioButton</code>. In the
+          <span class="quote">“<span class="quote"><span class="guilabel">Properties</span></span>”</span> window you can enter
+          the text, and the status, clicked or not, and the style.</p></div><div class="section"><div class="titlepage"><div><div><h4 class="title"><a name="idm139900191040592"></a>Spin Button</h4></div></div></div><p>This produces a <code class="classname">wxSpinButton</code>. In the
+          <span class="quote">“<span class="quote"><span class="guilabel">Properties</span></span>”</span> window you can enter
+          the range and the value.</p></div><div class="section"><div class="titlepage"><div><div><h4 class="title"><a name="idm139900191038224"></a>Toggle Button</h4></div></div></div><p>This produces a <code class="classname">wxToggleButton</code>. You can
+          enter a caption and the status (clicked or not) of the
+          button.</p></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="idm139900191036448"></a>Calendar Control</h3></div></div></div><p>This produces a <code class="classname">wxCalendarCtrl</code>. In the
+        <span class="quote">“<span class="quote"><span class="guilabel">Properties</span></span>”</span> window you can enter
+        the style.</p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="idm139900191034160"></a>Check List Box</h3></div></div></div><p>This produces a <code class="classname">wxCheckListBox</code>. In the
+        <span class="quote">“<span class="quote"><span class="guilabel">Properties</span></span>”</span> window you can enter
+        the choices, the selection and the style.</p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="idm139900191031792"></a>Check Box</h3></div></div></div><p>This produces a <code class="classname">wxCheckBox</code>. In the
+        <span class="quote">“<span class="quote"><span class="guilabel">Properties</span></span>”</span> window you can enter
+        the text, and the status, checked or not, of the button.</p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="idm139900191029408"></a>Choice</h3></div></div></div><p>This produces a <code class="classname">wxChoice</code>. In the
+        <span class="quote">“<span class="quote"><span class="guilabel">Properties</span></span>”</span> window you can enter
+        the position of the selected item starting from 0. You can edit the
+        list of choices.</p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="idm139900191026976"></a>Combo Box</h3></div></div></div><p>This produces a <code class="classname">wxComboBox</code>. In the
+        <span class="quote">“<span class="quote"><span class="guilabel">Properties</span></span>”</span> window you can enter
+        the position of the selected item starting from 0. You can edit the
+        list of choices.</p><p>Click on the <span class="quote">“<span class="quote"><span class="guibutton">Apply</span></span>”</span> button
+        to consolidate your changes, they are lost without clicking.</p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="idm139900191023312"></a>Date Picker Control</h3></div></div></div><p>This produces a <code class="classname">wxDatePickerCtrl</code>. In the
+        <span class="quote">“<span class="quote"><span class="guilabel">Properties</span></span>”</span> window you can enter
+        the style.</p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="idm139900191021024"></a>Gauge</h3></div></div></div><p>This produces a <code class="classname">wxGauge</code>. In the
+        <span class="quote">“<span class="quote"><span class="guilabel">Properties</span></span>”</span> window you can enter
+        the range and set the style.</p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="idm139900191018656"></a>Generic Calendar Control</h3></div></div></div><p>This produces a <code class="classname">wxGenericCalendarCtrl</code>. In
+        the <span class="quote">“<span class="quote"><span class="guilabel">Properties</span></span>”</span> window you can set
+        the style.</p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="idm139900191016368"></a>Grid</h3></div></div></div><p>This produces a <code class="classname">wxGrid</code>. In the properties
+        window you can set the style, the row number, the label size, the line
+        and background color and the selection mode. You can edit the list of
+        columns. Also you can choose to let wxGlade to create the grid or
+        leave it to the user code.</p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="idm139900191014528"></a>Hyperlink Control</h3></div></div></div><p>This produces a <code class="classname">wxHyperlinkCtrl</code>. In the
+        property window you can enter the label, the URL and also set the
+        style.</p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="idm139900191012880"></a>List Box</h3></div></div></div><p>This produces a <code class="classname">wxListBox</code>. In the
+        <span class="quote">“<span class="quote"><span class="guilabel">Properties</span></span>”</span> window you can enter
+        the position of the selected item starting from 0. You can edit the
+        list of choices.</p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="idm139900191010448"></a>List Control</h3></div></div></div><p>This produces a <code class="classname">wxListCtrl</code>. In the
+        <span class="quote">“<span class="quote"><span class="guilabel">Properties</span></span>”</span> window you can set the
+        style.</p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="idm139900191008160"></a>Property Grid Manager</h3></div></div></div><p>This produces a <code class="classname">wxPropertyGridManager</code>. In
+        the <span class="quote">“<span class="quote"><span class="guilabel">Properties</span></span>”</span> window you can set
+        the style.</p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="idm139900191005872"></a>Radio Box</h3></div></div></div><p>This produces a <code class="classname">wxRadioBox</code>. In the
+        <span class="quote">“<span class="quote"><span class="guilabel">Properties</span></span>”</span> window you can enter
+        the dimension. The style determines whether the dimension is the
+        number of rows or columns.</p><p>You also can set which button is selected with the
+        <span class="quote">“<span class="quote">Selection</span>”</span> spin starting from 0. You can edit the list
+        of choices.</p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="idm139900191002512"></a>Slider</h3></div></div></div><p>This produces a <code class="classname">wxSlider</code>. In the
+        <span class="quote">“<span class="quote"><span class="guilabel">Properties</span></span>”</span> window you can enter
+        the value, the range and also set the style.</p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="idm139900191000128"></a>Spin Control</h3></div></div></div><p>This produces a <code class="classname">wxSpinCtrl</code>. In the
+        <span class="quote">“<span class="quote"><span class="guilabel">Properties</span></span>”</span> window you can enter
+        the value, the range and also set the style.</p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="idm139900190997744"></a>Static Line</h3></div></div></div><p>This produces a vertical or horizontal
+        <code class="classname">wxStaticLine</code>. In the
+        <span class="quote">“<span class="quote"><span class="guilabel">Properties</span></span>”</span> window you can tell
+        wxGlade whether to store the object as an attribute of the frame
+        class.</p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="idm139900190995328"></a>Static Bitmap</h3></div></div></div><p>This produces a <code class="classname">wxStaticBitmap</code>. You will
+        be prompted for the bitmap path. Refer to <a class="xref" href="codegen_bitmap_path.html" title="Specifying the Path of Bitmaps">the section called “Specifying the Path of Bitmaps”</a> for bitmap path specifications. In the
+        <span class="quote">“<span class="quote"><span class="guilabel">Properties</span></span>”</span> window you can set the
+        style and you can tell wxGlade whether to store the object as an
+        attribute of the frame class.</p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="idm139900190992320"></a>Static Text</h3></div></div></div><p>This produces a <code class="classname">wxStaticText</code>. In the
+        <span class="quote">“<span class="quote"><span class="guilabel">Properties</span></span>”</span> window you can enter
+        the text, set the style and tell wxGlade whether to store the control
+        as an attribute.</p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="idm139900190989888"></a>Text Control</h3></div></div></div><p>This produces a <code class="classname">wxTextCtrl</code>. In the
+        <span class="quote">“<span class="quote"><span class="guilabel">Properties</span></span>”</span> window you can enter
+        the text and also set the style.</p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="idm139900190987520"></a>Tree Control</h3></div></div></div><p>This produces a <code class="classname">wxTreeCtrl</code>. In the
+        <span class="quote">“<span class="quote"><span class="guilabel">Properties</span></span>”</span> window you can set the
+        style.</p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="idm139900190985232"></a>Custom Widget</h3></div></div></div><p>When you put a Custom Widget in the design window you will be
+        prompted for a class name.</p><div class="note" style="margin-left: 0.5in; margin-right: 0.5in;"><h3 class="title">Note</h3><p>Custom Widgets will not be shown in the design
+            preview.</p></div><div class="section"><div class="titlepage"><div><div><h4 class="title"><a name="idm139900190983120"></a>Constructor for Custom Widgets</h4></div></div></div><p>In the <span class="quote">“<span class="quote"><span class="guilabel">Widget</span></span>”</span> tab of the
+          <span class="quote">“<span class="quote"><span class="guilabel">Properties</span></span>”</span> window you can set a
+          number of custom attributes that will appear in the constructor
+          call.</p><div class="figure"><a name="idm139900190980464"></a><p class="title"><b>Figure 6.4. Widget Properties for a Custom Widget</b></p><div class="figure-contents"><div class="mediaobject"><img src="properties_custom_widget.png" width="567" alt="Widget Properties for a Custom Widget"></div></div></div><br class="figure-break"><p>There are four attributes <strong class="userinput"><code>$id</code></strong>,
+          <strong class="userinput"><code>$parent</code></strong>, <strong class="userinput"><code>$width</code></strong> and
+          <strong class="userinput"><code>$height</code></strong> have a special meaning:</p><div class="glosslist"><dl><dt><span class="glossterm">$id</span></dt><dd class="glossdef"><p>This attribute will be replaced by the own widget ID
+                e.g. <code class="constant">wxID_ANY</code>.</p></dd><dt><span class="glossterm">$parent</span></dt><dd class="glossdef"><p>This attribute will be replaced by a reference to the
+                parent widget.</p></dd><dt><span class="glossterm">$width</span></dt><dd class="glossdef"><p>This attribute will be replaced by the widget
+                width.</p></dd><dt><span class="glossterm">$height</span></dt><dd class="glossdef"><p>This attribute will be replaced by the widget
+                height.</p></dd></dl></div><p>These attributes have different effects in C++, Lisp, Perl,
+          Python or XRC code generation.</p><p>For XRC you can use it to add custom attributes to the
+          resource object. To do so, arguments must have the following format:
+          <span class="quote">“<span class="quote"><em class="parameter"><code>ATTRIBUTE_NAME:
+          ATTRIBUTE_VALUE</code></em></span>”</span>. For instance:
+          <span class="quote">“<span class="quote"><em class="parameter"><code>default_value:10</code></em></span>”</span> is translated
+          to:
+          <span class="quote">“<span class="quote"><code class="code">&lt;default_value&gt;10&lt;/default_value&gt;</code></span>”</span>.
+          Invalid entries are silently ignored.</p><p>You can use the property <span class="quote">“<span class="quote"><span class="guilabel">Custom
+          constructor</span></span>”</span> to specify a custom constructor like
+          a factory method.</p><div class="example"><a name="idm139900190963440"></a><p class="title"><b>Example 6.6. Generated C++ code for the custom widget shown
+            above</b></p><div class="example-contents"><pre class="programlisting">MyFrame::MyFrame(wxWindow* parent, int id, const wxString&amp; title, const wxPoint&amp; pos, const wxSize&amp; size, long style):
+    wxFrame(parent, id, title, pos, size, style)
+{
+    // begin wxGlade: MyFrame::MyFrame
+    window_1 = new wxChoicebook(this, wxID_ANY);
+
+    set_properties();
+    do_layout();
+    // end wxGlade
+}
+</pre></div></div><br class="example-break"><div class="note" style="margin-left: 0.5in; margin-right: 0.5in;"><h3 class="title">Note</h3><p>Refer to <a class="xref" href="ui_properties_window.html#ui_code_properties" title="Code Properties">the section called “Code Properties”</a> for a
+            description of declaration and assignment of additional functions
+            and variables.</p></div></div><div class="section"><div class="titlepage"><div><div><h4 class="title"><a name="idm139900190959280"></a>Example: AGW SpeedMeter</h4></div></div></div><div class="example"><a name="idm139900190958512"></a><p class="title"><b>Example 6.7. Widget Custom Widget - AGW SpeedMeter</b></p><div class="example-contents"><div class="figure"><a name="idm139900190957744"></a><p class="title"><b>Figure 6.5. Widget Tree</b></p><div class="figure-contents"><div class="mediaobject"><img src="custom_widget_SM_tree.png" width="319" alt="Widget Tree"></div></div></div><p><br class="figure-break"></p><div class="figure"><a name="idm139900190955360"></a><p class="title"><b>Figure 6.6. SpeedMeter Properties</b></p><div class="figure-contents"><div class="mediaobject"><img src="custom_widget_SM_design1.png" width="638" alt="SpeedMeter Properties"></div><div class="mediaobject"><img src="custom_widget_SM_design2.png" width="319" alt="SpeedMeter Properties"></div></div></div><p><br class="figure-break"></p><div class="figure"><a name="idm139900190951472"></a><p class="title"><b>Figure 6.7. Preview</b></p><div class="figure-contents"><div class="mediaobject"><img src="custom_widget_SM_preview.png" width="319" alt="Preview"></div></div></div><p><br class="figure-break">Generated Python code:</p><pre class="programlisting">#!/usr/bin/env python
+# -*- coding: UTF-8 -*-
+#
+# generated by wxGlade 0.7.1 on Sat Dec 19 11:11:39 2015
+#
+
+import wx
+
+# begin wxGlade: dependencies
+import gettext
+# end wxGlade
+
+# begin wxGlade: extracode
+import wx.lib.agw.speedmeter as SM
+# end wxGlade
+
+
+class MyFrame(wx.Frame):
+    def __init__(self, *args, **kwds):
+        # begin wxGlade: MyFrame.__init__
+        wx.Frame.__init__(self, *args, **kwds)
+        self.speedmeter_1 = SM.SpeedMeter(self, wx.ID_ANY)
+
+        self.__set_properties()
+        self.__do_layout()
+        # end wxGlade
+
+    def __set_properties(self):
+        # begin wxGlade: MyFrame.__set_properties
+        self.SetTitle(_("frame_1"))
+        self.SetSize((300, 300))
+        self.speedmeter_1.SetSpeedValue(33)
+        # end wxGlade
+
+    def __do_layout(self):
+        # begin wxGlade: MyFrame.__do_layout
+        sizer_1 = wx.BoxSizer(wx.VERTICAL)
+        sizer_1.Add(self.speedmeter_1, 1, wx.ALL | wx.EXPAND, 5)
+        self.SetSizer(sizer_1)
+        self.Layout()
+        # end wxGlade
+
+# end of class MyFrame
+class MyApp(wx.App):
+    def OnInit(self):
+        frame_1 = MyFrame(None, wx.ID_ANY, "")
+        self.SetTopWindow(frame_1)
+        frame_1.Show()
+        return True
+
+# end of class MyApp
+
+if __name__ == "__main__":
+    gettext.install("app") # replace with the appropriate catalog name
+
+    app = MyApp(0)</pre></div></div><p><br class="example-break"></p></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="idm139900190945968"></a>Spacer</h3></div></div></div><p>When you put a spacer into a sizer slot in the design window you
+        will be prompted for the size; wxGlade will generate the code to set
+        an empty space in that slot of the sizer.</p></div></div><div class="navfooter"><hr><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="star_bars.html">Prev</a> </td><td width="20%" align="center"><a accesskey="u" href="supported_widgets.html">Up</a></td><td width="40%" align="right"> <a accesskey="n" href="technical_notes.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">Menubar, Statusbar and Toolbar </td><td width="20%" align="center"><a accesskey="h" href="index.html">Home</a></td><td width="40%" align="right" valign="top"> Chapter 7. wxGlade technical notes</td></tr></table></div></body></html>

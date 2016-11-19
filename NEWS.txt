@@ -1,0 +1,455 @@
+Version 0.7.3 - 2016-06-XX:
+General:
+  - Disable autosave functionality permanently after saving has failed
+  - Redesign the palette window (Thanks to Dietmar Schwertberger)
+  - ...
+
+Generated Code:
+  - Remove the outdated version from the Perl "use Wx" statement
+  - Use dynamic lookups to call event handler in Perl
+  - ...
+
+Known issues:
+  - Missing dependencies with wxToolBox widgets (sf bug #188)
+    Workaround: enter dependencies manually in th extra code field
+
+Bugs:
+  - Fix missing icons in release packages
+  - Fix PyDeadObject errors and crashes during cut and paste
+  - Fix preview failure for Perl class names with "::" (sf bug #183)
+  - System colour constants named incorrectly in Perl (sf bug #184,
+    Thanks to Sue D. Nymme)
+  - Rework querying home path to prevent unexpanded variables (sf bug #185)
+  - Fix C++ code issue with Ids assigned to variables (sf bug #186)
+  - Fix typo in default type of the toolbar C++ constructor
+  - Fix AttributeError during code generation of toplevel menubars
+  - Don't wrap up IOError in XmlParsingError (sf bug #189)
+  - Catch all errors raised during faulthandler initiasisation (sf bug #193)
+  - Fix wrong CheckListBox C++ statement if styles are selected
+  - Add excludes for wxCheckListBox mutual styles
+  - LB_EXTENDED for ListBox never show up in generated code (sf bug #194)
+  - Assert isinstance(geometry, (wx.Point,  wx.Rect)) (sf bug #196)
+  - ...
+
+Deprecation
+  - In place modifications for generated source files will be removed in one
+    of the next releases
+
+Documentation:
+  - ...
+
+Note:
+  - See CHANGES.txt for a full list of changes
+
+Version 0.7.2 - 2016-03-05:
+General:
+  - Remove usage of KDE file dialog
+  - Improve reporting of early error messages on Windows
+
+Generated Code:
+  - Inline wxStaticBox statement into wxStaticBoxSizer statement
+  - Use wxWindowID instead of int for widget identifiers in C++
+  - Add support for wxArtProvider to XRC code generator
+  - Don't set the default value for redirection in wx.PySimpleApp()
+
+Bugs:
+  - Fix wrong orientation of wxStaticLine widgets
+  - Fix NameError exception during inserting a sizer slot
+  - Fix ZeroDevisionError during adding a new column to a wxFlexGridSizer
+    with only one row
+  - Fix WindowsError is the backup file already exists (Thanks to Graeme
+    Glenn)
+  - Fix black window bug on Windows
+  - Fix PyDeadObjectError during closing wxGlade
+  - Fix usage of wx.NullIcon for Perl and Python
+  - Fix main file is generated without custom extensions (sf bug #179)
+  - Fix wrong CreateStatusBar statement if styles are selected
+  - Add missing wxStatusBar style wxST_SIZEGRIP
+  - Fix generated code for wxDatePickerCtrl
+  - Add workaround for missing wxDefaultDateTime in wxPerl
+
+Deprecation
+  - In place modifications for generated source files will be removed in one
+    of the next releases
+
+Documentation:
+  - Reorganise and update the documentation
+
+Note:
+  - See CHANGES.txt for a full list of changes
+
+Version 0.7.1 - 2015-12-26:
+General:
+  - Open wxGlade windows in the upper left corner if wxGlade is starting
+    the first time
+  - Change internal string handling to Unicode
+  - Show logged exceptions in wxGlade bug dialog
+  - Store generated source files in the selected encoding
+  - Add support for 3-state checkboxes
+  - Remove obsolete calls of wx.InitAllImageHandlers()
+  - Catch and show early exceptions on Windows (Thanks to Tor Sjøwall)
+  - Rework handling of event types for C++
+  - Add support for events that are only supported by a specific wx version
+  - Add styles to wxToggleButton
+  - Don't rewrite unchanged files
+  - Rework creation of wxBitmap code used by several widgets
+  - New widgets CheckListBox, GenericCalendarCtrl and PropertyGridManager
+    contributed by Franco Bugnano
+  - Use defaults for missing application attributes in wxg files
+
+Generated Code:
+  - Remove obsolete wx.InitAllImageHandlers() calls from Python codegen
+  - Add missing event types for event handling in C++
+  - Event handler in C++ aren't virtual anymore
+  - Add support for empty bitmaps and wxArtProvider
+
+Bugs:
+  - Fix Unicode error during saving wxg files
+  - Create non-existing config directory during initialisation (sf bug #164)
+  - Fix incorrect handling of styles only supported by a specific wx version
+  - Fix error during preview of classed with custom names (sf bug #165)
+  - Don't ignore disabled gettext support (Thanks to Udi Fuchs)
+  - Fix UnicodeDecodeError when saving project using non ASCII characters in
+    menu items (sf bug #166)
+  - Unicode error during update of an existing source file (sf bug #167)
+  - Fix unicode error during copying widgets to the clipboard
+  - Fix Designer not displaying buttons two lines correctly (sf bug #169)
+  - Fix generated code for wxListBox
+  - Fix broken color selection dialog
+  - Fix a string formatting error during creating the second instances of the
+    same widget
+  - Always show new widgets in the design window
+  - Fix generated code for CustomWidget constructor (Thanks to Udi Fuchs)
+  - Fix a infinite loop within sizing a widget (sf bug #170)
+  - Fix binding of menu event in Perl
+  - Fix root widget loses layout attributes during copy and paste
+  - Load wxg files even if application attributes are missing
+
+Deprecation
+  - In place modifications for generated source files will be removed in one
+    of the next releases
+
+Documentation:
+  - Adapt and extend the documentation
+
+Note:
+  - See CHANGES.txt for a full list of changes
+
+Version 0.7.0 - 2014-10-26:
+General:
+  - Remove support for old Python import style generally
+  - Add missing styles for wxNotebook (Thanks to Udi Fuchs)
+  - Use Python logging facility instead of print statements
+  - Rework quoting and escaping of special character sequences
+  - Rework internal path handling
+  - Write always an error log file
+  - Improve widget import to be able to import widgets from ZIP files
+  - Change configuration default to remember the position and geometry
+    of the three main windows. This change effects fresh installations only.
+  - adapt GUI to run with wxPython 2.8 till 3.0
+  - remove support for wxPython 2.6
+  - Disable Lisp for wx 3.0
+  - Improve the internal error dialog
+  - Unify the code generation of widget specific code
+    This change causes some minor changes in the generated code.
+  - Add Lisp and Perl support for wxDatePickerCtrl
+  - Add support for wxSplitterWindow.SetMinimumPaneSize()
+
+Generated Code:
+  - Use SetToolTip() instead of SetToolTipString() for wxPython 3 und wxPerl 3
+  - Use configurable indents instead of hard coded tabs in wxFrame code
+    for Perl
+
+Bugs:
+  - Fix escape sequences in Unicode strings were escaped twice Perl and
+    Python
+  - Wrong Lisp statement in wxHyperlinkCtrl and wxFrame
+  - Prevent code generation from a template file by commandline invocation
+  - Fix bug in generation of valid hash keys for Perl
+  - Fix various issues during transformation from XRC into wxGlade
+  - Fix wrong conditions to generate application start code (sf bug #161)
+  - Don't convert first char of a XRC extraproperty to upper case (sf
+    bug #163)
+  - Fix incomplete Unicode escaping
+
+Deprecation
+  - In place modifications for generated source files will be removed in one
+    of the next releases
+
+Documentation:
+  - Adapt and extend the documentation
+
+API (for custom widgets):
+  - Simplify signature of quote_str(), use quote_path() to quote / escape
+    filenames or paths
+
+Note:
+  - See CHANGES.txt for a full list of changes
+
+Version 0.6.8 - 2013-07-13:
+General:
+  - Add comfortable exception handler for more detailed bug reports
+
+Bugs:
+  - Wrong SetSizeHint() call in Perl (Thanks to Eric McKeeth)
+  - Fix XRC code generation for notebooks with panes
+  - Fix too strict sanity checks for class attributes
+  - Fix "Overwrite existing sources" for new projects
+  - Fix an uninitialised variable in saving a project file (sf bug # 157)
+  - Fix handling of unicode characters in strings for Perl and Python
+  - Fix handling of style-less dialogs and frames (sf bug #145)
+
+Documentation:
+  - ...
+
+API (for custom widgets):
+  - ...
+
+Note:
+  - See CHANGES.txt for a full list of changes
+
+Version 0.6.7 - 2013-04-07:
+General:
+  - Add a config option to suppress the code generation success message
+  - Improve usability of some dialogs
+
+Bugs:
+  - Remove empty line between shebang and encoding statement in Python files
+  - Regression in generated Python code for bindung events
+
+Documentation:
+  - no changes
+
+API (for custom widgets):
+  - no changes
+
+Note:
+  - See CHANGES.txt for a full list of changes
+
+Version 0.6.6 - 2013-03-29:
+General:
+  - Add i18n support to C++ code generator
+  - Add more test cases
+  - Add more tooltips to gui
+  - Add new widget HyperlinkCtrl
+  - Add Perl support to CalendarCtrl
+  - Add simple application start code to C++ code generator
+  - Add "Store as attribute" for sizers
+  - Change default widget ID from -1 to wxID_ANY and adapt codegen
+  - Change some default settings and reorg internal handling
+  - Fix exceptions during widget preview triggered by keyboard shortcut
+  - Improve error handling
+  - Improve message logging
+  - Internal rework of code generator parts, this causes minor changes
+    in the generated code
+  - Join code templates for application startup code in class variables
+    and unify the code generation of this piece
+  - Minor GUI improvements
+  - Rework and unify code generators, all code generators support
+    extracode and extraproperties now
+  - Set "Overwrite existing sources" for new projects
+  - Show existing tooltips at all elements of a property
+  - When pasting: only search current top-level window for duplicate names
+  - Write isolation directives at beginning in C++ header files
+
+Bugs:
+  - Don't add unsupported widgets to a sizer
+  - Encoding detection for Mac OS X
+  - Prevent caching effects in Lisp code generator
+  - Prevent deleting last notebook tab (sf bug #3126974)
+  - Same default names for multiple notebooks (sf bug #2000566)
+  - Setting invalid windows names hasn't blocked fully (sf bug #154)
+  - String formatting issue for event handlers in Lisp code generator
+  - UnicodeEncodeError in xml.sax.expatreader (sf bug #149)
+
+Documentation:
+  - Update wxGlade user manual
+
+API (for custom widgets):
+  - Add support for widget builder that don't support all wx versions
+    supported by wxGlade
+
+Note:
+  - See CHANGES.txt for a full list of changes
+
+Version 0.6.5 - 2012-01-08:
+General:
+  - remove support for Python 2.2
+  - remove support for wxPython < 2.6
+  - add a small test suite
+  - add tooltip for CheckBoxProperty (Davorin Kunstelj)
+  - add column sizes parameter to GridProperty init parameters
+    (Davorin Kunstelj)
+  - Improve searching and executeing of wxglade.py in shell script wxglade
+  - some minor changes / improvements
+
+Bugs:
+  - Various bugs in Lisp code generators
+  - Typo in Perl code generators
+  - Allow saving of generated code to filenames without directory part
+  - Solve issue "C++ CalendarControl issues in 0.6.3" (sf bug #2782306)
+
+Documentation:
+  - Update usage message and manpage
+
+API (for custom widgets):
+  - no changes
+
+Note:
+  - See CHANGES.txt for a full list of changes
+
+Version 0.6.4 till version 0.5:
+No summary of changes available - see CHANGES.txt for a full list of changes
+
+Version 0.5   - 2007-04-02:
+  - with some improvements
+  - code ported to the "new" wx namespace
+  - wxWidgets 2.8 support
+  - and more...
+
+Version 0.4.1 - 2006-03-02:
+  - Note that this file isn't very much up to date anymore...
+
+Version 0.4   - 2005-10-10:
+ - edit_sizers/edit_sizers.py:
+     updated layout() to work with wx2.6
+ - widgets/frame/frame.py:
+     fixed a segfault when deleting a frame with a statusbar on wx2.6
+ - widgets/notebook/notebook.py:
+     updated notebook virtual sizer to fix broken layout on wx2.6
+ - edit_windows.py:
+     fixed property_panel layout which was broken on wx2.6
+ - tree.py:
+     - added wxBegin/EndBusyCursor() calls when showing a toplevel widget
+     - called fit_parent at the end of show_widget for toplevel widgets
+       without a specific size
+ - added event handlers support (not for perl at the moment)
+ - better sizers layout
+ - many bugs fixed
+ - updated copyright information
+ - ...
+
+Version 0.3.5.1 - 2004-11-08:
+ - released, due to a bug in version 0.3.5 (size property not updating
+   correctly)
+
+Version 0.3.5 - 2004-11-04:
+ - kdefiledialog.py:
+     support for native file and dir dialogs on KDE
+ - debian/:
+     support for Debian package (by Georges Khaznadar)
+ - common.py, config.py, configUI.py, main.py, res/preferences.wxg:
+     auto save support (i.e. now wxg files can be saved automatically
+     periodically)
+ - edit_sizers/sizers_codegen.py, edit_sizers/perl_sizers_codegen.py,
+   codegen/*.py:
+     fixed issue with wxStaticBoxSizer code generation
+ - edit_sizers/edit_sizers.py, edit_windows.py:
+     fixed segfault on wxGTK2 when removing a widget from the popup menu
+ - *.py:
+     updated copyright information
+
+Version 0.3.4.1 - 2004-09-04:
+ - introduce of a workaround for a bug in wxPython 2.5.2.8 (about wxGrid
+   and its default size...)
+
+Version 0.3.4 - 2004-09-01:
+ - common.py:
+     minor UI tweak
+ - edit_windows.py, config.py, configUI.py:
+     added `show "handles" of sizers' option
+     added `allow duplicate widget names' option
+ - widgets/menubar/codegen.py:
+     changed python code generator to be smarter about menu items with a
+     user defined name
+ - edit_windows.py, widget_properties.py:
+     fixed a couple of wxMac issues
+ - widgets/frame/codegen.py:
+     added xrc code generator for wxStatusBar
+ - widgets/choice/choice.py, widgets/combo_box/combo_box.py,
+   widgets/list_box/list_box.py:
+     removed default entry in Choices property
+ - widgets/combo_box/codegen.py, widgets/spin_ctrl/codegen.py:
+     applied patch #944642
+ - widgets/list_ctrl/list_ctrl.py:
+     added a couple of extra styles
+  - widgets/button/*:
+     added wxButton styles
+ - widgets/panel/panel.py:
+     fixed (hopefully) bug #880674
+ - clipboard.py, main.py:
+     added Drag&Drop of wxg files for opening them (thanks to Chris Liechti)
+ - main.py, docs/index.html, docs/html/*:
+     new manual added
+ - config.py:
+     config path is now under APPDATA ok windows
+ - widgets/bitmap_button/*, widgets/toolbar/*, widgets/static_bitmap/*:
+     added "code:" tag
+ - xrc2wxg.py:
+     added wxSplitterWindow support
+ - tree.py:
+     partially fixed bug #798041 (renaming of cut widgets)
+ - widgets/panel/panel.py:
+     added ability to paste a sizer inside a panel, notebook page and
+     splitter pane
+ - codegen/py_codegen.py, widgets/*/codegen.py, edit_sizers/sizers_codegen.py:
+     changes to the python code generator to support new wx namespace
+
+Version 0.3.1 - 2003-08-30:
+ - we found an annoying bug on pl_codegen.py right after releasing 0.3 :-(
+
+Version 0.3   - 2003-08-29:
+ - codegen/pl_codegen.py, toolbar/perl_codegen.py, menubar/perl_codegen.py:
+     brought Perl code generator up to date:
+     - multiple files support
+     - ``keep contents'' support
+     - automatic ids generation (ID_FOO=?) support
+     everything is still *experimental* and NEEDS EXTENSIVE TESTING
+ - widgets/toolbar/codegen.py, widgets/bitmap_button/codegen.py,
+   widgets/static_bitmap/codegen.py:
+     added (limited) support to xpm data (not on files). I.e. if the bitmap
+     property is something like var:variable_name, variable_name is taken to
+     be a variable that holds xpm data
+ - codegen/xrc_codegen.py, xml_parse.py, docs/turorial.html:
+     added subclass support to XRC output
+ - application.py, tree.py, xml_parse.py, codegen/py_codegen.py,
+   codegen/cpp_codegen.py:
+     added "overwrite" property to Application, to allow
+     re-generation of (C++ and python) code from scratch (as opposed
+     to updating wxGlade blocks).
+ - docs/tutorial.html:
+     updated notes
+ - codegen/py_codegen.py, codegen/cpp_codegen.py:
+     enhanced generate_code_id, to recognize ID_SOMETHING=? and generate a
+     "unique" id automatically
+ - codegen/cpp_codegen.py:
+     fixed ids code generation when the output file already exists
+ - widgets/toolbar.py:
+     fixed xrc code generation
+ - common.py:
+     updated version number to 0.3pre1
+ -  edit_windows.py, application.py:
+      added validation code for `name' and `class' properties (fixed bug
+      #764186)
+ - credits.txt:
+      updated developer names
+ - codegen/py_codegen.py, codegen/cpp_codegen.py:
+      fixed bug in quote_str
+ -  tree.py, widgets/panel/*:
+      added scrolled window support (this required a small change in
+      Tree.Node.write in tree.py)
+ -  perl generation support added
+ -  nearly all around:
+      fixed various Unicode-related bugs
+ - misc.py
+      added functions, streq and wxstr, to fix some Unicode issues
+ - edit_windows.py, edit_sizers/edit_sizers.py, xml_parse.py:
+      added cut&paste support for toplevel sizers
+ - common.py, main.py:
+      added ToggleButtonBox to separate the "core" components from the
+      "custom" ones (similar to Glade and QT-Designer)
+ - common.py, config.py:
+     added local widgets path support
+
+See VCS revision history for change details of older version. Check
+especially revisions of CHANGES.txt earlier then December 2011

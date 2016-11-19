@@ -1,0 +1,110 @@
+'\" t
+.\"     Title: wxGlade
+.\"    Author: Georges Khaznadar <georgesk@ofset.org>
+.\" Generator: DocBook XSL Stylesheets v1.79.1 <http://docbook.sf.net/>
+.\"      Date: January 07, 2012
+.\"    Manual: User Commands
+.\"    Source: wxGlade
+.\"  Language: English
+.\"
+.TH "WXGLADE" "1" "January 07, 2012" "wxGlade" "User Commands"
+.\" -----------------------------------------------------------------
+.\" * Define some portability stuff
+.\" -----------------------------------------------------------------
+.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.\" http://bugs.debian.org/507673
+.\" http://lists.gnu.org/archive/html/groff/2009-02/msg00013.html
+.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.ie \n(.g .ds Aq \(aq
+.el       .ds Aq '
+.\" -----------------------------------------------------------------
+.\" * set default formatting
+.\" -----------------------------------------------------------------
+.\" disable hyphenation
+.nh
+.\" disable justification (adjust text to left margin only)
+.ad l
+.\" -----------------------------------------------------------------
+.\" * MAIN CONTENT STARTS HERE *
+.\" -----------------------------------------------------------------
+.SH "NAME"
+wxglade \- python program to build user interfaces based on the wxWidgets toolset\&.
+.SH "SYNOPSIS"
+.HP \w'\fBwxglade\fR\ 'u
+\fBwxglade\fR [\-\-help | \-h]
+.HP \w'\fBwxglade\fR\ 'u
+\fBwxglade\fR [\-\-version]
+.HP \w'\fBwxglade\fR\ 'u
+\fBwxglade\fR [\fIFILENAME\&.wxg\fR]
+.HP \w'\fBwxglade\fR\ 'u
+\fBwxglade\fR {\-g\ \fILANG\fR | \-\-generate\-code\ \fILANG\fR} [\-o\ \fIDESTINATION\fR | \-\-output\ \fIDESTINATION\fR] \fIFILENAME\&.wxg\fR
+.SH "DESCRIPTION"
+.PP
+\fBwxglade\fR
+wxGlade is a GUI designer written in Python with the popular GUI toolkit wxPython, that helps you create wxWidgets/wxPython user interfaces\&. At the moment it can generate Python, Lisp, C++ and XRC (wxWidgets\*(Aq XML resources) code\&.
+.SH "OPTIONS"
+.PP
+These programs follow the usual
+GNU
+command line syntax, with long options starting with two dashes (`\-\*(Aq)\&. A summary of options is included below\&. For a complete description, see the
+Info
+files\&.
+.PP
+\fB\-g\fR or \fB\-\-generate\-code\fR \fILANG\fR
+.RS 4
+If you only want to generate the code without starting the GUI, use the \-g or \-\-generate\-code option with the language as argument
+.sp
+Possible values for LANG are "python", "lisp", "XRC", "perl" or "C++"\&.
+.RE
+.PP
+\fB\-o\fR or \fB\-\-output\fR \fIDESTINATION\fR
+.RS 4
+You can specify the destination of the generated code with \-o or \-\-output option\&.
+.sp
+The DESTINATION argument can be a file or a directory\&. It is a file when the FILENAME\&.wxg generates single\-file source code\&. It is a directory when the FILENAME\&.wxg generates multiple\-file source code\&.
+.RE
+.PP
+\fB\-h\fR or \fB\-\-help\fR
+.RS 4
+Show the help message and exit
+.RE
+.PP
+\fB\-\-version\fR
+.RS 4
+Show programs version number and exit
+.RE
+.SH "EXAMPLES"
+.PP
+Generate Python code out of
+myapp\&.wxg:
+.PP
+\fBwxglade\fR
+\-o /tmp \-g python myapp\&.wxg
+.PP
+Open file
+myapp\&.wxg
+in wxGlade GUI:
+.PP
+\fBwxglade\fR
+myapp\&.wxg
+.SH "BUGS"
+.PP
+Report wxGlade bugs to <wxglade\-general@lists\&.sourceforge\&.net> or <https://sourceforge\&.net/projects/wxglade/>
+.SH "SEE ALSO"
+.PP
+wxGlade home page <http://wxgalde\&.sourceforge\&.net>
+.SH "AUTHORS"
+.PP
+\fBGeorges Khaznadar\fR <\&georgesk@ofset\&.org\&>
+.RS 4
+This manual page was originally written by Georges Khaznadar for the Debian(TM) system (but may be used by others)\&. Permission is granted to copy, distribute and/or modify this document under the terms of the GNU General Public License, Version 2 any later version published by the Free Software Foundation\&. On Debian(TM) systems, the complete text of the GNU General Public License can be found in /usr/share/common\-licenses/GPL\&.
+.RE
+.PP
+\fBCarsten Grohmann\fR <\&mail@carstengrohmann\&.de\&>
+.RS 4
+Current maintainer of this manpage\&.
+.RE
+.SH "COPYRIGHT"
+.br
+Copyright \(co 2003, 2012-2016 Georges Khaznadar, Carsten Grohmann
+.br
