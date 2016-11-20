@@ -45,8 +45,11 @@ class EditBitmapButton(ManagedBase, EditStylesMixin, BitmapMixin):
         #try:
         self.widget = wx.BitmapButton(self.parent.widget, self.id, bmp, style=self.style)
         if self.disabled_bitmap:
-            bmp = self.get_preview_obj_bitmap(self.disabled_bitmap)
-            self.widget.SetBitmapDisabled(bmp)
+            bmp_d = self.get_preview_obj_bitmap(self.disabled_bitmap)
+            if bmp.Size==bmp_d.Size:
+                self.widget.SetBitmapDisabled(bmp_d)
+            else:
+                self._logger.warning("bitmap button with disabled bitmap of different size")
 
         #except AttributeError:
             #self.widget = wx.BitmapButton(self.parent.widget, self.id, bmp)
