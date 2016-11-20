@@ -955,12 +955,10 @@ class EditStylesMixin(np.PropertyOwner):
         self.style = np.WidgetStyleProperty()  # this will read it's default value
 
     def _set_widget_style(self):
-        """\
-        Set a new widget style if the style has changed
+        """Set a new widget style if the style has changed
 
         @note:
-            Quote from wxWidgets documentation about changing styles
-            dynamically:
+            Quote from wxWidgets documentation about changing styles dynamically:
 
             Note that alignment styles (wxTE_LEFT, wxTE_CENTRE and
             wxTE_RIGHT) can be changed dynamically after control creation
@@ -971,15 +969,12 @@ class EditStylesMixin(np.PropertyOwner):
 
         @see: L{EditBase.widget}
         """
-        widget = getattr(self, 'widget', None)
-        if widget and self.update_widget_style:
-            old_style = widget.GetWindowStyleFlag()
-
-            new_style = self.get_int_style()
-
-            if old_style != new_style:
-                widget.SetWindowStyleFlag(new_style)
-                widget.Refresh()
+        if not self.widget or not self.update_widget_style: return
+        old_style = self.widget.GetWindowStyleFlag()
+        new_style = self.style
+        if old_style != new_style:
+            self.widget.SetWindowStyleFlag(new_style)
+            self.widget.Refresh()
 
     @decorators.memoize
     def wxname2attr(self, name):
@@ -1000,6 +995,7 @@ class EditStylesMixin(np.PropertyOwner):
         return attr
 
     def properties_changed(self, modified):
-        # XXX add style modfication handling
-        pass
+        if "style" in modified:
+            self._set_widget_style()
+        
 

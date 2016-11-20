@@ -56,6 +56,9 @@ class EditGenericCalendarCtrl(ManagedBase, EditStylesMixin):
             attr = getattr(wx, cn)
         return attr
 
+    def properties_changed(self, modified=None):
+        EditStylesMixin.properties_changed(self, modified)
+        ManagedBase.properties_changed(self, modified)
 
 
 def builder(parent, sizer, pos, number=[1]):

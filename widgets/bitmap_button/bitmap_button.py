@@ -79,6 +79,7 @@ class EditBitmapButton(ManagedBase, EditStylesMixin, BitmapMixin):
                 #if not size_p.is_active():
                     #size_p.set( self.widget.GetBestSize() )
 
+        EditStylesMixin.properties_changed(self, modified)
         ManagedBase.properties_changed(self, modified)
 
 

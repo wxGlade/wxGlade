@@ -310,6 +310,7 @@ class EditNotebook(ManagedBase, EditStylesMixin):
                 # during XML parsing, the tab names are set before
                 page_count = len(self.properties["tabs"].value)
                 self.pages.extend( [None]*page_count )
+        EditStylesMixin.properties_changed(self, modified)
         ManagedBase.properties_changed(self, modified)
 
     # helpers ##########################################################################################################
