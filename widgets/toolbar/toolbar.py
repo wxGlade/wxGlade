@@ -624,7 +624,8 @@ class EditToolBar(EditBase, PreviewMixin, EditStylesMixin, BitmapMixin):
         if not modified or "tools" in modified and self.widget:
             self._set_tools()
             refresh = True
-            
+
+        EditStylesMixin.properties_changed(self, modified)
         if refresh: self._refresh_widget()
 
         EditBase.properties_changed(self, modified)

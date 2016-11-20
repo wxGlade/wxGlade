@@ -57,7 +57,7 @@ class FieldsProperty(np.GridProperty):
 
 class EditStatusBar(EditBase, EditStylesMixin):
     _hidden_frame = None
-    update_widget_style = False
+    update_widget_style = False  # updating does not seem to have an effect
 
     _PROPERTIES = ["Widget", "style", "fields"]
     PROPERTIES = EditBase.PROPERTIES + _PROPERTIES + EditBase.EXTRA_PROPERTIES
@@ -123,6 +123,7 @@ class EditStatusBar(EditBase, EditStylesMixin):
     def properties_changed(self, modified):
         if not modified or "fields" in modified:
             self._set_fields()
+        EditStylesMixin.properties_changed(self, modified)
         EditBase.properties_changed(self, modified)
 
     def check_compatibility(self, widget, typename=None, report=False):

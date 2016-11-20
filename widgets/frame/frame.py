@@ -68,7 +68,7 @@ class EditFrame(TopLevelBase, EditStylesMixin, BitmapMixin):
         # remove menu, status and tool bar
         if self.menubar:
             self._menubar = self._menubar.remove(gtk_do_nothing=True)
-        if self._statusbar:
+        if self.statusbar:
             self._statusbar = self._statusbar.remove(do_nothing=True)
         if self.toolbar:
             self._toolbar = self._toolbar.remove(do_nothing=True)
