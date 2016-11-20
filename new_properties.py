@@ -551,10 +551,17 @@ class _CheckListProperty(Property):
     def get_string_value(self):
         "Return the selected styles joined with '|', for writing to XML file"
         if not self.value_set: return ""
+        # handle combinations: remove the individual components
+        value_set = set(self.value_set)
+        for name in self._names:
+            combination = self.style_defs[name].get("combination",[])
+            if combination and name in value_set or value_set.intersection(combination)==combination:
+                value_set.add(name)
+                value_set -= combination
 
         ret = []
         for name in self._names:
-            if name in self.value_set:
+            if name in value_set:
                 ret.append(name)
         return '|'.join(ret)
 
@@ -1364,7 +1371,7 @@ class ColorProperty(DialogProperty):
         if color is _DefaultArgument: return None
         if color in self.str_to_colors:
             # e.g. 'wxSYS_COLOUR_SCROLLBAR'
-            return wx.SystemSettings_GetColour(self.str_to_colors[color])
+            return compat.wx_SystemSettings_GetColour(self.str_to_colors[color])
         elif color.startswith("#"):
             return misc.string_to_color(color)
         ret = wx.NamedColour(color)
