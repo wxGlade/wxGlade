@@ -423,6 +423,7 @@ void All_Widgets_Frame::do_layout()
     sizer_1->AddGrowableCol(0);
     Layout();
     Centre();
+    SetSize(wxSize(800, 417));
     // end wxGlade
 }
 

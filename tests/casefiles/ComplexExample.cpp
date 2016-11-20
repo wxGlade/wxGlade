@@ -141,6 +141,7 @@ void PyOgg2_MyFrame::do_layout()
     sizer_1->AddGrowableCol(0);
     Layout();
     Centre();
+    SetSize(wxSize(600, 500));
     // end wxGlade
 }
 
@@ -228,6 +229,7 @@ void MyFrameGrid::do_layout()
     SetSizer(_szr_frame);
     _szr_frame->SetSizeHints(this);
     Layout();
+    SetSize(wxSize(492, 300));
     // end wxGlade
 }
 
