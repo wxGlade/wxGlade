@@ -76,6 +76,7 @@ class EditCheckBox(ManagedBase, EditStylesMixin):
 
         if resize: self._set_widget_best_size()
 
+        EditStylesMixin.properties_changed(self, modified)
         ManagedBase.properties_changed(self, modified)
 
 

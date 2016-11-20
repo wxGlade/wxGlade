@@ -43,6 +43,7 @@ class EditListCtrl(ManagedBase, EditStylesMixin):
         self.widget.SetColumn(1, col)
 
     def properties_changed(self, modified):
+        EditStylesMixin.properties_changed(self, modified)
         ManagedBase.properties_changed(self, modified)
         if not modified or "name" in modified:
             self._set_name()
