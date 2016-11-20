@@ -147,18 +147,19 @@ class EditMDIChildFrame(EditFrame):
 
 
 
-def builder(parent, sizer, pos):
+def builder(parent, sizer, pos, klass=None, base=None, name=None):
     "factory function for EditFrame objects"
-    import window_dialog
-    base_classes = ['wxFrame', 'wxMDIChildFrame']
-    klass = 'wxFrame' if common.app_tree.app.language.lower()=='xrc' else 'MyFrame'
-    
-    dialog = window_dialog.WindowDialog(klass, base_classes, 'Select frame class', True)
-    res = dialog.show()
-    dialog.Destroy()
-    if res is None: return None
-    klass, base = res
-    name = dialog.get_next_name("frame")
+    if klass is None or base is None:
+        import window_dialog
+        base_classes = ['wxFrame', 'wxMDIChildFrame']
+        klass = 'wxFrame' if common.app_tree.app.language.lower()=='xrc' else 'MyFrame'
+        
+        dialog = window_dialog.WindowDialog(klass, base_classes, 'Select frame class', True)
+        res = dialog.show()
+        dialog.Destroy()
+        if res is None: return None
+        klass, base = res
+        name = dialog.get_next_name("frame")
 
     if base == "wxFrame":
         base_class = EditFrame
