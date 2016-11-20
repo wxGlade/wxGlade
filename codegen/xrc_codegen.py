@@ -236,7 +236,8 @@ class DefaultXrcObject(XrcObject):
         if font:
             write(tab_str + '<font>\n')
             tab_str = self.tabs(ntabs + 2)
-            for key, val in font.items():
+            for key in sorted(font.keys()):
+                val = font[key]
                 if val:
                     write(tab_str + '<%s>%s</%s>\n' % (escape(key), escape(val), escape(key)))
             write(self.tabs(ntabs + 1) + '</font>\n')

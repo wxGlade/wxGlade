@@ -498,10 +498,8 @@ bool MyApp::OnInit()
         self.last_generated_id = 1000
 
         # Extensions and main filename based on Project options when set
-        self.source_extension = app_attrs.get(
-            'source_extension', config.default_source_extension)
-        self.header_extension = app_attrs.get(
-            'header_extension', config.default_header_extension)
+        self.source_extension = app_attrs.get('source_extension', config.default_source_extension)
+        self.header_extension = app_attrs.get('header_extension', config.default_header_extension)
         self.app_filename = self._generate_app_filename()
 
         self.header_lines = [
@@ -535,8 +533,8 @@ bool MyApp::OnInit()
             else:
                 # if the file doesn't exist, create it and write the ``intro''
                 self.previous_source = None
-                self.output_header = misc.AsciiStringIO()
-                self.output_file = misc.AsciiStringIO()
+                self.output_header = compat.StringIO()
+                self.output_file   = compat.StringIO()
 
                 # isolation directives
                 oh = os.path.basename(name + self.header_extension).upper().replace( '.', '_' )
@@ -586,7 +584,7 @@ bool MyApp::OnInit()
                     deps = []
                     for code in self.classes.itervalues():
                         deps.extend(code.dependencies)
-                    lines = self._format_dependencies(deps)
+                    lines = self._format_dependencies( deps )
                 elif tag[2] == 'methods':
                     lines = '%svoid set_properties();\n%svoid do_layout();\n' % (self.tabs(1), self.tabs(1))
                 else:
@@ -617,12 +615,13 @@ bool MyApp::OnInit()
             # write the list of include files
             header_content = self.output_header.getvalue()
             source_content = self.output_file.getvalue()
-            tags = re.findall('<%swxGlade replace  dependencies>' % self.nonce, header_content)
+            tag = '<%swxGlade replace  dependencies>' % self.nonce
+            tags = re.findall(tag, header_content)
             deps = []
-            for code in self.classes.itervalues():
+            for code in self.classes.values():
                 deps.extend(code.dependencies)
-            code = self._format_dependencies(deps)
-            header_content = header_content.replace( '<%swxGlade replace  dependencies>' % self.nonce, code )
+            code = self._format_dependencies( deps )
+            header_content = header_content.replace( tag, code )
 
             # extra code (see the 'extracode' property of top-level widgets)
             tag = '<%swxGlade replace  extracode>' % self.nonce
@@ -1317,27 +1316,10 @@ void %(klass)s::%(handler)s(%(evt_type)s &event)
         else:
             return '%s->' % obj.name
 
-    def _unique(self, sequence):
-        "Strips all duplicates from sequence. Works only if items of sequence are hashable"
-        tmp = {}
-        for item in sequence:
-            tmp[item] = 1
-        return tmp.keys()
-
     def _format_dependencies(self, dependencies):
-        """\
-        Format the dependencies output
-
-        @param dependencies: List if header files
-        @type dependencies:  list[str]
-
-        @return: Changed content
-        @rtype:  str
-
-        @see: L{_tagcontent()}
-        """
+        "Format a list of header files for the dependencies output"
         dep_list = []
-        for dependency in self._unique(dependencies):
+        for dependency in sorted( set(dependencies) ):  # unique and sorted
             if dependency and ('"' != dependency[0] != '<'):
                 dep_list.append('#include "%s.h"\n' % dependency)
             else:
