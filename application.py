@@ -383,6 +383,7 @@ class Application(np.PropertyOwner):
                          "with wxPython Phoenix")
                 wx.MessageBox( error, _('Error'), wx.OK | wx.CENTRE | wx.ICON_EXCLAMATION )
                 return
+        # XXX check other things as well, e.g. different bitmap sizes for BitmapButton
 
         if out_name is None:
             import warnings
@@ -495,6 +496,7 @@ class Application(np.PropertyOwner):
                 if os.path.isfile(name):
                     os.unlink(name)
         except Exception as inst:
+            if 'WINGDB_ACTIVE' in os.environ: raise
             widget.preview_widget = None
             widget.properties["preview"].set_label(_('Preview'))
             bugdialog.Show(_("Generate Preview"), inst)
