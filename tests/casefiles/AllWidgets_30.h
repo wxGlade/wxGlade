@@ -22,21 +22,21 @@
 
 
 // begin wxGlade: ::dependencies
+#include <wx/artprov.h>
+#include <wx/calctrl.h>
+#include <wx/datectrl.h>
+#include <wx/generic/calctrlg.h>
+#include <wx/grid.h>
+#include <wx/hyperlink.h>
+#include <wx/listctrl.h>
+#include <wx/notebook.h>
+#include <wx/propgrid/manager.h>
+#include <wx/spinbutt.h>
+#include <wx/spinctrl.h>
+#include <wx/splitter.h>
 #include <wx/statline.h>
 #include <wx/tglbtn.h>
-#include <wx/datectrl.h>
-#include <wx/grid.h>
-#include <wx/notebook.h>
-#include <wx/calctrl.h>
 #include <wx/treectrl.h>
-#include <wx/splitter.h>
-#include <wx/spinctrl.h>
-#include <wx/hyperlink.h>
-#include <wx/artprov.h>
-#include <wx/listctrl.h>
-#include <wx/spinbutt.h>
-#include <wx/propgrid/manager.h>
-#include <wx/generic/calctrlg.h>
 // end wxGlade
 
 // begin wxGlade: ::extracode
