@@ -46,7 +46,7 @@ class PythonMenubarGenerator(wcodegen.PythonWidgetCodeWriter):
                     append('%s.AppendMenu(%s, %s, %s, %s)\n' % args)
                     return
 
-                item_type = 'wx.ITEM_NORMAL'
+                item_type = None
                 if item.checkable == '1':
                     item_type = 'wx.ITEM_CHECK'
                 elif item.radio == '1':
