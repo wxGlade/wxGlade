@@ -48,9 +48,9 @@ class PythonMenubarGenerator(wcodegen.PythonWidgetCodeWriter):
 
                 item_type = None
                 if item.checkable == '1':
-                    item_type = 'wx.ITEM_CHECK'
+                    item_type = self.cn('wxITEM_CHECK')
                 elif item.radio == '1':
-                    item_type = 'wx.ITEM_RADIO'
+                    item_type = self.cn('wxITEM_RADIO')
 
                 if item.name:
                     # create MenuItem and assign to property, then append to menu
@@ -81,8 +81,10 @@ class PythonMenubarGenerator(wcodegen.PythonWidgetCodeWriter):
 
         for m in menus:
             menu = m.root
-            if menu.name: name = 'self.' + menu.name
-            else: name = 'wxglade_tmp_menu'
+            if menu.name:
+                name = 'self.' + menu.name
+            else:
+                name = 'wxglade_tmp_menu'
             append('%s = wx.Menu()\n' % name)
             if menu.children:
                 append_items(name, menu.children)

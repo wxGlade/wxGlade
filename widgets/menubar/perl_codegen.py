@@ -8,7 +8,6 @@ Perl generator functions for wxMenuBar objects
 
 import common
 import wcodegen
-from MenuTree import *
 from .codegen import MenuHandler
 
 
@@ -19,10 +18,11 @@ class PerlMenubarGenerator(wcodegen.PerlWidgetCodeWriter):
     def get_init_code(self, obj):
         out = []
         append = out.append
+        quote_str = self.codegen.quote_str
         menus = obj.properties['menubar']
         ids = []
-        # We need to keep track of tmpnames used.
-        tmpsused = {}
+        tmpsused = {}           # keep track used temporary names
+        obj_name = self.format_widget_access(obj)
 
         def append_items(menu, items):
             for item in items:
@@ -37,74 +37,81 @@ class PerlMenubarGenerator(wcodegen.PerlWidgetCodeWriter):
                     id = val
 
                 if item.children:
-                    if item.name:
-                        name = item.name
-                    else:
-                        name = '%s_sub' % menu
-                        if not name in tmpsused:
+                    # a submenu
+                    name = item.name or '%s_sub' % menu
+
+                    if not item.name:
+                        if name not in tmpsused:
                             tmpsused[name] = 1
                             append('my %s;\n' % name)
 
                     append('%s = Wx::Menu->new();\n' % name)
                     append_items(name, item.children)
-                    append( '%s->Append(%s, %s, %s, %s);\n' % (menu, id, self.codegen.quote_str(item.label),
-                                                               name, self.codegen.quote_str(item.help_str)) )
-                else:
-                    item_type = 0
-                    if item.checkable == '1':
-                        item_type = 1
-                    elif item.radio == '1':
-                        item_type = 2
+                    args = (menu, id, quote_str(item.label), name, quote_str(item.help_str))
+                    append('%s->Append(%s, %s, %s, %s);\n' % args)
+                    return
 
-                    if item.name:
-                        itemname = '$self->{%s} = ' % item.name
-                    else:
-                        itemname = ''
+                item_type = None
+                if item.checkable == '1':
+                    item_type = self.cn('wxITEM_CHECK')
+                elif item.radio == '1':
+                    item_type = self.cn('wxITEM_RADIO')
 
+                if item.name:
+                    # create MenuItem and assign to property, then append to menu
+                    menu_item = '$self->{%s}' % item.name
+                    args = ( menu, id, quote_str(item.label), quote_str(item.help_str) )
                     if item_type:
-                        append('%s%s->Append(%s, %s, %s, %s);\n' %
-                               (itemname, menu, id,
-                                self.codegen.quote_str(item.label),
-                                self.codegen.quote_str(item.help_str),
-                                item_type))
-                    else:
+                        args += (item_type,)
+                    append('%s = Wx::MenuItem->new(%s);\n' % (menu_item, ', '.join(args)))
+                    append('%s->Append(%s);\n' % (menu, menu_item))
 
-                        append('%s%s->Append(%s, %s, %s);\n' %
-                               (itemname, menu, id,
-                                self.codegen.quote_str(item.label),
-                                self.codegen.quote_str(item.help_str)))
-        #self._logger.debug('menus = %s', menus)
+                else:
+                    # append single menu entry to the menu
+                    args = ( id, quote_str(item.label), quote_str(item.help_str) )
+                    tmpl = '%s->Append(%%s);\n' % menu
+                    if item_type:
+                        args += (item_type,)
 
-        obj_name = self.format_widget_access(obj)
+                    # assign the returned item to a temporary variable to use to Bind() the handler
+                    if item.handler:
+                        tmpl = '$item = %s' % tmpl
+                        menu_item = '$item'
+                        if menu_item not in tmpsused:
+                            tmpsused[menu_item] = 1
+                            append('my %s;\n' % menu_item)
 
-        append('my $wxglade_tmp_menu;\n')  # NOTE below name =
+                    append(tmpl % ', '.join(args))
+
+                if item.handler:
+                    handler = item.handler if "->" in item.handler else "$self->{%s}" % item.handler
+                    append("Wx::Event::EVT_MENU($self, %s->GetId(), $self->can('%s'));\n" % (menu_item, handler))
+
         for m in menus:
             menu = m.root
             if menu.name:
-                name = '$self->{%s}' % menu.name
+                menu_item = '$self->{%s}' % menu.name
             else:
-                name = '$wxglade_tmp_menu'
-            append('%s = Wx::Menu->new();\n' % name)
+                menu_item = '$wxglade_tmp_menu'
+                if menu_item not in tmpsused:
+                    tmpsused[menu_item] = 1
+                    append('my %s;\n' % menu_item)    # define temporary wxMenuItem variable
+            append('%s = Wx::Menu->new();\n' % menu_item)
             if menu.children:
-                append_items(name, menu.children)
-            append('%s->Append(%s, %s);\n' %
-                   (obj_name, name, self.codegen.quote_str(menu.label)))
+                append_items(menu_item, menu.children)
+            append('%s->Append(%s, %s);\n' % (obj_name, menu_item, quote_str(menu.label)))
 
         return ids + out
 
     def get_code(self, obj):
-        klass = obj.base
-        if klass != obj.klass:
-            klass = obj.klass
+        if obj.klass == obj.base:
+            klass = self.cn(obj.klass)
         else:
-            klass = self.cn(klass)
-
-        init = ['\n\n', '# Menu Bar\n\n', '$self->{%s} = %s->new();\n' %
-                (obj.name, klass)]
+            klass = obj.klass
+        init = ['\n', '# Menu Bar\n', '$self->{%s} = %s->new();\n' % (obj.name, klass)]
         init.extend(self.get_init_code(obj))
         init.append('$self->SetMenuBar($self->{%s});\n' % obj.name)
-        init.append('\n')
-        init.append('# Menu Bar end\n\n')
+        init.append('# Menu Bar end\n')
         return init, [], []
 
     def get_event_handlers(self, obj):
@@ -112,14 +119,9 @@ class PerlMenubarGenerator(wcodegen.PerlWidgetCodeWriter):
 
         def do_get(item):
             ret = []
-            if item.name:
-                val = self.codegen.add_object_format_name(item.name)
-            else:
-                name, val = self.codegen.generate_code_id(None, item.id)
-                if not val:
-                    val = '-1'  # but this is wrong anyway...
-            if item.handler:
-                ret.append((val, 'EVT_MENU', item.handler, 'wxCommandEvent'))
+            if item.handler and item.handler!="---":
+                # first item is None -> just generate stub for item.handler, do not bind again
+                ret.append((None, 'EVT_MENU', item.handler, 'wxCommandEvent'))
             if item.children:
                 for c in item.children:
                     ret.extend(do_get(c))
@@ -136,5 +138,4 @@ def initialize():
     klass = 'wxMenuBar'
     common.class_names['EditMenuBar'] = klass
     common.toplevels['EditMenuBar'] = 1
-    common.register('perl', klass, PerlMenubarGenerator(klass),
-                    'menus', MenuHandler)
+    common.register('perl', klass, PerlMenubarGenerator(klass), 'menus', MenuHandler)

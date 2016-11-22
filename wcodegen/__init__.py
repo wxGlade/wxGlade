@@ -246,6 +246,8 @@ class PerlMixin(BaseLanguageMixin):
         """\
         Return the name properly formatted.
 
+        (Most) wxPerl constants are listed in Wx/Wx_Exp.pm.
+
         @see: L{self._perl_constant_list}
         """
         # handles constants like event or language identifiers
