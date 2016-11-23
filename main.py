@@ -298,9 +298,7 @@ class wxGladeFrame(wx.Frame):
         misc.bind_menu_item(self, item, self.preview)
 
         GENERATE_CODE = append_menu_item(file_menu, -1, _("&Generate Code\tCtrl+G"), wx.ART_EXECUTABLE_FILE)
-        def generate_code(event):
-            common.app_tree.app.generate_code()
-        misc.bind_menu_item(self, GENERATE_CODE, generate_code)
+        misc.bind_menu_item(self, GENERATE_CODE, lambda: common.app_tree.app.generate_code())
 
         file_menu.AppendSeparator() # ----------------------------------------------------------------------------------
 
