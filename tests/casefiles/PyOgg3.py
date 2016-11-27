@@ -49,7 +49,7 @@ class PyOgg3_MyDialog(wx.Dialog):
         # end wxGlade
 
         # manually added code
-        print 'Dialog has been created at ', time.asctime()
+        print( 'Dialog has been created at ', time.asctime() )
 
     def __set_properties(self):
         # begin wxGlade: PyOgg3_MyDialog.__set_properties
@@ -127,7 +127,7 @@ class PyOgg3_MyFrame(wx.Frame):
         # end wxGlade
 
         # manually added code
-        print 'Frame has been created at ', datetime.datetime.now().isoformat()
+        print( 'Frame has been created at ', datetime.datetime.now().isoformat() )
 
     def __set_properties(self):
         # begin wxGlade: PyOgg3_MyFrame.__set_properties

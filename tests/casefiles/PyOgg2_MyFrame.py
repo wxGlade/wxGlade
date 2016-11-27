@@ -49,6 +49,7 @@ class PyOgg2_MyFrame(wx.Frame):
         sizer_5.Add(grid_sizer_3, 1, wx.EXPAND, 0)
         self.SetSizer(sizer_5)
         self.Layout()
+        self.SetSize((400, 300))
         # end wxGlade
 
 # end of class PyOgg2_MyFrame

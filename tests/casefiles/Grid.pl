@@ -30,7 +30,7 @@ sub new {
     $name   = ""                 unless defined $name;
 
     # begin wxGlade: MyFrame::new
-    $style = wxDEFAULT_FRAME_STYLE 
+    $style = wxDEFAULT_FRAME_STYLE
         unless defined $style;
 
     $self = $self->SUPER::new( $parent, $id, $title, $pos, $size, $style, $name );

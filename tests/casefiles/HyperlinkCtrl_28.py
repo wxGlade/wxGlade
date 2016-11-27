@@ -19,7 +19,7 @@ class MyFrame(wx.Frame):
         # begin wxGlade: MyFrame.__init__
         kwds["style"] = wx.DEFAULT_FRAME_STYLE
         wx.Frame.__init__(self, *args, **kwds)
-        self.hyperlink_1 = wx.HyperlinkCtrl(self, wx.ID_ANY, _("Homepage wxGlade"), _("http://wxgalde.sf.net"), style=wx.HL_ALIGN_RIGHT)
+        self.hyperlink_1 = wx.HyperlinkCtrl(self, wx.ID_ANY, _("Homepage wxGlade"), _("http://wxglade.sf.net"), style=wx.HL_ALIGN_RIGHT)
 
         self.__set_properties()
         self.__do_layout()

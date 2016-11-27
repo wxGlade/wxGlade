@@ -31,11 +31,11 @@ sub new {
     $name   = ""                 unless defined $name;
 
     # begin wxGlade: MyFrame::new
-    $style = wxDEFAULT_FRAME_STYLE 
+    $style = wxDEFAULT_FRAME_STYLE
         unless defined $style;
 
     $self = $self->SUPER::new( $parent, $id, $title, $pos, $size, $style, $name );
-    $self->{hyperlink_1} = Wx::HyperlinkCtrl->new($self, wxID_ANY, _T("Homepage wxGlade"), _T("http://wxgalde.sf.net"), wxDefaultPosition, wxDefaultSize, wxHL_ALIGN_RIGHT);
+    $self->{hyperlink_1} = Wx::HyperlinkCtrl->new($self, wxID_ANY, _T("Homepage wxGlade"), _T("http://wxglade.sf.net"), wxDefaultPosition, wxDefaultSize, wxHL_ALIGN_RIGHT);
 
     $self->__set_properties();
     $self->__do_layout();

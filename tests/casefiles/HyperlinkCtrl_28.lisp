@@ -41,7 +41,7 @@
 "Method creates the objects contained in the class."
         ;;; begin wxGlade: MyFrame.__init__
         (setf (slot-top-window obj) (wxFrame_create nil wxID_ANY "" -1 -1 -1 -1 wxDEFAULT_FRAME_STYLE))
-        (setf (slot-hyperlink-1 obj) (wxHyperlinkCtrl_Create (slot-top-window obj) wxID_ANY (_"Homepage wxGlade") (_"http://wxgalde.sf.net") -1 -1 -1 -1 wxHL_ALIGN_RIGHT))
+        (setf (slot-hyperlink-1 obj) (wxHyperlinkCtrl_Create (slot-top-window obj) wxID_ANY (_"Homepage wxGlade") (_"http://wxglade.sf.net") -1 -1 -1 -1 wxHL_ALIGN_RIGHT))
         ;;; end wxGlade
         )
 

@@ -106,7 +106,7 @@ class PyOgg2_MyFrame(wx.Frame):
         self.notebook_1_pane_1.SetSizer(_gszr_pane1)
         _gszr_pane1.AddGrowableCol(1)
         sizer_4.Add(self.rbx_sampling_rate, 1, wx.ALL | wx.EXPAND, 5)
-        sizer_3.Add(self.cbx_love, 1, wx.ALL | wx.SHAPED, 5)
+        sizer_3.Add(self.cbx_love, 0, wx.ALL | wx.SHAPED, 5)
         sizer_4.Add(sizer_3, 1, wx.ALL | wx.EXPAND, 5)
         self.notebook_1_pane_2.SetSizer(sizer_4)
         _szr_pane3.Add(self.text_ctrl_2, 1, wx.ALL | wx.EXPAND, 5)

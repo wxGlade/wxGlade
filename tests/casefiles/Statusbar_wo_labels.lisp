@@ -28,9 +28,9 @@
 
 (defclass MyFrame()
         ((top-window :initform nil :accessor slot-top-window)
+        (statusbar-without-labels :initform nil :accessor slot-statusbar-without-labels)
         (label-1 :initform nil :accessor slot-label-1)
-        (sizer-1 :initform nil :accessor slot-sizer-1)
-        (statusbar-without-labels :initform nil :accessor slot-statusbar-without-labels)))
+        (sizer-1 :initform nil :accessor slot-sizer-1)))
 
 (defun make-MyFrame ()
         (let ((obj (make-instance 'MyFrame)))
@@ -42,8 +42,8 @@
 (defmethod init ((obj MyFrame))
 "Method creates the objects contained in the class."
         ;;; begin wxGlade: MyFrame.__init__
-        (setf (slot-label-1 obj) (wxStaticText_Create (slot-top-window obj) wxID_ANY (_"Example of a statusbar with three fields\nbut without labels in those fields.") -1 -1 -1 -1 0))
         (setf (slot-statusbar-without-labels obj) (wxFrame_CreateStatusBar (slot-top-window obj) 3 0))
+        (setf (slot-label-1 obj) (wxStaticText_Create (slot-top-window obj) wxID_ANY (_"Example of a statusbar with three fields\nbut without labels in those fields.") -1 -1 -1 -1 0))
         ;;; end wxGlade
         )
 

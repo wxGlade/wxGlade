@@ -31,7 +31,7 @@ sub new {
     $name   = ""                 unless defined $name;
 
     # begin wxGlade: PyOgg2_MyFrame::new
-    $style = wxDEFAULT_FRAME_STYLE 
+    $style = wxDEFAULT_FRAME_STYLE
         unless defined $style;
 
     $self = $self->SUPER::new( $parent, $id, $title, $pos, $size, $style, $name );
@@ -139,7 +139,7 @@ sub __do_layout {
     $self->{notebook_1_pane_1}->SetSizer($self->{_gszr_pane1});
     $self->{_gszr_pane1}->AddGrowableCol(1);
     $self->{sizer_4}->Add($self->{rbx_sampling_rate}, 1, wxALL|wxEXPAND, 5);
-    $self->{sizer_3}->Add($self->{cbx_love}, 1, wxALL|wxSHAPED, 5);
+    $self->{sizer_3}->Add($self->{cbx_love}, 0, wxALL|wxSHAPED, 5);
     $self->{sizer_4}->Add($self->{sizer_3}, 1, wxALL|wxEXPAND, 5);
     $self->{notebook_1_pane_2}->SetSizer($self->{sizer_4});
     $self->{_szr_pane3}->Add($self->{text_ctrl_2}, 1, wxALL|wxEXPAND, 5);
@@ -231,7 +231,7 @@ sub new {
     $name   = ""                 unless defined $name;
 
     # begin wxGlade: MyFrameGrid::new
-    $style = wxDEFAULT_FRAME_STYLE 
+    $style = wxDEFAULT_FRAME_STYLE
         unless defined $style;
 
     $self = $self->SUPER::new( $parent, $id, $title, $pos, $size, $style, $name );

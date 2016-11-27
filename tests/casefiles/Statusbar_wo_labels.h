@@ -43,8 +43,8 @@ private:
 
 protected:
     // begin wxGlade: MyFrame::attributes
-    wxStaticText* label_1;
     wxStatusBar* statusbar_without_labels;
+    wxStaticText* label_1;
     // end wxGlade
 }; // wxGlade: end class
 
