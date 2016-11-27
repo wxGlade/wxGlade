@@ -168,7 +168,7 @@ class wxGladeFrame(wx.Frame):
         if parent is None:
             parent = self
         common.palette = self  # to provide a reference accessible by the various widget classes
-        icon = wx.EmptyIcon()
+        icon = wx.EmptyIcon() if compat.IS_CLASSIC else wx.Icon()
         bmp = wx.Bitmap( os.path.join(config.icons_path, "icon.xpm"), wx.BITMAP_TYPE_XPM )
         icon.CopyFromBitmap(bmp)
         self.SetIcon(icon)
@@ -919,7 +919,10 @@ class wxGladeFrame(wx.Frame):
                 win.SetPosition(geometry)
         else:
             if client_area.Contains(geometry.TopLeft):
-                win.SetDimensions(*geometry.Get())
+                if compat.IS_CLASSIC:
+                    win.SetDimensions(*geometry.Get())
+                else:
+                    win.SetSize(*geometry.Get())
 
     def _get_geometry(self, widget):
         "Return widget position and size as wx.Rect"

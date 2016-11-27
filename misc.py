@@ -353,7 +353,10 @@ def append_menu_item(menu, id, text, xpm_file_or_artid=None): # XXX change: move
                 item.SetBitmap(bmp)
             except AttributeError:
                 pass
-    menu.AppendItem(item)
+    if compat.IS_CLASSIC:
+        menu.AppendItem(item)
+    else:
+        menu.Append(item)
     return item
 
 
