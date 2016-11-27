@@ -317,7 +317,3 @@ class WXGladeGUITest(WXGladeBaseTest):
         if compat.PYTHON2 or True:
             self.assertFalse(diff_fails, "Expected and generated files do not match for %s"%",".join(diff_fails))
 
-
-
-if __name__ == '__main__':
-    run_tests()
