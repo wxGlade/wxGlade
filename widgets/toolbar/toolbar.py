@@ -480,7 +480,7 @@ class EditToolBar(EditBase, PreviewMixin, EditStylesMixin, BitmapMixin):
             self.widget = wx.ToolBar(self.pwidget, -1, style=tb_style)
             self.pwidget.SetToolBar(self.widget)
             self.pwidget.SetBackgroundColour(self.widget.GetBackgroundColour())
-            icon = wx.EmptyIcon() if compat.IS_CLASSIC else wx.Icon()
+            icon = compat.wx_EmptyIcon()
             xpm = os.path.join(config.icons_path, 'toolbar.xpm')
             icon.CopyFromBitmap(misc.get_xpm_bitmap(xpm))
             self.pwidget.SetIcon(icon)

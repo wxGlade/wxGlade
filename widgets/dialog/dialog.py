@@ -60,7 +60,7 @@ class EditDialog(TopLevelBase, EditStylesMixin, BitmapMixin):
             xpm = os.path.join(config.icons_path, 'dialog.xpm')
             bitmap = misc.get_xpm_bitmap(xpm)
 
-        icon = wx.EmptyIcon()
+        icon = compat.wx_EmptyIcon()
         icon.CopyFromBitmap(bitmap)
         self.widget.SetIcon(icon)
 

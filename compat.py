@@ -220,6 +220,7 @@ if len(wx.VERSION)==5:
     def SetToolTip(c, s):
         c.SetToolTipString(s)
     wx_EmptyBitmap = wx.EmptyBitmap
+    wx_EmptyIcon = wx.EmptyIcon
 else:
     # wxPython Phoenix
     IS_CLASSIC = False
@@ -237,3 +238,4 @@ else:
     def SetToolTip(c, s):
         c.SetToolTip(s)
     wx_EmptyBitmap = wx.Bitmap
+    wx_EmptyIcon = wx.Icon

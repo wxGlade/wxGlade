@@ -656,7 +656,7 @@ class EditMenuBar(EditBase, PreviewMixin):
             self.widget.SetMenuBar(self._mb)
             self.widget.SetBackgroundColour(self._mb.GetBackgroundColour())
             import os
-            icon = wx.EmptyIcon()
+            icon = compat.wx_EmptyIcon()
             xpm = os.path.join(config.icons_path, 'menubar.xpm')
             icon.CopyFromBitmap(misc.get_xpm_bitmap(xpm))
             self.widget.SetIcon(icon)

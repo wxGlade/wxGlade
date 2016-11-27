@@ -9,7 +9,7 @@ wxFrame objects (incl. wxMenuBar, wxToolBar and wxStatusBar)
 
 import wx
 import os
-import common, config, misc
+import common, config, misc, compat
 from tree import Node
 import new_properties as np
 from edit_windows import TopLevelBase, EditStylesMixin
@@ -81,7 +81,7 @@ class EditFrame(TopLevelBase, EditStylesMixin, BitmapMixin):
             xpm = os.path.join(config.icons_path, 'frame.xpm')
             bitmap = misc.get_xpm_bitmap(xpm)
 
-        icon = wx.EmptyIcon()
+        icon = compat.wx_EmptyIcon()
         icon.CopyFromBitmap(bitmap)
         self.widget.SetIcon(icon)
 
