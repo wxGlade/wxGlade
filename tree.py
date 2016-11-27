@@ -13,6 +13,7 @@ import misc, common, compat, config, clipboard
 import edit_sizers, application
 
 
+
 class Node(object):
     __empty_win = None
 
@@ -375,7 +376,7 @@ class WidgetTree(wx.TreeCtrl, Tree):
             WidgetTree.images[w] = image_list.Add(misc.get_xpm_bitmap(WidgetTree.images[w]))
         self.AssignImageList(image_list)
         root_node.item = self.AddRoot(_('Application'), 0)
-        self.SetPyData(root_node.item, root_node)
+        self._SetItemData(root_node.item, root_node)
         self.skip_select = 0  # necessary to avoid an infinite loop on win32, as SelectItem fires an
                               # EVT_TREE_SEL_CHANGED event
         self.title = ' '
@@ -437,7 +438,7 @@ class WidgetTree(wx.TreeCtrl, Tree):
     def begin_drag(self, evt):
         # start drag & drop
         item = evt.GetItem()
-        node = self.GetPyData(item)
+        node = self._GetItemData(item)
         if node is self.root or isinstance(node, SlotNode):  # application and slots can't be dragged
             return
         widget = node.widget
@@ -447,7 +448,7 @@ class WidgetTree(wx.TreeCtrl, Tree):
 
     def begin_edit_label(self, evt):
         # Begin editing a label. This can be prevented by calling Veto()
-        widget = self.GetPyData( evt.Item ).widget
+        widget = self._GetItemData( evt.Item ).widget
         #if "name" not in widget.properties: evt.Veto()
         if not self._label_editable(widget): evt.Veto()
 
@@ -455,7 +456,7 @@ class WidgetTree(wx.TreeCtrl, Tree):
         # Finish editing a label. This can be prevented by calling Veto()
         if evt.IsEditCancelled(): return
         item = evt.Item
-        node = self.GetPyData( item )
+        node = self._GetItemData( item )
         widget = node.widget
         if "name" not in widget.properties: return
 
@@ -540,6 +541,17 @@ class WidgetTree(wx.TreeCtrl, Tree):
             s += ': "%s"'%node.widget.title
         return s
 
+    if compat.IS_CLASSIC:
+        def _SetItemData(self, item, data):
+            self.SetPyData(item, data)
+        def _GetItemData(self, item):
+            return self.GetPyData(item)
+    else:
+        def _SetItemData(self, item, data):
+            self.SetItemData(item, data)
+        def _GetItemData(self, item):
+            return self.GetItemData(item)
+
     def add(self, child, parent=None):
         "appends child to the list of parent's children"
         assert isinstance(child, Node)
@@ -548,7 +560,7 @@ class WidgetTree(wx.TreeCtrl, Tree):
         image = child.get_image()
         if parent is None: parent = parent.item = self.GetRootItem()
         child.item = self.AppendItem(parent.item, self._build_label(child), image)
-        self.SetPyData(child.item, child)
+        self._SetItemData(child.item, child)
         if self.auto_expand:
             self.Expand(parent.item)
             self.select_item(child)
@@ -562,7 +574,7 @@ class WidgetTree(wx.TreeCtrl, Tree):
         # pos is index
         if parent is None:
             # XXX check whether this is called at all
-            parent = self.GetPyData( self.GetRootItem() )
+            parent = self._GetItemData( self.GetRootItem() )
         assert isinstance(parent, Node)
 
         # parent is a Node, i.e. Dummy or Button are not in parent.children
@@ -577,7 +589,7 @@ class WidgetTree(wx.TreeCtrl, Tree):
         Tree.insert(self, child, parent, index)
         image = child.get_image()
         child.item = compat.wx_Tree_InsertItemBefore(self, parent.item, index, self._build_label(child), image)
-        self.SetPyData(child.item, child)
+        self._SetItemData(child.item, child)
         if self.auto_expand:
             self.Expand(parent.item)
             self.select_item(child)
@@ -646,7 +658,7 @@ class WidgetTree(wx.TreeCtrl, Tree):
     def on_change_selection(self, event):
         if self.skip_select: return  # triggered by self.SelectItem in self.set_current_widget
         item = event.GetItem()
-        widget = self.GetPyData(item).widget
+        widget = self._GetItemData(item).widget
         self.cur_widget = widget
         misc.set_focused_widget(widget)
         if not self.IsExpanded(item):
@@ -762,7 +774,7 @@ class WidgetTree(wx.TreeCtrl, Tree):
             try: x, y = event.GetPosition()
             except AttributeError:
                 # if we are here, event is a CommandEvent and not a MouseEvent
-                node = self.GetPyData(self.GetSelection())
+                node = self._GetItemData(self.GetSelection())
                 self.expand(node)  # if we are here, the widget must be shown
             else:
                 node = self._find_node_by_pos(x, y, True)
@@ -796,7 +808,7 @@ class WidgetTree(wx.TreeCtrl, Tree):
         If toplevels_only is True, scans only root's children"""
         item, flags = self.HitTest((x, y))
         if item and flags & (wx.TREE_HITTEST_ONITEMLABEL | wx.TREE_HITTEST_ONITEMICON):
-            node = self.GetPyData(item)
+            node = self._GetItemData(item)
             if not toplevels_only or node.parent is self.root:
                 return node
         return None
@@ -818,7 +830,7 @@ class WidgetTree(wx.TreeCtrl, Tree):
             index = parent.children.index(node)
             parent.children[index] = new_node
             new_node.item = node.item
-            self.SetPyData(node.item, new_node)
+            self._SetItemData(node.item, new_node)
             old_children = node.children
             self.remove(node, delete=False)  # don't delete the node, as we just want to modify it
             for c in old_children or []:           # but the children
@@ -833,7 +845,7 @@ class WidgetTree(wx.TreeCtrl, Tree):
         # helper for the next method
         idx = WidgetTree.images.get(node.widget.__class__.__name__, -1)
         node.item = self.AppendItem( parent.item, self._build_label(node), idx )
-        self.SetPyData(node.item, node)
+        self._SetItemData(node.item, node)
         if node.children:
             for c in node.children:
                 self._append_rec(node, c)
@@ -851,7 +863,7 @@ class WidgetTree(wx.TreeCtrl, Tree):
             node.item = compat.wx_Tree_InsertItemBefore( self, node.parent.item, new_pos, self._build_label(node), image )
         else:
             node.item = compat.wx_Tree_InsertItemBefore( self, node.parent.item, new_pos+1, self._build_label(node), image )
-        self.SetPyData(node.item, node)
+        self._SetItemData(node.item, node)
 
         if node.children:
             for c in node.children:
@@ -901,7 +913,7 @@ class WidgetTree(wx.TreeCtrl, Tree):
         parent = None
         pos = None
         while item.IsOk() and index < len(path):
-            widget = self.GetPyData(item).widget
+            widget = self._GetItemData(item).widget
             name = path[index]
             if index == 0 and isinstance(name, tuple):
                 name, pos = name
@@ -909,14 +921,14 @@ class WidgetTree(wx.TreeCtrl, Tree):
                 #self.EnsureVisible(item)
                 itemok = item
                 if parent is None:
-                    parent = self.GetPyData(itemok)
+                    parent = self._GetItemData(itemok)
                 self.cur_widget = widget
                 item, cookie = self._get_first_child(item)
                 index += 1
             else:
                 item = self.GetNextSibling(item)
         if itemok is not None:
-            node = self.GetPyData(itemok)
+            node = self._GetItemData(itemok)
             if parent is not None:
                 self._show_widget_toplevel(parent)
                 if pos is not None:

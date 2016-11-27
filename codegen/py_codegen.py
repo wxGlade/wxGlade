@@ -177,12 +177,13 @@ class PythonCodeWriter(BaseLangCodeWriter, wcodegen.PythonMixin):
                         'setfont':          "%(objname)s.SetFont(%(cnfont)s(%(size)s, %(family)s, "
                                             "%(style)s, %(weight)s, %(underlined)s, %(face)s))\n",
                         'tooltip':          "%(objname)s.SetToolTipString(%(tooltip)s)\n",
-                        'tooltip_3':        "%(objname)s.SetToolTip(wx.ToolTip(%(tooltip)s))\n",
                         'wxcolour':         "wxColour(%(value)s)"}
     if compat.IS_CLASSIC:
         _code_statements['wxsystemcolour'] = "wxSystemSettings_GetColour(%(value)s)"
+        _code_statements['tooltip_3'     ] = "%(objname)s.SetToolTip(wx.ToolTip(%(tooltip)s))\n"
     else:
         _code_statements['wxsystemcolour'] = "wxSystemSettings.GetColour(%(value)s)"
+        _code_statements['tooltip_3'     ] = "%(objname)s.SetToolTip(%(tooltip)s)\n"
 
     class_separator = '.'
 
