@@ -1887,6 +1887,10 @@ class PropertyOwner(object):
         if isinstance(value, Property):
             self.add_property(value, name)
             return
+        import os
+        if 'WINGDB_ACTIVE' in os.environ:
+            if name!="properties" and name in self.properties:
+                raise ValueError("implementation error: property about to be overwritten")
         object.__setattr__(self, name, value)
     def copy_properties(self, other, properties):
         "copy named properties from other"
