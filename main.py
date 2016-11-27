@@ -687,7 +687,7 @@ class wxGladeFrame(wx.Frame):
 
                 p.parse(infile)
             except (EnvironmentError, SAXParseException, XmlParsingError) as msg:
-                if 'WINGDB_ACTIVE' in os.environ: raise
+                #if 'WINGDB_ACTIVE' in os.environ: raise
                 if filename:
                     error_msg = _("Error loading file %s: %s") % (misc.wxstr(filename), misc.wxstr(msg))
                 else:
@@ -950,7 +950,8 @@ class wxGlade(wx.App):
         logging.exception = self.exception
 
         # needed for wx >= 2.3.4 to disable wxPyAssertionError exceptions
-        self.SetAssertMode(0)
+        if not 'WINGDB_ACTIVE' in os.environ:
+            self.SetAssertMode(0)
 
         common.init_preferences()
         if config.preferences.log_debug_info:
