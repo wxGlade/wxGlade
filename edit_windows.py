@@ -807,8 +807,6 @@ class TopLevelBase(WindowBase, PreviewMixin):
                 common.app_tree.app.saved = False
                 if self.widget: self.widget.SetSize(size)
         except xml_parse.XmlParsingError:
-            import os
-            if 'WINGDB_ACTIVE' in os.environ: raise
             self._logger.warning( _('WARNING: Only sizers can be pasted here') )
     ####################################################################################################################
 
