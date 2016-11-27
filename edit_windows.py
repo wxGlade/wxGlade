@@ -589,11 +589,15 @@ class ManagedBase(WindowBase):
 
     def properties_changed(self, modified):
         WindowBase.properties_changed(self, modified)
+        p = self.properties["flag"]
         if "border" in modified and self.border:
             # enable border flags if not yet done
-            p = self.properties["flag"]
             if not p.value_set.intersection(p.FLAG_DESCRIPTION["Border"]):
-                p.add("wxALL")
+                p.add("wxALL", notify=False)
+        if "flag" in modified and "wxSHAPED" in p.value_set and self.proportion:
+            self.properties["proportion"].set(0, notify=False)
+        elif "option" in modified and self.proportion and "wxSHAPED" in p.value_set:
+            p.remove("wxSHAPED", notify=False)
 
         if "option" in modified or "flag" in modified or "border" in modified or "size" in modified:
             if not self.sizer.is_virtual():
