@@ -86,51 +86,6 @@ def parse_command_line():
     # Make an absolute version of path.
     # According to the invoking dir of wxGlade (which can be different
     # from '.' if it is invoked from a shell script).
-    #args = [u'F:\\PythonInstallation\\wxGladeTest\\test.wxg']
-    # XXX cleanup
-    if not args:
-        args = [u"D:\\Python\\Sources35\\wxGladeTests\\Test_release_072_v2-TextCtrls.wxg"]
-        args = [u"D:\\Python\\Sources35\\wxGladeTests\\Test_release_072_v2-TextCtrls_font.wxg"]
-        args = [u"D:\\Python\\Sources35\\wxGladeTests\\Test_release_072_v2-TextCtrls_font_tabs.wxg"]
-        args = [u"D:\\Python\\Sources35\\wxglade_dev_temp\\saved.wxg"]
-        #args = [u"D:\\Python\\Sources35\\wxGladeTests\\Test_release_072_v3-SingleSizer.wxg"]
-        args = [os.getcwd() + u"\\tests\\casefiles\\AllWidgets_28.wxg"]
-        args = [os.getcwd() + u"\\tests\\casefiles\\AllWidgets_30.wxg"]
-        #args = ["C:\\Users\\dietmar\\text_ctrls_with_slot4.wxg"]
-        #args = ["C:\\Users\\dietmar\\4slots_1.wxg"]
-        #args = ["C:\\Users\\dietmar\\test2.wxg"]
-        #args = ["C:\\Users\\dietmar\\AllWidgets_28min.wxg"]
-        ##args = ["C:\\Users\\dietmar\\slots_test.wxg"]
-        ##args = ["C:\\Users\\dietmar\\single_tab.wxg"]
-        #args = ["C:\\Users\\dietmar\\grid_test.wxg"]
-        #args = ["C:\\Users\\dietmar\\sizer_min.wxg"]
-        #args = ["C:\\Users\\dietmar\\nested_sizers.wxg"]
-        #args = ["C:\\Users\\dietmar\\test_splitter.wxg"]
-        #args = ["C:\\Users\\dietmar\\test_splitter_copy.wxg"]
-        #args = ["C:\\Users\\dietmar\\class_names.wxg"]
-        #args = ["D:\\Python\\Sources35\\wxglade_dev\\tests\\casefiles\\ComplexExample.wxg"]
-        #args = ["C:\\Users\\dietmar\\test_splitter.wxg"]
-        #args = [u"D:\\Python\\Sources35\\wxGladeTests\\Calculator2.wxg"]
-        #args = [u"D:\\Python\\Sources35\\wxGladeTests\\Calculator3.wxg"]
-        #args = [u"D:\\Python\\Sources35\\wxGladeTests\\Calculator4.wxg"]
-        #args = [u"D:\\Python\\Sources35\\wxglade_dev_temp\Calculator\\Calculator_03.wxg"]
-        ##args = ["D:\\Python\\Sources35\\wxGladeTests\\Douglas2\\Calculator4.wxg"]
-        #args = ["D:\\Python\\Sources35\\wxGladeTests\\Douglas3\\Dialog Example.wxg"]
-        #args = ["D:\\Python\\Sources35\\wxGladeTests\\Douglas4_DialogDesigner\\Dialog-Designer.wxg"]
-        #args = ["D:\\Python\\Sources35\\wxglade_dev\\tests\\casefiles\\AllWidgets_28_bmpbutton2.wxg"]
-        # potential test cases:
-        #args = ["D:\\Python\\Sources35\\wxGladeTests\\Karsten1\\StaticBMP1.wxg"] # EmptyBitmap 50x50
-        #args = ["D:\Python\Sources35\wxGladeTests\Karsten1\wxgPACSPluginPnl.wxg"]
-        #args = ["D:\Python\Sources35\wxGladeTests\Karsten1\wxgPACSPluginPnl_Frame.wxg"]
-        #args = [u"D:\\Python\\Sources35\\wxGladeTests\\Datepicker.wxg"]
-        args = [u"D:\\Python\\Sources35\\wxglade_dev\\tests\\casefiles\\Grid.wxg"]
-        args = ["D:\\Python\\Sources35\\wxglade_dev\\tests\\casefiles\\Python_Preferences.wxg"]
-        #args = ["D:\\Python\\Sources35\\wxGladeTests\\Python_Preferences_min.wxg"
-        args = ["D:\\Python\\Sources35\\wxglade_dev\\tests\\casefiles\\Lisp_Preferences.wxg"]
-        args = ["D:/Python/Sources35/wxglade_dev/tests/casefiles/Sizers_no_classattr.wxg"]
-        args = ["D:/Python/Sources35/wxglade_dev/tests/casefiles/CPPOgg2.wxg"]
-    
-        #args = []
     if len(args) == 1:
         filename = args[0]
         if not os.path.isabs(filename):
