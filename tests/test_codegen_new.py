@@ -1136,5 +1136,4 @@ class TestCodeGen(WXGladeCLITest):
 
 if __name__ == '__main__':
     import unittest
-    #init_testing(gui=False)
-    unittest.main()
+    unittest.main(exit=False)

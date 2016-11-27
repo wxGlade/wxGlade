@@ -69,11 +69,8 @@ class TestGui(WXGladeGUITest):
         # Lisp code has to raise an exception
         common.app_tree.app.properties["language"].set("lisp")
         self._process_wx_events()
-        #import errors
-        # neither of these works:
-        #self.assertRaises( errors.WxgLispWx3NotSupported, common.app_tree.root.widget.generate_code)
-        #exc = errors.WxgLispWx3NotSupported("%d.%d" % self.for_version))
-        #self.assertRaises( exc, common.app_tree.root.widget.generate_code)
+        common.app_tree.root.widget.generate_code()
+        self._assert_error_message("Generating Lisp code for wxWidgets version 3.0 is not supported")
 
     def test_CodeGeneration_CustomWidget(self):
         'Test GUI code generation using "CustomWidget"'
@@ -128,8 +125,10 @@ class TestGui(WXGladeGUITest):
         if original is None:
             shutil.copy2( source, target )
             return
-        content = open(source,"rb").read().replace(original, replacement)
-        open(target, "wb").write(content)
+        with open(source,"rb") as infile:
+            content = infile.read().replace(original, replacement)
+        with open(target, "wb") as outfile:
+            outfile.write(content)
         shutil.copystat( source, target )
 
     def test_Python_Ogg1(self):
@@ -462,5 +461,4 @@ class TestGui(WXGladeGUITest):
 
 
 if __name__ == '__main__':
-    #unittest.main(failfast=True) # defaultTest="TestGui.test_missing_application_attributes"
-    unittest.main()
+    unittest.main(exit=False)
