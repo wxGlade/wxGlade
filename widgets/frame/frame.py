@@ -32,10 +32,10 @@ class EditFrame(TopLevelBase, EditStylesMixin, BitmapMixin):
         self.icon      = np.FileNamePropertyD("", default_value="")
         self.centered  = np.CheckBoxProperty(False, default_value=False)
         self.sizehints = np.CheckBoxProperty(False, default_value=False)
-        self.menubar   = np.CheckBoxProperty(False)
-        self.toolbar   = np.CheckBoxProperty(False)
+        self.menubar   = np.CheckBoxProperty(False, default_value=False)
+        self.toolbar   = np.CheckBoxProperty(False, default_value=False)
         if "statusbar" in self.PROPERTIES:
-            self.statusbar = np.CheckBoxProperty(False)
+            self.statusbar = np.CheckBoxProperty(False, default_value=False)
             self._statusbar = None
         else:
             self.statusbar = None
