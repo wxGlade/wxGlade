@@ -283,7 +283,7 @@ sub %(handler)s {
     tmpl_sizeritem = '%s->Add(%s, %s, %s, %s);\n'
 
     tmpl_style = \
-        '%(tab)s$style = %(style)s \n' \
+        '%(tab)s$style = %(style)s\n' \
         '%(tab)s%(tab)sunless defined $style;\n' \
         '\n'
 
