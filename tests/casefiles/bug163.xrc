@@ -15,11 +15,11 @@
                     <foobar>1</foobar>
                     <label>Extraproperty example</label>
                     <font>
-                        <style>normal</style>
                         <family>default</family>
-                        <weight>normal</weight>
-                        <underlined>0</underlined>
                         <size>40</size>
+                        <style>normal</style>
+                        <underlined>0</underlined>
+                        <weight>normal</weight>
                     </font>
                 </object>
             </object>

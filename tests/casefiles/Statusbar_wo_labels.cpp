@@ -20,8 +20,8 @@ MyFrame::MyFrame(wxWindow* parent, wxWindowID id, const wxString& title, const w
     wxFrame(parent, id, title, pos, size, style)
 {
     // begin wxGlade: MyFrame::MyFrame
-    label_1 = new wxStaticText(this, wxID_ANY, _("Example of a statusbar with three fields\nbut without labels in those fields."));
     statusbar_without_labels = CreateStatusBar(3);
+    label_1 = new wxStaticText(this, wxID_ANY, _("Example of a statusbar with three fields\nbut without labels in those fields."));
 
     set_properties();
     do_layout();

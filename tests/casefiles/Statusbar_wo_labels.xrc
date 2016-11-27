@@ -4,6 +4,10 @@
 <resource version="2.3.0.1">
     <object class="wxFrame" name="frame_1" subclass="MyFrame">
         <title>frame_1</title>
+        <object class="wxStatusBar" name="statusbar_without_labels">
+            <fields>3</fields>
+            <widths>-1, -1, -1</widths>
+        </object>
         <object class="wxBoxSizer">
             <orient>wxVERTICAL</orient>
             <object class="sizeritem">
@@ -14,10 +18,6 @@
                     <label>Example of a statusbar with three fields\nbut without labels in those fields.</label>
                 </object>
             </object>
-        </object>
-        <object class="wxStatusBar" name="statusbar_without_labels">
-            <fields>3</fields>
-            <widths>-1, -1, -1</widths>
         </object>
     </object>
 </resource>

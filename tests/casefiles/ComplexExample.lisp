@@ -163,7 +163,7 @@
         (wxWindow_SetSizer (slot-notebook-1-pane-1 obj) (slot--gszr-pane1 obj))
         (wxFlexGridSizer_AddGrowableCol (slot--gszr-pane1 obj) 1)
         (wxSizer_AddWindow (slot-sizer-4 obj) (slot-rbx-sampling-rate obj) 1 (logior wxALL wxEXPAND) 5 nil)
-        (wxSizer_AddWindow (slot-sizer-3 obj) (slot-cbx-love obj) 1 (logior wxALL wxSHAPED) 5 nil)
+        (wxSizer_AddWindow (slot-sizer-3 obj) (slot-cbx-love obj) 0 (logior wxALL wxSHAPED) 5 nil)
         (wxSizer_AddSizer (slot-sizer-4 obj) (slot-sizer-3 obj) 1 (logior wxALL wxEXPAND) 5 nil)
         (wxWindow_SetSizer (slot-notebook-1-pane-2 obj) (slot-sizer-4 obj))
         (wxSizer_AddWindow (slot--szr-pane3 obj) (slot-text-ctrl-2 obj) 1 (logior wxALL wxEXPAND) 5 nil)

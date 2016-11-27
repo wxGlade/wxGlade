@@ -22,8 +22,8 @@
 
 
 // begin wxGlade: ::dependencies
-#include <wx/spinctrl.h>
 #include <wx/notebook.h>
+#include <wx/spinctrl.h>
 // end wxGlade
 
 // begin wxGlade: ::extracode
