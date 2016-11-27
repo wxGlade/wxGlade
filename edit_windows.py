@@ -333,7 +333,7 @@ class WindowBase(EditBase):
     def __init__(self, name, klass, parent, id):
         EditBase.__init__(self, name, klass, parent, id)
 
-        self.window_id = np.TextPropertyD( "wxID_ANY", default_value="wxID_ANY", name="id" )
+        self.window_id = np.TextPropertyD( "wxID_ANY", name="id" )
         self.size      = np.SizePropertyD( "-1, -1", default_value="-1, -1" )
 
         # background, foreground, font properties
