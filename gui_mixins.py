@@ -274,10 +274,10 @@ class BitmapMixin(object):
             bitmap = getattr(self, 'bitmap', None)
 
         if not bitmap:
-            return wx.EmptyBitmap(1, 1)
+            return compat.wx_EmptyBitmap(1, 1)
 
         if bitmap.startswith('var:') or bitmap.startswith('code:'):
-            return wx.EmptyBitmap(16, 16)
+            return compat.wx_EmptyBitmap(16, 16)
         elif bitmap.startswith('empty:'):
             return self.get_preview_obj_emptybitmap(bitmap)
         elif bitmap.startswith('art:'):
@@ -352,4 +352,4 @@ class BitmapMixin(object):
             width, height = [int(item.strip()) for item in size.split(',', 1)]
         except ValueError:
             self._logger.warn( 'Malformed statement to create an empty bitmap: %s', bitmap )
-        return wx.EmptyBitmap(max(1, width), max(1, height))
+        return compat.wx_EmptyBitmap( max(1,width), max(1,height) )

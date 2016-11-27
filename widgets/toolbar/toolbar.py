@@ -480,17 +480,17 @@ class EditToolBar(EditBase, PreviewMixin, EditStylesMixin, BitmapMixin):
             self.widget = wx.ToolBar(self.pwidget, -1, style=tb_style)
             self.pwidget.SetToolBar(self.widget)
             self.pwidget.SetBackgroundColour(self.widget.GetBackgroundColour())
-            icon = wx.EmptyIcon()
+            icon = wx.EmptyIcon() if compat.IS_CLASSIC else wx.Icon()
             xpm = os.path.join(config.icons_path, 'toolbar.xpm')
             icon.CopyFromBitmap(misc.get_xpm_bitmap(xpm))
             self.pwidget.SetIcon(icon)
-            wx.EVT_CLOSE(self.pwidget, lambda e: self.hide_widget())
-            wx.EVT_LEFT_DOWN(self.widget, self.on_set_focus)
+            self.pwidget.Bind(wx.EVT_CLOSE, lambda e: self.hide_widget())
+            self.widget.Bind(wx.EVT_LEFT_DOWN, self.on_set_focus)
             if wx.Platform == '__WXMSW__':
                 # MSW isn't smart enough to avoid overlapping windows, so
                 # at least move it away from the 3 wxGlade frames
                 self.pwidget.CenterOnScreen()
-        wx.EVT_LEFT_DOWN(self.pwidget, self.on_set_focus)
+        self.pwidget.Bind(wx.EVT_LEFT_DOWN, self.on_set_focus)
 
         # set the various property values
         self._set_bitmapsize()
@@ -544,8 +544,9 @@ class EditToolBar(EditBase, PreviewMixin, EditStylesMixin, BitmapMixin):
                     kind = kinds[int(tool.type)]
                 except (ValueError, IndexError):
                     kind = wx.ITEM_NORMAL
-                self.widget.AddLabelTool( wx.NewId(), misc.wxstr(tool.label), bmp1, bmp2, kind,
-                                          misc.wxstr(tool.short_help), misc.wxstr(tool.long_help) )
+                ADD = self.widget.AddLabelTool  if compat.IS_CLASSIC else  self.widget.AddTool
+                ADD( wx.NewId(), misc.wxstr(tool.label), bmp1, bmp2, kind,
+                     misc.wxstr(tool.short_help), misc.wxstr(tool.long_help) )
         # this is required to refresh the toolbar properly
         self._refresh_widget()
 

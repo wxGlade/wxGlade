@@ -219,6 +219,7 @@ if len(wx.VERSION)==5:
     wx_Tree_InsertItemBefore = wx.TreeCtrl.InsertItemBefore
     def SetToolTip(c, s):
         c.SetToolTipString(s)
+    wx_EmptyBitmap = wx.EmptyBitmap
 else:
     # wxPython Phoenix
     IS_CLASSIC = False
@@ -235,3 +236,4 @@ else:
     SizerItem_SetSizer = SizerItem_SetSizerPhoenix    # uses AssignSizer
     def SetToolTip(c, s):
         c.SetToolTip(s)
+    wx_EmptyBitmap = wx.Bitmap
