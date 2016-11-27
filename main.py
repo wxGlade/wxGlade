@@ -168,7 +168,7 @@ class wxGladeFrame(wx.Frame):
         if parent is None:
             parent = self
         common.palette = self  # to provide a reference accessible by the various widget classes
-        icon = wx.EmptyIcon() if compat.IS_CLASSIC else wx.Icon()
+        icon = compat.wx_EmptyIcon()
         bmp = wx.Bitmap( os.path.join(config.icons_path, "icon.xpm"), wx.BITMAP_TYPE_XPM )
         icon.CopyFromBitmap(bmp)
         self.SetIcon(icon)

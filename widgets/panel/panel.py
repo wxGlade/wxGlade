@@ -250,7 +250,7 @@ class EditTopLevelPanel(PanelBase, TopLevelBase):
     def create_widget(self):
         win = wx.Frame( common.palette, -1, misc.design_title(self.name), size=(400, 300) )
         import os
-        icon = wx.EmptyIcon()
+        icon = compat.wx_EmptyIcon()
         xpm = os.path.join(config.icons_path, 'panel.xpm')
         icon.CopyFromBitmap(misc.get_xpm_bitmap(xpm))
         win.SetIcon(icon)
