@@ -14,7 +14,7 @@ except (SystemError, ValueError):
 
 import wx.xrc
 import xrc2wxg
-import common
+import common, compat
 import glob, shutil, os, sys, unittest
 
 
@@ -33,7 +33,7 @@ class TestGui(WXGladeGUITest):
         regex = u'Error loading .*Notebook widget "notebook_1" does not have any tabs! \(line: 17, column: 20\)'
         msg = ('Expected wxMessageBox(message="%s", caption="%s") got wxMessageBox(message="%s", caption="%s")'%(
                 err_msg, err_caption, self._messageBox[0], self._messageBox[1] ) )
-        self.assertRegexpMatches( self._messageBox[0], regex, msg=msg)
+        self.assertRegex( self._messageBox[0], regex, msg=msg)
 
     def test_NotebookWithTabs(self):
         "Test loading Notebook with tabs"
@@ -52,8 +52,8 @@ class TestGui(WXGladeGUITest):
 
     def test_CodeGeneration_AllWidgets_28(self):
         'Test GUI code generation using "AllWidgets_28"'
-        self.load_and_generate('AllWidgets_28')
-    
+        self.load_and_generate('AllWidgets_28', preview = compat.IS_CLASSIC)
+
     def test_CodeGeneration_AllWidgets_30(self):
         'Test GUI code generation using "AllWidgets_30"'
         self.load_and_generate('AllWidgets_30', ['lisp'])
