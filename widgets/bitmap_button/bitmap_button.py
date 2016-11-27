@@ -33,7 +33,7 @@ class EditBitmapButton(ManagedBase, EditStylesMixin, BitmapMixin):
         filedialog_style = wx.FD_OPEN | wx.FD_FILE_MUST_EXIST  # for the following two properties
         self.bitmap          = np.FileNameProperty(bmp_file, style=filedialog_style)
         self.disabled_bitmap = np.FileNamePropertyD("", default_value="", style=filedialog_style)
-        self.default         = np.CheckBoxProperty(False)
+        self.default         = np.CheckBoxProperty(False, default_value=False)
 
         if config.preferences.default_border:
             self.border.set( config.preferences.default_border_size )
