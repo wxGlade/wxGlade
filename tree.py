@@ -664,10 +664,6 @@ class WidgetTree(wx.TreeCtrl, Tree):
         if not self.IsExpanded(item):
             self.Expand(item)
         self.SetFocus()
-        import os
-        if 'WINGDB_ACTIVE' in os.environ:
-            path = self.get_selected_path(widget)
-            print("selected:", widget, path)
 
     def on_left_click(self, event):
         if not common.adding_widget:

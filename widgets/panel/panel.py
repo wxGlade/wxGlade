@@ -217,8 +217,6 @@ class EditPanel(PanelBase, ManagedBase):
                 if self.widget is not None:
                     self.widget.SetSize(size)
         except xml_parse.XmlParsingError:
-            import os
-            if 'WINGDB_ACTIVE' in os.environ: raise
             self._logger.warning(_('Only sizers can be pasted here'))
 
     def properties_changed(self, modified):

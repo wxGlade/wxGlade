@@ -687,13 +687,11 @@ class wxGladeFrame(wx.Frame):
 
                 p.parse(infile)
             except (EnvironmentError, SAXParseException, XmlParsingError) as msg:
-                #if 'WINGDB_ACTIVE' in os.environ: raise
                 if filename:
                     error_msg = _("Error loading file %s: %s") % (misc.wxstr(filename), misc.wxstr(msg))
                 else:
                     error_msg = _("Error loading from a file-like object: %s") % misc.wxstr(msg)
             except Exception as inst:
-                if 'WINGDB_ACTIVE' in os.environ: raise
                 if filename:
                     fn = os.path.basename(filename).encode('ascii','replace')
                     msg = _('loading file "%s"') % fn
@@ -941,17 +939,15 @@ class wxGlade(wx.App):
         sys.stdout = sys.__stdout__
         sys.stderr = sys.__stderr__
 
-        if not 'WINGDB_ACTIVE' in os.environ:
-            # replace text based exception handler by a graphical exception dialog
-            sys.excepthook = self.graphical_exception_handler
+        # replace text based exception handler by a graphical exception dialog
+        sys.excepthook = self.graphical_exception_handler
 
         # use graphical implementation to show caught exceptions
         self._exception_orig = logging.exception
         logging.exception = self.exception
 
         # needed for wx >= 2.3.4 to disable wxPyAssertionError exceptions
-        if not 'WINGDB_ACTIVE' in os.environ:
-            self.SetAssertMode(0)
+        self.SetAssertMode(0)
 
         common.init_preferences()
         if config.preferences.log_debug_info:

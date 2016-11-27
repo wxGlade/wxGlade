@@ -221,9 +221,7 @@ class EditNotebook(ManagedBase, EditStylesMixin):
             try:
                 wx.CallAfter(window.sel_marker.update)
             except AttributeError:
-                #self._logger.exception(_('Internal Error'))
-                import os
-                if 'WINGDB_ACTIVE' in os.environ: raise
+                self._logger.exception(_('Internal Error'))
         self.properties["tabs"].update_display()
 
     def set_tabs(self, old_names, indices):
@@ -284,8 +282,7 @@ class EditNotebook(ManagedBase, EditStylesMixin):
                 try:
                     wx.CallAfter(window.sel_marker.update)
                 except AttributeError:
-                    import os
-                    if 'WINGDB_ACTIVE' in os.environ: raise
+                    pass
 
                 added = i  # remember last added index for selection
 
