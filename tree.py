@@ -665,6 +665,10 @@ class WidgetTree(wx.TreeCtrl, Tree):
             self.Expand(item)
         self.SetFocus()
 
+        if config.debugging:
+            path = self.get_selected_path(widget)
+            print("selected:", widget, path)
+
     def on_left_click(self, event):
         if not common.adding_widget:
             event.Skip()

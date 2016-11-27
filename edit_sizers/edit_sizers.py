@@ -976,7 +976,7 @@ class SizerBase(Sizer, np.PropertyOwner):
                 self.widget.SetItemMinSize(item.widget, w, h)
         except Exception:
             # production version: exceptions to be ignored
-            pass
+            if config.debugging: raise
         if force_layout:
             self.layout()  # update the layout of self
 

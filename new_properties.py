@@ -1887,6 +1887,8 @@ class PropertyOwner(object):
         if isinstance(value, Property):
             self.add_property(value, name)
             return
+        if name!="properties" and name in self.properties and config.debugging:
+            raise ValueError("implementation error: property about to be overwritten")
         object.__setattr__(self, name, value)
     def copy_properties(self, other, properties):
         "copy named properties from other"

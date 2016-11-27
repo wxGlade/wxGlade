@@ -496,7 +496,7 @@ class Application(np.PropertyOwner):
                 if os.path.isfile(name):
                     os.unlink(name)
         except Exception as inst:
-            if 'WINGDB_ACTIVE' in os.environ: raise
+            if config.debugging: raise
             widget.preview_widget = None
             widget.properties["preview"].set_label(_('Preview'))
             bugdialog.Show(_("Generate Preview"), inst)
