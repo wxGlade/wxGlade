@@ -162,7 +162,7 @@ class BaseSourceFileContent(object):
     def _load_file(self, filename):
         "Load a file and return the content. The read source file will be decoded to unicode automatically."
         # Separated for debugging purposes
-        fh = open(filename)
+        fh = open(filename, "rb")
         lines = fh.readlines()
         fh.close()
 
@@ -902,7 +902,7 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
 
                 # insert the module dependencies of this class
                 tag = '<%swxGlade replace dependencies>' % self.nonce
-                dep_list = self.classes[klass].dependencies.keys()
+                dep_list = list( self.classes[klass].dependencies.keys() )
                 dep_list.extend(self.dependencies.keys())
                 dep_list.sort()
                 code = self._tagcontent('dependencies', dep_list)
@@ -931,7 +931,7 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
                 write(line)
 
             # write the module dependencies for this class
-            dep_list = self.classes[klass].dependencies.keys()
+            dep_list = list( self.classes[klass].dependencies.keys() )
             dep_list.extend(self.dependencies.keys())
             dep_list.sort()
             code = self._tagcontent('dependencies', dep_list, True)

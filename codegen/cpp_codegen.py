@@ -500,7 +500,7 @@ bool MyApp::OnInit()
         # Extensions and main filename based on Project options when set
         self.source_extension = app_attrs.get('source_extension', config.default_source_extension)
         self.header_extension = app_attrs.get('header_extension', config.default_header_extension)
-        self.app_filename = self._generate_app_filename()
+        if not self.app_filename: self.app_filename = self._generate_app_filename()
 
         self.header_lines = [
             '#include <wx/wx.h>\n',
@@ -582,7 +582,7 @@ bool MyApp::OnInit()
                 if tag[2] == 'dependencies':
                     #self._logger.debug('writing dependencies')
                     deps = []
-                    for code in self.classes.itervalues():
+                    for code in self.classes.values():
                         deps.extend(code.dependencies)
                     lines = self._format_dependencies( deps )
                 elif tag[2] == 'methods':

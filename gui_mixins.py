@@ -227,6 +227,7 @@ class StylesMixin(object):
             try:
                 if self.style_defs[style]['combination'] <= flags:
                     flags -= self.style_defs[style]['combination']
+                    style = self.style_defs[style].get('rename_to', style)
                     flags.add(style)
             except KeyError:
                 pass
