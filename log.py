@@ -399,7 +399,8 @@ def init(filename='wxglade.log', encoding='utf-8', level=None):
     # StreamHandler if no log handler exists.
     # There is a period of time with no log handler during this log
     # initialisation.
-    installExceptionHandler()
+    if not config.debugging:
+        installExceptionHandler()
 
 
 def deinit():
