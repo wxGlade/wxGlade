@@ -34,7 +34,10 @@ class EditSpinCtrl(ManagedBase, EditStylesMixin):
 
     def create_widget(self):
         mi,ma = self.properties["range"].get_tuple()
-        self.widget = wx.SpinCtrl(self.parent.widget, self.id, min=mi, max=ma, initial=self.value)
+        if self.properties["value"].is_active():
+            self.widget = wx.SpinCtrl(self.parent.widget, self.id, min=mi, max=ma, initial=self.value)
+        else:
+            self.widget = wx.SpinCtrl(self.parent.widget, self.id, min=mi, max=ma)
 
     def properties_changed(self, modified):  # from EditSlider
         if not modified or "range" in modified and self.widget:
@@ -83,15 +86,16 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
         raise XmlParsingError(_("'name' attribute missing"))
     if sizer is None or sizeritem is None:
         raise XmlParsingError(_("sizer or sizeritem object cannot be None"))
-    text = EditSpinCtrl( name, parent, wx.NewId(), sizer, pos )
-    sizer.set_item( text.pos, proportion=sizeritem.proportion, flag=sizeritem.flag, border=sizeritem.border )
-    node = Node(text)
-    text.node = node
+    spin = EditSpinCtrl( name, parent, wx.NewId(), sizer, pos )
+    spin.properties["value"].set_active(False)
+    sizer.set_item( spin.pos, proportion=sizeritem.proportion, flag=sizeritem.flag, border=sizeritem.border )
+    node = Node(spin)
+    spin.node = node
     if pos is None:
         common.app_tree.add(node, sizer.node)
     else:
         common.app_tree.insert(node, sizer.node, pos-1)
-    return text
+    return spin
 
 
 def initialize():
