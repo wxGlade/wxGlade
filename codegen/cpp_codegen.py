@@ -1249,6 +1249,7 @@ void %(klass)s::%(handler)s(%(evt_type)s &event)
         write(tab + '// begin wxGlade: %s::event_table\n' % code_obj.klass)
 
         for win_id, event, handler, evt_type in event_handlers:
+            if win_id is None: continue  # bound already, the entry is just for creation of the method stub
             if 'EVT_NAVIGATION_KEY' in event:
                 tmpl = '%(tab)s%(event)s(%(klass)s::%(handler)s)\n'
             else:
