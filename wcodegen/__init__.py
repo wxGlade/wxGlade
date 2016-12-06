@@ -1012,6 +1012,24 @@ class BaseWidgetWriter(StylesMixin, BaseCodeWriter):
 
         return layout_lines
 
+    def get_tmpl(self, name):
+        """\
+        Return non-formatted template or None if there is no such named template.
+
+        This function handled the template extensions described in L{codegen.BaseLangCodeWriter._code_statements}.
+        """
+        name_major = '%s_%d' % (name, self.codegen.for_version[0])
+        name_detailed = '%s_%d%d' % (name, self.codegen.for_version[0], self.codegen.for_version[1])
+
+        # check if there is a template for this name
+        # most specific to generic
+        for name in (name_detailed, name_major, name):
+            try:
+                return getattr(self, name)
+            except AttributeError:
+                pass
+        return None
+
     def get_inline_stmt_artprovider(self, bitmap):
         """\
         Return a inline statement of a bitmap from the given statement using
