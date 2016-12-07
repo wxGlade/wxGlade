@@ -1014,7 +1014,7 @@ class BaseWidgetWriter(StylesMixin, BaseCodeWriter):
 
     def get_tmpl(self, name):
         """\
-        Return non-formatted template or None if there is no such named template.
+        Return non-formatted template or an empty string if there is no such named template.
 
         This function handled the template extensions described in L{codegen.BaseLangCodeWriter._code_statements}.
         """
@@ -1028,7 +1028,7 @@ class BaseWidgetWriter(StylesMixin, BaseCodeWriter):
                 return getattr(self, name)
             except AttributeError:
                 pass
-        return None
+        return ''
 
     def get_inline_stmt_artprovider(self, bitmap):
         """\
