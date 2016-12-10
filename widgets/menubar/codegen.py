@@ -226,64 +226,106 @@ def xrc_code_generator(obj):
 
 class CppMenubarGenerator(wcodegen.CppWidgetCodeWriter):
     constructor = []
+    import_modules = ['<wx/menu.h>']
 
-    def get_code(self, obj):
-        init = [ '%s = new %s();\n' % (obj.name, obj.klass) ]
-        init.extend(self.get_properties_code(obj))
-        init.append('SetMenuBar(%s);\n' % obj.name)
-        ids = self.get_ids_code(obj)
-        return init, ids, [], []
+    tmpl_bind = 'Bind(wxEVT_MENU, &%(handler)s, this, %(item)s->GetId());\n'
+    tmpl_bind_28 = 'Connect(%(item)s->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(%(handler)s));\n'
 
     def get_properties_code(self, obj):
-        menus = obj.properties['menubar']
+        return []
+
+    def get_init_code(self, obj):
         out = []
         append = out.append
         quote_str = self.codegen.quote_str
+        menus = obj.properties['menubar']
+        ids = []
+        tmpsused = {}           # keep track used temporary names
+        obj_name = self.codegen.format_generic_access(obj)
 
-        def append_items(menu, items):
+        def append_items(menu, items, toplevel):
             for item in items:
                 if item.name == '---':  # item is a separator
                     append('%s->AppendSeparator();\n' % menu)
                     continue
                 name, val = self.codegen.generate_code_id(None, item.id)
-                if not name and val == '-1':
+                if not name and ( not val or val == '-1'):
                     id = 'wxNewId()'
                 else:
                     #if name: ids.append(name)
                     id = val
+
                 if item.children:
-                    if item.name: name = item.name
-                    else: name = '%s_sub' % menu
+                    # a submenu
+                    name = item.name or '%s_sub' % menu
+
+                    # if not item.name:
+                    #     if name not in tmpsused:
+                    #         tmpsused[name] = 1
+                    #         append('my %s;\n' % name)
+
                     append('wxMenu* %s = new wxMenu();\n' % name)
-                    append_items(name, item.children)
+                    append_items(name, item.children, toplevel)
                     args = (menu, id, quote_str(item.label), name, quote_str(item.help_str))
                     append('%s->Append(%s, %s, %s, %s);\n' % args)
-                else:
-                    item_type = 'wxITEM_NORMAL'
-                    if item.checkable == '1':
-                        item_type = 'wxITEM_CHECK'
-                    elif item.radio == '1':
-                        item_type = 'wxITEM_RADIO'
-                    args = (menu, id, quote_str(item.label), quote_str(item.help_str))
+                    return
+
+                item_type = None
+                if item.checkable == '1':
+                    item_type = 'wxITEM_CHECK'
+                elif item.radio == '1':
+                    item_type = 'wxITEM_RADIO'
+
+                if item.name:
+                    # create MenuItem and assign to property, then append to menu
+                    menu_item = '%s' % item.name
+                    args = ( menu, id, quote_str(item.label), quote_str(item.help_str) )
                     if item_type:
-                        append( '%s->Append(%s, %s, %s, %s);\n' % (args+(item_type,)) )
-                    else:
-                        append( '%s->Append(%s, %s, %s);\n' % args )
+                        args += (item_type,)
+                    self.codegen.register_class_member(toplevel, 'wxMenuItem', menu_item)
+                    append('%s = new wxMenuItem(%s);\n' % (menu_item, ', '.join(args)))
+                    append('%s->Append(%s);\n' % (menu, menu_item))
 
-        obj_name = self.codegen.format_generic_access(obj)
+                else:
+                    # append single menu entry to the menu
+                    args = ( id, quote_str(item.label), quote_str(item.help_str) )
+                    tmpl = '%s->Append(%%s);\n' % menu
+                    if item_type:
+                        args += (item_type,)
 
-        i = 1
+                    # assign the returned item to a temporary variable to use to Bind() the handler
+                    if item.handler:
+                        tmpl = 'item = %s' % tmpl
+                        menu_item = 'item'
+                        if menu_item not in tmpsused:
+                            tmpsused[menu_item] = 1
+                            append('wxMenuItem* %s;\n' % menu_item)
+
+                    append(tmpl % ', '.join(args))
+
+                if item.handler:
+                    handler = item.handler if "->" in item.handler else "%s::%s" % (toplevel.klass, item.handler)
+                    tmpl = self.get_tmpl('tmpl_bind')
+                    append(tmpl % {'item': menu_item, 'handler': handler})
+
         for m in menus:
             menu = m.root
             if menu.name:
-                name = menu.name
+                menu_item = menu.name
+                # declare menu within local scope
+                if menu_item not in tmpsused:
+                    tmpsused[menu_item] = 1
+                    append('wxMenu* %s = new wxMenu();\n' % menu_item)
             else:
-                name = 'wxglade_tmp_menu_%s' % i
-                i += 1
-            append('wxMenu* %s = new wxMenu();\n' % name)
+                menu_item = 'wxglade_tmp_menu'
+                if menu_item not in tmpsused:
+                    tmpsused[menu_item] = 1
+                    append('wxMenu* %s = new wxMenu();\n' % menu_item) # define temporary wxMenuItem variable
+                else:
+                    append('%s = new wxMenu();\n' % menu_item)
             if menu.children:
-                append_items(name, menu.children)
-            append('%sAppend(%s, %s);\n' % (obj_name, name, quote_str(menu.label)))
+                append_items(menu_item, menu.children, obj.parent)
+            append('%sAppend(%s, %s);\n' % (obj_name, menu_item, quote_str(menu.label)))
 
         return out
 
@@ -307,6 +349,18 @@ class CppMenubarGenerator(wcodegen.CppWidgetCodeWriter):
 
         return ids
 
+    def get_code(self, obj):
+        if obj.klass == obj.base:
+            klass = self.cn(obj.klass)
+        else:
+            klass = obj.klass
+        init = ['\n', '// Menu Bar\n', '%s = new %s();\n' % (obj.name, klass)]
+        init.extend(self.get_init_code(obj))
+        init.append('SetMenuBar(%s);\n' % obj.name)
+        init.append('// Menu Bar end\n')
+        ids = self.get_ids_code(obj)
+        return init, ids, [], []
+
     def get_event_handlers(self, obj):
         out = []
 
@@ -315,8 +369,9 @@ class CppMenubarGenerator(wcodegen.CppWidgetCodeWriter):
             name, val = self.codegen.generate_code_id(None, item.id)
             if not val:
                 val = '-1'  # but this is wrong anyway...
-            if item.handler:
-                ret.append((val, 'EVT_MENU', item.handler, 'wxCommandEvent'))
+            if item.handler and item.handler!="---":
+                # first item is None -> just generate stub for item.handler, do not bind again
+                ret.append((None, 'EVT_MENU', item.handler, 'wxCommandEvent'))
             if item.children:
                 for c in item.children:
                     ret.extend(do_get(c))
@@ -325,7 +380,6 @@ class CppMenubarGenerator(wcodegen.CppWidgetCodeWriter):
         for menu in obj.properties['menubar']:
             out.extend(do_get(menu.root))
         return out
-
 
 
 def initialize():
