@@ -22,6 +22,7 @@
 
 
 // begin wxGlade: ::dependencies
+#include <wx/menu.h>
 // end wxGlade
 
 // begin wxGlade: ::extracode
