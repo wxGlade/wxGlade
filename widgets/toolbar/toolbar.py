@@ -435,8 +435,7 @@ class ToolsHandler(BaseXmlBuilderTagHandler):
         super(ToolsHandler, self).char_data(data)
         if self.curr_index >= 0:
             char_data = self.get_char_data()
-            setattr(self.curr_tool,
-                    self.itemattrs[self.curr_index], char_data)
+            setattr(self.curr_tool, self.itemattrs[self.curr_index], char_data)
 
 
 
@@ -538,15 +537,18 @@ class EditToolBar(EditBase, PreviewMixin, EditStylesMixin, BitmapMixin):
                 self.widget.AddSeparator()
             else:
                 bmp1 = self.get_preview_obj_bitmap(tool.bitmap1)
-                bmp2 = self.get_preview_obj_bitmap(tool.bitmap2)
+                bmp2 = self.get_preview_obj_bitmap(tool.bitmap2) if tool.bitmap2.strip() else None
                 kinds = [wx.ITEM_NORMAL, wx.ITEM_CHECK, wx.ITEM_RADIO]
                 try:
                     kind = kinds[int(tool.type)]
                 except (ValueError, IndexError):
                     kind = wx.ITEM_NORMAL
                 ADD = self.widget.AddLabelTool  if compat.IS_CLASSIC else  self.widget.AddTool
-                ADD( wx.NewId(), misc.wxstr(tool.label), bmp1, bmp2, kind,
-                     misc.wxstr(tool.short_help), misc.wxstr(tool.long_help) )
+                if bmp2 is not None:
+                    ADD( wx.NewId(), misc.wxstr(tool.label), bmp1, bmp2, kind,
+                         misc.wxstr(tool.short_help), misc.wxstr(tool.long_help) )
+                else:
+                    ADD( wx.NewId(), misc.wxstr(tool.label), bmp1, misc.wxstr(tool.short_help) )
         # this is required to refresh the toolbar properly
         self._refresh_widget()
 
