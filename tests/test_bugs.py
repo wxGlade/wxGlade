@@ -138,6 +138,10 @@ class TestBugs(WXGladeBaseTest):
             '/tmp/existing_but_no_access.pl',
         )
 
+    def test_bug192(self):
+        """Test bug #192 - 'Store as attribute' does not work for sizers in C++"""
+        self._test_all('bug192')
+
     def test_bug194(self):
         """Test bug #194 - LB_EXTENDED for ListBox they never show up in generated code"""
         self._test_all('bug194')

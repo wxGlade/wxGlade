@@ -43,12 +43,20 @@ class BaseSizerBuilder(object):
 
     def __init__(self):
         "Initialise sizer builder"
-        self.props_get_code = {}                          # properties to replace in L{tmpl}
+        self.tmpl_dict = {}                          # properties to replace in L{tmpl}
         self.codegen = common.code_writers[self.language] #language specific code generator (codegen.BaseLangCodeWriter)
 
     def _get_wparent(self, obj):
         "Return the parent widget or a reference to it as string"
         raise NotImplementedError
+
+    def _prepare_tmpl_content(self, obj):
+        """Prepare template variables"""
+        self.tmpl_dict.clear()
+        self.tmpl_dict['klass'] = self.codegen.cn(self.klass)
+        self.tmpl_dict['wxIDANY'] = self.codegen.cn('wxID_ANY')
+        self.tmpl_dict['parent_widget'] = self._get_wparent(obj)
+        self.tmpl_dict['sizer_name'] = self.codegen._format_classattr(obj)
 
     def _get_code(self, obj):
         "Generates the language specific code for sizer specified in L{klass}"
@@ -58,29 +66,22 @@ class BaseSizerBuilder(object):
         init = []
         layout = []
 
-        # append default properties
-        self.props_get_code['sizer_name'] = obj.name
-        self.props_get_code['klass'] = self.codegen.cn(self.klass)
-        self.props_get_code['wxIDANY'] = self.codegen.cn('wxID_ANY')
-        self.props_get_code['parent_widget'] = self._get_wparent(obj)
-
-        self.props_get_code['sizer_name'] = self.codegen._format_classattr(obj)
-
-        # generate init lines from tmpl filled with props_get_code
-        init.append(self.tmpl % self.props_get_code)
+        # generate init lines from tmpl filled with tmpl_dict
+        init.append(self.tmpl % self.tmpl_dict)
 
         # generate layout lines
         if obj.is_toplevel:
-            layout.append(self.tmpl_SetSizer % self.props_get_code)
+            layout.append(self.tmpl_SetSizer % self.tmpl_dict)
             if not 'size' in obj.parent.properties and obj.parent.is_toplevel:
-                layout.append(self.tmpl_Fit % self.props_get_code)
+                layout.append(self.tmpl_Fit % self.tmpl_dict)
             if obj.parent.properties.get('sizehints', False):
-                layout.append(self.tmpl_SetSizeHints % self.props_get_code)
+                layout.append(self.tmpl_SetSizeHints % self.tmpl_dict)
 
         return init, [], layout  # init, props, layout
 
     def get_code(self, obj):
         "Generates the language specific code for sizer specified in L{klass}"
+        self._prepare_tmpl_content(obj)
         if self.klass == 'wxBoxSizer':       return self.get_code_wxBoxSizer(obj)
         if self.klass == 'wxStaticBoxSizer': return self.get_code_wxStaticBoxSizer(obj)
         if self.klass == 'wxGridSizer':      return self.get_code_wxGridSizer(obj)
@@ -89,24 +90,21 @@ class BaseSizerBuilder(object):
 
     def get_code_wxStaticBoxSizer(self, obj):
         "Set sizer specific properties and generate the code"
-        self.props_get_code.clear()
-        self.props_get_code['orient'] = self.codegen.cn( obj.properties.get('orient', 'wxHORIZONTAL') )
-        self.props_get_code['label'] = self.codegen.quote_str( obj.properties.get('label', '') )
+        self.tmpl_dict['orient'] = self.codegen.cn( obj.properties.get('orient', 'wxHORIZONTAL') )
+        self.tmpl_dict['label'] = self.codegen.quote_str( obj.properties.get('label', '') )
         return self._get_code(obj)
 
     def get_code_wxBoxSizer(self, obj):
         "Set sizer specific properties and generate the code"
-        self.props_get_code.clear()
-        self.props_get_code['orient'] = self.codegen.cn( obj.properties.get('orient', 'wxHORIZONTAL') )
+        self.tmpl_dict['orient'] = self.codegen.cn( obj.properties.get('orient', 'wxHORIZONTAL') )
         return self._get_code(obj)
 
     def get_code_wxGridSizer(self, obj):
         "Set sizer specific properties and generate the code"
-        self.props_get_code.clear()
-        self.props_get_code['rows'] = obj.properties.get('rows', '0')
-        self.props_get_code['cols'] = obj.properties.get('cols', '0')
-        self.props_get_code['vgap'] = obj.properties.get('vgap', '0')
-        self.props_get_code['hgap'] = obj.properties.get('hgap', '0')
+        self.tmpl_dict['rows'] = obj.properties.get('rows', '0')
+        self.tmpl_dict['cols'] = obj.properties.get('cols', '0')
+        self.tmpl_dict['vgap'] = obj.properties.get('vgap', '0')
+        self.tmpl_dict['hgap'] = obj.properties.get('hgap', '0')
         return self._get_code(obj)
 
     def get_code_wxFlexGridSizer(self, obj):
@@ -123,12 +121,12 @@ class BaseSizerBuilder(object):
         props = obj.properties
         if 'growable_rows' in props:
             for row in props['growable_rows'].split(','):
-                self.props_get_code['row'] = row.strip()
-                layout.append(self.tmpl_AddGrowableRow % self.props_get_code)
+                self.tmpl_dict['row'] = row.strip()
+                layout.append(self.tmpl_AddGrowableRow % self.tmpl_dict)
         if 'growable_cols' in props:
             for col in props['growable_cols'].split(','):
-                self.props_get_code['col'] = col.strip()
-                layout.append(self.tmpl_AddGrowableCol % self.props_get_code)
+                self.tmpl_dict['col'] = col.strip()
+                layout.append(self.tmpl_AddGrowableCol % self.tmpl_dict)
 
         # reappend layout lines
         result.append(layout)

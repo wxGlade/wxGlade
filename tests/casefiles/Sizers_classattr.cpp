@@ -47,12 +47,12 @@ void MyDialog::set_properties()
 void MyDialog::do_layout()
 {
     // begin wxGlade: MyDialog::do_layout
-    wxFlexGridSizer* grid_sizer_1 = new wxFlexGridSizer(3, 1, 0, 0);
-    wxBoxSizer* sizer_1 = new wxBoxSizer(wxHORIZONTAL);
-    wxFlexGridSizer* grid_sizer_2 = new wxFlexGridSizer(1, 3, 0, 0);
-    wxStaticBoxSizer* sizer_3 = new wxStaticBoxSizer(new wxStaticBox(this, wxID_ANY, _("Assigned Permissions:")), wxHORIZONTAL);
-    wxFlexGridSizer* sizer_4 = new wxFlexGridSizer(4, 1, 0, 0);
-    wxStaticBoxSizer* sizer_2 = new wxStaticBoxSizer(new wxStaticBox(this, wxID_ANY, _("Unassigned Permissions:")), wxHORIZONTAL);
+    grid_sizer_1 = new wxFlexGridSizer(3, 1, 0, 0);
+    sizer_1 = new wxBoxSizer(wxHORIZONTAL);
+    grid_sizer_2 = new wxFlexGridSizer(1, 3, 0, 0);
+    sizer_3 = new wxStaticBoxSizer(new wxStaticBox(this, wxID_ANY, _("Assigned Permissions:")), wxHORIZONTAL);
+    sizer_4 = new wxFlexGridSizer(4, 1, 0, 0);
+    sizer_2 = new wxStaticBoxSizer(new wxStaticBox(this, wxID_ANY, _("Unassigned Permissions:")), wxHORIZONTAL);
     sizer_2->Add(list_box_1, 1, wxALL|wxEXPAND, 5);
     grid_sizer_2->Add(sizer_2, 1, wxEXPAND, 0);
     sizer_4->Add(20, 20, 0, wxEXPAND, 0);

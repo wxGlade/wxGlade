@@ -27,6 +27,7 @@ Bugs:
   - Catch all errors raised during faulthandler initiasisation (sf bug #193)
   - Fix wrong CheckListBox C++ statement if styles are selected
   - Add excludes for wxCheckListBox mutual styles
+  - Fix 'Store as attribute' does not work for sizers in C++ (sf bug #192)
   - LB_EXTENDED for ListBox never show up in generated code (sf bug #194)
   - Assert isinstance(geometry, (wx.Point,  wx.Rect)) (sf bug #196)
   - ...

@@ -33,7 +33,7 @@ class BaseCPPSizerBuilder(BaseSizerBuilder):
         return parent_ref
 
     def _get_code(self, obj):
-        self.props_get_code['parent_ref'] = self._get_parent_ref(obj)
+        self.tmpl_dict['parent_ref'] = self._get_parent_ref(obj)
         result = BaseSizerBuilder._get_code(self, obj)
 
         # get_code() for C++ has different return values
@@ -41,24 +41,29 @@ class BaseCPPSizerBuilder(BaseSizerBuilder):
         result.insert(2, [])
         return result
 
+    def _prepare_tmpl_content(self, obj):
+        super(BaseCPPSizerBuilder, self)._prepare_tmpl_content(obj)
+        if self.codegen.store_as_attr(obj):
+            self.tmpl_dict['assignment'] = '%s' % self.tmpl_dict['sizer_name']
+        else:
+            self.tmpl_dict['assignment'] = '%s* %s' % (self.tmpl_dict['klass'],
+                                                            self.tmpl_dict['sizer_name'])
+        return
 
 
 class CppBoxSizerBuilder(BaseCPPSizerBuilder):
     klass = 'wxBoxSizer'
-    tmpl = '%(klass)s* %(sizer_name)s = new %(klass)s(%(orient)s);\n'
-
+    tmpl = '%(assignment)s = new %(klass)s(%(orient)s);\n'
 
 
 class CppStaticBoxSizerBuilder(BaseCPPSizerBuilder):
     klass = 'wxStaticBoxSizer'
-    tmpl = '%(klass)s* %(sizer_name)s = new %(klass)s(new wxStaticBox(%(parent_widget)s, wxID_ANY, %(label)s), %(orient)s);\n'
-
+    tmpl = '%(assignment)s = new %(klass)s(new wxStaticBox(%(parent_widget)s, wxID_ANY, %(label)s), %(orient)s);\n'
 
 
 class CppGridSizerBuilder(BaseCPPSizerBuilder):
     klass = 'wxGridSizer'
-    tmpl = '%(klass)s* %(sizer_name)s = new %(klass)s(%(rows)s, %(cols)s, %(vgap)s, %(hgap)s);\n'
-
+    tmpl = '%(assignment)s = new %(klass)s(%(rows)s, %(cols)s, %(vgap)s, %(hgap)s);\n'
 
 
 class CppFlexGridSizerBuilder(CppGridSizerBuilder):
@@ -66,7 +71,6 @@ class CppFlexGridSizerBuilder(CppGridSizerBuilder):
 
     tmpl_AddGrowableRow = '%(sizer_name)s->AddGrowableRow(%(row)s);\n'
     tmpl_AddGrowableCol = '%(sizer_name)s->AddGrowableCol(%(col)s);\n'
-
 
 
 import wcodegen
