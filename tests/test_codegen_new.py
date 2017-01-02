@@ -1097,6 +1097,8 @@ class TestCodeGen(WXGladeCLITest):
             codegen = common.code_writers.get(lang)
             get_bitmap_code = codegen.obj_builders['wxBitmapButton'].generate_code_bitmap
             for bitmap_file, expected in details[lang]:
+                if lang=='python' and compat.IS_PHOENIX and "wx.EmptyBitmap" in expected:
+                    expected = expected.replace("wx.EmptyBitmap" , "wx.Bitmap")
                 stmt = get_bitmap_code(bitmap_file)
                 self.assertEqual( expected, stmt,
                     '%s: Unexpected result got: "%s" expect: "%s"' % (misc.capitalize(lang), stmt, expected) )
