@@ -26,7 +26,7 @@ class FontHandler(BaseXmlBuilderTagHandler):
     def __init__(self, owner):
         super(FontHandler, self).__init__()
         self.owner = owner
-        self.props = [8, 'default', 'normal', 'normal', 0, 'Tahoma'] # size, family, style, weight, underlined, face
+        self.props = [8, 'default', 'normal', 'normal', 0, ''] # size, family, style, weight, underlined, face
         self.index = 0
 
     def start_elem(self, name, attrs):
@@ -272,7 +272,7 @@ class EditBase(EventsMixin, np.PropertyOwner):
             return self.widget.IsShown()
         parent = self.parent
         if parent: return parent.is_visible()
-        return self.widget.IsShown()
+        return self.widget.GetParent().IsShown()
 
     def update_view(self, selected):
         """Updates the widget's view to reflect its state, i.e. shows which
@@ -333,7 +333,7 @@ class WindowBase(EditBase):
     def __init__(self, name, klass, parent, id):
         EditBase.__init__(self, name, klass, parent, id)
 
-        self.window_id = np.TextPropertyD( "wxID_ANY", default_value="wxID_ANY", name="id" )
+        self.window_id = np.TextPropertyD( "wxID_ANY", name="id" )
         self.size      = np.SizePropertyD( "-1, -1", default_value="-1, -1" )
 
         # background, foreground, font properties
@@ -589,11 +589,15 @@ class ManagedBase(WindowBase):
 
     def properties_changed(self, modified):
         WindowBase.properties_changed(self, modified)
+        p = self.properties["flag"]
         if "border" in modified and self.border:
             # enable border flags if not yet done
-            p = self.properties["flag"]
             if not p.value_set.intersection(p.FLAG_DESCRIPTION["Border"]):
-                p.add("wxALL")
+                p.add("wxALL", notify=False)
+        if "flag" in modified and "wxSHAPED" in p.value_set and self.proportion:
+            self.properties["proportion"].set(0, notify=False)
+        elif "option" in modified and self.proportion and "wxSHAPED" in p.value_set:
+            p.remove("wxSHAPED", notify=False)
 
         if "option" in modified or "flag" in modified or "border" in modified or "size" in modified:
             if not self.sizer.is_virtual():
@@ -699,8 +703,9 @@ class PreviewMixin(object):
 
 
 class TopLevelBase(WindowBase, PreviewMixin):
-    "Base class for every non-managed window (i.e. Frames and Dialogs)"
+    "Base class for every non-managed window (i.e. Frames, Dialogs and TopLevelPanel)"
     _is_toplevel = True
+    _is_toplevel_window = True  # will be False for TopLevelPanel and MDIChildFrame
     _custom_base_classes = True
     PROPERTIES = WindowBase.PROPERTIES + ["preview"]
 
@@ -796,14 +801,13 @@ class TopLevelBase(WindowBase, PreviewMixin):
             self._logger.warning( _('WARNING: Sizer already set for this window') )
             return
         import xml_parse
-        size = self.widget.GetSize()
+        if self.widget: size = self.widget.GetSize()
         try:
             if clipboard.paste(self, None, 0, clipboard_data):
                 common.app_tree.app.saved = False
-                self.widget.SetSize(size)
+                if self.widget: self.widget.SetSize(size)
         except xml_parse.XmlParsingError:
-            import os
-            if 'WINGDB_ACTIVE' in os.environ: raise
+            if config.debugging: raise
             self._logger.warning( _('WARNING: Only sizers can be pasted here') )
     ####################################################################################################################
 
@@ -954,12 +958,10 @@ class EditStylesMixin(np.PropertyOwner):
         self.style = np.WidgetStyleProperty()  # this will read it's default value
 
     def _set_widget_style(self):
-        """\
-        Set a new widget style if the style has changed
+        """Set a new widget style if the style has changed
 
         @note:
-            Quote from wxWidgets documentation about changing styles
-            dynamically:
+            Quote from wxWidgets documentation about changing styles dynamically:
 
             Note that alignment styles (wxTE_LEFT, wxTE_CENTRE and
             wxTE_RIGHT) can be changed dynamically after control creation
@@ -970,15 +972,12 @@ class EditStylesMixin(np.PropertyOwner):
 
         @see: L{EditBase.widget}
         """
-        widget = getattr(self, 'widget', None)
-        if widget and self.update_widget_style:
-            old_style = widget.GetWindowStyleFlag()
-
-            new_style = self.get_int_style()
-
-            if old_style != new_style:
-                widget.SetWindowStyleFlag(new_style)
-                widget.Refresh()
+        if not self.widget or not self.update_widget_style: return
+        old_style = self.widget.GetWindowStyleFlag()
+        new_style = self.style
+        if old_style != new_style:
+            self.widget.SetWindowStyleFlag(new_style)
+            self.widget.Refresh()
 
     @decorators.memoize
     def wxname2attr(self, name):
@@ -999,6 +998,7 @@ class EditStylesMixin(np.PropertyOwner):
         return attr
 
     def properties_changed(self, modified):
-        # XXX add style modfication handling
-        pass
+        if "style" in modified:
+            self._set_widget_style()
+        
 

@@ -29,8 +29,8 @@ class EditDialog(TopLevelBase, EditStylesMixin, BitmapMixin):
 
         # initialise instance properties
         self.icon      = np.FileNamePropertyD("", default_value="")
-        self.centered  = np.CheckBoxProperty(False)
-        self.sizehints = np.CheckBoxProperty(False)
+        self.centered  = np.CheckBoxProperty(False, default_value=False)
+        self.sizehints = np.CheckBoxProperty(False, default_value=False)
 
     def create_widget(self):
         if self.parent:
@@ -60,7 +60,7 @@ class EditDialog(TopLevelBase, EditStylesMixin, BitmapMixin):
             xpm = os.path.join(config.icons_path, 'dialog.xpm')
             bitmap = misc.get_xpm_bitmap(xpm)
 
-        icon = wx.EmptyIcon()
+        icon = compat.wx_EmptyIcon()
         icon.CopyFromBitmap(bitmap)
         self.widget.SetIcon(icon)
 

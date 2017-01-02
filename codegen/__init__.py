@@ -162,7 +162,7 @@ class BaseSourceFileContent(object):
     def _load_file(self, filename):
         "Load a file and return the content. The read source file will be decoded to unicode automatically."
         # Separated for debugging purposes
-        fh = open(filename)
+        fh = open(filename, "rb")
         lines = fh.readlines()
         fh.close()
 
@@ -587,13 +587,12 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
                 code = ""
             self.previous_source.content = self.previous_source.content.replace(tag, code)
             tag = '<%swxGlade extra_modules>\n' % self.nonce
-            code = "".join(self._current_extra_modules.keys())
+            code = "".join(sorted(self._current_extra_modules.keys()))
             self.previous_source.content = self.previous_source.content.replace(tag, code)
 
             # module dependencies of all classes
             tag = '<%swxGlade replace dependencies>' % self.nonce
-            dep_list = self.dependencies.keys()
-            dep_list.sort()
+            dep_list = sorted( self.dependencies.keys() )
             code = self._tagcontent('dependencies', dep_list)
             self.previous_source.content = self.previous_source.content.replace(tag, code)
 
@@ -614,7 +613,7 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
             self.save_file( self.previous_source.name, self.previous_source.content, content_only=True )
 
         elif not self.multiple_files:
-            em = "".join(self._current_extra_modules.keys())
+            em = "".join(sorted(self._current_extra_modules.keys()))
             content = self.output_file.getvalue().replace( '<%swxGlade extra_modules>\n' % self.nonce, em )
 
             # module dependencies of all classes
@@ -903,7 +902,7 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
 
                 # insert the module dependencies of this class
                 tag = '<%swxGlade replace dependencies>' % self.nonce
-                dep_list = self.classes[klass].dependencies.keys()
+                dep_list = list( self.classes[klass].dependencies.keys() )
                 dep_list.extend(self.dependencies.keys())
                 dep_list.sort()
                 code = self._tagcontent('dependencies', dep_list)
@@ -932,7 +931,7 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
                 write(line)
 
             # write the module dependencies for this class
-            dep_list = self.classes[klass].dependencies.keys()
+            dep_list = list( self.classes[klass].dependencies.keys() )
             dep_list.extend(self.dependencies.keys())
             dep_list.sort()
             code = self._tagcontent('dependencies', dep_list, True)

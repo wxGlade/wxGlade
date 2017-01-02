@@ -7,7 +7,7 @@ Common code used by all widget code generators
 
 from __future__ import absolute_import
 
-import common, config, misc
+import common, config, misc, compat
 
 import copy, logging, os.path
 from .dialogs import *
@@ -938,7 +938,8 @@ class BaseWidgetWriter(StylesMixin, BaseCodeWriter):
         except KeyError:
             default_event = 'wxCommandEvent'
 
-        for event, handler in obj.properties['events'].items():
+        for event in sorted( obj.properties['events'].keys() ):
+            handler = obj.properties['events'][event]
             if event not in self.config['events']:
                 self._logger.warn( _('Ignore unknown event %s for %s'), (event, obj.klass) )
                 continue
@@ -1310,7 +1311,10 @@ class PythonWidgetCodeWriter(PythonMixin, BaseWidgetWriter):
     "Base class for all Python widget code writer classes"
     tmpl_inline_artprovider = 'wx.ArtProvider.GetBitmap(%(art_id)s, %(art_client)s, %(size)s)'
     tmpl_inline_bitmap = '%(name)s(%(bitmap)s, %(bitmap_type)s)'
-    tmpl_inline_emptybitmap = 'wx.EmptyBitmap(%(width)s, %(height)s)'
+    if compat.IS_CLASSIC:
+        tmpl_inline_emptybitmap = 'wx.EmptyBitmap(%(width)s, %(height)s)'
+    else:
+        tmpl_inline_emptybitmap = 'wx.Bitmap(%(width)s, %(height)s)'
     tmpl_bitmap_disabled = '%(name)s.SetBitmapDisabled(%(disabled_bitmap)s)\n'
 
     tmpl_flags = ', style=%s'

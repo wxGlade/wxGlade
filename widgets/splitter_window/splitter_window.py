@@ -195,6 +195,7 @@ class EditSplitterWindow(ManagedBase, EditStylesMixin):
         if not modified or "min_pane_size" in modified and self.widget:
             self.widget.SetMinimumPaneSize(self.min_pane_size)
 
+        EditStylesMixin.properties_changed(self, modified)
         ManagedBase.properties_changed(self, modified)
 
     def on_size(self, event):

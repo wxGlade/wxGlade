@@ -70,6 +70,7 @@ class EditComboBox(ManagedBase, EditStylesMixin):
         if self.widget and set_selection and self.widget.GetSelection()!=self.selection:
             self.widget.SetSelection(self.selection)
 
+        EditStylesMixin.properties_changed(self, modified)
         ManagedBase.properties_changed(self, modified)
 
 

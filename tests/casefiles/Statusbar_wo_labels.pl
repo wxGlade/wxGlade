@@ -32,8 +32,8 @@ sub new {
 
     # begin wxGlade: MyFrame::new
     $self = $self->SUPER::new( $parent, $id, $title, $pos, $size, $style, $name );
-    $self->{label_1} = Wx::StaticText->new($self, wxID_ANY, _T("Example of a statusbar with three fields\nbut without labels in those fields."));
     $self->{statusbar_without_labels} = $self->CreateStatusBar(3);
+    $self->{label_1} = Wx::StaticText->new($self, wxID_ANY, _T("Example of a statusbar with three fields\nbut without labels in those fields."));
 
     $self->__set_properties();
     $self->__do_layout();

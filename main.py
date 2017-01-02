@@ -168,7 +168,7 @@ class wxGladeFrame(wx.Frame):
         if parent is None:
             parent = self
         common.palette = self  # to provide a reference accessible by the various widget classes
-        icon = wx.EmptyIcon()
+        icon = compat.wx_EmptyIcon()
         bmp = wx.Bitmap( os.path.join(config.icons_path, "icon.xpm"), wx.BITMAP_TYPE_XPM )
         icon.CopyFromBitmap(bmp)
         self.SetIcon(icon)
@@ -298,9 +298,7 @@ class wxGladeFrame(wx.Frame):
         misc.bind_menu_item(self, item, self.preview)
 
         GENERATE_CODE = append_menu_item(file_menu, -1, _("&Generate Code\tCtrl+G"), wx.ART_EXECUTABLE_FILE)
-        def generate_code(event):
-            common.app_tree.app.generate_code()
-        misc.bind_menu_item(self, GENERATE_CODE, generate_code)
+        misc.bind_menu_item(self, GENERATE_CODE, lambda: common.app_tree.app.generate_code())
 
         file_menu.AppendSeparator() # ----------------------------------------------------------------------------------
 
@@ -689,13 +687,11 @@ class wxGladeFrame(wx.Frame):
 
                 p.parse(infile)
             except (EnvironmentError, SAXParseException, XmlParsingError) as msg:
-                if 'WINGDB_ACTIVE' in os.environ: raise
                 if filename:
                     error_msg = _("Error loading file %s: %s") % (misc.wxstr(filename), misc.wxstr(msg))
                 else:
                     error_msg = _("Error loading from a file-like object: %s") % misc.wxstr(msg)
             except Exception as inst:
-                if 'WINGDB_ACTIVE' in os.environ: raise
                 if filename:
                     fn = os.path.basename(filename).encode('ascii','replace')
                     msg = _('loading file "%s"') % fn
@@ -921,7 +917,10 @@ class wxGladeFrame(wx.Frame):
                 win.SetPosition(geometry)
         else:
             if client_area.Contains(geometry.TopLeft):
-                win.SetDimensions(*geometry.Get())
+                if compat.IS_CLASSIC:
+                    win.SetDimensions(*geometry.Get())
+                else:
+                    win.SetSize(*geometry.Get())
 
     def _get_geometry(self, widget):
         "Return widget position and size as wx.Rect"
@@ -940,9 +939,8 @@ class wxGlade(wx.App):
         sys.stdout = sys.__stdout__
         sys.stderr = sys.__stderr__
 
-        if not 'WINGDB_ACTIVE' in os.environ:
-            # replace text based exception handler by a graphical exception dialog
-            sys.excepthook = self.graphical_exception_handler
+        # replace text based exception handler by a graphical exception dialog
+        sys.excepthook = self.graphical_exception_handler
 
         # use graphical implementation to show caught exceptions
         self._exception_orig = logging.exception
@@ -967,6 +965,7 @@ class wxGlade(wx.App):
             except Exception as details:
                 logging.info(_('Generic error during faulthandler initialisation: %s'), details)
 
+        self.locale = wx.Locale(wx.LANGUAGE_DEFAULT)  # avoid PyAssertionErrors
         compat.wx_ArtProviderPush(wxGladeArtProvider())
 
         frame = wxGladeFrame()
@@ -1031,7 +1030,7 @@ class wxGlade(wx.App):
         @see: L{bugdialog.Show()}
         """
         bugdialog.ShowEI(exc_type, exc_value, exc_tb)
-        sys.exc_clear()
+        if compat.PYTHON2: sys.exc_clear()
 
     def exception(self, msg, *args, **kwargs):
         """\

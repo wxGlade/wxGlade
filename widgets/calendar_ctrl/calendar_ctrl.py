@@ -44,7 +44,6 @@ class EditCalendarCtrl(ManagedBase, EditStylesMixin):
         # TODO add all the other parameters for the CalendarCtrl especially style=self.style and the initial date
         self.widget = CalendarCtrl(self.parent.widget, self.id, style=self.style)
 
-
     # handle compatibility:
     @decorators.memoize
     def wxname2attr(self, name):
@@ -56,6 +55,10 @@ class EditCalendarCtrl(ManagedBase, EditStylesMixin):
         else:
             attr = getattr(wx.calendar, cn)
         return attr
+
+    def properties_changed(self, modified=None):
+        EditStylesMixin.properties_changed(self, modified)
+        ManagedBase.properties_changed(self, modified)
 
 
 def builder(parent, sizer, pos, number=[1]):

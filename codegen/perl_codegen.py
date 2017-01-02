@@ -283,7 +283,7 @@ sub %(handler)s {
     tmpl_sizeritem = '%s->Add(%s, %s, %s, %s);\n'
 
     tmpl_style = \
-        '%(tab)s$style = %(style)s \n' \
+        '%(tab)s$style = %(style)s\n' \
         '%(tab)s%(tab)sunless defined $style;\n' \
         '\n'
 
@@ -446,8 +446,7 @@ unless(caller){
             # TODO: Don't add dependencies twice with Perl
 
             # write the module dependencies for this class (package)
-            dep_list = self.classes[code_obj.klass].dependencies.keys()
-            dep_list.sort()
+            dep_list = sorted( self.classes[code_obj.klass].dependencies.keys() )
             if dep_list:
                 code = self._tagcontent('dependencies', dep_list, True)
                 write(code)
@@ -623,6 +622,9 @@ unless(caller){
         # default escape sequences
         s = s.encode('raw-unicode-escape')
         s = self._recode_x80_xff(s)
+        if compat.PYTHON3:
+            # convert back to str (unicode)
+            s = s.decode("ASCII")
         # convert Python style to Perl style
         s = re.sub(r'\\u([0-9a-f]{4})', r'\\N{U+\1}', s)
 

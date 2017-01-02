@@ -76,6 +76,8 @@ label_width = 110   # width of new created labels; new version
 tooltip_time = 3    # Number of seconds a tooltip will be shown
 tooltip_width = 50  # Maximum width to split tooltips into
 
+debugging = ('WINGDB_ACTIVE' in os.environ)  # if True, at many places exceptions will be raised instead of handled
+
 ########################################################################################################################
 widget_config = {
     'generic_styles': {
@@ -106,7 +108,8 @@ widget_config = {
                                        'synonym': 'wxALIGN_CENTER_HORIZONTAL',
                                        'rename_to': 'wxALIGN_CENTER_HORIZONTAL' },
         'wxEXPAND': { 'desc': _('The item will be expanded to fill the space assigned to the item.') },
-        'wxSHAPED':{'desc':_('The item will be expanded as much as possible while also maintaining its aspect ratio.')},
+        'wxSHAPED':{'desc':_('The item will be expanded as much as possible while also maintaining its aspect ratio.\n'
+                             'Proportion must be 0 in this case.')},
         'wxADJUST_MINSIZE': { 'desc': _('This style was used in wxWidgets 2.4. Since wxWidgets 2.6 the behaviour is '
                                         'default. Select wxFIXED_MINSIZE to use the old behaviour.'),
                               'supported_by': ('wx2',) },

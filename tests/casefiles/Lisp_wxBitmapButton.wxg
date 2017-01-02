@@ -11,7 +11,7 @@
                 <border>0</border>
                 <option>0</option>
                 <object class="wxBitmapButton" name="bitmap_button_1" base="EditBitmapButton">
-                    <bitmap>%(icons_path)s/wxglade_small.png</bitmap>
+                    <bitmap>icons/wxglade_small.png</bitmap>
                 </object>
             </object>
         </object>

@@ -3,10 +3,11 @@ Code generator functions for wxToolBar objects
 
 @copyright: 2002-2007 Alberto Griggio
 @copyright: 2014-2016 Carsten Grohmann
+@copyright: 2016 Dietmar Schwertberger
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
-import common
+import common, compat
 import wcodegen
 from wcodegen.taghandler import BaseCodeWriterTagHandler
 from .tool import *
@@ -70,8 +71,9 @@ class PythonCodeGenerator(wcodegen.PythonWidgetCodeWriter):
                     kind = 'wxITEM_NORMAL'
                 bmp1 = self.generate_code_bitmap(tool.bitmap1, obj.preview)
                 bmp2 = self.generate_code_bitmap(tool.bitmap2, obj.preview)
-                append('%s.AddLabelTool(%s, %s, %s, %s, %s, %s, %s)\n' %
-                       (obj_name, wid, self.codegen.quote_str(tool.label),
+                method = "AddLabelTool" if compat.IS_CLASSIC else "AddTool"
+                append('%s.%s(%s, %s, %s, %s, %s, %s, %s)\n' %
+                       (obj_name, method, wid, self.codegen.quote_str(tool.label),
                         bmp1, bmp2, self.cn(kind),
                         self.codegen.quote_str(tool.short_help),
                         self.codegen.quote_str(tool.long_help)))

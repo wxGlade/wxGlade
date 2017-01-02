@@ -12,18 +12,18 @@
                 <flag>wxALL|wxEXPAND</flag>
                 <border>5</border>
                 <object class="wxTextCtrl" name="text_ctrl_1">
-                    <style>wxTE_READONLY</style>
                     <bg>#00ff7f</bg>
-                    <value>Some Input</value>
-                    <focused>1</focused>
                     <fg>#ff0000</fg>
+                    <focused>1</focused>
                     <size>379, 23</size>
+                    <style>wxTE_READONLY</style>
+                    <value>Some Input</value>
                     <font>
-                        <style>normal</style>
                         <family>default</family>
-                        <weight>bold</weight>
-                        <underlined>0</underlined>
                         <size>10</size>
+                        <style>normal</style>
+                        <underlined>0</underlined>
+                        <weight>bold</weight>
                     </font>
                 </object>
             </object>

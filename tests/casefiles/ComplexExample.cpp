@@ -109,7 +109,7 @@ void PyOgg2_MyFrame::do_layout()
     notebook_1_pane_1->SetSizer(_gszr_pane1);
     _gszr_pane1->AddGrowableCol(1);
     sizer_4->Add(rbx_sampling_rate, 1, wxALL|wxEXPAND, 5);
-    sizer_3->Add(cbx_love, 1, wxALL|wxSHAPED, 5);
+    sizer_3->Add(cbx_love, 0, wxALL|wxSHAPED, 5);
     sizer_4->Add(sizer_3, 1, wxALL|wxEXPAND, 5);
     notebook_1_pane_2->SetSizer(sizer_4);
     _szr_pane3->Add(text_ctrl_2, 1, wxALL|wxEXPAND, 5);
@@ -141,6 +141,7 @@ void PyOgg2_MyFrame::do_layout()
     sizer_1->AddGrowableCol(0);
     Layout();
     Centre();
+    SetSize(wxSize(600, 500));
     // end wxGlade
 }
 
@@ -228,6 +229,7 @@ void MyFrameGrid::do_layout()
     SetSizer(_szr_frame);
     _szr_frame->SetSizeHints(this);
     Layout();
+    SetSize(wxSize(492, 300));
     // end wxGlade
 }
 

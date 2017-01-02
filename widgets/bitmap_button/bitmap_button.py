@@ -33,7 +33,7 @@ class EditBitmapButton(ManagedBase, EditStylesMixin, BitmapMixin):
         filedialog_style = wx.FD_OPEN | wx.FD_FILE_MUST_EXIST  # for the following two properties
         self.bitmap          = np.FileNameProperty(bmp_file, style=filedialog_style)
         self.disabled_bitmap = np.FileNamePropertyD("", default_value="", style=filedialog_style)
-        self.default         = np.CheckBoxProperty(False)
+        self.default         = np.CheckBoxProperty(False, default_value=False)
 
         if config.preferences.default_border:
             self.border.set( config.preferences.default_border_size )
@@ -45,8 +45,11 @@ class EditBitmapButton(ManagedBase, EditStylesMixin, BitmapMixin):
         #try:
         self.widget = wx.BitmapButton(self.parent.widget, self.id, bmp, style=self.style)
         if self.disabled_bitmap:
-            bmp = self.get_preview_obj_bitmap(self.disabled_bitmap)
-            self.widget.SetBitmapDisabled(bmp)
+            bmp_d = self.get_preview_obj_bitmap(self.disabled_bitmap)
+            if bmp.Size==bmp_d.Size:
+                self.widget.SetBitmapDisabled(bmp_d)
+            else:
+                self._logger.warning("bitmap button with disabled bitmap of different size")
 
         #except AttributeError:
             #self.widget = wx.BitmapButton(self.parent.widget, self.id, bmp)
@@ -76,6 +79,7 @@ class EditBitmapButton(ManagedBase, EditStylesMixin, BitmapMixin):
                 #if not size_p.is_active():
                     #size_p.set( self.widget.GetBestSize() )
 
+        EditStylesMixin.properties_changed(self, modified)
         ManagedBase.properties_changed(self, modified)
 
 
