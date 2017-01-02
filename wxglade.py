@@ -259,8 +259,11 @@ def init_stage2(use_gui):
         
         if sys.platform=="win32":
             # register ".wxg" extension
-            import msw
-            msw.register_extensions(["wxg"], "wxGlade")
+            try:
+                import msw
+                msw.register_extensions(["wxg"], "wxGlade")
+            except ImportError:
+                pass
 
         # codewrites, widgets and sizers are loaded in class main.wxGladeFrame
     else:
