@@ -1,7 +1,7 @@
 """\
 Common code used by all widget code generators
 
-@copyright: 2013-2016 Carsten Grohmann
+@copyright: 2013-2017 Carsten Grohmann
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
@@ -1124,6 +1124,13 @@ class BaseWidgetWriter(StylesMixin, BaseCodeWriter):
         """
         stmt = self.tmpl_inline_wxSize % {'width': width, 'height': heigh }
         return stmt
+
+    @staticmethod
+    def get_root_obj(obj):
+        """Return the root object in this hierarchy"""
+        while obj.parent:
+            obj = obj.parent
+        return obj
 
     def is_class_member(self, name):
         """\
