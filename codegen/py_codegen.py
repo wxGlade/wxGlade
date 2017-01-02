@@ -269,11 +269,7 @@ if __name__ == "__main__":
 
     def add_app(self, app_attrs, top_win_class):
         # add language specific mappings
-        self.lang_mapping = {
-            'cn_wxApp': self.cn('wxApp'),
-            'cn_wxIDANY': self.cn('wxID_ANY'),
-            'import_gettext': '',
-            }
+        self.lang_mapping = { 'cn_wxApp': self.cn('wxApp'), 'cn_wxIDANY': self.cn('wxID_ANY'), 'import_gettext': ''}
 
         # Add gettext import statements
         if self._use_gettext:
