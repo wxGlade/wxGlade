@@ -548,7 +548,7 @@ class EditToolBar(EditBase, PreviewMixin, EditStylesMixin, BitmapMixin):
                     ADD( wx.NewId(), misc.wxstr(tool.label), bmp1, bmp2, kind,
                          misc.wxstr(tool.short_help), misc.wxstr(tool.long_help) )
                 else:
-                    ADD( wx.NewId(), misc.wxstr(tool.label), bmp1, misc.wxstr(tool.short_help) )
+                    ADD( wx.NewId(), misc.wxstr(tool.label), bmp1, shortHelp=misc.wxstr(tool.short_help) )
         # this is required to refresh the toolbar properly
         self._refresh_widget()
 

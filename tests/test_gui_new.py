@@ -26,14 +26,7 @@ class TestGui(WXGladeGUITest):
         self._messageBox = None
         infilename = self._get_casefile_path('Notebook_wo_tabs.wxg')
         self.frame._open_app(infilename, use_progress_dialog=False, add_to_history=False)
-        err_msg = u'Error loading from a file-like object: Notebook ' \
-                  u'widget "notebook_1" does not have any tabs! (line: 17, column: 20)'
-        err_caption = u'Error'
-        
-        regex = u'Error loading .*Notebook widget "notebook_1" does not have any tabs! \(line: 17, column: 20\)'
-        msg = ('Expected wxMessageBox(message="%s", caption="%s") got wxMessageBox(message="%s", caption="%s")'%(
-                err_msg, err_caption, self._messageBox[0], self._messageBox[1] ) )
-        self.assertRegex( self._messageBox[0], regex, msg=msg)
+        self._assert_error_message('widget "notebook_1" does not have any tabs!')
 
     def test_NotebookWithTabs(self):
         "Test loading Notebook with tabs"
