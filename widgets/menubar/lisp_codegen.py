@@ -21,7 +21,7 @@ class LispMenubarGenerator(MenubarMixin, LispWidgetCodeWriter):
     tmpl_menu_new = '(let ((%s (wxMenu_Create "" 0))))\n'
     tmpl_menu_append_separator = '(wxMenu_AppendSeparator %(menu)s)\n'
     tmpl_menu_append_to_menubar = '(wxMenuBar_Append %(menubar)s %(menu)s %(label)s))\n'
-    tmpl_menu_append_to_menu = '(wxMenu_Append (%(menu)s) %s %s %s %s)\n'
+    tmpl_menu_append_to_menu = '(wxMenu_AppendSubMenu (%(parent_menu)s) %(sub_menu)s %(label)s %(help)s)\n'
     tmpl_menu_add_menuitem = '(wxMenu_Append %(menu)s %(args)s)\n'
     tmpl_menu_add_and_assign_menuitem = '(let ((%(assigment)s (wxMenu_Append %(menu)s %(args)s))))\n'
     tmpl_menu_tmpname = 'wxglade_tmp_menu'
