@@ -75,9 +75,9 @@ sub new {
     $wxglade_tmp_menu->AppendSubMenu($wxglade_tmp_menu_sub, _T("Leading spaces"), "");
     $self->{All_Widgets_menubar}->Append($wxglade_tmp_menu, _T("&Edit"));
     $wxglade_tmp_menu = Wx::Menu->new();
-    my $item;
-    $item = $wxglade_tmp_menu->Append(wxID_HELP, _T("Manual"), _T("Show the application manual"));
-    Wx::Event::EVT_MENU($self, $item->GetId(), $self->can('$self->{onShowManual}'));
+    my $wxglade_tmp_item;
+    $wxglade_tmp_item = $wxglade_tmp_menu->Append(wxID_HELP, _T("Manual"), _T("Show the application manual"));
+    Wx::Event::EVT_MENU($self, $wxglade_tmp_item->GetId(), $self->can('$self->{onShowManual}'));
     $wxglade_tmp_menu->AppendSeparator();
     $wxglade_tmp_menu->Append(wxID_ABOUT, _T("About"), _T("Show the About dialog"));
     $self->{All_Widgets_menubar}->Append($wxglade_tmp_menu, _T("&Help"));

@@ -89,9 +89,9 @@ All_Widgets_Frame::All_Widgets_Frame(wxWindow* parent, wxWindowID id, const wxSt
     wxglade_tmp_menu->AppendSubMenu(wxglade_tmp_menu_sub, _("Leading spaces"), wxEmptyString);
     All_Widgets_menubar->Append(wxglade_tmp_menu, _("&Edit"));
     wxglade_tmp_menu = new wxMenu();
-    wxMenuItem* item;
-    item = wxglade_tmp_menu->Append(wxID_HELP, _("Manual"), _("Show the application manual"));
-    Bind(wxEVT_MENU, &All_Widgets_Frame::onShowManual, this, item->GetId());
+    wxMenuItem* wxglade_tmp_item;
+    wxglade_tmp_item = wxglade_tmp_menu->Append(wxID_HELP, _("Manual"), _("Show the application manual"));
+    Bind(wxEVT_MENU, &All_Widgets_Frame::onShowManual, this, wxglade_tmp_item->GetId());
     wxglade_tmp_menu->AppendSeparator();
     wxglade_tmp_menu->Append(wxID_ABOUT, _("About"), _("Show the About dialog"));
     All_Widgets_menubar->Append(wxglade_tmp_menu, _("&Help"));
