@@ -59,7 +59,8 @@ All_Widgets_Frame::All_Widgets_Frame(wxWindow* parent, wxWindowID id, const wxSt
     
     // Menu Bar
     All_Widgets_menubar = new wxMenuBar();
-    wxMenu* wxglade_tmp_menu = new wxMenu();
+    wxMenu* wxglade_tmp_menu;
+    wxglade_tmp_menu = new wxMenu();
     wxglade_tmp_menu->Append(wxID_OPEN, _("&Open"), _("Open an existing document"));
     wxglade_tmp_menu->Append(wxID_CLOSE, _("&Close file"), _("Close current document"));
     wxglade_tmp_menu->AppendSeparator();

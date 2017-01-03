@@ -23,7 +23,8 @@ Frame186::Frame186(wxWindow* parent, wxWindowID id, const wxString& title, const
 
     // Menu Bar
     Bug186_Frame_menubar = new wxMenuBar();
-    wxMenu* File = new wxMenu();
+    wxMenu* File;
+    File = new wxMenu();
     File->Append(myMagicMenu, _("Magic"), wxEmptyString);
     Bug186_Frame_menubar->Append(File, _("File"));
     SetMenuBar(Bug186_Frame_menubar);
