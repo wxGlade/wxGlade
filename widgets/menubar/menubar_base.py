@@ -241,6 +241,7 @@ class MenubarMixin(BaseWidgetWriter):
         init_lines.append(self.tmpl_menu_new % name)
         self._create_all_menuitems(name, item.children)
         args = (menu, self._menu_id, self.codegen.quote_str(item.label), name, self.codegen.quote_str(item.help_str))
+
         init_lines.append(self.tmpl_menu_append_to_menu % (args,))
 
         return init_lines

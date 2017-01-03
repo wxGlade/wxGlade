@@ -29,7 +29,8 @@ PyOgg2_MyFrame::PyOgg2_MyFrame(wxWindow* parent, wxWindowID id, const wxString& 
     
     // Menu Bar
     Mp3_To_Ogg_menubar = new wxMenuBar();
-    wxMenu* wxglade_tmp_menu = new wxMenu();
+    wxMenu* wxglade_tmp_menu;
+    wxglade_tmp_menu = new wxMenu();
     wxMenuItem* item;
     item = wxglade_tmp_menu->Append(wxID_OPEN, _("&Open"), wxEmptyString);
     Bind(wxEVT_MENU, &PyOgg2_MyFrame::OnOpen, this, item->GetId());

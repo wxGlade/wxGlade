@@ -20,8 +20,9 @@ MyMenuBar::MyMenuBar():
     wxMenuBar()
 {
     // begin wxGlade: MyMenuBar::MyMenuBar
-    wxMenu* wxglade_tmp_menu = new wxMenu();
-    Append(wxglade_tmp_menu, wxT("File"));
+    wxMenu* wxglade_tmp_menu;
+    wxglade_tmp_menu = new wxMenu();
+    this->Append(wxglade_tmp_menu, wxT("File"));
 
     set_properties();
     do_layout();
