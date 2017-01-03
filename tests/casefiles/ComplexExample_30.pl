@@ -40,15 +40,15 @@ sub new {
     $self->{Mp3_To_Ogg_menubar} = Wx::MenuBar->new();
     my $wxglade_tmp_menu;
     $wxglade_tmp_menu = Wx::Menu->new();
-    my $item;
-    $item = $wxglade_tmp_menu->Append(wxID_OPEN, _T("&Open"), "");
-    Wx::Event::EVT_MENU($self, $item->GetId(), $self->can('$self->{OnOpen}'));
-    $item = $wxglade_tmp_menu->Append(wxID_EXIT, _T("&Quit"), "");
-    Wx::Event::EVT_MENU($self, $item->GetId(), $self->can('$self->{OnClose}'));
+    my $wxglade_tmp_item;
+    $wxglade_tmp_item = $wxglade_tmp_menu->Append(wxID_OPEN, _T("&Open"), "");
+    Wx::Event::EVT_MENU($self, $wxglade_tmp_item->GetId(), $self->can('$self->{OnOpen}'));
+    $wxglade_tmp_item = $wxglade_tmp_menu->Append(wxID_EXIT, _T("&Quit"), "");
+    Wx::Event::EVT_MENU($self, $wxglade_tmp_item->GetId(), $self->can('$self->{OnClose}'));
     $self->{Mp3_To_Ogg_menubar}->Append($wxglade_tmp_menu, _T("&File"));
     $wxglade_tmp_menu = Wx::Menu->new();
-    $item = $wxglade_tmp_menu->Append(wxID_ABOUT, _T("&About"), _T("About dialog"));
-    Wx::Event::EVT_MENU($self, $item->GetId(), $self->can('$self->{OnAboutDialog}'));
+    $wxglade_tmp_item = $wxglade_tmp_menu->Append(wxID_ABOUT, _T("&About"), _T("About dialog"));
+    Wx::Event::EVT_MENU($self, $wxglade_tmp_item->GetId(), $self->can('$self->{OnAboutDialog}'));
     $self->{Mp3_To_Ogg_menubar}->Append($wxglade_tmp_menu, _T("&Help"));
     $self->SetMenuBar($self->{Mp3_To_Ogg_menubar});
     # Menu Bar end

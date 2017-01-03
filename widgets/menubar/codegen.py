@@ -28,7 +28,7 @@ class PythonMenubarGenerator(MenubarMixin, PythonWidgetCodeWriter):
 
     tmpl_menuitem_new = '%s = wx.MenuItem(%s)\n'
     tmpl_menuitem_append_to_menu = '%s.AppendItem(%s)\n'
-    tmpl_menuitem_tmp_variable = 'item'
+    tmpl_menuitem_tmp_variable = 'wxglade_tmp_item'
 
     tmpl_inline_access_class_scope = 'self.%(member)s'
     tmpl_inline_access_local_scope = 'self.%(member)s'
@@ -159,7 +159,7 @@ class CppMenubarGenerator(MenubarMixin, CppWidgetCodeWriter):
 
     tmpl_menuitem_new = '%s = new wxMenuItem(%s);\n'
     tmpl_menuitem_append_to_menu = '%s->Append(%s);\n'
-    tmpl_menuitem_tmp_variable = 'item'
+    tmpl_menuitem_tmp_variable = 'wxglade_tmp_item'
 
     tmpl_inline_access_class_scope = '%(toplevel)s::%(member)s'
     tmpl_inline_access_local_scope = '%(member)s'

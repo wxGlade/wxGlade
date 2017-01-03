@@ -31,15 +31,15 @@ PyOgg2_MyFrame::PyOgg2_MyFrame(wxWindow* parent, wxWindowID id, const wxString& 
     Mp3_To_Ogg_menubar = new wxMenuBar();
     wxMenu* wxglade_tmp_menu;
     wxglade_tmp_menu = new wxMenu();
-    wxMenuItem* item;
-    item = wxglade_tmp_menu->Append(wxID_OPEN, _("&Open"), wxEmptyString);
-    Connect(item->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(PyOgg2_MyFrame::OnOpen));
-    item = wxglade_tmp_menu->Append(wxID_EXIT, _("&Quit"), wxEmptyString);
-    Connect(item->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(PyOgg2_MyFrame::OnClose));
+    wxMenuItem* wxglade_tmp_item;
+    wxglade_tmp_item = wxglade_tmp_menu->Append(wxID_OPEN, _("&Open"), wxEmptyString);
+    Connect(wxglade_tmp_item->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(PyOgg2_MyFrame::OnOpen));
+    wxglade_tmp_item = wxglade_tmp_menu->Append(wxID_EXIT, _("&Quit"), wxEmptyString);
+    Connect(wxglade_tmp_item->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(PyOgg2_MyFrame::OnClose));
     Mp3_To_Ogg_menubar->Append(wxglade_tmp_menu, _("&File"));
     wxglade_tmp_menu = new wxMenu();
-    item = wxglade_tmp_menu->Append(wxID_ABOUT, _("&About"), _("About dialog"));
-    Connect(item->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(PyOgg2_MyFrame::OnAboutDialog));
+    wxglade_tmp_item = wxglade_tmp_menu->Append(wxID_ABOUT, _("&About"), _("About dialog"));
+    Connect(wxglade_tmp_item->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(PyOgg2_MyFrame::OnAboutDialog));
     Mp3_To_Ogg_menubar->Append(wxglade_tmp_menu, _("&Help"));
     SetMenuBar(Mp3_To_Ogg_menubar);
     // Menu Bar end
