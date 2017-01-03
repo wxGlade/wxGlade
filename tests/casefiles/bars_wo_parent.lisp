@@ -38,8 +38,8 @@
 (defmethod init ((obj MyMenuBar))
 "Method creates the objects contained in the class."
         ;;; begin wxGlade: MyMenuBar.__init__
-        (let ((wxglade_tmp_menu (wxMenu_Create "" 0)))
-        		(wxMenuBar_Append (slot-menubar_1 obj) wxglade_tmp_menu "File"))
+        (let ((wxglade_tmp_menu (wxMenu_Create "" 0))))
+        (wxMenuBar_Append (slot-top-window obj) wxglade_tmp_menu "File"))
         ;;; end wxGlade
         )
 

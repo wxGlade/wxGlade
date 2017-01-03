@@ -22,6 +22,7 @@
 
 
 // begin wxGlade: ::dependencies
+#include <wx/menu.h>
 // end wxGlade
 
 // begin wxGlade: ::extracode
@@ -32,9 +33,9 @@ class Frame186: public wxFrame {
 public:
     // begin wxGlade: Frame186::ids
     enum {
-        myMagicMenu = wxID_HIGHEST + 1001,
-        myMagicTool = wxID_HIGHEST + 1004,
-        myButtonId = wxID_HIGHEST + 1007,
+        myMagicMenu = wxID_HIGHEST + 1000,
+        myMagicTool = wxID_HIGHEST + 1002,
+        myButtonId = wxID_HIGHEST + 1005,
     };
     // end wxGlade
 

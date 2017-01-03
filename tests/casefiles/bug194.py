@@ -52,6 +52,7 @@ class Frame194(wx.Frame):
         sizer_1.Add(self.check_list_box_extended, 1, wx.ALL | wx.EXPAND, 5)
         self.SetSizer(sizer_1)
         self.Layout()
+        self.SetSize((800, 600))
         # end wxGlade
 
 # end of class Frame194

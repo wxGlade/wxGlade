@@ -53,12 +53,11 @@
         ;;; Menu Bar
         (setf (slot-Bug186-Frame-menubar obj) (wxMenuBar_Create 0))
         global myMagicMenu; myMagicMenu = wxNewId()
-        (let ((File (wxMenu_Create "" 0)))
-        (wxMenu_Append File myMagicMenu (_"Magic") "" 0)
-        		(wxMenuBar_Append (slot-Bug186-Frame-menubar obj) File (_"File")))
+        (let ((File (wxMenu_Create "" 0))))
+        (wxMenu_Append File myMagicMenu (_"Magic") "" wxITEM_NORMAL)
+        (wxMenuBar_Append (slot-Bug186-Frame-menubar obj) File (_"File")))
         (wxFrame_SetMenuBar (slot-top-window obj) (slot-Bug186-Frame-menubar obj))
         ;;; Menu Bar end
-
         
 	;;; Tool Bar
         (setf (slot-Bug186-Frame-toolbar obj) (wxToolBar_Create (slot-top-window obj) -1 -1 -1 -1 -1 wxTB_HORIZONTAL))

@@ -22,6 +22,7 @@
 
 
 // begin wxGlade: ::dependencies
+#include <wx/menu.h>
 #include <wx/notebook.h>
 #include <wx/statline.h>
 #include <wx/grid.h>
