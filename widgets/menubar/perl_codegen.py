@@ -20,7 +20,7 @@ class PerlMenubarGenerator(MenubarMixin, PerlWidgetCodeWriter):
     tmpl_menu_new = '%s = Wx::Menu->new();\n'
     tmpl_menu_append_separator = '%(menu)s->AppendSeparator();\n'
     tmpl_menu_append_to_menubar = '%(menubar)s->Append(%(menu)s, %(label)s);\n'
-    tmpl_menu_append_to_menu = '%(menu)s->AppendMenu(%(args)s);\n'
+    tmpl_menu_append_to_menu = '%(parent_menu)s->AppendSubMenu(%(sub_menu)s, %(label)s, %(help)s);\n'
     tmpl_menu_add_menuitem = '%(menu)s->Append(%(args)s);\n'
     tmpl_menu_add_and_assign_menuitem = '%(assigment)s = %(menu)s->Append(%(args)s);\n'
     tmpl_menu_tmpname = '$wxglade_tmp_menu'

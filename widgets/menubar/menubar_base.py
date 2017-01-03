@@ -230,21 +230,28 @@ class MenubarMixin(BaseWidgetWriter):
     def _create_submenu(self, menu, item):
         """Add a submenu to the given menu"""
 
-        init_lines = []
+        menu_lines = []
         name = item.name or '%s_sub' % menu
 
         if not item.name:
             declare_menu_with_local_scope = self._format_declaration_tmp_menu_local_scope(name)
             if declare_menu_with_local_scope:
-                init_lines.append(declare_menu_with_local_scope)
+                menu_lines.append(declare_menu_with_local_scope)
 
-        init_lines.append(self.tmpl_menu_new % name)
-        self._create_all_menuitems(name, item.children)
-        args = (menu, self._menu_id, self.codegen.quote_str(item.label), name, self.codegen.quote_str(item.help_str))
+        menu_lines.append(self.tmpl_menu_new % name)
+        if item.children:
+            menu_lines.extend(self._create_all_menuitems(name, item.children))
 
-        init_lines.append(self.tmpl_menu_append_to_menu % (args,))
+        # append submenu to parent menu
+        args = (name, self.codegen.quote_str(item.label), self.codegen.quote_str(item.help_str))
+        args_dict = {'parent_menu': menu,
+                     'sub_menu': name,
+                     'label': self.codegen.quote_str(item.label),
+                     'help': self.codegen.quote_str(item.help_str),
+                     }
+        menu_lines.append(self.tmpl_menu_append_to_menu % args_dict)
 
-        return init_lines
+        return menu_lines
 
     def _create_menuitem_property(self, menu, item):
         """Create MenuItem and assign to property, then append to menu"""
