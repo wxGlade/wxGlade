@@ -836,10 +836,10 @@ class TestCodeGen(WXGladeCLITest):
             ('', '""'),
 
             ('My 1st and simple ascii test!',  '_("My 1st and simple ascii test!")'),
-            ('\xe2\x99\xa5 Love this song',    '_(u"\\u2665 Love this song")'),
-            ('\xe2\x99\xa5 Love \xe2\x99\xa5', '_(u"\\u2665 Love \\u2665")'),
-            ('\xe2\x99\xa5 Love \\n',          '_(u"\\u2665 Love \\n")'),
-            ('Yes!\\nWe \xe2\x99\xa5 it!',     '_(u"Yes!\\nWe \\u2665 it!")'),
+            (b'\xe2\x99\xa5 Love this song',    '_(u"\\u2665 Love this song")'),
+            (b'\xe2\x99\xa5 Love \xe2\x99\xa5', '_(u"\\u2665 Love \\u2665")'),
+            (b'\xe2\x99\xa5 Love \\n',          '_(u"\\u2665 Love \\n")'),
+            (b'Yes!\\nWe \xe2\x99\xa5 it!',     '_(u"Yes!\\nWe \\u2665 it!")'),
 
             (r'double quote: "',             '_("double quote: \\"")'),
             (r'newline \n',                  '_("newline \\n")'),
@@ -850,22 +850,22 @@ class TestCodeGen(WXGladeCLITest):
             (r'escaped tab \\t',          r'_("escaped tab \\t")'),
             (r'escaped double quote "',   r'_("escaped double quote \"")'),
 
-            ('euro \xe2\x82\xac and newline \\n',          '_(u"euro \\u20ac and newline \\n")'),
-            ('euro \xe2\x82\xac and tab \\t',              '_(u"euro \\u20ac and tab \\t")'),
-            ('euro \xe2\x82\xac and quoted newline \\\\n', '_(u"euro \u20ac and quoted newline \\\\n")'),
-            ('euro \xe2\x82\xac and quoted tab \\\\t',     '_(u"euro \u20ac and quoted tab \\\\t")'),
+            (b'euro \xe2\x82\xac and newline \\n',          '_(u"euro \\u20ac and newline \\n")'),
+            (b'euro \xe2\x82\xac and tab \\t',              '_(u"euro \\u20ac and tab \\t")'),
+            (b'euro \xe2\x82\xac and quoted newline \\\\n', '_(u"euro \\u20ac and quoted newline \\\\n")'),
+            (b'euro \xe2\x82\xac and quoted tab \\\\t',     '_(u"euro \\u20ac and quoted tab \\\\t")'),
 
-            ('rom\xc3\xa2n\xc4\x83', '_(u"rom\\u00e2n\\u0103")')
+            (b'rom\xc3\xa2n\xc4\x83', '_(u"rom\\u00e2n\\u0103")')
         ]
         details[('UTF-8', 'perl')] = [
             (None, '""'),
             ('', '""'),
 
             ('My 1st and simple ascii test!',   '_T("My 1st and simple ascii test!")'),
-            ('\xe2\x99\xa5 Love this song',     '_T("\N{U+2665} Love this song")'),
-            ('\xe2\x99\xa5 Love \xe2\x99\xa5',  '_T("\N{U+2665} Love \\N{U+2665}")'),
-            ('\xe2\x99\xa5 Love \xe2\x99\xa5',  '_T("\N{U+2665} Love \\N{U+2665}")'),
-            ('Yes!\\nWe \xe2\x99\xa5 it!',      '_T("Yes!\\nWe \N{U+2665} it!")'),
+            (b'\xe2\x99\xa5 Love this song',     b'_T("\N{U+2665} Love this song")'),
+            (b'\xe2\x99\xa5 Love \xe2\x99\xa5',  b'_T("\N{U+2665} Love \\N{U+2665}")'),
+            (b'\xe2\x99\xa5 Love \xe2\x99\xa5',  b'_T("\N{U+2665} Love \\N{U+2665}")'),
+            (b'Yes!\\nWe \xe2\x99\xa5 it!',      b'_T("Yes!\\nWe \N{U+2665} it!")'),
 
             (r'double quote: "',             '_T("double quote: \\"")'),
             (r'newline \n',                  '_T("newline \\n")'),
@@ -876,10 +876,10 @@ class TestCodeGen(WXGladeCLITest):
             (r'escaped tab \\t',          r'_T("escaped tab \\t")'),
             (r'escaped double quote \"',  r'_T("escaped double quote \\\"")'),
 
-            ('euro \xe2\x82\xac and newline \\n',          '_T("euro \N{U+20ac} and newline \\n")'),
-            ('euro \xe2\x82\xac and tab \\t',              '_T("euro \N{U+20ac} and tab \\t")'),
-            ('euro \xe2\x82\xac and quoted newline \\\\n', '_T("euro \N{U+20ac} and quoted newline \\\\n")'),
-            ('euro \xe2\x82\xac and quoted tab \\\\t',     '_T("euro \N{U+20ac} and quoted tab \\\\t")'),
+            (b'euro \xe2\x82\xac and newline \\n',          b'_T("euro \N{U+20ac} and newline \\n")'),
+            (b'euro \xe2\x82\xac and tab \\t',              b'_T("euro \N{U+20ac} and tab \\t")'),
+            (b'euro \xe2\x82\xac and quoted newline \\\\n', b'_T("euro \N{U+20ac} and quoted newline \\\\n")'),
+            (b'euro \xe2\x82\xac and quoted tab \\\\t',     b'_T("euro \N{U+20ac} and quoted tab \\\\t")'),
         ]
 
         # Lisp doesn't support unicode!
@@ -901,10 +901,10 @@ class TestCodeGen(WXGladeCLITest):
             ('', 'wxEmptyString'),
 
             ('My 1st and simple ascii test!',  '_("My 1st and simple ascii test!")'),
-            ('\xe2\x99\xa5 Love this song',    '_("\xe2\x99\xa5 Love this song")'),
-            ('\xe2\x99\xa5 Love \xe2\x99\xa5', '_("\xe2\x99\xa5 Love \xe2\x99\xa5")'),
-            ('\xe2\x99\xa5 Love \\n',          '_("\xe2\x99\xa5 Love \\n")'),
-            ('Yes!\\nWe \xe2\x99\xa5 it!',     '_("Yes!\\nWe \xe2\x99\xa5 it!")'),
+            (b'\xe2\x99\xa5 Love this song',    b'_("\xe2\x99\xa5 Love this song")'),
+            (b'\xe2\x99\xa5 Love \xe2\x99\xa5', b'_("\xe2\x99\xa5 Love \xe2\x99\xa5")'),
+            (b'\xe2\x99\xa5 Love \\n',          b'_("\xe2\x99\xa5 Love \\n")'),
+            (b'Yes!\\nWe \xe2\x99\xa5 it!',     b'_("Yes!\\nWe \xe2\x99\xa5 it!")'),
 
             (r'double quote: "',             '_("double quote: \\"")'),
             (r'newline \n',                  '_("newline \\n")'),
@@ -915,19 +915,20 @@ class TestCodeGen(WXGladeCLITest):
             (r'escaped tab \\t',          r'_("escaped tab \\t")'),
             (r'escaped double quote "',   r'_("escaped double quote \"")'),
 
-            ('euro \xe2\x82\xac and newline \\n',          '_("euro \xe2\x82\xac and newline \\n")'),
-            ('euro \xe2\x82\xac and tab \\t',              '_("euro \xe2\x82\xac and tab \\t")'),
-            ('euro \xe2\x82\xac and quoted newline \\\\n', '_("euro \xe2\x82\xac and quoted newline \\\\n")'),
-            ('euro \xe2\x82\xac and quoted tab \\\\t',     '_("euro \xe2\x82\xac and quoted tab \\\\t")'),
+            (b'euro \xe2\x82\xac and newline \\n',          b'_("euro \xe2\x82\xac and newline \\n")'),
+            (b'euro \xe2\x82\xac and tab \\t',              b'_("euro \xe2\x82\xac and tab \\t")'),
+            (b'euro \xe2\x82\xac and quoted newline \\\\n', b'_("euro \xe2\x82\xac and quoted newline \\\\n")'),
+            (b'euro \xe2\x82\xac and quoted tab \\\\t',     b'_("euro \xe2\x82\xac and quoted tab \\\\t")'),
         ]
-        details[('ISO-8859-1', 'python')] = [ ('\xc4nderung', '_(u"\u00c4nderung")') ]
-        details[('ISO-8859-1', 'perl'  )] = [ ('\xc4nderung', '_T("\\N{U+00c4}nderung")') ]
+
         for encoding, language in details:
             codegen = common.code_writers.get(language)
             codegen.app_encoding = encoding
             codegen._use_gettext = True
             for unformatted, formatted in details[(encoding, language)]:
-                # XXX quote_str expects a string as from an XML file/string
+                # quote_str expects a string as from an XML file/string, which is UTF8 encoded
+                if isinstance(unformatted, bytes): unformatted = unformatted.decode("UTF8")
+                if isinstance(formatted,   bytes): formatted   = formatted.decode("UTF8")
                 ret = codegen.quote_str(unformatted)
                 self.assertEqual( formatted, ret, 
                                   '%s: Unexpected result got: "%s" expect: "%s"' % (language, ret, formatted) )
