@@ -1121,8 +1121,10 @@ _trailing = r"\s*\)?\s*$"          # whitespace, optionally including a closing 
 
 
 class SizePropertyD(TextPropertyD):
-    validation_re = re.compile( _leading + _ge_m1 + _comma + _ge_m1 + _trailing )  # match pair of integers >=- 1
-    normalization = "%s, %s" # for normalization % valiation_re.match(...).groups()
+    d = r"(\s*[dD]?)" # the trailig d for "dialog units"
+    validation_re = re.compile( _leading + _ge_m1 + _comma + _ge_m1 + d + _trailing )  # match pair of integers >=- 1
+    del d
+    normalization = "%s, %s%s" # for normalization % valiation_re.match(...).groups()
     def _set_converter(self, value):
         # value can be a tuple
         if isinstance(value, compat.basestring):

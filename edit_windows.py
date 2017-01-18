@@ -415,7 +415,7 @@ class WindowBase(EditBase):
                 weidth_prop, height_prop = 0, 0
 
             if use_dialog_units:
-                weidth_widget, height_widget = self.widget.ConvertPixelSizeToDialog( self.widget.GetSize() )
+                weidth_widget, height_widget = compat.ConvertPixelsToDialog(self.widget, self.widget.GetSize() )
             else:
                 weidth_widget, height_widget = self.widget.GetSize()
 
