@@ -13,14 +13,9 @@ import wcodegen
 class PythonTextCtrlGenerator(wcodegen.PythonWidgetCodeWriter):
     tmpl = '%(name)s = %(klass)s(%(parent)s, %(id)s, %(value)s%(style)s)\n'
 
-# end of class PythonTextCtrlGenerator
-
 
 class CppTextCtrlGenerator(wcodegen.CppWidgetCodeWriter):
-    tmpl = '%(name)s = new %(klass)s(%(parent)s, %(id)s, ' \
-           '%(value)s%(style)s);\n'
-
-# end of class CppTextCtrlGenerator
+    tmpl = '%(name)s = new %(klass)s(%(parent)s, %(id)s, %(value)s%(style)s);\n'
 
 
 def initialize():

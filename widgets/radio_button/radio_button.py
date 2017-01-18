@@ -55,6 +55,7 @@ class EditRadioButton(ManagedBase, EditStylesMixin):
         if not modified or "clicked" in modified and self.widget:
             self.widget.SetValue(self.clicked)
 
+        EditStylesMixin.properties_changed(self, modified)
         ManagedBase.properties_changed(self, modified)
 
 

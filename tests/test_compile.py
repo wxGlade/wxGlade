@@ -148,7 +148,7 @@ Output:
         """\
         Test compilation of ComplexExample for wx28 and wx30
         """
-        self._compile28('ComplexExample_28.cpp')
+        self._compile28('ComplexExample.cpp')
         self._compile30('ComplexExample_30.cpp')
 
     def test_compile_FontColour(self):

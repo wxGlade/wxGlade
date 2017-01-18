@@ -55,7 +55,6 @@ void CPPOgg2_MyFrame::do_layout()
     sizer_5->Add(grid_sizer_3, 1, wxEXPAND, 0);
     SetSizer(sizer_5);
     Layout();
-    SetSize(wxSize(400, 300));
     // end wxGlade
 }
 

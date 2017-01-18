@@ -32,7 +32,6 @@ class StockAction(wx.Frame):
     def __do_layout(self):
         # begin wxGlade: StockAction.__do_layout
         self.Layout()
-        self.SetSize((150,150))
         # end wxGlade
 
 # end of class StockAction

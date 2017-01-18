@@ -63,6 +63,7 @@ class EditListBox(ManagedBase, EditStylesMixin):
         if self.widget and set_selection:
             self.widget.SetSelection(self.selection)  # -1 is identical to wx.NOT_FOUND
 
+        EditStylesMixin.properties_changed(self, modified)
         ManagedBase.properties_changed(self, modified)
 
 

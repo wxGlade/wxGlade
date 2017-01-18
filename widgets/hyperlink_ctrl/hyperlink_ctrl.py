@@ -58,6 +58,7 @@ class EditHyperlinkCtrl(ManagedBase, EditStylesMixin):
             if self.widget:
                 self.widget.SetURL(self.url)
 
+        EditStylesMixin.properties_changed(self, modified)
         ManagedBase.properties_changed(self, modified)
 
     # handle compatibility:

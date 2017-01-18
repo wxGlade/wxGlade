@@ -222,8 +222,7 @@ class EditNotebook(ManagedBase, EditStylesMixin):
                 wx.CallAfter(window.sel_marker.update)
             except AttributeError:
                 #self._logger.exception(_('Internal Error'))
-                import os
-                if 'WINGDB_ACTIVE' in os.environ: raise
+                if config.debugging: raise
         self.properties["tabs"].update_display()
 
     def set_tabs(self, old_names, indices):
@@ -284,8 +283,7 @@ class EditNotebook(ManagedBase, EditStylesMixin):
                 try:
                     wx.CallAfter(window.sel_marker.update)
                 except AttributeError:
-                    import os
-                    if 'WINGDB_ACTIVE' in os.environ: raise
+                    if config.debugging: raise
 
                 added = i  # remember last added index for selection
 
@@ -310,6 +308,7 @@ class EditNotebook(ManagedBase, EditStylesMixin):
                 # during XML parsing, the tab names are set before
                 page_count = len(self.properties["tabs"].value)
                 self.pages.extend( [None]*page_count )
+        EditStylesMixin.properties_changed(self, modified)
         ManagedBase.properties_changed(self, modified)
 
     # helpers ##########################################################################################################

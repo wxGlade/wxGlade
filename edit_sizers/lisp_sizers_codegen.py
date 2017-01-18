@@ -8,13 +8,11 @@ Lisp generator functions for the various wxSizerS
 
 
 import common
-from edit_sizers import BaseSizerBuilder
+from .edit_sizers import BaseSizerBuilder
 
 
 class BaseLispSizerBuilder(BaseSizerBuilder):
-    """\
-    Lisp base class for all sizer code generators
-    """
+    "Lisp base class for all sizer code generators"
 
     language = 'lisp'
 

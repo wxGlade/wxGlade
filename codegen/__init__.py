@@ -162,7 +162,7 @@ class BaseSourceFileContent(object):
     def _load_file(self, filename):
         "Load a file and return the content. The read source file will be decoded to unicode automatically."
         # Separated for debugging purposes
-        fh = open(filename)
+        fh = open(filename, "rb")
         lines = fh.readlines()
         fh.close()
 
@@ -390,8 +390,6 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
     class ClassLines(object):
         "Stores the lines of source code for a custom class"
         def __init__(self):
-            self.members = []         # List of tuples (type, name) representing sub objects of the toplevel object
-                                      # (currenly used only for C++ to declare class members in the header file)
             self.child_order = []
             self.dependencies = {}    # Names of the modules this class depends on
             self.deps = []
@@ -404,7 +402,6 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
             self.parents_init = []    # Lines to insert in the __init__ for container widgets (panels, splitters, ...)
             self.props = []           # Lines to insert in the __set_properties method
             self.sizers_init = []     # Lines related to sizer objects declarations
-
 
     DummyPropertyHandler = DummyPropertyHandler
     EventsPropertyHandler = EventsPropertyHandler
@@ -590,13 +587,12 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
                 code = ""
             self.previous_source.content = self.previous_source.content.replace(tag, code)
             tag = '<%swxGlade extra_modules>\n' % self.nonce
-            code = "".join(self._current_extra_modules.keys())
+            code = "".join(sorted(self._current_extra_modules.keys()))
             self.previous_source.content = self.previous_source.content.replace(tag, code)
 
             # module dependencies of all classes
             tag = '<%swxGlade replace dependencies>' % self.nonce
-            dep_list = self.dependencies.keys()
-            dep_list.sort()
+            dep_list = sorted( self.dependencies.keys() )
             code = self._tagcontent('dependencies', dep_list)
             self.previous_source.content = self.previous_source.content.replace(tag, code)
 
@@ -617,7 +613,7 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
             self.save_file( self.previous_source.name, self.previous_source.content, content_only=True )
 
         elif not self.multiple_files:
-            em = "".join(self._current_extra_modules.keys())
+            em = "".join(sorted(self._current_extra_modules.keys()))
             content = self.output_file.getvalue().replace( '<%swxGlade extra_modules>\n' % self.nonce, em )
 
             # module dependencies of all classes
@@ -906,7 +902,7 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
 
                 # insert the module dependencies of this class
                 tag = '<%swxGlade replace dependencies>' % self.nonce
-                dep_list = self.classes[klass].dependencies.keys()
+                dep_list = list( self.classes[klass].dependencies.keys() )
                 dep_list.extend(self.dependencies.keys())
                 dep_list.sort()
                 code = self._tagcontent('dependencies', dep_list)
@@ -935,7 +931,7 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
                 write(line)
 
             # write the module dependencies for this class
-            dep_list = self.classes[klass].dependencies.keys()
+            dep_list = list( self.classes[klass].dependencies.keys() )
             dep_list.extend(self.dependencies.keys())
             dep_list.sort()
             code = self._tagcontent('dependencies', dep_list, True)
@@ -1423,37 +1419,6 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
         s = s.replace('$', r'\$')  # sigh
         s = s.replace('@', r'\@')
         return '"%s"' % s
-
-    def register_class_member(self, top_obj, obj_type, obj_name):
-        """\
-        Register the object at the toplevel klass to create the object declaration later.
-
-        @param top_obj: toplevel object
-        @type top_obj: xml_parse.CodeObject
-
-        @param obj_type: Object type e.g. wxMenuItem
-        @type obj_type: str
-
-        @param obj_name: Object name
-        @type obj_name: str
-
-        @see: L{get_class_member_declaration()}
-        """
-        if top_obj.klass in self.classes:
-            self.classes[top_obj.klass].members.append((obj_type, obj_name))
-
-    def get_class_member_declaration(self, top_obj):
-        """\
-        Return statements to declare all registered class members
-
-        @param top_obj: toplevel object
-        @type top_obj: xml_parse.CodeObject
-
-        @rtype: list[str]
-
-        @see: L{register_class_member()}
-        """
-        return []
 
     def save_file(self, filename, content, mainfile=False, content_only=False):
         """Store the content in a file.

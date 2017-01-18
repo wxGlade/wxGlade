@@ -33,6 +33,7 @@ class EditGauge(ManagedBase, EditStylesMixin):
     def properties_changed(self, modified):
         if not modified or "range" in modified and self.widget:
             self.widget.SetRange(self.range)
+        EditStylesMixin.properties_changed(self, modified)
         ManagedBase.properties_changed(self, modified)
 
 editor_class = EditGauge

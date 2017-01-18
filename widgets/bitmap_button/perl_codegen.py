@@ -11,10 +11,8 @@ import wcodegen
 
 
 class PerlBitmapButtonGenerator(wcodegen.PerlWidgetCodeWriter):
-    tmpl = '%(name)s = %(klass)s->new(%(parent)s, %(id)s, ' \
-           '%(bitmap)s%(style)s);\n'
+    tmpl = '%(name)s = %(klass)s->new(%(parent)s, %(id)s, %(bitmap)s%(style)s);\n'
 
-# end of class PerlBitmapButtonGenerator
 
 
 def initialize():

@@ -33,14 +33,19 @@ sub new {
     # begin wxGlade: Frame186::new
     $self = $self->SUPER::new( $parent, $id, $title, $pos, $size, $style, $name );
     
+
     # Menu Bar
+
     $self->{Bug186_Frame_menubar} = Wx::MenuBar->new();
     use constant myMagicMenu => Wx::NewId();
+    my $wxglade_tmp_menu;
     $self->{File} = Wx::Menu->new();
     $self->{File}->Append(myMagicMenu, _T("Magic"), "");
     $self->{Bug186_Frame_menubar}->Append($self->{File}, _T("File"));
     $self->SetMenuBar($self->{Bug186_Frame_menubar});
+    
     # Menu Bar end
+
     
     # Tool Bar
     $self->{Bug186_Frame_toolbar} = Wx::ToolBar->new($self, -1);

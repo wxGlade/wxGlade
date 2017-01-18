@@ -215,35 +215,6 @@ class UnicodeStringIO(object):
         return self.out.getvalue()
 
 
-
-class AsciiStringIO(compat.StringIO):
-    """\
-    Wrapper class to store data in ASCII
-
-    @ivar isUnicode: True if the conversion to ASCII has failed at least one time
-    @type isUnicode: bool
-    """
-
-    def __init__(self, buf=''):
-        compat.StringIO.__init__(self, buf)
-        self.isUnicode = isinstance(buf, compat.unicode)
-
-    def write(self, s):
-        if not s:
-            return
-
-        if not isinstance(s, compat.basestring):
-            s = str(s)
-
-        if isinstance(s, compat.unicode):
-            try:
-                s = s.encode('ascii')
-            except UnicodeEncodeError:
-                self.isUnicode = True
-        compat.StringIO.write(self, s)
-
-
-
 def bound(number, lower, upper):
     return min(max(lower, number), upper)
 
@@ -382,7 +353,10 @@ def append_menu_item(menu, id, text, xpm_file_or_artid=None): # XXX change: move
                 item.SetBitmap(bmp)
             except AttributeError:
                 pass
-    menu.AppendItem(item)
+    if compat.IS_CLASSIC:
+        menu.AppendItem(item)
+    else:
+        menu.Append(item)
     return item
 
 

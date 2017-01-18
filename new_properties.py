@@ -486,7 +486,7 @@ class IntRadioProperty(RadioProperty):
 class _CheckListProperty(Property):
     # common base class for Flags and WidgetStyleFlags; keeps self.value_set as a set of strings
     CONTROLNAMES = ["enabler", "_choices"]
-    excludes = None
+    EXCLUDES = None
 
     def __init__(self, value, default_value=_DefaultArgument, name=None, names=None, values=None):
         self._names = names
@@ -534,10 +534,15 @@ class _CheckListProperty(Property):
             self.value_set = new_value_set
         Property.set(self, None, activate, deactivate, notify)  # with None, as this is to be calculated on demand only
 
-    def add(self, value, activate=False, deactivate=False):
+    def add(self, value, activate=False, deactivate=False, notify=True):
         if value in self.value_set: return
         self.value_set.add(value)
-        Property.set(self, None, activate, deactivate)  # with value=None, as this is to be calculated on demand only
+        Property.set(self, None, activate, deactivate, notify)  # with value=None, as this is to be calculated on demand only
+
+    def remove(self, value, activate=False, deactivate=False, notify=True):
+        if not value in self.value_set: return
+        self.value_set.remove(value)
+        Property.set(self, None, activate, deactivate, notify)  # with value=None, as this is to be calculated on demand only
 
     def get_list_value(self):
         """Convert the current style in a list of boolean values."""
@@ -551,10 +556,17 @@ class _CheckListProperty(Property):
     def get_string_value(self):
         "Return the selected styles joined with '|', for writing to XML file"
         if not self.value_set: return ""
+        # handle combinations: remove the individual components
+        value_set = set(self.value_set)
+        #for name in self._names:
+            #combination = self.style_defs[name].get("combination",[])
+            #if combination and name in value_set or value_set.intersection(combination)==combination:
+                #value_set.add(name)
+                #value_set -= combination
 
         ret = []
         for name in self._names:
-            if name in self.value_set:
+            if name in value_set:
                 ret.append(name)
         return '|'.join(ret)
 
@@ -592,8 +604,8 @@ class _CheckListProperty(Property):
         if checked:
             if value in self.value_set: return
             self.value_set.add(value)
-            if self.excludes:
-                excludes = self.excludes.get(value, [])
+            if self.EXCLUDES:
+                excludes = self.EXCLUDES.get(value, [])
             else:
                 excludes = self.style_defs[value].get("exclude",[])
             self.value_set.difference_update( excludes )
@@ -632,8 +644,8 @@ class _CheckListProperty(Property):
             elif not checked[i] and checkbox.GetValue():
                 checkbox.SetValue(False)
             # display included flags in grey and excluded flags red
-            if self.excludes:
-                excludes = self.excludes.get(name, [])
+            if self.EXCLUDES:
+                excludes = self.EXCLUDES.get(name, [])
             else:
                 excludes = self.style_defs[name].get("exclude",[])
             default_color = wx.BLACK if not "rename_to" in self.style_defs[name] else wx.Colour(130,130,130)
@@ -726,13 +738,13 @@ class ManagedFlags(_CheckListProperty):
     FLAG_DESCRIPTION['Alignment'] = ['wxEXPAND', 'wxALIGN_RIGHT', 'wxALIGN_BOTTOM', 'wxALIGN_CENTER',
                                      'wxALIGN_CENTER_HORIZONTAL', 'wxALIGN_CENTER_VERTICAL',
                                      'wxSHAPED', 'wxFIXED_MINSIZE']
-    remove = set( ['wxADJUST_MINSIZE',] )
-    renames =  {'wxALIGN_CENTRE':'wxALIGN_CENTER',
+    REMOVE = set( ['wxADJUST_MINSIZE',] )
+    RENAMES =  {'wxALIGN_CENTRE':'wxALIGN_CENTER',
                 'wxALIGN_CENTRE_VERTICAL':'wxALIGN_CENTER_VERTICAL'}
 
-    combinations = { "wxALL":set( 'wxLEFT|wxRIGHT|wxTOP|wxBOTTOM'.split("|") ),
+    COMBINATIONS = { "wxALL":set( 'wxLEFT|wxRIGHT|wxTOP|wxBOTTOM'.split("|") ),
                      "wxALIGN_CENTER":set( 'wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL'.split("|") ) }
-    excludes = {'wxALIGN_RIGHT':            set(['wxALIGN_CENTER","wxALIGN_CENTER_HORIZONTAL']),
+    EXCLUDES = {'wxALIGN_RIGHT':            set(['wxALIGN_CENTER","wxALIGN_CENTER_HORIZONTAL']),
                 'wxALIGN_BOTTOM':           set(['wxALIGN_CENTER","wxALIGN_CENTER_VERTICAL']),
                 'wxALIGN_CENTER_HORIZONTAL':set(["wxALIGN_RIGHT"]),
                 'wxALIGN_CENTER_VERTICAL':  set(["wxALIGN_BOTTOM"]),
@@ -750,10 +762,10 @@ class ManagedFlags(_CheckListProperty):
         # handle obsolete and renamed flags
         new_value = _CheckListProperty._decode_value(self, value)
         if new_value:
-            for name in self.remove:
+            for name in self.REMOVE:
                 if name in new_value: new_value.remove(name)
         if new_value:
-            for name, new_name in self.renames.items():
+            for name, new_name in self.RENAMES.items():
                 if name in new_value:
                     new_value.remove(name)
                     new_value.add(new_name)
@@ -764,10 +776,10 @@ class ManagedFlags(_CheckListProperty):
         if not self.value_set: return ""
         # handle combinations
         ret_set = set(self.value_set)
-        for name, combination in self.combinations.items():
-            if ret_set.intersection(combination) == combination:
-                ret_set.add(name)
-                ret_set -= combination
+        #for name, combination in self.combinations.items():
+            #if ret_set.intersection(combination) == combination:
+                #ret_set.add(name)
+                #ret_set -= combination
         ret = []
         for name in self._names:
             if name in ret_set:
@@ -1109,8 +1121,10 @@ _trailing = r"\s*\)?\s*$"          # whitespace, optionally including a closing 
 
 
 class SizePropertyD(TextPropertyD):
-    validation_re = re.compile( _leading + _ge_m1 + _comma + _ge_m1 + _trailing )  # match pair of integers >=- 1
-    normalization = "%s, %s" # for normalization % valiation_re.match(...).groups()
+    d = r"(\s*[dD]?)" # the trailig d for "dialog units"
+    validation_re = re.compile( _leading + _ge_m1 + _comma + _ge_m1 + d + _trailing )  # match pair of integers >=- 1
+    del d
+    normalization = "%s, %s%s" # for normalization % valiation_re.match(...).groups()
     def _set_converter(self, value):
         # value can be a tuple
         if isinstance(value, compat.basestring):
@@ -1364,7 +1378,7 @@ class ColorProperty(DialogProperty):
         if color is _DefaultArgument: return None
         if color in self.str_to_colors:
             # e.g. 'wxSYS_COLOUR_SCROLLBAR'
-            return wx.SystemSettings_GetColour(self.str_to_colors[color])
+            return compat.wx_SystemSettings_GetColour(self.str_to_colors[color])
         elif color.startswith("#"):
             return misc.string_to_color(color)
         ret = wx.NamedColour(color)
@@ -1875,6 +1889,8 @@ class PropertyOwner(object):
         if isinstance(value, Property):
             self.add_property(value, name)
             return
+        if name!="properties" and name in self.properties and config.debugging:
+            raise ValueError("implementation error: property about to be overwritten")
         object.__setattr__(self, name, value)
     def copy_properties(self, other, properties):
         "copy named properties from other"

@@ -46,6 +46,7 @@ class EditTextCtrl(ManagedBase, EditStylesMixin):
     def properties_changed(self, modified):
         if "value" in modified and self.widget:
             self.widget.SetValue(self.value)
+        EditStylesMixin.properties_changed(self, modified)
         ManagedBase.properties_changed(self, modified)
 
     def _set_widget_style(self):

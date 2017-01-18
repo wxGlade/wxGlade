@@ -130,11 +130,11 @@ class EditGrid(ManagedBase):
         self._update_widget_properties(modified=None)
 
         # following two events are to permit select grid from designer frame
-        EVT_GRID_CELL_LEFT_CLICK(self.widget, self.on_set_focus)
-        EVT_GRID_LABEL_LEFT_CLICK(self.widget, self.on_set_focus)
+        self.widget.Bind(EVT_GRID_CELL_LEFT_CLICK, self.on_set_focus)
+        self.widget.Bind(EVT_GRID_LABEL_LEFT_CLICK, self.on_set_focus)
         # these are to show the popup menu on right click
-        EVT_GRID_CELL_RIGHT_CLICK(self.widget, self.popup_menu)
-        EVT_GRID_LABEL_RIGHT_CLICK(self.widget, self.popup_menu)
+        self.widget.Bind(EVT_GRID_CELL_RIGHT_CLICK, self.popup_menu)
+        self.widget.Bind(EVT_GRID_LABEL_RIGHT_CLICK, self.popup_menu)
 
     def _update_widget_properties(self, modified=None):
         # after initial creation, call with modified=None

@@ -56,6 +56,7 @@ class EditStaticBitmap(ManagedBase, EditStylesMixin, BitmapMixin):
 
             self._set_widget_best_size()
 
+        EditStylesMixin.properties_changed(self, modified)
         ManagedBase.properties_changed(self, modified)
 
 

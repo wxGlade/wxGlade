@@ -62,9 +62,8 @@ class ExtraPropertiesPropertyHandler(BaseXmlBuilderTagHandler):
     def __init__(self, owner):
         super(ExtraPropertiesPropertyHandler, self).__init__()
         self.owner = owner
-        self.props = {}
+        self.props = []
         self.prop_name = None
-        self.curr_prop = []
 
     def start_elem(self, name, attrs):
         super(ExtraPropertiesPropertyHandler, self).__init__()
@@ -73,12 +72,10 @@ class ExtraPropertiesPropertyHandler(BaseXmlBuilderTagHandler):
 
     def end_elem(self, name):
         if name == 'property':
-            if self.prop_name and self.curr_prop:
-                self.props[self.prop_name] = ''.join(self.curr_prop)
+            if self.prop_name and self._content:
+                self.props.append( [self.prop_name, ''.join(self._content)] )
             self.prop_name = None
-            self.curr_prop = []
+            self._content = []
         elif name == 'extraproperties':
-            self.owner.properties['extraproperties'].set_value(self.props)
-            val = [[k, self.props[k]] for k in sorted(self.props.keys())]
-            self.owner.extraproperties = val
+            self.owner.properties['extraproperties'].load(self.props)
             return True  # to remove this handler
