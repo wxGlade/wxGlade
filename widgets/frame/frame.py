@@ -9,7 +9,7 @@ wxFrame objects (incl. wxMenuBar, wxToolBar and wxStatusBar)
 
 import wx
 import os
-import common, config, misc
+import common, config, misc, compat
 from tree import Node
 import new_properties as np
 from edit_windows import TopLevelBase, EditStylesMixin
@@ -31,11 +31,11 @@ class EditFrame(TopLevelBase, EditStylesMixin, BitmapMixin):
         # initialise instance properties
         self.icon      = np.FileNamePropertyD("", default_value="")
         self.centered  = np.CheckBoxProperty(False, default_value=False)
-        self.sizehints = np.CheckBoxProperty(False)
-        self.menubar   = np.CheckBoxProperty(False)
-        self.toolbar   = np.CheckBoxProperty(False)
+        self.sizehints = np.CheckBoxProperty(False, default_value=False)
+        self.menubar   = np.CheckBoxProperty(False, default_value=False)
+        self.toolbar   = np.CheckBoxProperty(False, default_value=False)
         if "statusbar" in self.PROPERTIES:
-            self.statusbar = np.CheckBoxProperty(False)
+            self.statusbar = np.CheckBoxProperty(False, default_value=False)
             self._statusbar = None
         else:
             self.statusbar = None
@@ -68,7 +68,7 @@ class EditFrame(TopLevelBase, EditStylesMixin, BitmapMixin):
         # remove menu, status and tool bar
         if self.menubar:
             self._menubar = self._menubar.remove(gtk_do_nothing=True)
-        if self._statusbar:
+        if self.statusbar:
             self._statusbar = self._statusbar.remove(do_nothing=True)
         if self.toolbar:
             self._toolbar = self._toolbar.remove(do_nothing=True)
@@ -81,7 +81,7 @@ class EditFrame(TopLevelBase, EditStylesMixin, BitmapMixin):
             xpm = os.path.join(config.icons_path, 'frame.xpm')
             bitmap = misc.get_xpm_bitmap(xpm)
 
-        icon = wx.EmptyIcon()
+        icon = compat.wx_EmptyIcon()
         icon.CopyFromBitmap(bitmap)
         self.widget.SetIcon(icon)
 
@@ -139,7 +139,7 @@ class EditFrame(TopLevelBase, EditStylesMixin, BitmapMixin):
 
 
 class EditMDIChildFrame(EditFrame):
-    _is_toplevel = False  # used to avoid to appear in the "Top Window" property of the app
+    _is_toplevel_window = False  # avoid to appear in the "Top Window" property of the app
     PROPERTIES = [p for p in EditFrame.PROPERTIES if p!="statusbar"]
     #def __init__(self, *args, **kwds):
         #EditFrame.__init__(self, *args, **kwds)
@@ -147,18 +147,19 @@ class EditMDIChildFrame(EditFrame):
 
 
 
-def builder(parent, sizer, pos):
+def builder(parent, sizer, pos, klass=None, base=None, name=None):
     "factory function for EditFrame objects"
-    import window_dialog
-    base_classes = ['wxFrame', 'wxMDIChildFrame']
-    klass = 'wxFrame' if common.app_tree.app.language.lower()=='xrc' else 'MyFrame'
-    
-    dialog = window_dialog.WindowDialog(klass, base_classes, 'Select frame class', True)
-    res = dialog.show()
-    dialog.Destroy()
-    if res is None: return None
-    klass, base = res
-    name = dialog.get_next_name("frame")
+    if klass is None or base is None:
+        import window_dialog
+        base_classes = ['wxFrame', 'wxMDIChildFrame']
+        klass = 'wxFrame' if common.app_tree.app.language.lower()=='xrc' else 'MyFrame'
+        
+        dialog = window_dialog.WindowDialog(klass, base_classes, 'Select frame class', True)
+        res = dialog.show()
+        dialog.Destroy()
+        if res is None: return None
+        klass, base = res
+        name = dialog.get_next_name("frame")
 
     if base == "wxFrame":
         base_class = EditFrame

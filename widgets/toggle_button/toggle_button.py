@@ -49,6 +49,7 @@ class EditToggleButton(ManagedBase, EditStylesMixin):
                 self._set_widget_best_size()
             common.app_tree.refresh(self.node, refresh_label=True)
 
+        EditStylesMixin.properties_changed(self, modified)
         ManagedBase.properties_changed(self, modified)
 
 

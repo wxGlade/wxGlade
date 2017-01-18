@@ -86,21 +86,16 @@
         
         ;;; Menu Bar
         (setf (slot-Mp3-To-Ogg-menubar obj) (wxMenuBar_Create 0))
-        (let ((wxglade_tmp_menu (wxMenu_Create "" 0))))
-        (let ((wxglade_tmp_item (wxMenu_Append wxglade_tmp_menu wxID_OPEN (_"&Open") "" wxITEM_NORMAL))))
-        (wxEvtHandler_Connect (slot-top-window obj) wxglade_tmp_item (expwxEVT_MENU)
-        (wxClosure_Create #'OnOpen obj))
-        (let ((wxglade_tmp_item (wxMenu_Append wxglade_tmp_menu wxID_EXIT (_"&Quit") "" wxITEM_NORMAL))))
-        (wxEvtHandler_Connect (slot-top-window obj) wxglade_tmp_item (expwxEVT_MENU)
-        (wxClosure_Create #'OnClose obj))
-        (wxMenuBar_Append (slot-Mp3-To-Ogg-menubar obj) wxglade_tmp_menu (_"&File")))
-        (let ((wxglade_tmp_menu (wxMenu_Create "" 0))))
-        (let ((wxglade_tmp_item (wxMenu_Append wxglade_tmp_menu wxID_ABOUT (_"&About") (_"About dialog") wxITEM_NORMAL))))
-        (wxEvtHandler_Connect (slot-top-window obj) wxglade_tmp_item (expwxEVT_MENU)
-        (wxClosure_Create #'OnAboutDialog obj))
-        (wxMenuBar_Append (slot-Mp3-To-Ogg-menubar obj) wxglade_tmp_menu (_"&Help")))
+        (let ((wxglade_tmp_menu (wxMenu_Create "" 0)))
+        (wxMenu_Append wxglade_tmp_menu wxID_OPEN (_"&Open") "" 0)
+        (wxMenu_Append wxglade_tmp_menu wxID_EXIT (_"&Quit") "" 0)
+        		(wxMenuBar_Append (slot-Mp3-To-Ogg-menubar obj) wxglade_tmp_menu (_"&File")))
+        (let ((wxglade_tmp_menu (wxMenu_Create "" 0)))
+        (wxMenu_Append wxglade_tmp_menu wxID_ABOUT (_"&About") (_"About dialog") 0)
+        		(wxMenuBar_Append (slot-Mp3-To-Ogg-menubar obj) wxglade_tmp_menu (_"&Help")))
         (wxFrame_SetMenuBar (slot-top-window obj) (slot-Mp3-To-Ogg-menubar obj))
         ;;; Menu Bar end
+
         (setf (slot-Mp3-To-Ogg-statusbar obj) (wxFrame_CreateStatusBar (slot-top-window obj) 2 0))
         
 	;;; Tool Bar
@@ -168,7 +163,7 @@
         (wxWindow_SetSizer (slot-notebook-1-pane-1 obj) (slot--gszr-pane1 obj))
         (wxFlexGridSizer_AddGrowableCol (slot--gszr-pane1 obj) 1)
         (wxSizer_AddWindow (slot-sizer-4 obj) (slot-rbx-sampling-rate obj) 1 (logior wxALL wxEXPAND) 5 nil)
-        (wxSizer_AddWindow (slot-sizer-3 obj) (slot-cbx-love obj) 1 (logior wxALL wxSHAPED) 5 nil)
+        (wxSizer_AddWindow (slot-sizer-3 obj) (slot-cbx-love obj) 0 (logior wxALL wxSHAPED) 5 nil)
         (wxSizer_AddSizer (slot-sizer-4 obj) (slot-sizer-3 obj) 1 (logior wxALL wxEXPAND) 5 nil)
         (wxWindow_SetSizer (slot-notebook-1-pane-2 obj) (slot-sizer-4 obj))
         (wxSizer_AddWindow (slot--szr-pane3 obj) (slot-text-ctrl-2 obj) 1 (logior wxALL wxEXPAND) 5 nil)
@@ -202,21 +197,6 @@
         (wxFrame_Centre (slot-top-window obj) wxBOTH)
         ;;; end wxGlade
         )
-
-(defun OnOpen (function data event) ;;; wxGlade: PyOgg2_MyFrame.<event_handler>
-        (print "Event handler 'OnOpen' not implemented!")
-        (when event
-                (wxEvent:wxEvent_Skip event)))
-
-(defun OnClose (function data event) ;;; wxGlade: PyOgg2_MyFrame.<event_handler>
-        (print "Event handler 'OnClose' not implemented!")
-        (when event
-                (wxEvent:wxEvent_Skip event)))
-
-(defun OnAboutDialog (function data event) ;;; wxGlade: PyOgg2_MyFrame.<event_handler>
-        (print "Event handler 'OnAboutDialog' not implemented!")
-        (when event
-                (wxEvent:wxEvent_Skip event)))
 
 (defun startConverting (function data event) ;;; wxGlade: PyOgg2_MyFrame.<event_handler>
         (print "Event handler 'startConverting' not implemented!")

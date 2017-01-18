@@ -974,8 +974,7 @@ class SizerBase(Sizer, np.PropertyOwner):
                 self.widget.SetItemMinSize(item.widget, w, h)
         except Exception:
             # production version: exceptions to be ignored
-            import os
-            if 'WINGDB_ACTIVE' in os.environ: raise # for debugging: check
+            if config.debugging: raise
         if force_layout:
             self.layout()  # update the layout of self
 
@@ -1345,7 +1344,7 @@ class SizerBase(Sizer, np.PropertyOwner):
             w, h = self.widget.GetSize()
             prefix = ''
             if config.preferences.use_dialog_units:
-                w, h = self.window.widget.ConvertPixelSizeToDialog( self.widget.GetSize() )
+                w, h = compat.ConvertPixelsToDialog( self.window.widget, self.widget.GetSize() )
                 prefix = 'd'
             self.window.set_size('%s, %s%s' % (w, h, prefix))
 

@@ -8,13 +8,8 @@ Entry point of wxGlade
 """
 
 import atexit
-import codecs
-import locale
-import logging
-import os
-import sys
-import gettext
-import optparse
+import codecs, locale
+import logging, os, sys, gettext, optparse
 
 # Use a NullWriter with Unicode support (encoding attribute) to catch and
 # drop all output in PyInstaller environment (standalone Edition)
@@ -46,83 +41,51 @@ def my_displayhook(value):
 sys.displayhook = my_displayhook
 
 
-import common
-import config
-import compat
-import log
-import errors
+import common, config, compat, log, errors
 
 
 def parse_command_line():
     "Parse command line"
-    # list of all available languages
-    # don't load code generators at this point!!
+    # list of all available languages; don't load code generators at this point!!
     languages = ['C++', 'XRC', 'lisp', 'perl', 'python']
 
     # inject
-    optparse.OptionParser.format_description = \
-        lambda self, formatter: self.description
+    optparse.OptionParser.format_description = lambda self, formatter: self.description
 
-    parser = optparse.OptionParser(
-        add_help_option=False,
-        usage=_("""\
-Usage: wxglade <WXG File>             start the wxGlade GUI
- or:   wxglade <Options> <WXG File>   generate code from command line
- or:   wxglade --version              show programs version number and exit
- or:   wxglade -h|--help              show this help message and exit"""),
-        version=_("""\
-wxGlade version %s
-Copyright (C) 2007-2012 Alberto Griggio
-Copyright (C) 2011-2016 Carsten Grohmann
-License MIT: The MIT License
-             <http://www.opensource.org/licenses/mit-license.php>""") %
-        config.get_version()
-        )
-    parser.add_option(
-        '-h',
-        '--help',
-        dest='help',
-        action='store_true',
-        help=_('show this help message and exit'),
-        )
-    parser.add_option(
-        "-g",
-        "--generate-code",
-        type="choice",
-        choices=languages,
-        metavar="LANG",
-        dest="language",
-        help=_("(required) output language, valid languages are: %s") %
-             ", ".join(languages)
-        )
-    parser.add_option(
-        "-o",
-        "--output",
-        metavar="PATH",
-        dest="output",
-        help=_("(optional) output file in single-file mode or output "
-               "directory in multi-file mode"),
-        )
+    version = _("wxGlade version %s\n"
+                "Copyright (C) 2007-2012 Alberto Griggio\n"
+                "Copyright (C) 2011-2016 Carsten Grohmann\n"
+                "Copyright (C) 2016 Dietmar Schwertberger\n"
+                "License MIT: The MIT License\n"
+                "             <http://www.opensource.org/licenses/mit-license.php>") % config.get_version()
+    usage = _("Usage: wxglade <WXG File>             start the wxGlade GUI\n"
+              " or:   wxglade <Options> <WXG File>   generate code from command line\n"
+              " or:   wxglade --version              show programs version number and exit\n"
+              " or:   wxglade -h|--help              show this help message and exit")
+    parser = optparse.OptionParser( add_help_option=False, version=version, usage=usage )
 
-    (options, args) = parser.parse_args()
+    parser.add_option('-h', '--help', dest='help', action='store_true', help=_('show this help message and exit'))
+    parser.add_option("-g", "--generate-code", type="choice", choices=languages, metavar="LANG", dest="language",
+                            help=_("(required) output language, valid languages are: %s") % ", ".join(languages) )
+    
+    parser.add_option("-o", "--output", metavar="PATH", dest="output",
+                            help=_("(optional) output file in single-file mode or output directory in multi-file mode"))
+
+    options, args = parser.parse_args()
 
     # print epilog because OptionParser.epilog isn't available to Python 2.3
     if options.help:
         parser.print_help()
-        print( _("""
-Example: Generate Python code out of myapp.wxg
-
-   wxglade -o output.py -g python myapp.wxg
-
-Report bugs to:    <wxglade-general@lists.sourceforge.net> or at
-                   <https://sourceforge.net/projects/wxglade/>
-wxGlade home page: <http://wxglade.sourceforge.net/>""") )
+        print( _( "Example: Generate Python code out of myapp.wxg\n\n"
+                  "   wxglade -o output.py -g python myapp.wxg\n\n"
+                  "Report bugs to:    <wxglade-general@lists.sourceforge.net> or at\n"
+                  "                   <https://sourceforge.net/projects/wxglade/>\n"
+                  "wxGlade home page: <http://wxglade.sourceforge.net/>") )
         sys.exit()
 
     # Make an absolute version of path.
     # According to the invoking dir of wxGlade (which can be different
     # from '.' if it is invoked from a shell script).
-
     if len(args) == 1:
         filename = args[0]
         if not os.path.isabs(filename):
@@ -186,15 +149,10 @@ def command_line_code_generation(filename, language, out_path=None):
 
 
 def init_stage1():
-    """\
-    Initialise paths for wxGlade (first stage)
+    """Initialise paths for wxGlade (first stage)
 
-    Initialisation is split because the test suite doesn't work with proper
-    initialised paths.
-
-    Initialise locale settings too. The determined system locale will be
-    stored in L{config.encoding}.
-    """
+    Initialisation is split because the test suite doesn't work with proper initialised paths.
+    Initialise locale settings too. The determined system locale will be stored in L{config.encoding}."""
     config.version = config.get_version()
     common.init_paths()
 
@@ -273,12 +231,8 @@ def init_localization():
 
 
 def init_stage2(use_gui):
-    """\
-    Initialise the remaining (non-path) parts of wxGlade (second stage)
-
-    @param use_gui: Starting wxGlade GUI
-    @type use_gui:  bool
-    """
+    """Initialise the remaining (non-path) parts of wxGlade (second stage)
+    use_gui: Starting wxGlade GUI"""
     config.use_gui = use_gui
     if use_gui:
         # import proper wx-module using wxversion, which is only available in Classic
@@ -305,8 +259,11 @@ def init_stage2(use_gui):
         
         if sys.platform=="win32":
             # register ".wxg" extension
-            import msw
-            msw.register_extensions(["wxg"], "wxGlade")
+            try:
+                import msw
+                msw.register_extensions(["wxg"], "wxGlade")
+            except ImportError:
+                pass
 
         # codewrites, widgets and sizers are loaded in class main.wxGladeFrame
     else:
@@ -328,8 +285,7 @@ def run_main():
     init_stage2(options.start_gui)
 
     if options.start_gui:
-        # late import of main (imported wx) for using wxversion  in
-        # init_stage2()
+        # late import of main (imported wx) for using wxversion  in init_stage2()
         import main
         main.main(options.filename)
     else:

@@ -350,11 +350,11 @@ class TestGui(WXGladeBaseTest):
         """
         self.load_and_generate('AllWidgets_30', ['lisp'])
 
-    def test_CodeGeneration_ComplexExample_28(self):
+    def test_CodeGeneration_ComplexExample(self):
         """\
-        Test GUI code generation using "ComplexExample_28.wxg"
+        Test GUI code generation using "ComplexExample.wxg"
         """
-        self.load_and_generate('ComplexExample_28')
+        self.load_and_generate('ComplexExample')
 
     def test_CodeGeneration_CustomWidget(self):
         """\

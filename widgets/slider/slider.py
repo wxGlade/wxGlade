@@ -57,6 +57,7 @@ class EditSlider(ManagedBase, EditStylesMixin):
                     value = ma
                 if self.widget: self.widget.SetValue(value)
 
+        EditStylesMixin.properties_changed(self, modified)
         ManagedBase.properties_changed(self, modified)
 
 

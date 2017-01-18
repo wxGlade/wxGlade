@@ -478,6 +478,8 @@ bool MyApp::OnInit()
         @ivar ids:             Ids declared in the source (to use for Event
                                handling): these are grouped together into a
                                public enum in the custom class
+        @ivar sub_objs:        List of 2-tuples (type, name) of the sub-objects
+                               which are attributes of the toplevel object
         @ivar extra_code_h:    Extra header code to output
         @ivar extra_code_cpp:  Extra source code to output
         """
@@ -485,6 +487,7 @@ bool MyApp::OnInit()
         def __init__(self):
             BaseLangCodeWriter.ClassLines.__init__(self)
             self.ids = []
+            self.sub_objs = []
             self.extra_code_h = []
             self.extra_code_cpp = []
             self.dependencies = []     # List not dictionary
@@ -495,11 +498,9 @@ bool MyApp::OnInit()
         self.last_generated_id = 1000
 
         # Extensions and main filename based on Project options when set
-        self.source_extension = app_attrs.get(
-            'source_extension', config.default_source_extension)
-        self.header_extension = app_attrs.get(
-            'header_extension', config.default_header_extension)
-        self.app_filename = self._generate_app_filename()
+        self.source_extension = app_attrs.get('source_extension', config.default_source_extension)
+        self.header_extension = app_attrs.get('header_extension', config.default_header_extension)
+        if not self.app_filename: self.app_filename = self._generate_app_filename()
 
         self.header_lines = [
             '#include <wx/wx.h>\n',
@@ -532,8 +533,8 @@ bool MyApp::OnInit()
             else:
                 # if the file doesn't exist, create it and write the ``intro''
                 self.previous_source = None
-                self.output_header = misc.AsciiStringIO()
-                self.output_file = misc.AsciiStringIO()
+                self.output_header = compat.StringIO()
+                self.output_file   = compat.StringIO()
 
                 # isolation directives
                 oh = os.path.basename(name + self.header_extension).upper().replace( '.', '_' )
@@ -581,9 +582,9 @@ bool MyApp::OnInit()
                 if tag[2] == 'dependencies':
                     #self._logger.debug('writing dependencies')
                     deps = []
-                    for code in self.classes.itervalues():
+                    for code in self.classes.values():
                         deps.extend(code.dependencies)
-                    lines = self._format_dependencies(deps)
+                    lines = self._format_dependencies( deps )
                 elif tag[2] == 'methods':
                     lines = '%svoid set_properties();\n%svoid do_layout();\n' % (self.tabs(1), self.tabs(1))
                 else:
@@ -614,12 +615,13 @@ bool MyApp::OnInit()
             # write the list of include files
             header_content = self.output_header.getvalue()
             source_content = self.output_file.getvalue()
-            tags = re.findall('<%swxGlade replace  dependencies>' % self.nonce, header_content)
+            tag = '<%swxGlade replace  dependencies>' % self.nonce
+            tags = re.findall(tag, header_content)
             deps = []
-            for code in self.classes.itervalues():
+            for code in self.classes.values():
                 deps.extend(code.dependencies)
-            code = self._format_dependencies(deps)
-            header_content = header_content.replace( '<%swxGlade replace  dependencies>' % self.nonce, code )
+            code = self._format_dependencies( deps )
+            header_content = header_content.replace( tag, code )
 
             # extra code (see the 'extracode' property of top-level widgets)
             tag = '<%swxGlade replace  extracode>' % self.nonce
@@ -769,7 +771,10 @@ bool MyApp::OnInit()
             # declarations of the attributes
             hwrite('\n')
             hwrite('protected:\n')
-            header_buffer.extend(self.get_class_member_declaration(code_obj))
+            hwrite(self.tabs(1) + '// begin wxGlade: %s::attributes\n' % fmt_klass)
+            for o_type, o_name in self.classes[klass].sub_objs:
+                hwrite(self.tabs(1) + '%s* %s;\n' % (o_type, o_name))
+            hwrite(self.tabs(1) + '// end wxGlade\n')
 
             if event_handlers:
                 t = self.tabs(1)
@@ -818,7 +823,10 @@ bool MyApp::OnInit()
                 prev_src.header_content = prev_src.header_content.replace(tag, "".join(header_buffer))
             header_buffer = []
             hwrite = header_buffer.append
-            header_buffer.extend(self.get_class_member_declaration(code_obj))
+            hwrite(self.tabs(1) + '// begin wxGlade: %s::attributes\n' % fmt_klass)
+            for o_type, o_name in self.classes[klass].sub_objs:
+                hwrite(self.tabs(1) + '%s* %s;\n' % (o_type, o_name))
+            hwrite(self.tabs(1) + '// end wxGlade\n')
             tag = '<%swxGlade replace %s attributes>' % (self.nonce, klass)
             if prev_src.header_content.find(tag) < 0:
                 # no attributes tag found, issue a warning and do nothing
@@ -1132,11 +1140,11 @@ bool MyApp::OnInit()
                 # sub_obj must be accessible as an attribute of top_obj,
                 # or as a local variable in the do_layout method
                 if self.store_as_attr(sub_obj):
-                    self.register_class_member(top_obj, sub_obj.klass, sub_obj.name)
+                    klass.sub_objs.append((sub_obj.klass, sub_obj.name))
         elif sub_obj.klass != "sizerslot":
             # the object is a sizer
             if self.store_as_attr(sub_obj):
-                self.register_class_member(top_obj, sub_obj.klass, sub_obj.name)
+                klass.sub_objs.append((sub_obj.klass, sub_obj.name))
             klass.sizers_init.extend(init)
 
         klass.props.extend(props)
@@ -1240,7 +1248,6 @@ void %(klass)s::%(handler)s(%(evt_type)s &event)
         write(tab + '// begin wxGlade: %s::event_table\n' % code_obj.klass)
 
         for win_id, event, handler, evt_type in event_handlers:
-            if win_id is None: continue  # bound already, the entry is just for creation of the method stub
             if 'EVT_NAVIGATION_KEY' in event:
                 tmpl = '%(tab)s%(event)s(%(klass)s::%(handler)s)\n'
             else:
@@ -1292,16 +1299,6 @@ void %(klass)s::%(handler)s(%(evt_type)s &event)
         else:
             return '%s%s(wxSize(%s));\n' % (objname, method, size)
 
-    def get_class_member_declaration(self, top_obj):
-        klass = top_obj.klass
-        fmt_klass = self.cn_class(klass)
-        result = []
-        result.append('%s// begin wxGlade: %s::attributes\n' % (self.tabs(1), fmt_klass))
-        for obj_type, obj_name in self.classes[klass].members:
-            result.append('%s%s* %s;\n' % (self.tabs(1), obj_type, obj_name))
-        result.append('%s// end wxGlade\n' % self.tabs(1))
-        return result
-
     def quote_path(self, s):
         path = super(CPPCodeWriter, self).quote_path(s)
         # path starts and ends with double quotes already
@@ -1319,27 +1316,10 @@ void %(klass)s::%(handler)s(%(evt_type)s &event)
         else:
             return '%s->' % obj.name
 
-    def _unique(self, sequence):
-        "Strips all duplicates from sequence. Works only if items of sequence are hashable"
-        tmp = {}
-        for item in sequence:
-            tmp[item] = 1
-        return tmp.keys()
-
     def _format_dependencies(self, dependencies):
-        """\
-        Format the dependencies output
-
-        @param dependencies: List if header files
-        @type dependencies:  list[str]
-
-        @return: Changed content
-        @rtype:  str
-
-        @see: L{_tagcontent()}
-        """
+        "Format a list of header files for the dependencies output"
         dep_list = []
-        for dependency in self._unique(dependencies):
+        for dependency in sorted( set(dependencies) ):  # unique and sorted
             if dependency and ('"' != dependency[0] != '<'):
                 dep_list.append('#include "%s.h"\n' % dependency)
             else:

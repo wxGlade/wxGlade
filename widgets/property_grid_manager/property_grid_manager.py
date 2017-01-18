@@ -37,10 +37,12 @@ class EditPropertyGridManager(ManagedBase, EditStylesMixin):
             self.widget.Bind(wx.EVT_LEFT_DOWN, self.on_set_focus)
             self.widget.SetToolTip("PropertyGridManager crashes on Phoenix, so you see just a panel")
 
-
     def get_property_handler(self, name):
         return ManagedBase.get_property_handler(self, name)
 
+    def properties_changed(self, modified=None):
+        EditStylesMixin.properties_changed(self, modified)
+        ManagedBase.properties_changed(self, modified)
 
 
 def builder(parent, sizer, pos, number=[1]):

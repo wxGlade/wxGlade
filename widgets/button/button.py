@@ -81,6 +81,7 @@ class EditButton(ManagedBase, EditStylesMixin):
 
         if resize and self.widget: self._set_widget_best_size()
 
+        EditStylesMixin.properties_changed(self, modified)
         ManagedBase.properties_changed(self, modified)
 
 

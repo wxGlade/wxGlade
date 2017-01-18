@@ -230,13 +230,14 @@ class DefaultXrcObject(XrcObject):
             del self.properties['extraproperties']
             self.properties.update(prop)
 
-        for name, val in self.properties.items():
-            self.write_property(str(name), val, out_file, ntabs + 1)
+        for name in sorted( self.properties.keys() ):
+            self.write_property(str(name), self.properties[name], out_file, ntabs + 1)
         # write the font, if present
         if font:
             write(tab_str + '<font>\n')
             tab_str = self.tabs(ntabs + 2)
-            for key, val in font.items():
+            for key in sorted(font.keys()):
+                val = font[key]
                 if val:
                     write(tab_str + '<%s>%s</%s>\n' % (escape(key), escape(val), escape(key)))
             write(self.tabs(ntabs + 1) + '</font>\n')
@@ -333,7 +334,7 @@ class XRCCodeWriter(BaseLangCodeWriter, wcodegen.XRCMixin):
 
     def finalize(self):
         # write the code for every toplevel object
-        for obj in self.xrc_objects.itervalues():
+        for obj in self.xrc_objects.values():
             obj.write(self.out_file, 1)
         self.out_file.write('</resource>\n')
         # store the contents to file

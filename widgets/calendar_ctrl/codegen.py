@@ -37,7 +37,6 @@ class PythonCalendarCtrlGenerator(wcodegen.PythonWidgetCodeWriter):
         self.has_setdefault = obj.properties.get('default', False)
         return
 
-# end of class PythonCalendarCtrlGenerator
 
 
 class CppCalendarCtrlGenerator(wcodegen.CppWidgetCodeWriter):
@@ -49,7 +48,6 @@ class CppCalendarCtrlGenerator(wcodegen.CppWidgetCodeWriter):
         self.has_setdefault = obj.properties.get('default', False)
         return
 
-# end of class CppCalendarCtrlGenerator
 
 
 def xrc_code_generator(obj):
@@ -68,9 +66,7 @@ def xrc_code_generator(obj):
                         val = val2[:index] + '&&' + val2[index+2:]
                 else:
                     val = val2
-            xrcgen.DefaultXrcObject.write_property(self, name, val,
-                                                   outfile, tabs)
-    # end of class CalendarCtrlXrcObject
+            xrcgen.DefaultXrcObject.write_property(self, name, val, outfile, tabs)
 
     return CalendarCtrlXrcObject(obj)
 
@@ -79,5 +75,5 @@ def initialize():
     klass = 'wxCalendarCtrl'
     common.class_names['EditCalendarCtrl'] = klass
     common.register('python', klass, PythonCalendarCtrlGenerator(klass))
-    common.register('C++', klass, CppCalendarCtrlGenerator(klass))
-    common.register('XRC', klass, xrc_code_generator)
+    common.register('C++',    klass, CppCalendarCtrlGenerator(klass))
+    common.register('XRC',    klass, xrc_code_generator)

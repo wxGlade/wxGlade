@@ -9,8 +9,8 @@
             <orient>wxVERTICAL</orient>
             <object class="sizeritem">
                 <object class="wxGauge" name="gauge_1">
-                    <style>wxGA_HORIZONTAL</style>
                     <range>10</range>
+                    <style>wxGA_HORIZONTAL</style>
                 </object>
             </object>
         </object>

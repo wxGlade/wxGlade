@@ -18,8 +18,8 @@ class MyFrame(wx.Frame):
     def __init__(self, *args, **kwds):
         # begin wxGlade: MyFrame.__init__
         wx.Frame.__init__(self, *args, **kwds)
-        self.label_1 = wx.StaticText(self, wx.ID_ANY, _("Example of a statusbar with three fields\nbut without labels in those fields."))
         self.statusbar_without_labels = self.CreateStatusBar(3)
+        self.label_1 = wx.StaticText(self, wx.ID_ANY, _("Example of a statusbar with three fields\nbut without labels in those fields."))
 
         self.__set_properties()
         self.__do_layout()
