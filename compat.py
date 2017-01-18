@@ -221,6 +221,8 @@ if len(wx.VERSION)==5:
         c.SetToolTipString(s)
     wx_EmptyBitmap = wx.EmptyBitmap
     wx_EmptyIcon = wx.EmptyIcon
+    def ConvertPixelsToDialog(widget, size):
+        return widget.ConvertPixelSizeToDialog(size)
 else:
     # wxPython Phoenix
     IS_CLASSIC = False
@@ -239,3 +241,5 @@ else:
         c.SetToolTip(s)
     wx_EmptyBitmap = wx.Bitmap
     wx_EmptyIcon = wx.Icon
+    def ConvertPixelsToDialog(widget, size):
+        return widget.ConvertPixelsToDialog(size)

@@ -1344,7 +1344,7 @@ class SizerBase(Sizer, np.PropertyOwner):
             w, h = self.widget.GetSize()
             prefix = ''
             if config.preferences.use_dialog_units:
-                w, h = self.window.widget.ConvertPixelSizeToDialog( self.widget.GetSize() )
+                w, h = compat.ConvertPixelsToDialog( self.window.widget, self.widget.GetSize() )
                 prefix = 'd'
             self.window.set_size('%s, %s%s' % (w, h, prefix))
 
