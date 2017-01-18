@@ -1738,8 +1738,7 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
         def repl(matchobj):
             dec = ord(matchobj.group(0))
             if dec > 127:
-                return b'\u00%x' % dec # old
-                #return u'\\u00%x' % dec new
+                return b'\u00' + ('%x'% dec).encode()
             return matchobj.group(0)
 
         s = re.sub(b'[\\x80-\\xFF]{1}', repl, s)
