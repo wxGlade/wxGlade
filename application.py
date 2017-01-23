@@ -90,7 +90,8 @@ class Application(np.PropertyOwner):
                         "multiple_files":       "Code Generation",
                         "overwrite":            'Overwrite existing sources',
                         "generate_code":        "Start generating source files"}
-    _PROPERTY_HELP = {"name":            'Name of the instance created from "Class"',
+    _PROPERTY_HELP = {"name":            'Name of the instance created from "Class";\n'
+                                         ' also used as (main) file name in case of "Separate file for each class"',
                       "class":           "Name of the automatically generated class derived from wxApp",
                       "use_gettext":     "Enable internationalisation and localisation for the generated source files",
                       "header_extension":'for C++ only: extension of the header file',

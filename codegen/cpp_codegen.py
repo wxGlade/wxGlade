@@ -500,7 +500,6 @@ bool MyApp::OnInit()
         # Extensions and main filename based on Project options when set
         self.source_extension = app_attrs.get('source_extension', config.default_source_extension)
         self.header_extension = app_attrs.get('header_extension', config.default_header_extension)
-        if not self.app_filename: self.app_filename = self._generate_app_filename()
 
         self.header_lines = [
             '#include <wx/wx.h>\n',
@@ -1329,7 +1328,7 @@ void %(klass)s::%(handler)s(%(evt_type)s &event)
 
     def _generate_app_filename(self):
         """\
-        Return the filename of C++ main file
+        Return the filename of C++ main file; XXX only used for testing
 
         @rtype: str
 
