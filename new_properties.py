@@ -883,7 +883,7 @@ class TextProperty(Property):
 
     def get_str_value(self):
         # for XML file writing: escape newline, \\n and tab
-        return self.value.replace("\\n", "\\\\n").replace("\n", "\\n").replace("\t", "\\t")
+        return self.get_value().replace("\\n", "\\\\n").replace("\n", "\\n").replace("\t", "\\t")
 
     @staticmethod
     def _unescape(value):
