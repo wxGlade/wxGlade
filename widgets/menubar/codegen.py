@@ -170,12 +170,12 @@ class CppMenubarGenerator(MenubarMixin, CppWidgetCodeWriter):
     def get_code(self, obj):
         # called for non-toplevel widgets
         init_lines, prop_lines, layout_lines = super(CppMenubarGenerator, self).get_code(obj)
-        return init_lines, self._menuitem_ids, prop_lines, layout_lines
+        return init_lines, self._menuitem_id_decl, prop_lines, layout_lines
 
     def get_init_code(self, obj):
         # called for toplevel widgets
         init_lines = super(CppMenubarGenerator, self).get_init_code(obj)
-        return self._menuitem_ids + init_lines
+        return self._menuitem_id_decl + init_lines
 
 
 def initialize():
