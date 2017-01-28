@@ -74,8 +74,8 @@ class MenubarMixin(BaseWidgetWriter):
     _declared_local_variables = {}
     """Dict to declare local variables once"""
 
-    _menuitem_ids = []
-    """Declared IDs for menu items"""
+    _menuitem_id_decl = []
+    """Declarations for menu items IDs"""
 
     _menubar_obj = None
     """Reference to the menubar L{xml_parse.CodeObject}"""
@@ -155,6 +155,7 @@ class MenubarMixin(BaseWidgetWriter):
 
     def _create_menus_and_menuitems(self):
         menu_lines = []
+        self._menuitem_id_decl = []
         for menu_tree in self._menubar_obj.properties['menubar']:
             menu = menu_tree.root
 
@@ -184,12 +185,11 @@ class MenubarMixin(BaseWidgetWriter):
                  })
 
         if self.add_menuids_to_initcode:
-            self._init_lines.extend(self._menuitem_ids)
+            self._init_lines.extend(self._menuitem_id_decl)
         self._init_lines.extend(menu_lines)
 
     def _create_all_menuitems(self, menu, menu_items):
         menu_lines = []
-        self._menuitem_ids = []
 
         for item in menu_items:
             self._menu_item = None
@@ -331,7 +331,6 @@ class MenubarMixin(BaseWidgetWriter):
         self._declared_local_variables[name] = 1
         return tmpl % name
 
-# XXX
     def _generate_and_store_menu_id(self, menu_item):
         name, val = self.codegen.generate_code_id(None, menu_item.id)
         if self._root_obj.preview or (not name and (not val or val == '-1')):
@@ -339,4 +338,4 @@ class MenubarMixin(BaseWidgetWriter):
         else:
             self._menu_id = val
             if name:
-                self._menuitem_ids.append(name)
+                self._menuitem_id_decl.append(name)

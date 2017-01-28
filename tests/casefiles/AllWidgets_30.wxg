@@ -39,6 +39,7 @@
                 <menu label="&amp;Edit" name="">
                     <item>
                         <label>Unix</label>
+                        <id>mn_IDUnix=?</id>
                         <name>mn_Unix</name>
                         <help_str>Use Unix line endings</help_str>
                         <radio>1</radio>
@@ -46,6 +47,7 @@
                     </item>
                     <item>
                         <label>Windows</label>
+                        <id>mn_IDWindows=?</id>
                         <name>mn_Windows</name>
                         <help_str>Use Windows line endings</help_str>
                         <radio>1</radio>
