@@ -24,19 +24,19 @@ class WxgBaseException(Exception):
 
 class WxgOutputDirectoryNotExist(WxgBaseException):
     "Raised if output path is not an existing directory"
-    msg = _('Output path "%s" must be an existing directory.')
+    msg = _('Output path "%s" must be an existing directory.\nCheck Properties->Application->Output Path.')
 
 class WxgOutputDirectoryNotWritable(WxgBaseException):
     "Raised if the output path exists but the directory is not writable"
-    msg = _('Output path "%s" exists but the directory is not writable.')
+    msg = _('Output path "%s" exists but the directory is not writable.\nCheck Properties->Application->Output Path.')
 
 class WxgOutputPathIsDirectory(WxgBaseException):
     "Raised if the output path is a directory when generating a single file"
-    msg = _('Output path "%s" can not be a directory when generating a single file.')
+    msg = _('Output path "%s" can not be a directory when generating a single file.\nCheck Properties->Application->Output Path.')
 
 class WxgOutputPathIsNotDirectory(WxgBaseException):
     "Raised if the output path is not a directory when generating multiple files"
-    msg = _('Output path "%s" should be a directory when generating multiple files.')
+    msg = _('Output path "%s" should be a directory when generating multiple files.\nCheck Properties->Application->Output Path.')
 
 class WxgOutputUnicodeError(WxgBaseException):
     "Raised if the generated code can't converted to the desired encoding"
