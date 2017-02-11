@@ -18,7 +18,8 @@ from edit_windows import EditBase, PreviewMixin
 
 class MenuItemDialog(wx.Dialog):
     def __init__(self, parent, owner, items=None):
-        wx.Dialog.__init__(self, parent, -1, _("Menu editor"), style=wx.DEFAULT_DIALOG_STYLE|wx.RESIZE_BORDER)
+        style = wx.DEFAULT_DIALOG_STYLE|wx.RESIZE_BORDER|wx.WANTS_CHARS
+        wx.Dialog.__init__(self, parent, -1, _("Menu editor"), style=style)
 
         # menu item fields
         self.label         = wx.TextCtrl(self, wx.ID_ANY, "")
@@ -65,6 +66,7 @@ class MenuItemDialog(wx.Dialog):
         self.Bind(wx.EVT_LIST_ITEM_SELECTED, self.show_menu_item, self.menu_items)
 
         self.Bind(wx.EVT_CHAR_HOOK, self.on_char)
+        self.remove.Bind(wx.EVT_CHAR_HOOK, self.on_button_char)  # to ignore the Enter key while the focus is on Remove
 
         self.owner = owner
 
@@ -100,13 +102,19 @@ class MenuItemDialog(wx.Dialog):
         if self.FindFocus() is self.check_radio:
             event.Skip()
             return
-        if event.GetKeyCode()==wx.WXK_DOWN:
+        k = event.GetKeyCode()
+        if k==wx.WXK_DOWN:
             self._select_menu_item(self.selected_index+1)
             return
-        if event.GetKeyCode()==wx.WXK_UP:
+        if k==wx.WXK_UP:
             self._select_menu_item(self.selected_index-1)
             return
         event.Skip()
+
+    def on_button_char(self, event):
+        # for e.g. the Remove button we don't want an action on the Return button
+        if event.GetKeyCode() != wx.WXK_RETURN:
+            event.Skip  ()
 
     def __do_layout(self):
         sizer_1 = wx.BoxSizer(wx.VERTICAL)
