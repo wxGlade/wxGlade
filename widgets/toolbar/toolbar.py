@@ -141,7 +141,7 @@ class ToolsDialog(wx.Dialog):
         self.help_str.SetSize((150, -1))
         self.long_help_str.SetSize((150, -1))
         self.event_handler.SetSize((150, -1))
-        szr = wx.FlexGridSizer(2,0,0)
+        szr = wx.FlexGridSizer(0,2,0,0)
         flag = wx.FIXED_MINSIZE
         label_flag = wx.ALIGN_CENTER_VERTICAL
         szr.Add(wx.StaticText(self, -1, _("Id   ")), flag=label_flag)
