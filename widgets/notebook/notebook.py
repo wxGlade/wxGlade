@@ -256,7 +256,11 @@ class EditNotebook(ManagedBase, EditStylesMixin):
         added = None
         for i, (name,) in enumerate(self.tabs):
             index = indices[i]
-            if index is not None: continue                  # old tab to be kept
+            if index is not None:
+                # old tab to be kept, just ensure that pos is correct
+                pos_p = self.pages[i].properties["pos"]
+                if pos_p.value!=i+1: pos_p.set(i+1)
+                continue
 
             # actually add/insert
             new_names.insert(i, [name,]) # this needs to be done before EditPanel calls self.virtual_sizer.add_item
