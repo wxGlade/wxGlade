@@ -215,7 +215,12 @@ if len(wx.VERSION)==5:
     wx_ArtProviderPush = wx.ArtProvider.PushProvider
     wx_ArtProvider_GetBitmap = wx.ArtProvider_GetBitmap
     wx_ToolTip_SetDelay = wx.ToolTip_SetDelay
-    wx_ToolTip_SetAutoPop = wx.ToolTip_SetAutoPop
+    try:
+        wx_ToolTip_SetAutoPop = wx.ToolTip_SetAutoPop
+    except AttributeError:
+        # this one is not essential
+        def wx_ToolTip_SetAutoPop(delay):
+            pass
     wx_Tree_InsertItemBefore = wx.TreeCtrl.InsertItemBefore
     def SetToolTip(c, s):
         c.SetToolTipString(s)
