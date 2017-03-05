@@ -112,7 +112,6 @@
                                     <label>Misc</label>
                                     <orient>wxHORIZONTAL</orient>
                                     <object class="sizeritem">
-                                        <option>1</option>
                                         <flag>wxALL|wxSHAPED</flag>
                                         <border>5</border>
                                         <object class="wxCheckBox" name="cbx_love">
