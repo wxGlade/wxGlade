@@ -118,7 +118,7 @@ void wxGladePreferencesUI::do_layout()
     sizer_4->Add(label_2_copy_1, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5);
     sizer_4->Add(buttons_per_row, 1, wxALIGN_CENTER_VERTICAL|wxALL, 5);
     sizer_4->AddGrowableCol(1);
-    sizer_3->Add(sizer_4, 0, wxALL|wxEXPAND, 3);
+    sizer_3->Add(sizer_4, 0, wxEXPAND, 3);
     notebook_1_pane_1->SetSizer(sizer_3);
     sizer_5->Add(use_dialog_units, 0, wxALL|wxEXPAND, 5);
     sizer_5->Add(wxg_backup, 0, wxALL|wxEXPAND, 5);

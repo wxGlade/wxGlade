@@ -22,8 +22,8 @@
 
 
 // begin wxGlade: ::dependencies
-#include <wx/statline.h>
 #include <wx/hyperlink.h>
+#include <wx/statline.h>
 // end wxGlade
 
 // begin wxGlade: ::extracode

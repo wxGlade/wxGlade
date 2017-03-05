@@ -48,6 +48,7 @@ class Frame192(wx.Frame):
         self.sizer_as_attr.AddGrowableRow(0)
         self.sizer_as_attr.AddGrowableCol(0)
         self.Layout()
+        self.SetSize((300, 300))
         # end wxGlade
 
 # end of class Frame192

@@ -6,10 +6,10 @@
         <style>wxDEFAULT_DIALOG_STYLE</style>
         <title>dialog_1</title>
         <object class="wxFlexGridSizer">
-            <hgap>0</hgap>
-            <growablerows>0</growablerows>
-            <rows>3</rows>
             <cols>1</cols>
+            <growablerows>0</growablerows>
+            <hgap>0</hgap>
+            <rows>3</rows>
             <vgap>0</vgap>
             <object class="sizeritem">
                 <option>1</option>
@@ -58,8 +58,8 @@
                 <flag>wxALL|wxEXPAND</flag>
                 <border>5</border>
                 <object class="wxHyperlinkCtrl" name="hyperlink_1">
-                    <url>http://wxglade.sf.net</url>
                     <label>Visit wxGlade home page</label>
+                    <url>http://wxglade.sf.net</url>
                 </object>
             </object>
         </object>
