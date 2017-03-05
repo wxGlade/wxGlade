@@ -367,7 +367,7 @@ class TestCodeGen(WXGladeCLITest):
         # top window and application name are mandatory
         if top_window and appname:
             if multiple_files:
-                generated = self.vFiles[app_filename].getvalue()
+                generated = self._get_file_content(app_filename)
                 multiple = '_multi'
             else:
                 generated = codewriter.output_file.getvalue()
@@ -383,7 +383,7 @@ class TestCodeGen(WXGladeCLITest):
             generated = ''
             if multiple_files:
                 if self.vFiles:
-                    generated = self.vFiles[app_filename].getvalue()
+                    generated = self._get_file_content(app_filename)
             else:
                 generated = codewriter.output_file.getvalue()
 
@@ -424,8 +424,8 @@ class TestCodeGen(WXGladeCLITest):
 
                 # generate and compare C++ code
                 self._generate_code('C++', source, outname)
-                generated_cpp = self.vFiles[name_cpp].getvalue()
-                generated_h = self.vFiles[name_h].getvalue()
+                generated_cpp = self._get_file_content(name_cpp)
+                generated_h = self._get_file_content(name_h)
 
                 # restore deleted handler
                 codegen.obj_builders['wxButton'] = handler
@@ -443,7 +443,7 @@ class TestCodeGen(WXGladeCLITest):
 
                 # generate code
                 self._generate_code(language, source, outname)
-                generated = self.vFiles[outname].getvalue()
+                generated = self._get_file_content(outname)
 
                 # restore deleted handler
                 codegen.obj_builders['wxButton'] = handler
@@ -461,7 +461,7 @@ class TestCodeGen(WXGladeCLITest):
 
         # generate code
         self._generate_code('lisp', source, 'add_class_inplace_orig.lisp')
-        generated = self.vFiles['add_class_inplace_orig.lisp'].getvalue()
+        generated = self._get_file_content('add_class_inplace_orig.lisp')
         self._compare(expected, generated)
 
         # Test Perl code generator
@@ -472,7 +472,7 @@ class TestCodeGen(WXGladeCLITest):
 
         # generate code
         self._generate_code('perl', source, 'add_class_inplace_orig.pl')
-        generated = self.vFiles['add_class_inplace_orig.pl'].getvalue()
+        generated = self._get_file_content('add_class_inplace_orig.pl')
         self._compare(expected, generated)
 
         # Test Python code generator
@@ -483,7 +483,7 @@ class TestCodeGen(WXGladeCLITest):
 
         # generate code
         self._generate_code('python', source, 'add_class_inplace_orig.py')
-        generated = self.vFiles['add_class_inplace_orig.py'].getvalue()
+        generated = self._get_file_content('add_class_inplace_orig.py')
         self._compare(expected, generated)
 
         # Test XRC code generator
@@ -494,7 +494,7 @@ class TestCodeGen(WXGladeCLITest):
 
         # generate code
         self._generate_code('XRC', source, 'add_class_inplace_orig.xrc')
-        generated = self.vFiles['add_class_inplace_orig.xrc'].getvalue()
+        generated = self._get_file_content('add_class_inplace_orig.xrc')
         self._compare(expected, generated)
 
         # Test C++ code generator
@@ -506,8 +506,8 @@ class TestCodeGen(WXGladeCLITest):
 
         # generate code
         self._generate_code('C++', source, 'add_class_inplace_orig.xrc')
-        gen_cpp = self.vFiles['add_class_inplace_orig.cpp'].getvalue()
-        gen_h   = self.vFiles['add_class_inplace_orig.h'].getvalue()
+        gen_cpp = self._get_file_content('add_class_inplace_orig.cpp')
+        gen_h   = self._get_file_content('add_class_inplace_orig.h')
         self._compare(expected_cpp, gen_cpp, 'C++ source')
         self._compare(expected_h, gen_h, 'C++ header')
     @unittest.skip("XXX")
@@ -521,7 +521,7 @@ class TestCodeGen(WXGladeCLITest):
 
         # generate code
         self._generate_code('lisp', source, 'remove_class_inplace_input.lisp')
-        generated = self.vFiles['remove_class_inplace_input.lisp'].getvalue()
+        generated = self._get_file_content('remove_class_inplace_input.lisp')
         self._compare(expected, generated)
 
         # Test Perl code generator
@@ -532,7 +532,7 @@ class TestCodeGen(WXGladeCLITest):
 
         # generate code
         self._generate_code('perl', source, 'remove_class_inplace_input.pl')
-        generated = self.vFiles['remove_class_inplace_input.pl'].getvalue()
+        generated = self._get_file_content('remove_class_inplace_input.pl')
         self._compare(expected, generated)
 
         # Test Python code generator
@@ -543,7 +543,7 @@ class TestCodeGen(WXGladeCLITest):
 
         # generate code
         self._generate_code('python', source, 'remove_class_inplace_input.py')
-        generated = self.vFiles['remove_class_inplace_input.py'].getvalue()
+        generated = self._get_file_content('remove_class_inplace_input.py')
         self._compare(expected, generated)
 
         # Test XRC code generator
@@ -554,7 +554,7 @@ class TestCodeGen(WXGladeCLITest):
 
         # generate code
         self._generate_code('XRC', source, 'remove_class_inplace_input.xrc')
-        generated = self.vFiles['remove_class_inplace_input.xrc'].getvalue()
+        generated = self._get_file_content('remove_class_inplace_input.xrc')
         self._compare(expected, generated)
 
         # Test C++ code generator
@@ -566,8 +566,8 @@ class TestCodeGen(WXGladeCLITest):
 
         # generate code
         self._generate_code('C++', source, 'remove_class_inplace_input.xrc')
-        gen_cpp = self.vFiles['remove_class_inplace_input.cpp'].getvalue()
-        gen_h   = self.vFiles['remove_class_inplace_input.h'].getvalue()
+        gen_cpp = self._get_file_content('remove_class_inplace_input.cpp')
+        gen_h   = self._get_file_content('remove_class_inplace_input.h')
         self._compare(expected_cpp, gen_cpp, 'C++ source')
         self._compare(expected_h, gen_h, 'C++ header')
 

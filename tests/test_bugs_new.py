@@ -54,9 +54,9 @@ class TestBugs(WXGladeGUITest):
 
         app_filename = codegen._generate_app_filename()
         main_cpp = self._with_curr_dir(app_filename)
-        generated_app    = self.vFiles[main_cpp].getvalue()
-        generated_frame_cpp  = self.vFiles[self._with_curr_dir('Bug179_Frame.c++')].getvalue()
-        generated_frame_h    = self.vFiles[self._with_curr_dir('Bug179_Frame.hpp')].getvalue()
+        generated_app    = self._get_file_content(main_cpp)
+        generated_frame_cpp  = self._get_file_content(self._with_curr_dir('Bug179_Frame.c++'))
+        generated_frame_h    = self._get_file_content(self._with_curr_dir('Bug179_Frame.hpp'))
         self._compare(result_app,    generated_app, app_filename)
         self._compare(result_frame_cpp,  generated_frame_cpp , 'Bug179_Frame.c++')
         self._compare(result_frame_h,    generated_frame_h,    'Bug179_Frame.hpp')

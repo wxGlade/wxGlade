@@ -1,7 +1,7 @@
 """\
 Graphical tests
 
-@copyright: 2012-2016 Carsten Grohmann
+@copyright: 2012-2017 Carsten Grohmann
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
@@ -277,13 +277,13 @@ class TestGui(WXGladeBaseTest):
                 name_cpp = filename
                 result_cpp = self._load_file(name_cpp)
                 result_h = self._load_file(name_h)
-                generated_cpp = self.vFiles[name_cpp].getvalue()
-                generated_h = self.vFiles[name_h].getvalue()
+                generated_cpp = self.get_content(name_cpp)
+                generated_h = self.get_content(name_h)
                 self._compare(result_cpp, generated_cpp, 'C++ source')
                 self._compare(result_h, generated_h, 'C++ header')
             else:
                 expected = self._load_file(filename)
-                generated = self.vFiles[filename].getvalue()
+                generated = self.get_content(filename)
                 self._compare(expected, generated)
 
     def test_CodeGeneration_FontColour(self):
@@ -329,13 +329,13 @@ class TestGui(WXGladeBaseTest):
                 name_cpp = filename
                 result_cpp = self._load_file(name_cpp)
                 result_h = self._load_file(name_h)
-                generated_cpp = self.vFiles[name_cpp].getvalue()
-                generated_h = self.vFiles[name_h].getvalue()
+                generated_cpp = self.get_content(name_cpp)
+                generated_h = self.get_content(name_h)
                 self._compare(result_cpp, generated_cpp, 'C++ source')
                 self._compare(result_h, generated_h, 'C++ header')
             else:
                 expected = self._load_file(filename)
-                generated = self.vFiles[filename].getvalue()
+                generated = self.get_content(filename)
                 self._compare(expected, generated)
 
     def test_CodeGeneration_AllWidgets_28(self):

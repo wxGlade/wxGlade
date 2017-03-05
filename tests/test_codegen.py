@@ -1,7 +1,7 @@
 """\
 Code genera Commandline / non-graphical tests
 
-@copyright: 2012-2016 Carsten Grohmann
+@copyright: 2012-2017 Carsten Grohmann
 
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
@@ -324,9 +324,9 @@ class TestCodeGen(WXGladeBaseTest):
 
         self._generate_code('python', source, self.curr_dir)
 
-        generated_app    = self.vFiles[self._with_curr_dir('PyOgg2_app.py')].getvalue()
-        generated_dialog = self.vFiles[self._with_curr_dir('PyOgg2_MyDialog.py')].getvalue()
-        generated_frame  = self.vFiles[self._with_curr_dir('PyOgg2_MyFrame.py')].getvalue()
+        generated_app    = self.get_content(self._with_curr_dir('PyOgg2_app.py'))
+        generated_dialog = self.get_content(self._with_curr_dir('PyOgg2_MyDialog.py'))
+        generated_frame  = self.get_content(self._with_curr_dir('PyOgg2_MyFrame.py'))
         self._compare(result_app,    generated_app, 'PyOgg2_app.py')
         self._compare(result_dialog, generated_dialog, 'PyOgg2_MyDialog.py')
         self._compare(result_frame,  generated_frame , 'PyOgg2_MyFrame.py')
@@ -348,7 +348,7 @@ class TestCodeGen(WXGladeBaseTest):
 
         # generate and compare code
         self._generate_code('python', source, 'PyOgg3.py')
-        generated = self.vFiles['PyOgg3.py'].getvalue()
+        generated = self.get_content('PyOgg3.py')
         self._compare(expected, generated, 'PyOgg3.py')
 
     def test_Lisp_Ogg1(self):
@@ -373,9 +373,9 @@ class TestCodeGen(WXGladeBaseTest):
 
         self._generate_code('lisp', source, self.curr_dir)
 
-        generated_app    = self.vFiles[self._with_curr_dir('LispOgg2_app.lisp')].getvalue()
-        generated_dialog = self.vFiles[self._with_curr_dir('LispOgg2_MyDialog.lisp')].getvalue()
-        generated_frame  = self.vFiles[self._with_curr_dir('LispOgg2_MyFrame.lisp')].getvalue()
+        generated_app    = self.get_content(self._with_curr_dir('LispOgg2_app.lisp'))
+        generated_dialog = self.get_content(self._with_curr_dir('LispOgg2_MyDialog.lisp'))
+        generated_frame  = self.get_content(self._with_curr_dir('LispOgg2_MyFrame.lisp'))
         self._compare(result_app,    generated_app, 'LispOgg2_app.lisp')
         self._compare(result_dialog, generated_dialog, 'LispOgg2_MyDialog.lisp')
         self._compare(result_frame,  generated_frame , 'LispOgg2_MyFrame.lisp')
@@ -397,7 +397,7 @@ class TestCodeGen(WXGladeBaseTest):
 
         # generate and compare code
         self._generate_code('lisp', source, 'LispOgg3.lisp')
-        generated = self.vFiles['LispOgg3.lisp'].getvalue()
+        generated = self.get_content('LispOgg3.lisp')
         self._compare(expected, generated, 'LispOgg3.lisp')
 
     def test_Perl_Ogg1(self):
@@ -422,9 +422,9 @@ class TestCodeGen(WXGladeBaseTest):
 
         self._generate_code('perl', source, self.curr_dir)
 
-        generated_app    = self.vFiles[self._with_curr_dir('PlOgg2_app.pl')].getvalue()
-        generated_dialog = self.vFiles[self._with_curr_dir('PlOgg2_MyDialog.pm')].getvalue()
-        generated_frame  = self.vFiles[self._with_curr_dir('PlOgg2_MyFrame.pm')].getvalue()
+        generated_app    = self.get_content(self._with_curr_dir('PlOgg2_app.pl'))
+        generated_dialog = self.get_content(self._with_curr_dir('PlOgg2_MyDialog.pm'))
+        generated_frame  = self.get_content(self._with_curr_dir('PlOgg2_MyFrame.pm'))
         self._compare(result_app,    generated_app, 'PlOgg2_app.pl')
         self._compare(result_dialog, generated_dialog, 'PlOgg2_MyDialog.pm')
         self._compare(result_frame,  generated_frame , 'PlOgg2_MyFrame.pm')
@@ -446,7 +446,7 @@ class TestCodeGen(WXGladeBaseTest):
 
         # generate and compare code
         self._generate_code('perl', source, 'PlOgg3.pl')
-        generated = self.vFiles['PlOgg3.pl'].getvalue()
+        generated = self.get_content('PlOgg3.pl')
         self._compare(expected, generated, 'PlOgg3.pl')
 
     def test_CPP_Ogg1(self):
@@ -466,7 +466,7 @@ class TestCodeGen(WXGladeBaseTest):
         codegen = common.code_writers['C++']
         source = self._load_file('CPPOgg2.wxg')
         source = self._modify_attrs(source, overwrite='0')
-        result_app        = self._load_file('CPPOgg2_main.cpp')
+        result_app        = self._load_file('CPPOgg2_app.cpp')
         result_dialog_cpp = self._load_file('CPPOgg2_MyDialog.cpp')
         result_dialog_h   = self._load_file('CPPOgg2_MyDialog.h')
         result_frame_cpp  = self._load_file('CPPOgg2_MyFrame.cpp')
@@ -476,11 +476,11 @@ class TestCodeGen(WXGladeBaseTest):
 
         app_filename = codegen._generate_app_filename()
         main_cpp = self._with_curr_dir(app_filename)
-        generated_app    = self.vFiles[main_cpp].getvalue()
-        generated_dialog_cpp = self.vFiles[self._with_curr_dir('CPPOgg2_MyDialog.cpp')].getvalue()
-        generated_dialog_h   = self.vFiles[self._with_curr_dir('CPPOgg2_MyDialog.h')].getvalue()
-        generated_frame_cpp  = self.vFiles[self._with_curr_dir('CPPOgg2_MyFrame.cpp')].getvalue()
-        generated_frame_h    = self.vFiles[self._with_curr_dir('CPPOgg2_MyFrame.h')].getvalue()
+        generated_app = self.get_content(main_cpp)
+        generated_dialog_cpp = self.get_content(self._with_curr_dir('CPPOgg2_MyDialog.cpp'))
+        generated_dialog_h   = self.get_content(self._with_curr_dir('CPPOgg2_MyDialog.h'))
+        generated_frame_cpp  = self.get_content(self._with_curr_dir('CPPOgg2_MyFrame.cpp'))
+        generated_frame_h    = self.get_content(self._with_curr_dir('CPPOgg2_MyFrame.h'))
         self._compare(result_app,    generated_app, app_filename)
         self._compare(result_dialog_cpp, generated_dialog_cpp, 'CPPOgg2_MyDialog.cpp')
         self._compare(result_dialog_h,   generated_dialog_h,   'CPPOgg2_MyDialog.h')
@@ -505,8 +505,8 @@ class TestCodeGen(WXGladeBaseTest):
 
         # generate and compare code
         self._generate_code('C++', source, 'CPPOgg3')
-        generated_cpp = self.vFiles['CPPOgg3.cpp'].getvalue()
-        generated_h   = self.vFiles['CPPOgg3.h'].getvalue()
+        generated_cpp = self.get_content('CPPOgg3.cpp')
+        generated_h   = self.get_content('CPPOgg3.h')
         self._compare(result_cpp, generated_cpp, 'CPPOgg3.cpp')
         self._compare(result_h,   generated_h,   'CPPOgg3.h')
 
@@ -688,15 +688,12 @@ class TestCodeGen(WXGladeBaseTest):
             simple = '_detailed'
         else:
             simple = '_simple'
-        if language == 'C++':
-            app_filename = self._with_curr_dir(codewriter._generate_app_filename())
-        else:
-            app_filename = self._with_curr_dir('myapp%s' % suffix)
+        app_filename = self._with_curr_dir('myapp%s' % suffix)
 
         # top window and application name are mandatory
         if top_window and appname:
             if multiple_files:
-                generated = self.vFiles[app_filename].getvalue()
+                generated = self.get_content(app_filename)
                 multiple = '_multi'
             else:
                 generated = codewriter.output_file.getvalue()
@@ -717,7 +714,7 @@ class TestCodeGen(WXGladeBaseTest):
             generated = ''
             if multiple_files:
                 if self.vFiles:
-                    generated = self.vFiles[app_filename].getvalue()
+                    generated = self.get_content(app_filename)
             else:
                 generated = codewriter.output_file.getvalue()
 
@@ -764,8 +761,8 @@ class TestCodeGen(WXGladeBaseTest):
 
                 # generate and compare C++ code
                 self._generate_code('C++', source, outname)
-                generated_cpp = self.vFiles[name_cpp].getvalue()
-                generated_h = self.vFiles[name_h].getvalue()
+                generated_cpp = self.get_content(name_cpp)
+                generated_h = self.get_content(name_h)
 
                 # restore deleted handler
                 codegen.obj_builders['wxButton'] = handler
@@ -783,7 +780,7 @@ class TestCodeGen(WXGladeBaseTest):
 
                 # generate code
                 self._generate_code(language, source, outname)
-                generated = self.vFiles[outname].getvalue()
+                generated = self.get_content(outname)
 
                 # restore deleted handler
                 codegen.obj_builders['wxButton'] = handler
@@ -803,7 +800,7 @@ class TestCodeGen(WXGladeBaseTest):
 
         # generate code
         self._generate_code('lisp', source, 'add_class_inplace_orig.lisp')
-        generated = self.vFiles['add_class_inplace_orig.lisp'].getvalue()
+        generated = self.get_content('add_class_inplace_orig.lisp')
         self._compare(expected, generated)
 
         # Test Perl code generator
@@ -814,7 +811,7 @@ class TestCodeGen(WXGladeBaseTest):
 
         # generate code
         self._generate_code('perl', source, 'add_class_inplace_orig.pl')
-        generated = self.vFiles['add_class_inplace_orig.pl'].getvalue()
+        generated = self.get_content('add_class_inplace_orig.pl')
         self._compare(expected, generated)
 
         # Test Python code generator
@@ -825,7 +822,7 @@ class TestCodeGen(WXGladeBaseTest):
 
         # generate code
         self._generate_code('python', source, 'add_class_inplace_orig.py')
-        generated = self.vFiles['add_class_inplace_orig.py'].getvalue()
+        generated = self.get_content('add_class_inplace_orig.py')
         self._compare(expected, generated)
 
         # Test XRC code generator
@@ -836,7 +833,7 @@ class TestCodeGen(WXGladeBaseTest):
 
         # generate code
         self._generate_code('XRC', source, 'add_class_inplace_orig.xrc')
-        generated = self.vFiles['add_class_inplace_orig.xrc'].getvalue()
+        generated = self.get_content('add_class_inplace_orig.xrc')
         self._compare(expected, generated)
 
         # Test C++ code generator
@@ -848,8 +845,8 @@ class TestCodeGen(WXGladeBaseTest):
 
         # generate code
         self._generate_code('C++', source, 'add_class_inplace_orig.xrc')
-        gen_cpp = self.vFiles['add_class_inplace_orig.cpp'].getvalue()
-        gen_h   = self.vFiles['add_class_inplace_orig.h'].getvalue()
+        gen_cpp = self.get_content('add_class_inplace_orig.cpp')
+        gen_h   = self.get_content('add_class_inplace_orig.h')
         self._compare(expected_cpp, gen_cpp, 'C++ source')
         self._compare(expected_h, gen_h, 'C++ header')
 
@@ -865,7 +862,7 @@ class TestCodeGen(WXGladeBaseTest):
 
         # generate code
         self._generate_code('lisp', source, 'remove_class_inplace_input.lisp')
-        generated = self.vFiles['remove_class_inplace_input.lisp'].getvalue()
+        generated = self.get_content('remove_class_inplace_input.lisp')
         self._compare(expected, generated)
 
         # Test Perl code generator
@@ -876,7 +873,7 @@ class TestCodeGen(WXGladeBaseTest):
 
         # generate code
         self._generate_code('perl', source, 'remove_class_inplace_input.pl')
-        generated = self.vFiles['remove_class_inplace_input.pl'].getvalue()
+        generated = self.get_content('remove_class_inplace_input.pl')
         self._compare(expected, generated)
 
         # Test Python code generator
@@ -887,7 +884,7 @@ class TestCodeGen(WXGladeBaseTest):
 
         # generate code
         self._generate_code('python', source, 'remove_class_inplace_input.py')
-        generated = self.vFiles['remove_class_inplace_input.py'].getvalue()
+        generated = self.get_content('remove_class_inplace_input.py')
         self._compare(expected, generated)
 
         # Test XRC code generator
@@ -898,7 +895,7 @@ class TestCodeGen(WXGladeBaseTest):
 
         # generate code
         self._generate_code('XRC', source, 'remove_class_inplace_input.xrc')
-        generated = self.vFiles['remove_class_inplace_input.xrc'].getvalue()
+        generated = self.get_content('remove_class_inplace_input.xrc')
         self._compare(expected, generated)
 
         # Test C++ code generator
@@ -910,8 +907,8 @@ class TestCodeGen(WXGladeBaseTest):
 
         # generate code
         self._generate_code('C++', source, 'remove_class_inplace_input.xrc')
-        gen_cpp = self.vFiles['remove_class_inplace_input.cpp'].getvalue()
-        gen_h   = self.vFiles['remove_class_inplace_input.h'].getvalue()
+        gen_cpp = self.get_content('remove_class_inplace_input.cpp')
+        gen_h   = self.get_content('remove_class_inplace_input.h')
         self._compare(expected_cpp, gen_cpp, 'C++ source')
         self._compare(expected_h, gen_h, 'C++ header')
 
