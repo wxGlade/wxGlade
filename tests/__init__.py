@@ -1,5 +1,5 @@
 """
-@copyright: 2012-2016 Carsten Grohmann
+@copyright: 2012-2017 Carsten Grohmann
 
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
@@ -361,10 +361,18 @@ class WXGladeBaseTest(unittest.TestCase):
             filetype = 'result'
         file_list = glob.glob( os.path.join(self.caseDirectory, "%s%s" % (casename, extension)) )
         self.failIf( len(file_list) == 0,
-                     'No %s file "%s" for case "%s" found!' % ( filetype, filename, casename ) )
+                     'No %s file "%s" for case "%s" found! Currently generated files: %s' %
+                     ( filetype, filename, casename, ', '.join(self.vFiles) ) )
         self.failIf( len(file_list) > 1,
-                     'More than one %s file "%s" for case "%s" found!' % ( filetype, filename, casename ) )
+                     'More than one %s file "%s" for case "%s" found! Currently generated files: %s' %
+                     ( filetype, filename, casename, ', '.join(self.vFiles) ) )
         return file_list[0]
+
+    def get_content(self, filename):
+        """Return the content of the specified file or raise an test failure"""
+        if filename not in self.vFiles:
+            self.fail('File "%s" not found. Currently generated files: %s' % (filename, ', '.join(self.vFiles)))
+        return self.vFiles[filename].getvalue()
 
     def _fixture_filename(self, func):
         """\
@@ -531,7 +539,7 @@ class WXGladeBaseTest(unittest.TestCase):
         self._generate_code(lang, source, outname)
 
         # convert from file encoding back to unicode
-        generated = self.vFiles[outname].getvalue()
+        generated = self.get_content(outname)
         encoding = self._get_encoding(outname)
         if encoding:
             generated = generated.decode(encoding)
@@ -562,12 +570,12 @@ class WXGladeBaseTest(unittest.TestCase):
         self._generate_code('C++', source, outname)
 
         # convert from file encoding back to unicode
-        generated_cpp = self.vFiles[name_cpp].getvalue()
+        generated_cpp = self.get_content(name_cpp)
         encoding_cpp = self._get_encoding(name_cpp)
         if encoding_cpp:
             generated_cpp = generated_cpp.decode(encoding_cpp)
 
-        generated_h = self.vFiles[name_h].getvalue()
+        generated_h = self.get_content(name_h)
         encoding_h = self._get_encoding(name_h)
         if encoding_h:
             generated_h = generated_h.decode(encoding_h)
