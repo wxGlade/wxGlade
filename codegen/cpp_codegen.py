@@ -1326,19 +1326,6 @@ void %(klass)s::%(handler)s(%(evt_type)s &event)
         code = self._tagcontent( '::dependencies', dep_list )
         return code
 
-    def _generate_app_filename(self):
-        """\
-        Return the filename of C++ main file; XXX only used for testing
-
-        @rtype: str
-
-        @see: L{config.default_cpp_app_name}
-        @see: L{source_extension}
-        """
-        base = os.path.splitext(config.default_cpp_app_name)[0]
-        app_filename = '%s%s' % (base, self.source_extension)
-        return app_filename
-
 # end of class CPPCodeWriter
 
 writer = CPPCodeWriter()

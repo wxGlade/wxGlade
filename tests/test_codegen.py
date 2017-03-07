@@ -474,7 +474,9 @@ class TestCodeGen(WXGladeBaseTest):
 
         self._generate_code('C++', source, self.curr_dir)
 
-        app_filename = codegen._generate_app_filename()
+        # The name of the application file is hard-coded because this information is only available within the code
+        # writer instance (BaseLangCodeWriter.app_filename).
+        app_filename = "CPPOgg2_app.cpp"
         main_cpp = self._with_curr_dir(app_filename)
         generated_app = self.get_content(main_cpp)
         generated_dialog_cpp = self.get_content(self._with_curr_dir('CPPOgg2_MyDialog.cpp'))
