@@ -359,14 +359,18 @@ class WXGladeBaseTest(unittest.TestCase):
             filetype = 'input'
         else:
             filetype = 'result'
-        file_list = glob.glob( os.path.join(self.caseDirectory, "%s%s" % (casename, extension)) )
-        self.failIf( len(file_list) == 0,
-                     'No %s file "%s" for case "%s" found! Currently generated files: %s' %
-                     ( filetype, filename, casename, ', '.join(self.vFiles) ) )
-        self.failIf( len(file_list) > 1,
-                     'More than one %s file "%s" for case "%s" found! Currently generated files: %s' %
-                     ( filetype, filename, casename, ', '.join(self.vFiles) ) )
-        return file_list[0]
+
+        casename_pattern = ['%s%s']
+        if extension == '.py':
+            casename_pattern.insert(0, '%s_Classic%s' if compat.IS_CLASSIC else '%s_Phoenix%s')
+
+        for pattern in casename_pattern:
+            abs_name = os.path.join(self.caseDirectory, pattern % (casename, extension))
+            if os.path.isfile(abs_name):
+                return abs_name
+
+        self.fail('No %s file "%s" for case "%s" found! Currently generated files: %s' %
+                  (filetype, filename, casename, ', '.join(self.vFiles)))
 
     def get_content(self, filename):
         """Return the content of the specified file or raise an test failure"""
