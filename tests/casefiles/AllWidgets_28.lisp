@@ -206,26 +206,49 @@
         
         ;;; Menu Bar
         (setf (slot-All-Widgets-menubar obj) (wxMenuBar_Create 0))
-        (let ((wxglade_tmp_menu (wxMenu_Create "" 0)))
-        (wxMenu_Append wxglade_tmp_menu wxID_OPEN (_"&Open") (_"Open an existing document") 0)
-        (wxMenu_Append wxglade_tmp_menu wxID_CLOSE (_"&Close file") (_"Close current document") 0)
+        global mn_IDUnix; mn_IDUnix = wxNewId()
+        global mn_IDWindows; mn_IDWindows = wxNewId()
+        (let ((wxglade_tmp_menu (wxMenu_Create "" 0))))
+        (wxMenu_Append wxglade_tmp_menu wxID_OPEN (_"&Open") (_"Open an existing document") wxITEM_NORMAL)
+        (wxMenu_Append wxglade_tmp_menu wxID_CLOSE (_"&Close file") (_"Close current document") wxITEM_NORMAL)
         (wxMenu_AppendSeparator wxglade_tmp_menu)
-        (wxMenu_Append wxglade_tmp_menu wxID_EXIT (_"E&xit") (_"Finish program") 0)
-        		(wxMenuBar_Append (slot-All-Widgets-menubar obj) wxglade_tmp_menu (_"&File")))
-        (let ((wxglade_tmp_menu (wxMenu_Create "" 0)))
-        (wxMenu_Append wxglade_tmp_menu wxID_ANY (_"Unix") (_"Use Unix line endings") 2)
-        (wxMenu_Append wxglade_tmp_menu wxID_ANY (_"Windows") (_"Use Windows line endings") 2)
+        (wxMenu_Append wxglade_tmp_menu wxID_EXIT (_"E&xit") (_"Finish program") wxITEM_NORMAL)
+        (wxMenuBar_Append (slot-All-Widgets-menubar obj) wxglade_tmp_menu (_"&File")))
+        (let ((wxglade_tmp_menu (wxMenu_Create "" 0))))
+        (let (mn_Unix (wxMenuItem_Create wxglade_tmp_menu mn_IDUnix (_"Unix") (_"Use Unix line endings") wxITEM_RADIO)))
+        (wxMenu_Append wxglade_tmp_menu mn_Unix)
+        (wxEvtHandler_Connect (slot-top-window obj) mn_Unix (expwxEVT_MENU)
+        (wxClosure_Create #'onSelectUnix obj))
+        (let (mn_Windows (wxMenuItem_Create wxglade_tmp_menu mn_IDWindows (_"Windows") (_"Use Windows line endings") wxITEM_RADIO)))
+        (wxMenu_Append wxglade_tmp_menu mn_Windows)
+        (wxEvtHandler_Connect (slot-top-window obj) mn_Windows (expwxEVT_MENU)
+        (wxClosure_Create #'onSelectWindows obj))
         (wxMenu_AppendSeparator wxglade_tmp_menu)
-        (wxMenu_Append wxglade_tmp_menu wxID_ANY (_"Remove Tabs") (_"Remove all leading tabs") 1)
-        		(wxMenuBar_Append (slot-All-Widgets-menubar obj) wxglade_tmp_menu (_"&Edit")))
-        (let ((wxglade_tmp_menu (wxMenu_Create "" 0)))
-        (wxMenu_Append wxglade_tmp_menu wxID_HELP (_"Manual") (_"Show the application manual") 0)
+        (let (mn_RemoveTabs (wxMenuItem_Create wxglade_tmp_menu wxID_ANY (_"Remove Tabs") (_"Remove all leading tabs") wxITEM_CHECK)))
+        (wxMenu_Append wxglade_tmp_menu mn_RemoveTabs)
+        (wxEvtHandler_Connect (slot-top-window obj) mn_RemoveTabs (expwxEVT_MENU)
+        (wxClosure_Create #'onRemoveTabs obj))
         (wxMenu_AppendSeparator wxglade_tmp_menu)
-        (wxMenu_Append wxglade_tmp_menu wxID_ABOUT (_"About") (_"Show the About dialog") 0)
-        		(wxMenuBar_Append (slot-All-Widgets-menubar obj) wxglade_tmp_menu (_"&Help")))
+        (let ((wxglade_tmp_menu_sub (wxMenu_Create "" 0))))
+        (let (mn_RemoveWhiteSpaces (wxMenuItem_Create wxglade_tmp_menu_sub wxID_ANY (_"Remove") (_"Remove leading whitespace characters") wxITEM_RADIO)))
+        (wxMenu_Append wxglade_tmp_menu_sub mn_RemoveWhiteSpaces)
+        (wxEvtHandler_Connect (slot-top-window obj) mn_RemoveWhiteSpaces (expwxEVT_MENU)
+        (wxClosure_Create #'OnRemoveWhiteSpaces obj))
+        (let (mn_KeepWhiteSpaces (wxMenuItem_Create wxglade_tmp_menu_sub wxID_ANY (_"Keep") (_"Don't touch leading whitespace characters") wxITEM_RADIO)))
+        (wxMenu_Append wxglade_tmp_menu_sub mn_KeepWhiteSpaces)
+        (wxEvtHandler_Connect (slot-top-window obj) mn_KeepWhiteSpaces (expwxEVT_MENU)
+        (wxClosure_Create #'OnKeepWhiteSpaces obj))
+        (wxMenu_AppendSubMenu (wxglade_tmp_menu) wxglade_tmp_menu_sub (_"Leading spaces") "")
+        (wxMenuBar_Append (slot-All-Widgets-menubar obj) wxglade_tmp_menu (_"&Edit")))
+        (let ((wxglade_tmp_menu (wxMenu_Create "" 0))))
+        (let ((wxglade_tmp_item (wxMenu_Append wxglade_tmp_menu wxID_HELP (_"Manual") (_"Show the application manual") wxITEM_NORMAL))))
+        (wxEvtHandler_Connect (slot-top-window obj) wxglade_tmp_item (expwxEVT_MENU)
+        (wxClosure_Create #'onShowManual obj))
+        (wxMenu_AppendSeparator wxglade_tmp_menu)
+        (wxMenu_Append wxglade_tmp_menu wxID_ABOUT (_"About") (_"Show the About dialog") wxITEM_NORMAL)
+        (wxMenuBar_Append (slot-All-Widgets-menubar obj) wxglade_tmp_menu (_"&Help")))
         (wxFrame_SetMenuBar (slot-top-window obj) (slot-All-Widgets-menubar obj))
         ;;; Menu Bar end
-
         (setf (slot-All-Widgets-statusbar obj) (wxFrame_CreateStatusBar (slot-top-window obj) 1 wxST_SIZEGRIP))
         
 	;;; Tool Bar
@@ -563,6 +586,36 @@
         (wxFrame_Centre (slot-top-window obj) wxBOTH)
         ;;; end wxGlade
         )
+
+(defun onSelectUnix (function data event) ;;; wxGlade: All_Widgets_Frame.<event_handler>
+        (print "Event handler 'onSelectUnix' not implemented!")
+        (when event
+                (wxEvent:wxEvent_Skip event)))
+
+(defun onSelectWindows (function data event) ;;; wxGlade: All_Widgets_Frame.<event_handler>
+        (print "Event handler 'onSelectWindows' not implemented!")
+        (when event
+                (wxEvent:wxEvent_Skip event)))
+
+(defun onRemoveTabs (function data event) ;;; wxGlade: All_Widgets_Frame.<event_handler>
+        (print "Event handler 'onRemoveTabs' not implemented!")
+        (when event
+                (wxEvent:wxEvent_Skip event)))
+
+(defun OnRemoveWhiteSpaces (function data event) ;;; wxGlade: All_Widgets_Frame.<event_handler>
+        (print "Event handler 'OnRemoveWhiteSpaces' not implemented!")
+        (when event
+                (wxEvent:wxEvent_Skip event)))
+
+(defun OnKeepWhiteSpaces (function data event) ;;; wxGlade: All_Widgets_Frame.<event_handler>
+        (print "Event handler 'OnKeepWhiteSpaces' not implemented!")
+        (when event
+                (wxEvent:wxEvent_Skip event)))
+
+(defun onShowManual (function data event) ;;; wxGlade: All_Widgets_Frame.<event_handler>
+        (print "Event handler 'onShowManual' not implemented!")
+        (when event
+                (wxEvent:wxEvent_Skip event)))
 
 (defun OnNotebookPageChanged (function data event) ;;; wxGlade: All_Widgets_Frame.<event_handler>
         (print "Event handler 'OnNotebookPageChanged' not implemented!")
