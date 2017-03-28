@@ -9,8 +9,8 @@
 //  g++ main.cpp $(wx-config --libs) $(wx-config --cxxflags) -o MyApp Dialog1.cpp Frame1.cpp
 //
 
-#ifndef COMPLEXEXAMPLE_H
-#define COMPLEXEXAMPLE_H
+#ifndef COMPLEXEXAMPLE_28_H
+#define COMPLEXEXAMPLE_28_H
 
 #include <wx/wx.h>
 #include <wx/image.h>
@@ -106,4 +106,4 @@ protected:
 }; // wxGlade: end class
 
 
-#endif // COMPLEXEXAMPLE_H
+#endif // COMPLEXEXAMPLE_28_H

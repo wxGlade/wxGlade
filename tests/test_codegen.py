@@ -1217,7 +1217,7 @@ class TestCodeGen(WXGladeBaseTest):
         """\
         Test code generation for a complex example
         """
-        self._test_all('ComplexExample')
+        self._test_all('ComplexExample_28')
         self._test_all('ComplexExample_30', ['lisp'])
 
         # Lisp code has to raise an exception
