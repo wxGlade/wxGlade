@@ -484,20 +484,15 @@ class LispCodeWriter(BaseLangCodeWriter, wcodegen.LispMixin):
             write('\n')
 
         for win_id, event, handler, unused in event_handlers:
+            if win_id is None: continue  # bound already, the entry is just for creation of the method stub
             if win_id.startswith('#'):
                 win_id = win_id[1:]
 
-            write(
-                  "%(tab)s(wxEvtHandler_Connect (slot-top-window obj) %(win_id)s (exp%(event)s)" \
-                  "\n%(tab2)s" \
-                  "(wxClosure_Create #'%(handler)s obj))\n" % {
-                    'tab':     tab,
-                    'tab2':    self.tabs(2),
-                    'win_id':  win_id,
-                    'event':   self.cn(event),
-                    'handler': handler,
-                    }
-                )
+            tmpl = "%(tab)s(wxEvtHandler_Connect (slot-top-window obj) %(win_id)s (exp%(event)s)\n" \
+                   "%(tab2)s(wxClosure_Create #\'%(handler)s obj))\n"
+            details = {'tab': tab, 'tab2': self.tabs(2), 'win_id': win_id, 'event': self.cn(event),
+                       'handler': handler,}
+            write(tmpl % details)
 
         return code_lines
 
