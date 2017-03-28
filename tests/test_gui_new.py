@@ -51,12 +51,12 @@ class TestGui(WXGladeGUITest):
         'Test GUI code generation using "AllWidgets_30"'
         self.load_and_generate('AllWidgets_30', ['lisp'])
 
-    def test_CodeGeneration_ComplexExample(self):
-        'Test GUI code generation using "ComplexExample"'
-        self.load_and_generate('ComplexExample')#, excluded=["wxg"])
+    def test_CodeGeneration_ComplexExample_28(self):
+        'Test GUI code generation using "ComplexExample_28"'
+        self.load_and_generate('ComplexExample_28')#, excluded=["wxg"])
 
-    def test_CodeGeneration_ComplexExample30(self):
-        'Test GUI code generation using "ComplexExample"'
+    def test_CodeGeneration_ComplexExample_30(self):
+        'Test GUI code generation using "ComplexExample_30"'
         self.load_and_generate('ComplexExample_30', excluded=["lisp"])
         #self.load_and_generate('ComplexExample_30', included=["lisp"])
         # Lisp code has to raise an exception
