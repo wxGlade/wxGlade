@@ -761,7 +761,7 @@ class BaseWidgetWriter(StylesMixin, BaseCodeWriter):
         if not 'size' in obj.properties and self.tmpl_SetBestSize:
             self.tmpl_props.append(self.tmpl_SetBestSize)
 
-        self.has_setdefault = obj.properties.get('default', False)
+        self.has_setdefault = int(obj.properties.get('default', 0))
 
     def _prepare_choice(self, obj):
         """\
