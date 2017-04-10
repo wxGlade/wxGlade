@@ -1,0 +1,85 @@
+#!/bin/sh
+#
+# License: MIT (see LICENSE.txt)
+# THIS PROGRAM COMES WITH NO WARRANTY
+#
+# Copyright 2011-2016 Carsten Grohmann
+#
+# Shell script to start wxGlade
+#
+# The wxGlade main script is called wxglade.py. It will be searched at
+# three places:
+#  1. parallel to this script
+#  2. in the module directory of the current Python
+#  3. in a parallel Python module directory
+
+# search order for Python interpreter
+INTERPRETER_LIST="python2 \
+                  python2.7 python27 \
+                  python2.6 python26 \
+                  python2.5 python25 \
+                  python2.4 python24 \
+                  python"
+
+# Use the binary from PYTHON_BIN, if this environment variable is set
+if [ "$PYTHON_BIN" ]; then
+  INTERPRETER_LIST="$PYTHON_BIN"
+fi
+
+for INTERPRETER in $INTERPRETER_LIST; do
+  ${INTERPRETER} -V >/dev/null 2>&1
+  if [ $? -ne 0 ]; then
+    continue
+  fi
+
+  # check if interpreter is for Python 2
+  ${INTERPRETER} -V 2>&1 | grep -q "Python 2"
+  if [ $? -ne 0 ]; then
+    continue
+  fi
+  
+  # Python 2 interpreter found
+  PYTHON_BIN=$INTERPRETER
+
+  break
+done
+
+if [ ! "$PYTHON_BIN" ]; then
+  echo "ERROR: No interpreter for Python 2 found!"
+  echo "       Please install Python 2 to run wxGlade!"
+  exit 1
+fi
+
+# determined current python version
+PY_VERSION=$(${PYTHON_BIN} -c 'import sys; print sys.version[:3]')
+
+# determined prefix of the Python module directory structure
+if [ -d "/usr/lib/pymodules/python${PY_VERSION}/wxglade" ]; then
+  WXG_MODULE_PATH="/usr/lib/pymodules/python${PY_VERSION}/wxglade"
+else
+  WXG_MODULE_PATH="/usr/lib/python${PY_VERSION}/wxglade"
+fi
+
+# search wxglade.py
+# dist-packages is only used in Debian and Debian derivates
+CURR_DIR=$(dirname "$0")
+for DIR in \
+   "${CURR_DIR}" \
+   "${WXG_MODULE_PATH}" \
+   "${CURR_DIR}/../lib/python${PY_VERSION}/site-packages/wxglade" \
+   "${CURR_DIR}/../lib/python${PY_VERSION}/dist-packages/wxglade" \
+   ; do
+  BINARY="${DIR}/wxglade.py"
+  if [ -e "${BINARY}" ]; then
+    WXG_BINARY="$BINARY"
+    break
+  fi
+done
+
+if [ ! "${WXG_BINARY}" ]; then
+  echo "ERROR: wxglade.py not found!"
+  exit 1
+fi
+
+# exec wxGlade
+exec "${PYTHON_BIN}" "${WXG_BINARY}" "$@"
