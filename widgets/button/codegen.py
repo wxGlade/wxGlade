@@ -24,7 +24,7 @@ class PythonButtonGenerator(wcodegen.PythonWidgetCodeWriter):
             self.tmpl_dict['id'] = self.tmpl_dict['id_number']
             self.tmpl_dict['label'] = self.codegen.quote_str('')
 
-        self.has_setdefault = prop.get('default', False)
+        self.has_setdefault = int(prop.get('default', 0))
 
         return
 
@@ -45,7 +45,7 @@ class CppButtonGenerator(wcodegen.CppWidgetCodeWriter):
             self.tmpl_dict['id_number'] = self.codegen.cn("wxID_" + stockitem)
             self.tmpl_dict['id'] = self.tmpl_dict['id_number']
 
-        self.has_setdefault = prop.get('default', False)
+        self.has_setdefault = int(prop.get('default', 0))
 
         return
 

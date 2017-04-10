@@ -26,7 +26,7 @@ class PerlButtonGenerator(wcodegen.PerlWidgetCodeWriter):
             self.tmpl_dict['id_number'] = self.codegen.cn("wxID_" + stockitem)
             self.tmpl_dict['id'] = self.tmpl_dict['id_number']
 
-        self.has_setdefault = prop.get('default', False)
+        self.has_setdefault = int(prop.get('default', 0))
 
         return
 
