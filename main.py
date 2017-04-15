@@ -980,6 +980,7 @@ class wxGlade(wx.App):
         "Restore original exception handler and logging.exception() on exit"
         sys.excepthook = sys.__excepthook__
         logging.exception = self._exception_orig
+        return 0
 
     def OnIdle(self, event):
         "Idle tasks - currently show error messages only;  @see: L{show_msgdialog()}"
