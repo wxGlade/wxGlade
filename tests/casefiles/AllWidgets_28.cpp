@@ -62,8 +62,8 @@ All_Widgets_Frame::All_Widgets_Frame(wxWindow* parent, wxWindowID id, const wxSt
     wxglade_tmp_menu_1->Append(wxID_EXIT, _("E&xit"), _("Finish program"), wxITEM_NORMAL);
     All_Widgets_menubar->Append(wxglade_tmp_menu_1, _("&File"));
     wxMenu* wxglade_tmp_menu_2 = new wxMenu();
-    wxglade_tmp_menu_2->Append(wxID_ANY, _("Unix"), _("Use Unix line endings"), wxITEM_RADIO);
-    wxglade_tmp_menu_2->Append(wxID_ANY, _("Windows"), _("Use Windows line endings"), wxITEM_RADIO);
+    wxglade_tmp_menu_2->Append(mn_IDUnix, _("Unix"), _("Use Unix line endings"), wxITEM_RADIO);
+    wxglade_tmp_menu_2->Append(mn_IDWindows, _("Windows"), _("Use Windows line endings"), wxITEM_RADIO);
     wxglade_tmp_menu_2->AppendSeparator();
     wxglade_tmp_menu_2->Append(wxID_ANY, _("Remove Tabs"), _("Remove all leading tabs"), wxITEM_CHECK);
     All_Widgets_menubar->Append(wxglade_tmp_menu_2, _("&Edit"));
@@ -418,8 +418,8 @@ void All_Widgets_Frame::do_layout()
 
 BEGIN_EVENT_TABLE(All_Widgets_Frame, wxFrame)
     // begin wxGlade: All_Widgets_Frame::event_table
-    EVT_MENU(wxID_ANY, All_Widgets_Frame::onSelectUnix)
-    EVT_MENU(wxID_ANY, All_Widgets_Frame::onSelectWindows)
+    EVT_MENU(mn_IDUnix, All_Widgets_Frame::onSelectUnix)
+    EVT_MENU(mn_IDWindows, All_Widgets_Frame::onSelectWindows)
     EVT_MENU(wxID_ANY, All_Widgets_Frame::onRemoveTabs)
     EVT_MENU(wxID_HELP, All_Widgets_Frame::onShowManual)
     EVT_NOTEBOOK_PAGE_CHANGED(wxID_ANY, All_Widgets_Frame::OnNotebookPageChanged)

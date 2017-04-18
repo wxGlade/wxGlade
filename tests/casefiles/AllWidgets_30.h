@@ -46,6 +46,10 @@
 class All_Widgets_Frame: public wxFrame {
 public:
     // begin wxGlade: All_Widgets_Frame::ids
+    enum {
+        mn_IDUnix = wxID_HIGHEST + 1000,
+        mn_IDWindows = wxID_HIGHEST + 1001,
+    };
     // end wxGlade
 
     All_Widgets_Frame(wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint& pos=wxDefaultPosition, const wxSize& size=wxDefaultSize, long style=wxDEFAULT_FRAME_STYLE);

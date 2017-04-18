@@ -47,6 +47,8 @@ sub new {
     # Menu Bar
 
     $self->{All_Widgets_menubar} = Wx::MenuBar->new();
+    use constant mn_IDUnix => Wx::NewId();
+    use constant mn_IDWindows => Wx::NewId();
     my $wxglade_tmp_menu;
     $wxglade_tmp_menu = Wx::Menu->new();
     $wxglade_tmp_menu->Append(wxID_OPEN, _T("&Open"), _T("Open an existing document"));
@@ -55,8 +57,8 @@ sub new {
     $wxglade_tmp_menu->Append(wxID_EXIT, _T("E&xit"), _T("Finish program"));
     $self->{All_Widgets_menubar}->Append($wxglade_tmp_menu, _T("&File"));
     $wxglade_tmp_menu = Wx::Menu->new();
-    $self->{mn_Unix} = $wxglade_tmp_menu->Append(wxID_ANY, _T("Unix"), _T("Use Unix line endings"), 2);
-    $self->{mn_Windows} = $wxglade_tmp_menu->Append(wxID_ANY, _T("Windows"), _T("Use Windows line endings"), 2);
+    $self->{mn_Unix} = $wxglade_tmp_menu->Append(mn_IDUnix, _T("Unix"), _T("Use Unix line endings"), 2);
+    $self->{mn_Windows} = $wxglade_tmp_menu->Append(mn_IDWindows, _T("Windows"), _T("Use Windows line endings"), 2);
     $wxglade_tmp_menu->AppendSeparator();
     $self->{mn_RemoveTabs} = $wxglade_tmp_menu->Append(wxID_ANY, _T("Remove Tabs"), _T("Remove all leading tabs"), 1);
     $self->{All_Widgets_menubar}->Append($wxglade_tmp_menu, _T("&Edit"));

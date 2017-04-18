@@ -206,6 +206,8 @@
         
         ;;; Menu Bar
         (setf (slot-All-Widgets-menubar obj) (wxMenuBar_Create 0))
+        global mn_IDUnix; mn_IDUnix = wxNewId()
+        global mn_IDWindows; mn_IDWindows = wxNewId()
         (let ((wxglade_tmp_menu (wxMenu_Create "" 0)))
         (wxMenu_Append wxglade_tmp_menu wxID_OPEN (_"&Open") (_"Open an existing document") 0)
         (wxMenu_Append wxglade_tmp_menu wxID_CLOSE (_"&Close file") (_"Close current document") 0)
@@ -213,8 +215,8 @@
         (wxMenu_Append wxglade_tmp_menu wxID_EXIT (_"E&xit") (_"Finish program") 0)
         		(wxMenuBar_Append (slot-All-Widgets-menubar obj) wxglade_tmp_menu (_"&File")))
         (let ((wxglade_tmp_menu (wxMenu_Create "" 0)))
-        (wxMenu_Append wxglade_tmp_menu wxID_ANY (_"Unix") (_"Use Unix line endings") 2)
-        (wxMenu_Append wxglade_tmp_menu wxID_ANY (_"Windows") (_"Use Windows line endings") 2)
+        (wxMenu_Append wxglade_tmp_menu mn_IDUnix (_"Unix") (_"Use Unix line endings") 2)
+        (wxMenu_Append wxglade_tmp_menu mn_IDWindows (_"Windows") (_"Use Windows line endings") 2)
         (wxMenu_AppendSeparator wxglade_tmp_menu)
         (wxMenu_Append wxglade_tmp_menu wxID_ANY (_"Remove Tabs") (_"Remove all leading tabs") 1)
         		(wxMenuBar_Append (slot-All-Widgets-menubar obj) wxglade_tmp_menu (_"&Edit")))
