@@ -24,14 +24,11 @@ class PyOgg2_MyFrame(wx.Frame):
         # Menu Bar
         self.Mp3_To_Ogg_menubar = wx.MenuBar()
         wxglade_tmp_menu = wx.Menu()
-        item = wxglade_tmp_menu.Append(wx.ID_OPEN, _("&Open"), "", wx.ITEM_NORMAL)
-        self.Bind(wx.EVT_MENU, self.OnOpen, id=item.GetId())
-        item = wxglade_tmp_menu.Append(wx.ID_EXIT, _("&Quit"), "", wx.ITEM_NORMAL)
-        self.Bind(wx.EVT_MENU, self.OnClose, id=item.GetId())
+        wxglade_tmp_menu.Append(wx.ID_OPEN, _("&Open"), "", wx.ITEM_NORMAL)
+        wxglade_tmp_menu.Append(wx.ID_EXIT, _("&Quit"), "", wx.ITEM_NORMAL)
         self.Mp3_To_Ogg_menubar.Append(wxglade_tmp_menu, _("&File"))
         wxglade_tmp_menu = wx.Menu()
-        item = wxglade_tmp_menu.Append(wx.ID_ABOUT, _("&About"), _("About dialog"), wx.ITEM_NORMAL)
-        self.Bind(wx.EVT_MENU, self.OnAboutDialog, id=item.GetId())
+        wxglade_tmp_menu.Append(wx.ID_ABOUT, _("&About"), _("About dialog"), wx.ITEM_NORMAL)
         self.Mp3_To_Ogg_menubar.Append(wxglade_tmp_menu, _("&Help"))
         self.SetMenuBar(self.Mp3_To_Ogg_menubar)
         # Menu Bar end
@@ -40,7 +37,7 @@ class PyOgg2_MyFrame(wx.Frame):
         # Tool Bar
         self.Mp3_To_Ogg_toolbar = wx.ToolBar(self, -1, style=wx.TB_HORIZONTAL | wx.TB_TEXT)
         self.SetToolBar(self.Mp3_To_Ogg_toolbar)
-        self.Mp3_To_Ogg_toolbar.AddTool(wx.ID_OPEN, _("&Open"), wx.NullBitmap, wx.NullBitmap, wx.ITEM_NORMAL, _("Open a file"), _("Open a MP3 file to convert into OGG format"))
+        self.Mp3_To_Ogg_toolbar.AddLabelTool(wx.ID_OPEN, _("&Open"), wx.NullBitmap, wx.NullBitmap, wx.ITEM_NORMAL, _("Open a file"), _("Open a MP3 file to convert into OGG format"))
         # Tool Bar end
         self.notebook_1 = wx.Notebook(self, wx.ID_ANY, style=wx.NB_BOTTOM)
         self.notebook_1_pane_1 = wx.Panel(self.notebook_1, wx.ID_ANY)
@@ -66,6 +63,9 @@ class PyOgg2_MyFrame(wx.Frame):
         self.__set_properties()
         self.__do_layout()
 
+        self.Bind(wx.EVT_MENU, self.OnOpen, id=wx.ID_OPEN)
+        self.Bind(wx.EVT_MENU, self.OnClose, id=wx.ID_EXIT)
+        self.Bind(wx.EVT_MENU, self.OnAboutDialog, id=wx.ID_ABOUT)
         self.Bind(wx.EVT_TOOL, self.OnOpen, id=wx.ID_OPEN)
         self.Bind(wx.EVT_BUTTON, self.startConverting, self.button_1)
         # end wxGlade
@@ -82,10 +82,10 @@ class PyOgg2_MyFrame(wx.Frame):
             self.Mp3_To_Ogg_statusbar.SetStatusText(Mp3_To_Ogg_statusbar_fields[i], i)
         self.Mp3_To_Ogg_toolbar.Realize()
         self.rbx_sampling_rate.SetSelection(0)
-        self.cbx_love.SetToolTip(_(u"Yes!\nWe \u2665 it!"))
+        self.cbx_love.SetToolTip(wx.ToolTip(_(u"Yes!\nWe \u2665 it!")))
         self.cbx_love.SetValue(1)
-        self.text_ctrl_3.SetToolTip(_("File name of the output file\nAn existing file will be overwritten without futher information!"))
-        self.checkbox_1.SetToolTip(_("Overwrite an existing file"))
+        self.text_ctrl_3.SetToolTip(wx.ToolTip(_("File name of the output file\nAn existing file will be overwritten without futher information!")))
+        self.checkbox_1.SetToolTip(wx.ToolTip(_("Overwrite an existing file")))
         self.checkbox_1.SetValue(1)
         # end wxGlade
 
@@ -106,7 +106,7 @@ class PyOgg2_MyFrame(wx.Frame):
         self.notebook_1_pane_1.SetSizer(_gszr_pane1)
         _gszr_pane1.AddGrowableCol(1)
         sizer_4.Add(self.rbx_sampling_rate, 1, wx.ALL | wx.EXPAND, 5)
-        sizer_3.Add(self.cbx_love, 0, wx.ALL | wx.SHAPED, 5)
+        sizer_3.Add(self.cbx_love, 1, wx.ALL | wx.SHAPED, 5)
         sizer_4.Add(sizer_3, 1, wx.ALL | wx.EXPAND, 5)
         self.notebook_1_pane_2.SetSizer(sizer_4)
         _szr_pane3.Add(self.text_ctrl_2, 1, wx.ALL | wx.EXPAND, 5)
@@ -138,7 +138,6 @@ class PyOgg2_MyFrame(wx.Frame):
         sizer_1.AddGrowableCol(0)
         self.Layout()
         self.Centre()
-        self.SetSize((600, 500))
         # end wxGlade
 
     def OnOpen(self, event):  # wxGlade: PyOgg2_MyFrame.<event_handler>
@@ -194,7 +193,6 @@ class MyFrameGrid(wx.Frame):
         self.SetSizer(self._szr_frame)
         self._szr_frame.SetSizeHints(self)
         self.Layout()
-        self.SetSize((492, 300))
         # end wxGlade
 
 # end of class MyFrameGrid

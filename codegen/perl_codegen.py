@@ -283,7 +283,7 @@ sub %(handler)s {
     tmpl_sizeritem = '%s->Add(%s, %s, %s, %s);\n'
 
     tmpl_style = \
-        '%(tab)s$style = %(style)s \n' \
+        '%(tab)s$style = %(style)s\n' \
         '%(tab)s%(tab)sunless defined $style;\n' \
         '\n'
 
@@ -524,15 +524,21 @@ unless(caller){
         write = code_lines.append
 
         for win_id, event, handler, unused in event_handlers:
-            if win_id is None: continue  # bound already, the entry is just for creation of the method stub
             if win_id.startswith('#'):
                 win_id = '$self->{%s}->GetId' % win_id[8:]
 
             if 'EVT_NAVIGATION_KEY' in event:
-                tmpl = '''%(tab)s%(event)s($self, $self->can('%(handler)s'));\n'''
+                tmpl = '''%(tab)s%(event)s($self, ''' \
+                       '''$self->can('%(handler)s'));\n'''
             else:
-                tmpl = '''%(tab)s%(event)s($self, %(win_id)s, $self->can('%(handler)s'));\n'''
-            details = {'tab': tab, 'event': self.cn(event), 'handler': handler, 'win_id': win_id,}
+                tmpl = '''%(tab)s%(event)s($self, %(win_id)s, ''' \
+                       '''$self->can('%(handler)s'));\n'''
+            details = {
+                'tab': tab,
+                'event': self.cn(event),
+                'handler': handler,
+                'win_id': win_id,
+                }
             write(tmpl % details)
 
         if event_handlers:

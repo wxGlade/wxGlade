@@ -3,23 +3,23 @@
 
 <resource version="2.3.0.1">
     <object class="wxFrame" name="Bug192_Frame" subclass="Frame192">
-        <size>300, 300</size>
         <title>frame_1</title>
+        <size>300, 300</size>
         <object class="wxFlexGridSizer">
-            <attribute>1</attribute>
-            <cols>1</cols>
-            <growablecols>0</growablecols>
-            <growablerows>0</growablerows>
             <hgap>0</hgap>
+            <growablerows>0</growablerows>
             <rows>3</rows>
+            <attribute>1</attribute>
+            <growablecols>0</growablecols>
+            <cols>1</cols>
             <vgap>0</vgap>
             <object class="sizeritem">
                 <option>1</option>
                 <flag>wxALIGN_CENTER|wxALL|wxEXPAND|wxSHAPED</flag>
                 <border>5</border>
                 <object class="wxStaticText" name="label_1">
-                    <label>Just a text</label>
                     <style>wxALIGN_CENTER</style>
+                    <label>Just a text</label>
                 </object>
             </object>
             <object class="sizeritem">

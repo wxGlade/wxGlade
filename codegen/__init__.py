@@ -390,8 +390,6 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
     class ClassLines(object):
         "Stores the lines of source code for a custom class"
         def __init__(self):
-            self.members = []         # List of tuples (type, name) representing sub objects of the toplevel object
-                                      # (currenly used only for C++ to declare class members in the header file)
             self.child_order = []
             self.dependencies = {}    # Names of the modules this class depends on
             self.deps = []
@@ -404,7 +402,6 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
             self.parents_init = []    # Lines to insert in the __init__ for container widgets (panels, splitters, ...)
             self.props = []           # Lines to insert in the __set_properties method
             self.sizers_init = []     # Lines related to sizer objects declarations
-
 
     DummyPropertyHandler = DummyPropertyHandler
     EventsPropertyHandler = EventsPropertyHandler
@@ -1422,37 +1419,6 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
         s = s.replace('$', r'\$')  # sigh
         s = s.replace('@', r'\@')
         return '"%s"' % s
-
-    def register_class_member(self, top_obj, obj_type, obj_name):
-        """\
-        Register the object at the toplevel klass to create the object declaration later.
-
-        @param top_obj: toplevel object
-        @type top_obj: xml_parse.CodeObject
-
-        @param obj_type: Object type e.g. wxMenuItem
-        @type obj_type: str
-
-        @param obj_name: Object name
-        @type obj_name: str
-
-        @see: L{get_class_member_declaration()}
-        """
-        if top_obj.klass in self.classes:
-            self.classes[top_obj.klass].members.append((obj_type, obj_name))
-
-    def get_class_member_declaration(self, top_obj):
-        """\
-        Return statements to declare all registered class members
-
-        @param top_obj: toplevel object
-        @type top_obj: xml_parse.CodeObject
-
-        @rtype: list[str]
-
-        @see: L{register_class_member()}
-        """
-        return []
 
     def save_file(self, filename, content, mainfile=False, content_only=False):
         """Store the content in a file.

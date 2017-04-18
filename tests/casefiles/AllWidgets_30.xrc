@@ -43,20 +43,6 @@
                     <help>Remove all leading tabs</help>
                     <checkable>1</checkable>
                 </object>
-                <object class="separator"/>
-                <object class="wxMenu">
-                    <label>Leading spaces</label>
-                    <object class="wxMenuItem" name="mn_RemoveWhiteSpaces">
-                        <label>Remove</label>
-                        <help>Remove leading whitespace characters</help>
-                        <radio>1</radio>
-                    </object>
-                    <object class="wxMenuItem" name="mn_KeepWhiteSpaces">
-                        <label>Keep</label>
-                        <help>Don't touch leading whitespace characters</help>
-                        <radio>1</radio>
-                    </object>
-                </object>
             </object>
             <object class="wxMenu">
                 <label>_Help</label>

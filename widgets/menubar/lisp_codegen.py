@@ -6,35 +6,76 @@ Lisp generator functions for wxMenuBar objects
 """
 
 import common
-from wcodegen import LispWidgetCodeWriter
-from .menubar_base import MenubarMixin
-from codegen import MenuHandler
+import wcodegen
+from MenuTree import *
+from .codegen import MenuHandler
 
 
-class LispMenubarGenerator(MenubarMixin, LispWidgetCodeWriter):
+class LispMenubarGenerator(wcodegen.LispWidgetCodeWriter):
+    def get_properties_code(self, obj):
+        return []
 
-    add_default_item = True
+    def get_init_code(self, obj):
+        out = []
+        append = out.append
+        menus = obj.properties['menubar']
+        ids = []
 
-    tmpl_menubar_new = '(setf (slot-%(menubar)s obj) (wxMenuBar_Create 0))\n'
-    tmpl_toplevel_set_menubar = '(wxFrame_SetMenuBar (slot-top-window obj) (slot-%(menubar)s obj))\n'
+        def append_items(menu, items):
+            for item in items:
+                if item.name == '---':  # item is a separator
+                    append('(wxMenu_AppendSeparator %s)\n' % menu)
+                    continue
+                id_name, id_number = self.codegen.generate_code_id(None, item.id)
+                if not id_name and ( not id_number or id_number == '-1'):
+                    widget_id = '-1'
+                else:
+                    if id_name: ids.append(id_name)
+                    widget_id = id_number
 
-    tmpl_menu_new = '(let ((%s (wxMenu_Create "" 0))))\n'
-    tmpl_menu_append_separator = '(wxMenu_AppendSeparator %(menu)s)\n'
-    tmpl_menu_append_to_menubar = '(wxMenuBar_Append %(menubar)s %(menu)s %(label)s))\n'
-    tmpl_menu_append_to_menu = '(wxMenu_AppendSubMenu (%(parent_menu)s) %(sub_menu)s %(label)s %(help)s)\n'
-    tmpl_menu_add_menuitem = '(wxMenu_Append %(menu)s %(args)s)\n'
-    tmpl_menu_add_and_assign_menuitem = '(let ((%(assigment)s (wxMenu_Append %(menu)s %(args)s))))\n'
-    tmpl_menu_tmpname = 'wxglade_tmp_menu'
+                if item.children:
+                    if item.name:
+                        id_name = item.name
+                    else:
+                        id_name = '%s_sub' % menu
 
-    tmpl_menuitem_new = '(let (%s (wxMenuItem_Create %s)))\n'
-    tmpl_menuitem_append_to_menu = '(wxMenu_Append %s %s)\n'
-    tmpl_menuitem_tmp_variable = 'wxglade_tmp_item'
+                    append('(let ((%s (wxMenu_Create "" 0)))\n' % id_name)
+                    append_items(id_name, item.children)
+                    append('(wxMenuBar_AppendSub %s %s %s %s %s))\n' %
+                           (menu, widget_id, self.codegen.quote_str(item.label),
+                            id_name, self.codegen.quote_str(item.help_str)))
+                else:
+                    item_type = 0
+                    if item.checkable == '1':
+                        item_type = 1
+                    elif item.radio == '1':
+                        item_type = 2
+                    append('(wxMenu_Append %s %s %s %s %s)\n' %
+                           (menu, widget_id, self.codegen.quote_str(item.label),
+                            self.codegen.quote_str(item.help_str), item_type))
 
-    tmpl_inline_access_class_scope = '%(member)s'
-    tmpl_inline_access_local_scope = '%(member)s'
+        for m in menus:
+            menu = m.root
+            if menu.name:
+                name = menu.name
+            else:
+                name = 'wxglade_tmp_menu'
+            append('(let ((%s (wxMenu_Create "" 0)))\n' % name)
+            if menu.children:
+                append_items(name, menu.children)
+            append('\t\t(wxMenuBar_Append (slot-%s obj) %s %s))\n' %
+                   (obj.name, name, self.codegen.quote_str(menu.label)))
 
-    tmpl_bind = "(wxEvtHandler_Connect (slot-top-window obj) %(item)s (expwxEVT_MENU)\n" \
-                "%(tab)s%(tab)s(wxClosure_Create #'%(handler)s obj))\n"
+        return ids + out
+
+    def get_code(self, obj):
+        init = [ '\n', ';;; Menu Bar\n', '(setf (slot-%s obj) (wxMenuBar_Create 0))\n' %
+                 obj.name]
+        init.extend(self.get_init_code(obj))
+        init.append('(wxFrame_SetMenuBar (slot-top-window obj) ' \
+                    '(slot-%s obj))\n' % obj.name)
+        init.append(';;; Menu Bar end\n\n')
+        return init, [], []
 
 # end of class LispMenubarGenerator
 

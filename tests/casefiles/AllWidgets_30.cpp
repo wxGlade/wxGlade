@@ -56,47 +56,25 @@ All_Widgets_Frame::All_Widgets_Frame(wxWindow* parent, wxWindowID id, const wxSt
     notebook_1_wxCalendarCtrl = new wxPanel(notebook_1, wxID_ANY);
     notebook_1_wxButton = new wxPanel(notebook_1, wxID_ANY);
     notebook_1_wxBitmapButton = new wxPanel(notebook_1, wxID_ANY);
-    
-    // Menu Bar
     All_Widgets_menubar = new wxMenuBar();
-    wxMenu* wxglade_tmp_menu;
-    wxglade_tmp_menu = new wxMenu();
-    wxglade_tmp_menu->Append(wxID_OPEN, _("&Open"), _("Open an existing document"));
-    wxglade_tmp_menu->Append(wxID_CLOSE, _("&Close file"), _("Close current document"));
-    wxglade_tmp_menu->AppendSeparator();
-    wxglade_tmp_menu->Append(wxID_EXIT, _("E&xit"), _("Finish program"));
-    All_Widgets_menubar->Append(wxglade_tmp_menu, _("&File"));
-    wxglade_tmp_menu = new wxMenu();
-    mn_Unix = new wxMenuItem(wxglade_tmp_menu, mn_IDUnix, _("Unix"), _("Use Unix line endings"), wxITEM_RADIO);
-    wxglade_tmp_menu->Append(mn_Unix);
-    Bind(wxEVT_MENU, &All_Widgets_Frame::onSelectUnix, this, mn_Unix->GetId());
-    mn_Windows = new wxMenuItem(wxglade_tmp_menu, mn_IDWindows, _("Windows"), _("Use Windows line endings"), wxITEM_RADIO);
-    wxglade_tmp_menu->Append(mn_Windows);
-    Bind(wxEVT_MENU, &All_Widgets_Frame::onSelectWindows, this, mn_Windows->GetId());
-    wxglade_tmp_menu->AppendSeparator();
-    mn_RemoveTabs = new wxMenuItem(wxglade_tmp_menu, wxID_ANY, _("Remove Tabs"), _("Remove all leading tabs"), wxITEM_CHECK);
-    wxglade_tmp_menu->Append(mn_RemoveTabs);
-    Bind(wxEVT_MENU, &All_Widgets_Frame::onRemoveTabs, this, mn_RemoveTabs->GetId());
-    wxglade_tmp_menu->AppendSeparator();
-    wxMenu* wxglade_tmp_menu_sub;
-    wxglade_tmp_menu_sub = new wxMenu();
-    mn_RemoveWhiteSpaces = new wxMenuItem(wxglade_tmp_menu_sub, wxID_ANY, _("Remove"), _("Remove leading whitespace characters"), wxITEM_RADIO);
-    wxglade_tmp_menu_sub->Append(mn_RemoveWhiteSpaces);
-    Bind(wxEVT_MENU, &All_Widgets_Frame::OnRemoveWhiteSpaces, this, mn_RemoveWhiteSpaces->GetId());
-    mn_KeepWhiteSpaces = new wxMenuItem(wxglade_tmp_menu_sub, wxID_ANY, _("Keep"), _("Don't touch leading whitespace characters"), wxITEM_RADIO);
-    wxglade_tmp_menu_sub->Append(mn_KeepWhiteSpaces);
-    Bind(wxEVT_MENU, &All_Widgets_Frame::OnKeepWhiteSpaces, this, mn_KeepWhiteSpaces->GetId());
-    wxglade_tmp_menu->AppendSubMenu(wxglade_tmp_menu_sub, _("Leading spaces"), wxEmptyString);
-    All_Widgets_menubar->Append(wxglade_tmp_menu, _("&Edit"));
-    wxglade_tmp_menu = new wxMenu();
-    wxMenuItem* wxglade_tmp_item;
-    wxglade_tmp_item = wxglade_tmp_menu->Append(wxID_HELP, _("Manual"), _("Show the application manual"));
-    Bind(wxEVT_MENU, &All_Widgets_Frame::onShowManual, this, wxglade_tmp_item->GetId());
-    wxglade_tmp_menu->AppendSeparator();
-    wxglade_tmp_menu->Append(wxID_ABOUT, _("About"), _("Show the About dialog"));
-    All_Widgets_menubar->Append(wxglade_tmp_menu, _("&Help"));
+    wxMenu* wxglade_tmp_menu_1 = new wxMenu();
+    wxglade_tmp_menu_1->Append(wxID_OPEN, _("&Open"), _("Open an existing document"), wxITEM_NORMAL);
+    wxglade_tmp_menu_1->Append(wxID_CLOSE, _("&Close file"), _("Close current document"), wxITEM_NORMAL);
+    wxglade_tmp_menu_1->AppendSeparator();
+    wxglade_tmp_menu_1->Append(wxID_EXIT, _("E&xit"), _("Finish program"), wxITEM_NORMAL);
+    All_Widgets_menubar->Append(wxglade_tmp_menu_1, _("&File"));
+    wxMenu* wxglade_tmp_menu_2 = new wxMenu();
+    wxglade_tmp_menu_2->Append(wxID_ANY, _("Unix"), _("Use Unix line endings"), wxITEM_RADIO);
+    wxglade_tmp_menu_2->Append(wxID_ANY, _("Windows"), _("Use Windows line endings"), wxITEM_RADIO);
+    wxglade_tmp_menu_2->AppendSeparator();
+    wxglade_tmp_menu_2->Append(wxID_ANY, _("Remove Tabs"), _("Remove all leading tabs"), wxITEM_CHECK);
+    All_Widgets_menubar->Append(wxglade_tmp_menu_2, _("&Edit"));
+    wxMenu* wxglade_tmp_menu_3 = new wxMenu();
+    wxglade_tmp_menu_3->Append(wxID_HELP, _("Manual"), _("Show the application manual"), wxITEM_NORMAL);
+    wxglade_tmp_menu_3->AppendSeparator();
+    wxglade_tmp_menu_3->Append(wxID_ABOUT, _("About"), _("Show the About dialog"), wxITEM_NORMAL);
+    All_Widgets_menubar->Append(wxglade_tmp_menu_3, _("&Help"));
     SetMenuBar(All_Widgets_menubar);
-    // Menu Bar end
     All_Widgets_statusbar = CreateStatusBar(1, wxSTB_ELLIPSIZE_MIDDLE|wxSTB_SHOW_TIPS|wxSTB_SIZEGRIP);
     All_Widgets_toolbar = new wxToolBar(this, -1);
     SetToolBar(All_Widgets_toolbar);
@@ -452,6 +430,10 @@ void All_Widgets_Frame::do_layout()
 
 BEGIN_EVENT_TABLE(All_Widgets_Frame, wxFrame)
     // begin wxGlade: All_Widgets_Frame::event_table
+    EVT_MENU(wxID_ANY, All_Widgets_Frame::onSelectUnix)
+    EVT_MENU(wxID_ANY, All_Widgets_Frame::onSelectWindows)
+    EVT_MENU(wxID_ANY, All_Widgets_Frame::onRemoveTabs)
+    EVT_MENU(wxID_HELP, All_Widgets_Frame::onShowManual)
     EVT_NAVIGATION_KEY(All_Widgets_Frame::OnBitmapButtonPanelNavigationKey)
     EVT_NOTEBOOK_PAGE_CHANGED(wxID_ANY, All_Widgets_Frame::OnNotebookPageChanged)
     EVT_NOTEBOOK_PAGE_CHANGING(wxID_ANY, All_Widgets_Frame::OnNotebookPageChanging)
@@ -479,20 +461,6 @@ void All_Widgets_Frame::onRemoveTabs(wxCommandEvent &event)
     event.Skip();
     // notify the user that he hasn't implemented the event handler yet
     wxLogDebug(wxT("Event handler (All_Widgets_Frame::onRemoveTabs) not implemented yet"));
-}
-
-void All_Widgets_Frame::OnRemoveWhiteSpaces(wxCommandEvent &event)
-{
-    event.Skip();
-    // notify the user that he hasn't implemented the event handler yet
-    wxLogDebug(wxT("Event handler (All_Widgets_Frame::OnRemoveWhiteSpaces) not implemented yet"));
-}
-
-void All_Widgets_Frame::OnKeepWhiteSpaces(wxCommandEvent &event)
-{
-    event.Skip();
-    // notify the user that he hasn't implemented the event handler yet
-    wxLogDebug(wxT("Event handler (All_Widgets_Frame::OnKeepWhiteSpaces) not implemented yet"));
 }
 
 void All_Widgets_Frame::onShowManual(wxCommandEvent &event)

@@ -478,6 +478,8 @@ bool MyApp::OnInit()
         @ivar ids:             Ids declared in the source (to use for Event
                                handling): these are grouped together into a
                                public enum in the custom class
+        @ivar sub_objs:        List of 2-tuples (type, name) of the sub-objects
+                               which are attributes of the toplevel object
         @ivar extra_code_h:    Extra header code to output
         @ivar extra_code_cpp:  Extra source code to output
         """
@@ -485,6 +487,7 @@ bool MyApp::OnInit()
         def __init__(self):
             BaseLangCodeWriter.ClassLines.__init__(self)
             self.ids = []
+            self.sub_objs = []
             self.extra_code_h = []
             self.extra_code_cpp = []
             self.dependencies = []     # List not dictionary
@@ -767,7 +770,10 @@ bool MyApp::OnInit()
             # declarations of the attributes
             hwrite('\n')
             hwrite('protected:\n')
-            header_buffer.extend(self.get_class_member_declaration(code_obj))
+            hwrite(self.tabs(1) + '// begin wxGlade: %s::attributes\n' % fmt_klass)
+            for o_type, o_name in self.classes[klass].sub_objs:
+                hwrite(self.tabs(1) + '%s* %s;\n' % (o_type, o_name))
+            hwrite(self.tabs(1) + '// end wxGlade\n')
 
             if event_handlers:
                 t = self.tabs(1)
@@ -816,7 +822,10 @@ bool MyApp::OnInit()
                 prev_src.header_content = prev_src.header_content.replace(tag, "".join(header_buffer))
             header_buffer = []
             hwrite = header_buffer.append
-            header_buffer.extend(self.get_class_member_declaration(code_obj))
+            hwrite(self.tabs(1) + '// begin wxGlade: %s::attributes\n' % fmt_klass)
+            for o_type, o_name in self.classes[klass].sub_objs:
+                hwrite(self.tabs(1) + '%s* %s;\n' % (o_type, o_name))
+            hwrite(self.tabs(1) + '// end wxGlade\n')
             tag = '<%swxGlade replace %s attributes>' % (self.nonce, klass)
             if prev_src.header_content.find(tag) < 0:
                 # no attributes tag found, issue a warning and do nothing
@@ -1130,11 +1139,11 @@ bool MyApp::OnInit()
                 # sub_obj must be accessible as an attribute of top_obj,
                 # or as a local variable in the do_layout method
                 if self.store_as_attr(sub_obj):
-                    self.register_class_member(top_obj, sub_obj.klass, sub_obj.name)
+                    klass.sub_objs.append((sub_obj.klass, sub_obj.name))
         elif sub_obj.klass != "sizerslot":
             # the object is a sizer
             if self.store_as_attr(sub_obj):
-                self.register_class_member(top_obj, sub_obj.klass, sub_obj.name)
+                klass.sub_objs.append((sub_obj.klass, sub_obj.name))
             klass.sizers_init.extend(init)
 
         klass.props.extend(props)
@@ -1238,7 +1247,6 @@ void %(klass)s::%(handler)s(%(evt_type)s &event)
         write(tab + '// begin wxGlade: %s::event_table\n' % code_obj.klass)
 
         for win_id, event, handler, evt_type in event_handlers:
-            if win_id is None: continue  # bound already, the entry is just for creation of the method stub
             if 'EVT_NAVIGATION_KEY' in event:
                 tmpl = '%(tab)s%(event)s(%(klass)s::%(handler)s)\n'
             else:
@@ -1290,16 +1298,6 @@ void %(klass)s::%(handler)s(%(evt_type)s &event)
         else:
             return '%s%s(wxSize(%s));\n' % (objname, method, size)
 
-    def get_class_member_declaration(self, top_obj):
-        klass = top_obj.klass
-        fmt_klass = self.cn_class(klass)
-        result = []
-        result.append('%s// begin wxGlade: %s::attributes\n' % (self.tabs(1), fmt_klass))
-        for obj_type, obj_name in self.classes[klass].members:
-            result.append('%s%s* %s;\n' % (self.tabs(1), obj_type, obj_name))
-        result.append('%s// end wxGlade\n' % self.tabs(1))
-        return result
-
     def quote_path(self, s):
         path = super(CPPCodeWriter, self).quote_path(s)
         # path starts and ends with double quotes already
@@ -1327,6 +1325,19 @@ void %(klass)s::%(handler)s(%(evt_type)s &event)
                 dep_list.append('#include %s\n' % dependency)
         code = self._tagcontent( '::dependencies', dep_list )
         return code
+
+    def _generate_app_filename(self):
+        """\
+        Return the filename of C++ main file; XXX only used for testing
+
+        @rtype: str
+
+        @see: L{config.default_cpp_app_name}
+        @see: L{source_extension}
+        """
+        base = os.path.splitext(config.default_cpp_app_name)[0]
+        app_filename = '%s%s' % (base, self.source_extension)
+        return app_filename
 
 # end of class CPPCodeWriter
 

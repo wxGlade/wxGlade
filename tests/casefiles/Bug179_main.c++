@@ -17,7 +17,7 @@
 #include <wx/intl.h>
 
 #ifndef APP_CATALOG
-#define APP_CATALOG "Bug179_main"  // replace with the appropriate catalog name
+#define APP_CATALOG "app"  // replace with the appropriate catalog name
 #endif
 
 #include "Bug179_Frame.hpp"

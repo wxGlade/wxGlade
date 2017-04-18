@@ -22,9 +22,9 @@
 
 
 // begin wxGlade: ::dependencies
-#include <wx/grid.h>
 #include <wx/notebook.h>
 #include <wx/statline.h>
+#include <wx/grid.h>
 // end wxGlade
 
 // begin wxGlade: ::extracode

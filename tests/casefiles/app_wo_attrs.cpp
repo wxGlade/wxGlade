@@ -39,7 +39,6 @@ void StockAction::do_layout()
 {
     // begin wxGlade: StockAction::do_layout
     Layout();
-    SetSize(wxSize(150,150));
     // end wxGlade
 }
 

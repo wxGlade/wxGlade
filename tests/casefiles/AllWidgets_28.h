@@ -28,7 +28,6 @@
 #include <wx/grid.h>
 #include <wx/hyperlink.h>
 #include <wx/listctrl.h>
-#include <wx/menu.h>
 #include <wx/notebook.h>
 #include <wx/spinbutt.h>
 #include <wx/spinctrl.h>
@@ -45,10 +44,6 @@
 class All_Widgets_Frame: public wxFrame {
 public:
     // begin wxGlade: All_Widgets_Frame::ids
-    enum {
-        mn_IDUnix = wxID_HIGHEST + 1000,
-        mn_IDWindows = wxID_HIGHEST + 1001,
-    };
     // end wxGlade
 
     All_Widgets_Frame(wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint& pos=wxDefaultPosition, const wxSize& size=wxDefaultSize, long style=wxDEFAULT_FRAME_STYLE);
@@ -61,11 +56,6 @@ private:
 
 protected:
     // begin wxGlade: All_Widgets_Frame::attributes
-    wxMenuItem* mn_Unix;
-    wxMenuItem* mn_Windows;
-    wxMenuItem* mn_RemoveTabs;
-    wxMenuItem* mn_RemoveWhiteSpaces;
-    wxMenuItem* mn_KeepWhiteSpaces;
     wxMenuBar* All_Widgets_menubar;
     wxStatusBar* All_Widgets_statusbar;
     wxToolBar* All_Widgets_toolbar;
@@ -173,8 +163,6 @@ public:
     void onSelectUnix(wxCommandEvent &event); // wxGlade: <event_handler>
     void onSelectWindows(wxCommandEvent &event); // wxGlade: <event_handler>
     void onRemoveTabs(wxCommandEvent &event); // wxGlade: <event_handler>
-    void OnRemoveWhiteSpaces(wxCommandEvent &event); // wxGlade: <event_handler>
-    void OnKeepWhiteSpaces(wxCommandEvent &event); // wxGlade: <event_handler>
     void onShowManual(wxCommandEvent &event); // wxGlade: <event_handler>
     void OnNotebookPageChanged(wxNotebookEvent &event); // wxGlade: <event_handler>
     void OnNotebookPageChanging(wxNotebookEvent &event); // wxGlade: <event_handler>
