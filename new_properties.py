@@ -1623,7 +1623,7 @@ class GridProperty(Property):
         self._changing_value = True
         for i,row in enumerate(value):
             for j, col in enumerate(row):
-                self.grid.SetCellValue(i, j, str(col))
+                self.grid.SetCellValue(i, j, compat.unicode(col))
         self._changing_value = False
 
         # update state of the remove button and the row label
