@@ -354,10 +354,16 @@ class wxGladeFrame(wx.Frame):
         parent.SetMenuBar(menu_bar)
         # Mac tweaks...
         if wx.Platform == "__WXMAC__":
-            wx.App_SetMacAboutMenuItemId(ABOUT_ID)
-            wx.App_SetMacPreferencesMenuItemId(PREFS_ID)
-            wx.App_SetMacExitMenuItemId(EXIT_ID)
-            wx.App_SetMacHelpMenuTitleName(_('&Help'))
+            if 'phoenix' in wx.PlatformInfo:
+                wx.PyApp.SetMacAboutMenuItemId(wx.ID_ABOUT)
+                wx.PyApp.SetMacPreferencesMenuItemId(wx.ID_PREFERENCES)
+                wx.PyApp.SetMacExitMenuItemId(wx.ID_EXIT)
+                wx.PyApp.SetMacHelpMenuTitleName(_('&Help'))
+            else:
+                wx.App_SetMacAboutMenuItemId(ABOUT_ID)
+                wx.App_SetMacPreferencesMenuItemId(PREFS_ID)
+                wx.App_SetMacExitMenuItemId(EXIT_ID)
+                wx.App_SetMacHelpMenuTitleName(_('&Help'))
 
         # file history support
         self.file_history = wx.FileHistory(config.preferences.number_history)
