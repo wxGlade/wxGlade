@@ -117,6 +117,7 @@ class TestCodeGen(WXGladeCLITest):
                 )
 
         # test for C++
+        common.code_writers['C++'].init_lang()
         gen_id = common.code_writers['C++'].generate_code_id
         for test_id, target_decl, target_value in [
             ['wxID_ANY', '', 'wxID_ANY'],                      # id => "wxID_ANY"
@@ -125,7 +126,8 @@ class TestCodeGen(WXGladeCLITest):
             ['myid', '', 'myid'],                              # id => "myid"  (predefined variable)
             ['myid=1', 'myid = 1', 'myid'],                    # id => "myid=1"
             ['myid=?', 'myid = wxID_HIGHEST + 1000', 'myid'],  # id => "myid=?"
-            ['myid=?', 'myid = wxID_HIGHEST + 1001', 'myid'],  # id => "myid=?"
+            ['myid=?', 'myid = wxID_HIGHEST + 1000', 'myid'],  # id => "myid=?"
+            ['myid2=?', 'myid2 = wxID_HIGHEST + 1001', 'myid2'],  # id => "myid2=?"
             ]:
             obj.properties['id'] = test_id
             act_decl, act_value = gen_id(obj)
@@ -138,8 +140,9 @@ class TestCodeGen(WXGladeCLITest):
             ['', '', 'wxID_ANY'],                              # id => ""
             ['myid', '', 'myid'],                              # id => "myid"  (predefined variable)
             ['myid=1', 'myid = 1', 'myid'],                    # id => "myid=1"
-            ['myid=?', 'myid = wxID_HIGHEST + 1002', 'myid'],  # id => "myid=?"
-            ['myid=?', 'myid = wxID_HIGHEST + 1003', 'myid'],  # id => "myid=?"
+            ['myid=?', 'myid = wxID_HIGHEST + 1000', 'myid'],  # id => "myid=?"
+            ['myid=?', 'myid = wxID_HIGHEST + 1000', 'myid'],  # id => "myid=?"
+            ['myid2=?', 'myid2 = wxID_HIGHEST + 1001', 'myid2'],  # id => "myid2=?"
             ]:
             act_decl, act_value = gen_id(None, test_id)
             self.assertTrue( (act_decl, act_value) == (target_decl, target_value),

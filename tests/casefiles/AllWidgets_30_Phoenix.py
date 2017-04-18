@@ -26,6 +26,8 @@ class All_Widgets_Frame(wx.Frame):
         
         # Menu Bar
         self.All_Widgets_menubar = wx.MenuBar()
+        global mn_IDUnix; mn_IDUnix = wx.NewId()
+        global mn_IDWindows; mn_IDWindows = wx.NewId()
         wxglade_tmp_menu = wx.Menu()
         item = wxglade_tmp_menu.Append(wx.ID_OPEN, _("&Open"), _("Open an existing document"), wx.ITEM_NORMAL)
         item = wxglade_tmp_menu.Append(wx.ID_CLOSE, _("&Close file"), _("Close current document"), wx.ITEM_NORMAL)
@@ -33,10 +35,10 @@ class All_Widgets_Frame(wx.Frame):
         item = wxglade_tmp_menu.Append(wx.ID_EXIT, _("E&xit"), _("Finish program"), wx.ITEM_NORMAL)
         self.All_Widgets_menubar.Append(wxglade_tmp_menu, _("&File"))
         wxglade_tmp_menu = wx.Menu()
-        item = self.All_Widgets_menubar.mn_Unix = wx.MenuItem(wxglade_tmp_menu, wx.ID_ANY, _("Unix"), _("Use Unix line endings"), wx.ITEM_RADIO)
+        item = self.All_Widgets_menubar.mn_Unix = wx.MenuItem(wxglade_tmp_menu, mn_IDUnix, _("Unix"), _("Use Unix line endings"), wx.ITEM_RADIO)
         wxglade_tmp_menu.AppendItem(self.All_Widgets_menubar.mn_Unix)
         self.Bind(wx.EVT_MENU, self.onSelectUnix, id=item.GetId())
-        item = self.All_Widgets_menubar.mn_Windows = wx.MenuItem(wxglade_tmp_menu, wx.ID_ANY, _("Windows"), _("Use Windows line endings"), wx.ITEM_RADIO)
+        item = self.All_Widgets_menubar.mn_Windows = wx.MenuItem(wxglade_tmp_menu, mn_IDWindows, _("Windows"), _("Use Windows line endings"), wx.ITEM_RADIO)
         wxglade_tmp_menu.AppendItem(self.All_Widgets_menubar.mn_Windows)
         self.Bind(wx.EVT_MENU, self.onSelectWindows, id=item.GetId())
         wxglade_tmp_menu.AppendSeparator()

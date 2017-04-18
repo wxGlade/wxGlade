@@ -13,6 +13,7 @@ methods of the parent object.
 
 @copyright: 2002-2007 Alberto Griggio
 @copyright: 2012-2016 Carsten Grohmann
+@copyright: 2017 Dietmar Schwertberger
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
@@ -106,7 +107,7 @@ class SourceFileContent(BaseSourceFileContent):
         self.header_content = None
         self.source_content = None
         self.event_table_decl = {}
-        self.event_table_def = {}
+        self.event_table_def  = {}
         self.header_extension = code_writer.header_extension
         self.source_extension = code_writer.source_extension
 
@@ -248,46 +249,29 @@ class SourceFileContent(BaseSourceFileContent):
 class WidgetHandler(BaseWidgetHandler):
     "Interface the various code generators for the widgets must implement"
 
-    constructor = []
-    "``signature'' of the widget's constructor"
-
-    import_modules = []
-    'If not None, list of extra header file, in the form <header.h> or "header.h"'
+    constructor    = []  # 'signature' of the widget's constructor
+    import_modules = []  # If not None, list of extra header file, in the form <header.h> or "header.h"
 
     def __init__(self):
         BaseWidgetHandler.__init__(self)
         self.constructor = []
 
     def get_ids_code(self, obj):
-        """\
-        Handler for the code of the ids enum of toplevel objects.
+        """Handler for the code of the ids enum of toplevel objects.
         Returns a list of strings containing the code to generate.
-        Usually the default implementation is ok (i.e. there are no
-        extra lines to add)
-        """
+        Usually the default implementation is ok (i.e. there are no extra lines to add)"""
         return []
 
 
 class CPPCodeWriter(BaseLangCodeWriter, wcodegen.CppMixin):
-    """\
-    Code writer class for writing C++ code out of the designed GUI elements
+    """Code writer class for writing C++ code out of the designed GUI elements
 
-    @ivar source_extension: Extension of the source file
-    @type source_extension: str
+    source_extension: Extension of the source file
+    header_extension: Extension of the header file
+    last_generated_id: Last generated Id number (wxNewId() is not used yet)
+    tmpl_init_gettext: Template for inclusion of i18n headers and defining APP_CATALOG constant or None
 
-    @ivar header_extension: Extension of the header file
-    @type header_extension: str
-
-    @ivar last_generated_id: Last generated Id number (wxNewId() is not
-                             used yet)
-    @type last_generated_id: int
-
-    @cvar tmpl_init_gettext: Template for inclusion of i18n headers and
-                             defining APP_CATALOG constant
-    @type tmpl_init_gettext: None | str
-
-    @see: L{BaseLangCodeWriter}
-    """
+    @see: L{BaseLangCodeWriter}"""
 
     _code_statements = {
         'backgroundcolour': "%(objname)sSetBackgroundColour(%(value)s);\n",
@@ -319,36 +303,14 @@ class CPPCodeWriter(BaseLangCodeWriter, wcodegen.CppMixin):
         '//  g++ main.cpp $(wx-config --libs) $(wx-config --cxxflags) -o MyApp Dialog1.cpp Frame1.cpp\n' \
         '//\n'
 
-    last_generated_id = 1000
-
-    output_name = None
-    """\
-    If not None, name (without extension) of the file to write into
-
-    @type: str
-    """
-
-    output_header = None
-    """\
-    Temporary storage of header file for writing into
-
-    @type: StringIO
-    """
-
-    output_file = None
-    """\
-    Temporary storage of source file for writing into
-
-    @type: StringIO
-    """
+    output_name   = None  # If not None, name (without extension) of the file to write into
+    output_header = None  # Temporary storage of header file for writing into (StringIO)
+    output_file   = None  # Temporary storage of source file for writing into (StringIO)
 
     shebang = '// -*- C++ -*-\n//\n'
-
     tmpl_cfunc_end = '}\n\n'
-
     tmpl_name_do_layout = 'do_layout'
     tmpl_name_set_properties = 'set_properties'
-
     tmpl_sizeritem = '%s->Add(%s, %s, %s, %s);\n'
 
     tmpl_ctor_call_layout = '\n' \
@@ -472,46 +434,36 @@ bool MyApp::OnInit()
     tmpl_empty_string = 'wxEmptyString'
 
     class ClassLines(BaseLangCodeWriter.ClassLines):
-        """\
-        Stores the lines of C++ code for a custom class
-
-        @ivar ids:             Ids declared in the source (to use for Event
-                               handling): these are grouped together into a
-                               public enum in the custom class
-        @ivar sub_objs:        List of 2-tuples (type, name) of the sub-objects
-                               which are attributes of the toplevel object
-        @ivar extra_code_h:    Extra header code to output
-        @ivar extra_code_cpp:  Extra source code to output
-        """
-
+        """Stores the lines of C++ code for a custom class"""
         def __init__(self):
             BaseLangCodeWriter.ClassLines.__init__(self)
-            self.ids = []
-            self.sub_objs = []
-            self.extra_code_h = []
-            self.extra_code_cpp = []
+            self.ids = [] # Ids declared in the source (for Evt. handling): grouped in a public enum in the custom class
+            self.sub_objs = [] # List of 2-tuples (type, name) of the sub-objects; attributes of the toplevel object
+            self.extra_code_h   = [] # Extra header code to output
+            self.extra_code_cpp = [] # Extra source code to output
             self.dependencies = []     # List not dictionary
-
     # end of class ClassLines
 
-    def init_lang(self, app_attrs):
+    def init_lang(self, app_attrs=None):
         self.last_generated_id = 1000
+        self.generated_ids = {}
 
         # Extensions and main filename based on Project options when set
-        self.source_extension = app_attrs.get('source_extension', config.default_source_extension)
-        self.header_extension = app_attrs.get('header_extension', config.default_header_extension)
+        if app_attrs is not None:
+            self.source_extension = app_attrs.get('source_extension', config.default_source_extension)
+            self.header_extension = app_attrs.get('header_extension', config.default_header_extension)
+        else:
+            self.source_extension = config.default_source_extension
+            self.header_extension = config.default_header_extension
 
-        self.header_lines = [
-            '#include <wx/wx.h>\n',
-            '#include <wx/image.h>\n',
-            ]
+        self.header_lines = [ '#include <wx/wx.h>\n',
+                              '#include <wx/image.h>\n' ]
 
         # include i18n / gettext
         if self._use_gettext and self._textdomain:
             self.header_lines.append( self.tmpl_init_gettext % {'textdomain': self._textdomain} )
 
-        # extra lines to generate (see the 'extracode' property of top-level
-        # widgets)
+        # extra lines to generate (see the 'extracode' property of top-level widgets)
         self._current_extra_code_h = []
         self._current_extra_code_cpp = []
 
@@ -522,12 +474,9 @@ bool MyApp::OnInit()
         else:
             name = os.path.splitext(out_path)[0]
             self.output_name = name
-            if not self._overwrite and \
-               self._file_exists(name + self.header_extension):
-                # the file exists, we must keep all the lines not inside a
-                # wxGlade block.
-                # NOTE: this may cause troubles if out_path is not a valid
-                # source file, so be careful!
+            if not self._overwrite and self._file_exists(name + self.header_extension):
+                # the file exists, we must keep all the lines not inside a wxGlade block.
+                # NOTE: this may cause troubles if out_path is not a valid source file, so be careful!
                 self.previous_source = SourceFileContent(name, self)
             else:
                 # if the file doesn't exist, create it and write the ``intro''
@@ -573,9 +522,8 @@ bool MyApp::OnInit()
             source_content = source_content.replace(tag, code)
             # --------------------------------------------------------------
 
-            # now remove all the remaining <123415wxGlade ...> tags from the
-            # source: this may happen if we're not generating multiple files,
-            # and one of the container class names is changed
+            # now remove all the remaining <123415wxGlade ...> tags from the source:
+            # this may happen if we're not generating multiple files, and one of the container class names is changed
             tags = re.findall( r'(<%swxGlade replace ([a-zA-Z_]*\w*) (\w+)>)' % self.nonce, header_content )
             for tag in tags:
                 if tag[2] == 'dependencies':
@@ -605,8 +553,8 @@ bool MyApp::OnInit()
             self.save_file( self.previous_source.name + self.header_extension, header_content, content_only=True )
             if extra_source:
                 extra_source = '\n\n' + extra_source
-            self.save_file( self.previous_source.name + self.source_extension,
-                            source_content + extra_source, content_only=True )
+            self.save_file( self.previous_source.name + self.source_extension, source_content + extra_source,
+                            content_only=True )
 
         elif not self.multiple_files:
             oh = os.path.basename(self.output_name).upper() + '_H'
@@ -648,8 +596,7 @@ bool MyApp::OnInit()
             return  # the code has already been generated
 
         if self.multiple_files:
-            # let's see if the file to generate exists, and in this case
-            # create a SourceFileContent instance
+            # let's see if the file to generate exists, and in this case create a SourceFileContent instance
             filename = os.path.join(self.out_dir, klass.replace('::', '_') + self.header_extension)
             if self._overwrite or not self._file_exists(filename):
                 prev_src = None
@@ -666,8 +613,7 @@ bool MyApp::OnInit()
             mycn_f = getattr(builder, 'cn_f', self.cn_f)
         except KeyError:
             self._logger.error('%s', code_obj)
-            # this is an error, let the exception be raised
-            # the details are logged by the global exception handler
+            # this is an error, let the exception be raised; the details are logged by the global exception handler
             raise
 
         if prev_src and klass in prev_src.classes:
@@ -918,8 +864,7 @@ bool MyApp::OnInit()
 
         # replace code inside existing __set_properties() function
         if prev_src and not is_new:
-            # replace the lines inside the set_properties wxGlade block
-            # with the new ones
+            # replace the lines inside the set_properties wxGlade block with the new ones
             tag = '<%swxGlade replace %s set_properties>' % (self.nonce, klass)
             if prev_src.source_content.find(tag) < 0:
                 # no set_properties tag found, issue a warning and do nothing
@@ -935,8 +880,7 @@ bool MyApp::OnInit()
 
         # replace code inside existing do_layout() function
         if prev_src and not is_new:
-            # replace the lines inside the do_layout wxGlade block
-            # with the new ones
+            # replace the lines inside the do_layout wxGlade block with the new ones
             tag = '<%swxGlade replace %s %s>' % (self.nonce, klass, 'do_layout')
             if prev_src.source_content.find(tag) < 0:
                 # no do_layout tag found, issue a warning and do nothing
@@ -977,8 +921,7 @@ bool MyApp::OnInit()
         self.classes[klass].done = True
 
         if not self.multiple_files and prev_src:
-            # if this is a new class, add its code to the new_classes list of the
-            # SourceFileContent instance
+            # if this is a new class, add its code to the new_classes list of the SourceFileContent instance
             if is_new:
                 prev_src.new_classes.append( ("".join(header_buffer), "".join(source_buffer)) )
             return
@@ -998,9 +941,8 @@ bool MyApp::OnInit()
 #                    extra_modules,
 #                    code_obj.base,
 #                    )
-                # WARNING: there's a double space '  ' between 'replace' and
-                # 'dependencies' in the tag below, because there is no class name
-                # (see SourceFileContent, line ~147)
+                # WARNING: there's a double space '  ' between 'replace' and 'dependencies' in the tag below,
+                # because there is no class name (see SourceFileContent, line ~147)
                 tag = '<%swxGlade replace  dependencies>' % self.nonce
                 code = self._format_dependencies(extra_modules)
                 prev_src.header_content = prev_src.header_content.replace(tag, code)
@@ -1008,8 +950,7 @@ bool MyApp::OnInit()
                 # insert the extra code of this class
                 extra_code_h = "".join(self.classes[klass].extra_code_h[::-1])
                 extra_code_cpp = "".join(self.classes[klass].extra_code_cpp[::-1])
-                # if there's extra code but we are not overwriting existing
-                # sources, warn the user
+                # if there's extra code but we are not overwriting existing sources, warn the user
                 if extra_code_h or extra_code_cpp:
                     self.warning( '%s (or one of its children) has extra code classes, but you are not overwriting '
                                   'existing sources: please check that the resulting code is correct!' % code_obj.name )
@@ -1127,17 +1068,15 @@ bool MyApp::OnInit()
                 klass.extra_code_h.append(extra_code[0])
                 if len(extra_code) > 1:
                     klass.extra_code_cpp.append(extra_code[1])
-                # if we are not overwriting existing source, warn the user
-                # about the presence of extra code
+                # if we are not overwriting existing source, warn the user about the presence of extra code
                 if not self.multiple_files and self.previous_source:
                     self.warning( '%s has extra code, but you are not overwriting existing sources: please check '
                                   'that the resulting code is correct!' % sub_obj.name )
 
             klass.ids.extend(ids)
             if sub_obj.klass != 'spacer':
-                # attribute is a special property which control whether
-                # sub_obj must be accessible as an attribute of top_obj,
-                # or as a local variable in the do_layout method
+                # attribute is a special property which control whether sub_obj must be accessible as an attribute of
+                # top_obj, or as a local variable in the do_layout method
                 if self.store_as_attr(sub_obj):
                     klass.sub_objs.append((sub_obj.klass, sub_obj.name))
         elif sub_obj.klass != "sizerslot":
@@ -1157,26 +1096,14 @@ bool MyApp::OnInit()
                 klass.dependencies.extend(headers)
 
     def generate_code_event_handler(self, code_obj, is_new, tab, prev_src, event_handlers):
-        """\
-        Generate the event handler stubs
-        
-        @param code_obj: Object to generate code for
-        @type code_obj:  CodeObject
-
-        @param is_new: Indicates if previous source code exists
-        @type is_new:  bool
-
-        @param tab: Indentation of function body
-        @type tab:  str
-        
-        @param prev_src: Previous source code
-        @type prev_src: SourceFileContent
-        
-        @param event_handlers: List of event handlers
-        
-        @rtype: list[str]
-        @see: L{tmpl_func_event_stub}
-        """
+        """Generate the event handler stubs
+        Parameters:
+            code_obj: Object to generate code for (CodeObject)
+            is_new: Indicates if previous source code exists (bool)
+            tab: Indentation of function body (str)
+            prev_src: Previous source code (SourceFileContent)
+            event_handlers: List of event handlers
+        @see: L{tmpl_func_event_stub}"""
         code_lines = []
         swrite = code_lines.append
 
@@ -1209,28 +1136,14 @@ void %(klass)s::%(handler)s(%(evt_type)s &event)
 
         return code_lines
 
-    def generate_code_event_table(self, code_obj, is_new, tab, prev_src,
-                                  event_handlers):
-        """\
-        Generate code for event table declaration.
+    def generate_code_event_table(self, code_obj, is_new, tab, prev_src, event_handlers):
+        """Generate code for event table declaration.
         
-        @param code_obj: Object to generate code for
-        @type code_obj:  CodeObject
-
-        @param is_new: Indicates if previous source code exists
-        @type is_new:  bool
-
-        @param tab: Indentation of function body
-        @type tab:  str
-        
-        @param prev_src: Previous source code
-        @type prev_src: SourceFileContent
-        
-        @param event_handlers: List of event handlers
-        @type event_handlers:  list[(str, str, str)]
-        
-        @rtype: list[str]
-        """
+        code_obj: Object to generate code for (CodeObject)
+        is_new: Indicates if previous source code exists (bool)
+        tab: Indentation of function body (str)
+        prev_src: Previous source code (SourceFileContent)
+        event_handlers: List of event handlers (strings)"""
         code_lines = []
         write = code_lines.append
 
@@ -1275,8 +1188,11 @@ void %(klass)s::%(handler)s(%(evt_type)s &event)
         name = name.strip()
         val = val.strip()
         if val == '?':
-            val = 'wxID_HIGHEST + %d' % self.last_generated_id
-            self.last_generated_id += 1
+            val = self.generated_ids.get(name)
+            if val is None:
+                val = 'wxID_HIGHEST + %d' % self.last_generated_id
+                self.last_generated_id += 1
+                self.generated_ids[name] = val
         else:
             val = val
         return '%s = %s' % (name, val), name
@@ -1327,19 +1243,12 @@ void %(klass)s::%(handler)s(%(evt_type)s &event)
         return code
 
     def _generate_app_filename(self):
-        """\
-        Return the filename of C++ main file; XXX only used for testing
-
-        @rtype: str
-
-        @see: L{config.default_cpp_app_name}
-        @see: L{source_extension}
-        """
+        """Return the filename of C++ main file; XXX only used for testing
+        @see: L{config.default_cpp_app_name}, L{source_extension}"""
         base = os.path.splitext(config.default_cpp_app_name)[0]
         app_filename = '%s%s' % (base, self.source_extension)
         return app_filename
 
-# end of class CPPCodeWriter
 
 writer = CPPCodeWriter()
 "The code writer is an instance of L{CPPCodeWriter}."

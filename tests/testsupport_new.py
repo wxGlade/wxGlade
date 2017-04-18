@@ -174,6 +174,8 @@ class WXGladeGUITest(WXGladeBaseTest):
         # suppress wx error messages
         cls.nolog = wx.LogNull()
 
+        #cls.app.SetAssertMode(0) # avoid triggering of wx assertions; sometimes needed for debugging
+
         # hide all windows
         #cls.frame.Hide()
         #cls.frame.hide_all()
