@@ -354,7 +354,7 @@ class wxGladeFrame(wx.Frame):
         parent.SetMenuBar(menu_bar)
         # Mac tweaks...
         if wx.Platform == "__WXMAC__":
-            if 'phoenix' in wx.PlatformInfo:
+            if compat.IS_PHOENIX:
                 wx.PyApp.SetMacAboutMenuItemId(wx.ID_ABOUT)
                 wx.PyApp.SetMacPreferencesMenuItemId(wx.ID_PREFERENCES)
                 wx.PyApp.SetMacExitMenuItemId(wx.ID_EXIT)
