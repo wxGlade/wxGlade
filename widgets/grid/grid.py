@@ -177,7 +177,7 @@ class EditGrid(ManagedBase):
             elif delta<0: self.widget.DeleteCols(0, -delta)
             # set column widths and labels
             for i, (label,size) in enumerate(self.columns):
-                size = int(size)
+                size = int(size or "0") 
                 if size>0:
                     self.widget.SetColSize(i, size)
                 self.widget.SetColLabelValue(i, label.replace('\\n', '\n'))
