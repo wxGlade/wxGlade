@@ -223,17 +223,10 @@ class SizerSlot(np.PropertyOwner):
             brush = wx.Brush(color, wx.FDIAGONAL_HATCH)
         else:
             brush = wx.Brush(color, wx.BDIAGONAL_HATCH)
-        # don't draw hatched lines in background on MSW due to wxWidget bug #17326:
-        # "SetBackground() with hatched brushes cases black background on MSW"
-        if wx.Platform == '__WXMSW__':
-            # draw hatched lines in foreground
-            dc.SetBrush(brush)
-            size = self.widget.GetClientSize()
-            dc.DrawRectangle(0, 0, size.width, size.height)
-        else:
-            # draw hatched lines in background
-            dc.SetBackground(brush)
-            dc.Clear()
+        # draw hatched lines in foreground
+        dc.SetBrush(brush)
+        size = self.widget.GetClientSize()
+        dc.DrawRectangle(0, 0, size.width, size.height)
 
     # context menu #####################################################################################################
     def popup_menu(self, event, pos=None):
