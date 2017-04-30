@@ -432,6 +432,11 @@ class Application(np.PropertyOwner):
         overwrite = self.overwrite
         self.properties["overwrite"].set(False)
 
+        if wx.Platform == "__WXMAC__":
+            # workaround for Mac OS testing: sometimes the caches need to be invalidated
+            import importlib
+            importlib.invalidate_caches()        
+
         frame = None
         try:
             self.generate_code(preview=True)

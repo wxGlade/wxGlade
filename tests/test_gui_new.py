@@ -103,7 +103,7 @@ class TestGui(WXGladeGUITest):
     def test_Preferences(self):
         "Test code generation for some variants of the preferences dialog; also tests backwards compatibility"
         self.load_and_generate('Python_Preferences', included=["Python"], test_GUI=True)
-        self.load_and_generate('Perl_Preferences', included=["Perl"], test_GUI=True)
+        self.load_and_generate('Perl_Preferences', included=["Perl"], test_GUI=False, preview=False)
         self.load_and_generate('CPP_Preferences', included=["C++"], test_GUI=True)
         self.load_and_generate('Lisp_Preferences', included=["Lisp"], test_GUI=True)
 
