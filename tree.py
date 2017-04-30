@@ -791,13 +791,21 @@ class WidgetTree(wx.TreeCtrl, Tree):
             node.widget.create()
 
         # the actual toplevel widget may be one level higher, e.g. for a Panel, which is embedded in a Frame
-        toplevel_widget = node.widget.widget if node.widget.widget.TopLevel else node.widget.widget.GetParent()
+        set_size = None
+        if node.widget._is_toplevel_window:
+            toplevel_widget = node.widget.widget
+            size_p = node.widget.properties["size"]
+            if size_p.is_active(): set_size = size_p.get_tuple()
+        else:
+            toplevel_widget = node.widget.widget.GetParent()
 
         if not node.widget.is_visible():
             toplevel_widget.Show()
             # added by rlawson to expand node on showing top level widget
             self.expand(node)
             self._show_widget_toplevel(node)
+            if wx.Platform == '__WXMAC__' and set_size is not None:
+                wx.CallAfter(toplevel_widget.SetSize, set_size)
         else:
             toplevel_widget.Hide()
 
