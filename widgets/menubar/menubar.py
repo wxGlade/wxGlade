@@ -710,7 +710,6 @@ class EditMenuBar(EditBase, PreviewMixin):
         self._mb.Refresh()
 
     def remove(self, *args, **kwds):
-        self._destroy_popup_menu()
         if self.parent is not None:
             self.parent.properties['menubar'].set(False)
             self.parent._menubar = None
@@ -745,11 +744,9 @@ class EditMenuBar(EditBase, PreviewMixin):
         item = misc.append_menu_item(menu, -1, _('Hide'))
         misc.bind_menu_item_after(widget, item, self.hide_widget)
 
-        self._rmenu = (menu, widget)
         return menu
 
     def hide_widget(self, *args):
-        self._destroy_popup_menu()
         if self.widget and self.widget is not self._mb:
             self.widget.Hide()
             common.app_tree.expand(self.node, False)

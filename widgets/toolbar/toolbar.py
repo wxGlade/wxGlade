@@ -593,7 +593,6 @@ class EditToolBar(EditBase, PreviewMixin, EditStylesMixin, BitmapMixin):
         i = misc.append_menu_item(menu, -1, _('Remove ToolBar\tDel'), wx.ART_DELETE)
         misc.bind_menu_item_after(widget, i, self.remove)
 
-        self._rmenu = (menu, widget) # store for destryoing and unbinding
         return menu
 
     def hide_widget(self, *args):

@@ -152,7 +152,6 @@ class SizerSlot(np.PropertyOwner):
         p.readonly = True
 
         self.widget = None       # Reference to the widget resembling the slot (a wx.Window)
-        self._rmenu = None       # context menu and widget, when active
         self.name = "SLOT"
 
     def post_load(self): # called from show_widget
@@ -238,10 +237,9 @@ class SizerSlot(np.PropertyOwner):
             screen_pos = event_widget.ClientToScreen(event_pos)
             pos        = event_widget.ScreenToClient(screen_pos)
         event_widget.PopupMenu(menu, pos)
+        menu.Destroy()
 
     def _create_popup_menu(self, widget):
-        self._destroy_popup_menu()
-        
         # menu title
         if isinstance(self.sizer, GridSizerBase):
             rows = self.sizer.rows
@@ -312,19 +310,10 @@ class SizerSlot(np.PropertyOwner):
         i = misc.append_menu_item( menu, -1, item )
         misc.bind_menu_item_after(widget, i, self.preview_parent)
 
-        self._rmenu = (menu, widget) # store for destryoing and unbinding
         return menu
-
-    def _destroy_popup_menu(self):
-        if self._rmenu is None: return
-        menu, widget = self._rmenu
-        widget.Unbind(wx.EVT_MENU)
-        menu.Destroy()
-        self._rmenu = None
 
     def preview_parent(self):
         # context menu callback
-        self._destroy_popup_menu()
         p = misc.get_toplevel_widget(self.sizer)
         if p is not None:
             p.preview()
@@ -332,9 +321,7 @@ class SizerSlot(np.PropertyOwner):
     ####################################################################################################################
 
     def remove(self, *args):
-        self._destroy_popup_menu()
         if self.sizer.is_virtual() or len(self.sizer.children)<=2: return
-
         sizer = self.sizer
         node = self.sizer.children[self.pos].item.node
         self.sizer.remove_item(self)
@@ -362,7 +349,7 @@ class SizerSlot(np.PropertyOwner):
             self.widget.Hide()
         # call the appropriate builder
         common.widgets[common.widget_to_add](self.parent, self.sizer, self.pos)
-        if event is None or not event.ControlDown():
+        if event is None or not misc.event_modifier_copy(event):
             common.adding_widget = common.adding_sizer = False
             common.widget_to_add = None
         common.app_tree.app.saved = False
@@ -394,7 +381,6 @@ class SizerSlot(np.PropertyOwner):
 
     def clipboard_paste(self, event=None, clipboard_data=None):
         "Insert a widget from the clipboard to the current destination"
-        self._destroy_popup_menu()
         if self.widget: self.widget.Hide()
         if clipboard.paste(self.parent, self.sizer, self.pos, clipboard_data):
             common.app_tree.app.saved = False
@@ -425,7 +411,6 @@ class SizerSlot(np.PropertyOwner):
             self.widget.Bind(wx.EVT_LEAVE_WINDOW, None)
             self.widget.Bind(wx.EVT_KEY_DOWN, None)
 
-            self._destroy_popup_menu()
             self.widget = None
 
         if misc.focused_widget is self:
@@ -705,7 +690,6 @@ class SizerBase(Sizer, np.PropertyOwner):
         self.children = []    # widgets added to the sizer
         self.widget = None    # actual wxSizer instance
         self._btn = None      # "handle" to activate a Sizer and to access its popup menu (SizerHandleButton)
-        self._rmenu = None    # the popup menu
 
     def create_widget(self):
         "Creates the wxSizer self.widget"
@@ -800,10 +784,10 @@ class SizerBase(Sizer, np.PropertyOwner):
             screen_pos = event_widget.ClientToScreen(event_pos)
             pos        = event_widget.ScreenToClient(screen_pos)
         event_widget.PopupMenu(menu, pos)
+        menu.Destroy()
 
     def _create_popup_menu(self, widget):
         # provide popup menu for removal
-        self._destroy_popup_menu()
         menu = misc.wxGladePopupMenu(self.name)
 
         widgetclass = self.__class__.__name__.lstrip("Edit")
@@ -840,15 +824,8 @@ class SizerBase(Sizer, np.PropertyOwner):
         i = misc.append_menu_item( menu, -1, item )
         misc.bind_menu_item_after(widget, i, self.preview_parent)
 
-        self._rmenu = (menu, widget) # store for destryoing and unbinding
         return menu
 
-    def _destroy_popup_menu(self):
-        if self._rmenu is None: return
-        menu, widget = self._rmenu
-        widget.Unbind(wx.EVT_MENU)
-        menu.Destroy()
-        self._rmenu = None
         ####################################################################################################################
 
     def _remove(self, *args):
@@ -867,19 +844,16 @@ class SizerBase(Sizer, np.PropertyOwner):
         #self.sizer.free_slot(self.pos)
         #for node in self.node.children:
         #    common.app_tree.remove(self.node)
-        self._destroy_popup_menu()
 
     remove = _remove # needed for consistency (common.focused_widget.remove)
 
     def Destroy(self):
-        self._destroy_popup_menu()
         GenButton.Destroy(self)
         if misc.focused_widget is self:
             misc.focused_widget = None
 
     def preview_parent(self):
         # context menu callback
-        self._destroy_popup_menu()
         p = misc.get_toplevel_widget(self)
         p.preview()
 
@@ -1182,7 +1156,6 @@ class SizerBase(Sizer, np.PropertyOwner):
 
     def delete(self):
         "Destructor"
-        self._destroy_popup_menu()
         if self._btn:
             self._btn.Destroy()
             self._btn = None
