@@ -103,7 +103,6 @@ class EditBase(EventsMixin, np.PropertyOwner):
         self.extraproperties = cp.ExtraPropertiesProperty()
 
         self.widget = None  # this is the reference to the actual wxWindow widget, created when required
-        self._rmenu = None  # popup menu
         self._dont_destroy = False
 
         EventsMixin.__init__(self)
@@ -126,8 +125,6 @@ class EditBase(EventsMixin, np.PropertyOwner):
     def delete(self):
         """Destructor. deallocates the popup menu, the notebook and all the properties.
         Why we need explicit deallocation? Well, basically because otherwise we get a lot of memory leaks... :)"""
-        # first, destroy the popup menu...
-        self._destroy_popup_menu()
         # XXX tell property editor
 
         # ...finally, destroy our widget (if needed)
@@ -139,7 +136,6 @@ class EditBase(EventsMixin, np.PropertyOwner):
 
     # context menu #####################################################################################################
     def popup_menu(self, event, pos=None):
-        self._destroy_popup_menu()
         event_widget = event.GetEventObject()
         menu = self._create_popup_menu(widget=event_widget)
         if pos is None:
@@ -148,9 +144,9 @@ class EditBase(EventsMixin, np.PropertyOwner):
             screen_pos = event_widget.ClientToScreen(event_pos)  # screen position
             pos        = event_widget.ScreenToClient(screen_pos)        # client position
         event_widget.PopupMenu(menu, pos=pos)
+        menu.Destroy()
 
     def _create_popup_menu(self, widget):
-        self._destroy_popup_menu()
         menu = misc.wxGladePopupMenu(self.name)
 
         # edit: remove/copy/cut
@@ -203,21 +199,13 @@ class EditBase(EventsMixin, np.PropertyOwner):
         #misc.bind_menu_item_after(widget, i, self.preview_parent)
         misc.bind_menu_item(widget, i, self.preview_parent)
 
-        self._rmenu = (menu, widget) # store for destryoing and unbinding
         return menu
 
     def preview_parent(self, *args):
-        self._destroy_popup_menu()
         widget = misc.get_toplevel_widget(self)
         if widget is not None:
             wx.CallAfter( widget.preview )  # direct call would result in crash
 
-    def _destroy_popup_menu(self):
-        if self._rmenu is None: return
-        menu, widget = self._rmenu
-        widget.Unbind(wx.EVT_MENU)
-        menu.Destroy()
-        self._rmenu = None
     ####################################################################################################################
 
     def remove(self, *args):
@@ -251,12 +239,10 @@ class EditBase(EventsMixin, np.PropertyOwner):
 
     def clipboard_copy(self, event=None):
         "Store a widget copy into the clipboard;  @see: L{clipboard.copy()}"
-        self._destroy_popup_menu()
         clipboard.copy(self)
 
     def clipboard_cut(self, event=None):
         "Store a copy of self into the clipboard and delete the widget;  @see: L{clipboard.cut()}"
-        self._destroy_popup_menu()
         clipboard.cut(self)
 
     def check_drop_compatibility(self):
@@ -770,7 +756,6 @@ class TopLevelBase(WindowBase, PreviewMixin):
         i = misc.append_menu_item(menu, -1, _('Preview %s\tF5'%widgetclass))
         misc.bind_menu_item(widget, i, self.preview_parent)
 
-        self._rmenu = (menu, widget)
         return menu
 
     ####################################################################################################################
@@ -796,7 +781,6 @@ class TopLevelBase(WindowBase, PreviewMixin):
 
     def clipboard_paste(self, event=None, clipboard_data=None):
         "Insert a widget from the clipboard to the current destination"
-        self._destroy_popup_menu()
         if self.sizer is not None:
             self._logger.warning( _('WARNING: Sizer already set for this window') )
             return
@@ -830,7 +814,7 @@ class TopLevelBase(WindowBase, PreviewMixin):
             return
         self.widget.SetCursor(wx.STANDARD_CURSOR)
         common.widgets[common.widget_to_add](self, None, None)
-        if event is None or not event.ControlDown():
+        if event is None or not misc.event_modifier_copy(event):
             common.adding_widget = common.adding_sizer = False
             common.widget_to_add = None
         common.app_tree.app.saved = False
@@ -841,7 +825,6 @@ class TopLevelBase(WindowBase, PreviewMixin):
         return common.adding_sizer
 
     def hide_widget(self, *args):
-        self._destroy_popup_menu()
         self.widget.Hide()
         common.app_tree.expand(self.node, False)
         #misc.set_focused_widget(self.node.parent)

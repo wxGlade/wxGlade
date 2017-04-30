@@ -178,7 +178,6 @@ class EditPanel(PanelBase, ManagedBase):
         i = misc.append_menu_item(menu, -1, _('Preview'))
         misc.bind_menu_item_after(widget, i, self.preview_parent)
 
-        self._rmenu = (menu, widget) # store for destryoing and unbinding
         return menu
 
     def check_compatibility(self, widget, typename=None, report=True):
