@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<resource version="2.3.0.1">
+    <object class="wxFrame" name="StockAction" subclass="StockAction">
+        <style>wxDEFAULT_FRAME_STYLE|wxTAB_TRAVERSAL</style>
+        <title>Stock Action</title>
+        <size>150,150</size>
+    </object>
+</resource>

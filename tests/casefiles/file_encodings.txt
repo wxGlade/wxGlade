@@ -1,0 +1,15 @@
+#
+# This file will be processes top-down - from specific to generic.
+#
+# Copyright: 2015-2016 Carsten Grohmann
+# License: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
+#
+# "None" is a valid "encoding", too. It disables the conversion.
+#
+# Syntax:  <Filename with wildcards> <encoding>
+
+bug167.*       iso-8859-1
+bug167_utf8.*  utf8
+
+# wxg files are always UTF8 encoded
+*.wxg      utf8
