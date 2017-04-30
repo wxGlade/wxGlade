@@ -469,6 +469,17 @@ def _reverse_dict(src):
         ret[val] = key
     return ret
 
+########################################################################################################################
+# key handlers
+if wx.Platform == '__WXMAC__':
+    # Mac has no Ctrl-Click -> use Shift-Click
+    def event_modifier_copy(event):
+        return event.ShiftDown()
+else:
+    def event_modifier_copy(event):
+        return event.ControlDown()
+
+
 
 #-----------------------------------------------------------------------------
 # helper functions to work with a Unicode-enabled wxPython
