@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Copyright 2014-2016 Carsten Grohmann -->
+<application>
+    <id type="desktop">wxGlade.desktop</id>
+    <metadata_license>CC0-1.0</metadata_license>
+    <project_license>MIT</project_license>
+    <name>wxGlade</name>
+    <summary>
+        A GUI designer written in Python with the popular GUI toolkit wxPython
+    </summary>
+    <description>
+        <p>
+            wxGlade allows to create graphical user interfaces using
+            wxWidgets. The designer can arrange different widgets using a
+            drag and drop WYSIWYG editor. This simplifies the creation of
+            a graphical user interface in comparison with manual
+            coded graphical user interfaces.
+        </p>
+        <p>
+            wxGlade is able to generate source code for Python, Perl, Lisp,
+            C++ and XRC based on the designed GUI.
+        </p>
+        <p>With wxGlade you can:</p>
+        <ul>
+            <li>Design the whole GUI of your application inclusive simple or
+                complex dialogs as well as menu bars, different kinds of
+                buttons and text widgets, bitmaps, ...
+            </li>
+            <li>
+                Use the graphical editor for editing, cutting and pasting
+                widgets
+            </li>
+            <li>
+                Convert your design in source code of your favorite
+                language
+            </li>
+            <li>
+                Run wxGlade on a wide variety of operation systems since
+                it's written in Python
+            </li>
+        </ul>
+    </description>
+    <screenshots>
+        <screenshot type="default">http://wxglade.sourceforge.net/img/wxglade_session.png</screenshot>
+    </screenshots>
+    <url type="homepage">http://wxglade.sourceforge.net/</url>
+    <updatecontact>wxglade-general_at_lists.sourceforge.net</updatecontact>
+</application>

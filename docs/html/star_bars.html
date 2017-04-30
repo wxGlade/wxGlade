@@ -1,0 +1,33 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><title>Menubar, Statusbar and Toolbar</title><meta name="generator" content="DocBook XSL Stylesheets V1.79.1"><link rel="home" href="index.html" title="wxGlade manual"><link rel="up" href="supported_widgets.html" title="Chapter 6. Supported widgets"><link rel="prev" href="codegen_bitmap_path.html" title="Specifying the Path of Bitmaps"><link rel="next" href="widget_list.html" title="Widget List"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="navheader"><table width="100%" summary="Navigation header"><tr><th colspan="3" align="center">Menubar, Statusbar and Toolbar</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="codegen_bitmap_path.html">Prev</a> </td><th width="60%" align="center">Chapter 6. Supported widgets</th><td width="20%" align="right"> <a accesskey="n" href="widget_list.html">Next</a></td></tr></table><hr></div><div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="star_bars"></a>Menubar, Statusbar and Toolbar</h2></div></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="idm139900191092432"></a>Introduction</h3></div></div></div><p>wxGlade helps you to design the menu, the tool bar and the
+        status bar for your application.</p><p>There are two ways to integrate the three elements into a
+        wxGlade project:</p><div class="orderedlist"><ol class="orderedlist" type="1"><li class="listitem"><p>Create standalone widgets by clicking the corresponding
+            button in the main window.</p></li><li class="listitem"><p>Associated with a <code class="classname">wxFrame</code>by selecting
+            the related checkboxes in the <code class="classname">wxFrame</code>
+            properties window.</p></li></ol></div><p>Associated bars will be integrated automatically to the right
+        place. On the other side standalone widgets have to integrate the
+        elements later manually in design after the source code has been
+        generated.</p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="idm139900191086784"></a>Menu</h3></div></div></div><p>In the menu <span class="quote">“<span class="quote"><span class="guilabel">Properties</span></span>”</span>
+        window click on the <span class="quote">“<span class="quote"><span class="guibutton">Edit
+        menus...</span></span>”</span> button. A dialog will let you edit your
+        menu. Use the <span class="quote">“<span class="quote"><span class="guibutton">Add</span></span>”</span> button to add
+        items to the menu; enter the label, an optional name and help string.
+        You can use numbers or variable names as the item id. If you use a
+        variable name, you have to provide extra code in the generated source
+        code.</p><p>Choose the type of the item: Normal, Checkable or Radio.</p><p>You can move menu items with
+        <span class="quote">“<span class="quote"><span class="guibutton">Up</span></span>”</span> and
+        <span class="quote">“<span class="quote"><span class="guibutton">Down</span></span>”</span> buttons, and you can modify
+        the hierarchy of the menu with
+        <span class="quote">“<span class="quote"><span class="guibutton">&lt;</span></span>”</span> and
+        <span class="quote">“<span class="quote"><span class="guibutton">&gt;</span></span>”</span> buttons.</p><div class="figure"><a name="idm139900191079200"></a><p class="title"><b>Figure 6.1. Menu editor</b></p><div class="figure-contents"><div class="mediaobject"><img src="properties_menu_editor.png" width="531" alt="Menu editor"></div></div></div><br class="figure-break"></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="idm139900191076560"></a>Statusbar</h3></div></div></div><p>In the <span class="quote">“<span class="quote"><span class="guilabel">Properties</span></span>”</span> window you
+        can edit the list of fields and their size.</p><div class="figure"><a name="idm139900191074704"></a><p class="title"><b>Figure 6.2. Statusbar properties</b></p><div class="figure-contents"><div class="mediaobject"><img src="properties_window_statusbar.png" width="283" alt="Statusbar properties"></div></div></div><br class="figure-break"></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="idm139900191072064"></a>Toolbar</h3></div></div></div><p>You can edit the toolbar style and bitmap size in the properties
+        window.</p><p>Click on the <span class="quote">“<span class="quote">Edit tools...</span>”</span> button to edit the
+        toolbar buttons. Use the <span class="quote">“<span class="quote">Add</span>”</span> button to add buttons to
+        the toolbar; enter the label, an optional name and help string. You
+        can use numbers or variable names as the button id. If you use a
+        variable name, you have to provide extra code in the generated source
+        code.</p><p>Choose the type of the button: Normal, Checkable or
+        Radio.</p><p>You can move toolbar buttons with
+        <span class="quote">“<span class="quote"><span class="guibutton">Up</span></span>”</span> and
+        <span class="quote">“<span class="quote"><span class="guibutton">Down</span></span>”</span> buttons.</p><p>You have to enter two bitmaps, one for normal status and the
+        other for the pushed status.</p><p>Refer to <a class="xref" href="codegen_bitmap_path.html" title="Specifying the Path of Bitmaps">the section called “Specifying the Path of Bitmaps”</a> for bitmap path
+        specifications.</p><div class="figure"><a name="idm139900191065776"></a><p class="title"><b>Figure 6.3. Toolbar editor</b></p><div class="figure-contents"><div class="mediaobject"><img src="properties_toolbar_editor.png" width="354" alt="Toolbar editor"></div></div></div><br class="figure-break"></div></div><div class="navfooter"><hr><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="codegen_bitmap_path.html">Prev</a> </td><td width="20%" align="center"><a accesskey="u" href="supported_widgets.html">Up</a></td><td width="40%" align="right"> <a accesskey="n" href="widget_list.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">Specifying the Path of Bitmaps </td><td width="20%" align="center"><a accesskey="h" href="index.html">Home</a></td><td width="40%" align="right" valign="top"> Widget List</td></tr></table></div></body></html>
