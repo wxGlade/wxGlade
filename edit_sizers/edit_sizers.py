@@ -828,8 +828,12 @@ class SizerBase(Sizer, np.PropertyOwner):
 
         ####################################################################################################################
 
-    def _remove(self, *args):
+    def _remove(self, stage=1):
         "removes the sizer from his parent, if it has one"
+        if stage==1:
+            wx.CallLater(10, self._remove, stage=2)  # avoid crashes on Mac OS
+            return
+        # stage 2
         if self.toplevel:
             window = self.window
             common.app_tree.remove(self.node)
