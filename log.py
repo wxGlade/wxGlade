@@ -199,7 +199,10 @@ class ExceptionFormatter(logging.Formatter):
                 wx_version = getattr(config, 'wx_version', 'not found')
                 platform = getattr(config, 'platform', 'not found')
                 app_version = getattr(config, 'version', 'not found')
-                loc_langcode, loc_encoding = locale.getlocale()
+                if sys.platform=="darwin":
+                    loc_langcode = loc_encoding = "darwin"  # getlocale may fail on Mac OS
+                else:
+                    loc_langcode, loc_encoding = locale.getlocale()
                 loc_filesystem = sys.getfilesystemencoding()
 
                 sio.write('An unexpected error occurred!\n')
