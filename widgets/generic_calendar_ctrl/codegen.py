@@ -7,7 +7,7 @@ Code generator functions for wxGenericCalendarCtrl objects
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
-import common
+import common, compat
 import wcodegen
 
 
@@ -15,7 +15,11 @@ class PythonGenericCalendarCtrlGenerator(wcodegen.PythonWidgetCodeWriter):
 
     tmpl = '%(name)s = %(klass)s(%(parent)s, %(id)s%(style)s)\n'
 
-    import_modules = ['import wx.calendar\n']
+    # XXX the following needs to depend on the code generator when Phoenix is about to be supported fully:
+    if compat.IS_CLASSIC:
+        import_modules = ['import wx.calendar\n']
+    else:
+        import_modules = ['import wx.adv\n']
 
     def cn(self, c):
         # TODO remove ugly hack for wxColour
@@ -23,7 +27,10 @@ class PythonGenericCalendarCtrlGenerator(wcodegen.PythonWidgetCodeWriter):
             return wcodegen.PythonWidgetCodeWriter.cn(self, c)
         if c[:2] == 'wx':
             c = c[2:]
-        return 'wx.calendar.' + c
+        if compat.IS_CLASSIC:
+            return 'wx.calendar.' + c
+        else:
+            return 'wx.adv.' + c
 
     def _prepare_tmpl_content(self, obj):
         wcodegen.PythonWidgetCodeWriter._prepare_tmpl_content(self, obj)

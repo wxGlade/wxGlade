@@ -6,7 +6,6 @@
 
 import wx
 import wx.adv
-import wx.calendar
 import wx.grid
 import wx.propgrid
 
@@ -73,7 +72,7 @@ class All_Widgets_Frame(wx.Frame):
         self.notebook_1_wxCalendarCtrl = wx.Panel(self.notebook_1, wx.ID_ANY)
         self.calendar_ctrl_1 = wx.adv.CalendarCtrl(self.notebook_1_wxCalendarCtrl, wx.ID_ANY, style=wx.adv.CAL_MONDAY_FIRST | wx.adv.CAL_SEQUENTIAL_MONTH_SELECTION | wx.adv.CAL_SHOW_SURROUNDING_WEEKS | wx.adv.CAL_SHOW_WEEK_NUMBERS)
         self.notebook_1_wxGenericCalendarCtrl = wx.Panel(self.notebook_1, wx.ID_ANY)
-        self.generic_calendar_ctrl_1 = wx.calendar.GenericCalendarCtrl(self.notebook_1_wxGenericCalendarCtrl, wx.ID_ANY, style=wx.calendar.CAL_MONDAY_FIRST)
+        self.generic_calendar_ctrl_1 = wx.adv.GenericCalendarCtrl(self.notebook_1_wxGenericCalendarCtrl, wx.ID_ANY, style=wx.adv.CAL_MONDAY_FIRST)
         self.notebook_1_wxCheckBox = wx.Panel(self.notebook_1, wx.ID_ANY)
         self.checkbox_1 = wx.CheckBox(self.notebook_1_wxCheckBox, wx.ID_ANY, _("one (unchecked)"))
         self.checkbox_2 = wx.CheckBox(self.notebook_1_wxCheckBox, wx.ID_ANY, _("two (checked)"))
