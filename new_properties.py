@@ -346,7 +346,8 @@ class SpinProperty(Property):
 
     def on_spin(self, event):
         event.Skip()
-        self._check_for_user_modification(self.spin.GetValue())
+        if self.spin:
+            self._check_for_user_modification(self.spin.GetValue())
 
     def set_range(self, min_v, max_v):
         new_range = (min_v, max_v)
@@ -1591,6 +1592,7 @@ class GridProperty(Property):
 
     def on_size(self, event):
         # resize last column to fill the space
+        if not self.grid: return
         if self._width_delta is None:
             self._width_delta = self.grid.GetParent().GetSize()[0] - self.grid.GetSize()[0]
         self.grid.SetColSize(1, 10)
