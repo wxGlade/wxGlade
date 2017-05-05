@@ -46,8 +46,8 @@ class wxGladePropertyPanel(wx.Frame):
 
     ####################################################################################################################
     # new editor interface
-    def set_widget(self, widget):
-        if widget is self.current_widget:
+    def set_widget(self, widget, force=False):
+        if widget is self.current_widget and not force:
             # just update
             return
         self.next_widget = widget
@@ -723,7 +723,7 @@ class wxGladeFrame(wx.Frame):
 
                 return False
 
-        misc.set_focused_widget(common.app_tree.root.widget)
+        misc.set_focused_widget(common.app_tree.root.widget, force=True)
 
         common.app_tree.auto_expand = True  # re-enable auto-expansion of nodes
 
