@@ -346,7 +346,8 @@ class SpinProperty(Property):
 
     def on_spin(self, event):
         event.Skip()
-        self._check_for_user_modification(self.spin.GetValue())
+        if self.spin:
+            self._check_for_user_modification(self.spin.GetValue())
 
     def set_range(self, min_v, max_v):
         new_range = (min_v, max_v)
@@ -1153,6 +1154,7 @@ class ScrollRatePropertyD(SizePropertyD):
 class IntRangePropertyA(SizePropertyD):
     deactivated = False
     validation_re = re.compile( _leading + _int + _comma + _int + _trailing )  # match pair of integers
+    normalization = "%s, %s"
     def _convert_from_text(self, value):
         # check that min is smaller than max
         match = self.validation_re.match(value)
