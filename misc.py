@@ -416,7 +416,7 @@ def _paste():
 
 
 def _preview():
-    common.palette.preview(None)
+    common.palette.preview()
 
 
 def _insert():
