@@ -461,46 +461,59 @@ class WidgetTree(wx.TreeCtrl, Tree):
         if "name" not in widget.properties: return
 
         new_value = evt.Label
+        new_name = new_label = None
         if "label" in widget.properties and self._label_editable(widget):
-            # split user input into name and label
+            # split user input into name and label; if there's no colon but a quotation mark, it's just a label
             new_value = new_value.strip()
             if new_value.endswith("'") and ": '" in new_value:
                 new_name, new_label = new_value.split(": '", 1)
+                new_label = new_label[:-1]
             elif new_value.endswith('"') and ': "' in new_value:
                 new_name, new_label = new_value.split(': "', 1)
-            else:
-                wx.Bell()
-                evt.Veto()
-                return
-            new_label = new_label[:-1]
-            label_p = widget.properties["label"]
-            label_modified = new_label!=label_p.get()
+                new_label = new_label[:-1]
+            elif new_value and new_value[0] in ["'",'"'] or new_value[-1] in ["'",'"']:
+                # just a label; for this we accept errors, we just want at least one quotation mark
+                if new_value[0]==new_value[-1] and len(new_value)>2:
+                    new_label = new_value[1:-1]
+                elif new_value[0] in ["'",'"']:
+                    new_label = new_value[1:]
+                elif new_value[-1] in ["'",'"']:
+                    new_label = new_value[:-1]
+            elif not ":" in new_value:
+                new_name = new_value
         else:
             new_name = new_value
-            label_modified = False
 
-        name_p = widget.properties["name"]
-        old_name = name_p.get()
+        if new_name:
+            name_p = widget.properties["name"]
+            if (new_name==name_p.get()): new_name = None
+        if new_name:
+            # check
+            name_OK = name_p.check(new_name)
+            if not name_OK: new_name = None
 
-        # check
-        name_OK = name_p.check(new_name)
-        if not name_OK:
+        if new_label is not None:
+            label_p = widget.properties["label"]
+            if new_label==label_p.get():
+                new_label = None
+        if not new_name and new_label is None:
+            # no change or an error
             wx.Bell()
-        if not name_OK or (new_value==old_name and not label_modified):
             evt.Veto()
             return
 
         # actually modify the values
         modified = set()
-        if new_name!=old_name:
+        if new_name:
             name_p.previous_value = name_p.value
             name_p.set(new_name, notify=False)
             modified.add("name")
-        if label_modified:
+        if new_label:
             label_p.previous_value = label_p.value
             label_p.set(new_label, notify=False)
             modified.add("label")
         widget.properties_changed(modified)
+        wx.CallAfter( self.refresh, node, refresh_label=True)  # setting from within the event handler does not work
 
     def _build_label(self, node):
         # get a label for node
