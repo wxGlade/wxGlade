@@ -1154,6 +1154,7 @@ class ScrollRatePropertyD(SizePropertyD):
 class IntRangePropertyA(SizePropertyD):
     deactivated = False
     validation_re = re.compile( _leading + _int + _comma + _int + _trailing )  # match pair of integers
+    normalization = "%d, %d"
     def _convert_from_text(self, value):
         # check that min is smaller than max
         match = self.validation_re.match(value)
