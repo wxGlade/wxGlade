@@ -9,7 +9,7 @@ THIS PROGRAM COMES WITH NO WARRANTY
 
 Requirements
 ------------
-- Python (http://www.python.org) 2.7, 3.1 or later
+- Python (http://www.python.org) 2.7, 3.4 or later
 - wxPython (http://www.wxpython.org) >= 2.8
 
 

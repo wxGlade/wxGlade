@@ -10,11 +10,7 @@ Code genera Commandline / non-graphical tests
 import os
 import unittest
 
-try:
-    from .testsupport_new import WXGladeCLITest
-except (SystemError, ValueError):
-    from testsupport_new import WXGladeCLITest
-
+from testsupport_new import WXGladeCLITest
 
 # import project modules
 import common, config, compat, errors, misc

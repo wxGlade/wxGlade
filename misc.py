@@ -27,7 +27,7 @@ _item_bitmaps = {}
 
 focused_widget = None  # the currently selected widget in GUI mode (for tree and property_panel)
 
-def set_focused_widget(widget):
+def set_focused_widget(widget, force=False):
     if not config.use_gui: return
     # set focused widget; tell tree and property panel
     global focused_widget
@@ -35,7 +35,7 @@ def set_focused_widget(widget):
         focused_widget.update_view(selected=False)
     focused_widget = widget
     common.app_tree.set_current_widget(widget)
-    common.property_panel.set_widget(widget)
+    common.property_panel.set_widget(widget, force)
     if widget and widget.widget:
         # ensure that it is visible and selection is displayed, if applicable
         show_widget(widget)
@@ -416,7 +416,7 @@ def _paste():
 
 
 def _preview():
-    common.palette.preview(None)
+    common.palette.preview()
 
 
 def _insert():

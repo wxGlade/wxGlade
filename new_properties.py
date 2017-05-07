@@ -1154,7 +1154,7 @@ class ScrollRatePropertyD(SizePropertyD):
 class IntRangePropertyA(SizePropertyD):
     deactivated = False
     validation_re = re.compile( _leading + _int + _comma + _int + _trailing )  # match pair of integers
-    normalization = "%s, %s"
+    normalization = "%d, %d"
     def _convert_from_text(self, value):
         # check that min is smaller than max
         match = self.validation_re.match(value)
@@ -1593,6 +1593,7 @@ class GridProperty(Property):
 
     def on_size(self, event):
         # resize last column to fill the space
+        if not self.grid: return
         if self._width_delta is None:
             self._width_delta = self.grid.GetParent().GetSize()[0] - self.grid.GetSize()[0]
         self.grid.SetColSize(1, 10)

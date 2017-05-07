@@ -46,8 +46,8 @@ class wxGladePropertyPanel(wx.Frame):
 
     ####################################################################################################################
     # new editor interface
-    def set_widget(self, widget):
-        if widget is self.current_widget:
+    def set_widget(self, widget, force=False):
+        if widget is self.current_widget and not force:
             # just update
             return
         self.next_widget = widget
@@ -66,11 +66,12 @@ class wxGladePropertyPanel(wx.Frame):
         self.current_widget = None
         self.create_editor(edit_widget)
         self.current_widget = edit_widget
-        self.SetTitle(_('Properties - %s - <%s>') % (edit_widget.klass, edit_widget.name) )
+        if self:
+            self.SetTitle(_('Properties - %s - <%s>') % (edit_widget.klass, edit_widget.name) )
 
     def create_editor(self, edit_widget):
         # fill the frame with a notebook of property editors
-        # not called yet
+        if not self.notebook: return  # already deleted
         self.current_widget_class = edit_widget.__class__
 
         self.notebook.Hide()
@@ -163,7 +164,10 @@ class wxGladeFrame(wx.Frame):
         self._logger = logging.getLogger(self.__class__.__name__)
         style = wx.SYSTEM_MENU | wx.CAPTION | wx.MINIMIZE_BOX
         style |= wx.RESIZE_BORDER | wx.CLOSE_BOX
-        wx.Frame.__init__(self, parent, -1, "wxGlade v%s" % config.version, style=style, name='MainFrame')
+        version = config.version
+        if version=='"faked test version"':
+            version = "%s on Python %d.%d"%(version, sys.version_info.major, sys.version_info.minor)
+        wx.Frame.__init__(self, parent, -1, "wxGlade v%s" % version, style=style, name='MainFrame')
 
         if parent is None:
             parent = self
@@ -719,7 +723,7 @@ class wxGladeFrame(wx.Frame):
 
                 return False
 
-        misc.set_focused_widget(common.app_tree.root.widget)
+        misc.set_focused_widget(common.app_tree.root.widget, force=True)
 
         common.app_tree.auto_expand = True  # re-enable auto-expansion of nodes
 
