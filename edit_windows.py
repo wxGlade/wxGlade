@@ -637,10 +637,8 @@ class ManagedBase(WindowBase):
             self.sel_marker = None
         WindowBase.delete(self)
 
-    def remove(self, stage=1):
-        if stage==1:
-            wx.CallLater(50, self.remove, stage=2)
-        elif stage==2:
+    if wx.Platform != '__WXMAC__':
+        def remove(self, stage=None):
             self.sizer.free_slot(self.pos)
             if self.sizer.is_virtual():
                 #if not self.sizer.is_fixed():
@@ -648,9 +646,23 @@ class ManagedBase(WindowBase):
                 pass
             else:
                 # focus the freed slot
-                wx.CallLater(10, self.remove, stage=3)
-        elif stage==3:
-            misc.set_focused_widget(self.sizer.children[self.pos].item)
+                misc.set_focused_widget(self.sizer.children[self.pos].item)
+    else:
+        # avoid crashes on Mac OS by delaying the action
+        def remove(self, stage=1):
+            if stage==1:
+                wx.CallLater(50, self.remove, stage=2)
+            elif stage==2:
+                self.sizer.free_slot(self.pos)
+                if self.sizer.is_virtual():
+                    #if not self.sizer.is_fixed():
+                    #    WindowBase.remove(self)
+                    pass
+                else:
+                    # focus the freed slot
+                    wx.CallLater(10, self.remove, stage=3)
+            elif stage==3:
+                misc.set_focused_widget(self.sizer.children[self.pos].item)
 
     def set_pos(self, value):
         "setter for the 'pos' property: calls self.sizer.change_item_pos"

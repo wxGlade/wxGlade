@@ -7,10 +7,7 @@ Graphical tests
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
-try:
-    from .testsupport_new import WXGladeGUITest
-except (SystemError, ValueError):
-    from testsupport_new import WXGladeGUITest
+from testsupport_new import WXGladeGUITest
 
 import wx.xrc
 import xrc2wxg

@@ -827,11 +827,10 @@ class SizerBase(Sizer, np.PropertyOwner):
         return menu
 
         ####################################################################################################################
-
     def _remove(self, stage=1):
         "removes the sizer from his parent, if it has one"
-        if stage==1:
-            wx.CallLater(10, self._remove, stage=2)  # avoid crashes on Mac OS
+        if wx.Platform == '__WXMAC__' and stage==1:  # avoid crashes on Mac OS by delaying the action
+            wx.CallLater(10, self._remove, stage=2)
             return
         # stage 2
         if self.toplevel:

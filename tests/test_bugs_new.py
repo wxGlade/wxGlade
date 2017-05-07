@@ -1,19 +1,12 @@
 """
 @copyright: 2014-2016 Carsten Grohmann
+@copyright: 2017 Dietmar Schwertberger
 
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
 
-try:
-    from .testsupport_new import WXGladeGUITest
-except (SystemError, ValueError):
-    from testsupport_new import WXGladeGUITest
-
-
-## import project modules
-#import common, config, compat, errors, misc
-#import xrc2wxg
+from testsupport_new import WXGladeGUITest
 
 import common
 import unittest
