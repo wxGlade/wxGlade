@@ -37,7 +37,7 @@ class TemplateInfoDialog(wx.Dialog):
     def __set_properties(self):
         # begin wxGlade: TemplateInfoDialog.__set_properties
         self.SetTitle(_("wxGlade template information"))
-        self.SetSize(wx.DLG_SZE(self, (250, 264)))
+        self.SetSize( (350, 400) )
         self.template_name.SetFocus()
         # end wxGlade
 
@@ -98,7 +98,7 @@ class TemplateListDialog(wx.Dialog):
     def __set_properties(self):
         # begin wxGlade: TemplateListDialog.__set_properties
         self.SetTitle(_("wxGlade template list"))
-        self.SetSize(wx.DLG_SZE(self, (300, 200)))
+        self.SetSize( (600, 400) )
         self.template_name.SetFont(wx.Font(-1, wx.DEFAULT, wx.NORMAL, wx.BOLD, 0, ""))
         # end wxGlade
 
