@@ -489,7 +489,7 @@ class Application(np.PropertyOwner):
             def on_close(event):
                 frame.Destroy()
                 widget.preview_widget = None
-                widget.properties["preview"].set_label(_('Preview'))
+                widget.properties["preview"].set_label(_('Show Preview'))
 
             frame.Bind(wx.EVT_CLOSE, on_close)
             frame.SetTitle(_('<Preview> - %s') % frame.GetTitle())
@@ -504,7 +504,7 @@ class Application(np.PropertyOwner):
         except Exception as inst:
             if config.debugging: raise
             widget.preview_widget = None
-            widget.properties["preview"].set_label(_('Preview'))
+            widget.properties["preview"].set_label(_('Show Preview'))
             bugdialog.Show(_("Generate Preview"), inst)
 
         # restore app state

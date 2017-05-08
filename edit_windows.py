@@ -686,6 +686,7 @@ class ManagedBase(WindowBase):
 class PreviewMixin(object):
     def __init__(self):
         self.preview = np.ActionButtonProperty(self.on_preview)
+        self.preview.set_label( _('Show Preview') )
         self.preview_widget = None
 
     def preview_is_visible(self):
@@ -699,9 +700,21 @@ class PreviewMixin(object):
         else:
             self.preview_widget.Close()
             self.preview_widget = None
-            label = _('Preview')
+            label = _('Show Preview')
             if refresh: wx.CallAfter(self.on_preview)
         self.properties["preview"].set_label(label)
+
+
+class DesignButtonProperty(np.ActionButtonProperty):
+    def __init__(self, callback):
+        np.ActionButtonProperty.__init__(self, callback)
+        self.set_label( _('Show Design Window') )
+    def update_label(self):
+        if not self.owner.widget or not self.owner.is_visible():
+            label = _('Show Design Window')
+        else:
+            label = _('Hide Design Window')
+        self.set_label(label)
 
 
 
@@ -710,7 +723,7 @@ class TopLevelBase(WindowBase, PreviewMixin):
     _is_toplevel = True
     _is_toplevel_window = True  # will be False for TopLevelPanel and MDIChildFrame
     _custom_base_classes = True
-    PROPERTIES = WindowBase.PROPERTIES + ["preview"]
+    PROPERTIES = WindowBase.PROPERTIES + ["design","preview"]
 
     def __init__(self, name, klass, parent, id, title=None):
         WindowBase.__init__(self, name, klass, parent, id)
@@ -720,6 +733,7 @@ class TopLevelBase(WindowBase, PreviewMixin):
             self.title = np.TextProperty(title or self.name)
         self.sizer = None  # sizer that controls the layout of the children of the window
         PreviewMixin.__init__(self)
+        self.design = DesignButtonProperty(self.on_design_button)
 
     def finish_widget_creation(self, *args, **kwds):
         WindowBase.finish_widget_creation(self)
@@ -752,16 +766,18 @@ class TopLevelBase(WindowBase, PreviewMixin):
         # remove, hide
         menu = misc.wxGladePopupMenu(self.name)
         widgetclass = self.__class__.__name__.lstrip("Edit")
-        i = misc.append_menu_item(menu, -1, _('Remove %s\tDel')%widgetclass, wx.ART_DELETE)
-        misc.bind_menu_item_after(widget, i, self.remove)
 
         if self.widget and self.is_visible():
             # hide window
-            i = misc.append_menu_item(menu, -1, _('Hide'))
+            i = misc.append_menu_item(menu, -1, _('Hide Design Window'))
             misc.bind_menu_item_after(widget, i, self.hide_widget)
         else:
-            i = misc.append_menu_item(menu, -1, _('Show'))
+            i = misc.append_menu_item(menu, -1, _('Show Design Window'))
             misc.bind_menu_item_after(widget, i, common.app_tree.show_toplevel, None, self)
+
+        menu.AppendSeparator()
+        i = misc.append_menu_item(menu, -1, _('Remove %s\tDel')%widgetclass, wx.ART_DELETE)
+        misc.bind_menu_item_after(widget, i, self.remove)
 
         # paste
         i = misc.append_menu_item(menu, -1, _('Paste Sizer\tCtrl+V'), wx.ART_PASTE)
@@ -774,6 +790,14 @@ class TopLevelBase(WindowBase, PreviewMixin):
         misc.bind_menu_item(widget, i, self.preview_parent)
 
         return menu
+
+    def on_design_button(self):
+        "Button 'Show Design Window' was pressed"
+        if not self.widget or not self.is_visible():
+            common.app_tree.show_toplevel(None, self)
+        else:
+            self.hide_widget()
+        self.design.update_label()
 
     ####################################################################################################################
     def check_compatibility(self, widget, typename=None, report=True):
@@ -845,6 +869,7 @@ class TopLevelBase(WindowBase, PreviewMixin):
         self.widget.Hide()
         common.app_tree.expand(self.node, False)
         #misc.set_focused_widget(self.node.parent)
+        self.design.update_label()
 
     def on_size(self, event):
         WindowBase.on_size(self, event)
