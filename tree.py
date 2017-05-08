@@ -783,8 +783,6 @@ class WidgetTree(wx.TreeCtrl, Tree):
         props = node.widget.properties
         if 'size' in props and not props['size'].is_active() and node.widget.sizer:
             node.widget.sizer.fit_parent()
-        if "design" in props:
-            props["design"].update_label()
         if wx.IsBusy(): wx.EndBusyCursor()
 
     def show_toplevel(self, event, widget=None):
@@ -828,6 +826,7 @@ class WidgetTree(wx.TreeCtrl, Tree):
             self.select_item(node)
             misc.set_focused_widget(node.widget)
             event.Skip()
+        if "design" in node.widget.properties: node.widget.design.update_label()
         #event.Skip()
 
     def _find_node_by_pos(self, x, y, toplevels_only=False):

@@ -171,6 +171,7 @@ def builder(parent, sizer, pos, klass=None, base=None, name=None):
     common.app_tree.add(node)
     frame.create()
     frame.widget.Show()
+    frame.design.update_label()
 
     # add a default vertical sizer to the frame
     import edit_sizers
