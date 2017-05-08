@@ -100,6 +100,7 @@ def builder(parent, sizer, pos, number=[0]):
     else:
         dialog.widget.GetParent().Show()  # the panel is created as child of a Frame
     common.app_tree.add(node)
+    dialog.design.update_label()
     if wx.Platform == '__WXMSW__':
         if not is_panel:
             w = dialog.widget

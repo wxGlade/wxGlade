@@ -274,6 +274,7 @@ class EditTopLevelPanel(PanelBase, TopLevelBase):
         # this is called from the context menu and from the EVT_CLOSE of the Frame
         super(EditTopLevelPanel, self).hide_widget(*args)
         self.widget.GetParent().Hide()
+        self.design.update_label()
 
     def set_name(self, name):
         super(EditTopLevelPanel, self).set_name(name)
