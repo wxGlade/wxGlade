@@ -1833,6 +1833,7 @@ class GridProperty(Property):
 class ActionButtonProperty(Property):
     # just a button to start an action
     CONTROLNAMES = ["button"]
+    background_color = None
     def __init__(self, callback):
         self.callback = callback
         self.label = None  # set to None; when creating an editor, self.set_label() may have been called
@@ -1849,10 +1850,15 @@ class ActionButtonProperty(Property):
         if tooltip: compat.SetToolTip(self.button, tooltip)
         self.button.Bind(wx.EVT_BUTTON, self.on_button)
         self.editing = True
+        if self.background_color is not None:
+            self.button.SetBackgroundColour(self.background_color)
 
     def set_label(self, label):
         self.label = label
-        if self.editing: self.button.SetLabel(label)
+        if self.editing:
+            self.button.SetLabel(label)
+            if self.background_color is not None:
+                self.button.SetBackgroundColour(self.background_color)
 
     def on_button(self, event):
         self.callback()
