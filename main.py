@@ -104,6 +104,7 @@ class wxGladePropertyPanel(wx.Frame):
                 # start new page
                 current_pagename = prop
                 if prop=="Layout" and not edit_widget._has_layout:continue
+                if prop=="Events" and edit_widget.events is None: continue
 
                 current_page = self.start_page(prop)
                 current_sizer = wx.BoxSizer(wx.VERTICAL)
