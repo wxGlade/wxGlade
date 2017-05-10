@@ -708,14 +708,17 @@ class PreviewMixin(object):
 class DesignButtonProperty(np.ActionButtonProperty):
     def __init__(self, callback):
         np.ActionButtonProperty.__init__(self, callback)
+        self.background_color = wx.Colour(150,150,200)
         self.set_label( _('Show Design Window') )
+
     def update_label(self):
         if not self.owner.widget or not self.owner.is_visible():
             label = _('Show Design Window')
+            self.background_color = wx.Colour(150,150,240)  # make button more visible
         else:
             label = _('Hide Design Window')
+            self.background_color = compat.wx_SystemSettings_GetColour(wx.SYS_COLOUR_BTNFACE)
         self.set_label(label)
-
 
 
 class TopLevelBase(WindowBase, PreviewMixin):
