@@ -270,10 +270,10 @@ class EditTopLevelPanel(PanelBase, TopLevelBase):
                 self.top_sizer.fit_parent()
         self.set_size(oldval)
 
-    def hide_widget(self, *args):
+    def hide_widget(self, event=None):
         # this is called from the context menu and from the EVT_CLOSE of the Frame
-        super(EditTopLevelPanel, self).hide_widget(*args)
         self.widget.GetParent().Hide()
+        common.app_tree.expand(self.node, False)
         self.design.update_label()
 
     def set_name(self, name):

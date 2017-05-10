@@ -868,8 +868,8 @@ class TopLevelBase(WindowBase, PreviewMixin):
             return False
         return common.adding_sizer
 
-    def hide_widget(self, *args):
-        self.widget.Hide()
+    def hide_widget(self, event=None):
+        self.widget.Hide()  # just hide, don't close
         common.app_tree.expand(self.node, False)
         #misc.set_focused_widget(self.node.parent)
         self.design.update_label()
