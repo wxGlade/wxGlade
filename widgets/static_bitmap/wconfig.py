@@ -10,7 +10,6 @@ config = {
     'wxklass': 'wxStaticBitmap',
     'style_defs': {
     },
-    'box_label': _('Style'),
     'style_list': ['wxSIMPLE_BORDER', 'wxBORDER_SIMPLE',
                    'wxSUNKEN_BORDER', 'wxBORDER_SUNKEN',
                    'wxRAISED_BORDER', 'wxBORDER_RAISED',

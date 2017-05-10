@@ -17,7 +17,6 @@ config = {
                       'number of columns.'),
         },
     },
-    'box_label': _('Style'),
     'style_list': ['wxRA_SPECIFY_ROWS', 'wxRA_SPECIFY_COLS'],
     'events': {
         'EVT_RADIOBOX': {},

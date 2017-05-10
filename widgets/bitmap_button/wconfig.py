@@ -31,7 +31,6 @@ config = {
                       'WIN32 only.'),
         },
     },
-    'box_label': _('Style'),
     'style_list': ['wxBU_AUTODRAW', 'wxBU_LEFT', 'wxBU_RIGHT', 'wxBU_TOP',
                    'wxBU_BOTTOM', 'wxNO_BORDER'],
     'events': {

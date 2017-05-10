@@ -50,7 +50,6 @@ config = {
             'desc': _('''wxPropertyGridManager only: don't show an internal border around the property grid.'''),
         },
     },
-    'box_label': _('Style'),
     'style_list': ['wxPG_AUTO_SORT', 'wxPG_HIDE_CATEGORIES', 'wxPG_ALPHABETIC_MODE',
                    'wxPG_BOLD_MODIFIED', 'wxPG_SPLITTER_AUTO_CENTER', 'wxPG_TOOLTIPS',
                    'wxPG_HIDE_MARGIN', 'wxPG_STATIC_SPLITTER', 'wxPG_STATIC_LAYOUT',

@@ -64,7 +64,6 @@ config = {
                       'mode.')
         },
     },
-    'box_label': _('Style'),
     'default_style': 'wxLC_ICON',
     'style_list': ['wxLC_LIST', 'wxLC_REPORT', 'wxLC_VIRTUAL', 'wxLC_ICON',
                    'wxLC_SMALL_ICON', 'wxLC_ALIGN_TOP', 'wxLC_ALIGN_LEFT',

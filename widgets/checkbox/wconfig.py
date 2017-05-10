@@ -28,7 +28,6 @@ config = {
             'desc': _('Makes the text appear on the left of the checkbox.')
         }
     },
-    'box_label': _('Style'),
     'style_list': ['wxCHK_2STATE', 'wxCHK_3STATE',
                    'wxCHK_ALLOW_3RD_STATE_FOR_USER', 'wxALIGN_RIGHT'],
 

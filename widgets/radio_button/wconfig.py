@@ -25,7 +25,6 @@ config = {
             'supported_by': ('wx2',),
         },
     },
-    'box_label': _('Style'),
     'style_list': ['wxRB_GROUP', 'wxRB_SINGLE', 'wxRB_USE_CHECKBOX'],
     'events': {
         'EVT_RADIOBUTTON': {},

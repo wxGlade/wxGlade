@@ -31,7 +31,6 @@ config = {
             'default_style': True,
         },
     },
-    'box_label': _('Style'),
     'style_list': ['wxHL_ALIGN_LEFT', 'wxHL_ALIGN_RIGHT', 'wxHL_ALIGN_CENTRE',
                    'wxHL_CONTEXTMENU', 'wxHL_DEFAULT_STYLE'],
     'events': {

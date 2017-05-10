@@ -243,8 +243,6 @@ Elements:
   - I{generic_styles} - Generic item to concentrate styles that are not
     part of a specific widget e.g. sizer styles.
 
-  - I{box_label} - Title of the widget style box
-
   - I{default_style} - Default style for new created widgets
 
   - I{style_list} - List of all styles to show within the style box
@@ -297,8 +295,7 @@ Event attributes:
 All event attributes are optional. If no attributes are given,
 C{wxCommandEvent} will be used as event type.
 
-Use gettext (C{_()}) for the attributes content of "box_label", "desc" and
-"obsolete".
+Use gettext (C{_()}) for the attributes content of "desc" and "obsolete".
 
 The style processing is described in L{gui_mixins.StylesMixin.cn_f()}.
 

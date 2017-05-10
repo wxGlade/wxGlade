@@ -22,7 +22,6 @@ config = {
             'desc': _('The value wraps at the minimum and maximum.'),
         },
     },
-    'box_label': _('Style'),
     'default_style': 'wxSP_HORIZONTAL',
     'style_list': ['wxSP_HORIZONTAL', 'wxSP_VERTICAL', 'wxSP_ARROW_KEYS',
                    'wxSP_WRAP'],

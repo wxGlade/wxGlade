@@ -17,7 +17,6 @@ config = {
             'exclude': 'wxLI_HORIZONTAL',
         },
     },
-    'box_label': _('Style'),
     'default_style': 'wxLI_HORIZONTAL',
     'style_list': ['wxLI_HORIZONTAL', 'wxLI_VERTICAL']
 }
