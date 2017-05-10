@@ -41,7 +41,6 @@ config = {
         # - wxNO_FULL_REPAINT_ON_RESIZE
         # - wxCLIP_CHILDREN
     },
-    'box_label': _('Style'),
     'style_list': ['wxDEFAULT_DIALOG_STYLE', 'wxDIALOG_MODAL', 'wxCAPTION',
                    'wxSYSTEM_MENU', 'wxCLOSE_BOX', 'wxRESIZE_BOX',
                    'wxMAXIMIZE_BOX', 'wxMINIMIZE_BOX', 'wxTHICK_FRAME',

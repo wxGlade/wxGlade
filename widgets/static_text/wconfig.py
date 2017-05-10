@@ -38,7 +38,6 @@ config = {
             'supported_by': ('wx3',),
         },
     },
-    'box_label': _('Style'),
     'style_list': ['wxALIGN_LEFT', 'wxALIGN_RIGHT', 'wxALIGN_CENTRE',
                    'wxALIGN_CENTER', 'wxALIGN_CENTRE_HORIZONTAL',
                    'wxST_NO_AUTORESIZE', 'wxST_ELLIPSIZE_START',

@@ -36,7 +36,6 @@ config = {
                       'behaviour ).'),
         },
     },
-    'box_label': _('Style'),
     'style_list': ['wxBU_AUTODRAW', 'wxBU_LEFT', 'wxBU_RIGHT', 'wxBU_TOP',
                    'wxBU_BOTTOM', 'wxBU_EXACTFIT', 'wxNO_BORDER'],
     'events': {

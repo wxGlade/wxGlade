@@ -44,7 +44,6 @@ config = {
 
         # plus generic styles from wxWindow (from common.py):
     },
-    'box_label': _('Style'),
     'style_list': ['wxDEFAULT_FRAME_STYLE', 'wxICONIZE', 'wxCAPTION',
                    'wxMINIMIZE', 'wxMINIMIZE_BOX', 'wxCLOSE_BOX',
                    'wxMAXIMIZE', 'wxMAXIMIZE_BOX', 'wxSTAY_ON_TOP',

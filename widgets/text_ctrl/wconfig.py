@@ -108,7 +108,6 @@ config = {
                       'to be capitalized.'),
         },
     },
-    'box_label': _('Style'),
     'style_list': ['wxTE_PROCESS_ENTER', 'wxTE_PROCESS_TAB',
                    'wxTE_MULTILINE', 'wxTE_PASSWORD', 'wxTE_READONLY',
                    'wxTE_RICH', 'wxTE_RICH2', 'wxTE_AUTO_URL',

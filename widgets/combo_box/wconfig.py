@@ -32,7 +32,6 @@ config = {
                       'Windows only.'),
         },
     },
-    'box_label': _('Style'),
     'default_style': 'wxCB_DROPDOWN',
     'style_list': ['wxCB_SIMPLE', 'wxCB_DROPDOWN', 'wxCB_READONLY', 'wxCB_SORT', 'wxTE_PROCESS_ENTER'],
     'events': {

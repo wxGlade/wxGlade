@@ -123,20 +123,6 @@ class BaseLanguageMixin(StylesMixin):
 
     style_list = property(_get_style_list)
 
-    def _get_box_label(self):
-        """\
-        Return the label of the style box in the widget dialog
-
-        @rtype: str
-        """
-        try:
-            name = self.config['box_label']
-        except (AttributeError, KeyError):
-            name = ''
-        return name
-
-    box_label = property(_get_box_label)
-
 
 
 class CppMixin(BaseLanguageMixin):

@@ -13,7 +13,6 @@ config = {
             'supported_by': ('wx3',)
             },
     },
-    'box_label': _('Style'),
     'style_list': ['wxCB_SORT'],
     'events': {
         'EVT_CHOICE': {},

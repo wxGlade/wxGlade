@@ -57,7 +57,6 @@ config = {
                             'wxSTB_ELLIPSIZE_END|wxFULL_REPAINT_ON_RESIZE'),
         },
     },
-    'box_label': _('Style'),
     'style_list': ['wxST_SIZEGRIP', 'wxSTB_SIZEGRIP', 'wxSTB_SHOW_TIPS',
                    'wxSTB_ELLIPSIZE_START', 'wxSTB_ELLIPSIZE_MIDDLE',
                    'wxSTB_ELLIPSIZE_END', 'wxSTB_DEFAULT_STYLE']

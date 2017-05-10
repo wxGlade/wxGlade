@@ -58,7 +58,6 @@ config = {
             'exclude': 'wxSL_SELRANGE',
         },
     },
-    'box_label': _('Style'),
     'default_style': 'wxSL_HORIZONTAL',
     'style_list': ['wxSL_HORIZONTAL', 'wxSL_VERTICAL',
                    'wxSL_AUTOTICKS',

@@ -3811,7 +3811,6 @@ config = {
             'desc': _('Use the old fashion design.'),
         },
     },
-    'box_label': _('Style'),
     'default_style': 'wxMCFance',
     'style_list': ['wxMCFance', 'wxMCOldFashion']
 }</programlisting>

@@ -800,7 +800,7 @@ class WidgetStyleProperty(_CheckListProperty):
         widget_writer = owner.widget_writer
         self.style_defs = widget_writer.style_defs
         self.styles = OrderedDict()
-        self.styles[widget_writer.box_label] = widget_writer.style_list
+        self.styles["Style"] = widget_writer.style_list
         self._names = sum( self.styles.values(), [] )
         self._values = None
         self.set(widget_writer.default_style)
@@ -830,8 +830,7 @@ class WidgetStyleProperty(_CheckListProperty):
 
         tooltips = self._create_tooltip_text()
 
-        box_label = _(widget_writer.box_label)
-        static_box = wx.StaticBox(panel, -1, box_label, style=wx.FULL_REPAINT_ON_RESIZE)
+        static_box = wx.StaticBox(panel, -1, _("Style"), style=wx.FULL_REPAINT_ON_RESIZE)
         box_sizer = wx.StaticBoxSizer(static_box, wx.VERTICAL)
         for name, flag_value in zip(self._names, self._values):
             if name in widget_writer.style_defs:
