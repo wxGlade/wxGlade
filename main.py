@@ -493,10 +493,8 @@ class wxGladeFrame(wx.Frame):
                 _('The autosave function failed. It has been disabled\n'
                   'permanently due to this error. Use the preferences\n'
                   'dialog to re-enable this functionality.\n'
-                  'The details have been written to the wxGlade log file\n'
-                  '\n'
-                  'The log file is: %s' % config.log_file
-                  ),
+                  'The details have been written to the wxGlade log file\n\n'
+                  'The log file is: %s' % config.log_file ),
                 _('Autosave Failed'), wx.OK | wx.CENTRE | wx.ICON_ERROR )
 
     def edit_preferences(self):
@@ -608,11 +606,9 @@ class wxGladeFrame(wx.Frame):
             return
         default_path = os.path.dirname(common.app_tree.app.filename or "") or self.cur_dir
         infile = wx.FileSelector(_("Open file"),
-                                   wildcard="wxGlade files (*.wxg)|*.wxg|"
-                                   "wxGlade Template files (*.wgt)|*.wgt|"
-                                   "XML files (*.xml)|*.xml|All files|*",
-                                   flags=wx.FD_OPEN | wx.FD_FILE_MUST_EXIST,
-                                   default_path=default_path)
+                                   wildcard="wxGlade files (*.wxg)|*.wxg|wxGlade Template files (*.wgt)|*.wgt|"
+                                            "XML files (*.xml)|*.xml|All files|*",
+                                   flags=wx.FD_OPEN | wx.FD_FILE_MUST_EXIST, default_path=default_path)
         if not infile: return
         if common.check_autosaved(infile):
             if wx.MessageBox( _("There seems to be auto saved data for this file: do you want to restore it?"),
@@ -631,37 +627,14 @@ class wxGladeFrame(wx.Frame):
         if path is not None:
             common.app_tree.select_path(path)  # re-loaded file -> go to previous position
 
-    def _open_app(self, filename_or_filelike, use_progress_dialog=True, add_to_history=True):
-        """\
-        Load a new wxGlade project
-
-        @param filename_or_filelike: Source filename or file-like object
-        @type filename_or_filelike: file | StringIO
-
-        @param use_progress_dialog: Show progress bar during loading WXG file
-        @type use_progress_dialog: bool
-
-        @param add_to_history: Add file to open to file history
-        @type add_to_history: bool
-
-        @return: True on Success
-        @rtype: bool
-        """
-        if isinstance(filename_or_filelike, compat.StringIO):
-            assert isinstance(filename_or_filelike.getvalue(), unicode)
-        else:
-            assert isinstance(filename_or_filelike, compat.basestring )
+    def _open_app(self, filename, use_progress_dialog=True, add_to_history=True):
+        "Load a new wxGlade project"
 
         error_msg = None
-        filename = None
         infile = None
         old_dir = os.getcwd()
 
-        if isinstance(filename_or_filelike, compat.basestring):
-            common.app_tree.app.filename = filename_or_filelike
-            filename = filename_or_filelike
-        else:
-            common.app_tree.filename = None
+        common.app_tree.app.filename = filename
 
         start = time.clock()
         common.app_tree.clear()
@@ -671,25 +644,13 @@ class wxGladeFrame(wx.Frame):
 
         try:
             try:
-                if isinstance(filename_or_filelike, compat.StringIO):
-                    # convert filename_or_filelike to UTF-8 and write back as lines, because
-                    # ProgressXmlWidgetBuilder uses lines to calculate and show the position
-                    tmp = filename_or_filelike.getvalue()
-                    tmp = tmp.encode('UTF-8')
-                    infile = compat.StringIO()
-                    for line in tmp.split('\n'):
-                        infile.write('%s\n' % line)
-                    infile.seek(0)
-                    self._logger.info( _('Read wxGlade project from file-like object') )
-
+                self._logger.info( _('Read wxGlade project from file "%s"'), filename )
+                os.chdir(os.path.dirname(filename))
+                # decoding will done automatically by SAX XML library
+                if compat.PYTHON2:
+                    infile = open(filename)
                 else:
-                    self._logger.info( _('Read wxGlade project from file "%s"'), filename )
-                    os.chdir(os.path.dirname(filename))
-                    # decoding will done automatically by SAX XML library
-                    if compat.PYTHON2:
-                        infile = open(filename)
-                    else:
-                        infile = open(filename, "r", encoding="UTF8")
+                    infile = open(filename, "r", encoding="UTF8")
 
                 if use_progress_dialog and config.preferences.show_progress:
                     p = ProgressXmlWidgetBuilder(input_file=infile)
@@ -698,11 +659,13 @@ class wxGladeFrame(wx.Frame):
 
                 p.parse(infile)
             except (EnvironmentError, SAXParseException, XmlParsingError) as msg:
+                if config.debugging: raise
                 if filename:
                     error_msg = _("Error loading file %s: %s") % (misc.wxstr(filename), misc.wxstr(msg))
                 else:
                     error_msg = _("Error loading from a file-like object: %s") % misc.wxstr(msg)
             except Exception as inst:
+                if config.debugging: raise
                 if filename:
                     fn = os.path.basename(filename).encode('ascii','replace')
                     msg = _('loading file "%s"') % fn
