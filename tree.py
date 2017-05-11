@@ -388,7 +388,7 @@ class WidgetTree(wx.TreeCtrl, Tree):
         self.auto_expand = True  # this control the automatic expansion of  nodes: it is set to False during xml loading
         self.Bind(wx.EVT_TREE_SEL_CHANGED, self.on_change_selection)
         self.Bind(wx.EVT_RIGHT_DOWN, self.popup_menu)
-        self.Bind(wx.EVT_LEFT_DCLICK, self.show_toplevel)
+        self.Bind(wx.EVT_LEFT_DCLICK, self.on_left_dclick)
         self.Bind(wx.EVT_LEFT_DOWN, self.on_left_click) # allow direct placement of widgets
         self.Bind(wx.EVT_MENU, self.show_toplevel)
         self.Bind(wx.EVT_TREE_BEGIN_DRAG, self.begin_drag)
@@ -699,6 +699,9 @@ class WidgetTree(wx.TreeCtrl, Tree):
             item.drop_sizer()
             return
         event.Skip()
+
+    def on_left_dclick(self, event):
+        self.show_toplevel(event)
 
     def on_leave_window(self, event):
         self.SetCursor(wx.STANDARD_CURSOR)
