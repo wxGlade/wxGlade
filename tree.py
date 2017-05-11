@@ -390,7 +390,8 @@ class WidgetTree(wx.TreeCtrl, Tree):
         self.Bind(wx.EVT_RIGHT_DOWN, self.popup_menu)
         self.Bind(wx.EVT_LEFT_DCLICK, self.on_left_dclick)
         self.Bind(wx.EVT_LEFT_DOWN, self.on_left_click) # allow direct placement of widgets
-        self.Bind(wx.EVT_MENU, self.show_toplevel)
+        self.Bind(wx.EVT_MENU, self.on_menu)  # for handling the selection of the first item
+        self._popup_menu_widget = None  # the widget for the popup menu
         self.Bind(wx.EVT_TREE_BEGIN_DRAG, self.begin_drag)
         self.Bind(wx.EVT_LEAVE_WINDOW, self.on_leave_window)
         self.Bind(wx.EVT_MOUSE_EVENTS, self.on_mouse_events)
@@ -707,6 +708,12 @@ class WidgetTree(wx.TreeCtrl, Tree):
         self.SetCursor(wx.STANDARD_CURSOR)
         event.Skip()
 
+    def on_menu(self, event):
+        # the first entry in the popup menu, i.e. the name was selected
+        if self._popup_menu_widget is None: return
+        if not getattr(self._popup_menu_widget, "_is_toplevel_window", False): return
+        self.show_toplevel( None, self._popup_menu_widget )
+
     def on_mouse_events(self, event):
         if not self._drag_ongoing and not event.IsButton():
             # set cursor to indicate a possible drop
@@ -730,8 +737,9 @@ class WidgetTree(wx.TreeCtrl, Tree):
         if not node:
             return
         self.select_item(node)
-        item = node.widget
-        item.popup_menu(event, pos)
+        self._popup_menu_widget = node.widget
+        node.widget.popup_menu(event, pos)
+        self._popup_menu_widget = None
 
     def expand(self, node=None, yes=True):
         "expands or collapses the given node"
