@@ -1309,7 +1309,7 @@ class FileNameProperty(DialogProperty):
     # these can be set on an instance
     message = _("Choose a file")
     wildcard = _("All files|*")
-    default_extension = None
+    default_extension = ""
     def __init__(self, value="", style=0, default_value=_DefaultArgument, name=None):
         self.style = style
         DialogProperty.__init__(self, value, False, True, default_value, name)
