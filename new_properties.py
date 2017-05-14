@@ -1323,14 +1323,14 @@ class FileNameProperty(DialogProperty):
         directory = self.value
         if directory and not os.path.isdir(directory):
             directory = os.path.dirname(directory)
-        if not directory:
+        if not directory or not os.path.exists(directory):
             directory = os.path.dirname(common.app_tree.app.filename)
         if not os.path.isdir(directory): return
         import subprocess
         if sys.platform=="win32":
             subprocess.call(['explorer', directory])
         elif sys.platform=="darwin":
-            subprocess.call(["open", "-R", directory])
+            subprocess.call(["open", directory])
     def _create_dialog(self):
         if self.dialog is not None: return self.dialog
         parent = self.text.GetTopLevelParent()
