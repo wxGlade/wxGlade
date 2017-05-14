@@ -976,6 +976,9 @@ class TextProperty(Property):
 
         self._set_tooltip(label, self.text, self.enabler, *self.additional_controls)
         self.editing = True
+        
+        if hasattr(self, "_on_label_dblclick"):
+            label.Bind(wx.EVT_LEFT_DCLICK, self._on_label_dblclick)
 
     def create_text_ctrl(self, panel, value):
         style = 0
@@ -1313,12 +1316,28 @@ class FileNameProperty(DialogProperty):
     def __init__(self, value="", style=0, default_value=_DefaultArgument, name=None):
         self.style = style
         DialogProperty.__init__(self, value, False, True, default_value, name)
+    def _on_label_dblclick(self, event):
+        # show directory in explorer/finder
+        if not self.value: return
+        import os,sys
+        directory = self.value
+        if directory and not os.path.isdir(directory):
+            directory = os.path.dirname(directory)
+        if not directory:
+            directory = os.path.dirname(common.app_tree.app.filename)
+        if not os.path.isdir(directory): return
+        import subprocess
+        if sys.platform=="win32":
+            subprocess.call(['explorer', directory])
+        elif sys.platform=="darwin":
+            subprocess.call(["open", "-R", directory])
     def _create_dialog(self):
         if self.dialog is not None: return self.dialog
         parent = self.text.GetTopLevelParent()
         dlg = _FileDialog(parent, self.message, self.wildcard, self.default_extension, style=self.style)
         dlg.set_value(self.value)
         return dlg
+
 
 class FileNamePropertyD(FileNameProperty):
     deactivated = True
