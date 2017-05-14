@@ -3,12 +3,12 @@ Application class to store properties of the application being created
 
 @copyright: 2002-2007 Alberto Griggio <agriggio@users.sourceforge.net>
 @copyright: 2012-2016 Carsten Grohmann
-@copyright: 2016 Dietmar Schwertberger
+@copyright: 2016-2017 Dietmar Schwertberger
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
 
-import os, random, re, logging, math
+import os, sys, random, re, logging, math
 import wx
 
 import common, config, misc, plugins, errors, compat
@@ -102,6 +102,10 @@ class Application(np.PropertyOwner):
                                   " place.\nModifying code in place is deprecated. Please adapt your application.",
                       "output_path": "Output file or directory"
                       }
+    if sys.platform=="win32":
+        _PROPERTY_HELP["output_path"] = "Output file or directory; double click label to show in Explorer"
+    elif sys.platform=="darwin":
+        _PROPERTY_HELP["output_path"] = "Output file or directory; double click label to show in Finder"
 
     def __init__(self):
         np.PropertyOwner.__init__(self)
