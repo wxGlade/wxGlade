@@ -386,7 +386,7 @@ class ToolsProperty(np.Property):
         sizer.Add(self.edit_btn, 1, wx.EXPAND|wx.ALIGN_CENTER|wx.TOP|wx.BOTTOM, 4)
         self.edit_btn.Bind(wx.EVT_BUTTON, self.edit_tools)
 
-    def edit_tools(self, event):
+    def edit_tools(self, event=None):
         dialog = ToolsDialog( self.edit_btn.GetTopLevelParent(), self.owner, items=self.value )
         if dialog.ShowModal() == wx.ID_OK:
             self.on_value_edited(dialog.get_tools())
@@ -457,39 +457,40 @@ class EditToolBar(EditBase, PreviewMixin, EditStylesMixin, BitmapMixin):
         self.separation = np.SpinPropertyD(5, val_range=(0,100), default_value=5, immediate=True)
         self.tools = ToolsProperty()  # the Edit button
 
-        self.pwidget = self.widget = None  # a panel and the actual ToolBar
+        self.widget = self._tb = None  # a panel and the actual ToolBar
 
         if not self.parent:
             PreviewMixin.__init__(self)  # add a preview button
+            self._is_toplevel = True
         else:
             self.preview = None
+            self._is_toplevel = False
 
     def create_widget(self):
         tb_style = wx.TB_HORIZONTAL | self.style
         if wx.Platform == '__WXGTK__':
             tb_style |= wx.TB_DOCKABLE | wx.TB_FLAT
         if self.parent:
-            self.pwidget = self.widget = wx.ToolBar(
-                self.parent.widget, -1, style=tb_style)
-            self.parent.widget.SetToolBar(self.pwidget)
+            self.widget = self._tb = wx.ToolBar(self.parent.widget, -1, style=tb_style)
+            self.parent.widget.SetToolBar(self.widget)
         else:
             # "top-level" toolbar
-            self.pwidget = wx.Frame(None, -1, misc.design_title(self.name))
-            self.pwidget.SetClientSize((400, 30))
-            self.widget = wx.ToolBar(self.pwidget, -1, style=tb_style)
-            self.pwidget.SetToolBar(self.widget)
-            self.pwidget.SetBackgroundColour(self.widget.GetBackgroundColour())
+            self.widget = wx.Frame(None, -1, misc.design_title(self.name))
+            self.widget.SetClientSize((400, 30))
+            self._tb = wx.ToolBar(self.widget, -1, style=tb_style)
+            self.widget.SetToolBar(self._tb)
+            self.widget.SetBackgroundColour(self.widget.GetBackgroundColour())
             icon = compat.wx_EmptyIcon()
             xpm = os.path.join(config.icons_path, 'toolbar.xpm')
             icon.CopyFromBitmap(misc.get_xpm_bitmap(xpm))
-            self.pwidget.SetIcon(icon)
-            self.pwidget.Bind(wx.EVT_CLOSE, lambda e: self.hide_widget())
+            self.widget.SetIcon(icon)
+            self.widget.Bind(wx.EVT_CLOSE, lambda e: self.hide_widget())
             self.widget.Bind(wx.EVT_LEFT_DOWN, self.on_set_focus)
             if wx.Platform == '__WXMSW__':
                 # MSW isn't smart enough to avoid overlapping windows, so
                 # at least move it away from the 3 wxGlade frames
-                self.pwidget.CenterOnScreen()
-        self.pwidget.Bind(wx.EVT_LEFT_DOWN, self.on_set_focus)
+                self.widget.CenterOnScreen()
+        self.widget.Bind(wx.EVT_LEFT_DOWN, self.on_set_focus)
 
         # set the various property values
         self._set_bitmapsize()
@@ -505,36 +506,36 @@ class EditToolBar(EditBase, PreviewMixin, EditStylesMixin, BitmapMixin):
 
     # update widget ####################################################################################################
     def _set_margins(self):
-        if not self.widget: return
+        if not self._tb: return
         margins_p = self.properties["margins"]
         if not margins_p.is_active(): return
-        self.widget.SetMargins(margins_p.get_tuple())
+        self._tb.SetMargins(margins_p.get_tuple())
 
     def _set_bitmapsize(self):
-        if not self.widget: return
+        if not self._tb: return
         bitmapsize_p = self.properties["bitmapsize"]
         if not bitmapsize_p.is_active(): return
-        self.widget.SetToolBitmapSize(bitmapsize_p.get_tuple())
+        self._tb.SetToolBitmapSize(bitmapsize_p.get_tuple())
 
     def _set_packing(self):
-        if not self.widget: return
+        if not self._tb: return
         packing_p = self.properties["packing"]
         if not packing_p.is_active(): return
-        self.widget.SetToolPacking(packing_p.get())
+        self._tb.SetToolPacking(packing_p.get())
 
     def _set_separation(self):
-        if not self.widget: return
+        if not self._tb: return
         separation_p = self.properties["separation"]
         if not separation_p.is_active(): return
-        self.widget.SetToolSeparation(separation_p.get())
+        self._tb.SetToolSeparation(separation_p.get())
 
     def _set_tools(self):
-        if not self.widget: return  # nothing left to do
-        self.widget.ClearTools()
+        if not self._tb: return  # nothing left to do
+        self._tb.ClearTools()
         # now add all the tools
         for tool in self.tools:
             if misc.streq(tool.id, '---'):  # the tool is a separator
-                self.widget.AddSeparator()
+                self._tb.AddSeparator()
             else:
                 bmp1 = self.get_preview_obj_bitmap(tool.bitmap1)
                 bmp2 = self.get_preview_obj_bitmap(tool.bitmap2) if tool.bitmap2.strip() else None
@@ -543,7 +544,7 @@ class EditToolBar(EditBase, PreviewMixin, EditStylesMixin, BitmapMixin):
                     kind = kinds[int(tool.type)]
                 except (ValueError, IndexError):
                     kind = wx.ITEM_NORMAL
-                ADD = self.widget.AddLabelTool  if compat.IS_CLASSIC else  self.widget.AddTool
+                ADD = self._tb.AddLabelTool  if compat.IS_CLASSIC else  self._tb.AddTool
                 if bmp2 is not None:
                     ADD( wx.NewId(), misc.wxstr(tool.label), bmp1, bmp2, kind,
                          misc.wxstr(tool.short_help), misc.wxstr(tool.long_help) )
@@ -553,15 +554,15 @@ class EditToolBar(EditBase, PreviewMixin, EditStylesMixin, BitmapMixin):
         self._refresh_widget()
 
     def _refresh_widget(self):
-        self.widget.Realize()
-        self.widget.SetSize((-1, self.widget.GetBestSize()[1]))
+        self._tb.Realize()
+        self._tb.SetSize((-1, self._tb.GetBestSize()[1]))
         if self.parent:
             widget = self.parent.widget
             w, h = widget.GetClientSize()
             widget.SetClientSize((w, h+1))
             widget.SetClientSize((w, h))
         else:
-            widget = self.pwidget
+            widget = self.widget
             w = widget.GetClientSize()[0]
             h = self.widget.GetSize()[1] // 2
             widget.SetClientSize((w, h))
@@ -573,14 +574,14 @@ class EditToolBar(EditBase, PreviewMixin, EditStylesMixin, BitmapMixin):
             self.parent._toolbar = None
             if kwds.get('do_nothing', False):
                 # this probably leaks memory, but avoids segfaults
-                self.pwidget = None
+                self.widget = None
             else:
                 if self.parent.widget:
                     self.parent.widget.SetToolBar(None)
         else:
-            if self.pwidget:
-                self.pwidget.Destroy()
-                self.pwidget = None
+            if self.widget:
+                self.widget.Destroy()
+                self.widget = None
         EditBase.remove(self)
 
     def popup_menu(self, event, pos=None):
@@ -590,14 +591,29 @@ class EditToolBar(EditBase, PreviewMixin, EditStylesMixin, BitmapMixin):
 
     def _create_popup_menu(self, widget):
         menu = misc.wxGladePopupMenu(self.name)
+
+        if self.widget and self.is_visible():
+            item = misc.append_menu_item(menu, -1, _('Hide'))
+            misc.bind_menu_item_after(widget, item, self.hide_widget)
+        else:
+            i = misc.append_menu_item(menu, -1, _('Show'))
+            misc.bind_menu_item_after(widget, i, common.app_tree.show_toplevel, None, self)
+        menu.AppendSeparator()
+
         i = misc.append_menu_item(menu, -1, _('Remove ToolBar\tDel'), wx.ART_DELETE)
         misc.bind_menu_item_after(widget, i, self.remove)
+
+        item = misc.append_menu_item(menu, -1, _('Edit tools ...'))
+        misc.bind_menu_item_after(widget, item, self.properties["tools"].edit_tools)
+
+        item = misc.append_menu_item(menu, -1, _('Hide'))
+        misc.bind_menu_item_after(widget, item, self.hide_widget)
 
         return menu
 
     def hide_widget(self, *args):
-        if self.pwidget and self.pwidget is not self.widget:
-            self.pwidget.Hide()
+        if self.widget and self.widget is not self._tb:
+            self.widget.Hide()
             common.app_tree.expand(self.node, False)
             common.app_tree.select_item(self.node.parent)
             #common.app_tree.app.show_properties()
@@ -608,22 +624,22 @@ class EditToolBar(EditBase, PreviewMixin, EditStylesMixin, BitmapMixin):
         return None
     
     def properties_changed(self, modified):
-        if not modified or "name" in modified and self.pwidget is not self.widget:
-            self.pwidget.SetTitle(misc.design_title(misc.wxstr(self.name)))
+        if not modified or "name" in modified and self.widget is not self._tb:
+            self.widget.SetTitle(misc.design_title(misc.wxstr(self.name)))
         refresh = False
-        if not modified or "margins" in modified and self.widget:
+        if not modified or "margins" in modified and self._tb:
             self._set_margins()
             refresh = True
-        if not modified or "bitmapsize" in modified and self.widget:
+        if not modified or "bitmapsize" in modified and self._tb:
             self._set_bitmapsize()
             refresh = True
-        if not modified or "packing" in modified and self.widget:
+        if not modified or "packing" in modified and self._tb:
             self._set_packing()
             refresh = True
-        if not modified or "separation" in modified and self.widget:
+        if not modified or "separation" in modified and self._tb:
             self._set_separation()
             refresh = True
-        if not modified or "tools" in modified and self.widget:
+        if not modified or "tools" in modified and self._tb:
             self._set_tools()
             refresh = True
 

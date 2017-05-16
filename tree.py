@@ -816,10 +816,11 @@ class WidgetTree(wx.TreeCtrl, Tree):
 
         # the actual toplevel widget may be one level higher, e.g. for a Panel, which is embedded in a Frame
         set_size = None
-        if node.widget._is_toplevel_window:
+        if getattr(node.widget, "_is_toplevel_window", False) or getattr(node.widget, "_is_toplevel", False):
+            # toplevel window or a menu/status bar
             toplevel_widget = node.widget.widget
-            size_p = node.widget.properties["size"]
-            if size_p.is_active(): set_size = size_p.get_tuple()
+            size_p = node.widget.properties.get("size")
+            if size_p is not None and size_p.is_active(): set_size = size_p.get_tuple()
         else:
             toplevel_widget = node.widget.widget.GetParent()
 
