@@ -644,8 +644,10 @@ class EditMenuBar(EditBase, PreviewMixin):
         self._mb = None  # the real menubar
         if not self.parent:
             PreviewMixin.__init__(self)  # add a preview button
+            self._is_toplevel = True
         else:
             self.preview = None
+            self._is_toplevel = False
 
     def create_widget(self):
         if wx.Platform == '__WXGTK__' and not EditMenuBar.__hidden_frame:
@@ -735,14 +737,20 @@ class EditMenuBar(EditBase, PreviewMixin):
     def _create_popup_menu(self, widget=None):
         if widget is None: widget = self.widget
         menu = misc.wxGladePopupMenu(self.name)
+
+        if self.widget and self.is_visible():
+            item = misc.append_menu_item(menu, -1, _('Hide'))
+            misc.bind_menu_item_after(widget, item, self.hide_widget)
+        else:
+            i = misc.append_menu_item(menu, -1, _('Show'))
+            misc.bind_menu_item_after(widget, i, common.app_tree.show_toplevel, None, self)
+        menu.AppendSeparator()
+
         item = misc.append_menu_item(menu, -1, _('Remove MenuBar\tDel'), wx.ART_DELETE)
         misc.bind_menu_item_after(widget, item, self.remove)
 
         item = misc.append_menu_item(menu, -1, _('Edit menus ...'))
         misc.bind_menu_item_after(widget, item, self.properties["menus"].edit_menus)
-
-        item = misc.append_menu_item(menu, -1, _('Hide'))
-        misc.bind_menu_item_after(widget, item, self.hide_widget)
 
         return menu
 
