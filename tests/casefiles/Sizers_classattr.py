@@ -73,9 +73,9 @@ class MyDialog(wx.Dialog):
 # end of class MyDialog
 class MyApp(wx.App):
     def OnInit(self):
-        dialog_1 = MyDialog(None, wx.ID_ANY, "")
-        self.SetTopWindow(dialog_1)
-        dialog_1.Show()
+        self.dialog_1 = MyDialog(None, wx.ID_ANY, "")
+        self.SetTopWindow(self.dialog_1)
+        self.dialog_1.Show()
         return True
 
 # end of class MyApp

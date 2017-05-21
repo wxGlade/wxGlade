@@ -67,9 +67,9 @@ class Bug173_UI_SomeDialog(wx.Dialog):
 # end of class Bug173_UI_SomeDialog
 class MyApp(wx.App):
     def OnInit(self):
-        Frame183 = Bug183_UI_Frame(None, wx.ID_ANY, "")
-        self.SetTopWindow(Frame183)
-        Frame183.Show()
+        self.Frame183 = Bug183_UI_Frame(None, wx.ID_ANY, "")
+        self.SetTopWindow(self.Frame183)
+        self.Frame183.Show()
         return True
 
 # end of class MyApp

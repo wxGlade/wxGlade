@@ -216,9 +216,9 @@ from %(top_win_class)s import %(top_win_class)s\n\n"""
     tmpl_detailed = """\
 class %(klass)s(%(cn_wxApp)s):
 %(tab)sdef OnInit(self):
-%(tab)s%(tab)s%(top_win)s = %(top_win_class)s(None, %(cn_wxIDANY)s, "")
-%(tab)s%(tab)sself.SetTopWindow(%(top_win)s)
-%(tab)s%(tab)s%(top_win)s.Show()
+%(tab)s%(tab)sself.%(top_win)s = %(top_win_class)s(None, %(cn_wxIDANY)s, "")
+%(tab)s%(tab)sself.SetTopWindow(self.%(top_win)s)
+%(tab)s%(tab)sself.%(top_win)s.Show()
 %(tab)s%(tab)sreturn True
 
 # end of class %(klass)s
@@ -230,9 +230,9 @@ if __name__ == "__main__":
     tmpl_gettext_detailed = """\
 class %(klass)s(%(cn_wxApp)s):
 %(tab)sdef OnInit(self):
-%(tab)s%(tab)s%(top_win)s = %(top_win_class)s(None, %(cn_wxIDANY)s, "")
-%(tab)s%(tab)sself.SetTopWindow(%(top_win)s)
-%(tab)s%(tab)s%(top_win)s.Show()
+%(tab)s%(tab)sself.%(top_win)s = %(top_win_class)s(None, %(cn_wxIDANY)s, "")
+%(tab)s%(tab)sself.SetTopWindow(self.%(top_win)s)
+%(tab)s%(tab)sself.%(top_win)s.Show()
 %(tab)s%(tab)sreturn True
 
 # end of class %(klass)s
