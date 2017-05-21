@@ -43,9 +43,9 @@ class MyFrame(wx.Frame):
 # end of class MyFrame
 class MyApp(wx.App):
     def OnInit(self):
-        frame_1 = MyFrame(None, wx.ID_ANY, "")
-        self.SetTopWindow(frame_1)
-        frame_1.Show()
+        self.frame_1 = MyFrame(None, wx.ID_ANY, "")
+        self.SetTopWindow(self.frame_1)
+        self.frame_1.Show()
         return True
 
 # end of class MyApp

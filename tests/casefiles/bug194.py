@@ -58,9 +58,9 @@ class Frame194(wx.Frame):
 # end of class Frame194
 class MyApp(wx.App):
     def OnInit(self):
-        Bug194_Frame = Frame194(None, wx.ID_ANY, "")
-        self.SetTopWindow(Bug194_Frame)
-        Bug194_Frame.Show()
+        self.Bug194_Frame = Frame194(None, wx.ID_ANY, "")
+        self.SetTopWindow(self.Bug194_Frame)
+        self.Bug194_Frame.Show()
         return True
 
 # end of class MyApp
