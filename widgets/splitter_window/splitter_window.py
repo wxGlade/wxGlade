@@ -310,6 +310,7 @@ def initialize():
     WidgetTree.images['EditSplitterSlot-Right']  = os.path.join( config.icons_path, 'splitter_slot-right.xpm' )
     WidgetTree.images['EditSplitterSlot-Top']    = os.path.join( config.icons_path, 'splitter_slot-top.xpm' )
     WidgetTree.images['EditSplitterSlot-Bottom'] = os.path.join( config.icons_path, 'splitter_slot-bottom.xpm' )
-    WidgetTree.images['EditSplitterWindow-v']    = os.path.join( config.icons_path, 'splitter_window-v.xpm' )
+    WidgetTree.images['EditSplitterWindow']    = os.path.join( config.icons_path, 'splitter_window.xpm' )
+    WidgetTree.images['EditSplitterWindow-h']    = os.path.join( config.icons_path, 'splitter_window-h.xpm' )
 
     return common.make_object_button(editor_name, 'splitter_window.xpm')
