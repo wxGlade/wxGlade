@@ -89,7 +89,7 @@ class Application(np.PropertyOwner):
                         "indent_mode":          "Indentation mode",
                         "multiple_files":       "Code Generation",
                         "overwrite":            'Overwrite existing sources',
-                        "generate_code":        "Start generating source files"}
+                        "generate_code":        "Generate Source"}
     _PROPERTY_HELP = {"name":            'Name of the instance created from "Class";\n'
                                          ' also used as (main) file name in case of "Separate file for each class"',
                       "class":           "Name of the automatically generated class derived from wxApp",
@@ -570,8 +570,8 @@ class Application(np.PropertyOwner):
     def popup_menu(self, event, pos=None):
         # right click event -> expand all or show context menu
         expanded = True
-        for child_node in common.app_tree.root.children:
-            if not common.app_tree.IsExpanded(child_node.item):
+        for child_node in common.app_tree.root.children or []:
+            if not common.app_tree.IsExpanded(child_node.item) and child_node.children:
                 expanded = False
                 break
         if not expanded:
