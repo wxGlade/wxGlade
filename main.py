@@ -812,7 +812,8 @@ class wxGladeFrame(wx.Frame):
 
     def show_manual(self):
         "Show the wxGlade user manual"
-        self._show_html(config.manual_file)
+        #self._show_html(config.manual_file)
+        self._show_html(config.tutorial_file)  # at the moment there's no new manual
 
     def show_tutorial(self):
         "Show the wxGlade tutorial"
