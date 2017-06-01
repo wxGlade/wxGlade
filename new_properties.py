@@ -587,7 +587,6 @@ class _CheckListProperty(Property):
                 checkbox = wx.CheckBox(panel, -1, style)
 
                 if style in tooltips: compat.SetToolTip(checkbox, tooltips[style])
-
                 self._choices.append(checkbox)
                 box_sizer.Add(checkbox)
 
@@ -655,7 +654,11 @@ class _CheckListProperty(Property):
             elif self.value_set.intersection( excludes ):
                 checkbox.SetForegroundColour(wx.RED)
             else:
-                checkbox.SetForegroundColour(default_color)
+                supported_by = self.style_defs.get(name, {}).get("supported_by", None)
+                if supported_by:
+                    checkbox.SetForegroundColour(wx.BLUE)
+                else:
+                    checkbox.SetForegroundColour(default_color)
             checkbox.Refresh()
 
     ####################################################################################################################
