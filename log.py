@@ -69,7 +69,7 @@ class StringHandler(logging.handlers.MemoryHandler):
     @type: bool
     """
 
-    encoding = sys.stdout.encoding or sys.getfilesystemencoding()
+    encoding = sys.stdout and sys.stdout.encoding or sys.getfilesystemencoding()
     """\
     Encoding of all character strings
 
