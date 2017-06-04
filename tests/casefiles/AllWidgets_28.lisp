@@ -369,7 +369,7 @@
         (wxChoice_SetSelection (slot-choice-filled obj) 1)
         (wxComboBox_SetSelection (slot-combo-box-filled obj) 0)
         (wxGrid_CreateGrid (slot-grid-1 obj) 10 3 0)
-        (wxGrid_SetSelectionMode (slot-grid-1 obj) wxGridSelectCells)
+        (wxGrid_SetSelectionMode (slot-grid-1 obj) wxGridSelectRows)
         (wxListBox_SetSelection (slot-list-box-filled obj) 1)
         (wxRadioBox_SetSelection (slot-radio-box-filled1 obj) 1)
         (wxRadioBox_SetSelection (slot-radio-box-filled2 obj) 1)

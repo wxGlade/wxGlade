@@ -74,9 +74,8 @@ class PerlCodeGenerator(wcodegen.PerlWidgetCodeWriter):
             out.append('%s->SetLabelBackgroundColour(Wx::Colour->new(%s));\n' %
                        (name, self.codegen._string_to_colour(prop['label_bg_color'])))
         sel_mode = prop.get('selection_mode')
-        if sel_mode and sel_mode != 'wxGridSelectCells':
-            out.append('%s->SetSelectionMode(%s);\n' %
-                (name, sel_mode.replace('wxGrid.','')))
+        if sel_mode and sel_mode != 'wxGrid.wxGridSelectCells':
+            out.append('%s->SetSelectionMode(%s);\n' % (name, sel_mode.replace('wxGrid.','')))
 
         i = 0
         for label, size in columns:

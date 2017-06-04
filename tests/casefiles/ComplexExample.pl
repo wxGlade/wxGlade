@@ -254,7 +254,6 @@ sub __set_properties {
     $self->SetTitle(_T("FrameOggCompressionDetails"));
     $self->SetSize(Wx::Size->new(492, 300));
     $self->{grid}->CreateGrid(8, 3);
-    $self->{grid}->SetSelectionMode(wxGridSelectCells);
     $self->{button}->SetFocus();
     $self->{button}->SetDefault();
     # end wxGlade

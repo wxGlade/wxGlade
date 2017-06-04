@@ -54,7 +54,6 @@ sub __set_properties {
     $self->{grid_1}->CreateGrid(2, 2);
     $self->{grid_1}->SetGridLineColour(Wx::Colour->new(255, 0, 0));
     $self->{grid_1}->SetLabelBackgroundColour(Wx::Colour->new(216, 191, 216));
-    $self->{grid_1}->SetSelectionMode(wxGridSelectCells);
     $self->{grid_1}->SetColLabelValue(0, "Column A");
     $self->{grid_1}->SetColLabelValue(1, "Column B");
     $self->{grid_1}->SetBackgroundColour(Wx::Colour->new(0, 255, 255));
