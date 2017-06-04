@@ -54,7 +54,6 @@
         (wxGrid_CreateGrid (slot-grid-1 obj) 2 2 0)
         (wxGrid_SetGridLineColour (slot-grid-1 obj) (wxColour:wxColour_CreateFromStock 255, 0, 0))
         (wxGrid_SetLabelBackgroundColour (slot-grid-1 obj) (wxColour:wxColour_CreateFromStock 216, 191, 216))
-        (wxGrid_SetSelectionMode (slot-grid-1 obj) wxGridSelectCells)
         (wxGrid_SetColLabelValue (slot-grid-1 obj) 0 "Column A")
         (wxGrid_SetColLabelValue (slot-grid-1 obj) 1 "Column B")
         (wxWindow_SetBackgroundColour (slot-grid-1 obj) (wxColour_CreateRGB 0, 255, 255))

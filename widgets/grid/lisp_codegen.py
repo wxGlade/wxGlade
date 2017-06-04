@@ -64,7 +64,7 @@ class LispCodeGenerator(wcodegen.LispWidgetCodeWriter):
 
         sel_mode = prop.get('selection_mode')
 
-        if sel_mode and sel_mode != 'wxGridSelectCells':
+        if sel_mode and sel_mode != 'wxGrid.wxGridSelectCells':
             out.append('(wxGrid_SetSelectionMode (slot-%s obj) %s)\n' % (name, sel_mode.replace('wxGrid.','')))
 
         i = 0

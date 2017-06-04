@@ -235,7 +235,7 @@ sub __set_properties {
     $self->{choice_filled}->SetSelection(1);
     $self->{combo_box_filled}->SetSelection(0);
     $self->{grid_1}->CreateGrid(10, 3);
-    $self->{grid_1}->SetSelectionMode(wxGridSelectCells);
+    $self->{grid_1}->SetSelectionMode(wxGridSelectColumns);
     $self->{list_box_filled}->SetSelection(1);
     $self->{radio_box_filled1}->SetSelection(1);
     $self->{radio_box_filled2}->SetSelection(1);

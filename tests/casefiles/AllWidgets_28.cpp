@@ -215,6 +215,7 @@ void All_Widgets_Frame::set_properties()
     choice_filled->SetSelection(1);
     combo_box_filled->SetSelection(0);
     grid_1->CreateGrid(10, 3);
+    grid_1->SetSelectionMode(wxGrid::wxGridSelectRows);
     list_box_filled->SetSelection(1);
     radio_box_filled1->SetSelection(1);
     radio_box_filled2->SetSelection(1);
