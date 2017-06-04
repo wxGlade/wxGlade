@@ -379,7 +379,6 @@ class WindowBase(EditBase):
         # after setting various Properties, we must Refresh widget in order to see changes
         self.widget.Refresh()
         self.widget.Bind(wx.EVT_KEY_DOWN, misc.on_key_down_event)
-        self.widget.Bind(wx.EVT_KEY_UP, misc.on_key_down_event)
 
     def on_size(self, event):
         "Update the value of the 'size' property"
@@ -752,7 +751,7 @@ class TopLevelBase(WindowBase, PreviewMixin):
             # MSW isn't smart enough to avoid overlapping windows, so at least move it away from the 3 wxGlade frames
             self.widget.Center()
         # ALB 2004-10-15
-        self.widget.SetAcceleratorTable(common.palette.accel_table)
+        #self.widget.SetAcceleratorTable(common.palette.accel_table)
 
     def create(self):
         WindowBase.create(self)

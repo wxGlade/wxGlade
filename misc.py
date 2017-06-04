@@ -436,6 +436,12 @@ def _add():
         method = getattr(focused_widget.sizer, "add_slot", None)
     if method: method()
 
+def _save():
+    common.palette.save_app()
+
+def _generate_code():
+    common.app_tree.app.generate_code()
+
 
 # accelerator table to enable keyboard shortcuts for the popup menus of the various widgets (remove, cut, copy, paste)
 accel_table = [
@@ -446,6 +452,8 @@ accel_table = [
     (wx.ACCEL_CTRL,                ord('I'),      _insert, ()),
     (wx.ACCEL_CTRL,                ord('A'),      _add, ()),
     (0,                            wx.WXK_F5,     _preview, ()),
+    (wx.ACCEL_CTRL,                ord('S'),      _save, ()),
+    (wx.ACCEL_CTRL,                ord('G'),      _generate_code, ()),
 ]
 
 def on_key_down_event(event):
