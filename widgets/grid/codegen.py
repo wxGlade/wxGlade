@@ -107,7 +107,7 @@ class PythonCodeGenerator(wcodegen.PythonWidgetCodeWriter):
             out.append( fmt % (name, self.codegen._string_to_colour(prop['label_bg_color']) ) )
         sel_mode = prop.get('selection_mode')
         if sel_mode and sel_mode != 'wxGrid.wxGridSelectCells':
-            sel_mode = sel_mode[9:] if compat.IS_PHOENIX else sel_mode[7:]
+            sel_mode = sel_mode[9:]
             out.append('%s.SetSelectionMode(%s)\n' % (name, self.cn('wxGrid') + "." + sel_mode))
 
         i = 0
