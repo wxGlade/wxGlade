@@ -381,13 +381,13 @@ class Application(np.PropertyOwner):
         """Generate and instantiate preview widget.
         None will be returned in case of errors. The error details are written to the application log file."""
         # some checks
-        if compat.IS_PHOENIX:
-            found = common.app_tree.find_widgets_by_classnames(widget.node, "EditPropertyGridManager")
-            if found:
-                error = ("Preview with PropertyGridManager controls is currently deactivated as it causes crashes "
-                         "with wxPython Phoenix")
-                wx.MessageBox( error, _('Error'), wx.OK | wx.CENTRE | wx.ICON_EXCLAMATION )
-                return
+        #if compat.IS_PHOENIX:
+            #found = common.app_tree.find_widgets_by_classnames(widget.node, "EditPropertyGridManager")
+            #if found:
+                #error = ("Preview with PropertyGridManager controls is currently deactivated as it causes crashes "
+                         #"with wxPython Phoenix")
+                #wx.MessageBox( error, _('Error'), wx.OK | wx.CENTRE | wx.ICON_EXCLAMATION )
+                #return
         # XXX check other things as well, e.g. different bitmap sizes for BitmapButton
 
         if out_name is None:
