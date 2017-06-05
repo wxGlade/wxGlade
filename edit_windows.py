@@ -476,7 +476,6 @@ class WindowBase(EditBase):
             self.properties['size'].set(value)
             if self.widget:
                 if use_dialog_units: size = wx.DLG_SZE(self.widget, size)
-                self.widget.SetMinSize(size)
                 self.widget.SetSize(size)
                 try:
                     self.sizer.set_item(self.pos, size=size)
