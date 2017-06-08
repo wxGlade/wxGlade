@@ -1,7 +1,10 @@
 wxGlade: A GUI builder for wxPython/wxWidgets
 =============================================
 
-Version: 0.7.2
+Version: no up-to-date release at the moment; 0.7.2 is outdated
+         please use the version from the repository
+         you can download from https://bitbucket.org/wxglade/wxglade/get/default.zip
+         or clone the repository
 License: MIT (see LICENSE.txt)
 
 THIS PROGRAM COMES WITH NO WARRANTY
@@ -15,22 +18,21 @@ Requirements
 
 Installation
 ------------
-If you are reading this file, you already did all the necessary :-)
 To start the program, enter ``python wxglade.py`` in your shell
+or use whatever is required to start a python application on
+your platform.
+If you want to build a GUI for wxPython Classic or Phoenix:
+Start wxGlade in your target version - if it runs under Phoenix,
+it will create Phoenix code.
 
 
 Documentation
 -------------
-The wxGlade documentation is available in two formats. The documentation in
-HTML format is located in ``docs/html`` and documentation in PDF format is
-stored ``docs/pdf``.
-
-There is also an short introductory tutorial in the ``docs/`` subdirectory.
+There's a tutorial in the docs subdirectory.
 
 
 Submitting Issues
 -----------------
-
 Writing a helpful bug report is easy if you follow some hints. The items below
 should help you to integrate useful information. They are not an absolute rule
 
@@ -42,7 +44,7 @@ should help you to integrate useful information. They are not an absolute rule
 - Include the internal error log file ``wxglade.log`` always.
 
 Please open a new bug in the wxGlade bug tracker on
-https://sourceforge.net/p/wxglade/bugs/. You have to log-in ar Sourceforge to
+https://sourceforge.net/p/wxglade/bugs/. You have to log-in at Sourceforge to
 file a bug report.
 
 Alternatively you can send the bug report to the wxGlade mailing list
@@ -59,4 +61,4 @@ For any kind of question, there's a mailing list on
 https://lists.sourceforge.net/lists/listinfo/wxglade-general.
 
 Enjoy!
-Carsten Grohmann
+Dietmar Schwertberger
