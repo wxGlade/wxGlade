@@ -513,7 +513,7 @@ class wxGladeFrame(wx.Frame):
         This doesn't mean that the widget is opened for editing."""
 
         if not common.app_tree.cur_widget or isinstance(common.app_tree.cur_widget, application.Application):
-            preview_widget = common.app_tree.root.children[0].widget
+            preview_widget = common.app_tree.root.children and common.app_tree.root.children[0].widget
         else:
             preview_widget = misc.get_toplevel_widget(common.app_tree.cur_widget)
 
