@@ -725,7 +725,7 @@ class EditMenuBar(EditBase, PreviewMixin):
                     self.parent.widget.SetMenuBar(None)
         else:
             if self.widget:
-                self.widget.Destroy()
+                self.widget.DestroyLater()
                 self.widget = None
         EditBase.remove(self)
 

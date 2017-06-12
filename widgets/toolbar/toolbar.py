@@ -580,7 +580,7 @@ class EditToolBar(EditBase, PreviewMixin, EditStylesMixin, BitmapMixin):
                     self.parent.widget.SetToolBar(None)
         else:
             if self.widget:
-                self.widget.Destroy()
+                self.widget.DestroyLater()
                 self.widget = None
         EditBase.remove(self)
 
