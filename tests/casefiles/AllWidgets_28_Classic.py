@@ -196,7 +196,7 @@ class All_Widgets_Frame(wx.Frame):
         self.choice_filled.SetSelection(1)
         self.combo_box_filled.SetSelection(0)
         self.grid_1.CreateGrid(10, 3)
-        self.grid_1.SetSelectionMode(wx.grid.Grid.GridSelectRows)
+        self.grid_1.SetSelectionMode(wx.grid.Grid.SelectRows)
         self.list_box_filled.SetSelection(1)
         self.radio_box_filled1.SetSelection(1)
         self.radio_box_filled2.SetSelection(1)
