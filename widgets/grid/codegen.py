@@ -107,7 +107,12 @@ class PythonCodeGenerator(wcodegen.PythonWidgetCodeWriter):
             out.append( fmt % (name, self.codegen._string_to_colour(prop['label_bg_color']) ) )
         sel_mode = prop.get('selection_mode')
         if sel_mode and sel_mode != 'wxGrid.wxGridSelectCells':
-            sel_mode = sel_mode.replace('wxGrid.wx','')
+            import wx
+            if compat.IS_PHOENIX and hasattr(wx.grid.Grid, "GridSelectCells"):
+                # workaround until Phoenix bug #391 is fixed
+                sel_mode = sel_mode.replace('wxGrid.wx','')
+            else:
+                sel_mode = sel_mode.replace('wxGrid.wxGrid','')
             out.append('%s.SetSelectionMode(%s)\n' % (name, self.cn('wxGrid') + "." + sel_mode))
 
         i = 0
