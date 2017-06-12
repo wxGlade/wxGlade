@@ -827,12 +827,8 @@ class SizerBase(Sizer, np.PropertyOwner):
         return menu
 
         ####################################################################################################################
-    def _remove(self, stage=1):
+    def _remove(self):
         "removes the sizer from his parent, if it has one"
-        if wx.Platform == '__WXMAC__' and stage==1:  # avoid crashes on Mac OS by delaying the action
-            wx.CallLater(10, self._remove, stage=2)
-            return
-        # stage 2
         if self.toplevel:
             window = self.window
             common.app_tree.remove(self.node)
@@ -928,7 +924,7 @@ class SizerBase(Sizer, np.PropertyOwner):
         if elem.IsWindow(): # delete old window at this position
             w = elem.GetWindow()
             w.SetContainingSizer(None)
-            w.Destroy()
+            w.DestroyLater()
 
         try:  # if the item was a window, set its size to a reasonable value
             w,h = size or item.widget.GetBestSize()
