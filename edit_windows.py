@@ -836,7 +836,7 @@ class TopLevelBase(WindowBase, PreviewMixin):
         else:
             self.widget.SetCursor(wx.STANDARD_CURSOR)
 
-    def drop_sizer(self, event):
+    def drop_sizer(self, event=None):
         if self.sizer or not common.adding_sizer:
             self.on_set_focus(event)  # default behaviour: call show_properties
             return
