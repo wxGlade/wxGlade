@@ -5,13 +5,9 @@
 #
 
 import wx
-
-# begin wxGlade: dependencies
 import gettext
-# end wxGlade
+import compat
 
-# begin wxGlade: extracode
-# end wxGlade
 
 
 class UIBugDialog(wx.Dialog):
@@ -46,7 +42,7 @@ class UIBugDialog(wx.Dialog):
         self.SetFocus()
         self.tc_details.SetFont(wx.Font(10, wx.MODERN, wx.NORMAL, wx.NORMAL, 0, ""))
         self.tc_howto_report.SetFont(wx.Font(10, wx.MODERN, wx.NORMAL, wx.NORMAL, 0, ""))
-        self.btn_copy.SetToolTipString(_("Copy error details to clipboard"))
+        compat.SetToolTip( self.btn_copy, _("Copy error details to clipboard") )
         self.btn_ok.SetDefault()
         # end wxGlade
 
