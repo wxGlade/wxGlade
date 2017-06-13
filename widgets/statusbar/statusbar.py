@@ -96,6 +96,7 @@ class EditStatusBar(EditBase, EditStylesMixin):
 
     def remove(self, *args, **kwds):
         if not kwds.get('do_nothing', False):
+            self.parent.properties['statusbar'].set(False)
             if self.parent.widget:
                 self.parent.widget.SetStatusBar(None)
             try:
