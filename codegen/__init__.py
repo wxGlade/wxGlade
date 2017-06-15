@@ -1103,9 +1103,7 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
         # check if sizer has to store as a class attribute
         sizer_name = self._format_classattr(sizer)
 
-        flag = self.cn_f(flag)
-        if not flag:
-            flag = '0'
+        flag = self.cn_f(flag) or '0'
 
         stmt = self.tmpl_sizeritem % ( sizer_name, obj_name, option, flag, border )
 
@@ -1227,11 +1225,9 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
             if handler in already_there:
                 continue
 
-            # add an empty line for
-            # TODO: Remove later
-            if self.language in ['python', 'lisp',]:
-                if not (prev_src and not is_new):
-                    write('\n')
+            # add an empty line for;  TODO: Remove later
+            if self.language in ('python', 'lisp') and not (prev_src and not is_new):
+                write('\n')
             write(self.tmpl_func_event_stub % {'tab': tab, 'klass': self.cn_class(code_obj.klass), 'handler': handler })
             already_there[handler] = 1
 
@@ -1345,41 +1341,21 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
 
     def generate_common_properties(self, widget):
         """generates the code for various properties common to all widgets (background and foreground colours, font,...)
-
-        returns a list of strings containing the generated code
-
-        @see: L{generate_code_background()}
-        @see: L{generate_code_disabled()}
-        @see: L{generate_code_extraproperties()}
-        @see: L{generate_code_focused()}
-        @see: L{generate_code_font()}
-        @see: L{generate_code_foreground()}
-        @see: L{generate_code_hidden()}
-        @see: L{generate_code_size()}
-        @see: L{generate_code_tooltip()}
-        """
+        returns a list of strings containing the generated code"""
         prop = widget.properties
         out = []
-        if prop.get('size', '').strip():
-            out.append(self.generate_code_size(widget))
-        if prop.get('background'):
-            out.append(self.generate_code_background(widget))
-        if prop.get('foreground'):
-            out.append(self.generate_code_foreground(widget))
-        if prop.get('font'):
-            out.append(self.generate_code_font(widget))
+        if prop.get('size', '').strip(): out.append(self.generate_code_size(widget))
+        if prop.get('background'):       out.append(self.generate_code_background(widget))
+        if prop.get('foreground'):       out.append(self.generate_code_foreground(widget))
+        if prop.get('font'):             out.append(self.generate_code_font(widget))
         # tooltip
-        if prop.get('tooltip'):
-            out.append(self.generate_code_tooltip(widget))
+        if prop.get('tooltip'): out.append(self.generate_code_tooltip(widget))
         # trivial boolean properties
-        if prop.get('disabled'):
-            out.append(self.generate_code_disabled(widget))
-        if prop.get('focused'):
-            out.append(self.generate_code_focused(widget))
-        if prop.get('hidden'):
-            out.append(self.generate_code_hidden(widget))
-        if prop.get('extraproperties') and not widget.preview:
-            out.extend(self.generate_code_extraproperties(widget))
+        if prop.get('disabled'): out.append(self.generate_code_disabled(widget))
+        if prop.get('focused'):  out.append(self.generate_code_focused(widget))
+        if prop.get('hidden'):   out.append(self.generate_code_hidden(widget))
+
+        if prop.get('extraproperties') and not widget.preview: out.extend(self.generate_code_extraproperties(widget))
         return out
 
     def quote_str(self, s):
@@ -1773,8 +1749,7 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
         code_lines.append('\n')
 
         # Add warning message to source code
-        # TODO: Remove next three lines after C++ code gen uses dependencies
-        # like Python, Perl and Lisp
+        # TODO: Remove next three lines after C++ code gen uses dependencies like Python, Perl and Lisp
         if self.language == 'C++':
             klass.init.extend(code_lines)
         else:
