@@ -3,7 +3,7 @@ Miscellaneous stuff, used in many parts of wxGlade
 
 @copyright: 2002-2007 Alberto Griggio
 @copyright: 2014-2016 Carsten Grohmann
-@copyright: 2016 Dietmar Schwertberger
+@copyright: 2016-2017 Dietmar Schwertberger
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
@@ -14,16 +14,11 @@ import wx
 
 use_menu_icons = None
 
+# the SizerSlot which has the "mouse focus"; used to restore the mouse cursor if the user cancelled adding a widget
 currently_under_mouse = None
-"""\
-If not None, this is the SizerSlot wich has the "mouse focus": this is used
-to restore the mouse cursor if the user cancelled the addition of a widget"""
 
 _get_xpm_bitmap_re = re.compile(r'"(?:[^"]|\\")*"')
-
 _item_bitmaps = {}
-
-
 
 focused_widget = None  # the currently selected widget in GUI mode (for tree and property_panel)
 
@@ -76,8 +71,6 @@ def show_widget(widget):
         widget = parent  # go up one level
 
 
-
-
 class wxMSWRadioButton(wx.RadioButton):
     """Custom wxRadioButton class which tries to implement a better GetBestSize than the default one for WXMSW
     (mostly copied from wxCheckBox::DoGetBestSize in checkbox.cpp)"""
@@ -97,7 +90,6 @@ class wxMSWRadioButton(wx.RadioButton):
         else:
             w = h = self.__radio_size
         return w, h
-
 
 
 class wxGTKGladePopupMenu(wx.Menu):
@@ -129,7 +121,6 @@ else:
 
 class SelectionTag(wx.Window):
     "This is one of the small blue squares that appear at the corners of the active widgets"
-
     def __init__(self, parent):
         kwds = {'size': (7, 7)}
         wx.Window.__init__(self, parent, wx.ID_ANY, **kwds)
@@ -137,16 +128,13 @@ class SelectionTag(wx.Window):
         self.Hide()
 
 
-
 class SelectionMarker(object):
     "Collection of the 4 SelectionTagS for each widget"
-
     def __init__(self, owner, parent, visible=False):
         self.visible = visible
         self.owner = owner
         self.parent = parent
-        if wx.Platform == '__WXMSW__':
-            self.parent = owner
+        if wx.Platform == '__WXMSW__': self.parent = owner
         self.tag_pos = None
         self.tags = None
         self.update()
@@ -198,21 +186,11 @@ class SelectionMarker(object):
 
 
 
-class UnicodeStringIO(object):
-    "Wrapper class to store data in Unicode"
-
-    def __init__(self, encoding=None):
-        #self.out = compat.StringIO()
-        self.out = compat.BytesIO()
-        self.encoding = encoding
-
+class UnicodeStringIO(compat.BytesIO):
+    "Wrapper class to store data in Unicode, converted to bytes"
     def write(self, data):
-        if self.encoding is not None and isinstance(data, compat.unicode):
-            data = data.encode(self.encoding)
-        self.out.write(data)
-
-    def getvalue(self):
-        return self.out.getvalue()
+        if isinstance(data, compat.unicode): data = data.encode('utf-8')
+        compat.BytesIO.write(self, data)
 
 
 def bound(number, lower, upper):
@@ -225,84 +203,40 @@ def capitalize(string):
     # Don't capitalise those terms
     if string.upper() in ['XML', 'XRC', 'URL']:
         return string.upper()
-
     return string.capitalize()
 
 
 def color_to_string(color):
-    "returns the hexadecimal string representation of the given colour  '#RRGGBB'"
+    "returns the hexadecimal string representation of the given colour '#RRGGBB'"
     return '#%.2x%.2x%.2x'%(color.Red(), color.Green(), color.Blue())
 
-
 def string_to_color(color):
-    """\
-    Returns the wxColour which corresponds to the given
-    hexadecimal string representation
-
-    Example::
-        >>> string_to_color("#ffffff")
-        wx.Colour(255, 255, 255)
-
-    @rtype: wx.Colour
-    """
-    if len(color)==7:
-        return wx.Colour( *[int(color[i:i + 2], 16) for i in range(1, 7, 2)] )
-    if len(color)==9:
-        return wx.Colour( *[int(color[i:i + 2], 16) for i in range(1, 9, 2)] )
+    "Hex string to wxColour instance; e.g. string_to_color('#ffffff') -> wx.Colour(255, 255, 255)"
+    if len(color)==7: return wx.Colour( *[int(color[i:i + 2], 16) for i in range(1, 7, 2)] )
+    if len(color)==9: return wx.Colour( *[int(color[i:i + 2], 16) for i in range(1, 9, 2)] )
     raise ValueError
 
 
 def format_for_version(version):
-    """\
-    Return the version information in C{for_version} in a string.
-
-    Example::
-        >>> format_for_version((2, 8))
-        '2.8'
-
-    @rtype: str
-    @see: L{wxglade.codegen.BaseLangCodeWriter.for_version}
-    """
+    "Return the version information in a string; e.g. format_for_version((2, 8)) -> '2.8'"
+    # see: L{wxglade.codegen.BaseLangCodeWriter.for_version}
     return '%s.%s' % version
 
-
 def format_supported_by(version):
-    """\
-    Return formatted version string.
-
-    Example::
-        >>> format_supported_by('wx3')
-        '3'
-        >>> format_supported_by('wx28')
-        '2.8'
-
-    @param version: Version as specified in L{config.widget_config}
-    @type version:  str
-
-    @rtype: str
-
-    @see: L{wcodegen.BaseWidgetWriter.is_widget_supported()}
-    @see: L{config.widget_config}
-    """
-    assert isinstance(version, str)
-
-    if len(version) == 3:
-        formatted = '%s' % version[2]
-    elif len(version) == 4:
-        formatted = '%s.%s' % (version[2], version[3])
-    else:
-        raise ValueError(_('Unknown version format for "%s"') % repr(version))
-    return formatted
+    "Return formatted version string; e.g. 'wx3' -> '3' or 'wx28' -> '2.8'"
+    # see config.widget_config, wcodegen.BaseWidgetWriter.is_widget_supported(), config.widget_config
+    assert version.startswith("wx")
+    if len(version) == 3: return '%s' % version[2]
+    if len(version) == 4: return '%s.%s' % (version[2], version[3])
+    raise ValueError(_('Unknown version format for "%s"') % repr(version))
 
 
 def get_toplevel_parent(obj):
     if not isinstance(obj, wx.Window):
-        window = obj.widget
-    else:
-        window = obj
-    while window and not window.IsTopLevel():
-        window = window.GetParent()
-    return window
+        obj = obj.widget
+    while obj and not obj.IsTopLevel():
+        obj = obj.GetParent()
+    return obj
 
 
 def get_toplevel_widget(widget):
@@ -385,7 +319,6 @@ def _remove():
     focused_widget.remove()
     #focused_widget = None  # should be done by the remove() already
 
-
 def _cut():
     global focused_widget
     if focused_widget is not None:
@@ -396,7 +329,6 @@ def _cut():
         else:
             focused_widget = None
 
-
 def _copy():
     global focused_widget
     if focused_widget is not None:
@@ -404,7 +336,6 @@ def _copy():
             focused_widget.clipboard_copy()
         except AttributeError:
             pass
-
 
 def _paste():
     global focused_widget
@@ -509,8 +440,7 @@ def wxstr(s, encoding=None):
     if encoding is None:
         if common.app_tree is None:
             return str(s)
-        else:
-            encoding = common.app_tree.app.encoding
+        encoding = common.app_tree.app.encoding
     if isinstance(s, compat.unicode): return s
     s = str(s)
     if isinstance(s, compat.unicode): return s

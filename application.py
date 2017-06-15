@@ -329,7 +329,7 @@ class Application(np.PropertyOwner):
                                   wx.OK | wx.CENTRE | wx.ICON_EXCLAMATION, common.palette )
 
         # temporary buffer for XML
-        tmp_xml = misc.UnicodeStringIO('utf-8')
+        tmp_xml = misc.UnicodeStringIO()
 
         from xml_parse import CodeWriter
         try:
