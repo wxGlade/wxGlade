@@ -414,18 +414,12 @@ def _paste():
         except AttributeError:
             pass
 
-
-def _preview():
-    common.palette.preview()
-
-
 def _insert():
     global focused_widget
     if not focused_widget: return
     if not hasattr(focused_widget, "sizer") or not hasattr(focused_widget, "pos"): return
     method = getattr(focused_widget.sizer, "insert_slot", None)
     if method: method(focused_widget.pos)
-
 
 def _add():
     global focused_widget
@@ -436,12 +430,6 @@ def _add():
         method = getattr(focused_widget.sizer, "add_slot", None)
     if method: method()
 
-def _save():
-    common.palette.save_app()
-
-def _generate_code():
-    common.app_tree.app.generate_code()
-
 
 # accelerator table to enable keyboard shortcuts for the popup menus of the various widgets (remove, cut, copy, paste)
 accel_table = [
@@ -451,9 +439,12 @@ accel_table = [
     (wx.ACCEL_CTRL,                ord('V'),      _paste, ()),
     (wx.ACCEL_CTRL,                ord('I'),      _insert, ()),
     (wx.ACCEL_CTRL,                ord('A'),      _add, ()),
-    (0,                            wx.WXK_F5,     _preview, ()),
-    (wx.ACCEL_CTRL,                ord('S'),      _save, ()),
-    (wx.ACCEL_CTRL,                ord('G'),      _generate_code, ()),
+    (0,                            wx.WXK_F2,     (common,"palette","show_tree"),            ()),
+    (0,                            wx.WXK_F3,     (common,"palette","show_props_window"),    ()),
+    (0,                            wx.WXK_F4,     (common,"palette","raise_all"),            ()),
+    (0,                            wx.WXK_F5,     (common,"palette","preview"),              ()),
+    (wx.ACCEL_CTRL,                ord('S'),      (common,"palette","save_app"),             ()),
+    (wx.ACCEL_CTRL,                ord('G'),      (common,"app_tree","app","generate_code"), ()),
 ]
 
 def on_key_down_event(event):
@@ -463,9 +454,16 @@ def on_key_down_event(event):
     if event.ShiftDown():   evt_flags |= wx.ACCEL_SHIFT
     evt_key = event.GetKeyCode()
     for flags, key, function, args in accel_table:
-        if evt_flags == flags and evt_key == key:
-            wx.CallAfter(function, *args)
-            return
+        if evt_flags != flags or evt_key != key:
+            continue
+        if isinstance(function, tuple):
+            # turn tuple of (modulename,...) into a function
+            obj = function[0]
+            for i in range(1,len(function)):
+                obj = getattr(obj, function[i])
+            function = obj
+        wx.CallAfter(function, *args)
+        return
     # not handled
     event.Skip()
 
