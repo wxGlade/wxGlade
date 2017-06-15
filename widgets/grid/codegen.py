@@ -108,7 +108,7 @@ class PythonCodeGenerator(wcodegen.PythonWidgetCodeWriter):
         sel_mode = prop.get('selection_mode')
         if sel_mode and sel_mode != 'wxGrid.wxGridSelectCells':
             import wx
-            if compat.IS_PHOENIX and hasattr(wx.grid.Grid, "GridSelectCells"):
+            if compat.IS_PHOENIX and not hasattr(wx.grid.Grid, "SelectCells"):
                 # workaround until Phoenix bug #391 is fixed
                 sel_mode = sel_mode.replace('wxGrid.wx','')
             else:
