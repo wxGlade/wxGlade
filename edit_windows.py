@@ -678,15 +678,18 @@ class PreviewMixin(object):
         return self.preview_widget is not None
 
     def on_preview(self, refresh=False):
+        new_label = None
         if self.preview_widget is None:
             self.preview_widget = common.app_tree.app.preview(self)
-            label = _('Close Preview')
+            if self.preview_widget:
+                new_label = _('Close Preview')
         else:
             self.preview_widget.Close()
             self.preview_widget = None
-            label = _('Show Preview')
+            new_label = _('Show Preview')
             if refresh: wx.CallAfter(self.on_preview)
-        self.properties["preview"].set_label(label)
+        if new_label is not None:
+            self.properties["preview"].set_label(new_label)
 
 
 class DesignButtonProperty(np.ActionButtonProperty):
