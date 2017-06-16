@@ -819,8 +819,11 @@ class WidgetTree(wx.TreeCtrl, Tree):
         if getattr(node.widget, "_is_toplevel_window", False) or getattr(node.widget, "_is_toplevel", False):
             # toplevel window or a menu/status bar
             toplevel_widget = node.widget.widget
-            size_p = node.widget.properties.get("size")
-            if size_p is not None and size_p.is_active(): set_size = size_p.get_tuple()
+            size_p    = node.widget.properties.get("size")
+            toolbar_p = node.widget.properties.get("toolbar")
+            if size_p is not None and size_p.is_active() and toolbar_p is not None and toolbar_p.value:
+                # apply workaround for size changes due to a toolbar; this would cause problems with automatic testing
+                set_size = size_p.get_tuple()
         else:
             toplevel_widget = node.widget.widget.GetParent()
 
@@ -829,7 +832,7 @@ class WidgetTree(wx.TreeCtrl, Tree):
             # added by rlawson to expand node on showing top level widget
             self.expand(node)
             self._show_widget_toplevel(node)
-            if wx.Platform == '__WXMAC__' and set_size is not None:
+            if wx.Platform != '__WXMSW__' and set_size is not None:
                 wx.CallAfter(toplevel_widget.SetSize, set_size)
         else:
             toplevel_widget.Hide()
