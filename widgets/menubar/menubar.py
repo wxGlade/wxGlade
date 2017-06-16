@@ -784,12 +784,27 @@ class EditMenuBar(EditBase, PreviewMixin):
 
 def builder(parent, sizer, pos, number=[0]):
     "factory function for EditMenuBar objects"
+    import window_dialog as wd
     klass = 'wxMenuBar' if common.app_tree.app.language.lower()=='xrc' else 'MyMenuBar'
-    import window_dialog
-    dialog = window_dialog.WindowDialog(klass, None, 'Select menubar class', True)
+
+    # if e.g. on a frame, suggest the user to add the menu bar to this
+    toplevel_widget = None
+    if misc.focused_widget is not None and misc.focused_widget.node.parent:
+        toplevel_widget = common.app_tree._find_toplevel(misc.focused_widget.node).widget
+        if not "menubar" in toplevel_widget.properties:
+            toplevel_widget = None
+    if toplevel_widget is not None:
+        dialog = wd.StandaloneOrChildDialog(klass, "Select menubar type and class", toplevel_widget, "menubar")
+    else:
+        dialog = wd.WindowDialog(klass, None, 'Select standalone menubar class', True)
+
     klass = dialog.show()
     dialog.Destroy()
     if klass is None: return
+    if klass is True:
+        # add to toplevel widget
+        toplevel_widget.properties["menubar"].set(True, notify=True)
+        return
     name = dialog.get_next_name("menubar")
     mb = EditMenuBar(name, klass, parent)
     mb.node = Node(mb)

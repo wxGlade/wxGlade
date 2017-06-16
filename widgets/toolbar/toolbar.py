@@ -657,14 +657,28 @@ class EditToolBar(EditBase, PreviewMixin, EditStylesMixin, BitmapMixin):
 
 def builder(parent, sizer, pos):
     "factory function for EditToolBar objects"
-    import window_dialog
+    import window_dialog as wd
     klass = 'wxToolBar' if common.app_tree.app.language.lower()=='xrc' else 'MyToolBar'
-    dialog = window_dialog.WindowDialog(klass, None, 'Select toolbar class', True)
+
+    # if e.g. on a frame, suggest the user to add the tool bar to this
+    toplevel_widget = None
+    if misc.focused_widget is not None and misc.focused_widget.node.parent:
+        toplevel_widget = common.app_tree._find_toplevel(misc.focused_widget.node).widget
+        if not "toolbar" in toplevel_widget.properties:
+            toplevel_widget = None
+    if toplevel_widget is not None:
+        dialog = wd.StandaloneOrChildDialog(klass, "Select toolbar type and class", toplevel_widget, "toolbar")
+    else:
+        dialog = wd.WindowDialog(klass, None, 'Select standalone toolbar class', True)
+
     klass = dialog.show()
     dialog.Destroy()
     if klass is None: return
+    if klass is True:
+        # add to toplevel widget
+        toplevel_widget.properties["toolbar"].set(True, notify=True)
+        return
     name = dialog.get_next_name("toolbar")
-
     tb = EditToolBar(name, klass, parent)
     tb.node = Node(tb)
     common.app_tree.add(tb.node)
@@ -673,7 +687,7 @@ def builder(parent, sizer, pos):
 
 
 def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
-    "factory to build EditMenuBar objects from a XML file"
+    "factory to build EditToolBar objects from a XML file"
     name = attrs.get('name')
     if parent is not None:
         if name:
@@ -681,7 +695,7 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
             parent._toolbar.properties_changed(["name"])
         return parent._toolbar
     else:
-        tb = EditToolBar(name, attrs.get('class', 'wxMenuBar'), None)
+        tb = EditToolBar(name, attrs.get('class', 'wxToolBar'), None)
         tb.node = Node(tb)
         common.app_tree.add(tb.node)
         return tb
