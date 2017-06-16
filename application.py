@@ -154,10 +154,11 @@ class Application(np.PropertyOwner):
         self.for_version = np.RadioProperty( version, self.all_supported_versions, tooltips=self._VERSION_TOOLTIPS)
 
         # encoding
-        self.encoding = np.TextProperty(config.encoding)
+        encodings = ["UTF-8", "ISO-8859-1", "ISO-8859-15", "CP1252"]  # just some common values
+        self.encoding = np.ComboBoxProperty(config.encoding, encodings)
 
         # top window name for the generated app
-        self.top_window = np.ComboBoxProperty("", choices=[])  # is actually only a ListBox
+        self.top_window = np.ListBoxProperty("", choices=[])
         self.generate_code = np.ActionButtonProperty(self.generate_code)
 
         self.widget = None  # always None, just to keep interface to Tree similar to other editors

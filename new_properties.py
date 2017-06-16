@@ -1173,13 +1173,13 @@ del _leading, _ge_m1, _g_0, _ge_0, _comma, _trailing
 ########################################################################################################################
 
 class ComboBoxProperty(TextProperty):
+    _CB_STYLE = wx.CB_DROPDOWN
     def __init__(self, value="", choices=[], default_value=_DefaultArgument, name=None):
         self.choices = choices
         TextProperty.__init__(self, value, False, default_value, name)
 
     def create_text_ctrl(self, panel, value):
-        style = wx.CB_DROPDOWN | wx.CB_READONLY
-        combo = wx.ComboBox( panel, -1, self.value, choices=self.choices, style=style )
+        combo = wx.ComboBox( panel, -1, self.value, choices=self.choices, style=self._CB_STYLE )
         if self.value in self.choices:
             combo.SetStringSelection(self.value)
         else:
@@ -1225,6 +1225,9 @@ class ComboBoxPropertyD(ComboBoxProperty):
     deactivated = True
 
 
+class ListBoxProperty(ComboBoxProperty):
+    _CB_STYLE = wx.CB_DROPDOWN | wx.CB_READONLY
+
 #class ListBoxProperty(ComboBoxProperty):
     #def __init__(self, value="", choices=[], default_value=_DefaultArgument, name=None):
         #self.choices = choices
@@ -1238,10 +1241,10 @@ class ComboBoxPropertyD(ComboBoxProperty):
         ##combo.Bind(wx.EVT_CHAR, self.on_char)
         #return combo
 
-#class ListBoxPropertyA(ListBoxProperty):
-    #deactivated = False
-#class ListBoxPropertyD(ListBoxProperty):
-    #deactivated = True
+class ListBoxPropertyA(ListBoxProperty):
+    deactivated = False
+class ListBoxPropertyD(ListBoxProperty):
+    deactivated = True
 
 
 
