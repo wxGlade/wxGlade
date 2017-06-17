@@ -281,6 +281,7 @@ class ExceptionFormatter(logging.Formatter):
                     sio.write('\n')
             except Exception as e:
                 # This code should NEVER be executed!
+                if config.debugging: raise
                 logging.error('An exception has been raised inside the exception handler: %s', e)
                 sys.exit(1)
 
