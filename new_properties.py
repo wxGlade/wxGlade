@@ -594,6 +594,7 @@ class _CheckListProperty(Property):
 
         self.update_display(True)
         for checkbox in self._choices:
+            if checkbox is None: continue  # derived classes may not use all options, e.g. obsolete ones
             checkbox.Bind(wx.EVT_CHECKBOX, self.on_checkbox)
 
     def on_checkbox(self, event):
@@ -638,6 +639,7 @@ class _CheckListProperty(Property):
         if not self.editing: return
         checked = self.get_list_value()
         for i,checkbox in enumerate(self._choices):
+            if checkbox is None: continue
             name = self._names[i]
             if checked[i] and not checkbox.GetValue():
                 checkbox.SetValue(True)
@@ -810,6 +812,18 @@ class WidgetStyleProperty(_CheckListProperty):
         self.modified = False
         self.default_value = set(self.value_set)
 
+    def _decode_value(self, value):
+        "handle obsolete and renamed properties"
+        value = _CheckListProperty._decode_value(self, value)
+        for v in list(value):
+            style_def = self.style_defs[v]
+            if "obsolete" in style_def:
+                value.remove(v)
+            elif "rename_to" in style_def:
+                value.remove(v)
+                value.add(style_def["rename_to"])
+        return value
+
     def _ensure_values(self):
         self._values = []  # the associated flag values
         widget_writer = self.owner.widget_writer
@@ -841,6 +855,9 @@ class WidgetStyleProperty(_CheckListProperty):
             else:
                 # a generic style; no description in the class config
                 style_def = config.widget_config["generic_styles"][name]
+            if "obsolete" in style_def or "rename_to" in style_def:
+                self._choices.append(None)
+                continue
             checkbox = wx.CheckBox(panel, -1, name)
 
             if name in tooltips:
@@ -853,7 +870,8 @@ class WidgetStyleProperty(_CheckListProperty):
 
         self.update_display(True)
         for checkbox in self._choices:
-            checkbox.Bind(wx.EVT_CHECKBOX, self.on_checkbox)
+            if checkbox is not None:
+                checkbox.Bind(wx.EVT_CHECKBOX, self.on_checkbox)
 
     def write(self, outfile, tabs=0):
         if isinstance(self.default_value, set) and self.value_set==self.default_value and not self.modified: return
@@ -982,6 +1000,7 @@ class TextProperty(Property):
         
         if hasattr(self, "_on_label_dblclick"):
             label.Bind(wx.EVT_LEFT_DCLICK, self._on_label_dblclick)
+            label.SetForegroundColour(wx.BLUE)
 
     def create_text_ctrl(self, panel, value):
         style = 0
