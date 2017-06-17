@@ -11,7 +11,7 @@ Interface to owner modified; see below for class PropertyOwner
 
 import common, config, compat, logging, misc
 from collections import OrderedDict
-import re
+import re, sys
 import wx
 
 class _DefaultArgument(object):
@@ -1341,27 +1341,29 @@ class FileNameProperty(DialogProperty):
     def __init__(self, value="", style=0, default_value=_DefaultArgument, name=None):
         self.style = style
         DialogProperty.__init__(self, value, False, True, default_value, name)
-    def _on_label_dblclick(self, event):
-        # show directory in explorer/finder
-        if not self.value: return
-        import os,sys
-        directory = self.value
-        if directory and not os.path.isdir(directory):
-            directory = os.path.dirname(directory)
-        if not directory or not os.path.exists(directory):
-            directory = os.path.dirname(common.app_tree.app.filename)
-        if not os.path.isdir(directory): return
-        import subprocess
-        if sys.platform=="win32":
-            subprocess.call(['explorer', directory])
-        elif sys.platform=="darwin":
-            subprocess.call(["open", directory])
     def _create_dialog(self):
         if self.dialog is not None: return self.dialog
         parent = self.text.GetTopLevelParent()
         dlg = _FileDialog(parent, self.message, self.wildcard, self.default_extension, style=self.style)
         dlg.set_value(self.value)
         return dlg
+
+    if sys.platform in ("win32","darwin"):
+        def _on_label_dblclick(self, event):
+            # show directory in explorer/finder
+            if not self.value: return
+            import os,sys
+            directory = self.value
+            if directory and not os.path.isdir(directory):
+                directory = os.path.dirname(directory)
+            if not directory or not os.path.exists(directory):
+                directory = os.path.dirname(common.app_tree.app.filename)
+            if not os.path.isdir(directory): return
+            import subprocess
+            if sys.platform=="win32":
+                subprocess.call(['explorer', directory])
+            elif sys.platform=="darwin":
+                subprocess.call(["open", directory])
 
 
 class FileNamePropertyD(FileNameProperty):
