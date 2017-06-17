@@ -1,6 +1,5 @@
  Main Developer:
  ---------------------------------------------------------------------------
- - Carsten Grohmann <mail@carstengrohmann.de> (project lead)
  - Dietmar Schwertberger <dietmar@schwertberger.de>
 
  Other Developers:
@@ -10,6 +9,7 @@
  Former Developers:
  ---------------------------------------------------------------------------
  - Alberto Griggio <agriggio@users.sourceforge.net>
+ - Carsten Grohmann <mail@carstengrohmann.de> (project lead)
  - Marcello Semboli <dinogen@siena.linux.it>
  - Guy Rutenberg <guyrutenberg@gmail.com>
  - D.H. <crazyinsomniac@yahoo.com> (Perl code generation)
