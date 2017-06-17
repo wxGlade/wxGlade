@@ -113,6 +113,11 @@ class WXGladeBaseTest(unittest.TestCase):
             elif compat.IS_PHOENIX: fn = "%s_Phoenix%s"%(basename, extension)
             fn = os.path.join(self.caseDirectory, fn)
             if os.path.exists(fn): return fn  # this could be a directory as well
+        if extension.lower() == ".wxg":
+            # search for "_Saved" version
+            fn = "%s_Saved%s"%(basename, extension)
+            fn = os.path.join(self.caseDirectory, fn)
+            if os.path.exists(fn): return fn  # this could be a directory as well
         fn = os.path.join(self.caseDirectory, filename)
         if os.path.exists(fn):
             return fn
@@ -253,6 +258,7 @@ class WXGladeGUITest(WXGladeBaseTest):
         if "wxg" in languages:
             # save file again and check
             generated_filename = self._get_outputfile_path(infilename)
+            compare_filename = self._get_casefile_path(infilename)  # some properties may have changed on loading
             common.palette._save_app(generated_filename)
             if compat.PYTHON2 or True:
                 if self._compare_files(infilename, generated_filename):
