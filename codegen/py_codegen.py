@@ -64,6 +64,8 @@ class SourceFileContent(BaseSourceFileContent):
         tmp_in = self._load_file(self.name)
         out_lines = []
         for line in tmp_in:
+            if line.endswith("\r\n"):  # normalize line ending for files on Windows
+                line = "%s\n"%line[:-2]
             quote_index = -1
             if not inside_triple_quote:
                 triple_dquote_index = line.find('"""')
