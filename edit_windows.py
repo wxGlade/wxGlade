@@ -843,7 +843,7 @@ class TopLevelBase(WindowBase, PreviewMixin):
         if self.sizer or not common.adding_sizer:
             self.on_set_focus(event)  # default behaviour: call show_properties
             return
-        self.widget.SetCursor(wx.STANDARD_CURSOR)
+        if self.widget: self.widget.SetCursor(wx.STANDARD_CURSOR)
         common.widgets[common.widget_to_add](self, None, None)
         if event is None or not misc.event_modifier_copy(event):
             common.adding_widget = common.adding_sizer = False
