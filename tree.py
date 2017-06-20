@@ -828,7 +828,6 @@ class WidgetTree(wx.TreeCtrl, Tree):
             toplevel_widget = node.widget.widget.GetParent()
 
         if not node.widget.is_visible():
-            toplevel_widget.Show()
             # added by rlawson to expand node on showing top level widget
             self.expand(node)
             self._show_widget_toplevel(node)
