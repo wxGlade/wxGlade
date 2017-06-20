@@ -1427,8 +1427,9 @@ class ColorProperty(DialogProperty):
 
     def get_color(self):
         # return a wx.Colour instance
+        if not self.is_active(): return self.default_value
         color = self.get()
-        if color is _DefaultArgument: return None
+        if color is None: return self.default_value
         if color in self.str_to_colors:
             # e.g. 'wxSYS_COLOUR_SCROLLBAR'
             return compat.wx_SystemSettings_GetColour(self.str_to_colors[color])
