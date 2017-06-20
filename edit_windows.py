@@ -347,16 +347,15 @@ class WindowBase(EditBase):
 
     def finish_widget_creation(self, *args, **kwds):
         # store the actual values of foreground, background and font as default, if the property is deactivated later
-        self.properties["background"].set_default( self.widget.GetBackgroundColour() )
-        self.properties["foreground"].set_default( self.widget.GetForegroundColour() )
-
+        background_p = self.properties["background"]
+        foreground_p = self.properties["foreground"]
+ 
         fnt = self.widget.GetFont()
         if not fnt.IsOk():
             fnt = wx.SystemSettings_GetFont(wx.SYS_DEFAULT_GUI_FONT)
         self._original['font'] = fnt
-
-        prop = self.properties
-        size_p = prop['size']
+ 
+        size_p = self.properties['size']
         if size_p.is_active():
             #self.widget.SetSize([int(s) for s in size.split(',')])
             self.set_size(size_p.get())
@@ -368,11 +367,11 @@ class WindowBase(EditBase):
             if "pos" in self.properties:
                 self.sizer.set_item(self.pos)
             size_p.set('%s, %s' % tuple(self.widget.GetSize()))
+ 
+        if background_p.is_active(): self.widget.SetBackgroundColour(self.background)
+        if foreground_p.is_active(): self.widget.SetForegroundColour(self.foreground)
 
-        self.widget.SetBackgroundColour(self.background)  # active or default
-        self.widget.SetForegroundColour(self.foreground)  # active or default
-
-        font_p = prop.get('font')
+        font_p = self.properties.get('font')
         if font_p and font_p.is_active():
             self._set_font()
 
