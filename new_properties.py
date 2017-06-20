@@ -123,11 +123,17 @@ class Property(object):
         self.activate_controls()
         self.owner.properties_changed([self.name])
 
-    def _check_for_user_modification(self, new_value, force=False):
+    def _check_for_user_modification(self, new_value, force=False, activate=False):
         # force: set to True when e.g. called from self.toggle_activate
         #new_value =
-        if new_value == self.value and not force: return False
+        if new_value == self.value:
+            if activate and not self.deactivated: activate = False
+            if not force and not activate:
+                return False
         self.value = new_value
+        if activate:
+            self.deactivated = False
+            self.activate_controls()
         self._notify()
         return True
 
@@ -197,6 +203,7 @@ class Property(object):
         pass
 
     def activate_controls(self):
+        "enable/disable controls; if the property can be enabled/disabled, also set the checkbox"
         if not self.editing: return
         if self.blocked:
             active = False
@@ -215,7 +222,7 @@ class Property(object):
 
         if "enabler" in self.CONTROLNAMES and self.enabler is not None:
             self.enabler.Enable(not self.blocked)
-
+            self.enabler.SetValue(not self.deactivated)
 
     ####################################################################################################################
     # helpers
@@ -1063,7 +1070,7 @@ class TextProperty(Property):
         if not compat.wxWindow_IsEnabled(self.text): return
         self._check_for_user_modification()
 
-    def _check_for_user_modification(self, new_value=None, force=False):
+    def _check_for_user_modification(self, new_value=None, force=False, activate=False):
         if new_value is None:
             new_value = self._convert_from_text(self.text.GetValue())
         if new_value is None:  # e.g. validation failed
@@ -1071,7 +1078,7 @@ class TextProperty(Property):
             self.text.SetValue( self._value_to_str(self.value))
             return
         self.previous_value = self.value
-        Property._check_for_user_modification(self, new_value)
+        Property._check_for_user_modification(self, new_value, force, activate)
 
     def _convert_from_text(self, value=None):
         """Convert newline and tab characters to a character sequences (FROM input widget TO property)
@@ -1269,15 +1276,13 @@ class ListBoxPropertyD(ListBoxProperty):
 
 class DialogProperty(TextProperty):
     # for now, this is only a base class for FileName, Color and FontProperty
-    CONTROLNAMES = ["enabler", "text", "button"]
+    CONTROLNAMES = ["enabler", "text"]#, "button"]
     def __init__(self, value="", multiline=False, strip=True, default_value=_DefaultArgument, name=None):
         TextProperty.__init__(self, value, multiline, strip, default_value, name)
         self.dialog = self.button = None
     def create_additional_controls(self, panel, sizer, hsizer):
         # used e.g. by DialogProperty to create the button
         self.button = wx.Button(panel, -1, " ... ")
-        if self.deactivated is not None:
-            self.button.Enable(not self.deactivated)
         self.button.Bind(wx.EVT_BUTTON, self.display_dialog)
         hsizer.Add(self.button, 0, wx.ALL | wx.ALIGN_CENTER, 3)
         self._update_button()
@@ -1295,7 +1300,7 @@ class DialogProperty(TextProperty):
         # the dialog needs to return a valid value!
         value = dialog.get_value()
         self.text.SetValue( self._value_to_str(value) )
-        self._check_for_user_modification(value)
+        self._check_for_user_modification(value, activate=True)
         self.update_display()
         #self.text.ProcessEvent( wx.FocusEvent(wx.wxEVT_KILL_FOCUS, self.text.GetId()) )
 
@@ -1406,7 +1411,8 @@ class ColorProperty(DialogProperty):
         'wxSYS_COLOUR_BTNHILIGHT': wx.SYS_COLOUR_BTNHILIGHT
         }
     colors_to_str = misc._reverse_dict(str_to_colors)
-
+    def __init__(self, value="", multiline=False, strip=True, default_value=wx.NullColour, name=None):
+        DialogProperty.__init__(self, value, multiline, strip, default_value, name)
     def _create_dialog(self):
         if self.dialog is None:
             from color_dialog import wxGladeColorDialog
