@@ -166,7 +166,11 @@ class Property(object):
         This is the default implementation."""
         if not self.is_active():
             return
-        if self.default_value is not _DefaultArgument and self.value==self.default_value:
+        if self.default_value is wx.NullColour:  # workaround for wxPython Phoenix bug 404
+            if self.value is self.default_value:
+                return
+        elif self.default_value is not _DefaultArgument and self.value==self.default_value:
+            #if self.default_value is not _DefaultArgument and self.value==self.default_value:
             # value is the default value -> not to be written
             return
         if self.value is None or isinstance(self.value, compat.basestring) and not self.value:
