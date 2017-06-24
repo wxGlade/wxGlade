@@ -54,6 +54,11 @@ class PythonFlexGridSizerBuilder(PythonGridSizerBuilder):
     tmpl_AddGrowableCol = '%(sizer_name)s.AddGrowableCol(%(col)s)\n'
 
 
+class PythonGridBagSizerBuilder(PythonFlexGridSizerBuilder):
+    klass = 'wxGridBagSizer'
+    tmpl = '%(sizer_name)s = %(klass)s(%(vgap)s, %(hgap)s)\n'
+
+
 import wcodegen
 
 class PythonSizerSlotGenerator(wcodegen.PythonWidgetCodeWriter):
@@ -69,6 +74,7 @@ def initialize():
     cn['EditStaticBoxSizer'] = 'wxStaticBoxSizer'
     cn['EditGridSizer'] = 'wxGridSizer'
     cn['EditFlexGridSizer'] = 'wxFlexGridSizer'
+    cn['EditGridBagSizer'] = 'wxGridBagSizer'
 
     pygen = common.code_writers.get("python")
     if pygen:
@@ -77,6 +83,7 @@ def initialize():
         awh('wxStaticBoxSizer', PythonStaticBoxSizerBuilder())
         awh('wxGridSizer', PythonGridSizerBuilder())
         awh('wxFlexGridSizer', PythonFlexGridSizerBuilder())
+        awh('wxGridBagSizer', PythonGridBagSizerBuilder())
 
     # handle SizerSlot
     #common.class_names['EditSpacer'] = klass

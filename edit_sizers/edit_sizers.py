@@ -86,6 +86,7 @@ class BaseSizerBuilder(object):
         if self.klass == 'wxStaticBoxSizer': return self.get_code_wxStaticBoxSizer(obj)
         if self.klass == 'wxGridSizer':      return self.get_code_wxGridSizer(obj)
         if self.klass == 'wxFlexGridSizer':  return self.get_code_wxFlexGridSizer(obj)
+        if self.klass == 'wxGridBagSizer':   return self.get_code_wxFlexGridSizer(obj)
         return self._get_code(obj)
 
     def get_code_wxStaticBoxSizer(self, obj):
@@ -101,8 +102,9 @@ class BaseSizerBuilder(object):
 
     def get_code_wxGridSizer(self, obj):
         "Set sizer specific properties and generate the code"
-        self.tmpl_dict['rows'] = obj.properties.get('rows', '0')
-        self.tmpl_dict['cols'] = obj.properties.get('cols', '0')
+        if self.klass != 'wxGridBagSizer':
+            self.tmpl_dict['rows'] = obj.properties.get('rows', '0')
+            self.tmpl_dict['cols'] = obj.properties.get('cols', '0')
         self.tmpl_dict['vgap'] = obj.properties.get('vgap', '0')
         self.tmpl_dict['hgap'] = obj.properties.get('hgap', '0')
         return self._get_code(obj)
@@ -346,7 +348,8 @@ class SizerSlot(np.PropertyOwner):
             return
         if self.widget:
             self.widget.SetCursor(wx.NullCursor)
-            self.widget.Hide()
+            #self.widget.Hide()
+        common.adding_window = event and event.GetEventObject().GetTopLevelParent() or None
         # call the appropriate builder
         common.widgets[common.widget_to_add](self.parent, self.sizer, self.pos)
         if event is None or not misc.event_modifier_copy(event):
@@ -469,7 +472,8 @@ def change_sizer(old, new):
         'wxStaticBoxSizer (wxHORIZONTAL)': lambda: EditStaticBoxSizer(old.name, old.window, wx.HORIZONTAL,
                                                                       getattr(old, 'label', old.name), 0, old.toplevel),
         'wxGridSizer':     lambda: EditGridSizer(old.name, old.window, rows=0, cols=0, toplevel=old.toplevel),
-        'wxFlexGridSizer': lambda: EditFlexGridSizer(old.name, old.window, rows=0, cols=0, toplevel=old.toplevel)
+        'wxFlexGridSizer': lambda: EditFlexGridSizer(old.name, old.window, rows=0, cols=0, toplevel=old.toplevel),
+        'wxGridBagSizer': lambda: EditGridBagSizer(old.name, old.window, rows=0, cols=0, toplevel=old.toplevel)
     }
 
     # construct without children, take then the children from the old sizer
@@ -552,6 +556,7 @@ def change_sizer(old, new):
 
 class Sizer(object):
     "Base class for every Sizer handled by wxGlade"
+    _IS_GRIDBAG = False
 
     def __init__(self, window):
         self.window = window
@@ -627,7 +632,8 @@ class ClassOrientProperty(np.RadioProperty):
                 ('wxStaticBoxSizer (wxVERTICAL)', 'with box and label'),
                 ('wxStaticBoxSizer (wxHORIZONTAL)', 'with box and label'),
                 ('wxGridSizer', None),
-                ('wxFlexGridSizer', "with columns/rows of different widths") ]
+                ('wxFlexGridSizer', "with columns/rows of different widths"),
+                ('wxGridBagSizer', "with cell spanning (i.e. item may populate multiple grid cells)")]
 
     TOOLTIPS = [c[1] for c in CHOICES]
     CHOICES  = [c[0] for c in CHOICES]
@@ -645,7 +651,7 @@ class SizerBase(Sizer, np.PropertyOwner):
                   "Layout"]  # not a property, just start the next page in the editor
     EXTRA_PROPERTIES = []
 
-    MANAGED_PROPERTIES  = ["pos", "proportion", "border", "flag"]
+    MANAGED_PROPERTIES  = ["pos", "span", "proportion", "border", "flag"]
     TOPLEVEL_PROPERTIES = ["fit"]
 
     _PROPERTY_LABELS = {"fit":"Fit parent",
@@ -677,10 +683,11 @@ class SizerBase(Sizer, np.PropertyOwner):
             self.PROPERTIES = self.PROPERTIES + self.MANAGED_PROPERTIES + self.EXTRA_PROPERTIES
             # if within another sizer: the arguments to sizer.Add(self, proportion, flag, border)
             # same as for edit_windows.ManagedBase
-            self.pos    = np.LayoutPosProperty(0, None)  # the position within the sizer, 0-based
+            self.pos        = np.LayoutPosProperty(0, None)  # the position within the sizer, 0-based
+            self.span       = np.LayoutSpanProperty(0, None)  # row,colspan for items in GridBagSizers
             self.proportion = np.SpinProperty(1, name="option", immediate=True)
-            self.border = np.SpinProperty(0, immediate=True)
-            self.flag   = np.ManagedFlags(wx.EXPAND)
+            self.border     = np.SpinProperty(0, immediate=True)
+            self.flag       = np.ManagedFlags(wx.EXPAND)
             self.sizer = None  # the (parent) sizer instance
             self._has_layout = True
         else:
@@ -903,7 +910,12 @@ class SizerBase(Sizer, np.PropertyOwner):
             # able to detect (yet): if the width or height of a widget is -1,
             # the layout is messed up!
 
-            self.widget.Add(item.widget, proportion, flag, border)
+            if self._IS_GRIDBAG:
+                row = (pos-1) // self.cols
+                col = (pos-1) %  self.cols
+                self.widget.Add(item.widget, (row,col), item.span, flag, border)
+            else:
+                self.widget.Add(item.widget, proportion, flag, border)
 
             if size:
                 w, h = size
@@ -1473,7 +1485,10 @@ class CustomSizer(wx.BoxSizer):
     def __init__(self, parent, factory, rows, cols, vgap, hgap):
         wx.BoxSizer.__init__(self, wx.VERTICAL)
         self.parent = parent
-        self._grid = factory(rows, cols, vgap, hgap)
+        if factory is wx.GridBagSizer:
+            self._grid = factory(vgap, hgap)
+        else:
+            self._grid = factory(rows, cols, vgap, hgap)
         wx.BoxSizer.Add(self, self.parent._btn, 0, wx.EXPAND)
         wx.BoxSizer.Add(self, self._grid, 1, wx.EXPAND)
 
@@ -1821,20 +1836,21 @@ class _GrowablePropertyD(np.DialogPropertyD):
 class EditFlexGridSizer(GridSizerBase):
     "Class to handle wxFlexGridSizer objects"
     WX_CLASS = "wxFlexGridSizer"
+    WX_FACTORY = wx.FlexGridSizer
 
     EXTRA_PROPERTIES = GridSizerBase.EXTRA_PROPERTIES + ["growable_rows", "growable_cols"]
     _PROPERTY_HELP = {"growable_rows":'Select growable rows',
                       "growable_cols":'Select growable columns'}
 
     def __init__(self, name, window, rows=3, cols=3, vgap=0, hgap=0, toplevel=True):
-        GridSizerBase.__init__(self, name, 'wxFlexGridSizer', window, rows, cols, vgap, hgap, toplevel)
+        GridSizerBase.__init__(self, name, self.WX_CLASS, window, rows, cols, vgap, hgap, toplevel)
         self.growable_rows = _GrowablePropertyD("", default_value="")
         self.growable_cols = _GrowablePropertyD("", default_value="")
         self.properties["growable_rows"].title = 'Select growable rows'
         self.properties["growable_cols"].title = 'Select growable cols'
 
     def create_widget(self):
-        self.widget = CustomSizer(self, wx.FlexGridSizer, self.rows, self.cols, self.vgap, self.hgap)
+        self.widget = CustomSizer(self, self.WX_FACTORY, self.rows, self.cols, self.vgap, self.hgap)
         GridSizerBase.create_widget(self)
         for r in self.growable_rows.split(","):
             if not r.strip(): continue
@@ -1867,6 +1883,64 @@ class EditFlexGridSizer(GridSizerBase):
             return # the sizer is re-created, so we need not consider other modifications
         GridSizerBase.properties_changed(self, modified)
 
+
+class EditGridBagSizer(EditFlexGridSizer):
+    "Class to handle wxFlexGridSizer objects"
+    WX_CLASS = "wxGridBagSizer"
+    WX_FACTORY = wx.GridBagSizer
+    _IS_GRIDBAG = True
+
+    def create_widget(self):  # this one does not call GridSizerBase.create_widget, as the strategy here is different
+        self.widget = CustomSizer(self, self.WX_FACTORY, self.rows, self.cols, self.vgap, self.hgap)
+        #GridSizerBase.create_widget(self)
+        ################################################################################################################
+        
+        to_lay_out = []
+        rows,cols = self.rows, self.cols
+        pos = [0,cols]
+        for c in self.children[1:]:  # we've already added self._btn
+            pos[1] += 1
+            if pos[1]>cols:
+                pos[0] += 1
+                pos[1]  = 1
+            c.item.create()
+            if isinstance(c.item, SizerSlot):
+                self.widget.Add(c.item.widget, pos, (1,1), 1, wx.EXPAND)
+                self.widget.SetItemMinSize(c.item.widget, 20, 20)
+            else:
+                sp = c.item.properties.get('size')
+                if sp and sp.is_active():
+                    if (c.proportion != 0 or (c.flag & wx.EXPAND)) and not (c.flag & wx.FIXED_MINSIZE):
+                        c.item.widget.Layout()
+                        w, h = c.item.widget.GetBestSize()
+                        c.item.widget.SetMinSize((w, h))
+                    else:
+                        size = sp.get_value().strip()
+                        if size[-1] == 'd':
+                            size = size[:-1]
+                            use_dialog_units = True
+                        else:
+                            use_dialog_units = False
+                        w, h = [int(v) for v in size.split(',')]
+                        if use_dialog_units:
+                            w, h = wx.DLG_SZE(c.item.widget, (w, h))
+                        # now re-set the item to update the size correctly...
+                        to_lay_out.append((c.item.pos, (w, h)))
+
+        for pos, size in to_lay_out:
+            # self._logger.debug('set_item: %s, %s', pos, size)
+            self.set_item(pos, size=size, force_layout=False)
+        self.layout(True)
+        ################################################################################################################
+        for r in self.growable_rows.split(","):
+            if not r.strip(): continue
+            self.widget.AddGrowableRow( int(r)-1 )  # the text property is 1-based
+        for c in self.growable_cols.split(","):
+            if not c.strip(): continue
+            self.widget.AddGrowableCol( int(c)-1 )
+        if not self.toplevel and getattr(self, 'sizer', None) is not None:
+            # hasattr(self, 'sizer') is False only in case of a 'change_sizer' call
+            self.sizer.add_item(self, self.pos, self.proportion, self.flag, self.border)
 
 
 def _builder(parent, sizer, pos, orientation=wx.VERTICAL, slots=1, is_static=False, label="", number=[1]):
@@ -2008,13 +2082,19 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
 
 class _GridBuilderDialog(wx.Dialog):
     def __init__(self, parent):
-        wx.Dialog.__init__( self, misc.get_toplevel_parent(parent), -1, _('Select sizer attributes') )
+        pos = wx.GetMousePosition()
+        wx.Dialog.__init__( self, misc.get_toplevel_parent(parent), -1, _('Select sizer type and attributes'), pos )
+        # the main sizer
+        sizer = wx.BoxSizer(wx.VERTICAL)
+        # type
+        choices = ["Grid", "FlexGrid", "GridBag"]
+        self.type_ = wx.RadioBox(self, -1, _('Type'), choices=choices, majorDimension=1)
+        sizer.Add(self.type_, 1, wx.ALL|wx.EXPAND, 3)
+        # layout
         self.rows = wx.SpinCtrl(self, -1, "3")
         self.cols = wx.SpinCtrl(self, -1, "3")
         self.vgap = wx.SpinCtrl(self, -1, "0")
         self.hgap = wx.SpinCtrl(self, -1, "0")
-        # the main sizer
-        sizer = wx.BoxSizer(wx.VERTICAL)
         # grid sizer with the controls
         gsizer = wx.FlexGridSizer(cols=2)
         for label, control, tooltip in [("Rows", self.rows, 'Numbers of sizer rows'),
@@ -2026,12 +2106,11 @@ class _GridBuilderDialog(wx.Dialog):
             compat.SetToolTip( control, tooltip )
         self.rows.SetFocus()
         self.rows.SetSelection(-1, -1)
+        # static box sizer around the grid sizer
+        boxsizer = wx.StaticBoxSizer(wx.VERTICAL, self, _("Layout"))
+        boxsizer.Add(gsizer)
+        sizer.Add(boxsizer, 0, wx.ALL, 3)
 
-        gsizer.Add(wx.StaticText(self, -1, _('Flexible')), 0, wx.ALL | wx.ALIGN_CENTER_VERTICAL, 5)
-        self.flex = wx.CheckBox(self, -1)
-        compat.SetToolTip(self.flex, _('Create a wxFlexGridSizer instead of a wxGridSizer') )
-        gsizer.Add(self.flex, 0, wx.TOP|wx.BOTTOM, 10)
-        sizer.Add(gsizer)
         # horizontal sizer for action buttons
         hsizer = wx.BoxSizer(wx.HORIZONTAL)
         hsizer.Add( wx.Button(self, wx.ID_CANCEL, _('Cancel')), 1, wx.ALL, 5)
@@ -2058,7 +2137,7 @@ def grid_builder(parent, sizer, pos, number=[1]):
     cols = dialog.cols.GetValue()
     vgap = dialog.vgap.GetValue()
     hgap = dialog.hgap.GetValue()
-    is_flexible = dialog.flex.GetValue()
+    type_ = dialog.type_.GetStringSelection()
     dialog.Destroy()
     if res != wx.ID_OK: return
 
@@ -2067,10 +2146,12 @@ def grid_builder(parent, sizer, pos, number=[1]):
         number[0] += 1
         name = 'grid_sizer_%d' % number[0]
     is_toplevel = True
-    if is_flexible:
-        constructor = EditFlexGridSizer
-    else:
+    if type_=="Grid":
         constructor = EditGridSizer
+    elif type_=="FlexGrid":
+        constructor = EditFlexGridSizer
+    elif type_=="GridBag":
+        constructor = EditGridBagSizer
     if sizer is not None:
         is_toplevel = False
     #sz = constructor(name, parent, rows, cols, vgap, hgap, is_toplevel)
@@ -2113,8 +2194,10 @@ def grid_xml_builder(attrs, parent, sizer, sizeritem, pos=None):
         raise XmlParsingError(_("'name' attribute missing"))
     if attrs['base'] == 'EditGridSizer':
         constructor = EditGridSizer
-    else:
+    elif attrs['base'] == 'EditFlexGridSizer':
         constructor = EditFlexGridSizer
+    elif attrs['base'] == 'EditGridBagSizer':
+        constructor = EditGridBagSizer
     if sizer is not None:
         sz = constructor(name, parent, rows=0, cols=0, toplevel=False)
         if sizeritem is None:
@@ -2147,11 +2230,13 @@ def init_all():
     cwx['EditStaticBoxSizer'] = xml_builder
     cwx['EditGridSizer'] = grid_xml_builder
     cwx['EditFlexGridSizer'] = grid_xml_builder
+    cwx['EditGridBagSizer'] = grid_xml_builder
 
     import os.path
 
     WidgetTree.images['EditStaticBoxSizer'] = os.path.join( config.icons_path, 'sizer.xpm')
     WidgetTree.images['EditFlexGridSizer']  = os.path.join( config.icons_path, 'grid_sizer.xpm' )
+    WidgetTree.images['EditGridBagSizer']  = os.path.join( config.icons_path, 'grid_sizer.xpm' )
 
     WidgetTree.images['EditVerticalSizer']   = os.path.join( config.icons_path, 'sizer_v.xpm' )
     WidgetTree.images['EditHorizontalSizer'] = os.path.join( config.icons_path, 'sizer_h.xpm' )

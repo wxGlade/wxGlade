@@ -208,6 +208,7 @@ class PythonCodeWriter(BaseLangCodeWriter, wcodegen.PythonMixin):
     tmpl_ctor_call_layout = '\n%(tab)sself.__set_properties()\n%(tab)sself.__do_layout()\n'
     tmpl_func_empty = '%(tab)spass\n'
     tmpl_sizeritem = '%s.Add(%s, %s, %s, %s)\n'
+    tmpl_gridbagsizeritem = '%s.Add(%s, %s, %s, %s, %s)\n'
     tmpl_style = '%(tab)skwds["style"] = %(style)s\n'
     tmpl_appfile = """\
 %(overwrite)s\
