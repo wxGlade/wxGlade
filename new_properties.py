@@ -1064,7 +1064,7 @@ class TextProperty(Property):
             self.text.SetInsertionPointEnd()
         if not self.multiline and keycode==13:
             # enter
-            self._check_for_user_modification()
+            if self._check_for_user_modification(): return
         event.Skip()
 
     def on_kill_focus(self, event):
@@ -1082,7 +1082,7 @@ class TextProperty(Property):
             self.text.SetValue( self._value_to_str(self.value))
             return
         self.previous_value = self.value
-        Property._check_for_user_modification(self, new_value, force, activate)
+        return Property._check_for_user_modification(self, new_value, force, activate)
 
     def _convert_from_text(self, value=None):
         """Convert newline and tab characters to a character sequences (FROM input widget TO property)
