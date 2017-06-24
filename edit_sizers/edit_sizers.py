@@ -1915,7 +1915,8 @@ def _builder(parent, sizer, pos, orientation=wx.VERTICAL, slots=1, is_static=Fal
 
 class _SizerDialog(wx.Dialog):
     def __init__(self, parent):
-        wx.Dialog.__init__( self, misc.get_toplevel_parent(parent), -1, _('Select sizer type') )
+        pos = wx.GetMousePosition()
+        wx.Dialog.__init__( self, misc.get_toplevel_parent(parent), -1, _('Select sizer type'), pos )
         self.orientation = wx.RadioBox( self, -1, _('Orientation'), choices=[_('Horizontal'), _('Vertical')] )
         self.orientation.SetSelection(0)
         tmp = wx.BoxSizer(wx.HORIZONTAL)
@@ -1937,14 +1938,18 @@ class _SizerDialog(wx.Dialog):
         tmp.Add(self.label, 1)
         szr.Add(tmp, 0, wx.ALL | wx.EXPAND, 4)
 
+        # horizontal sizer for action buttons
+        hsizer = wx.BoxSizer(wx.HORIZONTAL)
+        hsizer.Add( wx.Button(self, wx.ID_CANCEL, _('Cancel')), 1, wx.ALL, 5)
         btn = wx.Button(self, wx.ID_OK, _('OK'))
         btn.SetDefault()
-        szr.Add(btn, 0, wx.ALL | wx.ALIGN_CENTER, 10)
+        hsizer.Add(btn, 1, wx.ALL, 5)
+        szr.Add(hsizer, 0, wx.EXPAND|wx.ALIGN_CENTER )
         self.SetAutoLayout(1)
         self.SetSizer(szr)
         szr.Fit(self)
         self.Layout()
-        self.CenterOnScreen()
+        #self.CenterOnScreen()
 
     def reset(self):
         self.orientation.SetSelection(0)
@@ -1961,17 +1966,17 @@ class _SizerDialog(wx.Dialog):
 def builder(parent, sizer, pos, number=[1]):
     "factory function for box sizers"
 
-    dialog = _SizerDialog(parent)
-    dialog.ShowModal()
+    dialog = _SizerDialog(common.adding_window or parent)
+    res = dialog.ShowModal()
     if dialog.orientation.GetStringSelection() == _('Horizontal'):
         orientation = wx.HORIZONTAL
     else:
         orientation = wx.VERTICAL
     num = dialog.num.GetValue()
 
-    _builder (parent, sizer, pos, orientation, num, dialog.check.GetValue(), dialog.label.GetValue() )
-
     dialog.Destroy()
+    if res != wx.ID_OK: return
+    _builder (parent, sizer, pos, orientation, num, dialog.check.GetValue(), dialog.label.GetValue() )
 
 
 def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
@@ -2010,7 +2015,6 @@ class _GridBuilderDialog(wx.Dialog):
     def __init__(self, parent):
         pos = wx.GetMousePosition()
         wx.Dialog.__init__( self, misc.get_toplevel_parent(parent), -1, _('Select sizer type and attributes'), pos )
-        wx.Dialog.__init__( self, misc.get_toplevel_parent(parent), -1, _('Select sizer attributes') )
         self.rows = wx.SpinCtrl(self, -1, "3")
         self.cols = wx.SpinCtrl(self, -1, "3")
         self.vgap = wx.SpinCtrl(self, -1, "0")
@@ -2047,7 +2051,6 @@ class _GridBuilderDialog(wx.Dialog):
 
         sizer.Fit(self)
         self.Layout()
-        #self.CentreOnParent()
 
 
 

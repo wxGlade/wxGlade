@@ -696,11 +696,12 @@ class WidgetTree(wx.TreeCtrl, Tree):
         import edit_sizers
         if isinstance(item, edit_sizers.SizerSlot):
             item.on_drop_widget(event)
-            return
-        if common.adding_sizer:
+            common.adding_window = None
+        elif common.adding_sizer:
             item.drop_sizer()
-            return
-        event.Skip()
+        else:
+            event.Skip()
+        common.adding_window = None
 
     def on_left_dclick(self, event):
         self.show_toplevel(event)
