@@ -49,10 +49,6 @@ class Node(object):
             if parent.parent is None: return False
             parent = parent.parent
 
-    #def __repr__(self):
-        #try: return self.widget.name
-        #except AttributeError: return repr(self.widget)
-
     def write(self, outfile, tabs, class_names=None):
         "Writes the xml code for the widget to the given output file"
         # XXX move this to the widget
@@ -213,8 +209,7 @@ class Tree(object):
     def insert(self, child, parent, index):
         # if at index there is a SlotNode, replace this, otherwise insert
         if parent is None: parent = self.root
-        if parent.children is None:
-            parent.children = []
+        if parent.children is None: parent.children = []
         parent.children.insert(index, child)
         child.parent = parent
         self.current = child
@@ -439,8 +434,7 @@ class WidgetTree(wx.TreeCtrl, Tree):
         # start drag & drop
         item = evt.GetItem()
         node = self._GetItemData(item)
-        if node is self.root or isinstance(node, SlotNode):  # application and slots can't be dragged
-            return
+        if node is self.root or isinstance(node, SlotNode): return  # application and slots can't be dragged
         widget = node.widget
         self._drag_ongoing = True
         clipboard.begin_drag(self, widget)
@@ -607,7 +601,6 @@ class WidgetTree(wx.TreeCtrl, Tree):
             self.Expand(parent.item)
             self.select_item(child)
         if not isinstance(child.widget, edit_sizers.SizerSlot):
-            #child.widget.show_properties()
             self.app.check_codegen(child.widget)
 
     def remove(self, node=None, delete=True):
@@ -675,10 +668,6 @@ class WidgetTree(wx.TreeCtrl, Tree):
             self.Expand(item)
         self.SetFocus()
 
-        if config.debugging:
-            path = self.get_selected_path(widget)
-            print("selected:", widget, path)
-
     def on_left_click(self, event):
         if not common.adding_widget: return event.Skip()
         node = self._find_node_by_pos( *event.GetPosition() )
@@ -727,8 +716,7 @@ class WidgetTree(wx.TreeCtrl, Tree):
 
     def popup_menu(self, event, pos=None):
         node = self._find_node_by_pos(*event.GetPosition())
-        if not node:
-            return
+        if not node: return
         self.select_item(node)
         self._popup_menu_widget = node.widget
         node.widget.popup_menu(event, pos)
@@ -804,9 +792,6 @@ class WidgetTree(wx.TreeCtrl, Tree):
 
         if node is None or node is self.root: return
 
-        #if not node.widget.widget:
-            #node.widget.create()
-
         # the actual toplevel widget may be one level higher, e.g. for a Panel, which is embedded in a Frame
         set_size = None
         if getattr(node.widget, "_is_toplevel_window", False) or getattr(node.widget, "_is_toplevel", False):
@@ -834,7 +819,6 @@ class WidgetTree(wx.TreeCtrl, Tree):
             misc.set_focused_widget(node.widget)
             event.Skip()
         if "design" in node.widget.properties: node.widget.design.update_label()
-        #event.Skip()
 
     def _find_node_by_pos(self, x, y, toplevels_only=False):
         """Finds the node which is displayed at the given coordinates. Returns None if there's no match.
@@ -942,9 +926,7 @@ class WidgetTree(wx.TreeCtrl, Tree):
         "sets the selected widget from a path_list, which should be in the form returned by get_selected_path"
         index = 0
         item, cookie = self._get_first_child(self.GetRootItem())
-        itemok = None
-        parent = None
-        pos = None
+        itemok = parent = pos = None
         while item.IsOk() and index < len(path):
             widget = self._GetItemData(item).widget
             name = path[index]
