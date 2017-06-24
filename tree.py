@@ -674,7 +674,7 @@ class WidgetTree(wx.TreeCtrl, Tree):
         if not node: return event.Skip()
 
         item = node.widget
-        if not item.widget.check_drop_compatibility(): return event.Skip()
+        if not item.check_drop_compatibility(): return event.Skip()
 
         common.adding_window = event.GetEventObject().GetTopLevelParent()
         if isinstance(item, edit_sizers.SizerSlot):
@@ -700,13 +700,13 @@ class WidgetTree(wx.TreeCtrl, Tree):
         if not self._drag_ongoing and not event.IsButton():
             # set cursor to indicate a possible drop
             x,y = event.GetPosition()
-            item = self._find_node_by_pos(x, y, toplevels_only=False)
-            if item is not None:
+            node = self._find_node_by_pos(x, y, toplevels_only=False)
+            if node is not None:
                 if not common.adding_widget:
                     self.SetCursor(wx.STANDARD_CURSOR)
                 else:
                     # check whether the item can be dropped here
-                    if item.widget.check_drop_compatibility():
+                    if node.widget.check_drop_compatibility():
                         self.SetCursor(wx.CROSS_CURSOR)
                     else:
                         self.SetCursor(wx.StockCursor(wx.CURSOR_NO_ENTRY)) # https://wxpython.org/docs/api/wx.Cursor-class.html
