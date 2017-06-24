@@ -691,6 +691,7 @@ class WidgetTree(wx.TreeCtrl, Tree):
         if not node:
             event.Skip()
             return
+        common.adding_window = event.GetEventObject().GetTopLevelParent()
         item = node.widget
         import edit_sizers
         if isinstance(item, edit_sizers.SizerSlot):

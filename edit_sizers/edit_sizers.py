@@ -2045,13 +2045,14 @@ class _GridBuilderDialog(wx.Dialog):
 
         sizer.Fit(self)
         self.Layout()
-        self.CentreOnParent()
+        #self.CentreOnParent()
 
 
 
 def grid_builder(parent, sizer, pos, number=[1]):
     "factory function for grid sizers"
-    dialog = _GridBuilderDialog(parent)
+    #dialog = _GridBuilderDialog(parent)
+    dialog = _GridBuilderDialog(common.adding_window or parent)
     res = dialog.ShowModal()
     rows = dialog.rows.GetValue()
     cols = dialog.cols.GetValue()
