@@ -812,8 +812,8 @@ class WidgetTree(wx.TreeCtrl, Tree):
 
         if node is None or node is self.root: return
 
-        if not node.widget.widget:
-            node.widget.create()
+        #if not node.widget.widget:
+            #node.widget.create()
 
         # the actual toplevel widget may be one level higher, e.g. for a Panel, which is embedded in a Frame
         set_size = None
