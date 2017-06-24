@@ -56,7 +56,6 @@ class Node(object):
     def write(self, outfile, tabs, class_names=None):
         "Writes the xml code for the widget to the given output file"
         # XXX move this to the widget
-        import edit_sizers
         fwrite = outfile.write
         assert self.widget is not None
 
@@ -656,10 +655,7 @@ class WidgetTree(wx.TreeCtrl, Tree):
 
     def set_current_widget(self, widget):
         # interface from common.set_focused_widget
-        if widget is None:
-            #self.cur_widget = None
-            return
-        if widget is self.cur_widget: return
+        if widget is None or widget is self.cur_widget: return
         if widget is self.root.widget:
             node = self.root
         else:
@@ -684,23 +680,18 @@ class WidgetTree(wx.TreeCtrl, Tree):
             print("selected:", widget, path)
 
     def on_left_click(self, event):
-        if not common.adding_widget:
-            event.Skip()
-            return
-        node = self._find_node_by_pos(*event.GetPosition())
-        if not node:
-            event.Skip()
-            return
-        common.adding_window = event.GetEventObject().GetTopLevelParent()
+        if not common.adding_widget: return event.Skip()
+        node = self._find_node_by_pos( *event.GetPosition() )
+        if not node: return event.Skip()
+
         item = node.widget
-        import edit_sizers
+        if not item.widget.check_drop_compatibility(): return event.Skip()
+
+        common.adding_window = event.GetEventObject().GetTopLevelParent()
         if isinstance(item, edit_sizers.SizerSlot):
             item.on_drop_widget(event)
-            common.adding_window = None
         elif common.adding_sizer:
             item.drop_sizer()
-        else:
-            event.Skip()
         common.adding_window = None
 
     def on_left_dclick(self, event):
