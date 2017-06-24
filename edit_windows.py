@@ -357,8 +357,7 @@ class WindowBase(EditBase):
  
         size_p = self.properties['size']
         if size_p.is_active():
-            #self.widget.SetSize([int(s) for s in size.split(',')])
-            self.set_size(size_p.get())
+            self.set_size()
         else:
             # this is a dirty hack: in previous versions <=0.7.2 self.set_size is practically always called
             # set_size then calls self.sizer.set_item(item, pos)
@@ -450,39 +449,20 @@ class WindowBase(EditBase):
             if size != old_size:
                 self.sizer.set_item(self.pos, size=size)
 
-    def set_width(self, value):
-        self.set_size((int(value), -1))
+    def set_size(self):
+        if not self.widget: return
+        size_p = self.properties["size"]
+        if not size_p.is_active(): return
 
-    def set_height(self, value):
-        self.set_size((-1, int(value)))
-
-    def set_size(self, value):
-        #if not self.widget: return
-        if self.properties['size'].is_active():
-            v = self.properties['size'].get_value().strip()
-            use_dialog_units = v and v[-1] == 'd'
-        else:
-            use_dialog_units = config.preferences.use_dialog_units  # False
-        try: "" + value
-        except TypeError: pass
-        else:  # value is a string-like object
-            if value and value.strip()[-1] == 'd':
-                use_dialog_units = True
-                value = value[:-1]
+        v = size_p.get_value().strip()
+        use_dialog_units = v and v[-1] == 'd'
+        size = size_p.get_tuple()
+        if use_dialog_units: size = wx.DLG_SZE(self.widget, size)
+        self.widget.SetSize(size)
         try:
-            size = [int(t.strip()) for t in value.split(',', 1)]
-        except:
-            self.properties['size'].set(self.size)
-        else:
-            if use_dialog_units and value[-1] != 'd': value += 'd'
-            self.properties['size'].set(value)
-            if self.widget:
-                if use_dialog_units: size = wx.DLG_SZE(self.widget, size)
-                self.widget.SetSize(size)
-                try:
-                    self.sizer.set_item(self.pos, size=size)
-                except AttributeError:
-                    pass
+            self.sizer.set_item(self.pos, size=size)
+        except AttributeError:
+            pass
 
     def get_property_handler(self, name):
         if name == 'font':
@@ -495,6 +475,8 @@ class WindowBase(EditBase):
     def properties_changed(self, modified=None):
         # XXX check whether actions are required
         refresh = False
+        if modified and "size" in modified and self.widget:
+            self.set_size()
         if not modified or "background" in modified and self.widget:
             self.widget.SetBackgroundColour(self.properties["background"].get_color())
             refresh = True
