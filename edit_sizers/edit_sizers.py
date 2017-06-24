@@ -1309,14 +1309,15 @@ class SizerBase(Sizer, np.PropertyOwner):
         if "rows" in self.PROPERTIES: self._adjust_rows_cols()  # for GridSizer
         if not self.toplevel:
             return
-        if not self.window.properties['size'].is_active():
+        size_p = self.window.properties['size']
+        if not size_p.is_active():
             self.fit_parent()
             w, h = self.widget.GetSize()
             prefix = ''
             if config.preferences.use_dialog_units:
                 w, h = compat.ConvertPixelsToDialog( self.window.widget, self.widget.GetSize() )
                 prefix = 'd'
-            self.window.set_size('%s, %s%s' % (w, h, prefix))
+            size_p.set('%s, %s%s' % (w, h, prefix))
 
 
 
