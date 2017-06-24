@@ -2008,6 +2008,8 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
 
 class _GridBuilderDialog(wx.Dialog):
     def __init__(self, parent):
+        pos = wx.GetMousePosition()
+        wx.Dialog.__init__( self, misc.get_toplevel_parent(parent), -1, _('Select sizer type and attributes'), pos )
         wx.Dialog.__init__( self, misc.get_toplevel_parent(parent), -1, _('Select sizer attributes') )
         self.rows = wx.SpinCtrl(self, -1, "3")
         self.cols = wx.SpinCtrl(self, -1, "3")
