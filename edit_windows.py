@@ -521,7 +521,7 @@ class ManagedBase(WindowBase):
     proportion/option, flag, and border."""
     _is_toplevel = False  # this will be True for a top level widget like Frame
 
-    _PROPERTIES = ["Layout","pos", "proportion", "border", "flag"]
+    _PROPERTIES = ["Layout","pos", "span", "proportion", "border", "flag"]
     SIZER_PROPERTIES = ["pos","proportion","border","flag"]
     PROPERTIES = WindowBase.PROPERTIES + _PROPERTIES
 
@@ -540,6 +540,7 @@ class ManagedBase(WindowBase):
 
         # attributes to keep the values of the sizer properties
         self.pos        = np.LayoutPosProperty(pos, sizer)                  # position within the sizer, 1-based
+        self.span       = np.LayoutSpanProperty((1,1), sizer)               # cell spanning for GridBagSizer
         self.proportion = np.SpinProperty(0, name="option", immediate=True) # item growth in sizer main direction
         self.border     = np.SpinProperty(0, immediate=True)                # border width
         self.flag       = np.ManagedFlags(wx.ADJUST_MINSIZE)                # alignment, border; expansion in other dir.

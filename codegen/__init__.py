@@ -1105,7 +1105,12 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
 
         flag = self.cn_f(flag) or '0'
 
-        stmt = self.tmpl_sizeritem % ( sizer_name, obj_name, option, flag, border )
+        if sizer.klass!="wxGridBagSizer":
+            stmt = self.tmpl_sizeritem % ( sizer_name, obj_name, option, flag, border )
+        else:
+            row = (pos-1) // self.cols
+            col = (pos-1) %  self.cols
+            stmt = self.tmpl_gridbagsizeritem % ( sizer_name, obj_name, (row,col), obj.span, flag, border )
 
         klass.layout.append(stmt)
 

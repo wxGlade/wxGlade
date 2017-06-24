@@ -702,7 +702,8 @@ class CodeWriter(XmlParser):
                 topl = self._toplevels.top()
                 self.code_writer.add_object(topl, obj)
                 szr = self._sizers.top()
-                self.code_writer.add_sizeritem(topl, szr, obj, 0, "", 0)  # XXX maybe, grow and expand would be better
+                if szr.klass!="wxGridBagSizer":
+                    self.code_writer.add_sizeritem(topl, szr, obj, 0, "", 0)  # XXX maybe, grow and expand would be better
                 return
 
             # at the end of the object, we have all the information to add it to its toplevel parent,

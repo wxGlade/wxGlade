@@ -277,6 +277,16 @@ class PropertyRO(Property):
     readonly = True
 
 
+# some building blocks for regular expressions:
+_leading  = r"^\s*\(?\s*"          # whitespace, optionally including an opening "("
+_int      = r"(0|(?:-?[1-9]\d*))"  # a number group matching any integer
+_ge_m1    = r"((?:-1)|(?:\d+))"    # a number group matching integers >=-1
+_g_0      = r"([1-9]\d*)"          # a number group matching integers >0
+_ge_0     = r"(\d+)"               # a number group matching integers >=0
+_comma    = r"\s*,\s*"             # a comma, optionally with surrounding whitespace
+_trailing = r"\s*\)?\s*$"          # whitespace, optionally including a closing ")"
+
+
 class SpinProperty(Property):
     # int
     CONTROLNAMES = ["enabler", "spin"]
@@ -379,8 +389,8 @@ class SpinPropertyD(SpinProperty):
     deactivated = True
 
 
-def _is_gridbag(dummy):
-    return False
+def _is_gridbag(sizer):
+    return sizer and sizer._IS_GRIDBAG
 
 class LayoutPosProperty(SpinProperty):
     readonly = True
@@ -395,6 +405,90 @@ class LayoutPosProperty(SpinProperty):
 
     def write(self, *args, **kwds):
         pass
+
+
+class LayoutSpanProperty(Property):
+    TOOLTIP = "cell spanning for GridBagSizer items"
+    # (int,int)
+    CONTROLNAMES = ["rowspin","colspin"]
+    def __init__(self, value, sizer):
+        self.immediate = True
+        self.is_gridbag = _is_gridbag(sizer)
+        Property.__init__(self, value, default_value=(1,1), name="span")
+
+    def set_sizer(self, sizer):
+        self.is_gridbag = _is_gridbag(sizer)
+
+    validation_re = re.compile(_leading + _ge_0 + _comma + _ge_0 + _trailing )  # match a pair of integers >=0
+    normalization = "%s, %s%s" # for normalization % valiation_re.match(...).groups()
+    #def _set_converter(self, value):
+        ## value can be a tuple
+        #if isinstance(value, compat.basestring):
+            #return value
+        #if isinstance(value, wx.Size):
+            #return '%d, %d' % (value.x, value.y)
+        #return '%d, %d' % value
+
+    def _convert_from_text(self, value):
+        match = self.validation_re.match(value)
+        #if not match: return self.value
+        if not match: return None
+        groups = match.groups()
+        return [int(groups[0]),int(groups[1])]
+
+    def create_editor(self, panel, sizer):
+        hsizer = wx.BoxSizer(wx.HORIZONTAL)
+        # label
+        label = self._find_label()
+        label = wx.lib.stattext.GenStaticText( panel, -1, label, size=(config.label_width, -1) )
+        #hsizer.Add(label, 2, wx.ALL | wx.ALIGN_CENTER, 3)
+        hsizer.Add(label, 0, wx.ALL | wx.ALIGN_CENTER, 3)
+        # checkbox, if applicable
+        self.enabler = None
+
+        style = wx.TE_PROCESS_ENTER | wx.SP_ARROW_KEYS
+        self.rowspin = wx.SpinCtrl( panel, -1, style=style, min=1, max=10 )
+        self.colspin = wx.SpinCtrl( panel, -1, style=style, min=1, max=10 )
+        val = self.value
+        self.rowspin.SetValue(val and val[0] or 1)
+        self.colspin.SetValue(val and val[0] or 1)
+
+        # layout of the controls / sizers
+        hsizer.Add(self.rowspin, 5, wx.ALL | wx.ALIGN_CENTER, 3)
+        hsizer.Add(self.colspin, 5, wx.ALL | wx.ALIGN_CENTER, 3)
+        sizer.Add(hsizer, 0, wx.EXPAND)
+
+        self._set_tooltip(label, self.rowspin, self.colspin)
+
+        self.rowspin.Bind(wx.EVT_KILL_FOCUS, self.on_kill_focus) # by default, the value is only set when the focus is lost
+        self.colspin.Bind(wx.EVT_KILL_FOCUS, self.on_kill_focus)
+        if self.immediate:
+            self.rowspin.Bind(wx.EVT_SPINCTRL, self.on_spin)
+            self.rowspin.Bind(wx.EVT_TEXT_ENTER, self.on_spin)   # we want the enter key (see style above)
+            self.colspin.Bind(wx.EVT_SPINCTRL, self.on_spin)
+            self.colspin.Bind(wx.EVT_TEXT_ENTER, self.on_spin)
+        self.editing = True
+
+    def on_kill_focus(self, event):
+        event.Skip()
+        if self.rowspin is None or self.colspin is None: return
+        if self.rowspin.IsBeingDeleted() or self.colspin.IsBeingDeleted(): return
+        self._check_for_user_modification( (self.rowspin.GetValue(),self.colspin.GetValue() ) )
+
+    def update_display(self, start_editing=False):
+        if start_editing: self.editing = True
+        if not self.editing: return
+        self.rowspin.SetValue(self.value[0])
+        self.colspin.SetValue(self.value[1])
+
+    def on_spin(self, event):
+        event.Skip()
+        if self.rowspin and self.colspin:
+            self._check_for_user_modification( (self.rowspin.GetValue(),self.rowspin.GetValue() ) )
+
+    def write(self, outfile, tabs=0):
+        if self.is_gridbag:
+            Property.write(self, outfile, tabs)
 
 
 
@@ -996,6 +1090,9 @@ class TextProperty(Property):
                 sizer.Add(hsizer, 0, wx.EXPAND)
             else:
                 sizer.Add(hsizer, 5 if self.multiline else 0, wx.EXPAND)
+                self.text.SetMaxSize((-1,100))
+                if self.enabler: self.enabler.SetMaxSize((-1,100))
+                label.SetMaxSize((-1,100))
             #sizer.Add(hsizer, 0, wx.EXPAND)
         else:
             sizer.Add(hsizer, 0, wx.EXPAND)
@@ -1146,16 +1243,6 @@ class NameProperty(TextProperty):
         return True
 
 
-# some building blocks for regular expressions:
-_leading  = r"^\s*\(?\s*"          # whitespace, optionally including an opening "("
-_int      = r"(0|(?:-?[1-9]\d*))"  # a number group matching any integer
-_ge_m1    = r"((?:-1)|(?:\d+))"    # a number group matching integers >=-1
-_g_0      = r"([1-9]\d*)"          # a number group matching integers >0
-_ge_0     = r"(\d+)"               # a number group matching integers >=0
-_comma    = r"\s*,\s*"             # a comma, optionally with surrounding whitespace
-_trailing = r"\s*\)?\s*$"          # whitespace, optionally including a closing ")"
-
-
 class SizePropertyD(TextPropertyD):
     d = r"(\s*[dD]?)" # the trailig d for "dialog units"
     validation_re = re.compile( _leading + _ge_m1 + _comma + _ge_m1 + d + _trailing )  # match pair of integers >=- 1
@@ -1183,7 +1270,7 @@ class SizePropertyD(TextPropertyD):
 
 class ScrollRatePropertyD(SizePropertyD):
     # the value is still a string, but it's guaranteed to have the right format
-    validation_re = re.compile(_leading + _ge_0 + _comma + _ge_0 + _trailing )  # match a pair of positive integers
+    validation_re = re.compile(_leading + _ge_0 + _comma + _ge_0 + _trailing )  # match a pair of integers >=0
 
 
 class IntRangePropertyA(SizePropertyD):
@@ -1198,9 +1285,6 @@ class IntRangePropertyA(SizePropertyD):
         if int(mi)>int(ma): return None
         return self.normalization%(mi,ma)
 
-
-del _leading, _ge_m1, _g_0, _ge_0, _comma, _trailing
-########################################################################################################################
 
 class ComboBoxProperty(TextProperty):
     _CB_STYLE = wx.CB_DROPDOWN
@@ -1925,7 +2009,7 @@ class ActionButtonProperty(Property):
     def write(self, outfile, tabs=0):
         return
 
-
+del _leading, _ge_m1, _g_0, _ge_0, _comma, _trailing
 
 ########################################################################################################################
 
