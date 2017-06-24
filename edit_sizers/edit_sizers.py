@@ -339,14 +339,14 @@ class SizerSlot(np.PropertyOwner):
         appropriate builder function (found in the ``common.widgets'' dict)"""
         if not common.adding_widget:  # widget focused/selecte
             misc.set_focused_widget(self)
-            if self.widget: self.widget.Refresh()
-            self.widget.SetFocus()
+            if self.widget:
+                self.widget.Refresh()
+                self.widget.SetFocus()
             return
         if common.adding_sizer and self.sizer.is_virtual():
             return
         if self.widget:
             self.widget.SetCursor(wx.NullCursor)
-            self.widget.Hide()
         # call the appropriate builder
         common.widgets[common.widget_to_add](self.parent, self.sizer, self.pos)
         if event is None or not misc.event_modifier_copy(event):
@@ -410,6 +410,11 @@ class SizerSlot(np.PropertyOwner):
             self.widget.Bind(wx.EVT_ENTER_WINDOW, None)
             self.widget.Bind(wx.EVT_LEAVE_WINDOW, None)
             self.widget.Bind(wx.EVT_KEY_DOWN, None)
+
+            if compat.IS_PHOENIX:
+                self.widget.DestroyLater()
+            else:
+                self.widget.Destroy()
 
             self.widget = None
 
