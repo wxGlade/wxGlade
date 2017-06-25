@@ -12,8 +12,7 @@ import wcodegen
 
 
 class LispButtonGenerator(wcodegen.LispWidgetCodeWriter):
-    tmpl = '(setf %(name)s (%(klass)s_Create %(parent)s %(id)s ' \
-           '%(label)s -1 -1 -1 -1 %(style)s))\n'
+    tmpl = '(setf %(name)s (%(klass)s_Create %(parent)s %(id)s %(label)s -1 -1 -1 -1 %(style)s))\n'
 
     def _prepare_tmpl_content(self, obj):
         wcodegen.LispWidgetCodeWriter._prepare_tmpl_content(self, obj)
@@ -28,8 +27,6 @@ class LispButtonGenerator(wcodegen.LispWidgetCodeWriter):
         self.has_setdefault = int(prop.get('default', 0))
 
         return
-
-# end of class LispButtonGenerator
 
 
 def initialize():

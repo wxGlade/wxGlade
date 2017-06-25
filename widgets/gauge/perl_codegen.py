@@ -12,15 +12,12 @@ import wcodegen
 
 
 class PerlGaugeGenerator(wcodegen.PerlWidgetCodeWriter):
-    tmpl = '%(name)s = %(klass)s->new(%(parent)s, %(id)s, ' \
-           '%(range)s%(style)s);\n'
+    tmpl = '%(name)s = %(klass)s->new(%(parent)s, %(id)s, %(range)s%(style)s);\n'
 
     def _prepare_tmpl_content(self, obj):
         wcodegen.PerlWidgetCodeWriter._prepare_tmpl_content(self, obj)
         self.tmpl_dict['range'] = obj.properties.get('range', '10')
         return
-
-# end of class PerlGaugeGenerator
 
 
 def initialize():

@@ -13,10 +13,8 @@ import wcodegen
 
 class LispCheckBoxGenerator(wcodegen.LispWidgetCodeWriter,
                             checkbox_base.CheckBoxMixin):
-    tmpl = '(setf %(name)s (%(klass)s_Create %(parent)s %(id)s ' \
-           '%(label)s -1 -1 -1 -1 %(style)s))\n'
-    tmpl_set3statevalue = '(%(klass)s_Set3StateValue %(name)s ' \
-                          '%(value_3state)s)\n'
+    tmpl = '(setf %(name)s (%(klass)s_Create %(parent)s %(id)s %(label)s -1 -1 -1 -1 %(style)s))\n'
+    tmpl_set3statevalue = '(%(klass)s_Set3StateValue %(name)s %(value_3state)s)\n'
 
     def _prepare_tmpl_content(self, obj):
         super(LispCheckBoxGenerator, self)._prepare_tmpl_content(obj)
@@ -27,8 +25,6 @@ class LispCheckBoxGenerator(wcodegen.LispWidgetCodeWriter,
             super(LispCheckBoxGenerator, self).get_code(obj)
         self._get_checkbox_code(prop_lines)
         return init_lines, prop_lines, layout_lines
-
-# end of class LispCheckBoxGenerator
 
 
 def initialize():

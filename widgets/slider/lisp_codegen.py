@@ -26,8 +26,6 @@ class LispSliderGenerator(wcodegen.LispWidgetCodeWriter):
         self.tmpl_dict['maxValue'] = maxValue
         return
 
-# end of class LispSliderGenerator
-
 
 def initialize():
     klass = 'wxSlider'

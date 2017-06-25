@@ -136,8 +136,6 @@ class CppFrameCodeGenerator(wcodegen.CppWidgetCodeWriter):
             ret.append( self.codegen.generate_code_size(obj) )
         return ret
 
-# end of class CppFrameCodeGenerator
-
 
 class CppMDIChildFrameCodeGenerator(CppFrameCodeGenerator):
     import_modules = ['<wx/mdi.h>']
@@ -147,8 +145,6 @@ class CppMDIChildFrameCodeGenerator(CppFrameCodeGenerator):
                    ('const wxPoint&', 'pos', 'wxDefaultPosition'),
                    ('const wxSize&', 'size', 'wxDefaultSize'),
                    ('long', 'style', 'wxDEFAULT_FRAME_STYLE')]
-
-# end of class CppMDIChildFrameCodeGenerator
 
 
 def initialize():

@@ -26,14 +26,14 @@ class PythonSplitterWindowGenerator(wcodegen.PythonWidgetCodeWriter):
             l = []
             if id_name:
                 l.append(id_name)
-            l.append('self.%s = %s(%s, %s)\n' % (window.name, self.codegen.get_class(window.klass), parent, id))
+            l.append( 'self.%s = %s(%s, %s)\n' % (window.name, self.codegen.get_class(window.klass), parent, id) )
             return l, [], []
         if id_name:
             init.append(id_name)
         klass = window.klass
         if window.preview:
             klass = 'wxSplitterWindow'
-        init.append('self.%s = %s(%s, %s%s)\n' % (window.name, self.cn(klass), parent, id, self.tmpl_dict['style']) )
+        init.append( 'self.%s = %s(%s, %s%s)\n' % (window.name, self.cn(klass), parent, id, self.tmpl_dict['style']) )
 
         win_1 = prop.get('window_1')
         win_2 = prop.get('window_2')
@@ -46,12 +46,11 @@ class PythonSplitterWindowGenerator(wcodegen.PythonWidgetCodeWriter):
                 f_name = 'SplitVertically'
             else:
                 f_name = 'SplitHorizontally'
-            layout_buf.append('self.%s.%s(self.%s, self.%s%s)\n' %
-                              (window.name, f_name, win_1, win_2, sash_pos))
+            layout_buf.append( 'self.%s.%s(self.%s, self.%s%s)\n' % (window.name, f_name, win_1, win_2, sash_pos) )
         else:
             def add_sub(win):
-                layout_buf.append('self.%s.SetSplitMode(%s)\n' % (window.name, self.cn(orientation)))
-                layout_buf.append('self.%s.Initialize(self.%s)\n' % (window.name, win))
+                layout_buf.append( 'self.%s.SetSplitMode(%s)\n' % (window.name, self.cn(orientation)) )
+                layout_buf.append( 'self.%s.Initialize(self.%s)\n' % (window.name, win) )
             if win_1:
                 add_sub(win_1)
             elif win_2:
@@ -59,7 +58,7 @@ class PythonSplitterWindowGenerator(wcodegen.PythonWidgetCodeWriter):
 
         min_pane_size = prop.get('min_pane_size')
         if min_pane_size:
-            props_buf.append('self.%s.SetMinimumPaneSize(%s)\n' % (window.name, min_pane_size) )
+            props_buf.append( 'self.%s.SetMinimumPaneSize(%s)\n' % (window.name, min_pane_size) )
 
         return init, props_buf, layout_buf
 

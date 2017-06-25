@@ -32,11 +32,8 @@ class LispCustomWidgetGenerator(wcodegen.LispWidgetCodeWriter):
 
         return init, props_buf, []
 
-# end of class PerlCodeGenerator
-
 
 def initialize():
     klass = 'CustomWidget'
     common.class_names[klass] = klass
-    common.register('lisp', klass, LispCustomWidgetGenerator(klass),
-                    'arguments', ArgumentsCodeHandler, klass)
+    common.register('lisp', klass, LispCustomWidgetGenerator(klass), 'arguments', ArgumentsCodeHandler, klass)

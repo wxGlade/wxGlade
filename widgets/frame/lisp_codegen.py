@@ -20,13 +20,10 @@ class LispFrameCodeGenerator(wcodegen.LispWidgetCodeWriter):
         append = out.append
         title = obj.properties.get('title')
         if title:
-            append('(wxFrame_SetTitle (slot-top-window obj) %s)\n' %
-                   self.codegen.quote_str(title))
+            append( '(wxFrame_SetTitle (slot-top-window obj) %s)\n' % self.codegen.quote_str(title) )
         icon = obj.properties.get('icon')
         if icon:
-            append(
-                ';;; generating code for setting icons is not implemented\n'
-                )
+            append( ';;; generating code for setting icons is not implemented\n' )
         out.extend(self.codegen.generate_common_properties(obj))
         return out
 
@@ -39,13 +36,9 @@ class LispFrameCodeGenerator(wcodegen.LispWidgetCodeWriter):
             pass
         return ret
 
-# end of class LispFrameCodeGenerator
-
 
 class LispMDIChildFrameCodeGenerator(LispFrameCodeGenerator):
     import_modules = ['Wx::MDI']
-
-# end of class LispMDIChildFrameCodeGenerator
 
 
 def initialize():

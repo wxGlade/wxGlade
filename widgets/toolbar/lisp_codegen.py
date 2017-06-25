@@ -26,7 +26,7 @@ class LispCodeGenerator(wcodegen.LispWidgetCodeWriter):
         if bitmapsize:
             try:
                 w, h = [int(i) for i in bitmapsize.split(',')]
-                append('(wxToolBar_SetToolBitmapSize %s %s %s)\n' % (obj_name, w, h))
+                append( '(wxToolBar_SetToolBitmapSize %s %s %s)\n' % (obj_name, w, h) )
             except:
                 pass
 
@@ -40,12 +40,12 @@ class LispCodeGenerator(wcodegen.LispWidgetCodeWriter):
 
         packing = prop.get('packing')
         if packing:
-            append('(wxToolBar_SetToolPacking %s %s)\n' % (obj_name, packing))
+            append( '(wxToolBar_SetToolPacking %s %s)\n' % (obj_name, packing) )
 
         separation = prop.get('separation')
         if separation:
-            append('(wxToolBar_SetToolSeparation %s %s)\n' % (obj_name, separation))
-        append('(wxToolBar_Realize %s)\n' % obj_name)
+            append( '(wxToolBar_SetToolSeparation %s %s)\n' % (obj_name, separation) )
+        append( '(wxToolBar_Realize %s)\n' % obj_name )
 
         return out
 
@@ -59,7 +59,7 @@ class LispCodeGenerator(wcodegen.LispWidgetCodeWriter):
 
         for tool in tools:
             if tool.id == '---':  # item is a separator
-                append('(wxToolBar_AddSeparator %s)\n' % obj_name)
+                append( '(wxToolBar_AddSeparator %s)\n' % obj_name )
             else:
                 name, val = self.codegen.generate_code_id(None, tool.id)
                 if not name and (not val or val == '-1'):
@@ -76,11 +76,11 @@ class LispCodeGenerator(wcodegen.LispWidgetCodeWriter):
                 bmp1 = self.generate_code_bitmap(tool.bitmap1, obj.preview)
                 bmp2 = self.generate_code_bitmap(tool.bitmap2, obj.preview)
 #                append('%s->AddLabelTool(%s, %s, %s, %s, %s, %s, %s);\n' %
-                append('(wxToolBar_AddTool %s %s %s %s %s %s %s %s)\n' %
-                       (obj_name, wid, self.codegen.quote_str(tool.label),
-                        bmp1, bmp2, kind,
-                        self.codegen.quote_str(tool.short_help),
-                        self.codegen.quote_str(tool.long_help)))
+                append( '(wxToolBar_AddTool %s %s %s %s %s %s %s %s)\n' %
+                        (obj_name, wid, self.codegen.quote_str(tool.label),
+                         bmp1, bmp2, kind,
+                         self.codegen.quote_str(tool.short_help),
+                         self.codegen.quote_str(tool.long_help)) )
 
         return ids + out
 

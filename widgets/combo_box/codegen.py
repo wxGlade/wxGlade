@@ -14,19 +14,15 @@ from ChoicesCodeHandler import *
 
 class PythonComboBoxGenerator(wcodegen.PythonWidgetCodeWriter):
     tmpl = '%(name)s = %(klass)s(%(parent)s, %(id)s, choices=[%(choices)s]%(style)s)\n'
-
     set_default_style = True
 
 
 
 class CppComboBoxGenerator(wcodegen.CppWidgetCodeWriter):
     tmpl = '%(name)s = new %(klass)s(%(parent)s, %(id)s, wxT(""), ' \
-           'wxDefaultPosition, wxDefaultSize, %(choices_len)s, ' \
-           '%(name)s_choices, %(style)s);\n'
-
+           'wxDefaultPosition, wxDefaultSize, %(choices_len)s, %(name)s_choices, %(style)s);\n'
     prefix_style = False
     set_default_style = True
-
 
 
 def xrc_code_generator(obj):

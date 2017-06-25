@@ -14,10 +14,8 @@ class PythonStaticTextGenerator(wcodegen.PythonWidgetCodeWriter):
     tmpl = '%(name)s = %(klass)s(%(parent)s, %(id)s, %(label)s%(style)s)\n'
 
 
-
 class CppStaticTextGenerator(wcodegen.CppWidgetCodeWriter):
     tmpl = '%(name)s = new %(klass)s(%(parent)s, %(id)s, %(label)s%(style)s);\n'
-
 
 
 def xrc_code_generator(obj):

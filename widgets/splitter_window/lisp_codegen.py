@@ -29,8 +29,7 @@ class LispSplitterWindowGenerator(wcodegen.LispWidgetCodeWriter):
             if id_name:
                 l.append(id_name)
 
-            l.append('(setf (slot-%s obj) (wxSplitterWindow_Create %s %s))\n' %
-                     (window.name, parent, id))
+            l.append( '(setf (slot-%s obj) (wxSplitterWindow_Create %s %s))\n' % (window.name, parent, id) )
             return l, [], []
 
         if id_name:
@@ -51,14 +50,11 @@ class LispSplitterWindowGenerator(wcodegen.LispWidgetCodeWriter):
             else:
                 f_name = 'SplitHorizontally'
 
-            layout_buf.append('(%s %s %s %s %s)\n' %
-                              (f_name, window.name, win_1, win_2, sash_pos))
+            layout_buf.append( '(%s %s %s %s %s)\n' % (f_name, window.name, win_1, win_2, sash_pos) )
         else:
             def add_sub(win):
-                layout_buf.append('(wxSplitterWindow_SetSplitMode (slot-%s obj) %s)\n'
-                                  % (window.name, orientation))
-                layout_buf.append('(wxSplitterWindow_Initialize (slot-%s obj) %s)\n'
-                                  % (window.name, win))
+                layout_buf.append( '(wxSplitterWindow_SetSplitMode (slot-%s obj) %s)\n' % (window.name, orientation) )
+                layout_buf.append( '(wxSplitterWindow_Initialize (slot-%s obj) %s)\n' % (window.name, win) )
             if win_1:
                 add_sub(win_1)
             elif win_2:
@@ -66,9 +62,7 @@ class LispSplitterWindowGenerator(wcodegen.LispWidgetCodeWriter):
 
         min_pane_size = prop.get('min_pane_size')
         if min_pane_size:
-            props_buf.append('wxSplitterWindow_SetMinimumPaneSize '
-                             '(slot-%s obj) %s)\n' % (window.name,
-                                                      min_pane_size))
+            props_buf.append( 'wxSplitterWindow_SetMinimumPaneSize (slot-%s obj) %s)\n' % (window.name, min_pane_size) )
 
         return init, props_buf, layout_buf
 
@@ -92,18 +86,14 @@ class LispSplitterWindowGenerator(wcodegen.LispWidgetCodeWriter):
                              (f_name, win_1, win_2, sash_pos))
         else:
             def add_sub(win):
-                props_buf.append('(wxSplitterWindow_SetSplitMode (slot-%s obj) %s)\n' %
-                                 (obj.name,orientation))
-                props_buf.append('(wxSplitterWindow_Initialize (slot-%s obj) %s)\n' %
-                                 (obj.name,win))
+                props_buf.append( '(wxSplitterWindow_SetSplitMode (slot-%s obj) %s)\n' % (obj.name,orientation) )
+                props_buf.append( '(wxSplitterWindow_Initialize (slot-%s obj) %s)\n' % (obj.name,win) )
             if win_1:
                 add_sub(win_1)
             elif win_2:
                 add_sub(win_2)
 
         return props_buf
-
-# end of class LispSplitterWindowGenerator
 
 
 def initialize():

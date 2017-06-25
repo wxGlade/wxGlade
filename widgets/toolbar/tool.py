@@ -10,8 +10,7 @@ from common import format_xml_tag
 
 
 class Tool(object):
-    def __init__(self, id='', label='', type=0, short_help='',
-                 long_help='', bitmap1='', bitmap2='', handler=''):
+    def __init__(self, id='', label='', type=0, short_help='', long_help='', bitmap1='', bitmap2='', handler=''):
         self.id = id
         self.label = label
         self.type = type
@@ -34,4 +33,3 @@ class Tool(object):
         stmt = format_xml_tag(u'tool', inner_xml, tabs, is_xml=True)
         outfile.write(stmt)
 
-# end of class Tool

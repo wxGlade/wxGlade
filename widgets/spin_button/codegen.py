@@ -13,14 +13,10 @@ import wcodegen
 class PythonSpinButtonGenerator(wcodegen.PythonWidgetCodeWriter):
     tmpl = '%(name)s = %(klass)s(%(parent)s, %(id)s %(style)s)\n'
 
-# end of class PythonSpinButtonGenerator
-
 
 class CppSpinButtonGenerator(wcodegen.CppWidgetCodeWriter):
     import_modules = ['<wx/spinbutt.h>']
     tmpl = '%(name)s = new %(klass)s(%(parent)s, %(id)s%(style)s);\n'
-
-# end of class CppSpinButtonGenerator
 
 
 def xrc_code_generator(obj):
@@ -38,9 +34,7 @@ def xrc_code_generator(obj):
                     outfile.write(tab_s + '<min>%s</min>\n' % min)
                     outfile.write(tab_s + '<max>%s</max>\n' % max)
             else:
-                xrcgen.DefaultXrcObject.write_property(self, name, val,
-                                                       outfile, tabs)
-
+                xrcgen.DefaultXrcObject.write_property(self, name, val, outfile, tabs)
     # end of class SpinButtonXrcObject
 
     return SpinButtonXrcObject(obj)

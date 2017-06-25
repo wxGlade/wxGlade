@@ -11,17 +11,11 @@ import wcodegen
 
 
 class PythonBitmapButtonGenerator(wcodegen.PythonWidgetCodeWriter):
-    tmpl = '%(name)s = %(klass)s(%(parent)s, %(id_number)s, ' \
-           '%(bitmap)s%(style)s)\n'
-
-# end of class PythonBitmapButtonGenerator
+    tmpl = '%(name)s = %(klass)s(%(parent)s, %(id_number)s, %(bitmap)s%(style)s)\n'
 
 
 class CppBitmapButtonGenerator(wcodegen.CppWidgetCodeWriter):
-    tmpl = '%(name)s = new %(klass)s(%(parent)s, %(id_number)s, ' \
-           '%(bitmap)s%(style)s);\n'
-
-# end of class CppBitmapButtonGenerator
+    tmpl = '%(name)s = new %(klass)s(%(parent)s, %(id_number)s, %(bitmap)s%(style)s);\n'
 
 
 def xrc_code_generator(obj):
@@ -41,7 +35,6 @@ def xrc_code_generator(obj):
 
             xrcgen.DefaultXrcObject.write_property(
                 self, name, val, outfile, tabs)
-
     # end of class BitmapButtonXrcObject
 
     return BitmapButtonXrcObject(obj)

@@ -11,10 +11,7 @@ import wcodegen
 
 
 class PerlStaticTextGenerator(wcodegen.PerlWidgetCodeWriter):
-    tmpl = '%(name)s = %(klass)s->new(%(parent)s, %(id)s, ' \
-           '%(label)s%(style)s);\n'
-
-# end of class PerlStaticTextGenerator
+    tmpl = '%(name)s = %(klass)s->new(%(parent)s, %(id)s, %(label)s%(style)s);\n'
 
 
 def initialize():

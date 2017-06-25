@@ -32,8 +32,7 @@ class PythonPanelGenerator(wcodegen.PythonWidgetCodeWriter):
             style = ", style=%s" % self.cn_f(style)
         else:
             style = ''
-        if not int(panel.properties.get('no_custom_class', False)) \
-               or panel.preview:
+        if not int(panel.properties.get('no_custom_class', False)) or panel.preview:
             if scrollable:
                 klass = self.cn('wxScrolledWindow')
             else:

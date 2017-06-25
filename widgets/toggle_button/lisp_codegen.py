@@ -11,11 +11,8 @@ import wcodegen
 
 
 class LispToggleButtonGenerator(wcodegen.LispWidgetCodeWriter):
-    tmpl = '(setf %(name)s (%(klass)s_Create %(parent)s %(id)s ' \
-           '%(label)s -1 -1 -1 -1 %(style)s))\n'
+    tmpl = '(setf %(name)s (%(klass)s_Create %(parent)s %(id)s %(label)s -1 -1 -1 -1 %(style)s))\n'
     has_setvalue = True
-
-# end of class LispToggleButtonGenerator
 
 
 def initialize():

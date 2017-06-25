@@ -12,8 +12,7 @@ import wcodegen
 
 class PerlSpinCtrlGenerator(wcodegen.PerlWidgetCodeWriter):
     tmpl = '%(name)s = %(klass)s->new(%(parent)s, %(id)s, "%(value)s", ' \
-           'wxDefaultPosition, wxDefaultSize, %(style)s, %(minValue)s, ' \
-           '%(maxValue)s, %(value)s);\n'
+           'wxDefaultPosition, wxDefaultSize, %(style)s, %(minValue)s, ' '%(maxValue)s, %(value)s);\n'
     prefix_style = False
     set_default_style = True
 
@@ -22,15 +21,12 @@ class PerlSpinCtrlGenerator(wcodegen.PerlWidgetCodeWriter):
         prop = obj.properties
         self.tmpl_dict['value'] = prop.get('value', '')
         try:
-            minValue, maxValue = [s.strip() for s in
-                                  prop.get('range', '0, 100').split(',')]
+            minValue, maxValue = [s.strip() for s in prop.get('range', '0, 100').split(',')]
         except:
             minValue, maxValue = '0', '100'
         self.tmpl_dict['minValue'] = minValue
         self.tmpl_dict['maxValue'] = maxValue
         return
-
-# end of class PerlSpinCtrlGenerator
 
 
 def initialize():

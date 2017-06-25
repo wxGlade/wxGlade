@@ -21,24 +21,19 @@ class PerlCustomWidgetGenerator(wcodegen.PerlWidgetCodeWriter):
 
         if id_name:
             init.append(id_name)
-        arguments = format_ctor_arguments(prop.get('arguments', []), parent,
-                                          id, prop.get('size', "-1, -1"))
+        arguments = format_ctor_arguments(prop.get('arguments', []), parent, id, prop.get('size', "-1, -1"))
         cust_ctor = prop.get('custom_ctor', '').strip()
         if cust_ctor:
             ctor = cust_ctor
         else:
             ctor = widget.klass + '->new'
-        init.append('$self->{%s} = %s(%s);\n' %
-                    (widget.name, ctor, ", ".join(arguments)))
+        init.append( '$self->{%s} = %s(%s);\n' % (widget.name, ctor, ", ".join(arguments)) )
         props_buf = self.codegen.generate_common_properties(widget)
 
         return init, props_buf, []
-
-# end of class PerlCustomWidgetGenerator
 
 
 def initialize():
     klass = 'CustomWidget'
     common.class_names[klass] = klass
-    common.register('perl', klass, PerlCustomWidgetGenerator(klass),
-                    'arguments', ArgumentsCodeHandler, klass)
+    common.register('perl', klass, PerlCustomWidgetGenerator(klass), 'arguments', ArgumentsCodeHandler, klass)

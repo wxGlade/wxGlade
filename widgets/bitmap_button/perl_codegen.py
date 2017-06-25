@@ -14,7 +14,6 @@ class PerlBitmapButtonGenerator(wcodegen.PerlWidgetCodeWriter):
     tmpl = '%(name)s = %(klass)s->new(%(parent)s, %(id)s, %(bitmap)s%(style)s);\n'
 
 
-
 def initialize():
     klass = 'wxBitmapButton'
     common.class_names['EditBitmapButton'] = klass

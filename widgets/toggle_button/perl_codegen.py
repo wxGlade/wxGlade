@@ -11,11 +11,8 @@ import wcodegen
 
 
 class PerlToggleButtonGenerator(wcodegen.PerlWidgetCodeWriter):
-    tmpl = '%(name)s = %(klass)s->new(%(parent)s, %(id)s, %(label)s' \
-           '%(style)s);\n'
+    tmpl = '%(name)s = %(klass)s->new(%(parent)s, %(id)s, %(label)s%(style)s);\n'
     has_setvalue = True
-
-# end of class PerlToggleButtonGenerator
 
 
 def initialize():

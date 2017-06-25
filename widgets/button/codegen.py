@@ -28,12 +28,10 @@ class PythonButtonGenerator(wcodegen.PythonWidgetCodeWriter):
 
         return
 
-# end of class PythonButtonGenerator
 
 
 class CppButtonGenerator(wcodegen.CppWidgetCodeWriter):
-    tmpl = '%(name)s = new %(klass)s(%(parent)s, %(id)s, ' \
-           '%(label)s%(style)s);\n'
+    tmpl = '%(name)s = new %(klass)s(%(parent)s, %(id)s, %(label)s%(style)s);\n'
 
     def _prepare_tmpl_content(self, obj):
         wcodegen.CppWidgetCodeWriter._prepare_tmpl_content(self, obj)
@@ -49,7 +47,6 @@ class CppButtonGenerator(wcodegen.CppWidgetCodeWriter):
 
         return
 
-# end of class CppButtonGenerator
 
 
 def xrc_code_generator(obj):
@@ -79,8 +76,7 @@ def xrc_code_generator(obj):
                         val = val2[:index] + '&&' + val2[index+2:]
                 else:
                     val = val2
-            xrcgen.DefaultXrcObject.write_property(self, name, val,
-                                                   outfile, tabs)
+            xrcgen.DefaultXrcObject.write_property(self, name, val, outfile, tabs)
     # end of class ButtonXrcObject
 
     return ButtonXrcObject(obj)

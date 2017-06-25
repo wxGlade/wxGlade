@@ -11,8 +11,7 @@ import wcodegen
 
 
 class PerlSliderGenerator(wcodegen.PerlWidgetCodeWriter):
-    tmpl = '%(name)s = %(klass)s->new(%(parent)s, %(id)s, %(value)s, ' \
-           '%(minValue)s, %(maxValue)s%(style)s);\n'
+    tmpl = '%(name)s = %(klass)s->new(%(parent)s, %(id)s, %(value)s, %(minValue)s, %(maxValue)s%(style)s);\n'
 
     def _prepare_tmpl_content(self, obj):
         wcodegen.PerlWidgetCodeWriter._prepare_tmpl_content(self, obj)
@@ -26,7 +25,6 @@ class PerlSliderGenerator(wcodegen.PerlWidgetCodeWriter):
         self.tmpl_dict['maxValue'] = maxValue
         return
 
-# end of class PerlSliderGenerator
 
 
 def initialize():

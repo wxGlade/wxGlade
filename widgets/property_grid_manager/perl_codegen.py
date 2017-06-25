@@ -13,7 +13,6 @@ import wcodegen
 
 class PerlCodeGenerator(wcodegen.PerlWidgetCodeWriter):
     import_modules = ['use Wx::PropertyGridManager;\n']
-
     tmpl = '%(name)s = %(klass)s->new(%(parent)s, %(id)s%(style)s);\n'
     prefix_style = True
 
@@ -21,8 +20,6 @@ class PerlCodeGenerator(wcodegen.PerlWidgetCodeWriter):
         wcodegen.PerlWidgetCodeWriter._prepare_tmpl_content(self, obj)
 
         return
-
-# end of class PerlCodeGenerator
 
 
 def initialize():

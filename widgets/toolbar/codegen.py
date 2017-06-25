@@ -25,23 +25,23 @@ class PythonCodeGenerator(wcodegen.PythonWidgetCodeWriter):
         if bitmapsize:
             try:
                 w, h = [int(i) for i in bitmapsize.split(',')]
-                append('%s.SetToolBitmapSize((%s, %s))\n' % (obj_name, w, h))
+                append( '%s.SetToolBitmapSize((%s, %s))\n' % (obj_name, w, h) )
             except:
                 pass
         margins = prop.get('margins')
         if margins:
             try:
                 w, h = [int(i) for i in margins.split(',')]
-                append('%s.SetMargins((%s, %s))\n' % (obj_name, w, h))
+                append( '%s.SetMargins((%s, %s))\n' % (obj_name, w, h) )
             except:
                 pass
         packing = prop.get('packing')
         if packing:
-            append('%s.SetToolPacking(%s)\n' % (obj_name, packing))
+            append( '%s.SetToolPacking(%s)\n' % (obj_name, packing) )
         separation = prop.get('separation')
         if separation:
-            append('%s.SetToolSeparation(%s)\n' % (obj_name, separation))
-        append('%s.Realize()\n' % obj_name)
+            append( '%s.SetToolSeparation(%s)\n' % (obj_name, separation) )
+        append( '%s.Realize()\n' % obj_name )
 
         return out
 
@@ -55,14 +55,14 @@ class PythonCodeGenerator(wcodegen.PythonWidgetCodeWriter):
 
         for tool in tools:
             if tool.id == '---':  # item is a separator
-                append('%s.AddSeparator()\n' % obj_name)
+                append( '%s.AddSeparator()\n' % obj_name )
             else:
                 name, val = self.codegen.generate_code_id(None, tool.id)
                 if obj.preview or (not name and (not val or val == '-1')):
                     wid = self.cn('wxNewId()')
                 else:
                     if name:
-                        ids.append(name)
+                        ids.append( name )
                     wid = val
                 kinds = ['wxITEM_NORMAL', 'wxITEM_CHECK', 'wxITEM_RADIO']
                 try:
@@ -72,11 +72,11 @@ class PythonCodeGenerator(wcodegen.PythonWidgetCodeWriter):
                 bmp1 = self.generate_code_bitmap(tool.bitmap1, obj.preview)
                 bmp2 = self.generate_code_bitmap(tool.bitmap2, obj.preview)
                 method = "AddLabelTool" if compat.IS_CLASSIC else "AddTool"
-                append('%s.%s(%s, %s, %s, %s, %s, %s, %s)\n' %
-                       (obj_name, method, wid, self.codegen.quote_str(tool.label),
-                        bmp1, bmp2, self.cn(kind),
-                        self.codegen.quote_str(tool.short_help),
-                        self.codegen.quote_str(tool.long_help)))
+                append( '%s.%s(%s, %s, %s, %s, %s, %s, %s)\n' %
+                        (obj_name, method, wid, self.codegen.quote_str(tool.label),
+                         bmp1, bmp2, self.cn(kind),
+                         self.codegen.quote_str(tool.short_help),
+                         self.codegen.quote_str(tool.long_help)) )
 
         return ids + out
 
@@ -92,8 +92,8 @@ class PythonCodeGenerator(wcodegen.PythonWidgetCodeWriter):
             klass = self.cn(klass)
         init = ['\n', '# Tool Bar\n', 'self.%s = %s(self, -1%s)\n' %
                                                       (obj.name, klass, style), 'self.SetToolBar(self.%s)\n' % obj.name]
-        init.extend(self.get_init_code(obj))
-        init.append('# Tool Bar end\n')
+        init.extend( self.get_init_code(obj) )
+        init.append( '# Tool Bar end\n' )
         return init, self.get_properties_code(obj), []
 
     def get_event_handlers(self, obj):
@@ -116,7 +116,6 @@ class PythonCodeGenerator(wcodegen.PythonWidgetCodeWriter):
 
 class ToolsHandler(BaseCodeWriterTagHandler):
     "Handler for tools of a toolbar"
-
     item_attrs = ('label', 'id', 'short_help', 'type', 'long_help', 'bitmap1', 'bitmap2', 'handler')
 
     def __init__(self):
