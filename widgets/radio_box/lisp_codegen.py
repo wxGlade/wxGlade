@@ -14,9 +14,7 @@ from ChoicesCodeHandler import *
 
 class LispRadioBoxGenerator(radio_box_base.RadioBoxMixin, wcodegen.LispWidgetCodeWriter):
     tmpl = '(setf %(name)s (%(klass)s_Create %(parent)s %(id)s %(label)s ' \
-           '-1 -1 -1 -1 %(choices_len)s (vector %(choices)s) ' \
-           '%(majorDimension)s %(style)s))\n'
-
+           '-1 -1 -1 -1 %(choices_len)s (vector %(choices)s) %(majorDimension)s %(style)s))\n'
 
 
 def initialize():

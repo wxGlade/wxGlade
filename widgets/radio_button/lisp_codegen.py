@@ -12,15 +12,12 @@ import wcodegen
 
 
 class LispRadioButtonGenerator(wcodegen.LispWidgetCodeWriter):
-    tmpl = '(setf %(name)s (%(klass)s_Create %(parent)s %(id)s ' \
-           '%(label)s -1 -1 -1 -1 %(style)s))\n'
+    tmpl = '(setf %(name)s (%(klass)s_Create %(parent)s %(id)s %(label)s -1 -1 -1 -1 %(style)s))\n'
 
     def _prepare_tmpl_content(self, obj):
         wcodegen.LispWidgetCodeWriter._prepare_tmpl_content(self, obj)
         self.has_setvalue1 = obj.properties.get('clicked', False)
         return
-
-# end of class LispRadioButtonGenerator
 
 
 def initialize():

@@ -20,15 +20,12 @@ class LispSpinCtrlGenerator(wcodegen.LispWidgetCodeWriter):
         prop = obj.properties
         self.tmpl_dict['value'] = prop.get('value', '')
         try:
-            minValue, maxValue = [s.strip() for s in
-                                  prop.get('range', '0, 100').split(',')]
+            minValue, maxValue = [s.strip() for s in prop.get('range', '0, 100').split(',')]
         except:
             minValue, maxValue = '0', '100'
         self.tmpl_dict['minValue'] = minValue
         self.tmpl_dict['maxValue'] = maxValue
         return
-
-# end of class LispSpinCtrlGenerator
 
 
 def initialize():

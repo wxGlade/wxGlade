@@ -37,8 +37,6 @@ class PythonDialogGenerator(wcodegen.PythonWidgetCodeWriter):
             pass
         return ret
 
-# end of class PythonDialogGenerator
-
 
 class CppDialogGenerator(wcodegen.CppWidgetCodeWriter):
     constructor = [('wxWindow*', 'parent'), ('wxWindowID', 'id'),
@@ -51,10 +49,8 @@ class CppDialogGenerator(wcodegen.CppWidgetCodeWriter):
         return [], [], [], []
 
     def get_properties_code(self, obj):
-        """\
-        generates the code for the various wxDialog specific properties.
-        Returns a list of strings containing the generated code
-        """
+        """generates the code for the various wxDialog specific properties.
+        Returns a list of strings containing the generated code"""
         out = []
         title = obj.properties.get('title')
         if title:
@@ -76,8 +72,6 @@ class CppDialogGenerator(wcodegen.CppWidgetCodeWriter):
         except (KeyError, ValueError):
             pass
         return ret
-
-# end of class CppDialogGenerator
 
 
 def xrc_code_generator(obj):

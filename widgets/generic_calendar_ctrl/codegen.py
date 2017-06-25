@@ -12,7 +12,6 @@ import wcodegen
 
 
 class PythonGenericCalendarCtrlGenerator(wcodegen.PythonWidgetCodeWriter):
-
     tmpl = '%(name)s = %(klass)s(%(parent)s, %(id)s%(style)s)\n'
 
     # XXX the following needs to depend on the code generator when Phoenix is about to be supported fully:
@@ -37,14 +36,10 @@ class PythonGenericCalendarCtrlGenerator(wcodegen.PythonWidgetCodeWriter):
         self.has_setdefault = int(obj.properties.get('default', 0))
         return
 
-# end of class PythonGenericCalendarCtrlGenerator
-
 
 class CppGenericCalendarCtrlGenerator(wcodegen.CppWidgetCodeWriter):
     import_modules = ['<wx/generic/calctrlg.h>']
-
-    tmpl = '%(name)s = new %(klass)s(%(parent)s, %(id)s, wxDefaultDateTime' \
-           '%(style)s);\n'
+    tmpl = '%(name)s = new %(klass)s(%(parent)s, %(id)s, wxDefaultDateTime%(style)s);\n'
 
     def _prepare_tmpl_content(self, obj):
         wcodegen.CppWidgetCodeWriter._prepare_tmpl_content(self, obj)
@@ -52,12 +47,9 @@ class CppGenericCalendarCtrlGenerator(wcodegen.CppWidgetCodeWriter):
         return
 
     def get_events(self, obj):
-        """\
-        wxGenericCalendarCtrl uses wxCalendarEvent for event handling
-        """
+        "wxGenericCalendarCtrl uses wxCalendarEvent for event handling"
         return self.codegen.get_events_with_type(obj, 'wxCalendarEvent')
 
-# end of class CppGenericCalendarCtrlGenerator
 
 
 def xrc_code_generator(obj):

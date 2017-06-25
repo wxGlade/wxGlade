@@ -164,12 +164,11 @@ class PerlMixin(BaseLanguageMixin):
 
         "wxCAPTION", "wxMINIMIZE_BOX", "wxMAXIMIZE_BOX", "wxRESIZE_BORDER",
 
-        "wxYES_NO", "wxYES", "wxNO", 'wxYES_DEFAULT', 'wxNO_DEFAULT',
-        "wxCANCEL", "wxOK",
+        "wxYES_NO", "wxYES", "wxNO", 'wxYES_DEFAULT', 'wxNO_DEFAULT', "wxCANCEL", "wxOK",
 
         # Colours
         "wxBLACK", "wxWHITE", "wxRED", "wxBLUE", "wxGREEN", "wxCYAN", "wxLIGHT_GREY",
-
+        # Fonts
         'wxDEFAULT', 'wxDECORATIVE', 'wxROMAN', 'wxSWISS', 'wxSCRIPT', 'wxMODERN', 'wxTELETYPE',
         'wxNORMAL', 'wxSLANT', 'wxITALIC', 'wxNORMAL', 'wxLIGHT', 'wxBOLD',
         'wxNORMAL_FONT', 'wxSMALL_FONT', 'wxITALIC_FONT', 'wxSWISS_FONT',
@@ -235,12 +234,9 @@ class PythonMixin(BaseLanguageMixin):
 
     def cn(self, name):
         # don't process already formatted items again
-        if name.startswith('wx.'):
-            return name
-        if name.startswith('wx'):
-            return 'wx.' + name[2:]
-        elif name.startswith('EVT_'):
-            return 'wx.' + name
+        if name.startswith('wx.'):  return name
+        if name.startswith('wx'):   return 'wx.' + name[2:]
+        if name.startswith('EVT_'): return 'wx.' + name
         return name
 
     def cn_class(self, klass):

@@ -24,8 +24,6 @@ class PerlCheckBoxGenerator(wcodegen.PerlWidgetCodeWriter, checkbox_base.CheckBo
         self._get_checkbox_code(prop_lines)
         return init_lines, prop_lines, layout_lines
 
-# end of class PerlCheckBoxGenerator
-
 
 def initialize():
     klass = 'wxCheckBox'

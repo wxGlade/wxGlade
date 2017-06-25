@@ -31,23 +31,12 @@ class ArgumentsCodeHandler(BaseCodeWriterTagHandler):
 
 
 def format_ctor_arguments(arguments, parent, id, size):
-    """\
-    Format constructor arguments
+    """Format constructor arguments; returns a list
 
-    @param arguments: Constructor arguments
-    @type arguments:  list
-
-    @param parent: Parent widget
-    @type parent: str | Unicode
-
-    @param id: Widget ID e.g. wxID_ANY
-    @type id: str
-
-    @param size: Widget size 'width, height'
-    @type size: str
-
-    @rtype: list
-    """
+    arguments: Constructor arguments (list)
+    parent: Parent widget (string or unicode)
+    id: Widget ID e.g. wxID_ANY
+    size: Widget size 'width, height'"""
     vSize = size.split(',')
     for i in range(len(arguments)):
         if arguments[i] == '$parent':

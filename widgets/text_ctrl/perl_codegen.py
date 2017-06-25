@@ -11,10 +11,7 @@ import wcodegen
 
 
 class PerlTextCtrlGenerator(wcodegen.PerlWidgetCodeWriter):
-    tmpl = '%(name)s = %(klass)s->new(%(parent)s, %(id)s, %(value)s' \
-           '%(style)s);\n'
-
-# end of class PerlTextCtrlGenerator
+    tmpl = '%(name)s = %(klass)s->new(%(parent)s, %(id)s, %(value)s%(style)s);\n'
 
 
 def initialize():

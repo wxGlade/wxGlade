@@ -28,8 +28,7 @@ class PythonRadioBoxGenerator(radio_box_base.RadioBoxMixin, wcodegen.PythonWidge
 
 class CppRadioBoxGenerator(radio_box_base.RadioBoxMixin, wcodegen.CppWidgetCodeWriter):
     tmpl = '%(name)s = new %(klass)s(%(parent)s, %(id)s, %(label)s, ' \
-           'wxDefaultPosition, wxDefaultSize, %(choices_len)s, ' \
-           '%(name)s_choices, %(majorDimension)s, %(style)s);\n'
+           'wxDefaultPosition, wxDefaultSize, %(choices_len)s, %(name)s_choices, %(majorDimension)s, %(style)s);\n'
 
     prefix_style = False
 

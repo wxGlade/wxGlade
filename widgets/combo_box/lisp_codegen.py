@@ -15,14 +15,10 @@ from ChoicesCodeHandler import *
 class LispComboBoxGenerator(wcodegen.LispWidgetCodeWriter):
     tmpl = '(setf %(name)s (%(klass)s_Create %(parent)s %(id)s "" -1 -1 -1 ' \
            '-1 %(choices_len)s (vector %(choices)s) %(style)s))\n'
-
     set_default_style = True
-
-# end of class LispComboBoxGenerator
 
 
 def initialize():
     klass = 'wxComboBox'
     common.class_names['EditComboBox'] = klass
-    common.register('lisp', klass, LispComboBoxGenerator(klass),
-                    'choices', ChoicesCodeHandler)
+    common.register('lisp', klass, LispComboBoxGenerator(klass), 'choices', ChoicesCodeHandler)

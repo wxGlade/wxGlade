@@ -12,10 +12,7 @@ import wcodegen
 
 
 class LispStaticLineGenerator(wcodegen.LispWidgetCodeWriter):
-    tmpl = '(setf %(name)s (%(klass)s_Create %(parent)s %(id)s ' \
-           '-1 -1 -1 -1 %(style)s))\n'
-
-# end of class LispStaticLineGenerator
+    tmpl = '(setf %(name)s (%(klass)s_Create %(parent)s %(id)s -1 -1 -1 -1 %(style)s))\n'
 
 
 def initialize():

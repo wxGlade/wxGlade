@@ -12,8 +12,7 @@ import wcodegen
 
 
 class PerlButtonGenerator(wcodegen.PerlWidgetCodeWriter):
-    tmpl = '%(name)s = %(klass)s->new(%(parent)s, %(id)s, ' \
-           '%(label)s%(style)s);\n'
+    tmpl = '%(name)s = %(klass)s->new(%(parent)s, %(id)s, %(label)s%(style)s);\n'
     prefix_style = True
 
     def _prepare_tmpl_content(self, obj):
@@ -30,7 +29,6 @@ class PerlButtonGenerator(wcodegen.PerlWidgetCodeWriter):
 
         return
 
-# end of class PerlButtonGenerator
 
 
 def initialize():

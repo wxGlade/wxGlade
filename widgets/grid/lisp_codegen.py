@@ -80,11 +80,8 @@ class LispCodeGenerator(wcodegen.LispWidgetCodeWriter):
         out.extend(self.codegen.generate_common_properties(obj))
         return out
 
-# end of class LispCodeGenerator
-
 
 def initialize():
     klass = 'wxGrid'
     common.class_names['EditGrid'] = klass
-    common.register('lisp', klass, LispCodeGenerator(klass),
-                    'columns', ColsCodeHandler)
+    common.register('lisp', klass, LispCodeGenerator(klass), 'columns', ColsCodeHandler)

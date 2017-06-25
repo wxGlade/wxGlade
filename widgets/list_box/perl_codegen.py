@@ -13,13 +13,9 @@ from ChoicesCodeHandler import *
 
 
 class PerlListBoxGenerator(wcodegen.PerlWidgetCodeWriter):
-    tmpl = '%(name)s = %(klass)s->new(%(parent)s, %(id)s, ' \
-           'wxDefaultPosition, wxDefaultSize, [%(choices)s], %(style)s);\n'
-
+    tmpl ='%(name)s = %(klass)s->new(%(parent)s, %(id)s, wxDefaultPosition, wxDefaultSize, [%(choices)s], %(style)s);\n'
     prefix_style = False
     set_default_style = True
-
-# end of class PerlListBoxGenerator
 
 
 def initialize():

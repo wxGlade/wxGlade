@@ -12,16 +12,12 @@ import wcodegen
 
 
 class LispGaugeGenerator(wcodegen.LispWidgetCodeWriter):
-
-    tmpl = '(setf %(name)s (%(klass)s_Create %(parent)s %(id)s ' \
-           '%(range)s -1 -1 -1 -1 %(style)s))\n'
+    tmpl = '(setf %(name)s (%(klass)s_Create %(parent)s %(id)s %(range)s -1 -1 -1 -1 %(style)s))\n'
 
     def _prepare_tmpl_content(self, obj):
         wcodegen.LispWidgetCodeWriter._prepare_tmpl_content(self, obj)
         self.tmpl_dict['range'] = obj.properties.get('range', '10')
         return
-
-# end of class LispGaugeGenerator
 
 
 def initialize():

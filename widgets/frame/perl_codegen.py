@@ -11,9 +11,7 @@ import wcodegen
 
 
 class PerlFrameCodeGenerator(wcodegen.PerlWidgetCodeWriter):
-    new_signature = [
-        '$parent', '$id', '$title', '$pos', '$size', '$style', '$name'
-    ]
+    new_signature = ['$parent', '$id', '$title', '$pos', '$size', '$style', '$name']
 
     def get_code(self, obj):
         return [], [], [], []  # the frame can't be a children
@@ -42,13 +40,9 @@ class PerlFrameCodeGenerator(wcodegen.PerlWidgetCodeWriter):
             pass
         return ret
 
-# end of class PerlFrameCodeGenerator
-
 
 class PerlMDIChildFrameCodeGenerator(PerlFrameCodeGenerator):
     import_modules = ['Wx::MDI']
-
-# end of class PerlMDIChildFrameCodeGenerator
 
 
 def initialize():

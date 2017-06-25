@@ -12,9 +12,7 @@ import wcodegen
 
 
 class PerlDialogGenerator(wcodegen.PerlWidgetCodeWriter):
-    new_signature = [
-        '$parent', '$id', '$title', '$pos', '$size', '$style', '$name'
-    ]
+    new_signature = ['$parent', '$id', '$title', '$pos', '$size', '$style', '$name']
 
     def get_code(self, obj):
         return [], [], []
@@ -23,8 +21,7 @@ class PerlDialogGenerator(wcodegen.PerlWidgetCodeWriter):
         out = []
         title = obj.properties.get('title')
         if title:
-            out.append('$self->SetTitle(%s);\n' %
-                       self.codegen.quote_str(title))
+            out.append( '$self->SetTitle(%s);\n' % self.codegen.quote_str(title) )
         icon = obj.properties.get('icon')
         if icon:
             stmt_icon = self.generate_code_bitmap(icon, obj.preview)
@@ -42,8 +39,6 @@ class PerlDialogGenerator(wcodegen.PerlWidgetCodeWriter):
         except (KeyError, ValueError):
             pass
         return ret
-
-# end of class PerlDialogGenerator
 
 
 def initialize():

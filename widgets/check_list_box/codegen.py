@@ -19,8 +19,7 @@ class PythonCheckListBoxGenerator(wcodegen.PythonWidgetCodeWriter):
 
 class CppCheckListBoxGenerator(wcodegen.CppWidgetCodeWriter):
     tmpl = '%(name)s = new %(klass)s(%(parent)s, %(id)s, ' \
-           'wxDefaultPosition, wxDefaultSize, %(choices_len)s, ' \
-           '%(name)s_choices%(style)s);\n'
+           'wxDefaultPosition, wxDefaultSize, %(choices_len)s, %(name)s_choices%(style)s);\n'
 
     prefix_style = False
     tmpl_flags = ', %s'

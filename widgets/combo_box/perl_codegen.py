@@ -15,15 +15,11 @@ from ChoicesCodeHandler import *
 class PerlComboBoxGenerator(wcodegen.PerlWidgetCodeWriter):
     tmpl = '%(name)s = %(klass)s->new(%(parent)s, %(id)s, "", ' \
            'wxDefaultPosition, wxDefaultSize, [%(choices)s], %(style)s);\n'
-
     prefix_style = False
     set_default_style = True
-
-# end of class PerlComboBoxGenerator
 
 
 def initialize():
     klass = 'wxComboBox'
     common.class_names['EditComboBox'] = klass
-    common.register('perl', klass, PerlComboBoxGenerator(klass),
-                    'choices', ChoicesCodeHandler)
+    common.register('perl', klass, PerlComboBoxGenerator(klass), 'choices', ChoicesCodeHandler)

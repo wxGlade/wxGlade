@@ -27,8 +27,7 @@ class LispPanelGenerator(wcodegen.LispWidgetCodeWriter):
             if id_name:
                 l.append(id_name)
 
-            l.append('(setf (slot-%s obj) (wxPanel_Create %s %s -1 -1 -1 -1))\n'
-                     % (panel.name, parent, id))
+            l.append( '(setf (slot-%s obj) (wxPanel_Create %s %s -1 -1 -1 -1))\n' % (panel.name, parent, id) )
             return l, [], []
 
         init = []
@@ -40,16 +39,13 @@ class LispPanelGenerator(wcodegen.LispWidgetCodeWriter):
         else:
             style = self.codegen.cn_f(style)
 
-        init.append('(setf (slot-%s obj) '
-                    '(wxPanel_Create %s %s -1 -1 -1 -1 %s))\n'
-                    % (panel.name, parent, id, style))
+        init.append( '(setf (slot-%s obj) (wxPanel_Create %s %s -1 -1 -1 -1 %s))\n' % (panel.name, parent, id, style) )
 
         props_buf = self.codegen.generate_common_properties(panel)
         if scrollable:
             sr = prop.get('scroll_rate', '0 0')
             sr = sr.replace(',', ' ')
-            props_buf.append('(wxScrolledWindow:wxScrolledWindow_SetScrollRate'
-                             ' (slot-%s obj) %s)\n' % (panel.name, sr))
+            props_buf.append( '(wxScrolledWindow:wxScrolledWindow_SetScrollRate (slot-%s obj) %s)\n'% (panel.name, sr) )
         return init, props_buf, []
 
     def get_properties_code(self, obj):
@@ -61,8 +57,7 @@ class LispPanelGenerator(wcodegen.LispWidgetCodeWriter):
         props_buf = self.codegen.generate_common_properties(obj)
         if scrollable:
             sr = obj.properties.get('scroll_rate', '0 0')
-            props_buf.append('(wxScrolledWindow:wxScrolledWindow_SetScrollRate '
-                             '(slot-%s obj))\n' % sr)
+            props_buf.append('(wxScrolledWindow:wxScrolledWindow_SetScrollRate (slot-%s obj))\n' % sr)
         return props_buf
 
     def get_layout_code(self, obj):
@@ -73,8 +68,6 @@ class LispPanelGenerator(wcodegen.LispWidgetCodeWriter):
         except (KeyError, ValueError):
             pass
         return ret
-
-# end of class LispPanelGenerator
 
 
 def initialize():

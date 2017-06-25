@@ -14,15 +14,11 @@ from ChoicesCodeHandler import *
 
 class PerlRadioBoxGenerator(radio_box_base.RadioBoxMixin, wcodegen.PerlWidgetCodeWriter):
     tmpl = '%(name)s = %(klass)s->new(%(parent)s, %(id)s, %(label)s, ' \
-           'wxDefaultPosition, wxDefaultSize, [%(choices)s], ' \
-           '%(majorDimension)s, %(style)s);\n'
-
+           'wxDefaultPosition, wxDefaultSize, [%(choices)s], %(majorDimension)s, %(style)s);\n'
     prefix_style = False
-
 
 
 def initialize():
     klass = 'wxRadioBox'
     common.class_names['EditRadioBox'] = klass
-    common.register('perl', klass, PerlRadioBoxGenerator(klass),
-                    'choices', ChoicesCodeHandler)
+    common.register('perl', klass, PerlRadioBoxGenerator(klass), 'choices', ChoicesCodeHandler)

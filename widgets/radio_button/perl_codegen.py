@@ -12,16 +12,13 @@ import wcodegen
 
 
 class PerlRadioButtonGenerator(wcodegen.PerlWidgetCodeWriter):
-    tmpl = '%(name)s = %(klass)s->new(%(parent)s, %(id)s, ' \
-           '%(label)s%(style)s);\n'
+    tmpl = '%(name)s = %(klass)s->new(%(parent)s, %(id)s, %(label)s%(style)s);\n'
     prefix_style = True
 
     def _prepare_tmpl_content(self, obj):
         wcodegen.PerlWidgetCodeWriter._prepare_tmpl_content(self, obj)
         self.has_setvalue1 = obj.properties.get('clicked', False)
         return
-
-# end of class PerlRadioButtonGenerator
 
 
 def initialize():

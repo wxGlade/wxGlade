@@ -16,11 +16,8 @@ class LispChoiceGenerator(wcodegen.LispWidgetCodeWriter):
     tmpl = '(setf %(name)s (%(klass)s_Create %(parent)s %(id)s -1 -1 -1 ' \
            '-1 %(choices_len)s (vector %(choices)s)  %(style)s))\n'
 
-# end of class LispChoiceGenerator
-
 
 def initialize():
     klass = 'wxChoice'
     common.class_names['EditChoice'] = klass
-    common.register('lisp', klass, LispChoiceGenerator(klass),
-                    'choices', ChoicesCodeHandler)
+    common.register('lisp', klass, LispChoiceGenerator(klass), 'choices', ChoicesCodeHandler)
