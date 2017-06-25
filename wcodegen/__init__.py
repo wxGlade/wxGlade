@@ -47,38 +47,19 @@ class BaseLanguageMixin(StylesMixin):
 
 
     def cn(self, name):
-        """\
-        Return the properly formatted name.
-
-        @type name: Unicode
-        
-        @rtype: str
-        @see: L{cn_f()}
-        @see: L{cn_class()}
-        """
+        "Return the properly formatted name;  see: cn_f(), cn_class()"
         return name
 
     def cn_class(self, klass):
-        """\
-        Return the properly formatted class name
-
-        @type klass: Unicode
-
-        @rtype: str
-        @see: L{cn()}
-        """
+        "Return the properly formatted class name;  see cn()"
         return klass
 
     def get_class(self, scope):
-        """\
-        Return the last element of the given scope.
+        """Return the last element of the given scope;  see: get_scope(), scope_sep
 
         Example::
             >>> self.get_class('ui.AboutDialog')
             'ui.AboutDialog'
-
-        @see: L{get_scope()}
-        @see: L{scope_sep}
         """
         if self.scope_sep:
             scope_list = scope.rsplit(self.scope_sep, 1)
@@ -89,17 +70,13 @@ class BaseLanguageMixin(StylesMixin):
         return scope
 
     def get_scope(self, scope):
-        """\
-        Return the scope without the last element.
+        """Return the scope without the last element;  see: get_class(), scope_sep
 
         Example::
             >>> self.get_scope('ui.AboutDialog')
             'ui'
             >>> self.get_scope('uiAboutDialog')
             ''
-
-        @see: L{get_class()}
-        @see: L{scope_sep}
         """
         if self.scope_sep:
             scope_list = scope.rsplit(self.scope_sep, 1)
@@ -110,11 +87,7 @@ class BaseLanguageMixin(StylesMixin):
         return ''
 
     def _get_style_list(self):
-        """\
-        Return a list of all styles supported by this widget
-
-        @rtype: list[str]
-        """
+        "Return a list of all styles supported by this widget"
         try:
             groups = self.config['style_list']
         except (AttributeError, KeyError):
@@ -128,8 +101,7 @@ class BaseLanguageMixin(StylesMixin):
 class CppMixin(BaseLanguageMixin):
     "C++ specific but generic settings and functions"
     comment_sign = '//'
-    default_extensions = ['cpp', 'cc', 'C', 'cxx', 'c++',
-                          'h', 'hh', 'hpp', 'H', 'hxx', ]
+    default_extensions = ['cpp', 'cc', 'C', 'cxx', 'c++',  'h', 'hh', 'hpp', 'H', 'hxx', ]
     language = 'C++'
     lang_prefix = 'cpp'
     scope_sep = '::'
@@ -170,16 +142,13 @@ class LispMixin(BaseLanguageMixin):
 
 
 class PerlMixin(BaseLanguageMixin):
-    """\
-    Perl specific but generic settings and functions
+    """Perl specific but generic settings and functions
 
     @cvar _perl_constant_list: Incomplete list of wx constants used in wxPerl
-                               Constants don't follow the Wx::ObjectName name
-                               schema. There is a need to handle constants
-                               separately. See also L{cn} and
-                               wxPerl/trunk/Constant.xs.
-    @type _perl_constant_list: list[str]
-    """
+                               Constants don't follow the Wx::ObjectName name schema.
+                               There is a need to handle constants separately.
+                               See also L{cn} and wxPerl/trunk/Constant.xs.
+    @type _perl_constant_list: list[str]"""
     comment_sign = '#'
     default_extensions = ['pl', 'pm']
     language = 'perl'
@@ -227,71 +196,31 @@ class PerlMixin(BaseLanguageMixin):
         # wxSplitterWindow
         'wxSPLIT_HORIZONTAL', 'wxSPLIT_VERTICAL',
     ]
-
     def cn(self, name):
-        """\
-        Return the name properly formatted.
-
-        @see: L{self._perl_constant_list}
-        """
+        "Return the name properly formatted; see: self._perl_constant_list"
         # handles constants like event or language identifiers
-        if name.startswith('wxART_') or \
-           name.startswith('wxBITMAP_TYPE_') or \
-           name.startswith('wxBORDER_') or \
-           name.startswith('wxBRUSHSTYLE_') or \
-           name.startswith('wxBU_') or \
-           name.startswith('wxCB_') or \
-           name.startswith('wxCC_') or \
-           name.startswith('wxCHB_') or \
-           name.startswith('wxCHK_') or \
-           name.startswith('wxCURSOR_') or \
-           name.startswith('wxDD_') or \
-           name.startswith('wxEVT_') or \
-           name.startswith('wxFONTENCODING_') or \
-           name.startswith('wxFONTFAMILY_') or \
-           name.startswith('wxFONTSTYLE_') or \
-           name.startswith('wxFONTWEIGHT_') or \
-           name.startswith('wxFONTFLAG_') or \
-           name.startswith('wxFRAME_') or \
-           name.startswith('wxGA_') or \
-           name.startswith('wxICON_') or \
-           name.startswith('wxID_') or \
-           name.startswith('wxK_') or \
-           name.startswith('wxLANGUAGE_') or \
-           name.startswith('wxLB_') or \
-           name.startswith('wxMOD_') or \
-           name.startswith('wxNB_') or \
-           name.startswith('wxALIGN_') or \
-           name.startswith('wxDefault') or \
-           name.startswith('wxPD_') or \
-           name.startswith('wxPROPSHEET_') or \
-           name.startswith('wxRA_') or \
-           name.startswith('wxRB_') or \
-           name.startswith('wxSL_') or \
-           name.startswith('wxSP_') or \
-           name.startswith('wxSPLASH_') or \
-           name.startswith('wxST_') or \
-           name.startswith('wxSys_') or \
-           name.startswith('wxSYS_COLOUR_') or \
-           name.startswith('wxSW_') or \
-           name.startswith('wxSASH_') or \
-           name.startswith('wxTB_') or \
-           name.startswith('wxTE_') or \
-           name.startswith('wxWIZARD_') or \
-           name in self._perl_constant_list:
+        if name.startswith('wxBITMAP_TYPE_') or name.startswith("wxDefault") or name.startswith('wxSYS_COLOUR_'):
             return name
+        if "_" in name:
+            # check whether name starts with any of these plus underscore:
+            start = name.split("_",1)[0]
+            if start in {'wxART', 'wxBORDER', 'wxBRUSHSTYLE', 'wxBU', 'wxCB', 'wxCC', 'wxCHB', 'wxCHK',
+                        'wxCURSOR', 'wxDD', 'wxEVT', 'wxFONTENCODING', 'wxFONTFAMILY', 'wxFONTSTYLE',
+                        'wxFONTWEIGHT', 'wxFONTFLAG', 'wxFRAME', 'wxGA', 'wxICON', 'wxID', 'wxK', 'wxLANGUAGE',
+                        'wxLB', 'wxMOD', 'wxNB', 'wxALIGN', 'wxDefault', 'wxPD', 'wxPROPSHEET', 'wxRA', 'wxRB',
+                        'wxSL', 'wxSP', 'wxSPLASH', 'wxST', 'wxSys', 'wxSW', 'wxSASH',
+                        'wxTB', 'wxTE', 'wxWIZARD'}:
+                return name
+        if name in self._perl_constant_list: return name
 
         # don't process already formatted items again
-        if name.startswith('Wx::'):
-            return name
+        if name.startswith('Wx::'): return name
 
         # use default for remaining names
-        if name[:2] == 'wx':
-            return 'Wx::' + name[2:]
-        elif name[:4] == 'EVT_':
-            return 'Wx::Event::' + name
-        return name
+        if name[:2] == 'wx':   return 'Wx::' + name[2:]
+        if name[:4] == 'EVT_': return 'Wx::Event::' + name
 
+        return name
 
 
 class PythonMixin(BaseLanguageMixin):
@@ -333,254 +262,61 @@ class XRCMixin(BaseLanguageMixin):
 
 
 class BaseWidgetWriter(StylesMixin, BaseCodeWriter):
-    """\
-    Base class for all widget code writer classes.
+    """Base class for all widget code writer classes.
 
-    @ivar codegen: Language specific code generator
-    @type codegen: Instance of L{codegen.BaseLangCodeWriter}
+    codegen: Language specific code generator, instance of codegen.BaseLangCodeWriter
+    config: Widgets specific configuration dict (see config.widget_config)
+    klass: wxWidgets class name or None"""
 
-    @ivar config: Widgets specific configuration (see L{config.widget_config})
-    @type config: dict
-
-    @ivar klass: wxWidgets class name
-    @type klass: str | None
-    """
-
-    import_modules = []
-    """\
-    List of extra modules to import.
-
-    This list can be changed on demand. It'll be reset to the initial value
-    stored in L{__import_modules} within L{_reset_vars()}.
-
-    B{Example}::
-        import_modules = ['use Wx::Grid;\\n']
-
-    @type: list[str]
-    @see: L{__import_modules}
-    """
-
+    # List of extra modules to import; this list can be changed on demand.
+    # It'll be reset to the initial value stored in L{__import_modules} within L{_reset_vars()}.
+    # example: import_modules = ['use Wx::Grid;\\n']
+    import_modules = [] 
+    # Copy of the initial state of import_modules. This copy is used to restore the initial state within _reset_vars().
     __import_modules = []
-    """\
-    Copy of the initial state of L{import_modules}. This copy is used to
-    restore the initial state within L{_reset_vars()}.
 
-    @type: list[str]
-    @see: L{import_modules}
-    """
-
+    # This widget is only available at the listed wx versions. An empty list means the widgets is always available.
+    # List of tuples with major and minor wx version number; see wxglade.codegen.BaseLangCodeWriter.for_version
+    # Example for a widgets introduced with wx 2.8:: supported_by = ((2, 8), (3, 0))
     supported_by = ()
-    """\
-    This widget is only available at the listed wx versions. An empty list
-    means the widgets is always available.
 
-    Example for a widgets introduced with wx 2.8::
-        supported_by = ((2, 8), (3, 0))
+    ####################################################################################################################
+    # template strings and lists of template strings:
+    tmpl_after  = []  # for instructions to execute after the widget is initialised
+    tmpl_before = []  # for instructions to execute before the widget is initialised
+    tmpl_layout = []  # to set widget layout
+    tmpl_props  = []  # to set widget properties
+    tmpl = ''         # to create a new instance of a new wxWidget object; see get_code(), tmp_dict
+    tmpl_concatenate_choices = ', ' # to concatenate choices; see _prepare_choice()
+    tmpl_dict  = {}   # dict of content to replace in the templates; see tmpl, tmpl_before, tmpl_props
+    tmpl_flags = '%s' # to format the styles parameter; see _prepare_style()
 
-    @type: List of tuples with major and minor wx version number
-    @see: L{wxglade.codegen.BaseLangCodeWriter.for_version}
-    """
+    # see: generate_code_bitmap(), _prepare_bitmap()
+    tmpl_inline_artprovider = '' # to inline a bitmap from wxArtProvider; doesn't end with a newline
+    tmpl_inline_bitmap      = '' # to inline a C{wxBitmap(...)} call; doesn't end with a newline
+    tmpl_inline_emptybitmap = '' # to create an empty wxBitmap; doesn't end with a newline
 
-    tmpl_after = []
-    """\
-    Template for instructions to execute after the widget is initialised
+    tmpl_import_artprovider = '' # to import / include the art provider; see _prepare_bitmap()
 
-    @type: list[str]
-    @see: L{tmpl_before}
-    """
+    tmpl_inline_wxSize = '' # to inline a widget size with wxSize(); doesn't end with a newline; get_inline_stmt_wxSize()
 
-    tmpl_before = []
-    """\
-    Template for instructions to execute before the widget is initialised
+    has_selection  = False  # Flag to create a SetSelection(...) call; see tmpl_selection
+    tmpl_selection = ''    # Template to create a SetSelection(...) call; see has_selection
 
-    @type: list[str]
-    @see: L{tmpl_after}
-    """
+    has_setdefault  = False # Flag to create a C{SetDefault()} call.
+    tmpl_setdefault = ''    # Template to create a C{SetDefault()} call.
 
-    tmpl_layout = []
-    """\
-    Template to set widget layout
+    has_setvalue  = False  # Flag to create a C{SetValue(...)} call;     see tmpl_setvalue, has_setvalue1
+    has_setvalue1 = False  # Flag to create a C{SetValue(1)} call;       see tmpl_setvalue, has_setvalue
+    tmpl_setvalue = ''     # Template to create a C{SetValue(...)} call; see has_setvalue, has_setvalue1
 
-    @type: list[str]
-    """
+    # see default_style:
+    prefix_style      = False # Prepend wxDefaultPosition and wxDefaultSize to the widget style if the style will be set
+    set_default_style = False # Flag to add the default style always. The default style won't added generally.
 
-    tmpl_props = []
-    """\
-    Template to set widget properties
-
-    @type: list[str]
-    """
-
-    tmpl = ''
-    """\
-    Template to create a new instance of a new wxWidget object.
-
-    @type: str
-    @see: L{get_code()}
-    @see: L{tmpl_dict}
-    """
-
-    tmpl_concatenate_choices = ', '
-    """\
-    Template to concatenate choices
-
-    @type: str
-    @see: L{_prepare_choice()}
-    """
-
-    tmpl_dict = {}
-    """\
-    Content to replace in the templates
-
-    @type: dict
-    @see: L{tmpl}
-    @see: L{tmpl_before}
-    @see: L{tmpl_props}
-    """
-
-    tmpl_flags = '%s'
-    """\
-    Template to format the styles parameter.
-
-    @type: str
-    @see: L{_prepare_style()}
-    """
-
-    tmpl_inline_artprovider = ''
-    """
-    Template to inline a bitmap from wxArtProvider.
-
-    @note: This template doesn't end with a newline.
-
-    @type: str
-    @see: L{generate_code_bitmap()}
-    @see: L{_prepare_bitmap()}
-    """
-
-    tmpl_inline_bitmap = ''
-    """\
-    Template to inline a C{wxBitmap(...)} call.
-
-    @note: This template doesn't end with a newline.
-
-    @type: str
-    @see: L{generate_code_bitmap()}
-    @see: L{_prepare_bitmap()}
-    """
-
-    tmpl_inline_emptybitmap = ''
-    """\
-    Template to create an empty wxBitmap
-
-    @note: This template doesn't end with a newline.
-
-    @type: str
-    @see: L{generate_code_bitmap()}
-    @see: L{_prepare_bitmap()}
-    """
-
-    tmpl_import_artprovider = ''
-    """\
-    Template to import / include the art provider
-
-    @type: str
-    @see: L{_prepare_bitmap()}
-    """
-
-    tmpl_inline_wxSize = ''
-    """
-    Template to inline a widget size with wxSize()
-
-    @note: This template doesn't end with a newline.
-
-    @type: str
-    @see: L{get_inline_stmt_wxSize()}
-    """
-
-    has_selection = False
-    """\
-    Flag to create a C{SetSelection(...)} call.
-
-    @type: bool
-    @see: L{tmpl_selection}
-    """
-
-    tmpl_selection = ''
-    """\
-    Template to create a C{SetSelection(...)} call.
-
-    @type: str
-    @see: L{has_selection}
-    """
-
-    has_setdefault = False
-    """\
-    Flag to create a C{SetDefault()} call.
-
-    @type: bool
-    """
-
-    tmpl_setdefault = ''
-    """\
-    Template to create a C{SetDefault()} call.
-
-    @type: str
-    """
-
-    has_setvalue = False
-    """\
-    Flag to create a C{SetValue(...)} call.
-
-    @type: bool
-    @see: L{tmpl_setvalue}
-    @see: L{has_setvalue1}
-    """
-
-    has_setvalue1 = False
-    """\
-    Flag to create a C{SetValue(1)} call.
-
-    @type: bool
-    @see: L{tmpl_setvalue}
-    @see: L{has_setvalue}
-    """
-
-    tmpl_setvalue = ''
-    """\
-    Template to create a C{SetValue(...)} call.
-
-    @type: str
-    @see: L{has_setvalue}
-    @see: L{has_setvalue1}
-    """
-
-    prefix_style = False
-    """\
-    Prepend wxDefaultPosition and wxDefaultSize to the widget style if the
-    style will be set.
-
-    @type: bool
-    @see: L{default_style}
-    @see: L{set_default_style}
-    """
-
-    set_default_style = False
-    """\
-    Flag to to add the default style always. The default style won't added generally.
-
-    @type: bool
-    @see: L{default_style}
-    @see: L{prefix_style}
-    """
-
+    # Use formatted names for widget ID in event binding if widget is is -1 or wxID_ANY.
+    # see codegen.BaseLangCodeWriter.add_object_format_name(), wcodegen.BaseWidgetWriter.get_event_handlers()
     use_names_for_binding_events = True
-    """\
-    Use formatted names for widget ID in event binding if widget is is
-    C{-1} or C{wxID_ANY}.
-
-    @see: L{codegen.BaseLangCodeWriter.add_object_format_name()}
-    @see: L{wcodegen.BaseWidgetWriter.get_event_handlers()}
-    """
 
     def __init__(self, klass=None):
         # call inherited constructor
@@ -609,18 +345,8 @@ class BaseWidgetWriter(StylesMixin, BaseCodeWriter):
         return self.codegen.format_generic_access(obj)
 
     def stmt2list(self, stmt):
-        """\
-        Split a code statement into a list by conserving tailing newlines
-
-        B{Example}::
-            >>> tmpl2list('line 1\\nline 2\\nline 3\\n')
-            ['line 1\\n', 'line 2\\n', 'line 3\\n', '\\n']
-
-        @param stmt: Code statement
-        @type stmt:  str
-
-        @rtype: list[str]
-        """
+        """Split a code statement into a list by conserving tailing newlines
+        e.g. tmpl2list('line 1\\nline 2\\nline 3\\n') -> ['line 1\\n', 'line 2\\n', 'line 3\\n', '\\n']"""
         temp = ['%s\n' % line for line in stmt.split('\n')]
         return temp
 
@@ -638,16 +364,7 @@ class BaseWidgetWriter(StylesMixin, BaseCodeWriter):
         self.tmpl_dict = {}
 
     def _prepare_style(self, style):
-        """\
-        Process and format styles.
-
-        @param style: Styles to process / format with L{cn_f()}
-        @type style:  str
-
-        @rtype: str
-        @see: L{_prepare_tmpl_content()}
-        @see: L{tmpl_flags}
-        """
+        "Process and format style string with cn_f(); returns string; see _prepare_tmpl_content(), tmpl_flags"
         fmt_style = self.cn_f(style)
         fmt_default_style = self.cn_f(self.default_style)
 
@@ -665,14 +382,7 @@ class BaseWidgetWriter(StylesMixin, BaseCodeWriter):
         return style
 
     def _prepare_tmpl_content(self, obj):
-        """\
-        Prepare and set template variables.
-
-        @param obj: Instance of L{xml_parse.CodeObject}
-
-        @rtype: dict
-        @see: L{get_code()}
-        """
+        "Prepare and set template variables; obj is instance of L{xml_parse.CodeObject}; returns dict"
         self.tmpl_dict['comment'] = self.codegen.comment_sign
         self.tmpl_dict['tab'] = self.codegen.tabs(1)
         self.tmpl_dict['store_as_attr'] = self.codegen.store_as_attr(obj)
@@ -709,21 +419,7 @@ class BaseWidgetWriter(StylesMixin, BaseCodeWriter):
     default_style = property(_get_default_style)
 
     def _prepare_bitmap(self, obj, first='bitmap', second='disabled_bitmap'):
-        """\
-        Prepare content for widgets with bitmaps.
-
-        @param obj: Instance of L{xml_parse.CodeObject}
-        @type obj: xml_parse.CodeObject
-
-        @param first: Name of the first bitmap property
-        @type first: str
-
-        @param second: Name of the second bitmap property
-        @type second: str | None
-
-        @see: L{generate_code_bitmap()}
-        @see: L{get_code()}
-        """
+        "Prepare content for widgets with bitmaps; obj is xml_parse.CodeObject; see generate_code_bitmap(), get_code()"
         bmp_first = obj.properties.get(first, '')
         self.tmpl_dict[first] = self.generate_code_bitmap(bmp_first, obj.preview)
 
@@ -741,17 +437,12 @@ class BaseWidgetWriter(StylesMixin, BaseCodeWriter):
         self.has_setdefault = int(obj.properties.get('default', 0))
 
     def _prepare_choice(self, obj):
-        """\
-        Prepare content for widgets with choices.
+        """Prepare content for widgets with choices; see: get_code(), tmpl_concatenate_choices
 
         The content of choices will be generated automatically if the
-        template in L{self.tmpl} contains '%(choices)s' or '%(choices_len)s'
+        template in self.tmpl contains '%(choices)s' or '%(choices_len)s'
 
-        @param obj: Instance of L{xml_parse.CodeObject}
-
-        @see: L{get_code()}
-        @see: L{tmpl_concatenate_choices}
-        """
+        obj: Instance of xml_parse.CodeObject"""
         choices = obj.properties.get('choices')
 
         choices_str = self.tmpl_concatenate_choices.join( [self.codegen.quote_str(c) for c in choices] )
@@ -765,21 +456,12 @@ class BaseWidgetWriter(StylesMixin, BaseCodeWriter):
         return
 
     def generate_code_bitmap(self, bitmap, preview=False):
-        """\
-        Returns a code fragment that generates an wxBitmap object
+        """Returns a code fragment that generates an wxBitmap object
 
-        @param bitmap: Bitmap definition
-        @type bitmap: str
+        bitmap: Bitmap definition string
+        preview: True to generate code for the preview
 
-        @param preview: True to generate code for the preview
-        @type preview:  bool
-
-        @rtype: str
-
-        @see: L{tmpl_inline_bitmap}
-        @see: L{get_inline_stmt_emptybitmap()}
-        @see: L{get_inline_stmt_artprovider()}
-        """
+        see: tmpl_inline_bitmap, get_inline_stmt_emptybitmap(), get_inline_stmt_artprovider()"""
         assert self.tmpl_inline_bitmap
 
         if not bitmap:
@@ -796,14 +478,9 @@ class BaseWidgetWriter(StylesMixin, BaseCodeWriter):
                                                'bitmap': bitmap[4:].strip(),
                                                'bitmap_type': self.codegen.cn('wxBITMAP_TYPE_ANY') }
 
-        if bitmap.startswith('empty:'):
-            return self.get_inline_stmt_emptybitmap(bitmap)
-
-        if bitmap.startswith('art:'):
-            return self.get_inline_stmt_artprovider(bitmap)
-
-        if bitmap.startswith('code:'):
-            return '%s' % self.codegen.cn(bitmap[5:].strip())
+        if bitmap.startswith('empty:'): return self.get_inline_stmt_emptybitmap(bitmap)
+        if bitmap.startswith('art:'):   return self.get_inline_stmt_artprovider(bitmap) 
+        if bitmap.startswith('code:'):  return '%s' % self.codegen.cn(bitmap[5:].strip())
 
         if preview:
             bitmap = misc.get_relative_path(bitmap, True)
@@ -887,25 +564,15 @@ class BaseWidgetWriter(StylesMixin, BaseCodeWriter):
         return init_lines, prop_lines, []
 
     def get_event_handlers(self, obj):
-        """\
-        Returns a list of event handlers defined for the given object.
+        """Returns a list of event handlers defined for the given object (CodeObject instance).
 
-        Each list entry has following items:
-         - ID,
-         - Event
-         - Handler
-         - Event prototype
+        Each list entry has following items: (ID, Event, Handler, Event prototype)
 
         B{Example}::
             >>> self.get_event_handlers(obj)
             [('wxID_OPEN', 'EVT_MENU', 'OnOpen', 'wxCommandEvent'),
-             ('wxID_EXIT', 'EVT_MENU', 'OnClose', 'wxCommandEvent')]
+             ('wxID_EXIT', 'EVT_MENU', 'OnClose', 'wxCommandEvent')]"""
 
-        @param obj: Object to generate code for
-        @type obj:  CodeObject
-
-        @rtype: list[(str, str, str, str)]
-        """
         ret = []
         if 'events' not in obj.properties:
             return ret
@@ -957,66 +624,40 @@ class BaseWidgetWriter(StylesMixin, BaseCodeWriter):
         return ret
 
     def get_properties_code(self, obj):
-        """\
-        Generates language specific code to set properties for the wxWidget
-        object from a template by filling variables generated by
-        L{_prepare_tmpl_content()}.
-
-        @see: L{_prepare_tmpl_content()}
-        @see: L{tmpl_props}
-        @rtype: list[str]
-        """
+        """Generates language specific code to set properties for the wxWidget object from a template
+        by filling variables generated by _prepare_tmpl_content(); returns list of strings; see tmpl_props"""
         prop_lines = []
         self._reset_vars()
 
         self._prepare_tmpl_content(obj)
-
         for line in self.tmpl_props:
             prop_lines.append(line % self.tmpl_dict)
-
         return prop_lines
 
     def get_layout_code(self, obj):
-        """\
-        Generates language specific code to create the layout for the
-        wxWidget object from a template by filling variables generated by
-        L{_prepare_tmpl_content()}.
-
-        @see: L{_prepare_tmpl_content()}
-        @see: L{tmpl_props}
-        @rtype: list[str]
-        """
+        """Generates language specific code to create the layout for the wxWidget object from a template
+        by filling variables generated by _prepare_tmpl_content(); returns list of strings; see tmpl_props"""
         layout_lines = []
         self._reset_vars()
 
         self._prepare_tmpl_content(obj)
-
         for line in self.tmpl_layout:
             layout_lines.append(line % self.tmpl_dict)
-
         return layout_lines
 
     def get_inline_stmt_artprovider(self, bitmap):
-        """\
-        Return a inline statement of a bitmap from the given statement using
-        wxArtProvider.
+        """Return a inline statement of a bitmap from the given statement using wxArtProvider.
+        See generate_code_bitmap().
+
+        bitmap: Bitmap definition (string)
 
         B{Syntax}::
             art:<ArtID>,<ArtClient>
             art:<ArtID>,<ArtClient>,<width>,<height>
 
         B{Example}::
-            >>> get_inline_stmt_artprovider(
-            ... 'art:wxART_HELP,wxART_OTHER,32,32')
-            'wx.ArtProvider.GetBitmap(wx.ART_HELP, wx.ART_OTHER, (32, 32))'
-
-        @param bitmap: Bitmap definition
-        @type bitmap: str
-
-        @rtype: str
-
-        @see: L{generate_code_bitmap()}
-        """
+            >>> get_inline_stmt_artprovider('art:wxART_HELP,wxART_OTHER,32,32')
+            'wx.ArtProvider.GetBitmap(wx.ART_HELP, wx.ART_OTHER, (32, 32))'"""
         # keep in sync with BitmapMixin.get_preview_obj_bitmap()
         art_id = 'wxART_ERROR'
         art_client = 'wxART_OTHER'
@@ -1042,23 +683,16 @@ class BaseWidgetWriter(StylesMixin, BaseCodeWriter):
         return stmt
 
     def get_inline_stmt_emptybitmap(self, bitmap):
-        """\
-        Return a inline statement to create an empty wxBitmap.
+        """Return a inline statement to create an empty wxBitmap. See generate_code_bitmap().
+
+        bitmap: Bitmap definition (string)
 
         B{Syntax}::
             empty:<width>,<height>
 
         B{Example}::
             >>> get_inline_stmt_emptybitmap('empty:32,32')
-            'wx.EmptyBitmap(32, 32)'
-
-        @param bitmap: Bitmap definition
-        @type bitmap: str
-
-        @rtype: str
-
-        @see: L{generate_code_bitmap()}
-        """
+            'wx.EmptyBitmap(32, 32)'"""
         # keep in sync with BitmapMixin.get_preview_obj_bitmap()
         width = 16
         height = 16
@@ -1071,36 +705,20 @@ class BaseWidgetWriter(StylesMixin, BaseCodeWriter):
         return stmt
 
     def get_inline_stmt_wxSize(self, width, heigh):
-        """\
-        Returns a inline statement to specific the widget size with wxSize()
+        """Returns a inline statement to specific the widget size with wxSize()
 
         B{Example}::
             >>> get_inline_stmt_wxSize(16, 16)
             '(16, 16)'                  # Python
 
             >>> get_inline_stmt_wxSize(16, 16)
-            'wxSize(16, 16)'            # C++
-
-
-        @rtype: str
-        """
+            'wxSize(16, 16)'            # C++"""
         stmt = self.tmpl_inline_wxSize % {'width': width, 'height': heigh }
         return stmt
 
     def is_widget_supported(self, major, minor=None):
-        """\
-        Check if the widget is supported for the given version
-
-        @param major: Major version number
-        @type major:  int
-        @param minor: Minor version number
-        @type minor:  int
-
-        @return: True if the widget is supported by the specified wx version
-        @rtype:  bool
-
-        @see: L{config.widget_config}
-        """
+        """Check if the widget is supported for the given version; see config.widget_config
+        major, minor: Major and minor version number (int)"""
         assert isinstance(major, int)
         assert isinstance(minor, int) or minor is None
 
@@ -1122,28 +740,24 @@ class BaseWidgetWriter(StylesMixin, BaseCodeWriter):
 
 
 class CppWidgetCodeWriter(CppMixin, BaseWidgetWriter):
-    """\
-    Base class for all C++ widget code writer classes.
+    """Base class for all C++ widget code writer classes.
 
-    @cvar constructor: List of tuples to describe the constructor parameter
-                       set, ech tuple contains type, name and optional the
-                       default value,
-                       The constructor parameters will be used for toplevel
-                       windows only.
-    @type constructor:  list[(str, str, str)] | list[(str, str)]
-    """
+    @cvar constructor: List of tuples to describe the constructor parameter set, ech tuple contains type, name and
+                       optional the default value,
+                       The constructor parameters will be used for toplevel windows only.
+    @type constructor:  list[(str, str, str)] | list[(str, str)]"""
     prefix_style = True
 
     tmpl_import_artprovider = '<wx/artprov.h>'
     tmpl_inline_artprovider = 'wxArtProvider::GetBitmap(%(art_id)s, %(art_client)s, %(size)s)'
-    tmpl_inline_bitmap = '%(name)s(%(bitmap)s, %(bitmap_type)s)'
+    tmpl_inline_bitmap      = '%(name)s(%(bitmap)s, %(bitmap_type)s)'
     tmpl_inline_emptybitmap = 'wxBitmap(%(width)s, %(height)s)'
-    tmpl_bitmap_disabled = '%(name)s->SetBitmapDisabled(%(disabled_bitmap)s);\n'
+    tmpl_bitmap_disabled    = '%(name)s->SetBitmapDisabled(%(disabled_bitmap)s);\n'
 
-    tmpl_selection = '%(name)s->SetSelection(%(selection)s);\n'
-    tmpl_setvalue = '%(name)s->SetValue(%(value_unquoted)s);\n'
+    tmpl_selection   = '%(name)s->SetSelection(%(selection)s);\n'
+    tmpl_setvalue    = '%(name)s->SetValue(%(value_unquoted)s);\n'
     tmpl_SetBestSize = '%(name)s->SetSize(%(name)s->GetBestSize());\n'
-    tmpl_setdefault = '%(name)s->SetDefault();\n'
+    tmpl_setdefault  = '%(name)s->SetDefault();\n'
     tmpl_inline_wxSize = 'wxSize(%(width)s, %(height)s)'
 
     use_names_for_binding_events = False
@@ -1215,15 +829,15 @@ class CppWidgetCodeWriter(CppMixin, BaseWidgetWriter):
 class LispWidgetCodeWriter(LispMixin, BaseWidgetWriter):
     "Base class for all Lisp widget code writer classes"
     tmpl_inline_artprovider = 'wxArtProvider_GetBitmap(%(art_id)s %(art_client)s %(size)s)'
-    tmpl_inline_bitmap = '(%(name)s_CreateLoad %(bitmap)s %(bitmap_type)s)'
+    tmpl_inline_bitmap      = '(%(name)s_CreateLoad %(bitmap)s %(bitmap_type)s)'
     tmpl_inline_emptybitmap = 'wxBitmap_Create(%(width)s %(height)s)'
-    tmpl_bitmap_disabled = '(wxBitmapButton_SetBitmapDisabled (slot-%(name)s obj) %(disabled_bitmap)s)\n'
+    tmpl_bitmap_disabled    = '(wxBitmapButton_SetBitmapDisabled (slot-%(name)s obj) %(disabled_bitmap)s)\n'
 
     tmpl_concatenate_choices = ' '
-    tmpl_selection = '(%(klass)s_SetSelection %(name)s %(selection)s)\n'
-    tmpl_setvalue = '(%(klass)s_SetValue %(name)s %(value_unquoted)s)\n'
+    tmpl_selection   = '(%(klass)s_SetSelection %(name)s %(selection)s)\n'
+    tmpl_setvalue    = '(%(klass)s_SetValue %(name)s %(value_unquoted)s)\n'
     tmpl_SetBestSize = '%(name)s.wxWindow_SetSize(%(name)s.wxWindow_GetBestSize())\n'
-    tmpl_setdefault = '(%(klass)s_SetDefault %(name)s)\n'
+    tmpl_setdefault  = '(%(klass)s_SetDefault %(name)s)\n'
     tmpl_inline_wxSize = 'wxSize_Create(%(width)s %(height)s)'
 
     def _prepare_tmpl_content(self, obj):
@@ -1246,8 +860,7 @@ class LispWidgetCodeWriter(LispMixin, BaseWidgetWriter):
                 self.tmpl_dict['style'] = '0'
 
         # Lisp stores all widgets as class attributes
-        self.tmpl_dict['name'] = '(%s obj)' % \
-                                 self.codegen._format_classattr(obj)
+        self.tmpl_dict['name'] = '(%s obj)' % self.codegen._format_classattr(obj)
 
         return
 
@@ -1259,14 +872,14 @@ class PerlWidgetCodeWriter(PerlMixin, BaseWidgetWriter):
 
     tmpl_import_artprovider = 'use Wx::ArtProvider qw/:artid :clientid/;\n'
     tmpl_inline_artprovider = 'Wx::ArtProvider::GetBitmap(%(art_id)s, %(art_client)s, %(size)s)'
-    tmpl_inline_bitmap = '%(name)s->new(%(bitmap)s, %(bitmap_type)s)'
+    tmpl_inline_bitmap      = '%(name)s->new(%(bitmap)s, %(bitmap_type)s)'
     tmpl_inline_emptybitmap = 'Wx::Bitmap->new(%(width)s, %(height)s)'
-    tmpl_bitmap_disabled = '%(name)s->SetBitmapDisabled(%(disabled_bitmap)s);\n'
+    tmpl_bitmap_disabled    = '%(name)s->SetBitmapDisabled(%(disabled_bitmap)s);\n'
 
-    tmpl_selection = '%(name)s->SetSelection(%(selection)s);\n'
-    tmpl_setvalue = '%(name)s->SetValue(%(value_unquoted)s);\n'
+    tmpl_selection   = '%(name)s->SetSelection(%(selection)s);\n'
+    tmpl_setvalue    = '%(name)s->SetValue(%(value_unquoted)s);\n'
     tmpl_SetBestSize = '%(name)s->SetSize(%(name)s->GetBestSize());\n'
-    tmpl_setdefault = '%(name)s->SetDefault();\n'
+    tmpl_setdefault  = '%(name)s->SetDefault();\n'
     tmpl_inline_wxSize = 'Wx::Size->new(%(width)s, %(height)s)'
 
 
@@ -1303,11 +916,11 @@ class PythonWidgetCodeWriter(PythonMixin, BaseWidgetWriter):
         tmpl_inline_emptybitmap = 'wx.Bitmap(%(width)s, %(height)s)'
     tmpl_bitmap_disabled = '%(name)s.SetBitmapDisabled(%(disabled_bitmap)s)\n'
 
-    tmpl_flags = ', style=%s'
-    tmpl_selection = '%(name)s.SetSelection(%(selection)s)\n'
-    tmpl_setvalue = '%(name)s.SetValue(%(value_unquoted)s)\n'
+    tmpl_flags       = ', style=%s'
+    tmpl_selection   = '%(name)s.SetSelection(%(selection)s)\n'
+    tmpl_setvalue    = '%(name)s.SetValue(%(value_unquoted)s)\n'
     tmpl_SetBestSize = '%(name)s.SetSize(%(name)s.GetBestSize())\n'
-    tmpl_setdefault = '%(name)s.SetDefault()\n'
+    tmpl_setdefault  = '%(name)s.SetDefault()\n'
     tmpl_inline_wxSize = '(%(width)s, %(height)s)'
 
     def _prepare_tmpl_content(self, obj):
