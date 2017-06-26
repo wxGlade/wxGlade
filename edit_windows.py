@@ -531,7 +531,7 @@ class ManagedBase(WindowBase):
 
     def check_defaults(self):
         # apply default border if set in preferences; called explicitely from the interactive builder functions
-        if not config.preferences.default_border or self.border==config.preferences.default_border: return
+        if not config.preferences.default_border or self.border==config.preferences.default_border_size: return
         self.properties["border"].set( config.preferences.default_border_size )
         flag_p = self.properties["flag"]
         if not flag_p.value_set.intersection(flag_p.FLAG_DESCRIPTION["Border"]):
