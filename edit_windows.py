@@ -529,6 +529,14 @@ class ManagedBase(WindowBase):
         self.sizer = sizer
         sizer.add_item(self, pos)
 
+    def check_defaults(self):
+        # apply default border if set in preferences; called explicitely from the interactive builder functions
+        if not config.preferences.default_border or self.border==config.preferences.default_border: return
+        self.properties["border"].set( config.preferences.default_border_size )
+        flag_p = self.properties["flag"]
+        if not flag_p.value_set.intersection(flag_p.FLAG_DESCRIPTION["Border"]):
+            flag_p.add("wxALL", notify=False)
+
     def finish_widget_creation(self, sel_marker_parent=None):
         if sel_marker_parent is None: sel_marker_parent = self.parent.widget
         self.sel_marker = misc.SelectionMarker(self.widget, sel_marker_parent)

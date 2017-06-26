@@ -30,10 +30,6 @@ class EditToggleButton(ManagedBase, EditStylesMixin):
         self.label = np.TextProperty("", multiline=True, fixed_height=True)
         self.value = np.CheckBoxProperty(False, default_value=False)
 
-        if config.preferences.default_border:
-            self.border.set( config.preferences.default_border_size )
-            self.flag.set( wx.ALL )
-
     def create_widget(self):
         self.widget = wx.ToggleButton(self.parent.widget, self.id, self.label)
         self.widget.SetValue(self.value)
@@ -60,6 +56,7 @@ def builder(parent, sizer, pos, number=[1]):
         number[0] += 1
         label = u'button_%d' % number[0]
     button = EditToggleButton(label, parent, wx.NewId(), label, sizer, pos)
+    button.check_defaults()
     node = Node(button)
     button.node = node
     if parent.widget: button.create()
