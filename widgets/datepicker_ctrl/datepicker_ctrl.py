@@ -33,10 +33,6 @@ class EditDatePickerCtrl(ManagedBase, EditStylesMixin):
         ManagedBase.__init__(self, name, 'wxDatePickerCtrl', parent, id, sizer, pos)
         EditStylesMixin.__init__(self)
 
-        if config.preferences.default_border:
-            self.border.set( config.preferences.default_border_size )
-            self.flag.set( wx.ALL )
-
     def create_widget(self):
         # TODO add all the other parameters for the DatePickerCtrl initial date
         self.widget = DatePickerCtrl(self.parent.widget, self.id, style=self.style)
@@ -60,6 +56,7 @@ def builder(parent, sizer, pos, number=[1]):
         number[0] += 1
         label = 'datepicker_ctrl_%d' % number[0]
     datepicker_ctrl = EditDatePickerCtrl(label, parent, wx.NewId(), sizer, pos)
+    datepicker_ctrl.check_defaults()
     node = Node(datepicker_ctrl)
     datepicker_ctrl.node = node
     if parent.widget: datepicker_ctrl.create()

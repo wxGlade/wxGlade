@@ -33,10 +33,6 @@ class EditStaticBitmap(ManagedBase, EditStylesMixin, BitmapMixin):
         self.bitmap    = np.FileNameProperty(bmp_file, style=filedialog_style)
         self.attribute = np.CheckBoxProperty(False, default_value=False)
 
-        if config.preferences.default_border:
-            self.properties["border"].set( config.preferences.default_border_size )
-            self.properties["flag"].set( wx.ALL )
-
     def create_widget(self):
         bmp = self.get_preview_obj_bitmap()
         self.widget = wx.StaticBitmap(self.parent.widget, self.id, bmp)
@@ -68,6 +64,7 @@ def builder(parent, sizer, pos, number=[1]):
         name = 'bitmap_%s' % number[0]
     bitmap = wx.FileSelector(_("Select the image"))
     static_bitmap = EditStaticBitmap(name, parent, wx.NewId(), bitmap, sizer, pos)
+    static_bitmap.check_defaults()
     node = Node(static_bitmap)
     static_bitmap.node = node
     if parent.widget: static_bitmap.create()

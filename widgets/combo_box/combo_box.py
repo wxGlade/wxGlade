@@ -32,10 +32,6 @@ class EditComboBox(ManagedBase, EditStylesMixin):
         self.selection = np.SpinProperty(0, val_range=len(choices)-1, immediate=True )
         self.choices = ChoicesProperty( choices, [(_('Label'), np.GridProperty.STRING)] )
 
-        if config.preferences.default_border:
-            self.border.set( config.preferences.default_border_size )
-            self.flag.set( wx.ALL )
-
     def create_widget(self):
         choices = [c[0] for c in self.choices]
         self.widget = wx.ComboBox(self.parent.widget, self.id, choices=choices)
@@ -80,11 +76,12 @@ def builder(parent, sizer, pos, number=[1]):
     while common.app_tree.has_name(name):
         number[0] += 1
         name = 'combo_box_%d' % number[0]
-    choice = EditComboBox(name, parent, wx.NewId(), [], sizer, pos)
-    node = Node(choice)
+    combo = EditComboBox(name, parent, wx.NewId(), [], sizer, pos)
+    combo.check_defaults()
+    node = Node(combo)
 #    sizer.set_item(pos, size=choice.GetBestSize())
-    choice.node = node
-    if parent.widget: choice.create()
+    combo.node = node
+    if parent.widget: combo.create()
     common.app_tree.insert(node, sizer.node, pos-1)
 
 
@@ -97,15 +94,15 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
         raise XmlParsingError(_("'name' attribute missing"))
     if sizer is None or sizeritem is None:
         raise XmlParsingError(_("sizer or sizeritem object cannot be None"))
-    choice = EditComboBox(name, parent, wx.NewId(), [], sizer, pos)
-    sizer.set_item(choice.pos, proportion=sizeritem.proportion, flag=sizeritem.flag, border=sizeritem.border)
-    node = Node(choice)
-    choice.node = node
+    combo = EditComboBox(name, parent, wx.NewId(), [], sizer, pos)
+    sizer.set_item(combo.pos, proportion=sizeritem.proportion, flag=sizeritem.flag, border=sizeritem.border)
+    node = Node(combo)
+    combo.node = node
     if pos is None:
         common.app_tree.add(node, sizer.node)
     else:
         common.app_tree.insert(node, sizer.node, pos-1)
-    return choice
+    return combo
 
 
 def initialize():

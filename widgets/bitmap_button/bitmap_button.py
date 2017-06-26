@@ -35,11 +35,6 @@ class EditBitmapButton(ManagedBase, EditStylesMixin, BitmapMixin):
         self.disabled_bitmap = np.FileNamePropertyD("", default_value="", style=filedialog_style)
         self.default         = np.CheckBoxProperty(False, default_value=False)
 
-        if config.preferences.default_border:
-            self.border.set( config.preferences.default_border_size )
-            self.flag.set( wx.ALL )
-
-
     def create_widget(self):
         bmp = self.get_preview_obj_bitmap()
         #try:
@@ -91,6 +86,7 @@ def builder(parent, sizer, pos, number=[1]):
         name = 'bitmap_button_%s' % number[0]
     bitmap = wx.FileSelector(_("Select the image for the button"))
     button = EditBitmapButton(name, parent, wx.NewId(), bitmap, sizer, pos)
+    button.check_defaults()
     node = Node(button)
     button.node = node
     if parent.widget: button.create()
