@@ -453,9 +453,8 @@ class WindowBase(EditBase):
         if not self.widget: return
         size_p = self.properties["size"]
         if not size_p.is_active(): return
-
-        v = size_p.get_value().strip()
-        use_dialog_units = v and v[-1] == 'd'
+        size = size_p.get_value().strip()
+        use_dialog_units = size and size[-1] == 'd'
         size = size_p.get_tuple()
         if use_dialog_units: size = wx.DLG_SZE(self.widget, size)
         self.widget.SetSize(size)
