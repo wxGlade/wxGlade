@@ -1,7 +1,7 @@
-"""\
-Common code used by all code generators
+"""Common code used by all code generators
 
 @copyright: 2011-2016 Carsten Grohmann
+@copyright: 2017 Dietmar Schwertberger
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
@@ -437,6 +437,7 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
 
     def check_values(self):
         "Check the validity of the set application values. Raises exceptions for errors; see module errors"
+        # XXX implement without exceptions
         # Check if the values of use_multiple_files and out_path agree
         if self.multiple_files:
             if not os.path.isdir(self.out_dir):
@@ -461,14 +462,11 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
         # for anything except application.Application
         import tree
         obj = node.widget
-
         topl = self.toplevel
 
         if isinstance(node, tree.SlotNode):
             # empty sizer slot
-            #self.add_object(topl, node.widget)
             szr = self.sizers[-1]
-            #self.add_sizeritem(topl, szr, obj, 0, "", 0)  # XXX maybe, grow and expand would be better
             self.add_spacer(topl, szr, None)
             return
         elif node.widget.classname=="spacer":
@@ -477,18 +475,9 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
             self.add_spacer(topl, szr, obj, obj.proportion, obj.properties["flag"].get_string_value(), obj.border )
             return
 
-
         obj.is_toplevel = node.is_toplevel  # this is from the position in the data structure
 
         if obj.is_sizer:
-            #  from CodeObject -> not needed here any more
-            #if not self.sizers:
-                #obj.is_toplevel = True
-            #else:
-                ## the sizer is a toplevel one if its parent has not a sizer yet
-                #sz = self.sizers[-1]
-                #if sz.parent!=obj.parent:
-                    #obj.is_toplevel = True
             self.sizers.append(obj)
 
         can_be_toplevel = obj.__class__.__name__ in common.toplevels
@@ -506,17 +495,12 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
             # for panel objects, if the user sets a custom class but (s)he doesn't want the code to be generated...
             if obj.check_prop("no_custom_class") and obj.no_custom_class and not self.preview:
                 obj.is_toplevel = False
-            #else:
-                #self.toplevels.append(obj)
         elif self.preview and not can_be_toplevel and obj.base != 'CustomWidget':
             # if this is a custom class, but not a toplevel one, for the preview we have to use the "real" class
             # CustomWidgets handle this in a special way (see widgets/custom_widget/codegen.py)
             old_class = obj.properties["klass"].get()
             obj.properties["klass"].set(obj.base) # XXX handle this in a different way
 
-
-        
-        #self.windows.append(obj)  # never used, is from CodeObject
         if obj.is_toplevel:  # XXX as long as generate_code is called with 
             self.toplevels.append(obj)
 
@@ -524,8 +508,9 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
         for c in node.children or []:
             self._generate_code(c)
 
-        if obj.is_toplevel:
-            del self.toplevels[-1]
+        # clean up stacks
+        if obj.is_toplevel: del self.toplevels[-1]
+        if obj.is_sizer:    del self.sizers[-1]
 
         # then the item
         if obj.is_toplevel and not obj.is_sizer:  # XXX as long as generate_code is called with 
@@ -533,73 +518,20 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
         if self.toplevels:
             self.add_object(obj)
 
-        # if the object is not a sizeritem, check whether it belongs to some sizer
-        #  (in this case, self._sizer_item.top() doesn't return None):
-        # if so, write the code to add it to the sizer at the top of the stack
+        # check whether the object belongs to some sizer; if applicable, add it to the sizer at the top of the stack
         parent = node.parent.widget
         if parent.is_sizer:
             flag = obj.properties["flag"].get_string_value()  # as string, joined with "|"
             self.add_sizeritem(topl, parent, obj, obj.proportion, flag, obj.border)
-
-        if obj.is_sizer:
-            del self.sizers[-1]
 
         if old_class is not None:
             obj.properties["klass"].set(old_class) # XXX handle this in a different way
         if old_base is not None:
             obj.properties["base"].set(old_base)
 
-
-    def X_generate_code(self, node):
-        # for anything except application.Application
-        import tree
-        obj = node.widget
-        obj.is_toplevel = node.is_toplevel
-        topl = self.toplevel
-        if obj.is_sizer:
-            self.sizers.append(obj)
-        if isinstance(node, tree.SlotNode):
-            # empty sizer slot
-            #self.add_object(topl, node.widget)
-            szr = self.sizers[-1]
-            #self.add_sizeritem(topl, szr, obj, 0, "", 0)  # XXX maybe, grow and expand would be better
-            self.add_spacer(topl, szr, None)
-        elif node.widget.classname=="spacer":
-            szr = self.sizers[-1]
-            self.add_spacer(topl, szr, obj, obj.proportion, obj.properties["flag"].get_string_value(), obj.border )
-        else:
-            if obj.is_toplevel:  # XXX as long as generate_code is called with 
-                self.toplevels.append(obj)
-
-            if obj.is_toplevel:  # XXX as long as generate_code is called with 
-                self.add_class(obj)
-            self.add_object(obj)
-
-            # children first
-            for c in node.children or []:
-                self._generate_code(c)
-
-            ## then the item
-            #if obj.is_toplevel:  # XXX as long as generate_code is called with 
-                #self.add_class(obj)
-                #pass
-            #else:
-            self.add_object(obj)
-
-            # if the object is not a sizeritem, check whether it belongs to some sizer
-            #  (in this case, self._sizer_item.top() doesn't return None):
-            # if so, write the code to add it to the sizer at the top of the stack
-            parent = node.parent.widget
-            if parent.is_sizer:
-                flag = obj.properties["flag"].get_string_value()  # as string, joined with "|"
-                self.add_sizeritem(topl, parent, obj, obj.proportion, flag, obj.border)
-        if obj.is_sizer:
-            del self.sizers[-1]
     def generate_code(self, root, widget=None):
         # root must be application.Application instance for now
         self.class_names = {}
-        self.stack = [] # CodeObjects
-        #self.windows = [] # used? is from CodeObject / self.parser._windows
         self.toplevels = []
         self.sizers = []
         for c in root.children or []:
