@@ -16,7 +16,7 @@ class LispRadioButtonGenerator(wcodegen.LispWidgetCodeWriter):
 
     def _prepare_tmpl_content(self, obj):
         wcodegen.LispWidgetCodeWriter._prepare_tmpl_content(self, obj)
-        self.has_setvalue1 = obj.properties.get('clicked', False)
+        self.has_setvalue1 = bool(obj.clicked)
         return
 
 

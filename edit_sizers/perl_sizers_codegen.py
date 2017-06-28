@@ -18,16 +18,16 @@ class BasePerlSizerBuilder(BaseSizerBuilder):
 
     tmpl_SetSizer = '%(parent_widget)s->SetSizer(%(sizer_name)s);\n'
     tmpl_Fit = '%(sizer_name)s->Fit(%(parent_widget)s);\n'
-    tmpl_SetSizeHints = '%(sizer_name)s->SetSizeHints(' \
-                        '%(parent_widget)s);\n'
+    tmpl_SetSizeHints = '%(sizer_name)s->SetSizeHints(%(parent_widget)s);\n'
 
     def _get_wparent(self, obj):
-        if not obj.parent.is_toplevel:
-            parent = '$self->{%s}' % obj.parent.name
+        while obj.is_sizer:
+            obj = obj.node.parent.widget
+        if not obj.is_toplevel:
+            parent = '$self->{%s}' % obj.name
         else:
             parent = '$self'
         return parent
-
 
 
 class PerlBoxSizerBuilder(BasePerlSizerBuilder):

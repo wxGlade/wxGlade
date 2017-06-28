@@ -8,17 +8,18 @@ Code generator functions for wxChoice objects
 
 import common
 import wcodegen
-from ChoicesCodeHandler import *
+#from ChoicesCodeHandler import *
 
 
 class PythonChoiceGenerator(wcodegen.PythonWidgetCodeWriter):
-    tmpl = '%(name)s = %(klass)s(%(parent)s, %(id)s, choices=[%(choices)s]%(style)s)\n'
+    #tmpl = '%(name)s = %(klass)s(%(parent)s, %(id)s, choices=[%(choices)s]%(style)s)\n'
+    tmpl = '%(name)s = %(klass)s(%(parent)s, %(id)s, choices=[%(choices)s])\n'
 
 
 
 class CppChoiceGenerator(wcodegen.CppWidgetCodeWriter):
-    tmpl = '%(name)s = new %(klass)s(%(parent)s, %(id)s, ' \
-           'wxDefaultPosition, wxDefaultSize, %(choices_len)s, %(name)s_choices%(style)s);\n'
+    #tmpl = '%(name)s = new %(klass)s(%(parent)s, %(id)s, wxDefaultPosition, wxDefaultSize, %(choices_len)s, %(name)s_choices%(style)s);\n'
+    tmpl = '%(name)s = new %(klass)s(%(parent)s, %(id)s, wxDefaultPosition, wxDefaultSize, %(choices_len)s, %(name)s_choices);\n'
     prefix_style = False
 
 
@@ -40,6 +41,6 @@ def xrc_code_generator(obj):
 def initialize():
     klass = 'wxChoice'
     common.class_names['EditChoice'] = klass
-    common.register('python', klass, PythonChoiceGenerator(klass), 'choices', ChoicesCodeHandler)
-    common.register('C++',    klass, CppChoiceGenerator(klass),    'choices', ChoicesCodeHandler)
-    common.register('XRC',    klass, xrc_code_generator,           'choices', ChoicesCodeHandler)
+    common.register('python', klass, PythonChoiceGenerator(klass),)# 'choices', ChoicesCodeHandler)
+    common.register('C++',    klass, CppChoiceGenerator(klass),   )# 'choices', ChoicesCodeHandler)
+    common.register('XRC',    klass, xrc_code_generator,          )# 'choices', ChoicesCodeHandler)

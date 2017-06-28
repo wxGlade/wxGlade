@@ -361,7 +361,7 @@ class BaseWidgetWriter(StylesMixin, BaseCodeWriter):
 
     def _prepare_style(self, style):
         "Process and format style string with cn_f(); returns string; see _prepare_tmpl_content(), tmpl_flags"
-        fmt_style = self.cn_f(style)
+        fmt_style = self.cn_f(style.get_string_value())
         fmt_default_style = self.cn_f(self.default_style)
 
         if fmt_style and fmt_style != fmt_default_style:
@@ -395,12 +395,11 @@ class BaseWidgetWriter(StylesMixin, BaseCodeWriter):
 
         self.tmpl_dict['store_as_attr'] = self.codegen.store_as_attr(obj)
 
-        prop = obj.properties
-
-        self.tmpl_dict['style'] = self._prepare_style(prop.get('style', ''))
-        self.tmpl_dict['label'] = self.codegen.quote_str(prop.get('label', ''))
-        self.tmpl_dict['value'] = self.codegen.quote_str(prop.get('value', ''))
-        self.tmpl_dict['value_unquoted'] = prop.get('value', '')
+        if obj.check_prop('style'): self.tmpl_dict['style'] = self._prepare_style(obj.properties["style"])
+        if obj.check_prop('label'):
+            self.tmpl_dict['label'] = self.codegen.quote_str( obj.label )
+        if obj.check_prop('value'): self.tmpl_dict['value'] = self.codegen.quote_str( str(obj.value) )
+        if obj.check_prop('value_unquoted'): self.tmpl_dict['value_unquoted'] = obj.value
 
         return
 
@@ -416,21 +415,24 @@ class BaseWidgetWriter(StylesMixin, BaseCodeWriter):
 
     def _prepare_bitmap(self, obj, first='bitmap', second='disabled_bitmap'):
         "Prepare content for widgets with bitmaps; obj is xml_parse.CodeObject; see generate_code_bitmap(), get_code()"
-        bmp_first = obj.properties.get(first, '')
-        self.tmpl_dict[first] = self.generate_code_bitmap(bmp_first, obj.preview)
+        bmp_first = obj.properties[first].get_value()
+        self.tmpl_dict[first] = self.generate_code_bitmap(bmp_first, self.codegen.preview)
 
-        bmp_second = obj.properties.get(second, '')
-        if bmp_second:
-            self.tmpl_dict[second] = self.generate_code_bitmap(bmp_second, obj.preview)
-            self.tmpl_props.append(self.tmpl_bitmap_disabled)
+        if second in obj.properties:
+            bmp_second = obj.properties[second].get_value()
+            if bmp_second:
+                self.tmpl_dict[second] = self.generate_code_bitmap(bmp_second, self.codegen.preview)
+                self.tmpl_props.append(self.tmpl_bitmap_disabled)
+        else:
+            bmp_second = ""
 
         if self.tmpl_import_artprovider and (bmp_first.startswith('art:') or bmp_second.startswith('art:')):
             self.import_modules.append(self.tmpl_import_artprovider)
 
-        if not 'size' in obj.properties and self.tmpl_SetBestSize:
+        if not obj.check_prop('size') and self.tmpl_SetBestSize:
             self.tmpl_props.append(self.tmpl_SetBestSize)
 
-        self.has_setdefault = int(obj.properties.get('default', 0))
+        self.has_setdefault = "default" in obj.properties and obj.default or False
 
     def _prepare_choice(self, obj):
         """Prepare content for widgets with choices; see: get_code(), tmpl_concatenate_choices
@@ -439,17 +441,17 @@ class BaseWidgetWriter(StylesMixin, BaseCodeWriter):
         template in self.tmpl contains '%(choices)s' or '%(choices_len)s'
 
         obj: Instance of xml_parse.CodeObject"""
-        choices = obj.properties.get('choices')
+        choices = [c[0] for c in obj.choices]
 
         choices_str = self.tmpl_concatenate_choices.join( [self.codegen.quote_str(c) for c in choices] )
         self.tmpl_dict['choices'] = choices_str
         self.tmpl_dict['choices_len'] = len(choices)
 
-        selection = obj.properties.get('selection', None)
-        if selection is not None and choices:
-            self.tmpl_dict['selection'] = selection
-            self.has_selection = True
-        return
+        if choices:
+            selection_p = obj.properties.get("selection", None)
+            if selection_p and selection_p.is_active():
+                self.tmpl_dict['selection'] = selection_p.get()
+                self.has_selection = True
 
     def generate_code_bitmap(self, bitmap, preview=False):
         """Returns a code fragment that generates an wxBitmap object
@@ -491,19 +493,6 @@ class BaseWidgetWriter(StylesMixin, BaseCodeWriter):
         assert self.tmpl or obj.klass in ('spacer','sizerslot')#,'sizeritem')
         init_lines = []
         self._reset_vars()
-
-        # spacers and empty sizer slots are generally handled by a hack:
-        # The the implementations of add_sizeritem() contains more details.
-        if obj.klass == 'spacer':
-            width = obj.properties.get('width', '0')
-            height = obj.properties.get('height', '0')
-            obj.name = '%s, %s' % (width, height)
-            return [], [], []
-
-        if obj.klass == 'sizerslot':
-            obj.name = '0, 0'
-            return [], [], []
-
 
         self._prepare_tmpl_content(obj)
 
@@ -572,6 +561,8 @@ class BaseWidgetWriter(StylesMixin, BaseCodeWriter):
         ret = []
         if 'events' not in obj.properties:
             return ret
+        events = [(event,handler) for (event,handler) in obj.events if handler]
+        if not events: return ret
 
         if 'events' not in self.config:
             self._logger.warn( _('Object %(name)s(%(klass)s contains unknown events: %(events)s)'),
@@ -587,8 +578,7 @@ class BaseWidgetWriter(StylesMixin, BaseCodeWriter):
         except KeyError:
             default_event = 'wxCommandEvent'
 
-        for event in sorted( obj.properties['events'].keys() ):
-            handler = obj.properties['events'][event]
+        for event, handler in sorted( events ):
             if event not in self.config['events']:
                 self._logger.warn( _('Ignore unknown event %s for %s'), (event, obj.klass) )
                 continue
@@ -763,12 +753,12 @@ class CppWidgetCodeWriter(CppMixin, BaseWidgetWriter):
         super(CppWidgetCodeWriter, self)._prepare_choice(obj)
 
         # C++ part - extend generic settings
-        choices = obj.properties.get('choices')
+        choices = obj.choices
         # empty choices are not allowed
         if choices:
             self.tmpl_before.append('const wxString %(name)s_choices[] = {\n')
             for choice in choices:
-                self.tmpl_before.append( '%s%s,\n' % (self.codegen.tabs(1), self.codegen.quote_str(choice)) )
+                self.tmpl_before.append( '%s%s,\n' % (self.codegen.tabs(1), self.codegen.quote_str(choice[0])) )
             self.tmpl_before.append('};\n')
         else:
             self.tmpl_before.append('const wxString %(name)s_choices[] = {};\n')
@@ -849,7 +839,7 @@ class LispWidgetCodeWriter(LispMixin, BaseWidgetWriter):
         else:
             self.tmpl_dict['parent'] = '(slot-top-window obj)'
 
-        if not self.tmpl_dict['style']:
+        if 'style' in obj.properties and not self.tmpl_dict['style']:
             if self.default_style:
                 self.tmpl_dict['style'] = self.default_style
             else:

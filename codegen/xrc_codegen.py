@@ -11,7 +11,7 @@ return an instance of XrcObject
 """
 
 from xml.sax.saxutils import escape, quoteattr
-from codegen import BaseLangCodeWriter, EventsPropertyHandler, ExtraPropertiesPropertyHandler
+from codegen import BaseLangCodeWriter
 from collections import OrderedDict
 import common, compat, errors
 import wcodegen
@@ -192,9 +192,9 @@ class DefaultXrcObject(XrcObject):
             del self.properties['font']
         else:
             font = None
-        style = str(self.properties.get('style', ''))
+        style = self.properties["style"].get_string_value()
         if style:
-            if style == '0':
+            if not style:
                 del self.properties['style']
             else:
                 self.properties['style'] = self.cn_f(style)
@@ -280,12 +280,12 @@ class XRCCodeWriter(BaseLangCodeWriter, wcodegen.XRCMixin):
     (see L{add_object})
     """
 
-    global_property_writers = {
-        'font': FontPropertyHandler,
-        'events': EventsPropertyHandler,
-        'extraproperties': ExtraPropertiesPropertyHandler,
-        }
-    "Dictionary whose items are custom handlers for widget properties"
+    #global_property_writers = {
+        #'font': FontPropertyHandler,
+        #'events': EventsPropertyHandler,
+        #'extraproperties': ExtraPropertiesPropertyHandler,
+        #}
+    #"Dictionary whose items are custom handlers for widget properties"
 
     property_writers = {}
     """\
@@ -344,7 +344,7 @@ class XRCCodeWriter(BaseLangCodeWriter, wcodegen.XRCMixin):
         "In the case of XRC output, there's no wxApp code to generate"
         pass
 
-    def add_object(self, unused, sub_obj):
+    def add_object(self, sub_obj):
         "Adds the object sub_obj to the XRC tree. The first argument is unused."
         # what we need in XRC is not top_obj, but sub_obj's true parent
         top_obj = sub_obj.parent

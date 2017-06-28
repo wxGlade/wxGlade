@@ -641,6 +641,8 @@ class EditMenuBar(EditBase, PreviewMixin):
         self.properties["base"].set('wxMenuBar')
 
         self.menus = MenuProperty()
+        self.window_id = None  # just a dummy for code generation
+
         self._mb = None  # the real menubar
         if not self.parent:
             PreviewMixin.__init__(self)  # add a preview button

@@ -22,10 +22,11 @@ class PerlNotebookGenerator(wcodegen.PerlWidgetCodeWriter):
         id_name, id = self.codegen.generate_code_id(window)
 
         layout_props = []
-        tabs = prop.get('tabs', [])
-        for label, tab_win in tabs:
+        #tabs = prop.get('tabs', [])
+        #for label, tab_win in tabs:
+        for label, tab_win in zip(window.tabs, window.pages):
             layout_props.append('$self->{%s}->AddPage($self->{%s}, %s);\n' %
-                                (window.name, tab_win, self.codegen.quote_str(label)))
+                                (window.name, tab_win.name, self.codegen.quote_str(label[0])) )
 
         parent = self.format_widget_access(window.parent)
 
@@ -53,9 +54,11 @@ class PerlNotebookGenerator(wcodegen.PerlWidgetCodeWriter):
     def get_properties_code(self, obj):
         prop = obj.properties
         props_buf = []
-        tabs = prop.get('tabs', [])
-        for label, window in tabs:
-            props_buf.append( '$self->AddPage($self->{%s}, %s);\n' % (window, self.codegen.quote_str(label)) )
+        #tabs = prop.get('tabs', [])
+        #for label, window in tabs:
+        for label, tab_win in zip(obj.tabs, obj.pages):
+            label = label[0]
+            props_buf.append( '$self->AddPage($self->{%s}, %s);\n' % (tab_win.name, self.codegen.quote_str(label)) )
         props_buf.extend(self.codegen.generate_common_properties(obj))
         return props_buf
 
@@ -66,4 +69,4 @@ def initialize():
     common.class_names['NotebookPane'] = 'wxPanel'
     common.toplevels['EditNotebook'] = 1
     common.toplevels['NotebookPane'] = 1
-    common.register('perl', klass, PerlNotebookGenerator(klass), 'tabs', TabsCodeHandler, klass)
+    common.register('perl', klass, PerlNotebookGenerator(klass))#, 'tabs', TabsCodeHandler, klass)

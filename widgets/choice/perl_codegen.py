@@ -9,18 +9,16 @@ Perl generator functions for wxChoice objects
 
 import common
 import wcodegen
-from ChoicesCodeHandler import *
+#from ChoicesCodeHandler import *
 
 
 class PerlChoiceGenerator(wcodegen.PerlWidgetCodeWriter):
-    tmpl = '%(name)s = %(klass)s->new(%(parent)s, %(id)s, ' \
-           'wxDefaultPosition, wxDefaultSize, [%(choices)s], %(style)s);\n'
+    #tmpl ='%(name)s = %(klass)s->new(%(parent)s, %(id)s, wxDefaultPosition, wxDefaultSize, [%(choices)s], %(style)s);\n'
+    tmpl ='%(name)s = %(klass)s->new(%(parent)s, %(id)s, wxDefaultPosition, wxDefaultSize, [%(choices)s], );\n'
 
-# end of class PerlChoiceGenerator
 
 
 def initialize():
     klass = 'wxChoice'
     common.class_names['EditChoice'] = klass
-    common.register('perl', klass, PerlChoiceGenerator(klass),
-                    'choices', ChoicesCodeHandler)
+    common.register('perl', klass, PerlChoiceGenerator(klass) )#, 'choices', ChoicesCodeHandler)

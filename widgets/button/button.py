@@ -60,7 +60,7 @@ class EditButton(ManagedBase, EditStylesMixin):
                 self.properties["label"].set_blocked(True)
                 new_id = "wxID_" + self.stockitem
                 self.properties["id"].set( new_id, deactivate=True )
-                self.properties["id"].default_value = new_id  # avoid this value to be written to XML
+                #self.properties["id"].default_value = new_id  # avoid this value to be written to XML
 
                 l = ButtonStockItems.stock_ids[self.stockitem]
                 if self.widget:
@@ -68,7 +68,7 @@ class EditButton(ManagedBase, EditStylesMixin):
                     resize = True
             else:
                 self.properties["label"].set_blocked(False)
-                self.properties["id"].default_value = "wxID_ANY"
+                #self.properties["id"].default_value = "wxID_ANY"
                 label_modified = True
 
         if label_modified and self.properties["label"].is_active():

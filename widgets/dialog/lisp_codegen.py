@@ -18,22 +18,17 @@ class LispDialogGenerator(wcodegen.LispWidgetCodeWriter):
 
     def get_properties_code(self, obj):
         out = []
-        title = obj.properties.get('title')
-        if title:
-            out.append( '(wxWindow_SetTitle (slot-%s self) %s)\n' % (obj.name, self.codegen.quote_str(title)) )
-        icon = obj.properties.get('icon')
-        if icon:
+        if obj.title:
+            out.append( '(wxWindow_SetTitle (slot-%s self) %s)\n' % (obj.name, self.codegen.quote_str(obj.title)) )
+        if obj.icon:
             out.append( ';;; generating code for setting icons is not implemented\n' )
         out.extend(self.codegen.generate_common_properties(obj))
         return out
 
     def get_layout_code(self, obj):
         ret = ['(wxWindow_layout (slot-%s self))\n' % obj.name]
-        try:
-            if int(obj.properties['centered']):
-                ret.append( '(wxWindow_Centre (slot-%s self) wxBOTH)\n' % obj.name )
-        except (KeyError, ValueError):
-            pass
+        if obj.centered:
+            ret.append( '(wxWindow_Centre (slot-%s self) wxBOTH)\n' % obj.name )
         return ret
 
 

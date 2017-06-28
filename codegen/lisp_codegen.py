@@ -196,11 +196,11 @@ class LispCodeWriter(BaseLangCodeWriter, wcodegen.LispMixin):
     classattr_always = ['wxBoxSizer', 'wxStaticBoxSizer', 'wxGridSizer',
                         'wxFlexGridSizer']
 
-    global_property_writers = {
-        'font':            BaseLangCodeWriter.FontPropertyHandler,
-        'events':          BaseLangCodeWriter.EventsPropertyHandler,
-        'extraproperties': BaseLangCodeWriter.ExtraPropertiesPropertyHandler,
-        }
+    #global_property_writers = {
+        #'font':            BaseLangCodeWriter.FontPropertyHandler,
+        #'events':          BaseLangCodeWriter.EventsPropertyHandler,
+        #'extraproperties': BaseLangCodeWriter.ExtraPropertiesPropertyHandler,
+        #}
 
     indent_level_func_body = 2
 
@@ -324,27 +324,25 @@ class LispCodeWriter(BaseLangCodeWriter, wcodegen.LispMixin):
         if self.for_version > (2, 8):
             raise errors.WxgLispWx3NotSupported("%d.%d" % self.for_version)
 
-    def add_app(self, app_attrs, top_win_class):
-        top_win = app_attrs.get('top_window')
+    def add_app(self, app, top_win_class):
+        top_win = app.top_window
         # do nothing if there is no top window
-        if not top_win:
-            return
+        if not top_win: return
 
         # add language specific mappings
-        self.lang_mapping = {
-            'top_win': self._format_name(top_win),
-            }
-        BaseLangCodeWriter.add_app(self, app_attrs, top_win_class)
+        self.lang_mapping = { 'top_win': self._format_name(top_win), }
+        BaseLangCodeWriter.add_app(self, app, top_win_class)
 
-    def add_object(self, top_obj, sub_obj):
+    def add_object(self, sub_obj):
         # the lisp code gen add some hard coded depedencies
         # TODO: Move the hard coded dependencies to the widgets resp. sizers
 
-        sub_obj.name = self._format_name(sub_obj.name)
-        sub_obj.parent.name = self._format_name(sub_obj.parent.name)
+        # XXX temporarily disabled...
+        #sub_obj.name = self._format_name(sub_obj.name)
+        #sub_obj.parent.name = self._format_name(sub_obj.parent.name)
 
         # get top level source code object and the widget builder instance
-        klass, builder = self._add_object_init(top_obj, sub_obj)
+        klass, builder = self._add_object_init(sub_obj)
         if not klass or not builder:
             return
 
@@ -363,23 +361,21 @@ class LispCodeWriter(BaseLangCodeWriter, wcodegen.LispMixin):
         if sub_obj.klass == "wxMenuBar":
             self.dependencies['(use-package :wxMenu)'] = 1
 
-        BaseLangCodeWriter.add_object(self, top_obj, sub_obj)
+        BaseLangCodeWriter.add_object(self, sub_obj)
 
     def add_sizeritem(self, toplevel, sizer, obj, option, flag, border):
-        if obj.in_sizers:
+        # XXX remove this hack
+        if obj.is_sizer:
             self.tmpl_sizeritem = '(wxSizer_AddSizer (%s obj) (%s obj) %s %s %s nil)\n'
         else:
             self.tmpl_sizeritem = '(wxSizer_AddWindow (%s obj) (%s obj) %s %s %s nil)\n'
 
-        BaseLangCodeWriter.add_sizeritem(
-            self,
-            toplevel,
-            sizer,
-            obj,
-            option,
-            flag,
-            border,
-            )
+        BaseLangCodeWriter.add_sizeritem( self, toplevel, sizer, obj, option, flag, border )
+
+    def add_spacer(self, toplevel, sizer, obj=None, proportion=0, flag='0', border=0):
+        # XXX remove this hack
+        self.tmpl_sizeritem = '(wxSizer_AddWindow (%s obj) (%s obj) %s %s %s nil)\n'
+        BaseLangCodeWriter.add_spacer(self, toplevel, sizer, obj, proportion, flag, border)
 
     def generate_code_background(self, obj):
         self.dependencies['(use-package :wxColour)'] = 1
@@ -438,12 +434,11 @@ class LispCodeWriter(BaseLangCodeWriter, wcodegen.LispMixin):
             'tab':             tab,
             })
 
-        prop = code_obj.properties
-        style = prop.get("style", None)
+        style = code_obj.properties["style"].get_string_value()
         if style:
             m_style = mycn_f(style)
             if m_style:
-                stmt_style = self._format_style(style, code_obj)
+                stmt_style = self._format_style(m_style, code_obj)
                 write(stmt_style % {'style': m_style, 'tab': tab} )
 
         # classes[code_obj.klass].deps now contains a mapping of child to
@@ -511,7 +506,7 @@ class LispCodeWriter(BaseLangCodeWriter, wcodegen.LispMixin):
 
     def generate_code_id(self, obj, id=None):
         if id is None:
-            id = obj.properties.get('id')
+            id = obj.window_id
         if not id:
             return '', self.cn('wxID_ANY')
         tokens = id.split('=', 1)
@@ -534,7 +529,7 @@ class LispCodeWriter(BaseLangCodeWriter, wcodegen.LispMixin):
 
     def generate_code_size(self, obj):
         objname = self.format_generic_access(obj)
-        size = obj.properties.get('size', '').strip()
+        size = obj.properties["size"].get_string_value()
         use_dialog_units = (size[-1] == 'd')
         if not obj.parent:
             method = 'wxWindow_SetSize'

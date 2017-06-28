@@ -52,7 +52,8 @@ def format_ctor_arguments(arguments, parent, id, size):
 
 class PythonCustomWidgetGenerator(wcodegen.PythonWidgetCodeWriter):
     def get_code(self, widget):
-        if widget.preview and widget.klass not in widget.parser.class_names:
+        #if self.codegen.preview and widget.klass not in widget.parser.class_names:
+        if self.codegen.preview and widget.klass not in self.codegen.class_names:
             # if this CustomWidget refers to another class in the same wxg
             # file, use that for the preview
             return self.get_code_preview(widget)
@@ -106,7 +107,6 @@ def self_%s_on_paint(event):
 
 class CppCustomWidgetGenerator(wcodegen.CppWidgetCodeWriter):
     def get_code(self, widget):
-        prop = widget.properties
         id_name, id = self.codegen.generate_code_id(widget)
         if id_name:
             ids = [id_name]
@@ -116,8 +116,8 @@ class CppCustomWidgetGenerator(wcodegen.CppWidgetCodeWriter):
             parent = '%s' % widget.parent.name
         else:
             parent = 'this'
-        arguments = format_ctor_arguments( prop.get('arguments', []), parent, id, prop.get('size', '-1, -1').strip() )
-        cust_ctor = prop.get('custom_ctor', '').strip()
+        arguments = format_ctor_arguments( widget.arguments, parent, id, widget.size )
+        cust_ctor = widget.custom_ctor.strip()
         if cust_ctor:
             ctor = cust_ctor
         else:

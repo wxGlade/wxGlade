@@ -8,7 +8,7 @@ Lisp generator functions for wxMenuBar objects
 import common
 import wcodegen
 from MenuTree import *
-from .codegen import MenuHandler
+#from .codegen import MenuHandler
 
 
 class LispMenubarGenerator(wcodegen.LispWidgetCodeWriter):
@@ -18,7 +18,6 @@ class LispMenubarGenerator(wcodegen.LispWidgetCodeWriter):
     def get_init_code(self, obj):
         out = []
         append = out.append
-        menus = obj.properties['menubar']
         ids = []
 
         def append_items(menu, items):
@@ -54,7 +53,7 @@ class LispMenubarGenerator(wcodegen.LispWidgetCodeWriter):
                            (menu, widget_id, self.codegen.quote_str(item.label),
                             self.codegen.quote_str(item.help_str), item_type))
 
-        for m in menus:
+        for m in obj.menus:
             menu = m.root
             if menu.name:
                 name = menu.name
@@ -69,19 +68,16 @@ class LispMenubarGenerator(wcodegen.LispWidgetCodeWriter):
         return ids + out
 
     def get_code(self, obj):
-        init = [ '\n', ';;; Menu Bar\n', '(setf (slot-%s obj) (wxMenuBar_Create 0))\n' %
-                 obj.name]
+        init = [ '\n', ';;; Menu Bar\n', '(setf (slot-%s obj) (wxMenuBar_Create 0))\n' % obj.name ]
         init.extend(self.get_init_code(obj))
-        init.append('(wxFrame_SetMenuBar (slot-top-window obj) ' \
-                    '(slot-%s obj))\n' % obj.name)
+        init.append('(wxFrame_SetMenuBar (slot-top-window obj) (slot-%s obj))\n' % obj.name)
         init.append(';;; Menu Bar end\n\n')
         return init, [], []
 
-# end of class LispMenubarGenerator
 
 
 def initialize():
     klass = 'wxMenuBar'
     common.class_names['EditMenuBar'] = klass
     common.toplevels['EditMenuBar'] = 1
-    common.register('lisp', klass, LispMenubarGenerator(klass), 'menus', MenuHandler)
+    common.register('lisp', klass, LispMenubarGenerator(klass) ) #, 'menus', MenuHandler)

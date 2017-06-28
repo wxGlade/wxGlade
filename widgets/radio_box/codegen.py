@@ -18,8 +18,8 @@ class PythonRadioBoxGenerator(radio_box_base.RadioBoxMixin, wcodegen.PythonWidge
 
     def _prepare_choice(self, obj):
         # avoid empty choices, which causes a crash in classic wxPython; the box will still be empty with just [""]
-        choices = obj.properties.get('choices', [])
-        if choices or self.language!="python":
+        #choices = obj.properties.get('choices', [])
+        if obj.choices or self.language!="python":
             return wcodegen.PythonWidgetCodeWriter._prepare_choice(self, obj)
 
         self.tmpl_dict['choices'] = '""'

@@ -8,7 +8,7 @@ Code generator functions for wxMenuBar objects
 
 import common
 import wcodegen
-from wcodegen.taghandler import BaseCodeWriterTagHandler
+#from wcodegen.taghandler import BaseCodeWriterTagHandler
 from MenuTree import *
 
 
@@ -21,7 +21,7 @@ class PythonMenubarGenerator(wcodegen.PythonWidgetCodeWriter):
         out = []
         append = out.append
         quote_str = self.codegen.quote_str
-        menus = obj.properties['menubar']
+        menus = obj.menus
         ids = []
 
         obj_name = self.format_widget_access(obj)
@@ -106,54 +106,54 @@ class PythonMenubarGenerator(wcodegen.PythonWidgetCodeWriter):
                     ret.extend(do_get(c))
             return ret
 
-        for menu in obj.properties['menubar']:
+        for menu in obj.menus:
             out.extend(do_get(menu.root))
         return out
 
 
 
-class MenuHandler(BaseCodeWriterTagHandler):
-    "Handler for menus and menu items of a menubar"
-    item_attrs = ('label', 'id', 'name', 'help_str', 'checkable', 'radio', 'handler')
+#class MenuHandler(BaseCodeWriterTagHandler):
+    #"Handler for menus and menu items of a menubar"
+    #item_attrs = ('label', 'id', 'name', 'help_str', 'checkable', 'radio', 'handler')
 
-    def __init__(self):
-        super(MenuHandler, self).__init__()
-        self.menu_depth = 0
-        self.menus = []
-        self.curr_menu = None
-        self.curr_item = None
+    #def __init__(self):
+        #super(MenuHandler, self).__init__()
+        #self.menu_depth = 0
+        #self.menus = []
+        #self.curr_menu = None
+        #self.curr_item = None
 
-    def start_elem(self, name, attrs):
-        if name == 'menu':
-            self.menu_depth += 1
-            label = attrs['label']
-            if self.menu_depth == 1:
-                t = MenuTree(attrs['name'], label)
-                self.curr_menu = t.root
-                self.menus.append(t)
-                return
-            id = attrs.get('itemid', '')
-            handler = attrs.get('handler', '')
-            node = MenuTree.Node(label=label, name=attrs['name'], id=id, handler=handler)
-            node.parent = self.curr_menu
-            self.curr_menu.children.append(node)
-            self.curr_menu = node
-        elif name == 'item':
-            self.curr_item = MenuTree.Node()
+    #def start_elem(self, name, attrs):
+        #if name == 'menu':
+            #self.menu_depth += 1
+            #label = attrs['label']
+            #if self.menu_depth == 1:
+                #t = MenuTree(attrs['name'], label)
+                #self.curr_menu = t.root
+                #self.menus.append(t)
+                #return
+            #id = attrs.get('itemid', '')
+            #handler = attrs.get('handler', '')
+            #node = MenuTree.Node(label=label, name=attrs['name'], id=id, handler=handler)
+            #node.parent = self.curr_menu
+            #self.curr_menu.children.append(node)
+            #self.curr_menu = node
+        #elif name == 'item':
+            #self.curr_item = MenuTree.Node()
 
-    def end_elem(self, name, code_obj):
-        if name == 'menus':
-            code_obj.properties['menubar'] = self.menus
-            return True
-        if name == 'item' and self.curr_menu:
-            self.curr_menu.children.append(self.curr_item)
-            self.curr_item.parent = self.curr_menu
-        elif name == 'menu':
-            self.menu_depth -= 1
-            self.curr_menu = self.curr_menu.parent
-        elif name in self.item_attrs:
-            char_data = self.get_char_data()
-            setattr(self.curr_item, name, char_data)
+    #def end_elem(self, name, code_obj):
+        #if name == 'menus':
+            #code_obj.properties['menubar'] = self.menus
+            #return True
+        #if name == 'item' and self.curr_menu:
+            #self.curr_menu.children.append(self.curr_item)
+            #self.curr_item.parent = self.curr_menu
+        #elif name == 'menu':
+            #self.menu_depth -= 1
+            #self.curr_menu = self.curr_menu.parent
+        #elif name in self.item_attrs:
+            #char_data = self.get_char_data()
+            #setattr(self.curr_item, name, char_data)
 
 
 
@@ -225,7 +225,6 @@ class CppMenubarGenerator(wcodegen.CppWidgetCodeWriter):
         return init, ids, [], []
 
     def get_properties_code(self, obj):
-        menus = obj.properties['menubar']
         out = []
         append = out.append
         quote_str = self.codegen.quote_str
@@ -263,7 +262,7 @@ class CppMenubarGenerator(wcodegen.CppWidgetCodeWriter):
         obj_name = self.codegen.format_generic_access(obj)
 
         i = 1
-        for m in menus:
+        for m in obj.menus:
             menu = m.root
             if menu.name:
                 name = menu.name
@@ -279,7 +278,6 @@ class CppMenubarGenerator(wcodegen.CppWidgetCodeWriter):
 
     def get_ids_code(self, obj):
         ids = []
-        menus = obj.properties['menubar']
 
         def collect_ids(items):
             for item in items:
@@ -291,7 +289,7 @@ class CppMenubarGenerator(wcodegen.CppWidgetCodeWriter):
                 if item.children:
                     collect_ids(item.children)
 
-        for m in menus:
+        for m in obj.menus:
             if m.root.children:
                 collect_ids(m.root.children)
 
@@ -312,7 +310,7 @@ class CppMenubarGenerator(wcodegen.CppWidgetCodeWriter):
                     ret.extend(do_get(c))
             return ret
 
-        for menu in obj.properties['menubar']:
+        for menu in obj.menus:
             out.extend(do_get(menu.root))
         return out
 
@@ -322,6 +320,6 @@ def initialize():
     klass = 'wxMenuBar'
     common.class_names['EditMenuBar'] = klass
     common.toplevels['EditMenuBar'] = 1
-    common.register('python', klass, PythonMenubarGenerator(klass), 'menus', MenuHandler)
-    common.register('C++',    klass, CppMenubarGenerator(klass),    'menus', MenuHandler)
-    common.register('XRC',    klass, xrc_code_generator,            'menus', MenuHandler)
+    common.register('python', klass, PythonMenubarGenerator(klass) )#, 'menus', MenuHandler)
+    common.register('C++',    klass, CppMenubarGenerator(klass),   )# 'menus', MenuHandler)
+    common.register('XRC',    klass, xrc_code_generator,           )# 'menus', MenuHandler)

@@ -106,6 +106,7 @@ class Application(np.PropertyOwner):
         _PROPERTY_HELP["output_path"] = "Output file or directory; double click label to show in Explorer"
     elif sys.platform=="darwin":
         _PROPERTY_HELP["output_path"] = "Output file or directory; double click label to show in Finder"
+    is_sizer = False
 
     def __init__(self):
         np.PropertyOwner.__init__(self)
@@ -165,11 +166,11 @@ class Application(np.PropertyOwner):
         self.node = None
 
     def set_for_version(self, value):
-        self.for_version = self.for_version_prop.get_str_value()
+        self.for_version = self.for_version_prop.get_string_value()
 
         if self.for_version.startswith('3.'):
             ## disable lisp for wx > 2.8
-            if self.codewriters_prop.get_str_value() == 'lisp':
+            if self.codewriters_prop.get_string_value() == 'lisp':
                 wx.MessageBox( _('Generating Lisp code for wxWidgets version %s is not supported.\n'
                                  'Set version to "2.8" instead.') % self.for_version,
                                _("Warning"), wx.OK | wx.CENTRE | wx.ICON_EXCLAMATION )
@@ -318,8 +319,9 @@ class Application(np.PropertyOwner):
         # do not reset language, but call set_language anyway to update the wildcard of the file dialog
         self._set_language()
 
-    def generate_code(self, *args, **kwds):
-        preview = kwds.get('preview', False)
+    #def generate_code(self, *args, **kwds):
+        #preview = kwds.get('preview', False)
+    def generate_code(self, preview=False, out_path=None, widget=None):
         if not self.output_path:
             return wx.MessageBox( _("You must specify an output file\nbefore generating any code"),
                                   _("Error"), wx.OK | wx.CENTRE | wx.ICON_EXCLAMATION, common.palette )
@@ -329,35 +331,21 @@ class Application(np.PropertyOwner):
             return wx.MessageBox( _("Please select a top window for the application"), _("Error"),
                                   wx.OK | wx.CENTRE | wx.ICON_EXCLAMATION, common.palette )
 
-        # temporary buffer for XML
-        tmp_xml = misc.UnicodeStringIO()
+        if preview:
+            writer = common.code_writers["python"].copy()
+        else:
+            writer = common.code_writers[self.language].copy()
 
-        from xml_parse import CodeWriter
-        try:
-            # generate the code from the xml buffer
-            language = self.language
-
-            # save and overwrite some code generation settings; to be restored below
-            if preview and language == 'python':
-                overwrite_save = self.overwrite
-                self.properties["overwrite"].set(True)
-
-            class_names = common.app_tree.write(tmp_xml)
-
+        if out_path is None:
             out_path = os.path.expanduser(self.output_path.strip())
             if not os.path.isabs(out_path) and self.filename:
                 out_path = os.path.join(os.path.dirname(self.filename), out_path)
                 out_path = os.path.normpath(out_path)
-            else:
-                out_path = None
 
-            CodeWriter( common.code_writers[language], tmp_xml.getvalue(), True,
-                        preview=preview, out_path=out_path, class_names=class_names )
-
-            # restore saved settings
-            if preview and language == 'python':
-                self.properties["overwrite"].set(overwrite_save)
-
+        try:
+            writer.new_project(self, out_path, preview)
+            writer.generate_code(self.node, widget)
+            writer.finalize()
         except errors.WxgBaseException as inst:
             wx.MessageBox(_("Error generating code:\n%s") % inst, _("Error"), wx.OK | wx.CENTRE | wx.ICON_ERROR)
         except EnvironmentError as inst:
@@ -378,7 +366,31 @@ class Application(np.PropertyOwner):
     def is_visible(self):
         return True
 
-    def preview(self, widget, out_name=None):
+    def _get_preview_filename(self):
+        import warnings
+        warnings.filterwarnings("ignore", "tempnam", RuntimeWarning, "application")
+        if compat.PYTHON2:
+            out_name = os.tempnam(None, 'wxg') + '.py'
+        else:
+            # create a temporary file at either the output path or the project path
+            error = None
+            if not self.filename:
+                error = "Save project first; a temporary file will be created in the same directory."
+            else:
+                dirname, basename = os.path.split(self.filename)
+                basename, extension = os.path.splitext(basename)
+                if not os.path.exists(dirname):
+                    error = "Directory '%s' not found"%dirname
+                elif not os.path.isdir(dirname):
+                    error = "'%s' is not a directory"%dirname
+            if error:
+                wx.MessageBox( error, _('Error'), wx.OK | wx.CENTRE | wx.ICON_EXCLAMATION )
+                return
+            while True:
+                out_name = os.path.join(dirname, "_%s_%d.py"%(basename,random.randrange(10**8, 10**9)))
+                if not os.path.exists(out_name): break
+        return out_name
+    def preview(self, widget):
         """Generate and instantiate preview widget.
         None will be returned in case of errors. The error details are written to the application log file."""
         # some checks
@@ -391,30 +403,7 @@ class Application(np.PropertyOwner):
                 #return
         # XXX check other things as well, e.g. different bitmap sizes for BitmapButton
 
-        if out_name is None:
-            import warnings
-            warnings.filterwarnings("ignore", "tempnam", RuntimeWarning, "application")
-            if compat.PYTHON2:
-                out_name = os.tempnam(None, 'wxg') + '.py'
-            else:
-                # create a temporary file at either the output path or the project path
-                error = None
-                if not self.filename:
-                    error = "Save project first; a temporary file will be created in the same directory."
-                else:
-                    dirname, basename = os.path.split(self.filename)
-                    basename, extension = os.path.splitext(basename)
-                    if not os.path.exists(dirname):
-                        error = "Directory '%s' not found"%dirname
-                    elif not os.path.isdir(dirname):
-                        error = "'%s' is not a directory"%dirname
-                if error:
-                    wx.MessageBox( error, _('Error'), wx.OK | wx.CENTRE | wx.ICON_EXCLAMATION )
-                    return
-                while True:
-                    out_name = os.path.join(dirname, "_%s_%d.py"%(basename,random.randrange(10**8, 10**9)))
-                    if not os.path.exists(out_name): break
-
+        preview_filename = self._get_preview_filename()
         widget_class_name = widget.klass
 
         # make a valid name for the class (this can be invalid for some sensible reasons...)
@@ -425,28 +414,17 @@ class Application(np.PropertyOwner):
         widget_class = '_%d_%s' % (random.randrange(10 ** 8, 10 ** 9), widget_class)
         widget.properties["class"].set(widget_class)
 
-        self.real_output_path = self.output_path
-        self.properties["output_path"].set(out_name)
-        real_multiple_files = self.multiple_files
-        real_language = self.language
-        real_use_gettext = self.use_gettext
-        self.properties["use_gettext"].set(False)
-        self.properties["language"].set('python')
-        self.properties["multiple_files"].set(False)
-        overwrite = self.overwrite
-        self.properties["overwrite"].set(False)
-
         if wx.Platform == "__WXMAC__":
             # workaround for Mac OS testing: sometimes the caches need to be invalidated
             import importlib
-            importlib.invalidate_caches()        
+            importlib.invalidate_caches()
 
         frame = None
         try:
-            self.generate_code(preview=True)
+            self.generate_code(True, preview_filename, widget)
             # import generated preview module dynamically
-            preview_path = os.path.dirname(self.output_path)
-            preview_module_name = os.path.basename(self.output_path)
+            preview_path = os.path.dirname(preview_filename)
+            preview_module_name = os.path.basename(preview_filename)
             preview_module_name = os.path.splitext(preview_module_name)[0]
             preview_module = plugins.import_module(preview_path, preview_module_name)
             if not preview_module:
@@ -511,15 +489,8 @@ class Application(np.PropertyOwner):
             widget.preview_widget = None
             widget.properties["preview"].set_label(_('Show Preview'))
             bugdialog.Show(_("Generate Preview"), inst)
-
-        # restore app state
+        # XXX restore app state
         widget.properties["class"].set(widget_class_name)
-        self.properties["output_path"].set(self.real_output_path)
-        del self.real_output_path
-        self.properties["multiple_files"].set(real_multiple_files)
-        self.properties["language"].set(real_language)
-        self.properties["use_gettext"].set(real_use_gettext)
-        self.properties["overwrite"].set(overwrite)
         return frame
     def update_view(self, selected=False):
         pass

@@ -11,7 +11,7 @@ import common
 import wcodegen
 from .tool import *
 
-from .codegen import ToolsHandler
+#from .codegen import ToolsHandler
 
 
 class PerlCodeGenerator(wcodegen.PerlWidgetCodeWriter):
@@ -23,29 +23,19 @@ class PerlCodeGenerator(wcodegen.PerlWidgetCodeWriter):
 
         obj_name = self.format_widget_access(obj)
 
-        bitmapsize = prop.get('bitmapsize')
-        if bitmapsize:
-            try:
-                w, h = [int(i) for i in bitmapsize.split(',')]
-                append( '%s->SetToolBitmapSize(wxSIZE(%s, %s));\n' % (obj_name, w, h) )
-            except:
-                pass
+        if obj.properties["bitmapsize"].is_active():
+            w, h = obj.properties["bitmapsize"].get_tuple()
+            append( '%s->SetToolBitmapSize(wxSIZE(%s, %s));\n' % (obj_name, w, h) )
 
-        margins = prop.get('margins')
-        if margins:
-            try:
-                w, h = [int(i) for i in margins.split(',')]
-                append( '%s->SetMargins(%s, %s);\n' % (obj_name, w, h) )
-            except:
-                pass
+        if obj.properties["margins"].is_active():
+            w, h = obj.properties["margins"].get_tuple()
+            append( '%s->SetMargins(%s, %s);\n' % (obj_name, w, h) )
 
-        packing = prop.get('packing')
-        if packing:
-            append( '%s->SetToolPacking(%s);\n' % (obj_name, packing) )
+        if obj.properties["packing"].is_active():
+            append( '%s->SetToolPacking(%s);\n' % (obj_name, obj.packing) )
 
-        separation = prop.get('separation')
-        if separation:
-            append( '%s->SetToolSeparation(%s);\n' % (obj_name, separation) )
+        if obj.properties["separation"].is_active():
+            append( '%s->SetToolSeparation(%s);\n' % (obj_name, obj.separation) )
         append( '%s->Realize();\n' % obj_name )
 
         return out
@@ -53,12 +43,11 @@ class PerlCodeGenerator(wcodegen.PerlWidgetCodeWriter):
     def get_init_code(self, obj):
         out = []
         append = out.append
-        tools = obj.properties['toolbar']
         ids = []
 
         obj_name = self.codegen.format_generic_access(obj)
 
-        for tool in tools:
+        for tool in obj.tools:
             if tool.id == '---':  # item is a separator
                 append( '%s->AddSeparator();\n' % obj_name )
             else:
@@ -87,7 +76,7 @@ class PerlCodeGenerator(wcodegen.PerlWidgetCodeWriter):
     def get_code(self, obj):
         "function that generates Perl code for the toolbar of a wxFrame"
         init = []
-        style = obj.properties.get('style')
+        style = obj.properties['style'].get_string_value()
         if style:
             style = 'wxTB_HORIZONTAL|' + style
             extra = ', wxDefaultPosition, wxDefaultSize, %s' % style
@@ -113,4 +102,4 @@ def initialize():
     klass = 'wxToolBar'
     common.class_names['EditToolBar'] = klass
     common.toplevels['EditToolBar'] = 1
-    common.register('perl', klass, PerlCodeGenerator(klass), 'tools', ToolsHandler)
+    common.register('perl', klass, PerlCodeGenerator(klass), 'tools')#, ToolsHandler)

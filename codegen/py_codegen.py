@@ -189,9 +189,9 @@ class PythonCodeWriter(BaseLangCodeWriter, wcodegen.PythonMixin):
 
     class_separator = '.'
 
-    global_property_writers = { 'font':            BaseLangCodeWriter.FontPropertyHandler,
-                                'events':          BaseLangCodeWriter.EventsPropertyHandler,
-                                'extraproperties': BaseLangCodeWriter.ExtraPropertiesPropertyHandler }
+    #global_property_writers = { 'font':            BaseLangCodeWriter.FontPropertyHandler,
+                                #'events':          BaseLangCodeWriter.EventsPropertyHandler,
+                                #'extraproperties': BaseLangCodeWriter.ExtraPropertiesPropertyHandler }
 
     indent_level_func_body = 2
 
@@ -266,10 +266,10 @@ if __name__ == "__main__":
     def __init__(self):
         BaseLangCodeWriter.__init__(self)
 
-    def init_lang(self, app_attrs):
+    def init_lang(self, app):
         self.header_lines.append('import wx\n')
 
-    def add_app(self, app_attrs, top_win_class):
+    def add_app(self, app, top_win_class):
         # add language specific mappings
         self.lang_mapping = { 'cn_wxApp': self.cn('wxApp'), 'cn_wxIDANY': self.cn('wxID_ANY'), 'import_gettext': ''}
 
@@ -280,7 +280,7 @@ if __name__ == "__main__":
             else:
                 self.dependencies['import gettext\n'] = 1
 
-        BaseLangCodeWriter.add_app(self, app_attrs, top_win_class)
+        BaseLangCodeWriter.add_app(self, app, top_win_class)
 
     def generate_code_ctor(self, code_obj, is_new, tab):
         code_lines = []
@@ -292,8 +292,8 @@ if __name__ == "__main__":
         fmt_klass = self.cn_class(code_obj.klass)
 
         # custom base classes support
-        custom_base = getattr(code_obj, 'custom_base', code_obj.properties.get('custom_base', None))
-        if code_obj.preview or (custom_base and not custom_base.strip()):
+        custom_base = getattr(code_obj, 'custom_base', getattr(code_obj, 'custom_base', None) )
+        if self.preview or (custom_base and not custom_base.strip()):
             custom_base = None
 
         # generate constructor code
@@ -301,7 +301,7 @@ if __name__ == "__main__":
             base = mycn(code_obj.base)
             if custom_base:
                 base = ", ".join([b.strip() for b in custom_base.split(',')])
-            if code_obj.preview and code_obj.klass == base:
+            if self.preview and code_obj.klass == base:
                 klass = code_obj.klass + ('_%d' % random.randrange(10 ** 8, 10 ** 9))
             else:
                 klass = code_obj.klass
@@ -317,8 +317,7 @@ if __name__ == "__main__":
         write(self.tmpl_block_begin % {'class_separator': self.class_separator, 'comment_sign': self.comment_sign,
                                        'function':self.name_ctor, 'klass':fmt_klass, 'tab':tab} )
 
-        prop = code_obj.properties
-        style = prop.get("style", None)
+        style = code_obj.properties["style"].get_string_value()
         if style:
             m_style = mycn_f(style)
             if m_style:
@@ -408,12 +407,13 @@ def %(handler)s(self, event):  # wxGlade: %(klass)s.<event_handler>
         return BaseLangCodeWriter.generate_code_event_handler( self, code_obj, is_new, tab, prev_src, event_handlers )
 
     def generate_code_id(self, obj, id=None):
-        if obj and obj.preview:
+        if obj and self.preview:
             return '', '-1'  # never generate ids for preview code
         if id is None:
-            id = obj.properties.get('id')
+            id = obj.window_id
         if not id:
             return '', self.cn('wxID_ANY')
+        id = str(id)
         tokens = id.split('=', 1)
         if len(tokens) == 2:
             name, val = tokens
@@ -442,7 +442,7 @@ def %(handler)s(self, event):  # wxGlade: %(klass)s.<event_handler>
 
     def generate_code_size(self, obj):
         objname = self.format_generic_access(obj)
-        size = obj.properties.get('size', '').strip()
+        size = obj.properties["size"].get_string_value()
         use_dialog_units = (size[-1] == 'd')
         if not obj.parent:
             method = 'SetSize'

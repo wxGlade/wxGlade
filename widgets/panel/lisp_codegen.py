@@ -14,10 +14,7 @@ class LispPanelGenerator(wcodegen.LispWidgetCodeWriter):
 
     def get_code(self, panel):
         prop = panel.properties
-        try:
-            scrollable = int(prop['scrollable'])
-        except:
-            scrollable = False
+        scrollable = panel.scrollable
 
         id_name, id = self.codegen.generate_code_id(panel)
         parent = self.format_widget_access(panel.parent)
@@ -33,7 +30,7 @@ class LispPanelGenerator(wcodegen.LispWidgetCodeWriter):
         init = []
         if id_name: init.append(id_name)
 
-        style = prop.get("style", 'wxTAB_TRAVERSAL')
+        style = panel.properties["style"].get_string_value()
         if not (scrollable or style != 'wxTAB_TRAVERSAL'):
             style = 'wxTAB_TRAVERSAL'
         else:
@@ -43,30 +40,21 @@ class LispPanelGenerator(wcodegen.LispWidgetCodeWriter):
 
         props_buf = self.codegen.generate_common_properties(panel)
         if scrollable:
-            sr = prop.get('scroll_rate', '0 0')
-            sr = sr.replace(',', ' ')
+            sr = panel.scroll_rate.replace(',', ' ')
             props_buf.append( '(wxScrolledWindow:wxScrolledWindow_SetScrollRate (slot-%s obj) %s)\n'% (panel.name, sr) )
         return init, props_buf, []
 
     def get_properties_code(self, obj):
-        try:
-            scrollable = int(obj.properties['scrollable'])
-        except:
-            scrollable = False
-
         props_buf = self.codegen.generate_common_properties(obj)
-        if scrollable:
-            sr = obj.properties.get('scroll_rate', '0 0')
+        if obj.scrollable:
+            sr = obj.scroll_rate.replace(',', ' ')
             props_buf.append('(wxScrolledWindow:wxScrolledWindow_SetScrollRate (slot-%s obj))\n' % sr)
         return props_buf
 
     def get_layout_code(self, obj):
         ret = ['(wxPanel_layout (slot-%s self))\n' % obj.name]
-        try:
-            if int(obj.properties['centered']):
-                ret.append('(wxPanel_Centre (slot-top-window obj) wxBOTH)\n')
-        except (KeyError, ValueError):
-            pass
+        if obj.centered:
+            ret.append('(wxPanel_Centre (slot-top-window obj) wxBOTH)\n')
         return ret
 
 

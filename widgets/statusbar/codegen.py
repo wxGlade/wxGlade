@@ -18,7 +18,9 @@ class PythonStatusBarGenerator(wcodegen.PythonWidgetCodeWriter):
     def _prepare_tmpl_content(self, obj):
         wcodegen.PythonWidgetCodeWriter._prepare_tmpl_content(self, obj)
 
-        labels, widths = obj.properties['statusbar']
+        fields = obj.fields # properties['statusbar']
+        labels = [f[0] for f in fields]
+        widths = [int(f[1]) for f in fields]
         self.tmpl_dict['labels'] = ', '.join([self.codegen.quote_str(lb) for lb in labels])
         self.tmpl_dict['labels_len'] = len(labels)
         self.tmpl_dict['widths'] = repr(widths)
@@ -65,7 +67,10 @@ def xrc_statusbar_code_generator(obj):
     class StatusbarXrcObject(xrcgen.DefaultXrcObject):
         def write(self, outfile, tabs):
             if 'statusbar' in self.properties:
-                fields, widths = self.properties['statusbar']
+                fields = obj.fields # properties['statusbar']
+                labels = [f[0] for f in fields]
+                widths = [int(f[1]) for f in fields]
+
                 self.properties['fields'] = str(len(fields))
                 self.properties['widths'] = ', '.join([str(w) for w in widths])
                 del self.properties['statusbar']
@@ -82,7 +87,10 @@ class CppStatusBarGenerator(wcodegen.CppWidgetCodeWriter):
     def _prepare_tmpl_content(self, obj):
         wcodegen.CppWidgetCodeWriter._prepare_tmpl_content(self, obj)
 
-        labels, widths = obj.properties['statusbar']
+        fields = obj.fields # properties['statusbar']
+        labels = [f[0] for f in fields]
+        widths = [int(f[1]) for f in fields]
+
         self.tmpl_dict['labels_len'] = len(labels)
         self.tmpl_dict['widths'] = ', '.join(map(str, widths))
         self.tmpl_dict['widths_len'] = len(widths)
@@ -117,9 +125,9 @@ def initialize():
     if pygen:
         pygen.add_widget_handler('wxStatusBar', PythonStatusBarGenerator(klass))
 
-        aph = pygen.add_property_handler
-        aph('statusbar', pygen.DummyPropertyHandler)
-        aph('fields', StatusFieldsHandler)
+        #aph = pygen.add_property_handler
+        #aph('statusbar', pygen.DummyPropertyHandler)
+        #aph('fields', StatusFieldsHandler)
 
     xrcgen = common.code_writers.get('XRC')
     if xrcgen:
@@ -130,6 +138,6 @@ def initialize():
     if cppgen:
         cppgen.add_widget_handler('wxStatusBar', CppStatusBarGenerator(klass))
 
-        aph = cppgen.add_property_handler
-        aph('fields', StatusFieldsHandler)
-        aph('statusbar', cppgen.DummyPropertyHandler)
+        #aph = cppgen.add_property_handler
+        #aph('fields', StatusFieldsHandler)
+        #aph('statusbar', cppgen.DummyPropertyHandler)

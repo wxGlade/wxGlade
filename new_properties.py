@@ -155,7 +155,7 @@ class Property(object):
 
     ####################################################################################################################
     # XML file
-    def get_str_value(self):
+    def get_string_value(self):
         if self.value is True:  return '1'
         if self.value is False: return '0'
         return str(self.value)
@@ -183,7 +183,7 @@ class Property(object):
             value = string_getter()
             if not value: return
         else:
-            value = self.get_str_value()
+            value = self.get_string_value()
         # write the value
         stmt = common.format_xml_tag(self.name, value, tabs)
         outfile.write(stmt)
@@ -453,10 +453,10 @@ class RadioProperty(Property):
             value = self.values[self.aliases.index(value)]
         return value
 
-    def get_str_value(self):
+    def get_string_value(self):
         if self.aliases and not self.value in self.aliases:
             return self.aliases[self.values.index(self.value)]
-        return Property.get_str_value(self)
+        return Property.get_string_value(self)
 
     def create_editor(self, panel, sizer):
         label = self._find_label()
@@ -913,7 +913,7 @@ class TextProperty(Property):
             value = value.strip()
         return value
 
-    def get_str_value(self):
+    def get_string_value(self):
         # for XML file writing: escape newline, \\n, tab and \\t
         return self.get_value().replace("\\n", "\\\\n").replace("\n", "\\n").replace("\\t","\\\\t").replace("\t", "\\t")
 
@@ -1478,6 +1478,14 @@ class FontProperty(DialogProperty):
     validation_re = re.compile(" *\[(\d+), *'(default|decorative|roman|swiss|script|modern)', *"
                                "'(normal|slant|italic)', *'(normal|light|bold)', *(0|1), *'([a-zA-Z _]*)'] *")
     normalization = "[%s, '%s', '%s', '%s', %s, '%s']"
+
+    # for writing code
+    font_families = {'default': 'wxDEFAULT', 'decorative': 'wxDECORATIVE',
+                     'roman': 'wxROMAN', 'swiss': 'wxSWISS', 'script': 'wxSCRIPT', 'modern': 'wxMODERN',
+                     'teletype': 'wxTELETYPE'}
+    font_styles = {'normal': 'wxNORMAL', 'slant': 'wxSLANT', 'italic': 'wxITALIC'}
+    font_weights = {'normal': 'wxNORMAL', 'light': 'wxLIGHT', 'bold': 'wxBOLD'}
+
     def write(self, outfile, tabs=0):
         if not self.is_active(): return
         try:
@@ -1991,5 +1999,6 @@ class PropertyOwner(object):
             if prop.attributename in without: continue  # for e.g. option/proportion
             if prop is not None: ret.append(prop)
         return ret
-
-
+    def check_prop(self, name):
+        if not name in self.properties: return False
+        return self.properties[name].is_active()

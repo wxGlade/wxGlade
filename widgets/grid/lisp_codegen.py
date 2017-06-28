@@ -30,40 +30,27 @@ class LispCodeGenerator(wcodegen.LispWidgetCodeWriter):
 
         prop = obj.properties
 
-        try: create_grid = int(prop['create_grid'])
-        except (KeyError, ValueError): create_grid = False
-        if not create_grid: return []
+        if not obj.create_grid: return []
 
-        columns = prop.get('columns', [['A', '-1']])
-        out.append('(wxGrid_CreateGrid (slot-%s obj) %s %s 0)\n' % (name, prop.get('rows_number', '1'), len(columns)))
-        if prop.get('row_label_size'):
-            out.append('(wxGrid_SetRowLabelSize (slot-%s obj) %s)\n' % (name, prop['row_label_size']))
-        if prop.get('col_label_size'):
-            out.append('(wxGrid_SetColLabelSize (slot-%s obj) %s)\n' % (name, prop['col_label_size']))
-        enable_editing = prop.get('enable_editing', '1')
-        if enable_editing != '1':
-            out.append('(wxGrid_EnableEditing (slot-%s obj) 0)\n' % name)
-        enable_grid_lines = prop.get('enable_grid_lines', '1')
-        if enable_grid_lines != '1':
-            out.append('(wxGrid_EnableGridLines (slot-%s obj) 0)\n' % name)
-        enable_col_resize = prop.get('enable_col_resize', '1')
-        if enable_col_resize != '1':
-            out.append('(wxGrid_EnableDragColSize (slot-%s obj) 0)\n' % name)
-        enable_row_resize = prop.get('enable_row_resize', '1')
-        if enable_row_resize != '1':
-            out.append('(wxGrid_EnableDragRowSize (slot-%s obj) 0)\n' % name)
-        enable_grid_resize = prop.get('enable_grid_resize', '1')
-        if enable_grid_resize != '1':
-            out.append('(wxGrid_EnableDragGridSize (slot-%s obj) 0)\n' % name)
-        if prop.get('lines_color', False):
-            out.append('(wxGrid_SetGridLineColour (slot-%s obj) (wxColour:wxColour_CreateFromStock %s))\n' %
-                       (name, self.codegen._string_to_colour(prop['lines_color'])))
-        if prop.get('label_bg_color', False):
-            out.append('(wxGrid_SetLabelBackgroundColour (slot-%s obj) (wxColour:wxColour_CreateFromStock %s))\n'
-                       %(name, self.codegen._string_to_colour(prop['label_bg_color'])))
+        columns = obj.columns # prop.get('columns', [['A', '-1']])
+        out.append('(wxGrid_CreateGrid (slot-%s obj) %s %s 0)\n' % (name, obj.rows_number, len(columns)))
+        
+        if obj.check_prop('row_label_size'):  out.append('(wxGrid_SetRowLabelSize (slot-%s obj) %s)\n' % (name, obj.row_label_size))
+        if obj.check_prop('col_label_size'):  out.append('(wxGrid_SetColLabelSize (slot-%s obj) %s)\n' % (name, obj.col_label_size))
 
-        sel_mode = prop.get('selection_mode')
+        if not obj.enable_editing:      out.append('(wxGrid_EnableEditing (slot-%s obj) 0)\n' % name)
+        if not obj.enable_grid_lines:   out.append('(wxGrid_EnableGridLines (slot-%s obj) 0)\n' % name)
+        if not obj.enable_col_resize:   out.append('(wxGrid_EnableDragColSize (slot-%s obj) 0)\n' % name)
+        if not obj.enable_row_resize:   out.append('(wxGrid_EnableDragRowSize (slot-%s obj) 0)\n' % name)
+        if not obj.enable_grid_resize : out.append('(wxGrid_EnableDragGridSize (slot-%s obj) 0)\n' % name)
+        if obj.check_prop('lines_color'):
+            fmt = '(wxGrid_SetGridLineColour (slot-%s obj) (wxColour:wxColour_CreateFromStock %s))\n'
+            out.append( fmt % (name, self.codegen._string_to_colour(obj.lines_color)) )
+        if obj.check_prop('label_bg_color'):
+            ftm = '(wxGrid_SetLabelBackgroundColour (slot-%s obj) (wxColour:wxColour_CreateFromStock %s))\n'
+            out.append( fmt % (name, self.codegen._string_to_colour(obj.label_bg_color)) )
 
+        sel_mode = obj.properties['selection_mode'].get_string_value()
         if sel_mode and sel_mode != 'wxGrid.wxGridSelectCells':
             out.append('(wxGrid_SetSelectionMode (slot-%s obj) %s)\n' % (name, sel_mode.replace('wxGrid.','')))
 

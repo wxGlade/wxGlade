@@ -33,8 +33,7 @@ def xrc_code_generator(obj):
                     outfile.write(line)
                 return
 
-            xrcgen.DefaultXrcObject.write_property(
-                self, name, val, outfile, tabs)
+            xrcgen.DefaultXrcObject.write_property(self, name, val, outfile, tabs)
     # end of class BitmapButtonXrcObject
 
     return BitmapButtonXrcObject(obj)

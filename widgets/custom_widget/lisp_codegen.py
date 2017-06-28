@@ -16,7 +16,6 @@ class LispCustomWidgetGenerator(wcodegen.LispWidgetCodeWriter):
 
     def get_code(self, widget):
         init = []
-        prop = widget.properties
         id_name, id = self.codegen.generate_code_id(widget)
 
         if not widget.parent.is_toplevel:
@@ -26,7 +25,7 @@ class LispCustomWidgetGenerator(wcodegen.LispWidgetCodeWriter):
 
         if id_name:
             init.append(id_name)
-        arguments = format_ctor_arguments( prop.get('arguments', []), parent, id, prop.get('size', "-1, -1") )
+        arguments = format_ctor_arguments( widget.arguments, parent, id, widget.size )
         init.append( '(setf %s (%s_Create %s))\n' % (widget.name, widget.klass, " ".join(arguments)) )
         props_buf = self.codegen.generate_common_properties(widget)
 

@@ -21,6 +21,11 @@ class Node(object):
         self.widget = widget      # e.g. EditPanel or EditBoxSizer
         self.children = children  # list of Node or SlotNode instances
         self.parent = None        # parent node; will be set in Tree.add/insert
+    @property
+    def is_toplevel(self):
+        if self.parent.parent is None:
+            return True
+        return False
 
     @classmethod
     def remove_rec(cls, node):
@@ -254,14 +259,14 @@ class Tree(object):
         attrs = ["name","class","language","top_window","encoding","use_gettext", "overwrite",
                  "for_version","is_template","indent_amount"]
 
-        attrs = dict( (prop,self.app.properties[prop].get_str_value()) for prop in attrs )
-        attrs["option"] = self.app.properties["multiple_files"].get_str_value()
-        attrs["indent_symbol"] = self.app.properties["indent_mode"].get_str_value()
-        attrs["path"] = self.app.properties["output_path"].get_str_value()
+        attrs = dict( (prop,self.app.properties[prop].get_string_value()) for prop in attrs )
+        attrs["option"] = self.app.properties["multiple_files"].get_string_value()
+        attrs["indent_symbol"] = self.app.properties["indent_mode"].get_string_value()
+        attrs["path"] = self.app.properties["output_path"].get_string_value()
         attrs['use_new_namespace'] = 1
         # add a . to the file extensions
-        attrs["source_extension"] = '.' + self.app.properties["source_extension"].get_str_value()
-        attrs["header_extension"] = '.' + self.app.properties["header_extension"].get_str_value()
+        attrs["source_extension"] = '.' + self.app.properties["source_extension"].get_string_value()
+        attrs["header_extension"] = '.' + self.app.properties["header_extension"].get_string_value()
 
         inner_xml = compat.StringIO()
 
