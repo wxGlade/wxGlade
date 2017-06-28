@@ -2,6 +2,7 @@
 wxNotebook widget configuration
 
 @copyright: 2014-2016 Carsten Grohmann
+@copyright: 2017 Dietmar Schwertberger
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
@@ -10,16 +11,19 @@ config = {
     'style_defs': {
         'wxNB_TOP': {
             'desc': _('Place tabs on the top side.'),
+            'exclude': 'wxNB_LEFT|wxNB_RIGHT|wxNB_BOTTOM',
         },
         'wxNB_LEFT': {
             'desc': _('Place tabs on the left side.'),
+            'exclude': 'wxNB_TOP|wxNB_RIGHT|wxNB_BOTTOM',
         },
         'wxNB_RIGHT': {
             'desc': _('Place tabs on the right side.'),
+            'exclude': 'wxNB_TOP|wxNB_LEFT|wxNB_BOTTOM',
         },
         'wxNB_BOTTOM': {
-            'desc': _('Place tabs under instead of above the notebook '
-                      'pages.'),
+            'desc': _('Place tabs under instead of above the notebook pages.'),
+            'exclude': 'wxNB_TOP|wxNB_LEFT|wxNB_RIGHT',
         },
         'wxNB_FIXEDWIDTH': {
             'desc': _('(Windows only) All tabs will have same width.'),
