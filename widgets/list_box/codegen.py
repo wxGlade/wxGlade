@@ -3,12 +3,12 @@ Code generator functions for wxListBox objects
 
 @copyright: 2002-2007 Alberto Griggio
 @copyright: 2014-2016 Carsten Grohmann
+@copyright: 2017 Dietmar Schwertberger
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
 import common
 import wcodegen
-from ChoicesCodeHandler import *
 
 
 class PythonListBoxGenerator(wcodegen.PythonWidgetCodeWriter):
@@ -20,7 +20,6 @@ class CppListBoxGenerator(wcodegen.CppWidgetCodeWriter):
            'wxDefaultPosition, wxDefaultSize, %(choices_len)s, %(name)s_choices, %(style)s);\n'
     prefix_style = False
     set_default_style = True
-
 
 
 def xrc_code_generator(obj):
@@ -43,6 +42,6 @@ def xrc_code_generator(obj):
 def initialize():
     klass = 'wxListBox'
     common.class_names['EditListBox'] = klass
-    common.register('python', klass, PythonListBoxGenerator(klass), 'choices', ChoicesCodeHandler)
-    common.register('C++',    klass, CppListBoxGenerator(klass),    'choices', ChoicesCodeHandler)
-    common.register('XRC',    klass, xrc_code_generator,            'choices', ChoicesCodeHandler)
+    common.register('python', klass, PythonListBoxGenerator(klass) )
+    common.register('C++',    klass, CppListBoxGenerator(klass) )
+    common.register('XRC',    klass, xrc_code_generator )

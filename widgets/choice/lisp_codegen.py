@@ -3,13 +3,13 @@ Lisp generator functions for wxChoice objects
 
 @copyright: 2002-2004 D. H. aka crazyinsomniac on sourceforge
 @copyright: 2014-2016 Carsten Grohmann
+@copyright: 2017 Dietmar Schwertberger
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
 
 import common
 import wcodegen
-from ChoicesCodeHandler import *
 
 
 class LispChoiceGenerator(wcodegen.LispWidgetCodeWriter):
@@ -20,4 +20,4 @@ class LispChoiceGenerator(wcodegen.LispWidgetCodeWriter):
 def initialize():
     klass = 'wxChoice'
     common.class_names['EditChoice'] = klass
-    common.register('lisp', klass, LispChoiceGenerator(klass), 'choices', ChoicesCodeHandler)
+    common.register('lisp', klass, LispChoiceGenerator(klass) )

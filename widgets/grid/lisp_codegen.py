@@ -3,12 +3,13 @@ Lisp generator functions for wxGrid objects
 
 @copyright: 2002-2004 D. H. aka crazyinsomniac on sourceforge
 @copyright: 2014-2016 Carsten Grohmann
+@copyright: 2017 Dietmar Schwertberger
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
 import common
 import wcodegen
-from .codegen import ColsCodeHandler, _check_label
+from .codegen import _check_label
 
 
 class LispCodeGenerator(wcodegen.LispWidgetCodeWriter):
@@ -71,4 +72,4 @@ class LispCodeGenerator(wcodegen.LispWidgetCodeWriter):
 def initialize():
     klass = 'wxGrid'
     common.class_names['EditGrid'] = klass
-    common.register('lisp', klass, LispCodeGenerator(klass), 'columns', ColsCodeHandler)
+    common.register('lisp', klass, LispCodeGenerator(klass) )

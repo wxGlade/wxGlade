@@ -3,19 +3,18 @@ Code generator functions for wxComboBox objects
 
 @copyright: 2002-2007 Alberto Griggio
 @copyright: 2014-2016 Carsten Grohmann
+@copyright: 2017 Dietmar Schwertberger
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
 
 import common
 import wcodegen
-from ChoicesCodeHandler import *
 
 
 class PythonComboBoxGenerator(wcodegen.PythonWidgetCodeWriter):
     tmpl = '%(name)s = %(klass)s(%(parent)s, %(id)s, choices=[%(choices)s]%(style)s)\n'
     set_default_style = True
-
 
 
 class CppComboBoxGenerator(wcodegen.CppWidgetCodeWriter):
@@ -41,6 +40,6 @@ def xrc_code_generator(obj):
 def initialize():
     klass = 'wxComboBox'
     common.class_names['EditComboBox'] = klass
-    common.register('python', klass, PythonComboBoxGenerator(klass), 'choices', ChoicesCodeHandler)
-    common.register('C++',    klass, CppComboBoxGenerator(klass),    'choices', ChoicesCodeHandler)
-    common.register('XRC',    klass, xrc_code_generator,             'choices', ChoicesCodeHandler)
+    common.register('python', klass, PythonComboBoxGenerator(klass) )
+    common.register('C++',    klass, CppComboBoxGenerator(klass) )
+    common.register('XRC',    klass, xrc_code_generator )
