@@ -18,16 +18,38 @@ class BaseCPPSizerBuilder(BaseSizerBuilder):
     tmpl_Fit = '%(sizer_name)s->Fit(%(parent_widget)s);\n'
     tmpl_SetSizeHints = '%(sizer_name)s->SetSizeHints(%(parent_widget)s);\n'
 
+    #def _get_wparent(self, obj):
+        #if not obj.parent.is_toplevel:
+            #parent = '%s' % obj.parent.name
+        #else:
+            #parent = 'this'
+        #return parent
+
     def _get_wparent(self, obj):
-        if not obj.parent.is_toplevel:
-            parent = '%s' % obj.parent.name
+        while obj.is_sizer:
+            obj = obj.node.parent.widget
+        if not obj.is_toplevel:
+            parent = '%s' % obj.name
         else:
             parent = 'this'
         return parent
 
     def _get_parent_ref(self, obj):
-        if not obj.parent.is_toplevel:
+        #while obj.is_sizer:
+        if obj.is_sizer:
+            obj = obj.node.parent.widget
+        #if not obj.parent.is_toplevel:
+        if not obj.is_toplevel:
             parent_ref = '%s->' % obj.parent.name
+        else:
+            parent_ref = ''
+        return parent_ref
+
+    def _get_parent_ref(self, obj):
+        #if not obj.parent.is_toplevel:
+        if not obj.node.parent.is_toplevel:
+            #parent_ref = '%s->' % obj.parent.name
+            parent_ref = '%s->' % obj.node.parent.widget.name
         else:
             parent_ref = ''
         return parent_ref
@@ -46,8 +68,7 @@ class BaseCPPSizerBuilder(BaseSizerBuilder):
         if self.codegen.store_as_attr(obj):
             self.tmpl_dict['assignment'] = '%s' % self.tmpl_dict['sizer_name']
         else:
-            self.tmpl_dict['assignment'] = '%s* %s' % (self.tmpl_dict['klass'],
-                                                            self.tmpl_dict['sizer_name'])
+            self.tmpl_dict['assignment'] = '%s* %s' % (self.tmpl_dict['klass'], self.tmpl_dict['sizer_name'])
         return
 
 

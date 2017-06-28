@@ -69,6 +69,7 @@ class EditStatusBar(EditBase, EditStylesMixin):
         # for the statusbar fields
         fields = [[self.name, "-1"]]  # list of 2-lists label, size
         self.fields = FieldsProperty(fields)
+        self.window_id = None  # just a dummy for code generation
 
         self.node = Node(self)
         common.app_tree.add(self.node, parent.node)

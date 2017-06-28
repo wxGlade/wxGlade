@@ -9,7 +9,7 @@ Perl generator functions for wxMenuBar objects
 import common
 import wcodegen
 from MenuTree import *
-from .codegen import MenuHandler
+#from .codegen import MenuHandler
 
 
 class PerlMenubarGenerator(wcodegen.PerlWidgetCodeWriter):
@@ -19,7 +19,7 @@ class PerlMenubarGenerator(wcodegen.PerlWidgetCodeWriter):
     def get_init_code(self, obj):
         out = []
         append = out.append
-        menus = obj.properties['menubar']
+        menus = obj.menus
         ids = []
         # We need to keep track of tmpnames used.
         tmpsused = {}
@@ -125,16 +125,14 @@ class PerlMenubarGenerator(wcodegen.PerlWidgetCodeWriter):
                     ret.extend(do_get(c))
             return ret
 
-        for menu in obj.properties['menubar']:
+        for menu in obj.menus:
             out.extend(do_get(menu.root))
         return out
 
-# end of class PerlMenubarGenerator
 
 
 def initialize():
     klass = 'wxMenuBar'
     common.class_names['EditMenuBar'] = klass
     common.toplevels['EditMenuBar'] = 1
-    common.register('perl', klass, PerlMenubarGenerator(klass),
-                    'menus', MenuHandler)
+    common.register('perl', klass, PerlMenubarGenerator(klass), ) #'menus', MenuHandler)

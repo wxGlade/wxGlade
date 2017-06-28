@@ -455,7 +455,9 @@ class EditToolBar(EditBase, PreviewMixin, EditStylesMixin, BitmapMixin):
         self.margins    = np.ScrollRatePropertyD('0, 0',   default_value='0, 0')
         self.packing    = np.SpinPropertyD(1, val_range=(0,100), default_value=1, immediate=True)
         self.separation = np.SpinPropertyD(5, val_range=(0,100), default_value=5, immediate=True)
-        self.tools = ToolsProperty()  # the Edit button
+        self.tools = ToolsProperty()  # incl. the Edit button
+
+        self.window_id = None  # just a dummy for code generation
 
         self.widget = self._tb = None  # a panel and the actual ToolBar
 

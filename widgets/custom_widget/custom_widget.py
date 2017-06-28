@@ -23,6 +23,11 @@ class ArgumentsProperty(np.GridProperty):
                 inner_xml += common.format_xml_tag(u'argument', argument[0], tabs+1)
             stmt = common.format_xml_tag( u'arguments', inner_xml, tabs, is_xml=True)
             outfile.write(stmt)
+    def get(self):
+        "get the value, or the default value if deactivated; usually not used directly, as owner.property will call it"
+        if not self.deactivated:
+            return [row[0] for row in self.value]
+        return self.default_value
 
 
 
@@ -63,7 +68,7 @@ class CustomWidget(ManagedBase):
         arguments = [['$parent'], ['$id']]  # ,['$width'],['$height']]
         cols      = [('Arguments', np.GridProperty.STRING)]
         self.arguments   = ArgumentsProperty( arguments, cols )
-        self.custom_ctor = np.TextPropertyD("", name="custom_constructor", strip=True)
+        self.custom_ctor = np.TextPropertyD("", name="custom_constructor", strip=True, default_value="")
 
     def create_widget(self):
         self.widget = wx.Window( self.parent.widget, self.id, style=wx.BORDER_SUNKEN | wx.FULL_REPAINT_ON_RESIZE)

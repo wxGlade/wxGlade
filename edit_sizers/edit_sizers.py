@@ -46,7 +46,7 @@ class BaseSizerBuilder(object):
         self.tmpl_dict = {}                          # properties to replace in L{tmpl}
         self.codegen = common.code_writers[self.language] #language specific code generator (codegen.BaseLangCodeWriter)
 
-    def _get_wparent(self, obj):
+    def _get_wparent(self, topl, obj):
         "Return the parent widget or a reference to it as string"
         raise NotImplementedError
 
@@ -55,6 +55,7 @@ class BaseSizerBuilder(object):
         self.tmpl_dict.clear()
         self.tmpl_dict['klass'] = self.codegen.cn(self.klass)
         self.tmpl_dict['wxIDANY'] = self.codegen.cn('wxID_ANY')
+        #self.tmpl_dict['parent_widget'] = self._get_wparent(obj)
         self.tmpl_dict['parent_widget'] = self._get_wparent(obj)
         self.tmpl_dict['sizer_name'] = self.codegen._format_classattr(obj)
 
@@ -70,11 +71,16 @@ class BaseSizerBuilder(object):
         init.append(self.tmpl % self.tmpl_dict)
 
         # generate layout lines
-        if obj.is_toplevel:
+        #if obj.is_toplevel:
+        #if obj.window.is_toplevel:
+        if not obj.node.parent.widget.is_sizer:
             layout.append(self.tmpl_SetSizer % self.tmpl_dict)
-            if not 'size' in obj.parent.properties and obj.parent.is_toplevel:
+            #if not 'size' in obj.parent.properties and obj.parent.is_toplevel:
+            #if not 'size' in obj.window.properties:
+            #if not obj.window.properties["size"].is_active():
+            if not obj.node.parent.widget.check_prop("size") and obj.node.parent.widget.is_toplevel:
                 layout.append(self.tmpl_Fit % self.tmpl_dict)
-            if obj.parent.properties.get('sizehints', False):
+            if "sizehints" in obj.window.properties and obj.window.sizehints:
                 layout.append(self.tmpl_SetSizeHints % self.tmpl_dict)
 
         return init, [], layout  # init, props, layout
@@ -90,21 +96,23 @@ class BaseSizerBuilder(object):
 
     def get_code_wxStaticBoxSizer(self, obj):
         "Set sizer specific properties and generate the code"
-        self.tmpl_dict['orient'] = self.codegen.cn( obj.properties.get('orient', 'wxHORIZONTAL') )
-        self.tmpl_dict['label'] = self.codegen.quote_str( obj.properties.get('label', '') )
+        #self.tmpl_dict['orient'] = self.codegen.cn( obj.properties.get('orient', 'wxHORIZONTAL') )
+        self.tmpl_dict['orient'] = self.codegen.cn( obj.properties["orient"].get_string_value() )
+        self.tmpl_dict['label'] = self.codegen.quote_str( obj.label )
         return self._get_code(obj)
 
     def get_code_wxBoxSizer(self, obj):
         "Set sizer specific properties and generate the code"
-        self.tmpl_dict['orient'] = self.codegen.cn( obj.properties.get('orient', 'wxHORIZONTAL') )
+        #self.tmpl_dict['orient'] = self.codegen.cn( obj.properties.get('orient', 'wxHORIZONTAL') )
+        self.tmpl_dict['orient'] = self.codegen.cn( obj.properties["orient"].get_string_value() )
         return self._get_code(obj)
 
     def get_code_wxGridSizer(self, obj):
         "Set sizer specific properties and generate the code"
-        self.tmpl_dict['rows'] = obj.properties.get('rows', '0')
-        self.tmpl_dict['cols'] = obj.properties.get('cols', '0')
-        self.tmpl_dict['vgap'] = obj.properties.get('vgap', '0')
-        self.tmpl_dict['hgap'] = obj.properties.get('hgap', '0')
+        self.tmpl_dict['rows'] = obj.rows
+        self.tmpl_dict['cols'] = obj.cols
+        self.tmpl_dict['vgap'] = obj.vgap
+        self.tmpl_dict['hgap'] = obj.hgap
         return self._get_code(obj)
 
     def get_code_wxFlexGridSizer(self, obj):
@@ -118,14 +126,13 @@ class BaseSizerBuilder(object):
         layout = result[-1]
         del result[-1]
 
-        props = obj.properties
-        if 'growable_rows' in props:
-            for row in props['growable_rows'].split(','):
-                self.tmpl_dict['row'] = row.strip()
+        if 'growable_rows' in obj.properties and obj.growable_rows:
+            for row in obj.properties["growable_rows"].get_string_value().split(","): # get_string_value is 0 based
+                self.tmpl_dict['row'] = row
                 layout.append(self.tmpl_AddGrowableRow % self.tmpl_dict)
-        if 'growable_cols' in props:
-            for col in props['growable_cols'].split(','):
-                self.tmpl_dict['col'] = col.strip()
+        if 'growable_cols' in obj.properties and obj.growable_cols:
+            for col in obj.properties["growable_cols"].get_string_value().split(","): # get_string_value is 0 based
+                self.tmpl_dict['col'] = col
                 layout.append(self.tmpl_AddGrowableCol % self.tmpl_dict)
 
         # reappend layout lines
@@ -137,11 +144,12 @@ class BaseSizerBuilder(object):
 class SizerSlot(np.PropertyOwner):
     "A window to represent a slot in a sizer"
     PROPERTIES = ["Slot", "pos"]
+    is_sizer = False
     def __init__(self, parent, sizer, pos=0, label=None):
         np.PropertyOwner.__init__(self)
         # initialise instance logger
         self._logger = logging.getLogger(self.__class__.__name__)
-        self.klass = "SLOT"
+        self.klass = self.classname = "sizerslot"
         self.label = label
 
         self.sizer = sizer       # Sizer object (SizerBase instance)
@@ -557,7 +565,7 @@ def change_sizer(old, new):
 
 class Sizer(object):
     "Base class for every Sizer handled by wxGlade"
-
+    is_sizer = True
     def __init__(self, window):
         self.window = window
         # initialise instance logger
@@ -621,7 +629,7 @@ class OrientProperty(np.Property):
     def _write_converter(self, value):
         if not value: return None
         return self.ORIENTATION_to_STRING[value]
-    def get_str_value(self):
+    def get_string_value(self):
         return self.ORIENTATION_to_STRING[self.value]
 
 
@@ -671,6 +679,7 @@ class SizerBase(Sizer, np.PropertyOwner):
 
         # initialise instance properties
         self.name         = np.NameProperty(name)
+        self.classname    = klass
         self.klass        = np.Property(klass, name="class")             # class and orient are hidden
         self.orient       = OrientProperty(orient)                       # they will be set from the class_orient property
         self.class_orient = ClassOrientProperty(self.get_class_orient()) # this will set the class and orient properties
@@ -1351,7 +1360,7 @@ class BoxSizerBase(SizerBase):
         self.layout()
 
     def get_class_orient(self):
-        return '%s (%s)'%( self.WX_CLASS, self.properties["orient"].get_str_value() )
+        return '%s (%s)'%( self.WX_CLASS, self.properties["orient"].get_string_value() )
 
     def properties_changed(self, modified):
         if not modified or "orient" in modified and self.node:
@@ -1818,7 +1827,7 @@ class _GrowablePropertyD(np.DialogPropertyD):
     def get_list(self):
         return self.value.split(",")
 
-    def get_str_value(self):
+    def get_string_value(self):
         # for XML file writing; 0-based
         ret = [str(int(n)-1) for n in self.get_list()]
         return ",".join(ret)

@@ -19,12 +19,10 @@ class PerlDialogGenerator(wcodegen.PerlWidgetCodeWriter):
 
     def get_properties_code(self, obj):
         out = []
-        title = obj.properties.get('title')
-        if title:
-            out.append( '$self->SetTitle(%s);\n' % self.codegen.quote_str(title) )
-        icon = obj.properties.get('icon')
-        if icon:
-            stmt_icon = self.generate_code_bitmap(icon, obj.preview)
+        if obj.title:
+            out.append( '$self->SetTitle(%s);\n' % self.codegen.quote_str(obj.title) )
+        if obj.icon:
+            stmt_icon = self.generate_code_bitmap(obj.icon, self.codegen.preview)
             out.append('my $icon = &Wx::wxNullIcon;\n')
             out.append('$icon->CopyFromBitmap(%s);\n' % stmt_icon)
             out.append('$self->SetIcon($icon);\n')
@@ -33,11 +31,8 @@ class PerlDialogGenerator(wcodegen.PerlWidgetCodeWriter):
 
     def get_layout_code(self, obj):
         ret = ['$self->Layout();\n']
-        try:
-            if int(obj.properties['centered']):
-                ret.append('$self->Centre();\n')
-        except (KeyError, ValueError):
-            pass
+        if "centered" in obj.properties and obj.centered:
+            ret.append('$self->Centre();\n')
         return ret
 
 

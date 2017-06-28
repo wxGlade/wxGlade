@@ -13,8 +13,8 @@ from ChoicesCodeHandler import *
 
 
 class LispChoiceGenerator(wcodegen.LispWidgetCodeWriter):
-    tmpl = '(setf %(name)s (%(klass)s_Create %(parent)s %(id)s -1 -1 -1 ' \
-           '-1 %(choices_len)s (vector %(choices)s)  %(style)s))\n'
+    #tmpl = '(setf %(name)s (%(klass)s_Create %(parent)s %(id)s -1 -1 -1 -1 %(choices_len)s (vector %(choices)s)  %(style)s))\n'
+    tmpl = '(setf %(name)s (%(klass)s_Create %(parent)s %(id)s -1 -1 -1 -1 %(choices_len)s (vector %(choices)s)  0))\n'
 
 
 def initialize():

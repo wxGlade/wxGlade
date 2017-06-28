@@ -20,7 +20,6 @@ class LispSplitterWindowGenerator(wcodegen.LispWidgetCodeWriter):
         layout_buf = []
         props_buf = self.codegen.generate_common_properties(window)
 
-        prop = window.properties
         id_name, id = self.codegen.generate_code_id(window)
         parent = self.format_widget_access(window.parent)
 
@@ -38,12 +37,14 @@ class LispSplitterWindowGenerator(wcodegen.LispWidgetCodeWriter):
         init.append('(setf (slot-%s obj) (wxSplitterWindow_Create %s %s -1 -1 -1 -1 %s))\n'
                     % (window.name, parent, id, self.tmpl_dict['style']))
 
-        win_1 = prop.get('window_1')
-        win_2 = prop.get('window_2')
-        orientation = prop.get('orientation', 'wxSPLIT_VERTICAL')
+        win_1 = window.window_1
+        win_2 = window.window_2
+        orientation = window.properties['orientation'].get_string_value()
 
         if win_1 and win_2:
-            sash_pos = prop.get('sash_pos', '')
+            sash_pos = window.sash_pos
+            if sash_pos!="": sash_pos = ', %s' % sash_pos
+
 
             if orientation == 'wxSPLIT_VERTICAL':
                 f_name = 'SplitVertically'
@@ -60,22 +61,21 @@ class LispSplitterWindowGenerator(wcodegen.LispWidgetCodeWriter):
             elif win_2:
                 add_sub(win_2)
 
-        min_pane_size = prop.get('min_pane_size')
-        if min_pane_size:
-            props_buf.append( 'wxSplitterWindow_SetMinimumPaneSize (slot-%s obj) %s)\n' % (window.name, min_pane_size) )
+        if window.min_pane_size:
+            props_buf.append( 'wxSplitterWindow_SetMinimumPaneSize (slot-%s obj) %s)\n' % (window.name, window.min_pane_size) )
 
         return init, props_buf, layout_buf
 
     def get_layout_code(self, obj):
         props_buf = []
-        prop = obj.properties
-        orientation = prop.get('orientation', 'wxSPLIT_VERTICAL')
 
-        win_1 = prop.get('window_1')
-        win_2 = prop.get('window_2')
+        win_1 = window.window_1
+        win_2 = window.window_2
+        orientation = window.properties['orientation'].get_string_value()
 
         if win_1 and win_2:
-            sash_pos = prop.get('sash_pos', '')
+            sash_pos = window.sash_pos
+            if sash_pos!="": sash_pos = ', %s' % sash_pos
 
             if orientation == 'wxSPLIT_VERTICAL':
                 f_name = 'SplitVertically'

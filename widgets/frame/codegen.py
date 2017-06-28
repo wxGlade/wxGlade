@@ -18,12 +18,10 @@ class PythonFrameCodeGenerator(wcodegen.PythonWidgetCodeWriter):
 
     def get_properties_code(self, obj):
         out = []
-        title = obj.properties.get('title')
-        if title:
-            out.append('self.SetTitle(%s)\n' % self.codegen.quote_str(title))
-        icon = obj.properties.get('icon')
-        if icon:
-            stmt_icon = self.generate_code_bitmap(icon, obj.preview)
+        if obj.title:
+            out.append('self.SetTitle(%s)\n' % self.codegen.quote_str(obj.title))
+        if obj.icon:
+            stmt_icon = self.generate_code_bitmap(obj.icon, obj.preview)
             out.append('_icon = %s\n' % self.cn('wxNullIcon'))
             out.append('_icon.CopyFromBitmap(%s)\n' % stmt_icon)
             out.append('self.SetIcon(_icon)\n')
@@ -32,12 +30,9 @@ class PythonFrameCodeGenerator(wcodegen.PythonWidgetCodeWriter):
 
     def get_layout_code(self, obj):
         ret = ['self.Layout()\n']
-        try:
-            if int(obj.properties['centered']):
-                ret.append('self.Centre()\n')
-        except (KeyError, ValueError):
-            pass
-        if 'size' in obj.properties:
+        if "centered" in obj.properties and obj.centered:
+            ret.append('self.Centre()\n')
+        if 'size' in obj.properties and obj.properties["size"].is_active():
             ret.append( self.codegen.generate_code_size(obj) )
         return ret
 
@@ -113,12 +108,10 @@ class CppFrameCodeGenerator(wcodegen.CppWidgetCodeWriter):
 
     def get_properties_code(self, obj):
         out = []
-        title = obj.properties.get('title')
-        if title:
-            out.append('SetTitle(%s);\n' % self.codegen.quote_str(title))
-        icon = obj.properties.get('icon')
-        if icon:
-            stmt_icon = self.generate_code_bitmap(icon, obj.preview)
+        if obj.title:
+            out.append('SetTitle(%s);\n' % self.codegen.quote_str(obj.title))
+        if obj.icon:
+            stmt_icon = self.generate_code_bitmap(obj.icon, self.codegen.preview)
             out.append('wxIcon _icon;\n')
             out.append('_icon.CopyFromBitmap(%s);\n' % stmt_icon)
             out.append('SetIcon(_icon);\n')
@@ -127,12 +120,9 @@ class CppFrameCodeGenerator(wcodegen.CppWidgetCodeWriter):
 
     def get_layout_code(self, obj):
         ret = ['Layout();\n']
-        try:
-            if int(obj.properties['centered']):
-                ret.append('Centre();\n')
-        except (KeyError, ValueError):
-            pass
-        if 'size' in obj.properties:
+        if obj.centered:
+            ret.append('Centre();\n')
+        if obj.properties["size"].is_active():
             ret.append( self.codegen.generate_code_size(obj) )
         return ret
 
@@ -162,7 +152,7 @@ def initialize():
         awh('wxMDIChildFrame', PythonFrameCodeGenerator(klass))
 
         aph = pygen.add_property_handler
-        aph('menubar', pygen.DummyPropertyHandler)
+        #aph('menubar', pygen.DummyPropertyHandler)
 
     xrcgen = common.code_writers.get('XRC')
     if xrcgen:
@@ -176,5 +166,5 @@ def initialize():
         awh('wxFrame', CppFrameCodeGenerator(klass))
         awh('wxMDIChildFrame', CppMDIChildFrameCodeGenerator(klass))
 
-        aph = cppgen.add_property_handler
-        aph('menubar', cppgen.DummyPropertyHandler)
+        #aph = cppgen.add_property_handler
+        #aph('menubar', cppgen.DummyPropertyHandler)

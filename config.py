@@ -17,8 +17,8 @@ import os, sys
 default_app_name = 'app'           # application name
 
 default_cpp_app_name = 'main.cpp'  # name for C++ application file; XXX only used for testing
-default_header_extension = '.h'    # extension of C++ header files
-default_source_extension = '.cpp'  # extension of C++ source files
+default_header_extension = 'h'    # extension of C++ header files
+default_source_extension = 'cpp'  # extension of C++ source files
 
 default_language = 'python'        # Default language if no specified
 

@@ -17,14 +17,13 @@ class PythonButtonGenerator(wcodegen.PythonWidgetCodeWriter):
     def _prepare_tmpl_content(self, obj):
         wcodegen.PythonWidgetCodeWriter._prepare_tmpl_content(self, obj)
 
-        prop = obj.properties
-        stockitem = prop.get('stockitem', None)
+        stockitem = obj.stockitem
         if stockitem:
             self.tmpl_dict['id_number'] = self.codegen.cn("wxID_" + stockitem)
             self.tmpl_dict['id'] = self.tmpl_dict['id_number']
             self.tmpl_dict['label'] = self.codegen.quote_str('')
 
-        self.has_setdefault = int(prop.get('default', 0))
+        self.has_setdefault = obj.default
 
         return
 
@@ -36,14 +35,13 @@ class CppButtonGenerator(wcodegen.CppWidgetCodeWriter):
     def _prepare_tmpl_content(self, obj):
         wcodegen.CppWidgetCodeWriter._prepare_tmpl_content(self, obj)
 
-        prop = obj.properties
-        stockitem = prop.get('stockitem', None)
+        stockitem = obj.stockitem
         if stockitem:
             self.tmpl_dict['label'] = self.codegen.quote_str('')
             self.tmpl_dict['id_number'] = self.codegen.cn("wxID_" + stockitem)
             self.tmpl_dict['id'] = self.tmpl_dict['id_number']
 
-        self.has_setdefault = int(prop.get('default', 0))
+        self.has_setdefault = obj.default
 
         return
 
@@ -54,7 +52,7 @@ def xrc_code_generator(obj):
 
     class ButtonXrcObject(xrcgen.DefaultXrcObject):
         def write(self, out_file, ntabs):
-            stockitem = self.properties.get('stockitem', 'None')
+            stockitem = obj.stockitem or 'None'
             if stockitem != 'None':
                 self.name = 'wxID_' + stockitem
                 del self.properties['stockitem']

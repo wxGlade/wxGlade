@@ -15,10 +15,9 @@ class PythonSpinCtrlGenerator(wcodegen.PythonWidgetCodeWriter):
 
     def _prepare_tmpl_content(self, obj):
         wcodegen.PythonWidgetCodeWriter._prepare_tmpl_content(self, obj)
-        prop = obj.properties
-        self.tmpl_dict['value'] = prop.get('value', '')
+        self.tmpl_dict['value'] = obj.value
         try:
-            minValue, maxValue = [s.strip() for s in prop.get('range', '0, 100').split(',')]
+            minValue, maxValue = obj.properties["range"].get_tuple()
         except:
             minValue, maxValue = '0', '100'
         self.tmpl_dict['minValue'] = minValue
@@ -36,10 +35,9 @@ class CppSpinCtrlGenerator(wcodegen.CppWidgetCodeWriter):
 
     def _prepare_tmpl_content(self, obj):
         wcodegen.CppWidgetCodeWriter._prepare_tmpl_content(self, obj)
-        prop = obj.properties
-        self.tmpl_dict['value'] = prop.get('value', '')
+        self.tmpl_dict['value'] = obj.value
         try:
-            minValue, maxValue = [s.strip() for s in prop.get('range', '0, 100').split(',')]
+            minValue, maxValue = obj.properties["range"].get_tuple()
         except:
             minValue, maxValue = '0', '100'
         self.tmpl_dict['minValue'] = minValue

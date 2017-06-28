@@ -21,11 +21,10 @@ class LispNotebookGenerator(wcodegen.LispWidgetCodeWriter):
         id_name, id = self.codegen.generate_code_id(window)
 
         layout_props = []
-        tabs = prop.get('tabs', [])
-        for label, tab_win in tabs:
-            tab_win = tab_win.replace('_', '-')
+        for label, tab_win in zip(window.tabs, window.pages):
+            tab_win = tab_win.name.replace('_', '-')
             layout_props.append( '(wxNotebook_AddPage (slot-%s obj) (slot-%s obj) %s 1 -1)\n' % (
-                                 window.name, tab_win, self.codegen.quote_str(label) ) )
+                                 window.name, tab_win, self.codegen.quote_str(label[0]) ) )
 
         parent = self.format_widget_access(window.parent)
 
@@ -47,12 +46,10 @@ class LispNotebookGenerator(wcodegen.LispWidgetCodeWriter):
         return init, props_buf, layout_props
 
     def get_properties_code(self, obj):
-        prop = obj.properties
         props_buf = []
-        tabs = prop.get('tabs', [])
-        for label, window in tabs:
+        for label, tab_win in zip(obj.tabs, obj.pages):
             props_buf.append( '(wxNotebook_AddPage (slot-%s obj) page %s 1 -1);\n' % (
-                              window, self.codegen.quote_str(label) ) )
+                              tab_win, self.codegen.quote_str(label) ) )
         props_buf.extend(self.codegen.generate_common_properties(obj))
         return props_buf
 

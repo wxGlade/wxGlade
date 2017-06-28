@@ -17,7 +17,10 @@ class LispStatusBarCodeGenerator(wcodegen.LispWidgetCodeWriter):
     def _prepare_tmpl_content(self, obj):
         wcodegen.LispWidgetCodeWriter._prepare_tmpl_content(self, obj)
 
-        labels, widths = obj.properties['statusbar']
+        fields = obj.fields # properties['statusbar']
+        labels = [f[0] for f in fields]
+        widths = [int(f[1]) for f in fields]
+
         self.tmpl_dict['labels_len'] = len(labels)
         self.tmpl_dict['widths'] = ' '.join([str(w) for w in widths])
         self.tmpl_dict['widths_len'] = len(widths)
@@ -39,6 +42,6 @@ def initialize():
     lispgen = common.code_writers.get('lisp')
     if lispgen:
         lispgen.add_widget_handler('wxStatusBar', LispStatusBarCodeGenerator(klass))
-        aph = lispgen.add_property_handler
-        aph('fields', StatusFieldsHandler)
-        aph('statusbar', lispgen.DummyPropertyHandler)
+        #aph = lispgen.add_property_handler
+        #aph('fields', StatusFieldsHandler)
+        #aph('statusbar', lispgen.DummyPropertyHandler)

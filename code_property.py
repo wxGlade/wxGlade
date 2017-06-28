@@ -22,7 +22,7 @@ class CodePropertyD(TextPropertyD):
     LABEL = 'Extra code for this widget'
 
     def __init__(self, value="", name="extracode"):
-        TextPropertyD.__init__(self, value, multiline=True, name=name)
+        TextPropertyD.__init__(self, value, multiline=True, name=name, default_value=None)
 
     def create_editor(self, panel, sizer):
         TextPropertyD.create_editor(self, panel, sizer)

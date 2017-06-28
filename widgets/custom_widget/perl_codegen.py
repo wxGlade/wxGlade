@@ -15,14 +15,13 @@ from .codegen import ArgumentsCodeHandler, format_ctor_arguments
 class PerlCustomWidgetGenerator(wcodegen.PerlWidgetCodeWriter):
     def get_code(self, widget):
         init = []
-        prop = widget.properties
         id_name, id = self.codegen.generate_code_id(widget)
         parent = self.format_widget_access(widget.parent)
 
         if id_name:
             init.append(id_name)
-        arguments = format_ctor_arguments(prop.get('arguments', []), parent, id, prop.get('size', "-1, -1"))
-        cust_ctor = prop.get('custom_ctor', '').strip()
+        arguments = format_ctor_arguments(widget.arguments, parent, id, widget.size)
+        cust_ctor = widget.custom_ctor.strip()
         if cust_ctor:
             ctor = cust_ctor
         else:

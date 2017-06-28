@@ -34,7 +34,8 @@ class PythonCalendarCtrlGenerator(wcodegen.PythonWidgetCodeWriter):
 
     def _prepare_tmpl_content(self, obj):
         wcodegen.PythonWidgetCodeWriter._prepare_tmpl_content(self, obj)
-        self.has_setdefault = obj.properties.get('default', False)
+        #self.has_setdefault = obj.properties.get('default', False)
+        self.has_setdefault = obj.default
         return
 
 
@@ -45,7 +46,8 @@ class CppCalendarCtrlGenerator(wcodegen.CppWidgetCodeWriter):
 
     def _prepare_tmpl_content(self, obj):
         wcodegen.CppWidgetCodeWriter._prepare_tmpl_content(self, obj)
-        self.has_setdefault = obj.properties.get('default', False)
+        #self.has_setdefault = obj.properties.get('default', False)
+        self.has_setdefault = obj.default
         return
 
 

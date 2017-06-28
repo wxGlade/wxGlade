@@ -72,6 +72,7 @@ class EditBase(EventsMixin, np.PropertyOwner):
                                       "constructor will be used. You should probably not use this if \n"
                                       "overwrite existing sources is not set.") }
     _PROPERTY_LABELS = {"custom_base":'Base class(es)'}
+    is_sizer = False
 
     def __init__(self, name, klass, parent, id, custom_class=True):
         np.PropertyOwner.__init__(self)
@@ -84,6 +85,7 @@ class EditBase(EventsMixin, np.PropertyOwner):
 
         # initialise instance properties
         self.name  = name_p  = np.NameProperty(name)
+        self.classname = klass
         self.klass = klass_p = np.TextProperty(klass, name="class") # Name of the object's class: read/write or read only
         if not custom_class: klass_p.readonly = True
         # validation for class
@@ -95,7 +97,7 @@ class EditBase(EventsMixin, np.PropertyOwner):
         self.custom_class = custom_class
 
         if getattr(self, '_custom_base_classes', False):
-            self.custom_base = np.TextPropertyD("", multiline=False)
+            self.custom_base = np.TextPropertyD("", multiline=False, default_value=None)
         else:
             self.custom_base = None
 
@@ -322,7 +324,7 @@ class WindowBase(EditBase):
     def __init__(self, name, klass, parent, id):
         EditBase.__init__(self, name, klass, parent, id)
 
-        self.window_id = np.TextPropertyD( "wxID_ANY", name="id" )
+        self.window_id = np.TextPropertyD( "wxID_ANY", name="id", default_value=None )
         self.size      = np.SizePropertyD( "-1, -1", default_value="-1, -1" )
 
         # background, foreground, font properties

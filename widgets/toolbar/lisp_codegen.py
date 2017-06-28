@@ -11,7 +11,7 @@ import common
 import wcodegen
 from .tool import *
 
-from .codegen import ToolsHandler
+#from .codegen import ToolsHandler
 
 
 class LispCodeGenerator(wcodegen.LispWidgetCodeWriter):
@@ -22,29 +22,19 @@ class LispCodeGenerator(wcodegen.LispWidgetCodeWriter):
 
         obj_name = '(slot-%s obj)' % obj.name
 
-        bitmapsize = prop.get('bitmapsize')
-        if bitmapsize:
-            try:
-                w, h = [int(i) for i in bitmapsize.split(',')]
-                append( '(wxToolBar_SetToolBitmapSize %s %s %s)\n' % (obj_name, w, h) )
-            except:
-                pass
+        if obj.properties["bitmapsize"].is_active():
+            w, h = obj.properties["bitmapsize"].get_tuple()
+            append( '(wxToolBar_SetToolBitmapSize %s %s %s)\n' % (obj_name, w, h) )
 
-        margins = prop.get('margins')
-        if margins:
-            try:
-                w, h = [int(i) for i in margins.split(',')]
-                append( '(wxToolBar_SetMargins %s %s %s)\n' % (obj_name, w, h) )
-            except:
-                pass
+        if obj.properties["margins"].is_active():
+            w, h = obj.properties["margins"].get_tuple()
+            append( '(wxToolBar_SetMargins %s %s %s)\n' % (obj_name, w, h) )
 
-        packing = prop.get('packing')
-        if packing:
-            append( '(wxToolBar_SetToolPacking %s %s)\n' % (obj_name, packing) )
+        if obj.properties["packing"].is_active():
+            append( '(wxToolBar_SetToolPacking %s %s)\n' % (obj_name, obj.packing) )
 
-        separation = prop.get('separation')
-        if separation:
-            append( '(wxToolBar_SetToolSeparation %s %s)\n' % (obj_name, separation) )
+        if obj.properties["separation"].is_active():
+            append( '(wxToolBar_SetToolSeparation %s %s)\n' % (obj_name, obj.separation) )
         append( '(wxToolBar_Realize %s)\n' % obj_name )
 
         return out
@@ -52,12 +42,11 @@ class LispCodeGenerator(wcodegen.LispWidgetCodeWriter):
     def get_init_code(self, obj):
         out = []
         append = out.append
-        tools = obj.properties['toolbar']
         ids = []
 
         obj_name = self.format_widget_access(obj)
 
-        for tool in tools:
+        for tool in obj.tools:
             if tool.id == '---':  # item is a separator
                 append( '(wxToolBar_AddSeparator %s)\n' % obj_name )
             else:
@@ -86,9 +75,7 @@ class LispCodeGenerator(wcodegen.LispWidgetCodeWriter):
 
     def get_code(self, obj):
         "function that generates Lisp code for the toolbar of a wxFrame"
-        prop = obj.properties
-
-        style = prop.get("style")
+        style = obj.properties['style'].get_string_value()
         if not style:
             style = 'wxTB_HORIZONTAL'
         else:
@@ -110,4 +97,4 @@ def initialize():
     klass = 'wxToolBar'
     common.class_names['EditToolBar'] = klass
     common.toplevels['EditToolBar'] = 1
-    common.register('lisp', klass, LispCodeGenerator(klass), 'tools', ToolsHandler)
+    common.register('lisp', klass, LispCodeGenerator(klass) )#, 'tools', ToolsHandler)

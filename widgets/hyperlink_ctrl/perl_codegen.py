@@ -14,8 +14,8 @@ class PerlHyperlinkCtrlGenerator(wcodegen.PerlWidgetCodeWriter):
 
     def _prepare_tmpl_content(self, obj):
         wcodegen.PerlWidgetCodeWriter._prepare_tmpl_content(self, obj)
-        self.tmpl_dict['url'] = self.codegen.quote_str(obj.properties.get('url', ''))
-        self.has_setvalue1 = obj.properties.get('checked', False)
+        self.tmpl_dict['url'] = self.codegen.quote_str(obj.url)
+        #self.has_setvalue1 = bool(obj.checked)
         return
 
 

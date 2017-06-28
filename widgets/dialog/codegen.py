@@ -16,12 +16,10 @@ class PythonDialogGenerator(wcodegen.PythonWidgetCodeWriter):
 
     def get_properties_code(self, obj):
         out = []
-        title = obj.properties.get('title')
-        if title:
-            out.append('self.SetTitle(%s)\n' % self.codegen.quote_str(title))
-        icon = obj.properties.get('icon')
-        if icon:
-            stmt_icon = self.generate_code_bitmap(icon, obj.preview)
+        if obj.title:
+            out.append('self.SetTitle(%s)\n' % self.codegen.quote_str(obj.title))
+        if obj.icon:
+            stmt_icon = self.generate_code_bitmap(obj.icon, self.codegen.preview)
             out.append('_icon = %s\n' % self.cn('wxNullIcon'))
             out.append('_icon.CopyFromBitmap(%s)\n' % stmt_icon)
             out.append('self.SetIcon(_icon)\n')
@@ -30,11 +28,8 @@ class PythonDialogGenerator(wcodegen.PythonWidgetCodeWriter):
 
     def get_layout_code(self, obj):
         ret = ['self.Layout()\n']
-        try:
-            if int(obj.properties['centered']):
-                ret.append('self.Centre()\n')
-        except (KeyError, ValueError):
-            pass
+        if "centered" in obj.properties and obj.centered:
+            ret.append('self.Centre()\n')
         return ret
 
 
@@ -52,12 +47,10 @@ class CppDialogGenerator(wcodegen.CppWidgetCodeWriter):
         """generates the code for the various wxDialog specific properties.
         Returns a list of strings containing the generated code"""
         out = []
-        title = obj.properties.get('title')
-        if title:
-            out.append('SetTitle(%s);\n' % self.codegen.quote_str(title))
-        icon = obj.properties.get('icon')
-        if icon:
-            stmt_icon = self.generate_code_bitmap(icon, obj.preview)
+        if obj.title:
+            out.append('SetTitle(%s);\n' % self.codegen.quote_str(obj.title))
+        if obj.icon:
+            stmt_icon = self.generate_code_bitmap(obj.icon, self.codegen.preview)
             out.append('wxIcon _icon;\n')
             out.append('_icon.CopyFromBitmap(%s);\n' % stmt_icon)
             out.append('SetIcon(_icon);\n')
@@ -66,11 +59,8 @@ class CppDialogGenerator(wcodegen.CppWidgetCodeWriter):
 
     def get_layout_code(self, obj):
         ret = ['Layout();\n']
-        try:
-            if int(obj.properties['centered']):
-                ret.append('Centre();\n')
-        except (KeyError, ValueError):
-            pass
+        if "centered" in obj.properties and obj.centered:
+            ret.append('Centre();\n')
         return ret
 
 

@@ -79,8 +79,7 @@ def load_widgets_from_dir(widget_dir, submodule='',
                 if config.use_gui and button:
                     buttons[section].append(button)
     
-            # step 3: import and initialise Python codegen as well as widget
-            #         GUI elements
+            # step 3: import and initialise Python codegen as well as widget GUI elements
             elif not submodule:
                 result, button = _init_codegen_gui(widget_dir, module_name)
                 if not result:
