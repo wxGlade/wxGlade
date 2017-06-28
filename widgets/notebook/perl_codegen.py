@@ -8,7 +8,7 @@ Perl generator functions for wxNotebook objects
 
 import common
 import wcodegen
-from .codegen import TabsCodeHandler
+#from .codegen import TabsCodeHandler
 
 
 class PerlNotebookGenerator(wcodegen.PerlWidgetCodeWriter):
@@ -22,8 +22,6 @@ class PerlNotebookGenerator(wcodegen.PerlWidgetCodeWriter):
         id_name, id = self.codegen.generate_code_id(window)
 
         layout_props = []
-        #tabs = prop.get('tabs', [])
-        #for label, tab_win in tabs:
         for label, tab_win in zip(window.tabs, window.pages):
             layout_props.append('$self->{%s}->AddPage($self->{%s}, %s);\n' %
                                 (window.name, tab_win.name, self.codegen.quote_str(label[0])) )
@@ -69,4 +67,4 @@ def initialize():
     common.class_names['NotebookPane'] = 'wxPanel'
     common.toplevels['EditNotebook'] = 1
     common.toplevels['NotebookPane'] = 1
-    common.register('perl', klass, PerlNotebookGenerator(klass))#, 'tabs', TabsCodeHandler, klass)
+    common.register( 'perl', klass, PerlNotebookGenerator(klass) )

@@ -392,7 +392,7 @@ class LispCodeWriter(BaseLangCodeWriter, wcodegen.LispMixin):
         # custom base classes support
         custom_base = getattr(code_obj, 'custom_base',
                               code_obj.properties.get('custom_base', None))
-        if code_obj.preview or (custom_base and not custom_base.strip()):
+        if self.preview or (custom_base and not custom_base.strip()):
             custom_base = None
 
         # generate constructor code
@@ -434,9 +434,9 @@ class LispCodeWriter(BaseLangCodeWriter, wcodegen.LispMixin):
             'tab':             tab,
             })
 
-        style = code_obj.properties["style"].get_string_value()
-        if style:
-            m_style = mycn_f(style)
+        style_p = code_obj.properties.get("style")
+        if style_p and style_p.value_set != style_p.default_value:
+            m_style = mycn_f( style_p.get_string_value() )
             if m_style:
                 stmt_style = self._format_style(m_style, code_obj)
                 write(stmt_style % {'style': m_style, 'tab': tab} )
