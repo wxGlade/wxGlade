@@ -11,30 +11,30 @@ import wcodegen
 from wcodegen.taghandler import BaseCodeWriterTagHandler
 
 
-class TabsCodeHandler(BaseCodeWriterTagHandler):
+#class TabsCodeHandler(BaseCodeWriterTagHandler):
 
-    def __init__(self):
-        super(TabsCodeHandler, self).__init__()
-        self.tabs = []
-        self.tab_window = None
+    #def __init__(self):
+        #super(TabsCodeHandler, self).__init__()
+        #self.tabs = []
+        #self.tab_window = None
 
-    def start_elem(self, name, attrs):
-        if name == 'tab':
-            window = attrs.get('window')
-            if not window:
-                return
-            self.tab_window = window
-            self._content = []
+    #def start_elem(self, name, attrs):
+        #if name == 'tab':
+            #window = attrs.get('window')
+            #if not window:
+                #return
+            #self.tab_window = window
+            #self._content = []
 
-    def end_elem(self, name, code_obj):
-        if name == 'tabs':
-            code_obj.properties['tabs'] = self.tabs
-            return True
-        elif name == 'tab':
-            tab_name = self.get_char_data()
-            if self.tab_window:
-                self.tabs.append((tab_name, self.tab_window))
-        return False
+    #def end_elem(self, name, code_obj):
+        #if name == 'tabs':
+            #code_obj.properties['tabs'] = self.tabs
+            #return True
+        #elif name == 'tab':
+            #tab_name = self.get_char_data()
+            #if self.tab_window:
+                #self.tabs.append((tab_name, self.tab_window))
+        #return False
 
 
 
@@ -47,8 +47,6 @@ class PythonNotebookGenerator(wcodegen.PythonWidgetCodeWriter):
         id_name, id = self.codegen.generate_code_id(window)
 
         layout_props = []
-        #tabs = prop.get('tabs', [])
-        #for label, tab_win in tabs:
         for label, tab_win in zip(window.tabs, window.pages):
             label = label[0]
             layout_props.append('self.%s.AddPage(self.%s, %s)\n'%(window.name, tab_win.name, self.codegen.quote_str(label)))
@@ -78,7 +76,7 @@ class PythonNotebookGenerator(wcodegen.PythonWidgetCodeWriter):
         #for label, window in tabs:
         for label, tab_win in zip(obj.tabs, obj.pages):
             label = label[0]
-            props_buf.append( 'self.AddPage(self.%s, %s)\n' % (window, self.codegen.quote_str(label)) )
+            props_buf.append( 'self.AddPage(self.%s, %s)\n' % (tab_win.name, self.codegen.quote_str(label)) )
         props_buf.extend(self.codegen.generate_common_properties(obj))
         return props_buf
 
@@ -175,6 +173,6 @@ def initialize():
     common.class_names['NotebookPane'] = 'wxPanel'
     common.toplevels['EditNotebook'] = 1
     common.toplevels['NotebookPane'] = 1
-    common.register('python', klass, PythonNotebookGenerator(klass), 'tabs', TabsCodeHandler, klass)
-    common.register('C++',    klass, CppNotebookGenerator(klass),    'tabs', TabsCodeHandler, klass)
-    common.register('XRC',    klass, xrc_code_generator,             'tabs', TabsCodeHandler, klass)
+    common.register('python', klass, PythonNotebookGenerator(klass))#, 'tabs', TabsCodeHandler, klass)
+    common.register('C++',    klass, CppNotebookGenerator(klass))#,    'tabs', TabsCodeHandler, klass)
+    common.register('XRC',    klass, xrc_code_generator)#,             'tabs', TabsCodeHandler, klass)

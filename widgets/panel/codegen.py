@@ -3,6 +3,7 @@ Code generator functions for wxPanel objects
 
 @copyright: 2002-2007 Alberto Griggio
 @copyright: 2014-2016 Carsten Grohmann
+@copyright: 2017 Dietmar Schwertberger
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
@@ -31,7 +32,7 @@ class PythonPanelGenerator(wcodegen.PythonWidgetCodeWriter):
         #if not int(panel.properties.get('no_custom_class', False)) or panel.preview:
         if not panel.no_custom_class or self.codegen.preview:
             if scrollable:
-                klass = self.cn('wxScrolledWindow')
+                klass = self.cn( 'wxScrolledWindow')
             else:
                 klass = self.cn('wxPanel')
         else:

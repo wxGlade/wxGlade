@@ -317,9 +317,10 @@ if __name__ == "__main__":
         write(self.tmpl_block_begin % {'class_separator': self.class_separator, 'comment_sign': self.comment_sign,
                                        'function':self.name_ctor, 'klass':fmt_klass, 'tab':tab} )
 
-        style = code_obj.properties["style"].get_string_value()
-        if style:
-            m_style = mycn_f(style)
+        style_p = code_obj.properties.get("style")
+        if style_p and style_p.value_set != style_p.default_value:
+            style = style_p.get_string_value()
+            m_style = mycn_f( style )
             if m_style:
                 stmt_style = self._format_style(style, code_obj)
                 write(stmt_style % {'style': m_style, 'tab': tab} )

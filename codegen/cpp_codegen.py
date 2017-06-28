@@ -802,9 +802,9 @@ bool MyApp::OnInit()
 
         # source file
         # set the window's style
-        style = code_obj.properties["style"].get_string_value()
-        if style:
-            style = mycn_f(style)
+        style_p = code_obj.properties.get("style")
+        if style_p and style_p.value_set != style_p.default_value:
+            style = mycn_f(style_p.get_string_value())
             if style:
                 sign_inst = sign_inst.replace('style', '%s' % style)
 
