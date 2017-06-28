@@ -3,12 +3,12 @@ Perl generator functions for wxNotebook objects
 
 @copyright: 2002-2004 D.H. aka crazyinsomniac on sourceforge.net
 @copyright: 2014-2016 Carsten Grohmann
+@copyright: 2017 Dietmar Schwertberger
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
 import common
 import wcodegen
-#from .codegen import TabsCodeHandler
 
 
 class PerlNotebookGenerator(wcodegen.PerlWidgetCodeWriter):
@@ -52,8 +52,6 @@ class PerlNotebookGenerator(wcodegen.PerlWidgetCodeWriter):
     def get_properties_code(self, obj):
         prop = obj.properties
         props_buf = []
-        #tabs = prop.get('tabs', [])
-        #for label, window in tabs:
         for label, tab_win in zip(obj.tabs, obj.pages):
             label = label[0]
             props_buf.append( '$self->AddPage($self->{%s}, %s);\n' % (tab_win.name, self.codegen.quote_str(label)) )

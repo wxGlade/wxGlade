@@ -3,12 +3,12 @@ Lisp generator functions for wxNotebook objects
 
 @copyright: 2002-2004 D.H. aka crazyinsomniac on sourceforge.net
 @copyright: 2014-2016 Carsten Grohmann
+@copyright: 2017 Dietmar Schwertberger
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
 import common
 import wcodegen
-#from .codegen import TabsCodeHandler
 
 
 class LispNotebookGenerator(wcodegen.LispWidgetCodeWriter):
@@ -61,4 +61,4 @@ def initialize():
     common.toplevels['EditNotebook'] = 1
     common.toplevels['NotebookPane'] = 1
 
-    common.register('lisp', klass, LispNotebookGenerator(klass) ) #, 'tabs', TabsCodeHandler, klass)
+    common.register('lisp', klass, LispNotebookGenerator(klass) )

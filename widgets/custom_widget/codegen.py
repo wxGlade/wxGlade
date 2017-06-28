@@ -3,31 +3,12 @@ Code generator functions for CustomWidget objects
 
 @copyright: 2002-2007 Alberto Griggio
 @copyright: 2016 Carsten Grohmann
+@copyright: 2017 Dietmar Schwertberger
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
-import logging
-
-import common
+import logging, common
 import wcodegen
-from wcodegen.taghandler import BaseCodeWriterTagHandler
-
-
-class ArgumentsCodeHandler(BaseCodeWriterTagHandler):
-
-    def __init__(self):
-        super(ArgumentsCodeHandler, self).__init__()
-        self.arguments = []
-
-    def end_elem(self, name, code_obj):
-        if name == 'arguments':
-            code_obj.properties['arguments'] = self.arguments
-            return True
-        elif name == 'argument':
-            tab_name = self.get_char_data()
-            self.arguments.append(tab_name)
-        return False
-
 
 
 def format_ctor_arguments(arguments, parent, id, size):
@@ -160,6 +141,6 @@ def xrc_code_generator(obj):
 def initialize():
     klass = 'CustomWidget'
     common.class_names[klass] = klass
-    common.register('python', klass, PythonCustomWidgetGenerator(klass), 'arguments', ArgumentsCodeHandler, klass)
-    common.register('C++',    klass, CppCustomWidgetGenerator(klass),    'arguments', ArgumentsCodeHandler, klass)
-    common.register('XRC',    klass, xrc_code_generator,                 'arguments', ArgumentsCodeHandler, klass)
+    common.register('python', klass, PythonCustomWidgetGenerator(klass) )
+    common.register('C++',    klass, CppCustomWidgetGenerator(klass) )
+    common.register('XRC',    klass, xrc_code_generator )

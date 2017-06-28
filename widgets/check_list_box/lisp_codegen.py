@@ -10,7 +10,6 @@ Lisp generator functions for wxCheckListBox objects
 
 import common
 import wcodegen
-from ChoicesCodeHandler import *
 
 
 class LispCheckListBoxGenerator(wcodegen.LispWidgetCodeWriter):
@@ -21,4 +20,4 @@ class LispCheckListBoxGenerator(wcodegen.LispWidgetCodeWriter):
 def initialize():
     klass = 'wxCheckListBox'
     common.class_names['EditCheckListBox'] = klass
-    common.register('lisp', klass, LispCheckListBoxGenerator(klass), 'choices', ChoicesCodeHandler)
+    common.register('lisp', klass, LispCheckListBoxGenerator(klass) )

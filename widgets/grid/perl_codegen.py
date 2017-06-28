@@ -8,7 +8,7 @@ Perl generator functions for wxGrid objects
 
 import common
 import wcodegen
-from .codegen import ColsCodeHandler, _check_label
+from .codegen import _check_label
 
 
 class PerlCodeGenerator(wcodegen.PerlWidgetCodeWriter):
@@ -76,4 +76,4 @@ class PerlCodeGenerator(wcodegen.PerlWidgetCodeWriter):
 def initialize():
     klass = 'wxGrid'
     common.class_names['EditGrid'] = klass
-    common.register('perl', klass, PerlCodeGenerator(klass), 'columns', ColsCodeHandler)
+    common.register('perl', klass, PerlCodeGenerator(klass) )

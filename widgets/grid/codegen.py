@@ -3,37 +3,13 @@ Code generator functions for wxGrid objects
 
 @copyright: 2002-2007 Alberto Griggio
 @copyright: 2016 Dietmar Schwertberger
+@copyright: 2017 Dietmar Schwertberger
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
 import common, compat
 import wcodegen
 from wcodegen.taghandler import BaseCodeWriterTagHandler
-
-
-class ColsCodeHandler(BaseCodeWriterTagHandler):
-
-    def __init__(self):
-        super(ColsCodeHandler, self).__init__()
-        self.columns = []
-        self.col_name = ''
-        self.col_size = ''
-
-    def start_elem(self, name, attrs):
-        if name == 'column':
-            s = attrs.get('size', '')
-            self.col_size = s
-            self._content = []
-
-    def end_elem(self, name, code_obj):
-        if name == 'columns':
-            code_obj.properties['columns'] = self.columns
-            return True
-        elif name == 'column':
-            char_data = self.get_char_data()
-            self.columns.append([char_data, self.col_size])
-        return False
-
 
 
 def _check_label(label, col):
@@ -203,6 +179,6 @@ def xrc_code_generator(obj):
 def initialize():
     klass = 'wxGrid'
     common.class_names['EditGrid'] = klass
-    common.register('python', klass, PythonCodeGenerator(klass), 'columns', ColsCodeHandler, klass)
-    common.register('C++',    klass, CppCodeGenerator(klass),    'columns', ColsCodeHandler, klass)
+    common.register('python', klass, PythonCodeGenerator(klass) )
+    common.register('C++',    klass, CppCodeGenerator(klass) )
     common.register('XRC',    klass, xrc_code_generator)
