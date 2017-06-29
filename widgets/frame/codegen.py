@@ -9,7 +9,7 @@ Code generator functions for wxFrame objects
 
 import common
 import wcodegen
-from wcodegen.taghandler import BaseCodeWriterTagHandler
+#from wcodegen.taghandler import BaseCodeWriterTagHandler
 
 
 class PythonFrameCodeGenerator(wcodegen.PythonWidgetCodeWriter):
@@ -21,7 +21,7 @@ class PythonFrameCodeGenerator(wcodegen.PythonWidgetCodeWriter):
         if obj.title:
             out.append('self.SetTitle(%s)\n' % self.codegen.quote_str(obj.title))
         if obj.icon:
-            stmt_icon = self.generate_code_bitmap(obj.icon, obj.preview)
+            stmt_icon = self.generate_code_bitmap(obj.icon)
             out.append('_icon = %s\n' % self.cn('wxNullIcon'))
             out.append('_icon.CopyFromBitmap(%s)\n' % stmt_icon)
             out.append('self.SetIcon(_icon)\n')
@@ -38,26 +38,26 @@ class PythonFrameCodeGenerator(wcodegen.PythonWidgetCodeWriter):
 
 
 
-# property handlers for code generation
-class StatusFieldsHandler(BaseCodeWriterTagHandler):
-    "Handler for statusbar fields"
+## property handlers for code generation
+#class StatusFieldsHandler(BaseCodeWriterTagHandler):
+    #"Handler for statusbar fields"
 
-    def __init__(self):
-        super(StatusFieldsHandler, self).__init__()
-        self.labels = []
-        self.widths = []
-        self.curr_label = []
+    #def __init__(self):
+        #super(StatusFieldsHandler, self).__init__()
+        #self.labels = []
+        #self.widths = []
+        #self.curr_label = []
 
-    def start_elem(self, name, attrs):
-        if name == 'field':
-            self.widths.append(int(attrs.get('width', -1)))
+    #def start_elem(self, name, attrs):
+        #if name == 'field':
+            #self.widths.append(int(attrs.get('width', -1)))
 
-    def end_elem(self, name, code_obj):
-        if name == 'fields':
-            code_obj.properties['statusbar'] = (self.labels, self.widths)
-            return True
-        char_data = self.get_char_data()
-        self.labels.append(char_data)
+    #def end_elem(self, name, code_obj):
+        #if name == 'fields':
+            #code_obj.properties['statusbar'] = (self.labels, self.widths)
+            #return True
+        #char_data = self.get_char_data()
+        #self.labels.append(char_data)
 
 
 
@@ -111,7 +111,7 @@ class CppFrameCodeGenerator(wcodegen.CppWidgetCodeWriter):
         if obj.title:
             out.append('SetTitle(%s);\n' % self.codegen.quote_str(obj.title))
         if obj.icon:
-            stmt_icon = self.generate_code_bitmap(obj.icon, self.codegen.preview)
+            stmt_icon = self.generate_code_bitmap(obj.icon)
             out.append('wxIcon _icon;\n')
             out.append('_icon.CopyFromBitmap(%s);\n' % stmt_icon)
             out.append('SetIcon(_icon);\n')

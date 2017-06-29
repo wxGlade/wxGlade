@@ -7,8 +7,6 @@ Handler for the 'choices' property of various elements
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
-from wcodegen.taghandler import BaseCodeWriterTagHandler
-
 
 def xrc_write_choices_property(xrc_obj, outfile, tabs):
     "function used to write the XRC code for a ``choices'' property"
@@ -19,9 +17,8 @@ def xrc_write_choices_property(xrc_obj, outfile, tabs):
     tab_s = '    ' * (tabs+1)
     for choice in choices:
         if isinstance(choice, tuple):
-            write(tab_s + '<item checked="%d">%s</item>\n' % \
-                  (choice[1], escape(choice[0])))
+            write( tab_s + '<item checked="%d">%s</item>\n' % (choice[1], escape(choice[0])) )
         else:
-            write(tab_s + '<item>%s</item>\n' % escape(choice))
-    write('    '*tabs + '</content>\n')
+            write( tab_s + '<item>%s</item>\n' % escape(choice) )
+    write( '    '*tabs + '</content>\n' )
 

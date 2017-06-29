@@ -33,7 +33,7 @@ class BaseLispSizerBuilder(BaseSizerBuilder):
         while obj.is_sizer:
             obj = obj.node.parent.widget
         if not obj.is_toplevel:
-            parent = '(slot-%s obj)' % obj.name
+            parent = '(slot-%s obj)' % self.codegen._format_name(obj.name)
         else:
             parent = self.tmpl_wparent
         return parent

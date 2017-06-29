@@ -44,7 +44,7 @@
 
 (defmethod set-properties ((obj MyToolBar))
         ;;; begin wxGlade: MyToolBar.__set_properties
-        (wxToolBar_Realize (slot-toolbar_1 obj))
+        (wxToolBar_Realize (slot-toolbar-1 obj))
         ;;; end wxGlade
         )
 

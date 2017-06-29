@@ -322,7 +322,7 @@ class Application(np.PropertyOwner):
     #def generate_code(self, *args, **kwds):
         #preview = kwds.get('preview', False)
     def generate_code(self, preview=False, out_path=None, widget=None):
-        if not self.output_path:
+        if not out_path and not self.output_path:
             return wx.MessageBox( _("You must specify an output file\nbefore generating any code"),
                                   _("Error"), wx.OK | wx.CENTRE | wx.ICON_EXCLAMATION, common.palette )
         name_p = self.properties["name"]

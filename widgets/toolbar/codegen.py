@@ -3,13 +3,12 @@ Code generator functions for wxToolBar objects
 
 @copyright: 2002-2007 Alberto Griggio
 @copyright: 2014-2016 Carsten Grohmann
-@copyright: 2016 Dietmar Schwertberger
+@copyright: 2016-2017 Dietmar Schwertberger
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
 import common, compat
 import wcodegen
-from wcodegen.taghandler import BaseCodeWriterTagHandler
 from .tool import *
 
 
@@ -45,7 +44,7 @@ class PythonCodeGenerator(wcodegen.PythonWidgetCodeWriter):
                 append( '%s.AddSeparator()\n' % obj_name )
             else:
                 name, val = self.codegen.generate_code_id(None, tool.id)
-                if obj.preview or (not name and (not val or val == '-1')):
+                if self.codegen.preview or (not name and (not val or val == '-1')):
                     wid = self.cn('wxNewId()')
                 else:
                     if name:
@@ -56,14 +55,13 @@ class PythonCodeGenerator(wcodegen.PythonWidgetCodeWriter):
                     kind = kinds[int(tool.type)]
                 except (IndexError, ValueError):
                     kind = 'wxITEM_NORMAL'
-                bmp1 = self.generate_code_bitmap(tool.bitmap1, obj.preview)
-                bmp2 = self.generate_code_bitmap(tool.bitmap2, obj.preview)
+                bmp1 = self.generate_code_bitmap(tool.bitmap1)
+                bmp2 = self.generate_code_bitmap(tool.bitmap2)
                 method = "AddLabelTool" if compat.IS_CLASSIC else "AddTool"
                 append( '%s.%s(%s, %s, %s, %s, %s, %s, %s)\n' %
                         (obj_name, method, wid, self.codegen.quote_str(tool.label),
                          bmp1, bmp2, self.cn(kind),
-                         self.codegen.quote_str(tool.short_help),
-                         self.codegen.quote_str(tool.long_help)) )
+                         self.codegen.quote_str(tool.short_help), self.codegen.quote_str(tool.long_help)) )
 
         return ids + out
 
@@ -99,32 +97,6 @@ class PythonCodeGenerator(wcodegen.PythonWidgetCodeWriter):
         for tool in obj.tools:
             out.extend(do_get(tool))
         return out
-
-
-
-#class ToolsHandler(BaseCodeWriterTagHandler):
-    #"Handler for tools of a toolbar"
-    #item_attrs = ('label', 'id', 'short_help', 'type', 'long_help', 'bitmap1', 'bitmap2', 'handler')
-
-    #def __init__(self):
-        #super(ToolsHandler, self).__init__()
-        #self.tools = []
-        #self.curr_tool = None
-
-    #def start_elem(self, name, attrs):
-        #if name == 'tool':
-            #self.curr_tool = Tool()
-
-    #def end_elem(self, name, code_obj):
-        #if name == 'tools':
-            #code_obj.properties['toolbar'] = self.tools
-            #return True
-        #if name == 'tool' and self.curr_tool:
-            #self.tools.append(self.curr_tool)
-        #elif name in self.item_attrs:
-            #char_data = self.get_char_data()
-            #setattr(self.curr_tool, name, char_data)
-
 
 
 def xrc_code_generator(obj):
@@ -255,8 +227,8 @@ class CppCodeGenerator(wcodegen.CppWidgetCodeWriter):
                     kind = kinds[int(tool.type)]
                 except (IndexError, ValueError):
                     kind = 'wxITEM_NORMAL'
-                bmp1 = self.generate_code_bitmap(tool.bitmap1, obj.preview)
-                bmp2 = self.generate_code_bitmap(tool.bitmap2, obj.preview)
+                bmp1 = self.generate_code_bitmap(tool.bitmap1)
+                bmp2 = self.generate_code_bitmap(tool.bitmap2)
                 append('%sAddTool(%s, %s, %s, %s, %s, %s, %s);\n' %
                        (obj_name, wid, self.codegen.quote_str(tool.label),
                         bmp1, bmp2, kind,
@@ -300,6 +272,6 @@ def initialize():
     klass = 'wxToolBar'
     common.class_names['EditToolBar'] = klass
     common.toplevels['EditToolBar'] = 1
-    common.register('python', klass, PythonCodeGenerator(klass), 'tools')#, ToolsHandler)
-    common.register('C++',    klass, CppCodeGenerator(klass),    'tools')#, ToolsHandler)
-    common.register('XRC',    klass, xrc_code_generator,         'tools')#, ToolsHandler)
+    common.register('python', klass, PythonCodeGenerator(klass), 'tools')
+    common.register('C++',    klass, CppCodeGenerator(klass),    'tools')
+    common.register('XRC',    klass, xrc_code_generator,         'tools')

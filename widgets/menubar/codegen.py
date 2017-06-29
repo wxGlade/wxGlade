@@ -8,7 +8,6 @@ Code generator functions for wxMenuBar objects
 
 import common
 import wcodegen
-#from wcodegen.taghandler import BaseCodeWriterTagHandler
 from MenuTree import *
 
 
@@ -32,7 +31,7 @@ class PythonMenubarGenerator(wcodegen.PythonWidgetCodeWriter):
                     append('%s.AppendSeparator()\n' % menu)
                     continue
                 name, val = self.codegen.generate_code_id(None, item.id)
-                if obj.preview or (not name and ( not val or val == '-1')):
+                if self.codegen.preview or (not name and ( not val or val == '-1')):
                     id = cn('wxNewId()')
                 else:
                     if name: ids.append(name)
@@ -109,51 +108,6 @@ class PythonMenubarGenerator(wcodegen.PythonWidgetCodeWriter):
         for menu in obj.menus:
             out.extend(do_get(menu.root))
         return out
-
-
-
-#class MenuHandler(BaseCodeWriterTagHandler):
-    #"Handler for menus and menu items of a menubar"
-    #item_attrs = ('label', 'id', 'name', 'help_str', 'checkable', 'radio', 'handler')
-
-    #def __init__(self):
-        #super(MenuHandler, self).__init__()
-        #self.menu_depth = 0
-        #self.menus = []
-        #self.curr_menu = None
-        #self.curr_item = None
-
-    #def start_elem(self, name, attrs):
-        #if name == 'menu':
-            #self.menu_depth += 1
-            #label = attrs['label']
-            #if self.menu_depth == 1:
-                #t = MenuTree(attrs['name'], label)
-                #self.curr_menu = t.root
-                #self.menus.append(t)
-                #return
-            #id = attrs.get('itemid', '')
-            #handler = attrs.get('handler', '')
-            #node = MenuTree.Node(label=label, name=attrs['name'], id=id, handler=handler)
-            #node.parent = self.curr_menu
-            #self.curr_menu.children.append(node)
-            #self.curr_menu = node
-        #elif name == 'item':
-            #self.curr_item = MenuTree.Node()
-
-    #def end_elem(self, name, code_obj):
-        #if name == 'menus':
-            #code_obj.properties['menubar'] = self.menus
-            #return True
-        #if name == 'item' and self.curr_menu:
-            #self.curr_menu.children.append(self.curr_item)
-            #self.curr_item.parent = self.curr_menu
-        #elif name == 'menu':
-            #self.menu_depth -= 1
-            #self.curr_menu = self.curr_menu.parent
-        #elif name in self.item_attrs:
-            #char_data = self.get_char_data()
-            #setattr(self.curr_item, name, char_data)
 
 
 

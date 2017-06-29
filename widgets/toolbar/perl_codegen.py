@@ -11,7 +11,6 @@ import common
 import wcodegen
 from .tool import *
 
-#from .codegen import ToolsHandler
 
 
 class PerlCodeGenerator(wcodegen.PerlWidgetCodeWriter):
@@ -63,8 +62,8 @@ class PerlCodeGenerator(wcodegen.PerlWidgetCodeWriter):
                     kind = kinds[int(tool.type)]
                 except (IndexError, ValueError):
                     kind = 'wxITEM_NORMAL'
-                bmp1 = self.generate_code_bitmap(tool.bitmap1, obj.preview)
-                bmp2 = self.generate_code_bitmap(tool.bitmap2, obj.preview)
+                bmp1 = self.generate_code_bitmap(tool.bitmap1)
+                bmp2 = self.generate_code_bitmap(tool.bitmap2)
                 append( '%s->AddTool(%s, %s, %s, %s, %s, %s, %s);\n' %
                         (obj_name, wid, self.codegen.quote_str(tool.label),
                          bmp1, bmp2, kind,

@@ -20,7 +20,7 @@ class ArgumentsProperty(np.GridProperty):
         if arguments:
             inner_xml = u''
             for argument in arguments:
-                inner_xml += common.format_xml_tag(u'argument', argument[0], tabs+1)
+                inner_xml += common.format_xml_tag(u'argument', argument, tabs+1)
             stmt = common.format_xml_tag( u'arguments', inner_xml, tabs, is_xml=True)
             outfile.write(stmt)
     def get(self):

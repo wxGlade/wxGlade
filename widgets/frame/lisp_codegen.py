@@ -26,7 +26,7 @@ class LispFrameCodeGenerator(wcodegen.LispWidgetCodeWriter):
         return out
 
     def get_layout_code(self, obj):
-        ret = ['(wxFrame_layout (slot-%s self))\n' % obj.name]
+        ret = ['(wxFrame_layout (slot-%s self))\n' % self.codegen._format_name(obj.name)]
         if obj.centered:
             ret.append('(wxFrame_Centre (slot-top-window obj) wxBOTH)\n')
         return ret

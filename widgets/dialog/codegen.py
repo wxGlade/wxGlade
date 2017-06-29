@@ -19,7 +19,7 @@ class PythonDialogGenerator(wcodegen.PythonWidgetCodeWriter):
         if obj.title:
             out.append('self.SetTitle(%s)\n' % self.codegen.quote_str(obj.title))
         if obj.icon:
-            stmt_icon = self.generate_code_bitmap(obj.icon, self.codegen.preview)
+            stmt_icon = self.generate_code_bitmap(obj.icon)
             out.append('_icon = %s\n' % self.cn('wxNullIcon'))
             out.append('_icon.CopyFromBitmap(%s)\n' % stmt_icon)
             out.append('self.SetIcon(_icon)\n')
@@ -50,7 +50,7 @@ class CppDialogGenerator(wcodegen.CppWidgetCodeWriter):
         if obj.title:
             out.append('SetTitle(%s);\n' % self.codegen.quote_str(obj.title))
         if obj.icon:
-            stmt_icon = self.generate_code_bitmap(obj.icon, self.codegen.preview)
+            stmt_icon = self.generate_code_bitmap(obj.icon)
             out.append('wxIcon _icon;\n')
             out.append('_icon.CopyFromBitmap(%s);\n' % stmt_icon)
             out.append('SetIcon(_icon);\n')

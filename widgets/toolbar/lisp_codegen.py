@@ -20,7 +20,7 @@ class LispCodeGenerator(wcodegen.LispWidgetCodeWriter):
         out = []
         append = out.append
 
-        obj_name = '(slot-%s obj)' % obj.name
+        obj_name = '(slot-%s obj)' % self.codegen._format_name(obj.name)
 
         if obj.properties["bitmapsize"].is_active():
             w, h = obj.properties["bitmapsize"].get_tuple()
@@ -62,8 +62,8 @@ class LispCodeGenerator(wcodegen.LispWidgetCodeWriter):
                     kind = kinds[int(tool.type)]
                 except (IndexError, ValueError):
                     kind = 'wxITEM_NORMAL'
-                bmp1 = self.generate_code_bitmap(tool.bitmap1, obj.preview)
-                bmp2 = self.generate_code_bitmap(tool.bitmap2, obj.preview)
+                bmp1 = self.generate_code_bitmap(tool.bitmap1)
+                bmp2 = self.generate_code_bitmap(tool.bitmap2)
 #                append('%s->AddLabelTool(%s, %s, %s, %s, %s, %s, %s);\n' %
                 append( '(wxToolBar_AddTool %s %s %s %s %s %s %s %s)\n' %
                         (obj_name, wid, self.codegen.quote_str(tool.label),
@@ -83,10 +83,10 @@ class LispCodeGenerator(wcodegen.LispWidgetCodeWriter):
             style = self.cn_f(style)
 
         parent = self.format_widget_access(obj.parent)
-
+        obj_name = self.codegen._format_name(obj.name)
         init = [ '\n\t;;; Tool Bar\n',
-                 '(setf (slot-%s obj) (wxToolBar_Create %s -1 -1 -1 -1 -1 %s))\n' % (obj.name, parent, style),
-                      '(wxFrame_SetToolBar (slot-top-window obj) (slot-%s obj))\n' % obj.name ]
+                 '(setf (slot-%s obj) (wxToolBar_Create %s -1 -1 -1 -1 -1 %s))\n' % (obj_name, parent, style),
+                      '(wxFrame_SetToolBar (slot-top-window obj) (slot-%s obj))\n' % obj_name ]
         init.extend(self.get_init_code(obj))
         init.append(';;; Tool Bar end\n')
         return init, self.get_properties_code(obj), []

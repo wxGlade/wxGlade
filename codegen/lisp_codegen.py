@@ -97,8 +97,7 @@ class SourceFileContent(BaseSourceFileContent):
                 if not self.class_name:
                     # this is the first class declared in the file: insert the
                     # new ones before this
-                    out_lines.append('<%swxGlade insert new_classes>' %
-                                     self.nonce)
+                    out_lines.append('<%swxGlade insert new_classes>' % self.nonce)
                     self.new_classes_inserted = True
                 self.class_name = result.group(1)
                 self.class_name = self.format_classname(self.class_name)
@@ -162,21 +161,15 @@ class SourceFileContent(BaseSourceFileContent):
     def is_import_line(self, line):
         return line.startswith('(use-package :wx')
 
-# end of class SourceFileContent
 
 
 class WidgetHandler(BaseWidgetHandler):
     pass
 
-# end of class WidgetHandler
 
 
 class LispCodeWriter(BaseLangCodeWriter, wcodegen.LispMixin):
-    """\
-    Code writer class for writing Lisp code out of the designed GUI elements
-
-    @see: L{BaseLangCodeWriter}
-    """
+    "Code writer class for writing Lisp code out of the designed GUI elements"
 
     _code_statements = {
         'backgroundcolour': "(wxWindow_SetBackgroundColour %(objname)s %(value)s)\n",
@@ -193,8 +186,7 @@ class LispCodeWriter(BaseLangCodeWriter, wcodegen.LispMixin):
         }
 
     class_separator = '.'
-    classattr_always = ['wxBoxSizer', 'wxStaticBoxSizer', 'wxGridSizer',
-                        'wxFlexGridSizer']
+    classattr_always = ['wxBoxSizer', 'wxStaticBoxSizer', 'wxGridSizer', 'wxFlexGridSizer']
 
     #global_property_writers = {
         #'font':            BaseLangCodeWriter.FontPropertyHandler,
@@ -347,11 +339,9 @@ class LispCodeWriter(BaseLangCodeWriter, wcodegen.LispMixin):
             return
 
         if sub_obj.name not in ("spacer","sizerslot"):
-            self.class_lines.append(sub_obj.name)
-        if (sub_obj.klass == "wxBoxSizer" or
-                    sub_obj.klass == "wxStaticBoxSizer" or
-                    sub_obj.klass == "wxGridSizer" or
-                    sub_obj.klass == "wxFlexGridSizer"):
+            self.class_lines.append( self._format_name(sub_obj.name) )
+        if (sub_obj.klass == "wxBoxSizer"  or sub_obj.klass == "wxStaticBoxSizer" or
+            sub_obj.klass == "wxGridSizer" or sub_obj.klass == "wxFlexGridSizer"):
             self.dependencies['(use-package :wxSizer)'] = 1
         else:
             if sub_obj.klass not in ("spacer", "sizerslot"):
@@ -390,8 +380,7 @@ class LispCodeWriter(BaseLangCodeWriter, wcodegen.LispMixin):
         mycn_f = getattr(builder, 'cn_f', self.cn_f)
 
         # custom base classes support
-        custom_base = getattr(code_obj, 'custom_base',
-                              code_obj.properties.get('custom_base', None))
+        custom_base = getattr( code_obj, 'custom_base', code_obj.properties.get('custom_base', None) )
         if self.preview or (custom_base and not custom_base.strip()):
             custom_base = None
 
@@ -419,20 +408,12 @@ class LispCodeWriter(BaseLangCodeWriter, wcodegen.LispMixin):
         elif custom_base:
             # custom base classes set, but "overwrite existing sources" not
             # set. Issue a warning about this
-            self.warning(
-                '%s has custom base classes, but you are not overwriting '
-                'existing sources: please check that the resulting code is '
-                'correct!' % code_obj.name
-                )
+            self.warning( '%s has custom base classes, but you are not overwriting existing sources: please check that '
+                          'the resulting code is correct!' % code_obj.name )
 
         # __init__ begin tag
-        write(self.tmpl_block_begin % {
-            'class_separator': self.class_separator,
-            'comment_sign':    self.comment_sign,
-            'function':        self.name_ctor,
-            'klass':           self.cn_class(code_obj.klass),
-            'tab':             tab,
-            })
+        write( self.tmpl_block_begin % {'class_separator':self.class_separator, 'comment_sign':self.comment_sign,
+                                        'function':self.name_ctor, 'klass':self.cn_class(code_obj.klass), 'tab':tab} )
 
         style_p = code_obj.properties.get("style")
         if style_p and style_p.value_set != style_p.default_value:
@@ -481,18 +462,11 @@ class LispCodeWriter(BaseLangCodeWriter, wcodegen.LispMixin):
         for win_id, event, handler, unused in event_handlers:
             if win_id.startswith('#'):
                 win_id = win_id[1:]
+            win_id = self._format_name(win_id)
 
-            write(
-                  "%(tab)s(wxEvtHandler_Connect (slot-top-window obj) %(win_id)s (exp%(event)s)" \
-                  "\n%(tab2)s" \
-                  "(wxClosure_Create #'%(handler)s obj))\n" % {
-                    'tab':     tab,
-                    'tab2':    self.tabs(2),
-                    'win_id':  win_id,
-                    'event':   self.cn(event),
-                    'handler': handler,
-                    }
-                )
+            write( "%(tab)s(wxEvtHandler_Connect (slot-top-window obj) %(win_id)s (exp%(event)s)\n%(tab2)s" \
+                   "(wxClosure_Create #'%(handler)s obj))\n" % 
+                    {'tab':tab, 'tab2':self.tabs(2), 'win_id':win_id, 'event':self.cn(event), 'handler':handler} )
 
         return code_lines
 
@@ -536,13 +510,7 @@ class LispCodeWriter(BaseLangCodeWriter, wcodegen.LispMixin):
         else:
             method = 'SetMinSize'
         if use_dialog_units:
-            return '(%s %s(%s(%s (%s))))\n' % (
-                       method,
-                       objname,
-                       self.cn('wxDLG_SZE'),
-                       objname,
-                       size[:-1],
-                       )
+            return '(%s %s(%s(%s (%s))))\n' % ( method, objname, self.cn('wxDLG_SZE'), objname, size[:-1] )
         else:
             return '%s.%s((%s))\n' % (objname, method, size)
 
@@ -585,11 +553,9 @@ class LispCodeWriter(BaseLangCodeWriter, wcodegen.LispMixin):
         style = style.strip().replace('.', '')
 
         if code_obj.base == "wxFrame":
-            stmt = '%%(tab)s(setf (slot-top-window obj) (wxFrame_create nil ' \
-                   'wxID_ANY \"\" -1 -1 -1 -1 %s))\n' % style
+            stmt = '%%(tab)s(setf (slot-top-window obj) (wxFrame_create nil wxID_ANY \"\" -1 -1 -1 -1 %s))\n' % style
         elif code_obj.base == "wxDialog":
-            stmt = '%%(tab)s(setf (slot-top-window obj) (wxDialog_create ' \
-                   'nil wxID_ANY \"\" -1 -1 -1 -1 %s))\n' % style
+            stmt = '%%(tab)s(setf (slot-top-window obj) (wxDialog_create nil wxID_ANY \"\" -1 -1 -1 -1 %s))\n' % style
             self.dependencies['(use-package :wxButton)'] = 1
         else:
             stmt = ''
@@ -597,32 +563,23 @@ class LispCodeWriter(BaseLangCodeWriter, wcodegen.LispMixin):
         return stmt
 
     def _get_class_filename(self, klass):
-        filename = os.path.join(
-            self.out_dir,
-            klass.replace('.', '_') + '.lisp'
-            )
+        filename = os.path.join( self.out_dir, klass.replace('.', '_') + '.lisp' )
         return filename
 
     def format_generic_access(self, obj):
         if obj.is_toplevel:
             return '(slot-top-window obj)'
         else:
+            obj_name = self._format_name(obj.name)
             if self.store_as_attr(obj):
-                return '(slot-%s obj)' % obj.name
+                return '(slot-%s obj)' % obj_name
             else:
-                return obj.name
+                return obj_name
 
     def _format_name(self, name):
         return name.replace('_', '-')
 
-# end of class LispCodeWriter
 
-writer = LispCodeWriter()
-"""\
-The code writer is an instance of L{LispCodeWriter}.
-"""
+writer = LispCodeWriter()  # The code writer is an instance of L{LispCodeWriter}.
 
-language = writer.language
-"""\
-Language generated by this code generator
-"""
+language = writer.language  # Language generated by this code generator

@@ -384,7 +384,7 @@ class BaseWidgetWriter(StylesMixin, BaseCodeWriter):
         self.tmpl_dict['store_as_attr'] = self.codegen.store_as_attr(obj)
         self.tmpl_dict['id_name'], self.tmpl_dict['id_number'] = self.codegen.generate_code_id(obj)
         self.tmpl_dict['id'] = self.tmpl_dict['id_number']
-        self.tmpl_dict['obj_name'] = obj.name
+        self.tmpl_dict['obj_name'] = self.codegen._format_name(obj.name)
 
         klass = obj.klass
         if klass == obj.base:
@@ -416,12 +416,12 @@ class BaseWidgetWriter(StylesMixin, BaseCodeWriter):
     def _prepare_bitmap(self, obj, first='bitmap', second='disabled_bitmap'):
         "Prepare content for widgets with bitmaps; obj is xml_parse.CodeObject; see generate_code_bitmap(), get_code()"
         bmp_first = obj.properties[first].get_value()
-        self.tmpl_dict[first] = self.generate_code_bitmap(bmp_first, self.codegen.preview)
+        self.tmpl_dict[first] = self.generate_code_bitmap(bmp_first)
 
         if second in obj.properties:
             bmp_second = obj.properties[second].get_value()
             if bmp_second:
-                self.tmpl_dict[second] = self.generate_code_bitmap(bmp_second, self.codegen.preview)
+                self.tmpl_dict[second] = self.generate_code_bitmap(bmp_second)
                 self.tmpl_props.append(self.tmpl_bitmap_disabled)
         else:
             bmp_second = ""
@@ -453,17 +453,17 @@ class BaseWidgetWriter(StylesMixin, BaseCodeWriter):
                 self.tmpl_dict['selection'] = selection_p.get()
                 self.has_selection = True
 
-    def generate_code_bitmap(self, bitmap, preview=False):
+    def generate_code_bitmap(self, bitmap):
         """Returns a code fragment that generates an wxBitmap object
 
         bitmap: Bitmap definition string
-        preview: True to generate code for the preview
 
         see: tmpl_inline_bitmap, get_inline_stmt_emptybitmap(), get_inline_stmt_artprovider()"""
         assert self.tmpl_inline_bitmap
 
         if not bitmap:
             return self.codegen.cn('wxNullBitmap')
+        preview = self.codegen.preview
 
         if preview and ( bitmap.startswith('var:') or bitmap.startswith('code:') ):
             preview_icon = os.path.join(config.icons_path, "icon.xpm")
@@ -835,7 +835,7 @@ class LispWidgetCodeWriter(LispMixin, BaseWidgetWriter):
             # this breaks the generated code
             self.tmpl_dict['parent'] = 'Do not use the "parent" substitution in code templates for toplevel windows'
         elif not obj.parent.is_toplevel:
-            self.tmpl_dict['parent'] = '(slot-%s obj)' % obj.parent.name
+            self.tmpl_dict['parent'] = '(slot-%s obj)' % self.codegen._format_name(obj.parent.name)
         else:
             self.tmpl_dict['parent'] = '(slot-top-window obj)'
 
