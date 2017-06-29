@@ -17,7 +17,7 @@ class PerlGenericCalendarCtrlGenerator(wcodegen.PerlWidgetCodeWriter):
 
     def _prepare_tmpl_content(self, obj):
         wcodegen.PerlWidgetCodeWriter._prepare_tmpl_content(self, obj)
-        self.has_setdefault = obj.properties.get('default', False)
+        self.has_setdefault = obj.default
         return
 
 

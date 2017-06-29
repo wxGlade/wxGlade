@@ -39,7 +39,7 @@
 "Method creates the objects contained in the class."
         ;;; begin wxGlade: MyMenuBar.__init__
         (let ((wxglade_tmp_menu (wxMenu_Create "" 0)))
-        		(wxMenuBar_Append (slot-menubar_1 obj) wxglade_tmp_menu "File"))
+        		(wxMenuBar_Append (slot-menubar-1 obj) wxglade_tmp_menu "File"))
         ;;; end wxGlade
         )
 
@@ -77,7 +77,7 @@
 
 (defmethod set-properties ((obj MyToolBar))
         ;;; begin wxGlade: MyToolBar.__set_properties
-        (wxToolBar_Realize (slot-toolbar_1 obj))
+        (wxToolBar_Realize (slot-toolbar-1 obj))
         ;;; end wxGlade
         )
 

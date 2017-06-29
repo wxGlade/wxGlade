@@ -19,12 +19,13 @@ class LispNotebookGenerator(wcodegen.LispWidgetCodeWriter):
 
         prop = window.properties
         id_name, id = self.codegen.generate_code_id(window)
+        window_name = self.codegen._format_name(window.name)
 
         layout_props = []
         for label, tab_win in zip(window.tabs, window.pages):
             tab_win = tab_win.name.replace('_', '-')
             fmt = '(wxNotebook_AddPage (slot-%s obj) (slot-%s obj) %s 1 -1)\n'
-            layout_props.append( fmt % (window.name, tab_win, self.codegen.quote_str(label[0]) ) )
+            layout_props.append( fmt % (window_name, tab_win, self.codegen.quote_str(label[0]) ) )
 
         parent = self.format_widget_access(window.parent)
 
@@ -33,14 +34,14 @@ class LispNotebookGenerator(wcodegen.LispWidgetCodeWriter):
             if id_name:
                 l.append(id_name)
             fmt = '(setf (slot-%s obj) (wxNotebook_Create %s %s -1 -1 -1 -1 wxNB_TOP))\n'
-            l.append( fmt % (window.name, parent, id) )
+            l.append( fmt % (window_name, parent, id) )
             return l, [], []
 
         init = []
         if id_name:
             init.append(id_name)
         fmt = '(setf (slot-%s obj) (wxNotebook_Create %s %s -1 -1 -1 -1 %s))\n'
-        init.append( fmt % (window.name, parent, id, self.tmpl_dict['style']) )
+        init.append( fmt % (window_name, parent, id, self.tmpl_dict['style']) )
 
         props_buf = self.codegen.generate_common_properties(window)
         return init, props_buf, layout_props

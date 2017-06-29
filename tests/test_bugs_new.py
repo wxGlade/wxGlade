@@ -21,7 +21,7 @@ class TestBugs(WXGladeGUITest):
 
     def test_bug165(self):
         "Test bug #165 - Can't rename notebook widget class - internal error on Preview"
-        self.load_and_generate('bug165', test_GUI=True, preview=False)
+        self.load_and_generate('bug165', test_GUI=True)
 
     def test_bug166(self):
         "Test bug #166 - UnicodeDecodeError when saving project using non ASCII characters in menu items"

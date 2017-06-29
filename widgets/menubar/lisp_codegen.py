@@ -8,7 +8,6 @@ Lisp generator functions for wxMenuBar objects
 import common
 import wcodegen
 from MenuTree import *
-#from .codegen import MenuHandler
 
 
 class LispMenubarGenerator(wcodegen.LispWidgetCodeWriter):
@@ -53,6 +52,7 @@ class LispMenubarGenerator(wcodegen.LispWidgetCodeWriter):
                            (menu, widget_id, self.codegen.quote_str(item.label),
                             self.codegen.quote_str(item.help_str), item_type))
 
+        obj_name = self.codegen._format_name(obj.name)
         for m in obj.menus:
             menu = m.root
             if menu.name:
@@ -62,15 +62,15 @@ class LispMenubarGenerator(wcodegen.LispWidgetCodeWriter):
             append('(let ((%s (wxMenu_Create "" 0)))\n' % name)
             if menu.children:
                 append_items(name, menu.children)
-            append('\t\t(wxMenuBar_Append (slot-%s obj) %s %s))\n' %
-                   (obj.name, name, self.codegen.quote_str(menu.label)))
+            append('\t\t(wxMenuBar_Append (slot-%s obj) %s %s))\n'%(obj_name, name, self.codegen.quote_str(menu.label)))
 
         return ids + out
 
     def get_code(self, obj):
-        init = [ '\n', ';;; Menu Bar\n', '(setf (slot-%s obj) (wxMenuBar_Create 0))\n' % obj.name ]
+        obj_name = self.codegen._format_name(obj.name)
+        init = [ '\n', ';;; Menu Bar\n', '(setf (slot-%s obj) (wxMenuBar_Create 0))\n' % obj_name ]
         init.extend(self.get_init_code(obj))
-        init.append('(wxFrame_SetMenuBar (slot-top-window obj) (slot-%s obj))\n' % obj.name)
+        init.append('(wxFrame_SetMenuBar (slot-top-window obj) (slot-%s obj))\n' % obj_name)
         init.append(';;; Menu Bar end\n\n')
         return init, [], []
 
@@ -80,4 +80,4 @@ def initialize():
     klass = 'wxMenuBar'
     common.class_names['EditMenuBar'] = klass
     common.toplevels['EditMenuBar'] = 1
-    common.register('lisp', klass, LispMenubarGenerator(klass) ) #, 'menus', MenuHandler)
+    common.register('lisp', klass, LispMenubarGenerator(klass) )

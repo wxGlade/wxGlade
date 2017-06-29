@@ -15,27 +15,27 @@ from codegen import BaseLangCodeWriter
 from collections import OrderedDict
 import common, compat, errors
 import wcodegen
-from wcodegen.taghandler import BaseCodeWriterTagHandler
+#from wcodegen.taghandler import BaseCodeWriterTagHandler
 
 
-class FontPropertyHandler(BaseCodeWriterTagHandler):
-    props = {'size': '', 'family': '', 'style': '', 'weight': '', 'underlined': '', 'face': ''}
+#class FontPropertyHandler(BaseCodeWriterTagHandler):
+    #props = {'size': '', 'family': '', 'style': '', 'weight': '', 'underlined': '', 'face': ''}
 
-    def __init__(self):
-        super(FontPropertyHandler, self).__init__()
-        self.current = None
+    #def __init__(self):
+        #super(FontPropertyHandler, self).__init__()
+        #self.current = None
 
-    def start_elem(self, name, attrs):
-        self.current = name
+    #def start_elem(self, name, attrs):
+        #self.current = name
 
-    def end_elem(self, name, code_obj):
-        if name == 'font':
-            code_obj.properties['font'] = self.props
-            return True  # to remove this handler
+    #def end_elem(self, name, code_obj):
+        #if name == 'font':
+            #code_obj.properties['font'] = self.props
+            #return True  # to remove this handler
 
-    def char_data(self, data):
-        super(FontPropertyHandler, self).char_data(data)
-        self.props[self.current] = self.get_char_data()
+    #def char_data(self, data):
+        #super(FontPropertyHandler, self).char_data(data)
+        #self.props[self.current] = self.get_char_data()
 
 
 

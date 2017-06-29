@@ -20,14 +20,15 @@ class LispCustomWidgetGenerator(wcodegen.LispWidgetCodeWriter):
         id_name, id = self.codegen.generate_code_id(widget)
 
         if not widget.parent.is_toplevel:
-            parent = '(object-%s self)' % widget.parent.name
+            parent = '(object-%s self)' % self.codegen._format_name(widget.parent.name)
         else:
             parent = 'nil'
 
         if id_name:
             init.append(id_name)
         arguments = format_ctor_arguments( widget.arguments, parent, id, widget.size )
-        init.append( '(setf %s (%s_Create %s))\n' % (widget.name, widget.klass, " ".join(arguments)) )
+        widget_name = self.codegen._format_name(widget.name)
+        init.append( '(setf %s (%s_Create %s))\n' % (widget_name, widget.klass, " ".join(arguments)) )
         props_buf = self.codegen.generate_common_properties(widget)
 
         return init, props_buf, []

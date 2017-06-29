@@ -1014,6 +1014,7 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
         except KeyError:
             # no code generator found: write a comment about it
             name = getattr(sub_obj, "name", "None")
+            name = self._format_name(name)
             msg = _('Code for instance "%s" of "%s" not generated: no suitable writer found') % (name, sub_obj.klass )
             self._source_warning(klass, msg, sub_obj)
             self.warning(msg)
@@ -1031,7 +1032,7 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
             msg = _('Code for instance "%(name)s" of "%(klass)s" was\n'
                     'not created, because the widget is not available for wx version %(requested_version)s.\n'
                     'It is available for wx versions %(supported_versions)s only.') % {
-                        'name':  sub_obj.name, 'klass': sub_obj.klass,
+                        'name':  self._format_name(sub_obj.name), 'klass': sub_obj.klass,
                         'requested_version':  str(misc.format_for_version(self.for_version)),
                         'supported_versions': ', '.join(supported_versions) }
             self._source_warning(klass, msg, sub_obj)
@@ -1087,7 +1088,11 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
         else:
             klass = self.classes[toplevel.klass] = self.ClassLines()
         sizer_name = self._format_classattr(sizer)
-        size = obj and obj.properties["size"].get_tuple() or (0,0)
+        #size = obj and obj.properties["size"].get_tuple() or (0,0)
+        if obj is not None:
+            size = (obj.width, obj.height)
+        else:
+            size = (0, 0)
         size = self.tmpl_spacersize%size
         flag = self.cn_f(flag) or '0'
         klass.layout.append( self.tmpl_sizeritem % ( sizer_name, size, proportion,flag, border ) )

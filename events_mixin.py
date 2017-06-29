@@ -10,8 +10,7 @@ import wx
 import wx.grid
 import re
 
-import common
-import config
+import common, config
 from wcodegen.taghandler import BaseXmlBuilderTagHandler
 import new_properties as np
 

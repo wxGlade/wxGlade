@@ -21,13 +21,14 @@ class LispCodeGenerator(wcodegen.LispWidgetCodeWriter):
         if id_name:
             init.append(id_name)
 
-        init.append('(setf (slot-%s obj) (wxGrid_Create %s %s -1 -1 -1 -1 wxWANTS_CHARS))\n' % (obj.name, parent, id))
+        obj_name = self.codegen._format_name(obj.name)
+        init.append('(setf (slot-%s obj) (wxGrid_Create %s %s -1 -1 -1 -1 wxWANTS_CHARS))\n' % (obj_name, parent, id))
         props_buf = self.get_properties_code(obj)
         return init, props_buf, []
 
     def get_properties_code(self, obj):
         out = []
-        name = obj.name
+        name = self.codegen._format_name(obj.name)
 
         prop = obj.properties
 
@@ -48,7 +49,7 @@ class LispCodeGenerator(wcodegen.LispWidgetCodeWriter):
             fmt = '(wxGrid_SetGridLineColour (slot-%s obj) (wxColour:wxColour_CreateFromStock %s))\n'
             out.append( fmt % (name, self.codegen._string_to_colour(obj.lines_color)) )
         if obj.check_prop('label_bg_color'):
-            ftm = '(wxGrid_SetLabelBackgroundColour (slot-%s obj) (wxColour:wxColour_CreateFromStock %s))\n'
+            fmt = '(wxGrid_SetLabelBackgroundColour (slot-%s obj) (wxColour:wxColour_CreateFromStock %s))\n'
             out.append( fmt % (name, self.codegen._string_to_colour(obj.label_bg_color)) )
 
         sel_mode = obj.properties['selection_mode'].get_string_value()
