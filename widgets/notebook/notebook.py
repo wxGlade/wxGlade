@@ -267,7 +267,8 @@ class EditNotebook(ManagedBase, EditStylesMixin):
             self.pages.insert(i, None)
             # create panel and node, add to tree
             pos = i+1
-            window = EditPanel( self.next_pane_name(name), self, -1, self.virtual_sizer, pos )
+            suggestion = "%s_%s" % (self.name, name)
+            window = EditPanel( self.next_pane_name(suggestion), self, -1, self.virtual_sizer, pos )
             window._dont_destroy = True
             node = window.node = Node(window)
 
@@ -327,6 +328,11 @@ class EditNotebook(ManagedBase, EditStylesMixin):
 
     def next_pane_name(self, suggestion=None):
         # return new and (still) unused pane name
+        if suggestion:
+            suggestion = [c for c in suggestion if "a"<=c<="z" or "A"<=c<="Z" or "0"<=c<="9" or c=="_"]
+            while suggestion and "0"<=suggestion[0]<="9":
+                del suggestion[0]
+            suggestion = "".join(suggestion)
         if suggestion and not common.app_tree.has_name(suggestion):
             return suggestion
         while True:

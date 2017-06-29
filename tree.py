@@ -202,7 +202,7 @@ class Tree(object):
         parent.children.append(child)
         child.parent = parent
         self.current = child
-        self.names.setdefault(self._find_toplevel(child), {})[str(child.widget.name)] = 1
+        self.names.setdefault(self._find_toplevel(child), {})[child.widget.name] = 1
         if parent is self.root and getattr(child.widget.__class__, '_is_toplevel_window', False):
             self.app.add_top_window(child.widget.name)
 
@@ -213,7 +213,7 @@ class Tree(object):
         parent.children.insert(index, child)
         child.parent = parent
         self.current = child
-        self.names.setdefault(self._find_toplevel(child), {})[str(child.widget.name)] = 1
+        self.names.setdefault(self._find_toplevel(child), {})[child.widget.name] = 1
         if parent is self.root:
             self.app.add_top_window(child.widget.name)
 
@@ -222,7 +222,7 @@ class Tree(object):
             del self.names[n]
             return
         try:
-            del self.names[self._find_toplevel(n)][str(n.widget.name)]
+            del self.names[self._find_toplevel(n)][n.widget.name]
         except (KeyError, AttributeError):
             pass
 
