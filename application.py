@@ -479,11 +479,10 @@ class Application(np.PropertyOwner):
             # raise the frame
             frame.CenterOnScreen()
             frame.Show()
-            # remove the temporary file (and the .pyc/.pyo ones too)
-            for ext in ('', 'c', 'o', '~'):
-                name = self.output_path + ext
-                if os.path.isfile(name):
-                    os.unlink(name)
+            # remove the temporary file
+            if not config.debugging:
+                name = os.path.join(preview_path, preview_module_name+".py")
+                if os.path.isfile(name): os.unlink(name)
         except Exception as inst:
             if config.debugging: raise
             widget.preview_widget = None
