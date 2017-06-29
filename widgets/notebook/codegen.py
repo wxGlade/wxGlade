@@ -58,32 +58,27 @@ def xrc_code_generator(obj):
 
     class NotebookXrcObject(xrcgen.DefaultXrcObject):
 
-        def write(self, outfile, ntabs):
+        def write(self, outfile, ntabs, properties=None):
+            if properties is None: properties = {}
             # the "tabs" property contains the pages of a notebook
-            # be carefully: tabs in context of code generation are white
-            # spaces used for indenting lines!!
-            if 'tabs' in self.properties:
-                self.pages = self.properties['tabs']
-                del self.properties['tabs']
-            else:
-                self.pages = []
-            self.index = 0
+            # be careful: tabs in context of code generation are white spaces used for indenting lines!!
+            properties["tabs"] = None # don't write
+
             # always use a wxNotebookSizer
-            self.properties['usenotebooksizer'] = '1'
-            if 'no_custom_class' in self.properties:
-                del self.properties['no_custom_class']
-            xrcgen.DefaultXrcObject.write(self, outfile, ntabs)
+            properties['usenotebooksizer'] = '1'
+            properties['no_custom_class'] = None
+            xrcgen.DefaultXrcObject.write(self, outfile, ntabs, properties)
 
         def write_child_prologue(self, child, outfile, ntabs):
-            if self.pages:
+            if self.widget.pages:
+                label = self.widget.tabs[child.widget.pos-1][0]  # pos is 1-based
                 tab_s = '    ' * ntabs
                 outfile.write( tab_s + '<object class="notebookpage">\n' )
-                outfile.write( tab_s + '<label>%s</label>\n' % escape(self.pages[self.index][0]) )
-                self.index += 1
+                outfile.write( tab_s + '<label>%s</label>\n' % escape(label) )
 
         def write_child_epilogue(self, child, outfile, ntabs):
-            if self.tabs:
-                outfile.write('    '*ntabs + '</object>\n')
+            if self.widget.pages:
+                outfile.write( '    '*ntabs + '</object>\n' )
 
     return NotebookXrcObject(obj)
 

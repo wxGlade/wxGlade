@@ -109,18 +109,15 @@ def xrc_code_generator(obj):
     xrcgen = common.code_writers['XRC']
 
     class XrcCodeGenerator(xrcgen.DefaultXrcObject):
-        def write(self, *args, **kwds):
-            if 'scrollable' in self.properties:
-                style = self.properties.get('style', '').split('|')
-                try: style.remove('wxTAB_TRAVERSAL')
-                except ValueError: pass
-                self.properties['style'] = '|'.join(style)
-            for prop in ('scrollable', 'scroll_rate'):
-                try: del self.properties[prop]
-                except KeyError: pass
-            if 'no_custom_class' in self.properties:
-                del self.properties['no_custom_class']
-            xrcgen.DefaultXrcObject.write(self, *args, **kwds)
+        def write(self, out, tabs, properties=None):
+            if properties is None: properties = {}
+            if self.widget.check_prop('scrollable'):
+                style = self.widget.properties['style'].get_string_value().split("|")
+                if 'wxTAB_TRAVERSAL' in style: style.remove('wxTAB_TRAVERSAL')
+                properties['style'] = '|'.join(style)
+            properties["scrollable"] = properties["scroll_rate"] = None # not to be written
+            properties['no_custom_class'] = None
+            xrcgen.DefaultXrcObject.write(self, out, tabs, properties)
 
     return XrcCodeGenerator(obj)
 

@@ -43,13 +43,8 @@ class FileDirDialog(object):
         self.default_extension = None
 
     def ShowModal(self):
-        """\
-        Show a FileDialog or a DirDialog as a modal dialog. The selected
-        file or directory is stored in L{value} on success.
-
-        @return: C{ID_OK} or C{ID_CANCEL}
-        @see: L{get_value()}
-        """
+        """Show a FileDialog or a DirDialog as a modal dialog.
+        The selected file or directory is stored in self.value on success. Returns ID_OK or ID_CANCEL."""
         if self.parent.multiple_files == 0:
             self.value = wx.FileSelector( self.file_message, self.prev_dir, wildcard=self.wildcard,
                                           flags=self.file_style )
