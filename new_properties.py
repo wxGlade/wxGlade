@@ -26,6 +26,7 @@ class Property(object):
     LABEL = None # defaults to property name
     CONTROLNAMES = ["enabler"]  # for activation; also these attributes will be set to None when the editor is destroyed
     GROW = False # if this is True, no spacer is added after the control, so it may grow down to the lower edge
+    HAS_DATA = True
     def __init__(self, value, default_value=_DefaultArgument, name=None):#, write_always=False):
         self._logger = logging.getLogger(self.__class__.__name__)
         self.value = value
@@ -1898,6 +1899,7 @@ class ActionButtonProperty(Property):
     # just a button to start an action
     CONTROLNAMES = ["button"]
     background_color = None
+    HAS_DATA = False # to be ignored by owner.get_properties()
     def __init__(self, callback):
         self.callback = callback
         self.label = None  # set to None; when creating an editor, self.set_label() may have been called
@@ -1996,6 +1998,7 @@ class PropertyOwner(object):
         for name in self.property_names:
             if name in ("class","name","base") or name in without: continue
             prop = self.properties[name]
+            if not prop.HAS_DATA: continue
             if prop.attributename in without: continue  # for e.g. option/proportion
             if prop is not None: ret.append(prop)
         return ret
