@@ -77,6 +77,7 @@ def builder(parent, sizer, pos, number=[1]):
         number[0] += 1
         name = 'text_ctrl_%d' % number[0]
     text = EditTextCtrl(name, parent, wx.NewId(), sizer, pos)
+    text.properties["style"].set_to_default()
     text.check_defaults()
     node = Node(text)
     text.node = node

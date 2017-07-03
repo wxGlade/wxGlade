@@ -56,6 +56,7 @@ def builder(parent, sizer, pos, number=[1]):
         number[0] += 1
         label = 'datepicker_ctrl_%d' % number[0]
     datepicker_ctrl = EditDatePickerCtrl(label, parent, wx.NewId(), sizer, pos)
+    datepicker_ctrl.properties["style"].set_to_default()
     datepicker_ctrl.check_defaults()
     node = Node(datepicker_ctrl)
     datepicker_ctrl.node = node

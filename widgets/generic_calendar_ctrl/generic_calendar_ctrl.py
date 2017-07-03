@@ -64,6 +64,7 @@ def builder(parent, sizer, pos, number=[1]):
         number[0] += 1
         label = 'generic_calendar_ctrl_%d' % number[0]
     calendar_ctrl = EditGenericCalendarCtrl(label, parent, wx.NewId(), sizer, pos)
+    calendar_ctrl.properties["style"].set_to_default()
     calendar_ctrl.check_defaults()
     node = Node(calendar_ctrl)
     calendar_ctrl.node = node

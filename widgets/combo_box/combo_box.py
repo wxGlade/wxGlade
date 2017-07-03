@@ -77,6 +77,7 @@ def builder(parent, sizer, pos, number=[1]):
         number[0] += 1
         name = 'combo_box_%d' % number[0]
     combo = EditComboBox(name, parent, wx.NewId(), [], sizer, pos)
+    combo.properties["style"].set_to_default()
     combo.check_defaults()
     node = Node(combo)
 #    sizer.set_item(pos, size=choice.GetBestSize())

@@ -67,6 +67,7 @@ def builder(parent, sizer, pos, number=[1]):
         number[0] += 1
         name = 'spin_ctrl_%d' % number[0]
     spin = EditSpinCtrl(name, parent, wx.NewId(), sizer, pos)
+    spin.properties["style"].set_to_default()
     spin.check_defaults()
     node = Node(spin)
     spin.node = node

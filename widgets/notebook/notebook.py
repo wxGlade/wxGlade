@@ -167,6 +167,7 @@ class EditNotebook(ManagedBase, EditStylesMixin):
         name = name or self.next_notebook_name()  # create new and (still) unused notebook name
         ManagedBase.__init__(self, name, 'wxNotebook', parent, id, sizer, pos)
         EditStylesMixin.__init__(self)
+        self.properties["style"].set(style)
 
         self.virtual_sizer = NotebookVirtualSizer(self)
         self._is_removing_pages = False
@@ -375,7 +376,6 @@ def builder(parent, sizer, pos, number=[1]):
         return
 
     widget = editor_class(None, parent, wx.ID_ANY, style, sizer, pos)
-
     node = Node(widget)
     widget.node = node
     widget.virtual_sizer.node = node
