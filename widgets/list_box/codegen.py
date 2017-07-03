@@ -9,6 +9,7 @@ Code generator functions for wxListBox objects
 
 import common
 import wcodegen
+from ChoicesCodeHandler import *
 
 
 class PythonListBoxGenerator(wcodegen.PythonWidgetCodeWriter):
@@ -26,12 +27,17 @@ def xrc_code_generator(obj):
     xrcgen = common.code_writers['XRC']
 
     class ListBoxXrcObject(xrcgen.DefaultXrcObject):
+        def write(self, out_file, ntabs):
+            style = self.widget.properties["style"].get_string_value()
+            properties = {"style":style}
+            xrcgen.DefaultXrcObject.write(self, out_file, ntabs, properties)
+
         def write_property(self, name, val, outfile, tabs):
             if name == 'choices':
                 xrc_write_choices_property(self, outfile, tabs)
             elif name == 'selection':
-                choices = self.properties['choices']
-                if choices:
+                choices = self.widget.properties['choices']
+                if choices.is_active() and val!='-1':
                     xrcgen.DefaultXrcObject.write_property(self, name, val, outfile, tabs)
             else:
                 xrcgen.DefaultXrcObject.write_property(self, name, val, outfile, tabs)

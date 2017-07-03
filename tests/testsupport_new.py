@@ -34,7 +34,7 @@ class WXGladeBaseTest(unittest.TestCase):
     # Language specific constants for file names: language, file prefix, file extensions
     language_constants = [("python","Py", ".py", ".py"),("perl","Pl", ".pl", ".pm"),
                           ("C++","CPP", ".cpp", ".cpp"),("lisp","Lisp", ".lisp",".lisp"),
-                          ("xrc","xrc", ".xrc",".xrc")]
+                          ("XRC","xrc", ".xrc",".xrc")]
 
     @classmethod
     def setUpClass(cls):

@@ -10,6 +10,7 @@ Code generator functions for wxRadioBox objects
 import common
 import wcodegen
 from . import radio_box_base
+from ChoicesCodeHandler import *
 
 
 class PythonRadioBoxGenerator(radio_box_base.RadioBoxMixin, wcodegen.PythonWidgetCodeWriter):

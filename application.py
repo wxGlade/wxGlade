@@ -329,7 +329,7 @@ class Application(np.PropertyOwner):
         if preview:
             writer = common.code_writers["python"].copy()
         else:
-            writer = common.code_writers[self.language].copy()
+            writer = common.code_writers[self.language]#.copy()
 
         if out_path is None:
             out_path = os.path.expanduser(self.output_path.strip())

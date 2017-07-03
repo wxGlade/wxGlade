@@ -166,7 +166,7 @@ def xrc_code_generator(obj):
     xrcgen = common.code_writers['XRC']
 
     class GridXrcObject(xrcgen.DefaultXrcObject):
-        unsupported = set(['column', 'create_grid', 'rows_number', 'row_label_size', 'col_label_size',
+        unsupported = set(['columns', 'create_grid', 'rows_number', 'row_label_size', 'col_label_size',
                            'enable_editing', 'enable_grid_lines', 'enable_col_resize', 'enable_row_resize',
                            'enable_grid_resize', 'lines_color', 'label_bg_color', 'selection_mode'])
 

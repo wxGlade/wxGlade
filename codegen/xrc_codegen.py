@@ -56,7 +56,7 @@ class XrcObject(wcodegen.XrcWidgetCodeWriter):
     def write_property(self, name, val, outfile, ntabs):
         pass
 
-    def write(self, out_file, ntabs):
+    def write(self, out_file, ntabs, properties=None):
         pass
 
     def warning(self, msg):
@@ -75,7 +75,7 @@ class SizerItemXrcObject(XrcObject):
         self.flag = flag
         self.border = border
 
-    def write(self, out_file, ntabs):
+    def write(self, out_file, ntabs, properties=None):
         write = out_file.write
         tabs = self.tabs(ntabs)
         tabs1 = self.tabs(ntabs + 1)
@@ -167,14 +167,19 @@ class DefaultXrcObject(XrcObject):
     def write(self, out_file, ntabs, properties=None):
         if properties is None: properties = {}
         write = out_file.write
+        if "name" in properties:
+            name = properties["name"]
+            del properties["name"]
+        else:
+            name = self.name
         if self.widget.is_sizer:
             write(self.tabs(ntabs) + '<object class=%s>\n' % quoteattr(self.klass))
         else:
             if self.subclass and self.subclass != self.klass:
                 write(self.tabs(ntabs) + '<object class=%s name=%s subclass=%s>\n' % (
-                                                quoteattr(self.klass), quoteattr(self.name), quoteattr(self.subclass)) )
+                                                quoteattr(self.klass), quoteattr(name), quoteattr(self.subclass)) )
             else:
-                write(self.tabs(ntabs) + '<object class=%s name=%s>\n' % (quoteattr(self.klass), quoteattr(self.name)))
+                write(self.tabs(ntabs) + '<object class=%s name=%s>\n' % (quoteattr(self.klass), quoteattr(name)))
         tab_str = self.tabs(ntabs + 1)
         # write the properties
         import edit_sizers
@@ -189,13 +194,13 @@ class DefaultXrcObject(XrcObject):
             value = None
             if name=='foreground':
                 value = prop.get_string_value()
-                if value.startswith('#'):
+                if not value.startswith('#'):
                     # XRC does not support colors from system settings
                     continue
                 name = 'fg'
             elif name=='background':
                 value = prop.get_string_value()
-                if value.startswith('#'):
+                if not value.startswith('#'):
                     # XRC does not support colors from system settings
                     continue
                 name = "bg"
@@ -203,12 +208,14 @@ class DefaultXrcObject(XrcObject):
                 font = prop.value
                 continue
             elif name=="style":
+                if hasattr(prop, "value_set"):
+                    if prop.value_set==prop.default_value: continue
                 value = prop.get_string_value()
                 if value: value = self.cn_f(value)
             elif name=='id':
                 continue  # id has no meaning for XRC
             elif name=='events':
-                for win_id, event, handler, event_type in self.get_event_handlers(prop.get()):
+                for win_id, event, handler, event_type in self.get_event_handlers(self.widget):
                     write(tab_str + '<handler event=%s>%s</handler>\n' % (quoteattr(event), escape(handler)))
                 continue
             elif name=='disabled':
@@ -226,8 +233,7 @@ class DefaultXrcObject(XrcObject):
             elif name=='extraproperties':
                 value = prop.get()
                 if value:
-                    properties.update(prop)
-                    raise ValueError("XXX check and update active")
+                    properties.update(value)
                 continue
             if value is None: value = prop.get_string_value()
             if value is None: continue
@@ -241,8 +247,10 @@ class DefaultXrcObject(XrcObject):
         if font:
             write(tab_str + '<font>\n')
             tab_str = self.tabs(ntabs + 2)
-            for key in sorted(font.keys()):
-                val = font[key]
+
+            data = sorted( zip(['size','family','style','weight','underlined','face'], font) )
+            for key, val in data:
+                if isinstance(val, int): val = str(val)
                 if val:
                     write(tab_str + '<%s>%s</%s>\n' % (escape(key), escape(val), escape(key)))
             write(self.tabs(ntabs + 1) + '</font>\n')
@@ -369,7 +377,10 @@ class XRCCodeWriter(BaseLangCodeWriter, wcodegen.XRCMixin):
     def add_sizeritem(self, unused, sizer, obj, option, flag, border):
         "Adds a sizeritem to the XRC tree. The first argument is unused."
         # what we need in XRC is not toplevel, but sub_obj's true parent
-        toplevel = obj.parent
+        toplevel = obj.node.parent.widget
+        while toplevel.is_sizer:
+            toplevel = toplevel.node.parent.widget
+
         top_xrc = toplevel.xrc
         obj_xrc = obj.xrc
         try:
@@ -392,6 +403,18 @@ class XRCCodeWriter(BaseLangCodeWriter, wcodegen.XRCMixin):
             sizeritem_xrc = SizerItemXrcObject( obj_xrc, str(option), str(flag), str(border) )
             sizer.xrc.children.append(sizeritem_xrc)
         del top_xrc.children[index]
+
+    def add_spacer(self, topl, sizer, obj=None, option=0, flag='0', border=0):
+        #self.add_sizeritem(topl, sizer, obj, obj.proportion, obj.properties["flag"].get_string_value(), obj.border )
+        if obj is not None:
+            w = obj.width
+            h = obj.height
+        else:
+            h = w = 0
+        obj_xrc = SpacerXrcObject( '%s, %s' % (w,h), str(option), str(flag), str(border) )
+        if not hasattr(sizer, "xrc"):  # if the sizer has not an XrcObject yet, create it now
+            sizer.xrc = self.obj_builders.get( sizer.base, DefaultXrcObject )(sizer)
+        sizer.xrc.children.append(obj_xrc)
 
     def add_class(self, code_obj):
         """Add class behaves very differently for XRC output than for other languages (i.e. python):

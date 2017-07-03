@@ -16,7 +16,6 @@ class LispGaugeGenerator(wcodegen.LispWidgetCodeWriter):
 
     def _prepare_tmpl_content(self, obj):
         wcodegen.LispWidgetCodeWriter._prepare_tmpl_content(self, obj)
-        #self.tmpl_dict['range'] = obj.properties.get('range', '10')
         self.tmpl_dict['range'] = obj.range
         return
 

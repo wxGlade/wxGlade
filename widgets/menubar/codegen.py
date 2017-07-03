@@ -155,11 +155,10 @@ def xrc_code_generator(obj):
             if tokens: return tokens[0].strip()
 
         def write(self, outfile, tabs):
-            menus = self.code_obj.properties['menubar']
             write = outfile.write
             write('    '*tabs + '<object class="wxMenuBar" name=%s>\n' % \
                   quoteattr(self.name))
-            for m in menus:
+            for m in self.widget.menus:
                 self.append_item(m.root, outfile, tabs+1)
             write('    '*tabs + '</object>\n')
 

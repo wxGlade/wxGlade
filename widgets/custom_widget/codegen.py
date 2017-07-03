@@ -114,17 +114,16 @@ def xrc_code_generator(obj):
 
     class CustomXrcObject(xrcgen.DefaultXrcObject):
         # return value for xrc_code_generator
-        def write(self, outfile, ntabs):
+        def write(self, outfile, ntabs, properties=None):
+            if properties is None: properties = {}
             # first, fix the class:
             self.klass = obj.klass
             # delete the custom constructor property
-            if 'custom_ctor' in self.properties:
-                del self.properties['custom_ctor']
+            properties['custom_ctor'] = None
             # then, the attributes:
-            if 'arguments' in self.properties:
-                args = self.properties['arguments']
-                del self.properties['arguments']
-                for arg in args:
+            args_p = self.widget.properties['arguments']
+            if args_p.is_active() and args_p.value!=args_p.default_value:
+                for arg in args_p.value:
                     try:
                         name, val = [s.strip() for s in arg.split(':', 1)]
                     except Exception:
@@ -132,8 +131,9 @@ def xrc_code_generator(obj):
                         logging.warning('Ignore malformed argument "%s" for "%s". Argument format should be: name:value',
                                         arg, self.klass )
                         continue
-                    self.properties[name] = val
-            xrcgen.DefaultXrcObject.write(self, outfile, ntabs)
+                    properties[name] = val
+            properties["arguments"] = None
+            xrcgen.DefaultXrcObject.write(self, outfile, ntabs, properties)
 
     return CustomXrcObject(obj)
 

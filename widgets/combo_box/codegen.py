@@ -10,6 +10,7 @@ Code generator functions for wxComboBox objects
 
 import common
 import wcodegen
+from ChoicesCodeHandler import *
 
 
 class PythonComboBoxGenerator(wcodegen.PythonWidgetCodeWriter):
