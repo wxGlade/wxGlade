@@ -63,6 +63,7 @@ def builder(parent, sizer, pos, number=[1]):
         number[0] += 1
         label = u'radio_btn_%d' % number[0]
     radio = EditRadioButton(label, parent, wx.NewId(), label, sizer, pos)
+    radio.properties["style"].set_to_default()
     radio.check_defaults()
     node = Node(radio)
     radio.node = node

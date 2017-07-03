@@ -23,6 +23,7 @@ class EditGauge(ManagedBase, EditStylesMixin):
     def __init__(self, name, parent, id, style, sizer, pos):
         ManagedBase.__init__(self, name, 'wxGauge', parent, id, sizer, pos)
         EditStylesMixin.__init__(self)
+        if style: self.properties["style"].set(style)
 
         # initialise instance properties
         self.range = np.SpinProperty(10, val_range=(0,10000000), immediate=True)

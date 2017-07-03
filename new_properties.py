@@ -823,6 +823,11 @@ class WidgetStyleProperty(_CheckListProperty):
         self.modified = False
         self.default_value = set(self.value_set)
 
+    def set_to_default(self):
+        # for use after interactively creating an instance
+        if self.value_set==self.default_value: return
+        self.set(self.default_value)
+
     def _decode_value(self, value):
         "handle obsolete and renamed properties"
         value = _CheckListProperty._decode_value(self, value)

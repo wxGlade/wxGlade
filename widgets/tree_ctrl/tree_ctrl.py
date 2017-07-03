@@ -60,6 +60,7 @@ def builder(parent, sizer, pos, number=[1]):
         number[0] += 1
         name = 'tree_ctrl_%d' % number[0]
     tree_ctrl = EditTreeCtrl(name, parent, wx.NewId(), sizer, pos)
+    tree_ctrl.properties["style"].set_to_default()
     node = Node(tree_ctrl)
     tree_ctrl.node = node
     tree_ctrl.properties["proportion"].set(1)

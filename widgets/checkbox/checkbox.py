@@ -85,6 +85,7 @@ def builder(parent, sizer, pos, number=[1]):
         number[0] += 1
         label = 'checkbox_%d' % number[0]
     checkbox = EditCheckBox(label, parent, wx.NewId(), label, sizer, pos)
+    checkbox.properties["style"].set_to_default()
     checkbox.check_defaults()
     node = Node(checkbox)
     checkbox.node = node

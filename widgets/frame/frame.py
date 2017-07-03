@@ -166,6 +166,7 @@ def builder(parent, sizer, pos, klass=None, base=None, name=None):
     else:
         base_class = EditMDIChildFrame
     frame = base_class(name, parent, wx.NewId(), name, klass=klass)
+    frame.properties["style"].set_to_default()
     node = Node(frame)
     frame.node = node
     common.app_tree.add(node)

@@ -52,6 +52,7 @@ def builder(parent, sizer, pos, number=[1]):
         number[0] += 1
         label = u'label_%d' % number[0]
     static_text = EditStaticText(label, parent, wx.NewId(), label, sizer, pos)
+    static_text.properties["style"].set_to_default()
     static_text.check_defaults()
     node = Node(static_text)
     static_text.node = node

@@ -67,6 +67,7 @@ def builder(parent, sizer, pos, number=[1]):
         number[0] += 1
         name = 'spin_button_%d' % number[0]
     text = EditSpinButton(name, parent, wx.NewId(), sizer, pos)
+    text.properties["style"].set_to_default()
     text.check_defaults()
     node = Node(text)
     text.node = node
