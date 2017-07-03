@@ -8,7 +8,6 @@ Code generator functions for wxStatusBar objects
 
 import common
 import wcodegen
-from wcodegen.taghandler import BaseCodeWriterTagHandler
 
 
 class PythonStatusBarGenerator(wcodegen.PythonWidgetCodeWriter):
@@ -38,43 +37,19 @@ class PythonStatusBarGenerator(wcodegen.PythonWidgetCodeWriter):
             append( '%(tab)s%(name)s.SetStatusText(%(obj_name)s_fields[i], i)\n' )
 
 
-
-# property handlers for code generation
-class StatusFieldsHandler(BaseCodeWriterTagHandler):
-    "Handler for statusbar fields"
-
-    def __init__(self):
-        super(StatusFieldsHandler, self).__init__()
-        self.labels = []
-        self.widths = []
-
-    def start_elem(self, name, attrs):
-        if name == 'field':
-            self.widths.append(int(attrs.get('width', -1)))
-
-    def end_elem(self, name, code_obj):
-        if name == 'fields':
-            code_obj.properties['statusbar'] = (self.labels, self.widths)
-            return True
-        char_data = self.get_char_data()
-        self.labels.append(char_data)
-
-
-
 def xrc_statusbar_code_generator(obj):
     xrcgen = common.code_writers['XRC']
 
     class StatusbarXrcObject(xrcgen.DefaultXrcObject):
         def write(self, outfile, tabs):
-            if 'statusbar' in self.properties:
-                fields = obj.fields # properties['statusbar']
-                labels = [f[0] for f in fields]
-                widths = [int(f[1]) for f in fields]
+            properties = {}
+            fields = self.widget.fields # properties['statusbar']
+            labels = [f[0] for f in fields]
+            widths = [int(f[1]) for f in fields]
 
-                self.properties['fields'] = str(len(fields))
-                self.properties['widths'] = ', '.join([str(w) for w in widths])
-                del self.properties['statusbar']
-            xrcgen.DefaultXrcObject.write(self, outfile, tabs)
+            properties['fields'] = str(len(fields))
+            properties['widths'] = ', '.join([str(w) for w in widths])
+            xrcgen.DefaultXrcObject.write(self, outfile, tabs, properties)
 
     return StatusbarXrcObject(obj)
 
@@ -132,7 +107,7 @@ def initialize():
     xrcgen = common.code_writers.get('XRC')
     if xrcgen:
         xrcgen.add_widget_handler('wxStatusBar', xrc_statusbar_code_generator)
-        xrcgen.add_property_handler('fields', StatusFieldsHandler)
+        #xrcgen.add_property_handler('fields', StatusFieldsHandler)
 
     cppgen = common.code_writers.get('C++')
     if cppgen:

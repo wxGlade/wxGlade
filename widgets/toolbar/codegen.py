@@ -145,22 +145,23 @@ def xrc_code_generator(obj):
                     pass
                 write('    '*tabs + '</object>\n')
         def write(self, outfile, tabs):
-            tools = self.code_obj.properties['toolbar']
+            tools = self.widget.tools
             write = outfile.write
             write('    '*tabs + '<object class="wxToolBar" name=%s>\n' % quoteattr(self.name))
+            
             for prop_name in 'bitmapsize', 'margins':
-                prop = self.code_obj.properties.get(prop_name)
-                if prop:
+                prop = self.widget.properties.get(prop_name)
+                if prop.is_active():
                     try:
-                        w, h = [int(i) for i in prop.split(',')]
+                        w, h = prop.get_tuple()
                         write('    ' * (tabs+1) + '<%s>%s, %s</%s>\n' % (prop_name, w, h, prop_name))
                     except:
                         pass
             for prop_name in 'packing', 'separation':
-                prop = self.code_obj.properties.get(prop_name)
-                if prop:
+                prop = self.widget.properties.get(prop_name)
+                if prop.is_active():
                     write('    ' * (tabs+1) + '<%s>%s</%s>\n' % (prop_name, escape(prop), prop_name))
-            style = self.code_obj.properties.get('style')
+            style = self.widget.properties['style'].get_string_value()
             if style:
                 style = self.cn_f(style)
                 style = style.split('|')

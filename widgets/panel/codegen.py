@@ -111,7 +111,7 @@ def xrc_code_generator(obj):
     class XrcCodeGenerator(xrcgen.DefaultXrcObject):
         def write(self, out, tabs, properties=None):
             if properties is None: properties = {}
-            if self.widget.check_prop('scrollable'):
+            if self.widget.check_prop('scrollable') and self.widget.scrollable:
                 style = self.widget.properties['style'].get_string_value().split("|")
                 if 'wxTAB_TRAVERSAL' in style: style.remove('wxTAB_TRAVERSAL')
                 properties['style'] = '|'.join(style)

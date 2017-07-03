@@ -9,6 +9,19 @@ XRC generator functions for the various wxSizers
 import common
 
 
+def xrc_wxSizer_builder(obj):
+    xrcgen = common.code_writers['XRC']
+
+    class SizerXrcObject(xrcgen.DefaultXrcObject):
+        def write(self, outfile, ntabs, properties=None):
+            if properties is None: properties = {}
+            properties["class_orient"] = None # don't write
+            xrcgen.DefaultXrcObject.write(self, outfile, ntabs, properties)
+    # end of class SizerXrcObject
+
+    return SizerXrcObject(obj)
+
+
 def xrc_wxFlexGridSizer_builder(obj):
     xrcgen = common.code_writers['XRC']
 
@@ -40,4 +53,7 @@ def initialize():
 
     xrcgen = common.code_writers.get("XRC")
     if xrcgen:
+        xrcgen.add_widget_handler( 'wxBoxSizer', xrc_wxSizer_builder )
+        xrcgen.add_widget_handler( 'wxStaticBoxSizer', xrc_wxSizer_builder )
+        xrcgen.add_widget_handler( 'wxGridSizer', xrc_wxSizer_builder )
         xrcgen.add_widget_handler( 'wxFlexGridSizer', xrc_wxFlexGridSizer_builder )

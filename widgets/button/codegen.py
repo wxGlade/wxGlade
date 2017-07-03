@@ -53,14 +53,11 @@ def xrc_code_generator(obj):
     class ButtonXrcObject(xrcgen.DefaultXrcObject):
         def write(self, out_file, ntabs):
             stockitem = obj.stockitem or 'None'
+            properties = {}
             if stockitem != 'None':
-                self.name = 'wxID_' + stockitem
-                del self.properties['stockitem']
-                try:
-                    del self.properties['label']
-                except KeyError:
-                    pass
-            xrcgen.DefaultXrcObject.write(self, out_file, ntabs)
+                properties["name"] = 'wxID_' + stockitem
+                properties["stockitem"] = properties['label'] = None  # don't write
+            xrcgen.DefaultXrcObject.write(self, out_file, ntabs, properties)
 
         def write_property(self, name, val, outfile, tabs):
             if name == 'label':

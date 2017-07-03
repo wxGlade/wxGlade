@@ -50,11 +50,9 @@ config = {
         },
         'wxSTB_DEFAULT_STYLE': {
             'desc': _('The default style: includes wxSTB_SIZEGRIP|'
-                      'wxSTB_SHOW_TIPS|wxSTB_ELLIPSIZE_END|'
-                      'wxFULL_REPAINT_ON_RESIZE.'),
+                      'wxSTB_SHOW_TIPS|wxSTB_ELLIPSIZE_END|wxFULL_REPAINT_ON_RESIZE.'),
             'supported_by': ('wx3',),
-            'combination': ('wxSTB_SIZEGRIP|wxSTB_SHOW_TIPS|'
-                            'wxSTB_ELLIPSIZE_END|wxFULL_REPAINT_ON_RESIZE'),
+            'combination': ('wxSTB_SIZEGRIP|wxSTB_SHOW_TIPS|wxSTB_ELLIPSIZE_END|wxFULL_REPAINT_ON_RESIZE'),
         },
     },
     'style_list': ['wxST_SIZEGRIP', 'wxSTB_SIZEGRIP', 'wxSTB_SHOW_TIPS',

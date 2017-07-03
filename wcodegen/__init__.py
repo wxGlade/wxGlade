@@ -548,7 +548,7 @@ class BaseWidgetWriter(StylesMixin, BaseCodeWriter):
             return [], [], init_lines + prop_lines
         return init_lines, prop_lines, []
 
-    def get_event_handlers(self, events):
+    def get_event_handlers(self, obj):
         """Returns a list of event handlers defined for the given object (CodeObject instance).
 
         Each list entry has following items: (ID, Event, Handler, Event prototype)
@@ -559,15 +559,14 @@ class BaseWidgetWriter(StylesMixin, BaseCodeWriter):
              ('wxID_EXIT', 'EVT_MENU', 'OnClose', 'wxCommandEvent')]"""
 
         ret = []
-        if not events: return ret
+        if not obj.events: return ret
 
-        obj = self.widget
         if 'events' not in self.config:
             self._logger.warn( _('Object %(name)s(%(klass)s contains unknown events: %(events)s)'),
                                {'name':obj.name,'klass': obj.klass, 'events':obj.properties ['events']})
             return ret
 
-        win_id = self.codegen.generate_code_id(self.widget)[1]
+        win_id = self.codegen.generate_code_id(obj)[1]
         if self.use_names_for_binding_events and (win_id == '-1' or win_id == self.codegen.cn('wxID_ANY')):
             win_id = self.codegen.add_object_format_name(obj.name)
 
@@ -576,7 +575,8 @@ class BaseWidgetWriter(StylesMixin, BaseCodeWriter):
         except KeyError:
             default_event = 'wxCommandEvent'
 
-        for event, handler in sorted( events ):
+        for event, handler in sorted( obj.events ):
+            if not handler: continue
             if event not in self.config['events']:
                 self._logger.warn( _('Ignore unknown event %s for %s'), (event, obj.klass) )
                 continue

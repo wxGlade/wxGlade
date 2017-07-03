@@ -821,12 +821,23 @@ class WidgetStyleProperty(_CheckListProperty):
         self._names = sum( self.styles.values(), [] )
         self._values = None
         self.set(widget_writer.default_style)
-        self.modified = False
         self.default_value = set(self.value_set)
+        self.set("")
+        self.modified = False
 
     def _decode_value(self, value):
         "handle obsolete and renamed properties"
-        value = _CheckListProperty._decode_value(self, value)
+        # handle invalid combinations
+        if isinstance(value, compat.basestring) and value:
+            splitted = value.split("|")
+            value = set(splitted)
+            for v in splitted:
+                style_def = self.style_defs[v]
+                if "exclude" in style_def:
+                    value.difference_update(style_def["exclude"])
+                value.add(v)
+        else:
+            value = _CheckListProperty._decode_value(self, value)
         for v in list(value):
             style_def = self.style_defs[v]
             if "obsolete" in style_def:

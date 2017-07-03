@@ -9,6 +9,7 @@ Code generator functions for wxChoice objects
 
 import common
 import wcodegen
+from ChoicesCodeHandler import *
 
 
 class PythonChoiceGenerator(wcodegen.PythonWidgetCodeWriter):
