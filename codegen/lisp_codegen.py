@@ -79,9 +79,7 @@ class SourceFileContent(BaseSourceFileContent):
                     quote_index = triple_squote_index
                     tmp_quote_str = "'''"
                 else:
-                    quote_index, tmp_quote_str = min(
-                        (triple_squote_index, "'''"),
-                        (triple_dquote_index, '"""'))
+                    quote_index, tmp_quote_str = min( (triple_squote_index, "'''"), (triple_dquote_index, '"""') )
 
             if not inside_triple_quote and quote_index != -1:
                 inside_triple_quote = True
@@ -93,27 +91,18 @@ class SourceFileContent(BaseSourceFileContent):
 
             result = self.rec_class_decl.match(line)
             if not inside_triple_quote and result:
-##                self._logger.debug(">> class %r", result.group(1))
                 if not self.class_name:
-                    # this is the first class declared in the file: insert the
-                    # new ones before this
+                    # this is the first class declared in the file: insert the new ones before this
                     out_lines.append('<%swxGlade insert new_classes>' % self.nonce)
                     self.new_classes_inserted = True
                 self.class_name = result.group(1)
                 self.class_name = self.format_classname(self.class_name)
-                self.classes[self.class_name] = 1  # add the found class to the list
-                                              # of classes of this module
+                self.classes[self.class_name] = 1  # add the found class to the list of classes of this module
                 out_lines.append(line)
             elif not inside_block:
                 result = self.rec_block_start.match(line)
                 if not inside_triple_quote and result:
-##                     self._logger.debug(">> block %r %r %r",
-##                         result.group('spaces'),
-##                         result.group('classname'),
-##                         result.group('block'),
-##                         )
-                    # replace the lines inside a wxGlade block with a tag that
-                    # will be used later by add_class
+                    # replace the lines inside a wxGlade block with a tag that will be used later by add_class
                     spaces = result.group('spaces')
                     which_class = result.group('classname')
                     which_block = result.group('block')
@@ -124,11 +113,9 @@ class SourceFileContent(BaseSourceFileContent):
                     self.spaces[which_class] = spaces
                     inside_block = True
                     if not self.class_name:
-                        out_lines.append('<%swxGlade replace %s>' % \
-                                         (self.nonce, which_block))
+                        out_lines.append( '<%swxGlade replace %s>' % (self.nonce, which_block) )
                     else:
-                        out_lines.append('<%swxGlade replace %s %s>' % \
-                                         (self.nonce, which_class, which_block))
+                        out_lines.append( '<%swxGlade replace %s %s>' % (self.nonce, which_class, which_block) )
                 else:
                     result = self.rec_event_handler.match(line)
                     if not inside_triple_quote and result:
@@ -138,25 +125,21 @@ class SourceFileContent(BaseSourceFileContent):
                             which_class, {})[which_handler] = 1
                     if self.class_name and self.is_end_of_class(line):
                         # add extra event handlers here...
-                        out_lines.append('<%swxGlade event_handlers %s>'
-                                         % (self.nonce, self.class_name))
+                        out_lines.append( '<%swxGlade event_handlers %s>' % (self.nonce, self.class_name) )
                     out_lines.append(line)
                     if self.is_import_line(line):
                         # add a tag to allow extra modules
-                        out_lines.append('<%swxGlade extra_modules>\n'
-                                         % self.nonce)
+                        out_lines.append( '<%swxGlade extra_modules>\n' % self.nonce )
             else:
                 # ignore all the lines inside a wxGlade block
                 if self.rec_block_end.match(line):
-##                     self._logger.debug('end block')
                     inside_block = False
         if not self.new_classes_inserted:
-            # if we are here, the previous ``version'' of the file did not
-            # contain any class, so we must add the new_classes tag at the
-            # end of the file
+            # if we are here, the previous ``version'' of the file did not contain any class, so we must add the
+            # new_classes tag at the end of the file
             out_lines.append('<%swxGlade insert new_classes>' % self.nonce)
         # set the ``persistent'' content of the file
-        self.content = "".join(out_lines)
+        self.content = out_lines
 
     def is_import_line(self, line):
         return line.startswith('(use-package :wx')

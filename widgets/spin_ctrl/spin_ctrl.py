@@ -26,7 +26,7 @@ class EditSpinCtrl(ManagedBase, EditStylesMixin):
 
         # initialise instance properties
         self.range = np.IntRangePropertyA( "0, 100" )
-        self.value = np.SpinPropertyA(0, val_range=(0,100), immediate=True)
+        self.value = np.SpinPropertyA(0, val_range=(0,100), immediate=True, default_value="")
 
         if config.preferences.default_border:
             self.border.set( config.preferences.default_border_size )

@@ -171,6 +171,7 @@ class TestGui(WXGladeGUITest):
         # XXX overwriting is only working if ALL files are there; if e.g. .h is missing, it fails!
         # set up filenames, copy the old file to the output path and modify it to trigger re-writing
         for language, P, E1, E2 in self.language_constants:
+            if language=="XRC": continue
             infilename = self._get_casefile_path(P+'Ogg1.wxg')
             generate_filename = self._get_outputfile_path(P+'Ogg1'+E1)
             expected_filename = self._get_casefile_path(P+'Ogg1'+E1)
@@ -222,11 +223,12 @@ class TestGui(WXGladeGUITest):
             else:
                 APP = 'Ogg2_app'
             infilename = self._get_casefile_path(P+'Ogg2.wxg')
-            #APP = P+'Ogg2_app' if language!="C++" else 'main'  # XXX for C++, the main file does not follow the Application
+            if not infilename: continue
+
             generate_app    = self._get_outputfile_path(P+APP+E1)
             generate_dialog = self._get_outputfile_path(P+'Ogg2_MyDialog'+E2)
             generate_frame  = self._get_outputfile_path(P+'Ogg2_MyFrame'+E2)
-            #APP = 'Ogg2_app' if language!="C++" else 'Ogg2_main'
+
             expected_app    = self._get_casefile_path(P+APP+E1)
             expected_dialog = self._get_casefile_path(P+'Ogg2_MyDialog'+E2)
             expected_frame  = self._get_casefile_path(P+'Ogg2_MyFrame'+E2)
@@ -243,13 +245,13 @@ class TestGui(WXGladeGUITest):
 
             # load and set up project
             common.palette._open_app(infilename, use_progress_dialog=False, add_to_history=False)
-            if language=="C++":
-                common.app_tree.app.properties["name"].set( "CPPOgg2_main" )
             common.app_tree.app.properties["overwrite"].set(False)  # overwrite is 0 in the file
             common.app_tree.app.properties["output_path"].set(self.outDirectory)
             common.app_tree.app.properties["language"].set(language)
             # generate, compare and check for overwriting
             self._process_wx_events()
+            if language=="C++":
+                common.app_tree.app.app_filename = P+APP
             common.app_tree.root.widget.generate_code()
             check_mtime = language!="perl"
             self._compare_files(expected_app,    generate_app,    check_mtime=check_mtime)

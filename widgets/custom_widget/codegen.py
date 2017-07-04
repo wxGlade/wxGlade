@@ -43,10 +43,8 @@ class PythonCustomWidgetGenerator(wcodegen.PythonWidgetCodeWriter):
         parent = self.format_widget_access(widget.parent)
         init = []
         if id_name: init.append(id_name)
-        arguments = format_ctor_arguments(
-            prop.get('arguments', []), parent, id,
-            prop.get('size', '-1, -1').strip())
-        cust_ctor = prop.get('custom_ctor', '').strip()
+        arguments = format_ctor_arguments( widget.arguments, parent, id, widget.size)
+        cust_ctor = widget.custom_ctor.strip()
         if cust_ctor:
             ctor = cust_ctor
         else:

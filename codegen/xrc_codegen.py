@@ -15,28 +15,6 @@ from codegen import BaseLangCodeWriter
 from collections import OrderedDict
 import common, compat, errors
 import wcodegen
-#from wcodegen.taghandler import BaseCodeWriterTagHandler
-
-
-#class FontPropertyHandler(BaseCodeWriterTagHandler):
-    #props = {'size': '', 'family': '', 'style': '', 'weight': '', 'underlined': '', 'face': ''}
-
-    #def __init__(self):
-        #super(FontPropertyHandler, self).__init__()
-        #self.current = None
-
-    #def start_elem(self, name, attrs):
-        #self.current = name
-
-    #def end_elem(self, name, code_obj):
-        #if name == 'font':
-            #code_obj.properties['font'] = self.props
-            #return True  # to remove this handler
-
-    #def char_data(self, data):
-        #super(FontPropertyHandler, self).char_data(data)
-        #self.props[self.current] = self.get_char_data()
-
 
 
 class XrcObject(wcodegen.XrcWidgetCodeWriter):
@@ -405,7 +383,6 @@ class XRCCodeWriter(BaseLangCodeWriter, wcodegen.XRCMixin):
         del top_xrc.children[index]
 
     def add_spacer(self, topl, sizer, obj=None, option=0, flag='0', border=0):
-        #self.add_sizeritem(topl, sizer, obj, obj.proportion, obj.properties["flag"].get_string_value(), obj.border )
         if obj is not None:
             w = obj.width
             h = obj.height
