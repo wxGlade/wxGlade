@@ -43,8 +43,23 @@ class BaseSourceFileContent(object):
         if not self.content:
             self.build_untouched_content()
 
+    def _replace(self, tag, content, lst):
+        ret = False
+        while True:
+            try:
+                idx = lst.index(tag)
+            except ValueError:
+                return ret
+            if isinstance(content, list):
+                lst[idx:idx+1] = content
+            elif isinstance(content, compat.basestring):
+                lst[idx] = content
+            else:
+                raise ValueError("Internal error")
+            ret = True
+
     def replace(self, tag, content):
-        self.content.replace(tag, content)
+        return self._replace(tag, content, self.content)
 
     def build_untouched_content(self):
         """Builds a string with the contents of the file that must be left as is, and replaces the wxGlade blocks
@@ -70,6 +85,10 @@ class BaseSourceFileContent(object):
         fh = open(filename, "rb")
         lines = fh.readlines()
         fh.close()
+        for i,line in enumerate(lines):
+            # normalize file endings
+            if line.endswith(b"\r\n"):
+                lines[i] = line[:-2]+b"\n"
 
         encoding = self.code_writer.app_encoding
         if encoding:
@@ -578,14 +597,17 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
 
             # now remove all the remaining <123415wxGlade ...> tags from the source:
             # this may happen if we're not generating multiple files, and one of the container class names is changed
-            self.previous_source.content = self._content_notfound( self.previous_source.content )
+            self._content_notfound( self.previous_source )
 
-            tags = re.findall( r'<%swxGlade event_handlers \w+>' % self.nonce, self.previous_source.content )
-            for tag in tags:
-                self.previous_source.replace(tag, "")
+            #tags = re.findall( r'<%swxGlade event_handlers \w+>' % self.nonce, self.previous_source.content )
+            tag = r'<%swxGlade event_handlers \w+>' % self.nonce
+            while tag in self.previous_source.content:
+                #self.previous_source.replace(tag, "")
+                self.previous_source.content.remove(tag)
 
             # write the new file contents to disk
-            self.save_file( self.previous_source.name, self.previous_source.content, content_only=True )
+            content = "".join(self.previous_source.content)
+            self.save_file( self.previous_source.name, content, content_only=True )
 
         elif not self.multiple_files:
             em = "".join(sorted(self._current_extra_modules.keys()))
@@ -796,12 +818,10 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
             # replace the lines inside the ctor wxGlade block
             # with the new ones
             tag = '<%swxGlade replace %s %s>' % (self.nonce, klass, self.name_ctor)
-            if prev_src.content.find(tag) < 0:
+            if not prev_src.replace(tag, obuffer):
                 # no __init__ tag found, issue a warning and do nothing
                 self.warning( "wxGlade %(ctor)s block not found for %(name)s, %(ctor)s code "
                               "NOT generated" % { 'name': code_obj.name, 'ctor': self.name_ctor } )
-            else:
-                prev_src.content = prev_src.content.replace(tag, "".join(obuffer))
             obuffer = []
             write = obuffer.append
 
@@ -814,12 +834,10 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
             # replace the lines inside the __set_properties wxGlade block
             # with the new ones
             tag = '<%swxGlade replace %s %s>' % (self.nonce, klass, '__set_properties')
-            if prev_src.content.find(tag) < 0:
+            if not prev_src.replace(tag, obuffer):
                 # no __set_properties tag found, issue a warning and do nothing
                 self.warning( "wxGlade __set_properties block not found for %s, "
                               "__set_properties code NOT generated" % code_obj.name )
-            else:
-                prev_src.content = prev_src.content.replace(tag, "".join(obuffer))
             obuffer = []
             write = obuffer.append
 
@@ -831,11 +849,9 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
         if prev_src and not is_new:
             # replace the lines inside the __do_layout wxGlade block with the new ones
             tag = '<%swxGlade replace %s %s>' % (self.nonce, klass, '__do_layout')
-            if prev_src.content.find(tag) < 0:
+            if not prev_src.replace(tag, obuffer):
                 # no __do_layout tag found, issue a warning and do nothing
                 self.warning("wxGlade __do_layout block not found for %s, __do_layout code NOT generated"%code_obj.name)
-            else:
-                prev_src.content = prev_src.content.replace(tag, "".join(obuffer))
 
         # generate code for event handler stubs
         code_lines = self.generate_code_event_handler( code_obj, is_new, tab, prev_src, event_handlers )
@@ -843,12 +859,10 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
         # replace code inside existing event handlers
         if prev_src and not is_new:
             tag = '<%swxGlade event_handlers %s>' % (self.nonce, klass)
-            if prev_src.content.find(tag) < 0:
+            if not prev_src.replace( tag, code_lines ):
                 # no event_handlers tag found, issue a warning and do nothing
                 self.warning( "wxGlade event_handlers block not found for %s, "
                               "event_handlers code NOT generated" % code_obj.name )
-            else:
-                prev_src.content = prev_src.content.replace( tag, "".join(code_lines) )
         else:
             obuffer.extend(code_lines)
 
@@ -861,21 +875,17 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
 
         if self.multiple_files:
             if prev_src:
-                tag = '<%swxGlade insert new_classes>' % self.nonce
-                prev_src.content = prev_src.content.replace(tag, "")
+                prev_src.replace('<%swxGlade insert new_classes>' % self.nonce, "")
 
                 # insert the extra modules
-                tag = '<%swxGlade extra_modules>\n' % self.nonce
-                code = "".join(self._current_extra_modules.keys())
-                prev_src.content = prev_src.content.replace(tag, code)
+                prev_src.replace( '<%swxGlade extra_modules>\n' % self.nonce, list(self._current_extra_modules.keys()) )
 
                 # insert the module dependencies of this class
-                tag = '<%swxGlade replace dependencies>' % self.nonce
                 dep_list = list( self.classes[klass].dependencies.keys() )
                 dep_list.extend(self.dependencies.keys())
                 dep_list.sort()
                 code = self._tagcontent('dependencies', dep_list)
-                prev_src.content = prev_src.content.replace(tag, code)
+                prev_src.replace('<%swxGlade replace dependencies>' % self.nonce, code)
 
                 # insert the extra code of this class
                 extra_code = "".join(self.classes[klass].extra_code[::-1])
@@ -883,12 +893,11 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
                 if extra_code:
                     self.warning( '%s (or one of its children) has extra code classes, but you are not overwriting '
                                   'existing sources: please check that the resulting code is correct!' % code_obj.name )
-                tag = '<%swxGlade replace extracode>' % self.nonce
                 code = self._tagcontent('extracode', extra_code)
-                prev_src.content = prev_src.content.replace(tag, code)
+                prev_src.replace('<%swxGlade replace extracode>' % self.nonce, code)
 
                 # store the new file contents to disk
-                self.save_file(filename, prev_src.content, content_only=True)
+                self.save_file(filename, "".join(prev_src.content), content_only=True)
                 return
 
             # create the new source file
@@ -1505,11 +1514,13 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
 
         @param source: Source content string with tags to replace"""
 
-        tags = re.findall( r'(<%swxGlade replace ([a-zA-Z_]\w*) +[.\w]+>)' % self.nonce, source )
-        for tag in tags:
+        tags = re.compile( r'(<%swxGlade replace ([a-zA-Z_]\w*) +[.\w]+>)' % self.nonce)
+        for i,line in enumerate(source.content):
+            if not tags.match(line): continue
             # re.findall() returned a list of tuples (caused by grouping)
             # first element in tuple:  the whole match
             # second element in tuple: the class / block name
+            tag = match.groups()
             indent = self.previous_source.spaces.get(tag[1], "")
             comment = '%(indent)s%(comment_sign)s Content of this block not found. Did you rename this class?\n'
             tmpl = self._get_code_statement('contentnotfound' )
@@ -1519,8 +1530,8 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
             else:
                 command = ""
             comment = comment % {'command':command, 'comment_sign':self.comment_sign, 'indent':indent }
-            source = source.replace(tag[0], comment)
-        return source
+            #source = source.replace(tag[0], comment)
+            source.content[i] = comment
 
     def _do_replace_backslashes(self, match):
         "Escape double backslashes in first RE match group; see quote_str()"

@@ -14,7 +14,7 @@ methods of the parent object.
 @copyright: John Dubery
 @copyright: 2002-2007 Alberto Griggio
 @copyright: 2012-2016 Carsten Grohmann
-@copyright: 2016 Dietmar Schwertberger
+@copyright: 2016-2017 Dietmar Schwertberger
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
@@ -138,7 +138,7 @@ class SourceFileContent(BaseSourceFileContent):
             # so we must add the new_classes tag at the end of the file
             out_lines.append('<%swxGlade insert new_classes>' % self.nonce)
         # set the ``persistent'' content of the file
-        self.content = "".join(out_lines)
+        self.content = out_lines #"".join(out_lines)
 
     def is_import_line(self, line):
         return line.startswith('import wx')
@@ -188,10 +188,6 @@ class PythonCodeWriter(BaseLangCodeWriter, wcodegen.PythonMixin):
         _code_statements['tooltip_3'     ] = "%(objname)s.SetToolTip(%(tooltip)s)\n"
 
     class_separator = '.'
-
-    #global_property_writers = { 'font':            BaseLangCodeWriter.FontPropertyHandler,
-                                #'events':          BaseLangCodeWriter.EventsPropertyHandler,
-                                #'extraproperties': BaseLangCodeWriter.ExtraPropertiesPropertyHandler }
 
     indent_level_func_body = 2
 
@@ -308,8 +304,7 @@ if __name__ == "__main__":
             write('\nclass %s(%s):\n' % (self.get_class(fmt_klass), base))
             write(self.tabs(1) + 'def __init__(self, *args, **kwds):\n')
         elif custom_base:
-            # custom base classes set, but "overwrite existing sources" not
-            # set. Issue a warning about this
+            # custom base classes set, but "overwrite existing sources" not set. Issue a warning about this
             self.warning( '%s has custom base classes, but you are not overwriting '
                           'existing sources: please check that the resulting code is correct!' % code_obj.name )
 
@@ -501,8 +496,7 @@ def %(handler)s(self, event):  # wxGlade: %(klass)s.<event_handler>
             return res
         elif obj.name.startswith('self.'):
             return obj.name
-        # spacer.name is "<width>, <height>" already, but wxPython expect
-        # a tuple instead of two single values
+        # spacer.name is "<width>, <height>" already, but wxPython expect a tuple instead of two single values
         elif obj.klass in ('spacer','sizerslot'):
             return '(%s)' % obj.name
         elif self.store_as_attr(obj):
