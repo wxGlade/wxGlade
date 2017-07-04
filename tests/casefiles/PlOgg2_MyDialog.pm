@@ -89,7 +89,7 @@ sub __do_layout {
     $self->{grid_sizer_1}->Add($self->{button_3}, 0, wxALL, 5);
     $self->{notebook_1_pane_1}->SetSizer($self->{grid_sizer_1});
     $self->{grid_sizer_1}->AddGrowableCol(1);
-    $self->{sizer_4}->Add($self->{radio_box_1}, 1, wxALL|wxEXPAND|wxSHAPED, 5);
+    $self->{sizer_4}->Add($self->{radio_box_1}, 0, wxALL|wxEXPAND|wxSHAPED, 5);
     $self->{notebook_1_pane_2}->SetSizer($self->{sizer_4});
     $self->{sizer_3}->Add($self->{text_ctrl_2}, 1, wxALL|wxEXPAND, 5);
     $self->{notebook_1_pane_3}->SetSizer($self->{sizer_3});

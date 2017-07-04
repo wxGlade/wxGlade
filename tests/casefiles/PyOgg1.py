@@ -84,7 +84,7 @@ class PyOgg1_MyDialog(wx.Dialog):
         grid_sizer_1.Add(self.button_3, 0, wx.ALL, 5)
         self.notebook_1_pane_1.SetSizer(grid_sizer_1)
         grid_sizer_1.AddGrowableCol(1)
-        sizer_4.Add(self.radio_box_1, 1, wx.ALL | wx.EXPAND | wx.SHAPED, 5)
+        sizer_4.Add(self.radio_box_1, 0, wx.ALL | wx.EXPAND | wx.SHAPED, 5)
         self.notebook_1_pane_2.SetSizer(sizer_4)
         sizer_3.Add(self.text_ctrl_2, 1, wx.ALL | wx.EXPAND, 5)
         self.notebook_1_pane_3.SetSizer(sizer_3)
