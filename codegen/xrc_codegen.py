@@ -256,24 +256,16 @@ class NotImplementedXrcObject(XrcObject):
 
 class XRCCodeWriter(BaseLangCodeWriter, wcodegen.XRCMixin):
     "Code writer class for writing XRC XML code out of the designed GUI elements"
+
+    # dict of active XrcObject instances: during the code generation it stores all the non-sizer objects that have
+    # children (i.e. frames, dialogs, panels, notebooks, etc.), while at the end of the code generation,
+    # before finalize is called, it contains only the true toplevel objects (frames and dialogs), and is used to write
+    # their XML code (see finalize). The other objects are deleted when add_object is called with their corresponding
+    # code_object as argument (see add_object)
     xrc_objects = None
-    """\
-    dictionary of active L{XrcObject} instances: during the code generation
-    it stores all the non-sizer objects that have children (i.e. frames,
-    dialogs, panels, notebooks, etc.), while at the end of the code
-    generation, before L{finalize} is called, it contains only the true
-    toplevel objects (frames and dialogs), and is used to write their XML
-    code (see L{finalize}). The other objects are deleted when L{add_object}
-    is called with their corresponding code_object as argument
-    (see L{add_object})
-    """
 
-    property_writers = {}
-    """Dictionary of dictionaries of property handlers specific for a widget the keys are the class names of the widgets
-    Example: property_writers['wxRadioBox'] = {'choices', choices_handler}"""
-
-    obj_builders = {}
-    "Dictionary of ``writers'' for the various objects"
+    property_writers = {}  # dict of dicts of property handlers specific for a widget; keys: class names of the widgets
+    obj_builders = {}      # Dictionary of ``writers'' for the various objects
 
     tmpl_encoding = '<?xml version="1.0" encoding="%s"?>\n'
     tmpl_generated_by = '<!-- %(generated_by)s -->'

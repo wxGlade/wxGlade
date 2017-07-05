@@ -3,13 +3,12 @@ Code generator functions for wxFrame objects
 
 @copyright: 2002-2007 Alberto Griggio
 @copyright: 2014-2016 Carsten Grohmann
-@copyright: 2016 Dietmar Schwertberger
+@copyright: 2016-2017 Dietmar Schwertberger
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
 import common
 import wcodegen
-#from wcodegen.taghandler import BaseCodeWriterTagHandler
 
 
 class PythonFrameCodeGenerator(wcodegen.PythonWidgetCodeWriter):
@@ -35,30 +34,6 @@ class PythonFrameCodeGenerator(wcodegen.PythonWidgetCodeWriter):
         if 'size' in obj.properties and obj.properties["size"].is_active():
             ret.append( self.codegen.generate_code_size(obj) )
         return ret
-
-
-
-## property handlers for code generation
-#class StatusFieldsHandler(BaseCodeWriterTagHandler):
-    #"Handler for statusbar fields"
-
-    #def __init__(self):
-        #super(StatusFieldsHandler, self).__init__()
-        #self.labels = []
-        #self.widths = []
-        #self.curr_label = []
-
-    #def start_elem(self, name, attrs):
-        #if name == 'field':
-            #self.widths.append(int(attrs.get('width', -1)))
-
-    #def end_elem(self, name, code_obj):
-        #if name == 'fields':
-            #code_obj.properties['statusbar'] = (self.labels, self.widths)
-            #return True
-        #char_data = self.get_char_data()
-        #self.labels.append(char_data)
-
 
 
 def xrc_frame_code_generator(obj):

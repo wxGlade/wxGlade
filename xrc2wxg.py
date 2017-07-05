@@ -5,6 +5,7 @@ inside sizers, no widget unknown to wxGlade, ...) into a WXG file.
 
 @copyright: 2002-2007 Alberto Griggio
 @copyright: 2014-2016 Carsten Grohmann
+@copyright: 2017 Dietmar Schwertberger
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
@@ -16,11 +17,10 @@ import sys
 import time
 
 __version__ = '0.0.6'
-_name = 'xrc2wxg'
-"""\
-Application name
-"""
+_name = 'xrc2wxg'  # Application name
 
+
+# Mapping of default attribute names from XRC to WXG; see _class_props
 _default_props = {
     'bg': 'background',
     'content': 'choices',
@@ -31,12 +31,9 @@ _default_props = {
     'item': 'choice',
     'sashpos': 'sash_pos',
 }
-"""\
-Mapping of default attribute names from XRC to WXG
 
-@see: L{_class_props}
-"""
 
+# Mapping of class specific attribute names from XRC to WXG. The class names are XRC class names. see _default_props
 _class_props = {
     'wxMenuItem': {
         'help': 'help_str',
@@ -48,19 +45,12 @@ _class_props = {
         'toggle': 'type',
     }
 }
-"""\
-Mapping of class specific attribute names from XRC to WXG.
 
-The class names are XRC class names.
 
-@see: L{_default_props}
-"""
-
+# Counter to create unique names
 _counter_name = 1
-"""\
-Counter to create unique names
-"""
 
+# Supported widgets
 _widgets = [
     'wxBitmapButton', 'wxBoxSizer', 'wxButton', 'wxCalendarCtrl',
     'wxCheckBox', 'wxCheckListBox', 'wxChoice', 'wxComboBox',
@@ -72,21 +62,12 @@ _widgets = [
     'wxStaticLine', 'wxStaticText', 'wxStatusBar', 'wxTextCtrl',
     'wxToggleButton', 'wxToolBar', 'wxTreeCtrl',
 ]
-"""\
-Supported widgets
-"""
 
-_special_class_names = [
-    'notebookpage', 'separator', 'sizeritem', 'spacer', 'tool',
-]
-"""\
-Widget names with special meaning
-"""
+# Widget names with special meaning
+_special_class_names = ['notebookpage', 'separator', 'sizeritem', 'spacer', 'tool']
 
+# Write a timestamp in the output file
 _write_timestamp = True
-"""\
-Write a timestamp in the output file
-"""
 
 
 def get_child_elems(node):
@@ -104,16 +85,8 @@ def get_text_elems(node):
 
 
 def convert(filename, output_file):
-    """Convert the given XRC file to a wxGlade file
-
-    @note: The output content is UTF-8 encoded.
-
-    @param filename: Source filename
-    @type filename: str
-
-    @param output_file: Filename, file or file-like object
-    @type output_file:  str | StringIO
-    """
+    """Convert the given XRC file to a UTF-8 encoded wxGlade file
+    output_file: Filename, file or file-like object"""
     global _counter_name
     _counter_name = 1
 
@@ -169,11 +142,7 @@ def set_base_classes(document):
 
 
 def fix_default_properties(document):
-    """\
-    Rename generic properties
-
-    @see: L{_default_props}
-    """
+    "Rename generic properties; see: _default_props"
     # special case...
     for elem in document.getElementsByTagName('disabled'):
         elem.tagName = 'disabled_bitmap'
@@ -197,11 +166,7 @@ def fix_default_properties(document):
 
 
 def fix_class_properties(document):
-    """\
-    Rename class specific properties
-
-    @see: L{_class_props}
-    """
+    "Rename class specific properties; see: _class_props"
     for element in document.getElementsByTagName('object'):
         klass = element.getAttribute('class')
         if not klass or klass not in _class_props:
@@ -230,15 +195,12 @@ def fix_custom_widgets(document):
     for elem in document.getElementsByTagName('object'):
         klass = elem.getAttribute('class')
         if klass not in _widgets and klass not in _special_class_names:
-            logging.warning('Unknown widget "%s" - fallback to generic '
-                            'widget "CustomWidget"' % klass)
+            logging.warning('Unknown widget "%s" - fallback to generic widget "CustomWidget"' % klass)
             elem.setAttribute('base', 'CustomWidget')
             args = document.createElement('arguments')
             for child in get_child_elems(elem):
-                # if child is a 'simple' attribute, i.e
-                # <child>value</child>, convert it to an 'argument'
-                if len(child.childNodes) == 1 and \
-                   child.firstChild.nodeType == child.TEXT_NODE:
+                # if child is a 'simple' attribute, i.e <child>value</child>, convert it to an 'argument'
+                if len(child.childNodes) == 1 and child.firstChild.nodeType == child.TEXT_NODE:
                     arg = document.createElement('argument')
                     arg.appendChild(document.createTextNode(
                         child.tagName + ': ' + child.firstChild.data))
@@ -268,9 +230,8 @@ def fix_flag_property(document):
         elem.firstChild.data = tmp.replace('GROW', 'EXPAND')
         if elem.firstChild.data.find('wxALIGN_CENTER_HORIZONTAL') < 0 and \
            elem.firstChild.data.find('wxALIGN_CENTER_VERTICAL') < 0:
-            elem.firstChild.data = elem.firstChild.data.replace(
-                'wxALIGN_CENTER', 'wxALIGN_CENTER_HORIZONTAL|'
-                                  'wxALIGN_CENTER_VERTICAL')
+            elem.firstChild.data = elem.firstChild.data.replace( 'wxALIGN_CENTER', 'wxALIGN_CENTER_HORIZONTAL|'
+                                                                 'wxALIGN_CENTER_VERTICAL' )
 
 
 def fix_menubars(document):
@@ -287,8 +248,7 @@ def fix_menubars(document):
 
 
 def fix_menus(document, menubar):
-    """\
-    Rearrange the wxMenu elements
+    """Rearrange the wxMenu elements
 
     All menus of a wxMenuBar have to span by <menus> and </menus>::
         <menus>
@@ -298,8 +258,7 @@ def fix_menus(document, menubar):
             <menu>
             ...
             </menu>
-        </menus>
-    """
+        </menus>"""
 
     def ismenu(elem):
         return elem.getAttribute('class') == 'wxMenu'
@@ -309,8 +268,7 @@ def fix_menus(document, menubar):
     xrc_menus = filter(ismenu, get_child_elems(menubar))
     for menu in xrc_menus:
         try:
-            label = [c for c in get_child_elems(menu)
-                     if c.tagName == 'label'][0]
+            label = [c for c in get_child_elems(menu) if c.tagName == 'label'][0]
             label = label.firstChild.data
         except IndexError:
             label = ''
@@ -346,8 +304,7 @@ def fix_sub_menus(document, menu, new_menu):
             elem.tagName = 'menu'
             elem.setAttribute('name', child.getAttribute('name'))
             try:
-                label = [c for c in get_child_elems(child) if
-                         c.tagName == 'label'][0]
+                label = [c for c in get_child_elems(child) if c.tagName == 'label'][0]
                 label = label.firstChild.data
             except IndexError:
                 label = ''
@@ -372,8 +329,7 @@ def fix_toolbars(document):
 
 def fix_tools(document, toolbar):
     tools = document.createElement('tools')
-    for tool in [c for c in get_child_elems(toolbar) if
-                 c.tagName == 'object']:
+    for tool in [c for c in get_child_elems(toolbar) if c.tagName == 'object']:
         if tool.getAttribute('class') == 'tool':
             new_tool = document.createElement('tool')
             tool_id = document.createElement('id')
@@ -408,8 +364,7 @@ def fix_notebooks(document):
         pages = filter(ispage, get_child_elems(nb))
         tabs = document.createElement('tabs')
         try:
-            us = filter(lambda n: n.tagName == 'usenotebooksizer',
-                        get_child_elems(nb))[0]
+            us = filter( lambda n: n.tagName == 'usenotebooksizer', get_child_elems(nb) )[0]
             nb.removeChild(us).unlink()
         except IndexError:
             pass
@@ -442,8 +397,7 @@ def fix_splitters(document):
             e = document.createElement('window_%s' % (i + 1))
             e.appendChild(document.createTextNode(pane.getAttribute('name')))
             sp.insertBefore(e, sp.firstChild)
-        for orient in filter(lambda n: n.tagName == 'orientation',
-                             get_child_elems(sp)):
+        for orient in filter( lambda n: n.tagName == 'orientation', get_child_elems(sp) ):
             if orient.firstChild.data == 'vertical':
                 orient.firstChild.data = 'wxVERTICAL'
             elif orient.firstChild.data == 'horizontal':
@@ -456,11 +410,9 @@ def fix_fake_panels(document):
 
     for frame in filter(isframe, document.getElementsByTagName('object')):
         for c in get_child_elems(frame):
-            if c.tagName == 'object' and c.getAttribute('class') == 'wxPanel' \
-                    and c.getAttribute('name') == '':
+            if c.tagName == 'object' and c.getAttribute('class') == 'wxPanel' and c.getAttribute('name') == '':
                 elems = get_child_elems(c)
-                if len(elems) == 1 and \
-                   elems[0].getAttribute('class').find('Sizer') != -1:
+                if len(elems) == 1 and elems[0].getAttribute('class').find('Sizer') != -1:
                     frame.replaceChild(elems[0], c)
 
 
@@ -536,8 +488,7 @@ def fix_sliders(document):
 
 
 def fix_statusbar(document):
-    """\
-    Rearrange the wxStatusBar elements
+    """Rearrange the wxStatusBar elements
 
     XRC format::
 
@@ -623,12 +574,9 @@ def fix_encoding(filename, document):
     # if it's not specified, try to find a child of the root called
     # 'encoding': I don't know why, but XRCed does this
     for child in document.documentElement.childNodes:
-        if child.nodeType == child.ELEMENT_NODE and \
-           child.tagName == 'encoding':
-            if child.firstChild is not None and \
-               child.firstChild.nodeType == child.TEXT_NODE:
-                document.documentElement.setAttribute(
-                    'encoding', child.firstChild.data)
+        if child.nodeType == child.ELEMENT_NODE and child.tagName == 'encoding':
+            if child.firstChild is not None and child.firstChild.nodeType == child.TEXT_NODE:
+                document.documentElement.setAttribute( 'encoding', child.firstChild.data )
             document.documentElement.removeChild(child)
 
 
@@ -646,8 +594,7 @@ If WXG_FILE is not given, it defaults to INPUT_FILE.wxg
 
 
 def print_exception():
-    msg = """\
-An error occurred while trying to convert the XRC file.
+    msg = """An error occurred while trying to convert the XRC file.
 \n
 If you think this is a bug, or if you want to know more about the cause of the
 error, run this script again in debug mode (-d switch). If you find a bug,
