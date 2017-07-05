@@ -14,7 +14,7 @@ from wcodegen.taghandler import BaseXmlBuilderTagHandler
 __all__ = ['ChoicesProperty', 'ChoicesHandler']
 
 class ChoicesProperty(np.GridProperty):
-    def write(self, outfile, tabs):
+    def write(self, output, tabs):
         inner_xml = u''
         #for val in self.get_value():
         for val in self.get():
@@ -28,7 +28,7 @@ class ChoicesProperty(np.GridProperty):
             else:
                 inner_xml += common.format_xml_tag(u'choice', value, tabs+1, checked="%s" % checked)
         stmt = common.format_xml_tag(u'choices', inner_xml, tabs, is_xml=True)
-        outfile.write(stmt)
+        output.append(stmt)
 
 
 

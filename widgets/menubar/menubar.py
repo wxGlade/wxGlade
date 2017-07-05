@@ -549,12 +549,12 @@ class MenuProperty(np.Property):
             self.on_value_edited(dialog.get_menus())
         dialog.Destroy()
 
-    def write(self, outfile, tabs):
-        inner_xml = compat.StringIO()
+    def write(self, output, tabs):
+        inner_xml = []
         for menu in self.get():
             menu.write(inner_xml, tabs+1)
-        stmt = common.format_xml_tag( u'menus', inner_xml.getvalue(), tabs, is_xml=True )
-        outfile.write(stmt)
+        stmt = common.format_xml_tag( u'menus', "".join(inner_xml), tabs, is_xml=True )
+        output.append(stmt)
 
 
 

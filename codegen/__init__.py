@@ -12,6 +12,32 @@ import new_properties as np
 import wcodegen
 
 
+def _replace_tag(lst, tag, content):
+    ret = False
+    add_line = False
+    if not tag in lst and not tag.endswith("\n"):
+        tag = tag + "\n"
+        add_line = True
+    while True:
+        try:
+            idx = lst.index(tag)
+        except ValueError:
+            return ret
+        if isinstance(content, list):
+            if add_line:
+                lst[idx:idx+1] = content + ["\n"]
+            else:
+                lst[idx:idx+1] = content
+        elif isinstance(content, compat.basestring):
+            if add_line:
+                lst[idx] = content + "\n"
+            else:
+                lst[idx] = content
+        else:
+            raise ValueError("Internal error")
+        ret = True
+
+
 class BaseSourceFileContent(object):
     """Keeps info about an existing file that has to be updated, to replace only
     the lines inside a wxGlade block, an to keep the rest of the file as it was
@@ -43,23 +69,8 @@ class BaseSourceFileContent(object):
         if not self.content:
             self.build_untouched_content()
 
-    def _replace(self, tag, content, lst):
-        ret = False
-        while True:
-            try:
-                idx = lst.index(tag)
-            except ValueError:
-                return ret
-            if isinstance(content, list):
-                lst[idx:idx+1] = content
-            elif isinstance(content, compat.basestring):
-                lst[idx] = content
-            else:
-                raise ValueError("Internal error")
-            ret = True
-
     def replace(self, tag, content):
-        return self._replace(tag, content, self.content)
+        return _replace_tag(self.content, tag, content)
 
     def build_untouched_content(self):
         """Builds a string with the contents of the file that must be left as is, and replaces the wxGlade blocks
@@ -82,13 +93,7 @@ class BaseSourceFileContent(object):
     def _load_file(self, filename):
         "Load a file and return the content. The read source file will be decoded to unicode automatically."
         # Separated for debugging purposes
-        fh = open(filename, "rb")
-        lines = fh.readlines()
-        fh.close()
-        for i,line in enumerate(lines):
-            # normalize file endings
-            if line.endswith(b"\r\n"):
-                lines[i] = line[:-2]+b"\n"
+        lines = common._read_file(filename)
 
         encoding = self.code_writer.app_encoding
         if encoding:
@@ -445,14 +450,16 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
             else:
                 # if the file doesn't exist, create it and write the ``intro''
                 self.previous_source = None
-                self.output_file = compat.StringIO()
+                self.output_file = []
                 self.output_file_name = out_path
-                for line in self.header_lines:
-                    self.output_file.write(line)
-                self.output_file.write('<%swxGlade extra_modules>\n' % self.nonce)
-                self.output_file.write('\n')
-                self.output_file.write('<%swxGlade replace dependencies>\n' % self.nonce)
-                self.output_file.write('<%swxGlade replace extracode>\n' % self.nonce)
+                self.output_file.extend( self.header_lines )
+                self.output_file.append('<%swxGlade extra_modules>\n' % self.nonce)
+                self.output_file.append('\n')
+                self.output_file.append('<%swxGlade replace dependencies>\n' % self.nonce)
+                self.output_file.append('<%swxGlade replace extracode>\n' % self.nonce)
+
+    def output_file_replace(self, tag, content):
+        _replace_tag(self.output_file, tag, content)
 
     def check_values(self):
         "Check the validity of the set application values. Raises exceptions for errors; see module errors"
@@ -574,32 +581,27 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
         "Code generator finalization function"
         if self.previous_source:
             # insert all the new custom classes inside the old file
-            tag = '<%swxGlade insert new_classes>' % self.nonce
             if self.previous_source.new_classes:
                 code = "".join(self.previous_source.new_classes)
             else:
                 code = ""
-            self.previous_source.replace(tag, code)
-            tag = '<%swxGlade extra_modules>\n' % self.nonce
+            self.previous_source.replace( '<%swxGlade insert new_classes>' % self.nonce, code )
             code = "".join(sorted(self._current_extra_modules.keys()))
-            self.previous_source.replace(tag, code)
+            self.previous_source.replace( '<%swxGlade extra_modules>\n' % self.nonce, code )
 
             # module dependencies of all classes
-            tag = '<%swxGlade replace dependencies>' % self.nonce
             dep_list = sorted( self.dependencies.keys() )
             code = self._tagcontent('dependencies', dep_list)
-            self.previous_source.replace(tag, code)
+            self.previous_source.replace( '<%swxGlade replace dependencies>' % self.nonce, code )
 
             # extra code (see the 'extracode' property of top-level widgets)
-            tag = '<%swxGlade replace extracode>' % self.nonce
             code = self._tagcontent( 'extracode', self._current_extra_code )
-            self.previous_source.replace(tag, code)
+            self.previous_source.replace( '<%swxGlade replace extracode>' % self.nonce, code )
 
             # now remove all the remaining <123415wxGlade ...> tags from the source:
             # this may happen if we're not generating multiple files, and one of the container class names is changed
             self._content_notfound( self.previous_source )
 
-            #tags = re.findall( r'<%swxGlade event_handlers \w+>' % self.nonce, self.previous_source.content )
             tag = r'<%swxGlade event_handlers \w+>' % self.nonce
             while tag in self.previous_source.content:
                 #self.previous_source.replace(tag, "")
@@ -610,23 +612,20 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
             self.save_file( self.previous_source.name, content, content_only=True )
 
         elif not self.multiple_files:
-            em = "".join(sorted(self._current_extra_modules.keys()))
-            content = self.output_file.getvalue().replace( '<%swxGlade extra_modules>\n' % self.nonce, em )
+            code = "".join(sorted(self._current_extra_modules.keys()))
+            self.output_file_replace( '<%swxGlade extra_modules>\n' % self.nonce, code )
 
             # module dependencies of all classes
-            tag = '<%swxGlade replace dependencies>' % self.nonce
             dep_list = sorted( self.dependencies.keys() )
             code = self._tagcontent('dependencies', dep_list)
-            content = content.replace(tag, code)
+            self.output_file_replace( '<%swxGlade replace dependencies>' % self.nonce, code )
 
             # extra code (see the 'extracode' property of top-level widgets)
-            tag = '<%swxGlade replace extracode>' % self.nonce
             code = self._tagcontent('extracode', self._current_extra_code)
-            content = content.replace(tag, code)
+            self.output_file_replace( '<%swxGlade replace extracode>' % self.nonce, code )
 
-            self.output_file.close()
-            self.save_file(self.output_file_name, content, self._app_added)
-            del self.output_file
+            self.save_file(self.output_file_name, self.output_file, self._app_added)
+            self.output_file = None
 
     def add_app(self, app, top_win_class):
         """Generates the code for a wxApp instance.
@@ -712,9 +711,9 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
             filename = os.path.join(self.out_dir, self.app_filename)
             code = "%s%s" % ( self.tmpl_appfile % self.app_mapping, code )
             # write the wxApp code
-            self.save_file(filename, code, True)
+            self.save_file(filename, [code], True)
         else:
-            self.output_file.write(code)
+            self.output_file.append(code)
 
     def add_class(self, code_obj):
         """Add class behaves very differently for XRC output than for other languages (i.e. python):
@@ -762,7 +761,6 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
                     self._current_extra_modules[m] = 1
 
         obuffer = []
-        write = obuffer.append
 
         if not klass in self.classes:
             # if the class body was empty, create an empty ClassLines
@@ -796,20 +794,20 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
         # now check if there are extra lines to add to the constructor
         if hasattr(builder, 'get_init_code'):
             for l in builder.get_init_code(code_obj):
-                write(tab+l)
+                obuffer.append(tab+l)
 
-        write( self.tmpl_ctor_call_layout % {'tab':tab} )
+        obuffer.append( self.tmpl_ctor_call_layout % {'tab':tab} )
 
         # generate code for binding events
         code_lines = self.generate_code_event_bind( code_obj, tab, event_handlers )
         obuffer.extend(code_lines)
 
         # end tag
-        write( '%s%s end wxGlade\n' % (tab, self.comment_sign) )
+        obuffer.append( '%s%s end wxGlade\n' % (tab, self.comment_sign) )
 
         # write class function end statement
         if self.tmpl_cfunc_end and is_new:
-            write( self.tmpl_cfunc_end%{'tab':tab} )
+            obuffer.append( self.tmpl_cfunc_end%{'tab':tab} )
 
         # end of ctor generation
 
@@ -823,7 +821,6 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
                 self.warning( "wxGlade %(ctor)s block not found for %(name)s, %(ctor)s code "
                               "NOT generated" % { 'name': code_obj.name, 'ctor': self.name_ctor } )
             obuffer = []
-            write = obuffer.append
 
         # generate code for __set_properties()
         code_lines = self.generate_code_set_properties( builder, code_obj, is_new, tab )
@@ -839,7 +836,6 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
                 self.warning( "wxGlade __set_properties block not found for %s, "
                               "__set_properties code NOT generated" % code_obj.name )
             obuffer = []
-            write = obuffer.append
 
         # generate code for __do_layout()
         code_lines = self.generate_code_do_layout( builder, code_obj, is_new, tab )
@@ -871,7 +867,7 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
 
         # write "end of class" statement
         if self.tmpl_class_end:
-            write( self.tmpl_class_end % { 'klass': self.cn_class(klass), 'comment': self.comment_sign } )
+            obuffer.append( self.tmpl_class_end % { 'klass': self.cn_class(klass), 'comment': self.comment_sign } )
 
         if self.multiple_files:
             if prev_src:
@@ -897,33 +893,31 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
                 prev_src.replace('<%swxGlade replace extracode>' % self.nonce, code)
 
                 # store the new file contents to disk
-                self.save_file(filename, "".join(prev_src.content), content_only=True)
+                self.save_file(filename, prev_src.content, content_only=True)
                 return
 
             # create the new source file
             filename = self._get_class_filename(klass)
-            out = compat.StringIO()
-            write = out.write
+            out = []
+
             # write the common lines
-            for line in self.header_lines:
-                write(line)
+            out.extend( self.header_lines )
 
             # write the module dependencies for this class
             dep_list = list( self.classes[klass].dependencies.keys() )
             dep_list.extend(self.dependencies.keys())
             dep_list.sort()
             code = self._tagcontent('dependencies', dep_list, True)
-            write(code)
+            out.append(code)
 
             # insert the extra code of this class
             code = self._tagcontent( 'extracode', self.classes[klass].extra_code[::-1], True )
-            write(code)
+            out.append(code)
 
             # write the class body
-            for line in obuffer:
-                write(line)
+            out.extend( obuffer )
             # store the contents to filename
-            self.save_file(filename, out.getvalue())
+            self.save_file(filename, out)
             out.close()
         else:  # not self.multiple_files
             if prev_src:
@@ -939,9 +933,8 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
                     self._current_extra_modules[dep] = 1
                 if self.classes[klass].extra_code:
                     self._current_extra_code.extend(self.classes[klass].extra_code[::-1])
-                write = self.output_file.write
                 for line in obuffer:
-                    write(line)
+                    self.output_file.append(line)
 
     def add_object(self, sub_obj):
         """Adds the code to build 'sub_obj' to the class body of 'top_obj';
@@ -1097,7 +1090,6 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
         else:
             klass = self.classes[toplevel.klass] = self.ClassLines()
         sizer_name = self._format_classattr(sizer)
-        #size = obj and obj.properties["size"].get_tuple() or (0,0)
         if obj is not None:
             size = (obj.width, obj.height)
         else:
@@ -1360,17 +1352,11 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
         """Returns a quoted / escaped version of 's', suitable to insert in a source file as a string object.
         Takes care also of gettext support.
 
-        Escaped are (check implementation for details):
-         - quotations marks
-         - backslash
-         - characters with special meaning
+        Escaped are: quotations marks, backslash, characters with special meaning
 
-        @note: Please use L{quote_path()} to quote / escape filenames or paths.
-
-        @note: Please check the test case  L{tests.test_codegen.TestCodeGen.test_quote_str()} for additional
-        details about the different cases to quote and to escape.
-
-        @note: The language specific implementations are in L{_quote_str()}."""
+        Please use quote_path() to quote / escape filenames or paths.
+        Please check the test case tests.test_codegen.TestCodeGen.test_quote_str() for additional infos.
+        The language specific implementations are in _quote_str()."""
         if not s:
             return self.tmpl_empty_string
         # no longer with direct generation:
@@ -1398,51 +1384,52 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
     def save_file(self, filename, content, mainfile=False, content_only=False):
         """Store the content in a file.
 
-        A L{shebang} is added in top of all mainfiles. The permissions of mainfiles will be set to C{0755} too.
-        L{common.save_file()} is used for storing content.
+        A shebang is added in top of all mainfiles. The permissions of mainfiles will be set to 0755 too.
+        common.save_file() is used for storing content, i.e. the file will only be written in case of changes.
 
-        @param filename:     File name
-        @param content:      File content as string
-        @param mainfile:     Mainfiles gets a L{shebang} and C{0755} permissions.
-        @param content_only: Write only content to the file
+        filename:     File name
+        content:      File content as list of strings
+        mainfile:     Mainfiles gets a shebang and 0755 permissions.
+        content_only: Write only content to the file"""
 
-        @see: L{common.save_file()}"""
-        # create an temporary StringIO file to add header
-        tmp = ""
+        tmp = []
 
         # write additional information to file header
         if not content_only:
             # add shebang to main file
             if self.shebang and mainfile or self.language == 'C++':
-                tmp += self.shebang
+                tmp.append( self.shebang )
 
             # add file encoding notice
             if self.tmpl_encoding and self.app_encoding:
-                tmp += self.tmpl_encoding % self.app_encoding
+                tmp.append( self.tmpl_encoding % self.app_encoding )
 
             # add created by notice
             if self.tmpl_generated_by:
-                tmp += self.tmpl_generated_by % {'comment_sign': self.comment_sign,
-                                                 'generated_by': self.create_generated_by() }
+                tmp.append( self.tmpl_generated_by % {'comment_sign': self.comment_sign,
+                                                      'generated_by': self.create_generated_by() } )
 
             # add language specific note
             if self.language_note:
-                tmp += "%s" % self.language_note
+                tmp.append( "%s" % self.language_note )
 
             # add a empty line
-            tmp += "\n"
+            tmp.append( "\n" )
 
         # add original file content
         tmp += content
 
-        # convert the file encoding from Unicode to self.app_encoding
-        if isinstance(tmp, compat.unicode):
-            try:
-                tmp = tmp.encode(self.app_encoding)
-            except UnicodeEncodeError as inst:
-                raise errors.WxgOutputUnicodeError( self.app_encoding,
-                                                    inst.object[inst.start:inst.end].encode('unicode-escape'),
-                                                    inst.start, inst.end )
+        # encode unicode to binary; filter out empty line
+        def encode(line):
+            if isinstance(line, compat.unicode):
+                return line.encode(self.app_encoding)
+            return line
+        try:
+            tmp = [encode(line) for line in tmp if line]
+        except UnicodeEncodeError as inst:
+            raise errors.WxgOutputUnicodeError( self.app_encoding,
+                                                inst.object[inst.start:inst.end].encode('unicode-escape'),
+                                                inst.start, inst.end )
 
         # check for necessary sub directories e.g. for Perl or Python modules
         dirname = os.path.dirname(filename)

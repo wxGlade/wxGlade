@@ -117,50 +117,47 @@ def xrc_code_generator(obj):
     xrcgen = common.code_writers['XRC']
 
     class MenuBarXrcObject(xrcgen.DefaultXrcObject):
-        def append_item(self, item, outfile, tabs):
-            write = outfile.write
+        def append_item(self, item, output, tabs):
             if item.name == '---':  # item is a separator
-                write('    '*tabs + '<object class="separator"/>\n')
+                output.append('    '*tabs + '<object class="separator"/>\n')
             else:
                 if item.children:
                     name = self.get_name(item)
                     if name:
-                        write('    '*tabs + '<object class="wxMenu" name=%s>\n' % quoteattr(name))
+                        output.append('    '*tabs + '<object class="wxMenu" name=%s>\n' % quoteattr(name))
                     else:
-                        write('    '*tabs + '<object class="wxMenu">\n')
+                        output.append('    '*tabs + '<object class="wxMenu">\n')
                 else:
                     name = self.get_name(item)
                     if name:
-                        write('    '*tabs + '<object class="wxMenuItem" name=%s>\n' % quoteattr(name))
+                        output.append('    '*tabs + '<object class="wxMenuItem" name=%s>\n' % quoteattr(name))
                     else:
-                        write('    '*tabs + '<object class="wxMenuItem">\n')
+                        output.append('    '*tabs + '<object class="wxMenuItem">\n')
                 if item.label:
                     # translate & into _ as accelerator marker
                     val = item.label.replace('&', '_')
-                    write('    '*(tabs+1) + '<label>%s</label>\n' % escape(val))
+                    output.append('    '*(tabs+1) + '<label>%s</label>\n' % escape(val))
                 if item.help_str:
-                    write('    '*(tabs+1) + '<help>%s</help>\n' % escape(item.help_str))
+                    output.append('    '*(tabs+1) + '<help>%s</help>\n' % escape(item.help_str))
                 if item.children:
                     for c in item.children:
-                        self.append_item(c, outfile, tabs+1)
+                        self.append_item(c, output, tabs+1)
                 elif item.checkable == '1':
-                    write('    '*(tabs+1) + '<checkable>1</checkable>\n')
+                    output.append('    '*(tabs+1) + '<checkable>1</checkable>\n')
                 elif item.radio == '1':
-                    write('    '*(tabs+1) + '<radio>1</radio>\n')
-                write('    '*tabs + '</object>\n')
+                    output.append('    '*(tabs+1) + '<radio>1</radio>\n')
+                output.append('    '*tabs + '</object>\n')
 
         def get_name(self, item):
             if item.name: return item.name.strip()
             tokens = item.id.split('=')
             if tokens: return tokens[0].strip()
 
-        def write(self, outfile, tabs):
-            write = outfile.write
-            write('    '*tabs + '<object class="wxMenuBar" name=%s>\n' % \
-                  quoteattr(self.name))
+        def write(self, output, tabs):
+            output.append('    '*tabs + '<object class="wxMenuBar" name=%s>\n' % quoteattr(self.name))
             for m in self.widget.menus:
-                self.append_item(m.root, outfile, tabs+1)
-            write('    '*tabs + '</object>\n')
+                self.append_item(m.root, output, tabs+1)
+            output.append('    '*tabs + '</object>\n')
 
     # end of class MenuBarXrcObject
 

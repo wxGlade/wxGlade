@@ -731,13 +731,15 @@ class wxGladeFrame(wx.Frame):
 
     def _save_app(self, filename):
         try:
-            obuffer = compat.StringIO()
+            obuffer = []
             common.app_tree.write(obuffer)
-            common.save_file(filename, obuffer.getvalue(), 'wxg')
+            common.save_file(filename, obuffer, 'wxg')
         except EnvironmentError as inst:
+            if config.debugging: raise
             common.app_tree.app.saved = False
             bugdialog.ShowEnvironmentError(_('Saving this project failed'), inst)
         except Exception as inst:
+            if config.debugging: raise
             common.app_tree.app.saved = False
             fn = os.path.basename(filename).encode('ascii', 'replace')
             bugdialog.Show(_('Save File "%s"') % fn, inst)
@@ -855,15 +857,13 @@ class wxGladeFrame(wx.Frame):
         infilename = wx.FileSelector( _("Import file"), wildcard="XRC files (*.xrc)" "|*.xrc|All files|*",
                                       flags=wx.FD_OPEN | wx.FD_FILE_MUST_EXIST, default_path=self.cur_dir)
         if infilename:
-            ibuffer = compat.StringIO()
+            ibuffer = []
             try:
                 xrc2wxg.convert(infilename, ibuffer)
 
                 # Convert UTF-8 returned by xrc2wxg.convert() to Unicode
-                tmp = ibuffer.getvalue().decode('UTF-8')
-                ibuffer = compat.StringIO()
-                [ibuffer.write('%s\n' % line) for line in tmp.split('\n')]
-                ibuffer.seek(0)
+                tmp = b"".join(ibuffer).decode('UTF-8')
+                ibuffer = ['%s\n' for line in tmp.split('\n')]
 
                 self._open_app(ibuffer)
                 common.app_tree.app.saved = False

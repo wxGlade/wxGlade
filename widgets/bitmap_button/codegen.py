@@ -22,7 +22,7 @@ def xrc_code_generator(obj):
     xrcgen = common.code_writers['XRC']
 
     class BitmapButtonXrcObject(xrcgen.DefaultXrcObject):
-        def write_property(self, name, val, outfile, tabs):
+        def write_property(self, name, val, output, tabs):
             if name == 'disabled_bitmap':
                 name = 'disabled'
 
@@ -30,10 +30,10 @@ def xrc_code_generator(obj):
                 prop = self._format_bitmap_property(name, val)
                 if prop:
                     line = '%s%s' % (self.tabs(tabs), prop)
-                    outfile.write(line)
+                    output.append(line)
                 return
 
-            xrcgen.DefaultXrcObject.write_property(self, name, val, outfile, tabs)
+            xrcgen.DefaultXrcObject.write_property(self, name, val, output, tabs)
     # end of class BitmapButtonXrcObject
 
     return BitmapButtonXrcObject(obj)

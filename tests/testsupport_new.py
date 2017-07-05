@@ -9,7 +9,7 @@
 import os, sys
 sys.path.insert(1, os.path.dirname(sys.path[0]))
 
-import errno, fnmatch, glob, re
+import errno, fnmatch, glob, shutil, re
 import unittest, difflib, logging, imp
 
 import gettext
@@ -21,6 +21,10 @@ common.init_paths()
 
 import config, wxglade, codegen, compat, log
 
+if compat.PYTHON2:
+    from StringIO import StringIO
+else:
+    from io import StringIO
 
 
 class WXGladeBaseTest(unittest.TestCase):
@@ -102,7 +106,7 @@ class WXGladeBaseTest(unittest.TestCase):
         print( '\n'.join(diff[:30]) )
         if len(diff)>30: print("...")
         #if compat.PYTHON3:
-        #    self.assertFalse( diff, "Generated file and expected result differs:\n%s" % "\n".join(diff) )
+        self.assertFalse( diff, "Generated file and expected result differs:\n%s" % "\n".join(diff) )
         return True
 
     def _get_casefile_path(self, filename):
@@ -193,7 +197,7 @@ class WXGladeGUITest(WXGladeBaseTest):
     def setUp(self):
         # redirect stdout
         self.orig_stdout = sys.stdout
-        sys.stdout = compat.StringIO()
+        sys.stdout = StringIO()
 
         # initialise base class
         WXGladeBaseTest.setUp(self)
@@ -231,25 +235,29 @@ class WXGladeGUITest(WXGladeBaseTest):
         # open file
         infilename = self._get_casefile_path('%s.wxg' % basename)
         common.palette._open_app(infilename, use_progress_dialog=False, add_to_history=False)
+
+        # some shortcuts
+        tree = common.app_tree
+        app = tree.app
+
         if test_GUI or preview:
             # expand tree and show edit window
-            tree = common.app_tree
-            root = tree.GetRootItem()
-            first, cookie = tree.GetFirstChild(root)
-            node = tree._GetItemData(first)
+            first_window_node = app.node.children[0]
+            first_window = first_window_node.widget
+            first_window_item = first_window_node.item
         if test_GUI:
-            if first.IsOk():
+            if first_window_item.IsOk():
                 tree.expand()
                 self._process_wx_events()
-                tree.SelectItem(first)
+                tree.SelectItem(first_window_item)
                 self._process_wx_events()
-                tree.show_toplevel(node)
+                tree.show_toplevel(first_window_node)
             self._process_wx_events()
         if preview:
-            node.widget.properties["preview"]()
+            first_window.properties["preview"]()
             self._process_wx_events()
 
-        if compat.PYTHON2 or True:
+        if compat.PYTHON2:
             # the languages that failed due to differences to expected files
             diff_fails = []
         else:
@@ -261,7 +269,7 @@ class WXGladeGUITest(WXGladeBaseTest):
             generated_filename = self._get_outputfile_path(infilename)
             compare_filename = self._get_casefile_path(infilename)  # some properties may have changed on loading
             common.palette._save_app(generated_filename)
-            if compat.PYTHON2 or True:
+            if compat.PYTHON2:
                 if self._compare_files(infilename, generated_filename):
                     diff_fails.append("wxg")
             else:
@@ -270,8 +278,8 @@ class WXGladeGUITest(WXGladeBaseTest):
                 subtest += 1
 
         # try to generate code with empty output path -> will fail
-        common.app_tree.app.properties["output_path"].set("")
-        common.app_tree.root.widget.generate_code()
+        app.properties["output_path"].set("")
+        app.generate_code()
 
         # first test should fail because no output file is given
         err_msg = u'You must specify an output file\nbefore generating any code'
@@ -286,18 +294,28 @@ class WXGladeGUITest(WXGladeBaseTest):
             if not language in languages:
                 continue
 
-            expected_filename = self._get_casefile_path( '%s%s' % (basename, ext) )
+            if language=="C++" and app.multiple_files:
+                app_basename = os.path.splitext(config.default_cpp_app_name)[0]
+                app_basename = "%s_%s"%(first_window.klass.split("_")[0], app_basename)
+                app.app_filename = app_basename
+                expected_filename = self._get_casefile_path( "%s.%s"%(app_basename, app.source_extension) )
+                # first_window.klass  # 'Bug179_Frame'
+            else:
+                expected_filename = self._get_casefile_path( '%s%s' % (basename, ext) )
             if not expected_filename: continue
-            generate_filename = self._get_outputfile_path(expected_filename)
+            generated_filename = self._get_outputfile_path(expected_filename)
 
             # check for language first
             self.assertTrue( language in common.code_writers, "No codewriter loaded for %s" % language )
 
             # set absolute "Output path", language and generate code
-            common.app_tree.app.properties["output_path"].set(generate_filename)
-            common.app_tree.app.properties["language"].set(language)
+            if language=="C++" and app.multiple_files:
+                app.properties["output_path"].set( os.path.dirname(generated_filename) )
+            else:
+                app.properties["output_path"].set(generated_filename)
+            app.properties["language"].set(language)
             self._process_wx_events()
-            common.app_tree.root.widget.generate_code()
+            app.generate_code()
 
             success_msg = u'Code generation completed successfully'
             success_caption = u'Information'
@@ -306,23 +324,34 @@ class WXGladeGUITest(WXGladeBaseTest):
                        success_msg, success_caption, self._messageBox[0], self._messageBox[1]) )
             self._messageBox = None
 
-            generated_filename   = self._get_outputfile_path(expected_filename)
-            if compat.PYTHON2 or True:
+            if compat.PYTHON2:  # no subtests
                 if self._compare_files(expected_filename, generated_filename): diff_fails.append(language)
             else:
                 with self.subTest(subtest):
                     self._compare_files(expected_filename, generated_filename)
                 subtest += 1
-            if language == 'C++':
+            if language == 'C++' and not app.multiple_files:
                 # compare header file as well
-                expected_filename_h  = '%s.h' % os.path.splitext(expected_filename )[0]
-                generated_filename_h = '%s.h' % os.path.splitext(generated_filename)[0]
-                if compat.PYTHON2 or True:
+                expected_filename_h  = '%s.%s' % ( os.path.splitext(expected_filename )[0], app.header_extension )
+                generated_filename_h = '%s.%s' % ( os.path.splitext(generated_filename)[0], app.header_extension )
+                if compat.PYTHON2:
                     if self._compare_files(expected_filename_h, generated_filename_h): diff_fails.append( "C++.h")
                 else:
                     with self.subTest(subtest):
                         self._compare_files(expected_filename_h, generated_filename_h)
                     subtest += 1
-        if compat.PYTHON2 or True:
+            elif language == "C++":
+                # multiple files -> compare source and header files for all classes
+                print("XXX")
+        if compat.PYTHON2:
             self.assertFalse(diff_fails, "Expected and generated files do not match for %s"%",".join(diff_fails))
 
+    def _copy_and_modify(self, source, target, original=None, replacement=None):
+        if original is None:
+            shutil.copy2( source, target )
+            return
+        with open(source,"rb") as infile:
+            content = infile.read().replace(original, replacement)
+        with open(target, "wb") as outfile:
+            outfile.write(content)
+        shutil.copystat( source, target )

@@ -104,8 +104,7 @@ def get_text_elems(node):
 
 
 def convert(filename, output_file):
-    """\
-    Convert the given XRC file to a wxGlade file
+    """Convert the given XRC file to a wxGlade file
 
     @note: The output content is UTF-8 encoded.
 
@@ -134,10 +133,7 @@ def convert(filename, output_file):
 
 
 def write_output(document, output):
-    """\
-    Writes an UTF-8 encoded pretty-printed XML copy of the given document to
-    the output object.
-    """
+    "Writes an UTF-8 encoded pretty-printed XML copy of the given document to the output object."
     dom_copy = xml.dom.minidom.Document()
 
     if _write_timestamp:

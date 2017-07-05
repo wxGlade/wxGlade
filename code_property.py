@@ -44,7 +44,7 @@ class ExtraPropertiesProperty(GridProperty):
         value = []
         GridProperty.__init__(self, value, cols, can_insert=False)
 
-    def write(self, outfile, tabs):
+    def write(self, output, tabs):
         if not self.value: return
         inner_xml = u''
         for name, value in self.value:
@@ -52,7 +52,7 @@ class ExtraPropertiesProperty(GridProperty):
                 inner_xml += common.format_xml_tag( u'property', value.strip(), tabs+1, name=name )
         if inner_xml:
             stmt = common.format_xml_tag( u'extraproperties', inner_xml, tabs, is_xml=True )
-            outfile.write(stmt)
+            output.append(stmt)
 
 
 

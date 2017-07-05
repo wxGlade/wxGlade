@@ -20,7 +20,7 @@ methods of the parent object.
 
 import os.path, re
 
-from codegen import BaseLangCodeWriter, BaseSourceFileContent, BaseWidgetHandler
+from codegen import BaseLangCodeWriter, BaseSourceFileContent, BaseWidgetHandler, _replace_tag
 from codegen import ClassLines as BaseClassLines
 import config, compat, misc
 import wcodegen
@@ -117,7 +117,7 @@ class SourceFileContent(BaseSourceFileContent):
         BaseSourceFileContent.__init__(self, name, code_writer)
 
     def replace_header(self, tag, content):
-        return self._replace(tag, content, self.header_content)
+        return _replace_tag(self.header_content, tag, content)
 
     def build_untouched_content(self):
         BaseSourceFileContent.build_untouched_content(self)
@@ -282,12 +282,6 @@ class CPPCodeWriter(BaseLangCodeWriter, wcodegen.CppMixin):
 
     class_separator = '::'
 
-    #global_property_writers = {
-        #'font':            BaseLangCodeWriter.FontPropertyHandler,
-        #'events':          BaseLangCodeWriter.EventsPropertyHandler,
-        #'extraproperties': BaseLangCodeWriter.ExtraPropertiesPropertyHandler,
-        #}
-
     language_note = \
         '// Example for compiling a single file project under Linux using g++:\n' \
         '//  g++ MyApp.cpp $(wx-config --libs) $(wx-config --cxxflags) -o MyApp\n' \
@@ -297,8 +291,8 @@ class CPPCodeWriter(BaseLangCodeWriter, wcodegen.CppMixin):
         '//\n'
 
     output_name   = None  # If not None, name (without extension) of the file to write into
-    output_header = None  # Temporary storage of header file for writing into (StringIO)
-    output_file   = None  # Temporary storage of source file for writing into (StringIO)
+    output_header = None  # Temporary storage of header file for writing into (list)
+    output_file   = None  # Temporary storage of source file for writing into (list)
 
     shebang = '// -*- C++ -*-\n//\n'
     tmpl_cfunc_end = '}\n\n'
@@ -472,26 +466,31 @@ bool MyApp::OnInit()
             else:
                 # if the file doesn't exist, create it and write the ``intro''
                 self.previous_source = None
-                self.output_header = compat.StringIO()
-                self.output_file   = compat.StringIO()
+                self.output_header = []
+                self.output_file   = []
 
                 # isolation directives
                 oh = os.path.basename(name + "." + self.header_extension).upper().replace( '.', '_' )
-                self.output_header.write('#ifndef %s\n#define %s\n' % (oh, oh))
-                self.output_header.write('\n')
+                self.output_header.append('#ifndef %s\n#define %s\n' % (oh, oh))
+                self.output_header.append('\n')
 
                 for line in self.header_lines:
-                    self.output_header.write(line)
-                self.output_header.write('\n')
+                    self.output_header.append(line)
+                self.output_header.append('\n')
 
                 # now, write the tags to store dependencies and extra code
-                self.output_header.write('<%swxGlade replace  dependencies>' % self.nonce)
-                self.output_header.write('\n<%swxGlade replace  extracode>' % self.nonce)
+                self.output_header.append('<%swxGlade replace  dependencies>' % self.nonce)
+                self.output_header.append('\n')
+                self.output_header.append('<%swxGlade replace  extracode>' % self.nonce)
 
-                self.output_header.write('\n')
+                self.output_header.append('\n')
 
-                self.output_file.write('#include "%s.%s"\n\n' % (os.path.basename(name), self.header_extension))
-                self.output_file.write('<%swxGlade replace  extracode>\n\n' % self.nonce)
+                self.output_file.append('#include "%s.%s"\n\n' % (os.path.basename(name), self.header_extension))
+                self.output_file.append('<%swxGlade replace  extracode>\n' % self.nonce)
+                self.output_file.append('\n')
+
+    def output_header_replace(self, tag, content):
+        _replace_tag(self.output_header, tag, content)
 
     def finalize(self):
         if self.previous_source:
@@ -550,28 +549,25 @@ bool MyApp::OnInit()
 
         elif not self.multiple_files:
             oh = os.path.basename(self.output_name).upper() + '_H'
-            self.output_header.write('\n#endif // %s\n' % oh)
+            self.output_header.append('\n#endif // %s\n' % oh)
+
             # write the list of include files
-            header_content = self.output_header.getvalue()
-            source_content = self.output_file.getvalue()
-            tag = '<%swxGlade replace  dependencies>' % self.nonce
-            tags = re.findall(tag, header_content)
             deps = []
             for code in self.classes.values():
                 deps.extend(code.dependencies)
             code = self._format_dependencies( deps )
-            header_content = header_content.replace( tag, code )
+            self.output_header_replace( '<%swxGlade replace  dependencies>' % self.nonce, code )
 
             # extra code (see the 'extracode' property of top-level widgets)
             tag = '<%swxGlade replace  extracode>' % self.nonce
             code = self._tagcontent('::extracode', self._current_extra_code_h)
-            header_content = header_content.replace(tag, code)
+            self.output_header_replace( tag, code )
             code = self._tagcontent('::extracode', self._current_extra_code_cpp)
-            source_content = source_content.replace(tag, code)
-            # --------------------------------------------------------------
+            self.output_file_replace( tag, code )
 
-            self.save_file( self.output_name + "." + self.header_extension, header_content, self._app_added )
-            self.save_file( self.output_name + "." + self.source_extension, source_content, self._app_added )
+            self.save_file( self.output_name + "." + self.header_extension, self.output_header, self._app_added )
+            self.save_file( self.output_name + "." + self.source_extension, self.output_file, self._app_added )
+            self.output_file = self.output_header = None
 
     def add_app(self, app_attrs, top_win_class):
         # add language specific mappings
@@ -939,72 +935,59 @@ bool MyApp::OnInit()
             # create the new source file
             header_file = os.path.join(self.out_dir, klass + "." + self.header_extension)
             source_file = os.path.join(self.out_dir, klass + "." + self.source_extension)
-            hout = compat.StringIO()
-            sout = compat.StringIO()
+            hout = []
+            sout = []
 
-            # header file
-            hwrite = hout.write
+            # header file ----------------------------------------------------------------------------------------------
 
             # isolation directives
             hn = os.path.basename(header_file).upper().replace('.', '_')
-            hwrite('#ifndef %s\n#define %s\n' % (hn, hn))
-            hwrite('\n')
+            hout.append('#ifndef %s\n#define %s\n' % (hn, hn))
+            hout.append('\n')
 
             # write the common lines
-            for line in self.header_lines:
-                hwrite(line)
-            hwrite('\n')
+            hout.extend( self.header_lines )
+            hout.append('\n')
 
             # write the module dependencies for this class
             extra_modules = self.classes[klass].dependencies
             code = self._format_dependencies(extra_modules)
-            hwrite(code)
-            hwrite('\n')
+            hout.append(code)
+            hout.append('\n')
 
             # insert the extra code of this class
             extra_code_h = "".join(self.classes[klass].extra_code_h[::-1])
             extra_code_h = self._tagcontent('::extracode', extra_code_h)
-            hwrite(extra_code_h)
-            hwrite('\n')
+            hout.append(extra_code_h)
+            hout.append('\n')
 
             # write the class body
             for line in header_buffer:
-                hwrite(line)
-            hwrite('\n#endif // %s\n' % hn)
+                hout.append(line)
+            hout.append('\n#endif // %s\n' % hn)
 
-            # source file
-            swrite = sout.write
+            # source file ----------------------------------------------------------------------------------------------
             # write the common lines
-            #for line in self.header_lines:
-            #    swrite(line)
-            swrite(self.header_lines[0])
-            swrite('#include "%s"\n\n' % os.path.basename(header_file))
+            sout.append(self.header_lines[0])
+            sout.append('#include "%s"\n\n' % os.path.basename(header_file))
 
             # insert the extra code of this class
             extra_code_cpp = "".join(self.classes[klass].extra_code_cpp[::-1])
             extra_code_cpp = self._tagcontent('::extracode', extra_code_cpp)
-            swrite(extra_code_cpp)
-            swrite('\n')
+            sout.append(extra_code_cpp)
+            sout.append('\n')
 
             # write the class implementation
-            for line in source_buffer:
-                swrite(line)
+            sout.extend(source_buffer)
 
             # store source to disk
-            self.save_file(header_file, hout.getvalue())
-            self.save_file(source_file, sout.getvalue())
-
-            hout.close()
-            sout.close()
+            self.save_file(header_file, hout)
+            self.save_file(source_file, sout)
 
         else:  # not self.multiple_files
             # write the class body onto the single source file
-            hwrite = self.output_header.write
-            for line in header_buffer:
-                hwrite(line)
-            swrite = self.output_file.write
-            for line in source_buffer:
-                swrite(line)
+            self.output_header.extend(header_buffer)
+            self.output_file.extend(source_buffer)
 
     def add_object(self, sub_obj):
         # get top level source code object and the widget builder instance

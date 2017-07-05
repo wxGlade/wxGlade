@@ -392,12 +392,12 @@ class ToolsProperty(np.Property):
             self.on_value_edited(dialog.get_tools())
         dialog.Destroy()
 
-    def write(self, outfile, tabs):
-        inner_xml = compat.StringIO()
+    def write(self, output, tabs):
+        inner_xml = []
         for tool in self.get():
             tool.write(inner_xml, tabs+1)
-        stmt = common.format_xml_tag( u'tools', inner_xml.getvalue(), tabs, is_xml=True) 
-        outfile.write(stmt)
+        stmt = common.format_xml_tag( u'tools', "".join(inner_xml), tabs, is_xml=True) 
+        output.append(stmt)
 
 
 

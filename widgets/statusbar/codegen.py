@@ -41,7 +41,7 @@ def xrc_statusbar_code_generator(obj):
     xrcgen = common.code_writers['XRC']
 
     class StatusbarXrcObject(xrcgen.DefaultXrcObject):
-        def write(self, outfile, tabs):
+        def write(self, output, tabs):
             properties = {}
             fields = self.widget.fields # properties['statusbar']
             labels = [f[0] for f in fields]
@@ -49,7 +49,7 @@ def xrc_statusbar_code_generator(obj):
 
             properties['fields'] = str(len(fields))
             properties['widths'] = ', '.join([str(w) for w in widths])
-            xrcgen.DefaultXrcObject.write(self, outfile, tabs, properties)
+            xrcgen.DefaultXrcObject.write(self, output, tabs, properties)
 
     return StatusbarXrcObject(obj)
 

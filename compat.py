@@ -10,8 +10,6 @@ try:
     # Python 2
     basestring = basestring
     unicode = unicode
-    from StringIO import StringIO
-    BytesIO = StringIO
     import cPickle as pickle
     PYTHON2 = True
     PYTHON3 = False
@@ -19,8 +17,6 @@ except:
     # Python 3
     basestring = (bytes,str)
     unicode = str
-    from io import StringIO
-    from io import BytesIO
     import pickle
     PYTHON2 = False
     PYTHON3 = True

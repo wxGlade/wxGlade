@@ -27,15 +27,15 @@ def xrc_code_generator(obj):
     xrcgen = common.code_writers['XRC']
 
     class CheckListBoxXrcObject(xrcgen.DefaultXrcObject):
-        def write_property(self, name, val, outfile, tabs):
+        def write_property(self, name, val, output, tabs):
             if name == 'choices':
-                xrc_write_choices_property(self, outfile, tabs)
+                xrc_write_choices_property(self, output, tabs)
             elif name == 'selection':
                 choices = self.widget.properties['choices']
                 if choices.is_active():
-                    xrcgen.DefaultXrcObject.write_property(self, name, val, outfile, tabs)
+                    xrcgen.DefaultXrcObject.write_property(self, name, val, output, tabs)
             else:
-                xrcgen.DefaultXrcObject.write_property(self, name, val, outfile, tabs)
+                xrcgen.DefaultXrcObject.write_property(self, name, val, output, tabs)
 
     return CheckListBoxXrcObject(obj)
 

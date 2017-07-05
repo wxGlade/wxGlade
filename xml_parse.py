@@ -48,18 +48,17 @@ class XmlParser(ContentHandler):
         self.locator = None # Document locator
 
     def parse(self, source):
-        # Permanent workaround for Python bug "Sax parser crashes if given
-        # unicode file name" (http://bugs.python.org/issue11159).
-        #
-        # This bug causes a UnicodeEncodeError if the SAX XML parser wants to store an unicode filename internally.
-        #
-        # That's not a general file handling issue because the parameter source is an open file already.
-        source = compat.StringIO(source.read())
+        ## Permanent workaround for Python bug "Sax parser crashes if given
+        ## unicode file name" (http://bugs.python.org/issue11159).
+        ##
+        ## This bug causes a UnicodeEncodeError if the SAX XML parser wants to store an unicode filename internally.
+        ##
+        ## That's not a general file handling issue because the parameter source is an open file already.
+        #source = compat.StringIO(source.read())
         self.parser.parse(source)
-        source.close()
+        #source.close()
 
     def parse_string(self, source):
-        #source = compat.StringIO(source)
         source = compat.BytesIO(source)
         self.parser.parse(source)
         source.close()

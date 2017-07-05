@@ -185,14 +185,6 @@ class SelectionMarker(object):
             tag.Reparent(parent)
 
 
-
-class UnicodeStringIO(compat.BytesIO):
-    "Wrapper class to store data in Unicode, converted to bytes"
-    def write(self, data):
-        if isinstance(data, compat.unicode): data = data.encode('utf-8')
-        compat.BytesIO.write(self, data)
-
-
 def bound(number, lower, upper):
     return min(max(lower, number), upper)
 
