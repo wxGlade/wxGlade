@@ -109,15 +109,13 @@ class DefaultXrcObject(XrcObject):
             return
 
         if name in ['icon', 'bitmap']:
-            prop = self._format_bitmap_property(name, val)
+            prop = self._format_bitmap_property(name, val, ntabs)
         else:
-            prop = common.format_xml_tag(name, val)
+            prop = common.format_xml_prop(name, val, ntabs)
 
-        if prop:
-            line = '%s%s' % (self.tabs(ntabs), prop)
-            output.append(line)
+        output.append(prop)
 
-    def _format_bitmap_property(self, name, val):
+    def _format_bitmap_property(self, name, val, ntabs):
         "Return formatted bitmap/icon XRC property (as string)."
 
         if val.startswith('art:'):
@@ -127,18 +125,15 @@ class DefaultXrcObject(XrcObject):
             art_client = elements[1]
 
             if art_client != 'wxART_OTHER':
-                prop = common.format_xml_tag( name, '', stock_id=art_id, stock_client=art_client )
+                return common.format_xml_prop( name, '', ntabs, stock_id=art_id, stock_client=art_client )
             else:
-                prop = common.format_xml_tag(name, u'', stock_id=art_id)
+                return common.format_xml_prop(name, u'', ntabs, stock_id=art_id)
 
         elif val.startswith('code:') or val.startswith('empty:') or val.startswith('var:'):
             self._logger.warn( _('XRC: Unsupported bitmap statement "%s" for %s "%s"'), val, self.klass, self.name )
-            prop = None
+            return None
 
-        else:
-            prop = common.format_xml_tag(name, val)
-
-        return prop
+        return common.format_xml_prop(name, val, ntabs)
 
     def write(self, output, ntabs, properties=None):
         if properties is None: properties = {}
@@ -249,8 +244,7 @@ class NotImplementedXrcObject(XrcObject):
     def write(self, output, ntabs):
         msg = 'code generator for %s objects not available' % self.code_obj.base
         self.warning('%s' % msg)
-        stmt = '%s%s\n' % (self.tabs(ntabs), self._format_comment(msg))
-        output.append(stmt)
+        output.append( '%s%s\n' % (self.tabs(ntabs), self._format_comment(msg)) )
 
 
 

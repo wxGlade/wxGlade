@@ -15,7 +15,7 @@ __all__ = ['ChoicesProperty', 'ChoicesHandler']
 
 class ChoicesProperty(np.GridProperty):
     def write(self, output, tabs):
-        inner_xml = u''
+        inner_xml = []
         #for val in self.get_value():
         for val in self.get():
             value = common.encode_to_unicode(val[0])  # only first column is used
@@ -27,8 +27,7 @@ class ChoicesProperty(np.GridProperty):
                 inner_xml += common.format_xml_tag(u'choice', value, tabs+1)
             else:
                 inner_xml += common.format_xml_tag(u'choice', value, tabs+1, checked="%s" % checked)
-        stmt = common.format_xml_tag(u'choices', inner_xml, tabs, is_xml=True)
-        output.append(stmt)
+        output.extend( common.format_xml_tag(u'choices', inner_xml, tabs, is_xml=True) )
 
 
 

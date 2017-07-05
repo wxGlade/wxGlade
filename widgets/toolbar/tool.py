@@ -30,6 +30,4 @@ class Tool(object):
         inner_xml += format_xml_tag(u'bitmap2', self.bitmap2, tabs + 1)
         if self.handler:
             inner_xml += format_xml_tag(u'handler', self.handler, tabs + 1)
-        stmt = format_xml_tag(u'tool', inner_xml, tabs, is_xml=True)
-        output.append(stmt)
-
+        output.extend( format_xml_tag(u'tool', inner_xml, tabs, is_xml=True) )

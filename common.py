@@ -890,23 +890,42 @@ def format_xml_tag(tag, value, indentlevel=0, **kwargs):
     tag = encode_to_unicode(tag)
 
     if not is_xml:
-        value = encode_to_unicode(value)
-        value = escape(value)
+        value = escape( encode_to_unicode(value) )
 
     attrs = format_xml_attrs(**kwargs)
-    if attrs:
-        attrs = u' %s' % attrs
+    if attrs: attrs = u' %s' % attrs
+
+    data = {'attrs': attrs, 'tabs': tabs, 'tag': tag, 'value': value }  # for the format string
 
     if is_xml:
-        tmpl = u'%(tabs)s<%(tag)s%(attrs)s>\n%(value)s%(tabs)s</%(tag)s>\n'
-    elif not value:
+        tmpl1 = u'%(tabs)s<%(tag)s%(attrs)s>\n'
+        tmpl2 = u'%(tabs)s</%(tag)s>\n'
+        return [tmpl1%data] + value + [tmpl2%data]
+    if not value:
         tmpl = u'%(tabs)s<%(tag)s%(attrs)s />\n'
     else:
         tmpl = u'%(tabs)s<%(tag)s%(attrs)s>%(value)s</%(tag)s>\n'
+    return [tmpl%data]
 
-    stmt = tmpl % {'attrs': attrs, 'tabs': tabs, 'tag': tag, 'value': value }
 
-    return stmt
+def format_xml_prop(tag, value, indentlevel=0, **kwargs):
+    # format a single property as indented string
+    assert isinstance(tag, compat.basestring)
+    assert isinstance(indentlevel, int)
+
+    tabs = u'    ' * indentlevel
+    tag = encode_to_unicode(tag)
+
+    value = escape( encode_to_unicode(value) )
+
+    attrs = format_xml_attrs(**kwargs)
+    if attrs: attrs = u' %s' % attrs
+
+    if not value:
+        tmpl = u'%(tabs)s<%(tag)s%(attrs)s />\n'
+    else:
+        tmpl = u'%(tabs)s<%(tag)s%(attrs)s>%(value)s</%(tag)s>\n'
+    return tmpl%{'attrs': attrs, 'tabs': tabs, 'tag': tag, 'value': value }
 
 
 def format_xml_attrs(**kwargs):
