@@ -553,9 +553,7 @@ class MenuProperty(np.Property):
         inner_xml = []
         for menu in self.get():
             menu.write(inner_xml, tabs+1)
-        stmt = common.format_xml_tag( u'menus', "".join(inner_xml), tabs, is_xml=True )
-        output.append(stmt)
-
+        output.extend( common.format_xml_tag( u'menus', inner_xml, tabs, is_xml=True ) )
 
 
 class MenuHandler(BaseXmlBuilderTagHandler):

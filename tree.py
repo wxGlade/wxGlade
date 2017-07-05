@@ -94,9 +94,9 @@ class Node(object):
                             name.write(inner_xml, tabs+2)
 
                     child.write(inner_xml, tabs+2, class_names)
-                    stmt = common.format_xml_tag( u'object', "".join(inner_xml), tabs+1,
+                    stmt = common.format_xml_tag( u'object', inner_xml, tabs+1,
                                                   is_xml=True, **{'class': 'sizeritem'} )
-                    output.append(stmt)
+                    output.extend(stmt)
                 else:
                     child.write(output, tabs+1)
         elif self.children is not None:
@@ -148,8 +148,7 @@ class SlotNode(Node):
     "Placeholder for an empty sizer slot"
     def write(self, output, tabs, class_names=None):
         if self.widget.sizer.is_virtual(): return
-        stmt = common.format_xml_tag( u'object', '', tabs, **{'class': 'sizerslot'})
-        output.append(stmt)
+        output.extend( common.format_xml_tag( u'object', '', tabs, **{'class': 'sizerslot'}) )
 
 
 class Tree(object):
@@ -277,8 +276,7 @@ class Tree(object):
             for c in self.root.children:
                 c.write(inner_xml, tabs+1, class_names)
 
-        stmt = common.format_xml_tag( u'application', "".join(inner_xml), is_xml=True, **attrs )
-        output.append(stmt)
+        output.extend( common.format_xml_tag( u'application', inner_xml, is_xml=True, **attrs ) )
 
         return class_names
 

@@ -3,6 +3,7 @@ A class to represent a menu on a wxMenuBar
 
 @copyright: 2002-2007 Alberto Griggio
 @copyright: 2016 Carsten Grohmann
+@copyright: 2017 Dietmar Schwertberger
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
@@ -26,11 +27,10 @@ class MenuTree(object):
             self.parent = None
 
         def write(self, output, tabs, top=False):
-            inner_xml = u''
+            inner_xml = []
             if not top and not self.children:
                 if self.label:
-                    inner_xml += format_xml_tag(
-                        u'label', self.label, tabs + 1)
+                    inner_xml += format_xml_tag(u'label', self.label, tabs+1)
                 if self.id:
                     inner_xml += format_xml_tag(u'id', self.id, tabs+1)
                 if self.name:
@@ -42,8 +42,7 @@ class MenuTree(object):
                 except ValueError:
                     checkable = 0
                 if checkable:
-                    inner_xml += format_xml_tag(
-                        u'checkable', checkable, tabs + 1)
+                    inner_xml += format_xml_tag(u'checkable', checkable, tabs+1)
 
                 try:
                     radio = int(self.radio)
@@ -54,7 +53,7 @@ class MenuTree(object):
 
                 if self.handler:
                     inner_xml += format_xml_tag(u'handler', self.handler, tabs+1)
-                stmt = format_xml_tag(u'item', inner_xml, tabs, is_xml=True)
+                output.extend( format_xml_tag(u'item', inner_xml, tabs, is_xml=True) )
             else:
                 attrs = {'name': self.name}
                 if self.id:
@@ -62,13 +61,10 @@ class MenuTree(object):
                 if self.handler:
                     attrs[u'handler'] = self.handler
                 attrs[u'label'] = self.label
-                value = []
+                inner_xml = []
                 for c in self.children:
-                    c.write(value, tabs + 1)
-                inner_xml = "".join(value)
-                stmt = format_xml_tag( u'menu', inner_xml, tabs, is_xml=True, **attrs )
-
-            output.append(stmt)
+                    c.write(inner_xml, tabs + 1)
+                output.extend( format_xml_tag( u'menu', inner_xml, tabs, is_xml=True, **attrs ) )
 
     #end of class Node
 
@@ -78,4 +74,3 @@ class MenuTree(object):
     def write(self, output, tabs):
         self.root.write(output, tabs, top=True)
 
-#end of class MenuTree

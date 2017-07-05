@@ -126,13 +126,12 @@ class NotebookPagesProperty(np.GridProperty):
         np.GridProperty.__init__(self, value, cols, col_sizes=col_widths, can_remove_last=False, with_index=True)
 
     def write(self, output, tabs):
-        inner_xml = u''
+        inner_xml = []
         for (name,), window in zip(self.owner.tabs, self.owner.pages):
             # XXX what happens with empty pages?
             if window:
                 inner_xml += common.format_xml_tag(u'tab', name, tabs+1, window=window.name)
-        stmt = common.format_xml_tag(u'tabs', inner_xml, tabs, is_xml=True)
-        output.append(stmt)
+        output.extend( common.format_xml_tag(u'tabs', inner_xml, tabs, is_xml=True) )
 
 
 

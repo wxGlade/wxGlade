@@ -32,8 +32,7 @@ class ChildWidgetNameProperty(np.Property):
     def write(self, output, tabs=0):
         value = self.get()
         if value is not None:
-            stmt = common.format_xml_tag(self.name, value, tabs)
-            output.append(stmt)
+            output.extend( common.format_xml_tag(self.name, value, tabs) )
 
 
 

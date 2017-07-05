@@ -186,8 +186,7 @@ class Property(object):
         else:
             value = self.get_string_value()
         # write the value
-        stmt = common.format_xml_tag(self.name, value, tabs)
-        output.append(stmt)
+        output.extend( common.format_xml_tag(self.name, value, tabs) )
 
     ####################################################################################################################
     # editor (controls are added to common.property_panel)
@@ -586,8 +585,7 @@ class _CheckListProperty(Property):
     def write(self, output, tabs=0):
         value = self.get_string_value()
         if value:
-            stmt = common.format_xml_tag(self.name, value, tabs)
-            output.append(stmt)
+            output.extend( common.format_xml_tag(self.name, value, tabs) )
 
     def create_editor(self, panel, sizer):
         self._choices = []
@@ -900,9 +898,7 @@ class WidgetStyleProperty(_CheckListProperty):
         if isinstance(self.default_value, set) and self.value_set==self.default_value and not self.modified: return
         value = self.get_string_value()
         if value:
-            stmt = common.format_xml_tag(self.name, value, tabs)
-            output.append(stmt)
-
+            output.extend( common.format_xml_tag(self.name, value, tabs) )
 
 
 
@@ -1514,8 +1510,7 @@ class FontProperty(DialogProperty):
         inner_xml += common.format_xml_tag(u'weight',     props[3], tabs+1)
         inner_xml += common.format_xml_tag(u'underlined', props[4], tabs+1)
         inner_xml += common.format_xml_tag(u'face',       props[5], tabs+1)
-        stmt = common.format_xml_tag( self.name, inner_xml, tabs, is_xml=True )
-        output.append(stmt)
+        output.extend( common.format_xml_tag( self.name, inner_xml, tabs, is_xml=True ) )
 
     def _create_dialog(self):
         if self.dialog is None:

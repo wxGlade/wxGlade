@@ -27,10 +27,8 @@ def xrc_code_generator(obj):
                 name = 'disabled'
 
             if name in ['bitmap', 'selected', 'focus', 'disabled', 'hover']:
-                prop = self._format_bitmap_property(name, val)
-                if prop:
-                    line = '%s%s' % (self.tabs(tabs), prop)
-                    output.append(line)
+                prop = self._format_bitmap_property(name, val, tabs)
+                if prop: output.append(prop)
                 return
 
             xrcgen.DefaultXrcObject.write_property(self, name, val, output, tabs)

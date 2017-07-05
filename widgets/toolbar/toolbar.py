@@ -396,8 +396,7 @@ class ToolsProperty(np.Property):
         inner_xml = []
         for tool in self.get():
             tool.write(inner_xml, tabs+1)
-        stmt = common.format_xml_tag( u'tools', "".join(inner_xml), tabs, is_xml=True) 
-        output.append(stmt)
+        output.extend( common.format_xml_tag( u'tools', inner_xml, tabs, is_xml=True) )
 
 
 

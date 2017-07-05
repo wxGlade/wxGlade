@@ -48,11 +48,10 @@ class FieldsProperty(np.GridProperty):
         np.GridProperty.__init__(self, value, cols, col_sizes=col_sizes)
 
     def write(self, output, tabs):
-        inner_xml = u''
+        inner_xml = []
         for label, width in self.value:
             inner_xml += common.format_xml_tag( u'field', label, tabs+1, width=width )
-        stmt = common.format_xml_tag( u'fields', inner_xml, tabs, is_xml=True )
-        output.append(stmt)
+        output.extend( common.format_xml_tag( u'fields', inner_xml, tabs, is_xml=True ) )
 
 
 class EditStatusBar(EditBase, EditStylesMixin):

@@ -46,13 +46,12 @@ class ExtraPropertiesProperty(GridProperty):
 
     def write(self, output, tabs):
         if not self.value: return
-        inner_xml = u''
+        inner_xml = []
         for name, value in self.value:
             if value:
                 inner_xml += common.format_xml_tag( u'property', value.strip(), tabs+1, name=name )
         if inner_xml:
-            stmt = common.format_xml_tag( u'extraproperties', inner_xml, tabs, is_xml=True )
-            output.append(stmt)
+            output.extend( common.format_xml_tag( u'extraproperties', inner_xml, tabs, is_xml=True ) )
 
 
 

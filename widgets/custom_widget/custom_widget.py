@@ -18,11 +18,10 @@ class ArgumentsProperty(np.GridProperty):
     def write(self, output, tabs):
         arguments = self.get()
         if arguments:
-            inner_xml = u''
+            inner_xml = []
             for argument in arguments:
                 inner_xml += common.format_xml_tag(u'argument', argument, tabs+1)
-            stmt = common.format_xml_tag( u'arguments', inner_xml, tabs, is_xml=True)
-            output.append(stmt)
+            output.extend( common.format_xml_tag( u'arguments', inner_xml, tabs, is_xml=True) )
     def get(self):
         "get the value, or the default value if deactivated; usually not used directly, as owner.property will call it"
         if not self.deactivated:
