@@ -40,7 +40,7 @@ class NewEventsProperty(np.GridProperty):
             row[1] = values_dict.get(row[0], "")
         self.update_display()
 
-    def write(self, outfile, tabs):
+    def write(self, output, tabs):
         inner_xml = u''
         for event, handler in self.get():
             handler = handler.strip()
@@ -48,7 +48,7 @@ class NewEventsProperty(np.GridProperty):
                 inner_xml += common.format_xml_tag('handler', handler, tabs+1, event=event)
         if inner_xml:
             stmt = common.format_xml_tag(u'events', inner_xml, tabs, is_xml=True)
-            outfile.write(stmt)
+            output.append(stmt)
 
 
 

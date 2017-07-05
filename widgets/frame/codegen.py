@@ -65,13 +65,13 @@ def xrc_frame_code_generator(obj):
     xrcgen = common.code_writers['XRC']
 
     class FrameXrcObject(xrcgen.DefaultXrcObject):
-        def write(self, outfile, tabs):
+        def write(self, output, tabs):
             properties = {"menubar":None, "statusbar":None, "toolbar":None}
-            xrcgen.DefaultXrcObject.write(self, outfile, tabs, properties)
+            xrcgen.DefaultXrcObject.write(self, output, tabs, properties)
 
-        def write_property(self, name, val, outfile, ntabs):
+        def write_property(self, name, val, output, ntabs):
             if name != 'sizehints':
-                xrcgen.DefaultXrcObject.write_property(self, name, val, outfile, ntabs)
+                xrcgen.DefaultXrcObject.write_property(self, name, val, output, ntabs)
 
     return FrameXrcObject(obj)
 
@@ -80,14 +80,14 @@ def xrc_statusbar_code_generator(obj):
     xrcgen = common.code_writers['XRC']
 
     class StatusbarXrcObject(xrcgen.DefaultXrcObject):
-        def write(self, outfile, tabs):
+        def write(self, output, tabs):
             properties = {"statusbar":None}
             prop = self.widget.properties['statusbar']
             if prop.is_active():
                 fields, widths = self.widget.statusbar
                 properties['fields'] = str(len(fields))
                 properties['widths'] = ', '.join([str(w) for w in widths])
-            xrcgen.DefaultXrcObject.write(self, outfile, tabs, properties)
+            xrcgen.DefaultXrcObject.write(self, output, tabs, properties)
 
     return StatusbarXrcObject(obj)
 

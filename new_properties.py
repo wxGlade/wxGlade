@@ -161,7 +161,7 @@ class Property(object):
         if self.value is False: return '0'
         return str(self.value)
 
-    def write(self, outfile, tabs=0):
+    def write(self, output, tabs=0):
         """Writes the xml code for this property onto the given file or file-like object.
         Argument tabs (int) is the indentation level.
         This is the default implementation."""
@@ -187,7 +187,7 @@ class Property(object):
             value = self.get_string_value()
         # write the value
         stmt = common.format_xml_tag(self.name, value, tabs)
-        outfile.write(stmt)
+        output.append(stmt)
 
     ####################################################################################################################
     # editor (controls are added to common.property_panel)
@@ -583,11 +583,11 @@ class _CheckListProperty(Property):
                 ret.append(name)
         return '|'.join(ret)
 
-    def write(self, outfile, tabs=0):
+    def write(self, output, tabs=0):
         value = self.get_string_value()
         if value:
             stmt = common.format_xml_tag(self.name, value, tabs)
-            outfile.write(stmt)
+            output.append(stmt)
 
     def create_editor(self, panel, sizer):
         self._choices = []
@@ -896,12 +896,12 @@ class WidgetStyleProperty(_CheckListProperty):
             if checkbox is not None:
                 checkbox.Bind(wx.EVT_CHECKBOX, self.on_checkbox)
 
-    def write(self, outfile, tabs=0):
+    def write(self, output, tabs=0):
         if isinstance(self.default_value, set) and self.value_set==self.default_value and not self.modified: return
         value = self.get_string_value()
         if value:
             stmt = common.format_xml_tag(self.name, value, tabs)
-            outfile.write(stmt)
+            output.append(stmt)
 
 
 
@@ -1498,7 +1498,7 @@ class FontProperty(DialogProperty):
     font_styles = {'normal': 'wxNORMAL', 'slant': 'wxSLANT', 'italic': 'wxITALIC'}
     font_weights = {'normal': 'wxNORMAL', 'light': 'wxLIGHT', 'bold': 'wxBOLD'}
 
-    def write(self, outfile, tabs=0):
+    def write(self, output, tabs=0):
         if not self.is_active(): return
         try:
             props = [common.encode_to_unicode(s) for s in self.value]
@@ -1515,7 +1515,7 @@ class FontProperty(DialogProperty):
         inner_xml += common.format_xml_tag(u'underlined', props[4], tabs+1)
         inner_xml += common.format_xml_tag(u'face',       props[5], tabs+1)
         stmt = common.format_xml_tag( self.name, inner_xml, tabs, is_xml=True )
-        outfile.write(stmt)
+        output.append(stmt)
 
     def _create_dialog(self):
         if self.dialog is None:
@@ -1943,7 +1943,7 @@ class ActionButtonProperty(Property):
     def __call__(self, *args, **kwargs):
         self.callback(*args, **kwargs)
 
-    def write(self, outfile, tabs=0):
+    def write(self, output, tabs=0):
         return
 
 

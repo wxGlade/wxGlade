@@ -56,7 +56,7 @@ def xrc_code_generator(obj):
     xrcgen = common.code_writers['XRC']
 
     class GenericCalendarCtrlXrcObject(xrcgen.DefaultXrcObject):
-        def write_property(self, name, val, outfile, tabs):
+        def write_property(self, name, val, output, tabs):
             if name == 'label':
                 # translate & into _ as accelerator marker
                 val2 = val.replace('&', '_')
@@ -68,8 +68,7 @@ def xrc_code_generator(obj):
                         val = val2[:index] + '&&' + val2[index+2:]
                 else:
                     val = val2
-            xrcgen.DefaultXrcObject.write_property(self, name, val,
-                                                   outfile, tabs)
+            xrcgen.DefaultXrcObject.write_property(self, name, val, output, tabs)
     # end of class GenericCalendarCtrlXrcObject
 
     return GenericCalendarCtrlXrcObject(obj)

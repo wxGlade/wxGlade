@@ -46,7 +46,7 @@ def xrc_code_generator(obj):
     xrcgen = common.code_writers['XRC']
 
     class SliderXrcObject(xrcgen.DefaultXrcObject):
-        def write_property(self, name, val, outfile, tabs):
+        def write_property(self, name, val, output, tabs):
             if name == 'range':
                 try:
                     min, max = val.split(',')
@@ -54,10 +54,10 @@ def xrc_code_generator(obj):
                     pass
                 else:
                     tab_s = '    '*tabs
-                    outfile.write(tab_s + '<min>%s</min>\n' % min)
-                    outfile.write(tab_s + '<max>%s</max>\n' % max)
+                    output.append(tab_s + '<min>%s</min>\n' % min)
+                    output.append(tab_s + '<max>%s</max>\n' % max)
             else:
-                xrcgen.DefaultXrcObject.write_property(self, name, val, outfile, tabs)
+                xrcgen.DefaultXrcObject.write_property(self, name, val, output, tabs)
 
     return SliderXrcObject(obj)
 

@@ -12,7 +12,7 @@ from testsupport_new import WXGladeGUITest
 import wx.xrc
 import xrc2wxg
 import common, compat
-import glob, shutil, os, sys, unittest
+import glob, os, sys, unittest
 
 
 class TestGui(WXGladeGUITest):
@@ -110,16 +110,6 @@ class TestGui(WXGladeGUITest):
         self.load_and_generate('Sizers_no_classattr', test_GUI=False)
         # store sizer references
         self.load_and_generate('Sizers_classattr', test_GUI=False)
-
-    def _copy_and_modify(self, source, target, original=None, replacement=None):
-        if original is None:
-            shutil.copy2( source, target )
-            return
-        with open(source,"rb") as infile:
-            content = infile.read().replace(original, replacement)
-        with open(target, "wb") as outfile:
-            outfile.write(content)
-        shutil.copystat( source, target )
 
     def test_Python_Ogg1(self):
         "Test Python code generation with overwriting a single existing file, preserving manually added code"

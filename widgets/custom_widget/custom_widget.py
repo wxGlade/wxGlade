@@ -15,14 +15,14 @@ from edit_windows import ManagedBase
 
 
 class ArgumentsProperty(np.GridProperty):
-    def write(self, outfile, tabs):
+    def write(self, output, tabs):
         arguments = self.get()
         if arguments:
             inner_xml = u''
             for argument in arguments:
                 inner_xml += common.format_xml_tag(u'argument', argument, tabs+1)
             stmt = common.format_xml_tag( u'arguments', inner_xml, tabs, is_xml=True)
-            outfile.write(stmt)
+            output.append(stmt)
     def get(self):
         "get the value, or the default value if deactivated; usually not used directly, as owner.property will call it"
         if not self.deactivated:

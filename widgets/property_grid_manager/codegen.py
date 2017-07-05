@@ -43,8 +43,8 @@ def xrc_code_generator(obj):
     xrcgen = common.code_writers['XRC']
 
     class PropertyGridManagerXrcObject(xrcgen.DefaultXrcObject):
-        def write_property(self, name, val, outfile, tabs):
-            xrcgen.DefaultXrcObject.write_property(self, name, val, outfile, tabs)
+        def write_property(self, name, val, output, tabs):
+            xrcgen.DefaultXrcObject.write_property(self, name, val, output, tabs)
 
     return PropertyGridManagerXrcObject(obj)
 

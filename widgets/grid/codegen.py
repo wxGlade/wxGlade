@@ -170,9 +170,9 @@ def xrc_code_generator(obj):
                            'enable_editing', 'enable_grid_lines', 'enable_col_resize', 'enable_row_resize',
                            'enable_grid_resize', 'lines_color', 'label_bg_color', 'selection_mode'])
 
-        def write_property(self, name, val, outfile, tabs):
+        def write_property(self, name, val, output, tabs):
             if name not in self.unsupported:
-                xrcgen.DefaultXrcObject.write_property(self, name, val, outfile, tabs)
+                xrcgen.DefaultXrcObject.write_property(self, name, val, output, tabs)
     return GridXrcObject(obj)
 
 

@@ -29,11 +29,11 @@ class ChildWidgetNameProperty(np.Property):
         if isinstance(child, SizerSlot): return None
         return child.name
 
-    def write(self, outfile, tabs=0):
+    def write(self, output, tabs=0):
         value = self.get()
         if value is not None:
             stmt = common.format_xml_tag(self.name, value, tabs)
-            outfile.write(stmt)
+            output.append(stmt)
 
 
 

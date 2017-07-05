@@ -157,7 +157,7 @@ class DropTarget(wx.DropTarget):
 
 def get_data_object(widget):
     # build the XML string
-    xml_unicode = compat.StringIO()
+    xml_unicode = []
     widget.node.write(xml_unicode, 0)
     flag = option = border = None
     flag = widget.properties.get("flag")

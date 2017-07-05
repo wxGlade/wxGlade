@@ -25,7 +25,7 @@ class MenuTree(object):
             self.children = []
             self.parent = None
 
-        def write(self, outfile, tabs, top=False):
+        def write(self, output, tabs, top=False):
             inner_xml = u''
             if not top and not self.children:
                 if self.label:
@@ -62,20 +62,20 @@ class MenuTree(object):
                 if self.handler:
                     attrs[u'handler'] = self.handler
                 attrs[u'label'] = self.label
-                value = compat.StringIO()
+                value = []
                 for c in self.children:
                     c.write(value, tabs + 1)
-                inner_xml = value.getvalue()
+                inner_xml = "".join(value)
                 stmt = format_xml_tag( u'menu', inner_xml, tabs, is_xml=True, **attrs )
 
-            outfile.write(stmt)
+            output.append(stmt)
 
     #end of class Node
 
     def __init__(self, name, label, id="", help_str="", handler=""):
         self.root = self.Node(label, id, name, help_str, handler=handler)
 
-    def write(self, outfile, tabs):
-        self.root.write(outfile, tabs, top=True)
+    def write(self, output, tabs):
+        self.root.write(output, tabs, top=True)
 
 #end of class MenuTree

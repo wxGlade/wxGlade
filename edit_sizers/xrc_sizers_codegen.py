@@ -13,10 +13,10 @@ def xrc_wxSizer_builder(obj):
     xrcgen = common.code_writers['XRC']
 
     class SizerXrcObject(xrcgen.DefaultXrcObject):
-        def write(self, outfile, ntabs, properties=None):
+        def write(self, output, ntabs, properties=None):
             if properties is None: properties = {}
             properties["class_orient"] = None # don't write
-            xrcgen.DefaultXrcObject.write(self, outfile, ntabs, properties)
+            xrcgen.DefaultXrcObject.write(self, output, ntabs, properties)
     # end of class SizerXrcObject
 
     return SizerXrcObject(obj)
@@ -26,19 +26,19 @@ def xrc_wxFlexGridSizer_builder(obj):
     xrcgen = common.code_writers['XRC']
 
     class FlexGridSizerXrcObject(xrcgen.DefaultXrcObject):
-        def write(self, outfile, ntabs, properties=None):
+        def write(self, output, ntabs, properties=None):
             if properties is None: properties = {}
             properties["class_orient"] = None # don't write
-            xrcgen.DefaultXrcObject.write(self, outfile, ntabs, properties)
-        def write_property(self, name, val, outfile, tabs):
+            xrcgen.DefaultXrcObject.write(self, output, ntabs, properties)
+        def write_property(self, name, val, output, tabs):
             if val and name in ('growable_rows', 'growable_cols'):
                 if name == 'growable_rows':
                     name2 = 'growablerows'
                 else:
                     name2 = 'growablecols'
-                outfile.write( '    ' * tabs + '<%s>%s</%s>\n' % (name2, val, name2) )
+                output.append( '    ' * tabs + '<%s>%s</%s>\n' % (name2, val, name2) )
             else:
-                xrcgen.DefaultXrcObject.write_property(self, name, val, outfile, tabs)
+                xrcgen.DefaultXrcObject.write_property(self, name, val, output, tabs)
     # end of class FlexGridSizerXrcObject
 
     return FlexGridSizerXrcObject(obj)

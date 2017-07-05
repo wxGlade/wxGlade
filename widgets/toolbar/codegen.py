@@ -105,72 +105,70 @@ def xrc_code_generator(obj):
     xrcgen = common.code_writers['XRC']
 
     class ToolBarXrcObject(xrcgen.DefaultXrcObject):
-        def append_item(self, item, outfile, tabs):
-            write = outfile.write
+        def append_item(self, item, output, tabs):
             if item.id == '---':  # item is a separator
-                write('    '*tabs + '<object class="separator"/>\n')
+                output.append('    '*tabs + '<object class="separator"/>\n')
             else:
                 if item.id:
                     name = item.id.split('=', 1)[0]
                     if name:
-                        write('    '*tabs + '<object class="tool" name=%s>\n' % quoteattr(name))
+                        output.append('    '*tabs + '<object class="tool" name=%s>\n' % quoteattr(name))
                     else:
-                        write('    '*tabs + '<object class="tool">\n')
+                        output.append('    '*tabs + '<object class="tool">\n')
                 else:
-                    write('    '*tabs + '<object class="tool">\n')
+                    output.append('    '*tabs + '<object class="tool">\n')
                 # why XRC seems to ignore label??
                 # this has been fixed on CVS, so add it (it shouldn't hurt...)
                 if item.label:
-                    write('    '*(tabs+1) + '<label>%s</label>\n' % escape(item.label))
+                    output.append('    '*(tabs+1) + '<label>%s</label>\n' % escape(item.label))
                 if item.short_help:
-                    write('    '*(tabs+1) + '<tooltip>%s</tooltip>\n' % escape(item.short_help))
+                    output.append('    '*(tabs+1) + '<tooltip>%s</tooltip>\n' % escape(item.short_help))
                 if item.long_help:
-                    write('    '*(tabs+1) + '<longhelp>%s</longhelp>\n' % escape(item.long_help))
+                    output.append('    '*(tabs+1) + '<longhelp>%s</longhelp>\n' % escape(item.long_help))
                 if item.bitmap1:
                     prop = self._format_bitmap_property( 'bitmap', item.bitmap1 )
                     if prop:
-                        write('%s%s' % ('    ' * (tabs + 1), prop))
+                        output.append('%s%s' % ('    ' * (tabs + 1), prop))
                 if item.bitmap2:
                     prop = self._format_bitmap_property('bitmap2', item.bitmap2)
                     if prop:
-                        write('%s%s' % ('    ' * (tabs + 1), prop))
+                        output.append('%s%s' % ('    ' * (tabs + 1), prop))
                 try:
                     # again, it seems that XRC doesn't support "radio" tools
                     if int(item.type) == 1:
-                        write('    '*(tabs+1) + '<toggle>1</toggle>\n')
+                        output.append('    '*(tabs+1) + '<toggle>1</toggle>\n')
                     # the above has been fixed on CVS, so add a radio if it's there
                     elif int(item.type) == 2:
-                        write('    '*(tabs+1) + '<radio>1</radio>\n')
+                        output.append('    '*(tabs+1) + '<radio>1</radio>\n')
                 except ValueError:
                     pass
-                write('    '*tabs + '</object>\n')
-        def write(self, outfile, tabs):
+                output.append('    '*tabs + '</object>\n')
+        def write(self, output, tabs):
             tools = self.widget.tools
-            write = outfile.write
-            write('    '*tabs + '<object class="wxToolBar" name=%s>\n' % quoteattr(self.name))
+            output.append('    '*tabs + '<object class="wxToolBar" name=%s>\n' % quoteattr(self.name))
             
             for prop_name in 'bitmapsize', 'margins':
                 prop = self.widget.properties.get(prop_name)
                 if prop.is_active():
                     try:
                         w, h = prop.get_tuple()
-                        write('    ' * (tabs+1) + '<%s>%s, %s</%s>\n' % (prop_name, w, h, prop_name))
+                        output.append('    ' * (tabs+1) + '<%s>%s, %s</%s>\n' % (prop_name, w, h, prop_name))
                     except:
                         pass
             for prop_name in 'packing', 'separation':
                 prop = self.widget.properties.get(prop_name)
                 if prop.is_active():
-                    write('    ' * (tabs+1) + '<%s>%s</%s>\n' % (prop_name, escape(prop), prop_name))
+                    output.append('    ' * (tabs+1) + '<%s>%s</%s>\n' % (prop_name, escape(prop), prop_name))
             style = self.widget.properties['style'].get_string_value()
             if style:
                 style = self.cn_f(style)
                 style = style.split('|')
                 style.append('wxTB_HORIZONTAL')
                 style.sort()
-                write('    '*(tabs+1) + '<style>%s</style>\n' % escape('|'.join(style)))
+                output.append('    '*(tabs+1) + '<style>%s</style>\n' % escape('|'.join(style)))
             for t in tools:
-                self.append_item(t, outfile, tabs+1)
-            write('    '*tabs + '</object>\n')
+                self.append_item(t, output, tabs+1)
+            output.append('    '*tabs + '</object>\n')
     # end of class ToolBarXrcObject
 
     return ToolBarXrcObject(obj)

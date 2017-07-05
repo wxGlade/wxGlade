@@ -647,7 +647,7 @@ class ClassOrientProperty(np.RadioProperty):
 
     def __init__(self, value=None):
         np.RadioProperty.__init__(self, value, self.CHOICES, tooltips=self.TOOLTIP)
-    def write(self, outfile, tabs=0):
+    def write(self, output, tabs=0):
         pass
 
 
