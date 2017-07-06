@@ -5,7 +5,7 @@ See L{wcodegen.taghandler} for custom tag handler base classes.
 
 @copyright: 2002-2007 Alberto Griggio
 @copyright: 2016 Carsten Grohmann
-@copyright: 2016 Dietmar Schwertberger
+@copyright: 2016-2017 Dietmar Schwertberger
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
@@ -59,9 +59,12 @@ class XmlParser(ContentHandler):
         #source.close()
 
     def parse_string(self, source):
-        source = compat.BytesIO(source)
-        self.parser.parse(source)
-        source.close()
+        if isinstance(source, list):
+            for line in source:
+                self.parser.feed(source)
+        else:
+            self.parser.feed(source)
+        self.parser.close()
 
     def setDocumentLocator(self, locator):
         self.locator = locator
@@ -591,168 +594,6 @@ class XmlWidgetObject(object):
         self.obj.properties_changed(self._properties_added)
         del self._properties_added[:]
 
-
-
-class CodeWriter(XmlParser):
-    "Parser used to produce the source from a given XML file"
-
-    def __init__(self, writer, input, from_string=False, out_path=None, preview=False, class_names=None):
-        """
-        writer: Language specific code writer; stored in L{self.code_writer}; wxglade.codegen.BaseLangCodeWriter
-        input: Name of file to load or XML document as a String
-        from_string: True if L{input} is a XML document as String
-        out_path: Override the output path specified in the XML document; stored in L{self.out_path}, string or None
-
-        preview: True to generate code for the preview"""
-        self._logger = logging.getLogger(self.__class__.__name__)
-
-        XmlParser.__init__(self)
-        self._toplevels = Stack() # Toplevel objects, i.e. instances of a custom class
-        self.app_attrs = {}       # Attributes of the app (name, class, top_window)
-        self.top_window = ''      # Class name of the top window of the app (if any)
-        self.out_path = out_path  # Override the output path specified in the XML document
-        self.code_writer = writer # Language specific code writer; wxglade.codegen.BaseLangCodeWriter instance
-        self.preview = preview    # True to generate code for the preview
-
-        # used in the CustomWidget preview code, to generate better previews (see widgets/custom_widget/codegen.py)
-        self.class_names = class_names
-        if self.class_names is None:
-            self.class_names = set()
-
-        if from_string:
-            self.parse_string(input)
-        else:
-            inputfile = None
-            try:
-                inputfile = open(input)
-                self.parse(inputfile)
-            finally:
-                if inputfile:
-                    inputfile.close()
-
-    def startElement(self, name, attrs):
-        # check only existence of attributes not the logical correctness
-        if name == 'application':
-            # get properties of the app
-            self._appl_started = True
-            attrs = self._process_app_attrs(attrs)
-            self.app_attrs = attrs
-
-            attrs['for_version'] = attrs['for_version']
-            attrs['option'] = attrs['option']
-
-            if self.out_path is None:
-                out_path = attrs['path']
-                if out_path:
-                    self.out_path = attrs['path']
-                else:
-                    raise XmlParsingError(_("'path' attribute missing: could not generate code"))
-            else:
-                attrs['path'] = self.out_path
-
-            # Prevent empty output path
-            if not self.out_path:
-                raise XmlParsingError( _("'path' attribute empty: could not generate code") )
-
-            # Initialize the writer, thereby a logical check will be performed
-            self.code_writer.new_project(**attrs)
-
-            return
-
-        if not self._appl_started:
-            raise XmlParsingError( _("the root of the tree must be <application>") )
-        if name == 'object':
-            # create the object and push it on the appropriate stacks
-            CodeObject(attrs, self, preview=self.preview)
-            if 'name' in attrs and attrs['name'] == self.app_attrs.get('top_window', ''):
-                self.top_window = attrs['class']
-        else:
-            # handling of the various properties
-            try:
-                # look for a custom handler to push on the stack
-                obj = self.top()
-                handler = self.code_writer.get_property_handler(name, obj.base)
-                if handler:
-                    obj.prop_handlers.push(handler)
-                # get the top custom handler and use it if there's one
-                handler = obj.prop_handlers.top()
-                if handler:
-                    handler.start_elem(name, attrs)
-            except AttributeError:
-                self._logger.exception(_('Internal error'))
-            self._curr_prop = name
-
-    def endElement(self, name):
-        if name == 'application':
-            self._appl_started = False
-            if self.app_attrs:
-                self.code_writer.add_app(self.app_attrs, self.top_window)
-            # call the finalization function of the code writer
-            self.code_writer.finalize()
-            return
-        if name == 'object':
-            # remove last object from Stack
-            obj = self.pop()
-            if obj.klass=='sizeritem':
-                # nothing to do; the object inside was added already
-                return
-
-            if obj.klass=='sizerslot':  # no sizeritem required
-                topl = self._toplevels.top()
-                self.code_writer.add_object(topl, obj)
-                szr = self._sizers.top()
-                self.code_writer.add_sizeritem(topl, szr, obj, 0, "", 0)  # XXX maybe, grow and expand would be better
-                return
-
-            # at the end of the object, we have all the information to add it to its toplevel parent,
-            # or to generate the code for the custom class
-            if obj.is_toplevel and not obj.in_sizers:
-                self.code_writer.add_class(obj)
-            topl = self._toplevels.top()
-            if topl:
-                self.code_writer.add_object(topl, obj)
-                # if the object is not a sizeritem, check whether it belongs to some sizer
-                #  (in this case, self._sizer_item.top() doesn't return None):
-                # if so, write the code to add it to the sizer at the top of the stack
-                si = self._sizer_item.top()
-                if si is not None and si.parent == obj.parent:
-                    szr = self._sizers.top()
-                    if not szr:
-                        return
-                    flag = si.obj.properties["flag"].get_string_value()  # as string, joined with "|"
-                    self.code_writer.add_sizeritem(topl, szr, obj, si.obj.proportion, flag, si.obj.border)
-        else:
-            # end of a property or error
-            # case 1: set _curr_prop value
-            data = "".join(self._curr_prop_val)
-            if data:
-                try:
-                    handler = self.top().prop_handlers.top()
-                    if not handler or handler.char_data(data):
-                        # if char_data returned False, we don't have to call add_property
-                        self.top().add_property(self._curr_prop, data)
-                except AttributeError:
-                    raise
-
-            # case 2: call custom end_elem handler
-            try:
-                # if there is a custom handler installed for this property, call its end_elem function:
-                # if this returns True, remove the handler from Stack
-                obj = self.top()
-                handler = obj.prop_handlers.top()
-                if handler.end_elem(name, obj):
-                    obj.prop_handlers.pop()
-            except AttributeError:
-                pass
-            self._curr_prop = None
-            self._curr_prop_val = []
-
-    def characters(self, data):
-        if not data or data.isspace():
-            return
-        if self._curr_prop is None:
-            raise XmlParsingError(_("Character data can be present only inside properties"))
-        self._curr_prop_val.append(data)
 
 
 class Stack(object):

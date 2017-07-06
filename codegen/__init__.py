@@ -918,7 +918,6 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
             out.extend( obuffer )
             # store the contents to filename
             self.save_file(filename, out)
-            out.close()
         else:  # not self.multiple_files
             if prev_src:
                 # if this is a new class, add its code to the new_classes list of the SourceFileContent instance
