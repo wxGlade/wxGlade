@@ -884,7 +884,7 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
                 prev_src.replace('<%swxGlade replace dependencies>' % self.nonce, code)
 
                 # insert the extra code of this class
-                extra_code = "".join(self.classes[klass].extra_code[::-1])
+                extra_code = self.classes[klass].extra_code[::-1]
                 # if there's extra code but we are not overwriting existing sources, warn the user
                 if extra_code:
                     self.warning( '%s (or one of its children) has extra code classes, but you are not overwriting '
