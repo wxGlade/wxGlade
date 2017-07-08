@@ -19,8 +19,7 @@ class StylesMixin(object):
     "Class mixin to handle formatting and re-combining styles"
 
     def cn_f(self, flags):
-        """\
-        Rearrange and format flags.
+        """Rearrange and format flags.
 
         Steps to rearrange:
          1. Split given string using delimiter '|' and remove duplicate flags
@@ -61,8 +60,7 @@ class StylesMixin(object):
         @see: cn()
         @see: format_flags
         @see: tmpl_flag_join
-        @see: L{config.widget_config}
-        """
+        @see: L{config.widget_config}"""
         assert isinstance(flags, compat.basestring)
         if flags.isdigit():
             return flags
@@ -91,19 +89,13 @@ class StylesMixin(object):
 
     @decorators.memoize
     def _get_widget_styles_defs(self, widget_name):
-        """
-        Logic of L{_get_style_defs()} but extracted for cache decorator.
+        """Logic of _get_style_defs() but extracted for cache decorator.
 
-        @note: The styles are copied using a deep-copy to prevent changing
-               original data accidentally.
+        note: The styles are copied using a deep-copy to prevent changing original data accidentally.
 
-        @param widget_name: Widget name e.g. 'wxCheckBox'
-        @type widget_name: str
+        widget_name: Widget name e.g. 'wxCheckBox'
 
-        @return: A joined copy of the generic styles and widget specific
-                 styles.
-        @rtype: dict
-        """
+        returns a joined copy of the generic styles and widget specific styles as dict"""
         styles = {}
         # Use always a deep-copy to prevent changing original data
         try:
@@ -115,37 +107,26 @@ class StylesMixin(object):
         return styles
 
     def _get_style_defs(self):
-        """\
-        Return all styles related to this widget. This includes generic
-        styles from L{config.widget_config}.
+        """Return all styles related to this widget. This includes generic styles from L{config.widget_config}.
 
-        The implementation has moved to L{_get_widget_styles_defs()} to use a
+        The implementation has moved to _get_widget_styles_defs() to use a
         simple cache decorator instead of using an own cache implementation.
 
         @rtype: dict
-        @see: L{config.widget_config}
-        @see: L{_get_widget_styles_defs()}
-        """
+        see: config.widget_config, _get_widget_styles_defs()"""
         return self._get_widget_styles_defs(getattr(self, 'klass', None))
 
     style_defs = property(_get_style_defs)
 
     def process_styles(self, flags):
-        """\
-        Process the style attributes 'rename_to', 'include', 'exclude',
-        'supported_by' and 'require'.
+        """Process the style attributes 'rename_to', 'include', 'exclude', 'supported_by' and 'require'.
+        The documentation of cn_f() contains more details of the flag handling process.
 
-        The documentation of L{cn_f()} contains more details of the flag
-        handling process.
+        flags: Flags to process (as set)
 
-        @param flags: Flags to process
-        @type flags:  set
+        returns processed flags as set
 
-        @return: Processed flags
-        @rtype: set
-
-        @see: L{config.widget_config}
-        """
+        see: config.widget_config"""
         assert isinstance(flags, set)
 
         # processing empty set()s causes later trouble with
@@ -205,18 +186,12 @@ class StylesMixin(object):
         return flags
 
     def combine_styles(self, flags):
-        """\
-        Combine flags (attribute 'combination') and remove flags that are
-        parts of other flags already.
+        """Combine flags (attribute 'combination') and remove flags that are parts of other flags already.
 
-        @param flags: Flags to combine and reduce
-        @type flags:  set
+        flags: Flags to combine and reduce (a set)
 
-        @return: Processed flags
-        @rtype: set
-
-        @see: L{config.widget_config}
-        """
+        return: Processed flags as set
+        see config.widget_config}"""
         # processing empty set()s causes later trouble with
         # set([<filled>]) >= set()
         if not flags:
@@ -248,28 +223,17 @@ class StylesMixin(object):
 
 class BitmapMixin(object):
     "Class mixin to create wxBitmap instances from the given statement"
-
-    bitmap_tooltip_text = _(
-        'Choice a bitmap to show.\n\nYou can either select a file or you '
-        'can specify the bitmap using hand-crafted statements with the '
-        'prefixes "art:", "code:", "empty:" or "var:".\nThe wxGlade '
-        'documentation describes how to write such statements.')
-    "Detailed tooltip string to show with each bitmap property."
+    bitmap_tooltip_text = _('Choice a bitmap to show.\n\nYou can either select a file or you can specify the bitmap'
+                            ' using hand-crafted statements with the prefixes "art:", "code:", "empty:" or "var:".\n'
+                            'The wxGlade documentation describes how to write such statements.')
 
     def get_preview_obj_bitmap(self, bitmap=None):
-        """\
-        Create a wxBitmap instance from the given statement.
-
+        """Create a wxBitmap instance from the given statement.
         If not statement is given, the instance variable named "bitmap" is used.
 
-        @param bitmap: Bitmap definition
-        @type bitmap: str | None
+        bitmap: Bitmap definition string or None
 
-        @see: L{get_preview_obj_artprovider()}
-        @see: L{get_preview_obj_emptybitmap()}
-
-        @rtype: wx.Bitmap | wx.EmptyBitmap
-        """
+        see: L{get_preview_obj_artprovider(), get_preview_obj_emptybitmap()"""
         if bitmap is None:
             bitmap = getattr(self, 'bitmap', None)
 
@@ -287,19 +251,13 @@ class BitmapMixin(object):
             return wx.Bitmap(bitmap, wx.BITMAP_TYPE_ANY)
 
     def get_preview_obj_artprovider(self, bitmap):
-        """\
-        Create a wxBitmap instance from the given statement using
-        wxArtProvider.
+        """Create a wxBitmap instance from the given statement using wxArtProvider.
 
-        @note: Preview shows only wxART_* resources.
+        note: Preview shows only wxART_* resources.
 
-        @param bitmap: Bitmap definition
-        @type bitmap: str | None
+        bitmap: Bitmap definition string or None
 
-        @rtype: wx.Bitmap | wx.EmptyBitmap
-
-        @see: L{wcodegen.BaseWidgetWriter.get_inline_stmt_artprovider()}
-        """
+        see: wcodegen.BaseWidgetWriter.get_inline_stmt_artprovider()"""
         # keep in sync with BitmapMixin.get_inline_stmt_artprovider()
         art_id = 'wxART_ERROR'
         art_client = 'wxART_OTHER'
@@ -334,16 +292,11 @@ class BitmapMixin(object):
         )
 
     def get_preview_obj_emptybitmap(self, bitmap):
-        """\
-        Create an empty wxBitmap instance from the given statement.
+        """Create an empty wxBitmap instance from the given statement.
 
-        @param bitmap: Bitmap definition
-        @type bitmap: str | None
+        bitmap: Bitmap definition string or None
 
-        @rtype: wx.Bitmap | wx.EmptyBitmap
-
-        @see: L{wcodegen.BaseWidgetWriter.get_inline_stmt_emptybitmap()}
-        """
+        see: wcodegen.BaseWidgetWriter.get_inline_stmt_emptybitmap()"""
         # keep in sync with BaseWidgetWriter.get_inline_stmt_emptybitmap()
         width = 16
         height = 16
