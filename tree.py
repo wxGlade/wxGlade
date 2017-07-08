@@ -810,6 +810,7 @@ class WidgetTree(wx.TreeCtrl, Tree):
             self.expand(node)
             self._show_widget_toplevel(node)
             if wx.Platform != '__WXMSW__' and set_size is not None:
+                toplevel_widget = node.widget.widget  # above it was not yet created
                 wx.CallAfter(toplevel_widget.SetSize, set_size)
         else:
             toplevel_widget.Hide()
