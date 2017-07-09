@@ -103,8 +103,8 @@ class WXGladeBaseTest(unittest.TestCase):
         generated = [s.decode('ascii', 'replace') for s in generated]
         diff = difflib.unified_diff(expected, generated, fromfile=expected_filename, tofile=generated_filename, lineterm='')
         diff = list(diff)
-        print( '\n'.join(diff[:30]) )
-        if len(diff)>30: print("...")
+        print( '\n'.join(diff[:40]) )
+        if len(diff)>40: print("...")
         #if compat.PYTHON3:
         self.assertFalse( diff, "Generated file and expected result differs:\n%s" % "\n".join(diff) )
         return True
@@ -324,25 +324,32 @@ class WXGladeGUITest(WXGladeBaseTest):
                        success_msg, success_caption, self._messageBox[0], self._messageBox[1]) )
             self._messageBox = None
 
-            if compat.PYTHON2:  # no subtests
-                if self._compare_files(expected_filename, generated_filename): diff_fails.append(language)
-            else:
-                with self.subTest(subtest):
-                    self._compare_files(expected_filename, generated_filename)
-                subtest += 1
-            if language == 'C++' and not app.multiple_files:
-                # compare header file as well
-                expected_filename_h  = '%s.%s' % ( os.path.splitext(expected_filename )[0], app.header_extension )
-                generated_filename_h = '%s.%s' % ( os.path.splitext(generated_filename)[0], app.header_extension )
-                if compat.PYTHON2:
-                    if self._compare_files(expected_filename_h, generated_filename_h): diff_fails.append( "C++.h")
+            compare_files = [(expected_filename, generated_filename)]
+            if language == 'C++':
+                if not app.multiple_files:
+                    # compare header file as well
+                    expected_filename_h  = '%s.%s' % ( os.path.splitext(expected_filename )[0], app.header_extension )
+                    generated_filename_h = '%s.%s' % ( os.path.splitext(generated_filename)[0], app.header_extension )
+                    compare_files.append( (expected_filename, generated_filename) )
+                else:
+                    for toplevel in app.node.children:
+                        classname = toplevel.widget.klass
+                        # class C++ file
+                        expected_filename = self._get_casefile_path( "%s.%s"%(classname, app.source_extension) )
+                        if expected_filename:
+                            compare_files.append( (expected_filename, self._get_outputfile_path(expected_filename) ) )
+                        # class header file
+                        expected_filename = self._get_casefile_path( "%s.%s"%(classname, app.header_extension) )
+                        if expected_filename:
+                            compare_files.append( (expected_filename, self._get_outputfile_path(expected_filename) ) )
+
+            for expected_filename, generated_filename in compare_files:
+                if compat.PYTHON2:  # no subtests
+                    if self._compare_files(expected_filename, generated_filename): diff_fails.append(language)
                 else:
                     with self.subTest(subtest):
-                        self._compare_files(expected_filename_h, generated_filename_h)
+                        self._compare_files(expected_filename, generated_filename)
                     subtest += 1
-            elif language == "C++":
-                # multiple files -> compare source and header files for all classes
-                print("XXX")
         if compat.PYTHON2:
             self.assertFalse(diff_fails, "Expected and generated files do not match for %s"%",".join(diff_fails))
 
