@@ -851,7 +851,7 @@ class WidgetTree(wx.TreeCtrl, Tree):
             self._SetItemData(node.item, new_node)
             old_children = node.children
             self.remove(node, delete=False)  # don't delete the node, as we just want to modify it
-            for c in old_children or []:           # but the children
+            for c in old_children or []:     # but the children
                 self.Delete(c.item)
             node = new_node
             self.names.setdefault(Tree._find_toplevel(self, node), {})[str(node.widget.name)] = 1
