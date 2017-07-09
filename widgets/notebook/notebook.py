@@ -3,7 +3,7 @@ wxNotebook objects
 
 @copyright: 2002-2007 Alberto Griggio
 @copyright: 2016 Carsten Grohmann
-@copyright: 2016 Dietmar Schwertberger
+@copyright: 2016-2017 Dietmar Schwertberger
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
@@ -362,7 +362,7 @@ editor_style = ''
 
 dlg_title = _('wxNotebook')
 box_title = _('Orientation')
-choices = 'wx.NB_TOP|wx.NB_BOTTOM|wx.NB_LEFT|wx.NB_RIGHT'
+choices = 'wxNB_TOP|wxNB_BOTTOM|wxNB_LEFT|wxNB_RIGHT'
 tmpl_label = 'notebook'
 
 
