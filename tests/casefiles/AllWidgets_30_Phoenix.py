@@ -189,7 +189,7 @@ class All_Widgets_Frame(wx.Frame):
         self.bitmap_button_icon1.SetDefault()
         self.bitmap_button_empty1.SetSize(self.bitmap_button_empty1.GetBestSize())
         self.bitmap_button_empty1.SetDefault()
-        self.bitmap_button_icon2.SetBitmapDisabled(wx.Bitmap(20, 20))
+        self.bitmap_button_icon2.SetBitmapDisabled(wx.Bitmap(32, 32))
         self.bitmap_button_icon2.SetSize(self.bitmap_button_icon2.GetBestSize())
         self.bitmap_button_icon2.SetDefault()
         self.bitmap_button_art.SetSize(self.bitmap_button_art.GetBestSize())
