@@ -990,6 +990,7 @@ class TextProperty(Property):
             self.text.Enable(False)
         elif self.deactivated is not None:
             self.text.Enable(not self.deactivated)
+            panel.Bind( wx.EVT_LEFT_DOWN, self._on_text_click )
         # layout of the controls / sizers
         if self._HORIZONTAL_LAYOUT:
             #self.text.SetMaxSize( (-1,200) )
@@ -1017,6 +1018,18 @@ class TextProperty(Property):
         if hasattr(self, "_on_label_dblclick"):
             label.Bind(wx.EVT_LEFT_DCLICK, self._on_label_dblclick)
             label.SetForegroundColour(wx.BLUE)
+
+    def _on_text_click(self, event):
+        if self.deactivated:
+            text_rect = self.text.GetClientRect()
+            text_rect.Offset(self.text.Position)
+            if text_rect.Contains(event.Position):
+                self.toggle_active(active=True)
+                if self.text:
+                    self.text.SetFocus()
+                    self.text.SelectAll()
+                return
+        event.Skip()
 
     def create_text_ctrl(self, panel, value):
         style = 0
