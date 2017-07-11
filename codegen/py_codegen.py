@@ -445,7 +445,10 @@ def %(handler)s(self, event):  # wxGlade: %(klass)s.<event_handler>
         else:
             method = 'SetMinSize'
         if use_dialog_units:
-            return '%s.%s(%s(%s, (%s)))\n' % ( objname, method, self.cn('wxDLG_SZE'), objname, size[:-1] )
+            if compat.IS_CLASSIC:
+                return '%s.%s(%s(%s, (%s)))\n' % ( objname, method, self.cn('wxDLG_SZE'), objname, size[:-1] )
+            else:
+                return '%s.%s(%s(%s, %s(%s)))\n' % ( objname, method, self.cn('wxDLG_UNIT'), objname, self.cn("wxSize"), size[:-1] )
         else:
             return '%s.%s((%s))\n' % (objname, method, size)
 

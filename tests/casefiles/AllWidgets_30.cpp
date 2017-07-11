@@ -206,7 +206,7 @@ void All_Widgets_Frame::set_properties()
     bitmap_button_icon1->SetDefault();
     bitmap_button_empty1->SetSize(bitmap_button_empty1->GetBestSize());
     bitmap_button_empty1->SetDefault();
-    bitmap_button_icon2->SetBitmapDisabled(wxBitmap(20, 20));
+    bitmap_button_icon2->SetBitmapDisabled(wxBitmap(32, 32));
     bitmap_button_icon2->SetSize(bitmap_button_icon2->GetBestSize());
     bitmap_button_icon2->SetDefault();
     bitmap_button_art->SetSize(bitmap_button_art->GetBestSize());

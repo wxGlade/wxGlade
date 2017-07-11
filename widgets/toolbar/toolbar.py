@@ -450,8 +450,8 @@ class EditToolBar(EditBase, PreviewMixin, EditStylesMixin, BitmapMixin):
         EditStylesMixin.__init__(self)
 
         # initialise instance properties
-        self.bitmapsize = np.ScrollRatePropertyD('16, 15', default_value='16, 15')
-        self.margins    = np.ScrollRatePropertyD('0, 0',   default_value='0, 0')
+        self.bitmapsize = np.IntPairPropertyD('16, 15', default_value='16, 15')
+        self.margins    = np.IntPairPropertyD('0, 0',   default_value='0, 0')
         self.packing    = np.SpinPropertyD(1, val_range=(0,100), default_value=1, immediate=True)
         self.separation = np.SpinPropertyD(5, val_range=(0,100), default_value=5, immediate=True)
         self.tools = ToolsProperty()  # incl. the Edit button

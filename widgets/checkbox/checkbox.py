@@ -37,10 +37,6 @@ class EditCheckBox(ManagedBase, EditStylesMixin):
         labels = [_('Unchecked'), _('Checked'), _('Undetermined')]
         self.value = np.IntRadioProperty(0, values, labels, columns=3, default_value=0, name="checked") # rename to value?
 
-        if config.preferences.default_border:
-            self.border.set( config.preferences.default_border_size )
-            self.flag.set( wx.ALL )
-
     def create_widget(self):
         self.widget = wx.CheckBox(self.parent.widget, self.id, self.label)
         self.widget.SetValue(self.value)
@@ -89,6 +85,8 @@ def builder(parent, sizer, pos, number=[1]):
         number[0] += 1
         label = 'checkbox_%d' % number[0]
     checkbox = EditCheckBox(label, parent, wx.NewId(), label, sizer, pos)
+    checkbox.properties["style"].set_to_default()
+    checkbox.check_defaults()
     node = Node(checkbox)
     checkbox.node = node
     if parent.widget: checkbox.create()

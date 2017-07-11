@@ -30,10 +30,6 @@ class EditRadioButton(ManagedBase, EditStylesMixin):
         self.label   = np.TextProperty("", multiline=True, fixed_height=True)
         self.clicked = np.CheckBoxProperty(False, default_value=False)
 
-        if config.preferences.default_border:
-            self.border.set( config.preferences.default_border_size )
-            self.flag.set( wx.ALL )
-
     def create_widget(self):
         self.widget = wxGladeRadioButton(self.parent.widget, self.id, self.label)
         self.widget.SetValue(self.clicked)
@@ -67,6 +63,8 @@ def builder(parent, sizer, pos, number=[1]):
         number[0] += 1
         label = u'radio_btn_%d' % number[0]
     radio = EditRadioButton(label, parent, wx.NewId(), label, sizer, pos)
+    radio.properties["style"].set_to_default()
+    radio.check_defaults()
     node = Node(radio)
     radio.node = node
     if parent.widget: radio.create()

@@ -2,6 +2,7 @@
 Dialog to show details of internal errors.
 
 @copyright: 2014-2016 Carsten Grohmann
+@copyright: 2017 Dietmar Schwertberger
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
@@ -17,28 +18,18 @@ import wx
 class BugReport(bugdialog_ui.UIBugDialog):
     "Dialog to show details of internal errors"
 
-    _disabled = False
-    """\
-    Flag to prevent dialog popups during test runs.
-
-    @type: bool
-    """
+    _disabled = False  # Flag to prevent dialog popups during test runs.
 
     def __init__(self):
         self._disabled = getattr(sys, '_called_from_test', False)
         bugdialog_ui.UIBugDialog.__init__(self, None, -1, "")
 
     def SetContent(self, msg, exc):
-        """\
-        Prepare given exception information and show it as dialog content.
+        """Prepare given exception information and show it as dialog content.
 
-        @param msg: Short description of the action that has raised this error
-        @type msg:  str
-        @param exc: Caught exception
-        @type exc:  Exception
-
-        @see: L{SetContentEI()}
-        """
+        msg: Short description of the action that has raised this error
+        exc: Caught exception (Exception instance)
+        see: SetContentEI()"""
         if self._disabled:
             return
 
@@ -49,18 +40,15 @@ class BugReport(bugdialog_ui.UIBugDialog):
         self._fill_dialog(exc_msg, exc_type, header)
 
     def SetContentEI(self, exc_type, exc_value, exc_tb, msg=_('An internal error occurred')):
-        """\
-        Format given exception and add details to dialog.
+        """Format given exception and add details to dialog.
 
-        @param exc_type: Exception type
-        @param exc_value: Exception value
-        @param exc_tb: Exception traceback
+        exc_type: Exception type
+        exc_value: Exception value
+        exc_tb: Exception traceback
 
-        @param msg: Short description of the exception
-        @type msg:  basestring
+        msg: Short description of the exception
 
-        @see: L{SetContent()}
-        """
+        see: SetContent()"""
         if self._disabled:
             return
 
@@ -69,27 +57,19 @@ class BugReport(bugdialog_ui.UIBugDialog):
         self._fill_dialog(msg, exc_type, _('An internal error occurred'))
 
     def _fill_dialog(self, exc_msg, exc_type, header):
-        """\
-        Fill the bug dialog
+        """Fill the bug dialog
 
-        @param exc_msg: Short exception summary
-        @type exc_msg: str | None
-        @param exc_type: Exception type
-        @type exc_type: str
-        @param header: Initial message
-        @type header: str
+        exc_msg: Short exception summary
+        exc_type: Exception type as string
+        header: Initial message
 
-        @see: L{SetContent()}
-        @see: L{SetContentEI()}
-        """
+        see: L{SetContent(), SetContentEI()"""
         details = log.getBufferAsString()
 
         if not exc_msg:
             exc_msg = _('No summary available')
 
-        summary = self.st_summary.GetLabel() % {
-            'exc_type': exc_type,
-            'exc_msg': exc_msg}
+        summary = self.st_summary.GetLabel() % { 'exc_type':exc_type, 'exc_msg':exc_msg }
 
         self.st_header.SetLabel(header)
         self.st_summary.SetLabel(summary)
@@ -117,18 +97,12 @@ class BugReport(bugdialog_ui.UIBugDialog):
 
 
 def Show(msg, exc):
-    """\
-    Wrapper for creating a L{BugReport} dialog and show the details of the
-    given exception instance.
+    """Wrapper for creating a L{BugReport} dialog and show the details of the given exception instance.
 
-    @param msg: Short description of the action that has raised this error
-    @type msg:  str
-    @param exc: Caught exception
-    @type exc:  Exception
+    msg: Short description of the action that has raised this error
+    exc: Caught exception
 
-    @see: L{ShowEI()}
-    @see: L{BugReport.SetContent()}
-    """
+    see ShowEI(), BugReport.SetContent()"""
     dialog = BugReport()
     dialog.SetContent(msg, exc)
     dialog.ShowModal()
@@ -136,19 +110,14 @@ def Show(msg, exc):
 
 
 def ShowEI(exc_type, exc_value, exc_tb, msg=None):
-    """\
-    Wrapper for creating a L{BugReport} dialog and show the given exception
-    details.
+    """Wrapper for creating a L{BugReport} dialog and show the given exception details.
 
-    @param exc_type: Exception type
-    @param exc_value: Exception value
-    @param exc_tb: Exception traceback
-    @param msg: Short description of the exception
-    @type msg:  str | None
+    exc_type: Exception type
+    exc_value: Exception value
+    exc_tb: Exception traceback
+    msg: Short description of the exception
 
-    @see: L{Show()}
-    @see: L{BugReport.SetContent()}
-    """
+    see: L{Show(), BugReport.SetContent()"""
     dialog = BugReport()
     dialog.SetContentEI(exc_type, exc_value, exc_tb, msg)
     dialog.ShowModal()
@@ -156,19 +125,12 @@ def ShowEI(exc_type, exc_value, exc_tb, msg=None):
 
 
 def ShowEnvironmentError(msg, inst):
-    """\
-    Show EnvironmentError exceptions detailed and user-friendly
+    """Show EnvironmentError exceptions detailed and user-friendly
 
-    @param msg:  Error message
-    @type msg:   Unicode
-    @param inst: The caught exception
-    @type inst:  Exception
-    """
+    msg:  Error message
+    inst: The caught exception"""
 
-    details = {
-        'msg': msg,
-        'type': inst.__class__.__name__,
-    }
+    details = {'msg':msg, 'type':inst.__class__.__name__}
 
     if inst.filename:
         details['filename'] = _('Filename:   %s') % inst.filename
@@ -178,8 +140,7 @@ def ShowEnvironmentError(msg, inst):
     else:
         details['error'] = str(inst.args)
 
-    text = _("""\
-%(msg)s
+    text = _("""%(msg)s
 
 Error type: %(type)s
 Error code: %(error)s

@@ -99,10 +99,28 @@ class TestGui(WXGladeGUITest):
 
     def test_Preferences(self):
         "Test code generation for some variants of the preferences dialog; also tests backwards compatibility"
+        import config
+        restore = (config.preferences.default_border, config.preferences.default_border_size)
+
+        # without default border
+        config.preferences.default_border = False
+        config.preferences.default_border_size = 0
+
         self.load_and_generate('Python_Preferences', included=["Python"], test_GUI=True)
         self.load_and_generate('Perl_Preferences', included=["Perl"], test_GUI=False, preview=False)
         self.load_and_generate('CPP_Preferences', included=["C++"], test_GUI=True)
         self.load_and_generate('Lisp_Preferences', included=["Lisp"], test_GUI=True)
+
+        # with default border
+        config.preferences.default_border = True
+        config.preferences.default_border_size = 5
+
+        self.load_and_generate('Python_Preferences', included=["Python"], test_GUI=True)
+        self.load_and_generate('Perl_Preferences', included=["Perl"], test_GUI=False, preview=False)
+        self.load_and_generate('CPP_Preferences', included=["C++"], test_GUI=True)
+        self.load_and_generate('Lisp_Preferences', included=["Lisp"], test_GUI=True)
+
+        config.preferences.default_border, config.preferences.default_border_size = restore
 
     def test_sizer_references(self):
         "Test storing references to sizers in class attributes"
@@ -300,6 +318,9 @@ class TestGui(WXGladeGUITest):
         common.app_tree.app.properties["is_template"].set(True)
         common.app_tree.root.widget.generate_code()
         self._assert_error_message( "Code generation from a template is not possible" )
+
+    def test_SizersSize(self):
+        self.load_and_generate('SizersSizeTests', test_GUI=True)
 
     def _assert_styles(self, got, expected, msg=None):
         if isinstance(got,      str): got      = got.split("|")

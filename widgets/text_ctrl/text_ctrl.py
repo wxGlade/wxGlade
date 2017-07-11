@@ -30,11 +30,6 @@ class EditTextCtrl(ManagedBase, EditStylesMixin):
         # initialize instance properties
         self.value = np.TextProperty("", multiline=True)
 
-        if config.preferences.default_border:
-            # modify default values  XXX should this be moved somewhere else or dropped?
-            self.properties["border"].set( config.preferences.default_border_size )
-            self.properties["flag"].set( wx.ALL )
-
         #self.properties["style"].set( self.get_int_style() ) # XXX check whether this makes sense for any control
 
     def create_widget(self):
@@ -82,6 +77,8 @@ def builder(parent, sizer, pos, number=[1]):
         number[0] += 1
         name = 'text_ctrl_%d' % number[0]
     text = EditTextCtrl(name, parent, wx.NewId(), sizer, pos)
+    text.properties["style"].set_to_default()
+    text.check_defaults()
     node = Node(text)
     text.node = node
     if parent.widget: text.create()
