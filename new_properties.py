@@ -1162,11 +1162,9 @@ _comma    = r"\s*,\s*"             # a comma, optionally with surrounding whites
 _trailing = r"\s*\)?\s*$"          # whitespace, optionally including a closing ")"
 
 
-class SizePropertyD(TextPropertyD):
-    d = r"(\s*[dD]?)" # the trailig d for "dialog units"
-    validation_re = re.compile( _leading + _ge_m1 + _comma + _ge_m1 + d + _trailing )  # match pair of integers >=- 1
-    del d
-    normalization = "%s, %s%s" # for normalization % valiation_re.match(...).groups()
+class IntPairPropertyD(TextPropertyD):
+    # the value is still a string, but it's guaranteed to have the right format
+    validation_re = re.compile(_leading + _ge_0 + _comma + _ge_0 + _trailing )  # match a pair of positive integers
     def _set_converter(self, value):
         # value can be a tuple
         if isinstance(value, compat.basestring):
@@ -1182,17 +1180,46 @@ class SizePropertyD(TextPropertyD):
         if not match: return None
         return self.normalization%match.groups()
 
-    def get_tuple(self):
-        x, y = self.value.split(",")
-        return (int(x), int(y))
+    def get_tuple(self, widget=None):
+        w, h = self.value.split(",")
+        return (int(w), int(h))
 
 
-class ScrollRatePropertyD(SizePropertyD):
-    # the value is still a string, but it's guaranteed to have the right format
-    validation_re = re.compile(_leading + _ge_0 + _comma + _ge_0 + _trailing )  # match a pair of positive integers
+class SizePropertyD(IntPairPropertyD):
+    d = r"(\s*[dD]?)" # the trailig d for "dialog units"
+    validation_re = re.compile( _leading + _ge_m1 + _comma + _ge_m1 + d + _trailing )  # match pair of integers >=- 1
+    del d
+    normalization = "%s, %s%s" # for normalization % valiation_re.match(...).groups()
+
+    def get_size(self, widget=None):
+        "widget argument is used to calculate size in Dialog units, using wx.DLG_SZE"
+        w, h = self.value.split(",")
+
+        if h[-1] in 'dD':
+            h = h[:-1]
+            use_dialog_units = True
+        else:
+            use_dialog_units = False
+
+        w,h = int(w), int(h)
+        if widget is None: return (w,h)
+    
+        if use_dialog_units:
+            if compat.IS_CLASSIC:
+                wd, hd = wx.DLG_SZE(widget, (w, h))
+            else:
+                wd, hd = wx.DLG_UNIT(widget, wx.Size(w, h))
+            if w!=-1: w = wd
+            if h!=-1: h = hd
+
+        if w==-1 or h==-1:
+            best_size = widget.GetBestSize()
+            if w == -1: w = best_size[0]
+            if h == -1: h = best_size[1]
+        return (w,h)
 
 
-class IntRangePropertyA(SizePropertyD):
+class IntRangePropertyA(IntPairPropertyD):
     deactivated = False
     validation_re = re.compile( _leading + _int + _comma + _int + _trailing )  # match pair of integers
     normalization = "%s, %s"

@@ -455,10 +455,7 @@ class WindowBase(EditBase):
         if not self.widget: return
         size_p = self.properties["size"]
         if not size_p.is_active(): return
-        size = size_p.get_value().strip()
-        use_dialog_units = size and size[-1] == 'd'
-        size = size_p.get_tuple()
-        if use_dialog_units: size = wx.DLG_SZE(self.widget, size)
+        size = size_p.get_size(self.widget)
         self.widget.SetSize(size)
         try:
             self.sizer.set_item(self.pos, size=size)
@@ -558,10 +555,10 @@ class ManagedBase(WindowBase):
         if not self.widget: return
         old = self.size
         WindowBase.on_size(self, event)
-        size_prop = self.properties['size']
-        if size_prop.is_active():
+        size_p = self.properties['size']
+        if size_p.is_active():
             if self.proportion!=0 or (self.flag & wx.EXPAND):
-                size_prop.set(old)
+                size_p.set(old)
         if self.sel_marker: self.sel_marker.update()
 
     def properties_changed(self, modified):
@@ -584,29 +581,17 @@ class ManagedBase(WindowBase):
         # update the widget by calling self.sizer.set_item (again)
         if not self.widget: return
 
-        #border = self.border
-        #proportion = self.option
-        #flags = self.flag
         # get size from property
         try:
-            size_prop = self.properties['size']
-            if size_prop.is_active(): # or use get_value, which will now return the default value if disabled
-                size = self.size
-                if size[-1] == 'd':
-                    size = size[:-1]
-                    use_dialog_units = True
-                else:
-                    use_dialog_units = False
-                size = [int(v) for v in size.split(',')]
-                if use_dialog_units:
-                    size = wx.DLG_SZE(self.widget, size)
+            size_p = self.properties['size']
+            if size_p.is_active(): # or use get_value, which will now return the default value if disabled
+                size = size_p.get_size(self.widget)
             else:
                 if not (self.flag & wx.EXPAND):
                     size = self.widget.GetBestSize()
                 else:
                     size = (-1,-1) # would None or wx.DefaultSize be better`?`
 
-            #self.sizer.set_item(self.pos, border=self.border, option=self.option, flag=self.flag, size=size)
             self.sizer.item_layout_property_changed(self.pos, size=size)
         except AttributeError:
             self._logger.exception(_('Internal Error'))

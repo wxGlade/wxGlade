@@ -38,7 +38,7 @@ class PanelBase(EditStylesMixin):
         # initialise properties
         self.no_custom_class = np.CheckBoxProperty(False, default_value=False)
         self.scrollable      = np.CheckBoxProperty(False, default_value=False)
-        self.scroll_rate     = np.ScrollRatePropertyD( "10, 10" )
+        self.scroll_rate     = np.IntPairPropertyD( "10, 10" )
 
         if style: self.properties["style"].set(style)
 

@@ -910,14 +910,14 @@ class SizerBase(Sizer, np.PropertyOwner):
 
             self.widget.Add(item.widget, proportion, flag, border)
 
+            if not size or -1 in size:
+                best_size = item.widget.GetBestSize()
             if size:
                 w, h = size
+                if w == -1: w = best_size[0]
+                if h == -1: h = best_size[1]
             else:
-                w, h = item.widget.GetBestSize()
-            if w == -1:
-                w = item.widget.GetBestSize()[0]
-            if h == -1:
-                h = item.widget.GetBestSize()[1]
+                w, h = best_size
             self.widget.SetItemMinSize(item.widget, w, h)
             return
 
@@ -1005,8 +1005,7 @@ class SizerBase(Sizer, np.PropertyOwner):
                 size = elem.GetSize()
             item = elem.GetWindow()
             w, h = size
-            if w==-1 or h==-1:
-                best_size = item.GetBestSize()
+            if w==-1 or h==-1: best_size = item.GetBestSize()
             if w == -1: w = best_size[0]
             if h == -1: h = best_size[1]
             self.widget.SetItemMinSize(item, w, h)
@@ -1051,8 +1050,7 @@ class SizerBase(Sizer, np.PropertyOwner):
                 size = elem.GetSize()
             widget = elem.GetWindow()
             w, h = size
-            if w==-1 or h==-1:
-                best_size = widget.GetBestSize()
+            if w==-1 or h==-1: best_size = widget.GetBestSize()
             if w == -1: w = best_size[0]
             if h == -1: h = best_size[1]
             self.widget.SetItemMinSize(widget, w, h)  # XXX store the min size as attribute to track modifications
@@ -1313,11 +1311,11 @@ class SizerBase(Sizer, np.PropertyOwner):
         if not size_p.is_active():
             self.fit_parent()
             w, h = self.widget.GetSize()
-            prefix = ''
+            postfix = ''
             if config.preferences.use_dialog_units:
                 w, h = compat.ConvertPixelsToDialog( self.window.widget, self.widget.GetSize() )
-                prefix = 'd'
-            size_p.set('%s, %s%s' % (w, h, prefix))
+                postfix = 'd'
+            size_p.set('%s, %s%s' % (w, h, postfix))
 
 
 
@@ -1379,20 +1377,12 @@ class EditBoxSizer(BoxSizerBase):
                 if sp and sp.is_active():
                     if (c.proportion != 0 or (c.flag & wx.EXPAND)) and not (c.flag & wx.FIXED_MINSIZE):
                         c.item.widget.Layout()
-                        w, h = c.item.widget.GetBestSize()
-                        c.item.widget.SetMinSize((w, h))
+                        size = sp.get_size(c.item.widget)
+                        c.item.widget.SetMinSize(size)
                     else:
-                        size = sp.get_value().strip()
-                        if size[-1] == 'd':
-                            size = size[:-1]
-                            use_dialog_units = True
-                        else:
-                            use_dialog_units = False
-                        w, h = [int(v) for v in size.split(',')]
-                        if use_dialog_units:
-                            w, h = wx.DLG_SZE(c.item.widget, (w, h))
+                        size = sp.get_size(c.item.widget)
                         # now re-set the item to update the size correctly...
-                        to_lay_out.append((c.item.pos, (w, h)))
+                        to_lay_out.append((c.item.pos, size) )
         for pos, size in to_lay_out:
             self.set_item(pos, size=size, force_layout=False)
         self.layout(True)
@@ -1436,17 +1426,9 @@ class EditStaticBoxSizer(BoxSizerBase):
                 self.widget.Add(c.item.widget, 1, wx.EXPAND)
                 self.widget.SetItemMinSize(c.item.widget, 20, 20)
             else:
-                sp = c.item.properties.get('size')
-                if sp and sp.is_active() and ( c.proportion == 0 or not (c.flag & wx.EXPAND) ):
-                    size = sp.get_value().strip()
-                    if size[-1] == 'd':
-                        size = size[:-1]
-                        use_dialog_units = True
-                    else:
-                        use_dialog_units = False
-                    w, h = [int(v) for v in size.split(',')]
-                    if use_dialog_units:
-                        w, h = wx.DLG_SZE(c.item.widget, (w, h))
+                size_p = c.item.properties.get('size')
+                if size_p and size_p.is_active() and ( c.proportion == 0 or not (c.flag & wx.EXPAND) ):
+                    w,h = size_p.get_size(c.item.widget)
                 else:
                     w, h = c.item.widget.GetBestSize()
                 self.widget.SetItemMinSize(c.item.widget, w, h)
@@ -1565,20 +1547,12 @@ class GridSizerBase(SizerBase):
                 if sp and sp.is_active():
                     if (c.proportion != 0 or (c.flag & wx.EXPAND)) and not (c.flag & wx.FIXED_MINSIZE):
                         c.item.widget.Layout()
-                        w, h = c.item.widget.GetBestSize()
-                        c.item.widget.SetMinSize((w, h))
+                        size = sp.get_size(c.item.widget)
+                        c.item.widget.SetMinSize(size)
                     else:
-                        size = sp.get_value().strip()
-                        if size[-1] == 'd':
-                            size = size[:-1]
-                            use_dialog_units = True
-                        else:
-                            use_dialog_units = False
-                        w, h = [int(v) for v in size.split(',')]
-                        if use_dialog_units:
-                            w, h = wx.DLG_SZE(c.item.widget, (w, h))
+                        size = sp.get_size(c.item.widget)
                         # now re-set the item to update the size correctly...
-                        to_lay_out.append((c.item.pos, (w, h)))
+                        to_lay_out.append((c.item.pos, size) )
 
         for pos, size in to_lay_out:
             # self._logger.debug('set_item: %s, %s', pos, size)
