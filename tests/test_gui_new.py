@@ -327,6 +327,9 @@ class TestGui(WXGladeGUITest):
         common.app_tree.root.widget.generate_code()
         self._assert_error_message( "Code generation from a template is not possible" )
 
+    def test_SizersSize(self):
+        self.load_and_generate('SizersSizeTests', test_GUI=True)
+
     def _assert_styles(self, got, expected, msg=None):
         if isinstance(got,      str): got      = got.split("|")
         if isinstance(expected, str): expected = expected.split("|")
