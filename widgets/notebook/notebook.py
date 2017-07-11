@@ -3,7 +3,7 @@ wxNotebook objects
 
 @copyright: 2002-2007 Alberto Griggio
 @copyright: 2016 Carsten Grohmann
-@copyright: 2016 Dietmar Schwertberger
+@copyright: 2016-2017 Dietmar Schwertberger
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
@@ -166,6 +166,7 @@ class EditNotebook(ManagedBase, EditStylesMixin):
         name = name or self.next_notebook_name()  # create new and (still) unused notebook name
         ManagedBase.__init__(self, name, 'wxNotebook', parent, id, sizer, pos)
         EditStylesMixin.__init__(self)
+        self.properties["style"].set(style)
 
         self.virtual_sizer = NotebookVirtualSizer(self)
         self._is_removing_pages = False
@@ -266,7 +267,8 @@ class EditNotebook(ManagedBase, EditStylesMixin):
             self.pages.insert(i, None)
             # create panel and node, add to tree
             pos = i+1
-            window = EditPanel( self.next_pane_name(name), self, -1, self.virtual_sizer, pos )
+            suggestion = "%s_%s" % (self.name, name)
+            window = EditPanel( self.next_pane_name(suggestion), self, -1, self.virtual_sizer, pos )
             window._dont_destroy = True
             node = window.node = Node(window)
 
@@ -326,6 +328,11 @@ class EditNotebook(ManagedBase, EditStylesMixin):
 
     def next_pane_name(self, suggestion=None):
         # return new and (still) unused pane name
+        if suggestion:
+            suggestion = [c for c in suggestion if "a"<=c<="z" or "A"<=c<="Z" or "0"<=c<="9" or c=="_"]
+            while suggestion and "0"<=suggestion[0]<="9":
+                del suggestion[0]
+            suggestion = "".join(suggestion)
         if suggestion and not common.app_tree.has_name(suggestion):
             return suggestion
         while True:
@@ -354,7 +361,7 @@ editor_style = ''
 
 dlg_title = _('wxNotebook')
 box_title = _('Orientation')
-choices = 'wx.NB_TOP|wx.NB_BOTTOM|wx.NB_LEFT|wx.NB_RIGHT'
+choices = 'wxNB_TOP|wxNB_BOTTOM|wxNB_LEFT|wxNB_RIGHT'
 tmpl_label = 'notebook'
 
 
@@ -368,7 +375,6 @@ def builder(parent, sizer, pos, number=[1]):
         return
 
     widget = editor_class(None, parent, wx.ID_ANY, style, sizer, pos)
-
     node = Node(widget)
     widget.node = node
     widget.virtual_sizer.node = node

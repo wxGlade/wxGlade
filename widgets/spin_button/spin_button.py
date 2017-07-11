@@ -30,10 +30,6 @@ class EditSpinButton(ManagedBase, EditStylesMixin):
         self.range = np.IntRangePropertyA( "0, 100" )
         self.value = np.SpinPropertyA(0, val_range=(0,100), immediate=True)
 
-        if config.preferences.default_border:
-            self.border.set( config.preferences.default_border_size )
-            self.flag.set( wx.ALL )
-
     def create_widget(self):
         self.widget = wx.SpinButton(self.parent.widget, self.id, style=self.style)
         self.widget.SetRange( *self.properties["range"].get_tuple() )
@@ -71,6 +67,8 @@ def builder(parent, sizer, pos, number=[1]):
         number[0] += 1
         name = 'spin_button_%d' % number[0]
     text = EditSpinButton(name, parent, wx.NewId(), sizer, pos)
+    text.properties["style"].set_to_default()
+    text.check_defaults()
     node = Node(text)
     text.node = node
     if parent.widget: text.create()

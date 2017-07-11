@@ -823,6 +823,11 @@ class WidgetStyleProperty(_CheckListProperty):
         self.set("")
         self.modified = False
 
+    def set_to_default(self):
+        # for use after interactively creating an instance
+        if self.value_set==self.default_value: return
+        self.set(self.default_value)
+
     def _decode_value(self, value):
         "handle obsolete and renamed properties"
         # handle invalid combinations
@@ -993,6 +998,7 @@ class TextProperty(Property):
             self.text.Enable(False)
         elif self.deactivated is not None:
             self.text.Enable(not self.deactivated)
+            panel.Bind( wx.EVT_LEFT_DOWN, self._on_text_click )
         # layout of the controls / sizers
         if self._HORIZONTAL_LAYOUT:
             #self.text.SetMaxSize( (-1,200) )
@@ -1020,6 +1026,18 @@ class TextProperty(Property):
         if hasattr(self, "_on_label_dblclick"):
             label.Bind(wx.EVT_LEFT_DCLICK, self._on_label_dblclick)
             label.SetForegroundColour(wx.BLUE)
+
+    def _on_text_click(self, event):
+        if self.deactivated:
+            text_rect = self.text.GetClientRect()
+            text_rect.Offset(self.text.Position)
+            if text_rect.Contains(event.Position):
+                self.toggle_active(active=True)
+                if self.text:
+                    self.text.SetFocus()
+                    self.text.SelectAll()
+                return
+        event.Skip()
 
     def create_text_ctrl(self, panel, value):
         style = 0
@@ -1118,7 +1136,8 @@ class TextPropertyRO(TextProperty):
 # some text properties with validation:
 
 class NameProperty(TextProperty):
-    validation_re  = re.compile(r'^[a-zA-Z_]+[\w-]*(\[\w*\])*$')
+    #validation_re  = re.compile(r'^[a-zA-Z_]+[\w-]*(\[\w*\])*$')  # Python 3 only
+    validation_re  = re.compile(r'^[a-zA-Z_]+[a-zA-Z0-9_]*(\[\w*\])*$')  # Python 2 also
     def _check_name_uniqueness(self, name):
         # check whether the name is unique
         if config.preferences.allow_duplicate_names: return
@@ -1164,11 +1183,9 @@ _comma    = r"\s*,\s*"             # a comma, optionally with surrounding whites
 _trailing = r"\s*\)?\s*$"          # whitespace, optionally including a closing ")"
 
 
-class SizePropertyD(TextPropertyD):
-    d = r"(\s*[dD]?)" # the trailig d for "dialog units"
-    validation_re = re.compile( _leading + _ge_m1 + _comma + _ge_m1 + d + _trailing )  # match pair of integers >=- 1
-    del d
-    normalization = "%s, %s%s" # for normalization % valiation_re.match(...).groups()
+class IntPairPropertyD(TextPropertyD):
+    # the value is still a string, but it's guaranteed to have the right format
+    validation_re = re.compile(_leading + _ge_0 + _comma + _ge_0 + _trailing )  # match a pair of positive integers
     def _set_converter(self, value):
         # value can be a tuple
         if isinstance(value, compat.basestring):
@@ -1184,17 +1201,46 @@ class SizePropertyD(TextPropertyD):
         if not match: return None
         return self.normalization%match.groups()
 
-    def get_tuple(self):
-        x, y = self.value.split(",")
-        return (int(x), int(y))
+    def get_tuple(self, widget=None):
+        w, h = self.value.split(",")
+        return (int(w), int(h))
 
 
-class ScrollRatePropertyD(SizePropertyD):
-    # the value is still a string, but it's guaranteed to have the right format
-    validation_re = re.compile(_leading + _ge_0 + _comma + _ge_0 + _trailing )  # match a pair of positive integers
+class SizePropertyD(IntPairPropertyD):
+    d = r"(\s*[dD]?)" # the trailig d for "dialog units"
+    validation_re = re.compile( _leading + _ge_m1 + _comma + _ge_m1 + d + _trailing )  # match pair of integers >=- 1
+    del d
+    normalization = "%s, %s%s" # for normalization % valiation_re.match(...).groups()
+
+    def get_size(self, widget=None):
+        "widget argument is used to calculate size in Dialog units, using wx.DLG_SZE"
+        w, h = self.value.split(",")
+
+        if h[-1] in 'dD':
+            h = h[:-1]
+            use_dialog_units = True
+        else:
+            use_dialog_units = False
+
+        w,h = int(w), int(h)
+        if widget is None: return (w,h)
+    
+        if use_dialog_units:
+            if compat.IS_CLASSIC:
+                wd, hd = wx.DLG_SZE(widget, (w, h))
+            else:
+                wd, hd = wx.DLG_UNIT(widget, wx.Size(w, h))
+            if w!=-1: w = wd
+            if h!=-1: h = hd
+
+        if w==-1 or h==-1:
+            best_size = widget.GetBestSize()
+            if w == -1: w = best_size[0]
+            if h == -1: h = best_size[1]
+        return (w,h)
 
 
-class IntRangePropertyA(SizePropertyD):
+class IntRangePropertyA(IntPairPropertyD):
     deactivated = False
     validation_re = re.compile( _leading + _int + _comma + _int + _trailing )  # match pair of integers
     normalization = "%s, %s"

@@ -38,7 +38,7 @@ class PanelBase(EditStylesMixin):
         # initialise properties
         self.no_custom_class = np.CheckBoxProperty(False, default_value=False)
         self.scrollable      = np.CheckBoxProperty(False, default_value=False)
-        self.scroll_rate     = np.ScrollRatePropertyD( "10, 10" )
+        self.scroll_rate     = np.IntPairPropertyD( "10, 10" )
 
         if style: self.properties["style"].set(style)
 
@@ -277,12 +277,16 @@ class EditTopLevelPanel(PanelBase, TopLevelBase):
             win.CentreOnScreen()
 
     def create(self):
-        oldval = self.size
+        # XXX refactor this
+        size_p = self.properties['size']
+        oldval = size_p.get()
         super(EditTopLevelPanel, self).create()
         if self.widget:
-            if not self.properties['size'].is_active() and self.top_sizer:
+            if not size_p.is_active() and self.top_sizer:
                 self.top_sizer.fit_parent()
-        self.set_size(oldval)
+        if size_p.is_active() and oldval!=size_p.get():
+            size_p.set(oldval)
+            self.set_size()
 
     def hide_widget(self, event=None):
         # this is called from the context menu and from the EVT_CLOSE of the Frame

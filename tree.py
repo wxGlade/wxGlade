@@ -205,7 +205,7 @@ class Tree(object):
         parent.children.append(child)
         child.parent = parent
         self.current = child
-        self.names.setdefault(self._find_toplevel(child), {})[str(child.widget.name)] = 1
+        self.names.setdefault(self._find_toplevel(child), {})[child.widget.name] = 1
         if parent is self.root and getattr(child.widget.__class__, '_is_toplevel_window', False):
             self.app.add_top_window(child.widget.name)
 
@@ -216,7 +216,7 @@ class Tree(object):
         parent.children.insert(index, child)
         child.parent = parent
         self.current = child
-        self.names.setdefault(self._find_toplevel(child), {})[str(child.widget.name)] = 1
+        self.names.setdefault(self._find_toplevel(child), {})[child.widget.name] = 1
         if parent is self.root:
             self.app.add_top_window(child.widget.name)
 
@@ -225,7 +225,7 @@ class Tree(object):
             del self.names[n]
             return
         try:
-            del self.names[self._find_toplevel(n)][str(n.widget.name)]
+            del self.names[self._find_toplevel(n)][n.widget.name]
         except (KeyError, AttributeError):
             pass
 
@@ -803,7 +803,7 @@ class WidgetTree(wx.TreeCtrl, Tree):
             toolbar_p = node.widget.properties.get("toolbar")
             if size_p is not None and size_p.is_active() and toolbar_p is not None and toolbar_p.value:
                 # apply workaround for size changes due to a toolbar; this would cause problems with automatic testing
-                set_size = size_p.get_tuple()
+                set_size = size_p.get_size()
         else:
             toplevel_widget = node.widget.widget.GetParent()
 
@@ -812,6 +812,7 @@ class WidgetTree(wx.TreeCtrl, Tree):
             self.expand(node)
             self._show_widget_toplevel(node)
             if wx.Platform != '__WXMSW__' and set_size is not None:
+                toplevel_widget = node.widget.widget  # above it was not yet created
                 wx.CallAfter(toplevel_widget.SetSize, set_size)
         else:
             toplevel_widget.Hide()
@@ -852,7 +853,7 @@ class WidgetTree(wx.TreeCtrl, Tree):
             self._SetItemData(node.item, new_node)
             old_children = node.children
             self.remove(node, delete=False)  # don't delete the node, as we just want to modify it
-            for c in old_children or []:           # but the children
+            for c in old_children or []:     # but the children
                 self.Delete(c.item)
             node = new_node
             self.names.setdefault(Tree._find_toplevel(self, node), {})[str(node.widget.name)] = 1

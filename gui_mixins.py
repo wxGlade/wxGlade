@@ -57,8 +57,7 @@ class StylesMixin(object):
         @see: cn()
         @see: format_flags
         @see: tmpl_flag_join
-        @see: L{config.widget_config}
-        """
+        @see: L{config.widget_config}"""
         assert isinstance(flags, compat.basestring)
 
         if flags.isdigit(): return flags
@@ -82,13 +81,14 @@ class StylesMixin(object):
 
     @decorators.memoize
     def _get_widget_styles_defs(self, widget_name):
-        """Logic of L{_get_style_defs()} but extracted for cache decorator.
+        """Logic of _get_style_defs() but extracted for cache decorator.
 
-        @note: The styles are copied using a deep-copy to prevent changing original data accidentally.
+        note: The styles are copied using a deep-copy to prevent changing original data accidentally.
 
         widget_name: Widget name e.g. 'wxCheckBox'
+        widget_name: Widget name e.g. 'wxCheckBox'
 
-        @return: A joined copy of the generic styles and widget specific styles as dict."""
+        returns a joined copy of the generic styles and widget specific styles as dict"""
         styles = {}
         # Use always a deep-copy to prevent changing original data
         try:
@@ -102,7 +102,7 @@ class StylesMixin(object):
     def _get_style_defs(self):
         """Return all styles related to this widget as dict. This includes generic styles from config.widget_config.
 
-        The implementation has moved to L{_get_widget_styles_defs()} to use a
+        The implementation has moved to _get_widget_styles_defs() to use a
         simple cache decorator instead of using an own cache implementation.
 
         see: config.widget_config, _get_widget_styles_defs()"""
@@ -213,11 +213,9 @@ class StylesMixin(object):
 
 class BitmapMixin(object):
     "Class mixin to create wxBitmap instances from the given statement"
-
-    # Detailed tooltip string to show with each bitmap property.
-    bitmap_tooltip_text = _( 'Choice a bitmap to show.\n\nYou can either select a file or you can specify the bitmap '
-                             'using hand-crafted statements with the prefixes "art:", "code:", "empty:" or "var:".\n'
-                             'The wxGlade documentation describes how to write such statements.')
+    bitmap_tooltip_text = _('Choice a bitmap to show.\n\nYou can either select a file or you can specify the bitmap'
+                            ' using hand-crafted statements with the prefixes "art:", "code:", "empty:" or "var:".\n'
+                            'The wxGlade documentation describes how to write such statements.')
 
     def get_preview_obj_bitmap(self, bitmap=None):
         """Create a wx.Bitmap or wx.EmptyBitmap from the given statement.

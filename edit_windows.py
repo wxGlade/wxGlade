@@ -132,6 +132,8 @@ class EditBase(EventsMixin, np.PropertyOwner):
         # ...finally, destroy our widget (if needed)
         if self.widget and not self._dont_destroy:
             if hasattr(self.widget, "DestroyLater"):
+                if compat.IS_PHOENIX and getattr(self, "sizer", None) and not self.sizer.is_virtual():
+                    self.sizer.widget.Detach(self.widget)  # remove from sizer without destroying
                 self.widget.DestroyLater()
             else:
                 self.widget.Destroy()
@@ -455,11 +457,7 @@ class WindowBase(EditBase):
         if not self.widget: return
         size_p = self.properties["size"]
         if not size_p.is_active(): return
-
-        v = size_p.get_value().strip()
-        use_dialog_units = v and v[-1] == 'd'
-        size = size_p.get_tuple()
-        if use_dialog_units: size = wx.DLG_SZE(self.widget, size)
+        size = size_p.get_size(self.widget)
         self.widget.SetSize(size)
         try:
             self.sizer.set_item(self.pos, size=size)
@@ -531,6 +529,14 @@ class ManagedBase(WindowBase):
         self.sizer = sizer
         sizer.add_item(self, pos)
 
+    def check_defaults(self):
+        # apply default border if set in preferences; called explicitely from the interactive builder functions
+        if not config.preferences.default_border or self.border==config.preferences.default_border_size: return
+        self.properties["border"].set( config.preferences.default_border_size )
+        flag_p = self.properties["flag"]
+        if not flag_p.value_set.intersection(flag_p.FLAG_DESCRIPTION["Border"]):
+            flag_p.add("wxALL", notify=False)
+
     def finish_widget_creation(self, sel_marker_parent=None):
         if sel_marker_parent is None: sel_marker_parent = self.parent.widget
         self.sel_marker = misc.SelectionMarker(self.widget, sel_marker_parent)
@@ -551,10 +557,10 @@ class ManagedBase(WindowBase):
         if not self.widget: return
         old = self.size
         WindowBase.on_size(self, event)
-        size_prop = self.properties['size']
-        if size_prop.is_active():
+        size_p = self.properties['size']
+        if size_p.is_active():
             if self.proportion!=0 or (self.flag & wx.EXPAND):
-                size_prop.set(old)
+                size_p.set(old)
         if self.sel_marker: self.sel_marker.update()
 
     def properties_changed(self, modified):
@@ -577,29 +583,17 @@ class ManagedBase(WindowBase):
         # update the widget by calling self.sizer.set_item (again)
         if not self.widget: return
 
-        #border = self.border
-        #proportion = self.option
-        #flags = self.flag
         # get size from property
         try:
-            size_prop = self.properties['size']
-            if size_prop.is_active(): # or use get_value, which will now return the default value if disabled
-                size = self.size
-                if size[-1] == 'd':
-                    size = size[:-1]
-                    use_dialog_units = True
-                else:
-                    use_dialog_units = False
-                size = [int(v) for v in size.split(',')]
-                if use_dialog_units:
-                    size = wx.DLG_SZE(self.widget, size)
+            size_p = self.properties['size']
+            if size_p.is_active(): # or use get_value, which will now return the default value if disabled
+                size = size_p.get_size(self.widget)
             else:
                 if not (self.flag & wx.EXPAND):
                     size = self.widget.GetBestSize()
                 else:
                     size = (-1,-1) # would None or wx.DefaultSize be better`?`
 
-            #self.sizer.set_item(self.pos, border=self.border, option=self.option, flag=self.flag, size=size)
             self.sizer.item_layout_property_changed(self.pos, size=size)
         except AttributeError:
             self._logger.exception(_('Internal Error'))
