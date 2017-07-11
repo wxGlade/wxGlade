@@ -541,13 +541,7 @@ class LispCodeWriter(BaseLangCodeWriter, wcodegen.LispMixin):
         else:
             method = 'SetMinSize'
         if use_dialog_units:
-            return '(%s %s(%s(%s (%s))))\n' % (
-                       method,
-                       objname,
-                       self.cn('wxDLG_SZE'),
-                       objname,
-                       size[:-1],
-                       )
+            return '(%s %s(%s(%s (%s))))\n' % ( method, objname, self.cn('wxDLG_SZE'), objname, size[:-1] )
         else:
             return '%s.%s((%s))\n' % (objname, method, size)
 
