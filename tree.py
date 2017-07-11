@@ -801,7 +801,7 @@ class WidgetTree(wx.TreeCtrl, Tree):
             toolbar_p = node.widget.properties.get("toolbar")
             if size_p is not None and size_p.is_active() and toolbar_p is not None and toolbar_p.value:
                 # apply workaround for size changes due to a toolbar; this would cause problems with automatic testing
-                set_size = size_p.get_tuple()
+                set_size = size_p.get_size()
         else:
             toplevel_widget = node.widget.widget.GetParent()
 
