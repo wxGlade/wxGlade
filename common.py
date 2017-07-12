@@ -410,6 +410,18 @@ def get_name_for_autosave(filename=None):
     return ret
 
 
+class _Writer(object):
+    # file with a list compatible interface: append and extend
+    def __init__(self, filename):
+        self.outfile = codecs.open(filename, 'w', 'utf-8')
+    def append(self, line):
+        self.outfile.write(line)
+    def extend(self, lines):
+        for line in lines: self.outfile.write(line)
+    def close(self):
+        self.outfile.close()
+
+
 def autosave_current():
     "Save automatic backup copy for the current and un-saved design;  returns 0: error; 1: no changes to save; 2: saved"
     if app_tree.app.saved:
@@ -417,7 +429,7 @@ def autosave_current():
 
     autosave_name = get_name_for_autosave()
     try:
-        outfile = codecs.open(autosave_name, 'w', 'utf-8')
+        outfile = _Writer(autosave_name)
         app_tree.write(outfile)
         outfile.close()
     except EnvironmentError as details:
