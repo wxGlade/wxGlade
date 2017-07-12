@@ -10,7 +10,6 @@
                 <option>1</option>
                 <flag>wxEXPAND</flag>
                 <object class="wxNotebook" name="notebook_1">
-                    <style>wxNB_TOP</style>
                     <usenotebooksizer>1</usenotebooksizer>
                     <object class="notebookpage">
                     <label>BoxSizer</label>
