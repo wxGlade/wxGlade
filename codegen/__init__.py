@@ -170,41 +170,34 @@ class ClassLines(object):
 class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
     """Dictionary of objects used to generate the code in a given language.
 
-    A code writer object B{must} implement those interface and set those variables:
-      - L{init_lang()}
-      - L{init_files()}
-      - L{finalize()}
-      - L{wcodegen.BaseLanguageMixin.language}
-      - L{add_app()}
-      - L{add_class()}
-      - L{add_object()}
-      - L{add_property_handler()}
-      - L{add_sizeritem()}
-      - L{add_widget_handler()}
-      - L{generate_code_background()}
-      - L{generate_code_font()}
-      - L{generate_code_foreground()}
-      - L{generate_code_id()}
-      - L{generate_code_size()}
-      - L{format_generic_access()}
-      - L{_code_statements}
+    A code writer object *must* implement those interface and set those variables:
+      - init_lang(), init_files(), finalize()
+      - wcodegen.BaseLanguageMixin.language
+      - add_app(), add_class(), add_object()
+      - add_property_handler()
+      - add_sizeritem(}
+      - add_widget_handler()
+      - generate_code_background(), generate_code_font(), generate_code_foreground()
+      - generate_code_id()
+      - generate_code_size()
+      - format_generic_access()
+      - _code_statements
 
-    A code writer object B{could} implement those interfaces and set those variables:
-      - L{setup()}
-      - L{quote_str()}
-      - L{quote_path()}
-      - L{wcodegen.BaseLanguageMixin.cn()}
-      - L{wcodegen.BaseLanguageMixin.cn_f()}
+    A code writer object *could* implement those interfaces and set those variables:
+      - setup()
+      - quote_str(), quote_path()
+      - wcodegen.BaseLanguageMixin.cn()
+      - wcodegen.BaseLanguageMixin.cn_f()
 
 
      app_name:                Application name
-     app_encoding:            Encoding of the application; will be initialised with L{config.default_encoding}
+     app_encoding:            Encoding of the application; will be initialised with config.default_encoding
      app_filename:            File name to store the application start code within multi file projects
 
      app_mapping:             Default mapping of template variables for substituting in templates
-                               (see L{lang_mapping}, L{add_app()})
+                               (see lang_mapping, add_app())
      lang_mapping:            Language specific mapping of template variables for substituting in templates
-                               (see L{app_mapping}, L{add_app()})
+                               (see app_mapping, add_app())
 
      for_version:             wx version we are generating code for (e.g. (2, 8) )
      blacklisted_widgets:     Don't add those widgets to sizers because they are not supported for the requested
@@ -217,12 +210,12 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
      header_lines:            Lines common to all the generated files (import of wxCL, ...)
 
      curr_tab:                Current indentation level
-     indent_amount:           An indentation level is L{indent_symbol} *L{indent_amount};
-                               will be initialised with L{config.default_indent_amount}
+     indent_amount:           An indentation level is  indent_symbol*indent_amount;
+                               will be initialised with config.default_indent_amount
      indent_symbol:           Character to use for indentation; will be initialised with L{config.default_indent_symbol}
 
      nonce:                   Random number used to be sure that the replaced tags in the sources are the right ones
-                              (see L{BaseSourceFileContent}, L{add_class} and L{create_nonce})
+                              (see BaseSourceFileContent, add_class and create_nonce)
 
      obj_builders:           "writers" for the various objects
      obj_properties:         "property writer" functions, used to set the properties of a toplevel object
@@ -232,21 +225,21 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
      output_file_name:       Name of the output file
      multiple_files: If True, generate a file for each custom class
 
-     previous_source:        If not None, it is an instance of L{BaseSourceFileContent} that keeps info about the
+     previous_source:        If not None, it is an instance of BaseSourceFileContent that keeps info about the
                               previous version of the source to generate
      _app_added:             True after wxApp instance has been generated
      _current_extra_code:    Set of lines for extra code to add to the current file
      _current_extra_modules: Set of lines of extra modules to add to the current file
 
      _overwrite:             If True, overwrite any previous version of the source file instead of updating only
-                              the wxGlade blocks;  will be initialised with L{config.default_overwrite}
+                              the wxGlade blocks;  will be initialised with config.default_overwrite
 
      _property_writers:      Dictionary of dictionaries of property handlers specific for a widget;
                               keys are the class names of the widgets
                               (E.g. _property_writers['wxRadioBox'] = {'choices', choices_handler})
 
-     _textdomain:            gettext textdomain (see L{_use_gettext})
-     _use_gettext:           If True, enable gettext support; will be initialised with L{config.default_use_gettext}
+     _textdomain:            gettext textdomain (see _use_gettext)
+     _use_gettext:           If True, enable gettext support; will be initialised with config.default_use_gettext
 
      _widget_extra_modules:  Map of widget class names to a list of extra modules needed for the widget
                               (e.g. C{'wxGrid': 'from wxLisp.grid import *\\n'})."""
@@ -268,13 +261,9 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
         ... 'wxcolour_28': "<code sequence for wxWidgets 2.8 only>",
         ... 'tooltip_3':   "<code sequence for wxWidgets 3.X only>" }
 
-    The function L{_get_code_statement()} handles the extensions properly and returns the requested template.
+    The function _get_code_statement() handles the extensions properly and returns the requested template.
 
-    @type: dict[str]
-    @see: L{_get_code_statement()}
-    @see: L{_generic_code()}
-    @see: L{generate_code_extraproperties()}
-    """
+    see: _get_code_statement(), _generic_code(), generate_code_extraproperties()"""
     ClassLines = ClassLines
 
     classattr_always = [] # List of classes to store always as class attributes; see store_as_attr()
@@ -343,8 +332,8 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
         self._init_vars()
 
     def _init_vars(self):
-        """Set instance variables (back) to default values during class instantiation (L{__init__}) and before
-        loading new data (L{new_project()})."""
+        """Set instance variables (back) to default values during class instantiation (__init__) and before
+        loading new data (new_project())."""
         self.app_encoding = config.default_encoding
         self.app_filename = None
         self.app_mapping = {}
