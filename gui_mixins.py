@@ -16,30 +16,25 @@ class StylesMixin(object):
     "Class mixin to handle formatting and re-combining styles"
 
     def cn_f(self, flags):
-        """Rearrange and format flags.
+        """Rearrange and format flags into a string.
 
         Steps to rearrange:
          1. Split given string using delimiter '|' and remove duplicate flags
-         2. Process following style attributes, the styles are processed in
-            a alphanumeric order:
+         2. Process following style attributes, the styles are processed in a alphanumeric order:
               - Rename flags using the 'rename_to' entry
-              - Add additional flags using the 'include' entry (soft
-                requirement)
+              - Add additional flags using the 'include' entry (soft requirement)
               - Delete flags using the 'exclude' entry
               - Remove unsupported flags using the 'supported_by' entry
-              - Add required flags using the 'require' entry (hard
-                requirement)
+              - Add required flags using the 'require' entry (hard requirement)
          3. Combine flags using the 'combination' entry
-         4. Format single flags with L{wcodegen.BaseLanguageMixin.cn()} if
-            L{wcodegen.BaseLanguageMixin.format_flags} is True
-         5. Sort and recombine flags using
-            L{wcodegen.BaseLanguageMixin.tmpl_flag_join}
+         4. Format single flags with wcodegen.BaseLanguageMixin.cn() if wcodegen.BaseLanguageMixin.format_flags is True
+         5. Sort and recombine flags using wcodegen.BaseLanguageMixin.tmpl_flag_join
 
-        The style details are described in L{config.widget_config}. The
-        access to the details is only available in widget writer instances.
+        The style details are described in config.widget_config.
+        The access to the details is only available in widget writer instances.
 
-        Sometime the flag is a digit as a string. The function doesn't
-        process such kind of flags. It returns this flags unchanged.
+        Sometime the flag is a digit as a string. The function doesn't process such kind of flags.
+        It returns these flags unchanged.
 
         Example C++::
             >>> self.cn_f('wxLC_REPORT|wxSUNKEN_BORDER')
@@ -49,15 +44,9 @@ class StylesMixin(object):
             >>> self.cn_f('wxLC_REPORT|wxSUNKEN_BORDER')
             'wxLC_REPORT | wxSUNKEN_BORDER'
 
-        @param flags: wxWidget styles joined by '|'
-        @type flags:  str
-
-        @rtype: str
-
-        @see: cn()
-        @see: format_flags
-        @see: tmpl_flag_join
-        @see: L{config.widget_config}"""
+        flags: string with wxWidget styles joined by '|'
+        
+        see: cn(), format_flags, tmpl_flag_join, config.widget_config"""
         assert isinstance(flags, compat.basestring)
 
         if flags.isdigit(): return flags
