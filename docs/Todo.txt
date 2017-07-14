@@ -30,13 +30,15 @@ Use either gettext wx.GetTranslation for _
 
 Additional Widgets:
  * GridBagSizer
+ * WrapSizer
  * Ribbons 
  * stc.StyledTextCtrl
 
 Widget properties etc.:
- * ListCtrl: add rows
+ * ListCtrl: add rows, cols
  * Splitter: ask user whether to add panels
- * grid: allow resizing of cols/rows in design window
+ * grid: allow resizing of cols/rows in design window; add row labels
+ * RadioBox: tooltips per button
 
 Development process:
  * move to GitHub
