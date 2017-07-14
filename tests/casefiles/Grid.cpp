@@ -63,7 +63,7 @@ BEGIN_EVENT_TABLE(MyFrame, wxFrame)
 END_EVENT_TABLE();
 
 
-void MyFrame::myEVT_GRID_CELL_LEFT_CLICK(wxGridEvent &event)
+void MyFrame::myEVT_GRID_CELL_LEFT_CLICK(wxGridEvent &event)  // wxGlade: MyFrame.<event_handler>
 {
     event.Skip();
     // notify the user that he hasn't implemented the event handler yet
