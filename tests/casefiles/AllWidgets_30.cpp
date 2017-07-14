@@ -443,56 +443,56 @@ BEGIN_EVENT_TABLE(All_Widgets_Frame, wxFrame)
 END_EVENT_TABLE();
 
 
-void All_Widgets_Frame::onSelectUnix(wxCommandEvent &event)
+void All_Widgets_Frame::onSelectUnix(wxCommandEvent &event)  // wxGlade: All_Widgets_Frame.<event_handler>
 {
     event.Skip();
     // notify the user that he hasn't implemented the event handler yet
     wxLogDebug(wxT("Event handler (All_Widgets_Frame::onSelectUnix) not implemented yet"));
 }
 
-void All_Widgets_Frame::onSelectWindows(wxCommandEvent &event)
+void All_Widgets_Frame::onSelectWindows(wxCommandEvent &event)  // wxGlade: All_Widgets_Frame.<event_handler>
 {
     event.Skip();
     // notify the user that he hasn't implemented the event handler yet
     wxLogDebug(wxT("Event handler (All_Widgets_Frame::onSelectWindows) not implemented yet"));
 }
 
-void All_Widgets_Frame::onRemoveTabs(wxCommandEvent &event)
+void All_Widgets_Frame::onRemoveTabs(wxCommandEvent &event)  // wxGlade: All_Widgets_Frame.<event_handler>
 {
     event.Skip();
     // notify the user that he hasn't implemented the event handler yet
     wxLogDebug(wxT("Event handler (All_Widgets_Frame::onRemoveTabs) not implemented yet"));
 }
 
-void All_Widgets_Frame::onShowManual(wxCommandEvent &event)
+void All_Widgets_Frame::onShowManual(wxCommandEvent &event)  // wxGlade: All_Widgets_Frame.<event_handler>
 {
     event.Skip();
     // notify the user that he hasn't implemented the event handler yet
     wxLogDebug(wxT("Event handler (All_Widgets_Frame::onShowManual) not implemented yet"));
 }
 
-void All_Widgets_Frame::OnBitmapButtonPanelNavigationKey(wxNavigationKeyEvent &event)
+void All_Widgets_Frame::OnBitmapButtonPanelNavigationKey(wxNavigationKeyEvent &event)  // wxGlade: All_Widgets_Frame.<event_handler>
 {
     event.Skip();
     // notify the user that he hasn't implemented the event handler yet
     wxLogDebug(wxT("Event handler (All_Widgets_Frame::OnBitmapButtonPanelNavigationKey) not implemented yet"));
 }
 
-void All_Widgets_Frame::OnNotebookPageChanged(wxBookCtrlEvent &event)
+void All_Widgets_Frame::OnNotebookPageChanged(wxBookCtrlEvent &event)  // wxGlade: All_Widgets_Frame.<event_handler>
 {
     event.Skip();
     // notify the user that he hasn't implemented the event handler yet
     wxLogDebug(wxT("Event handler (All_Widgets_Frame::OnNotebookPageChanged) not implemented yet"));
 }
 
-void All_Widgets_Frame::OnNotebookPageChanging(wxBookCtrlEvent &event)
+void All_Widgets_Frame::OnNotebookPageChanging(wxBookCtrlEvent &event)  // wxGlade: All_Widgets_Frame.<event_handler>
 {
     event.Skip();
     // notify the user that he hasn't implemented the event handler yet
     wxLogDebug(wxT("Event handler (All_Widgets_Frame::OnNotebookPageChanging) not implemented yet"));
 }
 
-void All_Widgets_Frame::onStartConverting(wxCommandEvent &event)
+void All_Widgets_Frame::onStartConverting(wxCommandEvent &event)  // wxGlade: All_Widgets_Frame.<event_handler>
 {
     event.Skip();
     // notify the user that he hasn't implemented the event handler yet
