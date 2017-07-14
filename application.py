@@ -380,7 +380,7 @@ class Application(np.PropertyOwner):
                     error = "'%s' is not a directory"%dirname
             if error:
                 wx.MessageBox( error, _('Error'), wx.OK | wx.CENTRE | wx.ICON_EXCLAMATION )
-                return
+                return None
             while True:
                 out_name = os.path.join(dirname, "_%s_%d.py"%(basename,random.randrange(10**8, 10**9)))
                 if not os.path.exists(out_name): break
@@ -399,6 +399,7 @@ class Application(np.PropertyOwner):
         # XXX check other things as well, e.g. different bitmap sizes for BitmapButton
 
         preview_filename = self._get_preview_filename()
+        if preview_filename is None: return
         widget_class_name = widget.klass
 
         # make a valid name for the class (this can be invalid for some sensible reasons...)
