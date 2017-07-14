@@ -7,6 +7,7 @@ Configuration related stuff
 @see: L{preferencesdialog}
 @copyright: 2007 Alberto Griggio
 @copyright: 2013-2016 Carsten Grohmann
+@copyright: 2017 Dietmar Schwertberger
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
@@ -16,16 +17,16 @@ import os, sys
 # default configuration values #########################################################################################
 default_app_name = 'app'           # application name
 
-default_cpp_app_name = 'main.cpp'  # name for C++ application file; XXX only used for testing
-default_header_extension = 'h'    # extension of C++ header files
-default_source_extension = 'cpp'  # extension of C++ source files
+default_cpp_app_name = 'main.cpp'  # name for C++ application file
+default_header_extension = 'h'     # extension of C++ header files
+default_source_extension = 'cpp'   # extension of C++ source files
 
 default_language = 'python'        # Default language if no specified
 
 default_output_file = './wxglade_out.py'  # output file
 default_output_path = './'                # output path"
 
-default_encoding = 'UTF-8'   # value for encoding; @see: L{encoding}"
+default_encoding = 'UTF-8'   # value for encoding; see: encoding"
 
 default_indent_symbol = ' '  # value for indentation symbol
 default_indent_amount = 4    # value for indentation amount
@@ -79,6 +80,8 @@ tooltip_width = 50  # Maximum width to split tooltips into
 debugging = ('WINGDB_ACTIVE' in os.environ)  # if True, at many places exceptions will be raised instead of handled
 
 ########################################################################################################################
+# Dictionary to store widget generic widget details like tooltips, different names, ...
+# see below for examples and documentation
 widget_config = {
     'generic_styles': {
 
@@ -97,7 +100,7 @@ widget_config = {
                             'synonym': 'wxALIGN_CENTER',
                             'rename_to': 'wxALIGN_CENTER',
                             'combination': 'wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL' },
-        'wxALIGN_TOP':              {'desc': _('Align the item to the top.') },
+        'wxALIGN_TOP':               { 'desc': _('Align the item to the top.') },
         'wxALIGN_BOTTOM':            { 'desc': _('Align the item to the bottom.') },
         'wxALIGN_CENTER_VERTICAL':   { 'desc': _('Centre the item vertically.') },
         'wxALIGN_CENTRE_VERTICAL':   { 'desc': _('Centre the item vertically.'),
@@ -136,18 +139,14 @@ widget_config = {
                                                    'the window completely when its size is changed. '
                                                    'Since this behaviour is now the default, the style '
                                                    'is now obsolete and no longer has an effect.') },
-        'wxCLIP_CHILDREN': { 'desc': _('Use this style to eliminate flicker caused by the '
-                                       'background being repainted, then children being '
-                                       'painted over them. Windows only.') },
-        'wxWANTS_CHARS': { 'desc': _("Use this to indicate that the window wants to get "
-                                     "all char/key events for all keys - even for keys "
-                                     "like TAB or ENTER which are usually used for "
-                                     "dialog navigation and which wouldn't be generated "
-                                     "without this style. If you need to use this style "
-                                     "in order to get the arrows or etc., but would still "
-                                     "like to have normal keyboard navigation take place, "
-                                     "you should call Navigate in response to the key "
-                                     "events for Tab and Shift-Tab.") },
+        'wxCLIP_CHILDREN': { 'desc': _('Use this style to eliminate flicker caused by the background being repainted, '
+                                       'then children being painted over them. Windows only.') },
+        'wxWANTS_CHARS': { 'desc': _("Use this to indicate that the window wants to get all char/key events for all "
+                                     "keys - even for keys like TAB or ENTER which are usually used for "
+                                     "dialog navigation and which wouldn't be generated without this style. "
+                                     "If you need to use this style in order to get the arrows or etc., but would still"
+                                     " like to have normal keyboard navigation take place, you should call Navigate in "
+                                     "response to the key events for Tab and Shift-Tab.") },
 
         # Generic border styles
         'wxBORDER_DEFAULT': { 'desc': _('The window class will decide the kind of border to show, if any.'),
@@ -200,113 +199,63 @@ widget_config = {
         'wxSYSTEM_MENU': { 'desc': _('Display a system menu.') },
     }
 }
-"""Dictionary to store widget generic widget details like tooltips, different names, ...
-
-Example::
-    config = {
-        'wxSplitterWindow' = {
-            'supported_by': ('wx28', 'wx3'),
-            'style_defs': {
-                'wxSP_3D': {
-                    'desc': _('Draws a 3D effect border and sash'),
-                    'combination': 'wxSP_3DBORDER|wxSP_3DSASH',
-            },
-        },
-        'wxHyperlinkCtrl': {
-            'supported_by': ('wx28', 'wx3'),
-        },
-        'wxDialog': {
-            'style_defs': {
-                'wxNO_3D': {
-                    'desc': _('Under Windows, specifies that the child '
-                              'controls should not have 3D borders unless '
-                              'specified in the control.'),
-                    'supported_by': ('wx2',),
-                },
-            },
-        },
-        'generic_styles': {
-            'wxALL': {
-                'desc': _('from wxSizer'),
-                'combination': 'wxLEFT|wxRIGHT|wxTOP|wxBOTTOM',
-            },
-        },
+"""
+Example:
+    config = { 'wxSplitterWindow': { 'supported_by': ('wx28', 'wx3'),
+                                      'style_defs': { 'wxSP_3D': { 'desc': _('Draws a 3D effect border and sash'),
+                                                                   'combination': 'wxSP_3DBORDER|wxSP_3DSASH' } },
+               'wxHyperlinkCtrl':  { 'supported_by': ('wx28', 'wx3') },
+               'wxDialog':         { 'style_defs': { 'wxNO_3D': { 'desc': _('Under Windows, specifies that the child '
+                                                                            'controls should not have 3D borders unless'
+                                                                            ' specified in the control.'),
+                                                                  'supported_by': ('wx2',) } } },
+              'generic_styles': { 'wxALL': { 'desc': _('from wxSizer'),
+                                             'combination': 'wxLEFT|wxRIGHT|wxTOP|wxBOTTOM' } }
     }
 
 Elements:
-  - I{supported_by} - This widget is only available at the listed wx
-    versions. An empty list or a non-existing entry means the widgets is
-    always available.
-
-  - I{styles} - Dictionary with style specific settings
-
-  - I{generic_styles} - Generic item to concentrate styles that are not
-    part of a specific widget e.g. sizer styles.
-
-  - I{default_style} - Default style for new created widgets
-
-  - I{style_list} - List of all styles to show within the style box
-
-  - I{events} - Dictionary with event specific settings
+  - supported_by   - This widget is only available at the listed wx versions. An empty list or a non-existing entry
+                     means the widgets is always available.
+  - styles         - Dictionary with style specific settings
+  - generic_styles - Generic item to concentrate styles that are not part of a specific widget e.g. sizer styles.
+  - default_style  - Default style for new created widgets
+  - style_list     - List of all styles to show within the style box
+  - events         - Dictionary with event specific settings
 
 Style attributes:
-  - I{'desc':} I{<description>} - Short style description
-
-  - I{'combination':} I{<styles joined by '|'>} - The style is defined as
-    a combination of different other styles
-
-  - I{'exclude':} I{<styles joined by '|'>} - The listed styles will be
-    removed by selecting this style
-
-  - I{'include':} I{<styles joined by '|'>} - The style requires additional
-    styles. The listed styles are a soft requirement - these styles are
-    added even if the "requesting" style will be delete somehow or other.
-
-  - I{'obsolete':} I{<text>} - This style is obsolete. A short notice will
-    shown in the style tooltip
-
-  - I{'rename_to:} I{<new style name>} - The style will be renamed into the
-    given style name
-
-  - I{'require':} I{<styles joined by '|'>} - The style requires additional
-    styles. The listed styles are a hard requirement - these styles are
-    added only in together with the "requesting" style. If the "requesting"
-    style will be deleted, these styles will be not added.
-
-  - I{'supported_by':} I(<supported version>) - List of versions
-    supporting this style
-
-  - I{'synonym':} I{<alternative name>} - Short notice about an alternative
-    style name shown in style tooltip
+  - 'desc':         <description> - Short style description
+  - 'combination':  <styles joined by '|'> - The style is defined as a combination of different other styles
+  - 'exclude':      <styles joined by '|'> - The listed styles will be removed by selecting this style
+  - 'include':      <styles joined by '|'> - The style requires additional styles. The listed styles are a soft
+                                             requirement - these styles are added even if the "requesting" style will be
+                                             delete somehow or other.
+  - 'obsolete':     <text>                 - This style is obsolete. A short notice will shown in the style tooltip
+  - 'rename_to:     <new style name>       - The style will be renamed into the given style name
+  - 'require':      <styles joined by '|'> - The style requires additional styles.
+                                             The listed styles are a hard requirement - these styles are added only in
+                                             together with the "requesting" style.
+                                             If the "requesting" style will be deleted, these styles will be not added.
+  - 'supported_by': (<supported version>)  - List of versions supporting this style
+  - 'synonym':      <alternative name>     - Short notice about an alternative style name shown in style tooltip
 
 Event attributes:
-  - I{'type':} I{<event prototype>} - Event prototype, fallback is
-    C{wxCommandEvent}
+  - 'type':          <event prototype>     - Event prototype, fallback is wxCommandEvent
+  - 'type_wx2':      <event prototype>     - Event prototype for wx 2.X,
+                                             use this attribute if the event exists in all supported wx versions
+  - 'type_wx3':      <event prototype>     - Event prototype for wx 3.X,
+                                             use this attribute if the event exists in all supported wx versions
+  - 'supported_by': (<supported version>)  - List of versions supporting this event
 
-  - I{'type_wx2':} I{<event prototype>} - Event prototype for wx 2.X, use
-    this attribute if the event exists in all supported wx versions
+All event attributes are optional. If no attributes are given, wxCommandEvent will be used as event type.
 
-  - I{'type_wx3':} I{<event prototype>} - Event prototype for wx 3.X, use
-    this attribute if the event exists in all supported wx versions
+Use gettext ( _() ) for the attributes content of "desc" and "obsolete".
 
-  - I{'supported_by':} I{(<supported version>)} - List of versions
-    supporting this event
-
-All event attributes are optional. If no attributes are given,
-C{wxCommandEvent} will be used as event type.
-
-Use gettext (C{_()}) for the attributes content of "desc" and "obsolete".
-
-The style processing is described in L{gui_mixins.StylesMixin.cn_f()}.
-
-@type: dict
-"""
+The style processing is described in gui_mixins.StylesMixin.cn_f()."""
 
 
 def read_version_file():
     """Read the version information from file "RELEASE-VERSION".
-
-    @see: L{write_version_file()} and L{get_version()}"""
+    see: write_version_file() and get_version()"""
     try:
         import version
         return version.__version__.strip()
@@ -317,12 +266,9 @@ def read_version_file():
 def write_version_file(release):
     """Write the given version string into file "version.py".
 
-    @param release: version string to write
-    @type release:  str
+    release: version string to write
 
-    @see: L{read_version_file()}
-    @see: L{get_version()}
-    """
+    see: read_version_file(), get_version()"""
     fh = open('version.py', 'w')
     fh.write("""\
 #
@@ -379,24 +325,18 @@ def get_hg_version():
 
 
 def get_version(suffix=True):
-    """\
-    Return the release string.
+    """Return the release string.
 
     The release will determinate in three steps:
-     1. read from release file (see L{read_version_file()})
-     2. Queried from local hg repo (see L{get_hg_version()})
+     1. read from release file (see read_version_file() )
+     2. Queried from local hg repo (see get_hg_version() )
      3. Set to "not found"
 
     The release string contains a suffix if wxGlade runs as standalone edition.
 
-    @param suffix: Append suffix for standalone edition
-    @type suffix:  bool
+    suffix: Append suffix for standalone edition (bool)
 
-    @rtype: str
-
-    @see: L{read_version_file()}
-    @see: L{get_hg_version()}
-    """
+    see: read_version_file(), get_hg_version()"""
     release = read_version_file()
     if not release:
         release = get_hg_version()
