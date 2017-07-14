@@ -1061,7 +1061,7 @@ bool MyApp::OnInit()
             return []
 
         tmpl_handler = """
-void %(klass)s::%(handler)s(%(evt_type)s &event)
+void %(klass)s::%(handler)s(%(evt_type)s &event)  // wxGlade: %(klass)s.<event_handler>
 {
 %(tab)sevent.Skip();
 %(tab)s// notify the user that he hasn't implemented the event handler yet
