@@ -482,7 +482,8 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
         if isinstance(node, tree.SlotNode):
             # empty sizer slot
             szr = self.sizers[-1]
-            self.add_spacer(topl, szr, None)
+            if not szr._IS_GRIDBAG:
+                self.add_spacer(topl, szr, None)
             return
         elif node.widget.classname=="spacer":
             # add a spacer
@@ -1070,9 +1071,8 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
         if sizer.klass!="wxGridBagSizer":
             stmt = self.tmpl_sizeritem % ( sizer_name, obj_name, option, flag, border )
         else:
-            row = (pos-1) // self.cols
-            col = (pos-1) %  self.cols
-            stmt = self.tmpl_gridbagsizeritem % ( sizer_name, obj_name, (row,col), obj.span, flag, border )
+            pos = sizer._get_row_col(obj.pos)
+            stmt = self.tmpl_gridbagsizeritem % ( sizer_name, obj_name, pos, obj.span, flag, border )
 
         klass.layout.append(stmt)
 
