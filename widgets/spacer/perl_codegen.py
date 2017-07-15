@@ -11,13 +11,10 @@ import wcodegen
 
 
 class PerlSpacerGenerator(wcodegen.PerlWidgetCodeWriter):
-
     # spacers are generally handled by a hack:
     # The the implementations of add_sizeritem() contains more details.
     # The code generation code is already implemented in base class.
     pass
-
-# end of class PerlSpacerGenerator
 
 
 def initialize():

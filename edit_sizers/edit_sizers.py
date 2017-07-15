@@ -46,7 +46,7 @@ class BaseSizerBuilder(object):
         self.tmpl_dict = {}                          # properties to replace in L{tmpl}
         self.codegen = common.code_writers[self.language] #language specific code generator (codegen.BaseLangCodeWriter)
 
-    def _get_wparent(self, obj):
+    def _get_wparent(self, topl, obj):
         "Return the parent widget or a reference to it as string"
         raise NotImplementedError
 
@@ -55,6 +55,7 @@ class BaseSizerBuilder(object):
         self.tmpl_dict.clear()
         self.tmpl_dict['klass'] = self.codegen.cn(self.klass)
         self.tmpl_dict['wxIDANY'] = self.codegen.cn('wxID_ANY')
+        #self.tmpl_dict['parent_widget'] = self._get_wparent(obj)
         self.tmpl_dict['parent_widget'] = self._get_wparent(obj)
         self.tmpl_dict['sizer_name'] = self.codegen._format_classattr(obj)
 
@@ -70,11 +71,16 @@ class BaseSizerBuilder(object):
         init.append(self.tmpl % self.tmpl_dict)
 
         # generate layout lines
-        if obj.is_toplevel:
+        #if obj.is_toplevel:
+        #if obj.window.is_toplevel:
+        if not obj.node.parent.widget.is_sizer:
             layout.append(self.tmpl_SetSizer % self.tmpl_dict)
-            if not 'size' in obj.parent.properties and obj.parent.is_toplevel:
+            #if not 'size' in obj.parent.properties and obj.parent.is_toplevel:
+            #if not 'size' in obj.window.properties:
+            #if not obj.window.properties["size"].is_active():
+            if not obj.node.parent.widget.check_prop("size") and obj.node.parent.widget.is_toplevel:
                 layout.append(self.tmpl_Fit % self.tmpl_dict)
-            if obj.parent.properties.get('sizehints', False):
+            if "sizehints" in obj.window.properties and obj.window.sizehints:
                 layout.append(self.tmpl_SetSizeHints % self.tmpl_dict)
 
         return init, [], layout  # init, props, layout
@@ -91,22 +97,24 @@ class BaseSizerBuilder(object):
 
     def get_code_wxStaticBoxSizer(self, obj):
         "Set sizer specific properties and generate the code"
-        self.tmpl_dict['orient'] = self.codegen.cn( obj.properties.get('orient', 'wxHORIZONTAL') )
-        self.tmpl_dict['label'] = self.codegen.quote_str( obj.properties.get('label', '') )
+        #self.tmpl_dict['orient'] = self.codegen.cn( obj.properties.get('orient', 'wxHORIZONTAL') )
+        self.tmpl_dict['orient'] = self.codegen.cn( obj.properties["orient"].get_string_value() )
+        self.tmpl_dict['label'] = self.codegen.quote_str( obj.label )
         return self._get_code(obj)
 
     def get_code_wxBoxSizer(self, obj):
         "Set sizer specific properties and generate the code"
-        self.tmpl_dict['orient'] = self.codegen.cn( obj.properties.get('orient', 'wxHORIZONTAL') )
+        #self.tmpl_dict['orient'] = self.codegen.cn( obj.properties.get('orient', 'wxHORIZONTAL') )
+        self.tmpl_dict['orient'] = self.codegen.cn( obj.properties["orient"].get_string_value() )
         return self._get_code(obj)
 
     def get_code_wxGridSizer(self, obj):
         "Set sizer specific properties and generate the code"
         if self.klass != 'wxGridBagSizer':
-            self.tmpl_dict['rows'] = obj.properties.get('rows', '0')
-            self.tmpl_dict['cols'] = obj.properties.get('cols', '0')
-        self.tmpl_dict['vgap'] = obj.properties.get('vgap', '0')
-        self.tmpl_dict['hgap'] = obj.properties.get('hgap', '0')
+            self.tmpl_dict['rows'] = obj.rows
+            self.tmpl_dict['cols'] = obj.cols
+        self.tmpl_dict['vgap'] = obj.vgap
+        self.tmpl_dict['hgap'] = obj.hgap
         return self._get_code(obj)
 
     def get_code_wxFlexGridSizer(self, obj):
@@ -120,14 +128,13 @@ class BaseSizerBuilder(object):
         layout = result[-1]
         del result[-1]
 
-        props = obj.properties
-        if 'growable_rows' in props:
-            for row in props['growable_rows'].split(','):
-                self.tmpl_dict['row'] = row.strip()
+        if 'growable_rows' in obj.properties and obj.growable_rows:
+            for row in obj.properties["growable_rows"].get_string_value().split(","): # get_string_value is 0 based
+                self.tmpl_dict['row'] = row
                 layout.append(self.tmpl_AddGrowableRow % self.tmpl_dict)
-        if 'growable_cols' in props:
-            for col in props['growable_cols'].split(','):
-                self.tmpl_dict['col'] = col.strip()
+        if 'growable_cols' in obj.properties and obj.growable_cols:
+            for col in obj.properties["growable_cols"].get_string_value().split(","): # get_string_value is 0 based
+                self.tmpl_dict['col'] = col
                 layout.append(self.tmpl_AddGrowableCol % self.tmpl_dict)
 
         # reappend layout lines
@@ -139,11 +146,12 @@ class BaseSizerBuilder(object):
 class SizerSlot(np.PropertyOwner):
     "A window to represent a slot in a sizer"
     PROPERTIES = ["Slot", "pos"]
+    is_sizer = False
     def __init__(self, parent, sizer, pos=0, label=None):
         np.PropertyOwner.__init__(self)
         # initialise instance logger
         self._logger = logging.getLogger(self.__class__.__name__)
-        self.klass = "SLOT"
+        self.klass = self.classname = "sizerslot"
         self.label = label
 
         self.sizer = sizer       # Sizer object (SizerBase instance)
@@ -341,14 +349,14 @@ class SizerSlot(np.PropertyOwner):
         appropriate builder function (found in the ``common.widgets'' dict)"""
         if not common.adding_widget:  # widget focused/selecte
             misc.set_focused_widget(self)
-            if self.widget: self.widget.Refresh()
-            self.widget.SetFocus()
+            if self.widget:
+                self.widget.Refresh()
+                self.widget.SetFocus()
             return
         if common.adding_sizer and self.sizer.is_virtual():
             return
         if self.widget:
             self.widget.SetCursor(wx.NullCursor)
-            #self.widget.Hide()
         common.adding_window = event and event.GetEventObject().GetTopLevelParent() or None
         # call the appropriate builder
         common.widgets[common.widget_to_add](self.parent, self.sizer, self.pos)
@@ -413,6 +421,11 @@ class SizerSlot(np.PropertyOwner):
             self.widget.Bind(wx.EVT_ENTER_WINDOW, None)
             self.widget.Bind(wx.EVT_LEAVE_WINDOW, None)
             self.widget.Bind(wx.EVT_KEY_DOWN, None)
+
+            if compat.IS_PHOENIX:
+                self.widget.DestroyLater()
+            else:
+                self.widget.Destroy()
 
             self.widget = None
 
@@ -557,7 +570,7 @@ def change_sizer(old, new):
 class Sizer(object):
     "Base class for every Sizer handled by wxGlade"
     _IS_GRIDBAG = False
-
+    is_sizer = True
     def __init__(self, window):
         self.window = window
         # initialise instance logger
@@ -621,7 +634,7 @@ class OrientProperty(np.Property):
     def _write_converter(self, value):
         if not value: return None
         return self.ORIENTATION_to_STRING[value]
-    def get_str_value(self):
+    def get_string_value(self):
         return self.ORIENTATION_to_STRING[self.value]
 
 
@@ -640,7 +653,7 @@ class ClassOrientProperty(np.RadioProperty):
 
     def __init__(self, value=None):
         np.RadioProperty.__init__(self, value, self.CHOICES, tooltips=self.TOOLTIP)
-    def write(self, outfile, tabs=0):
+    def write(self, output, tabs=0):
         pass
 
 
@@ -672,6 +685,7 @@ class SizerBase(Sizer, np.PropertyOwner):
 
         # initialise instance properties
         self.name         = np.NameProperty(name)
+        self.classname    = klass
         self.klass        = np.Property(klass, name="class")             # class and orient are hidden
         self.orient       = OrientProperty(orient)                       # they will be set from the class_orient property
         self.class_orient = ClassOrientProperty(self.get_class_orient()) # this will set the class and orient properties
@@ -917,14 +931,14 @@ class SizerBase(Sizer, np.PropertyOwner):
             else:
                 self.widget.Add(item.widget, proportion, flag, border)
 
+            if not size or -1 in size:
+                best_size = item.widget.GetBestSize()
             if size:
                 w, h = size
+                if w == -1: w = best_size[0]
+                if h == -1: h = best_size[1]
             else:
-                w, h = item.widget.GetBestSize()
-            if w == -1:
-                w = item.widget.GetBestSize()[0]
-            if h == -1:
-                h = item.widget.GetBestSize()[1]
+                w, h = best_size
             self.widget.SetItemMinSize(item.widget, w, h)
             return
 
@@ -1012,8 +1026,7 @@ class SizerBase(Sizer, np.PropertyOwner):
                 size = elem.GetSize()
             item = elem.GetWindow()
             w, h = size
-            if w==-1 or h==-1:
-                best_size = item.GetBestSize()
+            if w==-1 or h==-1: best_size = item.GetBestSize()
             if w == -1: w = best_size[0]
             if h == -1: h = best_size[1]
             self.widget.SetItemMinSize(item, w, h)
@@ -1058,8 +1071,7 @@ class SizerBase(Sizer, np.PropertyOwner):
                 size = elem.GetSize()
             widget = elem.GetWindow()
             w, h = size
-            if w==-1 or h==-1:
-                best_size = widget.GetBestSize()
+            if w==-1 or h==-1: best_size = widget.GetBestSize()
             if w == -1: w = best_size[0]
             if h == -1: h = best_size[1]
             self.widget.SetItemMinSize(widget, w, h)  # XXX store the min size as attribute to track modifications
@@ -1316,14 +1328,15 @@ class SizerBase(Sizer, np.PropertyOwner):
         if "rows" in self.PROPERTIES: self._adjust_rows_cols()  # for GridSizer
         if not self.toplevel:
             return
-        if not self.window.properties['size'].is_active():
+        size_p = self.window.properties['size']
+        if not size_p.is_active():
             self.fit_parent()
             w, h = self.widget.GetSize()
-            prefix = ''
+            postfix = ''
             if config.preferences.use_dialog_units:
                 w, h = compat.ConvertPixelsToDialog( self.window.widget, self.widget.GetSize() )
-                prefix = 'd'
-            self.window.set_size('%s, %s%s' % (w, h, prefix))
+                postfix = 'd'
+            size_p.set('%s, %s%s' % (w, h, postfix))
 
 
 
@@ -1357,7 +1370,7 @@ class BoxSizerBase(SizerBase):
         self.layout()
 
     def get_class_orient(self):
-        return '%s (%s)'%( self.WX_CLASS, self.properties["orient"].get_str_value() )
+        return '%s (%s)'%( self.WX_CLASS, self.properties["orient"].get_string_value() )
 
     def properties_changed(self, modified):
         if not modified or "orient" in modified and self.node:
@@ -1385,20 +1398,12 @@ class EditBoxSizer(BoxSizerBase):
                 if sp and sp.is_active():
                     if (c.proportion != 0 or (c.flag & wx.EXPAND)) and not (c.flag & wx.FIXED_MINSIZE):
                         c.item.widget.Layout()
-                        w, h = c.item.widget.GetBestSize()
-                        c.item.widget.SetMinSize((w, h))
+                        size = sp.get_size(c.item.widget)
+                        c.item.widget.SetMinSize(size)
                     else:
-                        size = sp.get_value().strip()
-                        if size[-1] == 'd':
-                            size = size[:-1]
-                            use_dialog_units = True
-                        else:
-                            use_dialog_units = False
-                        w, h = [int(v) for v in size.split(',')]
-                        if use_dialog_units:
-                            w, h = wx.DLG_SZE(c.item.widget, (w, h))
+                        size = sp.get_size(c.item.widget)
                         # now re-set the item to update the size correctly...
-                        to_lay_out.append((c.item.pos, (w, h)))
+                        to_lay_out.append((c.item.pos, size) )
         for pos, size in to_lay_out:
             self.set_item(pos, size=size, force_layout=False)
         self.layout(True)
@@ -1442,17 +1447,9 @@ class EditStaticBoxSizer(BoxSizerBase):
                 self.widget.Add(c.item.widget, 1, wx.EXPAND)
                 self.widget.SetItemMinSize(c.item.widget, 20, 20)
             else:
-                sp = c.item.properties.get('size')
-                if sp and sp.is_active() and ( c.proportion == 0 or not (c.flag & wx.EXPAND) ):
-                    size = sp.get_value().strip()
-                    if size[-1] == 'd':
-                        size = size[:-1]
-                        use_dialog_units = True
-                    else:
-                        use_dialog_units = False
-                    w, h = [int(v) for v in size.split(',')]
-                    if use_dialog_units:
-                        w, h = wx.DLG_SZE(c.item.widget, (w, h))
+                size_p = c.item.properties.get('size')
+                if size_p and size_p.is_active() and ( c.proportion == 0 or not (c.flag & wx.EXPAND) ):
+                    w,h = size_p.get_size(c.item.widget)
                 else:
                     w, h = c.item.widget.GetBestSize()
                 self.widget.SetItemMinSize(c.item.widget, w, h)
@@ -1574,20 +1571,12 @@ class GridSizerBase(SizerBase):
                 if sp and sp.is_active():
                     if (c.proportion != 0 or (c.flag & wx.EXPAND)) and not (c.flag & wx.FIXED_MINSIZE):
                         c.item.widget.Layout()
-                        w, h = c.item.widget.GetBestSize()
-                        c.item.widget.SetMinSize((w, h))
+                        size = sp.get_size(c.item.widget)
+                        c.item.widget.SetMinSize(size)
                     else:
-                        size = sp.get_value().strip()
-                        if size[-1] == 'd':
-                            size = size[:-1]
-                            use_dialog_units = True
-                        else:
-                            use_dialog_units = False
-                        w, h = [int(v) for v in size.split(',')]
-                        if use_dialog_units:
-                            w, h = wx.DLG_SZE(c.item.widget, (w, h))
+                        size = sp.get_size(c.item.widget)
                         # now re-set the item to update the size correctly...
-                        to_lay_out.append((c.item.pos, (w, h)))
+                        to_lay_out.append((c.item.pos, size) )
 
         for pos, size in to_lay_out:
             # self._logger.debug('set_item: %s, %s', pos, size)
@@ -1827,7 +1816,7 @@ class _GrowablePropertyD(np.DialogPropertyD):
     def get_list(self):
         return self.value.split(",")
 
-    def get_str_value(self):
+    def get_string_value(self):
         # for XML file writing; 0-based
         ret = [str(int(n)-1) for n in self.get_list()]
         return ",".join(ret)
@@ -1989,7 +1978,8 @@ def _builder(parent, sizer, pos, orientation=wx.VERTICAL, slots=1, is_static=Fal
 
 class _SizerDialog(wx.Dialog):
     def __init__(self, parent):
-        wx.Dialog.__init__( self, misc.get_toplevel_parent(parent), -1, _('Select sizer type') )
+        pos = wx.GetMousePosition()
+        wx.Dialog.__init__( self, misc.get_toplevel_parent(parent), -1, _('Select sizer type'), pos )
         self.orientation = wx.RadioBox( self, -1, _('Orientation'), choices=[_('Horizontal'), _('Vertical')] )
         self.orientation.SetSelection(0)
         tmp = wx.BoxSizer(wx.HORIZONTAL)
@@ -2011,14 +2001,18 @@ class _SizerDialog(wx.Dialog):
         tmp.Add(self.label, 1)
         szr.Add(tmp, 0, wx.ALL | wx.EXPAND, 4)
 
+        # horizontal sizer for action buttons
+        hsizer = wx.BoxSizer(wx.HORIZONTAL)
+        hsizer.Add( wx.Button(self, wx.ID_CANCEL, _('Cancel')), 1, wx.ALL, 5)
         btn = wx.Button(self, wx.ID_OK, _('OK'))
         btn.SetDefault()
-        szr.Add(btn, 0, wx.ALL | wx.ALIGN_CENTER, 10)
+        hsizer.Add(btn, 1, wx.ALL, 5)
+        szr.Add(hsizer, 0, wx.EXPAND|wx.ALIGN_CENTER )
         self.SetAutoLayout(1)
         self.SetSizer(szr)
         szr.Fit(self)
         self.Layout()
-        self.CenterOnScreen()
+        #self.CenterOnScreen()
 
     def reset(self):
         self.orientation.SetSelection(0)
@@ -2035,17 +2029,17 @@ class _SizerDialog(wx.Dialog):
 def builder(parent, sizer, pos, number=[1]):
     "factory function for box sizers"
 
-    dialog = _SizerDialog(parent)
-    dialog.ShowModal()
+    dialog = _SizerDialog(common.adding_window or parent)
+    res = dialog.ShowModal()
     if dialog.orientation.GetStringSelection() == _('Horizontal'):
         orientation = wx.HORIZONTAL
     else:
         orientation = wx.VERTICAL
     num = dialog.num.GetValue()
 
-    _builder (parent, sizer, pos, orientation, num, dialog.check.GetValue(), dialog.label.GetValue() )
-
     dialog.Destroy()
+    if res != wx.ID_OK: return
+    _builder (parent, sizer, pos, orientation, num, dialog.check.GetValue(), dialog.label.GetValue() )
 
 
 def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
@@ -2124,7 +2118,6 @@ class _GridBuilderDialog(wx.Dialog):
 
         sizer.Fit(self)
         self.Layout()
-        #self.CentreOnParent()
 
 
 

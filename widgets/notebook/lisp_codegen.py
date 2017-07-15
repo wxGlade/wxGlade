@@ -3,12 +3,12 @@ Lisp generator functions for wxNotebook objects
 
 @copyright: 2002-2004 D.H. aka crazyinsomniac on sourceforge.net
 @copyright: 2014-2016 Carsten Grohmann
+@copyright: 2017 Dietmar Schwertberger
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
 import common
 import wcodegen
-from .codegen import TabsCodeHandler
 
 
 class LispNotebookGenerator(wcodegen.LispWidgetCodeWriter):
@@ -19,19 +19,13 @@ class LispNotebookGenerator(wcodegen.LispWidgetCodeWriter):
 
         prop = window.properties
         id_name, id = self.codegen.generate_code_id(window)
+        window_name = self.codegen._format_name(window.name)
 
         layout_props = []
-        tabs = prop.get('tabs', [])
-        for label, tab_win in tabs:
-            tab_win = tab_win.replace('_', '-')
-            layout_props.append(
-                '(wxNotebook_AddPage (slot-%s obj) (slot-%s obj) %s '
-                '1 -1)\n' % (
-                    window.name,
-                    tab_win,
-                    self.codegen.quote_str(label)
-                    )
-                )
+        for label, tab_win in zip(window.tabs, window.pages):
+            tab_win = tab_win.name.replace('_', '-')
+            fmt = '(wxNotebook_AddPage (slot-%s obj) (slot-%s obj) %s 1 -1)\n'
+            layout_props.append( fmt % (window_name, tab_win, self.codegen.quote_str(label[0]) ) )
 
         parent = self.format_widget_access(window.parent)
 
@@ -39,47 +33,26 @@ class LispNotebookGenerator(wcodegen.LispWidgetCodeWriter):
             l = []
             if id_name:
                 l.append(id_name)
-            l.append(
-                '(setf (slot-%s obj) (wxNotebook_Create %s %s -1 -1 -1 -1 '
-                'wxNB_TOP))\n' % (
-                    window.name,
-                    parent,
-                    id
-                    )
-                )
+            fmt = '(setf (slot-%s obj) (wxNotebook_Create %s %s -1 -1 -1 -1 wxNB_TOP))\n'
+            l.append( fmt % (window_name, parent, id) )
             return l, [], []
 
         init = []
         if id_name:
             init.append(id_name)
-        init.append(
-            '(setf (slot-%s obj) (wxNotebook_Create %s %s '
-            '-1 -1 -1 -1 %s))\n' % (
-                window.name,
-                parent,
-                id,
-                self.tmpl_dict['style']
-                )
-            )
+        fmt = '(setf (slot-%s obj) (wxNotebook_Create %s %s -1 -1 -1 -1 %s))\n'
+        init.append( fmt % (window_name, parent, id, self.tmpl_dict['style']) )
 
         props_buf = self.codegen.generate_common_properties(window)
         return init, props_buf, layout_props
 
     def get_properties_code(self, obj):
-        prop = obj.properties
         props_buf = []
-        tabs = prop.get('tabs', [])
-        for label, window in tabs:
-            props_buf.append(
-                '(wxNotebook_AddPage (slot-%s obj) page %s 1 -1);\n' % (
-                    window,
-                    self.codegen.quote_str(label),
-                    )
-                )
+        for label, tab_win in zip(obj.tabs, obj.pages):
+            fmt = '(wxNotebook_AddPage (slot-%s obj) page %s 1 -1);\n'
+            props_buf.append( fmt % (tab_win.name, self.codegen.quote_str(label[0]) ) )
         props_buf.extend(self.codegen.generate_common_properties(obj))
         return props_buf
-
-# end of class LispNotebookGenerator
 
 
 def initialize():
@@ -89,5 +62,4 @@ def initialize():
     common.toplevels['EditNotebook'] = 1
     common.toplevels['NotebookPane'] = 1
 
-    common.register('lisp', klass, LispNotebookGenerator(klass),
-                    'tabs', TabsCodeHandler, klass)
+    common.register('lisp', klass, LispNotebookGenerator(klass) )

@@ -79,9 +79,7 @@ class SourceFileContent(BaseSourceFileContent):
                     quote_index = triple_squote_index
                     tmp_quote_str = "'''"
                 else:
-                    quote_index, tmp_quote_str = min(
-                        (triple_squote_index, "'''"),
-                        (triple_dquote_index, '"""'))
+                    quote_index, tmp_quote_str = min( (triple_squote_index, "'''"), (triple_dquote_index, '"""') )
 
             if not inside_triple_quote and quote_index != -1:
                 inside_triple_quote = True
@@ -93,28 +91,18 @@ class SourceFileContent(BaseSourceFileContent):
 
             result = self.rec_class_decl.match(line)
             if not inside_triple_quote and result:
-##                self._logger.debug(">> class %r", result.group(1))
                 if not self.class_name:
-                    # this is the first class declared in the file: insert the
-                    # new ones before this
-                    out_lines.append('<%swxGlade insert new_classes>' %
-                                     self.nonce)
+                    # this is the first class declared in the file: insert the new ones before this
+                    out_lines.append('<%swxGlade insert new_classes>' % self.nonce)
                     self.new_classes_inserted = True
                 self.class_name = result.group(1)
                 self.class_name = self.format_classname(self.class_name)
-                self.classes[self.class_name] = 1  # add the found class to the list
-                                              # of classes of this module
+                self.classes[self.class_name] = 1  # add the found class to the list of classes of this module
                 out_lines.append(line)
             elif not inside_block:
                 result = self.rec_block_start.match(line)
                 if not inside_triple_quote and result:
-##                     self._logger.debug(">> block %r %r %r",
-##                         result.group('spaces'),
-##                         result.group('classname'),
-##                         result.group('block'),
-##                         )
-                    # replace the lines inside a wxGlade block with a tag that
-                    # will be used later by add_class
+                    # replace the lines inside a wxGlade block with a tag that will be used later by add_class
                     spaces = result.group('spaces')
                     which_class = result.group('classname')
                     which_block = result.group('block')
@@ -125,11 +113,9 @@ class SourceFileContent(BaseSourceFileContent):
                     self.spaces[which_class] = spaces
                     inside_block = True
                     if not self.class_name:
-                        out_lines.append('<%swxGlade replace %s>' % \
-                                         (self.nonce, which_block))
+                        out_lines.append( '<%swxGlade replace %s>' % (self.nonce, which_block) )
                     else:
-                        out_lines.append('<%swxGlade replace %s %s>' % \
-                                         (self.nonce, which_class, which_block))
+                        out_lines.append( '<%swxGlade replace %s %s>' % (self.nonce, which_class, which_block) )
                 else:
                     result = self.rec_event_handler.match(line)
                     if not inside_triple_quote and result:
@@ -139,44 +125,34 @@ class SourceFileContent(BaseSourceFileContent):
                             which_class, {})[which_handler] = 1
                     if self.class_name and self.is_end_of_class(line):
                         # add extra event handlers here...
-                        out_lines.append('<%swxGlade event_handlers %s>'
-                                         % (self.nonce, self.class_name))
+                        out_lines.append( '<%swxGlade event_handlers %s>' % (self.nonce, self.class_name) )
                     out_lines.append(line)
                     if self.is_import_line(line):
                         # add a tag to allow extra modules
-                        out_lines.append('<%swxGlade extra_modules>\n'
-                                         % self.nonce)
+                        out_lines.append( '<%swxGlade extra_modules>\n' % self.nonce )
             else:
                 # ignore all the lines inside a wxGlade block
                 if self.rec_block_end.match(line):
-##                     self._logger.debug('end block')
                     inside_block = False
         if not self.new_classes_inserted:
-            # if we are here, the previous ``version'' of the file did not
-            # contain any class, so we must add the new_classes tag at the
-            # end of the file
+            # if we are here, the previous ``version'' of the file did not contain any class, so we must add the
+            # new_classes tag at the end of the file
             out_lines.append('<%swxGlade insert new_classes>' % self.nonce)
         # set the ``persistent'' content of the file
-        self.content = "".join(out_lines)
+        self.content = out_lines
 
     def is_import_line(self, line):
         return line.startswith('(use-package :wx')
 
-# end of class SourceFileContent
 
 
 class WidgetHandler(BaseWidgetHandler):
     pass
 
-# end of class WidgetHandler
 
 
 class LispCodeWriter(BaseLangCodeWriter, wcodegen.LispMixin):
-    """\
-    Code writer class for writing Lisp code out of the designed GUI elements
-
-    @see: L{BaseLangCodeWriter}
-    """
+    "Code writer class for writing Lisp code out of the designed GUI elements"
 
     _code_statements = {
         'backgroundcolour': "(wxWindow_SetBackgroundColour %(objname)s %(value)s)\n",
@@ -193,14 +169,13 @@ class LispCodeWriter(BaseLangCodeWriter, wcodegen.LispMixin):
         }
 
     class_separator = '.'
-    classattr_always = ['wxBoxSizer', 'wxStaticBoxSizer', 'wxGridSizer',
-                        'wxFlexGridSizer']
+    classattr_always = ['wxBoxSizer', 'wxStaticBoxSizer', 'wxGridSizer', 'wxFlexGridSizer']
 
-    global_property_writers = {
-        'font':            BaseLangCodeWriter.FontPropertyHandler,
-        'events':          BaseLangCodeWriter.EventsPropertyHandler,
-        'extraproperties': BaseLangCodeWriter.ExtraPropertiesPropertyHandler,
-        }
+    #global_property_writers = {
+        #'font':            BaseLangCodeWriter.FontPropertyHandler,
+        #'events':          BaseLangCodeWriter.EventsPropertyHandler,
+        #'extraproperties': BaseLangCodeWriter.ExtraPropertiesPropertyHandler,
+        #}
 
     indent_level_func_body = 2
 
@@ -324,36 +299,32 @@ class LispCodeWriter(BaseLangCodeWriter, wcodegen.LispMixin):
         if self.for_version > (2, 8):
             raise errors.WxgLispWx3NotSupported("%d.%d" % self.for_version)
 
-    def add_app(self, app_attrs, top_win_class):
-        top_win = app_attrs.get('top_window')
+    def add_app(self, app, top_win_class):
+        top_win = app.top_window
         # do nothing if there is no top window
-        if not top_win:
-            return
+        if not top_win: return
 
         # add language specific mappings
-        self.lang_mapping = {
-            'top_win': self._format_name(top_win),
-            }
-        BaseLangCodeWriter.add_app(self, app_attrs, top_win_class)
+        self.lang_mapping = { 'top_win': self._format_name(top_win), }
+        BaseLangCodeWriter.add_app(self, app, top_win_class)
 
-    def add_object(self, top_obj, sub_obj):
+    def add_object(self, sub_obj):
         # the lisp code gen add some hard coded depedencies
         # TODO: Move the hard coded dependencies to the widgets resp. sizers
 
-        sub_obj.name = self._format_name(sub_obj.name)
-        sub_obj.parent.name = self._format_name(sub_obj.parent.name)
+        # XXX temporarily disabled...
+        #sub_obj.name = self._format_name(sub_obj.name)
+        #sub_obj.parent.name = self._format_name(sub_obj.parent.name)
 
         # get top level source code object and the widget builder instance
-        klass, builder = self._add_object_init(top_obj, sub_obj)
+        klass, builder = self._add_object_init(sub_obj)
         if not klass or not builder:
             return
 
         if sub_obj.name not in ("spacer","sizerslot"):
-            self.class_lines.append(sub_obj.name)
-        if (sub_obj.klass == "wxBoxSizer" or
-                    sub_obj.klass == "wxStaticBoxSizer" or
-                    sub_obj.klass == "wxGridSizer" or
-                    sub_obj.klass == "wxFlexGridSizer"):
+            self.class_lines.append( self._format_name(sub_obj.name) )
+        if (sub_obj.klass == "wxBoxSizer"  or sub_obj.klass == "wxStaticBoxSizer" or
+            sub_obj.klass == "wxGridSizer" or sub_obj.klass == "wxFlexGridSizer"):
             self.dependencies['(use-package :wxSizer)'] = 1
         else:
             if sub_obj.klass not in ("spacer", "sizerslot"):
@@ -363,23 +334,21 @@ class LispCodeWriter(BaseLangCodeWriter, wcodegen.LispMixin):
         if sub_obj.klass == "wxMenuBar":
             self.dependencies['(use-package :wxMenu)'] = 1
 
-        BaseLangCodeWriter.add_object(self, top_obj, sub_obj)
+        BaseLangCodeWriter.add_object(self, sub_obj)
 
     def add_sizeritem(self, toplevel, sizer, obj, option, flag, border):
-        if obj.in_sizers:
+        # XXX remove this hack
+        if obj.is_sizer:
             self.tmpl_sizeritem = '(wxSizer_AddSizer (%s obj) (%s obj) %s %s %s nil)\n'
         else:
             self.tmpl_sizeritem = '(wxSizer_AddWindow (%s obj) (%s obj) %s %s %s nil)\n'
 
-        BaseLangCodeWriter.add_sizeritem(
-            self,
-            toplevel,
-            sizer,
-            obj,
-            option,
-            flag,
-            border,
-            )
+        BaseLangCodeWriter.add_sizeritem( self, toplevel, sizer, obj, option, flag, border )
+
+    def add_spacer(self, toplevel, sizer, obj=None, proportion=0, flag='0', border=0):
+        # XXX remove this hack
+        self.tmpl_sizeritem = '(wxSizer_AddWindow (%s obj) (%s obj) %s %s %s nil)\n'
+        BaseLangCodeWriter.add_spacer(self, toplevel, sizer, obj, proportion, flag, border)
 
     def generate_code_background(self, obj):
         self.dependencies['(use-package :wxColour)'] = 1
@@ -394,9 +363,8 @@ class LispCodeWriter(BaseLangCodeWriter, wcodegen.LispMixin):
         mycn_f = getattr(builder, 'cn_f', self.cn_f)
 
         # custom base classes support
-        custom_base = getattr(code_obj, 'custom_base',
-                              code_obj.properties.get('custom_base', None))
-        if code_obj.preview or (custom_base and not custom_base.strip()):
+        custom_base = getattr( code_obj, 'custom_base', code_obj.properties.get('custom_base', None) )
+        if self.preview or (custom_base and not custom_base.strip()):
             custom_base = None
 
         # generate constructor code
@@ -423,27 +391,18 @@ class LispCodeWriter(BaseLangCodeWriter, wcodegen.LispMixin):
         elif custom_base:
             # custom base classes set, but "overwrite existing sources" not
             # set. Issue a warning about this
-            self.warning(
-                '%s has custom base classes, but you are not overwriting '
-                'existing sources: please check that the resulting code is '
-                'correct!' % code_obj.name
-                )
+            self.warning( '%s has custom base classes, but you are not overwriting existing sources: please check that '
+                          'the resulting code is correct!' % code_obj.name )
 
         # __init__ begin tag
-        write(self.tmpl_block_begin % {
-            'class_separator': self.class_separator,
-            'comment_sign':    self.comment_sign,
-            'function':        self.name_ctor,
-            'klass':           self.cn_class(code_obj.klass),
-            'tab':             tab,
-            })
+        write( self.tmpl_block_begin % {'class_separator':self.class_separator, 'comment_sign':self.comment_sign,
+                                        'function':self.name_ctor, 'klass':self.cn_class(code_obj.klass), 'tab':tab} )
 
-        prop = code_obj.properties
-        style = prop.get("style", None)
-        if style:
-            m_style = mycn_f(style)
+        style_p = code_obj.properties.get("style")
+        if style_p and style_p.value_set != style_p.default_value:
+            m_style = mycn_f( style_p.get_string_value() )
             if m_style:
-                stmt_style = self._format_style(style, code_obj)
+                stmt_style = self._format_style(m_style, code_obj)
                 write(stmt_style % {'style': m_style, 'tab': tab} )
 
         # classes[code_obj.klass].deps now contains a mapping of child to
@@ -486,18 +445,11 @@ class LispCodeWriter(BaseLangCodeWriter, wcodegen.LispMixin):
         for win_id, event, handler, unused in event_handlers:
             if win_id.startswith('#'):
                 win_id = win_id[1:]
+            win_id = self._format_name(win_id)
 
-            write(
-                  "%(tab)s(wxEvtHandler_Connect (slot-top-window obj) %(win_id)s (exp%(event)s)" \
-                  "\n%(tab2)s" \
-                  "(wxClosure_Create #'%(handler)s obj))\n" % {
-                    'tab':     tab,
-                    'tab2':    self.tabs(2),
-                    'win_id':  win_id,
-                    'event':   self.cn(event),
-                    'handler': handler,
-                    }
-                )
+            write( "%(tab)s(wxEvtHandler_Connect (slot-top-window obj) %(win_id)s (exp%(event)s)\n%(tab2)s" \
+                   "(wxClosure_Create #'%(handler)s obj))\n" % 
+                    {'tab':tab, 'tab2':self.tabs(2), 'win_id':win_id, 'event':self.cn(event), 'handler':handler} )
 
         return code_lines
 
@@ -511,7 +463,7 @@ class LispCodeWriter(BaseLangCodeWriter, wcodegen.LispMixin):
 
     def generate_code_id(self, obj, id=None):
         if id is None:
-            id = obj.properties.get('id')
+            id = obj.window_id
         if not id:
             return '', self.cn('wxID_ANY')
         tokens = id.split('=', 1)
@@ -534,20 +486,14 @@ class LispCodeWriter(BaseLangCodeWriter, wcodegen.LispMixin):
 
     def generate_code_size(self, obj):
         objname = self.format_generic_access(obj)
-        size = obj.properties.get('size', '').strip()
+        size = obj.properties["size"].get_string_value()
         use_dialog_units = (size[-1] == 'd')
         if not obj.parent:
             method = 'wxWindow_SetSize'
         else:
             method = 'SetMinSize'
         if use_dialog_units:
-            return '(%s %s(%s(%s (%s))))\n' % (
-                       method,
-                       objname,
-                       self.cn('wxDLG_SZE'),
-                       objname,
-                       size[:-1],
-                       )
+            return '(%s %s(%s(%s (%s))))\n' % ( method, objname, self.cn('wxDLG_SZE'), objname, size[:-1] )
         else:
             return '%s.%s((%s))\n' % (objname, method, size)
 
@@ -590,11 +536,9 @@ class LispCodeWriter(BaseLangCodeWriter, wcodegen.LispMixin):
         style = style.strip().replace('.', '')
 
         if code_obj.base == "wxFrame":
-            stmt = '%%(tab)s(setf (slot-top-window obj) (wxFrame_create nil ' \
-                   'wxID_ANY \"\" -1 -1 -1 -1 %s))\n' % style
+            stmt = '%%(tab)s(setf (slot-top-window obj) (wxFrame_create nil wxID_ANY \"\" -1 -1 -1 -1 %s))\n' % style
         elif code_obj.base == "wxDialog":
-            stmt = '%%(tab)s(setf (slot-top-window obj) (wxDialog_create ' \
-                   'nil wxID_ANY \"\" -1 -1 -1 -1 %s))\n' % style
+            stmt = '%%(tab)s(setf (slot-top-window obj) (wxDialog_create nil wxID_ANY \"\" -1 -1 -1 -1 %s))\n' % style
             self.dependencies['(use-package :wxButton)'] = 1
         else:
             stmt = ''
@@ -602,32 +546,23 @@ class LispCodeWriter(BaseLangCodeWriter, wcodegen.LispMixin):
         return stmt
 
     def _get_class_filename(self, klass):
-        filename = os.path.join(
-            self.out_dir,
-            klass.replace('.', '_') + '.lisp'
-            )
+        filename = os.path.join( self.out_dir, klass.replace('.', '_') + '.lisp' )
         return filename
 
     def format_generic_access(self, obj):
         if obj.is_toplevel:
             return '(slot-top-window obj)'
         else:
+            obj_name = self._format_name(obj.name)
             if self.store_as_attr(obj):
-                return '(slot-%s obj)' % obj.name
+                return '(slot-%s obj)' % obj_name
             else:
-                return obj.name
+                return obj_name
 
     def _format_name(self, name):
         return name.replace('_', '-')
 
-# end of class LispCodeWriter
 
-writer = LispCodeWriter()
-"""\
-The code writer is an instance of L{LispCodeWriter}.
-"""
+writer = LispCodeWriter()  # The code writer is an instance of L{LispCodeWriter}.
 
-language = writer.language
-"""\
-Language generated by this code generator
-"""
+language = writer.language  # Language generated by this code generator

@@ -36,10 +36,6 @@ class EditButton(ManagedBase, EditStylesMixin):
         self.default   = np.CheckBoxProperty(False, default_value=False)
         self.stockitem = np.ComboBoxPropertyD(self.STOCKITEMS[0], choices=self.STOCKITEMS)
 
-        if config.preferences.default_border:
-            self.border.set( config.preferences.default_border_size )
-            self.flag.set( wx.ALL )
-
     def create_widget(self):
         stockitem_p = self.properties["stockitem"]
         if stockitem_p.is_active():
@@ -60,7 +56,7 @@ class EditButton(ManagedBase, EditStylesMixin):
                 self.properties["label"].set_blocked(True)
                 new_id = "wxID_" + self.stockitem
                 self.properties["id"].set( new_id, deactivate=True )
-                self.properties["id"].default_value = new_id  # avoid this value to be written to XML
+                #self.properties["id"].default_value = new_id  # avoid this value to be written to XML
 
                 l = ButtonStockItems.stock_ids[self.stockitem]
                 if self.widget:
@@ -68,7 +64,7 @@ class EditButton(ManagedBase, EditStylesMixin):
                     resize = True
             else:
                 self.properties["label"].set_blocked(False)
-                self.properties["id"].default_value = "wxID_ANY"
+                #self.properties["id"].default_value = "wxID_ANY"
                 label_modified = True
 
         if label_modified and self.properties["label"].is_active():
@@ -93,6 +89,8 @@ def builder(parent, sizer, pos, number=[1]):
         number[0] += 1
         name = u'button_%d' % number[0]
     button = EditButton(name, parent, wx.NewId(), name, sizer, pos)
+    button.properties["style"].set_to_default()
+    button.check_defaults()
     node = Node(button)
     button.node = node
     if parent.widget: button.create()

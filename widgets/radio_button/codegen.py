@@ -15,22 +15,17 @@ class PythonRadioButtonGenerator(wcodegen.PythonWidgetCodeWriter):
 
     def _prepare_tmpl_content(self, obj):
         wcodegen.PythonWidgetCodeWriter._prepare_tmpl_content(self, obj)
-        self.has_setvalue1 = obj.properties.get('clicked', False)
+        self.has_setvalue1 = bool(obj.clicked)
         return
-
-# end of class PythonRadioButtonGenerator
 
 
 class CppRadioButtonGenerator(wcodegen.CppWidgetCodeWriter):
-    tmpl = '%(name)s = new %(klass)s(%(parent)s, %(id)s, ' \
-           '%(label)s%(style)s);\n'
+    tmpl = '%(name)s = new %(klass)s(%(parent)s, %(id)s, %(label)s%(style)s);\n'
 
     def _prepare_tmpl_content(self, obj):
         wcodegen.CppWidgetCodeWriter._prepare_tmpl_content(self, obj)
-        self.has_setvalue1 = obj.properties.get('clicked', False)
+        self.has_setvalue1 = bool(obj.clicked)
         return
-
-# end of class CppRadioButtonGenerator
 
 
 def xrc_code_generator(obj):

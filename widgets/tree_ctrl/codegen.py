@@ -14,11 +14,9 @@ class PythonTreeCtrlGenerator(wcodegen.PythonWidgetCodeWriter):
     tmpl = '%(name)s = %(klass)s(%(parent)s, %(id)s%(style)s)\n'
 
 
-
 class CppTreeCtrlGenerator(wcodegen.CppWidgetCodeWriter):
     import_modules = ['<wx/treectrl.h>']
     tmpl = '%(name)s = new %(klass)s(%(parent)s, %(id)s%(style)s);\n'
-
 
 
 def initialize():

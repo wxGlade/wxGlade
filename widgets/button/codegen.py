@@ -17,39 +17,34 @@ class PythonButtonGenerator(wcodegen.PythonWidgetCodeWriter):
     def _prepare_tmpl_content(self, obj):
         wcodegen.PythonWidgetCodeWriter._prepare_tmpl_content(self, obj)
 
-        prop = obj.properties
-        stockitem = prop.get('stockitem', None)
+        stockitem = obj.stockitem
         if stockitem:
             self.tmpl_dict['id_number'] = self.codegen.cn("wxID_" + stockitem)
             self.tmpl_dict['id'] = self.tmpl_dict['id_number']
             self.tmpl_dict['label'] = self.codegen.quote_str('')
 
-        self.has_setdefault = int(prop.get('default', 0))
+        self.has_setdefault = obj.default
 
         return
 
-# end of class PythonButtonGenerator
 
 
 class CppButtonGenerator(wcodegen.CppWidgetCodeWriter):
-    tmpl = '%(name)s = new %(klass)s(%(parent)s, %(id)s, ' \
-           '%(label)s%(style)s);\n'
+    tmpl = '%(name)s = new %(klass)s(%(parent)s, %(id)s, %(label)s%(style)s);\n'
 
     def _prepare_tmpl_content(self, obj):
         wcodegen.CppWidgetCodeWriter._prepare_tmpl_content(self, obj)
 
-        prop = obj.properties
-        stockitem = prop.get('stockitem', None)
+        stockitem = obj.stockitem
         if stockitem:
             self.tmpl_dict['label'] = self.codegen.quote_str('')
             self.tmpl_dict['id_number'] = self.codegen.cn("wxID_" + stockitem)
             self.tmpl_dict['id'] = self.tmpl_dict['id_number']
 
-        self.has_setdefault = int(prop.get('default', 0))
+        self.has_setdefault = obj.default
 
         return
 
-# end of class CppButtonGenerator
 
 
 def xrc_code_generator(obj):
@@ -57,17 +52,14 @@ def xrc_code_generator(obj):
 
     class ButtonXrcObject(xrcgen.DefaultXrcObject):
         def write(self, out_file, ntabs):
-            stockitem = self.properties.get('stockitem', 'None')
+            stockitem = obj.stockitem or 'None'
+            properties = {}
             if stockitem != 'None':
-                self.name = 'wxID_' + stockitem
-                del self.properties['stockitem']
-                try:
-                    del self.properties['label']
-                except KeyError:
-                    pass
-            xrcgen.DefaultXrcObject.write(self, out_file, ntabs)
+                properties["name"] = 'wxID_' + stockitem
+                properties["stockitem"] = properties['label'] = None  # don't write
+            xrcgen.DefaultXrcObject.write(self, out_file, ntabs, properties)
 
-        def write_property(self, name, val, outfile, tabs):
+        def write_property(self, name, val, output, tabs):
             if name == 'label':
                 # translate & into _ as accelerator marker
                 val2 = val.replace('&', '_')
@@ -79,8 +71,7 @@ def xrc_code_generator(obj):
                         val = val2[:index] + '&&' + val2[index+2:]
                 else:
                     val = val2
-            xrcgen.DefaultXrcObject.write_property(self, name, val,
-                                                   outfile, tabs)
+            xrcgen.DefaultXrcObject.write_property(self, name, val, output, tabs)
     # end of class ButtonXrcObject
 
     return ButtonXrcObject(obj)

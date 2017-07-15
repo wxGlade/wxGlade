@@ -75,7 +75,7 @@ void CPPOgg2_MyDialog::do_layout()
     grid_sizer_1->Add(button_3, 0, wxALL, 5);
     notebook_1_pane_1->SetSizer(grid_sizer_1);
     grid_sizer_1->AddGrowableCol(1);
-    sizer_4->Add(radio_box_1, 1, wxALL|wxEXPAND|wxSHAPED, 5);
+    sizer_4->Add(radio_box_1, 0, wxALL|wxEXPAND|wxSHAPED, 5);
     notebook_1_pane_2->SetSizer(sizer_4);
     sizer_3->Add(text_ctrl_2, 1, wxALL|wxEXPAND, 5);
     notebook_1_pane_3->SetSizer(sizer_3);

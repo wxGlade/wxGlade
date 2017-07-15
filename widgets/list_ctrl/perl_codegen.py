@@ -15,7 +15,6 @@ class PerlListCtrlGenerator(wcodegen.PerlWidgetCodeWriter):
     tmpl = '%(name)s = %(klass)s->new(%(parent)s, %(id)s%(style)s);\n'
 
 
-
 def initialize():
     klass = 'wxListCtrl'
     common.class_names['EditListCtrl'] = klass

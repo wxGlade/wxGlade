@@ -42,10 +42,6 @@ class EditChoice(ManagedBase):
         self.selection = np.SpinProperty(0, val_range=len(choices)-1, immediate=True )
         self.choices = ChoicesProperty( choices, [(_('Label'), np.GridProperty.STRING)] )
 
-        if config.preferences.default_border:
-            self.border.set( config.preferences.default_border_size )
-            self.flag.set( wx.ALL )
-
     def create_widget(self):
         choices = [c[0] for c in self.choices]
         self.widget = wxChoice2(self.parent.widget, self.id, choices=choices)
@@ -92,6 +88,7 @@ def builder(parent, sizer, pos, number=[1]):
         number[0] += 1
         name = 'choice_%d' % number[0]
     choice = EditChoice(name, parent, wx.NewId(), [(u'choice 1',)], sizer, pos)
+    choice.check_defaults()
     node = Node(choice)
     #sizer.set_item(pos, size=choice.GetBestSize())
     choice.node = node

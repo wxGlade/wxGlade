@@ -26,11 +26,7 @@ class EditSpinCtrl(ManagedBase, EditStylesMixin):
 
         # initialise instance properties
         self.range = np.IntRangePropertyA( "0, 100" )
-        self.value = np.SpinPropertyA(0, val_range=(0,100), immediate=True)
-
-        if config.preferences.default_border:
-            self.border.set( config.preferences.default_border_size )
-            self.flag.set( wx.ALL )
+        self.value = np.SpinPropertyA(0, val_range=(0,100), immediate=True, default_value="")
 
     def create_widget(self):
         mi,ma = self.properties["range"].get_tuple()
@@ -70,10 +66,12 @@ def builder(parent, sizer, pos, number=[1]):
     while common.app_tree.has_name(name):
         number[0] += 1
         name = 'spin_ctrl_%d' % number[0]
-    text = EditSpinCtrl(name, parent, wx.NewId(), sizer, pos)
-    node = Node(text)
-    text.node = node
-    if parent.widget: text.create()
+    spin = EditSpinCtrl(name, parent, wx.NewId(), sizer, pos)
+    spin.properties["style"].set_to_default()
+    spin.check_defaults()
+    node = Node(spin)
+    spin.node = node
+    if parent.widget: spin.create()
     common.app_tree.insert(node, sizer.node, pos-1)
 
 

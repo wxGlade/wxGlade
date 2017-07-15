@@ -15,9 +15,8 @@ class PythonGaugeGenerator(wcodegen.PythonWidgetCodeWriter):
 
     def _prepare_tmpl_content(self, obj):
         wcodegen.PythonWidgetCodeWriter._prepare_tmpl_content(self, obj)
-        self.tmpl_dict['range'] = obj.properties.get('range', '10')
+        self.tmpl_dict['range'] = obj.range
         return
-
 
 
 class CppGaugeGenerator(wcodegen.CppWidgetCodeWriter):
@@ -25,9 +24,20 @@ class CppGaugeGenerator(wcodegen.CppWidgetCodeWriter):
 
     def _prepare_tmpl_content(self, obj):
         wcodegen.CppWidgetCodeWriter._prepare_tmpl_content(self, obj)
-        self.tmpl_dict['range'] = obj.properties.get('range', '10')
+        self.tmpl_dict['range'] = obj.range
         return
 
+
+def xrc_code_generator(obj):
+    xrcgen = common.code_writers['XRC']
+
+    class XrcCodeGenerator(xrcgen.DefaultXrcObject):
+        def write(self, out_file, ntabs):
+            style = self.widget.properties["style"].get_string_value()
+            properties = {"style":style}
+            xrcgen.DefaultXrcObject.write(self, out_file, ntabs, properties)
+
+    return XrcCodeGenerator(obj)
 
 
 def initialize():
@@ -35,3 +45,4 @@ def initialize():
     common.class_names['EditGauge'] = klass
     common.register('python', klass, PythonGaugeGenerator(klass))
     common.register('C++', klass, CppGaugeGenerator(klass))
+    common.register('XRC',    klass, xrc_code_generator)

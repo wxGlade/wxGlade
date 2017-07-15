@@ -11,7 +11,6 @@ import common
 import wcodegen
 from .tool import *
 
-from .codegen import ToolsHandler
 
 
 class PerlCodeGenerator(wcodegen.PerlWidgetCodeWriter):
@@ -23,74 +22,60 @@ class PerlCodeGenerator(wcodegen.PerlWidgetCodeWriter):
 
         obj_name = self.format_widget_access(obj)
 
-        bitmapsize = prop.get('bitmapsize')
-        if bitmapsize:
-            try:
-                w, h = [int(i) for i in bitmapsize.split(',')]
-                append('%s->SetToolBitmapSize(wxSIZE(%s, %s));\n' % \
-                       (obj_name, w, h))
-            except:
-                pass
+        if obj.properties["bitmapsize"].is_active():
+            w, h = obj.properties["bitmapsize"].get_tuple()
+            append( '%s->SetToolBitmapSize(wxSIZE(%s, %s));\n' % (obj_name, w, h) )
 
-        margins = prop.get('margins')
-        if margins:
-            try:
-                w, h = [int(i) for i in margins.split(',')]
-                append('%s->SetMargins(%s, %s);\n' % (obj_name, w, h))
-            except:
-                pass
+        if obj.properties["margins"].is_active():
+            w, h = obj.properties["margins"].get_tuple()
+            append( '%s->SetMargins(%s, %s);\n' % (obj_name, w, h) )
 
-        packing = prop.get('packing')
-        if packing:
-            append('%s->SetToolPacking(%s);\n' % (obj_name, packing))
+        if obj.properties["packing"].is_active():
+            append( '%s->SetToolPacking(%s);\n' % (obj_name, obj.packing) )
 
-        separation = prop.get('separation')
-        if separation:
-            append('%s->SetToolSeparation(%s);\n' % (obj_name, separation))
-        append('%s->Realize();\n' % obj_name)
+        if obj.properties["separation"].is_active():
+            append( '%s->SetToolSeparation(%s);\n' % (obj_name, obj.separation) )
+        append( '%s->Realize();\n' % obj_name )
 
         return out
 
     def get_init_code(self, obj):
         out = []
         append = out.append
-        tools = obj.properties['toolbar']
         ids = []
 
         obj_name = self.codegen.format_generic_access(obj)
 
-        for tool in tools:
+        for tool in obj.tools:
             if tool.id == '---':  # item is a separator
-                append('%s->AddSeparator();\n' % obj_name)
+                append( '%s->AddSeparator();\n' % obj_name )
             else:
                 name, val = self.codegen.generate_code_id(None, tool.id)
                 if not name and (not val or val == '-1'):
                     wid = 'Wx::NewId()'
                 else:
                     if name:
-                        ids.append(name)
+                        ids.append( name )
                     wid = val
                 kinds = ['wxITEM_NORMAL', 'wxITEM_CHECK', 'wxITEM_RADIO']
                 try:
                     kind = kinds[int(tool.type)]
                 except (IndexError, ValueError):
                     kind = 'wxITEM_NORMAL'
-                bmp1 = self.generate_code_bitmap(tool.bitmap1, obj.preview)
-                bmp2 = self.generate_code_bitmap(tool.bitmap2, obj.preview)
-                append('%s->AddTool(%s, %s, %s, %s, %s, %s, %s);\n' %
-                       (obj_name, wid, self.codegen.quote_str(tool.label),
-                        bmp1, bmp2, kind,
-                        self.codegen.quote_str(tool.short_help),
-                        self.codegen.quote_str(tool.long_help)))
+                bmp1 = self.generate_code_bitmap(tool.bitmap1)
+                bmp2 = self.generate_code_bitmap(tool.bitmap2)
+                append( '%s->AddTool(%s, %s, %s, %s, %s, %s, %s);\n' %
+                        (obj_name, wid, self.codegen.quote_str(tool.label),
+                         bmp1, bmp2, kind,
+                         self.codegen.quote_str(tool.short_help),
+                         self.codegen.quote_str(tool.long_help)) )
 
         return ids + out
 
     def get_code(self, obj):
-        """\
-        function that generates Perl code for the toolbar of a wxFrame.
-        """
+        "function that generates Perl code for the toolbar of a wxFrame"
         init = []
-        style = obj.properties.get('style')
+        style = obj.properties['style'].get_string_value()
         if style:
             style = 'wxTB_HORIZONTAL|' + style
             extra = ', wxDefaultPosition, wxDefaultSize, %s' % style
@@ -103,21 +88,17 @@ class PerlCodeGenerator(wcodegen.PerlWidgetCodeWriter):
         else:
             klass = self.cn(klass)
 
-        init.append('\n')
-        init.append('# Tool Bar\n')
-        init.append('$self->{%s} = %s->new($self, -1%s);\n' % (obj.name,
-                                                               klass, extra))
-        init.append('$self->SetToolBar($self->{%s});\n' % obj.name)
-        init.extend(self.get_init_code(obj))
-        init.append('# Tool Bar end\n')
+        init.append( '\n')
+        init.append( '# Tool Bar\n')
+        init.append( '$self->{%s} = %s->new($self, -1%s);\n' % (obj.name, klass, extra) )
+        init.append( '$self->SetToolBar($self->{%s});\n' % obj.name )
+        init.extend( self.get_init_code(obj) )
+        init.append( '# Tool Bar end\n' )
         return init, self.get_properties_code(obj), []
-
-# end of class PerlCodeGenerator
 
 
 def initialize():
     klass = 'wxToolBar'
     common.class_names['EditToolBar'] = klass
     common.toplevels['EditToolBar'] = 1
-    common.register('perl', klass, PerlCodeGenerator(klass),
-                    'tools', ToolsHandler)
+    common.register('perl', klass, PerlCodeGenerator(klass), 'tools')#, ToolsHandler)

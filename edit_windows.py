@@ -11,7 +11,6 @@ import logging, re
 import wx
 
 import new_properties as np
-import code_property as cp
 import misc, common, compat, config, clipboard
 import decorators
 from wcodegen.taghandler import BaseXmlBuilderTagHandler
@@ -46,6 +45,30 @@ class FontHandler(BaseXmlBuilderTagHandler):
             self.props[self.index] = char_data
 
 
+class ExtraPropertiesPropertyHandler(BaseXmlBuilderTagHandler):
+    strip_char_data = True
+
+    def __init__(self, owner):
+        super(ExtraPropertiesPropertyHandler, self).__init__()
+        self.owner = owner
+        self.props = []
+        self.prop_name = None
+
+    def start_elem(self, name, attrs):
+        super(ExtraPropertiesPropertyHandler, self).__init__()
+        if name == 'property':
+            self.prop_name = attrs['name']
+
+    def end_elem(self, name):
+        if name == 'property':
+            if self.prop_name and self._content:
+                self.props.append( [self.prop_name, ''.join(self._content)] )
+            self.prop_name = None
+            self._content = []
+        elif name == 'extraproperties':
+            self.owner.properties['extraproperties'].load(self.props)
+            return True  # to remove this handler
+
 
 class EditBase(EventsMixin, np.PropertyOwner):
     """Base class of every window available in the builder.
@@ -72,6 +95,7 @@ class EditBase(EventsMixin, np.PropertyOwner):
                                       "constructor will be used. You should probably not use this if \n"
                                       "overwrite existing sources is not set.") }
     _PROPERTY_LABELS = {"custom_base":'Base class(es)'}
+    is_sizer = False
 
     def __init__(self, name, klass, parent, id, custom_class=True):
         np.PropertyOwner.__init__(self)
@@ -84,6 +108,7 @@ class EditBase(EventsMixin, np.PropertyOwner):
 
         # initialise instance properties
         self.name  = name_p  = np.NameProperty(name)
+        self.classname = klass
         self.klass = klass_p = np.TextProperty(klass, name="class") # Name of the object's class: read/write or read only
         if not custom_class: klass_p.readonly = True
         # validation for class
@@ -95,12 +120,12 @@ class EditBase(EventsMixin, np.PropertyOwner):
         self.custom_class = custom_class
 
         if getattr(self, '_custom_base_classes', False):
-            self.custom_base = np.TextPropertyD("", multiline=False)
+            self.custom_base = np.TextPropertyD("", multiline=False, default_value=None)
         else:
             self.custom_base = None
 
-        self.extracode       = cp.CodePropertyD()           # code property
-        self.extraproperties = cp.ExtraPropertiesProperty()
+        self.extracode       = np.CodePropertyD()
+        self.extraproperties = np.ExtraPropertiesProperty()
 
         self.widget = None  # this is the reference to the actual wxWindow widget, created when required
         self._dont_destroy = False
@@ -130,6 +155,8 @@ class EditBase(EventsMixin, np.PropertyOwner):
         # ...finally, destroy our widget (if needed)
         if self.widget and not self._dont_destroy:
             if hasattr(self.widget, "DestroyLater"):
+                if compat.IS_PHOENIX and getattr(self, "sizer", None) and not self.sizer.is_virtual():
+                    self.sizer.widget.Detach(self.widget)  # remove from sizer without destroying
                 self.widget.DestroyLater()
             else:
                 self.widget.Destroy()
@@ -322,7 +349,7 @@ class WindowBase(EditBase):
     def __init__(self, name, klass, parent, id):
         EditBase.__init__(self, name, klass, parent, id)
 
-        self.window_id = np.TextPropertyD( "wxID_ANY", name="id" )
+        self.window_id = np.TextPropertyD( "wxID_ANY", name="id", default_value=None )
         self.size      = np.SizePropertyD( "-1, -1", default_value="-1, -1" )
 
         # background, foreground, font properties
@@ -357,8 +384,7 @@ class WindowBase(EditBase):
  
         size_p = self.properties['size']
         if size_p.is_active():
-            #self.widget.SetSize([int(s) for s in size.split(',')])
-            self.set_size(size_p.get())
+            self.set_size()
         else:
             # this is a dirty hack: in previous versions <=0.7.2 self.set_size is practically always called
             # set_size then calls self.sizer.set_item(item, pos)
@@ -450,51 +476,29 @@ class WindowBase(EditBase):
             if size != old_size:
                 self.sizer.set_item(self.pos, size=size)
 
-    def set_width(self, value):
-        self.set_size((int(value), -1))
-
-    def set_height(self, value):
-        self.set_size((-1, int(value)))
-
-    def set_size(self, value):
-        #if not self.widget: return
-        if self.properties['size'].is_active():
-            v = self.properties['size'].get_value().strip()
-            use_dialog_units = v and v[-1] == 'd'
-        else:
-            use_dialog_units = config.preferences.use_dialog_units  # False
-        try: "" + value
-        except TypeError: pass
-        else:  # value is a string-like object
-            if value and value.strip()[-1] == 'd':
-                use_dialog_units = True
-                value = value[:-1]
+    def set_size(self):
+        if not self.widget: return
+        size_p = self.properties["size"]
+        if not size_p.is_active(): return
+        size = size_p.get_size(self.widget)
+        self.widget.SetSize(size)
         try:
-            size = [int(t.strip()) for t in value.split(',', 1)]
-        except:
-            self.properties['size'].set(self.size)
-        else:
-            if use_dialog_units and value[-1] != 'd': value += 'd'
-            self.properties['size'].set(value)
-            if self.widget:
-                if use_dialog_units: size = wx.DLG_SZE(self.widget, size)
-                self.widget.SetSize(size)
-                try:
-                    self.sizer.set_item(self.pos, size=size)
-                except AttributeError:
-                    pass
+            self.sizer.set_item(self.pos, size=size)
+        except AttributeError:
+            pass
 
     def get_property_handler(self, name):
         if name == 'font':
             return FontHandler(self)
         elif name == 'extraproperties':
-            import code_property
-            return code_property.ExtraPropertiesPropertyHandler(self)
+            return ExtraPropertiesPropertyHandler(self)
         return EditBase.get_property_handler(self, name)
 
     def properties_changed(self, modified=None):
         # XXX check whether actions are required
         refresh = False
+        if modified and "size" in modified and self.widget:
+            self.set_size()
         if not modified or "background" in modified and self.widget:
             self.widget.SetBackgroundColour(self.properties["background"].get_color())
             refresh = True
@@ -548,6 +552,14 @@ class ManagedBase(WindowBase):
         self.sizer = sizer
         sizer.add_item(self, pos)
 
+    def check_defaults(self):
+        # apply default border if set in preferences; called explicitely from the interactive builder functions
+        if not config.preferences.default_border or self.border==config.preferences.default_border_size: return
+        self.properties["border"].set( config.preferences.default_border_size )
+        flag_p = self.properties["flag"]
+        if not flag_p.value_set.intersection(flag_p.FLAG_DESCRIPTION["Border"]):
+            flag_p.add("wxALL", notify=False)
+
     def finish_widget_creation(self, sel_marker_parent=None):
         if sel_marker_parent is None: sel_marker_parent = self.parent.widget
         self.sel_marker = misc.SelectionMarker(self.widget, sel_marker_parent)
@@ -568,10 +580,10 @@ class ManagedBase(WindowBase):
         if not self.widget: return
         old = self.size
         WindowBase.on_size(self, event)
-        size_prop = self.properties['size']
-        if size_prop.is_active():
+        size_p = self.properties['size']
+        if size_p.is_active():
             if self.proportion!=0 or (self.flag & wx.EXPAND):
-                size_prop.set(old)
+                size_p.set(old)
         if self.sel_marker: self.sel_marker.update()
 
     def properties_changed(self, modified):
@@ -594,29 +606,17 @@ class ManagedBase(WindowBase):
         # update the widget by calling self.sizer.set_item (again)
         if not self.widget: return
 
-        #border = self.border
-        #proportion = self.option
-        #flags = self.flag
         # get size from property
         try:
-            size_prop = self.properties['size']
-            if size_prop.is_active(): # or use get_value, which will now return the default value if disabled
-                size = self.size
-                if size[-1] == 'd':
-                    size = size[:-1]
-                    use_dialog_units = True
-                else:
-                    use_dialog_units = False
-                size = [int(v) for v in size.split(',')]
-                if use_dialog_units:
-                    size = wx.DLG_SZE(self.widget, size)
+            size_p = self.properties['size']
+            if size_p.is_active(): # or use get_value, which will now return the default value if disabled
+                size = size_p.get_size(self.widget)
             else:
                 if not (self.flag & wx.EXPAND):
                     size = self.widget.GetBestSize()
                 else:
                     size = (-1,-1) # would None or wx.DefaultSize be better`?`
 
-            #self.sizer.set_item(self.pos, border=self.border, option=self.option, flag=self.flag, size=size)
             self.sizer.item_layout_property_changed(self.pos, size=size)
         except AttributeError:
             self._logger.exception(_('Internal Error'))

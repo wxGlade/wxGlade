@@ -20,8 +20,8 @@ class LispSplitterWindowGenerator(wcodegen.LispWidgetCodeWriter):
         layout_buf = []
         props_buf = self.codegen.generate_common_properties(window)
 
-        prop = window.properties
         id_name, id = self.codegen.generate_code_id(window)
+        window_name = self.codegen._format_name(window.name)
         parent = self.format_widget_access(window.parent)
 
         if window.is_toplevel:
@@ -29,59 +29,54 @@ class LispSplitterWindowGenerator(wcodegen.LispWidgetCodeWriter):
             if id_name:
                 l.append(id_name)
 
-            l.append('(setf (slot-%s obj) (wxSplitterWindow_Create %s %s))\n' %
-                     (window.name, parent, id))
+            l.append( '(setf (slot-%s obj) (wxSplitterWindow_Create %s %s))\n' % (window_name, parent, id) )
             return l, [], []
 
         if id_name:
             init.append(id_name)
 
         init.append('(setf (slot-%s obj) (wxSplitterWindow_Create %s %s -1 -1 -1 -1 %s))\n'
-                    % (window.name, parent, id, self.tmpl_dict['style']))
+                    % (window_name, parent, id, self.tmpl_dict['style']))
 
-        win_1 = prop.get('window_1')
-        win_2 = prop.get('window_2')
-        orientation = prop.get('orientation', 'wxSPLIT_VERTICAL')
+        win_1 = window.window_1
+        win_2 = window.window_2
+        orientation = window.properties['orientation'].get_string_value()
 
         if win_1 and win_2:
-            sash_pos = prop.get('sash_pos', '')
+            sash_pos = window.sash_pos
+            if sash_pos!="": sash_pos = ', %s' % sash_pos
+
 
             if orientation == 'wxSPLIT_VERTICAL':
                 f_name = 'SplitVertically'
             else:
                 f_name = 'SplitHorizontally'
 
-            layout_buf.append('(%s %s %s %s %s)\n' %
-                              (f_name, window.name, win_1, win_2, sash_pos))
+            layout_buf.append( '(%s %s %s %s %s)\n' % (f_name, window_name, win_1, win_2, sash_pos) )
         else:
             def add_sub(win):
-                layout_buf.append('(wxSplitterWindow_SetSplitMode (slot-%s obj) %s)\n'
-                                  % (window.name, orientation))
-                layout_buf.append('(wxSplitterWindow_Initialize (slot-%s obj) %s)\n'
-                                  % (window.name, win))
+                layout_buf.append( '(wxSplitterWindow_SetSplitMode (slot-%s obj) %s)\n' % (window_name, orientation) )
+                layout_buf.append( '(wxSplitterWindow_Initialize (slot-%s obj) %s)\n' % (window_name, win) )
             if win_1:
                 add_sub(win_1)
             elif win_2:
                 add_sub(win_2)
 
-        min_pane_size = prop.get('min_pane_size')
-        if min_pane_size:
-            props_buf.append('wxSplitterWindow_SetMinimumPaneSize '
-                             '(slot-%s obj) %s)\n' % (window.name,
-                                                      min_pane_size))
+        if window.min_pane_size:
+            props_buf.append( 'wxSplitterWindow_SetMinimumPaneSize (slot-%s obj) %s)\n' % (window_name, window.min_pane_size) )
 
         return init, props_buf, layout_buf
 
     def get_layout_code(self, obj):
         props_buf = []
-        prop = obj.properties
-        orientation = prop.get('orientation', 'wxSPLIT_VERTICAL')
 
-        win_1 = prop.get('window_1')
-        win_2 = prop.get('window_2')
+        win_1 = window.window_1
+        win_2 = window.window_2
+        orientation = window.properties['orientation'].get_string_value()
 
         if win_1 and win_2:
-            sash_pos = prop.get('sash_pos', '')
+            sash_pos = window.sash_pos
+            if sash_pos!="": sash_pos = ', %s' % sash_pos
 
             if orientation == 'wxSPLIT_VERTICAL':
                 f_name = 'SplitVertically'
@@ -91,19 +86,16 @@ class LispSplitterWindowGenerator(wcodegen.LispWidgetCodeWriter):
             props_buf.append('$self->%s($self->{%s}, $self->{%s}, %s);\n' %
                              (f_name, win_1, win_2, sash_pos))
         else:
+            obj_name = self.codegen._format_name(obj.name)
             def add_sub(win):
-                props_buf.append('(wxSplitterWindow_SetSplitMode (slot-%s obj) %s)\n' %
-                                 (obj.name,orientation))
-                props_buf.append('(wxSplitterWindow_Initialize (slot-%s obj) %s)\n' %
-                                 (obj.name,win))
+                props_buf.append( '(wxSplitterWindow_SetSplitMode (slot-%s obj) %s)\n' % (obj_name,orientation) )
+                props_buf.append( '(wxSplitterWindow_Initialize (slot-%s obj) %s)\n' % (obj_name,win) )
             if win_1:
                 add_sub(win_1)
             elif win_2:
                 add_sub(win_2)
 
         return props_buf
-
-# end of class LispSplitterWindowGenerator
 
 
 def initialize():

@@ -10,8 +10,7 @@ import wx
 import wx.grid
 import re
 
-import common
-import config
+import common, config
 from wcodegen.taghandler import BaseXmlBuilderTagHandler
 import new_properties as np
 
@@ -41,15 +40,14 @@ class NewEventsProperty(np.GridProperty):
             row[1] = values_dict.get(row[0], "")
         self.update_display()
 
-    def write(self, outfile, tabs):
-        inner_xml = u''
+    def write(self, output, tabs):
+        inner_xml = []
         for event, handler in self.get():
             handler = handler.strip()
             if handler:
                 inner_xml += common.format_xml_tag('handler', handler, tabs+1, event=event)
         if inner_xml:
-            stmt = common.format_xml_tag(u'events', inner_xml, tabs, is_xml=True)
-            outfile.write(stmt)
+            output.extend( common.format_xml_tag(u'events', inner_xml, tabs, is_xml=True) )
 
 
 

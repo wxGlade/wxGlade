@@ -46,6 +46,9 @@ adding_window = None  # the tree or the design window; used for centering dialog
 refs = {}
 
 
+########################################################################################################################
+# application initialization
+
 code_writers = {}
 """Dictionary of language name -> BaseLangCodeWriter objects used to generate the code in a given language.
 
@@ -63,10 +66,8 @@ code_writers = {}
 """
 
 
-
 def init_codegen():
-    """\
-    Load available code generators, built-in and user widgets as well as sizers
+    """Load available code generators, built-in and user widgets as well as sizers
 
     @return: In GUI-Mode: a dict with module sections as key and assigned list of wxBitmapButtons, the dict is empty
              in batch mode.
@@ -75,8 +76,7 @@ def init_codegen():
     @see: L{load_config()}
     @see: L{load_code_writers()}
     @see: L{load_widgets()}
-    @see: L{load_sizers()}
-    """
+    @see: L{load_sizers()}"""
     # process generic related style attributes
     style_attrs_to_sets(config.widget_config['generic_styles'])
     load_config()
@@ -134,12 +134,8 @@ def load_config():
 
 
 def load_sizers():
-    """\
-    Load and initialise the sizer support modules.
-
-    @return: The initialise sizers like described in L{edit_sizers.edit_sizers.init_all}
-    @rtype: dict
-    """
+    """Load and initialise the sizer support modules into ordered dict instance.
+    See edit_sizers.edit_sizers.init_all."""
     logging.info('Load sizer generators:')
     for lang in code_writers.keys():
         module_name = 'edit_sizers.%s_sizers_codegen' % code_writers[lang].lang_prefix
@@ -168,15 +164,13 @@ def load_sizers():
 
 
 def load_widgets():
-    """\
-    Load built-in and user widgets.
+    """Load built-in and user widgets.
 
     Scans the built-in and user widget directories to find the installed widgets and loads it.
 
     @rtype: OrderedDict
 
-    @see: L{plugins.load_widgets_from_dir()} for more details e.g. the structure of the dictionary.
-    """
+    @see: L{plugins.load_widgets_from_dir()} for more details e.g. the structure of the dictionary."""
     # load the "built-in" and "user" widgets
     core_buttons  = plugins.load_widgets_from_dir(config.widgets_path, default_section=_('Core widgets'))
     local_buttons = plugins.load_widgets_from_dir(config.preferences.local_widget_path,
@@ -203,6 +197,9 @@ def load_widgets():
     return all_widgets
 
 
+########################################################################################################################
+# user interaction
+
 def add_object(event):
     "Adds a widget or a sizer to the current app"
     global adding_widget, adding_sizer, widget_to_add
@@ -220,27 +217,23 @@ def add_toplevel_object(event):
     widgets[refs[event.GetId()]](None, None, 0)
     app_tree.app.saved = False
 
+########################################################################################################################
+# application GUI initialization
+
 
 def make_object_button(widget, icon_path, toplevel=False, tip=None):
-    """\
-    Creates a button for the widgets toolbar.
+    """Creates a button for the widgets toolbar.
 
-    Function used by the various widget modules to add a button to the
-    widgets toolbar.
+    Function used by the various widget modules to add a button to the widgets toolbar.
 
     Icons with a relative path will be loaded from config.icon_path.
 
-    @param widget: (name of) the widget the button will add to the app
-    @type widget:   str | Unicode
-    @param icon_path: Path to the icon_path used for the button
-    @type icon_path:  str | Unicode
-    @param toplevel: True if the widget is a toplevel object (frame, dialog)
-    @type toplevel:  bool
-    @param tip: Tool tip to display
-    @type tip:  str | Unicode
+    widget: (name of) the widget the button will add to the app
+    icon_path: Path to the icon_path used for the button
+    toplevel: True if the widget is a toplevel object (frame, dialog)
+    tip: Tool tip to display
 
-    @return: The newly created wxBitmapButton
-    """
+    return: The newly created wxBitmapButton instance"""
     import wx
     import misc
     from tree import WidgetTree
@@ -267,7 +260,6 @@ def make_object_button(widget, icon_path, toplevel=False, tip=None):
     # add support for ESC key. We bind the handler to the button, because
     # (at least on GTK) EVT_CHAR are not generated for wxFrame objects...
     def on_char(event):
-        #logging.debug('on_char')
         if event.HasModifiers() or event.GetKeyCode() != wx.WXK_ESCAPE:
             event.Skip()
             return
@@ -299,21 +291,17 @@ def encode_to_unicode(item, encoding=None):
     return item
 
 
-def register(lang, klass_name, code_writer, property_name=None,
-             property_handler=None, widget_name=None):
-    """\
-    Initialise and register widget code generator instance. The property handler will registered additionally.
+def register(lang, klass_name, code_writer, property_name=None, property_handler=None, widget_name=None):
+    """Initialise and register widget code generator instance. The property handler will registered additionally.
 
-    @param lang:             Code code_writer language
-    @param klass_name:       wxWidget class name
-    @param code_writer:      Code generator class
-    @param property_name:    Property name
-    @param property_handler: Property handler
-    @param widget_name:      Widget name
+    lang:             Code code_writer language
+    klass_name:       wxWidget class name
+    code_writer:      Code generator class
+    property_name:    Property name
+    property_handler: Property handler
+    widget_name:      Widget name
 
-    @see: L{codegen.BaseLangCodeWriter.add_widget_handler()}
-    @see: L{codegen.BaseLangCodeWriter.add_property_handler()}
-    """
+    see: L{codegen.BaseLangCodeWriter.add_widget_handler(), codegen.BaseLangCodeWriter.add_property_handler()"""
     codegen = code_writers[lang]
     if codegen:
         codegen.add_widget_handler(klass_name, code_writer)
@@ -321,82 +309,63 @@ def register(lang, klass_name, code_writer, property_name=None,
             codegen.add_property_handler(property_name, property_handler, widget_name)
 
 
+########################################################################################################################
+# file utilities
+
 def _smart_checksum(content):
-    """\
-    Generate a "smart" checksum of the given content. The version line
-    "generated by wxGlade" as well as tailing whitespaces will ignored during
-    generation of the checksum.
+    """Generate a "smart" checksum of the given content. The version line "generated by wxGlade" as well as tailing
+    whitespaces will ignored during generation of the checksum. Returns a strings.
 
     The version line will be ignored within the first ten lines only.
 
-    @param content: Content to generate a checksum for
-    @type content:  unicode
+    content: Content to generate a checksum for; list of bytes"""
+    chksum = md5()  # use md5 to be compatible with Python 2.4
 
-    @rtype: str
-    """
-    assert isinstance(content, compat.basestring)
-    content_list = [x.rstrip() for x in content.splitlines()]
-
-    # use md5 to be compatible with Python 2.4
-    chksum = md5()
-
-    for line in content_list[:10]:
-        if b'generated by wxGlade' in line:
-            content_list.remove(line)
-            break
-
-    for line in content_list:
+    for i,line in enumerate(content):
         if isinstance(line, compat.unicode):
             line = line.encode('utf-8')
-        chksum.update(line)
+        if b'generated by wxGlade' in line and i<10: continue
+        chksum.update(line.rstrip())
 
     return chksum.hexdigest()
 
 
+def _read_file(filename):
+    "read file into a list of lines (bytes); line ending is normalized to \n"
+    ret = []
+    with open(filename, "rb") as f:
+        for line in f.readlines():
+            if line.endswith(b"\r\n"): line = line[:-2]+b"\n"
+            yield line
+
+
 def save_file(filename, content, which='wxg'):
-    """\
-    Save I{content} to file named I{filename} and, if user's preferences say
-    so and I{filename} exists, makes a backup copy of it.
+    """Save content to named file and, if user's preferences say so and filename exists, makes a backup copy of it.
 
-    @note: The content of 'wxg' files must be Unicode always!
+    The content of 'wxg' files must be Unicode always!
+    Exceptions that may occur while performing the operations are not handled.
 
-    @note: Exceptions that may occur while performing the operations are not handled.
+    see: config.backed_up
 
-    @see: L{config.backed_up}
-
-    @param filename: Name of the file to create
-    @type filename:  str
-    @param content:  String to store into 'filename'
-    @type content:   str
-    @param which:    Kind of backup: 'wxg' or 'codegen'
-    @type which:     str
-    """
+    filename: Name of the file to create
+    content:  list of strings to store into 'filename'
+    which:    Kind of backup: 'wxg' or 'codegen'"""
     if which == 'wxg':
-        assert isinstance(content, compat.unicode)
-        content = content.encode('utf-8') # encode from unicode to utf-8
+        content = [line.encode('utf-8') for line in content] # encode from unicode to utf-8
         do_backup = config.preferences.wxg_backup
     elif which == 'codegen':
         do_backup = config.preferences.codegen_backup
     else:
         raise NotImplementedError( 'Unknown value "%s" for parameter "which"!' % which )
 
-    # read existing file to check content
-    chksum_oldcontent = None
     if os.path.isfile(filename):
-        oldfile = None
-        try:
-            oldfile = open(filename, "rb")
-            oldcontent = oldfile.read()
-            oldfile.close()
-            chksum_oldcontent = _smart_checksum(oldcontent)
-        finally:
-            if oldfile:
-                oldfile.close()
+        # read existing file to check content
+        chksum_oldcontent = _smart_checksum( _read_file(filename) )
 
-    # nothing changed?
-    chksum_content = _smart_checksum(content)
-    if chksum_oldcontent == chksum_content:
-        return
+        # nothing changed?
+        chksum_content = _smart_checksum(content)
+        if chksum_oldcontent == chksum_content:
+            return
 
     # create the backup file only with the first save
     need_backup = do_backup and filename not in config.backed_up and os.path.isfile(filename)
@@ -416,14 +385,18 @@ def save_file(filename, content, which='wxg'):
             os.makedirs(directory)
 
         outfile = open(filename, 'wb')
-        if sys.platform.startswith("win"):
-            content = content.replace(b"\n", b"\r\n")
-        outfile.write(content)
+        for line in content:
+            if sys.platform.startswith("win"):
+                line.replace(b"\n", b"\r\n")
+            outfile.write(line)
         outfile.close()
     finally:
         if outfile:
             outfile.close()
 
+
+########################################################################################################################
+# files and paths
 
 def get_name_for_autosave(filename=None):
     "Return filename for the automatic backup of named file or current file (app_tree.app.filename)"
@@ -437,6 +410,18 @@ def get_name_for_autosave(filename=None):
     return ret
 
 
+class _Writer(object):
+    # file with a list compatible interface: append and extend
+    def __init__(self, filename):
+        self.outfile = codecs.open(filename, 'w', 'utf-8')
+    def append(self, line):
+        self.outfile.write(line)
+    def extend(self, lines):
+        for line in lines: self.outfile.write(line)
+    def close(self):
+        self.outfile.close()
+
+
 def autosave_current():
     "Save automatic backup copy for the current and un-saved design;  returns 0: error; 1: no changes to save; 2: saved"
     if app_tree.app.saved:
@@ -444,7 +429,7 @@ def autosave_current():
 
     autosave_name = get_name_for_autosave()
     try:
-        outfile = codecs.open(autosave_name, 'w', 'utf-8')
+        outfile = _Writer(autosave_name)
         app_tree.write(outfile)
         outfile.close()
     except EnvironmentError as details:
@@ -509,8 +494,7 @@ def restore_from_autosaved(filename):
 
 def init_paths():
     "Set all wxGlade related paths; the paths will be stored in L{config}."
-    # use directory of the exe in case of frozen packages e.g.
-    # PyInstaller or py2exe
+    # use directory of the exe in case of frozen packages e.g. PyInstaller or py2exe
     if hasattr(sys, 'frozen'):
         wxglade_path = os.path.dirname(sys.argv[0])
     else:
@@ -540,14 +524,9 @@ def init_paths():
 
 
 def _create_appdata_path():
-    """\
-    Create missing application data directory
-
-    otherwise log initialisation will failed with an IOError
-    "No such file or directory".
-
-    The file logger will be initialised after this function returns.
-    """
+    """Create missing application data directory.
+    Otherwise log initialisation will fail with an IOError "No such file or directory".
+    The file logger will be initialised after this function returns."""
     if not os.path.isdir(config.appdata_path):
         try:
             os.makedirs(config.appdata_path, 0o700)
@@ -600,20 +579,19 @@ def _set_home_path():
 
     if home_path == '~':
         home_path = tempfile.gettempdir()
-        logging.info(_('Expansion of the home directory shortcut "~" '
-                       'failed. Use temp directory "%s" instead'), home_path)
+        logging.info( _('Expansion of the home directory shortcut "~" failed. Use temp directory "%s" instead'),
+                      home_path )
 
     if not os.path.isdir(home_path):
         tmp_dir = tempfile.gettempdir()
-        logging.info(_('The home path "%s" is not a directory. Use the '
-                       'temp directory "%s" instead.'), home_path, tmp_dir)
+        logging.info( _('The home path "%s" is not a directory. Use the temp directory "%s" instead.'),
+                      home_path, tmp_dir )
         home_path = tmp_dir
 
     if not os.access(home_path, os.W_OK):
         logging.info(_('The home path "%s" is not writable.'), home_path)
         tmp_dir = tempfile.gettempdir()
-        logging.info(_('The home path "%s" is not writable. Use the '
-                       'temp directory "%s" instead.'), home_path, tmp_dir)
+        logging.info(_('The home path "%s" is not writable. Use the temp directory "%s" instead.'), home_path, tmp_dir)
         home_path = tmp_dir
 
     config.home_path = home_path
@@ -621,16 +599,9 @@ def _set_home_path():
 
 
 def _get_install_method():
-    """\
-    Return a string indicating the installation method.
-
-    There are two different methods:
-      - C{single_directory} - just extract the source into an empty directory
-      - C{filesystem_installation} - install the software below /usr resp.
-        C:/Program Files
-
-    @rtype: str
-    """
+    """Return a string indicating the installation method as string:
+      - 'single_directory' - just extract the source into an empty directory
+      - 'filesystem_installation' - install the software below /usr resp. C:/Program Files"""
     # on Windows or installation in a single directory
     if os.name == 'nt' or os.path.isdir(os.path.join(config.wxglade_path, 'icons')):
         return 'single_directory'
@@ -639,16 +610,9 @@ def _get_install_method():
 
 
 def _get_share_path():
-    """\
-    Return the path of the "share" directory (architecture independent data
-    files).
-
-    That's something like "/usr/share" or "/usr/local/share" on Unix or the
-    installation directory on Windows.
-
-    @rtype: str
-    @see: L{_get_install_method()}
-    """
+    """Return the path of the "share" directory (architecture independent data files).
+    That's something like "/usr/share" or "/usr/local/share" on Unix or the installation directory on Windows.
+    see: _get_install_method()"""
 
     # all in a single directory (extract and run)
     if _get_install_method() == 'single_directory':
@@ -680,15 +644,7 @@ def _get_share_path():
 
 
 def split_path(path):
-    """\
-    Split the path into single components.
-
-    B{Example}::
-        >>> split_path('/usr/local/share')
-        ['/', 'usr', 'local', 'share']
-
-    @rtype: list[str]
-    """
+    "Split the path into single components; e.g. split_path('/usr/local/share') -> ['/', 'usr', 'local', 'share']"
     drive, path = os.path.splitdrive(path)
     components = []
     while True:
@@ -707,10 +663,8 @@ def split_path(path):
 
 def _normalise_paths():
     "Normalise all paths stored in config module"
-    for name in ['appdata_path', 'credits_file', 'docs_path',
-                 'history_file', 'home_path', 'icons_path', 'license_file',
-                 'manual_file', 'rc_file', 'templates_path',
-                 'tutorial_file', 'widgets_path', 'wxglade_path']:
+    for name in ['appdata_path', 'credits_file', 'docs_path', 'history_file', 'home_path', 'icons_path', 'license_file',
+                 'manual_file', 'rc_file', 'templates_path', 'tutorial_file', 'widgets_path', 'wxglade_path']:
         assert hasattr(config, name)
         path = getattr(config, name)
         path = os.path.normpath(path)
@@ -821,8 +775,7 @@ class Preferences(ConfigParser.ConfigParser):
         }
 
     def __init__(self, defaults=None):
-        # set defaults of 'codegen_path', 'local_widget_path', and
-        # 'open_save_path' and 'codegen_path' if the class is
+        # set defaults of 'codegen_path', 'local_widget_path', and 'open_save_path' and 'codegen_path' if the class is
         # instantiated first time, because the home_path is set later
         if config.home_path and not self._defaults['open_save_path']:
             self._defaults['open_save_path'] = config.home_path
@@ -841,9 +794,8 @@ class Preferences(ConfigParser.ConfigParser):
         cast = type(val)
         if cast is bool:
             cast = self._cast_to_bool
-        # ...but I haven't found a better way: the problem is that
-        # bool('0') == True, while int('0') == False, and we want the
-        # latter behaviour
+        # ...but I haven't found a better way: the problem is that bool('0') == True, while int('0') == False,
+        # and we want the latter behaviour
         try:
             return cast(self.get('wxglade', attr))
         except (ConfigParser.NoOptionError, ValueError):
@@ -901,19 +853,18 @@ class Preferences(ConfigParser.ConfigParser):
             pass
         return None
 
-# end of class Preferences
 
+
+
+########################################################################################################################
+# XML utilities
 
 def style_attrs_to_sets(styles):
-    """\
-    Convert the style attributes 'combination', 'exclude', 'include' and 'require' from string to a set.
+    """Convert the style attributes 'combination', 'exclude', 'include' and 'require' from string to a set.
 
-    @param styles: Style dictionary
-    @type styles: dict
+    styles: Style dictionary
 
-    @return: Style dictionary with modified attributes
-    @rtype: dict
-    """
+    returns: Style dictionary with modified attributes"""
     for style_name in styles.keys():
         for attr in ['combination', 'exclude', 'include', 'require', ]:
             try:
@@ -925,34 +876,21 @@ def style_attrs_to_sets(styles):
 
 
 def format_xml_tag(tag, value, indentlevel=0, **kwargs):
-    r"""
-    Generate a valid XML tag. The content will be proper escaped and quoted.
+    r"""Generate a valid XML tag as string. The content will be proper escaped and quoted.
 
     Example::
         >>> common.format_xml_tag(u'label', 'Exit', 1)
         u'    <label>Exit</label\n'
 
-    @note: The returned statement has a tailing newline character
+    The returned statement has a tailing newline character
 
-    @param tag: XML tag
-    @type tag: str | Unicode
+    tag: XML tag name
+    value: Content of the XML tag as string or unicode
+    indentlevel: Indention level as int, Each level are four spaces
+    is_xml: Content of value argument is already escaped and formatted XML
+    kwargs: XML attributes to include (see Lformat_xml_attrs() too)
 
-    @param value: Content of the XML tag
-    @type value: str | Unicode
-
-    @param indentlevel: Indention level, Each level are four spaces
-    @type indentlevel:  int
-
-    @keyword is_xml: Content of value argument is already escaped
-                     and formatted XML
-    @type is_xml: bool
-
-    @param kwargs: XML attributes to include (see L{format_xml_attrs()} too)
-
-    @rtype: str
-
-    @see: L{format_xml_attrs()}
-    """
+    see format_xml_attrs()"""
     assert isinstance(tag, compat.basestring)
     assert isinstance(indentlevel, int)
 
@@ -964,29 +902,46 @@ def format_xml_tag(tag, value, indentlevel=0, **kwargs):
     tag = encode_to_unicode(tag)
 
     if not is_xml:
-        value = encode_to_unicode(value)
-        value = escape(value)
+        value = escape( encode_to_unicode(value) )
 
     attrs = format_xml_attrs(**kwargs)
-    if attrs:
-        attrs = u' %s' % attrs
+    if attrs: attrs = u' %s' % attrs
+
+    data = {'attrs': attrs, 'tabs': tabs, 'tag': tag, 'value': value }  # for the format string
 
     if is_xml:
-        tmpl = u'%(tabs)s<%(tag)s%(attrs)s>\n%(value)s%(tabs)s</%(tag)s>\n'
-    elif not value:
+        tmpl1 = u'%(tabs)s<%(tag)s%(attrs)s>\n'
+        tmpl2 = u'%(tabs)s</%(tag)s>\n'
+        return [tmpl1%data] + value + [tmpl2%data]
+    if not value:
         tmpl = u'%(tabs)s<%(tag)s%(attrs)s />\n'
     else:
         tmpl = u'%(tabs)s<%(tag)s%(attrs)s>%(value)s</%(tag)s>\n'
+    return [tmpl%data]
 
-    stmt = tmpl % {'attrs': attrs, 'tabs': tabs, 'tag': tag,
-                   'value': value, }
 
-    return stmt
+def format_xml_prop(tag, value, indentlevel=0, **kwargs):
+    # format a single property as indented string
+    assert isinstance(tag, compat.basestring)
+    assert isinstance(indentlevel, int)
+
+    tabs = u'    ' * indentlevel
+    tag = encode_to_unicode(tag)
+
+    value = escape( encode_to_unicode(value) )
+
+    attrs = format_xml_attrs(**kwargs)
+    if attrs: attrs = u' %s' % attrs
+
+    if not value:
+        tmpl = u'%(tabs)s<%(tag)s%(attrs)s />\n'
+    else:
+        tmpl = u'%(tabs)s<%(tag)s%(attrs)s>%(value)s</%(tag)s>\n'
+    return tmpl%{'attrs': attrs, 'tabs': tabs, 'tag': tag, 'value': value }
 
 
 def format_xml_attrs(**kwargs):
-    """\
-    Format the given keyword arguments to use as XML attributes.
+    """Format the given keyword arguments to use as XML attributes.
     The arguments will be escaped and quoted.
 
     The returned Unicode string doesn't contain leading and tailing spaces.
@@ -995,11 +950,9 @@ def format_xml_attrs(**kwargs):
         >>> common.format_xml_attrs(base='EditFrame', name='Frame_1')
         u'base="EditFrame" name="Frame1"'
 
-    @param kwargs: Attributes to process
+    kwargs: Attributes to process
 
-    @return: Processed and joined kwargs
-    @rtype: Unicode
-    """
+    Returns processed and joined kwargs as unicode"""
     if not kwargs:
         return u''
 

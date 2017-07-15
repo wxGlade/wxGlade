@@ -15,10 +15,9 @@ class PythonSpinCtrlGenerator(wcodegen.PythonWidgetCodeWriter):
 
     def _prepare_tmpl_content(self, obj):
         wcodegen.PythonWidgetCodeWriter._prepare_tmpl_content(self, obj)
-        prop = obj.properties
-        self.tmpl_dict['value'] = prop.get('value', '')
+        self.tmpl_dict['value'] = obj.value
         try:
-            minValue, maxValue = [s.strip() for s in prop.get('range', '0, 100').split(',')]
+            minValue, maxValue = obj.properties["range"].get_tuple()
         except:
             minValue, maxValue = '0', '100'
         self.tmpl_dict['minValue'] = minValue
@@ -30,17 +29,15 @@ class PythonSpinCtrlGenerator(wcodegen.PythonWidgetCodeWriter):
 class CppSpinCtrlGenerator(wcodegen.CppWidgetCodeWriter):
     import_modules = ['<wx/spinctrl.h>']
     tmpl = '%(name)s = new %(klass)s(%(parent)s, %(id)s, wxT("%(value)s"), ' \
-           'wxDefaultPosition, wxDefaultSize, %(style)s, %(minValue)s, ' \
-           '%(maxValue)s);\n'
+           'wxDefaultPosition, wxDefaultSize, %(style)s, %(minValue)s, %(maxValue)s);\n'
     prefix_style = False
     set_default_style = True
 
     def _prepare_tmpl_content(self, obj):
         wcodegen.CppWidgetCodeWriter._prepare_tmpl_content(self, obj)
-        prop = obj.properties
-        self.tmpl_dict['value'] = prop.get('value', '')
+        self.tmpl_dict['value'] = obj.value
         try:
-            minValue, maxValue = [s.strip() for s in prop.get('range', '0, 100').split(',')]
+            minValue, maxValue = obj.properties["range"].get_tuple()
         except:
             minValue, maxValue = '0', '100'
         self.tmpl_dict['minValue'] = minValue
@@ -53,7 +50,7 @@ def xrc_code_generator(obj):
     xrcgen = common.code_writers['XRC']
 
     class SpinCtrlXrcObject(xrcgen.DefaultXrcObject):
-        def write_property(self, name, val, outfile, tabs):
+        def write_property(self, name, val, output, tabs):
             if name == 'range':
                 try:
                     minValue, maxValue = val.split(',')
@@ -61,10 +58,10 @@ def xrc_code_generator(obj):
                     pass
                 else:
                     tab_s = '    '*tabs
-                    outfile.write(tab_s + '<min>%s</min>\n' % minValue)
-                    outfile.write(tab_s + '<max>%s</max>\n' % maxValue)
+                    output.append(tab_s + '<min>%s</min>\n' % minValue)
+                    output.append(tab_s + '<max>%s</max>\n' % maxValue)
             else:
-                xrcgen.DefaultXrcObject.write_property(self, name, val, outfile, tabs)
+                xrcgen.DefaultXrcObject.write_property(self, name, val, output, tabs)
 
     return SpinCtrlXrcObject(obj)
 

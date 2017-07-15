@@ -10,17 +10,13 @@ import wcodegen
 
 
 class LispHyperlinkCtrlGenerator(wcodegen.LispWidgetCodeWriter):
-
-    tmpl = '(setf %(name)s (%(klass)s_Create %(parent)s %(id)s ' \
-           '%(label)s %(url)s -1 -1 -1 -1 %(style)s))\n'
+    tmpl = '(setf %(name)s (%(klass)s_Create %(parent)s %(id)s %(label)s %(url)s -1 -1 -1 -1 %(style)s))\n'
 
     def _prepare_tmpl_content(self, obj):
         wcodegen.LispWidgetCodeWriter._prepare_tmpl_content(self, obj)
-        self.tmpl_dict['url'] = self.codegen.quote_str(obj.properties.get('url', ''))
-        self.has_setvalue1 = obj.properties.get('checked', False)
+        self.tmpl_dict['url'] = self.codegen.quote_str(obj.url)
+        #self.has_setvalue1 = bool(obj.checked)
         return
-
-# end of class LispHyperlinkCtrlGenerator
 
 
 def initialize():

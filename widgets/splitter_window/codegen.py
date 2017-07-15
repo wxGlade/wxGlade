@@ -19,60 +19,53 @@ class PythonSplitterWindowGenerator(wcodegen.PythonWidgetCodeWriter):
         layout_buf = []
         props_buf = self.codegen.generate_common_properties(window)
 
-        prop = window.properties
         id_name, id = self.codegen.generate_code_id(window)
         parent = self.format_widget_access(window.parent)
         if window.is_toplevel:
             l = []
             if id_name:
                 l.append(id_name)
-            l.append('self.%s = %s(%s, %s)\n' % (window.name, self.codegen.get_class(window.klass), parent, id))
+            l.append( 'self.%s = %s(%s, %s)\n' % (window.name, self.codegen.get_class(window.klass), parent, id) )
             return l, [], []
         if id_name:
             init.append(id_name)
         klass = window.klass
-        if window.preview:
-            klass = 'wxSplitterWindow'
-        init.append('self.%s = %s(%s, %s%s)\n' % (window.name, self.cn(klass), parent, id, self.tmpl_dict['style']) )
+        if self.codegen.preview: klass = 'wxSplitterWindow'
+        init.append( 'self.%s = %s(%s, %s%s)\n' % (window.name, self.cn(klass), parent, id, self.tmpl_dict['style']) )
 
-        win_1 = prop.get('window_1')
-        win_2 = prop.get('window_2')
-        orientation = prop.get('orientation', 'wxSPLIT_VERTICAL')
+        win_1 = window.window_1
+        win_2 = window.window_2
+        orientation = window.properties['orientation'].get_string_value()
         if win_1 and win_2:
-            sash_pos = prop.get('sash_pos', '')
-            if sash_pos:
-                sash_pos = ', %s' % sash_pos
+            sash_pos = window.sash_pos
+            if sash_pos!="": sash_pos = ', %s' % sash_pos
             if orientation == 'wxSPLIT_VERTICAL':
                 f_name = 'SplitVertically'
             else:
                 f_name = 'SplitHorizontally'
-            layout_buf.append('self.%s.%s(self.%s, self.%s%s)\n' %
-                              (window.name, f_name, win_1, win_2, sash_pos))
+            layout_buf.append( 'self.%s.%s(self.%s, self.%s%s)\n' % (window.name, f_name, win_1, win_2, sash_pos) )
         else:
             def add_sub(win):
-                layout_buf.append('self.%s.SetSplitMode(%s)\n' % (window.name, self.cn(orientation)))
-                layout_buf.append('self.%s.Initialize(self.%s)\n' % (window.name, win))
+                layout_buf.append( 'self.%s.SetSplitMode(%s)\n' % (window.name, self.cn(orientation)) )
+                layout_buf.append( 'self.%s.Initialize(self.%s)\n' % (window.name, win) )
             if win_1:
                 add_sub(win_1)
             elif win_2:
                 add_sub(win_2)
 
-        min_pane_size = prop.get('min_pane_size')
-        if min_pane_size:
-            props_buf.append('self.%s.SetMinimumPaneSize(%s)\n' % (window.name, min_pane_size) )
+        if window.min_pane_size:
+            props_buf.append( 'self.%s.SetMinimumPaneSize(%s)\n' % (window.name, window.min_pane_size) )
 
         return init, props_buf, layout_buf
 
     def get_layout_code(self, obj):
-        prop = obj.properties
-        win_1 = prop.get('window_1')
-        win_2 = prop.get('window_2')
-        orientation = prop.get('orientation', 'wxSPLIT_VERTICAL')
+        win_1 = window.window_1
+        win_2 = window.window_2
+        orientation = window.properties['orientation'].get_string_value()
         props_buf = []
         if win_1 and win_2:
-            sash_pos = prop.get('sash_pos', '')
-            if sash_pos:
-                sash_pos = ', %s' % sash_pos
+            sash_pos = window.sash_pos
+            if sash_pos!="": sash_pos = ', %s' % sash_pos
             if orientation == 'wxSPLIT_VERTICAL':
                 f_name = 'SplitVertically'
             else:
@@ -107,7 +100,6 @@ class CppSplitterWindowGenerator(wcodegen.CppWidgetCodeWriter):
         layout_buf = []
         props_buf = self.codegen.generate_common_properties(window)
 
-        prop = window.properties
         id_name, id = self.codegen.generate_code_id(window)
 
         if id_name:
@@ -124,13 +116,12 @@ class CppSplitterWindowGenerator(wcodegen.CppWidgetCodeWriter):
 
         init.append( '%s = new %s(%s, %s%s);\n' % (window.name, window.klass, parent, id, self.tmpl_dict['style']) )
 
-        win_1 = prop.get('window_1')
-        win_2 = prop.get('window_2')
-        orientation = prop.get('orientation', 'wxSPLIT_VERTICAL')
+        win_1 = window.window_1
+        win_2 = window.window_2
+        orientation = window.properties['orientation'].get_string_value()
         if win_1 and win_2:
-            sash_pos = prop.get('sash_pos', '')
-            if sash_pos:
-                sash_pos = ', %s' % sash_pos
+            sash_pos = window.sash_pos
+            if sash_pos!="": sash_pos = ', %s' % sash_pos
             if orientation == 'wxSPLIT_VERTICAL':
                 f_name = 'SplitVertically'
             else:
@@ -145,22 +136,19 @@ class CppSplitterWindowGenerator(wcodegen.CppWidgetCodeWriter):
             elif win_2:
                 add_sub(win_2)
 
-        min_pane_size = prop.get('min_pane_size')
-        if min_pane_size:
-            props_buf.append( '%s->SetMinimumPaneSize(%s);\n' % (window.name, min_pane_size) )
+        if window.min_pane_size:
+            props_buf.append( '%s->SetMinimumPaneSize(%s);\n' % (window.name, window.min_pane_size) )
 
         return init, ids, props_buf, layout_buf
 
     def get_layout_code(self, obj):
-        prop = obj.properties
-        win_1 = prop.get('window_1')
-        win_2 = prop.get('window_2')
-        orientation = prop.get('orientation', 'wxSPLIT_VERTICAL')
+        win_1 = window.window_1
+        win_2 = window.window_2
+        orientation = window.properties['orientation'].get_string_value()
         props_buf = []
         if win_1 and win_2:
-            sash_pos = prop.get('sash_pos', '')
-            if sash_pos:
-                sash_pos = ', %s' % sash_pos
+            sash_pos = window.sash_pos
+            if sash_pos!="": sash_pos = ', %s' % sash_pos
             if orientation == 'wxSPLIT_VERTICAL':
                 f_name = 'SplitVertically'
             else:

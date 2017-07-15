@@ -14,22 +14,17 @@ class PythonStaticTextGenerator(wcodegen.PythonWidgetCodeWriter):
     tmpl = '%(name)s = %(klass)s(%(parent)s, %(id)s, %(label)s%(style)s)\n'
 
 
-
 class CppStaticTextGenerator(wcodegen.CppWidgetCodeWriter):
     tmpl = '%(name)s = new %(klass)s(%(parent)s, %(id)s, %(label)s%(style)s);\n'
-
 
 
 def xrc_code_generator(obj):
     xrcgen = common.code_writers['XRC']
 
     class XrcCodeGenerator(xrcgen.DefaultXrcObject):
-        def write(self, *args, **kwds):
-            try:
-                del self.properties['attribute']
-            except KeyError:
-                pass
-            xrcgen.DefaultXrcObject.write(self, *args, **kwds)
+        def write(self, out_file, ntabs):
+            properties = {"attribute":None}
+            xrcgen.DefaultXrcObject.write(self, out_file, ntabs, properties)
 
     return XrcCodeGenerator(obj)
 

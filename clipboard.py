@@ -157,14 +157,14 @@ class DropTarget(wx.DropTarget):
 
 def get_data_object(widget):
     # build the XML string
-    xml_unicode = compat.StringIO()
+    xml_unicode = []
     widget.node.write(xml_unicode, 0)
     flag = option = border = None
     flag = widget.properties.get("flag")
     if flag is not None: flag = flag.get_string_value()
     proportion = getattr(widget, "proportion", 0)
     border  = getattr(widget, "border", 0)
-    data = widget2clipboard( proportion, flag, border, xml_unicode.getvalue() )
+    data = widget2clipboard( proportion, flag, border, "".join(xml_unicode) )
     # make a data object
     if isinstance(widget, edit_sizers.Sizer):
         do = wx.CustomDataObject(sizer_data_format)

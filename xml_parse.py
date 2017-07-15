@@ -5,7 +5,7 @@ See L{wcodegen.taghandler} for custom tag handler base classes.
 
 @copyright: 2002-2007 Alberto Griggio
 @copyright: 2016 Carsten Grohmann
-@copyright: 2016 Dietmar Schwertberger
+@copyright: 2016-2017 Dietmar Schwertberger
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
@@ -48,21 +48,23 @@ class XmlParser(ContentHandler):
         self.locator = None # Document locator
 
     def parse(self, source):
-        # Permanent workaround for Python bug "Sax parser crashes if given
-        # unicode file name" (http://bugs.python.org/issue11159).
-        #
-        # This bug causes a UnicodeEncodeError if the SAX XML parser wants to store an unicode filename internally.
-        #
-        # That's not a general file handling issue because the parameter source is an open file already.
-        source = compat.StringIO(source.read())
+        ## Permanent workaround for Python bug "Sax parser crashes if given
+        ## unicode file name" (http://bugs.python.org/issue11159).
+        ##
+        ## This bug causes a UnicodeEncodeError if the SAX XML parser wants to store an unicode filename internally.
+        ##
+        ## That's not a general file handling issue because the parameter source is an open file already.
+        #source = compat.StringIO(source.read())
         self.parser.parse(source)
-        source.close()
+        #source.close()
 
     def parse_string(self, source):
-        #source = compat.StringIO(source)
-        source = compat.BytesIO(source)
-        self.parser.parse(source)
-        source.close()
+        if isinstance(source, list):
+            for line in source:
+                self.parser.feed(source)
+        else:
+            self.parser.feed(source)
+        self.parser.close()
 
     def setDocumentLocator(self, locator):
         self.locator = locator
@@ -591,257 +593,6 @@ class XmlWidgetObject(object):
         if not self._properties_added: return
         self.obj.properties_changed(self._properties_added)
         del self._properties_added[:]
-
-
-
-class CodeWriter(XmlParser):
-    "Parser used to produce the source from a given XML file"
-
-    def __init__(self, writer, input, from_string=False, out_path=None, preview=False, class_names=None):
-        """
-        writer: Language specific code writer; stored in L{self.code_writer}; wxglade.codegen.BaseLangCodeWriter
-        input: Name of file to load or XML document as a String
-        from_string: True if L{input} is a XML document as String
-        out_path: Override the output path specified in the XML document; stored in L{self.out_path}, string or None
-
-        preview: True to generate code for the preview"""
-        self._logger = logging.getLogger(self.__class__.__name__)
-
-        XmlParser.__init__(self)
-        self._toplevels = Stack() # Toplevel objects, i.e. instances of a custom class
-        self.app_attrs = {}       # Attributes of the app (name, class, top_window)
-        self.top_window = ''      # Class name of the top window of the app (if any)
-        self.out_path = out_path  # Override the output path specified in the XML document
-        self.code_writer = writer # Language specific code writer; wxglade.codegen.BaseLangCodeWriter instance
-        self.preview = preview    # True to generate code for the preview
-
-        # used in the CustomWidget preview code, to generate better previews (see widgets/custom_widget/codegen.py)
-        self.class_names = class_names
-        if self.class_names is None:
-            self.class_names = set()
-
-        if from_string:
-            self.parse_string(input)
-        else:
-            inputfile = None
-            try:
-                inputfile = open(input)
-                self.parse(inputfile)
-            finally:
-                if inputfile:
-                    inputfile.close()
-
-    def startElement(self, name, attrs):
-        # check only existence of attributes not the logical correctness
-        if name == 'application':
-            # get properties of the app
-            self._appl_started = True
-            attrs = self._process_app_attrs(attrs)
-            self.app_attrs = attrs
-
-            attrs['for_version'] = attrs['for_version']
-            attrs['option'] = attrs['option']
-
-            if self.out_path is None:
-                out_path = attrs['path']
-                if out_path:
-                    self.out_path = attrs['path']
-                else:
-                    raise XmlParsingError(_("'path' attribute missing: could not generate code"))
-            else:
-                attrs['path'] = self.out_path
-
-            # Prevent empty output path
-            if not self.out_path:
-                raise XmlParsingError( _("'path' attribute empty: could not generate code") )
-
-            # Initialize the writer, thereby a logical check will be performed
-            self.code_writer.new_project(**attrs)
-
-            return
-
-        if not self._appl_started:
-            raise XmlParsingError( _("the root of the tree must be <application>") )
-        if name == 'object':
-            # create the object and push it on the appropriate stacks
-            CodeObject(attrs, self, preview=self.preview)
-            if 'name' in attrs and attrs['name'] == self.app_attrs.get('top_window', ''):
-                self.top_window = attrs['class']
-        else:
-            # handling of the various properties
-            try:
-                # look for a custom handler to push on the stack
-                obj = self.top()
-                handler = self.code_writer.get_property_handler(name, obj.base)
-                if handler:
-                    obj.prop_handlers.push(handler)
-                # get the top custom handler and use it if there's one
-                handler = obj.prop_handlers.top()
-                if handler:
-                    handler.start_elem(name, attrs)
-            except AttributeError:
-                self._logger.exception(_('Internal error'))
-            self._curr_prop = name
-
-    def endElement(self, name):
-        if name == 'application':
-            self._appl_started = False
-            if self.app_attrs:
-                self.code_writer.add_app(self.app_attrs, self.top_window)
-            # call the finalization function of the code writer
-            self.code_writer.finalize()
-            return
-        if name == 'object':
-            # remove last object from Stack
-            obj = self.pop()
-            if obj.klass=='sizeritem':
-                # nothing to do; the object inside was added already
-                return
-
-            if obj.klass=='sizerslot':  # no sizeritem required
-                topl = self._toplevels.top()
-                self.code_writer.add_object(topl, obj)
-                szr = self._sizers.top()
-                if szr.klass!="wxGridBagSizer":
-                    self.code_writer.add_sizeritem(topl, szr, obj, 0, "", 0)  # XXX maybe, grow and expand would be better
-                return
-
-            # at the end of the object, we have all the information to add it to its toplevel parent,
-            # or to generate the code for the custom class
-            if obj.is_toplevel and not obj.in_sizers:
-                self.code_writer.add_class(obj)
-            topl = self._toplevels.top()
-            if topl:
-                self.code_writer.add_object(topl, obj)
-                # if the object is not a sizeritem, check whether it belongs to some sizer
-                #  (in this case, self._sizer_item.top() doesn't return None):
-                # if so, write the code to add it to the sizer at the top of the stack
-                si = self._sizer_item.top()
-                if si is not None and si.parent == obj.parent:
-                    szr = self._sizers.top()
-                    if not szr:
-                        return
-                    flag = si.obj.properties["flag"].get_string_value()  # as string, joined with "|"
-                    self.code_writer.add_sizeritem(topl, szr, obj, si.obj.proportion, flag, si.obj.border)
-        else:
-            # end of a property or error
-            # case 1: set _curr_prop value
-            data = "".join(self._curr_prop_val)
-            if data:
-                try:
-                    handler = self.top().prop_handlers.top()
-                    if not handler or handler.char_data(data):
-                        # if char_data returned False, we don't have to call add_property
-                        self.top().add_property(self._curr_prop, data)
-                except AttributeError:
-                    raise
-
-            # case 2: call custom end_elem handler
-            try:
-                # if there is a custom handler installed for this property, call its end_elem function:
-                # if this returns True, remove the handler from Stack
-                obj = self.top()
-                handler = obj.prop_handlers.top()
-                if handler.end_elem(name, obj):
-                    obj.prop_handlers.pop()
-            except AttributeError:
-                pass
-            self._curr_prop = None
-            self._curr_prop_val = []
-
-    def characters(self, data):
-        if not data or data.isspace():
-            return
-        if self._curr_prop is None:
-            raise XmlParsingError(_("Character data can be present only inside properties"))
-        self._curr_prop_val.append(data)
-
-
-
-class CodeObject(object):
-    "A class to store information needed to generate the code for a given object"
-
-    def __init__(self, attrs, parser, preview=False):
-        self._logger = logging.getLogger(self.__class__.__name__) # initialise instance logger
-
-        self.parser = parser
-        self.in_sizers  = False       # If True, the widget is a sizer,     opposite of 'in_windows'
-        self.in_windows = False       # If True, the widget is not a sizer, opposite of 'in_sizers'
-        self.is_toplevel = False      # if True, the widget is a toplevel sizer or window (instance of a custom class)
-        self.is_container = False     # If True, the widget is a container (frame, dialog, panel, ...)
-        self.properties = {}          # Properties of the widget sizer
-        self.prop_handlers = Stack()  # Is a stack of custom handler functions to set properties of this object
-        self.preview = preview
-        try:
-            base = attrs.get('base', None)
-            self.klass = attrs['class']
-        except KeyError:
-            raise XmlParsingError(_("'object' items must have a 'class' attribute"))
-        self.parser._objects.push(self)
-        self.parent = self.parser._windows.top()
-        if self.parent is not None:
-            self.parent.is_container = True
-        self.base = None
-        if base is not None:  # this is a ``real'' object, not a sizeritem
-            self.name = attrs['name']
-            self.base = common.class_names[base]
-            can_be_toplevel = base in common.toplevels
-            if (self.parent is None or self.klass != self.base) and can_be_toplevel:
-                self.is_toplevel = True
-                # for panel objects, if the user sets a custom class but (s)he doesn't want the code to be generated...
-                if int(attrs.get('no_custom_class', False)) and not self.preview:
-                    self.is_toplevel = False
-                else:
-                    self.parser._toplevels.push(self)
-            elif self.preview and not can_be_toplevel and self.base != 'CustomWidget':
-                # if this is a custom class, but not a toplevel one, for the preview we have to use the "real" class
-                # CustomWidgets handle this in a special way (see widgets/custom_widget/codegen.py)
-                self.klass = self.base
-
-            # temporary hack: to detect a sizer, check whether the name of its class contains the string 'Sizer'
-            # TODO: find a better way!!
-            if base.find('Sizer') != -1:
-                self.in_sizers = True
-                if not self.parser._sizers.count():
-                    self.is_toplevel = True
-                else:
-                    # the sizer is a toplevel one if its parent has not a sizer yet
-                    sz = self.parser._sizers.top()
-                    if sz.parent != self.parent:
-                        self.is_toplevel = True
-                self.parser._sizers.push(self)
-            else:
-                self.parser._windows.push(self)
-                self.in_windows = True
-        else:  # the object is a sizeritem or a slot
-            self.obj = Sizeritem()
-            if self.klass == "sizerslot":
-                self.base = "sizerslot"
-                self.name = "sizerslot"
-                self.is_slot = True
-            self.obj.flag_s = '0'
-            self.parser._sizer_item.push(self)
-
-    def __str__(self):
-        return "<xml_code_object: %s, %s, %s>" % (self.name, self.base, self.klass)
-
-    def add_property(self, name, value):
-        if hasattr(self, 'obj'):  # self is a sizeritem
-            try:
-                self.obj.properties[name].set( value )
-            except:
-                raise XmlParsingError(_("property '%s' not supported by '%s' objects") % (name, self.klass))
-        self.properties[name] = value
-
-    def pop(self):
-        if self.is_toplevel and not self.in_sizers:
-            self.parser._toplevels.pop()
-        if self.in_windows:
-            return self.parser._windows.pop()
-        elif self.in_sizers:
-            return self.parser._sizers.pop()
-        else:
-            return self.parser._sizer_item.pop()
 
 
 

@@ -18,34 +18,22 @@ class LispFrameCodeGenerator(wcodegen.LispWidgetCodeWriter):
     def get_properties_code(self, obj):
         out = []
         append = out.append
-        title = obj.properties.get('title')
-        if title:
-            append('(wxFrame_SetTitle (slot-top-window obj) %s)\n' %
-                   self.codegen.quote_str(title))
-        icon = obj.properties.get('icon')
-        if icon:
-            append(
-                ';;; generating code for setting icons is not implemented\n'
-                )
+        if obj.title:
+            append( '(wxFrame_SetTitle (slot-top-window obj) %s)\n' % self.codegen.quote_str(obj.title) )
+        if obj.icon:
+            append( ';;; generating code for setting icons is not implemented\n' )
         out.extend(self.codegen.generate_common_properties(obj))
         return out
 
     def get_layout_code(self, obj):
-        ret = ['(wxFrame_layout (slot-%s self))\n' % obj.name]
-        try:
-            if int(obj.properties['centered']):
-                ret.append('(wxFrame_Centre (slot-top-window obj) wxBOTH)\n')
-        except (KeyError, ValueError):
-            pass
+        ret = ['(wxFrame_layout (slot-%s self))\n' % self.codegen._format_name(obj.name)]
+        if obj.centered:
+            ret.append('(wxFrame_Centre (slot-top-window obj) wxBOTH)\n')
         return ret
-
-# end of class LispFrameCodeGenerator
 
 
 class LispMDIChildFrameCodeGenerator(LispFrameCodeGenerator):
     import_modules = ['Wx::MDI']
-
-# end of class LispMDIChildFrameCodeGenerator
 
 
 def initialize():
@@ -62,5 +50,5 @@ def initialize():
         awh('wxFrame', LispFrameCodeGenerator(klass))
         awh('wxMDIChildFrame', LispMDIChildFrameCodeGenerator(klass))
 
-        aph = lispgen.add_property_handler
-        aph('menubar', lispgen.DummyPropertyHandler)
+        #aph = lispgen.add_property_handler
+        #aph('menubar', lispgen.DummyPropertyHandler)

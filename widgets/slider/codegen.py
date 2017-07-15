@@ -15,10 +15,9 @@ class PythonSliderGenerator(wcodegen.PythonWidgetCodeWriter):
 
     def _prepare_tmpl_content(self, obj):
         wcodegen.PythonWidgetCodeWriter._prepare_tmpl_content(self, obj)
-        prop = obj.properties
-        self.tmpl_dict['value'] = prop.get('value', '0')
+        self.tmpl_dict['value'] = obj.value
         try:
-            minValue, maxValue = [s.strip() for s in prop['range'].split(',')]
+            minValue, maxValue = obj.properties["range"].get_tuple()
         except:
             minValue, maxValue = '0', '10'
         self.tmpl_dict['minValue'] = minValue
@@ -32,10 +31,9 @@ class CppSliderGenerator(wcodegen.CppWidgetCodeWriter):
 
     def _prepare_tmpl_content(self, obj):
         wcodegen.CppWidgetCodeWriter._prepare_tmpl_content(self, obj)
-        prop = obj.properties
-        self.tmpl_dict['value'] = prop.get('value', '0')
+        self.tmpl_dict['value'] = obj.value
         try:
-            minValue, maxValue = [s.strip() for s in prop['range'].split(',')]
+            minValue, maxValue = obj.properties["range"].get_tuple()
         except:
             minValue, maxValue = '0', '10'
         self.tmpl_dict['minValue'] = minValue
@@ -48,7 +46,7 @@ def xrc_code_generator(obj):
     xrcgen = common.code_writers['XRC']
 
     class SliderXrcObject(xrcgen.DefaultXrcObject):
-        def write_property(self, name, val, outfile, tabs):
+        def write_property(self, name, val, output, tabs):
             if name == 'range':
                 try:
                     min, max = val.split(',')
@@ -56,10 +54,10 @@ def xrc_code_generator(obj):
                     pass
                 else:
                     tab_s = '    '*tabs
-                    outfile.write(tab_s + '<min>%s</min>\n' % min)
-                    outfile.write(tab_s + '<max>%s</max>\n' % max)
+                    output.append(tab_s + '<min>%s</min>\n' % min)
+                    output.append(tab_s + '<max>%s</max>\n' % max)
             else:
-                xrcgen.DefaultXrcObject.write_property(self, name, val, outfile, tabs)
+                xrcgen.DefaultXrcObject.write_property(self, name, val, output, tabs)
 
     return SliderXrcObject(obj)
 

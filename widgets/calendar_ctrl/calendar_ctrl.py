@@ -36,10 +36,6 @@ class EditCalendarCtrl(ManagedBase, EditStylesMixin):
         # initialise instance properties
         self.default = np.CheckBoxProperty(False, default_value=False)
 
-        if config.preferences.default_border:
-            self.border.set( config.preferences.default_border_size )
-            self.flag.set( wx.ALL )
-
     def create_widget(self):
         # TODO add all the other parameters for the CalendarCtrl especially style=self.style and the initial date
         self.widget = CalendarCtrl(self.parent.widget, self.id, style=self.style)
@@ -68,6 +64,8 @@ def builder(parent, sizer, pos, number=[1]):
         number[0] += 1
         label = 'calendar_ctrl_%d' % number[0]
     calendar_ctrl = EditCalendarCtrl(label, parent, wx.NewId(), sizer, pos)
+    calendar_ctrl.properties["style"].set_to_default()
+    calendar_ctrl.check_defaults()
     node = Node(calendar_ctrl)
     calendar_ctrl.node = node
     if parent.widget: calendar_ctrl.create()

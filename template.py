@@ -53,16 +53,15 @@ class Template(object):
                 self.description=''
                 self.instructions=''
 
-    def write(self, outfile, tabs):
+    def write(self, output, tabs):
         outer_tab = u'    ' * tabs
-        stmt = u'%s<templatedata>\n' % outer_tab
+        stmt = [u'%s<templatedata>\n' % outer_tab]
         stmt += common.format_xml_tag(u'author', self.author, tabs + 1)
         stmt += common.format_xml_tag(u'description', self.description, tabs + 1)
         stmt += common.format_xml_tag(u'instructions', self.instructions, tabs + 1)
-        stmt += u'%s</templatedata>\n' % outer_tab
-        outfile.write(stmt)
+        stmt.append( u'%s</templatedata>\n' % outer_tab )
+        output.extend(stmt)
 
-# end of class Template
 
 
 class TemplateListDialog(templates_ui.TemplateListDialog):

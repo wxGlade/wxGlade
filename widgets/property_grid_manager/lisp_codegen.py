@@ -13,15 +13,12 @@ import wcodegen
 
 class LispCodeGenerator(wcodegen.LispWidgetCodeWriter):
 
-    tmpl = '(setf %(name)s (%(klass)s_Create %(parent)s %(id)s ' \
-           '-1 -1 -1 -1 %(style)s))\n'
+    tmpl = '(setf %(name)s (%(klass)s_Create %(parent)s %(id)s -1 -1 -1 -1 %(style)s))\n'
 
     def _prepare_tmpl_content(self, obj):
         wcodegen.LispWidgetCodeWriter._prepare_tmpl_content(self, obj)
 
         return
-
-# end of class LispCodeGenerator
 
 
 def initialize():

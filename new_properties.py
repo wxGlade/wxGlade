@@ -26,6 +26,7 @@ class Property(object):
     LABEL = None # defaults to property name
     CONTROLNAMES = ["enabler"]  # for activation; also these attributes will be set to None when the editor is destroyed
     GROW = False # if this is True, no spacer is added after the control, so it may grow down to the lower edge
+    HAS_DATA = True
     def __init__(self, value, default_value=_DefaultArgument, name=None):#, write_always=False):
         self._logger = logging.getLogger(self.__class__.__name__)
         self.value = value
@@ -155,12 +156,12 @@ class Property(object):
 
     ####################################################################################################################
     # XML file
-    def get_str_value(self):
+    def get_string_value(self):
         if self.value is True:  return '1'
         if self.value is False: return '0'
         return str(self.value)
 
-    def write(self, outfile, tabs=0):
+    def write(self, output, tabs=0):
         """Writes the xml code for this property onto the given file or file-like object.
         Argument tabs (int) is the indentation level.
         This is the default implementation."""
@@ -183,10 +184,9 @@ class Property(object):
             value = string_getter()
             if not value: return
         else:
-            value = self.get_str_value()
+            value = self.get_string_value()
         # write the value
-        stmt = common.format_xml_tag(self.name, value, tabs)
-        outfile.write(stmt)
+        output.extend( common.format_xml_tag(self.name, value, tabs) )
 
     ####################################################################################################################
     # editor (controls are added to common.property_panel)
@@ -275,16 +275,6 @@ class PropertyD(Property):
 class PropertyRO(Property):
     # can be activated/deactivated; deactivated by default
     readonly = True
-
-
-# some building blocks for regular expressions:
-_leading  = r"^\s*\(?\s*"          # whitespace, optionally including an opening "("
-_int      = r"(0|(?:-?[1-9]\d*))"  # a number group matching any integer
-_ge_m1    = r"((?:-1)|(?:\d+))"    # a number group matching integers >=-1
-_g_0      = r"([1-9]\d*)"          # a number group matching integers >0
-_ge_0     = r"(\d+)"               # a number group matching integers >=0
-_comma    = r"\s*,\s*"             # a comma, optionally with surrounding whitespace
-_trailing = r"\s*\)?\s*$"          # whitespace, optionally including a closing ")"
 
 
 class SpinProperty(Property):
@@ -389,8 +379,8 @@ class SpinPropertyD(SpinProperty):
     deactivated = True
 
 
-def _is_gridbag(sizer):
-    return sizer and sizer._IS_GRIDBAG
+def _is_gridbag(dummy):
+    return False
 
 class LayoutPosProperty(SpinProperty):
     readonly = True
@@ -405,90 +395,6 @@ class LayoutPosProperty(SpinProperty):
 
     def write(self, *args, **kwds):
         pass
-
-
-class LayoutSpanProperty(Property):
-    TOOLTIP = "cell spanning for GridBagSizer items"
-    # (int,int)
-    CONTROLNAMES = ["rowspin","colspin"]
-    def __init__(self, value, sizer):
-        self.immediate = True
-        self.is_gridbag = _is_gridbag(sizer)
-        Property.__init__(self, value, default_value=(1,1), name="span")
-
-    def set_sizer(self, sizer):
-        self.is_gridbag = _is_gridbag(sizer)
-
-    validation_re = re.compile(_leading + _ge_0 + _comma + _ge_0 + _trailing )  # match a pair of integers >=0
-    normalization = "%s, %s%s" # for normalization % valiation_re.match(...).groups()
-    #def _set_converter(self, value):
-        ## value can be a tuple
-        #if isinstance(value, compat.basestring):
-            #return value
-        #if isinstance(value, wx.Size):
-            #return '%d, %d' % (value.x, value.y)
-        #return '%d, %d' % value
-
-    def _convert_from_text(self, value):
-        match = self.validation_re.match(value)
-        #if not match: return self.value
-        if not match: return None
-        groups = match.groups()
-        return [int(groups[0]),int(groups[1])]
-
-    def create_editor(self, panel, sizer):
-        hsizer = wx.BoxSizer(wx.HORIZONTAL)
-        # label
-        label = self._find_label()
-        label = wx.lib.stattext.GenStaticText( panel, -1, label, size=(config.label_width, -1) )
-        #hsizer.Add(label, 2, wx.ALL | wx.ALIGN_CENTER, 3)
-        hsizer.Add(label, 0, wx.ALL | wx.ALIGN_CENTER, 3)
-        # checkbox, if applicable
-        self.enabler = None
-
-        style = wx.TE_PROCESS_ENTER | wx.SP_ARROW_KEYS
-        self.rowspin = wx.SpinCtrl( panel, -1, style=style, min=1, max=10 )
-        self.colspin = wx.SpinCtrl( panel, -1, style=style, min=1, max=10 )
-        val = self.value
-        self.rowspin.SetValue(val and val[0] or 1)
-        self.colspin.SetValue(val and val[0] or 1)
-
-        # layout of the controls / sizers
-        hsizer.Add(self.rowspin, 5, wx.ALL | wx.ALIGN_CENTER, 3)
-        hsizer.Add(self.colspin, 5, wx.ALL | wx.ALIGN_CENTER, 3)
-        sizer.Add(hsizer, 0, wx.EXPAND)
-
-        self._set_tooltip(label, self.rowspin, self.colspin)
-
-        self.rowspin.Bind(wx.EVT_KILL_FOCUS, self.on_kill_focus) # by default, the value is only set when the focus is lost
-        self.colspin.Bind(wx.EVT_KILL_FOCUS, self.on_kill_focus)
-        if self.immediate:
-            self.rowspin.Bind(wx.EVT_SPINCTRL, self.on_spin)
-            self.rowspin.Bind(wx.EVT_TEXT_ENTER, self.on_spin)   # we want the enter key (see style above)
-            self.colspin.Bind(wx.EVT_SPINCTRL, self.on_spin)
-            self.colspin.Bind(wx.EVT_TEXT_ENTER, self.on_spin)
-        self.editing = True
-
-    def on_kill_focus(self, event):
-        event.Skip()
-        if self.rowspin is None or self.colspin is None: return
-        if self.rowspin.IsBeingDeleted() or self.colspin.IsBeingDeleted(): return
-        self._check_for_user_modification( (self.rowspin.GetValue(),self.colspin.GetValue() ) )
-
-    def update_display(self, start_editing=False):
-        if start_editing: self.editing = True
-        if not self.editing: return
-        self.rowspin.SetValue(self.value[0])
-        self.colspin.SetValue(self.value[1])
-
-    def on_spin(self, event):
-        event.Skip()
-        if self.rowspin and self.colspin:
-            self._check_for_user_modification( (self.rowspin.GetValue(),self.rowspin.GetValue() ) )
-
-    def write(self, outfile, tabs=0):
-        if self.is_gridbag:
-            Property.write(self, outfile, tabs)
 
 
 
@@ -547,10 +453,10 @@ class RadioProperty(Property):
             value = self.values[self.aliases.index(value)]
         return value
 
-    def get_str_value(self):
+    def get_string_value(self):
         if self.aliases and not self.value in self.aliases:
             return self.aliases[self.values.index(self.value)]
-        return Property.get_str_value(self)
+        return Property.get_string_value(self)
 
     def create_editor(self, panel, sizer):
         label = self._find_label()
@@ -676,11 +582,10 @@ class _CheckListProperty(Property):
                 ret.append(name)
         return '|'.join(ret)
 
-    def write(self, outfile, tabs=0):
+    def write(self, output, tabs=0):
         value = self.get_string_value()
         if value:
-            stmt = common.format_xml_tag(self.name, value, tabs)
-            outfile.write(stmt)
+            output.extend( common.format_xml_tag(self.name, value, tabs) )
 
     def create_editor(self, panel, sizer):
         self._choices = []
@@ -914,12 +819,29 @@ class WidgetStyleProperty(_CheckListProperty):
         self._names = sum( self.styles.values(), [] )
         self._values = None
         self.set(widget_writer.default_style)
-        self.modified = False
         self.default_value = set(self.value_set)
+        self.set("")
+        self.modified = False
+
+    def set_to_default(self):
+        # for use after interactively creating an instance
+        if self.value_set==self.default_value: return
+        self.set(self.default_value)
 
     def _decode_value(self, value):
         "handle obsolete and renamed properties"
-        value = _CheckListProperty._decode_value(self, value)
+        # handle invalid combinations
+        if isinstance(value, compat.basestring) and value:
+            if value=="0": return set()
+            splitted = value.split("|")
+            value = set(splitted)
+            for v in splitted:
+                style_def = self.style_defs[v]
+                if "exclude" in style_def:
+                    value.difference_update(style_def["exclude"])
+                value.add(v)
+        else:
+            value = _CheckListProperty._decode_value(self, value)
         for v in list(value):
             style_def = self.style_defs[v]
             if "obsolete" in style_def:
@@ -978,13 +900,11 @@ class WidgetStyleProperty(_CheckListProperty):
             if checkbox is not None:
                 checkbox.Bind(wx.EVT_CHECKBOX, self.on_checkbox)
 
-    def write(self, outfile, tabs=0):
+    def write(self, output, tabs=0):
         if isinstance(self.default_value, set) and self.value_set==self.default_value and not self.modified: return
         value = self.get_string_value()
         if value:
-            stmt = common.format_xml_tag(self.name, value, tabs)
-            outfile.write(stmt)
-
+            output.extend( common.format_xml_tag(self.name, value, tabs) )
 
 
 
@@ -1007,7 +927,7 @@ class TextProperty(Property):
             value = value.strip()
         return value
 
-    def get_str_value(self):
+    def get_string_value(self):
         # for XML file writing: escape newline, \\n, tab and \\t
         return self.get_value().replace("\\n", "\\\\n").replace("\n", "\\n").replace("\\t","\\\\t").replace("\t", "\\t")
 
@@ -1079,6 +999,7 @@ class TextProperty(Property):
             self.text.Enable(False)
         elif self.deactivated is not None:
             self.text.Enable(not self.deactivated)
+            panel.Bind( wx.EVT_LEFT_DOWN, self._on_text_click )
         # layout of the controls / sizers
         if self._HORIZONTAL_LAYOUT:
             #self.text.SetMaxSize( (-1,200) )
@@ -1090,9 +1011,6 @@ class TextProperty(Property):
                 sizer.Add(hsizer, 0, wx.EXPAND)
             else:
                 sizer.Add(hsizer, 5 if self.multiline else 0, wx.EXPAND)
-                self.text.SetMaxSize((-1,100))
-                if self.enabler: self.enabler.SetMaxSize((-1,100))
-                label.SetMaxSize((-1,100))
             #sizer.Add(hsizer, 0, wx.EXPAND)
         else:
             sizer.Add(hsizer, 0, wx.EXPAND)
@@ -1109,6 +1027,18 @@ class TextProperty(Property):
         if hasattr(self, "_on_label_dblclick"):
             label.Bind(wx.EVT_LEFT_DCLICK, self._on_label_dblclick)
             label.SetForegroundColour(wx.BLUE)
+
+    def _on_text_click(self, event):
+        if self.deactivated:
+            text_rect = self.text.GetClientRect()
+            text_rect.Offset(self.text.Position)
+            if text_rect.Contains(event.Position):
+                self.toggle_active(active=True)
+                if self.text:
+                    self.text.SetFocus()
+                    self.text.SelectAll()
+                return
+        event.Skip()
 
     def create_text_ctrl(self, panel, value):
         style = 0
@@ -1161,7 +1091,7 @@ class TextProperty(Property):
             self.text.SetInsertionPointEnd()
         if not self.multiline and keycode==13:
             # enter
-            self._check_for_user_modification()
+            if self._check_for_user_modification(): return
         event.Skip()
 
     def on_kill_focus(self, event):
@@ -1179,7 +1109,7 @@ class TextProperty(Property):
             self.text.SetValue( self._value_to_str(self.value))
             return
         self.previous_value = self.value
-        Property._check_for_user_modification(self, new_value, force, activate)
+        return Property._check_for_user_modification(self, new_value, force, activate)
 
     def _convert_from_text(self, value=None):
         """Convert newline and tab characters to a character sequences (FROM input widget TO property)
@@ -1207,7 +1137,8 @@ class TextPropertyRO(TextProperty):
 # some text properties with validation:
 
 class NameProperty(TextProperty):
-    validation_re  = re.compile(r'^[a-zA-Z_]+[\w-]*(\[\w*\])*$')
+    #validation_re  = re.compile(r'^[a-zA-Z_]+[\w-]*(\[\w*\])*$')  # Python 3 only
+    validation_re  = re.compile(r'^[a-zA-Z_]+[a-zA-Z0-9_]*(\[\w*\])*$')  # Python 2 also
     def _check_name_uniqueness(self, name):
         # check whether the name is unique
         if config.preferences.allow_duplicate_names: return
@@ -1243,11 +1174,19 @@ class NameProperty(TextProperty):
         return True
 
 
-class SizePropertyD(TextPropertyD):
-    d = r"(\s*[dD]?)" # the trailig d for "dialog units"
-    validation_re = re.compile( _leading + _ge_m1 + _comma + _ge_m1 + d + _trailing )  # match pair of integers >=- 1
-    del d
-    normalization = "%s, %s%s" # for normalization % valiation_re.match(...).groups()
+# some building blocks for regular expressions:
+_leading  = r"^\s*\(?\s*"          # whitespace, optionally including an opening "("
+_int      = r"(0|(?:-?[1-9]\d*))"  # a number group matching any integer
+_ge_m1    = r"((?:-1)|(?:\d+))"    # a number group matching integers >=-1
+_g_0      = r"([1-9]\d*)"          # a number group matching integers >0
+_ge_0     = r"(\d+)"               # a number group matching integers >=0
+_comma    = r"\s*,\s*"             # a comma, optionally with surrounding whitespace
+_trailing = r"\s*\)?\s*$"          # whitespace, optionally including a closing ")"
+
+
+class IntPairPropertyD(TextPropertyD):
+    # the value is still a string, but it's guaranteed to have the right format
+    validation_re = re.compile(_leading + _ge_0 + _comma + _ge_0 + _trailing )  # match a pair of positive integers
     def _set_converter(self, value):
         # value can be a tuple
         if isinstance(value, compat.basestring):
@@ -1263,17 +1202,46 @@ class SizePropertyD(TextPropertyD):
         if not match: return None
         return self.normalization%match.groups()
 
-    def get_tuple(self):
-        x, y = self.value.split(",")
-        return (int(x), int(y))
+    def get_tuple(self, widget=None):
+        w, h = self.value.split(",")
+        return (int(w), int(h))
 
 
-class ScrollRatePropertyD(SizePropertyD):
-    # the value is still a string, but it's guaranteed to have the right format
-    validation_re = re.compile(_leading + _ge_0 + _comma + _ge_0 + _trailing )  # match a pair of integers >=0
+class SizePropertyD(IntPairPropertyD):
+    d = r"(\s*[dD]?)" # the trailig d for "dialog units"
+    validation_re = re.compile( _leading + _ge_m1 + _comma + _ge_m1 + d + _trailing )  # match pair of integers >=- 1
+    del d
+    normalization = "%s, %s%s" # for normalization % valiation_re.match(...).groups()
+
+    def get_size(self, widget=None):
+        "widget argument is used to calculate size in Dialog units, using wx.DLG_SZE"
+        w, h = self.value.split(",")
+
+        if h[-1] in 'dD':
+            h = h[:-1]
+            use_dialog_units = True
+        else:
+            use_dialog_units = False
+
+        w,h = int(w), int(h)
+        if widget is None: return (w,h)
+    
+        if use_dialog_units:
+            if compat.IS_CLASSIC:
+                wd, hd = wx.DLG_SZE(widget, (w, h))
+            else:
+                wd, hd = wx.DLG_UNIT(widget, wx.Size(w, h))
+            if w!=-1: w = wd
+            if h!=-1: h = hd
+
+        if w==-1 or h==-1:
+            best_size = widget.GetBestSize()
+            if w == -1: w = best_size[0]
+            if h == -1: h = best_size[1]
+        return (w,h)
 
 
-class IntRangePropertyA(SizePropertyD):
+class IntRangePropertyA(IntPairPropertyD):
     deactivated = False
     validation_re = re.compile( _leading + _int + _comma + _int + _trailing )  # match pair of integers
     normalization = "%s, %s"
@@ -1285,6 +1253,9 @@ class IntRangePropertyA(SizePropertyD):
         if int(mi)>int(ma): return None
         return self.normalization%(mi,ma)
 
+
+del _leading, _ge_m1, _g_0, _ge_0, _comma, _trailing
+########################################################################################################################
 
 class ComboBoxProperty(TextProperty):
     _CB_STYLE = wx.CB_DROPDOWN
@@ -1562,7 +1533,15 @@ class FontProperty(DialogProperty):
     validation_re = re.compile(" *\[(\d+), *'(default|decorative|roman|swiss|script|modern)', *"
                                "'(normal|slant|italic)', *'(normal|light|bold)', *(0|1), *'([a-zA-Z _]*)'] *")
     normalization = "[%s, '%s', '%s', '%s', %s, '%s']"
-    def write(self, outfile, tabs=0):
+
+    # for writing code
+    font_families = {'default': 'wxDEFAULT', 'decorative': 'wxDECORATIVE',
+                     'roman': 'wxROMAN', 'swiss': 'wxSWISS', 'script': 'wxSCRIPT', 'modern': 'wxMODERN',
+                     'teletype': 'wxTELETYPE'}
+    font_styles = {'normal': 'wxNORMAL', 'slant': 'wxSLANT', 'italic': 'wxITALIC'}
+    font_weights = {'normal': 'wxNORMAL', 'light': 'wxLIGHT', 'bold': 'wxBOLD'}
+
+    def write(self, output, tabs=0):
         if not self.is_active(): return
         try:
             props = [common.encode_to_unicode(s) for s in self.value]
@@ -1578,8 +1557,7 @@ class FontProperty(DialogProperty):
         inner_xml += common.format_xml_tag(u'weight',     props[3], tabs+1)
         inner_xml += common.format_xml_tag(u'underlined', props[4], tabs+1)
         inner_xml += common.format_xml_tag(u'face',       props[5], tabs+1)
-        stmt = common.format_xml_tag( self.name, inner_xml, tabs, is_xml=True )
-        outfile.write(stmt)
+        output.extend( common.format_xml_tag( self.name, inner_xml, tabs, is_xml=True ) )
 
     def _create_dialog(self):
         if self.dialog is None:
@@ -1849,7 +1827,6 @@ class GridProperty(Property):
         if not self.validation_res: return
         row,col = event.Row, event.Col
 
-
     def on_cell_changed(self, event):
         # user has entered a value
         row,col = event.Row, event.Col
@@ -1969,11 +1946,48 @@ class GridProperty(Property):
                 self.grid.SetColSize(col_to_expand, w)
 
 
+class CodePropertyD(TextPropertyD):
+    _HORIZONTAL_LAYOUT = False
+    TOOLTIP = ('You can use this property to add some extra code to that generated by wxGlade.\n\n'
+               'Please note that you should use this only if you have the "Overwrite existing sources" option set.')
+    LABEL = 'Extra code for this widget'
+
+    def __init__(self, value="", name="extracode"):
+        TextPropertyD.__init__(self, value, multiline=True, name=name, default_value=None)
+
+    def create_editor(self, panel, sizer):
+        TextPropertyD.create_editor(self, panel, sizer)
+        font = wx.Font(12, wx.FONTFAMILY_MODERN, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL)
+        self.text.SetFont(font)
+
+
+class ExtraPropertiesProperty(GridProperty):
+    LABEL = 'Extra properties for this widget'
+    TOOLTIP = ('You can use this property to add some extra custom properties to this widget.\n\n'
+               'For each property "prop" with value "val", wxGlade will generate a'
+               '"widget.SetProp(val)" line (or a "<prop>val</prop>" line for XRC).')
+
+    def __init__(self):
+        cols = [(_('Property'), GridProperty.STRING),
+                (_('Value'),    GridProperty.STRING)]
+        value = []
+        GridProperty.__init__(self, value, cols, can_insert=False)
+
+    def write(self, output, tabs):
+        if not self.value: return
+        inner_xml = []
+        for name, value in self.value:
+            if value:
+                inner_xml += common.format_xml_tag( u'property', value.strip(), tabs+1, name=name )
+        if inner_xml:
+            output.extend( common.format_xml_tag( u'extraproperties', inner_xml, tabs, is_xml=True ) )
+
 
 class ActionButtonProperty(Property):
     # just a button to start an action
     CONTROLNAMES = ["button"]
     background_color = None
+    HAS_DATA = False # to be ignored by owner.get_properties()
     def __init__(self, callback):
         self.callback = callback
         self.label = None  # set to None; when creating an editor, self.set_label() may have been called
@@ -2006,10 +2020,9 @@ class ActionButtonProperty(Property):
     def __call__(self, *args, **kwargs):
         self.callback(*args, **kwargs)
 
-    def write(self, outfile, tabs=0):
+    def write(self, output, tabs=0):
         return
 
-del _leading, _ge_m1, _g_0, _ge_0, _comma, _trailing
 
 ########################################################################################################################
 
@@ -2072,8 +2085,10 @@ class PropertyOwner(object):
         for name in self.property_names:
             if name in ("class","name","base") or name in without: continue
             prop = self.properties[name]
+            if not prop.HAS_DATA: continue
             if prop.attributename in without: continue  # for e.g. option/proportion
             if prop is not None: ret.append(prop)
         return ret
-
-
+    def check_prop(self, name):
+        if not name in self.properties: return False
+        return self.properties[name].is_active()

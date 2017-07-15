@@ -11,32 +11,10 @@ return an instance of XrcObject
 """
 
 from xml.sax.saxutils import escape, quoteattr
-from codegen import BaseLangCodeWriter, EventsPropertyHandler, ExtraPropertiesPropertyHandler
+from codegen import BaseLangCodeWriter
 from collections import OrderedDict
 import common, compat, errors
 import wcodegen
-from wcodegen.taghandler import BaseCodeWriterTagHandler
-
-
-class FontPropertyHandler(BaseCodeWriterTagHandler):
-    props = {'size': '', 'family': '', 'style': '', 'weight': '', 'underlined': '', 'face': ''}
-
-    def __init__(self):
-        super(FontPropertyHandler, self).__init__()
-        self.current = None
-
-    def start_elem(self, name, attrs):
-        self.current = name
-
-    def end_elem(self, name, code_obj):
-        if name == 'font':
-            code_obj.properties['font'] = self.props
-            return True  # to remove this handler
-
-    def char_data(self, data):
-        super(FontPropertyHandler, self).char_data(data)
-        self.props[self.current] = self.get_char_data()
-
 
 
 class XrcObject(wcodegen.XrcWidgetCodeWriter):
@@ -47,16 +25,16 @@ class XrcObject(wcodegen.XrcWidgetCodeWriter):
         self.properties = {}
         self.children = []  # sub-objects
 
-    def write_child_prologue(self, child, out_file, ntabs):
+    def write_child_prologue(self, child, output, ntabs):
         pass
 
-    def write_child_epilogue(self, child, out_file, ntabs):
+    def write_child_epilogue(self, child, output, ntabs):
         pass
 
     def write_property(self, name, val, outfile, ntabs):
         pass
 
-    def write(self, out_file, ntabs):
+    def write(self, output, ntabs, properties=None):
         pass
 
     def warning(self, msg):
@@ -75,20 +53,19 @@ class SizerItemXrcObject(XrcObject):
         self.flag = flag
         self.border = border
 
-    def write(self, out_file, ntabs):
-        write = out_file.write
+    def write(self, output, ntabs, properties=None):
         tabs = self.tabs(ntabs)
         tabs1 = self.tabs(ntabs + 1)
-        write(tabs + '<object class="sizeritem">\n')
+        output.append(tabs + '<object class="sizeritem">\n')
         if self.proportion != '0':
-            write(tabs1 + '<option>%s</option>\n' % self.proportion)
+            output.append(tabs1 + '<option>%s</option>\n' % self.proportion)
         if self.flag and self.flag != '0':
-            write(tabs1 + '<flag>%s</flag>\n' % self.cn_f(self.flag))
+            output.append(tabs1 + '<flag>%s</flag>\n' % self.cn_f(self.flag))
         if self.border != '0':
-            write(tabs1 + '<border>%s</border>\n' % self.border)
+            output.append(tabs1 + '<border>%s</border>\n' % self.border)
         # write the widget
-        self.obj.write(out_file, ntabs + 1)
-        write(tabs + '</object>\n')
+        self.obj.write(output, ntabs + 1)
+        output.append(tabs + '</object>\n')
 
 
 
@@ -102,47 +79,43 @@ class SpacerXrcObject(XrcObject):
         self.flag = flag
         self.border = border
 
-    def write(self, out_file, ntabs):
-        write = out_file.write
+    def write(self, output, ntabs):
         tabs = self.tabs(ntabs)
         tabs1 = self.tabs(ntabs + 1)
-        write(tabs + '<object class="spacer">\n')
-        write(tabs1 + '<size>%s</size>\n' % self.size_str.strip())
+        output.append(tabs + '<object class="spacer">\n')
+        output.append(tabs1 + '<size>%s</size>\n' % self.size_str.strip())
         if self.proportion != '0':
-            write(tabs1 + '<option>%s</option>\n' % self.proportion)
+            output.append(tabs1 + '<option>%s</option>\n' % self.proportion)
         if self.flag and self.flag != '0':
-            write(tabs1 + '<flag>%s</flag>\n' % self.cn_f(self.flag))
+            output.append(tabs1 + '<flag>%s</flag>\n' % self.cn_f(self.flag))
         if self.border != '0':
-            write(tabs1 + '<border>%s</border>\n' % self.border)
-        write(tabs + '</object>\n')
+            output.append(tabs1 + '<border>%s</border>\n' % self.border)
+        output.append(tabs + '</object>\n')
 
 
 
 class DefaultXrcObject(XrcObject):
     "Standard XrcObject for every widget, used if no specific XrcObject is available"
 
-    def __init__(self, code_obj):
-        XrcObject.__init__(self, code_obj.klass)
-        self.properties = code_obj.properties
-        self.code_obj = code_obj
-        self.name = code_obj.name
-        self.klass = code_obj.base  # custom classes aren't allowed in XRC
-        self.subclass = code_obj.klass
+    def __init__(self, widget):
+        XrcObject.__init__(self, widget.klass)
+        self.widget = widget
+        self.name = widget.name
+        self.klass = widget.base  # custom classes aren't allowed in XRC
+        self.subclass = widget.klass
 
-    def write_property(self, name, val, outfile, ntabs):
+    def write_property(self, name, val, output, ntabs):
         if not val:
             return
 
         if name in ['icon', 'bitmap']:
-            prop = self._format_bitmap_property(name, val)
+            prop = self._format_bitmap_property(name, val, ntabs)
         else:
-            prop = common.format_xml_tag(name, val)
+            prop = common.format_xml_prop(name, val, ntabs)
 
-        if prop:
-            line = '%s%s' % (self.tabs(ntabs), prop)
-            outfile.write(line)
+        output.append(prop)
 
-    def _format_bitmap_property(self, name, val):
+    def _format_bitmap_property(self, name, val, ntabs):
         "Return formatted bitmap/icon XRC property (as string)."
 
         if val.startswith('art:'):
@@ -152,101 +125,111 @@ class DefaultXrcObject(XrcObject):
             art_client = elements[1]
 
             if art_client != 'wxART_OTHER':
-                prop = common.format_xml_tag( name, '', stock_id=art_id, stock_client=art_client )
+                return common.format_xml_prop( name, '', ntabs, stock_id=art_id, stock_client=art_client )
             else:
-                prop = common.format_xml_tag(name, u'', stock_id=art_id)
+                return common.format_xml_prop(name, u'', ntabs, stock_id=art_id)
 
         elif val.startswith('code:') or val.startswith('empty:') or val.startswith('var:'):
             self._logger.warn( _('XRC: Unsupported bitmap statement "%s" for %s "%s"'), val, self.klass, self.name )
-            prop = None
+            return None
 
+        return common.format_xml_prop(name, val, ntabs)
+
+    def write(self, output, ntabs, properties=None):
+        if properties is None: properties = {}
+        if "name" in properties:
+            name = properties["name"]
+            del properties["name"]
         else:
-            prop = common.format_xml_tag(name, val)
-
-        return prop
-
-    def write(self, out_file, ntabs):
-        write = out_file.write
-        if self.code_obj.in_sizers:
-            write(self.tabs(ntabs) + '<object class=%s>\n' % quoteattr(self.klass))
+            name = self.name
+        if self.widget.is_sizer:
+            output.append(self.tabs(ntabs) + '<object class=%s>\n' % quoteattr(self.klass))
         else:
             if self.subclass and self.subclass != self.klass:
-                write(self.tabs(ntabs) + '<object class=%s name=%s subclass=%s>\n' % (
-                                                quoteattr(self.klass), quoteattr(self.name), quoteattr(self.subclass)) )
+                output.append(self.tabs(ntabs) + '<object class=%s name=%s subclass=%s>\n' % (
+                                                quoteattr(self.klass), quoteattr(name), quoteattr(self.subclass)) )
             else:
-                write(self.tabs(ntabs) + '<object class=%s name=%s>\n' % (quoteattr(self.klass), quoteattr(self.name)))
+                output.append(self.tabs(ntabs) + '<object class=%s name=%s>\n' % (quoteattr(self.klass), quoteattr(name)))
         tab_str = self.tabs(ntabs + 1)
         # write the properties
-        if 'foreground' in self.properties:
-            if self.properties['foreground'].startswith('#'):
-                # XRC does not support colors from system settings
-                self.properties['fg'] = self.properties['foreground']
-            del self.properties['foreground']
-        if 'background' in self.properties:
-            if self.properties['background'].startswith('#'):
-                # XRC does not support colors from system settings
-                self.properties['bg'] = self.properties['background']
-            del self.properties['background']
-        if 'font' in self.properties:
-            font = self.properties['font']
-            del self.properties['font']
-        else:
-            font = None
-        style = str(self.properties.get('style', ''))
-        if style:
-            if style == '0':
-                del self.properties['style']
-            else:
-                self.properties['style'] = self.cn_f(style)
+        import edit_sizers
+        active_properties = self.widget.get_properties(without=set(edit_sizers.SizerBase.MANAGED_PROPERTIES))
 
-        if 'id' in self.properties:
-            del self.properties['id']  # id has no meaning for XRC
+        font = None
+        for prop in active_properties:
+            if not prop.is_active(): continue
+            if prop.value==prop.default_value: continue
+            name = prop.name
+            if name in properties: continue  # set already
+            value = None
+            if name=='foreground':
+                value = prop.get_string_value()
+                if not value.startswith('#'):
+                    # XRC does not support colors from system settings
+                    continue
+                name = 'fg'
+            elif name=='background':
+                value = prop.get_string_value()
+                if not value.startswith('#'):
+                    # XRC does not support colors from system settings
+                    continue
+                name = "bg"
+            elif name=='font':
+                font = prop.value
+                continue
+            elif name=="style":
+                if hasattr(prop, "value_set"):
+                    if prop.value_set==prop.default_value: continue
+                value = prop.get_string_value()
+                if value: value = self.cn_f(value)
+            elif name=='id':
+                continue  # id has no meaning for XRC
+            elif name=='events':
+                for win_id, event, handler, event_type in self.get_event_handlers(self.widget):
+                    output.append(tab_str + '<handler event=%s>%s</handler>\n' % (quoteattr(event), escape(handler)))
+                continue
+            elif name=='disabled':
+                # 'disabled' property is actually 'enabled' for XRC
+                if prop.get():
+                    properties['enabled'] = '0'
+                else:
+                    continue
+            elif name=='extracode':
+                output.append(prop.get().replace('\\n', '\n'))
+                raise ValueError("XXX  use quoted value")
+            elif name=='custom_base' in self.properties:
+                # custom base classes are ignored for XRC...
+                continue
+            elif name=='extraproperties':
+                value = prop.get()
+                if value:
+                    properties.update(value)
+                continue
+            if value is None: value = prop.get_string_value()
+            if value is None: continue
+            properties[name] = value
 
-        if 'events' in self.properties:
-            for win_id, event, handler, event_type in self.get_event_handlers(self):
-                write(tab_str + '<handler event=%s>%s</handler>\n' % (quoteattr(event), escape(handler)))
-            del self.properties['events']
-
-        # 'disabled' property is actually 'enabled' for XRC
-        if 'disabled' in self.properties:
-            try:
-                val = int(self.properties['disabled'])
-            except:
-                val = False
-            if val:
-                self.properties['enabled'] = '0'
-            del self.properties['disabled']
-
-        if 'extracode' in self.properties:
-            write(self.properties['extracode'].replace('\\n', '\n'))
-            del self.properties['extracode']
-
-        # custom base classes are ignored for XRC...
-        if 'custom_base' in self.properties:
-            del self.properties['custom_base']
-
-        if 'extraproperties' in self.properties:
-            prop = self.properties['extraproperties']
-            del self.properties['extraproperties']
-            self.properties.update(prop)
-
-        for name in sorted( self.properties.keys() ):
-            self.write_property(str(name), self.properties[name], out_file, ntabs + 1)
+        for name in sorted( properties.keys() ):
+            value = properties[name]
+            if value is None: continue
+            self.write_property(str(name), value, output, ntabs + 1)
         # write the font, if present
         if font:
-            write(tab_str + '<font>\n')
+            output.append(tab_str + '<font>\n')
             tab_str = self.tabs(ntabs + 2)
-            for key in sorted(font.keys()):
-                val = font[key]
+
+            data = sorted( zip(['size','family','style','weight','underlined','face'], font) )
+            for key, val in data:
+                if isinstance(val, int): val = str(val)
                 if val:
-                    write(tab_str + '<%s>%s</%s>\n' % (escape(key), escape(val), escape(key)))
-            write(self.tabs(ntabs + 1) + '</font>\n')
+                    output.append(tab_str + '<%s>%s</%s>\n' % (escape(key), escape(val), escape(key)))
+            output.append(self.tabs(ntabs + 1) + '</font>\n')
         # write the children
         for c in self.children:
-            self.write_child_prologue(c, out_file, ntabs + 1)
-            c.write(out_file, ntabs + 1)
-            self.write_child_epilogue(c, out_file, ntabs + 1)
-        write(self.tabs(ntabs) + '</object>\n')
+            self.write_child_prologue(c, output, ntabs + 1)
+            c.write(output, ntabs + 1)
+            self.write_child_epilogue(c, output, ntabs + 1)
+        output.append(self.tabs(ntabs) + '</object>\n')
 
 
 
@@ -258,45 +241,25 @@ class NotImplementedXrcObject(XrcObject):
         XrcObject.__init__(self)
         self.code_obj = code_obj
 
-    def write(self, outfile, ntabs):
+    def write(self, output, ntabs):
         msg = 'code generator for %s objects not available' % self.code_obj.base
         self.warning('%s' % msg)
-        stmt = '%s%s\n' % (self.tabs(ntabs), self._format_comment(msg))
-        outfile.write(stmt)
+        output.append( '%s%s\n' % (self.tabs(ntabs), self._format_comment(msg)) )
 
 
 
 class XRCCodeWriter(BaseLangCodeWriter, wcodegen.XRCMixin):
     "Code writer class for writing XRC XML code out of the designed GUI elements"
+
+    # dict of active XrcObject instances: during the code generation it stores all the non-sizer objects that have
+    # children (i.e. frames, dialogs, panels, notebooks, etc.), while at the end of the code generation,
+    # before finalize is called, it contains only the true toplevel objects (frames and dialogs), and is used to write
+    # their XML code (see finalize). The other objects are deleted when add_object is called with their corresponding
+    # code_object as argument (see add_object)
     xrc_objects = None
-    """\
-    dictionary of active L{XrcObject} instances: during the code generation
-    it stores all the non-sizer objects that have children (i.e. frames,
-    dialogs, panels, notebooks, etc.), while at the end of the code
-    generation, before L{finalize} is called, it contains only the true
-    toplevel objects (frames and dialogs), and is used to write their XML
-    code (see L{finalize}). The other objects are deleted when L{add_object}
-    is called with their corresponding code_object as argument
-    (see L{add_object})
-    """
 
-    global_property_writers = {
-        'font': FontPropertyHandler,
-        'events': EventsPropertyHandler,
-        'extraproperties': ExtraPropertiesPropertyHandler,
-        }
-    "Dictionary whose items are custom handlers for widget properties"
-
-    property_writers = {}
-    """\
-    Dictionary of dictionaries of property handlers specific for a widget
-    the keys are the class names of the widgets
-
-    Example: property_writers['wxRadioBox'] = {'choices', choices_handler}
-    """
-
-    obj_builders = {}
-    "Dictionary of ``writers'' for the various objects"
+    property_writers = {}  # dict of dicts of property handlers specific for a widget; keys: class names of the widgets
+    obj_builders = {}      # Dictionary of ``writers'' for the various objects
 
     tmpl_encoding = '<?xml version="1.0" encoding="%s"?>\n'
     tmpl_generated_by = '<!-- %(generated_by)s -->'
@@ -318,7 +281,7 @@ class XRCCodeWriter(BaseLangCodeWriter, wcodegen.XRCMixin):
         if not hasattr(XrcObject, '_format_comment'):
             XrcObject._format_comment = self._format_comment
 
-    def init_lang(self, app_attrs):
+    def init_lang(self, app):
         # for now we handle only single-file code generation
         if self.multiple_files:
             raise errors.WxgXRCMultipleFilesNotSupported()
@@ -326,9 +289,9 @@ class XRCCodeWriter(BaseLangCodeWriter, wcodegen.XRCMixin):
         # overwrite existing sources always
         self._overwrite = True
 
-        self.output_file_name = app_attrs['path']
-        self.out_file = compat.StringIO()
-        self.out_file.write('\n<resource version="2.3.0.1">\n')
+        self.output_file_name = app.output_path
+        self.out_file = []
+        self.out_file.append('\n<resource version="2.3.0.1">\n')
         self.curr_tab = 1
         self.xrc_objects = OrderedDict()
 
@@ -336,18 +299,21 @@ class XRCCodeWriter(BaseLangCodeWriter, wcodegen.XRCMixin):
         # write the code for every toplevel object
         for obj in self.xrc_objects.values():
             obj.write(self.out_file, 1)
-        self.out_file.write('</resource>\n')
+        self.out_file.append('</resource>\n')
         # store the contents to file
-        self.save_file( self.output_file_name, self.out_file.getvalue() )
+        self.save_file( self.output_file_name, self.out_file )
+        self.out_file = None
 
-    def add_app(self, app_attrs, top_win_class):
+    def add_app(self, app, top_win_class):
         "In the case of XRC output, there's no wxApp code to generate"
         pass
 
-    def add_object(self, unused, sub_obj):
+    def add_object(self, sub_obj):
         "Adds the object sub_obj to the XRC tree. The first argument is unused."
-        # what we need in XRC is not top_obj, but sub_obj's true parent
-        top_obj = sub_obj.parent
+        # what we need in XRC is not top_obj, but sub_obj's true parent we don't need the sizer, but the window
+        top_obj = sub_obj.node.parent.widget
+        while top_obj.is_sizer:
+            top_obj = top_obj.node.parent.widget
         builder = self.obj_builders.get( sub_obj.base, DefaultXrcObject )
         try:
             # check whether we already created the xrc_obj
@@ -357,12 +323,10 @@ class XRCCodeWriter(BaseLangCodeWriter, wcodegen.XRCMixin):
             sub_obj.xrc = xrc_obj
         else:
             # if we found it, remove it from the self.xrc_objects dictionary
-            # (if it was there, i.e. the object is not a sizer), because this
-            # isn't a true toplevel object
+            # (if it was there, i.e. the object is not a sizer), because this isn't a true toplevel object
             if sub_obj in self.xrc_objects:
                 del self.xrc_objects[sub_obj]
-        # let's see if sub_obj's parent already has an XrcObject: if so, it
-        # is temporarily stored in the self.xrc_objects dict...
+        # let's see if sub_obj's parent already has an XrcObject: if so, it's temporarily stored in self.xrc_objects
         if top_obj in self.xrc_objects:
             top_xrc = self.xrc_objects[top_obj]
         else:
@@ -375,7 +339,10 @@ class XRCCodeWriter(BaseLangCodeWriter, wcodegen.XRCMixin):
     def add_sizeritem(self, unused, sizer, obj, option, flag, border):
         "Adds a sizeritem to the XRC tree. The first argument is unused."
         # what we need in XRC is not toplevel, but sub_obj's true parent
-        toplevel = obj.parent
+        toplevel = obj.node.parent.widget
+        while toplevel.is_sizer:
+            toplevel = toplevel.node.parent.widget
+
         top_xrc = toplevel.xrc
         obj_xrc = obj.xrc
         try:
@@ -399,13 +366,21 @@ class XRCCodeWriter(BaseLangCodeWriter, wcodegen.XRCMixin):
             sizer.xrc.children.append(sizeritem_xrc)
         del top_xrc.children[index]
 
+    def add_spacer(self, topl, sizer, obj=None, option=0, flag='0', border=0):
+        if obj is not None:
+            w = obj.width
+            h = obj.height
+        else:
+            h = w = 0
+        obj_xrc = SpacerXrcObject( '%s, %s' % (w,h), str(option), str(flag), str(border) )
+        if not hasattr(sizer, "xrc"):  # if the sizer has not an XrcObject yet, create it now
+            sizer.xrc = self.obj_builders.get( sizer.base, DefaultXrcObject )(sizer)
+        sizer.xrc.children.append(obj_xrc)
+
     def add_class(self, code_obj):
-        """\
-        Add class behaves very differently for XRC output than for other
-        languages (i.e. python): since custom classes are not supported in
-        XRC, this has effect only for true toplevel widgets, i.e. frames and
-        dialogs. For other kinds of widgets, this is equivalent to add_object
-        """
+        """Add class behaves very differently for XRC output than for other languages (i.e. python):
+        since custom classes are not supported in XRC, this has effect only for true toplevel widgets, i.e. frames and
+        dialogs. For other kinds of widgets, this is equivalent to add_object"""
         if not code_obj in self.xrc_objects:
             builder = self.obj_builders.get( code_obj.base, DefaultXrcObject )
             xrc_obj = builder(code_obj)
@@ -423,8 +398,6 @@ class XRCCodeWriter(BaseLangCodeWriter, wcodegen.XRCMixin):
         return s
 
 
-writer = XRCCodeWriter()
-"The code writer is an instance of L{XRCCodeWriter}."
+writer = XRCCodeWriter()    # The code writer is an instance of XRCCodeWriter
 
-language = writer.language
-"Language generated by this code generator"
+language = writer.language  # Language generated by this code generator

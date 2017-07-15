@@ -11,12 +11,9 @@ import wcodegen
 
 
 class PerlStaticBitmapGenerator(wcodegen.PerlWidgetCodeWriter):
-    tmpl = '%(name)s = %(klass)s->new(%(parent)s, %(id)s, ' \
-           '%(bitmap)s%(style)s);\n'
+    tmpl = '%(name)s = %(klass)s->new(%(parent)s, %(id)s, %(bitmap)s%(style)s);\n'
     tmpl_SetBestSize = ''
     prefix_style = True
-
-# end of class PerlStaticBitmapGenerator
 
 
 def initialize():

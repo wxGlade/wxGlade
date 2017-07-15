@@ -2,48 +2,39 @@
 Different Mixins
 
 @copyright: 2014-2016 Carsten Grohmann
+@copyright: 2017 Dietmar Schwertberger
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
-import copy
-import decorators
-import logging
+import copy, decorators, logging
 import wx
 
-import config
-import compat
-import misc
+import config, compat, misc
 
 
 class StylesMixin(object):
     "Class mixin to handle formatting and re-combining styles"
 
     def cn_f(self, flags):
-        """\
-        Rearrange and format flags.
+        """Rearrange and format flags into a string.
 
         Steps to rearrange:
          1. Split given string using delimiter '|' and remove duplicate flags
-         2. Process following style attributes, the styles are processed in
-            a alphanumeric order:
+         2. Process following style attributes, the styles are processed in a alphanumeric order:
               - Rename flags using the 'rename_to' entry
-              - Add additional flags using the 'include' entry (soft
-                requirement)
+              - Add additional flags using the 'include' entry (soft requirement)
               - Delete flags using the 'exclude' entry
               - Remove unsupported flags using the 'supported_by' entry
-              - Add required flags using the 'require' entry (hard
-                requirement)
+              - Add required flags using the 'require' entry (hard requirement)
          3. Combine flags using the 'combination' entry
-         4. Format single flags with L{wcodegen.BaseLanguageMixin.cn()} if
-            L{wcodegen.BaseLanguageMixin.format_flags} is True
-         5. Sort and recombine flags using
-            L{wcodegen.BaseLanguageMixin.tmpl_flag_join}
+         4. Format single flags with wcodegen.BaseLanguageMixin.cn() if wcodegen.BaseLanguageMixin.format_flags is True
+         5. Sort and recombine flags using wcodegen.BaseLanguageMixin.tmpl_flag_join
 
-        The style details are described in L{config.widget_config}. The
-        access to the details is only available in widget writer instances.
+        The style details are described in config.widget_config.
+        The access to the details is only available in widget writer instances.
 
-        Sometime the flag is a digit as a string. The function doesn't
-        process such kind of flags. It returns this flags unchanged.
+        Sometime the flag is a digit as a string. The function doesn't process such kind of flags.
+        It returns these flags unchanged.
 
         Example C++::
             >>> self.cn_f('wxLC_REPORT|wxSUNKEN_BORDER')
@@ -53,19 +44,12 @@ class StylesMixin(object):
             >>> self.cn_f('wxLC_REPORT|wxSUNKEN_BORDER')
             'wxLC_REPORT | wxSUNKEN_BORDER'
 
-        @param flags: wxWidget styles joined by '|'
-        @type flags:  str
-
-        @rtype: str
-
-        @see: cn()
-        @see: format_flags
-        @see: tmpl_flag_join
-        @see: L{config.widget_config}
-        """
+        flags: string with wxWidget styles joined by '|'
+        
+        see: cn(), format_flags, tmpl_flag_join, config.widget_config"""
         assert isinstance(flags, compat.basestring)
-        if flags.isdigit():
-            return flags
+
+        if flags.isdigit(): return flags
 
         # split flags to set first
         oflags = flags
@@ -82,28 +66,18 @@ class StylesMixin(object):
         tmpl_flag_join = getattr(self, 'tmpl_flag_join', '|')
         flags = tmpl_flag_join.join(sorted(flags))
 
-        if hasattr(self, 'klass'):
-            logging.debug('cn_f(%s:%s): %s', getattr(self, 'klass'), oflags, flags)
-        else:
-            logging.debug('cn_f(%s): %s', oflags, flags)
-
         return flags
 
     @decorators.memoize
     def _get_widget_styles_defs(self, widget_name):
-        """
-        Logic of L{_get_style_defs()} but extracted for cache decorator.
+        """Logic of _get_style_defs() but extracted for cache decorator.
 
-        @note: The styles are copied using a deep-copy to prevent changing
-               original data accidentally.
+        note: The styles are copied using a deep-copy to prevent changing original data accidentally.
 
-        @param widget_name: Widget name e.g. 'wxCheckBox'
-        @type widget_name: str
+        widget_name: Widget name e.g. 'wxCheckBox'
+        widget_name: Widget name e.g. 'wxCheckBox'
 
-        @return: A joined copy of the generic styles and widget specific
-                 styles.
-        @rtype: dict
-        """
+        returns a joined copy of the generic styles and widget specific styles as dict"""
         styles = {}
         # Use always a deep-copy to prevent changing original data
         try:
@@ -115,37 +89,24 @@ class StylesMixin(object):
         return styles
 
     def _get_style_defs(self):
-        """\
-        Return all styles related to this widget. This includes generic
-        styles from L{config.widget_config}.
+        """Return all styles related to this widget as dict. This includes generic styles from config.widget_config.
 
-        The implementation has moved to L{_get_widget_styles_defs()} to use a
+        The implementation has moved to _get_widget_styles_defs() to use a
         simple cache decorator instead of using an own cache implementation.
 
-        @rtype: dict
-        @see: L{config.widget_config}
-        @see: L{_get_widget_styles_defs()}
-        """
+        see: config.widget_config, _get_widget_styles_defs()"""
         return self._get_widget_styles_defs(getattr(self, 'klass', None))
 
     style_defs = property(_get_style_defs)
 
     def process_styles(self, flags):
-        """\
-        Process the style attributes 'rename_to', 'include', 'exclude',
-        'supported_by' and 'require'.
+        """Process the style attributes 'rename_to', 'include', 'exclude', 'supported_by' and 'require'.
+        Returns processed flags as set.
 
-        The documentation of L{cn_f()} contains more details of the flag
-        handling process.
+        flags: Flags to process as set
 
-        @param flags: Flags to process
-        @type flags:  set
-
-        @return: Processed flags
-        @rtype: set
-
-        @see: L{config.widget_config}
-        """
+        see: The documentation of cn_f() contains more details of the flag handling process.
+             config.widget_config"""
         assert isinstance(flags, set)
 
         # processing empty set()s causes later trouble with
@@ -205,20 +166,13 @@ class StylesMixin(object):
         return flags
 
     def combine_styles(self, flags):
-        """\
-        Combine flags (attribute 'combination') and remove flags that are
-        parts of other flags already.
+        """Combine flags (attribute 'combination') and remove flags that are parts of other flags already.
+        Returns processed flags as set.
 
-        @param flags: Flags to combine and reduce
-        @type flags:  set
+        flags: Flags to combine and reduce as set
 
-        @return: Processed flags
-        @rtype: set
-
-        @see: L{config.widget_config}
-        """
-        # processing empty set()s causes later trouble with
-        # set([<filled>]) >= set()
+        see: config.widget_config"""
+        # processing empty set()s causes later trouble with set([<filled>]) >= set()
         if not flags:
             return flags
 
@@ -248,28 +202,17 @@ class StylesMixin(object):
 
 class BitmapMixin(object):
     "Class mixin to create wxBitmap instances from the given statement"
-
-    bitmap_tooltip_text = _(
-        'Choice a bitmap to show.\n\nYou can either select a file or you '
-        'can specify the bitmap using hand-crafted statements with the '
-        'prefixes "art:", "code:", "empty:" or "var:".\nThe wxGlade '
-        'documentation describes how to write such statements.')
-    "Detailed tooltip string to show with each bitmap property."
+    bitmap_tooltip_text = _('Choice a bitmap to show.\n\nYou can either select a file or you can specify the bitmap'
+                            ' using hand-crafted statements with the prefixes "art:", "code:", "empty:" or "var:".\n'
+                            'The wxGlade documentation describes how to write such statements.')
 
     def get_preview_obj_bitmap(self, bitmap=None):
-        """\
-        Create a wxBitmap instance from the given statement.
+        """Create a wx.Bitmap or wx.EmptyBitmap from the given statement.
+        If no statement is given, the instance variable named "bitmap" is used.
 
-        If not statement is given, the instance variable named "bitmap" is used.
+        bitmap: Bitmap definition (str or None)
 
-        @param bitmap: Bitmap definition
-        @type bitmap: str | None
-
-        @see: L{get_preview_obj_artprovider()}
-        @see: L{get_preview_obj_emptybitmap()}
-
-        @rtype: wx.Bitmap | wx.EmptyBitmap
-        """
+        see: get_preview_obj_artprovider(), get_preview_obj_emptybitmap()"""
         if bitmap is None:
             bitmap = getattr(self, 'bitmap', None)
 
@@ -287,19 +230,12 @@ class BitmapMixin(object):
             return wx.Bitmap(bitmap, wx.BITMAP_TYPE_ANY)
 
     def get_preview_obj_artprovider(self, bitmap):
-        """\
-        Create a wxBitmap instance from the given statement using
-        wxArtProvider.
+        """Create a wxBitmap or wx.EmptyBitmap from the given statement using wxArtProvider.
+        (note: Preview shows only wxART_* resources.)
 
-        @note: Preview shows only wxART_* resources.
+        bitmap: Bitmap definition (str or None)
 
-        @param bitmap: Bitmap definition
-        @type bitmap: str | None
-
-        @rtype: wx.Bitmap | wx.EmptyBitmap
-
-        @see: L{wcodegen.BaseWidgetWriter.get_inline_stmt_artprovider()}
-        """
+        see: Lwcodegen.BaseWidgetWriter.get_inline_stmt_artprovider()"""
         # keep in sync with BitmapMixin.get_inline_stmt_artprovider()
         art_id = 'wxART_ERROR'
         art_client = 'wxART_OTHER'
@@ -322,28 +258,18 @@ class BitmapMixin(object):
             self._logger.warn( 'Malformed statement to create a bitmap via wxArtProvider(): %s', bitmap )
 
         # show wx art resources only
-        if not art_id.startswith('wx'):
-            art_id = 'wxART_HELP'
-        if not art_client.startswith('wx'):
-            art_client = 'wxART_OTHER'
+        if not art_id.startswith('wx'):     art_id     = 'wxART_HELP'
+        if not art_client.startswith('wx'): art_client = 'wxART_OTHER'
 
-        return wx.ArtProvider.GetBitmap(
-            self.wxname2attr(self.codegen.cn(art_id)),
-            self.wxname2attr(self.codegen.cn(art_client)),
-            size
-        )
+        return wx.ArtProvider.GetBitmap( self.wxname2attr(self.codegen.cn(art_id)),
+                                         self.wxname2attr(self.codegen.cn(art_client)), size )
 
     def get_preview_obj_emptybitmap(self, bitmap):
-        """\
-        Create an empty wxBitmap instance from the given statement.
+        """Create an empty wx.EmptyBitmap instance from the given statement.
 
-        @param bitmap: Bitmap definition
-        @type bitmap: str | None
+        bitmap: Bitmap definition as str or None
 
-        @rtype: wx.Bitmap | wx.EmptyBitmap
-
-        @see: L{wcodegen.BaseWidgetWriter.get_inline_stmt_emptybitmap()}
-        """
+        see: wcodegen.BaseWidgetWriter.get_inline_stmt_emptybitmap()"""
         # keep in sync with BaseWidgetWriter.get_inline_stmt_emptybitmap()
         width = 16
         height = 16

@@ -11,16 +11,11 @@ import wcodegen
 
 
 class PerlPanelGenerator(wcodegen.PerlWidgetCodeWriter):
-    new_signature = [
-        '$parent', '$id', '$pos', '$size', '$style', '$name'
-    ]
+    new_signature = ['$parent', '$id', '$pos', '$size', '$style', '$name']
 
     def get_code(self, panel):
         prop = panel.properties
-        try:
-            scrollable = int(prop['scrollable'])
-        except:
-            scrollable = False
+        scrollable = panel.scrollable
 
         id_name, id = self.codegen.generate_code_id(panel)
         parent = self.format_widget_access(panel.parent)
@@ -36,17 +31,17 @@ class PerlPanelGenerator(wcodegen.PerlWidgetCodeWriter):
             else:
                 klass = klass.replace('wx', 'Wx::', 1)
 
-            l.append('$self->{%s} = %s->new(%s, %s);\n' %
-                     (panel.name, klass, parent, id))
+            l.append( '$self->{%s} = %s->new(%s, %s);\n' % (panel.name, klass, parent, id) )
             return l, [], []
 
         init = []
         if id_name:
             init.append(id_name)
-        style = prop.get("style", 'wxTAB_TRAVERSAL')
+        style = panel.properties["style"].get_string_value() or 'wxTAB_TRAVERSAL'
         if not (scrollable or style != 'wxTAB_TRAVERSAL'):
             style = ''
-        if not int(panel.properties.get('no_custom_class', False)):
+        #if not int(panel.properties.get('no_custom_class', False)):
+        if not panel.no_custom_class:
             if scrollable:
                 klass = 'Wx::ScrolledWindow'
             else:
@@ -59,38 +54,24 @@ class PerlPanelGenerator(wcodegen.PerlWidgetCodeWriter):
         else:
             extra = ''
 
-        init.append('$self->{%s} = %s->new(%s, %s%s);\n' %
-                    (panel.name, klass, parent, id, extra))
+        init.append( '$self->{%s} = %s->new(%s, %s%s);\n' % (panel.name, klass, parent, id, extra) )
 
         props_buf = self.codegen.generate_common_properties(panel)
         if scrollable:
-            sr = prop.get('scroll_rate', '0, 0')
-            props_buf.append('$self->{%s}->SetScrollRate(%s);\n' %
-                             (panel.name, sr))
+            props_buf.append( '$self->{%s}->SetScrollRate(%s);\n' % (panel.name, panel.scroll_rate) )
         return init, props_buf, []
 
     def get_properties_code(self, obj):
-        try:
-            scrollable = int(obj.properties['scrollable'])
-        except:
-            scrollable = False
-
         props_buf = self.codegen.generate_common_properties(obj)
-        if scrollable:
-            sr = obj.properties.get('scroll_rate', '0, 0')
-            props_buf.append('$self->SetScrollRate(%s);\n' % sr)
+        if obj.scrollable:
+            props_buf.append('$self->SetScrollRate(%s);\n' % obj.scroll_rate)
         return props_buf
 
     def get_layout_code(self, obj):
         ret = ['$self->Layout();\n']
-        try:
-            if int(obj.properties['centered']):
-                ret.append('$self->Centre();\n')
-        except (KeyError, ValueError):
-            pass
+        if obj.centered:
+            ret.append('$self->Centre();\n')
         return ret
-
-# end of class PerlPanelGenerator
 
 
 def initialize():

@@ -3,13 +3,12 @@ Code generator functions for wxFrame objects
 
 @copyright: 2002-2007 Alberto Griggio
 @copyright: 2014-2016 Carsten Grohmann
-@copyright: 2016 Dietmar Schwertberger
+@copyright: 2016-2017 Dietmar Schwertberger
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
 import common
 import wcodegen
-from wcodegen.taghandler import BaseCodeWriterTagHandler
 
 
 class PythonFrameCodeGenerator(wcodegen.PythonWidgetCodeWriter):
@@ -18,12 +17,10 @@ class PythonFrameCodeGenerator(wcodegen.PythonWidgetCodeWriter):
 
     def get_properties_code(self, obj):
         out = []
-        title = obj.properties.get('title')
-        if title:
-            out.append('self.SetTitle(%s)\n' % self.codegen.quote_str(title))
-        icon = obj.properties.get('icon')
-        if icon:
-            stmt_icon = self.generate_code_bitmap(icon, obj.preview)
+        if obj.title:
+            out.append('self.SetTitle(%s)\n' % self.codegen.quote_str(obj.title))
+        if obj.icon:
+            stmt_icon = self.generate_code_bitmap(obj.icon)
             out.append('_icon = %s\n' % self.cn('wxNullIcon'))
             out.append('_icon.CopyFromBitmap(%s)\n' % stmt_icon)
             out.append('self.SetIcon(_icon)\n')
@@ -32,56 +29,24 @@ class PythonFrameCodeGenerator(wcodegen.PythonWidgetCodeWriter):
 
     def get_layout_code(self, obj):
         ret = ['self.Layout()\n']
-        try:
-            if int(obj.properties['centered']):
-                ret.append('self.Centre()\n')
-        except (KeyError, ValueError):
-            pass
-        if 'size' in obj.properties:
+        if "centered" in obj.properties and obj.centered:
+            ret.append('self.Centre()\n')
+        if 'size' in obj.properties and obj.properties["size"].is_active():
             ret.append( self.codegen.generate_code_size(obj) )
         return ret
-
-
-
-# property handlers for code generation
-class StatusFieldsHandler(BaseCodeWriterTagHandler):
-    "Handler for statusbar fields"
-
-    def __init__(self):
-        super(StatusFieldsHandler, self).__init__()
-        self.labels = []
-        self.widths = []
-        self.curr_label = []
-
-    def start_elem(self, name, attrs):
-        if name == 'field':
-            self.widths.append(int(attrs.get('width', -1)))
-
-    def end_elem(self, name, code_obj):
-        if name == 'fields':
-            code_obj.properties['statusbar'] = (self.labels, self.widths)
-            return True
-        char_data = self.get_char_data()
-        self.labels.append(char_data)
-
 
 
 def xrc_frame_code_generator(obj):
     xrcgen = common.code_writers['XRC']
 
     class FrameXrcObject(xrcgen.DefaultXrcObject):
-        def write(self, outfile, tabs):
-            if 'menubar' in self.properties:
-                del self.properties['menubar']
-            if 'statusbar' in self.properties:
-                del self.properties['statusbar']
-            if 'toolbar' in self.properties:
-                del self.properties['toolbar']
-            xrcgen.DefaultXrcObject.write(self, outfile, tabs)
+        def write(self, output, tabs):
+            properties = {"menubar":None, "statusbar":None, "toolbar":None}
+            xrcgen.DefaultXrcObject.write(self, output, tabs, properties)
 
-        def write_property(self, name, val, outfile, ntabs):
+        def write_property(self, name, val, output, ntabs):
             if name != 'sizehints':
-                xrcgen.DefaultXrcObject.write_property(self, name, val, outfile, ntabs)
+                xrcgen.DefaultXrcObject.write_property(self, name, val, output, ntabs)
 
     return FrameXrcObject(obj)
 
@@ -90,13 +55,14 @@ def xrc_statusbar_code_generator(obj):
     xrcgen = common.code_writers['XRC']
 
     class StatusbarXrcObject(xrcgen.DefaultXrcObject):
-        def write(self, outfile, tabs):
-            if 'statusbar' in self.properties:
-                fields, widths = self.properties['statusbar']
-                self.properties['fields'] = str(len(fields))
-                self.properties['widths'] = ', '.join([str(w) for w in widths])
-                del self.properties['statusbar']
-            xrcgen.DefaultXrcObject.write(self, outfile, tabs)
+        def write(self, output, tabs):
+            properties = {"statusbar":None}
+            prop = self.widget.properties['statusbar']
+            if prop.is_active():
+                fields, widths = self.widget.statusbar
+                properties['fields'] = str(len(fields))
+                properties['widths'] = ', '.join([str(w) for w in widths])
+            xrcgen.DefaultXrcObject.write(self, output, tabs, properties)
 
     return StatusbarXrcObject(obj)
 
@@ -113,12 +79,10 @@ class CppFrameCodeGenerator(wcodegen.CppWidgetCodeWriter):
 
     def get_properties_code(self, obj):
         out = []
-        title = obj.properties.get('title')
-        if title:
-            out.append('SetTitle(%s);\n' % self.codegen.quote_str(title))
-        icon = obj.properties.get('icon')
-        if icon:
-            stmt_icon = self.generate_code_bitmap(icon, obj.preview)
+        if obj.title:
+            out.append('SetTitle(%s);\n' % self.codegen.quote_str(obj.title))
+        if obj.icon:
+            stmt_icon = self.generate_code_bitmap(obj.icon)
             out.append('wxIcon _icon;\n')
             out.append('_icon.CopyFromBitmap(%s);\n' % stmt_icon)
             out.append('SetIcon(_icon);\n')
@@ -127,16 +91,11 @@ class CppFrameCodeGenerator(wcodegen.CppWidgetCodeWriter):
 
     def get_layout_code(self, obj):
         ret = ['Layout();\n']
-        try:
-            if int(obj.properties['centered']):
-                ret.append('Centre();\n')
-        except (KeyError, ValueError):
-            pass
-        if 'size' in obj.properties:
+        if obj.centered:
+            ret.append('Centre();\n')
+        if obj.properties["size"].is_active():
             ret.append( self.codegen.generate_code_size(obj) )
         return ret
-
-# end of class CppFrameCodeGenerator
 
 
 class CppMDIChildFrameCodeGenerator(CppFrameCodeGenerator):
@@ -147,8 +106,6 @@ class CppMDIChildFrameCodeGenerator(CppFrameCodeGenerator):
                    ('const wxPoint&', 'pos', 'wxDefaultPosition'),
                    ('const wxSize&', 'size', 'wxDefaultSize'),
                    ('long', 'style', 'wxDEFAULT_FRAME_STYLE')]
-
-# end of class CppMDIChildFrameCodeGenerator
 
 
 def initialize():
@@ -166,7 +123,7 @@ def initialize():
         awh('wxMDIChildFrame', PythonFrameCodeGenerator(klass))
 
         aph = pygen.add_property_handler
-        aph('menubar', pygen.DummyPropertyHandler)
+        #aph('menubar', pygen.DummyPropertyHandler)
 
     xrcgen = common.code_writers.get('XRC')
     if xrcgen:
@@ -180,5 +137,5 @@ def initialize():
         awh('wxFrame', CppFrameCodeGenerator(klass))
         awh('wxMDIChildFrame', CppMDIChildFrameCodeGenerator(klass))
 
-        aph = cppgen.add_property_handler
-        aph('menubar', cppgen.DummyPropertyHandler)
+        #aph = cppgen.add_property_handler
+        #aph('menubar', cppgen.DummyPropertyHandler)

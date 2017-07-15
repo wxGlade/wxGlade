@@ -14,11 +14,9 @@ class WidgetStyleSelectionDialog(wx.Dialog):
     def __init__(self, dlg_title, box_label, choices):
         """Initialise the dialog and draw the content
 
-        @param dlg_title: Dialog title
-        @type dlg_title:  str | unicode
-
-        @param box_label: Label of the draw around the listed choices
-        @param choices: Choices to select one (string list)"""
+        dlg_title: Dialog title
+        box_label: Label of the draw around the listed choices
+        choices: Choices to select one (string list)"""
         wx.Dialog.__init__(self, None, -1, dlg_title)
 
         szr = wx.BoxSizer(wx.VERTICAL)

@@ -99,12 +99,10 @@ class SourceFileContent(BaseSourceFileContent):
 
             result = self.rec_class_decl.match(line)
             if result:
-##                self._logger.debug(">> class %r", result.group(1))
                 if not self.class_name:
                     # this is the first class declared in the file: insert the
                     # new ones before this
-                    out_lines.append('<%swxGlade insert new_classes>' %
-                                     self.nonce)
+                    out_lines.append( '<%swxGlade insert new_classes>' % self.nonce )
                     self.new_classes_inserted = True
                 self.class_name = result.group(1)
                 self.class_name = self.format_classname(self.class_name)
@@ -114,13 +112,7 @@ class SourceFileContent(BaseSourceFileContent):
             elif not inside_block:
                 result = self.rec_block_start.match(line)
                 if result:
-##                     self.logger.debug(">> block %r %r %r",
-##                         result.group('spaces'),
-##                         result.group('classname'),
-##                         result.group('block'),
-##                         )
-                    # replace the lines inside a wxGlade block with a tag that
-                    # will be used later by add_class
+                    # replace the lines inside a wxGlade block with a tag that will be used later by add_class
                     spaces = result.group('spaces')
                     which_class = result.group('classname')
                     which_block = result.group('block')
@@ -131,11 +123,9 @@ class SourceFileContent(BaseSourceFileContent):
                     self.spaces[which_class] = spaces
                     inside_block = True
                     if not self.class_name:
-                        out_lines.append('<%swxGlade replace %s>' % \
-                                         (self.nonce, which_block))
+                        out_lines.append( '<%swxGlade replace %s>' % (self.nonce, which_block) )
                     else:
-                        out_lines.append('<%swxGlade replace %s %s>' % \
-                                         (self.nonce, which_class, which_block))
+                        out_lines.append( '<%swxGlade replace %s %s>' % (self.nonce, which_class, which_block) )
                 else:
                     result = self.rec_event_handler.match(line)
                     if result:
@@ -145,53 +135,36 @@ class SourceFileContent(BaseSourceFileContent):
                             which_class, {})[which_handler] = 1
                     if self.class_name and self.is_end_of_class(line):
                         # add extra event handlers here...
-                        out_lines.append('<%swxGlade event_handlers %s>'
-                                         % (self.nonce, self.class_name))
+                        out_lines.append( '<%swxGlade event_handlers %s>' % (self.nonce, self.class_name) )
                     out_lines.append(line)
                     if self.is_import_line(line):
                         # add a tag to allow extra modules
-                        out_lines.append('<%swxGlade extra_modules>\n'
-                                         % self.nonce)
+                        out_lines.append( '<%swxGlade extra_modules>\n' % self.nonce )
             else:
                 # ignore all the lines inside a wxGlade block
                 if self.rec_block_end.match(line):
 ##                     self._logger.debug('end block')
                     inside_block = False
         if not self.new_classes_inserted:
-            # if we are here, the previous ``version'' of the file did not
-            # contain any class, so we must add the new_classes tag at the
-            # end of the file
-            out_lines.append('<%swxGlade insert new_classes>' % self.nonce)
+            # if we are here, the previous ``version'' of the file did not contain any class, so we must add the
+            # new_classes tag at the end of the file
+            out_lines.append( '<%swxGlade insert new_classes>' % self.nonce )
         # set the ``persistent'' content of the file
-        self.content = "".join(out_lines)
+        self.content = out_lines
 
     def is_import_line(self, line):
         return line.lstrip().startswith('use Wx')
 
-# end of class SourceFileContent
 
 
 class WidgetHandler(BaseWidgetHandler):
-    """\
-    Interface the various code generators for the widgets must implement
-    """
+    "Interface the various code generators for the widgets must implement"
+    new_signature = []  # Constructor signature ($self->SUPER::new(@stuff)); see PerlCodeWriter.new_defaults
 
-    new_signature = []
-    """\
-    Constructor signature ($self->SUPER::new(@stuff))
-
-    @see: L{PerlCodeWriter.new_defaults}
-    """
-
-# end of class WidgetHandler
 
 
 class PerlCodeWriter(BaseLangCodeWriter, wcodegen.PerlMixin):
-    """\
-    Code writer class for writing Perl code out of the designed GUI elements
-
-    @see: L{BaseLangCodeWriter}
-    """
+    "Code writer class for writing Perl code out of the designed GUI elements; see: BaseLangCodeWriter"
 
     _code_statements = {
         'backgroundcolour': "%(objname)s->SetBackgroundColour(%(value)s);\n",
@@ -209,14 +182,8 @@ class PerlCodeWriter(BaseLangCodeWriter, wcodegen.PerlMixin):
         }
 
     class_separator = '::'
-    classattr_always = ['wxBoxSizer', 'wxStaticBoxSizer', 'wxGridSizer',
-                        'wxFlexGridSizer']
+    classattr_always = ['wxBoxSizer', 'wxStaticBoxSizer', 'wxGridSizer', 'wxFlexGridSizer']
 
-    global_property_writers = {
-        'font':            BaseLangCodeWriter.FontPropertyHandler,
-        'events':          BaseLangCodeWriter.EventsPropertyHandler,
-        'extraproperties': BaseLangCodeWriter.ExtraPropertiesPropertyHandler,
-        }
 
     indent_amount = 1
     indent_symbol = '\t'
@@ -227,10 +194,7 @@ class PerlCodeWriter(BaseLangCodeWriter, wcodegen.PerlMixin):
 
     name_ctor = 'new'
 
-    new_defaults = []
-    """\
-    Default class members, will be initialised during L{new_project()}
-    """
+    new_defaults = []  # Default class members, will be initialised during new_project()
 
     shebang = '#!/usr/bin/perl -w -- \n#\n'
 
@@ -281,6 +245,7 @@ sub %(handler)s {
     tmpl_func_empty = '%(tab)sreturn;\n'
 
     tmpl_sizeritem = '%s->Add(%s, %s, %s, %s);\n'
+    tmpl_spacersize = '%s, %s'
 
     tmpl_style = \
         '%(tab)s$style = %(style)s\n' \
@@ -422,9 +387,8 @@ unless(caller){
         mycn_f = getattr(builder, 'cn_f', self.cn_f)
 
         # custom base classes support
-        custom_base = getattr(code_obj, 'custom_base',
-                              code_obj.properties.get('custom_base', None))
-        if code_obj.preview or (custom_base and not custom_base.strip()):
+        custom_base = getattr( code_obj, 'custom_base', code_obj.properties.get('custom_base', None) )
+        if self.preview or (custom_base and not custom_base.strip()):
             custom_base = None
 
         new_signature = getattr(builder, 'new_signature', [])
@@ -440,9 +404,8 @@ unless(caller){
                 else:
                     write("use Wx::Locale gettext => '_T';\n")
 
-            # The dependencies have to add to the package block too
-            # because global imports are not visible inside the package
-            # block
+            # The dependencies have to add to the package block too because global imports are not visible inside the
+            # package block
             # TODO: Don't add dependencies twice with Perl
 
             # write the module dependencies for this class (package)
@@ -478,10 +441,10 @@ unless(caller){
             'tab':             tab,
             })
 
-        prop = code_obj.properties
-        style = prop.get("style", None)
-        if style:
-            m_style = mycn_f(style)
+        style_p = code_obj.properties.get("style")
+        if style_p and style_p.value_set != style_p.default_value:
+            style = style_p.get_string_value()
+            m_style = mycn_f( style )
             if m_style:
                 stmt_style = self._format_style(style, code_obj)
                 write( stmt_style % {'style':m_style, 'tab':tab} )
@@ -528,17 +491,10 @@ unless(caller){
                 win_id = '$self->{%s}->GetId' % win_id[8:]
 
             if 'EVT_NAVIGATION_KEY' in event:
-                tmpl = '''%(tab)s%(event)s($self, ''' \
-                       '''$self->can('%(handler)s'));\n'''
+                tmpl = '''%(tab)s%(event)s($self, $self->can('%(handler)s'));\n'''
             else:
-                tmpl = '''%(tab)s%(event)s($self, %(win_id)s, ''' \
-                       '''$self->can('%(handler)s'));\n'''
-            details = {
-                'tab': tab,
-                'event': self.cn(event),
-                'handler': handler,
-                'win_id': win_id,
-                }
+                tmpl = '''%(tab)s%(event)s($self, %(win_id)s, $self->can('%(handler)s'));\n'''
+            details = { 'tab': tab, 'event': self.cn(event), 'handler': handler, 'win_id': win_id }
             write(tmpl % details)
 
         if event_handlers:
@@ -548,9 +504,10 @@ unless(caller){
 
     def generate_code_id(self, obj, id=None):
         if id is None:
-            id = obj.properties.get('id')
+            id = obj.window_id
         if not id:
             return '', self.cn('wxID_ANY')
+        id = str(id)
         tokens = id.split('=', 1)
         if len(tokens) == 2:
             name, val = tokens
@@ -569,7 +526,7 @@ unless(caller){
 
     def generate_code_size(self, obj):
         objname = self.format_generic_access(obj)
-        size = obj.properties.get('size', '').strip()
+        size = obj.properties["size"].get_string_value()
         use_dialog_units = (size[-1] == 'd')
         if not obj.parent:
             method = 'SetSize'
@@ -618,8 +575,7 @@ unless(caller){
             pass
 
         # convert unicode strings to pure ascii
-        # use "raw-unicode-escape" just escaped unicode characters and not
-        # default escape sequences
+        # use "raw-unicode-escape" just escaped unicode characters and not default escape sequences
         s = s.encode('raw-unicode-escape')
         s = self._recode_x80_xff(s)
         if compat.PYTHON3:
@@ -648,7 +604,7 @@ unless(caller){
         elif obj.klass == 'spacer':
             return obj.name
         # Perl stores sizers always in class attributes
-        elif self.store_as_attr(obj) or obj.in_sizers:
+        elif self.store_as_attr(obj) or obj.is_sizer:
             return '$self->{%s}' % obj.name
         return '$%s' % obj.name
 
@@ -657,35 +613,16 @@ unless(caller){
         return stmt
 
     def _get_class_filename(self, klass):
-        """
-        Returns the name for a Perl module (.pm) to store a single class
-        in multi file projects.
-
-        @param klass: Class name
-        @type klass:  String
-        
-        @rtype: String
-        """
-        filename = os.path.join(
-            self.out_dir,
-            klass.replace('::', os.sep) + '.pm'
-            )
+        "Returns the name for a Perl module (.pm) to store a single class in multi file projects"
+        filename = os.path.join( self.out_dir, klass.replace('::', os.sep) + '.pm' )
         return filename
 
     def format_generic_access(self, obj):
         if obj.is_toplevel:
             return '$self'
-        else:
-            return self._format_classattr(obj)
+        return self._format_classattr(obj)
 
-# end of class PerlCodeWriter
 
-writer = PerlCodeWriter()
-"""\
-The code writer is an instance of L{PerlCodeWriter}.
-"""
+writer = PerlCodeWriter()  # the code writer instance
 
-language = writer.language
-"""\
-Language generated by this code generator
-"""
+language = writer.language  # Language generated by this code generator
