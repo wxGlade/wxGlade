@@ -1827,7 +1827,6 @@ class GridProperty(Property):
         if not self.validation_res: return
         row,col = event.Row, event.Col
 
-
     def on_cell_changed(self, event):
         # user has entered a value
         row,col = event.Row, event.Col
@@ -1984,7 +1983,6 @@ class ExtraPropertiesProperty(GridProperty):
             output.extend( common.format_xml_tag( u'extraproperties', inner_xml, tabs, is_xml=True ) )
 
 
-
 class ActionButtonProperty(Property):
     # just a button to start an action
     CONTROLNAMES = ["button"]
@@ -2024,7 +2022,6 @@ class ActionButtonProperty(Property):
 
     def write(self, output, tabs=0):
         return
-
 
 
 ########################################################################################################################
