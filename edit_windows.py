@@ -11,7 +11,6 @@ import logging, re
 import wx
 
 import new_properties as np
-import code_property as cp
 import misc, common, compat, config, clipboard
 import decorators
 from wcodegen.taghandler import BaseXmlBuilderTagHandler
@@ -45,6 +44,30 @@ class FontHandler(BaseXmlBuilderTagHandler):
         else:
             self.props[self.index] = char_data
 
+
+class ExtraPropertiesPropertyHandler(BaseXmlBuilderTagHandler):
+    strip_char_data = True
+
+    def __init__(self, owner):
+        super(ExtraPropertiesPropertyHandler, self).__init__()
+        self.owner = owner
+        self.props = []
+        self.prop_name = None
+
+    def start_elem(self, name, attrs):
+        super(ExtraPropertiesPropertyHandler, self).__init__()
+        if name == 'property':
+            self.prop_name = attrs['name']
+
+    def end_elem(self, name):
+        if name == 'property':
+            if self.prop_name and self._content:
+                self.props.append( [self.prop_name, ''.join(self._content)] )
+            self.prop_name = None
+            self._content = []
+        elif name == 'extraproperties':
+            self.owner.properties['extraproperties'].load(self.props)
+            return True  # to remove this handler
 
 
 class EditBase(EventsMixin, np.PropertyOwner):
@@ -101,8 +124,8 @@ class EditBase(EventsMixin, np.PropertyOwner):
         else:
             self.custom_base = None
 
-        self.extracode       = cp.CodePropertyD()           # code property
-        self.extraproperties = cp.ExtraPropertiesProperty()
+        self.extracode       = np.CodePropertyD()
+        self.extraproperties = np.ExtraPropertiesProperty()
 
         self.widget = None  # this is the reference to the actual wxWindow widget, created when required
         self._dont_destroy = False
@@ -468,8 +491,7 @@ class WindowBase(EditBase):
         if name == 'font':
             return FontHandler(self)
         elif name == 'extraproperties':
-            import code_property
-            return code_property.ExtraPropertiesPropertyHandler(self)
+            return ExtraPropertiesPropertyHandler(self)
         return EditBase.get_property_handler(self, name)
 
     def properties_changed(self, modified=None):
