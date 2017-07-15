@@ -11,12 +11,8 @@ import wcodegen
 
 
 class LispBitmapButtonGenerator(wcodegen.LispWidgetCodeWriter):
-
-    tmpl = '(setf %(name)s (%(klass)s_Create %(parent)s %(id)s ' \
-           '%(bitmap)s -1 -1 -1 -1 %(style)s))\n'
+    tmpl = '(setf %(name)s (%(klass)s_Create %(parent)s %(id)s %(bitmap)s -1 -1 -1 -1 %(style)s))\n'
     tmpl_setdefault = '(wxButton_SetDefault %(name)s)\n'
-
-# end of class LispBitmapButtonGenerator
 
 
 def initialize():

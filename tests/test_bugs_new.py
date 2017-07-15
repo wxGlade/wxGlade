@@ -9,7 +9,7 @@
 from testsupport_new import WXGladeGUITest
 
 import common
-import unittest
+import unittest, os
 
 
 class TestBugs(WXGladeGUITest):
@@ -27,15 +27,24 @@ class TestBugs(WXGladeGUITest):
         "Test bug #166 - UnicodeDecodeError when saving project using non ASCII characters in menu items"
         self.load_and_generate('bug166', test_GUI=False)
 
-    @unittest.skip("wxg and .py do not match")
     def test_bug167(self):
         """Test bug #167 - ascii codec error - UnicodeDecodeError will be raised if existing files will be changed
         (and not overwritten) and those files contains non-ASCII characters."""
+
+        for fn in ("bug167","bug167_utf8"):
+            for ext in (".cpp", ".h", ".lisp", ".pl", ".py", ".xrc"):
+                source = self._get_casefile_path(fn+ext)
+                target = self._get_outputfile_path(fn+ext)
+                if os.path.exists(source):
+                    self._copy_and_modify(source, target)
+
         self.load_and_generate('bug167', test_GUI=False)
         self.load_and_generate('bug167_utf8', test_GUI=False)
 
-    def Xtest_bug179(self):
+    def test_bug179(self):
         "Test bug #179 - Main file is generated without custom extensions"
+        self.load_and_generate('bug179', test_GUI=False)
+        return
         codegen = common.code_writers['C++']
         source = self._load_file('bug179.wxg')
         source = self._modify_attrs(source, overwrite='0')

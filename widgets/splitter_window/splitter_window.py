@@ -29,11 +29,10 @@ class ChildWidgetNameProperty(np.Property):
         if isinstance(child, SizerSlot): return None
         return child.name
 
-    def write(self, outfile, tabs=0):
+    def write(self, output, tabs=0):
         value = self.get()
         if value is not None:
-            stmt = common.format_xml_tag(self.name, value, tabs)
-            outfile.write(stmt)
+            output.extend( common.format_xml_tag(self.name, value, tabs) )
 
 
 
@@ -112,13 +111,13 @@ class EditSplitterWindow(ManagedBase, EditStylesMixin):
                         'sash_pos':"Sash position"}
     _PROPERTY_HELP = {'no_custom_class':"Don't generate code for this class"}
 
-    def __init__(self, name, parent, id, style, win_1, win_2, orientation, sizer, pos):
+    def __init__(self, name, parent, id, win_1, win_2, orientation, sizer, pos):
         ManagedBase.__init__(self, name, 'wxSplitterWindow', parent, id, sizer, pos)
         EditStylesMixin.__init__(self)
 
         # initialise instance properties
         self.no_custom_class = np.CheckBoxProperty(False, default_value=False)
-        self.sash_pos = np.SpinPropertyD(0, default_value=0)
+        self.sash_pos = np.SpinPropertyD(0, default_value="")
         self.min_pane_size = np.SpinProperty(20)
 
         # hidden properties: orientation string, window_1, window_2
@@ -130,8 +129,6 @@ class EditSplitterWindow(ManagedBase, EditStylesMixin):
         labels = ("SLOT Left","SLOT Right") if orientation=="wxSPLIT_VERTICAL" else ("SLOT Top","SLOT Bottom")
         self._window_1 = win_1 or SizerSlot(self, self.virtual_sizer, 1, labels[0])
         self._window_2 = win_2 or SizerSlot(self, self.virtual_sizer, 2, labels[1])
-
-        if style: self.properties["style"].set(style)
 
     def create_widget(self):
         self.widget = wx.SplitterWindow(self.parent.widget, self.id, style=self.style)
@@ -246,7 +243,8 @@ def builder(parent, sizer, pos, number=[1]):
         number[0] += 1
         label = '%s_%d' % (tmpl_label, number[0])
 
-    widget = editor_class(label, parent, -1, None, None,None, orientation, sizer, pos)
+    widget = editor_class(label, parent, -1, None, None, orientation, sizer, pos)
+    widget.properties["style"].set_to_default()
     widget._window_1 = pane1 = EditPanel(label + '_pane_1', widget, wx.NewId(), widget.virtual_sizer, 1)
     widget._window_2 = pane2 = EditPanel(label + '_pane_2', widget, wx.NewId(), widget.virtual_sizer, 2)
 
@@ -280,7 +278,7 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
         raise XmlParsingError(_("'name' attribute missing"))
     if sizer is None or sizeritem is None:
         raise XmlParsingError(_("sizer or sizeritem object cannot be None"))
-    widget = editor_class(name, parent, wx.NewId(), None, None, None, editor_style, sizer, pos)
+    widget = editor_class(name, parent, wx.NewId(), None, None, editor_style, sizer, pos)
     sizer.set_item(widget.pos, proportion=sizeritem.proportion, flag=sizeritem.flag, border=sizeritem.border)
     node = Node(widget)
     widget.node = node

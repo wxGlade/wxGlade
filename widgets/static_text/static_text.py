@@ -30,10 +30,6 @@ class EditStaticText(ManagedBase, EditStylesMixin):
         self.label     = np.TextProperty(label, multiline=True)
         self.attribute = np.CheckBoxProperty(False, default_value=False)
 
-        if config.preferences.default_border:
-            self.properties["border"].set( config.preferences.default_border_size )
-            self.properties["flag"].set( wx.ALL )
-
     def create_widget(self):
         self.widget = wx.lib.stattext.GenStaticText(self.parent.widget, self.id, self.label)
 
@@ -56,6 +52,8 @@ def builder(parent, sizer, pos, number=[1]):
         number[0] += 1
         label = u'label_%d' % number[0]
     static_text = EditStaticText(label, parent, wx.NewId(), label, sizer, pos)
+    static_text.properties["style"].set_to_default()
+    static_text.check_defaults()
     node = Node(static_text)
     static_text.node = node
     if parent.widget: static_text.create()

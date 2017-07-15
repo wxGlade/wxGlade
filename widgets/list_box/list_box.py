@@ -75,6 +75,7 @@ def builder(parent, sizer, pos, number=[1]):
         number[0] += 1
         name = 'list_box_%d' % number[0]
     list_box = EditListBox(name, parent, wx.NewId(), [u'choice 1', ], sizer, pos)
+    list_box.properties["style"].set_to_default()
     node = Node(list_box)
 ##     sizer.set_item(pos, size=list_box.GetBestSize())
     list_box.node = node

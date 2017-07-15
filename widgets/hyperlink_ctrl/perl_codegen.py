@@ -10,17 +10,13 @@ import wcodegen
 
 
 class PerlHyperlinkCtrlGenerator(wcodegen.PerlWidgetCodeWriter):
-
-    tmpl = '%(name)s = %(klass)s->new(%(parent)s, %(id)s, %(label)s, ' \
-           '%(url)s%(style)s);\n'
+    tmpl = '%(name)s = %(klass)s->new(%(parent)s, %(id)s, %(label)s, %(url)s%(style)s);\n'
 
     def _prepare_tmpl_content(self, obj):
         wcodegen.PerlWidgetCodeWriter._prepare_tmpl_content(self, obj)
-        self.tmpl_dict['url'] = self.codegen.quote_str(obj.properties.get('url', ''))
-        self.has_setvalue1 = obj.properties.get('checked', False)
+        self.tmpl_dict['url'] = self.codegen.quote_str(obj.url)
+        #self.has_setvalue1 = bool(obj.checked)
         return
-
-# end of class PerlHyperlinkCtrlGenerator
 
 
 def initialize():

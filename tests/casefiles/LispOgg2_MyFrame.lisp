@@ -86,7 +86,6 @@
         (wxFrame_SetTitle (slot-top-window obj) (_"FrameOggCompressionDetails"))
         (slot-top-window obj).wxWindow_SetSize((400, 300))
         (wxGrid_CreateGrid (slot-grid-1 obj) 8 3 0)
-        (wxGrid_SetSelectionMode (slot-grid-1 obj) wxGridSelectCells)
         (wxWindow_SetFocus (slot-button-6 obj))
         (wxButton_SetDefault (slot-button-6 obj))
         ;;; end wxGlade

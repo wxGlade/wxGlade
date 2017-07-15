@@ -17,12 +17,11 @@ from wcodegen.taghandler import BaseXmlBuilderTagHandler
 
 
 class GridColsProperty(np.GridProperty):
-    def write(self, outfile, tabs):
-        inner_xml = u''
+    def write(self, output, tabs):
+        inner_xml = []
         for label, size in self.get():
             inner_xml += common.format_xml_tag(u'column', label, tabs+1, size=size)
-        stmt = common.format_xml_tag(u'columns', inner_xml, tabs, is_xml=True)
-        outfile.write(stmt)
+        output.extend( common.format_xml_tag(u'columns', inner_xml, tabs, is_xml=True) )
 
     def _get_label(self, col):
         s = []

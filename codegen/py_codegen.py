@@ -14,7 +14,7 @@ methods of the parent object.
 @copyright: John Dubery
 @copyright: 2002-2007 Alberto Griggio
 @copyright: 2012-2016 Carsten Grohmann
-@copyright: 2016 Dietmar Schwertberger
+@copyright: 2016-2017 Dietmar Schwertberger
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
@@ -138,7 +138,7 @@ class SourceFileContent(BaseSourceFileContent):
             # so we must add the new_classes tag at the end of the file
             out_lines.append('<%swxGlade insert new_classes>' % self.nonce)
         # set the ``persistent'' content of the file
-        self.content = "".join(out_lines)
+        self.content = out_lines #"".join(out_lines)
 
     def is_import_line(self, line):
         return line.startswith('import wx')
@@ -188,10 +188,6 @@ class PythonCodeWriter(BaseLangCodeWriter, wcodegen.PythonMixin):
         _code_statements['tooltip_3'     ] = "%(objname)s.SetToolTip(%(tooltip)s)\n"
 
     class_separator = '.'
-
-    global_property_writers = { 'font':            BaseLangCodeWriter.FontPropertyHandler,
-                                'events':          BaseLangCodeWriter.EventsPropertyHandler,
-                                'extraproperties': BaseLangCodeWriter.ExtraPropertiesPropertyHandler }
 
     indent_level_func_body = 2
 
@@ -267,10 +263,10 @@ if __name__ == "__main__":
     def __init__(self):
         BaseLangCodeWriter.__init__(self)
 
-    def init_lang(self, app_attrs):
+    def init_lang(self, app):
         self.header_lines.append('import wx\n')
 
-    def add_app(self, app_attrs, top_win_class):
+    def add_app(self, app, top_win_class):
         # add language specific mappings
         self.lang_mapping = { 'cn_wxApp': self.cn('wxApp'), 'cn_wxIDANY': self.cn('wxID_ANY'), 'import_gettext': ''}
 
@@ -281,7 +277,7 @@ if __name__ == "__main__":
             else:
                 self.dependencies['import gettext\n'] = 1
 
-        BaseLangCodeWriter.add_app(self, app_attrs, top_win_class)
+        BaseLangCodeWriter.add_app(self, app, top_win_class)
 
     def generate_code_ctor(self, code_obj, is_new, tab):
         code_lines = []
@@ -293,8 +289,8 @@ if __name__ == "__main__":
         fmt_klass = self.cn_class(code_obj.klass)
 
         # custom base classes support
-        custom_base = getattr(code_obj, 'custom_base', code_obj.properties.get('custom_base', None))
-        if code_obj.preview or (custom_base and not custom_base.strip()):
+        custom_base = getattr(code_obj, 'custom_base', getattr(code_obj, 'custom_base', None) )
+        if self.preview or (custom_base and not custom_base.strip()):
             custom_base = None
 
         # generate constructor code
@@ -302,15 +298,14 @@ if __name__ == "__main__":
             base = mycn(code_obj.base)
             if custom_base:
                 base = ", ".join([b.strip() for b in custom_base.split(',')])
-            if code_obj.preview and code_obj.klass == base:
+            if self.preview and code_obj.klass == base:
                 klass = code_obj.klass + ('_%d' % random.randrange(10 ** 8, 10 ** 9))
             else:
                 klass = code_obj.klass
             write('\nclass %s(%s):\n' % (self.get_class(fmt_klass), base))
             write(self.tabs(1) + 'def __init__(self, *args, **kwds):\n')
         elif custom_base:
-            # custom base classes set, but "overwrite existing sources" not
-            # set. Issue a warning about this
+            # custom base classes set, but "overwrite existing sources" not set. Issue a warning about this
             self.warning( '%s has custom base classes, but you are not overwriting '
                           'existing sources: please check that the resulting code is correct!' % code_obj.name )
 
@@ -318,10 +313,10 @@ if __name__ == "__main__":
         write(self.tmpl_block_begin % {'class_separator': self.class_separator, 'comment_sign': self.comment_sign,
                                        'function':self.name_ctor, 'klass':fmt_klass, 'tab':tab} )
 
-        prop = code_obj.properties
-        style = prop.get("style", None)
-        if style:
-            m_style = mycn_f(style)
+        style_p = code_obj.properties.get("style")
+        if style_p and style_p.value_set != style_p.default_value:
+            style = style_p.get_string_value()
+            m_style = mycn_f( style )
             if m_style:
                 stmt_style = self._format_style(style, code_obj)
                 write(stmt_style % {'style': m_style, 'tab': tab} )
@@ -409,12 +404,13 @@ def %(handler)s(self, event):  # wxGlade: %(klass)s.<event_handler>
         return BaseLangCodeWriter.generate_code_event_handler( self, code_obj, is_new, tab, prev_src, event_handlers )
 
     def generate_code_id(self, obj, id=None):
-        if obj and obj.preview:
+        if obj and self.preview:
             return '', '-1'  # never generate ids for preview code
         if id is None:
-            id = obj.properties.get('id')
+            id = obj.window_id
         if not id:
             return '', self.cn('wxID_ANY')
+        id = str(id)
         tokens = id.split('=', 1)
         if len(tokens) == 2:
             name, val = tokens
@@ -443,14 +439,17 @@ def %(handler)s(self, event):  # wxGlade: %(klass)s.<event_handler>
 
     def generate_code_size(self, obj):
         objname = self.format_generic_access(obj)
-        size = obj.properties.get('size', '').strip()
+        size = obj.properties["size"].get_string_value()
         use_dialog_units = (size[-1] == 'd')
         if not obj.parent:
             method = 'SetSize'
         else:
             method = 'SetMinSize'
         if use_dialog_units:
-            return '%s.%s(%s(%s, (%s)))\n' % ( objname, method, self.cn('wxDLG_SZE'), objname, size[:-1] )
+            if compat.IS_CLASSIC:
+                return '%s.%s(%s(%s, (%s)))\n' % ( objname, method, self.cn('wxDLG_SZE'), objname, size[:-1] )
+            else:
+                return '%s.%s(%s(%s, %s(%s)))\n' % ( objname, method, self.cn('wxDLG_UNIT'), objname, self.cn("wxSize"), size[:-1] )
         else:
             return '%s.%s((%s))\n' % (objname, method, size)
 
@@ -501,8 +500,7 @@ def %(handler)s(self, event):  # wxGlade: %(klass)s.<event_handler>
             return res
         elif obj.name.startswith('self.'):
             return obj.name
-        # spacer.name is "<width>, <height>" already, but wxPython expect
-        # a tuple instead of two single values
+        # spacer.name is "<width>, <height>" already, but wxPython expect a tuple instead of two single values
         elif obj.klass in ('spacer','sizerslot'):
             return '(%s)' % obj.name
         elif self.store_as_attr(obj):

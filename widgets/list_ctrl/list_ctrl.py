@@ -57,6 +57,7 @@ def builder(parent, sizer, pos, number=[1]):
         number[0] += 1
         name = 'list_ctrl_%d' % number[0]
     list_ctrl = EditListCtrl(name, parent, wx.NewId(), sizer, pos)
+    list_ctrl.properties["style"].set_to_default()
     node = Node(list_ctrl)
     list_ctrl.node = node
     list_ctrl.properties["proportion"].set(1)

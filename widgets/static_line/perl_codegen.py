@@ -14,8 +14,6 @@ import wcodegen
 class PerlStaticLineGenerator(wcodegen.PerlWidgetCodeWriter):
     tmpl = '%(name)s = %(klass)s->new(%(parent)s, %(id)s%(style)s);\n'
 
-# end of class PerlStaticLineGenerator
-
 
 def initialize():
     klass = 'wxStaticLine'

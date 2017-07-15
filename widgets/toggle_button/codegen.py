@@ -15,12 +15,10 @@ class PythonToggleButtonGenerator(wcodegen.PythonWidgetCodeWriter):
     has_setvalue = True
 
 
-
 class CppToggleButtonGenerator(wcodegen.CppWidgetCodeWriter):
     import_modules = ['<wx/tglbtn.h>']
     tmpl = '%(name)s = new %(klass)s(%(parent)s, %(id)s, %(label)s%(style)s);\n'
     has_setvalue = True
-
 
 
 def initialize():

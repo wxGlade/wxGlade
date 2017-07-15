@@ -9,8 +9,7 @@ config = {
     'wxklass': 'wxRadioButton',
     'style_defs': {
         'wxRB_GROUP': {
-            'desc': _('Marks the beginning of a new group of radio '
-                      'buttons.'),
+            'desc': _('Marks the beginning of a new group of radio buttons.'),
         },
         'wxRB_SINGLE': {
             'desc': _('In some circumstances, radio buttons that are not '
@@ -20,8 +19,7 @@ config = {
                       'the mutually-exclusive group behaviour yourself.'),
         },
         'wxRB_USE_CHECKBOX': {
-            'desc': _('Use a checkbox button instead of radio button ('
-                      'currently supported only on PalmOS).'),
+            'desc': _('Use a checkbox button instead of radio button (currently supported only on PalmOS).'),
             'supported_by': ('wx2',),
         },
     },

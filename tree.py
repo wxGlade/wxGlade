@@ -3,7 +3,7 @@ Classes to handle and display the structure of a wxGlade app
 
 @copyright: 2002-2007 Alberto Griggio
 @copyright_ 2014-2016 Carsten Grohmann
-@copyright_ 2016      Dietmar Schwertberger
+@copyright_ 2016-2017 Dietmar Schwertberger
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
@@ -21,6 +21,11 @@ class Node(object):
         self.widget = widget      # e.g. EditPanel or EditBoxSizer
         self.children = children  # list of Node or SlotNode instances
         self.parent = None        # parent node; will be set in Tree.add/insert
+    @property
+    def is_toplevel(self):
+        if self.parent.parent is None:
+            return True
+        return False
 
     @classmethod
     def remove_rec(cls, node):
@@ -49,15 +54,9 @@ class Node(object):
             if parent.parent is None: return False
             parent = parent.parent
 
-    #def __repr__(self):
-        #try: return self.widget.name
-        #except AttributeError: return repr(self.widget)
-
-    def write(self, outfile, tabs, class_names=None):
+    def write(self, output, tabs, class_names=None):
         "Writes the xml code for the widget to the given output file"
         # XXX move this to the widget
-        import edit_sizers
-        fwrite = outfile.write
         assert self.widget is not None
 
         # write object tag, including class, name, base
@@ -68,18 +67,18 @@ class Node(object):
         else:
             no_custom = ""
         outer_tabs = u'    ' * tabs
-        fwrite(u'%s<object %s %s %s%s>\n' % ( outer_tabs,
-                                              common.format_xml_attrs(**{'class': self.widget.klass}),
-                                              common.format_xml_attrs(name=self.widget.name),
-                                              common.format_xml_attrs(base=classname),
-                                              no_custom) )
+        output.append(u'%s<object %s %s %s%s>\n' % ( outer_tabs,
+                                                     common.format_xml_attrs(**{'class': self.widget.klass}),
+                                                     common.format_xml_attrs(name=self.widget.name),
+                                                     common.format_xml_attrs(base=classname),
+                                                     no_custom) )
 
         # write properties, but without name and class
         # XXX be 100% compatible to 0.7.2, where option is written into the object; remove later
         properties = self.widget.get_properties(without=set(edit_sizers.SizerBase.MANAGED_PROPERTIES))
         #properties = self.widget.get_properties(without=set(["pos","flag","border"]))
         for prop in properties:
-            prop.write(outfile, tabs+1)
+            prop.write(output, tabs+1)
 
         if class_names is not None and self.widget.__class__.__name__ != 'CustomWidget':
             class_names.add(self.widget.klass)
@@ -87,7 +86,7 @@ class Node(object):
         if isinstance(self.widget, edit_sizers.SizerBase):
             for child in self.children or []:
                 if not isinstance(child, SlotNode):# hasattr(child, 'widget'):
-                    inner_xml = compat.StringIO()
+                    inner_xml = []
 
                     for name in edit_sizers.SizerBase.MANAGED_PROPERTIES:
                         name = child.widget.properties[name]
@@ -95,15 +94,15 @@ class Node(object):
                             name.write(inner_xml, tabs+2)
 
                     child.write(inner_xml, tabs+2, class_names)
-                    stmt = common.format_xml_tag( u'object', inner_xml.getvalue(), tabs+1,
+                    stmt = common.format_xml_tag( u'object', inner_xml, tabs+1,
                                                   is_xml=True, **{'class': 'sizeritem'} )
-                    fwrite(stmt)
+                    output.extend(stmt)
                 else:
-                    child.write(outfile, tabs+1)
+                    child.write(output, tabs+1)
         elif self.children is not None:
             for child in self.children:
-                child.write(outfile, tabs+1, class_names)
-        fwrite(u'%s</object>\n' % outer_tabs)
+                child.write(output, tabs+1, class_names)
+        output.append(u'%s</object>\n' % outer_tabs)
 
     def get_image(self, image=None):
         # get an image for this node
@@ -147,10 +146,9 @@ class Node(object):
 
 class SlotNode(Node):
     "Placeholder for an empty sizer slot"
-    def write(self, outfile, tabs, class_names=None):
+    def write(self, output, tabs, class_names=None):
         if self.widget.sizer.is_virtual(): return
-        stmt = common.format_xml_tag( u'object', '', tabs, **{'class': 'sizerslot'})
-        outfile.write(stmt)
+        output.extend( common.format_xml_tag( u'object', '', tabs, **{'class': 'sizerslot'}) )
 
 
 class Tree(object):
@@ -207,19 +205,18 @@ class Tree(object):
         parent.children.append(child)
         child.parent = parent
         self.current = child
-        self.names.setdefault(self._find_toplevel(child), {})[str(child.widget.name)] = 1
+        self.names.setdefault(self._find_toplevel(child), {})[child.widget.name] = 1
         if parent is self.root and getattr(child.widget.__class__, '_is_toplevel_window', False):
             self.app.add_top_window(child.widget.name)
 
     def insert(self, child, parent, index):
         # if at index there is a SlotNode, replace this, otherwise insert
         if parent is None: parent = self.root
-        if parent.children is None:
-            parent.children = []
+        if parent.children is None: parent.children = []
         parent.children.insert(index, child)
         child.parent = parent
         self.current = child
-        self.names.setdefault(self._find_toplevel(child), {})[str(child.widget.name)] = 1
+        self.names.setdefault(self._find_toplevel(child), {})[child.widget.name] = 1
         if parent is self.root:
             self.app.add_top_window(child.widget.name)
 
@@ -228,7 +225,7 @@ class Tree(object):
             del self.names[n]
             return
         try:
-            del self.names[self._find_toplevel(n)][str(n.widget.name)]
+            del self.names[self._find_toplevel(n)][n.widget.name]
         except (KeyError, AttributeError):
             pass
 
@@ -247,29 +244,29 @@ class Tree(object):
             self.root.children = None
             self.names = {}
 
-    def write(self, outfile=None, tabs=0):
+    def write(self, output, tabs=0):
         """Writes the xml equivalent of this tree to the given output file.
         This function writes unicode to the outfile."""
         # XXX move this to application.Application
-        if outfile is None:
-            outfile = sys.stdout
-        outfile.write( u'<?xml version="1.0"?>\n'
+        #if outfile is None:
+            #outfile = sys.stdout
+        output.append( u'<?xml version="1.0"?>\n'
                        u'<!-- generated by wxGlade %s on %s -->\n\n' % (config.version, time.asctime()) )
         #outpath = os.path.normpath( os.path.expanduser(self.app.output_path.strip()) )
 
         attrs = ["name","class","language","top_window","encoding","use_gettext", "overwrite",
                  "for_version","is_template","indent_amount"]
 
-        attrs = dict( (prop,self.app.properties[prop].get_str_value()) for prop in attrs )
-        attrs["option"] = self.app.properties["multiple_files"].get_str_value()
-        attrs["indent_symbol"] = self.app.properties["indent_mode"].get_str_value()
-        attrs["path"] = self.app.properties["output_path"].get_str_value()
+        attrs = dict( (prop,self.app.properties[prop].get_string_value()) for prop in attrs )
+        attrs["option"] = self.app.properties["multiple_files"].get_string_value()
+        attrs["indent_symbol"] = self.app.properties["indent_mode"].get_string_value()
+        attrs["path"] = self.app.properties["output_path"].get_string_value()
         attrs['use_new_namespace'] = 1
         # add a . to the file extensions
-        attrs["source_extension"] = '.' + self.app.properties["source_extension"].get_str_value()
-        attrs["header_extension"] = '.' + self.app.properties["header_extension"].get_str_value()
+        attrs["source_extension"] = '.' + self.app.properties["source_extension"].get_string_value()
+        attrs["header_extension"] = '.' + self.app.properties["header_extension"].get_string_value()
 
-        inner_xml = compat.StringIO()
+        inner_xml = []
 
         if self.app.is_template and getattr(self.app, 'template_data', None):
             self.app.template_data.write(inner_xml, tabs+1)
@@ -279,8 +276,7 @@ class Tree(object):
             for c in self.root.children:
                 c.write(inner_xml, tabs+1, class_names)
 
-        stmt = common.format_xml_tag( u'application', inner_xml.getvalue(), is_xml=True, **attrs )
-        outfile.write(stmt)
+        output.extend( common.format_xml_tag( u'application', inner_xml, is_xml=True, **attrs ) )
 
         return class_names
 
@@ -440,8 +436,7 @@ class WidgetTree(wx.TreeCtrl, Tree):
         # start drag & drop
         item = evt.GetItem()
         node = self._GetItemData(item)
-        if node is self.root or isinstance(node, SlotNode):  # application and slots can't be dragged
-            return
+        if node is self.root or isinstance(node, SlotNode): return  # application and slots can't be dragged
         widget = node.widget
         self._drag_ongoing = True
         clipboard.begin_drag(self, widget)
@@ -608,7 +603,6 @@ class WidgetTree(wx.TreeCtrl, Tree):
             self.Expand(parent.item)
             self.select_item(child)
         if not isinstance(child.widget, edit_sizers.SizerSlot):
-            #child.widget.show_properties()
             self.app.check_codegen(child.widget)
 
     def remove(self, node=None, delete=True):
@@ -656,10 +650,7 @@ class WidgetTree(wx.TreeCtrl, Tree):
 
     def set_current_widget(self, widget):
         # interface from common.set_focused_widget
-        if widget is None:
-            #self.cur_widget = None
-            return
-        if widget is self.cur_widget: return
+        if widget is None or widget is self.cur_widget: return
         if widget is self.root.widget:
             node = self.root
         else:
@@ -679,28 +670,20 @@ class WidgetTree(wx.TreeCtrl, Tree):
             self.Expand(item)
         self.SetFocus()
 
-        if config.debugging:
-            path = self.get_selected_path(widget)
-            print("selected:", widget, path)
-
     def on_left_click(self, event):
-        if not common.adding_widget:
-            event.Skip()
-            return
-        node = self._find_node_by_pos(*event.GetPosition())
-        if not node:
-            event.Skip()
-            return
-        common.adding_window = event.GetEventObject().GetTopLevelParent()
+        if not common.adding_widget: return event.Skip()
+        node = self._find_node_by_pos( *event.GetPosition() )
+        if not node: return event.Skip()
+
         item = node.widget
-        import edit_sizers
+        if not item.check_drop_compatibility(): return event.Skip()
+
+        common.adding_window = event.GetEventObject().GetTopLevelParent()
         if isinstance(item, edit_sizers.SizerSlot):
             item.on_drop_widget(event)
-            return
-        if common.adding_sizer:
+        elif common.adding_sizer:
             item.drop_sizer()
-            return
-        event.Skip()
+        common.adding_window = None
 
     def on_left_dclick(self, event):
         self.show_toplevel(event)
@@ -719,13 +702,13 @@ class WidgetTree(wx.TreeCtrl, Tree):
         if not self._drag_ongoing and not event.IsButton():
             # set cursor to indicate a possible drop
             x,y = event.GetPosition()
-            item = self._find_node_by_pos(x, y, toplevels_only=False)
-            if item is not None:
+            node = self._find_node_by_pos(x, y, toplevels_only=False)
+            if node is not None:
                 if not common.adding_widget:
                     self.SetCursor(wx.STANDARD_CURSOR)
                 else:
                     # check whether the item can be dropped here
-                    if item.widget.check_drop_compatibility():
+                    if node.widget.check_drop_compatibility():
                         self.SetCursor(wx.CROSS_CURSOR)
                     else:
                         self.SetCursor(wx.StockCursor(wx.CURSOR_NO_ENTRY)) # https://wxpython.org/docs/api/wx.Cursor-class.html
@@ -735,8 +718,7 @@ class WidgetTree(wx.TreeCtrl, Tree):
 
     def popup_menu(self, event, pos=None):
         node = self._find_node_by_pos(*event.GetPosition())
-        if not node:
-            return
+        if not node: return
         self.select_item(node)
         self._popup_menu_widget = node.widget
         node.widget.popup_menu(event, pos)
@@ -812,9 +794,6 @@ class WidgetTree(wx.TreeCtrl, Tree):
 
         if node is None or node is self.root: return
 
-        #if not node.widget.widget:
-            #node.widget.create()
-
         # the actual toplevel widget may be one level higher, e.g. for a Panel, which is embedded in a Frame
         set_size = None
         if getattr(node.widget, "_is_toplevel_window", False) or getattr(node.widget, "_is_toplevel", False):
@@ -824,7 +803,7 @@ class WidgetTree(wx.TreeCtrl, Tree):
             toolbar_p = node.widget.properties.get("toolbar")
             if size_p is not None and size_p.is_active() and toolbar_p is not None and toolbar_p.value:
                 # apply workaround for size changes due to a toolbar; this would cause problems with automatic testing
-                set_size = size_p.get_tuple()
+                set_size = size_p.get_size()
         else:
             toplevel_widget = node.widget.widget.GetParent()
 
@@ -833,6 +812,7 @@ class WidgetTree(wx.TreeCtrl, Tree):
             self.expand(node)
             self._show_widget_toplevel(node)
             if wx.Platform != '__WXMSW__' and set_size is not None:
+                toplevel_widget = node.widget.widget  # above it was not yet created
                 wx.CallAfter(toplevel_widget.SetSize, set_size)
         else:
             toplevel_widget.Hide()
@@ -842,7 +822,6 @@ class WidgetTree(wx.TreeCtrl, Tree):
             misc.set_focused_widget(node.widget)
             event.Skip()
         if "design" in node.widget.properties: node.widget.design.update_label()
-        #event.Skip()
 
     def _find_node_by_pos(self, x, y, toplevels_only=False):
         """Finds the node which is displayed at the given coordinates. Returns None if there's no match.
@@ -874,7 +853,7 @@ class WidgetTree(wx.TreeCtrl, Tree):
             self._SetItemData(node.item, new_node)
             old_children = node.children
             self.remove(node, delete=False)  # don't delete the node, as we just want to modify it
-            for c in old_children or []:           # but the children
+            for c in old_children or []:     # but the children
                 self.Delete(c.item)
             node = new_node
             self.names.setdefault(Tree._find_toplevel(self, node), {})[str(node.widget.name)] = 1
@@ -950,9 +929,7 @@ class WidgetTree(wx.TreeCtrl, Tree):
         "sets the selected widget from a path_list, which should be in the form returned by get_selected_path"
         index = 0
         item, cookie = self._get_first_child(self.GetRootItem())
-        itemok = None
-        parent = None
-        pos = None
+        itemok = parent = pos = None
         while item.IsOk() and index < len(path):
             widget = self._GetItemData(item).widget
             name = path[index]

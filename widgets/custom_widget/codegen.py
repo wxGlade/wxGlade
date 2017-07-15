@@ -3,51 +3,21 @@ Code generator functions for CustomWidget objects
 
 @copyright: 2002-2007 Alberto Griggio
 @copyright: 2016 Carsten Grohmann
+@copyright: 2017 Dietmar Schwertberger
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
-import logging
-
-import common
+import logging, common
 import wcodegen
-from wcodegen.taghandler import BaseCodeWriterTagHandler
-
-
-class ArgumentsCodeHandler(BaseCodeWriterTagHandler):
-
-    def __init__(self):
-        super(ArgumentsCodeHandler, self).__init__()
-        self.arguments = []
-
-    def end_elem(self, name, code_obj):
-        if name == 'arguments':
-            code_obj.properties['arguments'] = self.arguments
-            return True
-        elif name == 'argument':
-            tab_name = self.get_char_data()
-            self.arguments.append(tab_name)
-        return False
-
 
 
 def format_ctor_arguments(arguments, parent, id, size):
-    """\
-    Format constructor arguments
+    """Format constructor arguments; returns a list
 
-    @param arguments: Constructor arguments
-    @type arguments:  list
-
-    @param parent: Parent widget
-    @type parent: str | Unicode
-
-    @param id: Widget ID e.g. wxID_ANY
-    @type id: str
-
-    @param size: Widget size 'width, height'
-    @type size: str
-
-    @rtype: list
-    """
+    arguments: Constructor arguments (list)
+    parent: Parent widget (string or unicode)
+    id: Widget ID e.g. wxID_ANY
+    size: Widget size 'width, height'"""
     vSize = size.split(',')
     for i in range(len(arguments)):
         if arguments[i] == '$parent':
@@ -63,7 +33,8 @@ def format_ctor_arguments(arguments, parent, id, size):
 
 class PythonCustomWidgetGenerator(wcodegen.PythonWidgetCodeWriter):
     def get_code(self, widget):
-        if widget.preview and widget.klass not in widget.parser.class_names:
+        #if self.codegen.preview and widget.klass not in widget.parser.class_names:
+        if self.codegen.preview and widget.klass not in self.codegen.class_names:
             # if this CustomWidget refers to another class in the same wxg
             # file, use that for the preview
             return self.get_code_preview(widget)
@@ -72,10 +43,8 @@ class PythonCustomWidgetGenerator(wcodegen.PythonWidgetCodeWriter):
         parent = self.format_widget_access(widget.parent)
         init = []
         if id_name: init.append(id_name)
-        arguments = format_ctor_arguments(
-            prop.get('arguments', []), parent, id,
-            prop.get('size', '-1, -1').strip())
-        cust_ctor = prop.get('custom_ctor', '').strip()
+        arguments = format_ctor_arguments( widget.arguments, parent, id, widget.size)
+        cust_ctor = widget.custom_ctor.strip()
         if cust_ctor:
             ctor = cust_ctor
         else:
@@ -117,7 +86,6 @@ def self_%s_on_paint(event):
 
 class CppCustomWidgetGenerator(wcodegen.CppWidgetCodeWriter):
     def get_code(self, widget):
-        prop = widget.properties
         id_name, id = self.codegen.generate_code_id(widget)
         if id_name:
             ids = [id_name]
@@ -127,8 +95,8 @@ class CppCustomWidgetGenerator(wcodegen.CppWidgetCodeWriter):
             parent = '%s' % widget.parent.name
         else:
             parent = 'this'
-        arguments = format_ctor_arguments( prop.get('arguments', []), parent, id, prop.get('size', '-1, -1').strip() )
-        cust_ctor = prop.get('custom_ctor', '').strip()
+        arguments = format_ctor_arguments( widget.arguments, parent, id, widget.size )
+        cust_ctor = widget.custom_ctor.strip()
         if cust_ctor:
             ctor = cust_ctor
         else:
@@ -144,17 +112,16 @@ def xrc_code_generator(obj):
 
     class CustomXrcObject(xrcgen.DefaultXrcObject):
         # return value for xrc_code_generator
-        def write(self, outfile, ntabs):
+        def write(self, outfile, ntabs, properties=None):
+            if properties is None: properties = {}
             # first, fix the class:
             self.klass = obj.klass
             # delete the custom constructor property
-            if 'custom_ctor' in self.properties:
-                del self.properties['custom_ctor']
+            properties['custom_ctor'] = None
             # then, the attributes:
-            if 'arguments' in self.properties:
-                args = self.properties['arguments']
-                del self.properties['arguments']
-                for arg in args:
+            args_p = self.widget.properties['arguments']
+            if args_p.is_active() and args_p.value!=args_p.default_value:
+                for arg in args_p.value:
                     try:
                         name, val = [s.strip() for s in arg.split(':', 1)]
                     except Exception:
@@ -162,8 +129,9 @@ def xrc_code_generator(obj):
                         logging.warning('Ignore malformed argument "%s" for "%s". Argument format should be: name:value',
                                         arg, self.klass )
                         continue
-                    self.properties[name] = val
-            xrcgen.DefaultXrcObject.write(self, outfile, ntabs)
+                    properties[name] = val
+            properties["arguments"] = None
+            xrcgen.DefaultXrcObject.write(self, outfile, ntabs, properties)
 
     return CustomXrcObject(obj)
 
@@ -171,6 +139,6 @@ def xrc_code_generator(obj):
 def initialize():
     klass = 'CustomWidget'
     common.class_names[klass] = klass
-    common.register('python', klass, PythonCustomWidgetGenerator(klass), 'arguments', ArgumentsCodeHandler, klass)
-    common.register('C++',    klass, CppCustomWidgetGenerator(klass),    'arguments', ArgumentsCodeHandler, klass)
-    common.register('XRC',    klass, xrc_code_generator,                 'arguments', ArgumentsCodeHandler, klass)
+    common.register('python', klass, PythonCustomWidgetGenerator(klass) )
+    common.register('C++',    klass, CppCustomWidgetGenerator(klass) )
+    common.register('XRC',    klass, xrc_code_generator )

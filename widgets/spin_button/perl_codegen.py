@@ -13,8 +13,6 @@ import wcodegen
 class PerlSpinButtonGenerator(wcodegen.PerlWidgetCodeWriter):
     tmpl = '%(name)s = %(klass)s->new(%(parent)s, %(id)s,%(style)s);\n'
 
-# end of class PerlSpinButtonGenerator
-
 
 def initialize():
     klass = 'wxSpinButton'

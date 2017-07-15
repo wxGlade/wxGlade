@@ -157,28 +157,28 @@ BEGIN_EVENT_TABLE(PyOgg2_MyFrame, wxFrame)
 END_EVENT_TABLE();
 
 
-void PyOgg2_MyFrame::OnOpen(wxCommandEvent &event)
+void PyOgg2_MyFrame::OnOpen(wxCommandEvent &event)  // wxGlade: PyOgg2_MyFrame.<event_handler>
 {
     event.Skip();
     // notify the user that he hasn't implemented the event handler yet
     wxLogDebug(wxT("Event handler (PyOgg2_MyFrame::OnOpen) not implemented yet"));
 }
 
-void PyOgg2_MyFrame::OnClose(wxCommandEvent &event)
+void PyOgg2_MyFrame::OnClose(wxCommandEvent &event)  // wxGlade: PyOgg2_MyFrame.<event_handler>
 {
     event.Skip();
     // notify the user that he hasn't implemented the event handler yet
     wxLogDebug(wxT("Event handler (PyOgg2_MyFrame::OnClose) not implemented yet"));
 }
 
-void PyOgg2_MyFrame::OnAboutDialog(wxCommandEvent &event)
+void PyOgg2_MyFrame::OnAboutDialog(wxCommandEvent &event)  // wxGlade: PyOgg2_MyFrame.<event_handler>
 {
     event.Skip();
     // notify the user that he hasn't implemented the event handler yet
     wxLogDebug(wxT("Event handler (PyOgg2_MyFrame::OnAboutDialog) not implemented yet"));
 }
 
-void PyOgg2_MyFrame::startConverting(wxCommandEvent &event)
+void PyOgg2_MyFrame::startConverting(wxCommandEvent &event)  // wxGlade: PyOgg2_MyFrame.<event_handler>
 {
     event.Skip();
     // notify the user that he hasn't implemented the event handler yet

@@ -12,44 +12,26 @@ import compat
 
 
 class BaseTagHandler(object):
-    """\
-    Base for all custom tag handler classes.
-
-    All handler are called during the XML parse process.
-
-    @ivar _content: Tag content
-    @type _content: list[Unicode]
-    """
+    """Base for all custom tag handler classes; all handler are called during the XML parse process."""
 
     strip_char_data = False
 
     def __init__(self):
-        self._content = []
+        self._content = []  # Tag content as list of unicode strings
 
     def start_elem(self, name, attrs):
-        """\
-        Start a new element
+        """Start a new elements
 
-        @param name: Element name
-        @type name: Unicode
-        @param attrs: Element attributes
-        @type attrs: dict
-        """
+        name: Element name
+        attrs: Element attributes as dict"""
         pass
 
     def char_data(self, data):
-        """\
-        Process tag content
+        """Process tag content; if returning False, we don't have to call add_property().
 
-        If returning False, we don't have to call add_property().
+        data: (Partial) tag content as unicode
 
-        @param data: (Partial) tag content
-        @type data: Unicode
-
-        @rtype: bool
-        @see: L{self._content}
-        see: L{xml_parse.XmlWidgetObject.add_property()}
-        """
+        see: self._content, xml_parse.XmlWidgetObject.add_property()"""
         assert isinstance(data, compat.unicode)
         if self.strip_char_data:
             data = data.strip()
@@ -58,11 +40,7 @@ class BaseTagHandler(object):
         return False
 
     def get_char_data(self):
-        """\
-        Return the whole content of a tag
-
-        @rtype: Unicode
-        """
+        "Return the whole content of a tag"
         if not self._content:
             return u''
         data = "".join(self._content)
@@ -71,47 +49,27 @@ class BaseTagHandler(object):
         self._content = []
         return data
 
-# end of class BaseTagHandler
-
 
 class BaseCodeWriterTagHandler(BaseTagHandler):
-    """\
-    Custom tag handler interface called by L{xml_parse.CodeWriter}
-    """
+    "Custom tag handler interface called by xml_parse.CodeWriter"
 
     def end_elem(self, name, code_obj):
-        """\
-        End the current element
+        """End the current element
 
-        @param name: Element name
-        @type name:  Unicode
+        name: Element name as unicode
+        code_obj: Object to generate code for as CodeObject
 
-        @param code_obj: Object to generate code for
-        @type code_obj: CodeObject
-
-        @return: True to remove this handler from XML parser stack
-        @rtype: bool
-        """
+        return: True to remove this handler from XML parser stack"""
         return True
-
-# end of class BaseCodeWriterTagHandler
 
 
 class BaseXmlBuilderTagHandler(BaseTagHandler):
-    """\
-    Custom tag handler interface called by L{xml_parse.XmlWidgetBuilder}
-    """
+    "Custom tag handler interface called by xml_parse.XmlWidgetBuilder"
 
     def end_elem(self, name):
-        """\
-        End the current element
+        """End the current element
 
-        @param name: Element name
-        @type name:  Unicode
+        name: Element name as unicode
 
-        @return: True to remove this handler from XML parser stack
-        @rtype: bool
-        """
+        return: True to remove this handler from XML parser stack"""
         return True
-
-# end of class BaseXmlBuilderTagHandler

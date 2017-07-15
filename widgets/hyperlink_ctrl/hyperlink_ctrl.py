@@ -40,10 +40,6 @@ class EditHyperlinkCtrl(ManagedBase, EditStylesMixin):
         self.url   = np.TextProperty("")
         self.attribute = np.CheckBoxProperty(False, default_value=False)
 
-        if config.preferences.default_border:
-            self.properties["border"].set( config.preferences.default_border_size )
-            self.properties["flag"].set( wx.ALL )
-
     def create_widget(self):
         self.widget = HyperlinkCtrl(self.parent.widget, self.id, self.label, self.url)
 
@@ -76,7 +72,9 @@ def builder(parent, sizer, pos, number=[1]):
         number[0] += 1
         name = u'hyperlink_%d' % number[0]
     hyperlink_ctrl = EditHyperlinkCtrl(name, parent, wx.NewId(), name, sizer, pos)
+    hyperlink_ctrl.properties["style"].set_to_default()
     hyperlink_ctrl.properties["attribute"].set(True)  # allow to modificate it later on...
+    hyperlink_ctrl.check_defaults()
     node = Node(hyperlink_ctrl)
     hyperlink_ctrl.node = node
     if parent.widget: hyperlink_ctrl.create()

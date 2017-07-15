@@ -116,7 +116,7 @@
         (wxSizer_AddWindow (slot-grid-sizer-1 obj) (slot-button-3 obj) 0 wxALL 5 nil)
         (wxWindow_SetSizer (slot-notebook-1-pane-1 obj) (slot-grid-sizer-1 obj))
         (wxFlexGridSizer_AddGrowableCol (slot-grid-sizer-1 obj) 1)
-        (wxSizer_AddWindow (slot-sizer-4 obj) (slot-radio-box-1 obj) 1 (logior wxALL wxEXPAND wxSHAPED) 5 nil)
+        (wxSizer_AddWindow (slot-sizer-4 obj) (slot-radio-box-1 obj) 0 (logior wxALL wxEXPAND wxSHAPED) 5 nil)
         (wxWindow_SetSizer (slot-notebook-1-pane-2 obj) (slot-sizer-4 obj))
         (wxSizer_AddWindow (slot-sizer-3 obj) (slot-text-ctrl-2 obj) 1 (logior wxALL wxEXPAND) 5 nil)
         (wxWindow_SetSizer (slot-notebook-1-pane-3 obj) (slot-sizer-3 obj))

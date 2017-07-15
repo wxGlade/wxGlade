@@ -11,16 +11,13 @@ import wcodegen
 
 
 class PerlCalendarCtrlGenerator(wcodegen.PerlWidgetCodeWriter):
-    tmpl = '%(name)s = %(klass)s->new(%(parent)s, %(id)s, ' \
-           'Wx::DateTime->new%(style)s);\n'
+    tmpl = '%(name)s = %(klass)s->new(%(parent)s, %(id)s, Wx::DateTime->new%(style)s);\n'
     prefix_style = True
 
     def _prepare_tmpl_content(self, obj):
         wcodegen.PerlWidgetCodeWriter._prepare_tmpl_content(self, obj)
-        self.has_setdefault = int(obj.properties.get('default', 0))
+        self.has_setdefault = obj.default
         return
-
-#end of code generator
 
 
 def initialize():

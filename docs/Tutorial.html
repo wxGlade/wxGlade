@@ -469,6 +469,7 @@
         <p style="margin-left: 40px;"> <a href="attachments/Calculator_06_Screenshot.png" title="Screenshot"><img alt="Screenshot" src="attachments/Calculator_06_Screenshot.png" title="Screenshot" width="150"></a> </p>
         <p>To <strong>use the generated code</strong> and extend it with the required functionality, it's best to create another Python file, import the generated code and use app/MyApp as template.</p>
         <p>In the generated code you can see assignments like <code>self.result_text = wx.TextCtrl(...)</code>. This allows you to access the control via the attribute <code>result_text</code>. You may e.g. call <code>frame.result_text.SetValue(str(result))</code> to display a value in the Result text control.</p>
+        <p>Some widgets like StaticText are not accessible as attributes by default. You can change this by going to <em>Properties</em>-&gt;Widget and checking 'Store as attribute'. For Sizers you can achieve the same on the "Common" tab.</p>
         As of now, nothing will happen if the user hits the "Execute" button. So we need an event handler for this.<br>
         <h2><a class="mozTocH2" id="mozTocId797300"></a>Code for event handlers</h2>
         Traditional programs or scripts usually have a defined flow. GUI programs on the other hand, are event-driven and the flow depends on the user‘s actions. The events like mouse clicks are delivered from the operating system or window manager to the application. The receiving side is an infinite loop, called „event loop“ or „main loop“. When you have a look at the last lines of a Python file that wxGlade wrote, you will see that the <tt>MainLoop</tt> method of your application is called. The main loop receives events from e.g. the Windows operating sytem and dispatches it to windows and controls. To handle things like mouse clicks, menu selections, button clicks etc. you need to register handlers.
@@ -485,11 +486,12 @@
         </p>
         <br>
         The generated code will look like this:<code>
-        def init(self, *args, **kwds):
+    def init(self, *args, **kwds):
         self.execute_button = wx.Button(self.notebook_1_pane_1, wx.ID_ANY, "Execute")
         self.Bind(wx.EVT_BUTTON, self.on_button_clicked, self.execute_button)
-        def on_execute_button_clicked(self, event):
-        print("Event handler 'on_execute_button_clicked' not implemented!")<br>    event.Skip()
+    def on_execute_button_clicked(self, event):
+        print("Event handler 'on_execute_button_clicked' not implemented!")
+        event.Skip()
         </code>
         <br>
         To be useful, you need to derive from the <code>MyFrame</code> class and actually implement the method.<br>

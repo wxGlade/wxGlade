@@ -549,13 +549,11 @@ class MenuProperty(np.Property):
             self.on_value_edited(dialog.get_menus())
         dialog.Destroy()
 
-    def write(self, outfile, tabs):
-        inner_xml = compat.StringIO()
+    def write(self, output, tabs):
+        inner_xml = []
         for menu in self.get():
             menu.write(inner_xml, tabs+1)
-        stmt = common.format_xml_tag( u'menus', inner_xml.getvalue(), tabs, is_xml=True )
-        outfile.write(stmt)
-
+        output.extend( common.format_xml_tag( u'menus', inner_xml, tabs, is_xml=True ) )
 
 
 class MenuHandler(BaseXmlBuilderTagHandler):
@@ -641,6 +639,8 @@ class EditMenuBar(EditBase, PreviewMixin):
         self.properties["base"].set('wxMenuBar')
 
         self.menus = MenuProperty()
+        self.window_id = None  # just a dummy for code generation
+
         self._mb = None  # the real menubar
         if not self.parent:
             PreviewMixin.__init__(self)  # add a preview button

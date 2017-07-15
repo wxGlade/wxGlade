@@ -16,10 +16,9 @@ class RadioBoxMixin(object):
         super(RadioBoxMixin, self)._prepare_tmpl_content(obj)
 
         # wx raises an assertion if choices are empty and majorDim is 0
-        majorDimension = obj.properties.get('dimension', '1')
-        choices = obj.properties.get('choices', [])
-        if not choices and majorDimension == '0':
-            majorDimension = '1'
+        majorDimension = obj.dimension
+        if not obj.choices and majorDimension == 0:
+            majorDimension = 1
 
         self.tmpl_dict['majorDimension'] = majorDimension
 

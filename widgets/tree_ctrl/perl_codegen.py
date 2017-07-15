@@ -13,8 +13,6 @@ import wcodegen
 class PerlTreeCtrlGenerator(wcodegen.PerlWidgetCodeWriter):
     tmpl = '%(name)s = %(klass)s->new(%(parent)s, %(id)s%(style)s);\n'
 
-# end of class PerlTreeCtrlGenerator
-
 
 def initialize():
     klass = 'wxTreeCtrl'

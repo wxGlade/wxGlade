@@ -30,7 +30,7 @@ sub new {
     $name   = ""                 unless defined $name;
 
     # begin wxGlade: PlOgg2_MyFrame::new
-    $style = wxDEFAULT_FRAME_STYLE 
+    $style = wxDEFAULT_FRAME_STYLE
         unless defined $style;
 
     $self = $self->SUPER::new( $parent, $id, $title, $pos, $size, $style, $name );
@@ -53,7 +53,6 @@ sub __set_properties {
     $self->SetTitle(_T("FrameOggCompressionDetails"));
     $self->SetSize(Wx::Size->new(400, 300));
     $self->{grid_1}->CreateGrid(8, 3);
-    $self->{grid_1}->SetSelectionMode(wxGridSelectCells);
     $self->{button_6}->SetFocus();
     $self->{button_6}->SetDefault();
     # end wxGlade

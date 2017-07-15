@@ -12,25 +12,22 @@ import wcodegen
 
 
 class PerlButtonGenerator(wcodegen.PerlWidgetCodeWriter):
-    tmpl = '%(name)s = %(klass)s->new(%(parent)s, %(id)s, ' \
-           '%(label)s%(style)s);\n'
+    tmpl = '%(name)s = %(klass)s->new(%(parent)s, %(id)s, %(label)s%(style)s);\n'
     prefix_style = True
 
     def _prepare_tmpl_content(self, obj):
         wcodegen.PerlWidgetCodeWriter._prepare_tmpl_content(self, obj)
 
-        prop = obj.properties
-        stockitem = prop.get('stockitem', None)
+        stockitem = obj.stockitem
         if stockitem:
             self.tmpl_dict['label'] = self.codegen.quote_str('')
             self.tmpl_dict['id_number'] = self.codegen.cn("wxID_" + stockitem)
             self.tmpl_dict['id'] = self.tmpl_dict['id_number']
 
-        self.has_setdefault = int(prop.get('default', 0))
+        self.has_setdefault = obj.default
 
         return
 
-# end of class PerlButtonGenerator
 
 
 def initialize():

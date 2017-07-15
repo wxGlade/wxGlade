@@ -20,7 +20,8 @@ methods of the parent object.
 
 import os.path, re
 
-from codegen import BaseLangCodeWriter, BaseSourceFileContent, BaseWidgetHandler
+from codegen import BaseLangCodeWriter, BaseSourceFileContent, BaseWidgetHandler, _replace_tag
+from codegen import ClassLines as BaseClassLines
 import config, compat, misc
 import wcodegen
 
@@ -105,7 +106,8 @@ class SourceFileContent(BaseSourceFileContent):
 
         # initialise new variables first
         self.header_content = None
-        self.source_content = None
+        #self.source_content = None
+        self.content = None
         self.event_table_decl = {}
         self.event_table_def  = {}
         self.header_extension = code_writer.header_extension
@@ -114,11 +116,14 @@ class SourceFileContent(BaseSourceFileContent):
         # call inherited constructor
         BaseSourceFileContent.__init__(self, name, code_writer)
 
+    def replace_header(self, tag, content):
+        return _replace_tag(self.header_content, tag, content)
+
     def build_untouched_content(self):
         BaseSourceFileContent.build_untouched_content(self)
-        self._build_untouched(self.name + self.header_extension, True)
+        self._build_untouched(self.name + "." + self.header_extension, True)
         BaseSourceFileContent.build_untouched_content(self)
-        self._build_untouched(self.name + self.source_extension, False)
+        self._build_untouched(self.name + "." + self.source_extension, False)
 
     def _build_untouched(self, filename, is_header):
         prev_was_handler = False
@@ -142,28 +147,18 @@ class SourceFileContent(BaseSourceFileContent):
             else:
                 result = self.rec_class_decl.match(line)
             if not inside_comment and not inside_block and result:
-##                self._logger.debug(">> class %r", result.group(1))
                 if not self.class_name:
-                    # this is the first class declared in the file: insert the
-                    # new ones before this
-                    out_lines.append('<%swxGlade insert new_classes>' %
-                                     self.nonce)
+                    # this is the first class declared in the file: insert the new ones before this
+                    out_lines.append( '<%swxGlade insert new_classes>' % self.nonce )
                     self.new_classes_inserted = True
                 self.class_name = result.group(1)
                 self.class_name = self.format_classname(self.class_name)
-                self.classes[self.class_name] = 1  # add the found class to the list
-                                              # of classes of this module
+                self.classes[self.class_name] = 1  # add the found class to the list of classes of this module
                 out_lines.append(line)
             elif not inside_block:
                 result = self.rec_block_start.match(line)
                 if not inside_comment and result:
-##                     self._logger.debug(">> block %r %r %r",
-##                         result.group('spaces'),
-##                         result.group('classname'),
-##                         result.group('block'),
-##                         )
-                    # replace the lines inside a wxGlade block with a tag that
-                    # will be used later by add_class
+                    # replace the lines inside a wxGlade block with a tag that will be used later by add_class
                     spaces = result.group('spaces')
                     which_class = result.group('classname')
                     which_block = result.group('block')
@@ -173,11 +168,8 @@ class SourceFileContent(BaseSourceFileContent):
                         which_class = self.format_classname(which_class)
                     self.spaces[which_class] = spaces
                     inside_block = True
-                    out_lines.append('<%swxGlade replace %s %s>' % (
-                        self.nonce,
-                        result.group('classname'),
-                        result.group('block')
-                        ))
+                    out_lines.append( '<%swxGlade replace %s %s>' %
+                                      (self.nonce, result.group('classname'), result.group('block') ) )
                 else:
                     dont_append = False
 
@@ -193,28 +185,20 @@ class SourceFileContent(BaseSourceFileContent):
                         else:
                             if prev_was_handler:
                                 # add extra event handlers here...
-                                out_lines.append('<%swxGlade event_handlers %s>'
-                                                 % (self.nonce, self.class_name)
-                                        )
+                                out_lines.append('<%swxGlade event_handlers %s>' % (self.nonce, self.class_name) )
                                 prev_was_handler = False
                                 events_tag_added = True
                             elif not events_tag_added and \
                                      self.is_end_of_class(line):
-                                out_lines.append(
-                                    '<%swxGlade event_handlers %s>' % \
-                                        (self.nonce, self.class_name)
-                                        )
-                            # now try to see if we already have a
-                            # DECLARE_EVENT_TABLE
+                                out_lines.append( '<%swxGlade event_handlers %s>' % (self.nonce, self.class_name) )
+                            # now try to see if we already have a DECLARE_EVENT_TABLE
                             result = self.rec_decl_event_table.match(line)
                             if result:
                                 self.event_table_decl[self.class_name] = True
                     elif not inside_comment:
                         result = self.rec_event_handlers_marker.match(line)
                         if result:
-                            out_lines.append('<%swxGlade add %s event '
-                                             'handlers>' % \
-                                             (self.nonce, result.group(1)))
+                            out_lines.append( '<%swxGlade add %s event handlers>' % (self.nonce, result.group(1)) )
                             dont_append = True
                         result = self.rec_def_event_table.match(line)
                         if result:
@@ -229,15 +213,14 @@ class SourceFileContent(BaseSourceFileContent):
                 if self.rec_block_end.match(line):
                     inside_block = False
         if is_header and not self.new_classes_inserted:
-            # if we are here, the previous ``version'' of the file did not
-            # contain any class, so we must add the new_classes tag at the
-            # end of the file
+            # if we are here, the previous ``version'' of the file did not contain any class, so we must add the
+            # new_classes tag at the end of the file
             out_lines.append('<%swxGlade insert new_classes>' % self.nonce)
         # set the ``persistent'' content of the file
         if is_header:
-            self.header_content = "".join(out_lines)
+            self.header_content = out_lines
         else:
-            self.source_content = "".join(out_lines)
+            self.content = out_lines
 
     def is_end_of_class(self, line):
         """Returns True if the line is the last line of a class
@@ -262,6 +245,16 @@ class WidgetHandler(BaseWidgetHandler):
         Usually the default implementation is ok (i.e. there are no extra lines to add)"""
         return []
 
+class ClassLines(BaseClassLines):
+    """Stores the lines of C++ code for a custom class"""
+    def __init__(self):
+        BaseClassLines.__init__(self)
+        self.ids = [] # Ids declared in the source (for Evt. handling): grouped in a public enum in the custom class
+        self.sub_objs = [] # List of 2-tuples (type, name) of the sub-objects; attributes of the toplevel object
+        self.extra_code_h   = [] # Extra header code to output
+        self.extra_code_cpp = [] # Extra source code to output
+        self.dependencies = []     # List not dictionary
+
 
 class CPPCodeWriter(BaseLangCodeWriter, wcodegen.CppMixin):
     """Code writer class for writing C++ code out of the designed GUI elements
@@ -272,7 +265,7 @@ class CPPCodeWriter(BaseLangCodeWriter, wcodegen.CppMixin):
     tmpl_init_gettext: Template for inclusion of i18n headers and defining APP_CATALOG constant or None
 
     @see: L{BaseLangCodeWriter}"""
-
+    ClassLines = ClassLines
     _code_statements = {
         'backgroundcolour': "%(objname)sSetBackgroundColour(%(value)s);\n",
         'disabled':         "%(objname)sEnable(0);\n",
@@ -289,12 +282,6 @@ class CPPCodeWriter(BaseLangCodeWriter, wcodegen.CppMixin):
 
     class_separator = '::'
 
-    global_property_writers = {
-        'font':            BaseLangCodeWriter.FontPropertyHandler,
-        'events':          BaseLangCodeWriter.EventsPropertyHandler,
-        'extraproperties': BaseLangCodeWriter.ExtraPropertiesPropertyHandler,
-        }
-
     language_note = \
         '// Example for compiling a single file project under Linux using g++:\n' \
         '//  g++ MyApp.cpp $(wx-config --libs) $(wx-config --cxxflags) -o MyApp\n' \
@@ -304,14 +291,15 @@ class CPPCodeWriter(BaseLangCodeWriter, wcodegen.CppMixin):
         '//\n'
 
     output_name   = None  # If not None, name (without extension) of the file to write into
-    output_header = None  # Temporary storage of header file for writing into (StringIO)
-    output_file   = None  # Temporary storage of source file for writing into (StringIO)
+    output_header = None  # Temporary storage of header file for writing into (list)
+    output_file   = None  # Temporary storage of source file for writing into (list)
 
     shebang = '// -*- C++ -*-\n//\n'
     tmpl_cfunc_end = '}\n\n'
     tmpl_name_do_layout = 'do_layout'
     tmpl_name_set_properties = 'set_properties'
     tmpl_sizeritem = '%s->Add(%s, %s, %s, %s);\n'
+    tmpl_spacersize = '%s, %s'
 
     tmpl_ctor_call_layout = '\n' \
                             '%(tab)sset_properties();\n' \
@@ -433,28 +421,25 @@ bool MyApp::OnInit()
 
     tmpl_empty_string = 'wxEmptyString'
 
-    class ClassLines(BaseLangCodeWriter.ClassLines):
-        """Stores the lines of C++ code for a custom class"""
-        def __init__(self):
-            BaseLangCodeWriter.ClassLines.__init__(self)
-            self.ids = [] # Ids declared in the source (for Evt. handling): grouped in a public enum in the custom class
-            self.sub_objs = [] # List of 2-tuples (type, name) of the sub-objects; attributes of the toplevel object
-            self.extra_code_h   = [] # Extra header code to output
-            self.extra_code_cpp = [] # Extra source code to output
-            self.dependencies = []     # List not dictionary
-    # end of class ClassLines
-
-    def init_lang(self, app_attrs=None):
+    def init_lang(self, app=None):
         self.last_generated_id = 1000
         self.generated_ids = {}
+        
 
         # Extensions and main filename based on Project options when set
-        if app_attrs is not None:
-            self.source_extension = app_attrs.get('source_extension', config.default_source_extension)
-            self.header_extension = app_attrs.get('header_extension', config.default_header_extension)
+        if app is not None:
+            self.source_extension = app.source_extension or config.default_source_extension
+            self.header_extension = app.header_extension or config.default_header_extension
         else:
             self.source_extension = config.default_source_extension
             self.header_extension = config.default_header_extension
+
+        if hasattr(app, "app_filename"):  # only for testing
+            base = os.path.splitext(app.app_filename)[0]
+        else:
+            base = os.path.splitext(config.default_cpp_app_name)[0]  # 
+        self.app_filename = '%s.%s' % (base, self.source_extension)
+
 
         self.header_lines = [ '#include <wx/wx.h>\n',
                               '#include <wx/image.h>\n' ]
@@ -474,33 +459,38 @@ bool MyApp::OnInit()
         else:
             name = os.path.splitext(out_path)[0]
             self.output_name = name
-            if not self._overwrite and self._file_exists(name + self.header_extension):
+            if not self._overwrite and self._file_exists(name + "." + self.header_extension):
                 # the file exists, we must keep all the lines not inside a wxGlade block.
                 # NOTE: this may cause troubles if out_path is not a valid source file, so be careful!
                 self.previous_source = SourceFileContent(name, self)
             else:
                 # if the file doesn't exist, create it and write the ``intro''
                 self.previous_source = None
-                self.output_header = compat.StringIO()
-                self.output_file   = compat.StringIO()
+                self.output_header = []
+                self.output_file   = []
 
                 # isolation directives
-                oh = os.path.basename(name + self.header_extension).upper().replace( '.', '_' )
-                self.output_header.write('#ifndef %s\n#define %s\n' % (oh, oh))
-                self.output_header.write('\n')
+                oh = os.path.basename(name + "." + self.header_extension).upper().replace( '.', '_' )
+                self.output_header.append('#ifndef %s\n#define %s\n' % (oh, oh))
+                self.output_header.append('\n')
 
                 for line in self.header_lines:
-                    self.output_header.write(line)
-                self.output_header.write('\n')
+                    self.output_header.append(line)
+                self.output_header.append('\n')
 
                 # now, write the tags to store dependencies and extra code
-                self.output_header.write('<%swxGlade replace  dependencies>' % self.nonce)
-                self.output_header.write('\n<%swxGlade replace  extracode>' % self.nonce)
+                self.output_header.append('<%swxGlade replace  dependencies>' % self.nonce)
+                self.output_header.append('\n')
+                self.output_header.append('<%swxGlade replace  extracode>' % self.nonce)
 
-                self.output_header.write('\n')
+                self.output_header.append('\n')
 
-                self.output_file.write('#include "%s%s"\n\n' % (os.path.basename(name), self.header_extension))
-                self.output_file.write('<%swxGlade replace  extracode>\n\n' % self.nonce)
+                self.output_file.append('#include "%s.%s"\n\n' % (os.path.basename(name), self.header_extension))
+                self.output_file.append('<%swxGlade replace  extracode>\n' % self.nonce)
+                self.output_file.append('\n')
+
+    def output_header_replace(self, tag, content):
+        _replace_tag(self.output_header, tag, content)
 
     def finalize(self):
         if self.previous_source:
@@ -510,22 +500,24 @@ bool MyApp::OnInit()
                 code = "".join([c[0] for c in self.previous_source.new_classes])
             else:
                 code = ""
-            header_content = self.previous_source.header_content.replace(tag, code)
+            self.previous_source.replace_header(tag, code)
             extra_source = "".join([c[1] for c in self.previous_source.new_classes])
-            source_content = self.previous_source.source_content
 
             # extra code (see the 'extracode' property of top-level widgets)
             tag = '<%swxGlade replace  extracode>' % self.nonce
             code = self._tagcontent( '::extracode', self._current_extra_code_h )
-            header_content = header_content.replace(tag, code)
+            self.previous_source.replace_header(tag, code)
             code = self._tagcontent( '::extracode', self._current_extra_code_cpp )
-            source_content = source_content.replace(tag, code)
+            self.previous_source.replace(tag, code)
             # --------------------------------------------------------------
 
             # now remove all the remaining <123415wxGlade ...> tags from the source:
             # this may happen if we're not generating multiple files, and one of the container class names is changed
-            tags = re.findall( r'(<%swxGlade replace ([a-zA-Z_]*\w*) (\w+)>)' % self.nonce, header_content )
-            for tag in tags:
+            tags = re.compile( r'(<%swxGlade replace ([a-zA-Z_]*\w*) (\w+)>)' % self.nonce )
+            for i,line in enumerate(self.previous_source.header_content):
+                match = tags.match(line)
+                if not match: continue
+                tag = match.groups()
                 if tag[2] == 'dependencies':
                     #self._logger.debug('writing dependencies')
                     deps = []
@@ -536,54 +528,50 @@ bool MyApp::OnInit()
                     lines = '%svoid set_properties();\n%svoid do_layout();\n' % (self.tabs(1), self.tabs(1))
                 else:
                     lines = '// content of this block (%s) not found: did you rename this class?\n' % tag[2]
-                header_content = header_content.replace(tag[0], lines)
+                self.previous_source.replace_header(tag[0], lines)
 
-            # remove all the remaining <123415wxGlade ...> tags in source file
-            source_content = self._content_notfound( source_content )
-
-            # ALB 2004-12-08
-            tags = re.findall(r'<%swxGlade event_handlers \w+>' % self.nonce, header_content)
-            for tag in tags:
-                header_content = header_content.replace(tag, "")
-            tags = re.findall(r'<%swxGlade add \w+ event_handlers>' % self.nonce, source_content)
-            for tag in tags:
-                source_content = source_content.replace(tag, "")
+            # remove all the remaining <123415wxGlade ...> tags in source file    XXX make more efficient
+            self._content_notfound( self.previous_source )
+            tag_start = r'<%swxGlade add ' % self.nonce
+            tag_end = r' event_handlers>'
+            for i, line in enumerate(self.previous_source.content):
+                if line.startswith(tag_start) and line.endswith(tag_end):
+                    source_content.content[i] = ""
 
             # write the new file contents to disk
-            self.save_file( self.previous_source.name + self.header_extension, header_content, content_only=True )
+            header_content = "".join( self.previous_source.header_content )
+            self.save_file( self.previous_source.name + "." + self.header_extension, header_content, content_only=True )
             if extra_source:
                 extra_source = '\n\n' + extra_source
-            self.save_file( self.previous_source.name + self.source_extension, source_content + extra_source,
+            source_content = "".join( self.previous_source.content )
+            self.save_file( self.previous_source.name + "." + self.source_extension, source_content + extra_source,
                             content_only=True )
 
         elif not self.multiple_files:
             oh = os.path.basename(self.output_name).upper() + '_H'
-            self.output_header.write('\n#endif // %s\n' % oh)
+            self.output_header.append('\n#endif // %s\n' % oh)
+
             # write the list of include files
-            header_content = self.output_header.getvalue()
-            source_content = self.output_file.getvalue()
-            tag = '<%swxGlade replace  dependencies>' % self.nonce
-            tags = re.findall(tag, header_content)
             deps = []
             for code in self.classes.values():
                 deps.extend(code.dependencies)
             code = self._format_dependencies( deps )
-            header_content = header_content.replace( tag, code )
+            self.output_header_replace( '<%swxGlade replace  dependencies>' % self.nonce, code )
 
             # extra code (see the 'extracode' property of top-level widgets)
             tag = '<%swxGlade replace  extracode>' % self.nonce
             code = self._tagcontent('::extracode', self._current_extra_code_h)
-            header_content = header_content.replace(tag, code)
+            self.output_header_replace( tag, code )
             code = self._tagcontent('::extracode', self._current_extra_code_cpp)
-            source_content = source_content.replace(tag, code)
-            # --------------------------------------------------------------
+            self.output_file_replace( tag, code )
 
-            self.save_file( self.output_name + self.header_extension, header_content, self._app_added )
-            self.save_file( self.output_name + self.source_extension, source_content, self._app_added )
+            self.save_file( self.output_name + "." + self.header_extension, self.output_header, self._app_added )
+            self.save_file( self.output_name + "." + self.source_extension, self.output_file, self._app_added )
+            self.output_file = self.output_header = None
 
     def add_app(self, app_attrs, top_win_class):
         # add language specific mappings
-        self.lang_mapping['filename_top_win_class'] = '%s%s' % (top_win_class, self.header_extension)
+        self.lang_mapping['filename_top_win_class'] = '%s.%s' % (top_win_class, self.header_extension)
         BaseLangCodeWriter.add_app(self, app_attrs, top_win_class)
 
     def add_class(self, code_obj):
@@ -597,7 +585,7 @@ bool MyApp::OnInit()
 
         if self.multiple_files:
             # let's see if the file to generate exists, and in this case create a SourceFileContent instance
-            filename = os.path.join(self.out_dir, klass.replace('::', '_') + self.header_extension)
+            filename = os.path.join(self.out_dir, klass.replace('::', '_') + "." + self.header_extension)
             if self._overwrite or not self._file_exists(filename):
                 prev_src = None
             else:
@@ -637,7 +625,7 @@ bool MyApp::OnInit()
             event_handlers.append((win_id, mycn(evt), handler, evt_type))
 
         # try to see if there's some extra code to add to this class
-        extra_code = getattr(builder, 'extracode', code_obj.properties.get('extracode', ""))
+        extra_code = getattr(builder, 'extracode', getattr(code_obj, 'extracode', "") or "")
         if extra_code:
             extra_code = re.sub(r'\\n', '\n', extra_code)
             extra_code = re.split(re.compile(r'^###\s*$', re.M), extra_code, 1)
@@ -748,11 +736,9 @@ bool MyApp::OnInit()
                 hwrite(self.tabs(1) + '};\n')
             hwrite(self.tabs(1) + '// end wxGlade\n')
             tag = '<%swxGlade replace %s ids>' % (self.nonce, klass)
-            if prev_src.header_content.find(tag) < 0:
+            if not prev_src.replace_header( tag, "".join(header_buffer) ):
                 # no ids tag found, issue a warning and do nothing
                 self.warning("wxGlade ids block not found for %s, ids declarations code NOT generated" % code_obj.name)
-            else:
-                prev_src.header_content = prev_src.header_content.replace(tag, "".join(header_buffer))
             header_buffer = [
                 self.tabs(1) + '// begin wxGlade: %s::methods\n' % fmt_klass,
                 self.tabs(1) + 'void set_properties();\n',
@@ -760,12 +746,10 @@ bool MyApp::OnInit()
                 self.tabs(1) + '// end wxGlade\n',
                 ]
             tag = '<%swxGlade replace %s methods>' % (self.nonce, klass)
-            if prev_src.header_content.find(tag) < 0:
+            if not prev_src.replace_header(tag, "".join(header_buffer)):
                 # no methods tag found, issue a warning and do nothing
                 self.warning(
                     "wxGlade methods block not found for %s, methods declarations code NOT generated" % code_obj.name )
-            else:
-                prev_src.header_content = prev_src.header_content.replace(tag, "".join(header_buffer))
             header_buffer = []
             hwrite = header_buffer.append
             hwrite(self.tabs(1) + '// begin wxGlade: %s::attributes\n' % fmt_klass)
@@ -773,12 +757,10 @@ bool MyApp::OnInit()
                 hwrite(self.tabs(1) + '%s* %s;\n' % (o_type, o_name))
             hwrite(self.tabs(1) + '// end wxGlade\n')
             tag = '<%swxGlade replace %s attributes>' % (self.nonce, klass)
-            if prev_src.header_content.find(tag) < 0:
+            if not prev_src.replace_header(tag, "".join(header_buffer)):
                 # no attributes tag found, issue a warning and do nothing
-                self.warning( "wxGlade attributes block not found for %s, attributes "
-                              "declarations code NOT generated" % code_obj.name )
-            else:
-                prev_src.header_content = prev_src.header_content.replace(tag, "".join(header_buffer))
+                self.warning( "wxGlade attributes block not found for %s, attributes declarations code NOT generated" %
+                              code_obj.name )
 
             header_buffer = []
             hwrite = header_buffer.append
@@ -793,18 +775,15 @@ bool MyApp::OnInit()
                     hwrite('\nprotected:\n')
                     hwrite(self.tabs(1) + 'DECLARE_EVENT_TABLE()\n')
             tag = '<%swxGlade event_handlers %s>' % (self.nonce, klass)
-            if prev_src.header_content.find(tag) < 0:
+            if not prev_src.replace_header( tag, "".join(header_buffer) ):
                 # no attributes tag found, issue a warning and do nothing
                 self.warning( "wxGlade events block not found for %s, event table code NOT generated" % code_obj.name )
-            else:
-                prev_src.header_content = prev_src.header_content.replace( tag, "".join(header_buffer) )
 
         # source file
         # set the window's style
-        prop = code_obj.properties
-        style = prop.get("style", None)
-        if style:
-            style = mycn_f(style)
+        style_p = code_obj.properties.get("style")
+        if style_p and style_p.value_set != style_p.default_value:
+            style = mycn_f(style_p.get_string_value())
             if style:
                 sign_inst = sign_inst.replace('style', '%s' % style)
 
@@ -850,11 +829,9 @@ bool MyApp::OnInit()
             # replace the lines inside the ctor wxGlade block
             # with the new ones
             tag = '<%swxGlade replace %s %s>' % (self.nonce, klass, klass)
-            if prev_src.source_content.find(tag) < 0:
+            if not prev_src.replace( tag, "".join(source_buffer) ):
                 # no constructor tag found, issue a warning and do nothing
                 self.warning( "wxGlade %s::%s block not found, relative code NOT generated" % (fmt_klass, fmt_klass) )
-            else:
-                prev_src.source_content = prev_src.source_content.replace(tag, "".join(source_buffer))
             source_buffer = []
             swrite = source_buffer.append
 
@@ -866,11 +843,9 @@ bool MyApp::OnInit()
         if prev_src and not is_new:
             # replace the lines inside the set_properties wxGlade block with the new ones
             tag = '<%swxGlade replace %s set_properties>' % (self.nonce, klass)
-            if prev_src.source_content.find(tag) < 0:
+            if not prev_src.replace( tag, "".join(source_buffer) ):
                 # no set_properties tag found, issue a warning and do nothing
                 self.warning( "wxGlade %s::set_properties block not found, relative code NOT generated" % fmt_klass )
-            else:
-                prev_src.source_content = prev_src.source_content.replace(tag, "".join(source_buffer))
             source_buffer = []
             swrite = source_buffer.append
 
@@ -882,11 +857,9 @@ bool MyApp::OnInit()
         if prev_src and not is_new:
             # replace the lines inside the do_layout wxGlade block with the new ones
             tag = '<%swxGlade replace %s %s>' % (self.nonce, klass, 'do_layout')
-            if prev_src.source_content.find(tag) < 0:
+            if not prev_src.replace(tag, "".join(source_buffer)):
                 # no do_layout tag found, issue a warning and do nothing
                 self.warning( "wxGlade do_layout block not found for %s, do_layout code NOT generated" % code_obj.name )
-            else:
-                prev_src.source_content = prev_src.source_content.replace(tag, "".join(source_buffer))
             source_buffer = []
             swrite = source_buffer.append
 
@@ -895,11 +868,9 @@ bool MyApp::OnInit()
 
         if prev_src and not is_new:
             tag = '<%swxGlade replace %s event_table>' % (self.nonce, klass)
-            if prev_src.source_content.find(tag) < 0:
+            if not prev_src.replace( tag, "".join(code_lines) ):
                 # no constructor tag found, issue a warning and do nothing
                 self.warning( "wxGlade %s::event_table block not found, relative code NOT generated" % fmt_klass )
-            else:
-                prev_src.source_content = prev_src.source_content.replace( tag, "".join(code_lines) )
         else:
             source_buffer.extend(code_lines)
 
@@ -909,11 +880,9 @@ bool MyApp::OnInit()
         # replace code inside existing event handlers
         if prev_src and not is_new:
             tag = '<%swxGlade add %s event handlers>' % (self.nonce, klass)
-            if prev_src.source_content.find(tag) < 0:
+            if not prev_src.replace( tag, "".join(code_lines) ):
                 # no constructor tag found, issue a warning and do nothing
                 self.warning( "wxGlade %s event handlers marker not found, relative code NOT generated" % fmt_klass )
-            else:
-                prev_src.source_content = prev_src.source_content.replace( tag, "".join(code_lines) )
         else:
             source_buffer.extend(code_lines)
 
@@ -932,20 +901,15 @@ bool MyApp::OnInit()
 
             if prev_src:
                 tag = '<%swxGlade insert new_classes>' % self.nonce
-                prev_src.header_content = prev_src.header_content.replace(tag, "")
+                prev_src.replace_header(tag, "")
 
                 # insert the module dependencies of this class
                 extra_modules = self.classes[klass].dependencies
-#                self._logger.debug(
-#                    'extra_modules: %s, %s',
-#                    extra_modules,
-#                    code_obj.base,
-#                    )
                 # WARNING: there's a double space '  ' between 'replace' and 'dependencies' in the tag below,
                 # because there is no class name (see SourceFileContent, line ~147)
                 tag = '<%swxGlade replace  dependencies>' % self.nonce
                 code = self._format_dependencies(extra_modules)
-                prev_src.header_content = prev_src.header_content.replace(tag, code)
+                prev_src.replace_header(tag, code)
 
                 # insert the extra code of this class
                 extra_code_h = "".join(self.classes[klass].extra_code_h[::-1])
@@ -958,89 +922,76 @@ bool MyApp::OnInit()
                 extra_code_h   = self._tagcontent("::extracode", extra_code_h)
                 extra_code_cpp = self._tagcontent("::extracode", extra_code_cpp)
                 tag = '<%swxGlade replace  extracode>' % self.nonce
-                prev_src.header_content = prev_src.header_content.replace(tag, extra_code_h)
-                prev_src.source_content = prev_src.source_content.replace(tag, extra_code_cpp)
+                prev_src.replace_header(tag, extra_code_h)
+                prev_src.replace(tag, extra_code_cpp)
 
                 # store the new file contents to disk
                 name = os.path.join(self.out_dir, klass)
-                self.save_file( name + self.header_extension, prev_src.header_content, content_only=True )
-                self.save_file( name + self.source_extension, prev_src.source_content, content_only=True )
+                self.save_file( name +"."+ self.header_extension, "".join(prev_src.header_content), content_only=True )
+                self.save_file( name +"."+ self.source_extension, "".join(prev_src.content), content_only=True )
 
                 return
 
             # create the new source file
-            header_file = os.path.join(self.out_dir, klass + self.header_extension)
-            source_file = os.path.join(self.out_dir, klass + self.source_extension)
-            hout = compat.StringIO()
-            sout = compat.StringIO()
+            header_file = os.path.join(self.out_dir, klass + "." + self.header_extension)
+            source_file = os.path.join(self.out_dir, klass + "." + self.source_extension)
+            hout = []
+            sout = []
 
-            # header file
-            hwrite = hout.write
+            # header file ----------------------------------------------------------------------------------------------
 
             # isolation directives
             hn = os.path.basename(header_file).upper().replace('.', '_')
-            hwrite('#ifndef %s\n#define %s\n' % (hn, hn))
-            hwrite('\n')
+            hout.append('#ifndef %s\n#define %s\n' % (hn, hn))
+            hout.append('\n')
 
             # write the common lines
-            for line in self.header_lines:
-                hwrite(line)
-            hwrite('\n')
+            hout.extend( self.header_lines )
+            hout.append('\n')
 
             # write the module dependencies for this class
             extra_modules = self.classes[klass].dependencies
             code = self._format_dependencies(extra_modules)
-            hwrite(code)
-            hwrite('\n')
+            hout.append(code)
+            hout.append('\n')
 
             # insert the extra code of this class
             extra_code_h = "".join(self.classes[klass].extra_code_h[::-1])
             extra_code_h = self._tagcontent('::extracode', extra_code_h)
-            hwrite(extra_code_h)
-            hwrite('\n')
+            hout.append(extra_code_h)
+            hout.append('\n')
 
             # write the class body
             for line in header_buffer:
-                hwrite(line)
-            hwrite('\n#endif // %s\n' % hn)
+                hout.append(line)
+            hout.append('\n#endif // %s\n' % hn)
 
-            # source file
-            swrite = sout.write
+            # source file ----------------------------------------------------------------------------------------------
             # write the common lines
-            #for line in self.header_lines:
-            #    swrite(line)
-            swrite(self.header_lines[0])
-            swrite('#include "%s"\n\n' % os.path.basename(header_file))
+            sout.append(self.header_lines[0])
+            sout.append('#include "%s"\n\n' % os.path.basename(header_file))
 
             # insert the extra code of this class
             extra_code_cpp = "".join(self.classes[klass].extra_code_cpp[::-1])
             extra_code_cpp = self._tagcontent('::extracode', extra_code_cpp)
-            swrite(extra_code_cpp)
-            swrite('\n')
+            sout.append(extra_code_cpp)
+            sout.append('\n')
 
             # write the class implementation
-            for line in source_buffer:
-                swrite(line)
+            sout.extend(source_buffer)
 
             # store source to disk
-            self.save_file(header_file, hout.getvalue())
-            self.save_file(source_file, sout.getvalue())
-
-            hout.close()
-            sout.close()
+            self.save_file(header_file, hout)
+            self.save_file(source_file, sout)
 
         else:  # not self.multiple_files
             # write the class body onto the single source file
-            hwrite = self.output_header.write
-            for line in header_buffer:
-                hwrite(line)
-            swrite = self.output_file.write
-            for line in source_buffer:
-                swrite(line)
+            self.output_header.extend(header_buffer)
+            self.output_file.extend(source_buffer)
 
-    def add_object(self, top_obj, sub_obj):
+    def add_object(self, sub_obj):
         # get top level source code object and the widget builder instance
-        klass, builder = self._add_object_init(top_obj, sub_obj)
+        klass, builder = self._add_object_init(sub_obj)
         if not klass or not builder:
             return
 
@@ -1050,8 +1001,8 @@ bool MyApp::OnInit()
             print(sub_obj)
             raise  # this shouldn't happen
 
-        if sub_obj.in_windows:  # the object is a wxWindow instance
-            if sub_obj.is_container and not sub_obj.is_toplevel:
+        if not sub_obj.is_sizer:  # the object is a wxWindow instance
+            if sub_obj.node.children and not sub_obj.is_toplevel:
                 init.reverse()
                 klass.parents_init.extend(init)
             else:
@@ -1061,7 +1012,7 @@ bool MyApp::OnInit()
                 klass.event_handlers.append( (win_id, mycn(evt), handler, evt_type) )
 
             # try to see if there's some extra code to add to this class
-            extra_code = getattr(builder, 'extracode', sub_obj.properties.get('extracode', ""))
+            extra_code = getattr(builder, 'extracode', getattr(sub_obj, 'extracode', "") or "" )
             if extra_code:
                 extra_code = re.sub(r'\\n', '\n', extra_code)
                 extra_code = re.split(re.compile(r'^###\s*$', re.M), extra_code, 1)
@@ -1088,7 +1039,6 @@ bool MyApp::OnInit()
         klass.props.extend(props)
         klass.layout.extend(layout)
         if self.multiple_files and (sub_obj.is_toplevel and sub_obj.base != sub_obj.klass):
-            #print top_obj.name, sub_obj.name
             klass.dependencies.append(sub_obj.klass)
         else:
             if sub_obj.base in self.obj_builders:
@@ -1111,7 +1061,7 @@ bool MyApp::OnInit()
             return []
 
         tmpl_handler = """
-void %(klass)s::%(handler)s(%(evt_type)s &event)
+void %(klass)s::%(handler)s(%(evt_type)s &event)  // wxGlade: %(klass)s.<event_handler>
 {
 %(tab)sevent.Skip();
 %(tab)s// notify the user that he hasn't implemented the event handler yet
@@ -1175,9 +1125,10 @@ void %(klass)s::%(handler)s(%(evt_type)s &event)
 
     def generate_code_id(self, obj, id=None):
         if id is None:
-            id = obj.properties.get('id')
+            id = obj.window_id
         if not id:
             return '', 'wxID_ANY'
+        id = str(id)
         tokens = id.split('=', 1)
         if len(tokens) == 2:
             name, val = tokens
@@ -1203,7 +1154,7 @@ void %(klass)s::%(handler)s(%(evt_type)s &event)
             name2 = 'this'
         else:
             name2 = obj.name
-        size = obj.properties.get('size', '').strip()
+        size = obj.properties["size"].get_string_value()
         use_dialog_units = (size[-1] == 'd')
         if not obj.parent:
             method = 'SetSize'
@@ -1242,16 +1193,6 @@ void %(klass)s::%(handler)s(%(evt_type)s &event)
         code = self._tagcontent( '::dependencies', dep_list )
         return code
 
-    def _generate_app_filename(self):
-        """Return the filename of C++ main file; XXX only used for testing
-        @see: L{config.default_cpp_app_name}, L{source_extension}"""
-        base = os.path.splitext(config.default_cpp_app_name)[0]
-        app_filename = '%s%s' % (base, self.source_extension)
-        return app_filename
+writer = CPPCodeWriter()  # The code writer is an instance of CPPCodeWriter
 
-
-writer = CPPCodeWriter()
-"The code writer is an instance of L{CPPCodeWriter}."
-
-language = writer.language
-"Language generated by this code generator"
+language = writer.language  # Language generated by this code generator

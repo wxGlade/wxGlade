@@ -11,11 +11,8 @@ import wcodegen
 
 
 class LispStaticBitmapGenerator(wcodegen.LispWidgetCodeWriter):
-    tmpl = '(setf %(name)s (%(klass)s_Create %(parent)s %(id)s  ' \
-           '%(bitmap)s -1 -1 -1 -1 %(style)s))\n'
+    tmpl = '(setf %(name)s (%(klass)s_Create %(parent)s %(id)s  %(bitmap)s -1 -1 -1 -1 %(style)s))\n'
     tmpl_SetBestSize = ''
-
-# end of class LispStaticBitmapGenerator
 
 
 def initialize():
