@@ -1331,13 +1331,31 @@ class IntRangePropertyA(IntPairPropertyD):
     deactivated = False
     validation_re = re.compile( _leading + _int + _comma + _int + _trailing )  # match pair of integers
     normalization = "%s, %s"
+    def __init__(self, value, notnull=False):
+        self.notnull = notnull  # min/max of range are not allowed to be the same
+        IntPairPropertyD.__init__(self, value)
+
     def _convert_from_text(self, value):
         # check that min is smaller than max
         match = self.validation_re.match(value)
         if not match: return None
         mi, ma = match.groups()
         if int(mi)>int(ma): return None
+        if self.notnull and int(mi)==int(ma): return None
         return self.normalization%(mi,ma)
+    def load(self, value, activate=None, deactivate=None, notify=False):
+        # loading from XML file
+        if not self.notnull or self._convert_from_text(value) is not None:
+            self.set(value, activate, deactivate, notify)
+            return
+        # validation for notnull failed -> set max to min+1
+        match = self.validation_re.match(value)
+        if not match: return None
+        mi, ma = match.groups()
+        if int(mi)>int(ma): return None
+        if self.notnull and int(mi)==int(ma):
+            ma = str(int(mi)+1)
+        self.set(self.normalization%(mi,ma), activate, deactivate, notify)
 
 
 del _leading, _ge_m1, _g_0, _ge_0, _comma, _trailing
