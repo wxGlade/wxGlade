@@ -832,6 +832,7 @@ class WidgetStyleProperty(_CheckListProperty):
         "handle obsolete and renamed properties"
         # handle invalid combinations
         if isinstance(value, compat.basestring) and value:
+            if value=="0": return set()
             splitted = value.split("|")
             value = set(splitted)
             for v in splitted:
