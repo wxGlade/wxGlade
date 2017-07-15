@@ -465,7 +465,7 @@ class SizerItem(object):
         if isinstance(item, np.PropertyOwner):
             self.item.properties["pos"].set(pos)
         else:
-            self.item.pos = pos
+            self.item.pos = pos  # a Dummy
         self.proportion = option
         self.flag = flag
         self.border = border
@@ -925,9 +925,8 @@ class SizerBase(Sizer, np.PropertyOwner):
             # the layout is messed up!
 
             if self._IS_GRIDBAG:
-                row = (pos-1) // self.cols
-                col = (pos-1) %  self.cols
-                self.widget.Add(item.widget, (row,col), item.span, flag, border)
+                pos = self._get_row_col(pos)
+                self.widget.Add(item.widget, pos, item.span, flag, border)
             else:
                 self.widget.Add(item.widget, proportion, flag, border)
 
@@ -942,8 +941,19 @@ class SizerBase(Sizer, np.PropertyOwner):
             self.widget.SetItemMinSize(item.widget, w, h)
             return
 
-        self.widget.Insert(pos, item.widget, proportion, flag, border)
-        self.widget.Remove(pos + 1)
+        if not self._IS_GRIDBAG:
+            self.widget.Insert(pos, item.widget, proportion, flag, border)
+            self.widget.Remove(pos + 1)
+        else:
+            pos = self._get_row_col(pos)
+            # XXX check item.widget.span and remove empty slots
+            old_item = self.widget.FindItemAtPosition(pos)
+            if old_item is not None:
+                old_item.GetWindow().Destroy()
+            self.widget.Add( item.widget, pos, item.span, flag )
+            self.widget.Layout()
+            return
+
         # XXX
         #si = wx.SizerItem(item.widget, option, flag, border)
         #self.widget.Replace(pos, si )
@@ -1305,7 +1315,10 @@ class SizerBase(Sizer, np.PropertyOwner):
         if self.widget:
             tmp.create()  # create the actual SizerSlot as wx.Window with hatched background
             # pos is 1 based, Insert/Detach are 0 based, but item at 0 is the handle button
-            self.widget.Insert(pos, tmp.widget, 1, wx.EXPAND)
+            if not self._IS_GRIDBAG:
+                self.widget.Insert(pos, tmp.widget, 1, wx.EXPAND)
+            else:
+                self.widget.Add( tmp.widget, self._get_row_col(pos), (1,1), wx.EXPAND )
             # detach is not needed here any more, as change_node does this already
             #self.widget.Detach(pos-1) # does only remove from sizer, but not destroy item
             if force_layout:
@@ -1878,6 +1891,9 @@ class EditGridBagSizer(EditFlexGridSizer):
     WX_CLASS = "wxGridBagSizer"
     WX_FACTORY = wx.GridBagSizer
     _IS_GRIDBAG = True
+    def _get_row_col(self, pos):
+        cols = self.cols
+        return (pos-1) // cols,  (pos-1) %  cols
 
     def create_widget(self):  # this one does not call GridSizerBase.create_widget, as the strategy here is different
         self.widget = CustomSizer(self, self.WX_FACTORY, self.rows, self.cols, self.vgap, self.hgap)
@@ -1885,16 +1901,11 @@ class EditGridBagSizer(EditFlexGridSizer):
         ################################################################################################################
         
         to_lay_out = []
-        rows,cols = self.rows, self.cols
-        pos = [0,cols]
         for c in self.children[1:]:  # we've already added self._btn
-            pos[1] += 1
-            if pos[1]>cols:
-                pos[0] += 1
-                pos[1]  = 1
+            pos = self._get_row_col(c.item.pos)
             c.item.create()
             if isinstance(c.item, SizerSlot):
-                self.widget.Add(c.item.widget, pos, (1,1), 1, wx.EXPAND)
+                self.widget.Add(c.item.widget, pos, (1,1), wx.EXPAND)
                 self.widget.SetItemMinSize(c.item.widget, 20, 20)
             else:
                 sp = c.item.properties.get('size')
@@ -1904,15 +1915,7 @@ class EditGridBagSizer(EditFlexGridSizer):
                         w, h = c.item.widget.GetBestSize()
                         c.item.widget.SetMinSize((w, h))
                     else:
-                        size = sp.get_value().strip()
-                        if size[-1] == 'd':
-                            size = size[:-1]
-                            use_dialog_units = True
-                        else:
-                            use_dialog_units = False
-                        w, h = [int(v) for v in size.split(',')]
-                        if use_dialog_units:
-                            w, h = wx.DLG_SZE(c.item.widget, (w, h))
+                        size = sp.get_size(c.item.widget)
                         # now re-set the item to update the size correctly...
                         to_lay_out.append((c.item.pos, (w, h)))
 
