@@ -158,8 +158,7 @@ class SizerSlot(np.PropertyOwner):
 
         # initialise instance properties
         self.parent = parent
-        self.pos =p = np.LayoutPosProperty(pos, sizer)  # position within the sizer, 1-based
-        p.readonly = True
+        self.pos = p = np.LayoutPosProperty(pos)  # position within the sizer, 1-based
 
         self.widget = None       # Reference to the widget resembling the slot (a wx.Window)
         self.name = "SLOT"
