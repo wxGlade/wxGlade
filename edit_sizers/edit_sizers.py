@@ -162,10 +162,21 @@ class SizerSlot(np.PropertyOwner):
 
         self.widget = None       # Reference to the widget resembling the slot (a wx.Window)
         self.name = "SLOT"
+        self.overlapped = False  # for spanning in GridBagSizer
 
-    def set_overlap(self, visible=True):
+    def set_overlap(self, overlapped=True):
         # interface from GridBagSizer
-        pass
+        if overlapped==self.overlapped: return
+        if overlapped:
+            if self.widget:
+                self.widget.Destroy()
+                self.widget = None
+        else:
+            if self.sizer.widget and not self.widget:
+                self.create_widget()
+                self.sizer.widget.Add(self.widget, self.sizer._get_row_col(self.pos), (1,1), wx.EXPAND)
+        self.overlapped = overlapped
+        # XXX update icon in Tree
 
     def post_load(self): # called from show_widget
         pass
@@ -530,15 +541,16 @@ def change_sizer(old, new):
         if _change_sizer_panel is None:
             _change_sizer_panel = wx.Frame(None, -1, _("HIDDEN FRAME FOR CHANGE SIZER"))
 
+    if isinstance(szr, EditGridBagSizer):
+        szr._check_slots(remove_only=True)  # mark overlapped slots
+
     for c in szr.children[1:]:
         widget = c.item
         widget.sizer = szr
         if not isinstance(widget, SizerSlot):
             # This is necessary as a workaround to a wx.StaticBoxSizer issue:
-            # it seems that the wx.StaticBox needs to come before any other
-            # widget managed by the wx.StaticBoxSizer in the GetChildren()
-            # list. Explicitly reparenting the widgets seems to solve the
-            # problem
+            # it seems that the wx.StaticBox needs to come before any other widget managed by the wx.StaticBoxSizer
+            # in the GetChildren() list. Explicitly reparenting the widgets seems to solve the problem
             if hasattr(widget.widget, 'GetParent'):
                 p = widget.widget.GetParent()
                 widget.widget.Reparent(_change_sizer_panel)
@@ -705,9 +717,9 @@ class SizerBase(Sizer, np.PropertyOwner):
             self.PROPERTIES = self.PROPERTIES + self.MANAGED_PROPERTIES + self.EXTRA_PROPERTIES
             # if within another sizer: the arguments to sizer.Add(self, proportion, flag, border)
             # same as for edit_windows.ManagedBase
-            self.pos        = np.LayoutPosProperty(0, None)  # the position within the sizer, 0-based
+            self.pos        = np.LayoutPosProperty(0, None)   # the position within the sizer, 0-based
             self.span       = np.LayoutSpanProperty(0, None)  # row,colspan for items in GridBagSizers
-            self.proportion = np.SpinProperty(1, name="option", immediate=True)
+            self.proportion = np.LayoutProportionProperty(1)
             self.border     = np.SpinProperty(0, immediate=True)
             self.flag       = np.ManagedFlags(wx.EXPAND)
             self.sizer = None  # the (parent) sizer instance
@@ -1253,7 +1265,11 @@ class SizerBase(Sizer, np.PropertyOwner):
 
         if self.widget:
             tmp.create()  # create the actual SizerSlot widget
-            self.widget.Add(tmp.widget, 1, wx.EXPAND)
+            if not self._IS_GRIDBAG:
+                self.widget.Add(tmp.widget, 1, wx.EXPAND)
+            else:
+                self._check_slots(remove_only=True)  # the added slot could be hidden
+                self.widget.Add(tmp.widget, self._get_row_col(tmp.pos), (1,1), wx.EXPAND)
             self.widget.SetItemMinSize(tmp.widget, 20, 20)
 
     def _insert_slot(self, pos=None):
@@ -1598,10 +1614,9 @@ class GridSizerBase(SizerBase):
                     else:
                         size = sp.get_size(c.item.widget)
                         # now re-set the item to update the size correctly...
-                        to_lay_out.append((c.item.pos, size) )
+                        to_lay_out.append( (c.item.pos, size) )
 
         for pos, size in to_lay_out:
-            # self._logger.debug('set_item: %s, %s', pos, size)
             self.set_item(pos, size=size, force_layout=False)
         self.layout(True)
 
@@ -1907,6 +1922,7 @@ class EditGridBagSizer(EditFlexGridSizer):
         return 1 + row*self.cols + col
 
     def check_span_range(self, pos, rowspan=1, colspan=1):
+        "called from LayoutSpanProperty to set the maximum row/col span range"
         row, col = self._get_row_col(pos)
         # check max colspan
         max_col = col
@@ -1914,7 +1930,9 @@ class EditGridBagSizer(EditFlexGridSizer):
             for r in range(row, row+rowspan):
                 # check cell content
                 p = self._get_pos(r,c)
-                if p>=len(self.children): break
+                if p>=len(self.children):
+                    max_col = c
+                    break
                 item = self.children[p]
                 if not isinstance(item.item, SizerSlot): break
             if p>=len(self.children) or not isinstance(item.item, SizerSlot): break
@@ -1926,7 +1944,9 @@ class EditGridBagSizer(EditFlexGridSizer):
             for c in range(col, col+colspan):
                 # check cell content
                 p = self._get_pos(r,c)
-                if p>=len(self.children): break
+                if p>=len(self.children):
+                    max_row = r
+                    break
                 item = self.children[p]
                 if not isinstance(item.item, SizerSlot): break
             if p>=len(self.children) or not isinstance(item.item, SizerSlot): break
@@ -1934,13 +1954,14 @@ class EditGridBagSizer(EditFlexGridSizer):
             max_row = r
         return max_row-row+1, max_col-col+1
 
-    def _check_slots(self, remove_only=False, add_only=False):
-        "add/remove the widgets for empty slots"
+    def _get_occupied_slots(self):
+        "get pos for all slots that are SizerSlots only, but are occupied by other items spanning over rows/cols"
         pos = 0
         occupied = []
         for row in range(self.rows):
             for col in range(self.cols):
                 pos += 1
+                if pos==len(self.children): break
                 item = self.children[pos]
                 if not isinstance(item, SizerSlot):
                     # an element, check whether it spans over any slots
@@ -1950,17 +1971,18 @@ class EditGridBagSizer(EditFlexGridSizer):
                             for c in range(col, col+span[1]):
                                 if r==row and c ==col: continue  # the original cell
                                 occupied.append( self._get_pos(r,c) )
+        return occupied
+
+    def _check_slots(self, remove_only=False, add_only=False):
+        "add/remove the widgets for empty slots"
+        occupied = set( self._get_occupied_slots() )
         for p,c in enumerate(self.children[1:]):
             pos = p+1
             if isinstance(c.item, SizerSlot):
                 if pos in occupied:
-                    if c.item.widget and not add_only:
-                        c.item.widget.Destroy()
-                        c.item.widget = None
+                    if not add_only: c.item.set_overlap(True)
                 else:
-                    if self.widget and not c.item.widget and not remove_only:
-                        c.item.create_widget()
-                        self.widget.Add(c.item.widget, self._get_row_col(pos), (1,1), wx.EXPAND)
+                    if not remove_only: c.item.set_overlap(False)
 
     def create_widget(self):  # this one does not call GridSizerBase.create_widget, as the strategy here is different
         self.widget = CustomSizer(self, self.WX_FACTORY, self.rows, self.cols, self.vgap, self.hgap)
@@ -2309,6 +2331,5 @@ def init_all():
 
     ret = {'Sizers': [
         common.make_object_button('EditBoxSizer', 'sizer.xpm'),
-        common.make_object_button('EditGridSizer', 'grid_sizer.xpm'),
-    ]}
+        common.make_object_button('EditGridSizer', 'grid_sizer.xpm')] }
     return ret
