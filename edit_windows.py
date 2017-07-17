@@ -568,7 +568,8 @@ class ManagedBase(WindowBase):
         self.widget.Bind(wx.EVT_MOUSE_EVENTS, self.on_mouse_events)
         self.widget.Bind(wx.EVT_MOVE, self.on_move)
         # re-add the item to update it
-        self.sizer.add_item( self, self.pos, self.proportion, self.flag, self.border, self.widget.GetSize() )
+        # XXX just pass self, not the attributes
+        self.sizer.add_item( self, self.pos, self.proportion, self.span, self.flag, self.border, self.widget.GetSize() )
 
     def update_view(self, selected):
         if self.sel_marker: self.sel_marker.Show(selected)
@@ -598,7 +599,8 @@ class ManagedBase(WindowBase):
         elif "option" in modified and self.proportion and "wxSHAPED" in p.value_set:
             p.remove("wxSHAPED", notify=False)
 
-        if "option" in modified or "flag" in modified or "border" in modified or "size" in modified:
+        if ("option" in modified or "flag" in modified or "border" in modified or
+            "size" in modified or "span" in modified):
             if not self.sizer.is_virtual():
                 self._update_sizer_item()
 
