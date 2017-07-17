@@ -364,7 +364,7 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
     if not sizer or not sizeritem:
         raise XmlParsingError(_("sizer or sizeritem object cannot be None"))
     panel = EditPanel(name, parent, wx.NewId(), sizer, pos, style='')
-    sizer.set_item(panel.pos, proportion=sizeritem.proportion, flag=sizeritem.flag, border=sizeritem.border)
+    sizer.set_item(panel.pos, proportion=sizeritem.proportion, span=sizeritem.span, flag=sizeritem.flag, border=sizeritem.border)
     node = Node(panel)
     panel.node = node
     if pos is None:

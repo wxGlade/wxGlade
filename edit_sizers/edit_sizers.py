@@ -167,6 +167,7 @@ class SizerSlot(np.PropertyOwner):
     def set_overlap(self, overlapped=True):
         # interface from GridBagSizer
         if overlapped==self.overlapped: return
+        self.overlapped = overlapped
         if overlapped:
             if self.widget:
                 self.widget.Destroy()
@@ -175,7 +176,6 @@ class SizerSlot(np.PropertyOwner):
             if self.sizer.widget and not self.widget:
                 self.create_widget()
                 self.sizer.widget.Add(self.widget, self.sizer._get_row_col(self.pos), (1,1), wx.EXPAND)
-        self.overlapped = overlapped
         # XXX update icon in Tree
 
     def post_load(self): # called from show_widget
@@ -187,6 +187,7 @@ class SizerSlot(np.PropertyOwner):
             self.widget.Refresh()
 
     def create_widget(self):
+        if self.overlapped and self.sizer._IS_GRIDBAG: return
         style = wx.FULL_REPAINT_ON_RESIZE
         self.widget = wx.Window(self.parent.widget, -1, size=(20, 20), style=style)
         self.widget.SetBackgroundStyle(wx.BG_STYLE_CUSTOM)
@@ -476,6 +477,7 @@ class SizerItem(object):
     "Represents a child of a sizer"
     def __init__(self, item, pos, option=0, span=(1,1), flag=0, border=0, size=None):
         self.item = item
+        # XXX get rid of the properties -> they are redundant
         if isinstance(item, np.PropertyOwner):
             self.item.properties["pos"].set(pos)
         else:
@@ -1005,7 +1007,7 @@ class SizerBase(Sizer, np.PropertyOwner):
         if force_layout:
             self.layout()
 
-    def set_item(self, pos, proportion=None, flag=None, border=None, size=None, force_layout=True):
+    def set_item(self, pos, proportion=None, span=None, flag=None, border=None, size=None, force_layout=True):
         "Updates the layout of the item at the given pos"
         # XXX rename method to something more meaningful like 'set_item_layout' or 'update_layout' and option to proportion#
         # don't set the item properties; do this in the caller
@@ -1019,6 +1021,8 @@ class SizerBase(Sizer, np.PropertyOwner):
         if proportion is not None:
             proportion = int(proportion)
             item.proportion = proportion
+        if span is not None:
+            item.span = span
         if flag is not None:
             flag = int(flag)
             item.flag = flag
@@ -2286,7 +2290,7 @@ def grid_xml_builder(attrs, parent, sizer, sizeritem, pos=None):
         sz = constructor(name, parent, rows=0, cols=0, toplevel=False)
         if sizeritem is None:
             raise XmlParsingError(_("'sizeritem' object not found"))
-        sizer.add_item(sz, pos=pos, proportion=sizeritem.proportion, flag=sizeritem.flag, border=sizeritem.border)
+        sizer.add_item(sz, pos=pos, proportion=sizeritem.proportion, span=sizeritem.span, flag=sizeritem.flag, border=sizeritem.border)
         node = Node(sz)
         sz.node = node
         if pos is None:

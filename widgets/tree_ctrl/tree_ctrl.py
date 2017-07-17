@@ -80,7 +80,7 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
     if sizer is None or sizeritem is None:
         raise XmlParsingError(_("sizer or sizeritem object cannot be None"))
     tree_ctrl = EditTreeCtrl(name, parent, wx.NewId(), sizer, pos, style=0)
-    sizer.set_item(tree_ctrl.pos, proportion=sizeritem.proportion, flag=sizeritem.flag, border=sizeritem.border)
+    sizer.set_item(tree_ctrl.pos, proportion=sizeritem.proportion, span=sizeritem.span, flag=sizeritem.flag, border=sizeritem.border)
     node = Node(tree_ctrl)
     tree_ctrl.node = node
     if pos is None:

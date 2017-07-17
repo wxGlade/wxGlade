@@ -85,7 +85,7 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
     if sizer is None or sizeritem is None:
         raise XmlParsingError(_("sizer or sizeritem object cannot be None"))
     text = EditSpinButton(name, parent, wx.NewId(), sizer, pos)
-    sizer.set_item(text.pos, proportion=sizeritem.proportion, flag=sizeritem.flag, border=sizeritem.border)
+    sizer.set_item(text.pos, proportion=sizeritem.proportion, span=sizeritem.span, flag=sizeritem.flag, border=sizeritem.border)
     node = Node(text)
     text.node = node
     if pos is None:
