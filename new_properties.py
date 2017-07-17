@@ -438,7 +438,14 @@ class LayoutSpanProperty(Property):
         #if not match: return self.value
         if not match: return None
         groups = match.groups()
-        return [int(groups[0]),int(groups[1])]
+        return (int(groups[0]),int(groups[1]))
+    
+    def _set_converter(self, value):
+        if isinstance(value, compat.basestring):
+            return self._convert_from_text(value)
+        return value
+    def get_string_value(self):
+        return "%d, %d"%self.value
 
     def create_editor(self, panel, sizer):
         if not _is_gridbag(self.owner.sizer): return

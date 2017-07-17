@@ -263,7 +263,9 @@ class XmlWidgetBuilder(XmlParser):
                 return
             si = self._sizer_item.top()
             if si is not None and si.parent == obj.parent:
-                obj.obj.copy_properties( si.obj, ("option","flag","border") )
+                obj.obj.copy_properties( si.obj, ("option","flag","border","span") )
+            if obj.klass == "wxGridBagSizer":
+                obj.obj._check_slots(remove_only=True)
         else:
             # end of a property or error
             # case 1: set _curr_prop value
@@ -351,19 +353,15 @@ class ProgressXmlWidgetBuilder(XmlWidgetBuilder):
 
 
 class ClipboardXmlWidgetBuilder(XmlWidgetBuilder):
-    """\
-    Parser used to cut&paste widgets.
+    """Parser used to cut&paste widgets.
 
     The differences with XmlWidgetBuilder are:
       - No <application> tag in the piece of xml to parse
       - Fake parent, sizer and sizeritem objects to push on the three stacks:
-        they keep info about the destination of the hierarchy of widgets (i.e.
-        the target of the 'paste' command)
-      - The first widget built must be hidden and shown again at the end of
-        the operation
-    """
+        they keep info about the destination of the hierarchy of widgets (i.e. the target of the 'paste' command)
+      - The first widget built must be hidden and shown again at the end of the operation"""
 
-    def __init__(self, parent, sizer, pos, proportion, flag, border):
+    def __init__(self, parent, sizer, pos, proportion, span, flag, border):
         XmlWidgetBuilder.__init__(self)
         if parent is not None:
             self.parent_node = parent.node
@@ -389,6 +387,7 @@ class ClipboardXmlWidgetBuilder(XmlWidgetBuilder):
             fake_sizer = XmlClipboardObject(obj=sizer, parent=parent)
             sizeritem = Sizeritem()
             sizeritem.properties["proportion"].set(proportion)
+            sizeritem.properties["span"].set(span)
             sizeritem.properties["flag"].set(flag)
             sizeritem.properties["border"].set(border)
             sizeritem.properties["pos"].set(pos)
@@ -626,10 +625,11 @@ import new_properties as np
 
 class Sizeritem(np.PropertyOwner):
     "temporarily represents a child of a sizer"
-    SIZER_PROPERTIES = ["pos","proportion","border","flag"]
+    SIZER_PROPERTIES = ["pos","proportion","span","border","flag"]
     def __init__(self):
         np.PropertyOwner.__init__(self)
-        self.proportion = np.SpinProperty(0, name="option")
+        self.proportion = np.LayoutProportionProperty(0)
+        self.span = np.LayoutSpanProperty((1,1))
         self.border = np.SpinProperty(0)
         self.flag = np.ManagedFlags(None)
         self.pos = np.SpinProperty(None)
