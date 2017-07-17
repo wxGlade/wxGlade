@@ -394,42 +394,44 @@ def _is_gridbag(sizer):
     return sizer and sizer._IS_GRIDBAG
 
 
+class LayoutProportionProperty(SpinProperty):
+    def __init__(self, value):
+        SpinProperty.__init__(self, value, name="option", immediate=True)
+
+    def write(self, outfile, tabs=0):
+        if not _is_gridbag(self.owner.sizer):
+            Property.write(self, outfile, tabs)
+
+    def create_editor(self, panel, sizer):
+        if _is_gridbag(self.owner.sizer): return
+        SpinProperty.create_editor(self, panel, sizer)
+
+
 class LayoutPosProperty(SpinProperty):
     readonly = True
     TOOLTIP = "Position of item within sizer; 1-based"
 
-    def __init__(self, value, sizer):
-        self.is_gridbag = _is_gridbag(sizer)
+    def __init__(self, value):
         SpinProperty.__init__(self, value, val_range=(1,1000), immediate=False, default_value=_DefaultArgument, name="pos")
 
-    def set_sizer(self, sizer):
-        self.is_gridbag = _is_gridbag(sizer)
+    #def create_editor(self, panel, sizer):
+        #SpinProperty.create_editor(self, panel, sizer)
 
     def write(self, *args, **kwds):
+        # maybe, for GridBagSizers row/col should be written
         pass
 
 
 class LayoutSpanProperty(Property):
-    TOOLTIP = "cell spanning for GridBagSizer items"
+    TOOLTIP = "cell spanning for GridBagSizer items: rows, columns"
     # (int,int)
     CONTROLNAMES = ["rowspin","colspin"]
-    def __init__(self, value, sizer):
+    def __init__(self, value):
         self.immediate = True
-        self.is_gridbag = _is_gridbag(sizer)
         Property.__init__(self, value, default_value=(1,1), name="span")
-
-    def set_sizer(self, sizer):
-        self.is_gridbag = _is_gridbag(sizer)
 
     validation_re = re.compile(_leading + _ge_0 + _comma + _ge_0 + _trailing )  # match a pair of integers >=0
     normalization = "%s, %s%s" # for normalization % valiation_re.match(...).groups()
-    #def _set_converter(self, value):
-        ## value can be a tuple
-        #if isinstance(value, compat.basestring):
-            #return value
-        #if isinstance(value, wx.Size):
-            #return '%d, %d' % (value.x, value.y)
-        #return '%d, %d' % value
 
     def _convert_from_text(self, value):
         match = self.validation_re.match(value)
@@ -439,6 +441,9 @@ class LayoutSpanProperty(Property):
         return [int(groups[0]),int(groups[1])]
 
     def create_editor(self, panel, sizer):
+        if not _is_gridbag(self.owner.sizer): return
+        max_rows, max_cols = self.owner.sizer.check_span_range(self.owner.pos, *self.value)
+
         hsizer = wx.BoxSizer(wx.HORIZONTAL)
         # label
         label = self._find_label()
@@ -449,11 +454,13 @@ class LayoutSpanProperty(Property):
         self.enabler = None
 
         style = wx.TE_PROCESS_ENTER | wx.SP_ARROW_KEYS
-        self.rowspin = wx.SpinCtrl( panel, -1, style=style, min=1, max=10 )
-        self.colspin = wx.SpinCtrl( panel, -1, style=style, min=1, max=10 )
+        self.rowspin = wx.SpinCtrl( panel, -1, style=style, min=1, max=max_rows )
+        self.colspin = wx.SpinCtrl( panel, -1, style=style, min=1, max=max_cols )
         val = self.value
         self.rowspin.SetValue(val and val[0] or 1)
-        self.colspin.SetValue(val and val[0] or 1)
+        self.colspin.SetValue(val and val[1] or 1)
+        self.rowspin.Enable(max_rows!=1)
+        self.colspin.Enable(max_cols!=1)
 
         # layout of the controls / sizers
         hsizer.Add(self.rowspin, 5, wx.ALL | wx.ALIGN_CENTER, 3)
@@ -486,10 +493,16 @@ class LayoutSpanProperty(Property):
     def on_spin(self, event):
         event.Skip()
         if self.rowspin and self.colspin:
-            self._check_for_user_modification( (self.rowspin.GetValue(),self.rowspin.GetValue() ) )
+            self._check_for_user_modification( (self.rowspin.GetValue(),self.colspin.GetValue() ) )
+            # update ranges
+            max_rows, max_cols = self.owner.sizer.check_span_range(self.owner.pos, *self.value)
+            self.rowspin.SetMax(max_rows)
+            self.colspin.SetMax(max_cols)
+            self.rowspin.Enable(max_rows!=1)
+            self.colspin.Enable(max_cols!=1)
 
     def write(self, outfile, tabs=0):
-        if self.is_gridbag:
+        if _is_gridbag(self.owner.sizer):
             Property.write(self, outfile, tabs)
 
 
@@ -1343,8 +1356,9 @@ class IntRangePropertyA(IntPairPropertyD):
         if int(mi)>int(ma): return None
         if self.notnull and int(mi)==int(ma): return None
         return self.normalization%(mi,ma)
+
     def load(self, value, activate=None, deactivate=None, notify=False):
-        # loading from XML file
+        # loading from XML file; if self.notnull: ensure that max is > min, e.g. for Slider
         if not self.notnull or self._convert_from_text(value) is not None:
             self.set(value, activate, deactivate, notify)
             return
