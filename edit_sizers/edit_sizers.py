@@ -153,7 +153,7 @@ class SizerSlot(np.PropertyOwner):
         self.name = "SLOT"
         self.overlapped = False  # for spanning in GridBagSizer
 
-    def set_overlap(self, overlapped=True):
+    def set_overlap(self, overlapped=True, add_to_sizer=True):
         # interface from GridBagSizer
         if overlapped==self.overlapped: return
         self.overlapped = overlapped
@@ -164,7 +164,8 @@ class SizerSlot(np.PropertyOwner):
         else:
             if self.sizer.widget and not self.widget:
                 self.create_widget()
-                self.sizer.widget.Add(self.widget, self.sizer._get_row_col(self.pos), (1,1), wx.EXPAND)
+                if add_to_sizer:
+                    self.sizer.widget.Add(self.widget, self.sizer._get_row_col(self.pos), (1,1), wx.EXPAND)
         # XXX update icon in Tree
 
     def post_load(self): # called from show_widget
@@ -497,6 +498,15 @@ def change_sizer(old, new):
 
     # construct without children, take then the children from the old sizer
     szr = constructors[new]()
+    if old._IS_GRIDBAG and old.widget:
+        for c in old.children[1:]:
+            if c.item:
+                if c.item.widget:
+                    old.widget.Detach(c.item.widget)
+                elif isinstance(c.item, SizerSlot) and c.item.overlapped:
+                    # re-create hidden widget
+                    c.item.set_overlap(False, add_to_sizer=False)
+
     szr.children.extend(old.children[1:])
     szr.node = old.node
 
@@ -567,7 +577,7 @@ def change_sizer(old, new):
     common.app_tree.change_node(szr.node, szr)
 
     old.toplevel = False
-    old.children = old.children[:1]
+    del old.children[1:]
     old.delete()
 
     if szr.toplevel:
@@ -899,18 +909,18 @@ class SizerBase(Sizer, np.PropertyOwner):
         "Adds an item to self."
         # called from ManagedBase.__init__ when adding an item to the end from XML parser
         # or interactively when adding an item to an empty sizer slot
-        #proportion = int(proportion)
-        #flag = int(flag)
-        #border = int(border)
         if pos is None:
             pos = len(self.children)
+        sizer_item = None
         if pos==len(self.children):
             self.children.append(None)
         else:
             old_child = self.children[pos]
-            if isinstance(old_child.item, SizerSlot):
+            if isinstance(old_child.item, SizerSlot) and old_child.item.widget:
+                self.widget.Detach(old_child.item.widget)
                 old_child.item.delete()
-        if "rows" in self.PROPERTIES: self._adjust_rows_cols()  # for GridSizer
+        if "rows" in self.PROPERTIES and not self._IS_GRIDBAG:
+            self._adjust_rows_cols()  # for GridSizer
         self.children[pos] = SizerItem(item, pos, proportion, span, flag, border, size)
 
         if hasattr(item, 'set_containing_sizer'):
@@ -939,12 +949,11 @@ class SizerBase(Sizer, np.PropertyOwner):
         else:
             w, h = best_size
 
-        try:
-            elem = self.widget.GetChildren()[pos]
-        except IndexError:  # this happens after loading from xml
-            # I have to set wxADJUST_MINSIZE to handle a bug that I'm not able to detect (yet): if the width or height
-            # of a widget is -1, the layout is messed up!
-
+        elem = self.widget.GetItem(item.widget)
+        
+        if not elem:
+            ## I have to set wxADJUST_MINSIZE to handle a bug that I'm not able to detect (yet): if the width or height
+            ## of a widget is -1, the layout is messed up!
             if self._IS_GRIDBAG:
                 self.widget.Add( item.widget, row_col, item.span, flag, border )
             else:
@@ -973,8 +982,6 @@ class SizerBase(Sizer, np.PropertyOwner):
             win.DestroyLater()
 
         try:  # if the item was a window, set its size to a reasonable value
-            #proportion = elem.GetProportion()
-            #flag = elem.GetFlag()
             self.widget.SetItemMinSize(item.widget, w, h)  # w,h is GBestSize
         except Exception:
             # production version: exceptions to be ignored
@@ -1024,10 +1031,8 @@ class SizerBase(Sizer, np.PropertyOwner):
         if not self.widget:
             return
 
-        try:
-            elem = self.widget.GetChildren()[pos]
-        except IndexError:  # this may happen during xml loading
-            return
+        elem = self.widget.GetItem(item.item.widget)
+        if not elem: return
 
         if proportion is not None:
             elem.SetProportion(proportion)
@@ -1061,10 +1066,8 @@ class SizerBase(Sizer, np.PropertyOwner):
 
         item = sizer_item.item  # the ManagedBase or derived class instance
 
-        try:
-            elem = self.widget.GetChildren()[pos]
-        except IndexError:  # this may happen during xml loading
-            return
+        elem = self.widget.GetItem(item.widget)  # GBSizerItem or SizerItem
+        if not elem: return
 
         # XXX track modifications; if no modifications, including SetItemMinSize
         if self._IS_GRIDBAG:
@@ -1180,11 +1183,11 @@ class SizerBase(Sizer, np.PropertyOwner):
             for c in self.children[old_pos+1:new_pos+1]:
                 c.item.update_pos(c.item.pos-1)
             del self.children[old_pos]
-            # self.children.insert(new_pos+1, new_item)
             self.children.insert(new_pos, new_item)
         item.update_pos(new_pos)
 
-        elem = self.widget.GetChildren()[old_pos]
+        #elem = self.widget.GetChildren()[old_pos]
+        elem = self.widget.GetItem(item.widget)
         # always set the sizer to None because otherwise it will be Destroy'd
         elem.SetSizer(None)
         # this fake_win trick seems necessary because wxSizer::Remove(int pos) doesn't seem to work with grid sizers :-\
@@ -1341,6 +1344,7 @@ class SizerBase(Sizer, np.PropertyOwner):
                 self.widget.Insert(pos, tmp.widget, 1, wx.EXPAND)
             else:
                 self.widget.Add( tmp.widget, self._get_row_col(pos), (1,1), wx.EXPAND )
+                self._check_slots(add_only=True)
             # detach is not needed here any more, as change_node does this already
             #self.widget.Detach(pos-1) # does only remove from sizer, but not destroy item
             if force_layout:
@@ -1400,6 +1404,7 @@ class BoxSizerBase(SizerBase):
         SizerBase.__init__(self, name, self.WX_CLASS, orient, window, toplevel)
 
         self.children = [SizerItem(Dummy(), 0, 0, (1,1), wx.EXPAND)]  # add to self.children the SizerItem for self._btn
+
         for i in range(1, elements + 1):
             self._add_slot()
         self.layout()
@@ -1564,6 +1569,11 @@ class CustomSizer(wx.BoxSizer):
 
     def GetChildren(self):
         return [None] + list(self._grid.GetChildren())
+
+    def GetItem(self, widget):
+        if hasattr(self._grid, "FindItem"):
+            return self._grid.FindItem(widget)  # GridBagSizer
+        return self._grid.GetItem(widget)
 
     def Layout(self):
         self._grid.Layout()
@@ -1979,6 +1989,7 @@ class EditGridBagSizer(EditFlexGridSizer):
                         for r in range(row, row+span[0]):
                             for c in range(col, col+span[1]):
                                 if r==row and c ==col: continue  # the original cell
+                                if c>=self.cols: continue
                                 occupied.append( self._get_pos(r,c) )
         return occupied
 
@@ -2002,7 +2013,7 @@ class EditGridBagSizer(EditFlexGridSizer):
         for c in self.children[1:]:  # we've already added self._btn
             pos = self._get_row_col(c.item.pos)
             c.item.create()
-            if isinstance(c.item, SizerSlot):
+            if isinstance(c.item, SizerSlot) and c.item.widget:
                 self.widget.Add(c.item.widget, pos, (1,1), wx.EXPAND)
                 self.widget.SetItemMinSize(c.item.widget, 20, 20)
             else:

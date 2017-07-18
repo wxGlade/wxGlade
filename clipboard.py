@@ -86,6 +86,10 @@ class DropTarget(wx.DropTarget):
         widget = self.window.find_widget_by_pos(x,y)
         if widget is None: return False
 
+        if getattr(widget,"sizer",None) and widget.sizer._IS_GRIDBAG and not isinstance(widget, edit_sizers.SizerSlot):
+            # for GridBagSizer we have cells, so we don't shift items
+            return False
+
         if _current_drag_source is not None:
             # drag within application: avoid dragging of an item on itself or it's child
             if widget.node is _current_drag_source.node:            return False

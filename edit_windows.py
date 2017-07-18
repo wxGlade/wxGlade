@@ -599,8 +599,15 @@ class ManagedBase(WindowBase):
         elif "option" in modified and self.proportion and "wxSHAPED" in p.value_set:
             p.remove("wxSHAPED", notify=False)
 
-        if ("option" in modified or "flag" in modified or "border" in modified or
+        if not modified or ("option" in modified or "flag" in modified or "border" in modified or
             "size" in modified or "span" in modified):
+            if self.sizer._IS_GRIDBAG and (not modified or "span" in modified) and self.span!=(1,1):
+                # check span range, if pasted item would span more rows/cols than available
+                span_p = self.properties["span"]
+                max_span = self.sizer.check_span_range(self.pos, *span_p.value)
+                max_span = ( min(span_p.value[0],max_span[0]), min(span_p.value[1],max_span[1]) )
+                if max_span!=span_p.value:
+                    span_p.set(max_span, notify=False)
             if not self.sizer.is_virtual():
                 self._update_sizer_item()
 
