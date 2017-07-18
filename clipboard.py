@@ -159,12 +159,13 @@ def get_data_object(widget):
     # build the XML string
     xml_unicode = []
     widget.node.write(xml_unicode, 0)
-    flag = option = border = None
+    flag = option = span = border = None
     flag = widget.properties.get("flag")
     if flag is not None: flag = flag.get_string_value()
     proportion = getattr(widget, "proportion", 0)
+    span = getattr(widget, "span", (1,1))
     border  = getattr(widget, "border", 0)
-    data = widget2clipboard( proportion, flag, border, "".join(xml_unicode) )
+    data = widget2clipboard( proportion, span, flag, border, "".join(xml_unicode) )
     # make a data object
     if isinstance(widget, edit_sizers.Sizer):
         do = wx.CustomDataObject(sizer_data_format)
@@ -176,13 +177,13 @@ def get_data_object(widget):
     return do
 
 
-def widget2clipboard(option, flag, border, xml_unicode):
+def widget2clipboard(option, span, flag, border, xml_unicode):
     """Pickle all parameter to store them as a string in the clipboard.
     
     option, flag, border: widget layout properties
     xml_unicode: XML representation of this widget"""
 
-    clipboard_data = compat.pickle.dumps((option, flag, border, xml_unicode))
+    clipboard_data = compat.pickle.dumps((option, span, flag, border, xml_unicode))
     return clipboard_data
 
 
@@ -191,7 +192,7 @@ def clipboard2widget(clipboard_data):
 
     Returns a list [option (proportions), flag, border and widget in XML representation]"""
 
-    option, flag, border, xml_unicode = compat.pickle.loads(clipboard_data)
+    option, span, flag, border, xml_unicode = compat.pickle.loads(clipboard_data)
 
     # remove the dirt at the end of XML representation
     bound = xml_unicode.rfind('>') + 1
@@ -201,7 +202,7 @@ def clipboard2widget(clipboard_data):
     if option is not None: option = int(option)
     if border is not None: border = int(border)
 
-    return option, flag, border, xml_unicode
+    return option, span, flag, border, xml_unicode
 
 
 def copy(widget):
@@ -250,14 +251,14 @@ def paste(parent, sizer, pos, clipboard_data=None):
             return False
         clipboard_data = data_object.GetData()
 
-    option, flag, border, xml_unicode = clipboard2widget( clipboard_data )
+    option, span, flag, border, xml_unicode = clipboard2widget( clipboard_data )
     if xml_unicode:
         import xml_parse
         try:
             wx.BeginBusyCursor()
             # widget representation is still unicode, but parser need UTF8
             xml_utf8 = xml_unicode.encode('utf8')
-            parser = xml_parse.ClipboardXmlWidgetBuilder(parent, sizer, pos, option, flag, border)
+            parser = xml_parse.ClipboardXmlWidgetBuilder(parent, sizer, pos, option, span, flag, border)
             parser.parse_string(xml_utf8)
             return True  # Widget hierarchy pasted.
         finally:
