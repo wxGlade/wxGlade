@@ -308,6 +308,7 @@ def exec_after(func, *args, **kwargs):
 def _remove():
     global focused_widget
     if focused_widget is None or not hasattr(focused_widget, "remove"): return
+    if hasattr(focused_widget, "sizer") and focused_widget.sizer._IS_GRIDBAG: return
     focused_widget.remove()
     #focused_widget = None  # should be done by the remove() already
 
@@ -341,6 +342,7 @@ def _insert():
     global focused_widget
     if not focused_widget: return
     if not hasattr(focused_widget, "sizer") or not hasattr(focused_widget, "pos"): return
+    if focused_widget.sizer._IS_GRIDBAG: return
     method = getattr(focused_widget.sizer, "insert_slot", None)
     if method: method(focused_widget.pos)
 
