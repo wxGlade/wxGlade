@@ -39,7 +39,7 @@ class ChildWidgetNameProperty(np.Property):
 class SplitterWindowSizer(Sizer):
     "'Virtual sizer' responsible for the management of a SplitterWindow"
     PROPERTIES = []
-    def set_item(self, pos, proportion=None, flag=None, border=None, size=None, force_layout=True):
+    def set_item(self, pos, proportion=None, span=None, flag=None, border=None, size=None, force_layout=True):
         "Updates the layout of the item at the given pos"
         if self.window.widget and self.window.window_old and self.window.window_old.widget:
             self.window.widget.Unsplit(self.window.window_old.widget)
