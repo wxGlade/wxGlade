@@ -28,7 +28,7 @@ class NotebookVirtualSizer(Sizer):
         Sizer.__init__(self, *args, **kwds)
         self._itempos = 0
 
-    def set_item(self, pos, proportion=None, flag=None, border=None, size=None, force_layout=True):
+    def set_item(self, pos, proportion=None, span=None, flag=None, border=None, size=None, force_layout=True):
         "Updates the layout of the item at the given pos; (re-)creates the notebook page if required"
         if not self.window.widget:
             return
