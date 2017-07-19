@@ -308,7 +308,8 @@ def exec_after(func, *args, **kwargs):
 def _remove():
     global focused_widget
     if focused_widget is None or not hasattr(focused_widget, "remove"): return
-    if hasattr(focused_widget, "sizer") and focused_widget.sizer._IS_GRIDBAG: return
+    if focused_widget.klass=="sizerslot" and hasattr(focused_widget, "sizer") and focused_widget.sizer._IS_GRIDBAG:
+        return
     focused_widget.remove()
     #focused_widget = None  # should be done by the remove() already
 

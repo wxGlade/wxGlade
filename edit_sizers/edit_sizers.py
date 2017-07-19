@@ -950,7 +950,7 @@ class SizerBase(Sizer, np.PropertyOwner):
             w, h = best_size
 
         #elem = self.widget.GetItem(item.widget)
-        if pos>=len(self.widget.GetChildren()):
+        if pos>len(self.widget.GetChildren()):
             ## I have to set wxADJUST_MINSIZE to handle a bug that I'm not able to detect (yet): if the width or height
             ## of a widget is -1, the layout is messed up!
             if self._IS_GRIDBAG:
