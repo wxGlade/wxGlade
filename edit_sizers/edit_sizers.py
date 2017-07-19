@@ -801,7 +801,7 @@ class SizerBase(Sizer, np.PropertyOwner):
                     if not p.value_set.intersection(p.FLAG_DESCRIPTION["Border"]):
                         p.add("wxALL")
                 if self.widget:
-                    self.sizer.set_item(self.pos, self.proportion, self.flag, self.border)
+                    self.sizer.set_item(self.pos, self.proportion, self.span, self.flag, self.border)
         np.PropertyOwner.properties_changed(self, modified)
 
     def check_drop_compatibility(self):
@@ -949,9 +949,8 @@ class SizerBase(Sizer, np.PropertyOwner):
         else:
             w, h = best_size
 
-        elem = self.widget.GetItem(item.widget)
-        
-        if not elem:
+        #elem = self.widget.GetItem(item.widget)
+        if pos>=len(self.widget.GetChildren()):
             ## I have to set wxADJUST_MINSIZE to handle a bug that I'm not able to detect (yet): if the width or height
             ## of a widget is -1, the layout is messed up!
             if self._IS_GRIDBAG:
@@ -973,13 +972,14 @@ class SizerBase(Sizer, np.PropertyOwner):
 
         # no GridBagSizer
         self.widget.Insert(pos, item.widget, proportion, flag, border)
-        self.widget.Remove(pos + 1)
+        #self.widget.Remove(pos + 1)
+        #elem = self.widget.GetItem(item.widget)
 
-        # XXX check whether this all is needed
-        if elem.IsWindow(): # delete old window at this position
-            win = elem.GetWindow()
-            win.SetContainingSizer(None)
-            win.DestroyLater()
+        ## XXX check whether this all is needed
+        #if elem.IsWindow(): # delete old window at this position
+            #win = elem.GetWindow()
+            #win.SetContainingSizer(None)
+            #win.DestroyLater()
 
         try:  # if the item was a window, set its size to a reasonable value
             self.widget.SetItemMinSize(item.widget, w, h)  # w,h is GBestSize
@@ -989,7 +989,7 @@ class SizerBase(Sizer, np.PropertyOwner):
         if force_layout:
             self.layout()  # update the layout of self
 
-    def _fix_notebook(self, pos, notebook_sizer, force_layout=True):
+    def _fix_notebook(self, pos, notebook_sizer, force_layout=True):   # XXX check this with new implementation
         """Replaces the widget at 'pos' with 'notebook_sizer':
         this is intended to be used by wxNotebook widgets, to add the notebook sizer to this sizer.
         This is a hack, but it's the best I could find without having to rewrite too much code :-("""
@@ -1025,7 +1025,7 @@ class SizerBase(Sizer, np.PropertyOwner):
         if border is not None:
             border = int(border)
             item.border = border
-        if size is not None:
+        if size is not None:  # e.g. called from _set_widget_best_size -> just the sizer item size is set, not the property
             item.size = size
 
         if not self.widget:
@@ -1092,6 +1092,8 @@ class SizerBase(Sizer, np.PropertyOwner):
 
         if size is None:
             size = item.size
+        else:
+            print("XXX")
 
         if elem.IsWindow():
             if size is None:
@@ -1186,7 +1188,6 @@ class SizerBase(Sizer, np.PropertyOwner):
             self.children.insert(new_pos, new_item)
         item.update_pos(new_pos)
 
-        #elem = self.widget.GetChildren()[old_pos]
         elem = self.widget.GetItem(item.widget)
         # always set the sizer to None because otherwise it will be Destroy'd
         elem.SetSizer(None)
