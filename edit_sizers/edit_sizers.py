@@ -764,20 +764,6 @@ class SizerBase(Sizer, np.PropertyOwner):
         # button clicked -> set ourself as current widget
         misc.set_focused_widget(self)
 
-    def set_containing_sizer(self, sizer):
-        self.sizer = sizer
-        #self.properties['pos'].set_sizer(sizer)
-
-    def set_pos(self, value):
-        # XXX currently not used; make np.LayoutPosProperty editable again
-        wx.CallAfter( self.sizer.change_item_pos, self, min( value+1, len(self.sizer.children)-1 ) )
-
-    def update_pos(self, value):
-        # XXX currently not used; make np.LayoutPosProperty editable again
-        # self._logger.debug('update pos: %s, %s', self.name, value)
-        self.sizer_properties['pos'].set_value(value-1)
-        self.pos = value
-
     def get_class_orient(self):
         # as string
         return self.WX_CLASS
@@ -923,10 +909,7 @@ class SizerBase(Sizer, np.PropertyOwner):
             self._adjust_rows_cols()  # for GridSizer
         self.children[pos] = SizerItem(item, pos, proportion, span, flag, border, size)
 
-        if hasattr(item, 'set_containing_sizer'):
-            item.set_containing_sizer(self)
-        else:
-            item.sizer = self
+        item.sizer = self
         item.properties["pos"].set(pos)
 
         ################################################################################################################
@@ -1108,6 +1091,42 @@ class SizerBase(Sizer, np.PropertyOwner):
         if force_layout:
             self.layout(True)
 
+    def item_properties_modified(self, widget, modified=None):
+        # XXX new implementation for set_item and item_layout_property_changed
+        "update layout properties"
+        if not self.widget:
+            return
+        try:
+            item = self.children[pos]
+        except IndexError:  # this shouldn't happen
+            self._logger.exception(_('Internal Error'))
+            raise SystemExit
+
+        elem = self.widget.GetItem(item.widget)
+        if not elem: return
+
+        if modified is None or "proportion" in modified and not self._IS_GRIDBAG:
+            elem.SetProportion(widget.proportion)
+        if modified is None or "flag" in modified and widget.flag is not None:
+            elem.SetFlag(widget.flag)
+        if modified is None or "border" in modified:
+            elem.SetBorder(widget.border)
+            
+        # set either specified size or GetBestSize
+
+        if elem.IsWindow():
+            size = widget.get_size() # XXX check dialog units -> call with window
+            #size = elem.GetSize()
+            item = elem.GetWindow()
+            w, h = size
+            if w==-1 or h==-1: best_size = item.GetBestSize()
+            if w == -1: w = best_size[0]
+            if h == -1: h = best_size[1]
+            self.widget.SetItemMinSize(item, w, h)
+
+        if force_layout:
+            self.layout(True)
+
     def remove_item(self, elem, force_layout=True):
         "Removes elem from self"
         # called e.g. from context menu of SizerSlot
@@ -1166,44 +1185,6 @@ class SizerBase(Sizer, np.PropertyOwner):
         if recursive:
             if getattr(self, 'sizer', None) is not None:
                 self.sizer.layout(recursive)
-
-    def change_item_pos(self, item, new_pos, force_layout=True):
-        "Changes the position of the 'item' so that it is at 'new_pos', which must be a valid position"
-        if not self.widget:
-            return
-
-        old_pos = item.pos
-        import copy
-
-        new_item = copy.copy(self.children[old_pos])
-        if old_pos > new_pos:
-            for c in self.children[new_pos:old_pos]:
-                c.item.update_pos(c.item.pos+1)
-            self.children.insert(new_pos, new_item)
-            del self.children[old_pos+1]
-        else:
-            for c in self.children[old_pos+1:new_pos+1]:
-                c.item.update_pos(c.item.pos-1)
-            del self.children[old_pos]
-            self.children.insert(new_pos, new_item)
-        item.update_pos(new_pos)
-
-        elem = self.widget.GetItem(item.widget)
-        # always set the sizer to None because otherwise it will be Destroy'd
-        elem.SetSizer(None)
-        # this fake_win trick seems necessary because wxSizer::Remove(int pos) doesn't seem to work with grid sizers :-\
-        fake_win = wx.Window(self.window.widget, -1)
-        compat.SizerItem_SetWindow(elem, fake_win)
-        self.widget.Remove(fake_win)
-        fake_win.Destroy()
-        self.widget.Insert( new_pos, item.widget, int(item.get_option()), item.flag, int(item.get_border()) )
-        common.app_tree.change_node_pos(item.node, new_pos-1)
-        common.app_tree.select_item(item.node)
-
-        if force_layout:
-            self.layout()
-            if wx.Platform == '__WXMSW__':
-                self.window.widget.Refresh()
 
     def delete(self):
         "Destructor"

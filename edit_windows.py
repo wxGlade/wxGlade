@@ -657,15 +657,6 @@ class ManagedBase(WindowBase):
             # focus the freed slot
             misc.set_focused_widget(self.sizer.children[self.pos].item)
 
-    def set_pos(self, value):
-        "setter for the 'pos' property: calls self.sizer.change_item_pos"
-        self.sizer.change_item_pos( self, min( value+1, len(self.sizer.children)-1 ) )
-
-    def update_pos(self, pos):
-        "called by self.sizer.change_item_pos to update the item's position when another widget is moved"
-        # XXX currently not used; make np.LayoutPosProperty editable again
-        self.properties['pos'].set_value(pos)
-        
     def on_mouse_events(self, event):
         if event.Dragging():
             # start drag & drop
