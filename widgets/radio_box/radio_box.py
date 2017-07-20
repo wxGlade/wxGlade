@@ -100,14 +100,14 @@ class EditRadioBox(ManagedBase):
         sb_sizer.Add(sizer, 1, wx.EXPAND)
         sb_sizer.SetMinSize(sizer.GetMinSize())
         sb_sizer.Fit(self.widget)
-        self.sizer.set_item(self.pos, size=self.widget.GetBestSize())
+        self.sizer.set_item_best_size(self, size=self.widget.GetBestSize())
 
     def _set_label(self):
         if not self.widget or not self.static_box: return
         label = self.label
         self.static_box.SetLabel(label)
         if not self.properties['size'].is_active():
-            self.sizer.set_item(self.pos, size=self.widget.GetBestSize())
+            self.sizer.set_item_best_size(self, size=self.widget.GetBestSize())
 
     def _set_choices(self):
         if not self.widget: return
@@ -207,7 +207,7 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
     if sizer is None or sizeritem is None:
         raise XmlParsingError(_("sizer or sizeritem object cannot be None"))
     radio_box = EditRadioBox(label, parent, wx.NewId(), '', [], 1, 0, sizer, pos)
-    sizer.set_item(radio_box.pos, proportion=sizeritem.proportion, span=sizeritem.span, flag=sizeritem.flag, border=sizeritem.border)
+    #size.set_item(radio_box.pos, proportion=sizeritem.proportion, span=sizeritem.span, flag=sizeritem.flag, border=sizeritem.border)
     node = Node(radio_box)
     radio_box.node = node
     if pos is None:

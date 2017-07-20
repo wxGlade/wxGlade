@@ -91,7 +91,7 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
     if sizer is None or sizeritem is None:
         raise XmlParsingError(_("sizer or sizeritem object cannot be None"))
     hyperlink_ctrl = EditHyperlinkCtrl(name, parent, wx.NewId(), "", sizer, pos)
-    sizer.set_item(hyperlink_ctrl.pos, proportion=sizeritem.proportion, span=sizeritem.span, flag=sizeritem.flag, border=sizeritem.border)
+    #sizer.set_item(hyperlink_ctrl.pos, proportion=sizeritem.proportion, span=sizeritem.span, flag=sizeritem.flag, border=sizeritem.border)
     node = Node(hyperlink_ctrl)
     hyperlink_ctrl.node = node
     if pos is None:

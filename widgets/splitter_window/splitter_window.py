@@ -39,13 +39,24 @@ class ChildWidgetNameProperty(np.Property):
 class SplitterWindowSizer(Sizer):
     "'Virtual sizer' responsible for the management of a SplitterWindow"
     PROPERTIES = []
-    def set_item(self, pos, proportion=None, span=None, flag=None, border=None, size=None, force_layout=True):
-        "Updates the layout of the item at the given pos"
+    #def set_item(self, pos, proportion=None, span=None, flag=None, border=None, size=None, force_layout=True):
+        #"Updates the layout of the item at the given pos"
+        #if self.window.widget and self.window.window_old and self.window.window_old.widget:
+            #self.window.widget.Unsplit(self.window.window_old.widget)
+            #self.window.window_old = None
+        #if self.window._window_1 and self.window._window_2:
+            #self.window.split()
+
+    def item_properties_modified(self, widget, modified=None, force_layout=True):
+        "Updates the layout of the item"
         if self.window.widget and self.window.window_old and self.window.window_old.widget:
             self.window.widget.Unsplit(self.window.window_old.widget)
             self.window.window_old = None
         if self.window._window_1 and self.window._window_2:
             self.window.split()
+
+    def set_item_best_size(self, widget, size=None, force_layout=True):
+        pass
 
     def add_item(self, item, pos=None, proportion=0, flag=0, border=0, size=None, force_layout=True):
         "Adds an item to self.window"
@@ -266,7 +277,7 @@ def builder(parent, sizer, pos, number=[1]):
     common.app_tree.add(node3, widget.node)
 
     if parent.widget: widget.create()
-    sizer.set_item(widget.pos, 1, wx.EXPAND)
+    #sizer.set_item(widget.pos, 1, wx.EXPAND)
 
 
 def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
@@ -279,7 +290,7 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
     if sizer is None or sizeritem is None:
         raise XmlParsingError(_("sizer or sizeritem object cannot be None"))
     widget = editor_class(name, parent, wx.NewId(), None, None, editor_style, sizer, pos)
-    sizer.set_item(widget.pos, proportion=sizeritem.proportion, span=sizeritem.span, flag=sizeritem.flag, border=sizeritem.border)
+    #sizer.set_item(widget.pos, proportion=sizeritem.proportion, span=sizeritem.span, flag=sizeritem.flag, border=sizeritem.border)
     node = Node(widget)
     widget.node = node
     if pos is None:

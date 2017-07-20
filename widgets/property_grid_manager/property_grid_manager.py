@@ -72,8 +72,8 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
     if sizer is None or sizeritem is None:
         raise XmlParsingError(_("sizer or sizeritem object cannot be None"))
     property_grid_manager = EditPropertyGridManager( label, parent, wx.NewId(), sizer, pos )
-    sizer.set_item( property_grid_manager.pos, proportion=sizeritem.proportion, flag=sizeritem.flag,
-                    border=sizeritem.border)
+    #sizer.set_item( property_grid_manager.pos, proportion=sizeritem.proportion, flag=sizeritem.flag,
+    #                border=sizeritem.border)
     node = Node(property_grid_manager)
     property_grid_manager.node = node
     if pos is None:

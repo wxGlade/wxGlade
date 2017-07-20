@@ -53,7 +53,7 @@ class EditListBox(ManagedBase, EditStylesMixin):
                 self.widget.Clear()
                 for c in choices: self.widget.Append(c[0])
                 if not self.properties['size'].is_active():
-                    self.sizer.set_item(self.pos, size=self.widget.GetBestSize())
+                    self.sizer.set_item_best_size(self, size=self.widget.GetBestSize())
 
         if not modified or "selection" in modified or set_selection:
             if self.selection>max_selection:
@@ -93,7 +93,7 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
     if sizer is None or sizeritem is None:
         raise XmlParsingError(_("sizer or sizeritem object cannot be None"))
     list_box = EditListBox(name, parent, wx.NewId(), [], sizer, pos)
-    sizer.set_item(list_box.pos, proportion=sizeritem.proportion, span=sizeritem.span, flag=sizeritem.flag, border=sizeritem.border)
+    #sizer.set_item(list_box.pos, proportion=sizeritem.proportion, span=sizeritem.span, flag=sizeritem.flag, border=sizeritem.border)
     node = Node(list_box)
     list_box.node = node
     if pos is None:

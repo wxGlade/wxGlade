@@ -67,7 +67,7 @@ class EditChoice(ManagedBase):
                 self.widget.Clear()
                 for c in choices: self.widget.Append(c[0])
                 if not self.properties['size'].is_active():
-                    self.sizer.set_item(self.pos, size=self.widget.GetBestSize())
+                    self.sizer.set_item_best_size(self, size=self.widget.GetBestSize())
 
         if not modified or "selection" in modified or set_selection:
             set_selection = True
@@ -106,7 +106,7 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
     if sizer is None or sizeritem is None:
         raise XmlParsingError(_("sizer or sizeritem object cannot be None"))
     choice = EditChoice(name, parent, wx.NewId(), [], sizer, pos)
-    sizer.set_item(choice.pos, proportion=sizeritem.proportion, span=sizeritem.span, flag=sizeritem.flag, border=sizeritem.border)
+    #sizer.set_item(choice.pos, proportion=sizeritem.proportion, span=sizeritem.span, flag=sizeritem.flag, border=sizeritem.border)
     node = Node(choice)
     choice.node = node
     if pos is None:
