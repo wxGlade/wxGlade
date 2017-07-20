@@ -342,8 +342,8 @@ class TestGui(WXGladeGUITest):
         item = common.app_tree.root.children[0]
         common.adding_widget = True
         common.widget_to_add = "EditHyperlinkCtrl"
-        item.widget.sizer.children[1].item.on_drop_widget(None)
-        hyperlink = item.widget.sizer.children[1].item
+        item.widget.sizer.children[1].on_drop_widget(None)
+        hyperlink = item.widget.sizer.children[1]
 
         ## expand tree and show edit window
         #tree = common.app_tree.drop_target()

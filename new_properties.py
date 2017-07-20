@@ -1319,6 +1319,8 @@ class SizePropertyD(IntPairPropertyD):
     del d
     normalization = "%s, %s%s" # for normalization % valiation_re.match(...).groups()
 
+    def set(self, value, activate=None, deactivate=None, notify=False):
+        IntPairPropertyD.set(self, value, activate, deactivate, notify)
     def get_size(self, widget=None):
         "widget argument is used to calculate size in Dialog units, using wx.DLG_SZE"
         w, h = self.value.split(",")

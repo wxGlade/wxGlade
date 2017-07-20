@@ -167,7 +167,7 @@ def builder(parent, sizer, pos, number=[1]):
     if parent.widget: win.create()
 
     common.app_tree.insert(node, sizer.node, pos-1)
-    sizer.set_item(win.pos, 1, wx.EXPAND)
+    #sizer.set_item(win.pos, 1, wx.EXPAND)
 
 
 def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
@@ -180,7 +180,7 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
     if not sizer or not sizeritem:
         raise XmlParsingError(_("sizer or sizeritem object cannot be None"))
     win = CustomWidget(name, 'CustomWidget', parent, wx.NewId(), sizer, pos)
-    sizer.set_item(win.pos, proportion=sizeritem.proportion, span=sizeritem.span, flag=sizeritem.flag, border=sizeritem.border)
+    #sizer.set_item(win.pos, proportion=sizeritem.proportion, span=sizeritem.span, flag=sizeritem.flag, border=sizeritem.border)
     node = Node(win)
     win.node = node
     if pos is None: common.app_tree.add(node, sizer.node)

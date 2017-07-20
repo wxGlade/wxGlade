@@ -54,7 +54,7 @@ class EditSpacer(ManagedBase):
         if not modified or "width" in modified or "height" in modified:
             size = (self.width, self.height)
             if self.widget: self.widget.SetSize(size)
-            self.sizer.set_item(self.pos, size=size)
+            self.sizer.set_item_best_size(self, size=size)
         ManagedBase.properties_changed(self, modified)
 
 
@@ -114,7 +114,7 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
     if not sizer or not sizeritem:
         raise XmlParsingError(_("sizer or sizeritem object cannot be None"))
     spacer = EditSpacer('spacer', parent, wx.NewId(), 1, 1, sizer, pos)
-    sizer.set_item(spacer.pos, proportion=sizeritem.proportion, span=sizeritem.span, flag=sizeritem.flag, border=sizeritem.border)
+    #sizer.set_item(spacer.pos, proportion=sizeritem.proportion, span=sizeritem.span, flag=sizeritem.flag, border=sizeritem.border)
     node = Node(spacer)
     spacer.node = node
     if pos is None:

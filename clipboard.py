@@ -133,12 +133,12 @@ class DropTarget(wx.DropTarget):
             # dropped on a sizer -> add slot
             dst_widget._add_slot()
             dst_widget.layout()
-            dst_widget = dst_widget.children[-1].item # the slot
+            dst_widget = dst_widget.children[-1] # the slot
         elif compatible=="Slot":
             # insert a slot or fill empty slot
             pos = dst_widget.pos
             dst_widget.sizer._insert_slot(pos)
-            dst_widget = dst_widget.sizer.children[pos].item # the slot
+            dst_widget = dst_widget.sizer.children[pos] # the slot
 
         if not hasattr(dst_widget, "clipboard_paste"):
             return wx.DragCancel

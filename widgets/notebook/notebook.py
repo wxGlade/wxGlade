@@ -52,7 +52,34 @@ class NotebookVirtualSizer(Sizer):
                 #self._logger.exception(_('Internal Error'))
                 pass
         if self.window.sizer is not None:
-            self.window.sizer.set_item( self.window.pos, size=self.window.widget.GetBestSize() )
+            self.window.sizer.set_item_best_size( self.window, size=self.window.widget.GetBestSize() )
+
+    def set_item_best_size(self, widget, size=None, force_layout=True):
+        pass
+
+    def item_properties_modified(self, widget, modified=None, force_layout=True):
+        if not self.window.widget: return
+        index = widget.pos-1 # 0 based
+        item = self.window.pages[index]
+        if not item or not item.widget: return
+        label = self.window.tabs[index][0]
+        if not (index < self.window.widget.GetPageCount()):
+            self.window.widget.AddPage(item.widget, label) # this is e.g. for the first creation after loading a file
+        elif self.window.widget.GetPage(index) is not item.widget:
+            # XXX delete this part if it's not called; insert_tab and remove_tab should handle this now
+            if self.window.widget.GetPageCount()==len(self.window.pages):
+                #self.window.widget.RemovePage(index) # deletes the specified page, without deleting the associated window
+                self.window.widget.DeletePage(index)  # deletes the specified page, and the associated window
+            self.window.widget.InsertPage(index, item.widget, label)
+            self.window.widget.SetSelection(index)
+            try:
+                wx.CallAfter(item.sel_marker.update)
+            except AttributeError:
+                #self._logger.exception(_('Internal Error'))
+                pass
+        if self.window.sizer is not None:
+            #self.window.sizer.set_item( self.window.pos, size=self.window.widget.GetBestSize() )
+            self.window.sizer.set_item_best_size( self.window, size=self.window.widget.GetBestSize() )
 
     ####################################################################################################################
     # new implementation
@@ -71,7 +98,7 @@ class NotebookVirtualSizer(Sizer):
         except AttributeError:
             pass
         if self.window.sizer is not None:
-            self.window.sizer.set_item( self.window.pos, size=self.window.widget.GetBestSize() )
+            self.window.sizer.set_item_best_size( self.window, size=self.window.widget.GetBestSize() )
 
     def remove_tab(self, index):
         if not self.window.widget: return
@@ -79,7 +106,7 @@ class NotebookVirtualSizer(Sizer):
         self.window.widget.RemovePage(index)  # deletes the specified page
     ####################################################################################################################
 
-    def add_item(self, item, pos=None, option=0, flag=0, border=0, size=None, force_layout=True):
+    def add_item(self, item, pos=None, size=None, force_layout=True):
         "Adds an item to self.window"
         #if not self.window.pages:
             ## during XML parsing, the tab names are set before
@@ -384,7 +411,7 @@ def builder(parent, sizer, pos, number=[1]):
     common.app_tree.insert(node, sizer.node, pos-1)
 
     widget.insert_tab(0, widget.next_pane_name()) # next_pane_name will be used as label and as pane name, if possible
-    sizer.set_item(widget.pos, 1, wx.EXPAND)
+    #sizer.set_item(widget.pos, 1, wx.EXPAND)
 
 
 def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
@@ -396,7 +423,7 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
     if sizer is None or sizeritem is None:
         raise XmlParsingError(_("sizer or sizeritem object cannot be None"))
     widget = editor_class(name, parent, wx.ID_ANY, editor_style, sizer, pos)
-    sizer.set_item(widget.pos, proportion=sizeritem.proportion, span=sizeritem.span, flag=sizeritem.flag, border=sizeritem.border)
+    #sizer.set_item(widget.pos)
     node = Node(widget)
     widget.node = node
     if pos is None:

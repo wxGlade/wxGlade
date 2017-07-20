@@ -70,7 +70,7 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
     if sizer is None or sizeritem is None:
         raise XmlParsingError(_("sizer or sizeritem object cannot be None"))
     static_text = EditStaticText(label, parent, wx.NewId(), "", sizer, pos)
-    sizer.set_item(static_text.pos, proportion=sizeritem.proportion, span=sizeritem.span, flag=sizeritem.flag, border=sizeritem.border)
+    #sizer.set_item(static_text.pos, proportion=sizeritem.proportion, span=sizeritem.span, flag=sizeritem.flag, border=sizeritem.border)
     node = Node(static_text)
     static_text.node = node
     if pos is None:

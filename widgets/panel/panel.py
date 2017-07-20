@@ -158,7 +158,7 @@ class EditPanel(PanelBase, ManagedBase):
     def set_sizer(self, sizer):
         super(EditPanel, self).set_sizer(sizer)
         if self.top_sizer and self.top_sizer.widget and self.widget:
-            self.sizer.set_item(self.pos, size=self.widget.GetBestSize())
+            self.sizer.set_item_best_size(self, size=self.widget.GetBestSize())
 
     def _create_popup_menu(self, widget=None):
         if widget is None: widget = self.widget
@@ -351,7 +351,7 @@ def builder(parent, sizer, pos, number=[1]):
     panel.properties["flag"].set("wxEXPAND")
     if parent.widget: panel.create()
     common.app_tree.insert(node, sizer.node, pos-1)
-    sizer.set_item(panel.pos, 1, wx.EXPAND)
+    #sizer.set_item(panel.pos, 1, wx.EXPAND)
 
 
 def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
@@ -364,7 +364,7 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
     if not sizer or not sizeritem:
         raise XmlParsingError(_("sizer or sizeritem object cannot be None"))
     panel = EditPanel(name, parent, wx.NewId(), sizer, pos, style='')
-    sizer.set_item(panel.pos, proportion=sizeritem.proportion, span=sizeritem.span, flag=sizeritem.flag, border=sizeritem.border)
+    #sizer.set_item(panel.pos, proportion=sizeritem.proportion, span=sizeritem.span, flag=sizeritem.flag, border=sizeritem.border)
     node = Node(panel)
     panel.node = node
     if pos is None:

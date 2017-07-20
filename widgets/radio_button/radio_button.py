@@ -39,7 +39,7 @@ class EditRadioButton(ManagedBase, EditStylesMixin):
         if not self.widget: return
         self.widget.SetLabel(self.label)
         if not self.properties['size'].is_active():  # XXX changed this: '-1, -1' is identical to not active
-            self.sizer.set_item(self.pos, size=self.widget.GetBestSize())
+            self.sizer.set_item_best_size(self, size=self.widget.GetBestSize())
 
     def properties_changed(self, modified):
         resize = False
@@ -81,7 +81,7 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
     if sizer is None or sizeritem is None:
         raise XmlParsingError(_("sizer or sizeritem object cannot be None"))
     radio = EditRadioButton(label, parent, wx.NewId(), "", sizer, pos)
-    sizer.set_item(radio.pos, proportion=sizeritem.proportion, span=sizeritem.span, flag=sizeritem.flag, border=sizeritem.border)
+    #sizer.set_item(radio.pos, proportion=sizeritem.proportion, span=sizeritem.span, flag=sizeritem.flag, border=sizeritem.border)
     node = Node(radio)
     radio.node = node
     if pos is None:

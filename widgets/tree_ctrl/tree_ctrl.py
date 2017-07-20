@@ -67,7 +67,7 @@ def builder(parent, sizer, pos, number=[1]):
     tree_ctrl.properties["flag"].set("wxEXPAND")
     if parent.widget: tree_ctrl.create()
     common.app_tree.insert(node, sizer.node, pos-1)
-    sizer.set_item(tree_ctrl.pos, 1, wx.EXPAND)
+    #sizer.set_item(tree_ctrl.pos, 1, wx.EXPAND)
 
 
 def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
@@ -80,7 +80,7 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
     if sizer is None or sizeritem is None:
         raise XmlParsingError(_("sizer or sizeritem object cannot be None"))
     tree_ctrl = EditTreeCtrl(name, parent, wx.NewId(), sizer, pos, style=0)
-    sizer.set_item(tree_ctrl.pos, proportion=sizeritem.proportion, span=sizeritem.span, flag=sizeritem.flag, border=sizeritem.border)
+    #sizer.set_item(tree_ctrl.pos, proportion=sizeritem.proportion, span=sizeritem.span, flag=sizeritem.flag, border=sizeritem.border)
     node = Node(tree_ctrl)
     tree_ctrl.node = node
     if pos is None:

@@ -391,7 +391,8 @@ class WindowBase(EditBase):
             # without calling this here, e.g. an empty notebook page is not created!
             # XXX this should be made more straightforward
             if "pos" in self.properties:
-                self.sizer.set_item(self.pos)
+                #self.sizer.set_item(self.pos)
+                self.sizer.item_properties_modified(self)
             size_p.set('%s, %s' % tuple(self.widget.GetSize()))
  
         if background_p.is_active(): self.widget.SetBackgroundColour(self.background)
@@ -474,7 +475,7 @@ class WindowBase(EditBase):
         if not self.properties["size"].is_active():
             size = self.widget.GetSize()
             if size != old_size:
-                self.sizer.set_item(self.pos, size=size)
+                self.sizer.set_item_best_size(self, size=size)
 
     def set_size(self):
         if not self.widget: return
@@ -483,7 +484,7 @@ class WindowBase(EditBase):
         size = size_p.get_size(self.widget)
         self.widget.SetSize(size)
         try:
-            self.sizer.set_item(self.pos, size=size)
+            self.sizer.set_item_best_size(self, size=size)
         except AttributeError:
             pass
 
@@ -569,7 +570,7 @@ class ManagedBase(WindowBase):
         self.widget.Bind(wx.EVT_MOVE, self.on_move)
         # re-add the item to update it
         # XXX just pass self, not the attributes
-        self.sizer.add_item( self, self.pos, self.proportion, self.span, self.flag, self.border, self.widget.GetSize() )
+        self.sizer.add_item( self, self.pos, self.widget.GetSize() )
 
     def update_view(self, selected):
         if self.sel_marker: self.sel_marker.Show(selected)
@@ -583,8 +584,8 @@ class ManagedBase(WindowBase):
         WindowBase.on_size(self, event)
         size_p = self.properties['size']
         if size_p.is_active():
-            if self.proportion!=0 or (self.flag & wx.EXPAND):
-                size_p.set(old)
+            #if self.proportion!=0 or (self.flag & wx.EXPAND):
+            size_p.set(old)
         if self.sel_marker: self.sel_marker.update()
 
     def properties_changed(self, modified):
@@ -609,35 +610,16 @@ class ManagedBase(WindowBase):
                 if max_span!=span_p.value:
                     span_p.set(max_span, notify=False)
             if not self.sizer.is_virtual():
-                self._update_sizer_item()
-
-    def _update_sizer_item(self):
-        # update the widget by calling self.sizer.set_item (again)
-        if not self.widget: return
-
-        # get size from property
-        try:
-            size_p = self.properties['size']
-            if size_p.is_active(): # or use get_value, which will now return the default value if disabled
-                size = size_p.get_size(self.widget)
-            else:
-                if not (self.flag & wx.EXPAND):
-                    size = self.widget.GetBestSize()
-                else:
-                    size = (-1,-1) # would None or wx.DefaultSize be better`?`
-
-            self.sizer.item_layout_property_changed(self.pos, size=size)
-        except AttributeError:
-            self._logger.exception(_('Internal Error'))
+                self.sizer.item_properties_modified(self, modified)
 
     def _set_widget_best_size(self):
         # called when the widget has been modified and this might affect the automatic size
         if not self.widget: return
         size_p = self.properties["size"]
-        if size_p.get() != "-1, -1": return # fixed size
+        if size_p.is_active() and size_p.get() != "-1, -1": return # fixed size
         # find best size, apply; display if size property is not active
         best_size = self.widget.GetBestSize()
-        self.sizer.set_item(self.pos, size=best_size)
+        self.sizer.set_item_best_size(self, best_size)
         if not size_p.is_active():
             size_p.set( best_size )
 
@@ -655,7 +637,7 @@ class ManagedBase(WindowBase):
             pass
         else:
             # focus the freed slot
-            misc.set_focused_widget(self.sizer.children[self.pos].item)
+            misc.set_focused_widget(self.sizer.children[self.pos])
 
     def on_mouse_events(self, event):
         if event.Dragging():
