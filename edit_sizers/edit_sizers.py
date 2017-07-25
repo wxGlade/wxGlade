@@ -148,6 +148,8 @@ class SizerSlot(np.PropertyOwner):
         # initialise instance properties
         self.parent = parent
         self.pos = p = np.LayoutPosProperty(pos)  # position within the sizer, 1-based
+        self.span = (1,1)
+        self.flag = wx.EXPAND
 
         self.widget = None       # Reference to the widget resembling the slot (a wx.Window)
         self.name = "SLOT"
@@ -275,9 +277,10 @@ class SizerSlot(np.PropertyOwner):
         # slot actions
         if not self.sizer.is_virtual():
             # we can add/remove items only from non-virtual sizers
-            i = misc.append_menu_item(menu, -1, _('Remove Slot\tDel'), wx.ART_DELETE)
-            misc.bind_menu_item_after(widget, i, self.remove)
-            if len(self.sizer.children)<=2: i.Enable(False)
+            if not isinstance(self.sizer, EditGridBagSizer):
+                i = misc.append_menu_item(menu, -1, _('Remove Slot\tDel'), wx.ART_DELETE)
+                misc.bind_menu_item_after(widget, i, self.remove)
+                if len(self.sizer.children)<=2: i.Enable(False)
 
             # if inside a grid sizer: allow removal of empty rows/cols
             if isinstance(self.sizer, GridSizerBase):
@@ -463,7 +466,7 @@ class SizerHandleButton(GenButton):
 
 
 
-_change_sizer_panel = None  # reference to a hidden frame persistently shared between different calls of change_sizer
+#_change_sizer_panel = None  # reference to a hidden frame persistently shared between different calls of change_sizer
 
 def change_sizer(old, new):
     """Replaces sizer instance 'old' with a new one; 'new' is the name of the new one.
@@ -515,7 +518,7 @@ def change_sizer(old, new):
     # XXX keep rows, cols, growable_rows, growable_cols in attributes of new sizer if it's not a (Flex)GridSizer
     #     and re-use them if user switches back
 
-    global _change_sizer_panel
+    #global _change_sizer_panel
     if old.widget is not None:
         for c in old.widget.GetChildren():
             if c and c.IsSizer():
@@ -523,8 +526,8 @@ def change_sizer(old, new):
         old.widget.Clear()  # without deleting window items; but sets the sizer of the windows to NULL
 
         szr.create(dont_set=True)
-        if _change_sizer_panel is None:
-            _change_sizer_panel = wx.Frame(None, -1, _("HIDDEN FRAME FOR CHANGE SIZER"))
+        #if _change_sizer_panel is None:
+            #_change_sizer_panel = wx.Frame(None, -1, _("HIDDEN FRAME FOR CHANGE SIZER"))
 
     if isinstance(szr, EditGridBagSizer):
         szr._check_slots(remove_only=True)  # mark overlapped slots
@@ -532,13 +535,13 @@ def change_sizer(old, new):
     for widget in szr.children[1:]:
         widget.sizer = szr
         if not isinstance(widget, SizerSlot):
-            # This is necessary as a workaround to a wx.StaticBoxSizer issue:
-            # it seems that the wx.StaticBox needs to come before any other widget managed by the wx.StaticBoxSizer
-            # in the GetChildren() list. Explicitly reparenting the widgets seems to solve the problem
-            if hasattr(widget.widget, 'GetParent'):
-                p = widget.widget.GetParent()
-                widget.widget.Reparent(_change_sizer_panel)
-                widget.widget.Reparent(p)
+            ## This is necessary as a workaround to a wx.StaticBoxSizer issue:
+            ## it seems that the wx.StaticBox needs to come before any other widget managed by the wx.StaticBoxSizer
+            ## in the GetChildren() list. Explicitly reparenting the widgets seems to solve the problem
+            #if hasattr(widget.widget, 'GetParent'):
+                #p = widget.widget.GetParent()
+                #widget.widget.Reparent(_change_sizer_panel)
+                #widget.widget.Reparent(p)
             if szr.widget is not None:
                 if not isinstance(szr, EditGridBagSizer):
                     szr.widget.Insert(widget.pos, widget.widget, widget.proportion, widget.flag, widget.border)
@@ -762,7 +765,7 @@ class SizerBase(Sizer, np.PropertyOwner):
             value = self.class_orient
             if misc.focused_widget is self: misc.set_focused_widget(None)
             wx.CallAfter(change_sizer, self, value)
-        if (not modified or "flag" in modified or "option" in modified or "border" in modified):
+        if (not modified or "flag" in modified or "option" in modified or "border" in modified or "span" in modified):
             if not self.toplevel and self.sizer is not None:
                 if "border" in modified and self.border:
                     # enable border flags if not yet done
@@ -987,31 +990,36 @@ class SizerBase(Sizer, np.PropertyOwner):
             self.layout(True)
 
     def item_properties_modified(self, widget, modified=None, force_layout=True):
-        # XXX new implementation for set_item and item_layout_property_changed
         "update layout properties"
         if not self.widget or not widget.widget:
             return
 
-        elem = self.widget.GetItem(widget.widget)
-        if not elem: return
+        item = self.widget.GetItem(widget.widget)  # a SizerItem or GBSizerItem instance
+        if not item: return
 
         if modified is None or "proportion" in modified and not self._IS_GRIDBAG:
-            elem.SetProportion(widget.proportion)
+            item.SetProportion(widget.proportion)
         if modified is None or "flag" in modified and widget.flag is not None:
-            elem.SetFlag(widget.flag)
+            item.SetFlag(widget.flag)
         if modified is None or "border" in modified:
-            elem.SetBorder(widget.border)
+            item.SetBorder(widget.border)
+        if modified is None or "span" in modified and self._IS_GRIDBAG:
+            self._check_slots(remove_only=True)
+            item.SetSpan(widget.span)
+            self._check_slots(add_only=True)
 
         # set either specified size or GetBestSize
-        if elem.IsWindow():
-            size = widget.properties["size"].get_size(widget.widget) # XXX check dialog units -> call with window
-            #size = elem.GetSize()
-            item = elem.GetWindow()
-            w, h = size
-            if w==-1 or h==-1: best_size = item.GetBestSize()
-            if w == -1: w = best_size[0]
-            if h == -1: h = best_size[1]
-            self.widget.SetItemMinSize(item, w, h)
+        if item.IsWindow():
+            best_size = widget.widget.GetBestSize()
+            size_p = widget.properties["size"]
+            if size_p.is_active():
+                size = size_p.get_size(widget.widget) # XXX check dialog units -> call with window
+                w, h = size
+                if w == -1: w = best_size[0]
+                if h == -1: h = best_size[1]
+            else:
+                w,h = best_size
+            self.widget.SetItemMinSize(widget.widget, w, h)
 
         if force_layout:
             self.layout(True)
@@ -1040,10 +1048,7 @@ class SizerBase(Sizer, np.PropertyOwner):
         if not self.widget:
             return
 
-        #from edit_windows import TopLevelBase
-
         # layout
-        #if self.toplevel and not isinstance(self.window, TopLevelBase) and hasattr(self.window.sizer, 'widget'):
         if self.toplevel and not self.window._is_toplevel and hasattr(self.window.sizer, 'widget'):
             if not self.window.properties['size'].is_active():
                 szr = self.window.sizer.widget
@@ -1054,7 +1059,6 @@ class SizerBase(Sizer, np.PropertyOwner):
             else:
                 szr.Layout()
             return
-        #elif self.toplevel and isinstance(self.window, TopLevelBase):
         elif self.toplevel and self.window._is_toplevel:
             # self.window.widget.Layout()
             self.widget.Layout()
@@ -1641,8 +1645,9 @@ class GridSizerBase(SizerBase):
                 self.properties["cols"].set(cols)
                 if modified and not "cols" in modified: modified.append("cols")
 
+        layout = False
+
         if not "class_orient" in modified:  # otherwise, change_sizer will be called and we can skip the following
-            layout = False
             if not modified or "rows" in modified and self.widget:
                 if self.widget.GetRows()!=rows:
                     self.widget.SetRows(rows)
@@ -1660,8 +1665,13 @@ class GridSizerBase(SizerBase):
                     self.widget.SetVGap(self.vgap)
                     layout = True
 
-            if layout:
-                self.layout(True)
+        if "growable_rows" in self.properties and self.widget:
+            if not modified or "growable_rows" in modified or "growable_cols" in modified:
+                self._set_growable()
+                layout = True
+
+        if layout:
+            self.layout(True)
 
         SizerBase.properties_changed(self, modified)
 
@@ -1733,6 +1743,7 @@ class _GrowablePropertyD(np.DialogPropertyD):
 
     def _set_converter(self, value):
         # 0-based -> 1 based
+        if not value: return ""
         ret = [str(int(n)+1) for n in value.split(",")]
         return ",".join(ret)
 
@@ -1756,6 +1767,19 @@ class _GrowablePropertyD(np.DialogPropertyD):
         ret = [str(int(n)-1) for n in self.get_list()]
         return ",".join(ret)
 
+    def remove_item(self, item):
+        if not self.value: return
+        new = []
+        for n in self.get_list():
+            n = int(n)
+            if int(n)!=item:
+                if n<item:
+                    new.append(str(n))
+                else:
+                    new.append(str(n-1))
+        deactivate = not new
+        self.set( "".join(new), deactivate=deactivate )
+
 
 class EditFlexGridSizer(GridSizerBase):
     "Class to handle wxFlexGridSizer objects"
@@ -1776,36 +1800,27 @@ class EditFlexGridSizer(GridSizerBase):
     def create_widget(self):
         self.widget = CustomSizer(self, self.WX_FACTORY, self.rows, self.cols, self.vgap, self.hgap)
         GridSizerBase.create_widget(self)
-        for r in self.growable_rows.split(","):
-            if not r.strip(): continue
-            self.widget.AddGrowableRow( int(r)-1 )  # the text property is 1-based
-        for c in self.growable_cols.split(","):
-            if not c.strip(): continue
-            self.widget.AddGrowableCol( int(c)-1 )
+        self._set_growable()
         if not self.toplevel and getattr(self, 'sizer', None) is not None:
             # hasattr(self, 'sizer') is False only in case of a 'change_sizer' call
             self.sizer.add_item(self, self.pos)
 
-    def _recreate(self):
-        # recreate the sizer by calling change_sizer
-        if self.widget is None: return
-        if misc.focused_widget is self: misc.set_focused_widget(None)
-        wx.CallAfter(change_sizer, self, self.get_class_orient())
+    def _set_growable(self):
+        rows = [int(r)-1 for r in self.growable_rows.split(",") if r.strip()]  # the text property is 1-based
+        cols = [int(c)-1 for c in self.growable_cols.split(",") if c.strip()]
+        for r in range(self.rows):
+            growable = self.widget.IsRowGrowable(r)
+            if growable and not r in rows:
+                self.widget.RemoveGrowableRow(r)
+            elif not growable and r in rows:
+                self.widget.AddGrowableRow(r)
+        for c in range(self.cols):
+            growable = self.widget.IsColGrowable(c)
+            if growable and not c in cols:
+                self.widget.RemoveGrowableCol(c)
+            elif not growable and c in cols:
+                self.widget.AddGrowableCol(c)
 
-    def properties_changed(self, modified):
-        # XXX unify recreate with the other methods called in GridSizerBase, SizerBase
-        # if recreate is required, it's not necessary to call layout
-        # EditFlexGridSizer: calls _recreate, which later calls change_sizer
-        # GridSizerBase: calls layout (when rows, cols, hgap, vgap are modified)
-        # SizerBase: calls change_sizer if class_orient is modified
-
-        recreate = False
-        if not modified or "growable_rows" in modified or "growable_cols" in modified:
-            recreate = True
-        if recreate:
-            self._recreate()
-            return # the sizer is re-created, so we need not consider other modifications
-        GridSizerBase.properties_changed(self, modified)
 
 
 class EditGridBagSizer(EditFlexGridSizer):
@@ -1911,15 +1926,56 @@ class EditGridBagSizer(EditFlexGridSizer):
             self.set_item(pos, size=size, force_layout=False)
         self.layout(True)
         ################################################################################################################
-        for r in self.growable_rows.split(","):
-            if not r.strip(): continue
-            self.widget.AddGrowableRow( int(r)-1 )  # the text property is 1-based
-        for c in self.growable_cols.split(","):
-            if not c.strip(): continue
-            self.widget.AddGrowableCol( int(c)-1 )
+        self._set_growable()
         if not self.toplevel and getattr(self, 'sizer', None) is not None:
             # hasattr(self, 'sizer') is False only in case of a 'change_sizer' call
             self.sizer.add_item(self, self.pos)
+
+    def _detach_delete_row_or_col(self, row=None, col=None):
+        # detach all elements below row or right from col; delete SizerSlots in row or col
+        rows = self.rows
+        cols = self.cols
+        remove_slots = []
+        reattach = []
+        for pos, child in enumerate(self.children):
+            if pos==0: continue
+            r,c = self._get_row_col(pos)
+            if (row is not None and r==row) or (col is not None and c==col):
+                remove_slots.append(child)
+                continue
+            if (row is not None and r>=row) or (col is not None and c>=col):
+                if child.widget and self._IS_GRIDBAG:
+                    self.widget.Detach(child.widget)
+                    reattach.append(child)
+
+        for slot in reversed(remove_slots): slot.remove()
+
+        if row is not None:
+            self.properties["rows"].set( rows-1 )
+            self.properties["growable_rows"].remove_item(row+1)  # 1 based
+        if col is not None:
+            self.properties["cols"].set( cols-1 )
+            self.properties["growable_cols"].remove_item(col+1)
+
+        if not self.widget: return
+
+        for child in reattach:
+            if child.widget:  # for overlapped sizer slots, widget may be None
+                self.widget.Add(child.widget, self._get_row_col(child.pos), child.span, child.flag)
+
+        self._set_growable()
+        self.layout(True)
+
+    def remove_row(self, pos):
+        # calculate row and pos of the slot
+        row,col = self._get_row_col(pos)
+        self._detach_delete_row_or_col(row=row)
+
+    def remove_col(self, pos):
+        # calculate row and pos of the slot
+        row,col = self._get_row_col(pos)
+        self._detach_delete_row_or_col(col=col)
+
 
 
 def _builder(parent, sizer, pos, orientation=wx.VERTICAL, slots=1, is_static=False, label="", number=[1]):
