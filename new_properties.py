@@ -503,8 +503,8 @@ class LayoutSpanProperty(Property):
             self._check_for_user_modification( (self.rowspin.GetValue(),self.colspin.GetValue() ) )
             # update ranges
             max_rows, max_cols = self.owner.sizer.check_span_range(self.owner.pos, *self.value)
-            self.rowspin.SetMax(max_rows)
-            self.colspin.SetMax(max_cols)
+            self.rowspin.SetRange(1,max_rows)
+            self.colspin.SetRange(1,max_cols)
             self.rowspin.Enable(max_rows!=1)
             self.colspin.Enable(max_cols!=1)
 
