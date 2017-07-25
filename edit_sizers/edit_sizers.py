@@ -161,7 +161,12 @@ class SizerSlot(np.PropertyOwner):
         self.overlapped = overlapped
         if overlapped:
             if self.widget:
-                self.widget.Destroy()
+                self.widget.Hide()
+                self.sizer.widget.Detach(self.widget)
+                if compat.IS_PHOENIX:
+                    self.widget.DestroyLater()
+                else:
+                    self.widget.Destroy()
                 self.widget = None
         else:
             if self.sizer.widget and not self.widget:
@@ -429,7 +434,7 @@ class SizerSlot(np.PropertyOwner):
             self.widget.Bind(wx.EVT_ENTER_WINDOW, None)
             self.widget.Bind(wx.EVT_LEAVE_WINDOW, None)
             self.widget.Bind(wx.EVT_KEY_DOWN, None)
-
+            self.sizer.widget.Detach(self.widget)
             if compat.IS_PHOENIX:
                 self.widget.DestroyLater()
             else:
