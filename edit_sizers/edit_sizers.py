@@ -1332,7 +1332,6 @@ class EditBoxSizer(BoxSizerBase):
                         # now re-set the item to update the size correctly...
                         to_lay_out.append((c.pos, size) )
         for pos, size in to_lay_out:
-            #self.set_item(pos, size=size, force_layout=False)
             self.set_item_best_size(self.children[pos], size)
         self.layout(True)
         if not self.toplevel and getattr(self, 'sizer'):
@@ -1554,10 +1553,7 @@ class GridSizerBase(SizerBase):
                         row,col = self._get_row_col(p)
                         item = self.children[p]
                         self.widget._grid.Detach(item.widget)
-                        if isinstance(item, SizerSlot):
-                            self.widget.Add(item.widget, (row+1,col), (1,1), wx.EXPAND)
-                        else:
-                            self.widget.Add(item.widget, (row+1,col), item.span, item.flag)
+                        self.widget.Add(item.widget, (row+1,col), item.span, item.flag)
 
         self.properties["rows"].set( rows+1 )
 
@@ -1924,11 +1920,10 @@ class EditGridBagSizer(EditFlexGridSizer):
                         c.widget.SetMinSize((w, h))
                     else:
                         size = sp.get_size(c.widget)
-                        to_lay_out.append((c.pos, (w, h)))  # re-set the item to update the size correctly...
+                        to_lay_out.append((c.pos, size))  # re-set the item to update the size correctly...
 
         for pos, size in to_lay_out:
-            # self._logger.debug('set_item: %s, %s', pos, size)
-            self.set_item(pos, size=size, force_layout=False)
+            self.set_item_best_size(self.children[pos], size)
         self.layout(True)
         ################################################################################################################
         self._set_growable()
