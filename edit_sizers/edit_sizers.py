@@ -17,7 +17,7 @@ import common, compat, config, misc
 
 
 class BaseSizerBuilder(object):
-    "Language independent base class for all sizer builders"
+    "Language independent base class for all sizer builders / code generators"
 
     tmpl = []                 # Statements to generate the sizer from, the stmt has to end with a newline character
 
@@ -240,10 +240,11 @@ class SizerSlot(np.PropertyOwner):
             dc.SetBackground(wx.Brush(wx.LIGHT_GREY))
             dc.Clear()
         color = wx.BLUE  if misc.focused_widget is self  else  wx.BLACK
-        if self.pos % 2:
-            brush = wx.Brush(color, wx.FDIAGONAL_HATCH)
+        if not "cols" in self.sizer.PROPERTIES:  # horizontal/vertical sizer or grid sizer?
+            pos = self.pos
         else:
-            brush = wx.Brush(color, wx.BDIAGONAL_HATCH)
+            pos = sum( self.sizer._get_row_col(self.pos) )
+        brush = wx.Brush(color, wx.FDIAGONAL_HATCH  if pos%2 else  wx.BDIAGONAL_HATCH)
         # draw hatched lines in foreground
         dc.SetBrush(brush)
         size = self.widget.GetClientSize()
@@ -1522,6 +1523,14 @@ class GridSizerBase(SizerBase):
             self.widget.Fit(self.window.widget)
             self.widget.SetSizeHints(self.window.widget)
 
+    # helpers ##########################################################################################################
+    def _get_row_col(self, pos):
+        cols = self.cols
+        return (pos-1) // cols,  (pos-1) %  cols
+
+    def _get_pos(self, row, col):
+        return 1 + row*self.cols + col
+
     def _adjust_rows_cols(self):
         # adjust rows and cols properties; set slot names
         cols_p = self.properties["cols"]
@@ -1831,11 +1840,6 @@ class EditGridBagSizer(EditFlexGridSizer):
     WX_CLASS = "wxGridBagSizer"
     WX_FACTORY = wx.GridBagSizer
     _IS_GRIDBAG = True
-    def _get_row_col(self, pos):
-        cols = self.cols
-        return (pos-1) // cols,  (pos-1) %  cols
-    def _get_pos(self, row, col):
-        return 1 + row*self.cols + col
 
     def check_span_range(self, pos, rowspan=1, colspan=1):
         "called from LayoutSpanProperty to set the maximum row/col span range"

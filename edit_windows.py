@@ -191,15 +191,16 @@ class EditBase(EventsMixin, np.PropertyOwner):
 
         # rows/cols if inside a grid sizer
         if "rows" in self.sizer.PROPERTIES:
+            row, col = self.sizer._get_row_col(self.pos)
             i = misc.append_menu_item(menu, -1, _('Insert Row before') )
             misc.bind_menu_item_after(widget, i, self.sizer.insert_row, self.pos)
             i = misc.append_menu_item(menu, -1, _('Insert Column before') )
             misc.bind_menu_item_after(widget, i, self.sizer.insert_col, self.pos)
-            if  (self.pos-1)//self.sizer.cols + 1 >= self.sizer.rows:
+            if row==self.sizer.rows-1:
                 # last row
                 i = misc.append_menu_item(menu, -1, _('Add Row') )
                 misc.bind_menu_item_after(widget, i, self.sizer.insert_row, -1)
-            if self.pos % self.sizer.cols == 0:
+            if col==self.sizer.cols-1:
                 # last col
                 i = misc.append_menu_item(menu, -1, _('Add Column') )
                 misc.bind_menu_item_after(widget, i, self.sizer.insert_col, -1)
