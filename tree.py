@@ -147,7 +147,7 @@ class Node(object):
 class SlotNode(Node):
     "Placeholder for an empty sizer slot"
     def write(self, output, tabs, class_names=None):
-        if self.widget.sizer.is_virtual(): return
+        if self.widget.sizer is None or self.widget.sizer.is_virtual(): return
         output.extend( common.format_xml_tag( u'object', '', tabs, **{'class': 'sizerslot'}) )
 
 
