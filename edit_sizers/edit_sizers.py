@@ -164,12 +164,9 @@ class SizerSlot(np.PropertyOwner):
         self.overlapped = overlapped
         if overlapped:
             if self.widget:
-                self.widget.Hide()
-                self.sizer.widget.Detach(self.widget)
-                if compat.IS_PHOENIX:
-                    self.widget.DestroyLater()
-                else:
-                    self.widget.Destroy()
+                if add_to_sizer:
+                    self.sizer.widget.Detach(self.widget)
+                compat.DestroyLater(self.widget)
                 self.widget = None
         else:
             if self.sizer.widget and not self.widget:
@@ -442,11 +439,7 @@ class SizerSlot(np.PropertyOwner):
             if self.sizer and self.sizer.widget:
                 self.sizer.widget.Detach(self.widget)  # this will happen during recursive removal only
                 self.sizer = None
-            if compat.IS_PHOENIX:
-                self.widget.DestroyLater()
-            else:
-                self.widget.Destroy()
-
+            compat.DestroyLater(self.widget)
             self.widget = None
 
         if misc.focused_widget is self:
@@ -1472,12 +1465,7 @@ class CustomGridBagSizer(CustomFlexGridSizer):
             if destroy:
                 old_window = old_item.GetWindow()
                 if old_window:
-                    old_window.Hide()
-                    if hasattr(old_window, "DestroyLater"):
-                        old_window.DestroyLater()
-                    else:
-                        old_window.Destroy()
-
+                    compat.DestroyLater(old_window)
             old_sizer_item.SetSpan((1,1))
             old_sizer_item.SetFlag(wx.EXPAND)
             old_sizer_item.SetBorder(border)

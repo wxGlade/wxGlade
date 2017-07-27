@@ -154,12 +154,9 @@ class EditBase(EventsMixin, np.PropertyOwner):
 
         # ...finally, destroy our widget (if needed)
         if self.widget and not self._dont_destroy:
-            if hasattr(self.widget, "DestroyLater"):
-                if compat.IS_PHOENIX and getattr(self, "sizer", None) and not self.sizer.is_virtual():
-                    self.sizer.widget.Detach(self.widget)  # remove from sizer without destroying
-                self.widget.DestroyLater()
-            else:
-                self.widget.Destroy()
+            if getattr(self, "sizer", None) and not self.sizer.is_virtual():
+                self.sizer.widget.Detach(self.widget)  # remove from sizer without destroying
+            compat.DestroyLater(self.widget)
             self.widget = None
         if misc.focused_widget is self:
             misc.focused_widget = None

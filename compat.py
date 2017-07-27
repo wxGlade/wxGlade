@@ -185,6 +185,19 @@ def wxWindow_IsThisEnabled(item):
     return item.IsThisEnabled()
 
 
+if hasattr(wx.Window, "DestroyLater"):
+    def DestroyLater(widget):
+        widget.Hide()
+        if hasattr(widget, "DestroyLater"):
+            widget.DestroyLater()
+        else:
+            wx.CallAfter(widget.Destroy)
+else:
+    def DestroyLater(widget):
+        widget.Hide()
+        wx.CallAfter(widget.Destroy)
+
+
 # Set different functions depending on the active wxPython version
 if wx.VERSION[:2] >= (2, 9):
     GridSizer_GetRows = GridSizer_GetRows3
