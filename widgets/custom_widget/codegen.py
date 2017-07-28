@@ -79,9 +79,8 @@ def self_%s_on_paint(event):
 """ % ((widget.name,) * 3)
         for line in on_paint_code.splitlines():
             append(line + '\n')
-        append( 'wx.EVT_PAINT(self.%s, self_%s_on_paint)\n' % (widget.name, widget.name) )
+        append( 'self.%s.Bind(wx.EVT_PAINT, self_%s_on_paint)\n' % (widget.name, widget.name) )
         return init, [], []
-
 
 
 class CppCustomWidgetGenerator(wcodegen.CppWidgetCodeWriter):
