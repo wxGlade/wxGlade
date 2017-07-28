@@ -15,6 +15,7 @@ Like all other perl parts, based on the pre-existing python generators
 
 @copyright: 2002-2004 D.H. aka crazyinsomniac on sourceforge.net
 @copyright: 2012-2016 Carsten Grohmann
+@copyright: 2017 Dietmar Schwertberger
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
@@ -245,6 +246,7 @@ sub %(handler)s {
     tmpl_func_empty = '%(tab)sreturn;\n'
 
     tmpl_sizeritem = '%s->Add(%s, %s, %s, %s);\n'
+    tmpl_gridbagsizeritem = '%s->Add(%s, %s, %s, %s, %s);\n'
     tmpl_spacersize = '%s, %s'
 
     tmpl_style = \
