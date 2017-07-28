@@ -184,6 +184,8 @@ def wxWindow_IsThisEnabled(item):
     """
     return item.IsThisEnabled()
 
+def _Destroy(widget):
+    if widget: widget.Destroy()
 
 if hasattr(wx.Window, "DestroyLater"):
     def DestroyLater(widget):
@@ -191,11 +193,11 @@ if hasattr(wx.Window, "DestroyLater"):
         if hasattr(widget, "DestroyLater"):
             widget.DestroyLater()
         else:
-            wx.CallAfter(widget.Destroy)
+            wx.CallAfter(_Destroy, widget)
 else:
     def DestroyLater(widget):
         widget.Hide()
-        wx.CallAfter(widget.Destroy)
+        wx.CallAfter(_Destroy, widget)
 
 
 # Set different functions depending on the active wxPython version
