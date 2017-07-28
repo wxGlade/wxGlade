@@ -3,9 +3,9 @@ Lisp generator functions for the various wxSizerS
 
 @copyright: 2002-2004 D.H. aka crazyinsomniac on sourceforge.net
 @copyright: 2013-2016 Carsten Grohmann
+@copyright: 2017 Dietmar Schwertberger
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
-
 
 import common
 from .edit_sizers import BaseSizerBuilder
@@ -47,11 +47,9 @@ class LispBoxSizerBuilder(BaseLispSizerBuilder):
     tmpl_wparent = '(slot-top-window obj)'
 
 
-
 class LispStaticBoxSizerBuilder(BaseLispSizerBuilder):
     klass = 'wxStaticBoxSizer'
     tmpl = '(setf (%(sizer_name)s obj) (StaticBoxSizer_Create (wxStaticBox:wxStaticBox_Create %(parent_widget)s %(label)s) %(orient)s))\n'
-
 
 
 class LispGridSizerBuilder(BaseLispSizerBuilder):
@@ -59,12 +57,17 @@ class LispGridSizerBuilder(BaseLispSizerBuilder):
     tmpl = '(setf (%(sizer_name)s obj) (wxGridSizer_Create %(rows)s %(cols)s %(vgap)s %(hgap)s))\n'
 
 
-
 class LispFlexGridSizerBuilder(LispGridSizerBuilder):
     klass = 'wxFlexGridSizer'
 
     tmpl_AddGrowableRow = '(wxFlexGridSizer_AddGrowableRow (%(sizer_name)s obj) %(row)s)\n'
     tmpl_AddGrowableCol = '(wxFlexGridSizer_AddGrowableCol (%(sizer_name)s obj) %(col)s)\n'
+
+
+class LispGridBagSizerBuilder(LispGridSizerBuilder):
+    klass = 'wxGridBagSizer'
+    tmpl = '(setf (%(sizer_name)s obj) (wxGridSizer_Create %(vgap)s %(hgap)s))\n'
+
 
 import wcodegen
 
@@ -81,6 +84,7 @@ def initialize():
     cn['EditStaticBoxSizer'] = 'wxStaticBoxSizer'
     cn['EditGridSizer'] = 'wxGridSizer'
     cn['EditFlexGridSizer'] = 'wxFlexGridSizer'
+    cn['EditGridBagSizer'] = 'wxGridBagSizer'
 
     lispgen = common.code_writers.get("lisp")
     if lispgen:
@@ -89,5 +93,6 @@ def initialize():
         awh('wxStaticBoxSizer', LispStaticBoxSizerBuilder())
         awh('wxGridSizer', LispGridSizerBuilder())
         awh('wxFlexGridSizer', LispFlexGridSizerBuilder())
+        awh('wxGridBagSizer', LispGridBagSizerBuilder())
         
     common.register('lisp', "sizerslot", LispSizerSlotGenerator("sizerslot"))
