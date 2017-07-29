@@ -974,7 +974,7 @@ class SizerBase(Sizer, np.PropertyOwner):
         item = self.widget.GetItem(widget.widget)  # a SizerItem or GBSizerItem instance
         if not item: return
 
-        if modified is None or "proportion" in modified and not self._IS_GRIDBAG:
+        if modified is None or ("proportion" in modified or "option" in modified) and not self._IS_GRIDBAG:
             item.SetProportion(widget.proportion)
         if modified is None or "flag" in modified and widget.flag is not None:
             item.SetFlag(widget.flag)
