@@ -561,7 +561,7 @@ class WidgetTree(wx.TreeCtrl, Tree):
         def _GetItemData(self, item):
             return self.GetItemData(item)
 
-    def add(self, child, parent=None):
+    def add(self, child, parent=None, select=True):
         "appends child to the list of parent's children"
         assert isinstance(child, Node)
 
@@ -572,12 +572,13 @@ class WidgetTree(wx.TreeCtrl, Tree):
         self._SetItemData(child.item, child)
         if self.auto_expand:
             self.Expand(parent.item)
-            self.select_item(child)
+            if select:
+                self.select_item(child)
 
         if not isinstance(child.widget, edit_sizers.SizerSlot):
             self.app.check_codegen(child.widget)
 
-    def insert(self, child, parent, index):
+    def insert(self, child, parent, index, select=True):
         "inserts child to the list of parent's children at index; a SlotNode at index is overwritten"
         assert isinstance(child, Node)
         # pos is index
@@ -588,7 +589,7 @@ class WidgetTree(wx.TreeCtrl, Tree):
 
         # parent is a Node, i.e. Dummy or Button are not in parent.children
         if parent.children is None or index>=len(parent.children):
-            self.add(child, parent)
+            self.add(child, parent, select=select)
             return
 
         if isinstance( parent.children[index], SlotNode ):
@@ -601,16 +602,19 @@ class WidgetTree(wx.TreeCtrl, Tree):
         self._SetItemData(child.item, child)
         if self.auto_expand:
             self.Expand(parent.item)
-            self.select_item(child)
+            if select:
+                self.select_item(child)
         if not isinstance(child.widget, edit_sizers.SizerSlot):
             self.app.check_codegen(child.widget)
 
     def remove(self, node=None, delete=True):
         self.app.saved = False  # update the status of the app
+        set_focus = self.current is node.widget
         Tree.remove(self, node)
         if node is not None:
             if delete:
-                if self.cur_widget:
+                #if self.cur_widget:
+                if set_focus:
                     misc.set_focused_widget(node.parent and node.parent.widget or None)
                 self.Delete(node.item)
         else:

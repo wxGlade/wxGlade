@@ -344,14 +344,17 @@ class SizerSlot(np.PropertyOwner):
             p.preview()
 
     ####################################################################################################################
-
-    def remove(self, *args):
+    def _remove(self):
+        # does not set focus
         if self.sizer.is_virtual() or len(self.sizer.children)<=2: return
         sizer = self.sizer
         node = self.sizer.children[self.pos].node
         self.sizer.remove_item(self)
         self.delete()
         common.app_tree.remove(node)
+
+    def remove(self):
+        self._remove()
         # set focused widget
         pos = (self.pos - 1) or 1
         if pos >= len(sizer.children):
@@ -1117,7 +1120,7 @@ class SizerBase(Sizer, np.PropertyOwner):
                 self.widget.Add(slot.widget, slot.pos, (1,1), wx.EXPAND)
             self.widget.SetItemMinSize(slot.widget, 20, 20)
 
-    def _insert_slot(self, pos=None):
+    def _insert_slot(self, pos=None, select=True):
         "Inserts an empty slot into the sizer at pos (1 based); optionally force layout update"
         # called from context menu handler; multiple times if applicable; layout will be called there
         # also called from SizerBase._remove after a sizer has removed itself and inserts an empty slot instead
@@ -1137,7 +1140,7 @@ class SizerBase(Sizer, np.PropertyOwner):
 
         # insert node into tree
         slot.node = node = SlotNode(slot)
-        common.app_tree.insert(node, self.node, pos-1)
+        common.app_tree.insert(node, self.node, pos-1, select=select)
         for c in self.children:
             if isinstance(c, SizerSlot):
                 common.app_tree.refresh_name( c.node )
@@ -1490,8 +1493,8 @@ class GridSizerBase(SizerBase):
 
         self.children = [Dummy()]  # add to self.children the SizerItem for self._btn
         for i in range(1, self.rows * self.cols + 1):
-            tmp = SizerSlot(self.window, self, i) # XXX no node?
-            self.children.append(SizerItem(tmp, i, 1, (1,1), wx.EXPAND))
+            slot = SizerSlot(self.window, self, i) # XXX no node?
+            self.children.append(slot)
 
     def create_widget(self):
         "This must be overriden and called at the end of the overriden version"
@@ -1524,8 +1527,8 @@ class GridSizerBase(SizerBase):
             self.widget.SetSizeHints(self.window.widget)
 
     # helpers ##########################################################################################################
-    def _get_row_col(self, pos):
-        cols = self.cols
+    def _get_row_col(self, pos, cols=None):
+        if cols is None: cols = self.cols
         return (pos-1) // cols,  (pos-1) %  cols
 
     def _get_pos(self, row, col):
@@ -1572,6 +1575,7 @@ class GridSizerBase(SizerBase):
 
         if self._IS_GRIDBAG:
             self._check_slots(add_only=True)
+            self._set_row_col_range()
 
         if "growable_rows" in self.PROPERTIES:
             self.properties["growable_rows"].shift_items(add_row+1)  # 1 based
@@ -1621,6 +1625,7 @@ class GridSizerBase(SizerBase):
 
         if self._IS_GRIDBAG:
             self._check_slots(add_only=True)
+            self._set_row_col_range()
 
         if "growable_cols" in self.PROPERTIES:
             self.properties["growable_cols"].shift_items(add_col+1)  # 1 based
@@ -1847,6 +1852,14 @@ class _GrowablePropertyD(np.DialogPropertyD):
                 new.append(str(n))
         self.set( "".join(new) )
 
+    def keep_items(self, indices):
+        print("keep_items", self.value)
+        if not self.value: return
+        current = [int(n)-1 for n in self.get_list()] # 1 based -> 0 based
+        new = [str(indices.index(n)) for n in current if n in indices]  # self._set_converter adds 1
+        self.set( "".join(new) )
+        print("new itesm", new)
+
 
 class EditFlexGridSizer(GridSizerBase):
     "Class to handle wxFlexGridSizer objects"
@@ -1885,6 +1898,7 @@ class EditFlexGridSizer(GridSizerBase):
             if growable and not c in cols:
                 self.widget.RemoveGrowableCol(c)
             elif not growable and c in cols:
+                print("Adding col", c)
                 self.widget.AddGrowableCol(c)
 
 
@@ -1900,22 +1914,22 @@ class EditGridBagSizer(EditFlexGridSizer):
         ################################################################################################################
         
         to_lay_out = []
-        for c in self.children[1:]:  # we've already added self._btn
-            pos = self._get_row_col(c.pos)
-            c.create()
-            if isinstance(c, SizerSlot) and c.widget:
-                self.widget.Add(c.widget, pos, (1,1), wx.EXPAND, 0)
-                self.widget.SetItemMinSize(c.widget, 20, 20)
+        for child in self.children[1:]:  # we've already added self._btn
+            pos = self._get_row_col(child.pos)
+            child.create()
+            if isinstance(child, SizerSlot) and child.widget:
+                self.widget.Add(child.widget, pos, (1,1), wx.EXPAND, 0)
+                self.widget.SetItemMinSize(child.widget, 20, 20)
             else:
-                sp = c.properties.get('size')
+                sp = child.properties.get('size')
                 if sp and sp.is_active():
-                    if (c.proportion != 0 or (c.flag & wx.EXPAND)) and not (c.flag & wx.FIXED_MINSIZE):
-                        c.widget.Layout()
-                        w, h = c.widget.GetBestSize()
-                        c.widget.SetMinSize((w, h))
+                    if (child.proportion != 0 or (child.flag & wx.EXPAND)) and not (child.flag & wx.FIXED_MINSIZE):
+                        child.widget.Layout()
+                        w, h = child.widget.GetBestSize()
+                        child.widget.SetMinSize((w, h))
                     else:
-                        size = sp.get_size(c.widget)
-                        to_lay_out.append((c.pos, size))  # re-set the item to update the size correctly...
+                        size = sp.get_size(child.widget)
+                        to_lay_out.append((child.pos, size))  # re-set the item to update the size correctly...
 
         for pos, size in to_lay_out:
             self.set_item_best_size(self.children[pos], size)
@@ -1939,9 +1953,9 @@ class EditGridBagSizer(EditFlexGridSizer):
                     #max_col = c
                     max_col = self.cols-1
                     break
-                item = self.children[p]
-                if not isinstance(item, SizerSlot): break
-            if p>=len(self.children) or not isinstance(item, SizerSlot): break
+                child = self.children[p]
+                if not isinstance(child, SizerSlot): break
+            if p>=len(self.children) or not isinstance(child, SizerSlot): break
             # only empty cells found
             max_col = c
         # check max rowspan
@@ -1954,9 +1968,9 @@ class EditGridBagSizer(EditFlexGridSizer):
                     #max_row = r
                     max_row = self.rows-1
                     break
-                item = self.children[p]
-                if not isinstance(item, SizerSlot): break
-            if p>=len(self.children) or not isinstance(item, SizerSlot): break
+                child = self.children[p]
+                if not isinstance(child, SizerSlot): break
+            if p>=len(self.children) or not isinstance(child, SizerSlot): break
             # only empty cells found
             max_row = r
         return max_row-row+1, max_col-col+1
@@ -1969,10 +1983,10 @@ class EditGridBagSizer(EditFlexGridSizer):
             for col in range(self.cols):
                 pos += 1
                 if pos==len(self.children): break
-                item = self.children[pos]
-                if not isinstance(item, SizerSlot) and not item is None:
+                child = self.children[pos]
+                if not isinstance(child, SizerSlot) and not child is None:
                     # an element, check whether it spans over any slots
-                    span = item.span
+                    span = child.span
                     if span != (1,1):
                         for r in range(row, row+span[0]):
                             for c in range(col, col+span[1]):
@@ -1981,16 +1995,28 @@ class EditGridBagSizer(EditFlexGridSizer):
                                 occupied.append( self._get_pos(r,c) )
         return occupied
 
+    def _get_max_row_col(self):
+        "get last row and col indices that are populated or spanned; for use by rows/cols properties"
+        max_row = max_col = 0
+        for pos, child in enumerate(self.children):
+            if pos==0: continue
+            row, col = self._get_row_col(pos)
+            if not isinstance(child, SizerSlot) and not child is None:
+                span = child.span
+                max_row = max( max_row, row + span[0] - 1 )
+                max_col = max( max_col, col + span[1] - 1 )
+        return max_row, max_col
+
     def _check_slots(self, remove_only=False, add_only=False, add_to_sizer=True):
         "add/remove the widgets for empty slots"
         occupied = set( self._get_occupied_slots() )
-        for p,c in enumerate(self.children[1:]):
+        for p,child in enumerate(self.children[1:]):
             pos = p+1
-            if isinstance(c, SizerSlot):
+            if isinstance(child, SizerSlot):
                 if pos in occupied:
-                    if not add_only: c.set_overlap(True, add_to_sizer=add_to_sizer)
+                    if not add_only: child.set_overlap(True, add_to_sizer=add_to_sizer)
                 else:
-                    if not remove_only: c.set_overlap(False, add_to_sizer=add_to_sizer)
+                    if not remove_only: child.set_overlap(False, add_to_sizer=add_to_sizer)
 
     # context menu actions #############################################################################################
     def _delete_row_or_col(self, row=None, col=None):
@@ -2044,15 +2070,126 @@ class EditGridBagSizer(EditFlexGridSizer):
 
         self.layout(True)
 
+    def _recreate(self, rows, cols, previous_rows, previous_cols):
+        "rows, cols: list of indices to keep or None for new rows/cols"
+
+        # detach all elements from old sizer
+        if rows is None: rows = [r for r in range(self.rows)]
+        if cols is None: cols = [c for c in range(self.cols)]
+        remove_slots = [] # as of now, only slots are being removed
+        remove_rows = [r for r in range(previous_rows) if not r in rows]
+        remove_cols = [c for c in range(previous_cols) if not c in rows]
+        new_children = [[None]*len(cols) for row in range(len(rows))]
+        for pos, child in enumerate(self.children):
+            if pos==0: continue
+            r,c = self._get_row_col(pos, previous_cols)
+            if r not in rows or c not in cols:
+                remove_slots.append(child)
+                continue
+            new_children[rows.index(r)][cols.index(c)] = child
+
+            if child.widget:
+                self.widget.Detach(child.widget)
+
+            # check whether an item is spanning over the removed row/col and reduce span by 1
+            span = child.span
+            r_end = r+span[0]-1
+            c_end = c+span[1]-1
+            spanned_rows = [r_ for r_ in range(r,r_end+1) if r_ in rows]
+            spanned_cols = [c_ for c_ in range(c,c_end+1) if c_ in cols]
+            new_span = (rows.index( spanned_rows[-1] ) - rows.index(r) + 1,
+                        cols.index( spanned_cols[-1] ) - cols.index(c) + 1)
+            if new_span != span:
+                child.properties["span"].set( new_span )
+
+        # remove the slots
+        set_focus = misc.focused_widget in remove_slots
+        for slot in reversed(remove_slots): slot._remove()
+        if set_focus:
+            misc.set_focused_widget(self)
+
+        self.properties["rows"].set( len(rows) )
+        self.properties["growable_rows"].keep_items(rows)  # 1 based
+        self.properties["cols"].set( len(cols) )
+        self.properties["growable_cols"].keep_items(cols)
+
+        # insert placeholders to avoid problems with GridBagSizers and overlap tests
+        self.children[1:] = sum(new_children,[])
+        # actually create the new slots
+        for pos, child in enumerate(self.children):
+            if pos==0 or child is not None: continue
+            self._insert_slot( pos, select=False )
+
+        # check overlapped slots
+        self._check_slots(add_to_sizer=False)
+
+
+        if not self.widget: return
+        # re-create the widget and add the items
+        self.widget._grid.Destroy()
+        self.widget._create(None,None, self.vgap, self.hgap)
+
+        for child in self.children[1:]:
+            if not child.widget: continue # for overlapped sizer slots, widget may be None
+            self.widget.Add(child.widget, child.pos, child.span, child.flag, child.border)
+
+        self._set_growable()
+        self.layout(True)
+
     def remove_row(self, pos):
-        # calculate row and pos of the slot
         row,col = self._get_row_col(pos)
-        self._delete_row_or_col(row=row)
+        rows = [r for r in range(self.rows) if r!=row]
+        self._recreate(rows, None, self.rows, self.cols)
 
     def remove_col(self, pos):
-        # calculate row and pos of the slot
         row,col = self._get_row_col(pos)
-        self._delete_row_or_col(col=col)
+        cols = [c for c in range(self.cols) if c!=col]
+        self._recreate(None, cols, self.rows, self.cols)
+
+    def _set_row_col_range(self):
+        "set ranges of rows/cols properties"
+        max_row, max_col = self._get_max_row_col()
+        rows_p = self.properties["rows"]
+        cols_p = self.properties["cols"]
+        rows_p.set_range(max_row+1, rows_p.val_range[1])
+        cols_p.set_range(max_col+1, cols_p.val_range[1])
+    
+    def check_property_modification(self, name, value, new_value):
+        max_row, max_col = self._get_max_row_col()
+        if name=="rows" and new_value<max_row+1: return False
+        if name=="cols" and new_value<max_col+1: return False
+        return EditFlexGridSizer.check_property_modification(self, name, value, new_value)
+
+    def properties_changed(self, modified):
+        if modified and ("rows" in modified or "cols" in modified):
+            rows_p = self.properties["rows"]
+            cols_p = self.properties["cols"]
+            if rows_p.previous_value is not None or cols_p.previous_value is not None:
+                # actually a user input
+                delete_rows = []
+                delete_cols = []
+                rows = cols = None # default arguments
+                if "rows" in modified:
+                    previous_rows = rows_p.previous_value
+                    previous_cols = self.cols
+                    if previous_rows<rows_p.value:
+                        # add rows
+                        rows = list(range(previous_rows)) + [None]*(rows_p.value-previous_rows)
+                    else:
+                        # remove rows
+                        rows = list(range(rows_p.value))
+                if "cols" in modified:
+                    previous_rows = self.rows
+                    previous_cols = cols_p.previous_value
+                    if previous_cols<cols_p.value:
+                        # add cols
+                        cols = list(range(previous_cols)) + [None]*(cols_p.value-previous_cols)
+                    else:
+                        # remove cols
+                        cols = list(range(cols_p.value))
+                self._recreate(rows, cols, previous_rows, previous_cols)
+
+        EditFlexGridSizer.properties_changed(self, modified)
 
 
 def _builder(parent, sizer, pos, orientation=wx.VERTICAL, slots=1, is_static=False, label="", number=[1]):

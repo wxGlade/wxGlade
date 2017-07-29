@@ -41,6 +41,7 @@ class Property(object):
     def __init__(self, value, default_value=_DefaultArgument, name=None):#, write_always=False):
         self._logger = logging.getLogger(self.__class__.__name__)
         self.value = value
+        self.previous_value = None  # only set during call of self.owner.properties_modified
         # when the property is assigned to an instance property, these will be set:
         self.owner = None
         self.name = name
@@ -142,11 +143,17 @@ class Property(object):
             if activate and not self.deactivated: activate = False
             if not force and not activate:
                 return False
+        if not self.owner.check_property_modification(self.name, self.value, new_value):
+            if self.editing:
+                self.update_display()
+            return
+        self.previous_value = self.value
         self.value = new_value
         if activate:
             self.deactivated = False
             self.activate_controls()
         self._notify()
+        self.previous_value = None
         return True
 
     def _notify(self):
@@ -2201,6 +2208,9 @@ class PropertyOwner(object):
                 prop.set(new)
         if modified:
             self.properties_changed(modified)
+    def check_property_modification(self, name, value, new_value):
+        # return False in derived class to veto a user modification
+        return True
     def properties_changed(self, modified):
         """properties edited; trigger actions like widget or sizer update;
         'modified' is None or a list of property names;

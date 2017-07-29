@@ -90,6 +90,7 @@ class wxGladePropertyPanel(wx.Frame):
 
         self.pagenames = pagenames = []
         self.sizers = []
+        if not edit_widget: return
         current_page = current_sizer = current_pagename = None
         property_instance = None
         for prop in edit_widget.PROPERTIES:
