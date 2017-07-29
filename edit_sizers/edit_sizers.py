@@ -1559,23 +1559,11 @@ class GridSizerBase(SizerBase):
                 self._insert_slot( len(self.children) )
         else:
             add_row, dummy = self._get_row_col(pos)
-            if self._IS_GRIDBAG and self.widget:
-                # move all widgets in the sizer down by one
-                for p in range(len(self.children)-1, add_row*cols, -1):
-                    row,col = self._get_row_col(p)
-                    item = self.children[p]
-                    if item.widget:
-                        self.widget._grid.Detach(item.widget)
-                        self.widget.Add(item.widget, (row+1,col), item.span, item.flag, item.border)
 
         self.properties["rows"].set( rows+1 )
 
         for n in range(cols):
             self._insert_slot( n+1 + add_row*cols )
-
-        if self._IS_GRIDBAG:
-            self._check_slots(add_only=True)
-            self._set_row_col_range()
 
         if "growable_rows" in self.PROPERTIES:
             self.properties["growable_rows"].shift_items(add_row+1)  # 1 based
@@ -1596,14 +1584,6 @@ class GridSizerBase(SizerBase):
             add_col = cols
         else:
             dummy, add_col = self._get_row_col(pos)
-            if self._IS_GRIDBAG and self.widget:
-                # move all widgets in the sizer right by one
-                for col in range(cols-1,add_col-1, -1):  # from last column to add_col
-                    for row in range(0,rows):
-                        item = self.children[self._get_pos(row,col)]
-                        if item.widget:
-                            self.widget._grid.Detach(item.widget)
-                            self.widget.Add(item.widget, (row,col+1), item.span, item.flag, item.border)
 
         # calculate the column index of the last child (0 based)
         last_pos = len(self.children)-1
@@ -1623,16 +1603,11 @@ class GridSizerBase(SizerBase):
         for r in range(0,rows):
             self._insert_slot( self._get_pos(r,add_col) )
 
-        if self._IS_GRIDBAG:
-            self._check_slots(add_only=True)
-            self._set_row_col_range()
-
         if "growable_cols" in self.PROPERTIES:
             self.properties["growable_cols"].shift_items(add_col+1)  # 1 based
 
         if self.widget:
-            if not self._IS_GRIDBAG:
-                if self.widget.GetCols()!=cols+1: self.widget.SetCols(cols+1)
+            if self.widget.GetCols()!=cols+1: self.widget.SetCols(cols+1)
             if "growable_rows" in self.PROPERTIES:
                 self._set_growable()
             self.layout(True)
@@ -2019,57 +1994,6 @@ class EditGridBagSizer(EditFlexGridSizer):
                     if not remove_only: child.set_overlap(False, add_to_sizer=add_to_sizer)
 
     # context menu actions #############################################################################################
-    def _delete_row_or_col(self, row=None, col=None):
-        "re-create sizer without the elements from row or col; this is to avoid problems with empty SizerItems"
-        # detach all elements from old sizer
-        assert row is None or col is None
-        remove_slots = []
-        for pos, child in enumerate(self.children):
-            if pos==0: continue
-            r,c = self._get_row_col(pos)
-            if (row is not None and r==row) or (col is not None and c==col):
-                remove_slots.append(child)
-                continue
-
-            if child.widget:
-                self.widget.Detach(child.widget)
-
-            # check whether an item is spanning over the removed row/col and reduce span by 1
-            span = child.span
-            if row is not None and span[0]>1:
-                if r<row and r+child.span[0]-1>=row:
-                    child.properties["span"].set( (span[0]-1,span[1]))
-                    assert child.span[0]>0
-            if col is not None and span[1]>1:
-                if c<col and c+child.span[1]-1>=col:
-                    child.properties["span"].set( (span[0],span[1]-1))
-                    assert child.span[1]>0
-
-        # remove the slots of the row or col
-        for slot in reversed(remove_slots): slot.remove()
-
-        if row is not None:
-            self.properties["rows"].set( self.rows-1 )
-            self.properties["growable_rows"].remove_item(row+1)  # 1 based
-        if col is not None:
-            self.properties["cols"].set( self.cols-1 )
-            self.properties["growable_cols"].remove_item(col+1)
-
-        # check overlapped slots
-        self._check_slots(add_to_sizer=False)
-
-        if not self.widget: return
-        # re-create the widget and add the items
-        self.widget._grid.Destroy()
-        self.widget._create(None,None, self.vgap, self.hgap)
-        self._set_growable()
-
-        for child in self.children[1:]:
-            if not child.widget: continue # for overlapped sizer slots, widget may be None
-            self.widget.Add(child.widget, child.pos, child.span, child.flag, child.border)
-
-        self.layout(True)
-
     def _recreate(self, rows, cols, previous_rows, previous_cols):
         "rows, cols: list of indices to keep or None for new rows/cols"
 
