@@ -20,6 +20,7 @@ class EditStaticBitmap(ManagedBase, EditStylesMixin, BitmapMixin):
     update_widget_style = False
     _PROPERTIES = ["Widget", "bitmap", "attribute", "style"]
     PROPERTIES = ManagedBase.PROPERTIES + _PROPERTIES + ManagedBase.EXTRA_PROPERTIES
+    ManagedBase.MOVE_PROPERTY(PROPERTIES, "attribute", "name")
     _PROPERTY_LABELS = {"attribute":'Store as attribute'}
     _PROPERTY_HELP = {"attribute":'Store instance as attribute of window class; e.g. self.bitmap_1 = wx.wxStaticBitmap'
                                   '(...)\nWithout this, you can not access the bitmap from your program.'}

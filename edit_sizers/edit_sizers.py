@@ -659,8 +659,7 @@ class ClassOrientProperty(np.RadioProperty):
 
 class SizerBase(Sizer, np.PropertyOwner):
     "Base class for every non-virtual Sizer handled by wxGlade"
-    PROPERTIES = ["Common", "name", "class", "orient", "class_orient", # class and orient are hidden
-                  "attribute",
+    PROPERTIES = ["Common", "name", "attribute", "class", "orient", "class_orient", # class and orient are hidden
                   "Layout"]  # not a property, just start the next page in the editor
     EXTRA_PROPERTIES = []
 
