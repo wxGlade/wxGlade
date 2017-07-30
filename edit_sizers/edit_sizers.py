@@ -652,7 +652,7 @@ class ClassOrientProperty(np.RadioProperty):
     CHOICES  = [c[0] for c in CHOICES]
 
     def __init__(self, value=None):
-        np.RadioProperty.__init__(self, value, self.CHOICES, tooltips=self.TOOLTIP)
+        np.RadioProperty.__init__(self, value, self.CHOICES, tooltips=self.TOOLTIPS)
     def write(self, output, tabs=0):
         pass
 
@@ -668,7 +668,8 @@ class SizerBase(Sizer, np.PropertyOwner):
 
     _PROPERTY_LABELS = {"fit":"Fit parent",
                         "attribute":'Store as attribute',
-                        "option": "Proportion"}
+                        "option": "Proportion",
+                        "class_orient":"Sizer Type"}
     _PROPERTY_HELP = {"fit":'Sizes the window so that it fits around its subwindows',
                       "attribute":'Store instance as attribute of window class; e.g. self.sizer_1 = wx.BoxSizer(...)\n'
                                   'Without this, you can not access the sizer from your program'}
