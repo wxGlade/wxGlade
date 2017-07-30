@@ -132,6 +132,12 @@ class EditBase(EventsMixin, np.PropertyOwner):
 
         EventsMixin.__init__(self)
 
+    @staticmethod
+    def MOVE_PROPERTY(PROPERTIES, move_property, after_property):
+        "move a property to another position, right behind after_property"
+        PROPERTIES.remove( move_property )
+        PROPERTIES.insert( PROPERTIES.index(after_property)+1, move_property )
+
     def create(self):
         "create the wx widget"
         if self.parent is not None and self.parent.widget is None: return

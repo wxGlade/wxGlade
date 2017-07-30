@@ -19,6 +19,7 @@ class EditStaticText(ManagedBase, EditStylesMixin):
     "Class to handle wxStaticText objects"
     _PROPERTIES = ["Widget", "label", "style", "attribute"]
     PROPERTIES = ManagedBase.PROPERTIES + _PROPERTIES + ManagedBase.EXTRA_PROPERTIES
+    ManagedBase.MOVE_PROPERTY(PROPERTIES, "attribute", "name")
     _PROPERTY_HELP ={"attribute":'Store instance as attribute of window class; e.g. self.label_1 = wx.StaticText(...)\n'
                                  'Without this, you can not access the label from your program.'}
 

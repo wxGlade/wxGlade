@@ -25,6 +25,7 @@ class EditHyperlinkCtrl(ManagedBase, EditStylesMixin):
     "Class to handle wxHyperlinkCtrl objects"
     _PROPERTIES = ["Widget", "label", "style", "url", "attribute"]
     PROPERTIES = ManagedBase.PROPERTIES + _PROPERTIES + ManagedBase.EXTRA_PROPERTIES
+    ManagedBase.MOVE_PROPERTY(PROPERTIES, "attribute", "name")
     _PROPERTY_HELP = { 'label':"Label of the hyperlink",
                        'url':"URL associated with the given label",
                        "attribute":'Store instance as attribute of window class; e.g. self.bitmap_1 = wx.wxStaticBitmap'

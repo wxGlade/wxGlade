@@ -17,9 +17,10 @@ import new_properties as np
 
 class EditStaticLine(ManagedBase, EditStylesMixin):
     "Class to handle wxStaticLine objects"
-    _PROPERTIES = ["Widget", "attribute"]
+    _PROPERTIES = ["attribute"]
     PROPERTIES = ManagedBase.PROPERTIES + _PROPERTIES + ManagedBase.EXTRA_PROPERTIES
     PROPERTIES.remove("font")
+    ManagedBase.MOVE_PROPERTY(PROPERTIES, "attribute", "name")
     _PROPERTY_LABELS = {"attribute":'Store as attribute'}
     _PROPERTY_HELP={"attribute":'Store instance as attribute of window class; e.g. self.line_1 = wx.wxStaticLine(...)\n'
                                 'Without this, you can not access the line from your program.'}
