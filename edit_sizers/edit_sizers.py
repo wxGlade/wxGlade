@@ -2285,7 +2285,7 @@ class _GridBuilderDialog(wx.Dialog):
         self.rows.SetFocus()
         self.rows.SetSelection(-1, -1)
         # static box sizer around the grid sizer
-        boxsizer = wx.StaticBoxSizer(wx.VERTICAL, self, _("Layout"))
+        boxsizer = wx.StaticBoxSizer(wx.StaticBox(self, -1, _("Layout")), wx.VERTICAL)
         boxsizer.Add(gsizer)
         sizer.Add(boxsizer, 0, wx.ALL, 3)
 
