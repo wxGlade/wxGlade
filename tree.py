@@ -929,6 +929,14 @@ class WidgetTree(wx.TreeCtrl, Tree):
             ret[0] = (ret[0], pos)
         return ret
 
+    def get_widget_path(self, w):
+        ret = self.get_selected_path(w)
+        if isinstance(ret[0], tuple):
+            ret[0] = ret[0][0]
+        return tuple(ret)
+    def find_widget_from_path(self, path):
+        pass
+
     def select_path(self, path):
         "sets the selected widget from a path_list, which should be in the form returned by get_selected_path"
         index = 0

@@ -123,18 +123,15 @@ class Property(object):
     ####################################################################################################################
     # internal interface from the editor controls
     def on_value_edited(self, value):
-        """called from self when the user has entered a new value
+        """called from self when the user has entered a new value or de-/activated the property
         controls need not to be set, but the owner needs to be notified and the application"""
+        common.history.property_changing(self)
+        self.previous_value = self.value
+        previous_modified = self.modified
         self.set(value)
         self._notify()
-
-    def on_activated(self, active=True):
-        "activation checkbox toggled"
-        # XXX  assert self.default_value is not _DefaultArgument
-        if active != self.deactivated: return
-        self.deactivated = not active
-        self.activate_controls()
-        self.owner.properties_changed([self.name])
+        common.history.property_changed(self)
+        self.previous_value = None
 
     def _check_for_user_modification(self, new_value, force=False, activate=False):
         # force: set to True when e.g. called from self.toggle_activate
@@ -146,14 +143,12 @@ class Property(object):
         if not self.owner.check_property_modification(self.name, self.value, new_value):
             if self.editing:
                 self.update_display()
-            return
-        self.previous_value = self.value
-        self.value = new_value
+            return False
         if activate:
             self.deactivated = False
+        self.on_value_edited(new_value)
+        if activate:
             self.activate_controls()
-        self._notify()
-        self.previous_value = None
         return True
 
     def _notify(self):
@@ -169,7 +164,7 @@ class Property(object):
         for controlname in self.CONTROLNAMES:
             if controlname=="enabler": continue
             getattr(self, controlname).Enable(active)
-        self._notify()
+        self.on_value_edited(self.value)
         self.activate_controls()
 
     ####################################################################################################################
@@ -734,6 +729,9 @@ class _CheckListProperty(Property):
         value = self._names[index]
         checked = event.IsChecked()
         event.Skip()
+        self._change_value(value, checked)
+
+    def _change_value(self, value, checked):
         if checked:
             if value in self.value_set: return
             self.value_set.add(value)
@@ -763,6 +761,7 @@ class _CheckListProperty(Property):
 
         self.value = None  # to be calculated on demand
         self._notify()
+        common.history.set_property_changed(self, value, checked)
         self.update_display()
 
     def update_display(self, start_editing=False):
@@ -1197,7 +1196,7 @@ class TextProperty(Property):
         # when the value has changed
         if start_editing: self.editing = True
         if not self.editing: return
-        self.text.SetValue(self._value_to_str(self.value))
+        self.text.SetValue(self._value_to_str(self.value) or "")
 
     def _value_to_str(self, value):
         # change in derived classes where value might be a tuple or similar
