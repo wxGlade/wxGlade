@@ -200,6 +200,7 @@ def capitalize(string):
 
 def color_to_string(color):
     "returns the hexadecimal string representation of the given colour '#RRGGBB'"
+    if color is None: return None
     return '#%.2x%.2x%.2x'%(color.Red(), color.Green(), color.Blue())
 
 def string_to_color(color):
@@ -363,6 +364,8 @@ accel_table = [
     (wx.ACCEL_CTRL,                ord('C'),      _copy, ()),
     (wx.ACCEL_CTRL,                ord('X'),      _cut, ()),
     (wx.ACCEL_CTRL,                ord('V'),      _paste, ()),
+    (wx.ACCEL_CTRL,                ord('Z'),      (common, "history","undo"), "focused_widget"),
+    (wx.ACCEL_CTRL,                ord('Y'),      (common, "history","redo"), "focused_widget"),
     (wx.ACCEL_CTRL,                ord('I'),      _insert, ()),
     (wx.ACCEL_CTRL,                ord('A'),      _add, ()),
     (0,                            wx.WXK_F2,     (common,"palette","show_tree"),            ()),
@@ -388,6 +391,8 @@ def on_key_down_event(event):
             for i in range(1,len(function)):
                 obj = getattr(obj, function[i])
             function = obj
+        if isinstance(args, str):
+            args = (globals()[args],)
         wx.CallAfter(function, *args)
         return
     # not handled

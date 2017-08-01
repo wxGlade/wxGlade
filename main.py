@@ -67,7 +67,10 @@ class wxGladePropertyPanel(wx.Frame):
         self.create_editor(edit_widget)
         self.current_widget = edit_widget
         if self:
-            self.SetTitle(_('Properties - %s - <%s>') % (edit_widget.klass, edit_widget.name) )
+            if edit_widget:
+                self.SetTitle(_('Properties - %s - <%s>') % (edit_widget.klass, edit_widget.name) )
+            else:
+                self.SetTitle(_('Properties') )
 
     def create_editor(self, edit_widget):
         # fill the frame with a notebook of property editors
