@@ -93,7 +93,7 @@ def builder(parent, sizer, pos, number=[0]):
         import panel
         dialog = panel.EditTopLevelPanel(name, parent, wx.NewId(), klass=klass)
     #dialog.properties["style"].set_to_default()
-    frame.properties["style"].set("wxDEFAULT_DIALOG_STYLE")
+    dialog.properties["style"].set("wxDEFAULT_DIALOG_STYLE")
     node = Node(dialog)
     dialog.node = node
     dialog.create()
