@@ -947,7 +947,7 @@ class WidgetTree(wx.TreeCtrl, Tree):
             name = path[index]
             if index == 0 and isinstance(name, tuple):
                 name, pos = name
-            if misc.streq(widget.name, name):
+            if widget.name == name:
                 #self.EnsureVisible(item)
                 itemok = item
                 if parent is None:

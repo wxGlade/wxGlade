@@ -535,7 +535,7 @@ class EditToolBar(EditBase, PreviewMixin, EditStylesMixin, BitmapMixin):
         self._tb.ClearTools()
         # now add all the tools
         for tool in self.tools:
-            if misc.streq(tool.id, '---'):  # the tool is a separator
+            if tool.id == '---':  # the tool is a separator
                 self._tb.AddSeparator()
             else:
                 bmp1 = self.get_preview_obj_bitmap(tool.bitmap1)
