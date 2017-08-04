@@ -226,7 +226,7 @@ class MenuItemDialog(wx.Dialog):
         self._ignore_events = True
         self.menu_items.Select(index)
         self.selected_index = index
-        if not misc.streq(self.menu_items.GetItem(index, 2).GetText(), '---'):
+        if self.menu_items.GetItem(index, 2).GetText() != '---':
             # skip if the selected item is a separator
             for (s, i) in ((self.label, 0), (self.event_handler, 1), (self.name, 2), (self.help_str, 4), (self.id, 5)):
                 s.SetBackgroundColour(wx.WHITE) # at this point, the value should be validated already
@@ -414,7 +414,7 @@ class MenuItemDialog(wx.Dialog):
             if ( index+1 < self.menu_items.GetItemCount() and (self.item_level(index) < self.item_level(index+1)) ):
                 return
             label = self.menu_items.GetItem(index, 0).GetText()
-            if misc.streq(label[:4], " " * 4):
+            if label[:4] == "    ":
                 self.menu_items.SetStringItem(index, 0, label[4:])
                 self.menu_items.SetItemState(index, wx.LIST_STATE_SELECTED, wx.LIST_STATE_SELECTED)
             self._enable_buttons()
@@ -681,7 +681,7 @@ class EditMenuBar(EditBase, PreviewMixin):
 
         def append(menu, items):
             for item in items:
-                if misc.streq(item.name, '---'):  # item is a separator
+                if item.name == '---':  # item is a separator
                     menu.AppendSeparator()
                 elif item.children:
                     m = wx.Menu()

@@ -1938,7 +1938,7 @@ class GridProperty(Property):
                 modified = True
             if not modified:
                 for j, col in enumerate(row):
-                    if not misc.streq(col, self.value[i][j]):
+                    if col != self.value[i][j]:
                         modified = True
         if not modified:
             return None

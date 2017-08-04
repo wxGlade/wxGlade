@@ -412,18 +412,6 @@ else:
 # helper functions to work with a Unicode-enabled wxPython
 #-----------------------------------------------------------------------------
 
-def streq(s1, s2):
-    """Returns True if the strings or unicode objects s1 and s2 are equal, i.e. contain the same text.
-    Appropriate encoding/decoding are performed to make the comparison."""
-    try:
-        return s1 == s2
-    except UnicodeError:
-        if isinstance(s1, compat.unicode):
-            s1 = s1.encode(common.app_tree.app.encoding)
-        else:
-            s2 = s2.encode(common.app_tree.app.encoding)
-        return s1 == s2
-
 
 def wxstr(s, encoding=None):
     "Converts the object s to str or unicode, according to what wxPython expects"

@@ -257,7 +257,7 @@ class Application(np.PropertyOwner):
     def _get_filename(self):
         return self.__filename
     def _set_filename(self, value):
-        if not misc.streq(self.__filename, value):
+        if self.__filename != value:
             self.__filename = value
             if self.__saved:
                 flag = ' '
