@@ -311,34 +311,24 @@ def _remove():
     if focused_widget is None or not hasattr(focused_widget, "remove"): return
     if focused_widget.klass=="sizerslot" and hasattr(focused_widget, "sizer") and focused_widget.sizer._IS_GRIDBAG:
         return
-    focused_widget.remove()
-    #focused_widget = None  # should be done by the remove() already
+    focused_widget = focused_widget.remove()
 
 def _cut():
     global focused_widget
-    if focused_widget is not None:
-        try:
-            focused_widget.clipboard_cut()
-        except AttributeError:
-            pass
-        else:
-            focused_widget = None
+    if focused_widget is None or not hasattr(focused_widget, "clipboard_cut"): return
+    focused_widget.clipboard_cut()
+    focused_widget = None
 
 def _copy():
     global focused_widget
-    if focused_widget is not None:
-        try:
-            focused_widget.clipboard_copy()
-        except AttributeError:
-            pass
+    if focused_widget is None or not hasattr(focused_widget, "clipboard_copy"): return
+    focused_widget.clipboard_copy()
 
 def _paste():
     global focused_widget
-    if focused_widget is not None:
-        try:
-            focused_widget.clipboard_paste()
-        except AttributeError:
-            pass
+    if focused_widget is None or not hasattr(focused_widget, "clipboard_paste"): return
+    focused_widget.clipboard_paste()
+
 
 def _insert():
     global focused_widget

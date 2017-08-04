@@ -360,7 +360,7 @@ class SizerSlot(np.PropertyOwner):
         pos = (self.pos - 1) or 1
         if pos >= len(sizer.children):
             pos -= 1  # the deleted slot was the last one; the check above ensures that at least one more slot is left
-        misc.set_focused_widget(sizer.children[pos])
+        return sizer.children[pos]
 
     def on_drop_widget(self, event):
         """replaces self with a widget in self.sizer. This method is called
@@ -843,12 +843,13 @@ class SizerBase(Sizer, np.PropertyOwner):
             window.set_sizer(None)
             return
         # XXX as of now: remove old and then create a new slot; maybe there's a better way to change the node directly
+        #sizer = self.sizer
         #common.app_tree.remove(self.node)
-        #self.sizer.remove_item(self)
-        #self.sizer.insert_slot(self.pos)
+        #sizer.remove_item(self)
+        #sizer.insert_slot(self.pos)
 
         # XXX as of now, this won't work
-        self.sizer.free_slot(self.pos)
+        return self.sizer.free_slot(self.pos)
 
     remove = _remove # needed for consistency (common.focused_widget.remove)
 
@@ -1192,7 +1193,10 @@ class SizerBase(Sizer, np.PropertyOwner):
 
         # replace the node with a SlotNode
         slot.node = node = SlotNode(slot)
-        common.app_tree.change_node( old_node, slot, node )
+        if self.widget:
+            # required here; otherwise removal of a StaticBox of a StaticBoxSizer will cause a crash
+            self.widget.Detach(old_node.widget.widget)
+        common.app_tree.change_node( old_node, slot, node )  # calls the delete methods of the widgets
 
         if self.widget:
             slot.create()  # create the actual SizerSlot as wx.Window with hatched background
@@ -1206,6 +1210,7 @@ class SizerBase(Sizer, np.PropertyOwner):
             #self.widget.Detach(pos-1) # does only remove from sizer, but not destroy item
             if force_layout:
                 self.layout()
+        return slot
     ####################################################################################################################
     def is_visible(self):
         return self.window.is_visible()
@@ -1216,7 +1221,7 @@ class SizerBase(Sizer, np.PropertyOwner):
 
     def clipboard_cut(self, event=None):
         "Store a copy of self into the clipboard and delete the widget, @see: L{clipboard.cut()}"
-        clipboard.cut(self)
+        return clipboard.cut(self)
 
     def post_load(self):
         """Called after loading of an app from a XML file, before showing the hierarchy of widget for the first time.
