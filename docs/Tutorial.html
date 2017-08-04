@@ -79,7 +79,7 @@
         <p><strong>Prerequisites:</strong>On Windows, the win32 extensions should be installed: <a target="_blank" href="https://sourceforge.net/projects/pywin32/">https://sourceforge.net/projects/pywin32/</a><strong></strong></p>
         <strong>Supported Python and wxPython Versions:</strong>
         <ul>
-            <li>The „classic“ wxPython versions 2.8 and 3.0 are supported as well as wxPython Phoenix running under Python 3</li>
+            <li>The &lsquo;classic&rsquo; wxPython versions 2.8 and 3.0 are supported as well as wxPython Phoenix running under Python 3</li>
             <li>Phoenix plus Python 2 will probably also work, but this is not tested at all. wxPython 2.8 is generally less tested than the more recent versions. </li>
             <li>When running Python 3 + Phoenix or Python 2 + Classic, the generated code will not be compatible to the other version. </li>
         </ul>
@@ -99,7 +99,7 @@
                 <tr>
                     <td><a href="attachments/wTree.png" title=""><img alt="attachment:wTree.png" src="attachments/wTree.png" title="attachment:wTree.png" width="100"></a> </td>
                     <td><em><strong>Tree</strong></em> window:<br>
-                        This window visualizes and allows to edit the structure of the project with it’s application, windows, sizers and controls.<br>
+                        This window visualizes and allows to edit the structure of the project with it's application, windows, sizers and controls.<br>
                         On selection of an item, it's properties will be shown in the <em>Properties</em> window.<br>
                     </td>
                 </tr>
@@ -148,7 +148,7 @@
             <li>the MainLoop (right at the bottom of the page)</li>
         </ul>
         <h2><a class="mozTocH2" id="mozTocId587431"></a>Sizers (Layout Managers)</h2>
-        With wxWidgets/wxPython and similar toolkits, usually controls are not placed at pixel positions on their windows, but the layout of a window is managed by <em>sizers</em>. There are horizontal <em>box sizers</em>, vertical <em>box sizers</em> and <em>grid sizers</em>. The box sizers may have a label and a box around them. In this case they’re called <em>static box sizers</em>. Each sizer and sizer item can be fixed size or grow to fill the available space, e.g. when the window is resized.
+        With wxWidgets/wxPython and similar toolkits, usually controls are not placed at pixel positions on their windows, but the layout of a window is managed by <em>sizers</em>. There are horizontal <em>box sizers</em>, vertical <em>box sizers</em> and <em>grid sizers</em>. The box sizers may have a label and a box around them. In this case they're called <em>static box sizers</em>. Each sizer and sizer item can be fixed size or grow to fill the available space, e.g. when the window is resized.
         <h3><a class="mozTocH3" id="mozTocId996644"></a>Example: Calculator window</h3>
         <div style="margin-left: 40px;"> <a href="attachments/Calculator_06_preview.png"><img alt="attachment:Calculator_06_preview.png" src="attachments/Calculator_06_preview.png" style="margin-left: 20px;" width="200"></a> </div>
         <p>This window is managed by <font color="green"><b>one vertical box sizer with six slots</b></font> for the five rows plus horizontal line and <font color="blue"><b>five horizontal box sizers</b></font> for e.g. one label and one button: </p>
@@ -178,7 +178,7 @@
         </strong>
         <ol>
             <li>Select File-&gt;New to <b>create a new file</b> and save it to a directory. </li>
-            <li><b>Add the frame</b> by clicking on the Frame icon in the section „Windows:“ <img alt="frame.png" src="attachments/frame.png" title="frame.png"></li>
+            <li><b>Add the frame</b> by clicking on the Frame icon in the section "Windows": <img alt="frame.png" src="attachments/frame.png" title="frame.png" border=1 valign="top"></li>
             <li>A frame with a sizer <img alt="sizer.png" src="attachments/sizer.png" title="sizer.png"> and one slot is now visible in the <em>Tree</em> and <em>Design</em> window (there the slot is visualized by a hatched area)</li>
             <li>
                 It would be possible to place controls directly on the frame, but usually a <b>panel</b> is added first<br>
@@ -192,11 +192,11 @@
                 On the panel we need a <b>vertical sizer</b> with six slots: <br>
                 <ul>
                     <li>in the <em>Palette</em> window click on the sizer icon <img alt="sizer.png" src="attachments/sizer.png" title="sizer.png"> to start the placement</li>
-                    <li>in the <em>Tree</em> or <em>Design</em> window, click on the panel to place the sizer there; a dialog will open; set "Orientation" to "Vertical" and the number of slots to "6</li>
+                    <li>in the <em>Tree</em> or <em>Design</em> window, click on the panel to place the sizer there; a dialog will open; set "Orientation" to "Vertical" and the number of slots to "6"</li>
                 </ul>
             </li>
             <li>Now add a <b>horizontal box sizer</b> to the first slot: do as before, but keep "Orientation" as "Horizontal" and set the number of slots to "2"</li>
-            <li>Place a <b>label</b> <img alt="static_text.png" src="attachments/static_text.png" title="static_text.png"> in the top left slot and a <b>text control</b> <img alt="text_ctrl.png" src="attachments/text_ctrl.png"> in the right</li>
+            <li>Place a <b>label</b> <img alt="static_text.png" src="attachments/static_text.png" title="static_text.png" border=1> in the top left slot and a <b>text control</b> <img alt="text_ctrl.png" src="attachments/text_ctrl.png" border=1> in the right</li>
         </ol>
         <p><strong>Your design should now look like this:</strong> </p>
         <p style="margin-left: 40px;"><a href="attachments/Calculator_01.png"><img alt="attachment:Calculator_01.png" src="attachments/Calculator_01.png" style="margin-left: 20px;" width="200"></a> </p>
@@ -270,7 +270,7 @@
             <li>
                 <strong>Copy &amp; Paste</strong>:
                 <ul>
-                    <li>in the Design Window select the "handle" of the sizer, which is shown in red here: <a href="attachments/SizerHandle.png"><img alt="attachment:SizerHandle.png" src="attachments/SizerHandle.png" title="attachment:SizerHandle.png" width="30"></a></li>
+                    <li>in the Design Window select the &lsquo;handle&rsquo; of the sizer, which is shown in red here: <a href="attachments/SizerHandle.png"><img alt="attachment:SizerHandle.png" src="attachments/SizerHandle.png" title="attachment:SizerHandle.png" width="30"></a></li>
                     <li>then hit Ctrl-C to copy the selected sizer (or use the context menu) </li>
                     <li>select the third slot, where you want to place a copy </li>
                     <li>then hit Ctrl-V (or use the context menu) </li>
@@ -288,9 +288,9 @@
         <strong>In the next steps fill the other slots of the main sizer:</strong>
         <ul>
             <li>repeat the copying to fill SLOT 5 </li>
-            <li>insert a sizer with two buttons into SLOT 6 <img alt="button.png" src="attachments/button.png" title="button.png"> </li>
-            <li>add a horizontal line into SLOT 4 and enable wxEXPAND for this <img alt="static_line.png" src="attachments/static_line.png" title="static_line.png"> </li>
-            <li>insert a sizer, a label and a radio box into SLOT 2 <img alt="radio_box.png" src="attachments/radio_box.png" title="radio_box.png"> </li>
+            <li>insert a sizer with two buttons into SLOT 6 <img alt="button.png" src="attachments/button.png" title="button.png" border=1> </li>
+            <li>add a horizontal line into SLOT 4 and enable wxEXPAND for this <img alt="static_line.png" src="attachments/static_line.png" title="static_line.png" border=1> </li>
+            <li>insert a sizer, a label and a radio box into SLOT 2 <img alt="radio_box.png" src="attachments/radio_box.png" title="radio_box.png" border=1> </li>
         </ul>
         <strong>Define the options "+-*/" for the radio box by going to the "Widget" tab:</strong>
         <table style="margin-left: 60px;">
@@ -347,7 +347,7 @@
         <div style="margin-left: 40px;"> </div>
         <p><strong>Add a notebook:</strong></p>
         <ol>
-            <li>click on the Notebook icon <img alt="notebook.png" src="attachments/notebook.png" title="notebook.png"> in the section "Containers" to start placing a notebook</li>
+            <li>click on the Notebook icon <img alt="notebook.png" src="attachments/notebook.png" title="notebook.png" border=1> in the section "Containers" to start placing a notebook</li>
             <li>click on the hatched area in the Design window or on the sizer slot <img alt="sizer_slot.png" src="attachments/sizer_slot.png" title="sizer_slot.png"> in the <em>Tree</em> window</li>
             <li>in the dialog, select wx.NB_TOP to place the notebook tabs at the top</li>
         </ol>
@@ -392,7 +392,7 @@
         </ol>
         <h2><a class="mozTocH2" id="mozTocId362286"></a>Part 3: Use of Spacers</h2>
         Sometimes you need to keep some space in a sizer, either with a fixed size or growable, e.g. to have a gap between two controls or to align two controls to the left and the right edge of a window or to align a control to the center.<br>
-        To add a spacer, click the spacer icon <img alt="spacer.png" src="attachments/spacer.png" title="spacer.png"> and place it in a sizer slot.<br>
+        To add a spacer, click the spacer icon <img alt="spacer.png" src="attachments/spacer.png" title="spacer.png" border=1> and place it in a sizer slot.<br>
         <br>
         In our example, we may place a spacer to the left and right of the operator radio box to center it:<br>
         <ol>
@@ -423,8 +423,8 @@
         The current version doesn't look perfect as the controls are not vertically aligned. To change this, the labels can be modified to have the same fixed size. This may cause problems when running on a different platform with a different font size. Instead, we will now move the controls into a grid sizer. There are two grid sizers which are supported by wxGlade:
         <ul>
             <li><em>GridSizer</em>: all columns have the same width, all rows have the same height</li>
-            <li><em>FlexGridSizer</em>: all rows and columns may have different sizes. Any row(s) and/or column(s) can be defined to be „growable“</li>
-            <li> (Additionally, wxPython has a sizer called <em>GridBagSizer</em>. This allow items to span multiple rows or columns. This is not yet supported by wxGlade, though.)</li>
+            <li><em>FlexGridSizer</em>: all rows and columns may have different sizes. Any row(s) and/or column(s) can be defined to be &lsquo;growable&rsquo;</li>
+            <li><em>GridBagSizer</em>: a grid that allows items to span multiple rows or columns. The editing logic is a bit different from the other sizers. There's no documentation yet.</li>
         </ul>
         For our calculator we need the <em>FlexGridSizer </em>as the first column is fixed and the second column should grow. The result will look like this:<br>
         <br>
@@ -472,7 +472,7 @@
         <p>Some widgets like StaticText are not accessible as attributes by default. You can change this by going to <em>Properties</em>-&gt;Widget and checking 'Store as attribute'. For Sizers you can achieve the same on the "Common" tab.</p>
         As of now, nothing will happen if the user hits the "Execute" button. So we need an event handler for this.<br>
         <h2><a class="mozTocH2" id="mozTocId797300"></a>Code for event handlers</h2>
-        Traditional programs or scripts usually have a defined flow. GUI programs on the other hand, are event-driven and the flow depends on the user‘s actions. The events like mouse clicks are delivered from the operating system or window manager to the application. The receiving side is an infinite loop, called „event loop“ or „main loop“. When you have a look at the last lines of a Python file that wxGlade wrote, you will see that the <tt>MainLoop</tt> method of your application is called. The main loop receives events from e.g. the Windows operating sytem and dispatches it to windows and controls. To handle things like mouse clicks, menu selections, button clicks etc. you need to register handlers.
+        Traditional programs or scripts usually have a defined flow. GUI programs on the other hand, are event-driven and the flow depends on the user‘s actions. The events like mouse clicks are delivered from the operating system or window manager to the application. The receiving side is an infinite loop, called &lsquo;event loop&rsquo; or &lsquo;main loop&rsquo;. When you have a look at the last lines of a Python file that wxGlade wrote, you will see that the <tt>MainLoop</tt> method of your application is called. The main loop receives events from e.g. the Windows operating sytem and dispatches it to windows and controls. To handle things like mouse clicks, menu selections, button clicks etc. you need to register handlers.
         <ul>
         </ul>
         wxGlade allows you to enter handler names. For any of these names, empty method stubs will be generated in the source code file and the methods will be bound when the window is created. Alternatively, you may define and register handlers yourself.<br>
