@@ -354,8 +354,9 @@ class SizerSlot(np.PropertyOwner):
         common.app_tree.remove(node)
 
     def remove(self):
-        self._remove()
         # set focused widget
+        sizer = self.sizer
+        self._remove()
         pos = (self.pos - 1) or 1
         if pos >= len(sizer.children):
             pos -= 1  # the deleted slot was the last one; the check above ensures that at least one more slot is left
