@@ -1548,14 +1548,16 @@ class FileNameProperty(DialogProperty):
     if sys.platform in ("win32","darwin"):
         def _on_label_dblclick(self, event):
             # show directory in explorer/finder
-            if not self.value: return
+            app_filename = common.app_tree.app.filename
+            if not self.value and not app_filename: return
             import os,sys
-            directory = self.value
+            directory = self.value or app_filename
             if directory and not os.path.isdir(directory):
                 directory = os.path.dirname(directory)
-            if not directory or not os.path.exists(directory):
-                directory = os.path.dirname(common.app_tree.app.filename)
-            if not os.path.isdir(directory): return
+            if not os.path.isdir(directory):
+                if not self.value and not app_filename: return
+                directory = os.path.dirname(app_filename)
+                if not os.path.isdir(directory): return
             import subprocess
             if sys.platform=="win32":
                 subprocess.call(['explorer', directory])
