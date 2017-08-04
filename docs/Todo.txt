@@ -26,6 +26,11 @@ File Format:
 done:
  * get rid of obsolete options -> convert when opening file
 
+Internal:
+ * refactor edit_sizers and ManagedBase
+done:
+ * refactor Property handling
+
 
 Use either gettext wx.GetTranslation for _
 
