@@ -3,7 +3,7 @@ Support for cut & paste of wxGlade widgets
 
 @copyright: 2002-2007 Alberto Griggio
 @copyright: 2016 Carsten Grohmann
-@copyright: 2016 Dietmar Schwertberger
+@copyright: 2016-2017 Dietmar Schwertberger
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
@@ -160,16 +160,7 @@ class DropTarget(wx.DropTarget):
 
 
 def get_data_object(widget):
-    # build the XML string
-    xml_unicode = []
-    widget.node.write(xml_unicode, 0)
-    flag = option = span = border = None
-    flag = widget.properties.get("flag")
-    if flag is not None: flag = flag.get_string_value()
-    proportion = getattr(widget, "proportion", 0)
-    span = getattr(widget, "span", (1,1))
-    border  = getattr(widget, "border", 0)
-    data = widget2clipboard( proportion, span, flag, border, "".join(xml_unicode) )
+    data = dump_widget(widget)
     # make a data object
     if isinstance(widget, edit_sizers.Sizer):
         do = wx.CustomDataObject(sizer_data_format)
@@ -181,12 +172,24 @@ def get_data_object(widget):
     return do
 
 
+def dump_widget(widget):
+    "build the XML string and pickle it together with the layout properties"
+    xml_unicode = []
+    widget.node.write(xml_unicode, 0)
+    flag = option = span = border = None
+    flag = widget.properties.get("flag")
+    if flag is not None: flag = flag.get_string_value()
+    proportion = getattr(widget, "proportion", 0)
+    span = getattr(widget, "span", (1,1))
+    border  = getattr(widget, "border", 0)
+    return widget2clipboard( proportion, span, flag, border, "".join(xml_unicode) )
+
+
 def widget2clipboard(option, span, flag, border, xml_unicode):
     """Pickle all parameter to store them as a string in the clipboard.
     
     option, flag, border: widget layout properties
     xml_unicode: XML representation of this widget"""
-
     clipboard_data = compat.pickle.dumps((option, span, flag, border, xml_unicode))
     return clipboard_data
 

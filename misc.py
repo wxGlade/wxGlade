@@ -356,6 +356,7 @@ accel_table = [
     (wx.ACCEL_CTRL,                ord('V'),      _paste, ()),
     (wx.ACCEL_CTRL,                ord('Z'),      (common, "history","undo"), "focused_widget"),
     (wx.ACCEL_CTRL,                ord('Y'),      (common, "history","redo"), "focused_widget"),
+    (wx.ACCEL_CTRL,                ord('R'),      (common, "history","repeat"), "focused_widget"),
     (wx.ACCEL_CTRL,                ord('I'),      _insert, ()),
     (wx.ACCEL_CTRL,                ord('A'),      _add, ()),
     (0,                            wx.WXK_F2,     (common,"palette","show_tree"),            ()),
