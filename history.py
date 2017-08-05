@@ -8,12 +8,13 @@ license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 import common, config, clipboard
 
 
-# use such?
 class PropertyValue(object):
     def __init__(self, deactivated, value, modified):
         self.deactivated = deactivated
         self.value = value
         self.modified = modified
+    def __repr__(self):
+        return "(%r, %r, %r)"%(self.deactivated, self.value, self.modified)
 
 class HistoryItem(object):
     def __init__(self, prop):
@@ -28,12 +29,17 @@ class HistoryPropertyItem(HistoryItem):
         if isinstance(new, tuple): new = PropertyValue(*new)
         self.old = old
         self.new = new
+    def __repr__(self):
+        return "%s(%s, %s, %r, %r)"%(self.__class__.__name__, self.path, self.name, self.old, self.new)
+
 
 class HistorySetPropertyItem(HistoryPropertyItem):
     def __init__(self, prop, value, checked):
         HistoryItem.__init__(self, prop)
         self.value = value
         self.checked = checked
+    def __repr__(self):
+        return "%s(%s, %s, %r, %r)"%(self.__class__.__name__, self.path, self.name, self.value, self.checked)
 
 
 class History(object):
@@ -44,9 +50,6 @@ class History(object):
         self._buffer = None
         self._redo_widget = None # the widget that originally was modified
         self._repeating = False
-        #if config.debugging:
-            #self._redo_widget = ('frame', 'sizer_1', 'button_3')
-            #self.actions = [('property', ('frame', 'sizer_1', 'button_3'), 'background', 'set', (False, None, False), (False, '#00ffff', True))]
 
     def undo(self, focused_widget):
         pass
@@ -81,12 +84,18 @@ class History(object):
         # apply to the new widget
         self._repeating = True  # don't set self._redo_widget
         for action in repeat_actions:
+            if config.debugging:
+                print("Repeating %s"%action)
             prop = focused_widget.properties[action.name]
             if isinstance(action, HistorySetPropertyItem):
                 prop._change_value(action.value, action.checked)
             elif isinstance(action, HistoryPropertyItem):
-                force = action.new.deactivated!=prop.deactivated
-                prop._check_for_user_modification(action.new.value, force=force, activate=not action.new.deactivated)
+                if prop.deactivated is None:
+                    # a property that can not be deactivated
+                    prop._check_for_user_modification(action.new.value)
+                else:
+                    force = action.new.deactivated!=prop.deactivated
+                    prop._check_for_user_modification(action.new.value, force=force, activate=not action.new.deactivated)
         self._repeating = False
 
     def _add_item(self, item):
@@ -96,18 +105,19 @@ class History(object):
         if not self._repeating and isinstance(item, HistoryPropertyItem):
             self._redo_widget = item.path
 
+        if self.actions_redo:
+            del self.actions_redo[:]
+
         if config.debugging:
             print("UndoBuffer:")
             for entry in self.actions:
                 print(entry)
 
+    ####################################################################################################################
+    # interface from Property instances
     def property_changing(self, prop):
         "to be called when property value is still the old one"
         value = prop.value
-        if isinstance(value, set):
-            value = set(set)  # track modifications only
-        elif isinstance(value, list):
-            value = value[:]
         self._buffer = (prop.deactivated, prop.value, prop.modified)
 
     def property_changed(self, prop, user=True):
