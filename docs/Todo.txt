@@ -1,3 +1,10 @@
+For release 0.8:
+ * re-do
+ * ListCtrl properties
+ * Grid rows property
+ * Grid col resizing
+ * better dialog code
+
 
 User Interface:
  * implement "re-do / Ctrl-Y" to apply last property modification to currently selected widget
