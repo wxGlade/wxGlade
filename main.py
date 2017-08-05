@@ -15,7 +15,7 @@ from xml.sax import SAXParseException
 
 # import project modules
 import application
-import common, config, compat, misc, clipboard
+import common, config, compat, misc, clipboard, history
 import preferencesdialog, msgdialog, bugdialog, about
 import log
 import template
@@ -377,7 +377,7 @@ class wxGladeFrame(wx.Frame):
         # file history support
         self.file_history = wx.FileHistory(config.preferences.number_history)
         self.file_history.UseMenu(file_menu)
-        files = common.load_history()
+        files = common.load_file_history()
         files.reverse()
         for path in files:
             self.file_history.AddFileToHistory(path.strip())
@@ -1045,6 +1045,7 @@ class wxGlade(wx.App):
 def main(filename=None):
     "if filename is not None, loads it"
     logging.info(_("Using wxPython %s"), config.wx_version)
+    common.history = history.History()
     app = wxGlade()
     if filename is not None:
         win = app.GetTopWindow()

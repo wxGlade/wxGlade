@@ -122,10 +122,12 @@ class Property(object):
 
     ####################################################################################################################
     # internal interface from the editor controls
-    def on_value_edited(self, value):
+    def on_value_edited(self, value, active=None):
         """called from self when the user has entered a new value or de-/activated the property
         controls need not to be set, but the owner needs to be notified and the application"""
         common.history.property_changing(self)
+        if active is not None:
+            self.deactivated = not active
         self.previous_value = self.value
         previous_modified = self.modified
         self.set(value)
@@ -144,8 +146,8 @@ class Property(object):
             if self.editing:
                 self.update_display()
             return False
-        if activate:
-            self.deactivated = False
+        if activate or force:
+            self.deactivated = not activate
         self.on_value_edited(new_value)
         if activate:
             self.activate_controls()
@@ -160,11 +162,10 @@ class Property(object):
         "Toggle the activation state"
         # active is not given when refreshing target and enabler
         if active != self.deactivated: return
-        self.deactivated = not active
         for controlname in self.CONTROLNAMES:
             if controlname=="enabler": continue
             getattr(self, controlname).Enable(active)
-        self.on_value_edited(self.value)
+        self.on_value_edited(self.value, active)
         self.activate_controls()
 
     ####################################################################################################################
@@ -732,6 +733,7 @@ class _CheckListProperty(Property):
         self._change_value(value, checked)
 
     def _change_value(self, value, checked):
+        "user has clicked checkbox or History is setting"
         if checked:
             if value in self.value_set: return
             self.value_set.add(value)

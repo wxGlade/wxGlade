@@ -45,6 +45,7 @@ adding_window = None  # the tree or the design window; used for centering dialog
 # used to call the appropriate builder function when a dropping of a widget occurs, knowing only the id of the event
 refs = {}
 
+history = None
 
 ########################################################################################################################
 # application initialization
@@ -734,7 +735,7 @@ def save_preferences():
         outfile.close()
 
 
-def load_history():
+def load_file_history():
     "Loads the file history and returns a list of paths;  @see: L{config.history_file} and L{config.use_file_history}"
     try:
         infile = codecs.open(config.history_file, encoding='utf-8')
@@ -968,146 +969,3 @@ def format_xml_attrs(**kwargs):
     res = res.strip()
     return res
 
-
-########################################################################################################################
-# history for undo/redo/repeat
-
-# use such?
-class HistoryItem(object):
-    pass
-class HistoryPropertyItem(HistoryItem):
-    pass
-class HistorySetPropertyItem(HistoryPropertyItem):
-    pass
-
-
-class History(object):
-    def __init__(self, depth=20):
-        self.actions = []
-        self.actions_redo = [] # on undo, the action is moved from actions to actions_redo
-        self.depth = depth
-        self._buffer = None
-        self._redo_widget = None # the widget that originally was modified
-        self._repeating = False
-        if config.debugging:
-            self._redo_widget = ('frame', 'sizer_1', 'button_3')
-            self.actions = [('property', ('frame', 'sizer_1', 'button_3'), 'background', 'set', (False, None, False), (False, '#00ffff', True))]
-
-    def undo(self, focused_widget):
-        pass
-
-    def redo(self, focused_widget):
-        if not self.actions_redo:
-            self.repeat(focused_widget)
-            return
-
-    def repeat(self, focused_widget):
-        "apply action to another widget"
-        if not self.actions or not self.actions[-1][0]=="property": return
-        if not self._redo_widget: return
-        path = app_tree.get_widget_path(focused_widget)
-        if path==self._redo_widget: return
-
-        self._repeating = True
-
-        # find all actions that could be repeated
-        repeat_actions = []
-        for i,action in enumerate(self.actions):
-            # ("property", path, prop.name, action, old, new )
-            if action[0]!="property": break
-            if repeat_actions and action[1]!=self._redo_widget: break
-            if action[1]==self._redo_widget:
-                if action[2] in focused_widget.properties:
-                    repeat_actions.append( action )
-
-        repeat_actions.reverse()
-
-        for action in repeat_actions:
-            # "property", path, prop.name, action, old, new
-            prop = focused_widget.properties[action[2]]
-            action_ = action[3]  # set, add or remove
-            if action_ in ("add","remove"):
-                # a CheckListProperty
-                prop._change_value(action[4], action_=="add")
-                self._repeating = False
-                return
-            deactivated, value, modified = action[5]
-            if deactivated:
-                prop.deactivated = deactivated
-                prop._check_for_user_modification(value, activate=False)
-            else:
-                prop._check_for_user_modification(value, activate=True)
-        self._repeating = False
-
-    def property_changing(self, prop):
-        "to be called when property value is still the old one"
-        value = prop.value
-        if isinstance(value, set):
-            value = set(set)  # track modifications only
-        elif isinstance(value, list):
-            value = value[:]
-        self._buffer_before = (prop.deactivated, prop.value, prop.modified)
-
-    def property_changed(self, prop, user=True):
-        "argument user: True if set by the user, False if set in dependence to another change"
-        old_deactivated, old_value, old_modified = old = self._buffer_before
-        value = prop.value
-        new = (prop.deactivated, value, prop.modified)
-        self._buffer = None
-        if new==old: return
-
-        action = "set"
-
-        if isinstance(value, set):
-            # if possible, track modifications only
-            if isinstance(self._buffer_before[0], set):
-                if value.issuperset(old_value):
-                    action = "add"
-                    value = new-old
-                elif value.issubset(old_value):
-                    action = "remove"
-                    value = old-new
-        elif isinstance(value, list):
-            value = value[:]
-
-        new = (prop.deactivated, value, prop.modified)
-        path = app_tree.get_widget_path(prop.owner)
-        self.actions.insert(0, ("property", path, prop.name, action, old, new ) )
-        if len(self.actions)>self.depth:
-            del self.actions[-1]
-        if not self._repeating:
-            self._redo_widget = path
-
-        print("UndoBuffer:")
-        for entry in self.actions:
-            print(entry)
-
-    def set_property_changed(self, prop, value, checked, user=True):
-        if checked:
-            action = "add"
-        else:
-            action = "remove"
-        path = app_tree.get_widget_path(prop.owner)
-        self.actions.insert(0, ("property", path, prop.name, action, value, checked) )
-        if not self._repeating:
-            self._redo_widget = path
-
-        print("UndoBuffer:")
-        for entry in self.actions:
-            print(entry)
-
-    def widget_added(self):
-        self.actions.append( ("widget", path, "add", xml_data))
-        pass
-
-    def widget_removing(self, widget):
-        path
-        pos
-        xml_data
-        self._buffer = xml_data
-
-    def widget_removed(self):
-        self.actions.append( ("widget", path, "remove", xml_data))
-        self._buffer = None
-
-history = History()
