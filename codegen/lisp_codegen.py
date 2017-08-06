@@ -274,6 +274,18 @@ class LispCodeWriter(BaseLangCodeWriter, wcodegen.LispMixin):
 %(tab)s(ffi:close-foreign-library "../miscellaneous/wxc-msw2.6.2.dll"))
 """
 
+    def _get_app_template(self, app, top_win):
+        # check for templates for detailed startup code
+        klass = app.klass
+        if klass and self._use_gettext:
+            return self.tmpl_gettext_detailed
+        elif klass and not self._use_gettext:
+            return self.tmpl_detailed
+        # check for templates for simple startup code
+        elif not klass and self._use_gettext:
+            return self.tmpl_gettext_simple
+        elif not klass and not self._use_gettext:
+            return self.tmpl_simple
     def init_lang(self, app_attrs):
         self.class_lines = []
 

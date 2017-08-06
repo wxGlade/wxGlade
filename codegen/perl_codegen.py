@@ -256,103 +256,61 @@ sub %(handler)s {
 
     tmpl_appfile = """%(overwrite)s%(header_lines)s"""
 
-    tmpl_detailed = """\
-package %(klass)s;
+    def _get_app_template(self, app, top_win):
+        'build template string for application'
+        
+        # XXX use Show() for frames/panels and ShowModal()/Destroy for dialogs
+        klass = app.klass
+        
+        if self._use_gettext:
+            gettext1 = ['%(tab)smy $local = Wx::Locale->new("English", "en", "en"); # replace with ??',
+                        '%(tab)s$local->AddCatalog("%(textdomain)s"); # replace with the appropriate catalog name\n']
+        else:
+            gettext1 = []
 
-use base qw(Wx::App);
-use strict;
-%(pl_import)s
-sub OnInit {
-%(tab)smy( $self ) = shift;
-
-%(tab)sWx::InitAllImageHandlers();
-
-%(tab)smy $%(top_win)s = %(top_win_class)s->new();
-
-%(tab)s$self->SetTopWindow($%(top_win)s);
-%(tab)s$%(top_win)s->Show(1);
-
-%(tab)sreturn 1;
-}
-# end of class %(klass)s
-
-package main;
-
-unless(caller){
-%(tab)smy $%(name)s = %(klass)s->new();
-%(tab)s$%(name)s->MainLoop();
-}
-"""
-
-    tmpl_gettext_detailed = """\
-package %(klass)s;
-
-use base qw(Wx::App);
-use strict;
-%(pl_import)s
-sub OnInit {
-%(tab)smy( $self ) = shift;
-
-%(tab)sWx::InitAllImageHandlers();
-
-%(tab)smy $%(top_win)s = %(top_win_class)s->new();
-
-%(tab)s$self->SetTopWindow($%(top_win)s);
-%(tab)s$%(top_win)s->Show(1);
-
-%(tab)sreturn 1;
-}
-# end of class %(klass)s
-
-package main;
-
-unless(caller){
-%(tab)smy $local = Wx::Locale->new("English", "en", "en"); # replace with ??
-%(tab)s$local->AddCatalog("%(textdomain)s"); # replace with the appropriate catalog name
-
-%(tab)smy $%(name)s = %(klass)s->new();
-%(tab)s$%(name)s->MainLoop();
-}
-"""
-
-    tmpl_simple = """\
-1;
-
-package main;
-%(pl_import)s
-unless(caller){
-%(tab)slocal *Wx::App::OnInit = sub{1};
-%(tab)smy $%(name)s = Wx::App->new();
-%(tab)sWx::InitAllImageHandlers();
-
-%(tab)smy $%(top_win)s = %(top_win_class)s->new();
-
-%(tab)s$%(name)s->SetTopWindow($%(top_win)s);
-%(tab)s$%(top_win)s->Show(1);
-%(tab)s$%(name)s->MainLoop();
-}
-"""
-
-    tmpl_gettext_simple = """\
-1;
-
-package main;
-%(pl_import)s
-unless(caller){
-%(tab)smy $local = Wx::Locale->new("English", "en", "en"); # replace with ??
-%(tab)s$local->AddCatalog("%(textdomain)s"); # replace with the appropriate catalog name
-
-%(tab)slocal *Wx::App::OnInit = sub{1};
-%(tab)smy $%(name)s = Wx::App->new();
-%(tab)sWx::InitAllImageHandlers();
-
-%(tab)smy $%(top_win)s = %(top_win_class)s->new();
-
-%(tab)s$%(name)s->SetTopWindow($%(top_win)s);
-%(tab)s$%(top_win)s->Show(1);
-%(tab)s$%(name)s->MainLoop();
-}
-"""
+        if klass:
+            ret = [ 'package %(klass)s;',
+                    '',
+                    'use base qw(Wx::App);',
+                    'use strict;',
+                    '%(pl_import)s',
+                    'sub OnInit {',
+                    '%(tab)smy( $self ) = shift;',
+                    '',
+                    '%(tab)sWx::InitAllImageHandlers();',
+                    '',
+                    '%(tab)smy $%(top_win)s = %(top_win_class)s->new();',
+                    '',
+                    '%(tab)s$self->SetTopWindow($%(top_win)s);',
+                    '%(tab)s$%(top_win)s->Show(1);',
+                    '',
+                    '%(tab)sreturn 1;',
+                    '}',
+                    '# end of class %(klass)s',
+                    '',
+                    'package main;',
+                    '',
+                    'unless(caller){'] + gettext1 + [
+                    '%(tab)smy $%(name)s = %(klass)s->new();',
+                    '%(tab)s$%(name)s->MainLoop();',
+                    '}']
+        else:
+            ret = ['1;',
+                    '',
+                    'package main;',
+                    '%(pl_import)s',
+                    'unless(caller){'] + gettext1 + [
+                    '%(tab)slocal *Wx::App::OnInit = sub{1};',
+                    '%(tab)smy $%(name)s = Wx::App->new();',
+                    '%(tab)sWx::InitAllImageHandlers();',
+                    '',
+                    '%(tab)smy $%(top_win)s = %(top_win_class)s->new();',
+                    '',
+                    '%(tab)s$%(name)s->SetTopWindow($%(top_win)s);',
+                    '%(tab)s$%(top_win)s->Show(1);',
+                    '%(tab)s$%(name)s->MainLoop();',
+                    '}']
+        return '\n'.join(ret)
 
     def init_lang(self, app_attrs):
         # initial new defaults late to use the proper indent characters
@@ -372,13 +330,13 @@ unless(caller){
             'use strict;\n'
         ]
 
-    def add_app(self, app_attrs, top_win_class):
+    def add_app(self, app_attrs, top_win):
         # add language specific mappings
         if self.multiple_files:
-            self.lang_mapping['pl_import'] = "\nuse %s;\n" % top_win_class
+            self.lang_mapping['pl_import'] = "\nuse %s;\n" % top_win.klass
         else:
             self.lang_mapping['pl_import'] = ''
-        BaseLangCodeWriter.add_app(self, app_attrs, top_win_class)
+        BaseLangCodeWriter.add_app(self, app_attrs, top_win)
 
     def generate_code_ctor(self, code_obj, is_new, tab):
         code_lines = []

@@ -212,53 +212,39 @@ class PythonCodeWriter(BaseLangCodeWriter, wcodegen.PythonMixin):
 %(import_gettext)s\
 from %(top_win_class)s import %(top_win_class)s\n\n"""
 
-    tmpl_detailed = """\
-class %(klass)s(%(cn_wxApp)s):
-%(tab)sdef OnInit(self):
-%(tab)s%(tab)sself.%(top_win)s = %(top_win_class)s(None, %(cn_wxIDANY)s, "")
-%(tab)s%(tab)sself.SetTopWindow(self.%(top_win)s)
-%(tab)s%(tab)sself.%(top_win)s.Show()
-%(tab)s%(tab)sreturn True
+    def _get_app_template(self, app, top_win):
+        'build template string for application'
+        ret = []
+        # XXX use Show() for frames/panels and ShowModal()/Destroy for dialogs
+        klass = app.klass
+        if klass:
+            # create application class
+            ret += ['class %(klass)s(%(cn_wxApp)s):',
+                    '%(tab)sdef OnInit(self):',
+                    '%(tab)s%(tab)sself.%(top_win)s = %(top_win_class)s(None, %(cn_wxIDANY)s, "")',
+                    '%(tab)s%(tab)sself.SetTopWindow(self.%(top_win)s)',
+                    '%(tab)s%(tab)sself.%(top_win)s.Show()',
+                    '%(tab)s%(tab)sreturn True',
+                    '',
+                    '# end of class %(klass)s\n']
 
-# end of class %(klass)s
+        ret.append( 'if __name__ == "__main__":' )
 
-if __name__ == "__main__":
-%(tab)s%(name)s = %(klass)s(0)
-%(tab)s%(name)s.MainLoop()"""
+        if self._use_gettext:
+            ret.append( '%(tab)sgettext.install("%(textdomain)s") # replace with the appropriate catalog name\n' )
 
-    tmpl_gettext_detailed = """\
-class %(klass)s(%(cn_wxApp)s):
-%(tab)sdef OnInit(self):
-%(tab)s%(tab)sself.%(top_win)s = %(top_win_class)s(None, %(cn_wxIDANY)s, "")
-%(tab)s%(tab)sself.SetTopWindow(self.%(top_win)s)
-%(tab)s%(tab)sself.%(top_win)s.Show()
-%(tab)s%(tab)sreturn True
-
-# end of class %(klass)s
-
-if __name__ == "__main__":
-%(tab)sgettext.install("%(textdomain)s") # replace with the appropriate catalog name
-
-%(tab)s%(name)s = %(klass)s(0)
-%(tab)s%(name)s.MainLoop()"""
-
-    tmpl_simple = """\
-if __name__ == "__main__":
-%(tab)s%(name)s = wx.PySimpleApp()
-%(tab)s%(top_win)s = %(top_win_class)s(None, %(cn_wxIDANY)s, "")
-%(tab)s%(name)s.SetTopWindow(%(top_win)s)
-%(tab)s%(top_win)s.Show()
-%(tab)s%(name)s.MainLoop()"""
-
-    tmpl_gettext_simple = """\
-if __name__ == "__main__":
-%(tab)sgettext.install("%(textdomain)s") # replace with the appropriate catalog name
-
-%(tab)s%(name)s = wx.PySimpleApp()
-%(tab)s%(top_win)s = %(top_win_class)s(None, %(cn_wxIDANY)s, "")
-%(tab)s%(name)s.SetTopWindow(%(top_win)s)
-%(tab)s%(top_win)s.Show()
-%(tab)s%(name)s.MainLoop()"""
+        if klass:
+            ret.append( '%(tab)s%(name)s = %(klass)s(0)' )
+            ret.append( '%(tab)s%(name)s.MainLoop()' )
+        else:
+            # use PySimpleApp
+            ret += ['%(tab)s%(name)s = wx.PySimpleApp()',
+                    '%(tab)s%(top_win)s = %(top_win_class)s(None, %(cn_wxIDANY)s, "")',
+                    '%(tab)s%(name)s.SetTopWindow(%(top_win)s)',
+                    '%(tab)s%(top_win)s.Show()',
+                    '%(tab)s%(name)s.MainLoop()']
+    
+        return '\n'.join(ret)
 
     def __init__(self):
         BaseLangCodeWriter.__init__(self)
@@ -266,7 +252,7 @@ if __name__ == "__main__":
     def init_lang(self, app):
         self.header_lines.append('import wx\n')
 
-    def add_app(self, app, top_win_class):
+    def add_app(self, app, top_win):
         # add language specific mappings
         self.lang_mapping = { 'cn_wxApp': self.cn('wxApp'), 'cn_wxIDANY': self.cn('wxID_ANY'), 'import_gettext': ''}
 
@@ -277,7 +263,7 @@ if __name__ == "__main__":
             else:
                 self.dependencies['import gettext\n'] = 1
 
-        BaseLangCodeWriter.add_app(self, app, top_win_class)
+        BaseLangCodeWriter.add_app(self, app, top_win)
 
     def generate_code_ctor(self, code_obj, is_new, tab):
         code_lines = []
