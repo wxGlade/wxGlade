@@ -648,8 +648,6 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
         if not app.top_window or not self.app_name:
             return
 
-        tmpl = self._get_app_template(app, top_win)
-
         # map to substitute template variables
         self.app_mapping = {'comment_sign': self.comment_sign,
                             'header_lines': ''.join(self.header_lines),
@@ -664,6 +662,8 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
         if self.lang_mapping:
             self.app_mapping.update(self.lang_mapping)
 
+        # get and fill language dependent template
+        tmpl = self._get_app_template(app, top_win)
         code = tmpl % self.app_mapping
 
         if self.multiple_files:

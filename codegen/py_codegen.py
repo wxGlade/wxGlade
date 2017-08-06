@@ -215,15 +215,23 @@ from %(top_win_class)s import %(top_win_class)s\n\n"""
     def _get_app_template(self, app, top_win):
         'build template string for application'
         ret = []
-        # XXX use Show() for frames/panels and ShowModal()/Destroy for dialogs
+
         klass = app.klass
         if klass:
             # create application class
+            if top_win and top_win.base=="wxDialog":
+                # use ShowModal()/Destroy for dialogs
+                show_code = ['%(tab)s%(tab)sself.%(top_win)s.ShowModal()',
+                            '%(tab)s%(tab)sself.%(top_win)s.Destroy()']
+            else:
+                # use Show() for other toplevel windows
+                show_code = ['%(tab)s%(tab)sself.%(top_win)s.Show()']
+            
             ret += ['class %(klass)s(%(cn_wxApp)s):',
                     '%(tab)sdef OnInit(self):',
                     '%(tab)s%(tab)sself.%(top_win)s = %(top_win_class)s(None, %(cn_wxIDANY)s, "")',
-                    '%(tab)s%(tab)sself.SetTopWindow(self.%(top_win)s)',
-                    '%(tab)s%(tab)sself.%(top_win)s.Show()',
+                    '%(tab)s%(tab)sself.SetTopWindow(self.%(top_win)s)'
+                    ] + show_code + [
                     '%(tab)s%(tab)sreturn True',
                     '',
                     '# end of class %(klass)s\n']
@@ -238,10 +246,16 @@ from %(top_win_class)s import %(top_win_class)s\n\n"""
             ret.append( '%(tab)s%(name)s.MainLoop()' )
         else:
             # use PySimpleApp
+            if top_win and top_win.base=="wxDialog":
+                show_code = ['%(tab)s%(top_win)s.ShowModal()',
+                             '%(tab)s%(top_win)s.Destroy()']
+            else:
+                show_code = ['%(tab)s%(top_win)s.Show()']
+
             ret += ['%(tab)s%(name)s = wx.PySimpleApp()',
                     '%(tab)s%(top_win)s = %(top_win_class)s(None, %(cn_wxIDANY)s, "")',
-                    '%(tab)s%(name)s.SetTopWindow(%(top_win)s)',
-                    '%(tab)s%(top_win)s.Show()',
+                    '%(tab)s%(name)s.SetTopWindow(%(top_win)s)'
+                    ] + show_code + [
                     '%(tab)s%(name)s.MainLoop()']
     
         return '\n'.join(ret)
