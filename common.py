@@ -388,7 +388,7 @@ def save_file(filename, content, which='wxg'):
         outfile = open(filename, 'wb')
         for line in content:
             if sys.platform.startswith("win"):
-                line.replace(b"\n", b"\r\n")
+                line = line.replace(b"\n", b"\r\n")
             outfile.write(line)
         outfile.close()
     finally:
