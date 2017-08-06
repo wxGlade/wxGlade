@@ -248,6 +248,19 @@ def check_wx_version(major, minor=0, release=0, revision=0):
     return wx.VERSION[:-1] >= (major, minor, release, revision)
 
 
+
+########################################################################################################################
+# error/warning/info messages
+def error_message(msg, title="Error", display_traceback=False):
+    wx.MessageBox( _(msg), _(title), wx.OK | wx.CENTRE | wx.ICON_ERROR )
+
+def info_message(msg, title="Information"):
+    wx.MessageBox( _(msg), _(title), wx.OK | wx.CENTRE | wx.ICON_INFORMATION )
+
+def warning_message(msg, title="Warning"):
+    wx.MessageBox( _(msg), _(title), wx.OK | wx.CENTRE | wx.ICON_WARNING )
+
+
 ########################################################################################################################
 # menu helpers
 
@@ -305,6 +318,7 @@ def exec_after(func, *args, **kwargs):
 
 ########################################################################################################################
 # key handlers
+import clipboard
 
 def _remove():
     global focused_widget
@@ -315,19 +329,17 @@ def _remove():
 
 def _cut():
     global focused_widget
-    if focused_widget is None or not hasattr(focused_widget, "clipboard_cut"): return
-    focused_widget.clipboard_cut()
-    focused_widget = None
+    if focused_widget is None: return
+    clipboard.cut(focused_widget)
+    #focused_widget = None
 
 def _copy():
-    global focused_widget
-    if focused_widget is None or not hasattr(focused_widget, "clipboard_copy"): return
-    focused_widget.clipboard_copy()
+    if focused_widget is None: return
+    clipboard.copy(focused_widget)
 
 def _paste():
-    global focused_widget
-    if focused_widget is None or not hasattr(focused_widget, "clipboard_paste"): return
-    focused_widget.clipboard_paste()
+    if focused_widget is None: return
+    clipboard.paste(focused_widget)
 
 
 def _insert():

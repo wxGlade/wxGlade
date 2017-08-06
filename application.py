@@ -562,18 +562,15 @@ class Application(np.PropertyOwner):
         misc.bind_menu_item_after(widget, i, self.generate_code)  # a property, but it can be called
         return menu
 
-    def check_drop_compatibility(self):
-        return False
+    def check_drop_compatibility(self, widget):
+        return (False,None)
 
-    def check_compatibility(self, widget, report=False):
-        return getattr(widget, "_is_toplevel", False)
+    def check_compatibility(self, widget, typename=None):
+        if getattr(widget, "_is_toplevel", False) or typename=="window":
+            return (True, None)
+        return (False, "Only toplevel widgets can be pasted here (e.g. Frame or Dialog)")
 
-    def clipboard_paste(self, event=None, clipboard_data=None):
+    def clipboard_paste(self, clipboard_data):
         "Insert a widget from the clipboard to the current destination"
-        import xml_parse
         import clipboard
-        try:
-            if clipboard.paste(None, None, 0, clipboard_data):
-                common.app_tree.app.saved = False
-        except xml_parse.XmlParsingError:
-            self._logger.warning( _('WARNING: paste failed') )
+        return clipboard._paste(None, None, 0, clipboard_data)

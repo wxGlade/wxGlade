@@ -275,7 +275,7 @@ class SizerSlot(np.PropertyOwner):
 
         # edit: paste
         i = misc.append_menu_item(menu, -1, _('Paste\tCtrl+V'), wx.ART_PASTE)
-        misc.bind_menu_item_after(widget, i, self.clipboard_paste)
+        misc.bind_menu_item_after(widget, i, clipboard.paste, self)
         if not clipboard.check("widget","sizer"): i.Enable(False)
         menu.AppendSeparator()
 
@@ -393,35 +393,31 @@ class SizerSlot(np.PropertyOwner):
         return True
 
     # clipboard handling ###############################################################################################
-    def check_compatibility(self, widget, typename=None, report=False):
+    def check_compatibility(self, widget, typename=None):
         "check whether widget can be pasted here"
         if typename is not None:
             if typename=="sizer" and self.sizer.is_virtual():
-                return False
+                return (False, "No sizer can be pasted here")
             if typename=="window":
-                return False
-            return True
+                return (False, "No toplevel object can be pasted here.")
+            return (True,None)
 
         if getattr(widget, "_is_toplevel", False):
-            return False
+            return (False, "No toplevel object can be pasted here.")
         if self.sizer.is_virtual() and isinstance(widget, Sizer):
             # e.g. a sizer dropped on a splitter window slot; instead, a panel would be required
-            return False
-        return True
+            return (False, "No sizer can be pasted here")
+        return (True,None)
 
-    def clipboard_paste(self, event=None, clipboard_data=None):
+    def clipboard_paste(self, clipboard_data):
         "Insert a widget from the clipboard to the current destination"
-        if self.widget: self.widget.Hide()
-        if clipboard.paste(self.parent, self.sizer, self.pos, clipboard_data):
-            common.app_tree.app.saved = False
-        else:
-            if self.widget: self.widget.Show()
+        return clipboard._paste(self.parent, self.sizer, self.pos, clipboard_data)
 
     def on_select_and_paste(self, *args):
         "Middle-click event handler: selects the slot and, if the clipboard is not empty, pastes its content here"
         misc.focused_widget = self
         self.widget.SetFocus()
-        self.clipboard_paste()
+        clipboard.paste(self)
     ####################################################################################################################
 
     def delete(self):
@@ -771,15 +767,16 @@ class SizerBase(Sizer, np.PropertyOwner):
         np.PropertyOwner.properties_changed(self, modified)
 
     def check_drop_compatibility(self):
-        return False
+        return (False,None)
 
-    def check_compatibility(self, widget, typename=None, report=False):
+    def check_compatibility(self, widget, typename=None):
         if typename is not None:
             if typename in ("widget","sizer"):
-                return "AddSlot"
-            return False
-        if getattr(widget, "_is_toplevel", False): return False
-        return "AddSlot" # a slot is to be added before inserting/pasting
+                return ("AddSlot",None)
+            return (False,"Only widgets and sizers can be pasted here")
+        if getattr(widget, "_is_toplevel", False):
+            return (False,"No toplevel objects can be pasted here")
+        return ("AddSlot",None) # a slot is to be added before inserting/pasting
 
     # popup menu #######################################################################################################
     def popup_menu(self, event, pos=None):
@@ -818,9 +815,9 @@ class SizerBase(Sizer, np.PropertyOwner):
             menu.AppendSeparator()
 
         i = misc.append_menu_item( menu, -1, _('Copy\tCtrl+C'), wx.ART_COPY )
-        misc.bind_menu_item_after(widget, i, self.clipboard_copy)
+        misc.bind_menu_item_after(widget, i, clipboard.copy, self)
         i = misc.append_menu_item( menu, -1, _('Cut\tCtrl+X'), wx.ART_CUT )
-        misc.bind_menu_item_after(widget, i, self.clipboard_cut)
+        misc.bind_menu_item_after(widget, i, clipboard.cut, self)
 
         # preview (create or close?)
         menu.AppendSeparator()
@@ -1119,7 +1116,7 @@ class SizerBase(Sizer, np.PropertyOwner):
                 self.widget.Add(slot.widget, 1, wx.EXPAND)
             else:
                 self._check_slots(remove_only=True)  # the added slot could be hidden
-                self.widget.Add(slot.widget, slot.pos, (1,1), wx.EXPAND)
+                self.widget.Add( slot.widget, slot.pos, slot.span, slot.flag, slot.border )
             self.widget.SetItemMinSize(slot.widget, 20, 20)
 
     def _insert_slot(self, pos=None, select=True):
@@ -1214,14 +1211,6 @@ class SizerBase(Sizer, np.PropertyOwner):
     ####################################################################################################################
     def is_visible(self):
         return self.window.is_visible()
-
-    def clipboard_copy(self, event=None):
-        "Store a widget copy into the clipboard, @see: L{clipboard.copy()}"
-        clipboard.copy(self)
-
-    def clipboard_cut(self, event=None):
-        "Store a copy of self into the clipboard and delete the widget, @see: L{clipboard.cut()}"
-        return clipboard.cut(self)
 
     def post_load(self):
         """Called after loading of an app from a XML file, before showing the hierarchy of widget for the first time.
