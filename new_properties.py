@@ -1854,7 +1854,7 @@ class GridProperty(Property):
         # resize last column to fill the space
         if not self.grid: return
         if self._width_delta is None:
-            self._width_delta = self.grid.GetParent().GetSize()[0] - self.grid.GetSize()[0]
+            self._width_delta = self.grid.GetParent().GetSize()[0] - self.grid.GetSize()[0] + 30
         self.grid.SetColSize(1, 10)
         col_widths = 0
         for n in range(len(self.col_defs)-1):

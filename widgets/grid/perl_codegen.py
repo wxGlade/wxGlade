@@ -8,7 +8,7 @@ Perl generator functions for wxGrid objects
 
 import common
 import wcodegen
-from .codegen import _check_label
+from .codegen import _check_col_label, _check_row_label
 
 
 class PerlCodeGenerator(wcodegen.PerlWidgetCodeWriter):
@@ -37,8 +37,9 @@ class PerlCodeGenerator(wcodegen.PerlWidgetCodeWriter):
 
         if not obj.create_grid: return []
 
-        columns = obj.columns # prop.get('columns', [['A', '-1']])
-        out.append( '%s->CreateGrid(%s, %s);\n' % (name, obj.rows_number, len(columns)) )
+        rows = obj.rows
+        columns = obj.columns
+        out.append( '%s->CreateGrid(%s, %s);\n' % (name, len(rows), len(columns)) )
 
         if obj.check_prop('row_label_size'): out.append( '%s->SetRowLabelSize(%s);\n' % (name, obj.row_label_size) )
         if obj.check_prop('col_label_size'): out.append( '%s->SetColLabelSize(%s);\n' % (name, obj.col_label_size) )
@@ -59,15 +60,22 @@ class PerlCodeGenerator(wcodegen.PerlWidgetCodeWriter):
         if sel_mode and sel_mode != 'wxGrid.wxGridSelectCells':
             out.append( '%s->SetSelectionMode(%s);\n' % (name, sel_mode.replace('wxGrid.','')) )
 
-        i = 0
-        for label, size in columns:
-            if _check_label(label, i):
+        # set columns
+        for i, (label, size) in enumerate(columns):
+            if _check_col_label(label, i):
                 out.append( '%s->SetColLabelValue(%s, %s);\n' % (name, i, self.codegen.quote_str(label)) )
             try:
                 if int(size) > 0:
                     out.append( '%s->SetColSize(%s, %s);\n' % (name, i, size) )
             except ValueError: pass
-            i += 1
+        # set rows
+        for i, (label, size) in enumerate(rows):
+            if _check_row_label(label, i):
+                out.append( '%s->SetRowLabelValue(%s, %s);\n' % (name, i, self.codegen.quote_str(label)) )
+            try:
+                if int(size) > 0:
+                    out.append( '%s->SetRowSize(%s, %s);\n' % (name, i, size) )
+            except ValueError: pass
 
         out.extend(self.codegen.generate_common_properties(obj))
         return out

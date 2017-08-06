@@ -9,7 +9,7 @@ Lisp generator functions for wxGrid objects
 
 import common
 import wcodegen
-from .codegen import _check_label
+from .codegen import _check_col_label, _check_row_label
 
 
 class LispCodeGenerator(wcodegen.LispWidgetCodeWriter):
@@ -34,8 +34,9 @@ class LispCodeGenerator(wcodegen.LispWidgetCodeWriter):
 
         if not obj.create_grid: return []
 
-        columns = obj.columns # prop.get('columns', [['A', '-1']])
-        out.append('(wxGrid_CreateGrid (slot-%s obj) %s %s 0)\n' % (name, obj.rows_number, len(columns)))
+        rows = obj.rows
+        columns = obj.columns
+        out.append('(wxGrid_CreateGrid (slot-%s obj) %s %s 0)\n' % (name, len(rows), len(columns)))
         
         if obj.check_prop('row_label_size'):  out.append('(wxGrid_SetRowLabelSize (slot-%s obj) %s)\n' % (name, obj.row_label_size))
         if obj.check_prop('col_label_size'):  out.append('(wxGrid_SetColLabelSize (slot-%s obj) %s)\n' % (name, obj.col_label_size))
@@ -56,15 +57,22 @@ class LispCodeGenerator(wcodegen.LispWidgetCodeWriter):
         if sel_mode and sel_mode != 'wxGrid.wxGridSelectCells':
             out.append('(wxGrid_SetSelectionMode (slot-%s obj) %s)\n' % (name, sel_mode.replace('wxGrid.','')))
 
-        i = 0
-        for label, size in columns:
-            if _check_label(label, i):
+        # set columns
+        for i, (label, size) in enumerate(columns):
+            if _check_col_label(label, i):
                 out.append('(wxGrid_SetColLabelValue (slot-%s obj) %s %s)\n' % (name, i, self.codegen.quote_str(label)))
             try:
                 if int(size) > 0:
                     out.append('(wxGrid_SetColSize (slot-%s obj) %s %s)\n' % (name, i, size))
             except ValueError: pass
-            i += 1
+        # set rows
+        for i, (label, size) in enumerate(rows):
+            if _check_row_label(label, i):
+                out.append('(wxGrid_SetRowLabelValue (slot-%s obj) %s %s)\n' % (name, i, self.codegen.quote_str(label)))
+            try:
+                if int(size) > 0:
+                    out.append('(wxGrid_SetRowSize (slot-%s obj) %s %s)\n' % (name, i, size))
+            except ValueError: pass
 
         out.extend(self.codegen.generate_common_properties(obj))
         return out
