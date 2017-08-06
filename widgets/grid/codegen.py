@@ -12,8 +12,8 @@ import wcodegen
 from wcodegen.taghandler import BaseCodeWriterTagHandler
 
 
-def _check_label(label, col):
-    """Checks if 'label' is not the default one for the columns 'col':
+def _check_col_label(label, col):
+    """Checks if 'label' is not the default one for the column 'col':
     returns True if the label is a custom one, False otherwise"""
     # build the default value
     s = []
@@ -24,6 +24,12 @@ def _check_label(label, col):
     s.reverse()
     # then compare it with label
     return label != "".join(s)
+
+def _check_row_label(label, row):
+    """Checks if 'label' is not the default one for the row:
+    returns True if the label is a custom one, False otherwise"""
+    # build the default value
+    return label != str(row)
 
 
 class PythonCodeGenerator(wcodegen.PythonWidgetCodeWriter):
@@ -57,8 +63,9 @@ class PythonCodeGenerator(wcodegen.PythonWidgetCodeWriter):
 
         if not obj.create_grid: return []
 
-        columns = obj.columns # prop.get('columns', [['A', '-1']])
-        out.append('%s.CreateGrid(%s, %s)\n' % (name, obj.rows_number, len(columns)))
+        rows = obj.rows
+        columns = obj.columns
+        out.append('%s.CreateGrid(%s, %s)\n' % (name, len(rows), len(columns)))
 
         if obj.check_prop('row_label_size'): out.append( '%s.SetRowLabelSize(%s)\n' % (name, obj.row_label_size) )
         if obj.check_prop('col_label_size'): out.append( '%s.SetColLabelSize(%s)\n' % (name, obj.col_label_size) )
@@ -86,15 +93,23 @@ class PythonCodeGenerator(wcodegen.PythonWidgetCodeWriter):
                 sel_mode = sel_mode.replace('wxGrid.wxGrid','')
             out.append('%s.SetSelectionMode(%s)\n' % (name, self.cn('wxGrid') + "." + sel_mode))
 
-        i = 0
-        for label, size in columns:
-            if _check_label(label, i):
+        # set columns
+        for i, (label, size) in enumerate(columns):
+            if _check_col_label(label, i):
                 out.append( '%s.SetColLabelValue(%s, %s)\n' % (name, i, self.codegen.quote_str(label)) )
             try:
                 if int(size) > 0:
                     out.append( '%s.SetColSize(%s, %s)\n' % (name, i, size) )
             except ValueError: pass
-            i += 1
+
+        # set rows
+        for i, (label, size) in enumerate(rows):
+            if _check_row_label(label, i):
+                out.append( '%s.SetRowLabelValue(%s, %s)\n' % (name, i, self.codegen.quote_str(label)) )
+            try:
+                if int(size) > 0:
+                    out.append( '%s.SetRowSize(%s, %s)\n' % (name, i, size) ).s
+            except ValueError: pass
 
         out.extend(self.codegen.generate_common_properties(obj))
         return out
@@ -122,8 +137,9 @@ class CppCodeGenerator(wcodegen.CppWidgetCodeWriter):
         if not obj.create_grid:
             return []
 
-        columns = obj.columns # prop.get('columns', [['A', '-1']])
-        out.append('%s->CreateGrid(%s, %s);\n' % (name, obj.rows_number, len(columns)))
+        rows = obj.rows
+        columns = obj.columns
+        out.append('%s->CreateGrid(%s, %s);\n' % (name, len(rows), len(columns)))
         
         if obj.check_prop('row_label_size'): out.append('%s->SetRowLabelSize(%s);\n' % (name, obj.row_label_size))
         if obj.check_prop('col_label_size'): out.append('%s->SetColLabelSize(%s);\n' % (name, obj.col_label_size))
@@ -146,9 +162,9 @@ class CppCodeGenerator(wcodegen.CppWidgetCodeWriter):
         if sel_mode and sel_mode != 'wxGrid::wxGridSelectCells':
             out.append('%s->SetSelectionMode(%s);\n' % (name, sel_mode))
 
-        i = 0
-        for label, size in columns:
-            if _check_label(label, i):
+        # set columns
+        for i, (label, size) in enumerate(columns):
+            if _check_col_label(label, i):
                 out.append('%s->SetColLabelValue(%s, %s);\n' % (name, i, self.codegen.quote_str(label)))
             try:
                 if int(size) > 0:
@@ -156,6 +172,15 @@ class CppCodeGenerator(wcodegen.CppWidgetCodeWriter):
             except ValueError:
                 pass
             i += 1
+        # set rows
+        for i, (label, size) in enumerate(rows):
+            if _check_row_label(label, i):
+                out.append('%s->SetRowLabelValue(%s, %s);\n' % (name, i, self.codegen.quote_str(label)))
+            try:
+                if int(size) > 0:
+                    out.append('%s->SetRowSize(%s, %s);\n' % (name, i, size))
+            except ValueError:
+                pass
 
         out.extend(self.codegen.generate_common_properties(obj))
         return out
@@ -166,7 +191,7 @@ def xrc_code_generator(obj):
     xrcgen = common.code_writers['XRC']
 
     class GridXrcObject(xrcgen.DefaultXrcObject):
-        unsupported = set(['columns', 'create_grid', 'rows_number', 'row_label_size', 'col_label_size',
+        unsupported = set(['columns', 'create_grid', 'rows', 'row_label_size', 'col_label_size',
                            'enable_editing', 'enable_grid_lines', 'enable_col_resize', 'enable_row_resize',
                            'enable_grid_resize', 'lines_color', 'label_bg_color', 'selection_mode'])
 

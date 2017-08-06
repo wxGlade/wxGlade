@@ -9,7 +9,7 @@ wxGrid objects
 
 import wx
 from wx.grid import *
-import common, misc
+import common, misc, compat
 from edit_windows import ManagedBase
 from tree import Node
 import new_properties as np
@@ -77,12 +77,78 @@ class ColsHandler(BaseXmlBuilderTagHandler):
         return False
 
 
+class GridRowsProperty(np.GridProperty):
+    def _get_label(self, row):
+        return str(row)
+
+    def load(self, value, activate=None, deactivate=None, notify=False):
+        if isinstance(value, compat.unicode):
+            value =  [[str(n),'-1'] for n in range(int(value))]
+        np.GridProperty.load(self, value, activate, deactivate, notify)
+
+    def write(self, output, tabs):
+        is_default = True
+        inner_xml = []
+        for i, (label, size) in enumerate(self.get()):
+            if size!="-1" or label!=str(i): is_default=False
+            inner_xml += common.format_xml_tag(u'row', label, tabs+1, size=size)
+        if not is_default:
+            # actually write labels and sizes
+            output.extend( common.format_xml_tag(u'rows', inner_xml, tabs, is_xml=True) )
+        else:
+            # just write the number of rows
+            output.extend( common.format_xml_tag(u'rows_number', str(i+1), tabs) )
+
+    def add_row(self, event):
+        np.GridProperty.add_row(self, event)
+        rows = self.grid.NumberRows
+        label = self._get_label(rows-1)
+        self.grid.SetCellValue(rows-1, 0, label)
+        # take the default row width from the previous row
+        col_width = -1 if rows==1 else int(self.grid.GetCellValue(rows-2, 1))
+        self.grid.SetCellValue(rows-1, 1, str(col_width))
+        self.editing_values[-1] = [label, col_width]
+
+    def insert_row(self, event):
+        np.GridProperty.insert_row(self, event)
+        label = self._get_label(self.cur_row)
+        self.grid.SetCellValue(self.cur_row, 0, label)
+        # take the default row width from the previous row
+        col_width = -1 if self.cur_row<1 else int(self.grid.GetCellValue(self.cur_row-1, 1))
+        self.grid.SetCellValue(self.cur_row, 1, str(col_width))
+        self.editing_values[self.cur_row] = [label, col_width]
+
+
+
+class RowsHandler(BaseXmlBuilderTagHandler):
+    # for XML import
+    def __init__(self, parent):
+        super(RowsHandler, self).__init__()
+        self.parent = parent
+        self.rows = []
+        self.curr_col = []
+        self.curr_size = '-1'
+
+    def start_elem(self, name, attrs):
+        if name == 'row':
+            self.curr_size = attrs.get('size', '-1')
+
+    def end_elem(self, name):
+        if name == 'rows':
+            self.parent.properties['rows'].set(self.rows)
+            self.parent.properties_changed(["rows"])
+            return True
+        elif name == 'row':
+            char_data = self.get_char_data()
+            self.rows.append([char_data, self.curr_size])
+        return False
+
 
 class EditGrid(ManagedBase):
 
-    _PROPERTIES =["Widget", 'create_grid', 'columns', 'rows_number', 'row_label_size', 'col_label_size',
+    _PROPERTIES =["Widget", 'create_grid', 'row_label_size', 'col_label_size',
                   'enable_editing', 'enable_grid_lines', 'enable_col_resize', 'enable_row_resize', 'enable_grid_resize',
-                  'lines_color', 'label_bg_color', 'selection_mode']
+                  'lines_color', 'label_bg_color', 'selection_mode', 'columns', 'rows']
     PROPERTIES = ManagedBase.PROPERTIES + _PROPERTIES + ManagedBase.EXTRA_PROPERTIES
     _PROPERTY_HELP = {"create_grid":"The following properties are meaningful only if 'Create grid' is selected",
                       "columns":"Enter \\\\n for a line break in the label",
@@ -100,7 +166,10 @@ class EditGrid(ManagedBase):
         self.create_grid = np.CheckBoxProperty(True)
         columns = [['A', '-1'], ['B', '-1'], ['C', '-1']]
         self.columns = GridColsProperty( columns, [('Label', np.GridProperty.STRING), ('Size', np.GridProperty.INT)] )
-        self.rows_number        = np.SpinProperty(10, immediate=True)
+        rows =  [[str(n),'-1'] for n in range(10)]
+        self.rows = GridRowsProperty( rows, [('Label', np.GridProperty.STRING), ('Size', np.GridProperty.INT)] )
+        self.properties["rows_number"] = self.properties["rows"]  # backward compatibility
+        #self.rows_number        = np.SpinProperty(10, immediate=True)
         self.row_label_size     = np.SpinPropertyD(30, default_value=30, immediate=True)
         self.col_label_size     = np.SpinPropertyD(30, default_value=30, immediate=True)
 
@@ -118,7 +187,8 @@ class EditGrid(ManagedBase):
 
     def create_widget(self):
         self.widget = Grid(self.parent.widget, self.id, (200, 200))
-        self.widget.CreateGrid(self.rows_number, len(self.columns))
+        #self.widget.CreateGrid(self.rows_number, len(self.columns))
+        self.widget.CreateGrid(len(self.rows), len(self.columns))
 
         # read default colors from created widget
         default_background = misc.color_to_string( self.widget.GetLabelBackgroundColour() )
@@ -175,17 +245,29 @@ class EditGrid(ManagedBase):
             if   delta>0: self.widget.AppendCols(delta)
             elif delta<0: self.widget.DeleteCols(0, -delta)
             # set column widths and labels
-            for i, (label,size) in enumerate(self.columns):
+            for i, (label,size) in enumerate(columns):
                 size = int(size or "0") 
                 if size>0:
                     self.widget.SetColSize(i, size)
                 self.widget.SetColLabelValue(i, label.replace('\\n', '\n'))
-        if m("rows_number"):  # adjust number of rows
-            rows_number = self.rows_number
-            if rows_number>=0:
-                delta = rows_number - self.widget.GetNumberRows()  # the number of rows to be added
-                if   delta>0: self.widget.AppendRows(delta)
-                elif delta<0: self.widget.DeleteRows(rows_number, -delta)
+        if m("rows"):
+            rows = self.rows
+            # adjust number of columns
+            delta = len(rows) - self.widget.GetNumberRows()
+            if   delta>0: self.widget.AppendRows(delta)
+            elif delta<0: self.widget.AppendRows(0, -delta)
+            # set column widths and labels
+            for i, (label,size) in enumerate(rows):
+                size = int(size or "0") 
+                if size>0:
+                    self.widget.SetRowSize(i, size)
+                self.widget.SetRowLabelValue(i, label.replace('\\n', '\n'))
+        #if m("rows_number"):  # adjust number of rows
+            #rows_number = self.rows_number
+            #if rows_number>=0:
+                #delta = rows_number - self.widget.GetNumberRows()  # the number of rows to be added
+                #if   delta>0: self.widget.AppendRows(delta)
+                #elif delta<0: self.widget.DeleteRows(rows_number, -delta)
         
         self.widget.ForceRefresh()
 
@@ -195,6 +277,7 @@ class EditGrid(ManagedBase):
 
     def get_property_handler(self, name):
         if name == 'columns': return ColsHandler(self)
+        if name == 'rows': return RowsHandler(self)
         return ManagedBase.get_property_handler(self, name)
 
 
