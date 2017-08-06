@@ -1417,10 +1417,14 @@ class ComboBoxProperty(TextProperty):
             self.value = ""
         if not self.editing: return
         # update choices, but keep current selection, if possible
+        self.text.SetItems(self.choices)
         if self.value in self.choices:
-            if self.editing: self.text.SetStringSelection(self.value)
-        else:
-            if self.editing: self.text.SetSelection(-1)
+            self.text.SetStringSelection(self.value)
+            self.text.Enable()
+            return
+        self.text.SetSelection(-1)
+        if not self.choices:
+            self.text.Disable()
 
     def add_choice(self, choice):
         self.choices.append(choice)
