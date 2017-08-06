@@ -609,7 +609,7 @@ class WidgetTree(wx.TreeCtrl, Tree):
 
     def remove(self, node=None, delete=True):
         self.app.saved = False  # update the status of the app
-        set_focus = self.current is node.widget
+        set_focus = self.current and ( self.current is node.widget or self.current.has_ancestor(node) )
         Tree.remove(self, node)
         if node is not None:
             if delete:
