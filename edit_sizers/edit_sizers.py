@@ -1203,8 +1203,6 @@ class SizerBase(Sizer, np.PropertyOwner):
             else:
                 self.widget.Add( slot.widget, pos, slot.span, slot.flag, slot.border )
                 self._check_slots(add_only=True)
-            # detach is not needed here any more, as change_node does this already
-            #self.widget.Detach(pos-1) # does only remove from sizer, but not destroy item
             if force_layout:
                 self.layout()
         return slot
