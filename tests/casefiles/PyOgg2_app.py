@@ -17,5 +17,6 @@ if __name__ == "__main__":
     PyOgg2_app = wx.PySimpleApp()
     Mp3_To_Ogg = PyOgg2_MyDialog(None, wx.ID_ANY, "")
     PyOgg2_app.SetTopWindow(Mp3_To_Ogg)
-    Mp3_To_Ogg.Show()
+    Mp3_To_Ogg.ShowModal()
+    Mp3_To_Ogg.Destroy()
     PyOgg2_app.MainLoop()
