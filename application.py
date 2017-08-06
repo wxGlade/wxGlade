@@ -113,10 +113,10 @@ class Application(np.PropertyOwner):
         # initialise instance properties
         self.is_template = np.Property(False)  # hidden property
         # name and derived class name, including validation
-        self.name  = np.TextPropertyD("app",   default_value="")
-        self.klass = np.TextPropertyD("MyApp", default_value="", name="class")
+        self.name  = np.TextPropertyA("app",   default_value="")
+        self.klass = np.TextPropertyA("MyApp", default_value="", name="class")
         self.properties["name"].validation_re = re.compile(r'^[a-zA-Z]+[\w0-9-]*$')
-        self.properties["name"].validation_re = re.compile(r'^[a-zA-Z]+[\w:.0-9-]*$')
+        self.properties["class"].validation_re = re.compile(r'^[a-zA-Z]+[\w:.0-9-]*$')
 
         # generate separate file for each class?
         labels   = [_("Single file"),                       _("Separate file for each class") ]
@@ -301,8 +301,8 @@ class Application(np.PropertyOwner):
     def reset(self):
         "resets the default values of the attributes of the app"""
         p = self.properties
-        p["class"].set("MyApp", deactivate=True)
-        p["name" ].set("app",   deactivate=True)
+        p["class"].set("MyApp", activate=True)
+        p["name" ].set("app",   activate=True)
         p["multiple_files"].set( config.default_multiple_files )
         p["indent_mode"].set(1)
         p["indent_amount"].set(config.default_indent_amount)
