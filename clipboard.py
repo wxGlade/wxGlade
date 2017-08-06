@@ -8,7 +8,7 @@ Support for cut & paste of wxGlade widgets
 """
 
 import logging, os.path
-import compat, common, misc
+import compat, common, config, misc
 import edit_sizers
 
 import wx
@@ -26,7 +26,8 @@ sizer_data_format  = DataFormat("wxglade.sizer")   # a serialized sizer
 window_data_format = DataFormat("wxglade.window")  # a toplevel window
 
 
-_current_drag_source = None
+_current_drag_source = None  # reference to drag start; used when dragging within application
+
 def set_drag_source(widget=None):
     # to be called when a drag operation starts or ends
     global _current_drag_source
@@ -84,34 +85,32 @@ class DropTarget(wx.DropTarget):
     def _check_compatibility(self, x,y):
         # check whether the dragged item is compatible to the widget at position (x,y)
         widget = self.window.find_widget_by_pos(x,y)
-        if widget is None: return False
+        if widget is None:
+            return (False, "No widget found")
 
         if getattr(widget,"sizer",None) and widget.sizer._IS_GRIDBAG and not isinstance(widget, edit_sizers.SizerSlot):
             # for GridBagSizer we have cells, so we don't shift items
-            return False
+            return (False, "Can only paste into empty slots")
 
         if _current_drag_source is not None:
             # drag within application: avoid dragging of an item on itself or it's child
-            if widget.node is _current_drag_source.node:            return False
-            if widget.node.has_ancestor(_current_drag_source.node): return False
-            return widget.check_compatibility(_current_drag_source, report=False)
+            if widget.node is _current_drag_source.node:            return (False, "Can't paste item on itself")
+            if widget.node.has_ancestor(_current_drag_source.node): return (False, "Can't paste item into itself")
+            return widget.check_compatibility(_current_drag_source)
 
         # drag from outside
         fmt = self._get_received_format().split(".")[-1]
-        return widget.check_compatibility(None, fmt, report=False)
+        return widget.check_compatibility(None, fmt)
 
     def OnDragOver(self, x,y, default):
         # continuously called while the mouse is over the target should return the desired operation or wx.DragNone
         # check only if position changed
-        if self._last_check and x==self._last_check[0] and y==self._last_check[1]:
-            compatible = self._last_check[2]
-        else:
-            compatible = self._check_compatibility(x, y)
-            self._last_check = (x,y,compatible)
-        return compatible and default or wx.DragNone
+        if not self._last_check or x!=self._last_check[0] or y!=self._last_check[1]:
+            self._last_check = (x,y, self._check_compatibility(x, y)[0] )
+        return self._last_check[2] and default or wx.DragNone
 
     def OnData(self, x,y,default):
-        compatible = self._check_compatibility(x,y)
+        compatible, message = self._check_compatibility(x,y)
         if not compatible: return wx.DragCancel
 
         dst_widget = self.window.find_widget_by_pos(x,y)
@@ -151,7 +150,7 @@ class DropTarget(wx.DropTarget):
         if _current_drag_source and not copy:
             src_widget.remove()
 
-        dst_widget.clipboard_paste(None, data)
+        dst_widget.clipboard_paste(data)
         common.app_tree.expand(dst_node)
         return default
 
@@ -232,45 +231,58 @@ def cut(widget):
         return False
 
 
-def paste(parent, sizer, pos, clipboard_data=None):
+#def paste(parent, sizer, pos, clipboard_data=None):
+def paste(widget):
     """Copies a widget (and all its children) from the clipboard to the given
-    destination (parent, sizer and position inside the sizer). Returns True on success.
+    destination (parent, sizer and position inside the sizer). Returns True on success."""
+    error = None
+    if not wx.TheClipboard.Open():
+        misc.error_message( "Clipboard can't be opened." )
+        return False
 
-    parent: Parent widget of the widget to add
-    sizer: Sizer to place widget in
-    pos: Position inside the sizer"""
-    if clipboard_data is None:
-        if wx.TheClipboard.Open():
-            try:
-                if wx.TheClipboard.IsSupported(widget_data_format):
-                    data_object = wx.CustomDataObject(widget_data_format)
-                    if not wx.TheClipboard.GetData(data_object):
-                        logging.debug(_("Data can't be copied from clipboard."))
-                        return False
-                else:
-                    wx.MessageBox( _("The clipboard doesn't contain wxGlade widget data."),
-                                   _("Information"), wx.OK | wx.CENTRE | wx.ICON_INFORMATION )
-                    return False
-            finally:
-                wx.TheClipboard.Close()
-        else:
-            logging.info(_("Clipboard can't be opened."))
+    try:
+        data_object = None
+        for fmt in [widget_data_format,sizer_data_format,window_data_format]:
+            if wx.TheClipboard.IsSupported(fmt):
+                data_object = wx.CustomDataObject(fmt)
+                break
+        if data_object is None:
+            misc.info_message( "The clipboard doesn't contain wxGlade widget data." )
             return False
-        clipboard_data = data_object.GetData()
+        if not wx.TheClipboard.GetData(data_object):
+            misc.error_message( "Data can't be copied from clipboard." )
+            return False
+    finally:
+        wx.TheClipboard.Close()
+    format_name = data_object.GetFormat().GetId().split(".")[1]  # e.g. 'wxglade.widget' -> 'widget'
+    compatible, message = widget.check_compatibility(None, format_name)
+    if not compatible:
+        wx.Bell()
+        if message:
+            misc.error_message(message)
+        return False
+    if not widget.clipboard_paste(data_object.GetData()):
+        misc.error_message("Paste failed")
 
+
+def _paste(parent, sizer, pos, clipboard_data):
+    "parse XML and insert widget"
     option, span, flag, border, xml_unicode = clipboard2widget( clipboard_data )
-    if xml_unicode:
-        import xml_parse
-        try:
-            wx.BeginBusyCursor()
-            # widget representation is still unicode, but parser need UTF8
-            xml_utf8 = xml_unicode.encode('utf8')
-            parser = xml_parse.ClipboardXmlWidgetBuilder(parent, sizer, pos, option, span, flag, border)
-            parser.parse_string(xml_utf8)
-            return True  # Widget hierarchy pasted.
-        finally:
-            wx.EndBusyCursor()
-    return False  # There's nothing to paste.
+    if not xml_unicode: return False
+    import xml_parse
+    try:
+        wx.BeginBusyCursor()
+        # widget representation is still unicode, but parser need UTF8
+        xml_utf8 = xml_unicode.encode('utf8')
+        parser = xml_parse.ClipboardXmlWidgetBuilder(parent, sizer, pos, option, span, flag, border)
+        parser.parse_string(xml_utf8)
+        common.app_tree.saved = False
+        return True  # Widget hierarchy pasted.
+    except xml_parse.XmlParsingError:
+        if config.debugging: raise
+        return False
+    finally:
+        wx.EndBusyCursor()
 
 
 def check(*formats):

@@ -166,12 +166,12 @@ class EditPanel(PanelBase, ManagedBase):
         i = misc.append_menu_item(menu, -1, _('Remove Panel\tDel'),  wx.ART_DELETE)
         misc.bind_menu_item_after(widget, i, self.remove)
         i = misc.append_menu_item(menu, -1,   _('Copy\tCtrl+C'), wx.ART_COPY)
-        misc.bind_menu_item_after(widget, i, self.clipboard_copy)
+        misc.bind_menu_item_after(widget, i, clipboard.copy, self)
         i = misc.append_menu_item(menu, -1,    _('Cut\tCtrl+X'),  wx.ART_CUT)
-        misc.bind_menu_item_after(widget, i, self.clipboard_cut)
+        misc.bind_menu_item_after(widget, i, clipboard.cut, self)
 
         i = misc.append_menu_item(menu, -1, _('Paste Sizer\tCtrl+V'), wx.ART_PASTE)
-        misc.bind_menu_item_after(widget, i, self.clipboard_paste)
+        misc.bind_menu_item_after(widget, i, clipboard.paste, self)
         if self.top_sizer is not None or not clipboard.check("sizer"): i.Enable(False)
 
         if self.sizer and not self.sizer.is_virtual():
@@ -198,40 +198,25 @@ class EditPanel(PanelBase, ManagedBase):
         "check whether widget can be pasted"
         if typename is not None:
             if typename!="sizer":
-                if report:
-                    self._logger.warning(_('Only sizers can be pasted here'))
-                return False
+                return (False, 'Only sizers can be pasted here')
             if self.top_sizer:
-                if report:
-                    self._logger.warning(_('Sizer set already'))
-                return False
-            return True
+                return (False, 'Sizer set already')
+            return (True, None)
 
         import edit_sizers
         if not isinstance(widget, edit_sizers.Sizer):
-            if report:
-                self._logger.warning(_('Only sizers can be pasted here'))
-            return False
+            return (False, 'Only sizers can be pasted here')
         #if self.sizer is not None:
         if self.top_sizer:
-            if report:
-                self._logger.warning(_('Sizer set already'))
-            return False
-        return True
+            return (False, 'Sizer set already')
+        return (True, None)
 
-    def clipboard_paste(self, event=None, clipboard_data=None):
+    def clipboard_paste(self, clipboard_data):
         "Insert a widget from the clipboard to the current destination"
-        import xml_parse
-        if self.widget is not None:
-            size = self.widget.GetSize()
-        try:
-            if clipboard.paste(self, None, 0, clipboard_data):
-                common.app_tree.app.saved = False
-                if self.widget is not None:
-                    self.widget.SetSize(size)
-        except xml_parse.XmlParsingError:
-            if config.debugging: raise
-            self._logger.warning(_('Only sizers can be pasted here'))
+        if self.widget: size = self.widget.GetSize()
+        ret = clipboard.paste(self, None, 0, clipboard_data)
+        if self.widget: self.widget.SetSize(size)
+        return ret
 
     def properties_changed(self, modified):
         if not modified or "scrollable" in modified:

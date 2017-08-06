@@ -187,9 +187,9 @@ class EditBase(EventsMixin, np.PropertyOwner):
         i = misc.append_menu_item(menu, -1, _('Remove %s\tDel')%widgetclass, wx.ART_DELETE)
         misc.bind_menu_item_after(widget, i, self.remove)
         i = misc.append_menu_item( menu, -1, _('Copy\tCtrl+C'), wx.ART_COPY )
-        misc.bind_menu_item_after(widget, i, self.clipboard_copy)
+        misc.bind_menu_item_after(widget, i, clipboard.copy, self)
         i = misc.append_menu_item( menu, -1, _('Cut\tCtrl+X'), wx.ART_CUT )
-        misc.bind_menu_item_after(widget, i, self.clipboard_cut)
+        misc.bind_menu_item_after(widget, i, clipboard.cut, self)
         menu.AppendSeparator()
 
         # rows/cols if inside a grid sizer
@@ -268,16 +268,8 @@ class EditBase(EventsMixin, np.PropertyOwner):
     def check_compatibility(self, widget, typename=None, report=False):
         # only with slots before/after
         if typename is not None and typename=="window" or getattr(widget, "_is_toplevel",False):
-            return False
-        return "Slot"
-
-    def clipboard_copy(self, event=None):
-        "Store a widget copy into the clipboard;  @see: L{clipboard.copy()}"
-        clipboard.copy(self)
-
-    def clipboard_cut(self, event=None):
-        "Store a copy of self into the clipboard and delete the widget;  @see: L{clipboard.cut()}"
-        clipboard.cut(self)
+            return (False,"No toplevel objects can be pasted here")
+        return ("Slot",None)
 
     def check_drop_compatibility(self):
         # checks whether a widget can be dropped here
@@ -783,37 +775,26 @@ class TopLevelBase(WindowBase, PreviewMixin):
 
         if self.sizer is not None:
             if report:
-                self._logger.warning( _('WARNING: Sizer already set for this window') )
-            return False
+                return (False, 'Sizer already set for this window')
+            return (True,None)
 
         if typename is not None:
             if typename!="sizer":
-                if report:
-                    self._logger.warning(_('Only sizers can be pasted here'))
-            return False
+                return (False,'Only sizers can be pasted here')
+            return (True,None)
         import edit_sizers
         if not isinstance(widget, edit_sizers.Sizer):
-            if report:
-                self._logger.warning(_('Only sizers can be pasted here'))
-            return False
-        return True
+            return 'Only sizers can be pasted here'
+        return (True,None)
 
-    def clipboard_paste(self, event=None, clipboard_data=None):
+    def clipboard_paste(self, clipboard_data):
         "Insert a widget from the clipboard to the current destination"
-        if self.sizer is not None:
-            self._logger.warning( _('WARNING: Sizer already set for this window') )
-            return
-        import xml_parse
         if self.widget: size = self.widget.GetSize()
-        try:
-            if clipboard.paste(self, None, 0, clipboard_data):
-                common.app_tree.app.saved = False
-                if self.widget: self.widget.SetSize(size)
-        except xml_parse.XmlParsingError:
-            if config.debugging: raise
-            self._logger.warning( _('WARNING: Only sizers can be pasted here') )
-    ####################################################################################################################
+        ret = clipboard._paste(self, None, 0, clipboard_data)
+        if self.widget: self.widget.SetSize(size)
+        return ret
 
+    ####################################################################################################################
     def set_sizer(self, sizer):
         self.sizer = sizer
         if self.sizer and self.sizer.widget and self.widget:
