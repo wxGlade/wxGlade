@@ -332,93 +332,41 @@ class CPPCodeWriter(BaseLangCodeWriter, wcodegen.CppMixin):
 
 """
 
-    tmpl_detailed = """\
+    def _get_app_template(self, app, top_win):
+        'build template string for application'
+        
+        # XXX use Show() for frames/panels and ShowModal()/Destroy for dialogs
+        klass = app.klass
+        
+        if self._use_gettext:
+            gettext1 = ["protected:", "%(tab)swxLocale m_locale;  // locale we'll be using"]
+            gettext2 = ['%(tab)sm_locale.Init();',
+                        '#ifdef APP_LOCALE_DIR',
+                        '%(tab)sm_locale.AddCatalogLookupPathPrefix(wxT(APP_LOCALE_DIR));',
+                        '#endif',
+                        '%(tab)sm_locale.AddCatalog(wxT(APP_CATALOG));\n']
+        else:
+            gettext1 = gettext2 = []
+        
+        if klass:
+            klass1 = 'class %(klass)s: public wxApp {'
+            klass2 = ['IMPLEMENT_APP(%(klass)s)\n',
+                      'bool %(klass)s::OnInit()']
+        else:
+            klass1 = 'class MyApp: public wxApp {'
+            klass2 = ['IMPLEMENT_APP(MyApp)\n',
+                      'bool MyApp::OnInit()',]
 
-class %(klass)s: public wxApp {
-public:
-%(tab)sbool OnInit();
-};
-
-IMPLEMENT_APP(%(klass)s)
-
-bool %(klass)s::OnInit()
-{
-%(tab)swxInitAllImageHandlers();
-%(tab)s%(top_win_class)s* %(top_win)s = new %(top_win_class)s(NULL, wxID_ANY, wxEmptyString);
-%(tab)sSetTopWindow(%(top_win)s);
-%(tab)s%(top_win)s->Show();
-%(tab)sreturn true;
-}"""
-
-    tmpl_gettext_detailed = """\
-
-class %(klass)s: public wxApp {
-public:
-%(tab)sbool OnInit();
-protected:
-%(tab)swxLocale m_locale;  // locale we'll be using
-};
-
-IMPLEMENT_APP(%(klass)s)
-
-bool %(klass)s::OnInit()
-{
-%(tab)sm_locale.Init();
-#ifdef APP_LOCALE_DIR
-%(tab)sm_locale.AddCatalogLookupPathPrefix(wxT(APP_LOCALE_DIR));
-#endif
-%(tab)sm_locale.AddCatalog(wxT(APP_CATALOG));
-
-%(tab)swxInitAllImageHandlers();
-%(tab)s%(top_win_class)s* %(top_win)s = new %(top_win_class)s(NULL, wxID_ANY, wxEmptyString);
-%(tab)sSetTopWindow(%(top_win)s);
-%(tab)s%(top_win)s->Show();
-%(tab)sreturn true;
-}"""
-
-    tmpl_simple = """\
-
-class MyApp: public wxApp {
-public:
-%(tab)sbool OnInit();
-};
-
-IMPLEMENT_APP(MyApp)
-
-bool MyApp::OnInit()
-{
-%(tab)swxInitAllImageHandlers();
-%(tab)s%(top_win_class)s* %(top_win)s = new %(top_win_class)s(NULL, wxID_ANY, wxEmptyString);
-%(tab)sSetTopWindow(%(top_win)s);
-%(tab)s%(top_win)s->Show();
-%(tab)sreturn true;
-}"""
-
-    tmpl_gettext_simple = """\
-
-class MyApp: public wxApp {
-public:
-%(tab)sbool OnInit();
-protected:
-%(tab)swxLocale m_locale;  // locale we'll be using
-};
-
-IMPLEMENT_APP(MyApp)
-
-bool MyApp::OnInit()
-{
-%(tab)sm_locale.Init();
-#ifdef APP_LOCALE_DIR
-%(tab)sm_locale.AddCatalogLookupPathPrefix(wxT(APP_LOCALE_DIR));
-#endif
-%(tab)sm_locale.AddCatalog(wxT(APP_CATALOG));
-
-%(tab)swxInitAllImageHandlers();
-%(tab)s%(top_win_class)s* %(top_win)s = new %(top_win_class)s(NULL, wxID_ANY, wxEmptyString);
-%(tab)sSetTopWindow(%(top_win)s);
-%(tab)s%(top_win)s->Show();
-%(tab)sreturn true;
-}"""
+        ret = ['', klass1,
+               'public:', '%(tab)sbool OnInit();'
+               ] + gettext1 + ['};\n'] + klass2 + ['{'] + gettext2 + [
+                '%(tab)swxInitAllImageHandlers();',
+                '%(tab)s%(top_win_class)s* %(top_win)s = new %(top_win_class)s(NULL, wxID_ANY, wxEmptyString);',
+                '%(tab)sSetTopWindow(%(top_win)s);',
+                '%(tab)s%(top_win)s->Show();',
+                '%(tab)sreturn true;',
+                '}']
+        return '\n'.join(ret)
 
     tmpl_empty_string = 'wxEmptyString'
 
@@ -570,10 +518,10 @@ bool MyApp::OnInit()
             self.save_file( self.output_name + "." + self.source_extension, self.output_file, self._app_added )
             self.output_file = self.output_header = None
 
-    def add_app(self, app_attrs, top_win_class):
+    def add_app(self, app_attrs, top_win):
         # add language specific mappings
-        self.lang_mapping['filename_top_win_class'] = '%s.%s' % (top_win_class, self.header_extension)
-        BaseLangCodeWriter.add_app(self, app_attrs, top_win_class)
+        self.lang_mapping['filename_top_win_class'] = '%s.%s' % (top_win.klass, self.header_extension)
+        BaseLangCodeWriter.add_app(self, app_attrs, top_win)
 
     def add_class(self, code_obj):
         # shortcuts

@@ -556,9 +556,9 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
         #if isinstance(root, application.Application):
         topwin = [c.widget for c in root.children if c.widget.name==root.widget.top_window]
         if topwin:
-            topwin = topwin[0].klass
+            topwin = topwin[0]
         elif root.children:
-            topwin = root.children[0].klass
+            topwin = root.children[0]
         else:
             topwin = None
         self.add_app(root.widget, topwin)
@@ -617,7 +617,7 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
             self.save_file(self.output_file_name, self.output_file, self._app_added)
             self.output_file = None
 
-    def add_app(self, app, top_win_class):
+    def add_app(self, app, top_win):
         """Generates the code for a wxApp instance.
         If the file to write into already exists, this function does nothing.
 
@@ -643,44 +643,12 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
             return
 
         klass = app.klass
-        top_win = app.top_window
 
         # top window and application name are mandatory
-        if not top_win or not self.app_name:
+        if not app.top_window or not self.app_name:
             return
 
-        # check for templates for detailed startup code
-        if klass and self._use_gettext:
-            if self.tmpl_gettext_detailed:
-                tmpl = self.tmpl_gettext_detailed
-            else:
-                self.warning( _("Skip generating detailed startup code because no suitable template found.") )
-                return
-
-        elif klass and not self._use_gettext:
-            if self.tmpl_detailed:
-                tmpl = self.tmpl_detailed
-            else:
-                self.warning( _("Skip generating detailed startup code because no suitable template found.") )
-                return
-
-        # check for templates for simple startup code
-        elif not klass and self._use_gettext:
-            if self.tmpl_gettext_simple:
-                tmpl = self.tmpl_gettext_simple
-            else:
-                self.warning( _("Skip generating simple startup code because no suitable template found.") )
-                return
-        elif not klass and not self._use_gettext:
-            if self.tmpl_simple:
-                tmpl = self.tmpl_simple
-            else:
-                self.warning( _("Skip generating simple startup code because no suitable template found.") )
-                return
-        else:
-            self.warning( _('No application code template for klass "%(klass)s" and gettext "%(gettext)s" found!' % {
-                         'klass':   klass, 'gettext': self._use_gettext } ))
-            return
+        tmpl = self._get_app_template(app, top_win)
 
         # map to substitute template variables
         self.app_mapping = {'comment_sign': self.comment_sign,
@@ -689,7 +657,8 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
                             'overwrite': self.tmpl_overwrite % {'comment_sign': self.comment_sign},
                             'tab': self.tabs(1),
                             'textdomain': self._textdomain,
-                            'top_win_class': self.cn_class(top_win_class), 'top_win': top_win }
+                            'top_win_class': self.cn_class(top_win and top_win.klass or None),
+                            'top_win': app.top_window }
 
         # extend default mapping with language specific mapping
         if self.lang_mapping:
