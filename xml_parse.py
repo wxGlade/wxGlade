@@ -589,13 +589,13 @@ class XmlWidgetObject(object):
         if name == 'pos':  # sanity check, this shouldn't happen...
             self._logger.debug('add_property(name=pos)')
             return
-        prop = self.obj.properties[name]
         try:
-            prop.load(val, activate=True)
+            prop = self.obj.properties[name]
         except KeyError:
             # unknown property for this object; issue a warning and ignore the property
             if config.debugging: raise
             self._logger.error( _("WARNING: Property '%s' not supported by this object ('%s') "), name, self.obj )
+        prop.load(val, activate=True)
         #self.obj.properties_changed([name])
         self._properties_added.append(name)
     def notify_owner(self):
