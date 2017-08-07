@@ -52,7 +52,7 @@ config = {
                    'wxSIMPLE_BORDER', 'wxBORDER_SIMPLE', 'wxRESIZE_BORDER',
                    'wxFRAME_TOOL_WINDOW', 'wxFRAME_NO_TASKBAR',
                    'wxFRAME_FLOAT_ON_PARENT', 'wxNO_BORDER',
-                   'wxNO_FULL_REPAINT_ON_RESIZE', 'wxFULL_REPAINT_ON_RESIZE',
+                   'wxFULL_REPAINT_ON_RESIZE',
                    'wxTAB_TRAVERSAL', 'wxCLIP_CHILDREN'],
 }
 
