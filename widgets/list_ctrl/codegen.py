@@ -3,20 +3,65 @@ Code generator functions for wxListCtrl objects
 
 @copyright: 2002-2007 Alberto Griggio
 @copyright: 2014-2016 Carsten Grohmann
+@copyright: 2017 Dietmar Schwertberger
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
-import common
+import common, compat
 import wcodegen
 
+class ListCtrlPropertyGeneratorMixin(object):
+    tmpl_append_row = None
+    def get_more_properties_code(self, obj):
+        # only for report view: add Columns; for preview: add Rows
+        styles = obj.properties["style"].value_set
+        if not "wxLC_REPORT" in styles or "wxLC_VIRTUAL" in styles: return []
 
-class PythonListCtrlGenerator(wcodegen.PythonWidgetCodeWriter):
+        out = []
+
+        name = self.format_widget_access(obj)
+
+        rows_number = obj.rows_number
+        cols_p = obj.properties["columns"]
+        columns = cols_p.value
+
+        for i, (heading,width) in enumerate(columns):
+            out.append( self.tmpl_append_column % (name, self.codegen.quote_str(heading), width) )
+
+        if self.codegen.preview:
+            for r in range(rows_number):
+                out.append( self.tmpl_append_row % (name, r) )
+
+        return out
+
+
+class PythonListCtrlGenerator(ListCtrlPropertyGeneratorMixin, wcodegen.PythonWidgetCodeWriter):
     tmpl = '%(name)s = %(klass)s(%(parent)s, %(id)s%(style)s)\n'
 
+    # templates for adding columns and rows (rows are for preview only)
+    tmpl_append_column = '%s.AppendColumn(%s, format=wx.LIST_FORMAT_LEFT, width=%d)\n'
+    if compat.IS_PHOENIX:
+        tmpl_append_row = '%s.InsertItem(%d, "")\n'
+    else:
+        tmpl_append_row = '%s.InsertStringItem(%d, "")\n'
 
-class CppListCtrlGenerator(wcodegen.CppWidgetCodeWriter):
+
+class CppListCtrlGenerator(ListCtrlPropertyGeneratorMixin, wcodegen.CppWidgetCodeWriter):
     import_modules = ['<wx/listctrl.h>']
     tmpl = '%(name)s = new %(klass)s(%(parent)s, %(id)s%(style)s);\n'
+    tmpl_append_column = '%s->AppendColumn(%s, wxLIST_FORMAT_LEFT, %d)\n'
+
+
+def xrc_code_generator(obj):
+    xrcgen = common.code_writers['XRC']
+
+    class ListXrcObject(xrcgen.DefaultXrcObject):
+        unsupported = set(['columns', 'rows_number'])
+
+        def write_property(self, name, val, output, tabs):
+            if name not in self.unsupported:
+                xrcgen.DefaultXrcObject.write_property(self, name, val, output, tabs)
+    return ListXrcObject(obj)
 
 
 def initialize():
@@ -24,3 +69,4 @@ def initialize():
     common.class_names['EditListCtrl'] = klass
     common.register('python', klass, PythonListCtrlGenerator(klass))
     common.register('C++',    klass, CppListCtrlGenerator(klass))
+    common.register('XRC',    klass, xrc_code_generator)

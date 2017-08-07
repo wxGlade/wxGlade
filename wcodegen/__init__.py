@@ -542,6 +542,9 @@ class BaseWidgetWriter(StylesMixin, BaseCodeWriter):
             assert self.tmpl_selection
             prop_lines.append(self.tmpl_selection % self.tmpl_dict)
 
+        if hasattr(self, "get_more_properties_code"):
+            prop_lines += self.get_more_properties_code(obj)
+
         if not self.tmpl_dict['store_as_attr']:
             # the object doesn't have to be stored as an attribute of the
             # custom class, but it is just considered part of the layout

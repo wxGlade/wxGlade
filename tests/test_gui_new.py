@@ -88,6 +88,10 @@ class TestGui(WXGladeGUITest):
         "Test code generation with a grid widgets and handling events"
         self.load_and_generate('Grid', test_GUI=False)
 
+    def test_ListCtrl_Report(self):
+        "Test code generation for ListCtrl with some columns and rows"
+        self.load_and_generate('ListCtrl_Report', test_GUI=True)
+
     def test_Gauge(self):
         "Test code generation for a wxGauge"
         self.load_and_generate('Gauge', test_GUI=False)

@@ -72,32 +72,33 @@ class EditListCtrl(ManagedBase, EditStylesMixin):
         # after initial creation, call with modified=None
 
         if not self.widget: return
-
-        # columns and rows #############################################################################################
-        if not modified or "columns" in modified:
-            columns = self.columns
-            # adjust number of columns
-            while self.widget.GetColumnCount()>len(columns):
-                self.widget.DeleteColumn(self.widget.GetColumnCount()-1)
-            while self.widget.GetColumnCount()<len(columns):
-                i = self.widget.GetColumnCount()
-                self.widget.InsertColumn(i, columns[i][0])
-            # set column widths and labels
-            for i, (label,size) in enumerate(columns):
-                item = wx.ListItem()
-                item.SetText(label)
-                self.widget.SetColumn(i, item)
-                size = int(size or "0") 
-                if size>0:
-                    # results with LIST_AUTOSIZE are not too good
-                    self.widget.SetColumnWidth(i, size)
-        if not modified or "rows_number" in modified:
-            self.widget.DeleteAllItems()
-            if self.columns:
-                for i in range(self.rows_number):
-                    compat.ListCtrl_InsertStringItem(self.widget, i, "")
-
-        self._set_name()
+        
+        if self.style & wx.LC_REPORT:
+            # columns and rows #############################################################################################
+            if not modified or "columns" in modified or "style" in modified:
+                columns = self.columns
+                # adjust number of columns
+                while self.widget.GetColumnCount()>len(columns):
+                    self.widget.DeleteColumn(self.widget.GetColumnCount()-1)
+                while self.widget.GetColumnCount()<len(columns):
+                    i = self.widget.GetColumnCount()
+                    self.widget.InsertColumn(i, columns[i][0])
+                # set column widths and labels
+                for i, (label,size) in enumerate(columns):
+                    item = wx.ListItem()
+                    item.SetText(label)
+                    self.widget.SetColumn(i, item)
+                    size = int(size or "0") 
+                    if size>0:
+                        # results with LIST_AUTOSIZE are not too good
+                        self.widget.SetColumnWidth(i, size)
+            if not modified or "rows_number" in modified or "style" in modified:
+                self.widget.DeleteAllItems()
+                if self.columns:
+                    for i in range(self.rows_number):
+                        compat.ListCtrl_InsertStringItem(self.widget, i, "")
+    
+            self._set_name()
         self.widget.Refresh()
 
     def get_property_handler(self, name):
