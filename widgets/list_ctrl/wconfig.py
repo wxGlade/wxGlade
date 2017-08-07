@@ -9,24 +9,25 @@ config = {
     'wxklass': 'wxListCtrl',
     'style_defs': {
         'wxLC_LIST': {
-            'desc': _("Multicolumn list view, with optional small icons. "
-                      "Columns are computed automatically, i.e. you don't "
-                      "set columns as in wxLC_REPORT. In other words, "
-                      "the list wraps, unlike a wxListBox.")
+            'desc': _("Multicolumn list view, with optional small icons. Columns are computed automatically, i.e. "
+                      "you don't set columns as in wxLC_REPORT. In other words, the list wraps, unlike a wxListBox."),
+            'exclude': 'wxLC_REPORT|wxLC_VIRTUAL|wxLC_ICON|wxLC_SMALL_ICON',
         },
         'wxLC_REPORT': {
-            'desc': _('Single or multicolumn report view, with optional '
-                      'header.')
+            'desc': _('Single or multicolumn report view, with optional header.'),
+            'exclude': 'wxLC_LIST|wxLC_ICON|wxLC_SMALL_ICON',
         },
         'wxLC_VIRTUAL': {
-            'desc': _('The application provides items text on demand. May '
-                      'only be used with wxLC_REPORT.')
+            'desc': _('The application provides items text on demand. May only be used with wxLC_REPORT.'),
+            'exclude': 'wxLC_LIST|wxLC_ICON|wxLC_SMALL_ICON',
         },
         'wxLC_ICON': {
-            'desc': _('Large icon view, with optional labels.')
+            'desc': _('Large icon view, with optional labels.'),
+            'exclude': 'wxLC_LIST|wxLC_REPORT|wxLC_VIRTUAL|wxLC_SMALL_ICON',
         },
         'wxLC_SMALL_ICON': {
-            'desc': _('Small icon view, with optional labels.')
+            'desc': _('Small icon view, with optional labels.'),
+            'exclude': 'wxLC_LIST|wxLC_REPORT|wxLC_VIRTUAL|wxLC_ICON',
         },
         'wxLC_ALIGN_TOP': {
             'desc': _('Icons align to the top. Win32 default, Win32 only.')
@@ -38,8 +39,7 @@ config = {
             'desc': _('Icons arrange themselves. Win32 only.')
         },
         'wxLC_EDIT_LABELS': {
-            'desc': _('Labels are editable: the application will be '
-                      'notified when editing starts.')
+            'desc': _('Labels are editable: the application will be notified when editing starts.')
         },
         'wxLC_NO_HEADER': {
             'desc': _('No header in report mode.')
@@ -48,20 +48,17 @@ config = {
             'desc': _('Single selection (default is multiple).')
         },
         'wxLC_SORT_ASCENDING': {
-            'desc': _('Sort in ascending order. (You must still supply a '
-                      'comparison callback in wxListCtrl::SortItems.)')
+            'desc':_('Sort in ascending order. (You must still supply a comparison callback in wxListCtrl::SortItems.)')
         },
         'wxLC_SORT_DESCENDING': {
             'desc': _('Sort in descending order. (You must still supply a '
                       'comparison callback in wxListCtrl::SortItems.)')
         },
         'wxLC_HRULES': {
-            'desc': _('Draws light horizontal rules between rows in report '
-                      'mode.')
+            'desc': _('Draws light horizontal rules between rows in report mode.')
         },
         'wxLC_VRULES': {
-            'desc': _('Draws light vertical rules between columns in report '
-                      'mode.')
+            'desc': _('Draws light vertical rules between columns in report mode.')
         },
     },
     'default_style': 'wxLC_ICON',
