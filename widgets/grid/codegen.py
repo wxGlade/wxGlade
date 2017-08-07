@@ -108,7 +108,7 @@ class PythonCodeGenerator(wcodegen.PythonWidgetCodeWriter):
                 out.append( '%s.SetRowLabelValue(%s, %s)\n' % (name, i, self.codegen.quote_str(label)) )
             try:
                 if int(size) > 0:
-                    out.append( '%s.SetRowSize(%s, %s)\n' % (name, i, size) ).s
+                    out.append( '%s.SetRowSize(%s, %s)\n' % (name, i, size) )
             except ValueError: pass
 
         out.extend(self.codegen.generate_common_properties(obj))
