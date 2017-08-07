@@ -60,11 +60,11 @@ class ColsHandler(BaseXmlBuilderTagHandler):
         self.parent = parent
         self.columns = []
         self.curr_col = []
-        self.curr_size = '-1'
+        self.curr_size = -1
 
     def start_elem(self, name, attrs):
         if name == 'column':
-            self.curr_size = attrs.get('size', '-1')
+            self.curr_size = attrs.get('size', -1)
 
     def end_elem(self, name):
         if name == 'columns':
@@ -83,14 +83,15 @@ class GridRowsProperty(np.GridProperty):
 
     def load(self, value, activate=None, deactivate=None, notify=False):
         if isinstance(value, compat.unicode):
-            value =  [[str(n),'-1'] for n in range(int(value))]
+            value =  [[str(n),-1] for n in range(int(value))]
         np.GridProperty.load(self, value, activate, deactivate, notify)
 
     def write(self, output, tabs):
         is_default = True
         inner_xml = []
         for i, (label, size) in enumerate(self.get()):
-            if size!="-1" or label!=str(i): is_default=False
+            if size!=-1 or label!=str(i):
+                is_default=False
             inner_xml += common.format_xml_tag(u'row', label, tabs+1, size=size)
         if not is_default:
             # actually write labels and sizes
@@ -127,11 +128,11 @@ class RowsHandler(BaseXmlBuilderTagHandler):
         self.parent = parent
         self.rows = []
         self.curr_col = []
-        self.curr_size = '-1'
+        self.curr_size = -1
 
     def start_elem(self, name, attrs):
         if name == 'row':
-            self.curr_size = attrs.get('size', '-1')
+            self.curr_size = attrs.get('size', -1)
 
     def end_elem(self, name):
         if name == 'rows':
@@ -140,7 +141,7 @@ class RowsHandler(BaseXmlBuilderTagHandler):
             return True
         elif name == 'row':
             char_data = self.get_char_data()
-            self.rows.append([char_data, self.curr_size])
+            self.rows.append([char_data, int(self.curr_size)])
         return False
 
 
@@ -204,6 +205,28 @@ class EditGrid(ManagedBase):
         # these are to show the popup menu on right click
         self.widget.Bind(EVT_GRID_CELL_RIGHT_CLICK, self.popup_menu)
         self.widget.Bind(EVT_GRID_LABEL_RIGHT_CLICK, self.popup_menu)
+        self.widget.Bind(EVT_GRID_COL_SIZE, self._on_grid_col_resize)
+        self.widget.Bind(EVT_GRID_ROW_SIZE, self._on_grid_row_resize)
+
+    def _on_grid_col_resize(self, event):
+        col = event.GetRowOrCol()
+        new_value = self.widget.GetColSize(col)
+        prop = self.properties["columns"]
+        value = prop.value[:]
+        if new_value==value[col][1]: return
+        value[col] = [value[col][0],new_value]
+        prop._check_for_user_modification(value)
+        prop.update_display()
+
+    def _on_grid_row_resize(self, event):
+        row = event.GetRowOrCol()
+        new_value = self.widget.GetRowSize(row)
+        prop = self.properties["rows"]
+        value = prop.value[:]
+        if new_value==value[row][1]: return
+        value[row] = [value[row][0],new_value]
+        prop._check_for_user_modification(value)
+        prop.update_display()
 
     def _update_widget_properties(self, modified=None):
         # after initial creation, call with modified=None
