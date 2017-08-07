@@ -239,6 +239,10 @@ if len(wx.VERSION)==5:
     wx_EmptyIcon = wx.EmptyIcon
     def ConvertPixelsToDialog(widget, size):
         return widget.ConvertPixelSizeToDialog(size)
+
+    ListCtrl_SetStringItem    = wx.ListCtrl.SetStringItem
+    ListCtrl_InsertStringItem = wx.ListCtrl.InsertStringItem
+
 else:
     # wxPython Phoenix
     IS_CLASSIC = False
@@ -259,3 +263,6 @@ else:
     wx_EmptyIcon = wx.Icon
     def ConvertPixelsToDialog(widget, size):
         return widget.ConvertPixelsToDialog(size)
+
+    ListCtrl_SetStringItem    = wx.ListCtrl.SetItem
+    ListCtrl_InsertStringItem = wx.ListCtrl.InsertItem
