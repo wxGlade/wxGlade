@@ -436,7 +436,7 @@ class SizerSlot(np.PropertyOwner):
             self.widget.Bind(wx.EVT_ENTER_WINDOW, None)
             self.widget.Bind(wx.EVT_LEAVE_WINDOW, None)
             self.widget.Bind(wx.EVT_KEY_DOWN, None)
-            if self.sizer and self.sizer.widget:
+            if self.sizer and not self.sizer.is_virtual and self.sizer.widget:
                 self.sizer.widget.Detach(self.widget)  # this will happen during recursive removal only
                 self.sizer = None
             compat.DestroyLater(self.widget)
