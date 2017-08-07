@@ -15,8 +15,8 @@ config = {
                    'wxRAISED_BORDER', 'wxBORDER_RAISED',
                    'wxSTATIC_BORDER', 'wxBORDER_STATIC',
                    'wxNO_BORDER', 'wxBORDER_NONE',
-                   'wxNO_3D', 'wxTAB_TRAVERSAL', 'wxWANTS_CHARS',
-                   'wxNO_FULL_REPAINT_ON_RESIZE', 'wxFULL_REPAINT_ON_RESIZE',
+                   'wxTAB_TRAVERSAL', 'wxWANTS_CHARS',
+                   'wxFULL_REPAINT_ON_RESIZE',
                    'wxCLIP_CHILDREN'],
     'events': {
         'EVT_NAVIGATION_KEY': {

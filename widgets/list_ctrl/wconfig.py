@@ -81,7 +81,6 @@ config = {
                    'wxNO_BORDER', 'wxBORDER_NONE',
 
                    'wxWANTS_CHARS',
-                   'wxNO_FULL_REPAINT_ON_RESIZE',
                    'wxFULL_REPAINT_ON_RESIZE'],
     'events': {
         'default': {
