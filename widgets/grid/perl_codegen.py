@@ -3,12 +3,12 @@ Perl generator functions for wxGrid objects
 
 @copyright: 2002-2004 D. H. aka crazyinsomniac on sourceforge
 @copyright: 2014-2016 Carsten Grohmann
+@copyright: 2017 Dietmar Schwertberger
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
 import common
 import wcodegen
-from .codegen import _check_col_label, _check_row_label
 
 
 class PerlCodeGenerator(wcodegen.PerlWidgetCodeWriter):
@@ -31,14 +31,15 @@ class PerlCodeGenerator(wcodegen.PerlWidgetCodeWriter):
         return init, props_buf, []
 
     def get_properties_code(self, obj):
-        out = []
-        name = self.format_widget_access(obj)
-        prop = obj.properties
-
         if not obj.create_grid: return []
 
-        rows = obj.rows
-        columns = obj.columns
+        out = []
+        name = self.format_widget_access(obj)
+
+        rows_p = obj.properties["rows"]
+        cols_p = obj.properties["columns"]
+        rows    = rows_p.value
+        columns = cols_p.value
         out.append( '%s->CreateGrid(%s, %s);\n' % (name, len(rows), len(columns)) )
 
         if obj.check_prop('row_label_size'): out.append( '%s->SetRowLabelSize(%s);\n' % (name, obj.row_label_size) )
@@ -62,20 +63,16 @@ class PerlCodeGenerator(wcodegen.PerlWidgetCodeWriter):
 
         # set columns
         for i, (label, size) in enumerate(columns):
-            if _check_col_label(label, i):
+            if cols_p._check_label(label, i):
                 out.append( '%s->SetColLabelValue(%s, %s);\n' % (name, i, self.codegen.quote_str(label)) )
-            try:
-                if int(size) > 0:
-                    out.append( '%s->SetColSize(%s, %s);\n' % (name, i, size) )
-            except ValueError: pass
+            if size>0:
+                out.append( '%s->SetColSize(%s, %s);\n' % (name, i, size) )
         # set rows
         for i, (label, size) in enumerate(rows):
-            if _check_row_label(label, i):
+            if rows_p._check_label(label, i):
                 out.append( '%s->SetRowLabelValue(%s, %s);\n' % (name, i, self.codegen.quote_str(label)) )
-            try:
-                if int(size) > 0:
-                    out.append( '%s->SetRowSize(%s, %s);\n' % (name, i, size) )
-            except ValueError: pass
+            if size>0:
+                out.append( '%s->SetRowSize(%s, %s);\n' % (name, i, size) )
 
         out.extend(self.codegen.generate_common_properties(obj))
         return out

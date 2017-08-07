@@ -18,10 +18,12 @@ from wcodegen.taghandler import BaseXmlBuilderTagHandler
 
 class GridColsProperty(np.GridProperty):
     def write(self, output, tabs):
-        inner_xml = []
-        for label, size in self.get():
-            inner_xml += common.format_xml_tag(u'column', label, tabs+1, size=size)
-        output.extend( common.format_xml_tag(u'columns', inner_xml, tabs, is_xml=True) )
+        value = self.get()
+        if value:
+            inner_xml = []
+            for label, size in value:
+                inner_xml += common.format_xml_tag(u'column', label, tabs+1, size=size)
+            output.extend( common.format_xml_tag(u'columns', inner_xml, tabs, is_xml=True) )
 
     def _get_label(self, col):
         s = []
@@ -31,6 +33,9 @@ class GridColsProperty(np.GridProperty):
             if col < 0: break
         s.reverse()
         return "".join(s)
+    def _check_label(self, label, i):
+        "return True if it's not the default value"
+        return label != self._get_label(i)
 
     def add_row(self, event):
         np.GridProperty.add_row(self, event)
@@ -73,13 +78,16 @@ class ColsHandler(BaseXmlBuilderTagHandler):
             return True
         elif name == 'column':
             char_data = self.get_char_data()
-            self.columns.append([char_data, self.curr_size])
+            self.columns.append([char_data, int(self.curr_size)])
         return False
 
 
 class GridRowsProperty(np.GridProperty):
     def _get_label(self, row):
         return str(row)
+    def _check_label(self, label, i):
+        "return True if it's not the default value"
+        return label != self._get_label(i)
 
     def load(self, value, activate=None, deactivate=None, notify=False):
         if isinstance(value, compat.unicode):
@@ -165,9 +173,9 @@ class EditGrid(ManagedBase):
 
         # instance properties
         self.create_grid = np.CheckBoxProperty(True)
-        columns = [['A', '-1'], ['B', '-1'], ['C', '-1']]
-        self.columns = GridColsProperty( columns, [('Label', np.GridProperty.STRING), ('Size', np.GridProperty.INT)] )
-        rows =  [[str(n),'-1'] for n in range(10)]
+        columns = [['A', -1], ['B', -1], ['C', -1]]
+        self.columns = GridColsProperty( [], [('Label', np.GridProperty.STRING), ('Size', np.GridProperty.INT)] )
+        rows =  [[str(n),-1] for n in range(10)]
         self.rows = GridRowsProperty( rows, [('Label', np.GridProperty.STRING), ('Size', np.GridProperty.INT)] )
         self.properties["rows_number"] = self.properties["rows"]  # backward compatibility
         #self.rows_number        = np.SpinProperty(10, immediate=True)
