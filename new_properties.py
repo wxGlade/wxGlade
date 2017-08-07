@@ -1834,7 +1834,7 @@ class GridProperty(Property):
         # add our sizer to the main sizer   XXX change if required
         sizer.Add(box_sizer, 5, wx.EXPAND)
 
-        self.display_value(start_editing=True)
+        self.update_display(start_editing=True)
 
         self.grid.Bind(wx.grid.EVT_GRID_SELECT_CELL, self.on_select_cell)
         if self.buttons:
@@ -1866,7 +1866,7 @@ class GridProperty(Property):
         self.cur_row = event.GetRow()
         event.Skip()
 
-    def display_value(self, start_editing=False):
+    def update_display(self, start_editing=False):
         if start_editing: self.editing = True
         if not self.editing: return
 
