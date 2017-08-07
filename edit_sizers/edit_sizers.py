@@ -1450,7 +1450,7 @@ class CustomGridBagSizer(CustomFlexGridSizer):
         old_sizer_item = self._grid.FindItemAtPosition(pos)
         if old_sizer_item:
             if destroy:
-                old_window = old_item.GetWindow()
+                old_window = old_sizer_item.GetWindow()
                 if old_window:
                     compat.DestroyLater(old_window)
             old_sizer_item.SetSpan((1,1))
