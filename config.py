@@ -138,7 +138,8 @@ widget_config = {
         'wxNO_FULL_REPAINT_ON_RESIZE': { 'desc': _('On Windows, this style used to disable repainting '
                                                    'the window completely when its size is changed. '
                                                    'Since this behaviour is now the default, the style '
-                                                   'is now obsolete and no longer has an effect.') },
+                                                   'is now obsolete and no longer has an effect.'),
+                                         'obsolete': _('obsolete')},
         'wxCLIP_CHILDREN': { 'desc': _('Use this style to eliminate flicker caused by the background being repainted, '
                                        'then children being painted over them. Windows only.') },
         'wxWANTS_CHARS': { 'desc': _("Use this to indicate that the window wants to get all char/key events for all "
