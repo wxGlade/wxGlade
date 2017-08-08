@@ -84,9 +84,9 @@ class EditBase(EventsMixin, np.PropertyOwner):
     EXTRA_PROPERTIES = _EXTRA_PROPERTIES
 
     _PROPERTY_HELP={ "class": _("If you change the default value, it will be interpreted as the name "
-                                "of the subclass of the widget. How this name affects code generation "
+                                "of the subclass of the widget.\n\nHow this name affects code generation "
                                 "depends on the kind (i.e. language) of output. See the docs for more details."),
-                     "name":_("Name of the variable for assigning the reference to the created widget instance.\n"
+                     "name":_("Name of the variable for assigning the reference to the created widget instance.\n\n"
                               "(Valid: alphanumeric characters and underscore, also minus, but not at the beginning)\n"
                               "If the config setting is to have unique names, a non-unique name will be indicated"
                               " by a yellow background"),
