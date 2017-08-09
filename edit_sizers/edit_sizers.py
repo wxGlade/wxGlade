@@ -1742,7 +1742,7 @@ class _GrowableDialog(wx.Dialog):
         for c,choice in enumerate(self._choices):
             #in range(self.choices.GetCount()):
             if self.choices.IsChecked(c):
-                ret.append(choice)
+                ret.append(str(int(choice)-1))
         return ",".join(ret)
 
     def set_choices(self, choices, values):
