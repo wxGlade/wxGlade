@@ -214,7 +214,7 @@ class EditPanel(PanelBase, ManagedBase):
     def clipboard_paste(self, clipboard_data):
         "Insert a widget from the clipboard to the current destination"
         if self.widget: size = self.widget.GetSize()
-        ret = clipboard.paste(self, None, 0, clipboard_data)
+        ret = clipboard._paste(self, None, 0, clipboard_data)
         if self.widget: self.widget.SetSize(size)
         return ret
 
