@@ -973,16 +973,25 @@ class EditStylesMixin(np.PropertyOwner):
             >>> self.wxname2attr('wx.VERSION')
             (2, 8, 12, 1, '')
 
-        @note: Exceptions especially NameError and AttributeError aren't caught.
-        """
+        note: Exceptions especially NameError and AttributeError aren't caught."""
         assert name.startswith('wx')
 
-        cn = self.codegen.get_class(self.codegen.cn(name))
-        attr = getattr(wx, cn)
-        return attr
+        #cn = self.codegen.get_class(self.codegen.cn(name))
+        cn = self.codegen.cn(name)
+        namespace, cn = cn.rsplit(".",1)
+        if namespace=="wx":
+            import wx
+            return getattr(wx, cn)
+        if namespace=="wx.propgrid":
+            import wx.propgrid
+            return getattr(wx.propgrid, cn)
+        if namespace=="wx.grid":
+            import wx.grid
+            return getattr(wx.propgrid, cn)
+        raise ValueError("namespace %s not implemented"%namespace)
 
     def properties_changed(self, modified):
         if "style" in modified:
             self._set_widget_style()
-        
+
 
