@@ -78,7 +78,8 @@ class EditPropertyGridManager(ManagedBase, EditStylesMixin):
 
         pg.SetPropertyAttribute( "File", wxpg.PG_FILE_SHOW_FULL_PATH, 0 )
         pg.SetPropertyAttribute( "File", wxpg.PG_FILE_INITIAL_PATH, r"C:\Program Files\Internet Explorer" )
-        pg.SetPropertyAttribute( "Date", wxpg.PG_DATE_PICKER_STYLE, wx.adv.DP_DROPDOWN|wx.adv.DP_SHOWCENTURY )
+        if compat.IS_PHOENIX:
+            pg.SetPropertyAttribute( "Date", wxpg.PG_DATE_PICKER_STYLE, wx.adv.DP_DROPDOWN|wx.adv.DP_SHOWCENTURY )
 
         pg.AddPage( "Page 2 - Almost Empty" )
         pg.Append( wxpg.PropertyCategory("1 - Basic Properties") )
