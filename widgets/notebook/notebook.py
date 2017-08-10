@@ -139,8 +139,10 @@ class NotebookVirtualSizer(Sizer):
 
     def get_itempos(self, attrs):
         "Get position of sizer item (used in xml_parse)"
-        self._itempos += 1
-        return self._itempos
+        try:
+            return self.window.pages.index(attrs["name"]) + 1
+        except ValueError:
+            raise XmlParsingError( _('Notebook widget "%s" does not have tab "%s"!')%(self.window.name, attrs["name"]) )
 
     def is_virtual(self):
         return True
@@ -167,9 +169,17 @@ class TabsHandler(BaseXmlBuilderTagHandler):
         super(TabsHandler, self).__init__()
         self.parent = parent
         self.tab_names = [] # a list of one-item lists; to be compatible to GridProperty
+        self.pagenames = []
+
+    def start_elem(self, name, attrs):
+        if name=='tab':
+            window = attrs["window"]
+            if window=="SLOT": window = None
+            self.pagenames.append(window)
 
     def end_elem(self, name):
         if name == 'tabs':
+            self.parent.pages[:] = self.pagenames
             self.parent.properties['tabs'].set(self.tab_names)
             self.parent.properties_changed(["tabs"])
             return True
@@ -209,6 +219,10 @@ class EditNotebook(ManagedBase, EditStylesMixin):
 
     def create_widget(self):
         self.widget = wx.Notebook( self.parent.widget, self.id, style=self.style )
+        for c,label in zip(self.pages, self.tabs):
+            c.create()
+            if isinstance(c, SizerSlot):
+                self.widget.AddPage(c.widget, label[0])
 
     def on_set_focus(self, event):
         # allow switching of pages
@@ -335,11 +349,6 @@ class EditNotebook(ManagedBase, EditStylesMixin):
         return ManagedBase.get_property_handler(self, name)
 
     def properties_changed(self, modified):
-        if not modified or "tabs" in modified:
-            if not self.pages:
-                # during XML parsing, the tab names are set before
-                page_count = len(self.properties["tabs"].value)
-                self.pages.extend( [None]*page_count )
         EditStylesMixin.properties_changed(self, modified)
         ManagedBase.properties_changed(self, modified)
 
@@ -380,6 +389,13 @@ class EditNotebook(ManagedBase, EditStylesMixin):
                     return -1
         return -1
 
+    def on_load(self):
+        # create slot nodes for empty slots
+        for p,page in enumerate(self.pages):
+            if page is not None: continue
+            self.pages[p] = slot = SizerSlot(self, self.virtual_sizer, p+1)
+            node = slot.node = Node(slot)
+            common.app_tree.insert(node, self.node, p)
 
 editor_class = EditNotebook
 editor_icon = 'notebook.xpm'

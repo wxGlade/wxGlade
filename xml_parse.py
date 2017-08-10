@@ -36,9 +36,6 @@ class XmlParser(ContentHandler):
     def __init__(self):
         self._logger = logging.getLogger(self.__class__.__name__)
         self._objects = Stack()      # Stack of 'alive' objects
-        self._windows = Stack()      # Stack of window objects (derived by wxWindow)
-        self._sizers = Stack()       # Stack of sizer objects
-        self._sizer_item = Stack()   # Stack of sizer items
         self._curr_prop = None       # Name of the current property
         self._curr_prop_val = []     # Value of the current property; strings, to be joined
         self._appl_started = False
@@ -50,13 +47,9 @@ class XmlParser(ContentHandler):
     def parse(self, source):
         ## Permanent workaround for Python bug "Sax parser crashes if given
         ## unicode file name" (http://bugs.python.org/issue11159).
-        ##
         ## This bug causes a UnicodeEncodeError if the SAX XML parser wants to store an unicode filename internally.
-        ##
         ## That's not a general file handling issue because the parameter source is an open file already.
-        #source = compat.StringIO(source.read())
         self.parser.parse(source)
-        #source.close()
 
     def parse_string(self, source):
         if isinstance(source, list):
@@ -78,12 +71,6 @@ class XmlParser(ContentHandler):
 
     def characters(self, data):
         raise NotImplementedError
-
-    def pop(self):
-        try:
-            return self._objects.pop().pop()
-        except AttributeError:
-            return None
 
     def _process_app_attrs(self, attrs):
         "Process attributes of the application tag; Check only existence of attributes not the logical correctness"
@@ -154,19 +141,11 @@ class XmlParser(ContentHandler):
         res['use_gettext'] = bool(use_gettext)
 
         if attrs.get('use_new_namespace') == u'0' and attrs.get('language') == 'python':
-            logging.warning(
-                _('The loaded wxGlade designs are created to use the '
-                  'old Python import style ("from wxPython.wx '
-                  'import *)". The old import style is not supported '
-                  'anymore.')
-            )
-            logging.warning(
-                _('The designs will be loaded and the import style will '
-                  'be converted to new style imports ("import wx"). '
-                  'Please check your design carefully.')
-            )
+            logging.warning( _('The loaded wxGlade designs are created to use the old Python import style '
+                               '("from wxPython.wx import *)". The old import style is not supported anymore.') )
+            logging.warning( _('The designs will be loaded and the import style will be converted to new style imports '
+                               '("import wx"). Please check your design carefully.') )
             # no update necessary - the attribute will not be used anymore
-
         return res
 
     def _get_encoding(self, attrs):
@@ -257,15 +236,13 @@ class XmlWidgetBuilder(XmlParser):
             return
         if name == 'object':
             # remove last object from Stack
-            obj = self.pop()
+            obj = self._objects.pop()
             obj.notify_owner()
             if obj.klass in ('sizeritem', 'sizerslot'):
                 return
-            si = self._sizer_item.top()
-            if si is not None and si.parent == obj.parent:
-                obj.obj.copy_properties( si.obj, ("option","flag","border","span") )
-            if obj.klass == "wxGridBagSizer":
-                obj.obj._check_slots(remove_only=True)
+            if obj.sizeritem:
+                obj.obj.copy_properties( obj.sizeritem, ("option","flag","border","span") )
+            obj.obj.on_load()
         else:
             # end of a property or error
             # case 1: set _curr_prop value
@@ -381,10 +358,20 @@ class ClipboardXmlWidgetBuilder(XmlWidgetBuilder):
 
         # fake parent window object
         fake_parent = XmlClipboardObject(obj=parent, parent=parent)
+        if parent.is_sizer:
+            fake_parent.in_sizers = True
+            fake_parent.in_windows = False
+        else:
+            fake_parent.in_sizers = False
+            fake_parent.in_windows = True
+
+        self._objects.push(fake_parent)
 
         # fake sizer object
         if sizer:
             fake_sizer = XmlClipboardObject(obj=sizer, parent=parent)
+            fake_sizer.in_windows = False
+            fake_sizer.in_sizers = True
             sizeritem = Sizeritem()
             sizeritem.properties["proportion"].set(proportion)
             sizeritem.properties["span"].set(span)
@@ -393,15 +380,12 @@ class ClipboardXmlWidgetBuilder(XmlWidgetBuilder):
             sizeritem.properties["pos"].set(pos)
             # fake sizer item
             fake_sizeritem = XmlClipboardObject(obj=sizeritem, parent=parent)
+            fake_sizeritem.in_windows = False
+            fake_sizeritem.in_sizers = False
 
-        # push the fake objects on the stacks
-        self._objects.push(fake_parent)
-        self._windows.push(fake_parent)
-        if sizer:
             self._objects.push(fake_sizer)
-            self._sizers.push(fake_sizer)
             self._objects.push(fake_sizeritem)
-            self._sizer_item.push(fake_sizeritem)
+
 
         self.depth_level = 0
         self._appl_started = True  # no application tag when parsing from the clipboard
@@ -500,7 +484,6 @@ class ClipboardXmlWidgetBuilder(XmlWidgetBuilder):
         XmlWidgetBuilder.endElement(self, name)
 
 
-
 class XmlWidgetObject(object):
     "A class to encapsulate widget attributes read from a XML file, to store them until the widget can be created"
 
@@ -512,6 +495,7 @@ class XmlWidgetObject(object):
         self.parser = parser
         self.in_sizers = False   # if True, the widget is     a sizer, opposite of 'in_windows'
         self.in_windows = False  # if True, the widget is not a sizer, opposite of 'in_sizers'
+
         self._properties_added = []
         try:
             base = attrs.get('base', None)
@@ -519,31 +503,37 @@ class XmlWidgetObject(object):
         except KeyError:
             raise XmlParsingError(_("'object' items must have a 'class' attribute"))
 
+        # find sizeritem, sizer, parent window
+        sizeritem = sizer = parent = None
+        stack = self.parser._objects[:]
+        top = stack.pop(-1) if stack else None
+
+        if top and isinstance(top.obj, Sizeritem):
+            sizeritem = top.obj
+            top = stack.pop(-1)
+        if top and top.in_sizers:
+            sizer = top.obj
+            top = stack.pop(-1)
+        if top and top.in_windows:
+            parent = top.obj
+        while parent is None and stack:
+            top = stack.pop()
+            if top.in_windows: parent = top.obj
+
         if base is not None:
             # if base is not None, the object is a widget (or sizer), and not a sizeritem
-            sizer  = self.parser._sizers.top()
-            parent = self.parser._windows.top()
-            if parent is not None:
-                parent = self.parent = parent.obj
-            else:
-                self.parent = None
-            sizeritem = self.parser._sizer_item.top()
-            if sizeritem is not None:
-                sizeritem = sizeritem.obj
-            if sizer is not None:
-                # we must check if the sizer on the top of the stack is really the one we are looking for: to check this
-                if sizer.parent != parent:
-                    sizer = None
-                else:
-                    sizer = sizer.obj
+            self.sizeritem = sizeritem
 
             pos = getattr(sizeritem, 'pos', None)
-            if parent and hasattr(parent, 'virtual_sizer') and parent.virtual_sizer:
-                # virtual sizers don't use sizeritem objects around their items in XML
+            # XXX change this: don't use pos here at all; either we're just appending to the end or filling virtual sizers acc. to pagenames
+            #if pos is None and parent and hasattr(parent, 'virtual_sizer') and parent.virtual_sizer:
+            if pos is None and parent and hasattr(parent, 'virtual_sizer') and parent.virtual_sizer:
+                # virtual sizers don't use sizeritem objects around their items in XML; the index is found from the name
                 sizer = parent.virtual_sizer
                 sizer.node = parent.node
                 sizeritem = Sizeritem()
                 pos_ = sizer.get_itempos(attrs)
+                # XXXinsert empty slots before, if required
                 if pos_: pos = pos_  # when loading from a file, the names are set already and pos_ is not None
 
             # build the widget
@@ -552,36 +542,22 @@ class XmlWidgetObject(object):
             p = self.obj.properties.get("class")
             if p: p.set(self.klass)
 
-            # push the object on the appropriate stack
             if isinstance(self.obj, edit_sizers.SizerBase):
-                self.parser._sizers.push(self)
                 self.in_sizers = True
             else:
-                self.parser._windows.push(self)
                 self.in_windows = True
 
         elif self.klass == 'sizeritem':
             self.obj = Sizeritem()
-            self.parent = self.parser._windows.top().obj
-            self.parser._sizer_item.push(self)
+            self.parent = parent
 
         elif self.klass == 'sizerslot':
-            sizer = self.parser._sizers.top().obj
             assert sizer is not None, _("malformed wxg file: slots can only be inside sizers!")
             sizer._add_slot()
             sizer.layout()
-            self.parser._sizer_item.push(self)
 
         # push the object on the _objects stack
         self.parser._objects.push(self)
-
-    def pop(self):
-        if self.in_windows:
-            return self.parser._windows.pop()
-        elif self.in_sizers:
-            return self.parser._sizers.pop()
-        else:
-            return self.parser._sizer_item.pop()
 
     def add_property(self, name, val):
         """adds a property to this widget. This method is not called if there
@@ -598,6 +574,7 @@ class XmlWidgetObject(object):
         prop.load(val, activate=True)
         #self.obj.properties_changed([name])
         self._properties_added.append(name)
+
     def notify_owner(self):
         # notify owner about the added properties
         if not self._properties_added: return
@@ -606,29 +583,14 @@ class XmlWidgetObject(object):
 
 
 
-class Stack(object):
+class Stack(list):
     "Simple stack implementation"
-
-    def __init__(self):
-        self._repr = []
-
     def push(self, elem):
-        self._repr.append(elem)
-
-    def pop(self):
-        try:
-            return self._repr.pop()
-        except IndexError:
-            return None
-
+        self.append(elem)
     def top(self):
-        try:
-            return self._repr[-1]
-        except IndexError:
-            return None
-
+        return self and self[-1] or None
     def count(self):
-        return len(self._repr)
+        return len(self)
 
 
 
