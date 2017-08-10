@@ -175,6 +175,8 @@ class SizerSlot(np.PropertyOwner):
                     self.sizer.widget.Add(self.widget, self.pos, self.span, wx.EXPAND, self.border)
         # XXX update icon in Tree
 
+    def on_load(self):  # called from XML parser, right after the widget is loaded
+        pass
     def post_load(self): # called from show_widget
         pass
 
@@ -604,6 +606,12 @@ class Sizer(object):
         """For virtual sizers only, returns the position of the item in the parent:
         this is used when loading a wxg file, to build the tree of widgets correctly"""
         raise NotImplementedError
+
+    def on_load(self):  # called from XML parser, right after the widget is loaded
+        pass
+
+    def post_load(self):  # called from Tree when widget tree is first shown
+        pass
 
     def __getstate__(self):
         state = self.__dict__.copy()
@@ -2107,6 +2115,10 @@ class EditGridBagSizer(EditFlexGridSizer):
                 self._recreate(rows, cols, previous_rows, previous_cols)
 
         EditFlexGridSizer.properties_changed(self, modified)
+    def on_load(self):
+        # called from XML parser right after loading the widget
+        self._check_slots(remove_only=True)
+        EditFlexGridSizer.on_load(self)
 
 
 def _builder(parent, sizer, pos, orientation=wx.VERTICAL, slots=1, is_static=False, label="", number=[1]):

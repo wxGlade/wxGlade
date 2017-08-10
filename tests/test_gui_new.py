@@ -23,7 +23,7 @@ class TestGui(WXGladeGUITest):
         self._messageBox = None
         infilename = self._get_casefile_path('Notebook_wo_tabs.wxg')
         self.frame._open_app(infilename, use_progress_dialog=False, add_to_history=False)
-        self._assert_error_message('widget "notebook_1" does not have any tabs!')
+        self._assert_error_message('widget "notebook_1" does not have')
 
     def test_NotebookWithTabs(self):
         "Test loading Notebook with tabs"

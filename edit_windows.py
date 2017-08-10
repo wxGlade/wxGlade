@@ -291,6 +291,10 @@ class EditBase(EventsMixin, np.PropertyOwner):
         widget is currently selected; the default implementation does nothing."""
         pass
 
+    def on_load(self):
+        "called from XML parser, right after the widget is loaded"
+        pass
+
     def post_load(self):
         """Called after the loading of an app from a XML file, before showing the hierarchy of widget for the first time.
         The default implementation does nothing."""
