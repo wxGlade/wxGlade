@@ -138,8 +138,8 @@ class EditSplitterWindow(ManagedBase, EditStylesMixin):
 
         self.virtual_sizer = SplitterWindowSizer(self)
         labels = ("SLOT Left","SLOT Right") if orientation=="wxSPLIT_VERTICAL" else ("SLOT Top","SLOT Bottom")
-        self._window_1 = win_1 or SizerSlot(self, self.virtual_sizer, 1, labels[0])
-        self._window_2 = win_2 or SizerSlot(self, self.virtual_sizer, 2, labels[1])
+        self._window_1 = win_1 or SizerSlot(self, self.virtual_sizer, 1, label=labels[0])
+        self._window_2 = win_2 or SizerSlot(self, self.virtual_sizer, 2, label=labels[0])
 
     def create_widget(self):
         self.widget = wx.SplitterWindow(self.parent.widget, self.id, style=self.style)
@@ -205,6 +205,17 @@ class EditSplitterWindow(ManagedBase, EditStylesMixin):
 
         EditStylesMixin.properties_changed(self, modified)
         ManagedBase.properties_changed(self, modified)
+
+        if modified and "orientation" in modified:
+            # update horizontal/vertical icons
+            labels = ("SLOT Left","SLOT Right") if self.orientation=="wxSPLIT_VERTICAL" else ("SLOT Top","SLOT Bottom")
+            common.app_tree.refresh(self.node, refresh_label=False, refresh_image=True)
+            if isinstance(self._window_1, SizerSlot):
+                self._window_1.label = labels[0]
+                common.app_tree.refresh(self._window_1.node)
+            if isinstance(self._window_2, SizerSlot):
+                self._window_2.label = labels[1]
+                common.app_tree.refresh(self._window_2.node)
 
     def on_size(self, event):
         if not self.widget:
