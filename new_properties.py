@@ -1884,7 +1884,7 @@ class GridProperty(Property):
         # update content
         self._changing_value = True
         for i,row in enumerate(value):
-            for j, col in enumerate(row):
+            for j, col in enumerate(row or []):
                 self.grid.SetCellValue(i, j, compat.unicode(col))
         self._changing_value = False
 
