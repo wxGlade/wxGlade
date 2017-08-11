@@ -43,30 +43,10 @@ def show_widget(widget):
     while True:
         if not widget.node or not widget.node.parent: break  # Application.node is None
         parent = widget.node.parent.widget
-        if widget.klass == 'wxPanel':
-            # am I a wxPanel under a wxNotebook?
-            if parent.klass == 'wxNotebook':
-                if parent.widget:
-                    for i, editpanel in enumerate(parent.pages):
-                        try:
-                            if editpanel and widget.name == editpanel.name:
-                                # If I am under this tab...
-                                parent.widget.SetSelection(i)  # ...Show that tab.
-                                break
-                        except AttributeError:
-                            pass
-        elif parent.klass == 'wxPanel':
-            # am I a widget under a wxPanel under a wxNotebook?
-            if parent.parent and parent.parent.klass == 'wxNotebook':
-                if parent.parent.widget:
-                    for i,editpanel in enumerate(parent.parent.pages):
-                        try:
-                            if editpanel and parent.name == editpanel.name:
-                                parent.parent.widget.SetSelection(i)
-                                break
-                        except AttributeError:
-                            pass
-                parent = parent.parent  # skip one level
+        if parent.klass!="wxNotebook": continue
+        # a wiget under a wxNotebook without a panel: select page
+        if parent.widget and widget in parent.pages:
+            parent.widget.SetSelection( parent.pages.index(widget) )
 
         widget = parent  # go up one level
 
