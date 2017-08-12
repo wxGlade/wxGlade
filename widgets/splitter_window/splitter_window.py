@@ -304,6 +304,8 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
     #sizer.set_item(widget.pos, proportion=sizeritem.proportion, span=sizeritem.span, flag=sizeritem.flag, border=sizeritem.border)
     node = Node(widget)
     widget.node = node
+    widget.virtual_sizer.node = node
+
     if pos is None:
         common.app_tree.add(node, sizer.node)
     else:
