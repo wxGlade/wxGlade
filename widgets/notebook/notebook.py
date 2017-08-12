@@ -349,6 +349,10 @@ class EditNotebook(ManagedBase, EditStylesMixin):
         return ManagedBase.get_property_handler(self, name)
 
     def properties_changed(self, modified):
+        if modified and "tabs" in modified and self.widget:
+            for i,(tab,) in enumerate(self.tabs):
+                self.widget.SetPageText(i,tab)
+            
         EditStylesMixin.properties_changed(self, modified)
         ManagedBase.properties_changed(self, modified)
 

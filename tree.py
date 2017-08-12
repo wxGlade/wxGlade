@@ -448,6 +448,28 @@ class WidgetTree(wx.TreeCtrl, Tree):
         #if "name" not in widget.properties: evt.Veto()
         if not self._label_editable(widget): evt.Veto()
 
+    def _split_name_label(self, new_value):
+        # split user input into name and label; if there's no colon but a quotation mark, it's just a label
+        new_name = new_label = None
+        new_value = new_value.strip()
+        if new_value.endswith("'") and ": '" in new_value:
+            new_name, new_label = new_value.split(": '", 1)
+            new_label = new_label[:-1]
+        elif new_value.endswith('"') and ': "' in new_value:
+            new_name, new_label = new_value.split(': "', 1)
+            new_label = new_label[:-1]
+        elif new_value and new_value[0] in ["'",'"'] or new_value[-1] in ["'",'"']:
+            # just a label; for this we accept errors, we just want at least one quotation mark
+            if new_value[0]==new_value[-1] and len(new_value)>2:
+                new_label = new_value[1:-1]
+            elif new_value[0] in ["'",'"']:
+                new_label = new_value[1:]
+            elif new_value[-1] in ["'",'"']:
+                new_label = new_value[:-1]
+        elif not ":" in new_value:
+            new_name = new_value
+        return new_name, new_label
+
     def end_edit_label(self, evt):
         # Finish editing a label. This can be prevented by calling Veto()
         if evt.IsEditCancelled(): return
@@ -457,46 +479,60 @@ class WidgetTree(wx.TreeCtrl, Tree):
         if "name" not in widget.properties: return
 
         new_value = evt.Label
-        new_name = new_label = None
+        if new_value==self._build_label(node): return
+
+        new_name = new_label = new_title = new_tab = None
         if "label" in widget.properties and self._label_editable(widget):
-            # split user input into name and label; if there's no colon but a quotation mark, it's just a label
-            new_value = new_value.strip()
-            if new_value.endswith("'") and ": '" in new_value:
-                new_name, new_label = new_value.split(": '", 1)
-                new_label = new_label[:-1]
-            elif new_value.endswith('"') and ': "' in new_value:
-                new_name, new_label = new_value.split(': "', 1)
-                new_label = new_label[:-1]
-            elif new_value and new_value[0] in ["'",'"'] or new_value[-1] in ["'",'"']:
-                # just a label; for this we accept errors, we just want at least one quotation mark
-                if new_value[0]==new_value[-1] and len(new_value)>2:
-                    new_label = new_value[1:-1]
-                elif new_value[0] in ["'",'"']:
-                    new_label = new_value[1:]
-                elif new_value[-1] in ["'",'"']:
-                    new_label = new_value[:-1]
-            elif not ":" in new_value:
-                new_name = new_value
+            new_name, new_label = self._split_name_label(new_value)
+        elif "label" in widget.properties:
+            # label is not editable, but name may have changed
+            new_name, dummy = self._split_name_label(new_value)
+        elif getattr(node.widget, "has_title", None):
+            new_name, new_title = self._split_name_label(new_value)
+        elif getattr(node.widget, "parent", None) and node.widget.parent.klass=="wxNotebook" and "]" in new_value:
+            # notebook pages: include page title: "[title] name"
+            new_tab, new_name = new_value.rsplit("]",1)
+            if "[" in new_tab: new_tab = new_tab.split("[",1)[-1]
+            new_name = new_name.strip()
         else:
             new_name = new_value
 
+
+        # check name
         if new_name:
             name_p = widget.properties["name"]
-            if (new_name==name_p.get()): new_name = None
+            if new_name==name_p.get(): new_name = None
         if new_name:
             # check
             name_OK = name_p.check(new_name)
             if not name_OK: new_name = None
 
+        # check label
         if new_label is not None:
             label_p = widget.properties["label"]
-            if new_label==label_p.get():
-                new_label = None
-        if not new_name and new_label is None:
+            if new_label==label_p.get(): new_label = None
+        if not new_name and new_label is None and new_title is None and new_tab is None:
             # no change or an error
             wx.Bell()
             evt.Veto()
             return
+        # check title
+        if new_title is not None:
+            title_p = widget.properties["title"]
+            if new_title==title_p.get(): new_title = None
+        # check notabook tab
+        if new_tab is not None:
+            notebook = widget.parent
+            tabs_p = notebook.properties["tabs"]
+            if widget in notebook.pages:
+                index = notebook.pages.index(node.widget)
+                if notebook.tabs[index][0]==new_tab:
+                    new_tab = None
+                else:
+                    new_tabs = notebook.tabs[:]
+                    new_tabs[index][0] = new_tab
+            else:
+                new_tab = None
 
         # actually modify the values
         modified = set()
@@ -508,7 +544,14 @@ class WidgetTree(wx.TreeCtrl, Tree):
             label_p.previous_value = label_p.value
             label_p.set(new_label, notify=False)
             modified.add("label")
-        widget.properties_changed(modified)
+        if new_title:
+            title_p.previous_value = title_p.value
+            title_p.set(new_title, notify=False)
+            modified.add("title")
+        if modified: widget.properties_changed(modified)
+        if new_tab:
+            tabs_p.previous_value = tabs_p.value
+            tabs_p.set(new_tabs, notify=True)
         wx.CallAfter( self.refresh, node, refresh_label=True)  # setting from within the event handler does not work
 
     def _build_label(self, node):
@@ -548,6 +591,12 @@ class WidgetTree(wx.TreeCtrl, Tree):
         elif getattr(node.widget, "has_title", None):
             # include title
             s += ': "%s"'%node.widget.title
+        elif getattr(node.widget, "parent", None) and node.widget.parent.klass=="wxNotebook":
+            # notebook pages: include page title: "[title] name"
+            notebook = node.widget.parent
+            if node.widget in notebook.pages:
+                title = notebook.tabs[notebook.pages.index(node.widget)][0]
+                s = '[%s] %s'%(title, s)
         return s
 
     if compat.IS_CLASSIC:
