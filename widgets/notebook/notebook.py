@@ -398,7 +398,7 @@ class EditNotebook(ManagedBase, EditStylesMixin):
         for p,page in enumerate(self.pages):
             if page is not None: continue
             self.pages[p] = slot = SizerSlot(self, self.virtual_sizer, p+1)
-            node = slot.node = Node(slot)
+            node = slot.node = SlotNode(slot)
             common.app_tree.insert(node, self.node, p)
 
 editor_class = EditNotebook
@@ -446,6 +446,7 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
     #sizer.set_item(widget.pos)
     node = Node(widget)
     widget.node = node
+    widget.virtual_sizer.node = node
     if pos is None:
         common.app_tree.add(node, sizer.node)
     else:
