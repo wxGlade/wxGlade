@@ -136,6 +136,7 @@ class NotebookVirtualSizer(Sizer):
 
         self.window.widget.InsertPage(pos-1, slot.widget, label)
         self.window.widget.SetSelection(pos-1)
+        return slot
 
     def get_itempos(self, attrs):
         "Get position of sizer item (used in xml_parse)"

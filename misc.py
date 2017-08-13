@@ -396,6 +396,14 @@ def on_key_down_event(event):
     if event.ControlDown(): evt_flags |= wx.ACCEL_CTRL
     if event.ShiftDown():   evt_flags |= wx.ACCEL_SHIFT
     evt_key = event.GetKeyCode()
+    if focused_widget and evt_key in (wx.WXK_UP, wx.WXK_DOWN):
+        obj = event.GetEventObject()
+        toplevel_obj = obj.GetTopLevelParent()
+        if toplevel_obj!=common.app_tree.GetParent() and toplevel_obj!=common.palette and toplevel_obj!=common.property_panel:
+            # must be a design window
+            navigate( evt_key==wx.WXK_UP )
+            return
+
     for flags, key, function, args in accel_table:
         if evt_flags != flags or evt_key != key:
             continue
@@ -411,6 +419,43 @@ def on_key_down_event(event):
         return
     # not handled
     event.Skip()
+
+
+def navigate(up):
+    # must be a design window
+    print("DESIGN nav")
+    focused_item = focused_widget.node.item
+    if up:
+        item = common.app_tree.GetPrevSibling(focused_item)
+        if not item:
+            # no upper sibling -> go up
+            item = common.app_tree.GetItemParent(focused_item)
+            #item = common.app_tree.GetFirstChild(focused_item)
+        else:
+            # go down again
+            while common.app_tree.ItemHasChildren(item):
+                item = common.app_tree.GetLastChild(item)
+    else:
+        if common.app_tree.ItemHasChildren(focused_item):
+            item, token = common.app_tree.GetFirstChild(focused_item)
+        else:
+            item = common.app_tree.GetNextSibling(focused_item)
+            if not item:
+                item = focused_item
+                while True:
+                    parent = common.app_tree.GetItemParent(item)
+                    if not parent: return
+                    if common.app_tree.ItemHasChildren(parent):
+                        item = common.app_tree.GetNextSibling(parent)
+                        if common.app_tree._GetItemData( common.app_tree.GetNextSibling(parent) ):
+                            break
+                    item = parent
+
+    widget = getattr(common.app_tree._GetItemData(item), "widget", None)
+    if not widget: return
+    print("widget", widget)
+    set_focused_widget(widget)
+
 
 
 def _reverse_dict(src):
