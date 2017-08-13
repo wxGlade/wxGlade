@@ -300,6 +300,18 @@ def exec_after(func, *args, **kwargs):
 # key handlers
 import clipboard
 
+
+def restore_focus(func):
+    "try to restore the input focus"
+    def wrapper(*args, **kwargs):
+        focus = common.app_tree.FindFocus()
+        ret = func(*args, **kwargs)
+        if focus: focus.SetFocus()
+        return ret
+    wrapper.__name__ = func.__name__
+    return wrapper
+
+
 def _can_remove():
     global focused_widget
     if focused_widget is None or not hasattr(focused_widget, "remove"): return False
@@ -310,11 +322,17 @@ def _can_remove():
             return False
     return True
 
+@restore_focus
 def _remove():
     global focused_widget
     if not _can_remove(): return
-    focused_widget = focused_widget.remove()
+    previous_focus = focused_widget
+    focused_widget.remove()
+    if focused_widget==previous_focus:
+        # usually, remove() should set the focus to the empty slot or the parent of the widget, if not clear it here
+        focused_widget = None
 
+@restore_focus
 def _cut():
     global focused_widget
     if not _can_remove(): return
@@ -325,6 +343,7 @@ def _copy():
     if focused_widget is None: return
     clipboard.copy(focused_widget)
 
+@restore_focus
 def _paste():
     if focused_widget is None: return
     if not hasattr(focused_widget, "clipboard_paste"):
@@ -332,7 +351,7 @@ def _paste():
         return
     clipboard.paste(focused_widget)
 
-
+@restore_focus
 def _insert():
     global focused_widget
     if not focused_widget: return
@@ -341,6 +360,7 @@ def _insert():
     method = getattr(focused_widget.sizer, "insert_slot", None)
     if method: method(focused_widget.pos)
 
+@restore_focus
 def _add():
     global focused_widget
     if not focused_widget: return

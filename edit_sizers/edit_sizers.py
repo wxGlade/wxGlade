@@ -853,10 +853,15 @@ class SizerBase(Sizer, np.PropertyOwner):
         #sizer.remove_item(self)
         #sizer.insert_slot(self.pos)
 
-        # XXX as of now, this won't work
+        ## XXX as of now, this won't work
         return self.sizer.free_slot(self.pos)
 
-    remove = _remove # needed for consistency (common.focused_widget.remove)
+    def remove(self):
+        if self.toplevel:
+            parent = self.window
+        self._remove()
+        if self.toplevel:
+            misc.set_focused_widget(parent)
 
     def Destroy(self):
         GenButton.Destroy(self)
