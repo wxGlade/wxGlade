@@ -861,6 +861,11 @@ class TopLevelBase(WindowBase, PreviewMixin):
             x0,y0,width,height = page.GetRect() # c.GetClientRect()
             return self._find_widget_by_pos(page, x-x0,y-y0, level+1)
         ret = []
+        # check the widget itself
+        x0,y0,width,height = w.GetRect() # c.GetClientRect()
+        if x0 <= x <= x0+width and y0 <= y <= y0+height:
+            ret.append(w)
+        # and the children
         for c in w.GetChildren():
             x0,y0,width,height = c.GetRect() # c.GetClientRect()
             if x0 <= x <= x0+width and y0 <= y <= y0+height:
