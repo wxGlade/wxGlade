@@ -241,6 +241,10 @@ class EditSplitterWindow(ManagedBase, EditStylesMixin):
         # resize instead of drag & drop
         event.Skip()
 
+    def check_compatibility(self, widget, typename=None, report=False):
+        return (False,"No objects can be pasted here; paste to empty slots instead.")
+
+
 editor_class = EditSplitterWindow
 editor_name = 'EditSplitterWindow'
 editor_style = 'wxSPLIT_VERTICAL'
