@@ -631,8 +631,12 @@ class ManagedBase(WindowBase):
             self.sel_marker = None
         WindowBase.delete(self)
 
-    def remove(self, stage=None):
+    def _remove(self):
+        "don't set focus"
         self.sizer.free_slot(self.pos)
+
+    def remove(self):
+        self._remove()
         if self.sizer.is_virtual():
             #if not self.sizer.is_fixed():
             #    WindowBase.remove(self)

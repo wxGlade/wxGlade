@@ -266,6 +266,7 @@ class EditNotebook(ManagedBase, EditStylesMixin):
                 if config.debugging: raise
         self.properties["tabs"].update_display()
 
+    @misc.restore_focus
     def set_tabs(self, old_names, indices):
         """tabs: list of strings
         indices: the current indices of the tabs or None for a new tab; re-ordering is currently not supported"""
@@ -287,7 +288,7 @@ class EditNotebook(ManagedBase, EditStylesMixin):
             if not index in keep_indices:
                 self._is_removing_pages = True
                 self.virtual_sizer.remove_tab(index)            # remove from sizer; does not delete window
-                self.pages[index].remove(False)                 # delete the page content
+                self.pages[index]._remove()                     # delete the page content without setting the focus
                 common.app_tree.remove(self.pages[index].node)  # remove from tree
                 del self.pages[index]                           # delete from page list
                 del new_names[index]                            # delete from list of names
@@ -319,7 +320,7 @@ class EditNotebook(ManagedBase, EditStylesMixin):
                 pos_p.set(i+2+p)
 
             self.virtual_sizer.add_item(window, pos)
-            common.app_tree.insert(node, self.node, i)
+            common.app_tree.insert(node, self.node, i, select=False)
             # add to widget
             if self.widget:
                 window.create()
