@@ -358,11 +358,11 @@ class SizerSlot(np.PropertyOwner):
     def remove(self):
         # set focused widget
         sizer = self.sizer
+        pos = self.pos
         self._remove()
-        pos = (self.pos - 1) or 1
         if pos >= len(sizer.children):
-            pos -= 1  # the deleted slot was the last one; the check above ensures that at least one more slot is left
-        return sizer.children[pos]
+            pos = len(sizer.children)-1
+        misc.set_focused_widget( sizer.children[pos] )
 
     def on_drop_widget(self, event):
         """replaces self with a widget in self.sizer. This method is called

@@ -79,18 +79,20 @@ class SplitterWindowSizer(Sizer):
             if self.window.widget and self.window._window_1 and self.window._window_1.widget:
                 self.window.widget.Unsplit(self.window._window_1.widget)
             old_node = self.window._window_1.node
-            self.window._window_1 = SizerSlot(self.window, self, pos, labels[0]) # XXX no node, no tree visualization?
+            slot = SizerSlot(self.window, self, pos, labels[0]) # XXX no node, no tree visualization?
+            self.window._window_1 = slot
             w = self.window._window_1
         else:
             if self.window.widget and self.window._window_2 and self.window._window_2.widget:
                 self.window.widget.Unsplit()
             old_node = self.window._window_2.node
-            self.window._window_2 = SizerSlot(self.window, self, pos, labels[1]) # XXX no node, no tree visualization?
+            slot = SizerSlot(self.window, self, pos, labels[1]) # XXX no node, no tree visualization?
+            self.window._window_2 = slot
             w = self.window._window_2
         w.node = node = SlotNode(w)
         common.app_tree.change_node( old_node, w, node )
         self.window.split()
-        #w.widget.SetFocus()
+        return slot
 
     def get_itempos(self, attrs):
         "Get position of sizer item (used in xml_parse)"

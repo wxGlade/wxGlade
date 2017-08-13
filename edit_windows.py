@@ -633,17 +633,11 @@ class ManagedBase(WindowBase):
 
     def _remove(self):
         "don't set focus"
-        self.sizer.free_slot(self.pos)
+        return self.sizer.free_slot(self.pos)
 
     def remove(self):
-        self._remove()
-        if self.sizer.is_virtual():
-            #if not self.sizer.is_fixed():
-            #    WindowBase.remove(self)
-            pass
-        else:
-            # focus the freed slot
-            misc.set_focused_widget(self.sizer.children[self.pos])
+        slot = self._remove()
+        misc.set_focused_widget(slot)
 
     def on_mouse_events(self, event):
         if event.Dragging():
