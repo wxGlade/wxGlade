@@ -300,16 +300,24 @@ def exec_after(func, *args, **kwargs):
 # key handlers
 import clipboard
 
+def _can_remove():
+    global focused_widget
+    if focused_widget is None or not hasattr(focused_widget, "remove"): return False
+    if focused_widget.klass=="sizerslot" and hasattr(focused_widget, "sizer"):
+        sizer = focused_widget.sizer
+        if sizer.is_virtual() or focused_widget.sizer._IS_GRIDBAG:
+            wx.Bell()
+            return False
+    return True
+
 def _remove():
     global focused_widget
-    if focused_widget is None or not hasattr(focused_widget, "remove"): return
-    if focused_widget.klass=="sizerslot" and hasattr(focused_widget, "sizer") and focused_widget.sizer._IS_GRIDBAG:
-        return
+    if not _can_remove(): return
     focused_widget = focused_widget.remove()
 
 def _cut():
     global focused_widget
-    if focused_widget is None: return
+    if not _can_remove(): return
     clipboard.cut(focused_widget)
     #focused_widget = None
 
@@ -319,6 +327,9 @@ def _copy():
 
 def _paste():
     if focused_widget is None: return
+    if not hasattr(focused_widget, "clipboard_paste"):
+        wx.Bell()
+        return
     clipboard.paste(focused_widget)
 
 
