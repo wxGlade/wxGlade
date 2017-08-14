@@ -230,7 +230,7 @@ class wxGladeFrame(wx.Frame):
 
         # create the property and the tree frame
         self.create_property_panel(frame_style, icon, main_geometry)
-        self.create_tree_frame(frame_style, icon, main_geometry)
+        self.create_tree_frame(frame_style, icon, main_geometry)  # also creates Application object
         common.property_panel = self.property_frame
 
         # last visited directory, used on GTK for wxFileDialog
@@ -255,6 +255,7 @@ class wxGladeFrame(wx.Frame):
         self.tree_frame.SetAcceleratorTable(self.accel_table)
 
         self.Raise()
+        misc.set_focused_widget(common.app_tree.app)
 
         # disable autosave checks during unittests
         if not getattr(sys, '_called_from_test', False):
