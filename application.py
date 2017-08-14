@@ -166,9 +166,8 @@ class Application(np.PropertyOwner):
         if self.for_version.startswith('3.'):
             ## disable lisp for wx > 2.8
             if self.codewriters_prop.get_string_value() == 'lisp':
-                wx.MessageBox( _('Generating Lisp code for wxWidgets version %s is not supported.\n'
-                                 'Set version to "2.8" instead.') % self.for_version,
-                               _("Warning"), wx.OK | wx.CENTRE | wx.ICON_EXCLAMATION )
+                misc.warning_message( _('Generating Lisp code for wxWidgets version %s is not supported.\n'
+                                        'Set version to "2.8" instead.') % self.for_version )
                 self.for_version_prop.set_str_value('2.8')
                 self.set_for_version('2.8')
                 return
@@ -212,9 +211,8 @@ class Application(np.PropertyOwner):
         if language == 'lisp':
             for_version = self.for_version
             if for_version == '3.0':
-                wx.MessageBox( _('Generating Lisp code for wxWidgets version %s is not supported.\n'
-                                 'Set version to "2.8" instead.') % self.for_version,
-                               _("Warning"), wx.OK | wx.CENTRE | wx.ICON_EXCLAMATION )
+                misc.warning_message( _('Generating Lisp code for wxWidgets version %s is not supported.\n'
+                                        'Set version to "2.8" instead.') % self.for_version )
                 self.properties["for_version"].set('2.8')
             self.properties["for_version"].set_blocked(True)
         else:
@@ -335,8 +333,7 @@ class Application(np.PropertyOwner):
         name_p = self.properties["name"]
         class_p = self.properties["class"]
         if not preview and ( name_p.is_active() or class_p.is_active() ) and not self.top_window:
-            return wx.MessageBox( _("Please select a top window for the application"), _("Error"),
-                                  wx.OK | wx.CENTRE | wx.ICON_EXCLAMATION, common.palette )
+            return misc.error_message( "Please select a top window for the application" )
 
         if preview:
             writer = common.code_writers["python"].copy()
@@ -348,7 +345,7 @@ class Application(np.PropertyOwner):
             writer.generate_code(self.node, widget)
             writer.finalize()
         except errors.WxgBaseException as inst:
-            wx.MessageBox(_("Error generating code:\n%s") % inst, _("Error"), wx.OK | wx.CENTRE | wx.ICON_ERROR)
+            misc.error_message( _("Error generating code:\n%s")%inst )
         except EnvironmentError as inst:
             bugdialog.ShowEnvironmentError(_('An IO/OS related error is occurred:'), inst)
             bugdialog.Show(_('Generate Code'), inst)
@@ -356,8 +353,7 @@ class Application(np.PropertyOwner):
             if not preview:
                 if config.preferences.show_completion:
                     # Show informational dialog
-                    wx.MessageBox( _("Code generation completed successfully"),
-                                   _("Information"), wx.OK | wx.CENTRE | wx.ICON_INFORMATION )
+                    misc.info_message("Code generation completed successfully")
                 else:
                     # Show message in application status bar
                     app = wx.GetApp()
@@ -385,7 +381,7 @@ class Application(np.PropertyOwner):
                 elif not os.path.isdir(dirname):
                     error = "'%s' is not a directory"%dirname
             if error:
-                wx.MessageBox( error, _('Error'), wx.OK | wx.CENTRE | wx.ICON_EXCLAMATION )
+                misc.error_message(error)
                 return None
             while True:
                 out_name = os.path.join(dirname, "_%s_%d.py"%(basename,random.randrange(10**8, 10**9)))
@@ -431,10 +427,9 @@ class Application(np.PropertyOwner):
             preview_module_name = os.path.splitext(preview_module_name)[0]
             preview_module = plugins.import_module(preview_path, preview_module_name)
             if not preview_module:
-                wx.MessageBox( _('Can not import the preview module from file \n"%s".\n'
-                                 'The details are written to the log file.\nIf you think this is a wxGlade bug, please '
-                                 'report it.') % self.output_path,
-                               _('Error'), wx.OK | wx.CENTRE | wx.ICON_EXCLAMATION )
+                misc.error_message( _('Can not import the preview module from file \n"%s".\n'
+                                      'The details are written to the log file.\n'
+                                      'If you think this is a wxGlade bug, please report it.') % self.output_path )
                 return None
 
             try:
@@ -446,9 +441,8 @@ class Application(np.PropertyOwner):
                 preview_class = getattr(preview_module, widget.klass)
 
             if not preview_class:
-                wx.MessageBox( _('No preview class "%s" found.\nThe details are written to the log file.\n'
-                                 'If you think this is a wxGlade bug, please report it.') % widget.klass,
-                               _('Error'), wx.OK | wx.CENTRE | wx.ICON_EXCLAMATION )
+                misc.error_message( _('No preview class "%s" found.\nThe details are written to the log file.\n'
+                                      'If you think this is a wxGlade bug, please report it.') % widget.klass )
                 return None
 
             if issubclass(preview_class, wx.MDIChildFrame):
