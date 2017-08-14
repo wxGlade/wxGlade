@@ -175,7 +175,7 @@ class EditBase(EventsMixin, np.PropertyOwner):
             # convert relative event position to relative widget position
             event_pos  = event.GetPosition()                     # event position
             screen_pos = event_widget.ClientToScreen(event_pos)  # screen position
-            pos        = event_widget.ScreenToClient(screen_pos)        # client position
+            pos        = event_widget.ScreenToClient(screen_pos) # client position
         event_widget.PopupMenu(menu, pos=pos)
         menu.Destroy()
 
