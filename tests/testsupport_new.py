@@ -170,6 +170,22 @@ class WXGladeGUITest(WXGladeBaseTest):
         "Mock object for wx.MessageBox"
         self._messageBox = [message, caption]
 
+    def _assert_message(self, substring, caption ):
+        self.assertTrue( self._messageBox, "No %s message generated"%caption )
+        generated_message, generated_caption = self._messageBox
+        self.assertTrue( generated_caption==caption, "Expected %s message, got %s"%(caption, generated_caption) )
+        fmt='%s message does not match: Expected message containing "%s" \ngot wxMessageBox(message="%s", caption="%s")'
+        msg = fmt%(caption, substring, self._messageBox[0], self._messageBox[1] )
+        self.assertTrue( substring in generated_message, msg )
+        self._messageBox = None
+
+    def _assert_error_message(self, substring ):
+        self._assert_message(substring, u"Error")
+    def _assert_warning_message(self, substring ):
+        self._assert_message(substring, u"Warning")
+    def _assert_info_message(self, substring ):
+        self._assert_message(substring, u"Information")
+
     @classmethod
     def setUpClass(cls):
         WXGladeBaseTest.setUpClass()
@@ -282,14 +298,9 @@ class WXGladeGUITest(WXGladeBaseTest):
         app.generate_code()
 
         # first test should fail because no output file is given
-        err_msg = u'You must specify an output file\nbefore generating any code'
-        err_caption = u'Error'
-        self.assertTrue( [err_msg, err_caption] == self._messageBox,
-                      'Expected wxMessageBox(message="%s", caption="%s") got wxMessageBox(message="%s", caption="%s")'%(
-                       err_msg, err_caption, self._messageBox[0], self._messageBox[1]) )
+        self._assert_error_message( u'You must specify an output file' )
 
         # now test full code generation
-        self._messageBox = None
         for language, dummy, ext, dummy in self.language_constants:
             if not language in languages:
                 continue
@@ -317,12 +328,7 @@ class WXGladeGUITest(WXGladeBaseTest):
             self._process_wx_events()
             app.generate_code()
 
-            success_msg = u'Code generation completed successfully'
-            success_caption = u'Information'
-            self.assertTrue( [success_msg, success_caption] == self._messageBox,
-                      'Expected wxMessageBox(message="%s", caption="%s") got wxMessageBox(message="%s", caption="%s")'%(
-                       success_msg, success_caption, self._messageBox[0], self._messageBox[1]) )
-            self._messageBox = None
+            self._assert_info_message(u'Code generation completed successfully')
 
             compare_files = [(expected_filename, generated_filename)]
             if language == 'C++':

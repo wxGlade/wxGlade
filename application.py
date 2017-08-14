@@ -318,11 +318,9 @@ class Application(np.PropertyOwner):
     def generate_code(self, preview=False, out_path=None, widget=None):
         if out_path is None:
             out_path = os.path.expanduser(self.output_path.strip())
-            if not os.path.isabs(out_path) and self.filename:
+            if not os.path.isabs(out_path) and (out_path and self.filename):
                 out_path = os.path.join(os.path.dirname(self.filename), out_path)
                 out_path = os.path.normpath(out_path)
-            else:
-                out_path = None
 
         if not out_path:
             msg = "You must specify an output file before generating any code."

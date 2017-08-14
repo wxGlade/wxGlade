@@ -270,14 +270,6 @@ class TestGui(WXGladeGUITest):
             self._compare_files(expected_dialog, generate_dialog, check_mtime=check_mtime)
             self._compare_files(expected_frame,  generate_frame,  check_mtime=check_mtime)
 
-    def _assert_error_message(self, substring ):
-        self.assertTrue( self._messageBox, "No error message generated" )
-        
-        msg = ('Error message does not match: Expected message containing "%s"'
-              ' \ngot wxMessageBox(message="%s", caption="%s")'%(substring, self._messageBox[0], self._messageBox[1] ))
-        self.assertTrue( substring in self._messageBox[0], msg )
-        self._messageBox = None
-        
     def test_OutputFileAndDirectory(self):
         "Test check for output file and directory"
         infilename = self._get_casefile_path('Python_Preferences.wxg')
