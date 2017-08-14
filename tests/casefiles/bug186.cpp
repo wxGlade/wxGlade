@@ -21,8 +21,8 @@ Frame186::Frame186(wxWindow* parent, wxWindowID id, const wxString& title, const
 {
     // begin wxGlade: Frame186::Frame186
     Bug186_Frame_menubar = new wxMenuBar();
-    wxMenu* File = new wxMenu();
-    File->Append(myMagicMenu, _("Magic"), wxEmptyString, wxITEM_NORMAL);
+    File = new wxMenu();
+    File->Append(myMagicMenu, _("Magic"), wxEmptyString);
     Bug186_Frame_menubar->Append(File, _("File"));
     SetMenuBar(Bug186_Frame_menubar);
     Bug186_Frame_toolbar = new wxToolBar(this, -1);

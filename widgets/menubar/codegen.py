@@ -54,7 +54,7 @@ class PythonMenubarGenerator(wcodegen.PythonWidgetCodeWriter):
                     # checkable, radio or normal?
                     if item.checkable: item_type = cn('wxITEM_CHECK')
                     elif item.radio:   item_type = cn('wxITEM_RADIO')
-                    else:              item_type = cn('wxITEM_NORMAL')
+                    else:              item_type = None
 
                     # append and optionally assign the returned item to a temporary variable
                     if item.name:
@@ -68,10 +68,12 @@ class PythonMenubarGenerator(wcodegen.PythonWidgetCodeWriter):
                         assignment = 'item = '
                         id_access = 'item.GetId()'
                     else:
-                        # no assignment necessaray, as no handler defined
+                        # no assignment necessary, as no handler defined
                         assignment = ''
-
-                    out.append( '%s%s.Append(%s, %s, %s, %s)\n' % ( assignment, menu, id, label, help_str, item_type ) )
+                    if item_type:
+                        out.append( '%s%s.Append(%s, %s, %s, %s)\n'%(assignment, menu, id, label, help_str, item_type) )
+                    else:
+                        out.append( '%s%s.Append(%s, %s, %s)\n' % ( assignment, menu, id, label, help_str) )
 
                     if item.handler:
                         handler = item.handler if "." in item.handler else "self.%s"%item.handler
@@ -190,41 +192,75 @@ class CppMenubarGenerator(wcodegen.CppWidgetCodeWriter):
                 if item.name == '---':  # item is a separator
                     out.append('%s->AppendSeparator();\n' % menu)
                     continue
+                id_access = None
                 name, val = self.codegen.generate_code_id(None, item.id)
                 if not name and val == '-1':
                     id = 'wxNewId()'
                 else:
                     #if name: ids.append(name)
                     id = val
+                    if val!='wxID_ANY': id_access = val
+
+                label = quote_str(item.label)
+                help_str = quote_str(item.help_str)
                 if item.children:
                     name = item.name or '%s_sub'%menu
                     out.append('wxMenu* %s = new wxMenu();\n' % name)
                     append_items(name, item.children)
-                    args = (menu, id, quote_str(item.label), name, quote_str(item.help_str))
+                    args = (menu, id, label, name, help_str)
                     out.append('%s->Append(%s, %s, %s, %s);\n' % args)
                 else:
                     if item.checkable: item_type = 'wxITEM_CHECK'
                     elif item.radio:   item_type = 'wxITEM_RADIO'
-                    else:              item_type = 'wxITEM_NORMAL'
+                    else:              item_type = None
 
-                    args = (menu, id, quote_str(item.label), quote_str(item.help_str), item_type)
-                    out.append( '%s->Append(%s, %s, %s, %s);\n' % args )
+                    if item.name:
+                        # assign to attribute
+                        self.codegen.classes[obj.parent.klass].sub_objs.append( ('wxMenuItem',item.name) )
+                        assignment = '%s = '%item.name
+                        if not id_access:
+                            id_access = "%s->GetId()"%item.name
+                    elif item.handler and not id_access:
+                        # assignment to local variable to bind handler
+                        assignment = 'wxglade_tmp_item = '
+                        id_access = 'wxglade_tmp_item->GetId()'
+                    else:
+                        # no assignment necessary, as no handler defined
+                        assignment = ''
+
+                    if item_type:
+                        out.append('%s%s->Append(%s, %s, %s, %s);\n'%(assignment, menu, id, label, help_str, item_type))
+                    else:
+                        out.append( '%s%s->Append(%s, %s, %s);\n' % (assignment, menu, id, label, help_str) )
+
+                    if item.handler:
+                        # Python
+                        handler = item.handler if "::" in item.handler else '%s::%s'%(obj.parent.klass, item.handler)
+
+                        if self.codegen.for_version==(2,8):
+                            tmpl = 'Connect(%(id)s, wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(%(handler)s));\n'
+                        else:
+                            tmpl = 'Bind(wxEVT_MENU, &%(handler)s, this, %(id)s);\n'
+                        out.append( tmpl % {"id":id_access, "handler":handler} )
 
         obj_name = self.codegen.format_generic_access(obj)
 
-        i = 1
+        if any( m for m in obj.menus if not m.root.name ):
+            out.append('wxMenu *wxglade_tmp_menu;\n')
         for m in obj.menus:
             menu = m.root
             if menu.name:
+                # assign to attribute
                 name = menu.name
+                self.codegen.classes[obj.parent.klass].sub_objs.append( ('wxMenu',menu.name) )
             else:
-                name = 'wxglade_tmp_menu_%s' % i
-                i += 1
-            out.append('wxMenu* %s = new wxMenu();\n' % name)
+                name = 'wxglade_tmp_menu'
+            out.append('%s = new wxMenu();\n' % name)
             if menu.children:
                 append_items(name, menu.children)
             out.append('%sAppend(%s, %s);\n' % (obj_name, name, quote_str(menu.label)))
-
+        if any( [l for l in out if "wxglade_tmp_item =" in l]):
+            out.insert(1, "wxMenuItem *wxglade_tmp_item;\n" )
         return out
 
     def get_ids_code(self, obj):
@@ -251,11 +287,9 @@ class CppMenubarGenerator(wcodegen.CppWidgetCodeWriter):
 
         def do_get(item):
             ret = []
-            name, val = self.codegen.generate_code_id(None, item.id)
-            if not val:
-                val = '-1'  # but this is wrong anyway...
             if item.handler:
-                ret.append((val, 'EVT_MENU', item.handler, 'wxCommandEvent'))
+                # first item is None -> just generate stub for item.handler, do not bind again
+                ret.append((None, 'EVT_MENU', item.handler, 'wxCommandEvent'))
             if item.children:
                 for c in item.children:
                     ret.extend(do_get(c))
@@ -271,6 +305,6 @@ def initialize():
     klass = 'wxMenuBar'
     common.class_names['EditMenuBar'] = klass
     common.toplevels['EditMenuBar'] = 1
-    common.register('python', klass, PythonMenubarGenerator(klass) )#, 'menus', MenuHandler)
-    common.register('C++',    klass, CppMenubarGenerator(klass),   )# 'menus', MenuHandler)
-    common.register('XRC',    klass, xrc_code_generator,           )# 'menus', MenuHandler)
+    common.register('python', klass, PythonMenubarGenerator(klass) )
+    common.register('C++',    klass, CppMenubarGenerator(klass),   )
+    common.register('XRC',    klass, xrc_code_generator,           )

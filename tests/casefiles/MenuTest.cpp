@@ -21,74 +21,100 @@ MenuTestFrame::MenuTestFrame(wxWindow* parent, wxWindowID id, const wxString& ti
 {
     // begin wxGlade: MenuTestFrame::MenuTestFrame
     test_menubar = new wxMenuBar();
-    wxMenu* wxglade_tmp_menu_1 = new wxMenu();
-    wxglade_tmp_menu_1->Append(wxID_OPEN, wxT("&Open"), wxT("Stock ID"), wxITEM_NORMAL);
-    wxglade_tmp_menu_1->Append(wxID_HELP, wxT("Manual"), wxT("Stock ID, handler"), wxITEM_NORMAL);
-    wxglade_tmp_menu_1->Append(wxID_CLOSE, wxT("&Close file"), wxT("Stock ID, name, handler"), wxITEM_NORMAL);
-    wxglade_tmp_menu_1->Append(wxID_EXIT, wxT("E&xit"), wxT("Stock ID, name"), wxITEM_NORMAL);
-    wxglade_tmp_menu_1->AppendSeparator();
-    wxglade_tmp_menu_1->Append(wxID_OPEN, wxT("&Open"), wxT("Stock ID"), wxITEM_CHECK);
-    wxglade_tmp_menu_1->Append(wxID_HELP, wxT("Manual"), wxT("Stock ID, handler"), wxITEM_CHECK);
-    wxglade_tmp_menu_1->Append(wxID_CLOSE, wxT("&Close file"), wxT("Stock ID, name, handler"), wxITEM_CHECK);
-    wxglade_tmp_menu_1->Append(wxID_EXIT, wxT("E&xit"), wxT("Stock ID, name"), wxITEM_CHECK);
-    wxMenu* wxglade_tmp_menu_1_sub = new wxMenu();
-    wxglade_tmp_menu_1_sub->Append(wxID_OPEN, wxT("&Open"), wxT("Stock ID"), wxITEM_RADIO);
-    wxglade_tmp_menu_1_sub->Append(wxID_HELP, wxT("Manual"), wxT("Stock ID, handler"), wxITEM_RADIO);
-    wxglade_tmp_menu_1_sub->Append(wxID_CLOSE, wxT("&Close file"), wxT("Stock ID, name, handler"), wxITEM_RADIO);
-    wxglade_tmp_menu_1_sub->Append(wxID_EXIT, wxT("E&xit"), wxT("Stock ID, name"), wxITEM_RADIO);
-    wxglade_tmp_menu_1->Append(wxID_ANY, wxT("Radio"), wxglade_tmp_menu_1_sub, wxEmptyString);
-    test_menubar->Append(wxglade_tmp_menu_1, wxT("&Stock IDs"));
-    wxMenu* wxglade_tmp_menu_2 = new wxMenu();
-    wxglade_tmp_menu_2->Append(mn_ID1, wxT("Named 1"), wxT("Named ID"), wxITEM_NORMAL);
-    wxglade_tmp_menu_2->Append(mn_ID2, wxT("Named 2"), wxT("Named ID, handler"), wxITEM_NORMAL);
-    wxglade_tmp_menu_2->Append(mn_ID3, wxT("Named 3"), wxT("Named ID, name, handler"), wxITEM_NORMAL);
-    wxglade_tmp_menu_2->Append(mn_ID4, wxT("Named 4"), wxT("Named ID, name"), wxITEM_NORMAL);
-    wxglade_tmp_menu_2->AppendSeparator();
-    wxglade_tmp_menu_2->Append(mn_ID1C, wxT("Named 1"), wxT("Named ID"), wxITEM_CHECK);
-    wxglade_tmp_menu_2->Append(mn_ID2C, wxT("Named 2"), wxT("Named ID, handler"), wxITEM_CHECK);
-    wxglade_tmp_menu_2->Append(mn_ID3C, wxT("Named 3"), wxT("Named ID, name, handler"), wxITEM_CHECK);
-    wxglade_tmp_menu_2->Append(mn_ID4C, wxT("Named 4"), wxT("Named ID, name"), wxITEM_CHECK);
-    wxMenu* wxglade_tmp_menu_2_sub = new wxMenu();
-    wxglade_tmp_menu_2_sub->Append(mn_ID1R, wxT("Named 1"), wxT("Named ID"), wxITEM_RADIO);
-    wxglade_tmp_menu_2_sub->Append(mn_ID2R, wxT("Named 2"), wxT("Named ID, handler"), wxITEM_RADIO);
-    wxglade_tmp_menu_2_sub->Append(mn_ID3R, wxT("Named 3"), wxT("Named ID, name, handler"), wxITEM_RADIO);
-    wxglade_tmp_menu_2_sub->Append(mn_ID4R, wxT("Named 4"), wxT("Named ID, name"), wxITEM_RADIO);
-    wxglade_tmp_menu_2->Append(wxID_ANY, wxT("Radio"), wxglade_tmp_menu_2_sub, wxEmptyString);
-    test_menubar->Append(wxglade_tmp_menu_2, wxT("&Named ID"));
-    wxMenu* wxglade_tmp_menu_3 = new wxMenu();
-    wxglade_tmp_menu_3->Append(wxID_ANY, wxT("Auto 1"), wxT("Auto ID"), wxITEM_NORMAL);
-    wxglade_tmp_menu_3->Append(wxID_ANY, wxT("Auto 2"), wxT("Auto ID, handler"), wxITEM_NORMAL);
-    wxglade_tmp_menu_3->Append(wxID_ANY, wxT("Auto 3"), wxT("Auto ID, name, handler"), wxITEM_NORMAL);
-    wxglade_tmp_menu_3->Append(wxID_ANY, wxT("Auto 4"), wxT("Auto ID, name"), wxITEM_NORMAL);
-    wxglade_tmp_menu_3->AppendSeparator();
-    wxglade_tmp_menu_3->Append(wxID_ANY, wxT("Auto 1"), wxT("Auto ID"), wxITEM_CHECK);
-    wxglade_tmp_menu_3->Append(wxID_ANY, wxT("Auto 2"), wxT("Auto ID, handler"), wxITEM_CHECK);
-    wxglade_tmp_menu_3->Append(wxID_ANY, wxT("Auto 3"), wxT("Auto ID, name, handler"), wxITEM_CHECK);
-    wxglade_tmp_menu_3->Append(wxID_ANY, wxT("Auto 4"), wxT("Auto ID, name"), wxITEM_CHECK);
-    wxMenu* wxglade_tmp_menu_3_sub = new wxMenu();
-    wxglade_tmp_menu_3_sub->Append(wxID_ANY, wxT("Auto 1"), wxT("Auto ID"), wxITEM_RADIO);
-    wxglade_tmp_menu_3_sub->Append(wxID_ANY, wxT("Auto 2"), wxT("Auto ID, handler"), wxITEM_RADIO);
-    wxglade_tmp_menu_3_sub->Append(wxID_ANY, wxT("Auto 3"), wxT("Auto ID, name, handler"), wxITEM_RADIO);
-    wxglade_tmp_menu_3_sub->Append(wxID_ANY, wxT("Auto 4"), wxT("Auto ID, name"), wxITEM_RADIO);
-    wxglade_tmp_menu_3->Append(wxID_ANY, wxT("Radio"), wxglade_tmp_menu_3_sub, wxEmptyString);
-    test_menubar->Append(wxglade_tmp_menu_3, wxT("&Auto ID"));
-    wxMenu* wxglade_tmp_menu_4 = new wxMenu();
-    wxglade_tmp_menu_4->Append(wxNewId(), wxT("Minus1 1"), wxT("Minus1 ID"), wxITEM_NORMAL);
-    wxglade_tmp_menu_4->Append(wxNewId(), wxT("Minus1 2"), wxT("Minus1 ID, handler"), wxITEM_NORMAL);
-    wxglade_tmp_menu_4->Append(wxNewId(), wxT("Minus1 3"), wxT("Minus1 ID, name, handler"), wxITEM_NORMAL);
-    wxglade_tmp_menu_4->Append(wxNewId(), wxT("Minus1 4"), wxT("Minus1 ID, name"), wxITEM_NORMAL);
-    wxglade_tmp_menu_4->AppendSeparator();
-    wxglade_tmp_menu_4->Append(wxNewId(), wxT("Minus1 1"), wxT("Minus1 ID"), wxITEM_CHECK);
-    wxglade_tmp_menu_4->Append(wxNewId(), wxT("Minus1 2"), wxT("Minus1 ID, handler"), wxITEM_CHECK);
-    wxglade_tmp_menu_4->Append(wxNewId(), wxT("Minus1 3"), wxT("Minus1 ID, name, handler"), wxITEM_CHECK);
-    wxglade_tmp_menu_4->Append(wxNewId(), wxT("Minus1 4"), wxT("Minus1 ID, name"), wxITEM_CHECK);
-    wxMenu* wxglade_tmp_menu_4_sub = new wxMenu();
-    wxglade_tmp_menu_4_sub->Append(wxNewId(), wxT("Minus1 1"), wxT("Minus1 ID"), wxITEM_RADIO);
-    wxglade_tmp_menu_4_sub->Append(wxNewId(), wxT("Minus1 2"), wxT("Minus1 ID, handler"), wxITEM_RADIO);
-    wxglade_tmp_menu_4_sub->Append(wxNewId(), wxT("Minus1 3"), wxT("Minus1 ID, name, handler"), wxITEM_RADIO);
-    wxglade_tmp_menu_4_sub->Append(wxNewId(), wxT("Minus1 4"), wxT("Minus1 ID, name"), wxITEM_RADIO);
-    wxglade_tmp_menu_4->Append(wxID_ANY, wxT("Radio"), wxglade_tmp_menu_4_sub, wxEmptyString);
-    test_menubar->Append(wxglade_tmp_menu_4, wxT("&Minus1 ID"));
+    wxMenu *wxglade_tmp_menu;
+    wxMenuItem *wxglade_tmp_item;
+    wxglade_tmp_menu = new wxMenu();
+    wxglade_tmp_menu->Append(wxID_OPEN, wxT("&Open"), wxT("Stock ID"));
+    wxglade_tmp_menu->Append(wxID_HELP, wxT("Manual"), wxT("Stock ID, handler"));
+    Bind(wxEVT_MENU, &MenuTestFrame::onShowManual, this, wxID_HELP);
+    m_Close = wxglade_tmp_menu->Append(wxID_CLOSE, wxT("&Close file"), wxT("Stock ID, name, handler"));
+    Bind(wxEVT_MENU, &MenuTestFrame::onCloseFile, this, wxID_CLOSE);
+    m_Exit = wxglade_tmp_menu->Append(wxID_EXIT, wxT("E&xit"), wxT("Stock ID, name"));
+    wxglade_tmp_menu->AppendSeparator();
+    wxglade_tmp_menu->Append(wxID_OPEN, wxT("&Open"), wxT("Stock ID"), wxITEM_CHECK);
+    wxglade_tmp_menu->Append(wxID_HELP, wxT("Manual"), wxT("Stock ID, handler"), wxITEM_CHECK);
+    Bind(wxEVT_MENU, &MenuTestFrame::onShowManual, this, wxID_HELP);
+    m_Close = wxglade_tmp_menu->Append(wxID_CLOSE, wxT("&Close file"), wxT("Stock ID, name, handler"), wxITEM_CHECK);
+    Bind(wxEVT_MENU, &MenuTestFrame::onCloseFile, this, wxID_CLOSE);
+    m_Exit = wxglade_tmp_menu->Append(wxID_EXIT, wxT("E&xit"), wxT("Stock ID, name"), wxITEM_CHECK);
+    wxMenu* wxglade_tmp_menu_sub = new wxMenu();
+    wxglade_tmp_menu_sub->Append(wxID_OPEN, wxT("&Open"), wxT("Stock ID"), wxITEM_RADIO);
+    wxglade_tmp_menu_sub->Append(wxID_HELP, wxT("Manual"), wxT("Stock ID, handler"), wxITEM_RADIO);
+    Bind(wxEVT_MENU, &MenuTestFrame::onShowManual, this, wxID_HELP);
+    m_Close = wxglade_tmp_menu_sub->Append(wxID_CLOSE, wxT("&Close file"), wxT("Stock ID, name, handler"), wxITEM_RADIO);
+    Bind(wxEVT_MENU, &MenuTestFrame::onCloseFile, this, wxID_CLOSE);
+    m_Exit = wxglade_tmp_menu_sub->Append(wxID_EXIT, wxT("E&xit"), wxT("Stock ID, name"), wxITEM_RADIO);
+    wxglade_tmp_menu->Append(wxID_ANY, wxT("Radio"), wxglade_tmp_menu_sub, wxEmptyString);
+    test_menubar->Append(wxglade_tmp_menu, wxT("&Stock IDs"));
+    wxglade_tmp_menu = new wxMenu();
+    wxglade_tmp_menu->Append(mn_ID1, wxT("Named 1"), wxT("Named ID"));
+    wxglade_tmp_menu->Append(mn_ID2, wxT("Named 2"), wxT("Named ID, handler"));
+    Bind(wxEVT_MENU, &MenuTestFrame::on_named2, this, mn_ID2);
+    m_named = wxglade_tmp_menu->Append(mn_ID3, wxT("Named 3"), wxT("Named ID, name, handler"));
+    Bind(wxEVT_MENU, &MenuTestFrame::on_named3, this, mn_ID3);
+    m_named4 = wxglade_tmp_menu->Append(mn_ID4, wxT("Named 4"), wxT("Named ID, name"));
+    wxglade_tmp_menu->AppendSeparator();
+    wxglade_tmp_menu->Append(mn_ID1C, wxT("Named 1"), wxT("Named ID"), wxITEM_CHECK);
+    wxglade_tmp_menu->Append(mn_ID2C, wxT("Named 2"), wxT("Named ID, handler"), wxITEM_CHECK);
+    Bind(wxEVT_MENU, &MenuTestFrame::on_named2, this, mn_ID2C);
+    m_named3C = wxglade_tmp_menu->Append(mn_ID3C, wxT("Named 3"), wxT("Named ID, name, handler"), wxITEM_CHECK);
+    Bind(wxEVT_MENU, &MenuTestFrame::on_named3, this, mn_ID3C);
+    m_named4C = wxglade_tmp_menu->Append(mn_ID4C, wxT("Named 4"), wxT("Named ID, name"), wxITEM_CHECK);
+    wxMenu* wxglade_tmp_menu_sub = new wxMenu();
+    wxglade_tmp_menu_sub->Append(mn_ID1R, wxT("Named 1"), wxT("Named ID"), wxITEM_RADIO);
+    wxglade_tmp_menu_sub->Append(mn_ID2R, wxT("Named 2"), wxT("Named ID, handler"), wxITEM_RADIO);
+    Bind(wxEVT_MENU, &MenuTestFrame::on_named2, this, mn_ID2R);
+    m_named3R = wxglade_tmp_menu_sub->Append(mn_ID3R, wxT("Named 3"), wxT("Named ID, name, handler"), wxITEM_RADIO);
+    Bind(wxEVT_MENU, &MenuTestFrame::on_named3, this, mn_ID3R);
+    m_named4R = wxglade_tmp_menu_sub->Append(mn_ID4R, wxT("Named 4"), wxT("Named ID, name"), wxITEM_RADIO);
+    wxglade_tmp_menu->Append(wxID_ANY, wxT("Radio"), wxglade_tmp_menu_sub, wxEmptyString);
+    test_menubar->Append(wxglade_tmp_menu, wxT("&Named ID"));
+    wxglade_tmp_menu = new wxMenu();
+    wxglade_tmp_menu->Append(wxID_ANY, wxT("Auto 1"), wxT("Auto ID"));
+    wxglade_tmp_item = wxglade_tmp_menu->Append(wxID_ANY, wxT("Auto 2"), wxT("Auto ID, handler"));
+    Bind(wxEVT_MENU, &MenuTestFrame::on_auto2, this, wxglade_tmp_item->GetId());
+    m_auto3 = wxglade_tmp_menu->Append(wxID_ANY, wxT("Auto 3"), wxT("Auto ID, name, handler"));
+    Bind(wxEVT_MENU, &MenuTestFrame::on_auto3, this, m_auto3->GetId());
+    m_auto4 = wxglade_tmp_menu->Append(wxID_ANY, wxT("Auto 4"), wxT("Auto ID, name"));
+    wxglade_tmp_menu->AppendSeparator();
+    wxglade_tmp_menu->Append(wxID_ANY, wxT("Auto 1"), wxT("Auto ID"), wxITEM_CHECK);
+    wxglade_tmp_item = wxglade_tmp_menu->Append(wxID_ANY, wxT("Auto 2"), wxT("Auto ID, handler"), wxITEM_CHECK);
+    Bind(wxEVT_MENU, &MenuTestFrame::on_auto2, this, wxglade_tmp_item->GetId());
+    m_auto3C = wxglade_tmp_menu->Append(wxID_ANY, wxT("Auto 3"), wxT("Auto ID, name, handler"), wxITEM_CHECK);
+    Bind(wxEVT_MENU, &MenuTestFrame::on_auto3, this, m_auto3C->GetId());
+    m_auto4C = wxglade_tmp_menu->Append(wxID_ANY, wxT("Auto 4"), wxT("Auto ID, name"), wxITEM_CHECK);
+    wxMenu* wxglade_tmp_menu_sub = new wxMenu();
+    wxglade_tmp_menu_sub->Append(wxID_ANY, wxT("Auto 1"), wxT("Auto ID"), wxITEM_RADIO);
+    wxglade_tmp_item = wxglade_tmp_menu_sub->Append(wxID_ANY, wxT("Auto 2"), wxT("Auto ID, handler"), wxITEM_RADIO);
+    Bind(wxEVT_MENU, &MenuTestFrame::on_auto2, this, wxglade_tmp_item->GetId());
+    m_auto3R = wxglade_tmp_menu_sub->Append(wxID_ANY, wxT("Auto 3"), wxT("Auto ID, name, handler"), wxITEM_RADIO);
+    Bind(wxEVT_MENU, &MenuTestFrame::on_auto3, this, m_auto3R->GetId());
+    m_auto4R = wxglade_tmp_menu_sub->Append(wxID_ANY, wxT("Auto 4"), wxT("Auto ID, name"), wxITEM_RADIO);
+    wxglade_tmp_menu->Append(wxID_ANY, wxT("Radio"), wxglade_tmp_menu_sub, wxEmptyString);
+    test_menubar->Append(wxglade_tmp_menu, wxT("&Auto ID"));
+    wxglade_tmp_menu = new wxMenu();
+    wxglade_tmp_menu->Append(wxNewId(), wxT("Minus1 1"), wxT("Minus1 ID"));
+    wxglade_tmp_item = wxglade_tmp_menu->Append(wxNewId(), wxT("Minus1 2"), wxT("Minus1 ID, handler"));
+    Bind(wxEVT_MENU, &MenuTestFrame::on_Minus12, this, wxglade_tmp_item->GetId());
+    m_Minus13 = wxglade_tmp_menu->Append(wxNewId(), wxT("Minus1 3"), wxT("Minus1 ID, name, handler"));
+    Bind(wxEVT_MENU, &MenuTestFrame::on_Minus13, this, m_Minus13->GetId());
+    m_Minus14 = wxglade_tmp_menu->Append(wxNewId(), wxT("Minus1 4"), wxT("Minus1 ID, name"));
+    wxglade_tmp_menu->AppendSeparator();
+    wxglade_tmp_menu->Append(wxNewId(), wxT("Minus1 1"), wxT("Minus1 ID"), wxITEM_CHECK);
+    wxglade_tmp_item = wxglade_tmp_menu->Append(wxNewId(), wxT("Minus1 2"), wxT("Minus1 ID, handler"), wxITEM_CHECK);
+    Bind(wxEVT_MENU, &MenuTestFrame::on_Minus12, this, wxglade_tmp_item->GetId());
+    m_Minus13C = wxglade_tmp_menu->Append(wxNewId(), wxT("Minus1 3"), wxT("Minus1 ID, name, handler"), wxITEM_CHECK);
+    Bind(wxEVT_MENU, &MenuTestFrame::on_Minus13, this, m_Minus13C->GetId());
+    m_Minus14C = wxglade_tmp_menu->Append(wxNewId(), wxT("Minus1 4"), wxT("Minus1 ID, name"), wxITEM_CHECK);
+    wxMenu* wxglade_tmp_menu_sub = new wxMenu();
+    wxglade_tmp_menu_sub->Append(wxNewId(), wxT("Minus1 1"), wxT("Minus1 ID"), wxITEM_RADIO);
+    wxglade_tmp_item = wxglade_tmp_menu_sub->Append(wxNewId(), wxT("Minus1 2"), wxT("Minus1 ID, handler"), wxITEM_RADIO);
+    Bind(wxEVT_MENU, &MenuTestFrame::on_Minus12, this, wxglade_tmp_item->GetId());
+    m_Minus13R = wxglade_tmp_menu_sub->Append(wxNewId(), wxT("Minus1 3"), wxT("Minus1 ID, name, handler"), wxITEM_RADIO);
+    Bind(wxEVT_MENU, &MenuTestFrame::on_Minus13, this, m_Minus13R->GetId());
+    m_Minus14R = wxglade_tmp_menu_sub->Append(wxNewId(), wxT("Minus1 4"), wxT("Minus1 ID, name"), wxITEM_RADIO);
+    wxglade_tmp_menu->Append(wxID_ANY, wxT("Radio"), wxglade_tmp_menu_sub, wxEmptyString);
+    test_menubar->Append(wxglade_tmp_menu, wxT("&Minus1 ID"));
     SetMenuBar(test_menubar);
 
     set_properties();
@@ -121,34 +147,6 @@ void MenuTestFrame::do_layout()
 
 BEGIN_EVENT_TABLE(MenuTestFrame, wxFrame)
     // begin wxGlade: MenuTestFrame::event_table
-    EVT_MENU(wxID_HELP, MenuTestFrame::onShowManual)
-    EVT_MENU(wxID_CLOSE, MenuTestFrame::onCloseFile)
-    EVT_MENU(wxID_ANY, MenuTestFrame::---)
-    EVT_MENU(wxID_HELP, MenuTestFrame::onShowManual)
-    EVT_MENU(wxID_CLOSE, MenuTestFrame::onCloseFile)
-    EVT_MENU(wxID_HELP, MenuTestFrame::onShowManual)
-    EVT_MENU(wxID_CLOSE, MenuTestFrame::onCloseFile)
-    EVT_MENU(mn_ID2, MenuTestFrame::on_named2)
-    EVT_MENU(mn_ID3, MenuTestFrame::on_named3)
-    EVT_MENU(wxID_ANY, MenuTestFrame::---)
-    EVT_MENU(mn_ID2C, MenuTestFrame::on_named2)
-    EVT_MENU(mn_ID3C, MenuTestFrame::on_named3)
-    EVT_MENU(mn_ID2R, MenuTestFrame::on_named2)
-    EVT_MENU(mn_ID3R, MenuTestFrame::on_named3)
-    EVT_MENU(wxID_ANY, MenuTestFrame::on_auto2)
-    EVT_MENU(wxID_ANY, MenuTestFrame::on_auto3)
-    EVT_MENU(wxID_ANY, MenuTestFrame::---)
-    EVT_MENU(wxID_ANY, MenuTestFrame::on_auto2)
-    EVT_MENU(wxID_ANY, MenuTestFrame::on_auto3)
-    EVT_MENU(wxID_ANY, MenuTestFrame::on_auto2)
-    EVT_MENU(wxID_ANY, MenuTestFrame::on_auto3)
-    EVT_MENU(-1, MenuTestFrame::on_Minus12)
-    EVT_MENU(-1, MenuTestFrame::on_Minus13)
-    EVT_MENU(wxID_ANY, MenuTestFrame::---)
-    EVT_MENU(-1, MenuTestFrame::on_Minus12)
-    EVT_MENU(-1, MenuTestFrame::on_Minus13)
-    EVT_MENU(-1, MenuTestFrame::on_Minus12)
-    EVT_MENU(-1, MenuTestFrame::on_Minus13)
     // end wxGlade
 END_EVENT_TABLE();
 

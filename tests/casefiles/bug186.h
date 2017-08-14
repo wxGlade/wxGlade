@@ -48,6 +48,7 @@ private:
 
 protected:
     // begin wxGlade: Frame186::attributes
+    wxMenu* File;
     wxMenuBar* Bug186_Frame_menubar;
     wxToolBar* Bug186_Frame_toolbar;
     wxTextCtrl* text_ctrl_1;

@@ -60,6 +60,9 @@ private:
 
 protected:
     // begin wxGlade: All_Widgets_Frame::attributes
+    wxMenuItem* mn_Unix;
+    wxMenuItem* mn_Windows;
+    wxMenuItem* mn_RemoveTabs;
     wxMenuBar* All_Widgets_menubar;
     wxStatusBar* All_Widgets_statusbar;
     wxToolBar* All_Widgets_toolbar;
