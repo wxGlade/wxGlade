@@ -308,18 +308,30 @@ class Application(np.PropertyOwner):
         p["indent_amount"].set(config.default_indent_amount)
         p["source_extension"].set('cpp')
         p["header_extension"].set('h')
-        p["output_path"].set("")
+        if config.default_multiple_files:
+            p["output_path"].set("wxglade_out")
+        else:
+            p["output_path"].set("wxglade_out.dummy")  # will be changed by _set_language()
         p["top_window"].set('')
         p["top_window"].set_choices([])
         # do not reset language, but call set_language anyway to update the wildcard of the file dialog
         self._set_language()
 
-    #def generate_code(self, *args, **kwds):
-        #preview = kwds.get('preview', False)
     def generate_code(self, preview=False, out_path=None, widget=None):
-        if not out_path and not self.output_path:
-            return wx.MessageBox( _("You must specify an output file\nbefore generating any code"),
-                                  _("Error"), wx.OK | wx.CENTRE | wx.ICON_EXCLAMATION, common.palette )
+        if out_path is None:
+            out_path = os.path.expanduser(self.output_path.strip())
+            if not os.path.isabs(out_path) and self.filename:
+                out_path = os.path.join(os.path.dirname(self.filename), out_path)
+                out_path = os.path.normpath(out_path)
+            else:
+                out_path = None
+
+        if not out_path:
+            msg = "You must specify an output file before generating any code."
+            if not self.filename:
+                msg += "\nFor relative file names, the project needs to be saved first."
+            return misc.error_message( msg )
+
         name_p = self.properties["name"]
         class_p = self.properties["class"]
         if not preview and ( name_p.is_active() or class_p.is_active() ) and not self.top_window:
@@ -330,12 +342,6 @@ class Application(np.PropertyOwner):
             writer = common.code_writers["python"].copy()
         else:
             writer = common.code_writers[self.language]#.copy()
-
-        if out_path is None:
-            out_path = os.path.expanduser(self.output_path.strip())
-            if not os.path.isabs(out_path) and self.filename:
-                out_path = os.path.join(os.path.dirname(self.filename), out_path)
-                out_path = os.path.normpath(out_path)
 
         try:
             writer.new_project(self, out_path, preview)
@@ -385,6 +391,7 @@ class Application(np.PropertyOwner):
                 out_name = os.path.join(dirname, "_%s_%d.py"%(basename,random.randrange(10**8, 10**9)))
                 if not os.path.exists(out_name): break
         return out_name
+
     def preview(self, widget):
         """Generate and instantiate preview widget.
         None will be returned in case of errors. The error details are written to the application log file."""

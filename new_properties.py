@@ -1561,7 +1561,7 @@ class FileNameProperty(DialogProperty):
             if directory and not os.path.isdir(directory):
                 directory = os.path.dirname(directory)
             if not os.path.isdir(directory):
-                if not self.value and not app_filename: return
+                if not app_filename: return
                 directory = os.path.dirname(app_filename)
                 if not os.path.isdir(directory): return
             import subprocess

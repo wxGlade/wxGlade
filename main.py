@@ -593,6 +593,7 @@ class wxGladeFrame(wx.Frame):
             common.remove_autosaved()
             if config.preferences.autosave and self.autosave_timer is not None:
                 self.autosave_timer.Start()
+            misc.set_focused_widget(common.app_tree.root.widget)
 
     def new_app_from_template(self):
         "creates a new wxGlade project from an existing template file"
