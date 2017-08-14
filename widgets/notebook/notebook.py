@@ -224,6 +224,7 @@ class EditNotebook(ManagedBase, EditStylesMixin):
             c.create()
             if isinstance(c, SizerSlot):
                 self.widget.AddPage(c.widget, label[0])
+        self.widget.Bind(wx.EVT_KEY_DOWN, misc.on_key_down_event)
 
     def on_set_focus(self, event):
         # allow switching of pages

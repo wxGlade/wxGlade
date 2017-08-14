@@ -423,7 +423,6 @@ def on_key_down_event(event):
 
 def navigate(up):
     # must be a design window
-    print("DESIGN nav")
     focused_item = focused_widget.node.item
     if up:
         item = common.app_tree.GetPrevSibling(focused_item)
@@ -453,7 +452,6 @@ def navigate(up):
 
     widget = getattr(common.app_tree._GetItemData(item), "widget", None)
     if not widget: return
-    print("widget", widget)
     set_focused_widget(widget)
 
 
