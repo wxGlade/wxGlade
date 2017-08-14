@@ -3,7 +3,7 @@ wxSplitterWindow objects
 
 @copyright: 2002-2007 Alberto Griggio
 @copyright: 2014-2016 Carsten Grohmann
-@copyright: 2016 Dietmar Schwertberger
+@copyright: 2016-2017 Dietmar Schwertberger
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
@@ -39,19 +39,14 @@ class ChildWidgetNameProperty(np.Property):
 class SplitterWindowSizer(Sizer):
     "'Virtual sizer' responsible for the management of a SplitterWindow"
     PROPERTIES = []
-    #def set_item(self, pos, proportion=None, span=None, flag=None, border=None, size=None, force_layout=True):
-        #"Updates the layout of the item at the given pos"
-        #if self.window.widget and self.window.window_old and self.window.window_old.widget:
-            #self.window.widget.Unsplit(self.window.window_old.widget)
-            #self.window.window_old = None
-        #if self.window._window_1 and self.window._window_2:
-            #self.window.split()
-
     def item_properties_modified(self, widget, modified=None, force_layout=True):
         "Updates the layout of the item"
-        if self.window.widget and self.window.window_old and self.window.window_old.widget:
-            self.window.widget.Unsplit(self.window.window_old.widget)
-            self.window.window_old = None
+        if self.window.widget and self.window.window_old:
+            if self.window.window_old.widget:
+                self.window.widget.Unsplit(self.window.window_old.widget)
+            elif self.window.widget.IsSplit(): # the child widget may have been delete meanwhile by tree remove_rec
+                self.window.widget.Unsplit()
+        self.window.window_old = None
         if self.window._window_1 and self.window._window_2:
             self.window.split()
 
@@ -84,7 +79,7 @@ class SplitterWindowSizer(Sizer):
             w = self.window._window_1
         else:
             if self.window.widget and self.window._window_2 and self.window._window_2.widget:
-                self.window.widget.Unsplit()
+                self.window.widget.Unsplit(self.window._window_1.widget)
             old_node = self.window._window_2.node
             slot = SizerSlot(self.window, self, pos, labels[1]) # XXX no node, no tree visualization?
             self.window._window_2 = slot
@@ -189,7 +184,7 @@ class EditSplitterWindow(ManagedBase, EditStylesMixin):
         if sash_pos_p.is_active():
             sash_pos = sash_pos_p.get()
         else:
-            max_pos = self.widget.GetClientSize() [0 if orientation=='wxSPLIT_VERTICAL' else 0]
+            max_pos = self.widget.GetClientSize() [0 if orientation=='wxSPLIT_VERTICAL' else 1]
             sash_pos = max_pos // 2
         if orientation == 'wxSPLIT_VERTICAL':
             self.widget.SplitVertically  (self._window_1.widget, self._window_2.widget, sash_pos)
