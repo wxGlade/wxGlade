@@ -2076,6 +2076,19 @@ class EditGridBagSizer(EditFlexGridSizer):
         cols = [c for c in range(self.cols) if c!=col]
         self._recreate(None, cols, self.rows, self.cols)
 
+
+    def insert_row(self, pos=-1):
+        row,col = self._get_row_col(pos)
+        rows = [r for r in range(self.rows)]
+        rows.insert(row, None)
+        self._recreate(rows, None, self.rows, self.cols)
+
+    def insert_col(self, pos=-1):
+        row,col = self._get_row_col(pos)
+        cols = [c for c in range(self.cols)]
+        cols.insert(col, None)
+        self._recreate(None, cols, self.rows, self.cols)
+
     def _set_row_col_range(self):
         "set ranges of rows/cols properties"
         max_row, max_col = self._get_max_row_col()
