@@ -30,8 +30,9 @@ MyMenuBar::MyMenuBar():
 void MyMenuBar::set_properties()
 {
     // begin wxGlade: MyMenuBar::set_properties
-    wxMenu* wxglade_tmp_menu_1 = new wxMenu();
-    Append(wxglade_tmp_menu_1, wxT("File"));
+    wxMenu *wxglade_tmp_menu;
+    wxglade_tmp_menu = new wxMenu();
+    Append(wxglade_tmp_menu, wxT("File"));
     // end wxGlade
 }
 

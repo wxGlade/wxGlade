@@ -55,23 +55,28 @@ All_Widgets_Frame::All_Widgets_Frame(wxWindow* parent, wxWindowID id, const wxSt
     notebook_1_wxButton = new wxPanel(notebook_1, wxID_ANY);
     notebook_1_wxBitmapButton = new wxPanel(notebook_1, wxID_ANY);
     All_Widgets_menubar = new wxMenuBar();
-    wxMenu* wxglade_tmp_menu_1 = new wxMenu();
-    wxglade_tmp_menu_1->Append(wxID_OPEN, _("&Open"), _("Open an existing document"), wxITEM_NORMAL);
-    wxglade_tmp_menu_1->Append(wxID_CLOSE, _("&Close file"), _("Close current document"), wxITEM_NORMAL);
-    wxglade_tmp_menu_1->AppendSeparator();
-    wxglade_tmp_menu_1->Append(wxID_EXIT, _("E&xit"), _("Finish program"), wxITEM_NORMAL);
-    All_Widgets_menubar->Append(wxglade_tmp_menu_1, _("&File"));
-    wxMenu* wxglade_tmp_menu_2 = new wxMenu();
-    wxglade_tmp_menu_2->Append(mn_IDUnix, _("Unix"), _("Use Unix line endings"), wxITEM_RADIO);
-    wxglade_tmp_menu_2->Append(mn_IDWindows, _("Windows"), _("Use Windows line endings"), wxITEM_RADIO);
-    wxglade_tmp_menu_2->AppendSeparator();
-    wxglade_tmp_menu_2->Append(wxID_ANY, _("Remove Tabs"), _("Remove all leading tabs"), wxITEM_CHECK);
-    All_Widgets_menubar->Append(wxglade_tmp_menu_2, _("&Edit"));
-    wxMenu* wxglade_tmp_menu_3 = new wxMenu();
-    wxglade_tmp_menu_3->Append(wxID_HELP, _("Manual"), _("Show the application manual"), wxITEM_NORMAL);
-    wxglade_tmp_menu_3->AppendSeparator();
-    wxglade_tmp_menu_3->Append(wxID_ABOUT, _("About"), _("Show the About dialog"), wxITEM_NORMAL);
-    All_Widgets_menubar->Append(wxglade_tmp_menu_3, _("&Help"));
+    wxMenu *wxglade_tmp_menu;
+    wxglade_tmp_menu = new wxMenu();
+    wxglade_tmp_menu->Append(wxID_OPEN, _("&Open"), _("Open an existing document"));
+    wxglade_tmp_menu->Append(wxID_CLOSE, _("&Close file"), _("Close current document"));
+    wxglade_tmp_menu->AppendSeparator();
+    wxglade_tmp_menu->Append(wxID_EXIT, _("E&xit"), _("Finish program"));
+    All_Widgets_menubar->Append(wxglade_tmp_menu, _("&File"));
+    wxglade_tmp_menu = new wxMenu();
+    mn_Unix = wxglade_tmp_menu->Append(mn_IDUnix, _("Unix"), _("Use Unix line endings"), wxITEM_RADIO);
+    Connect(mn_IDUnix, wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(All_Widgets_Frame::onSelectUnix));
+    mn_Windows = wxglade_tmp_menu->Append(mn_IDWindows, _("Windows"), _("Use Windows line endings"), wxITEM_RADIO);
+    Connect(mn_IDWindows, wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(All_Widgets_Frame::onSelectWindows));
+    wxglade_tmp_menu->AppendSeparator();
+    mn_RemoveTabs = wxglade_tmp_menu->Append(wxID_ANY, _("Remove Tabs"), _("Remove all leading tabs"), wxITEM_CHECK);
+    Connect(mn_RemoveTabs->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(All_Widgets_Frame::onRemoveTabs));
+    All_Widgets_menubar->Append(wxglade_tmp_menu, _("&Edit"));
+    wxglade_tmp_menu = new wxMenu();
+    wxglade_tmp_menu->Append(wxID_HELP, _("Manual"), _("Show the application manual"));
+    Connect(wxID_HELP, wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(All_Widgets_Frame::onShowManual));
+    wxglade_tmp_menu->AppendSeparator();
+    wxglade_tmp_menu->Append(wxID_ABOUT, _("About"), _("Show the About dialog"));
+    All_Widgets_menubar->Append(wxglade_tmp_menu, _("&Help"));
     SetMenuBar(All_Widgets_menubar);
     All_Widgets_statusbar = CreateStatusBar(1, wxST_SIZEGRIP);
     All_Widgets_toolbar = new wxToolBar(this, -1);
@@ -419,10 +424,6 @@ void All_Widgets_Frame::do_layout()
 
 BEGIN_EVENT_TABLE(All_Widgets_Frame, wxFrame)
     // begin wxGlade: All_Widgets_Frame::event_table
-    EVT_MENU(mn_IDUnix, All_Widgets_Frame::onSelectUnix)
-    EVT_MENU(mn_IDWindows, All_Widgets_Frame::onSelectWindows)
-    EVT_MENU(wxID_ANY, All_Widgets_Frame::onRemoveTabs)
-    EVT_MENU(wxID_HELP, All_Widgets_Frame::onShowManual)
     EVT_NOTEBOOK_PAGE_CHANGED(wxID_ANY, All_Widgets_Frame::OnNotebookPageChanged)
     EVT_NOTEBOOK_PAGE_CHANGING(wxID_ANY, All_Widgets_Frame::OnNotebookPageChanging)
     EVT_BUTTON(wxID_ANY, All_Widgets_Frame::onStartConverting)

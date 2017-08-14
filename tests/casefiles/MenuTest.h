@@ -51,6 +51,30 @@ private:
 
 protected:
     // begin wxGlade: MenuTestFrame::attributes
+    wxMenuItem* m_Close;
+    wxMenuItem* m_Exit;
+    wxMenuItem* m_Close;
+    wxMenuItem* m_Exit;
+    wxMenuItem* m_Close;
+    wxMenuItem* m_Exit;
+    wxMenuItem* m_named;
+    wxMenuItem* m_named4;
+    wxMenuItem* m_named3C;
+    wxMenuItem* m_named4C;
+    wxMenuItem* m_named3R;
+    wxMenuItem* m_named4R;
+    wxMenuItem* m_auto3;
+    wxMenuItem* m_auto4;
+    wxMenuItem* m_auto3C;
+    wxMenuItem* m_auto4C;
+    wxMenuItem* m_auto3R;
+    wxMenuItem* m_auto4R;
+    wxMenuItem* m_Minus13;
+    wxMenuItem* m_Minus14;
+    wxMenuItem* m_Minus13C;
+    wxMenuItem* m_Minus14C;
+    wxMenuItem* m_Minus13R;
+    wxMenuItem* m_Minus14R;
     wxMenuBar* test_menubar;
     // end wxGlade
 

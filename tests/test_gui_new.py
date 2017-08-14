@@ -318,6 +318,9 @@ class TestGui(WXGladeGUITest):
     def test_SizersSize(self):
         self.load_and_generate('SizersSizeTests', test_GUI=True)
 
+    def test_Menu(self):
+        self.load_and_generate('MenuTest', excluded=["lisp"], test_GUI=True)
+
     def _assert_styles(self, got, expected, msg=None):
         if isinstance(got,      str): got      = got.split("|")
         if isinstance(expected, str): expected = expected.split("|")

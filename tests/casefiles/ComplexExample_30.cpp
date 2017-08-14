@@ -27,13 +27,17 @@ PyOgg2_MyFrame::PyOgg2_MyFrame(wxWindow* parent, wxWindowID id, const wxString& 
     notebook_1_pane_2 = new wxPanel(notebook_1, wxID_ANY);
     notebook_1_pane_1 = new wxPanel(notebook_1, wxID_ANY);
     Mp3_To_Ogg_menubar = new wxMenuBar();
-    wxMenu* wxglade_tmp_menu_1 = new wxMenu();
-    wxglade_tmp_menu_1->Append(wxID_OPEN, _("&Open"), wxEmptyString, wxITEM_NORMAL);
-    wxglade_tmp_menu_1->Append(wxID_EXIT, _("&Quit"), wxEmptyString, wxITEM_NORMAL);
-    Mp3_To_Ogg_menubar->Append(wxglade_tmp_menu_1, _("&File"));
-    wxMenu* wxglade_tmp_menu_2 = new wxMenu();
-    wxglade_tmp_menu_2->Append(wxID_ABOUT, _("&About"), _("About dialog"), wxITEM_NORMAL);
-    Mp3_To_Ogg_menubar->Append(wxglade_tmp_menu_2, _("&Help"));
+    wxMenu *wxglade_tmp_menu;
+    wxglade_tmp_menu = new wxMenu();
+    wxglade_tmp_menu->Append(wxID_OPEN, _("&Open"), wxEmptyString);
+    Bind(wxEVT_MENU, &PyOgg2_MyFrame::OnOpen, this, wxID_OPEN);
+    wxglade_tmp_menu->Append(wxID_EXIT, _("&Quit"), wxEmptyString);
+    Bind(wxEVT_MENU, &PyOgg2_MyFrame::OnClose, this, wxID_EXIT);
+    Mp3_To_Ogg_menubar->Append(wxglade_tmp_menu, _("&File"));
+    wxglade_tmp_menu = new wxMenu();
+    wxglade_tmp_menu->Append(wxID_ABOUT, _("&About"), _("About dialog"));
+    Bind(wxEVT_MENU, &PyOgg2_MyFrame::OnAboutDialog, this, wxID_ABOUT);
+    Mp3_To_Ogg_menubar->Append(wxglade_tmp_menu, _("&Help"));
     SetMenuBar(Mp3_To_Ogg_menubar);
     Mp3_To_Ogg_statusbar = CreateStatusBar(2);
     Mp3_To_Ogg_toolbar = new wxToolBar(this, -1, wxDefaultPosition, wxDefaultSize, wxTB_HORIZONTAL|wxTB_TEXT);
@@ -148,9 +152,6 @@ void PyOgg2_MyFrame::do_layout()
 
 BEGIN_EVENT_TABLE(PyOgg2_MyFrame, wxFrame)
     // begin wxGlade: PyOgg2_MyFrame::event_table
-    EVT_MENU(wxID_OPEN, PyOgg2_MyFrame::OnOpen)
-    EVT_MENU(wxID_EXIT, PyOgg2_MyFrame::OnClose)
-    EVT_MENU(wxID_ABOUT, PyOgg2_MyFrame::OnAboutDialog)
     EVT_TOOL(wxID_OPEN, PyOgg2_MyFrame::OnOpen)
     EVT_BUTTON(wxID_ANY, PyOgg2_MyFrame::startConverting)
     // end wxGlade

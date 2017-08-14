@@ -135,8 +135,7 @@ class SourceFileContent(BaseSourceFileContent):
         out_lines = []
         for line in tmp_in:
             comment_index = line.find('/*')
-            if not inside_comment and comment_index != -1 \
-                   and comment_index > line.find('//'):
+            if not inside_comment and comment_index != -1 and comment_index > line.find('//'):
                 inside_comment = True
             if inside_comment:
                 end_index = line.find('*/')
@@ -180,8 +179,7 @@ class SourceFileContent(BaseSourceFileContent):
                             prev_was_handler = True
                             which_handler = result.group('handler')
                             which_class = self.class_name
-                            self.event_handlers.setdefault(
-                                which_class, {})[which_handler] = 1
+                            self.event_handlers.setdefault(which_class, {})[which_handler] = 1
                         else:
                             if prev_was_handler:
                                 # add extra event handlers here...
@@ -1059,6 +1057,7 @@ void %(klass)s::%(handler)s(%(evt_type)s &event)  // wxGlade: %(klass)s.<event_h
         write(tab + '// begin wxGlade: %s::event_table\n' % code_obj.klass)
 
         for win_id, event, handler, evt_type in event_handlers:
+            if win_id is None: continue
             if 'EVT_NAVIGATION_KEY' in event:
                 tmpl = '%(tab)s%(event)s(%(klass)s::%(handler)s)\n'
             else:
