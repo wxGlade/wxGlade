@@ -35,8 +35,8 @@ class MenuItemDialog(wx.Dialog):
         self.ok     = wx.Button(self, wx.ID_ANY, "OK")
         self.cancel = wx.Button(self, wx.ID_ANY, "Cancel")
         # editor action buttons
-        self.move_left  = wx.Button(self, wx.ID_ANY, "<")
-        self.move_right = wx.Button(self, wx.ID_ANY, ">")
+        self.move_left  = wx.Button(self, wx.ID_ANY, "&<")
+        self.move_right = wx.Button(self, wx.ID_ANY, "&>")
         self.move_up    = wx.Button(self, wx.ID_ANY, "&Up")
         self.move_down  = wx.Button(self, wx.ID_ANY, "&Down")
         self.add     = wx.Button(self, wx.ID_ANY, "&Add")
@@ -93,28 +93,48 @@ class MenuItemDialog(wx.Dialog):
 
         self.selected_index = -1  # index of the selected element in the wx.ListCtrl menu_items
         self._ignore_events = False
+        self._last_focus = None
         if items:
             self.add_items(items)
             self._select_menu_item(0)
 
     def on_char(self, event):
         # keyboard navigation: up/down arrows
-        if self.FindFocus() is self.check_radio:
+        focus = self.FindFocus()
+        if focus is self.check_radio:
             event.Skip()
             return
+        if isinstance(focus, wx.Button):
+            self.label.SetFocus()
+        elif isinstance(focus, wx.TextCtrl):
+            self._last_focus = focus
         k = event.GetKeyCode()
+        if k==wx.WXK_RETURN:  # ignore Enter key
+            return
         if k==wx.WXK_DOWN:
-            self._select_menu_item(self.selected_index+1)
+            if event.AltDown():
+                self.move_item_down(event)
+            else:
+                self._select_menu_item(self.selected_index+1)
             return
         if k==wx.WXK_UP:
-            self._select_menu_item(self.selected_index-1)
+            if event.AltDown():
+                self.move_item_up(event)
+            else:
+                self._select_menu_item(self.selected_index-1)
+            return
+        if k==wx.WXK_RIGHT and event.AltDown():
+            self.move_item_right(event)
+            return
+        if k==wx.WXK_LEFT and event.AltDown():
+            self.move_item_left(event)
             return
         event.Skip()
 
     def on_button_char(self, event):
         # for e.g. the Remove button we don't want an action on the Return button
         if event.GetKeyCode() != wx.WXK_RETURN:
-            event.Skip  ()
+            event.Skip()
 
     def __do_layout(self):
         sizer_1 = wx.BoxSizer(wx.VERTICAL)
@@ -237,11 +257,18 @@ class MenuItemDialog(wx.Dialog):
             except:
                 self.check_radio.SetSelection(0)
             self._enable_fields(True)
+            # set focus to text field again
+            focus = self.FindFocus()
+            if not isinstance(focus, wx.TextCtrl) and isinstance(self._last_focus, wx.TextCtrl):
+                self._last_focus.SetFocus()
         else:
             for c in (self.label, self.event_handler, self.name, self.help_str, self.id):
                 c.SetValue("")
             self._enable_fields(False)
         self._enable_buttons()
+        if force:
+            self.label.SetFocus()
+            self.label.SelectAll()
 
     def _enable_buttons(self):
         # activate the left/right/up/down buttons
