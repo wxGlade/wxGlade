@@ -3,13 +3,13 @@ wxToolBar objects
 
 @copyright: 2002-2007 Alberto Griggio
 @copyright: 2014-2016 Carsten Grohmann
+@copyright: 2017 Dietmar Schwertberger
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
 from __future__ import absolute_import
 
 import wx
-from wx.lib.filebrowsebutton import FileBrowseButton
 
 import common, compat, config, misc
 import os, re
@@ -21,20 +21,424 @@ from gui_mixins import BitmapMixin
 from wcodegen.taghandler import BaseXmlBuilderTagHandler
 
 
-class _MyBrowseButton(FileBrowseButton):
-    def createBrowseButton( self):
-        "Create the browse-button control"
-        ID = wx.NewId()
-        button =wx.Button(self, ID, misc.wxstr(self.buttonText))
-        compat.SetToolTip(button, self.toolTip)
-        w = button.GetTextExtent(self.buttonText)[0] + 10
-        button.SetMinSize((w, -1))
-        button.Bind(wx.EVT_BUTTON, self.OnBrowse, id=ID)
-        return button
+class ToolsDialog(wx.Dialog):
+    # initially based on MenuItemDialog; with more abstraction, e.g. columns
+    columns  = ["label","bitmap1","bitmap2","short_help","long_help","type","handler","id"]
+    column_widths = [180,180,     120,       120,        180,        50,     120,           50]
+    headers = ["Label","Primary Bitmap","Disabled Bitmap","Short Help","Long Help","Type","Event Handler","Id"]
+    coltypes = {"type":int}
+    default_item = ("item","","","","",0,"","")
+    control_names = columns
+    def __init__(self, parent, owner, items=None):
+        style = wx.DEFAULT_DIALOG_STYLE|wx.RESIZE_BORDER|wx.WANTS_CHARS
+        wx.Dialog.__init__(self, parent, -1, _("Toolbar editor"), style=style)
 
-    def OnBrowse(self, event=None):
-        " Going to browse for file... "
-        current = self.GetValue()
+        # menu item fields
+        self.label = wx.TextCtrl(self, wx.ID_ANY, "")
+        self.bitmap1 = wx.TextCtrl(self, wx.ID_ANY, "")
+        self.bitmap2 = wx.TextCtrl(self, wx.ID_ANY, "")
+        self.handler = wx.TextCtrl(self, wx.ID_ANY, "")
+        #self.name = wx.TextCtrl(self, wx.ID_ANY, "")
+        self.short_help = wx.TextCtrl(self, wx.ID_ANY, "")
+        self.long_help = wx.TextCtrl(self, wx.ID_ANY, "")
+        self.id = wx.TextCtrl(self, wx.ID_ANY, "")
+        self.type = wx.RadioBox(self, wx.ID_ANY, "Type", choices=["Normal", "Checkable", "Radio"], majorDimension=1, style=wx.RA_SPECIFY_COLS)
+        self.ok = wx.Button(self, wx.ID_OK, "")
+        self.cancel = wx.Button(self, wx.ID_CANCEL, "")
+        self.move_up = wx.Button(self, wx.ID_ANY, "Up")
+        self.move_down = wx.Button(self, wx.ID_ANY, "Down")
+        self.add = wx.Button(self, wx.ID_ANY, "&Add")
+        self.remove = wx.Button(self, wx.ID_ANY, "&Remove")
+        self.add_sep = wx.Button(self, wx.ID_ANY, "Add Separator")
+
+        self.bitmap1_button = wx.Button(self, wx.ID_ANY, "...")
+        self.bitmap2_button = wx.Button(self, wx.ID_ANY, "...")
+
+        self.items = wx.ListCtrl(self, wx.ID_ANY, style=wx.BORDER_DEFAULT | wx.BORDER_SUNKEN | wx.LC_EDIT_LABELS | wx.LC_REPORT | wx.LC_SINGLE_SEL)
+
+        self.__do_layout()
+        self._set_tooltips()
+
+        self.Bind(wx.EVT_TEXT, self.on_label_edited, self.label)
+        self.Bind(wx.EVT_TEXT, self.on_event_handler_edited, self.handler)
+        #self.Bind(wx.EVT_TEXT, self.on_name_edited, self.name)
+        self.Bind(wx.EVT_TEXT, self.on_help_str_edited, self.short_help)
+        self.Bind(wx.EVT_TEXT, self.on_long_help_str_edited, self.long_help)
+        self.Bind(wx.EVT_TEXT, self.on_id_edited, self.id)
+        self.Bind(wx.EVT_RADIOBOX, self.on_type_edited, self.type)
+
+        self.Bind(wx.EVT_BUTTON, self.move_item_up, self.move_up)
+        self.Bind(wx.EVT_BUTTON, self.move_item_down, self.move_down)
+        self.Bind(wx.EVT_BUTTON, self.add_item, self.add)
+        self.Bind(wx.EVT_BUTTON, self.remove_item, self.remove)
+        self.Bind(wx.EVT_BUTTON, self.add_separator, self.add_sep)
+        self.Bind(wx.EVT_BUTTON, self.on_cancel, self.cancel)
+        self.Bind(wx.EVT_BUTTON, self.on_OK, self.ok)
+        self.Bind(wx.EVT_BUTTON, self.select_bitmap1, self.bitmap1_button)
+        self.Bind(wx.EVT_BUTTON, self.select_bitmap2, self.bitmap2_button)
+        self.Bind(wx.EVT_TEXT, self.on_bitmap1_edited, self.bitmap1)
+        self.Bind(wx.EVT_TEXT, self.on_bitmap2_edited, self.bitmap2)
+        self.Bind(wx.EVT_LIST_ITEM_SELECTED, self.show_item, self.items)
+
+        self.Bind(wx.EVT_CHAR_HOOK, self.on_char)
+        self.remove.Bind(wx.EVT_CHAR_HOOK, self.on_button_char)  # to ignore the Enter key while the focus is on Remove
+
+        self.owner = owner
+
+        # ALB 2004-09-26: workaround to make the scroll wheel work...
+        self.items.Bind(wx.EVT_MOUSEWHEEL, lambda e: e.Skip())
+        for c,col in enumerate(self.columns):
+            self.items.InsertColumn(c, _(col))
+            self.items.SetColumnWidth(c, self.column_widths[c])
+
+        self.SetSize( (900, 600) )
+
+        import re
+        self.handler_re = self.name_re = re.compile(r'^[a-zA-Z_]+[\w-]*(\[\w*\])*$')
+
+        self.selected_index = -1  # index of the selected element in the wx.ListCtrl menu_items
+        self._ignore_events = False
+        self._last_focus = None
+        if items:
+            self.add_items(items)
+            self._select_item(0)
+
+    def on_char(self, event):
+        # keyboard navigation: up/down arrows
+        focus = self.FindFocus()
+        if focus is self.type:
+            event.Skip()
+            return
+        if isinstance(focus, wx.Button):
+            self.label.SetFocus()
+        elif isinstance(focus, wx.TextCtrl):
+            self._last_focus = focus
+        k = event.GetKeyCode()
+        if k==wx.WXK_RETURN:  # ignore Enter key
+            return
+        if k==wx.WXK_DOWN:
+            if event.AltDown():
+                self.move_item_down(event)
+            else:
+                self._select_item(self.selected_index+1)
+            return
+        if k==wx.WXK_UP:
+            if event.AltDown():
+                self.move_item_up(event)
+            else:
+                self._select_item(self.selected_index-1)
+            return
+        event.Skip()
+
+    def on_button_char(self, event):
+        # for e.g. the Remove button we don't want an action on the Return button
+        if event.GetKeyCode() != wx.WXK_RETURN:
+            event.Skip()
+
+    def __do_layout(self):
+        # begin wxGlade: ToolsDialog.__do_layout
+        sizer_1 = wx.BoxSizer(wx.VERTICAL)
+        sizer_2 = wx.BoxSizer(wx.HORIZONTAL)
+        sizer_5 = wx.BoxSizer(wx.HORIZONTAL)
+        sizer_6 = wx.BoxSizer(wx.VERTICAL)
+        grid_sizer = wx.FlexGridSizer(7, 2, 0, 0)
+        sizer_bitmap1 = wx.BoxSizer(wx.HORIZONTAL)
+        sizer_bitmap2 = wx.BoxSizer(wx.HORIZONTAL)
+        self.label_6 = wx.StaticText(self, wx.ID_ANY, "Label:")
+        grid_sizer.Add(self.label_6, 0, wx.ALIGN_CENTER_VERTICAL | wx.LEFT | wx.RIGHT, 4)
+        grid_sizer.Add(self.label, 1, wx.EXPAND, 0)
+        label_11 = wx.StaticText(self, wx.ID_ANY, "Primary Bitmap:")
+        grid_sizer.Add(label_11, 0, wx.ALIGN_CENTER_VERTICAL | wx.LEFT | wx.RIGHT, 4)
+        sizer_bitmap1.Add(self.bitmap1, 1, 0, 0)
+        sizer_bitmap1.Add(self.bitmap1_button, 0, wx.BOTTOM | wx.LEFT | wx.TOP, 0)
+        grid_sizer.Add(sizer_bitmap1, 1, wx.EXPAND, 0)
+        label_12 = wx.StaticText(self, wx.ID_ANY, "Disabled Bitmap:")
+        grid_sizer.Add(label_12, 0, wx.ALIGN_CENTER_VERTICAL | wx.LEFT | wx.RIGHT, 4)
+        sizer_bitmap2.Add(self.bitmap2, 1, 0, 0)
+        sizer_bitmap2.Add(self.bitmap2_button, 0, wx.BOTTOM | wx.LEFT | wx.TOP, 0)
+        grid_sizer.Add(sizer_bitmap2, 1, wx.EXPAND, 0)
+        self.label_7 = wx.StaticText(self, wx.ID_ANY, "Event Handler:")
+        grid_sizer.Add(self.label_7, 0, wx.ALIGN_CENTER_VERTICAL | wx.LEFT | wx.RIGHT, 4)
+        grid_sizer.Add(self.handler, 1, wx.EXPAND, 0)
+        #label_8 = wx.StaticText(self, wx.ID_ANY, "(Attribute) Name:")
+        #grid_sizer.Add(label_8, 0, wx.ALIGN_CENTER_VERTICAL | wx.LEFT | wx.RIGHT, 4)
+        #grid_sizer.Add(self.name, 1, wx.EXPAND, 0)
+        self.label_9 = wx.StaticText(self, wx.ID_ANY, "Short Help:")
+        grid_sizer.Add(self.label_9, 0, wx.ALIGN_CENTER_VERTICAL | wx.LEFT | wx.RIGHT, 4)
+        grid_sizer.Add(self.short_help, 1, wx.EXPAND, 0)
+        self.label_9b = wx.StaticText(self, wx.ID_ANY, "Long Help:")
+        grid_sizer.Add(self.label_9b, 0, wx.ALIGN_CENTER_VERTICAL | wx.LEFT | wx.RIGHT, 4)
+        grid_sizer.Add(self.long_help, 1, wx.EXPAND, 0)
+
+        self.label_10 = wx.StaticText(self, wx.ID_ANY, "ID:")
+        grid_sizer.Add(self.label_10, 0, wx.ALIGN_CENTER_VERTICAL | wx.LEFT | wx.RIGHT, 4)
+        grid_sizer.Add(self.id, 0, 0, 0)
+        grid_sizer.AddGrowableCol(1)
+        sizer_5.Add(grid_sizer, 2, wx.EXPAND, 0)
+        sizer_5.Add(self.type, 0, wx.ALL, 4)
+        sizer_5.Add((20, 20), 1, wx.ALIGN_CENTER_VERTICAL | wx.EXPAND, 0)
+        sizer_6.Add(self.ok, 0, wx.ALL, 5)
+        sizer_6.Add(self.cancel, 0, wx.ALL, 5)
+        sizer_5.Add(sizer_6, 0, wx.EXPAND, 0)
+        sizer_1.Add(sizer_5, 0, wx.EXPAND, 0)
+        sizer_2.Add(self.move_up, 0, wx.BOTTOM | wx.LEFT | wx.TOP, 8)
+        sizer_2.Add(self.move_down, 0, wx.BOTTOM | wx.RIGHT | wx.TOP, 8)
+        sizer_2.Add((20, 20), 1, wx.ALIGN_CENTER_VERTICAL, 0)
+        sizer_2.Add(self.add, 0, wx.BOTTOM | wx.LEFT | wx.TOP, 8)
+        sizer_2.Add(self.remove, 0, wx.BOTTOM | wx.TOP, 8)
+        sizer_2.Add(self.add_sep, 0, wx.ALL, 8)
+        sizer_2.Add((20, 20), 2, wx.ALIGN_CENTER_VERTICAL, 0)
+        sizer_1.Add(sizer_2, 0, wx.EXPAND, 0)
+        sizer_1.Add(self.items, 1, wx.EXPAND, 0)
+        self.SetSizer(sizer_1)
+        sizer_1.Fit(self)
+        self.Layout()
+        # end wxGlade
+    def _set_tooltips(self):
+        # set tooltips
+        for c in (self.label_6, self.label):
+            compat.SetToolTip(c, "The menu entry text;\nenter & for access keys (using ALT key)\nappend e.g. \\tCtrl-X for keyboard shortcut")
+        for c in (self.label_7, self.handler):
+            compat.SetToolTip(c, "Enter the name of an event handler method; this will be created as stub")
+        #for c in (label_8, self.name):
+            #compat.SetToolTip(c, "optional: enter a name to store the menu item as attribute of the menu bar")
+        for c in (self.label_10, self.id):
+            compat.SetToolTip(c, "optional: enter wx ID")
+        for c in (self.label_9, self.short_help):
+            compat.SetToolTip(c , "This will be displayed as tooltip" )
+        for c in (self.label_9b, self.long_help):
+            compat.SetToolTip( c, "This will be displayed in the status bar" )
+        compat.SetToolTip( self.move_up, "Move selected item up" )
+        compat.SetToolTip( self.move_down, "Move selected item down" )
+        compat.SetToolTip( self.items, "For navigation use the mouse or the up/down arrows" )
+
+    def _enable_fields(self, enable=True):
+        for name in self.control_names:
+            control = getattr(self, name)
+            control.Enable(enable)
+
+    def add_item(self, event):
+        "Event handler called when the Add button is clicked"
+        index = self.selected_index = self.selected_index + 1
+        if not self.items.GetItemCount():
+            self._enable_fields()
+        if index < 0:
+            index = self.items.GetItemCount()
+        item = list(self.default_item)
+        self._insert_item(index, item)
+        self._select_item(index, force=True)
+
+    def add_separator(self, event):
+        "Event handler called when the Add Separator button is clicked"
+        index = self.selected_index + 1
+        label = '---'
+        if not self.items.GetItemCount():
+            self._enable_fields()
+        if index < 0:
+            index = self.items.GetItemCount()
+        elif index > 0:
+            label = "    " * self.item_level(index-1) + '---'
+        compat.ListCtrl_SetStringItem(self.items, index, label)
+        compat.ListCtrl_SetStringItem(self.items, index, 1, '---')
+        compat.ListCtrl_SetStringItem(self.items, index, 2, '---')
+        # fix bug 698074
+        self.items.SetItemState(index, wx.LIST_STATE_SELECTED, wx.LIST_STATE_SELECTED)
+
+    def show_item(self, event):
+        "Event handler called when a menu item in the list is selected"
+        if not self._ignore_events:
+            self._select_item(event.GetIndex())
+        event.Skip()
+
+    def _select_item(self, index, force=False):
+        if index >= self.items.GetItemCount() or index<0 or (index==self.selected_index and not force): return
+        self._ignore_events = True
+        self.items.Select(index)
+        self.selected_index = index
+        if self.items.GetItem(index, 2).GetText() != '---':
+            # skip if the selected item is a separator
+            for i,colname in enumerate(self.columns):
+                s = getattr(self, colname)
+                coltype = self.coltypes.get(colname,None)
+                value = self.items.GetItem(index, i).GetText()
+                if coltype is None:
+                    s.SetBackgroundColour(wx.WHITE) # at this point, the value should be validated already
+                    s.SetValue(value)
+                elif coltype is int:
+                    s.SetSelection( int(value) )
+            self.label.SetValue(self.label.GetValue().lstrip())
+            self._enable_fields(True)
+            # set focus to text field again
+            focus = self.FindFocus()
+            if not isinstance(focus, wx.TextCtrl) and isinstance(self._last_focus, wx.TextCtrl):
+                self._last_focus.SetFocus()
+        else:
+            for c in (self.label, self.handler, self.long_help, self.short_help, self.id,
+                      self.bitmap1, self.bitmap2):
+                c.SetValue("")
+            self._enable_fields(False)
+        self._enable_buttons()
+        if force:
+            self.label.SetFocus()
+            self.label.SelectAll()
+
+    def _enable_buttons(self):
+        # activate the left/right/up/down buttons
+        index = self.selected_index
+        item_count = self.items.GetItemCount()
+        self.move_up.Enable( index>0 )
+        self.move_down.Enable( index<item_count-1 )
+        self._ignore_events = False
+
+    def on_label_edited(self, event):
+        if not self._ignore_events:
+            value = self.label.GetValue().lstrip()
+            compat.ListCtrl_SetStringItem(self.items, self.selected_index, self.columns.index("label"), value)
+        event.Skip()
+
+    def on_event_handler_edited(self, event):
+        value = self.handler.GetValue()
+        if not value or self.handler_re.match(value):
+            self.handler.SetBackgroundColour(wx.WHITE)
+            valid = True
+        else:
+            self.handler.SetBackgroundColour(wx.RED)
+            valid = False
+        self.handler.Refresh()
+        if valid and not self._ignore_events:
+            compat.ListCtrl_SetStringItem(self.items, self.selected_index, self.columns.index("handler"), value)
+        event.Skip()
+
+    #def on_name_edited(self, event):
+        #value = self.name.GetValue()
+        #if not value or self.name_re.match(value):
+            #self.name.SetBackgroundColour(wx.WHITE)
+            #valid = True
+        #else:
+            #self.name.SetBackgroundColour(wx.RED)
+            #valid = False
+        #if value and valid and not self._ignore_events:
+            ## check for double names
+            #for i in range(self.menu_items.GetItemCount()):
+                #if i==self.selected_index: continue
+                #if value == self.menu_items.GetItem(i, 2).GetText():
+                    #valid = False
+                    #self.name.SetBackgroundColour(wx.YELLOW)
+                    #break
+        #self.name.Refresh()
+        #if valid and not self._ignore_events:
+            #self.menu_items.SetStringItem(self.selected_index, 2, value)
+        #event.Skip()
+
+    def _on_edited(self, event, colname, value):
+        if not self._ignore_events:
+            idx = self.columns.index(colname)
+            compat.ListCtrl_SetStringItem(self.items, self.selected_index, idx, value)
+        event.Skip()
+
+    def on_type_edited(self, event):
+        self._on_edited(event, "type", str(self.type.GetSelection()))
+
+    def on_help_str_edited(self, event):
+        self._on_edited(event, "short_help", self.short_help.GetValue())
+
+    def on_long_help_str_edited(self, event):
+        self._on_edited(event, "long_help", self.long_help.GetValue())
+
+    def on_id_edited(self, event):
+        self._on_edited(event, "id", self.id.GetValue())
+
+    def on_bitmap1_edited(self, event):
+        self._on_edited(event, "bitmap1", self.bitmap1.GetValue())
+
+    def on_bitmap2_edited(self, event):
+        self._on_edited(event, "bitmap2", self.bitmap2.GetValue())
+
+    def remove_item(self, event):
+        "Event handler called when the Remove button is clicked"
+        if self.selected_index < 0: return
+        index = self.selected_index+1
+        if index<self.items.GetItemCount() and (self.item_level(self.selected_index) < self.item_level(index)):
+            # the item to be deleted is parent to the following item -> move up the following item
+            self._move_item_left(index)
+            #self.selected_index = index-1
+        for s in (self.name, self.id, self.label, self.short_help, self.handler):
+            s.SetValue("")
+        self.type.SetSelection(0)
+        self.items.DeleteItem(self.selected_index)
+        if not self.items.GetItemCount():
+            self._enable_fields(False)
+        self.selected_index -= 1
+        self.items.Select(self.selected_index)
+
+    def _insert_item(self, index, item):
+        compat.ListCtrl_InsertStringItem(self.items, index, item.label)
+        for col, value in enumerate(item):
+            if col==0: continue
+            compat.ListCtrl_SetStringItem(self.items, index, col, compat.unicode(value))
+        # fix bug 698074
+        self.items.SetItemState(index, wx.LIST_STATE_SELECTED, wx.LIST_STATE_SELECTED)
+
+    def _get_item(self, index):
+        ret = []
+        for c,colname in enumerate(self.columns):
+            col = self.columns.index(colname)
+            value = self.items.GetItem(index, col).GetText()
+            if colname in self.coltypes:
+                value = self.coltypes[colname](value)
+            ret.append(value)
+        return ret
+
+    def add_items(self, tools):
+        """adds the content of 'tools' to self.tool_items. tools is a sequence of (simple) tool items for the toolbar.
+        At the moment there is no control support, but I hope to add it soon"""
+        for i,tool in enumerate(tools):
+            self._insert_item(i, tool)
+        self._enable_fields(bool(tools))
+
+    def get_items(self):
+        "returns the contents of self.tool_items as a list of tools that describes the contents of the ToolBar"
+        tools = []
+        for i in range(self.items.GetItemCount()):
+            item = self._get_item(i)
+            kwargs = dict( key_value for key_value in zip(self.columns,item))
+            tools.append( Tool( **kwargs ) )
+        return tools
+
+    def move_item_up(self, event):
+        "moves the selected menu item before the previous one at the same level in self.items"
+        self._do_move_item(event, self.selected_index, False)
+        state = wx.LIST_STATE_SELECTED | wx.LIST_STATE_FOCUSED
+        self.items.SetItemState(self.selected_index, state, state)
+
+    def _do_move_item(self, event, index, is_down):
+        """internal function used by move_item_up and move_item_down.
+        Returns the new index of the moved item, or None if no change occurred"""
+        self.items.SetFocus()
+        #index = self.selected_index
+        i = index+1 if is_down else index-1
+        if i < 0 or i>=self.items.GetItemCount(): return None
+
+        def get(i, j): return self.items.GetItem(i, j).GetText()
+        item = [get(index, j) for j in range(6)]
+        self.items.DeleteItem(index)
+        compat.ListCtrl_InsertStringItem(self.items, i, item[0])
+        for col,content in enumerate(item):
+            if col==0: continue
+            compat.ListCtrl_SetStringItem(self.items, i,col, content)
+        self._select_item(i, force=True)
+
+    def move_item_down(self, event):
+        "moves the selected menu item after the next one at the same level in self.items"
+        self._do_move_item(event, self.selected_index, True)
+        ## fix bug 698071
+        #state = wx.LIST_STATE_SELECTED | wx.LIST_STATE_FOCUSED
+        #self.items.SetItemState(self.selected_index, state, state)
+
+
+    def _select_bitmap(self, event, colname, title):
+        control = getattr(self, colname)
+        current = control.GetValue()
         directory = os.path.split(current)
         if os.path.isdir(current):
             directory = current
@@ -42,335 +446,27 @@ class _MyBrowseButton(FileBrowseButton):
         elif directory and os.path.isdir(directory[0]):
             current = directory[1]
             directory = directory [0]
+        elif common.app_tree.app.filename:
+            #directory = self.startDirectory
+            directory = common.app_tree.app.filename
+            current = ""
         else:
-            directory = self.startDirectory
-        value = wx.FileSelector(self.dialogTitle, directory, current, wildcard=self.fileMask, flags=self.fileMode)
+            directory = ""
+        value = wx.FileSelector(_(title), directory, current, wildcard="*.*", flags=wx.FD_OPEN)
         if value:
-            self.SetValue(value)
+            control.SetValue(value)
 
+    def select_bitmap1(self, event):
+        self._select_bitmap(event, "bitmap1", 'Primary Bitmap')
 
+    def select_bitmap2(self, event):
+        self._select_bitmap(event, "bitmap2", 'Disabled Bitmap')
 
-class ToolsDialog(wx.Dialog):
-    def __init__(self, parent, owner, items=None):
-        wx.Dialog.__init__(self, parent, -1, _("Toolbar editor"), style=wx.DEFAULT_DIALOG_STYLE|wx.RESIZE_BORDER)
-
-        self._staticbox = wx.StaticBox(self, -1, _("Tool:"))
-
-        self.owner = owner
-
-        self.tool_items = wx.ListCtrl(self, -1, style=wx.LC_REPORT|wx.LC_SINGLE_SEL|wx.BORDER_SUNKEN, size=(300, -1) )
-        self.selected_index = -1  # index of the selected element in the
-                                 # wxListCtrl
-        self.tool_items.InsertColumn(0, _("Label"))
-        self.tool_items.InsertColumn(1, _("Id"))
-        self.tool_items.InsertColumn(2, _("Primary Bitmap"))
-        self.tool_items.InsertColumn(3, _("Disabled Bitmap"))
-        self.tool_items.InsertColumn(4, _("Short Help"))
-        self.tool_items.InsertColumn(5, _("Long Help"))
-        self.tool_items.InsertColumn(6, _("Type"))
-        self.tool_items.InsertColumn(7, _("Event Handler"))
-
-        self.tool_items.SetColumnWidth(0, 100)
-        self.tool_items.SetColumnWidth(2, 100)
-        self.tool_items.SetColumnWidth(3, 150)
-        self.tool_items.SetColumnWidth(4, 150)
-        self.tool_items.SetColumnWidth(5, 100)
-        self.tool_items.SetColumnWidth(6, 150)
-        self.tool_items.SetColumnWidth(7, 150)
-
-        # tool fields
-        self.id = wx.TextCtrl(self, -1)
-        self.label = wx.TextCtrl(self, -1)
-        self.help_str = wx.TextCtrl(self, -1)
-        self.long_help_str = wx.TextCtrl(self, -1)
-        self.event_handler = wx.TextCtrl(self, -1)
-        self.handler_re = re.compile(r'^\s*\w*\s*$')
-
-        self.bitmap1 = _MyBrowseButton( self, -1, labelText=_('Primary Bitmap'), buttonText='...',
-                                        changeCallback=self.update_tool)
-        self.bitmap2 = _MyBrowseButton( self, -1, labelText=_('Disabled Bitmap'), buttonText='...',
-                                        changeCallback=self.update_tool)
-        self.check_radio = wx.RadioBox( self, -1, _("Type"),
-                                        choices=['Normal', 'Checkable', 'Radio'], majorDimension=3 )
-
-        self.add = wx.Button(self, -1, _("Add"))
-        self.remove = wx.Button(self, -1, _("Remove"))
-        self.add_sep = wx.Button(self, -1, _("Add separator"))
-
-        # tools navigation
-        self.move_up = wx.Button(self, -1, _("Up"))
-        self.move_down = wx.Button(self, -1, _("Down"))
-
-        self.ok = wx.Button(self, wx.ID_OK, _("OK"))
-        self.apply = wx.Button(self, wx.ID_APPLY, _("Apply"))
-        self.cancel = wx.Button(self, wx.ID_CANCEL, _("Cancel"))
-
-        self.do_layout()
-
-        # event handlers
-        self.add.Bind(wx.EVT_BUTTON, self.add_tool)
-        self.remove.Bind(wx.EVT_BUTTON, self.remove_tool)
-        self.add_sep.Bind(wx.EVT_BUTTON, self.add_separator)
-        self.move_up.Bind(wx.EVT_BUTTON, self.move_item_up)
-        self.move_down.Bind(wx.EVT_BUTTON, self.move_item_down)
-        self.apply.Bind(wx.EVT_BUTTON, self.on_apply)
-        self.label.Bind(wx.EVT_KILL_FOCUS, self.update_tool)
-        self.id.Bind(wx.EVT_KILL_FOCUS, self.update_tool)
-        self.help_str.Bind(wx.EVT_KILL_FOCUS, self.update_tool)
-        self.long_help_str.Bind(wx.EVT_KILL_FOCUS, self.update_tool)
-        self.event_handler.Bind(wx.EVT_KILL_FOCUS, self.update_tool)
-        self.check_radio.Bind(wx.EVT_RADIOBOX, self.update_tool)
-        self.tool_items.Bind(wx.EVT_LIST_ITEM_SELECTED, self.show_tool)
-        if items:
-            self.add_tools(items)
-
-    def do_layout(self):
-        self.label.Enable(False)
-        self.id.Enable(False)
-        self.help_str.Enable(False)
-        self.long_help_str.Enable(False)
-        self.event_handler.Enable(False)
-        self.bitmap1.Enable(False)
-        self.bitmap2.Enable(False)
-        self.check_radio.Enable(False)
-
-        sizer = wx.BoxSizer(wx.VERTICAL)
-        sizer2 = wx.StaticBoxSizer(self._staticbox, wx.VERTICAL)
-        self.label.SetSize((150, -1))
-        self.id.SetSize((150, -1))
-        self.help_str.SetSize((150, -1))
-        self.long_help_str.SetSize((150, -1))
-        self.event_handler.SetSize((150, -1))
-        szr = wx.FlexGridSizer(0,2,0,0)
-        flag = wx.FIXED_MINSIZE
-        label_flag = wx.ALIGN_CENTER_VERTICAL
-        szr.Add(wx.StaticText(self, -1, _("Id   ")), flag=label_flag)
-        szr.Add(self.id, flag=flag)
-        szr.Add(wx.StaticText(self, -1, _("Label  ")), flag=label_flag)
-        szr.Add(self.label, flag=flag)
-        szr.Add(wx.StaticText(self, -1, _("Short Help  ")), flag=label_flag)
-        szr.Add(self.help_str, flag=flag)
-        szr.Add(wx.StaticText(self, -1, _("Long Help  ")), flag=label_flag)
-        szr.Add(self.long_help_str, flag=flag)
-        szr.Add(wx.StaticText(self, -1, _("Event Handler  ")), flag=label_flag)
-        szr.Add(self.event_handler, flag=flag)
-        sizer2.Add(szr, 1, wx.ALL|wx.EXPAND, 5)
-        sizer2.Add(self.bitmap1, 0, wx.EXPAND)
-        sizer2.Add(self.bitmap2, 0, wx.EXPAND)
-        sizer2.Add(self.check_radio, 0, wx.LEFT|wx.RIGHT|wx.BOTTOM, 4)
-        szr = wx.GridSizer(0, 2, 3, 3)
-        szr.Add(self.add, 0, wx.EXPAND); szr.Add(self.remove, 0, wx.EXPAND)
-        sizer2.Add(szr, 0, wx.EXPAND)
-        sizer2.Add(self.add_sep, 0, wx.TOP|wx.EXPAND, 3)
-
-        sizer3 = wx.BoxSizer(wx.VERTICAL)
-        sizer3.Add(self.tool_items, 1, wx.ALL|wx.EXPAND, 5)
-        sizer4 = wx.BoxSizer(wx.HORIZONTAL)
-
-        sizer4.Add(self.move_up, 0, wx.LEFT|wx.RIGHT, 3)
-        sizer4.Add(self.move_down, 0, wx.LEFT|wx.RIGHT, 5)
-        sizer3.Add(sizer4, 0, wx.ALIGN_CENTER|wx.ALL, 5)
-        szr = wx.BoxSizer(wx.HORIZONTAL)
-        szr.Add(sizer3, 1, wx.ALL|wx.EXPAND, 5)
-        szr.Add(sizer2, 0, wx.TOP|wx.BOTTOM|wx.RIGHT, 5)
-        sizer.Add(szr, 1, wx.EXPAND)
-        sizer2 = wx.BoxSizer(wx.HORIZONTAL)
-        sizer2.Add(self.ok, 0, wx.ALL, 5)
-        sizer2.Add(self.apply, 0, wx.ALL, 5)
-        sizer2.Add(self.cancel, 0, wx.ALL, 5)
-        sizer.Add(sizer2, 0, wx.ALL|wx.ALIGN_CENTER, 3)
-        self.SetAutoLayout(1)
-        self.SetSizer(sizer)
-        sizer.Fit(self)
-        #self.SetSize((-1, 350))
-        self.CenterOnScreen()
-
-    def add_tool(self, event):
-        "Event handler called when the Add button is clicked"
-        index = self.selected_index = self.selected_index + 1
-        if not self.tool_items.GetItemCount():
-            for s in (self.label, self.id, self.help_str, self.long_help_str,
-                      self.bitmap1, self.bitmap2, self.check_radio, self.event_handler):
-                s.Enable(True)
-        if index < 0:
-            index = self.tool_items.GetItemCount()
-        label, wid, check_radio = "item", "", "0"
-        bitmap1, bitmap2, help_str, long_help_str = [""] * 4
-        self.tool_items.InsertStringItem(index, label)
-        self.tool_items.SetStringItem(index, 1, wid)
-        self.tool_items.SetStringItem(index, 2, bitmap1)
-        self.tool_items.SetStringItem(index, 3, bitmap2)
-        self.tool_items.SetStringItem(index, 4, help_str)
-        self.tool_items.SetStringItem(index, 5, long_help_str)
-        self.tool_items.SetStringItem(index, 6, check_radio)
-        self.tool_items.SetItemState(index, wx.LIST_STATE_SELECTED, wx.LIST_STATE_SELECTED)
-        self.label.SetValue(label)
-        self.id.SetValue(wid)
-        self.check_radio.SetSelection(int(check_radio))
-        self.bitmap1.SetValue(bitmap1, False)
-        self.bitmap2.SetValue(bitmap2, False)
-        self.help_str.SetValue(help_str)
-        self.long_help_str.SetValue(long_help_str)
-        self.event_handler.SetValue("")
-
-    def add_separator(self, event):
-        "Event handler called when the Add Separator button is clicked"
-        index = self.selected_index+1
-        if not self.tool_items.GetItemCount():
-            for s in (self.label, self.id, self.help_str, self.long_help_str,
-                      self.bitmap1, self.bitmap2, self.check_radio, self.event_handler):
-                s.Enable(True)
-        if index < 0: index = self.tool_items.GetItemCount()
-        self.tool_items.InsertStringItem(index, '---')
-        for i in range(1, 5):
-            self.tool_items.SetStringItem(index, i, '---')
-        self.tool_items.SetItemState(index, wx.LIST_STATE_SELECTED, wx.LIST_STATE_SELECTED)
-
-    def show_tool(self, event):
-        "Event handler called when a tool in the list is selected"
-        self.selected_index = index = event.GetIndex()
-        get_item = self.tool_items.GetItem
-        if not self.tool_items.GetItem(index, 2).GetText() == '---':
-            # skip if the selected item is a separator
-            for (s, i) in ((self.label, 0), (self.id, 1),
-                           (self.help_str, 4), (self.long_help_str, 5),
-                           (self.event_handler, 7)):
-                s.SetValue(get_item(index, i).GetText())
-            self.bitmap1.SetValue(get_item(index, 2).GetText(), False)
-            self.bitmap2.SetValue(get_item(index, 3).GetText(), False)
-            try:
-                self.check_radio.SetSelection( int(self.tool_items.GetItem(index, 6).GetText()) )
-            except:
-                self.check_radio.SetSelection(0)
-        event.Skip()
-
-    def update_tool(self, event):
-        "Event handler called when some of the properties of the current tool changes"
-        set_item = self.tool_items.SetStringItem
-        index = self.selected_index
-        handler = self.event_handler.GetValue()
-        if not self.handler_re.match(handler):
-            event.GetEventObject().SetFocus()
-            return
-        if index < 0:
-            return event.Skip()
-        set_item(index, 0, self.label.GetValue())
-        set_item(index, 1, self.id.GetValue())
-        set_item(index, 2, self.bitmap1.GetValue())
-        set_item(index, 3, self.bitmap2.GetValue())
-        set_item(index, 4, self.help_str.GetValue())
-        set_item(index, 5, self.long_help_str.GetValue())
-        set_item(index, 6, str(self.check_radio.GetSelection()))
-        set_item(index, 7, self.event_handler.GetValue())
-        try:
-            event.Skip()
-        except AttributeError:
-            # this happens on wx2.4.0.1 for FileBrowseButton events
-            pass
-        # update the directory of the browse buttons
-        directory = os.path.split(self.bitmap1.GetValue())[0]
-        if not os.path.isdir(directory):
-            directory = os.path.split(self.bitmap2.GetValue())[0]
-        if os.path.isdir(directory):
-            self.bitmap1.startDirectory = directory
-            self.bitmap2.startDirectory = directory
-
-    def remove_tool(self, event):
-        "Event handler called when the Remove button is clicked"
-        if self.selected_index >= 0:
-            for s in (self.id, self.label, self.help_str, self.long_help_str, self.event_handler):
-                s.SetValue("")
-            for s in (self.bitmap1, self.bitmap2):
-                s.SetValue("", False)
-            self.check_radio.SetSelection(0)
-            self.tool_items.DeleteItem(self.selected_index)
-            if not self.tool_items.GetItemCount():
-                for s in (self.id, self.label, self.help_str, self.long_help_str, self.bitmap1, self.bitmap2,
-                          self.check_radio, self.event_handler):
-                    s.Enable(False)
-
-    def add_tools(self, tools):
-        """adds the content of 'tools' to self.tool_items. tools is a sequence of (simple) tool items for the toolbar.
-        At the moment there is no control support, but I hope to add it soon"""
-        set_item = self.tool_items.SetStringItem
-        add_item = self.tool_items.InsertStringItem
-        index = [0]
-
-        def add(tool):
-            i = index[0]
-            add_item(i, misc.wxstr(tool.label))
-            set_item(i, 1, misc.wxstr(tool.id))
-            set_item(i, 2, misc.wxstr(tool.bitmap1))
-            set_item(i, 3, misc.wxstr(tool.bitmap2))
-            set_item(i, 4, misc.wxstr(tool.short_help))
-            set_item(i, 5, misc.wxstr(tool.long_help))
-            set_item(i, 7, misc.wxstr(tool.handler))
-            item_type = 0
-            set_item(i, 6, misc.wxstr(tool.type))
-            index[0] += 1
-        for tool in tools:
-            add(tool)
-        if self.tool_items.GetItemCount():
-            for s in (self.id, self.label, self.help_str, self.long_help_str,
-                      self.bitmap1, self.bitmap2, self.check_radio, self.event_handler):
-                s.Enable(True)
-
-    def get_tools(self):
-        "returns the contents of self.tool_items as a list of tools that describes the contents of the ToolBar"
-        def get(i, j):
-            return self.tool_items.GetItem(i, j).GetText()
-        tools = []
-
-        def add(index):
-            label = get(index, 0)
-            id = get(index, 1)
-            bitmap1 = get(index, 2)
-            bitmap2 = get(index, 3)
-            short_help = get(index, 4)
-            long_help = get(index, 5)
-            event_handler = get(index, 7)
-            try:
-                item_type = int(get(index, 6))
-            except ValueError:
-                item_type = 0
-            tools.append( Tool( label=label, id=id, type=item_type, short_help=short_help, long_help=long_help,
-                                bitmap1=bitmap1, bitmap2=bitmap2, handler=event_handler ) )
-        for index in range( self.tool_items.GetItemCount() ):
-            add(index)
-
-        return tools
-
-    def move_item_up(self, event):
-        "moves the selected tool before the previous one at the same level in self.tool_items"
-        self.tool_items.SetFocus()
-        if self.selected_index > 0:
-            index = self.selected_index - 1
-            vals1 = [ self.tool_items.GetItem(self.selected_index, i).GetText() for i in range(8) ]
-            vals2 = [ self.tool_items.GetItem(index, i).GetText() for i in range(8) ]
-            for i in range(8):
-                self.tool_items.SetStringItem(index, i, vals1[i])
-                self.tool_items.SetStringItem(self.selected_index, i, vals2[i])
-            state = wx.LIST_STATE_SELECTED | wx.LIST_STATE_FOCUSED
-            self.tool_items.SetItemState(index, state, state)
-            self.selected_index = index
-
-    def move_item_down(self, event):
-        "moves the selected tool after the next one at the same level in self.tool_items"
-        self.tool_items.SetFocus()
-        if self.selected_index < self.tool_items.GetItemCount()-1:
-            index = self.selected_index + 1
-            vals1 = [ self.tool_items.GetItem(self.selected_index, i).GetText() for i in range(8) ]
-            vals2 = [ self.tool_items.GetItem(index, i).GetText() for i in range(8) ]
-            for i in range(8):
-                self.tool_items.SetStringItem(index, i, vals1[i])
-                self.tool_items.SetStringItem(self.selected_index, i, vals2[i])
-            state = wx.LIST_STATE_SELECTED | wx.LIST_STATE_FOCUSED
-            self.tool_items.SetItemState(index, state, state)
-            self.selected_index = index
-
-    def on_apply(self, event):
-        self.owner.set_tools(self.get_tools())
-        common.app_tree.app.saved = False
+    # the action buttons are not linked to ESC and Enter to avoid accidental modifications
+    def on_cancel(self, event):
+        self.EndModal(wx.ID_CANCEL)
+    def on_OK(self, event):
+        self.EndModal(wx.ID_OK)
 
 
 
@@ -389,7 +485,7 @@ class ToolsProperty(np.Property):
     def edit_tools(self, event=None):
         dialog = ToolsDialog( self.edit_btn.GetTopLevelParent(), self.owner, items=self.value )
         if dialog.ShowModal() == wx.ID_OK:
-            self.on_value_edited(dialog.get_tools())
+            self.on_value_edited(dialog.get_items())
         dialog.Destroy()
 
     def write(self, output, tabs):
