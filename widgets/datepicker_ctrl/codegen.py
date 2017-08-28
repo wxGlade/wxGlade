@@ -26,7 +26,7 @@ class PythonDatePickerCtrlGenerator(wcodegen.PythonWidgetCodeWriter):
             if name.startswith('wx'):
                 return 'wx.adv.' + name[2:]
             elif name.startswith('EVT_'):
-                return 'wx.adv' + name
+                return 'wx.adv.' + name
             return name
 
     def _prepare_tmpl_content(self, obj):
