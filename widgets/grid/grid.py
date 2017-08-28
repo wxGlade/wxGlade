@@ -160,7 +160,8 @@ class EditGrid(ManagedBase):
                   'lines_color', 'label_bg_color', 'selection_mode', 'columns', 'rows']
     PROPERTIES = ManagedBase.PROPERTIES + _PROPERTIES + ManagedBase.EXTRA_PROPERTIES
     _PROPERTY_HELP = {"create_grid":"The following properties are meaningful only if 'Create grid' is selected",
-                      "columns":"Enter \\\\n for a line break in the label",
+                      "columns":"Enter \\n for a line break in the label",
+                      "rows":"Enter \\n for a line break in the label",
                       "selection_mode": "wxGrid.wxGridSelectCells, ...Rows or ...Columns"}
     _PROPERTY_LABELS = {'label_bg_color':"Label background colour",}
 
