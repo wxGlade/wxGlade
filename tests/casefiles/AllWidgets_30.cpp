@@ -225,6 +225,7 @@ void All_Widgets_Frame::set_properties()
     combo_box_filled->SetSelection(0);
     grid_1->CreateGrid(10, 3);
     grid_1->SetSelectionMode(wxGrid::wxGridSelectColumns);
+    grid_1->SetColLabelValue(1, _("B\nC"));
     list_box_filled->SetSelection(1);
     radio_box_filled1->SetSelection(1);
     radio_box_filled2->SetSelection(1);

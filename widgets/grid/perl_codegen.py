@@ -64,12 +64,14 @@ class PerlCodeGenerator(wcodegen.PerlWidgetCodeWriter):
         # set columns
         for i, (label, size) in enumerate(columns):
             if cols_p._check_label(label, i):
+                label = label.replace('\\n', '\n')
                 out.append( '%s->SetColLabelValue(%s, %s);\n' % (name, i, self.codegen.quote_str(label)) )
             if size>0:
                 out.append( '%s->SetColSize(%s, %s);\n' % (name, i, size) )
         # set rows
         for i, (label, size) in enumerate(rows):
             if rows_p._check_label(label, i):
+                label = label.replace('\\n', '\n')
                 out.append( '%s->SetRowLabelValue(%s, %s);\n' % (name, i, self.codegen.quote_str(label)) )
             if size>0:
                 out.append( '%s->SetRowSize(%s, %s);\n' % (name, i, size) )

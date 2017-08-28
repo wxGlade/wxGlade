@@ -439,7 +439,7 @@
                                     <create_grid>1</create_grid>
                                     <columns>
                                         <column size="-1">A</column>
-                                        <column size="-1">B</column>
+                                        <column size="-1">B\nC</column>
                                         <column size="-1">C</column>
                                     </columns>
                                     <rows_number>10</rows_number>
