@@ -3,6 +3,7 @@ wxMenuBar objects
 
 @copyright: 2002-2007 Alberto Griggio
 @copyright: 2014-2016 Carsten Grohmann
+@copyright: 2016-2017 Dietmar Schwertberger
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
@@ -58,12 +59,12 @@ class MenuItemDialog(wx.Dialog):
         self.Bind(wx.EVT_BUTTON, self.move_item_right, self.move_right)
         self.Bind(wx.EVT_BUTTON, self.move_item_up, self.move_up)
         self.Bind(wx.EVT_BUTTON, self.move_item_down, self.move_down)
-        self.Bind(wx.EVT_BUTTON, self.add_menu_item, self.add)
-        self.Bind(wx.EVT_BUTTON, self.remove_menu_item, self.remove)
+        self.Bind(wx.EVT_BUTTON, self.add_item, self.add)
+        self.Bind(wx.EVT_BUTTON, self.remove_item, self.remove)
         self.Bind(wx.EVT_BUTTON, self.add_separator, self.add_sep)
         self.Bind(wx.EVT_BUTTON, self.on_cancel, self.cancel)
         self.Bind(wx.EVT_BUTTON, self.on_OK, self.ok)
-        self.Bind(wx.EVT_LIST_ITEM_SELECTED, self.show_menu_item, self.menu_items)
+        self.Bind(wx.EVT_LIST_ITEM_SELECTED, self.show_item, self.menu_items)
 
         self.Bind(wx.EVT_CHAR_HOOK, self.on_char)
         self.remove.Bind(wx.EVT_CHAR_HOOK, self.on_button_char)  # to ignore the Enter key while the focus is on Remove
@@ -96,7 +97,7 @@ class MenuItemDialog(wx.Dialog):
         self._last_focus = None
         if items:
             self.add_items(items)
-            self._select_menu_item(0)
+            self._select_item(0)
 
     def on_char(self, event):
         # keyboard navigation: up/down arrows
@@ -115,13 +116,13 @@ class MenuItemDialog(wx.Dialog):
             if event.AltDown():
                 self.move_item_down(event)
             else:
-                self._select_menu_item(self.selected_index+1)
+                self._select_item(self.selected_index+1)
             return
         if k==wx.WXK_UP:
             if event.AltDown():
                 self.move_item_up(event)
             else:
-                self._select_menu_item(self.selected_index-1)
+                self._select_item(self.selected_index-1)
             return
         if k==wx.WXK_RIGHT and event.AltDown():
             self.move_item_right(event)
@@ -200,7 +201,7 @@ class MenuItemDialog(wx.Dialog):
         for s in (self.event_handler, self.id, self.name, self.help_str, self.check_radio, self.label):
             s.Enable(enable)
 
-    def add_menu_item(self, event):
+    def add_item(self, event):
         "Event handler called when the Add button is clicked"
         index = self.selected_index = self.selected_index + 1
         indent = ""
@@ -217,7 +218,7 @@ class MenuItemDialog(wx.Dialog):
         self.menu_items.SetStringItem(index, 5, id)
         # fix bug 698074
         self.menu_items.SetItemState(index, wx.LIST_STATE_SELECTED, wx.LIST_STATE_SELECTED)
-        self._select_menu_item(index, force=True)
+        self._select_item(index, force=True)
 
     def add_separator(self, event):
         "Event handler called when the Add Separator button is clicked"
@@ -235,13 +236,13 @@ class MenuItemDialog(wx.Dialog):
         # fix bug 698074
         self.menu_items.SetItemState(index, wx.LIST_STATE_SELECTED, wx.LIST_STATE_SELECTED)
 
-    def show_menu_item(self, event):
+    def show_item(self, event):
         "Event handler called when a menu item in the list is selected"
         if not self._ignore_events:
-            self._select_menu_item(event.GetIndex())
+            self._select_item(event.GetIndex())
         event.Skip()
 
-    def _select_menu_item(self, index, force=False):
+    def _select_item(self, index, force=False):
         if index >= self.menu_items.GetItemCount() or index<0 or (index==self.selected_index and not force): return
         self._ignore_events = True
         self.menu_items.Select(index)
@@ -341,7 +342,7 @@ class MenuItemDialog(wx.Dialog):
         label = self.menu_items.GetItem(index, 0).GetText()
         return (len(label) - len(label.lstrip())) // 4
 
-    def remove_menu_item(self, event):
+    def remove_item(self, event):
         "Event handler called when the Remove button is clicked"
         if self.selected_index < 0: return
         index = self.selected_index+1
@@ -571,7 +572,7 @@ class MenuProperty(np.Property):
         else:
             parent = None
         dialog = MenuItemDialog( parent, self.owner, items=self.value )
-        if not self.value: dialog.add_menu_item(None)
+        if not self.value: dialog.add_item(None)
         if dialog.ShowModal() == wx.ID_OK:
             self.on_value_edited(dialog.get_menus())
         dialog.Destroy()
