@@ -19,7 +19,7 @@ class PythonHyperlinkCtrlGenerator(wcodegen.PythonWidgetCodeWriter):
             # don't process already formatted items again
             if name.startswith('wx.'):  return name
             if name.startswith('wx'):   return 'wx.adv.' + name[2:]
-            if name.startswith('EVT_'): return 'wx.adv' + name
+            if name.startswith('EVT_'): return 'wx.adv.' + name
             return name
 
     def _prepare_tmpl_content(self, obj):
