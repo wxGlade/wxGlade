@@ -1819,7 +1819,7 @@ class _GrowablePropertyD(np.DialogPropertyD):
                 else:
                     new.append(str(n-1))
         deactivate = not new
-        self.set( "".join(new), deactivate=deactivate )
+        self.set( ",".join(new), deactivate=deactivate )
 
     def shift_items(self, item):
         # when a row/col is added, the values above need to be shifted by 1
@@ -1831,15 +1831,13 @@ class _GrowablePropertyD(np.DialogPropertyD):
                 new.append(str(n-1))
             else:
                 new.append(str(n))
-        self.set( "".join(new) )
+        self.set( ",".join(new) )
 
     def keep_items(self, indices):
-        print("keep_items", self.value)
         if not self.value: return
         current = [int(n)-1 for n in self.get_list()] # 1 based -> 0 based
         new = [str(indices.index(n)) for n in current if n in indices]  # self._set_converter adds 1
-        self.set( "".join(new) )
-        print("new itesm", new)
+        self.set( ",".join(new) )
 
 
 class EditFlexGridSizer(GridSizerBase):
@@ -2080,13 +2078,19 @@ class EditGridBagSizer(EditFlexGridSizer):
     def insert_row(self, pos=-1):
         row,col = self._get_row_col(pos)
         rows = [r for r in range(self.rows)]
-        rows.insert(row, None)
+        if pos==-1:
+            rows.append(None)
+        else:
+            rows.insert(row, None)
         self._recreate(rows, None, self.rows, self.cols)
 
     def insert_col(self, pos=-1):
         row,col = self._get_row_col(pos)
         cols = [c for c in range(self.cols)]
-        cols.insert(col, None)
+        if pos==-1:
+            cols.append(None)
+        else:
+            cols.insert(col, None)
         self._recreate(None, cols, self.rows, self.cols)
 
     def _set_row_col_range(self):
