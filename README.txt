@@ -5,6 +5,7 @@ Version: no up-to-date release at the moment; 0.7.2 is outdated
          please use the version from the repository
          you can download from https://bitbucket.org/wxglade/wxglade/get/default.zip
          or clone the repository
+         in a few days I will add an alpha revision number as preparation for release
 License: MIT (see LICENSE.txt)
 
 THIS PROGRAM COMES WITH NO WARRANTY
