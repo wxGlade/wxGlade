@@ -143,6 +143,9 @@ class Node(object):
         index = WidgetTree.images.get(name, -1)
         return index
 
+    def refresh(self, refresh_label=True, refresh_image=True):
+        common.app_tree.refresh(self, refresh_label, refresh_image)
+
 
 class SlotNode(Node):
     "Placeholder for an empty sizer slot"
