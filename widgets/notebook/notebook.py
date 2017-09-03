@@ -340,6 +340,10 @@ class EditNotebook(ManagedBase, EditStylesMixin):
         if added is not None and self.widget:
             self.widget.SetSelection(added)
 
+        # update tree labels
+        for node in self.node.children:
+            node.refresh(refresh_label=True, refresh_image=False)
+
     ####################################################################################################################
 
     def delete(self):
