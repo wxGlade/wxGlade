@@ -1260,8 +1260,8 @@ class TextPropertyRO(TextProperty):
 # some text properties with validation:
 
 class NameProperty(TextProperty):
-    #validation_re  = re.compile(r'^[a-zA-Z_]+[\w-]*(\[\w*\])*$')  # Python 3 only
-    validation_re  = re.compile(r'^[a-zA-Z_]+[a-zA-Z0-9_]*(\[\w*\])*$')  # Python 2 also
+    #validation_re  = re.compile(r'^[a-zA-Z_]+[\w-]*(\[\w*\])*$')  # Python 3 only, including non-ASCII characters
+    validation_re  = re.compile(r'^[a-zA-Z_]+[a-zA-Z0-9_-]*$')  # Python 2 also; for lisp a hyphen - is allowed
     def _check_name_uniqueness(self, name):
         # check whether the name is unique
         if config.preferences.allow_duplicate_names: return
