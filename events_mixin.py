@@ -16,10 +16,10 @@ import new_properties as np
 
 
 
-class NewEventsProperty(np.GridProperty):
+class EventsProperty(np.GridProperty):
     "Class EventsProperty"
     LABEL = 'Events'
-    validation_res = [False, re.compile(r'^\s*[\w-]+\s*$')]
+    validation_res = [False, re.compile(r'^(([a-zA-Z_]+[a-zA-Z0-9_-]*)|())$')]
     def __init__(self, events):
         # initialise instance
         cols = [(_('Event'), np.GridProperty.STRING),
@@ -92,7 +92,7 @@ class EventsMixin(object):
             events = []  # no default handler
 
         # create Property
-        self.events = NewEventsProperty(events) if events else None
+        self.events = EventsProperty(events) if events else None
 
     def get_property_handler(self, name):
         if name == 'events':
