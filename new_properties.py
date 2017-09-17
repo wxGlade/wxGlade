@@ -2198,7 +2198,7 @@ class PropertyOwner(object):
     def copy_properties(self, other, properties):
         "copy named properties from other"
         # with short cut for properties with 'values_set'
-        modified = set()
+        modified = []
         for p in properties:
             if hasattr(other, "properties"):
                 o_prop = other.properties[p]
@@ -2211,7 +2211,7 @@ class PropertyOwner(object):
             else:
                 old = prop.get()
             if new!=old:
-                modified.add(p)
+                modified.append(p)
                 prop.set(new)
         if modified:
             self.properties_changed(modified)
