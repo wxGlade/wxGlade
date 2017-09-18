@@ -596,7 +596,7 @@ class ManagedBase(WindowBase):
         elif "option" in modified and self.proportion and "wxSHAPED" in p.value_set:
             p.remove("wxSHAPED", notify=False)
 
-        if "border" in modified and self.border:
+        if "border" in modified and self.border and not "flag" in modified:
             # enable border flags if not yet done
             if not p.value_set.intersection(p.FLAG_DESCRIPTION["Border"]):
                 p.add("wxALL", notify=False)
