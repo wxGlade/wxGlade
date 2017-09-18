@@ -21,6 +21,8 @@ class HistoryItem(object):
         path = common.app_tree.get_widget_path(prop.owner)
         self.path = path
         self.name = prop.name
+    def get_key(self):
+        return self.name
 
 class HistoryPropertyItem(HistoryItem):
     def __init__(self, prop, old, new):
@@ -30,7 +32,7 @@ class HistoryPropertyItem(HistoryItem):
         self.old = old
         self.new = new
     def __repr__(self):
-        return "%s(%s, %s, %r, %r)"%(self.__class__.__name__, self.path, self.name, self.old, self.new)
+        return "%s(%s, %r, %r, %r)"%(self.__class__.__name__, self.path, self.name, self.old, self.new)
 
 
 class HistorySetPropertyItem(HistoryPropertyItem):
@@ -40,6 +42,8 @@ class HistorySetPropertyItem(HistoryPropertyItem):
         self.checked = checked
     def __repr__(self):
         return "%s(%s, %s, %r, %r)"%(self.__class__.__name__, self.path, self.name, self.value, self.checked)
+    def get_key(self):
+        return (self.name, self.value)
 
 
 class History(object):
@@ -66,17 +70,17 @@ class History(object):
         path = common.app_tree.get_widget_path(focused_widget)
         if path==self._redo_widget: return
 
-
         # find all actions that could be repeated; they need to be HistoryPropertyItems from the _redo_widget
         repeat_actions = []
-        repeat_actions_s = set()  # set of names, to avoid multiple changes of the same property
+        repeat_actions_keys = set()  # set of names, to avoid multiple changes of the same property
         for i,action in enumerate(self.actions):
             if not isinstance(action, HistoryPropertyItem):break
             if repeat_actions and action.path!=self._redo_widget: break
             if action.path==self._redo_widget:
-                if action.name in focused_widget.properties and not action.name in repeat_actions_s:
+                action_key = action.get_key()  # this may be a tuple for HistorySetPropertyItem
+                if action.name in focused_widget.properties and not action_key in repeat_actions_keys:
                     repeat_actions.append( action )
-                    repeat_actions_s.add( action.name )
+                    repeat_actions_keys.add( action_key )
                     if not multiple: break
 
         repeat_actions.reverse()
