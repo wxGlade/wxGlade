@@ -69,7 +69,7 @@ class ColsHandler(BaseXmlBuilderTagHandler):
 
     def start_elem(self, name, attrs):
         if name == 'column':
-            self.curr_size = attrs.get('size', -1)
+            self.curr_size = attrs.get('size', -1) or 0
 
     def end_elem(self, name):
         if name == 'columns':
@@ -97,7 +97,8 @@ class GridRowsProperty(np.GridProperty):
     def write(self, output, tabs):
         is_default = True
         inner_xml = []
-        for i, (label, size) in enumerate(self.get()):
+        rows = self.get()
+        for i, (label, size) in enumerate(rows):
             if size!=-1 or label!=str(i):
                 is_default=False
             inner_xml += common.format_xml_tag(u'row', label, tabs+1, size=size)
@@ -106,7 +107,7 @@ class GridRowsProperty(np.GridProperty):
             output.extend( common.format_xml_tag(u'rows', inner_xml, tabs, is_xml=True) )
         else:
             # just write the number of rows
-            output.extend( common.format_xml_tag(u'rows_number', str(i+1), tabs) )
+            output.extend( common.format_xml_tag(u'rows_number', str(len(rows)), tabs) )
 
     def add_row(self, event):
         np.GridProperty.add_row(self, event)
