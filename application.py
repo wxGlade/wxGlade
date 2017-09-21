@@ -561,7 +561,7 @@ class Application(np.PropertyOwner):
         misc.bind_menu_item_after(widget, i, self.generate_code)  # a property, but it can be called
         return menu
 
-    def check_drop_compatibility(self, widget):
+    def check_drop_compatibility(self):
         return (False,None)
 
     def check_compatibility(self, widget, typename=None):
