@@ -1138,7 +1138,7 @@ class SizerBase(Sizer, np.PropertyOwner):
         # also called from SizerBase._remove after a sizer has removed itself and inserts an empty slot instead
         # pos is 1 based here
         slot = SizerSlot(self.window, self, pos)
-        if self.children[pos] is None:
+        if pos<len(self.children) and self.children[pos] is None:
             # a placeholder to be overwritten
             self.children[pos] = slot
         else:
