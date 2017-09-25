@@ -139,10 +139,10 @@ else:
 setup(
     name='wxGlade',
     version=version,
-    author='Alberto Griggio, Carsten Grohmann and the wxGlade developers',
+    author='Alberto Griggio, Carsten Grohmann, Dietmar Schwertberger and the wxGlade developers',
     author_email='wxglade-general@lists.sourceforge.net',
-    maintainer='Carsten Grohmann',
-    maintainer_email='mail@carstengrohmann.de',
+    maintainer='Dietmar Schwertberger',
+    maintainer_email='wxglade@schwertberger.de',
     url='http://wxglade.sourceforge.net/',
     classifiers=classifiers.split("\n"),
     description=description,
