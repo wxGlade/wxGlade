@@ -94,7 +94,7 @@ data_files = [
     ['share/wxglade/icons/msw', glob('icons/msw/*')],
     ['share/wxglade/templates', glob('templates/*')],
     ['share/doc/wxglade', text_files],
-    ['share/doc/wxglade/tutorial', glob('docs/tutorial.html')],
+    ['share/doc/wxglade/tutorial', glob('docs/Tutorial.html')],
     ['share/doc/wxglade/tutorial/img', glob('docs/img/*.*')],
     ['share/doc/wxglade/manual_html', glob('docs/html/*.*')],
     ['share/doc/wxglade/manual_pdf', glob('docs/pdf/*.pdf')],
