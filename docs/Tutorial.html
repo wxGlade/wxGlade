@@ -1,5 +1,3 @@
-
-
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
     <head>
@@ -10,7 +8,7 @@
     <body dir="ltr" lang="en">
         <h1 id="wxGlade_Tutorial"><a class="mozTocH1" id="mozTocId242317"></a>wxGlade Tutorial</h1>
         <br>
-        (for versions >=0.8.0, currently only available from the repository, to be downloaded from <a href="https://bitbucket.org/wxglade/wxglade/get/default.zip">https://bitbucket.org/wxglade/wxglade/get/default.zip</a> )<br>
+        (for versions &gt;=0.8.0, currently only available from the repository, to be downloaded from <a href="https://bitbucket.org/wxglade/wxglade/get/default.zip">https://bitbucket.org/wxglade/wxglade/get/default.zip</a> )<br>
         <br>
         <ol id="mozToc">
             <!--mozToc h1 1 h2 2 h3 3 h4 4 h5 5 h6 6-->
@@ -262,8 +260,8 @@
                 </tr>
             </tbody>
         </table>
-        <p><br>
-        </p>
+        <p><br></p>
+<p><strong>Add the remaining rows: copy "Value 1" to "Value 2" and "Result"; add "Operator" and the buttons<br></strong></p>
         <p>We need almost the same combination of sizer/label/text for the second value, so we'll copy the sizer including it's content.</p>
         <strong>There are several methods to copy:</strong>
         <ul>
@@ -281,16 +279,13 @@
                 <strong>Drag &amp; Drop</strong>:
                 <ul>
                     <li>drag the sizer handle to the empty slot while holding the Ctrl-Key </li>
-                    <li>drag the sizer icon in the <em>Tree</em> window to the empty slot, again holding the Ctrl-Key </li>
-                </ul>
-            </li>
-        </ul>
-        <strong>In the next steps fill the other slots of the main sizer:</strong>
+                    <li>drag the sizer icon in the <em>Tree</em> window to the empty slot, again holding the Ctrl-Key</li></ul></li>
+        </ul><strong>Change labels and names:</strong><br>After copying, the controls will have default values and names. Usually you have to change them. You can do this in the <em>Properties</em> window or directly in the <em>Tree </em>window. To edit in the <em>Tree </em>window, you can click on the label or press F2 while it is selected.<br><br><strong>In the next steps fill the other slots of the main sizer:</strong>
         <ul>
-            <li>repeat the copying to fill SLOT 5 </li>
-            <li>insert a sizer with two buttons into SLOT 6 <img alt="button.png" src="attachments/button.png" title="button.png" border=1> </li>
-            <li>add a horizontal line into SLOT 4 and enable wxEXPAND for this <img alt="static_line.png" src="attachments/static_line.png" title="static_line.png" border=1> </li>
-            <li>insert a sizer, a label and a radio box into SLOT 2 <img alt="radio_box.png" src="attachments/radio_box.png" title="radio_box.png" border=1> </li>
+            <li>repeat the copying to fill SLOT 5 and rename the label to "Result" and the text control to "result_text".</li>
+            <li>insert a sizer with two buttons into SLOT 6 <img alt="button.png" src="attachments/button.png" title="button.png" border="1"> </li>
+            <li>add a horizontal line into SLOT 4 and enable wxEXPAND for this <img alt="static_line.png" src="attachments/static_line.png" title="static_line.png" border="1"> </li>
+            <li>insert a sizer, a label and a radio box into SLOT 2 <img alt="radio_box.png" src="attachments/radio_box.png" title="radio_box.png" border="1"> </li>
         </ul>
         <strong>Define the options "+-*/" for the radio box by going to the "Widget" tab:</strong>
         <table style="margin-left: 60px;">
@@ -347,7 +342,7 @@
         <div style="margin-left: 40px;"> </div>
         <p><strong>Add a notebook:</strong></p>
         <ol>
-            <li>click on the Notebook icon <img alt="notebook.png" src="attachments/notebook.png" title="notebook.png" border=1> in the section "Containers" to start placing a notebook</li>
+            <li>click on the Notebook icon <img alt="notebook.png" src="attachments/notebook.png" title="notebook.png" border="1"> in the section "Containers" to start placing a notebook</li>
             <li>click on the hatched area in the Design window or on the sizer slot <img alt="sizer_slot.png" src="attachments/sizer_slot.png" title="sizer_slot.png"> in the <em>Tree</em> window</li>
             <li>in the dialog, select wx.NB_TOP to place the notebook tabs at the top</li>
         </ol>
@@ -392,7 +387,7 @@
         </ol>
         <h2><a class="mozTocH2" id="mozTocId362286"></a>Part 3: Use of Spacers</h2>
         Sometimes you need to keep some space in a sizer, either with a fixed size or growable, e.g. to have a gap between two controls or to align two controls to the left and the right edge of a window or to align a control to the center.<br>
-        To add a spacer, click the spacer icon <img alt="spacer.png" src="attachments/spacer.png" title="spacer.png" border=1> and place it in a sizer slot.<br>
+        To add a spacer, click the spacer icon <img alt="spacer.png" src="attachments/spacer.png" title="spacer.png" border="1"> and place it in a sizer slot.<br>
         <br>
         In our example, we may place a spacer to the left and right of the operator radio box to center it:<br>
         <ol>
