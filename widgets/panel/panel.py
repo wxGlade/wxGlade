@@ -93,8 +93,10 @@ class PanelBase(EditStylesMixin):
 
     def check_drop_compatibility(self):
         if self.top_sizer:
-            return False
-        return common.adding_sizer
+            return (False, 'Sizer already set for this panel')
+        if common.adding_sizer:
+            return (True, None)
+        return (False, 'Only sizers can be added here')
 
     def get_widget_best_size(self):
         if self.top_sizer and self.widget.GetSizer():

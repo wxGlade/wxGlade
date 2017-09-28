@@ -806,7 +806,7 @@ class EditMenuBar(EditBase, PreviewMixin):
     def check_compatibility(self, widget, typename=None, report=False):
         return (False,"No pasting possible here.")
     def check_drop_compatibility(self):
-        return (False,"No pasting possible here.")
+        return (False,"Use menu editor: Properties -> Edit menus...")
 
 
 

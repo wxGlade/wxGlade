@@ -748,7 +748,7 @@ class EditToolBar(EditBase, PreviewMixin, EditStylesMixin, BitmapMixin):
     def check_compatibility(self, widget, typename=None, report=False):
         return (False,"No pasting possible here.")
     def check_drop_compatibility(self):
-        return (False,"No pasting possible here.")
+        return (False,"Use toolbar editor: Properties -> Edit tools...")
 
 
 

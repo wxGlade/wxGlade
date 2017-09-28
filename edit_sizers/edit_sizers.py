@@ -391,8 +391,8 @@ class SizerSlot(np.PropertyOwner):
         to add every non-toplevel widget or sizer, and in turn calls the
         appropriate builder function (found in the ``common.widgets'' dict)"""
         if common.adding_sizer and self.sizer.is_virtual():
-            return False
-        return True
+            return (False, "No sizer can be added here")
+        return (True,None)
 
     # clipboard handling ###############################################################################################
     def check_compatibility(self, widget, typename=None):
@@ -775,7 +775,7 @@ class SizerBase(Sizer, np.PropertyOwner):
         np.PropertyOwner.properties_changed(self, modified)
 
     def check_drop_compatibility(self):
-        return (False,None)
+        return (False, "Items can only be added to empty slots")
 
     def check_compatibility(self, widget, typename=None):
         if typename is not None:

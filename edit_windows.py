@@ -273,7 +273,7 @@ class EditBase(EventsMixin, np.PropertyOwner):
 
     def check_drop_compatibility(self):
         # checks whether a widget can be dropped here
-        return False
+        return (False, "Items can only be added to empty slots. Add or free a slot first.")
 
     ####################################################################################################################
 
@@ -823,8 +823,10 @@ class TopLevelBase(WindowBase, PreviewMixin):
 
     def check_drop_compatibility(self):
         if self.sizer:
-            return False
-        return common.adding_sizer
+            return (False, 'Sizer already set for this window')
+        if common.adding_sizer:
+            return (True, None)
+        return (False, 'Only sizers can be added here')
 
     def hide_widget(self, event=None):
         self.widget.Hide()  # just hide, don't close
