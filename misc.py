@@ -370,6 +370,11 @@ def _add():
         method = getattr(focused_widget.sizer, "add_slot", None)
     if method: method()
 
+def _cancel():
+    if not common.adding_widget: return
+    common.adding_widget = common.adding_sizer = False
+    common.widget_to_add = None
+
 
 # accelerator table to enable keyboard shortcuts for the popup menus of the various widgets (remove, cut, copy, paste)
 accel_table = [
@@ -382,6 +387,7 @@ accel_table = [
     (wx.ACCEL_CTRL,                ord('R'),      (common, "history","repeat"), "focused_widget"),
     (wx.ACCEL_CTRL,                ord('I'),      _insert, ()),
     (wx.ACCEL_CTRL,                ord('A'),      _add, ()),
+    (0,                            wx.WXK_ESCAPE, _cancel, ()),
     (0,                            wx.WXK_F2,     (common,"palette","show_tree"),            ()),
     (0,                            wx.WXK_F3,     (common,"palette","show_props_window"),    ()),
     (0,                            wx.WXK_F4,     (common,"palette","raise_all"),            ()),
