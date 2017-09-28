@@ -130,7 +130,7 @@ class EditStatusBar(EditBase, EditStylesMixin):
     def check_compatibility(self, widget, typename=None, report=False):
         return (False,"No pasting possible here.")
     def check_drop_compatibility(self):
-        return (False,"No pasting possible here.")
+        return (False,"Edit fields in Properties -> Widget")
 
 
 _NUMBER = 0

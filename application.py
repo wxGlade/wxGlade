@@ -562,7 +562,7 @@ class Application(np.PropertyOwner):
         return menu
 
     def check_drop_compatibility(self):
-        return (False,None)
+        return (False, "Only toplevel widgets can be added here; click Frame or Dialog icon to do so")
 
     def check_compatibility(self, widget, typename=None):
         if getattr(widget, "_is_toplevel", False) or typename=="window":
