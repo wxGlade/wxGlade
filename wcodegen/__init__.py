@@ -538,7 +538,7 @@ class BaseWidgetWriter(StylesMixin, BaseCodeWriter):
             assert self.tmpl_setdefault
             prop_lines.append(self.tmpl_setdefault % self.tmpl_dict)
 
-        if self.has_selection:
+        if self.has_selection and self.tmpl_dict['selection']!=-1:
             assert self.tmpl_selection
             prop_lines.append(self.tmpl_selection % self.tmpl_dict)
 
