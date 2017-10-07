@@ -39,7 +39,7 @@ class EditChoice(ManagedBase):
         ManagedBase.__init__(self, name, 'wxChoice', parent, id, sizer, pos)
 
         # initialise instance properties
-        self.selection = np.SpinProperty(0, val_range=len(choices)-1, immediate=True )
+        self.selection = np.SpinProperty(0, val_range=(-1,len(choices)-1), immediate=True )
         self.choices = ChoicesProperty( choices, [(_('Label'), np.GridProperty.STRING)] )
 
     def create_widget(self):
@@ -54,13 +54,13 @@ class EditChoice(ManagedBase):
         return ManagedBase.get_property_handler(self, prop_name)
 
     def properties_changed(self, modified):
-        # self.selection needs to be in range (0,len(self.choices))
+        # self.selection needs to be in range (-1,len(self.choices)-1)
         choices = self.choices
-        max_selection = len(choices)
+        max_selection = len(choices)-1
         set_selection = False
         if not modified or "choices" in modified:
             # adjust range of selection
-            self.properties['selection'].set_range(min(0,max_selection), max_selection)
+            self.properties['selection'].set_range(min(-1,max_selection), max_selection)
             set_selection = True
             if self.widget:
                 # update widget

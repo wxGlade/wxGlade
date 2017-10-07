@@ -9,7 +9,7 @@ wxComboBox objects
 
 import wx
 
-import common, config
+import common, config, compat
 from edit_windows import ManagedBase, EditStylesMixin
 from tree import Node
 import new_properties as np
@@ -29,14 +29,20 @@ class EditComboBox(ManagedBase, EditStylesMixin):
         EditStylesMixin.__init__(self)
 
         # initialise instance properties
-        self.selection = np.SpinProperty(0, val_range=len(choices)-1, immediate=True )
+        self.selection = np.SpinProperty(0, val_range=(-1,len(choices)-1), immediate=True )
         self.choices = ChoicesProperty( choices, [(_('Label'), np.GridProperty.STRING)] )
 
     def create_widget(self):
-        choices = [c[0] for c in self.choices]
-        self.widget = wx.ComboBox(self.parent.widget, self.id, choices=choices)
-        self.widget.SetSelection(self.selection)
-        self.widget.Bind(wx.EVT_LEFT_DOWN, self.on_set_focus)
+        if compat.IS_PHOENIX:
+            # we prefer ComboCtrl as EVT_LEFT_DOWN does not work otherwise (ComboBox has no GetTextCtrl method)
+            selection = self.selection
+            value = self.choices[selection][0] if selection!=-1 else ""
+            self.widget = wx.ComboCtrl(self.parent.widget, self.id, value=value)
+            self.widget.GetTextCtrl().Bind(wx.EVT_LEFT_DOWN, self.on_set_focus)
+        else:
+            choices = [c[0] for c in self.choices]
+            self.widget = wx.ComboBox(self.parent.widget, self.id, choices=choices)
+            self.widget.SetSelection(self.selection)
 
     def get_property_handler(self, prop_name):
         if prop_name == 'choices':
@@ -44,18 +50,19 @@ class EditComboBox(ManagedBase, EditStylesMixin):
         return ManagedBase.get_property_handler(self, prop_name)
 
     def properties_changed(self, modified):  # the same code as for EditChoice and EditCheckListBox
-        # self.selection needs to be in range (0,len(self.choices))
+        # self.selection needs to be in range (-1,len(self.choices)-1)
         choices = self.choices
-        max_selection = len(choices)
+        max_selection = len(choices)-1
         set_selection = False
         if not modified or "choices" in modified:
             # adjust range of selection
-            self.properties['selection'].set_range(min(0,max_selection), max_selection)
+            self.properties['selection'].set_range(min(-1,max_selection), max_selection)
             set_selection = True
             if self.widget:
                 # update widget
                 self.widget.Clear()
-                for c in choices: self.widget.Append(c[0])
+                if compat.IS_CLASSIC:
+                    for c in choices: self.widget.Append(c[0])
                 if not self.properties['size'].is_active():
                     self.sizer.set_item_best_size(self, size=self.widget.GetBestSize())
 
@@ -64,7 +71,12 @@ class EditComboBox(ManagedBase, EditStylesMixin):
             if self.selection>max_selection:
                 self.properties['selection'].set(max_selection)
         if self.widget and set_selection and self.widget.GetSelection()!=self.selection:
-            self.widget.SetSelection(self.selection)
+            if compat.IS_CLASSIC:
+                self.widget.SetSelection(self.selection)
+            else:
+                selection = self.selection
+                value = self.choices[selection][0] if selection!=-1 else ""
+                self.widget.SetValue(value)
 
         EditStylesMixin.properties_changed(self, modified)
         ManagedBase.properties_changed(self, modified)
