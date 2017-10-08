@@ -966,7 +966,7 @@ class SizerBase(Sizer, np.PropertyOwner):
         if force_layout:
             self.layout()
 
-    def set_item_best_size(self, widget, size, force_layout=True):
+    def set_item_best_size(self, widget, size=(-1,-1), force_layout=True):
         if not self.widget or not widget.widget: return
 
         elem = self.widget.GetItem(widget.widget)
