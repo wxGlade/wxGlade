@@ -267,8 +267,7 @@ class SizerSlot(np.PropertyOwner):
     def _create_popup_menu(self, widget):
         # menu title
         if isinstance(self.sizer, GridSizerBase):
-            rows = self.sizer.rows
-            cols = self.sizer.cols
+            rows, cols = self.sizer._get_actual_rows_cols()
             # calculate row and pos of our slot
             row,col = self.sizer._get_row_col(self.pos)
             menu = wx.Menu(_("Slot %d/%d"%(row+1,col+1)))
@@ -503,8 +502,15 @@ def change_sizer(old, new):
     # copy/set properties
     if isinstance(szr, GridSizerBase):
         # take rows, cols, hgap, vgap from old sizer, if applicable
-        szr.properties["rows"].set( getattr(old, "rows", 1) )
-        szr.properties["cols"].set( getattr(old, "cols", len(szr.children)-1) )
+        rows = getattr(old, "rows", 1)
+        cols = getattr(old, "cols", len(szr.children)-1)
+        if isinstance(szr, EditGridBagSizer):
+            # for GridSizer and FlexGridSizer cols may be 0, i.e. auto calculated
+            if rows==0: rows = (len(self.children)-2)//cols +1
+            if cols==0: cols = (len(self.children)-2)//rows +1
+
+        szr.properties["rows"].set( rows )
+        szr.properties["cols"].set( cols )
         szr.properties["hgap"].set( getattr(old, "hgap", 0) )
         szr.properties["vgap"].set( getattr(old, "vgap", 0) )
         szr.properties_changed( ["rows","cols","hgap","vgap"] )
@@ -961,8 +967,7 @@ class SizerBase(Sizer, np.PropertyOwner):
             self.layout()
 
     def set_item_best_size(self, widget, size, force_layout=True):
-        if not self.widget or not widget.widget:
-            return
+        if not self.widget or not widget.widget: return
 
         elem = self.widget.GetItem(widget.widget)
         if not elem: return
@@ -1482,8 +1487,8 @@ class CustomGridBagSizer(CustomFlexGridSizer):
 
 class GridSizerBase(SizerBase):
     "Base class for Grid sizers"
-    _PROPERTY_HELP = {"rows":'Numbers of sizer rows',
-                      "cols":'Numbers of sizer columns',
+    _PROPERTY_HELP = {"rows":"Numbers of sizer rows; can be set to 0 for 'as many as required'",
+                      "cols":"Numbers of sizer columns; can be set to 0 for 'as many as required'",
                       "vgap":'Vertical extra space between all children',
                       "hgap":'Horizontal extra space between all children'}
 
@@ -1491,9 +1496,13 @@ class GridSizerBase(SizerBase):
 
     def __init__(self, name, klass, window, rows=3, cols=3, vgap=0, hgap=0, toplevel=True):
         SizerBase.__init__(self, name, klass, None, window, toplevel)
-
-        self.rows = np.SpinProperty(rows, immediate=True)
-        self.cols = np.SpinProperty(cols, immediate=True)
+        if self.WX_CLASS == "wxGridBagSizer":
+            val_range=(1,1000)
+        else:
+            # Grid and FlexGrid sizers allow columns/rows to be 0, i.e. as many as required
+            val_range=(0,1000)
+        self.rows = np.SpinProperty(rows, val_range=val_range, immediate=True)
+        self.cols = np.SpinProperty(cols, val_range=val_range, immediate=True)
         self.vgap = np.SpinProperty(vgap, immediate=True)
         self.hgap = np.SpinProperty(hgap, immediate=True)
 
@@ -1533,22 +1542,28 @@ class GridSizerBase(SizerBase):
             self.widget.SetSizeHints(self.window.widget)
 
     # helpers ##########################################################################################################
+    def _get_actual_rows_cols(self):
+        rows = self.rows
+        cols = self.cols
+        # for GridSizer and FlexGridSizer cols may be 0, i.e. auto calculated
+        if cols==0:    cols = (len(self.children)-2)//rows + 1
+        elif rows==0:  rows = (len(self.children)-2)//cols + 1
+        return rows, cols
     def _get_row_col(self, pos, cols=None):
-        if cols is None: cols = self.cols
+        if cols is None:
+            rows, cols = self._get_actual_rows_cols()
         return (pos-1) // cols,  (pos-1) %  cols
 
     def _get_pos(self, row, col):
-        return 1 + row*self.cols + col
+        rows, cols = self._get_actual_rows_cols()
+        return 1 + row*cols + col
 
     def _adjust_rows_cols(self):
-        # adjust rows and cols properties; set slot names
+        # called when items are added or removed: adjust number of rows
         cols_p = self.properties["cols"]
         rows_p = self.properties["rows"]
-        if cols_p.get()==0:
-            rows_new = len(self.children)-1
-        else:
-            rows_new = (len(self.children)-1) // cols_p.get()
-            if (len(self.children)-1) % cols_p.get(): rows_new += 1
+        if rows_p.value==0 or cols_p.value==0: return
+        rows_new = (len(self.children)-2) // cols_p.get() + 1
         if rows_new!=rows_p.value: rows_p.set(rows_new)
 
     # context menu actions #############################################################################################
@@ -1566,7 +1581,7 @@ class GridSizerBase(SizerBase):
         else:
             add_row, dummy = self._get_row_col(pos)
 
-        self.properties["rows"].set( rows+1 )
+        if rows: self.properties["rows"].set( rows+1 )
 
         for n in range(cols):
             self._insert_slot( n+1 + add_row*cols )
@@ -1582,8 +1597,7 @@ class GridSizerBase(SizerBase):
 
     def insert_col(self, pos=-1):
         "inserts slots for a new column"
-        rows = self.rows
-        cols = self.cols
+        rows, cols = self._get_actual_rows_cols()
 
         # calculate the column (0 based) to be added
         if pos==-1:
@@ -1601,7 +1615,7 @@ class GridSizerBase(SizerBase):
                 self._insert_slot( last_pos+1+i )
 
         # insert the new colum
-        self.properties["cols"].set( cols+1 )
+        if self.cols: self.properties["cols"].set( cols+1 )
         # insert placeholders to avoid problems with GridBagSizers and overlap tests
         for r in range(rows-1,-1,-1):
             self.children.insert( add_col+1 + r*cols, None )
@@ -1630,7 +1644,7 @@ class GridSizerBase(SizerBase):
             if pos==0: continue
             child_row, child_col = self._get_row_col(pos)
             if child_row==row: slots.append(child)
-        self.properties["rows"].set( rows-1 )
+        if rows: self.properties["rows"].set( rows-1 )
         # actually remove the slots
         for slot in reversed(slots): slot.remove()
         
@@ -1652,7 +1666,7 @@ class GridSizerBase(SizerBase):
             if pos==0: continue
             child_row, child_col = self._get_row_col(pos)
             if child_col==col: slots.append(child)
-        self.properties["cols"].set( cols-1 )
+        if cols: self.properties["cols"].set( cols-1 )
         # actually remove the slots
         for slot in reversed(slots): slot.remove()
 
@@ -1668,10 +1682,9 @@ class GridSizerBase(SizerBase):
 
     ####################################################################################################################
     def properties_changed(self, modified):
-        cols = self.cols
-        rows = self.rows
+        rows, cols = self._get_actual_rows_cols()
         if rows*cols < len(self.children) + 1:
-            # number of rows/cols too low
+            # number of rows/cols too low; this is not called if rows or col==0
             if not modified or "cols" in modified:
                 # adjust number of rows if required
                 if rows*cols < len(self.children) + 1:
@@ -1775,7 +1788,10 @@ class _GrowablePropertyD(np.DialogPropertyD):
         if self.dialog is None:
             parent = self.text.GetTopLevelParent()
             self.dialog = _GrowableDialog(parent, self.title)
-        row_or_col_count = getattr(self.owner, self.name.split("_")[-1])
+
+        rows, cols = self.owner._get_actual_rows_cols()
+        row_or_col_count = rows  if "rows" in self.name else  cols
+
         choices = [ str(n) for n in range(1, row_or_col_count+1) ]
         selected = self.get_list()
         self.dialog.set_choices(choices, selected)
@@ -1866,13 +1882,14 @@ class EditFlexGridSizer(GridSizerBase):
     def _set_growable(self):
         rows = [int(r)-1 for r in self.growable_rows.split(",") if r.strip()]  # the text property is 1-based
         cols = [int(c)-1 for c in self.growable_cols.split(",") if c.strip()]
-        for r in range(self.rows):
+        rowcount,colcount = self._get_actual_rows_cols()
+        for r in range(rowcount):
             growable = self.widget.IsRowGrowable(r)
             if growable and not r in rows:
                 self.widget.RemoveGrowableRow(r)
             elif not growable and r in rows:
                 self.widget.AddGrowableRow(r)
-        for c in range(self.cols):
+        for c in range(colcount):
             growable = self.widget.IsColGrowable(c)
             if growable and not c in cols:
                 self.widget.RemoveGrowableCol(c)
@@ -1886,6 +1903,9 @@ class EditGridBagSizer(EditFlexGridSizer):
     "Class to handle wxFlexGridSizer objects"
     WX_CLASS = "wxGridBagSizer"
     _IS_GRIDBAG = True
+    _PROPERTY_HELP = {"rows":"Numbers of sizer rows; this is just used internally for wxGlade design, not by wx",
+                      "cols":"Numbers of sizer columns; this is just used internally for wxGlade design, not by wx"}
+
 
     def create_widget(self):  # this one does not call GridSizerBase.create_widget, as the strategy here is different
         self.widget = CustomGridBagSizer(self, self.rows, self.cols, self.vgap, self.hgap)
