@@ -472,7 +472,7 @@ class WindowBase(EditBase):
 
         self.widget.SetFont(font)
         if not self.properties["size"].is_active():
-            self.sizer.set_item_best_size(self, size=size)
+            self.sizer.set_item_best_size(self)
 
     def set_size(self):
         if not self.widget: return
