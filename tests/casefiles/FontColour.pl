@@ -50,10 +50,9 @@ sub __set_properties {
     my $self = shift;
     # begin wxGlade: MyFrame::__set_properties
     $self->SetTitle(_T("frame_1"));
-    $self->{text_ctrl_1}->SetMinSize(Wx::Size->new(379, 23));
     $self->{text_ctrl_1}->SetBackgroundColour(Wx::Colour->new(0, 255, 127));
     $self->{text_ctrl_1}->SetForegroundColour(Wx::Colour->new(255, 0, 0));
-    $self->{text_ctrl_1}->SetFont(Wx::Font->new(10, wxDEFAULT, wxNORMAL, wxBOLD, 0, ""));
+    $self->{text_ctrl_1}->SetFont(Wx::Font->new(16, wxDEFAULT, wxNORMAL, wxBOLD, 0, ""));
     $self->{text_ctrl_1}->SetFocus();
     # end wxGlade
 }

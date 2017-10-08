@@ -49,10 +49,9 @@
 (defmethod set-properties ((obj MyFrame))
         ;;; begin wxGlade: MyFrame.__set_properties
         (wxFrame_SetTitle (slot-top-window obj) (_"frame_1"))
-        (slot-text-ctrl-1 obj).SetMinSize((379, 23))
         (wxWindow_SetBackgroundColour (slot-text-ctrl-1 obj) (wxColour_CreateRGB 0, 255, 127))
         (wxWindow_SetForegroundColour (slot-text-ctrl-1 obj) (wxColour_CreateRGB 255, 0, 0))
-        (wxWindow_SetFont (slot-text-ctrl-1 obj) (wxFont_Create 10 wxDEFAULT wxNORMAL wxBOLD 0 "" wxFONTENCODING_DEFAULT))
+        (wxWindow_SetFont (slot-text-ctrl-1 obj) (wxFont_Create 16 wxDEFAULT wxNORMAL wxBOLD 0 "" wxFONTENCODING_DEFAULT))
         (wxWindow_SetFocus (slot-text-ctrl-1 obj))
         ;;; end wxGlade
         )
