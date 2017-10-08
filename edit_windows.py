@@ -470,12 +470,9 @@ class WindowBase(EditBase):
             weights = np.FontProperty.font_weights_to
             font = wx.Font( font[0], families[font[1]], styles[font[2]], weights[font[3]], font[4], font[5])
 
-        old_size = self.widget.GetSize()
         self.widget.SetFont(font)
         if not self.properties["size"].is_active():
-            size = self.widget.GetSize()
-            if size != old_size:
-                self.sizer.set_item_best_size(self, size=size)
+            self.sizer.set_item_best_size(self, size=size)
 
     def set_size(self):
         if not self.widget: return
@@ -569,8 +566,7 @@ class ManagedBase(WindowBase):
         self.widget.Bind(wx.EVT_MOUSE_EVENTS, self.on_mouse_events)
         self.widget.Bind(wx.EVT_MOVE, self.on_move)
         # re-add the item to update it
-        # XXX just pass self, not the attributes
-        self.sizer.add_item( self, self.pos, self.widget.GetSize() )
+        self.sizer.add_item( self, self.pos )
 
     def update_view(self, selected):
         if self.sel_marker: self.sel_marker.Show(selected)
