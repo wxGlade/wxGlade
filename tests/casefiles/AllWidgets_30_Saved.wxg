@@ -345,7 +345,7 @@
                                 <border>5</border>
                                 <flag>wxALL</flag>
                                 <object class="wxChoice" name="choice_empty" base="EditChoice">
-                                    <selection>0</selection>
+                                    <selection>-1</selection>
                                     <choices>
                                     </choices>
                                 </object>
