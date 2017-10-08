@@ -32,10 +32,6 @@ class TestGui(WXGladeGUITest):
         self.frame._open_app(infilename, use_progress_dialog=False, add_to_history=False)
         self.assertFalse( self._messageBox, 'Loading test wxg file caused an error message: %s' % self._messageBox )
 
-    def test_CodeGeneration_FontColour(self):
-        'Test GUI code generation using "FontColour"'
-        self.load_and_generate('FontColour')
-
     def test_StylelessDialog(self):
         "Test code generation for a style less dialog"
         self.load_and_generate('styleless-dialog')
@@ -82,7 +78,7 @@ class TestGui(WXGladeGUITest):
 
     def test_FontColour(self):
         "Test code generation for fonts and colours"
-        self.load_and_generate('FontColour', test_GUI=False)
+        self.load_and_generate('FontColour', test_GUI=True)
 
     def test_Grid(self):
         "Test code generation with a grid widgets and handling events"

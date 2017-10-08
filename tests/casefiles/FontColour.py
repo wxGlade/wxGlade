@@ -28,10 +28,9 @@ class MyFrame(wx.Frame):
     def __set_properties(self):
         # begin wxGlade: MyFrame.__set_properties
         self.SetTitle(_("frame_1"))
-        self.text_ctrl_1.SetMinSize((379, 23))
         self.text_ctrl_1.SetBackgroundColour(wx.Colour(0, 255, 127))
         self.text_ctrl_1.SetForegroundColour(wx.Colour(255, 0, 0))
-        self.text_ctrl_1.SetFont(wx.Font(10, wx.DEFAULT, wx.NORMAL, wx.BOLD, 0, ""))
+        self.text_ctrl_1.SetFont(wx.Font(16, wx.DEFAULT, wx.NORMAL, wx.BOLD, 0, ""))
         self.text_ctrl_1.SetFocus()
         # end wxGlade
 

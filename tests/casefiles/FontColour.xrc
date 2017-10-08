@@ -15,12 +15,11 @@
                     <bg>#00ff7f</bg>
                     <fg>#ff0000</fg>
                     <focused>1</focused>
-                    <size>379, 23</size>
                     <style>wxTE_READONLY</style>
                     <value>Some Input</value>
                     <font>
                         <family>default</family>
-                        <size>10</size>
+                        <size>16</size>
                         <style>normal</style>
                         <underlined>0</underlined>
                         <weight>bold</weight>

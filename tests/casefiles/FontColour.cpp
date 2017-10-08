@@ -32,10 +32,9 @@ void MyFrame::set_properties()
 {
     // begin wxGlade: MyFrame::set_properties
     SetTitle(_("frame_1"));
-    text_ctrl_1->SetMinSize(wxSize(379, 23));
     text_ctrl_1->SetBackgroundColour(wxColour(0, 255, 127));
     text_ctrl_1->SetForegroundColour(wxColour(255, 0, 0));
-    text_ctrl_1->SetFont(wxFont(10, wxDEFAULT, wxNORMAL, wxBOLD, 0, wxT("")));
+    text_ctrl_1->SetFont(wxFont(16, wxDEFAULT, wxNORMAL, wxBOLD, 0, wxT("")));
     text_ctrl_1->SetFocus();
     // end wxGlade
 }
