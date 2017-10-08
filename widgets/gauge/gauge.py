@@ -30,6 +30,7 @@ class EditGauge(ManagedBase, EditStylesMixin):
 
     def create_widget(self):
         self.widget = wx.Gauge(self.parent.widget, self.id, self.range, style=self.style)
+        if self.range>=3: self.widget.SetValue(self.range//3)
 
     def properties_changed(self, modified):
         if not modified or "range" in modified and self.widget:
