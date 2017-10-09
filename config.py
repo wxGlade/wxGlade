@@ -61,7 +61,6 @@ rc_file = ''                         # Path to the rc / ini file to store user p
 history_file = ''                    # Path to the history file, if used
 log_file = ''                        # Path to wxGlade log file
 
-encoding = None                      # character encoding; see wxglade.init_localization(); fallback: 'default_encoding'
 
 
 use_gui = True                 # If True, wxGlade runs in "GUI" mode, if False, in "batch" mode for generating code only
