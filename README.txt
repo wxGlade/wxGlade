@@ -1,11 +1,7 @@
 wxGlade: A GUI builder for wxPython/wxWidgets
 =============================================
 
-Version: no up-to-date release at the moment; 0.7.2 is outdated
-         please use the version from the repository
-         you can download from https://bitbucket.org/wxglade/wxglade/get/default.zip
-         or clone the repository
-         in a few days I will add an alpha revision number as preparation for release
+Version: 0.8.0a2
 License: MIT (see LICENSE.txt)
 
 THIS PROGRAM COMES WITH NO WARRANTY
@@ -15,6 +11,7 @@ Requirements
 ------------
 - Python (http://www.python.org) 2.7, 3.4 or later
 - wxPython (http://www.wxpython.org) >= 2.8
+  (wxPython Phoenix is supported)
 
 
 Installation
@@ -30,6 +27,7 @@ it will create Phoenix code.
 Documentation
 -------------
 There's a tutorial in the docs subdirectory.
+You can view it from the help menu as well.
 
 
 Submitting Issues
