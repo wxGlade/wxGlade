@@ -1,7 +1,9 @@
 For release 0.8:
- * Grid Sizer: insert row, insert col for empty slots
- * testing, examples
  * Tutorial update; add some HowTos?
+
+don't fix:
+ * static text: change Widget->Align left, Layout->Expand -> with border
+   -> re-create required on style change
 
 
 User Interface:
