@@ -151,7 +151,7 @@ class Application(np.PropertyOwner):
 
         # encoding
         encodings = ["UTF-8", "ISO-8859-1", "ISO-8859-15", "CP1252"]  # just some common values
-        self.encoding = np.ComboBoxProperty(config.encoding, encodings)
+        self.encoding = np.ComboBoxProperty(config.default_encoding, encodings)
 
         # top window name for the generated app
         self.top_window = np.ListBoxProperty("", choices=[])
