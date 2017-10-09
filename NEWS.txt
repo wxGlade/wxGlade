@@ -1,3 +1,32 @@
+Version 0.8.0
+General:
+  - support for wxPython Phoenix and Python 3
+  - full visualization of sizer slots; full editing capability in Tree window (structure, names, labels)
+  - support for GridBagSizer
+  - Repeat feature (Ctrl-R and Ctrl-Y) to apply property change(s) to multiple widgets
+  - new Menu and Toolbar editors
+
+Internal:
+  - very major refactoring of property handling, code generation and sizers
+  - many bug fixes
+  - reformatted code and comments to be more compact
+  - always use DestroyLater to avoid crashes
+  - less redundant calls to widget.Show() to reduce display errors
+  - better handling of size changes due to fonts
+  - Disable autosave functionality permanently after saving has failed
+  - Redesigned palette window
+
+Generated Code:
+  - bind menu handlers without the need for user-defined IDs
+  - default file encoding is now UTF-8
+
+Documentation:
+  - new tutorial
+
+Testing:
+  - refactored testing
+
+
 Version 0.7.3 - 2016-06-XX:
 General:
   - Disable autosave functionality permanently after saving has failed
@@ -32,9 +61,6 @@ Bugs:
   - Assert isinstance(geometry, (wx.Point,  wx.Rect)) (sf bug #196)
   - ...
 
-Deprecation
-  - In place modifications for generated source files will be removed in one
-    of the next releases
 
 Documentation:
   - ...
