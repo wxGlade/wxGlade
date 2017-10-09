@@ -9,7 +9,7 @@ Entry point of wxGlade
 """
 
 import atexit
-import codecs, locale
+import codecs
 import logging, os, sys, gettext, optparse
 
 # Use a NullWriter with Unicode support (encoding attribute) to catch and
@@ -31,8 +31,10 @@ if hasattr(sys, 'frozen') and not hasattr(sys.stderr, 'encoding'):
     sys.stdout = NullWriter()
     sys.stderr = NullWriter()
 
+
 t = gettext.translation(domain="wxglade", localedir="locale", fallback=True)
 t.install("wxglade")
+
 
 # avoid problems with "_" in __builtins__ being replaced:
 def my_displayhook(value):
@@ -151,9 +153,7 @@ def command_line_code_generation(filename, language, out_path=None):
 
 def init_stage1():
     """Initialise paths for wxGlade (first stage)
-
-    Initialisation is split because the test suite doesn't work with proper initialised paths.
-    Initialise locale settings too. The determined system locale will be stored in L{config.encoding}."""
+    Initialisation is split because the test suite doesn't work with proper initialised paths."""
     config.version = config.get_version()
     common.init_paths()
 
@@ -183,52 +183,6 @@ def init_stage1():
     # adapt application search path
     sys.path.insert(0, config.wxglade_path)
     sys.path.insert(1, config.widgets_path)
-
-
-def init_localization():
-    "Initialise localization"
-    encoding = None
-    try:
-        locale.setlocale(locale.LC_ALL, '')
-    except locale.Error as e:
-        # ignore problems by fallback to ascii
-        logging.warning(_('Setting locale failed: %s'), str(e))
-        logging.warning(_('Use "ascii" locale instead.'))
-        encoding = 'ascii'
-
-    # try to query character encoding used in the selected locale
-    if not encoding and hasattr(locale, 'nl_langinfo'):
-        try:
-            encoding = locale.nl_langinfo(locale.CODESET)
-        except AttributeError as e:
-            logging.warning( _('locale.nl_langinfo(locale.CODESET) failed: %s'), str(e) )
-
-    # try getdefaultlocale, it used environment variables
-    if not encoding:
-        try:
-            encoding = locale.getdefaultlocale()[1]
-        except ValueError:
-            encoding = config.default_encoding
-
-    # On Mac OS X encoding may None or '' somehow
-    if not encoding:
-        encoding = config.default_encoding
-        logging.warning(_('Empty encoding. Use "%s" instead'), encoding)
-
-    # check if a codec for the encoding exists
-    try:
-        codecs.lookup(encoding)
-    except LookupError:
-        logging.warning( _('No codec for encoding "%s" found. Use "ascii" instead'), encoding)
-        encoding = 'ascii'
-
-    # store determined encoding and show current locale
-    config.encoding = encoding.upper()
-    loc_langcode, loc_encoding = locale.getlocale()
-    logging.info(_('Current locale settings are:'))
-    logging.info(_('  Language code: %s'), loc_langcode)
-    logging.info(_('  Encoding: %s'), loc_encoding)
-    logging.info(_('  Filesystem encoding: %s'), sys.getfilesystemencoding())
 
 
 def init_stage2(use_gui):
@@ -282,7 +236,6 @@ def run_main():
 
     # initialise wxGlade (first stage and second stage)
     init_stage1()
-    init_localization()
     init_stage2(options.start_gui)
 
     if options.start_gui:

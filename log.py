@@ -20,7 +20,7 @@ behaviour is useful to store logged exceptions permanently.
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
-import datetime, inspect, locale
+import datetime, inspect
 import logging, logging.handlers
 import os, sys, types, traceback
 
@@ -110,9 +110,6 @@ class ExceptionFormatter(logging.Formatter):
         exc_tb = ei[2]
         exc_type = ei[0]
         exc_value = ei[1]
-        loc_langcode = None
-        loc_encoding = None
-        loc_filesystem = None
         msg = []
         try:
             try:
@@ -122,11 +119,6 @@ class ExceptionFormatter(logging.Formatter):
                 wx_version = getattr(config, 'wx_version', 'not found')
                 platform = getattr(config, 'platform', 'not found')
                 app_version = getattr(config, 'version', 'not found')
-                if sys.platform=="darwin":
-                    loc_langcode = loc_encoding = "darwin"  # getlocale may fail on Mac OS
-                else:
-                    loc_langcode, loc_encoding = locale.getlocale()
-                loc_filesystem = sys.getfilesystemencoding()
 
                 msg.append('An unexpected error occurred!\n')
                 msg.append('\n')
@@ -141,9 +133,6 @@ class ExceptionFormatter(logging.Formatter):
                 msg.append('wxPython version:    %s\n' % wx_version)
                 msg.append('wxWidgets platform:  %s\n' % platform)
                 msg.append('wxGlade version:     %s\n' % app_version)
-                msg.append('Language code:       %s\n' % loc_langcode)
-                msg.append('Encoding:            %s\n' % loc_encoding)
-                msg.append('Filesystem encoding: %s\n' % loc_filesystem)
                 msg.append('\n')
 
             except Exception as e:
