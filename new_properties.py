@@ -164,7 +164,9 @@ class Property(object):
         if active != self.deactivated: return
         for controlname in self.CONTROLNAMES:
             if controlname=="enabler": continue
-            getattr(self, controlname).Enable(active)
+            control = getattr(self, controlname, None)
+            if control is None: continue
+            control.Enable(active)
         self.on_value_edited(self.value, active)
         self.activate_controls()
 
