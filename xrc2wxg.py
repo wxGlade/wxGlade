@@ -97,7 +97,7 @@ def convert(filename, output_file):
     fix_class_properties(document)
     fix_widgets(document)
     fix_encoding(filename, document)
-    if not hasattr(output_file, 'write'):
+    if not hasattr(output_file, 'write') and not isinstance(output_file, list):
         output_file = open(output_file, 'wb')
         write_output(document, output_file)
         output_file.close()
@@ -123,8 +123,11 @@ def write_output(document, output):
         # ignore empty lines
         if not line.strip():
             continue
-        output.write(line)
-        output.write(b'\n')
+        if hasattr(output, "write"):
+            output.write(line)
+            output.write(b'\n')
+        else:
+            output.append(line+b'\n')
 
     dom_copy.unlink()
 
@@ -314,12 +317,14 @@ def fix_sub_menus(document, menu, new_menu):
             new_menu.appendChild(elem)
 
 
-def fix_toolbars(document):
-    def istoolbar(elem):
-        return elem.getAttribute('class') == 'wxToolBar'
+def _get_elements_by_class(document, classnames):
+    if isinstance(classnames, str):
+        classnames = (classnames,)
+    return [node for node in document.getElementsByTagName('object') if node.getAttribute('class') in classnames]
 
-    toolbars = filter(istoolbar, document.getElementsByTagName('object'))
-    for tb in toolbars:
+
+def fix_toolbars(document):
+    for tb in _get_elements_by_class(document, 'wxToolBar'):
         fix_tools(document, tb)
         if tb.parentNode is not document.documentElement:
             tb_prop = document.createElement('toolbar')
@@ -354,17 +359,12 @@ def fix_tools(document, toolbar):
 
 
 def fix_notebooks(document):
-    def ispage(node):
-        return node.getAttribute('class') == 'notebookpage'
 
-    def isnotebook(node):
-        return node.getAttribute('class') == 'wxNotebook'
-
-    for nb in filter(isnotebook, document.getElementsByTagName('object')):
-        pages = filter(ispage, get_child_elems(nb))
+    for nb in _get_elements_by_class(document, 'wxNotebook'):
+        pages = [node for node in get_child_elems(nb) if node.getAttribute('class')=='notebookpage']
         tabs = document.createElement('tabs')
         try:
-            us = filter( lambda n: n.tagName == 'usenotebooksizer', get_child_elems(nb) )[0]
+            us = [node for node in get_child_elems(nb) if node.tagName=='usenotebooksizer'][0]
             nb.removeChild(us).unlink()
         except IndexError:
             pass
@@ -384,14 +384,8 @@ def fix_notebooks(document):
 
 
 def fix_splitters(document):
-    def issplitter(node):
-        return node.getAttribute('class') == 'wxSplitterWindow'
-
-    def ispane(node):
-        return node.tagName == 'object'
-
-    for sp in filter(issplitter, document.getElementsByTagName('object')):
-        panes = filter(ispane, get_child_elems(sp))
+    for sp in _get_elements_by_class(document, 'wxSplitterWindow'):
+        panes = [node for node in get_child_elems(sp) if node.tagName=='object']
         assert len(panes) <= 2, "Splitter window with more than 2 panes!"
         for i, pane in enumerate(panes):
             e = document.createElement('window_%s' % (i + 1))
@@ -405,10 +399,7 @@ def fix_splitters(document):
 
 
 def fix_fake_panels(document):
-    def isframe(node):
-        return node.getAttribute('class') == 'wxFrame'
-
-    for frame in filter(isframe, document.getElementsByTagName('object')):
+    for frame in _get_elements_by_class(document, 'wxFrame'):
         for c in get_child_elems(frame):
             if c.tagName == 'object' and c.getAttribute('class') == 'wxPanel' and c.getAttribute('name') == '':
                 elems = get_child_elems(c)
@@ -417,10 +408,7 @@ def fix_fake_panels(document):
 
 
 def fix_spacers(document):
-    def isspacer(node):
-        return node.getAttribute('class') == 'spacer'
-
-    for spacer in filter(isspacer, document.getElementsByTagName('object')):
+    for spacer in _get_elements_by_class(document, 'spacer'):
         spacer.setAttribute('name', 'spacer')
         spacer.setAttribute('base', 'EditSpacer')
         sizeritem = document.createElement('object')
@@ -442,10 +430,7 @@ def fix_spacers(document):
 
 
 def fix_scrolled_windows(document):
-    def isscrollwin(node):
-        return node.getAttribute('class') == 'wxScrolledWindow'
-
-    for sw in filter(isscrollwin, document.getElementsByTagName('object')):
+    for sw in _get_elements_by_class(document, 'wxScrolledWindow'):
         e = document.createElement('scrollable')
         e.appendChild(document.createTextNode('1'))
         sw.insertBefore(e, sw.firstChild)
@@ -469,11 +454,7 @@ def fix_toplevel_names(document):
 
 
 def fix_sliders(document):
-    def isslider(node):
-        klass = node.getAttribute('class')
-        return klass == 'wxSlider' or klass == 'wxSpinCtrl'
-
-    for slider in filter(isslider, document.getElementsByTagName('object')):
+    for slider in _get_elements_by_class(document, ('wxSlider', 'wxSpinCtrl')): 
         v1, v2 = 0, 100
         for child in get_child_elems(slider):
             if child.tagName == 'min':
