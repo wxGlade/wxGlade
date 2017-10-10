@@ -54,7 +54,7 @@ class XmlParser(ContentHandler):
     def parse_string(self, source):
         if isinstance(source, list):
             for line in source:
-                self.parser.feed(source)
+                self.parser.feed(line)
         else:
             self.parser.feed(source)
         self.parser.close()
@@ -569,8 +569,9 @@ class XmlWidgetObject(object):
             prop = self.obj.properties[name]
         except KeyError:
             # unknown property for this object; issue a warning and ignore the property
-            if config.debugging: raise
+            #if config.debugging: raise
             self._logger.error( _("WARNING: Property '%s' not supported by this object ('%s') "), name, self.obj )
+            return
         prop.load(val, activate=True)
         #self.obj.properties_changed([name])
         self._properties_added.append(name)
