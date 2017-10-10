@@ -9,7 +9,7 @@ Graphical tests
 
 from testsupport_new import WXGladeGUITest
 
-import wx.xrc
+import wx, wx.xrc
 import xrc2wxg
 import common, compat
 import glob, os, sys, unittest
@@ -40,6 +40,7 @@ class TestGui(WXGladeGUITest):
         'Test GUI code generation using "AllWidgets_28"'
         self.load_and_generate('AllWidgets_28', preview = compat.IS_CLASSIC)
 
+    @unittest.skipIf(wx.VERSION[:2]<(3,0), "not supported")
     def test_CodeGeneration_AllWidgets_30(self):
         'Test GUI code generation using "AllWidgets_30"'
         self.load_and_generate('AllWidgets_30', ['lisp'])
@@ -447,6 +448,7 @@ class TestGui(WXGladeGUITest):
         "Test code generation with unsupported flags"
         self.load_and_generate('no_supported_flags', test_GUI=False)
 
+    @unittest.skipIf(wx.VERSION[:2]<(3,0), "not all supported (import_test.xrc fails")
     def test_load_xrc(self):
         "Test loading XRC files"
         res = wx.xrc.EmptyXmlResource()

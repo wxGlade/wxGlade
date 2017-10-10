@@ -1397,6 +1397,9 @@ class CustomGridSizer(wx.BoxSizer):
         self._create(rows, cols, vgap, hgap)
         wx.BoxSizer.Add(self, self.parent._btn, 0, wx.EXPAND)
         wx.BoxSizer.Add(self, self._grid, 1, wx.EXPAND)
+        if wx.VERSION[:2] < (3,0):
+            self._growable_rows = set()
+            self._growable_cols = set()
 
     def _create(self, rows, cols, vgap, hgap):
         self._grid = wx.GridSizer(rows, cols, vgap, hgap)
@@ -1450,6 +1453,25 @@ class CustomGridSizer(wx.BoxSizer):
     def Layout(self):
         self._grid.Layout()
         wx.BoxSizer.Layout(self)
+
+    if wx.VERSION[:2] < (3,0):
+        # compatibility for wxPython 2.8, as IsRowGrowable was only introduced with wx 2.9.1
+        def IsRowGrowable(self, row):
+            return row in self._growable_rows
+        def IsColGrowable(self, col):
+            return col in self._growable_cols
+        def AddGrowableRow(self, row):
+            self._grid.AddGrowableRow(row)
+            self._growable_rows.add(row)
+        def RemoveGrowableRow(self, row):
+            self._grid.RemoveGrowableRow(row)
+            self._growable_rows.remove(row)
+        def AddGrowableCol(self, col):
+            self._grid.AddGrowableCol(col)
+            self._growable_cols.add(col)
+        def RemoveGrowableCol(self, col):
+            self._grid.RemoveGrowableCol(col)
+            self._growable_cols.remove(col)
 
 
 class CustomFlexGridSizer(CustomGridSizer):
@@ -1894,7 +1916,6 @@ class EditFlexGridSizer(GridSizerBase):
             if growable and not c in cols:
                 self.widget.RemoveGrowableCol(c)
             elif not growable and c in cols:
-                print("Adding col", c)
                 self.widget.AddGrowableCol(c)
 
 
@@ -1905,7 +1926,6 @@ class EditGridBagSizer(EditFlexGridSizer):
     _IS_GRIDBAG = True
     _PROPERTY_HELP = {"rows":"Numbers of sizer rows; this is just used internally for wxGlade design, not by wx",
                       "cols":"Numbers of sizer columns; this is just used internally for wxGlade design, not by wx"}
-
 
     def create_widget(self):  # this one does not call GridSizerBase.create_widget, as the strategy here is different
         self.widget = CustomGridBagSizer(self, self.rows, self.cols, self.vgap, self.hgap)
