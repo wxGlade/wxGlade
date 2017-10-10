@@ -638,35 +638,39 @@ class wxGladeFrame(wx.Frame):
 
         error_msg = None
         infile = None
-        old_dir = os.getcwd()
-
-        common.app_tree.app.filename = filename
 
         start = time.clock()
-        common.app_tree.clear()
 
-        # disable auto-expansion of nodes
-        common.app_tree.auto_expand = False
+        common.app_tree.clear()
+        common.app_tree.auto_expand = False  # disable auto-expansion of nodes
 
         try:
             try:
                 self._logger.info( _('Read wxGlade project from file "%s"'), filename )
-                os.chdir(os.path.dirname(filename))
-                # decoding will done automatically by SAX XML library
-                if compat.PYTHON2:
-                    infile = open(filename)
+
+                if not isinstance(filename, list):
+                    common.app_tree.app.filename = filename
+                    # decoding will done automatically by SAX XML library
+                    if compat.PYTHON2:
+                        infile = open(filename)
+                    else:
+                        infile = open(filename, "r", encoding="UTF8")
                 else:
-                    infile = open(filename, "r", encoding="UTF8")
+                    common.app_tree.app.filename = None
 
                 if use_progress_dialog and config.preferences.show_progress:
                     p = ProgressXmlWidgetBuilder(input_file=infile)
                 else:
                     p = XmlWidgetBuilder()
 
-                p.parse(infile)
+                if infile is not None:
+                    p.parse(infile)
+                else:
+                    p.parse_string(filename)
+                    filename = None
             except (EnvironmentError, SAXParseException, XmlParsingError) as msg:
                 if config.debugging: raise
-                if filename:
+                if infile is not None:
                     error_msg = _("Error loading file %s: %s") % (misc.wxstr(filename), misc.wxstr(msg))
                 else:
                     error_msg = _("Error loading from a file-like object: %s") % misc.wxstr(msg)
@@ -686,8 +690,6 @@ class wxGladeFrame(wx.Frame):
                 common.app_tree.clear()
                 common.app_tree.app.saved = True
                 common.app_tree.auto_expand = True  # re-enable auto-expansion of nodes
-
-                os.chdir(old_dir)
 
                 wx.MessageBox(error_msg, _('Error'), wx.OK | wx.CENTRE | wx.ICON_ERROR)
 
@@ -854,14 +856,15 @@ class wxGladeFrame(wx.Frame):
         self.tree_frame.Hide()
         self.property_frame.Hide()
 
-    def import_xrc(self):
+    def import_xrc(self, infilename=None):
         import xrc2wxg
 
         if not self.ask_save():
             return
 
-        infilename = wx.FileSelector( _("Import file"), wildcard="XRC files (*.xrc)" "|*.xrc|All files|*",
-                                      flags=wx.FD_OPEN | wx.FD_FILE_MUST_EXIST, default_path=self.cur_dir)
+        if not infilename:
+            infilename = wx.FileSelector( _("Import file"), wildcard="XRC files (*.xrc)" "|*.xrc|All files|*",
+                                          flags=wx.FD_OPEN | wx.FD_FILE_MUST_EXIST, default_path=self.cur_dir)
         if infilename:
             ibuffer = []
             try:
@@ -869,7 +872,7 @@ class wxGladeFrame(wx.Frame):
 
                 # Convert UTF-8 returned by xrc2wxg.convert() to Unicode
                 tmp = b"".join(ibuffer).decode('UTF-8')
-                ibuffer = ['%s\n' for line in tmp.split('\n')]
+                ibuffer = ['%s\n'%line for line in tmp.split('\n')]
 
                 self._open_app(ibuffer)
                 common.app_tree.app.saved = False
