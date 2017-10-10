@@ -5,6 +5,7 @@ General:
   - support for GridBagSizer
   - Repeat feature (Ctrl-R and Ctrl-Y) to apply property change(s) to multiple widgets
   - new Menu and Toolbar editors
+  - better visualization for gauge, list ctrl, property grid in Design window
 
 Internal:
   - very major refactoring of property handling, code generation and sizers
