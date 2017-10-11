@@ -51,7 +51,7 @@
     <size>200,200</size>
     <title>XRC Import test</title>
     <centered>1</centered>
-    <style>wxDEFAULT_DIALOG_STYLE|wxCAPTION|wxSYSTEM_MENU|wxRESIZE_BORDER</style>
+    <style>wxDEFAULT_FRAME_STYLE|wxCAPTION|wxSYSTEM_MENU|wxRESIZE_BORDER</style>
     <object class="wxFlexGridSizer">
       <object class="sizeritem">
         <object class="wxStaticLine"/>

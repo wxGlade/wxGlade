@@ -456,6 +456,16 @@ class TestGui(WXGladeGUITest):
             self.assertTrue( res.Load(filename),
                              'Loading XRC file %s failed' % os.path.relpath(filename, self.caseDirectory) )
 
+    def test_import_xrc(self):
+        "Test importing XRC files: just import_test.xrc at the moment"
+        infilename = self._get_casefile_path("import_test.xrc")
+        common.palette.import_xrc(infilename)
+        # save file to wxg and check
+        generated_filename = self._get_outputfile_path("import_test.wxg")
+        compare_filename = self._get_casefile_path("import_test.wxg")
+        common.palette._save_app(generated_filename)
+        self._compare_files(compare_filename, generated_filename)
+
     def stop(self):
         print("XXX")  # nothing to do
 
