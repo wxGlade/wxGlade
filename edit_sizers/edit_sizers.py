@@ -224,6 +224,7 @@ class SizerSlot(np.PropertyOwner):
 
     def on_paint(self, event):
         "Handle paint request and draw hatched lines onto the window"
+        if not self.sizer: return  # in deletion
         dc = wx.PaintDC(self.widget)
         self._draw_background(dc)
 
