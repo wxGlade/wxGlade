@@ -1294,7 +1294,8 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
         returns a list of strings containing the generated code"""
         out = []
         props = [p.name for p in widget.get_properties() if p.is_active()]
-        if widget.check_prop('size'):       out.append(self.generate_code_size(widget))
+        if widget.check_prop('size') and widget.base!='wxFrame':
+            out.append(self.generate_code_size(widget))
         if widget.check_prop('background'): out.append(self.generate_code_background(widget))
         if widget.check_prop('foreground'): out.append(self.generate_code_foreground(widget))
         if widget.check_prop('font'):       out.append(self.generate_code_font(widget))
