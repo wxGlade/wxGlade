@@ -122,6 +122,7 @@
         (wxSizer_AddWindow (slot-sizer-1 obj) (slot-label-1 obj) 1 (logior wxALIGN_CENTER wxALL wxEXPAND) 0 nil)
         (wxWindow_SetSizer (slot-top-window obj) (slot-sizer-1 obj))
         (wxFrame_layout (slot-frame-1 self))
+        (slot-top-window obj).wxWindow_SetSize((200, 200))
         ;;; end wxGlade
         )
 

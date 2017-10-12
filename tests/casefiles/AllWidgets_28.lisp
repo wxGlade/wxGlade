@@ -562,6 +562,7 @@
         (wxFlexGridSizer_AddGrowableCol (slot-sizer-1 obj) 0)
         (wxFrame_layout (slot-All-Widgets self))
         (wxFrame_Centre (slot-top-window obj) wxBOTH)
+        (slot-top-window obj).wxWindow_SetSize((800, 417))
         ;;; end wxGlade
         )
 

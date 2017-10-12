@@ -135,6 +135,7 @@ sub __do_layout {
     $self->{sizer_1}->Add($self->{label_1}, 1, wxALIGN_CENTER|wxALL|wxEXPAND, 0);
     $self->SetSizer($self->{sizer_1});
     $self->Layout();
+    $self->SetSize(Wx::Size->new(200, 200));
     # end wxGlade
 }
 

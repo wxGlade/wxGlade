@@ -194,6 +194,7 @@
         (wxFlexGridSizer_AddGrowableCol (slot-sizer-1 obj) 0)
         (wxFrame_layout (slot-Mp3-To-Ogg self))
         (wxFrame_Centre (slot-top-window obj) wxBOTH)
+        (slot-top-window obj).wxWindow_SetSize((600, 500))
         ;;; end wxGlade
         )
 
@@ -285,6 +286,7 @@
         (wxWindow_SetSizer (slot-top-window obj) (slot--szr-frame obj))
         (wxSizer_SetSizeHints (slot-slot--szr-frame obj) (slot-top-window obj))
         (wxFrame_layout (slot-FrameGrid self))
+        (slot-top-window obj).wxWindow_SetSize((492, 300))
         ;;; end wxGlade
         )
 

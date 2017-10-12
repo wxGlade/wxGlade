@@ -102,6 +102,7 @@
         (wxSizer_AddSizer (slot-sizer-5 obj) (slot-grid-sizer-3 obj) 1 wxEXPAND 0 nil)
         (wxWindow_SetSizer (slot-top-window obj) (slot-sizer-5 obj))
         (wxFrame_layout (slot-FrameOggCompressionDetails self))
+        (slot-top-window obj).wxWindow_SetSize((400, 300))
         ;;; end wxGlade
         )
 

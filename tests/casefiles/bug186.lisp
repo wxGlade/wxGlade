@@ -92,6 +92,7 @@
         (wxSizer_AddSizer (slot-sizer-1 obj) (slot-sizer-2 obj) 1 wxEXPAND 0 nil)
         (wxWindow_SetSizer (slot-top-window obj) (slot-sizer-1 obj))
         (wxFrame_layout (slot-Bug186-Frame self))
+        (slot-top-window obj).wxWindow_SetSize((300, 300))
         ;;; end wxGlade
         )
 
