@@ -52,7 +52,6 @@ sub __set_properties {
     my $self = shift;
     # begin wxGlade: Frame194::__set_properties
     $self->SetTitle(_T("frame_1"));
-    $self->SetSize(Wx::Size->new(800, 600));
     $self->{list_box_single}->SetSelection(0);
     $self->{list_box_multiple}->SetSelection(0);
     $self->{list_box_extended}->SetSelection(0);

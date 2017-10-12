@@ -73,7 +73,6 @@ void PyOgg2_MyFrame::set_properties()
 {
     // begin wxGlade: PyOgg2_MyFrame::set_properties
     SetTitle(_("mp3 2 ogg"));
-    SetSize(wxSize(600, 500));
     int Mp3_To_Ogg_statusbar_widths[] = { -2, -1 };
     Mp3_To_Ogg_statusbar->SetStatusWidths(2, Mp3_To_Ogg_statusbar_widths);
 
@@ -208,7 +207,6 @@ void MyFrameGrid::set_properties()
 {
     // begin wxGlade: MyFrameGrid::set_properties
     SetTitle(_("FrameOggCompressionDetails"));
-    SetSize(wxSize(492, 300));
     grid->CreateGrid(8, 3);
     button->SetFocus();
     button->SetDefault();

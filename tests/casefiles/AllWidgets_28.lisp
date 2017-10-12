@@ -348,7 +348,6 @@
         ;;; begin wxGlade: All_Widgets_Frame.__set_properties
         (wxFrame_SetTitle (slot-top-window obj) (_"All Widgets"))
         ;;; generating code for setting icons is not implemented
-        (slot-top-window obj).wxWindow_SetSize((800, 417))
         (wxStatusBar_SetStatusWidths (slot-All-Widgets-statusbar obj) 1 (vector -1))
         (wxStatusBar_SetStatusText (slot-All-Widgets-statusbar obj) (_"All Widgets statusbar") 0)
         (wxToolBar_Realize (slot-All-Widgets-toolbar obj))

@@ -58,7 +58,6 @@
 (defmethod set-properties ((obj Frame194))
         ;;; begin wxGlade: Frame194.__set_properties
         (wxFrame_SetTitle (slot-top-window obj) (_"frame_1"))
-        (slot-top-window obj).wxWindow_SetSize((800, 600))
         (wxListBox_SetSelection (slot-list-box-single obj) 0)
         (wxListBox_SetSelection (slot-list-box-multiple obj) 0)
         (wxListBox_SetSelection (slot-list-box-extended obj) 0)

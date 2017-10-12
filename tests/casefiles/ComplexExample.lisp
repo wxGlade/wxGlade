@@ -132,7 +132,6 @@
 (defmethod set-properties ((obj PyOgg2_MyFrame))
         ;;; begin wxGlade: PyOgg2_MyFrame.__set_properties
         (wxFrame_SetTitle (slot-top-window obj) (_"mp3 2 ogg"))
-        (slot-top-window obj).wxWindow_SetSize((600, 500))
         (wxStatusBar_SetStatusWidths (slot-Mp3-To-Ogg-statusbar obj) 2 (vector -2 -1))
         (wxStatusBar_SetStatusText (slot-Mp3-To-Ogg-statusbar obj) (_"Mp3_To_Ogg_statusbar") 0)
         (wxStatusBar_SetStatusText (slot-Mp3-To-Ogg-statusbar obj) "" 1)
@@ -267,7 +266,6 @@
 (defmethod set-properties ((obj MyFrameGrid))
         ;;; begin wxGlade: MyFrameGrid.__set_properties
         (wxFrame_SetTitle (slot-top-window obj) (_"FrameOggCompressionDetails"))
-        (slot-top-window obj).wxWindow_SetSize((492, 300))
         (wxGrid_CreateGrid (slot-grid obj) 8 3 0)
         (wxWindow_SetFocus (slot-button obj))
         (wxButton_SetDefault (slot-button obj))

@@ -44,7 +44,6 @@ void Frame186::set_properties()
 {
     // begin wxGlade: Frame186::set_properties
     SetTitle(_("frame_1"));
-    SetSize(wxSize(300, 300));
     // end wxGlade
 }
 

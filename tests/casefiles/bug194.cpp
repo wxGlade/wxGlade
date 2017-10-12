@@ -55,7 +55,6 @@ void Frame194::set_properties()
 {
     // begin wxGlade: Frame194::set_properties
     SetTitle(_("frame_1"));
-    SetSize(wxSize(800, 600));
     list_box_single->SetSelection(0);
     list_box_multiple->SetSelection(0);
     list_box_extended->SetSelection(0);

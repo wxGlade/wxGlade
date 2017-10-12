@@ -77,7 +77,6 @@
 (defmethod set-properties ((obj Frame186))
         ;;; begin wxGlade: Frame186.__set_properties
         (wxFrame_SetTitle (slot-top-window obj) (_"frame_1"))
-        (slot-top-window obj).wxWindow_SetSize((300, 300))
         (wxToolBar_Realize (slot-Bug186-Frame-toolbar obj))
         ;;; end wxGlade
         )

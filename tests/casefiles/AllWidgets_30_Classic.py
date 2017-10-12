@@ -174,7 +174,6 @@ class All_Widgets_Frame(wx.Frame):
         _icon = wx.NullIcon
         _icon.CopyFromBitmap(wx.ArtProvider.GetBitmap(wx.ART_TIP, wx.ART_OTHER, (32, 32)))
         self.SetIcon(_icon)
-        self.SetSize((800, 417))
         self.All_Widgets_statusbar.SetStatusWidths([-1])
 
         # statusbar fields

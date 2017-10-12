@@ -32,7 +32,6 @@ class Frame194(wx.Frame):
     def __set_properties(self):
         # begin wxGlade: Frame194.__set_properties
         self.SetTitle(_("frame_1"))
-        self.SetSize((800, 600))
         self.list_box_single.SetSelection(0)
         self.list_box_multiple.SetSelection(0)
         self.list_box_extended.SetSelection(0)

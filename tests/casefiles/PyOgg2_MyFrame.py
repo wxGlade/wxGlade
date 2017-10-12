@@ -31,7 +31,6 @@ class PyOgg2_MyFrame(wx.Frame):
     def __set_properties(self):
         # begin wxGlade: PyOgg2_MyFrame.__set_properties
         self.SetTitle(_("FrameOggCompressionDetails"))
-        self.SetSize((400, 300))
         self.grid_1.CreateGrid(8, 3)
         self.button_6.SetFocus()
         self.button_6.SetDefault()

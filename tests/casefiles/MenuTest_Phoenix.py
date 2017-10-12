@@ -139,7 +139,6 @@ class MenuTestFrame(wx.Frame):
         _icon = wx.NullIcon
         _icon.CopyFromBitmap(wx.ArtProvider.GetBitmap(wx.ART_TIP, wx.ART_OTHER, (32, 32)))
         self.SetIcon(_icon)
-        self.SetSize((800, 417))
         # end wxGlade
 
     def __do_layout(self):

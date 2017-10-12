@@ -198,7 +198,6 @@ sub __set_properties {
     my $icon = &Wx::wxNullIcon;
     $icon->CopyFromBitmap(Wx::ArtProvider::GetBitmap(wxART_TIP, wxART_OTHER, Wx::Size->new(32, 32)));
     $self->SetIcon($icon);
-    $self->SetSize(Wx::Size->new(800, 417));
     $self->{All_Widgets_statusbar}->SetStatusWidths(-1);
 
     # statusbar fields

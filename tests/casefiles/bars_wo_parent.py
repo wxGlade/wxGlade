@@ -70,7 +70,6 @@ class MyFrame(wx.Frame):
     def __set_properties(self):
         # begin wxGlade: MyFrame.__set_properties
         self.SetTitle("frame_1")
-        self.SetSize((200, 200))
         # end wxGlade
 
     def __do_layout(self):
