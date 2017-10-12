@@ -318,6 +318,14 @@ sub new {
     $self->{_1_N_F_copy_29} = Wx::TextCtrl->new($self->{notebook_1_GridBagSizer}, wxID_ANY, "");
     $self->{_0_X_F_copy_29} = Wx::TextCtrl->new($self->{notebook_1_GridBagSizer}, wxID_ANY, "");
     $self->{_1_X_F_copy_29} = Wx::TextCtrl->new($self->{notebook_1_GridBagSizer}, wxID_ANY, "");
+    $self->{notebook_1_BorderTest} = Wx::Panel->new($self->{notebook_1}, wxID_ANY);
+    $self->{_0_N_N_border_10_none} = Wx::TextCtrl->new($self->{notebook_1_BorderTest}, wxID_ANY, "");
+    $self->{_1_N_N_border_0_all} = Wx::TextCtrl->new($self->{notebook_1_BorderTest}, wxID_ANY, "");
+    $self->{_0_X_N_border_5_LEFTRIGHT} = Wx::TextCtrl->new($self->{notebook_1_BorderTest}, wxID_ANY, "");
+    $self->{_1_X_N_border_15_BOTTOM} = Wx::TextCtrl->new($self->{notebook_1_BorderTest}, wxID_ANY, "");
+    $self->{_0_N_N_copy_copy_1} = Wx::TextCtrl->new($self->{notebook_1_BorderTest}, wxID_ANY, "");
+    $self->{_0_N_N_copy_31} = Wx::TextCtrl->new($self->{notebook_1_BorderTest}, wxID_ANY, "");
+    $self->{_0_N_N_copy_32} = Wx::TextCtrl->new($self->{notebook_1_BorderTest}, wxID_ANY, "");
 
     $self->__set_properties();
     $self->__do_layout();
@@ -562,6 +570,9 @@ sub __set_properties {
     $self->{_1_N_F_copy_29}->SetMinSize($self->{_1_N_F_copy_29}->ConvertDialogSizeToPixels(Wx::Size->new(100, -1)));
     $self->{_0_X_F_copy_29}->SetMinSize($self->{_0_X_F_copy_29}->ConvertDialogSizeToPixels(Wx::Size->new(100, -1)));
     $self->{_1_X_F_copy_29}->SetMinSize($self->{_1_X_F_copy_29}->ConvertDialogSizeToPixels(Wx::Size->new(100, -1)));
+    $self->{_0_N_N_copy_copy_1}->SetMinSize(Wx::Size->new(100, 21));
+    $self->{_0_N_N_copy_31}->SetMinSize($self->{_0_N_N_copy_31}->ConvertDialogSizeToPixels(Wx::Size->new(100, 21)));
+    $self->{_0_N_N_copy_32}->SetMinSize(Wx::Size->new(-1, 21));
     # end wxGlade
 }
 
@@ -569,6 +580,11 @@ sub __do_layout {
     my $self = shift;
     # begin wxGlade: MyFrame::__do_layout
     $self->{sizer_1} = Wx::BoxSizer->new(wxVERTICAL);
+    $self->{sizer_7} = Wx::BoxSizer->new(wxHORIZONTAL);
+    $self->{sizer_border_15_BOTTOM} = Wx::BoxSizer->new(wxVERTICAL);
+    $self->{sizer_border_5_LEFTRIGHT} = Wx::BoxSizer->new(wxVERTICAL);
+    $self->{sizer_border_0_ALL} = Wx::BoxSizer->new(wxVERTICAL);
+    $self->{sizer_border_10_none} = Wx::BoxSizer->new(wxVERTICAL);
     $self->{sizer_6} = Wx::GridBagSizer->new(1, 1);
     $self->{sizer_5} = Wx::FlexGridSizer->new(7, 8, 1, 1);
     $self->{sizer_4} = Wx::GridSizer->new(7, 8, 0, 0);
@@ -895,14 +911,26 @@ sub __do_layout {
     $self->{sizer_6}->AddGrowableRow(5);
     $self->{sizer_6}->AddGrowableCol(1);
     $self->{sizer_6}->AddGrowableCol(7);
+    $self->{sizer_border_10_none}->Add($self->{_0_N_N_border_10_none}, 0, 0, 10);
+    $self->{sizer_border_10_none}->Add($self->{_1_N_N_border_0_all}, 1, wxALL, 0);
+    $self->{sizer_border_10_none}->Add($self->{_0_X_N_border_5_LEFTRIGHT}, 0, wxEXPAND|wxLEFT|wxRIGHT, 5);
+    $self->{sizer_border_10_none}->Add($self->{_1_X_N_border_15_BOTTOM}, 1, wxBOTTOM|wxEXPAND, 15);
+    $self->{sizer_7}->Add($self->{sizer_border_10_none}, 1, wxEXPAND, 10);
+    $self->{sizer_border_0_ALL}->Add($self->{_0_N_N_copy_copy_1}, 0, 0, 0);
+    $self->{sizer_7}->Add($self->{sizer_border_0_ALL}, 1, wxALL|wxEXPAND, 0);
+    $self->{sizer_border_5_LEFTRIGHT}->Add($self->{_0_N_N_copy_31}, 0, 0, 0);
+    $self->{sizer_7}->Add($self->{sizer_border_5_LEFTRIGHT}, 1, wxLEFT|wxRIGHT, 5);
+    $self->{sizer_border_15_BOTTOM}->Add($self->{_0_N_N_copy_32}, 0, 0, 0);
+    $self->{sizer_7}->Add($self->{sizer_border_15_BOTTOM}, 1, wxALIGN_RIGHT, 15);
+    $self->{notebook_1_BorderTest}->SetSizer($self->{sizer_7});
     $self->{notebook_1}->AddPage($self->{notebook_1_pane_1}, _T("BoxSizer"));
     $self->{notebook_1}->AddPage($self->{notebook_1_StaticBoxSizer}, _T("StaticBoxSizer"));
     $self->{notebook_1}->AddPage($self->{notebook_1_GridSizer}, _T("GridSizer"));
     $self->{notebook_1}->AddPage($self->{notebook_1_FlexGridSizer}, _T("FlexGridSizer"));
     $self->{notebook_1}->AddPage($self->{notebook_1_GridBagSizer}, _T("GridBagSizer"));
+    $self->{notebook_1}->AddPage($self->{notebook_1_BorderTest}, _T("BorderTest"));
     $self->{sizer_1}->Add($self->{notebook_1}, 1, wxEXPAND, 0);
     $self->SetSizer($self->{sizer_1});
-    $self->{sizer_1}->Fit($self);
     $self->Layout();
     # end wxGlade
 }

@@ -3,6 +3,7 @@
 
 <resource version="2.3.0.1">
     <object class="wxFrame" name="frame" subclass="MyFrame">
+        <size>600, 400</size>
         <title>frame</title>
         <object class="wxBoxSizer">
             <orient>wxVERTICAL</orient>
@@ -1842,6 +1843,85 @@
                                 <flag>wxEXPAND|wxFIXED_MINSIZE</flag>
                                 <object class="wxTextCtrl" name="_1_X_F_copy_29">
                                     <size>100, -1d</size>
+                                </object>
+                            </object>
+                        </object>
+                    </object>
+                    </object>
+                    <object class="notebookpage">
+                    <label>BorderTest</label>
+                    <object class="wxPanel" name="notebook_1_BorderTest">
+                        <style>wxTAB_TRAVERSAL</style>
+                        <object class="wxBoxSizer">
+                            <orient>wxHORIZONTAL</orient>
+                            <object class="sizeritem">
+                                <option>1</option>
+                                <flag>wxEXPAND</flag>
+                                <border>10</border>
+                                <object class="wxBoxSizer">
+                                    <orient>wxVERTICAL</orient>
+                                    <object class="sizeritem">
+                                        <border>10</border>
+                                        <object class="wxTextCtrl" name="_0_N_N_border_10_none">
+                                        </object>
+                                    </object>
+                                    <object class="sizeritem">
+                                        <option>1</option>
+                                        <flag>wxALL</flag>
+                                        <object class="wxTextCtrl" name="_1_N_N_border_0_all">
+                                        </object>
+                                    </object>
+                                    <object class="sizeritem">
+                                        <flag>wxEXPAND|wxLEFT|wxRIGHT</flag>
+                                        <border>5</border>
+                                        <object class="wxTextCtrl" name="_0_X_N_border_5_LEFTRIGHT">
+                                        </object>
+                                    </object>
+                                    <object class="sizeritem">
+                                        <option>1</option>
+                                        <flag>wxBOTTOM|wxEXPAND</flag>
+                                        <border>15</border>
+                                        <object class="wxTextCtrl" name="_1_X_N_border_15_BOTTOM">
+                                        </object>
+                                    </object>
+                                </object>
+                            </object>
+                            <object class="sizeritem">
+                                <option>1</option>
+                                <flag>wxALL|wxEXPAND</flag>
+                                <object class="wxBoxSizer">
+                                    <orient>wxVERTICAL</orient>
+                                    <object class="sizeritem">
+                                        <object class="wxTextCtrl" name="_0_N_N_copy_copy_1">
+                                            <size>100, 21</size>
+                                        </object>
+                                    </object>
+                                </object>
+                            </object>
+                            <object class="sizeritem">
+                                <option>1</option>
+                                <flag>wxLEFT|wxRIGHT</flag>
+                                <border>5</border>
+                                <object class="wxBoxSizer">
+                                    <orient>wxVERTICAL</orient>
+                                    <object class="sizeritem">
+                                        <object class="wxTextCtrl" name="_0_N_N_copy_31">
+                                            <size>100, 21d</size>
+                                        </object>
+                                    </object>
+                                </object>
+                            </object>
+                            <object class="sizeritem">
+                                <option>1</option>
+                                <flag>wxALIGN_RIGHT</flag>
+                                <border>15</border>
+                                <object class="wxBoxSizer">
+                                    <orient>wxVERTICAL</orient>
+                                    <object class="sizeritem">
+                                        <object class="wxTextCtrl" name="_0_N_N_copy_32">
+                                            <size>-1, 21</size>
+                                        </object>
+                                    </object>
                                 </object>
                             </object>
                         </object>

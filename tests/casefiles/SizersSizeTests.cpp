@@ -21,6 +21,7 @@ MyFrame::MyFrame(wxWindow* parent, wxWindowID id, const wxString& title, const w
 {
     // begin wxGlade: MyFrame::MyFrame
     notebook_1 = new wxNotebook(this, wxID_ANY);
+    notebook_1_BorderTest = new wxPanel(notebook_1, wxID_ANY);
     notebook_1_GridBagSizer = new wxPanel(notebook_1, wxID_ANY);
     notebook_1_FlexGridSizer = new wxPanel(notebook_1, wxID_ANY);
     notebook_1_GridSizer = new wxPanel(notebook_1, wxID_ANY);
@@ -309,6 +310,13 @@ MyFrame::MyFrame(wxWindow* parent, wxWindowID id, const wxString& title, const w
     
     // WARNING: Code for instance "sizer_6" of "wxGridBagSizer" not generated: no suitable writer found
     
+    _0_N_N_border_10_none = new wxTextCtrl(notebook_1_BorderTest, wxID_ANY, wxEmptyString);
+    _1_N_N_border_0_all = new wxTextCtrl(notebook_1_BorderTest, wxID_ANY, wxEmptyString);
+    _0_X_N_border_5_LEFTRIGHT = new wxTextCtrl(notebook_1_BorderTest, wxID_ANY, wxEmptyString);
+    _1_X_N_border_15_BOTTOM = new wxTextCtrl(notebook_1_BorderTest, wxID_ANY, wxEmptyString);
+    _0_N_N_copy_copy_1 = new wxTextCtrl(notebook_1_BorderTest, wxID_ANY, wxEmptyString);
+    _0_N_N_copy_31 = new wxTextCtrl(notebook_1_BorderTest, wxID_ANY, wxEmptyString);
+    _0_N_N_copy_32 = new wxTextCtrl(notebook_1_BorderTest, wxID_ANY, wxEmptyString);
 
     set_properties();
     do_layout();
@@ -550,6 +558,9 @@ void MyFrame::set_properties()
     _1_N_F_copy_29->SetMinSize(wxDLG_UNIT(_1_N_F_copy_29, wxSize(100, -1)));
     _0_X_F_copy_29->SetMinSize(wxDLG_UNIT(_0_X_F_copy_29, wxSize(100, -1)));
     _1_X_F_copy_29->SetMinSize(wxDLG_UNIT(_1_X_F_copy_29, wxSize(100, -1)));
+    _0_N_N_copy_copy_1->SetMinSize(wxSize(100, 21));
+    _0_N_N_copy_31->SetMinSize(wxDLG_UNIT(_0_N_N_copy_31, wxSize(100, 21)));
+    _0_N_N_copy_32->SetMinSize(wxSize(-1, 21));
     // end wxGlade
 }
 
@@ -558,6 +569,11 @@ void MyFrame::do_layout()
 {
     // begin wxGlade: MyFrame::do_layout
     wxBoxSizer* sizer_1 = new wxBoxSizer(wxVERTICAL);
+    wxBoxSizer* sizer_7 = new wxBoxSizer(wxHORIZONTAL);
+    wxBoxSizer* sizer_border_15_BOTTOM = new wxBoxSizer(wxVERTICAL);
+    wxBoxSizer* sizer_border_5_LEFTRIGHT = new wxBoxSizer(wxVERTICAL);
+    wxBoxSizer* sizer_border_0_ALL = new wxBoxSizer(wxVERTICAL);
+    wxBoxSizer* sizer_border_10_none = new wxBoxSizer(wxVERTICAL);
     wxFlexGridSizer* sizer_5 = new wxFlexGridSizer(7, 8, 1, 1);
     wxGridSizer* sizer_4 = new wxGridSizer(7, 8, 0, 0);
     wxBoxSizer* sizer_3 = new wxBoxSizer(wxHORIZONTAL);
@@ -878,15 +894,28 @@ void MyFrame::do_layout()
     sizer_6->Add(_1_N_F_copy_29, (6, 5), wxGBPosition(1, 1), wxFIXED_MINSIZE, 0);
     sizer_6->Add(_0_X_F_copy_29, (6, 6), wxGBPosition(1, 1), wxEXPAND|wxFIXED_MINSIZE, 0);
     sizer_6->Add(_1_X_F_copy_29, (6, 7), wxGBPosition(1, 1), wxEXPAND|wxFIXED_MINSIZE, 0);
+    sizer_border_10_none->Add(_0_N_N_border_10_none, 0, 0, 10);
+    sizer_border_10_none->Add(_1_N_N_border_0_all, 1, wxALL, 0);
+    sizer_border_10_none->Add(_0_X_N_border_5_LEFTRIGHT, 0, wxEXPAND|wxLEFT|wxRIGHT, 5);
+    sizer_border_10_none->Add(_1_X_N_border_15_BOTTOM, 1, wxBOTTOM|wxEXPAND, 15);
+    sizer_7->Add(sizer_border_10_none, 1, wxEXPAND, 10);
+    sizer_border_0_ALL->Add(_0_N_N_copy_copy_1, 0, 0, 0);
+    sizer_7->Add(sizer_border_0_ALL, 1, wxALL|wxEXPAND, 0);
+    sizer_border_5_LEFTRIGHT->Add(_0_N_N_copy_31, 0, 0, 0);
+    sizer_7->Add(sizer_border_5_LEFTRIGHT, 1, wxLEFT|wxRIGHT, 5);
+    sizer_border_15_BOTTOM->Add(_0_N_N_copy_32, 0, 0, 0);
+    sizer_7->Add(sizer_border_15_BOTTOM, 1, wxALIGN_RIGHT, 15);
+    notebook_1_BorderTest->SetSizer(sizer_7);
     notebook_1->AddPage(notebook_1_pane_1, _("BoxSizer"));
     notebook_1->AddPage(notebook_1_StaticBoxSizer, _("StaticBoxSizer"));
     notebook_1->AddPage(notebook_1_GridSizer, _("GridSizer"));
     notebook_1->AddPage(notebook_1_FlexGridSizer, _("FlexGridSizer"));
     notebook_1->AddPage(notebook_1_GridBagSizer, _("GridBagSizer"));
+    notebook_1->AddPage(notebook_1_BorderTest, _("BorderTest"));
     sizer_1->Add(notebook_1, 1, wxEXPAND, 0);
     SetSizer(sizer_1);
-    sizer_1->Fit(this);
     Layout();
+    SetSize(wxSize(600, 400));
     // end wxGlade
 }
 
