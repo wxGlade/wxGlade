@@ -70,6 +70,7 @@ sub __do_layout {
     $self->{sizer_5}->Add($self->{grid_sizer_3}, 1, wxEXPAND, 0);
     $self->SetSizer($self->{sizer_5});
     $self->Layout();
+    $self->SetSize(Wx::Size->new(400, 300));
     # end wxGlade
 }
 

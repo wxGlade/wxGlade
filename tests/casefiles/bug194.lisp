@@ -78,6 +78,7 @@
         (wxSizer_AddWindow (slot-sizer-1 obj) (slot-check-list-box-extended obj) 1 (logior wxALL wxEXPAND) 5 nil)
         (wxWindow_SetSizer (slot-frame obj) (slot-sizer-1 obj))
         (wxFrame_layout (slot-Bug194-Frame self))
+        (slot-top-window obj).wxWindow_SetSize((800, 600))
         ;;; end wxGlade
         )
 

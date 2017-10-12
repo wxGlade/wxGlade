@@ -73,6 +73,7 @@ sub __do_layout {
     $self->{sizer_1}->Add($self->{check_list_box_extended}, 1, wxALL|wxEXPAND, 5);
     $self->SetSizer($self->{sizer_1});
     $self->Layout();
+    $self->SetSize(Wx::Size->new(800, 600));
     # end wxGlade
 }
 

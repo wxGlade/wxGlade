@@ -33,6 +33,8 @@ class PerlFrameCodeGenerator(wcodegen.PerlWidgetCodeWriter):
         ret = ['$self->Layout();\n']
         if obj.centered:
             ret.append('$self->Centre();\n')
+        if 'size' in obj.properties and obj.properties["size"].is_active():
+            ret.append( self.codegen.generate_code_size(obj) )
         return ret
 
 

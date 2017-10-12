@@ -932,6 +932,7 @@ sub __do_layout {
     $self->{sizer_1}->Add($self->{notebook_1}, 1, wxEXPAND, 0);
     $self->SetSizer($self->{sizer_1});
     $self->Layout();
+    $self->SetSize(Wx::Size->new(600, 400));
     # end wxGlade
 }
 

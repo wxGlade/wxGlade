@@ -170,6 +170,7 @@ sub __do_layout {
     $self->{sizer_1}->AddGrowableCol(0);
     $self->Layout();
     $self->Centre();
+    $self->SetSize(Wx::Size->new(600, 500));
     # end wxGlade
 }
 
@@ -271,6 +272,7 @@ sub __do_layout {
     $self->SetSizer($self->{_szr_frame});
     $self->{_szr_frame}->SetSizeHints($self);
     $self->Layout();
+    $self->SetSize(Wx::Size->new(492, 300));
     # end wxGlade
 }
 

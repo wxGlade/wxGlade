@@ -423,6 +423,7 @@ sub __do_layout {
     $self->{sizer_1}->AddGrowableCol(0);
     $self->Layout();
     $self->Centre();
+    $self->SetSize(Wx::Size->new(800, 417));
     # end wxGlade
 }
 
