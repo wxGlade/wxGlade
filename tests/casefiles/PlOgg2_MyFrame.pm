@@ -51,7 +51,6 @@ sub __set_properties {
     my $self = shift;
     # begin wxGlade: PlOgg2_MyFrame::__set_properties
     $self->SetTitle(_T("FrameOggCompressionDetails"));
-    $self->SetSize(Wx::Size->new(400, 300));
     $self->{grid_1}->CreateGrid(8, 3);
     $self->{button_6}->SetFocus();
     $self->{button_6}->SetDefault();

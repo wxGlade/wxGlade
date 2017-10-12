@@ -192,7 +192,6 @@ void All_Widgets_Frame::set_properties()
     wxIcon _icon;
     _icon.CopyFromBitmap(wxArtProvider::GetBitmap(wxART_TIP, wxART_OTHER, wxSize(32, 32)));
     SetIcon(_icon);
-    SetSize(wxSize(800, 417));
     int All_Widgets_statusbar_widths[] = { -1 };
     All_Widgets_statusbar->SetStatusWidths(1, All_Widgets_statusbar_widths);
 

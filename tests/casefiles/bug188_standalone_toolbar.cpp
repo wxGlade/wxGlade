@@ -59,7 +59,6 @@ void MyFrame::set_properties()
 {
     // begin wxGlade: MyFrame::set_properties
     SetTitle(wxT("frame_1"));
-    SetSize(wxSize(200, 200));
     // end wxGlade
 }
 

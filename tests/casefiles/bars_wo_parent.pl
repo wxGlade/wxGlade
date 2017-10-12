@@ -125,7 +125,6 @@ sub __set_properties {
     my $self = shift;
     # begin wxGlade: MyFrame::__set_properties
     $self->SetTitle("frame_1");
-    $self->SetSize(Wx::Size->new(200, 200));
     # end wxGlade
 }
 

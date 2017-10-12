@@ -34,7 +34,6 @@ void CPPOgg2_MyFrame::set_properties()
 {
     // begin wxGlade: CPPOgg2_MyFrame::set_properties
     SetTitle(_("FrameOggCompressionDetails"));
-    SetSize(wxSize(400, 300));
     grid_1->CreateGrid(8, 3);
     button_6->SetFocus();
     button_6->SetDefault();

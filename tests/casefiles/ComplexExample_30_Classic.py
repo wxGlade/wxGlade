@@ -73,7 +73,6 @@ class PyOgg2_MyFrame(wx.Frame):
     def __set_properties(self):
         # begin wxGlade: PyOgg2_MyFrame.__set_properties
         self.SetTitle(_("mp3 2 ogg"))
-        self.SetSize((600, 500))
         self.Mp3_To_Ogg_statusbar.SetStatusWidths([-2, -1])
 
         # statusbar fields
@@ -175,7 +174,6 @@ class MyFrameGrid(wx.Frame):
     def __set_properties(self):
         # begin wxGlade: MyFrameGrid.__set_properties
         self.SetTitle(_("FrameOggCompressionDetails"))
-        self.SetSize((492, 300))
         self.grid.CreateGrid(8, 3)
         self.button.SetFocus()
         self.button.SetDefault()

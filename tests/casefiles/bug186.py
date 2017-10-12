@@ -47,7 +47,6 @@ class Frame186(wx.Frame):
     def __set_properties(self):
         # begin wxGlade: Frame186.__set_properties
         self.SetTitle(_("frame_1"))
-        self.SetSize((300, 300))
         self.Bug186_Frame_toolbar.Realize()
         # end wxGlade
 
