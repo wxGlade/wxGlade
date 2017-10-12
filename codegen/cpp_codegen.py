@@ -297,7 +297,7 @@ class CPPCodeWriter(BaseLangCodeWriter, wcodegen.CppMixin):
     tmpl_name_do_layout = 'do_layout'
     tmpl_name_set_properties = 'set_properties'
     tmpl_sizeritem = '%s->Add(%s, %s, %s, %s);\n'
-    tmpl_gridbagsizeritem = '%s->Add(%s, %s, wxGBPosition%s, %s, %s);\n'
+    tmpl_gridbagsizeritem = '%s->Add(%s, wxGBPosition%s, wxGBSpan%s, %s, %s);\n'
     tmpl_spacersize = '%s, %s'
 
     tmpl_ctor_call_layout = '\n' \

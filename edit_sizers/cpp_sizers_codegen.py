@@ -95,6 +95,11 @@ class CppFlexGridSizerBuilder(CppGridSizerBuilder):
     tmpl_AddGrowableCol = '%(sizer_name)s->AddGrowableCol(%(col)s);\n'
 
 
+class CppGridBagSizerBuilder(CppFlexGridSizerBuilder):
+    klass = 'wxGridBagSizer'
+    tmpl = '%(assignment)s = new %(klass)s(%(vgap)s, %(hgap)s);\n'
+
+
 import wcodegen
 
 class CppSizerSlotGenerator(wcodegen.CppWidgetCodeWriter):
@@ -118,5 +123,6 @@ def initialize():
         awh('wxStaticBoxSizer', CppStaticBoxSizerBuilder())
         awh('wxGridSizer', CppGridSizerBuilder())
         awh('wxFlexGridSizer', CppFlexGridSizerBuilder())
+        awh('wxGridBagSizer', CppGridBagSizerBuilder())
 
     common.register('C++', "sizerslot", CppSizerSlotGenerator("sizerslot"))
