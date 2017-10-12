@@ -772,7 +772,7 @@ class SizerBase(Sizer, np.PropertyOwner):
             wx.CallAfter(change_sizer, self, value)
         if (not modified or "flag" in modified or "option" in modified or "border" in modified or "span" in modified):
             if not self.toplevel and self.sizer is not None:
-                if "border" in modified and self.border:
+                if "border" in modified and self.border and not "flag" in modified:
                     # enable border flags if not yet done
                     p = self.properties["flag"]
                     if not p.value_set.intersection(p.FLAG_DESCRIPTION["Border"]):

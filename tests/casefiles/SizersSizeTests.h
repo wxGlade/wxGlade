@@ -329,6 +329,14 @@ protected:
     wxTextCtrl* _0_X_F_copy_29;
     wxTextCtrl* _1_X_F_copy_29;
     wxPanel* notebook_1_GridBagSizer;
+    wxTextCtrl* _0_N_N_border_10_none;
+    wxTextCtrl* _1_N_N_border_0_all;
+    wxTextCtrl* _0_X_N_border_5_LEFTRIGHT;
+    wxTextCtrl* _1_X_N_border_15_BOTTOM;
+    wxTextCtrl* _0_N_N_copy_copy_1;
+    wxTextCtrl* _0_N_N_copy_31;
+    wxTextCtrl* _0_N_N_copy_32;
+    wxPanel* notebook_1_BorderTest;
     wxNotebook* notebook_1;
     // end wxGlade
 }; // wxGlade: end class
