@@ -15,9 +15,9 @@ import wx
 
 
 # Format used by wxGlade for the clipboard.
-try:
+if compat.IS_CLASSIC:
     DataFormat = wx.CustomDataFormat
-except AttributeError: # Phoenix
+else:
     DataFormat = wx.DataFormat
 
 
