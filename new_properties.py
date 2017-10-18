@@ -1280,7 +1280,7 @@ class NameProperty(TextProperty):
             if self._check_name_uniqueness(name):
                 self.text.SetBackgroundColour(wx.WHITE)
             else:
-                self.text.SetBackgroundColour(wx.YELLOW)
+                self.text.SetBackgroundColour( wx.Colour(255, 255, 0, 255) )  # YELLOW
         else:
             self.text.SetBackgroundColour(wx.RED)
         self.text.Refresh()

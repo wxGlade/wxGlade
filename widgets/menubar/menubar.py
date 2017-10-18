@@ -315,7 +315,7 @@ class MenuItemDialog(wx.Dialog):
                 if i==self.selected_index: continue
                 if value == self.menu_items.GetItem(i, 2).GetText():
                     valid = False
-                    self.name.SetBackgroundColour(wx.YELLOW)
+                    self.name.SetBackgroundColour( wx.Colour(255, 255, 0, 255) )  # YELLOW
                     break
         self.name.Refresh()
         if valid and not self._ignore_events:
