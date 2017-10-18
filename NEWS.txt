@@ -4,7 +4,7 @@ General:
   - full visualization of sizer slots; full editing capability in Tree window (structure, names, labels)
   - support for GridBagSizer
   - Repeat feature (Ctrl-R and Ctrl-Y) to apply property change(s) to multiple widgets
-  - new Menu and Toolbar editors
+  - new Menu and Toolbar editors; you don't have to create IDs manually any more
   - better visualization for gauge, list ctrl, property grid in Design window
 
 Internal:
