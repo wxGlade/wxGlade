@@ -295,6 +295,20 @@ class TestGui(WXGladeGUITest):
         #common.app_tree.root.widget.generate_code()
         #self._assert_error_message( "can not be a directory when generating a single file" )
 
+    def test_PythonSubclass(self):
+        "check for correct import: from package.name import name"
+        infilename = self._get_casefile_path('PythonSubclass.wxg')
+        common.palette._open_app(infilename, use_progress_dialog=False, add_to_history=False)
+        common.app_tree.app.filename = self._get_outputfile_path('PythonSubclass.wxg')
+        common.app_tree.root.widget.generate_code()
+
+        expected_filename = self._get_casefile_path("PythonSubclass.py")
+        generated_filename = self._get_outputfile_path("PythonSubclass.py")
+        self._compare_files(expected_filename, generated_filename)
+        expected_filename = self._get_casefile_path("PythonSubclass_PythonSubclass.py")
+        generated_filename = self._get_outputfile_path("PythonSubclass/PythonSubclass.py")
+        self._compare_files(expected_filename, generated_filename)
+
     def test_WxgXRCMultipleFilesNotSupported(self):
         "Test for multi file XRC projects."
         infilename = self._get_casefile_path('Python_Preferences.wxg')
