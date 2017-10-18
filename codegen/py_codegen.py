@@ -210,7 +210,7 @@ class PythonCodeWriter(BaseLangCodeWriter, wcodegen.PythonMixin):
 %(overwrite)s\
 %(header_lines)s\
 %(import_gettext)s\
-from %(top_win_class)s import %(top_win_class)s\n\n"""
+from %(top_win_module)s import %(top_win_class)s\n\n"""
 
     def _get_app_template(self, app, top_win):
         'build template string for application'

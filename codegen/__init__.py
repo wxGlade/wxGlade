@@ -656,6 +656,7 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
                             'tab': self.tabs(1),
                             'textdomain': self._textdomain,
                             'top_win_class': self.cn_class(top_win and top_win.klass or None),
+                            'top_win_module': top_win and top_win.klass.replace('::', '_'),
                             'top_win': app.top_window }
 
         # extend default mapping with language specific mapping
