@@ -1973,7 +1973,7 @@ class GridProperty(Property):
     def on_cell_changed(self, event):
         # user has entered a value
         row,col = event.Row, event.Col
-        value = self.grid.GetCellValue(row,col)  # the new value
+        value = event.GetEventObject().GetCellValue(row,col)  # the new value
         if self.validation_res and self.validation_res[col]:
             validation_re = self.validation_res[col]
             match = validation_re.match(value)
