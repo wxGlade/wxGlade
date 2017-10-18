@@ -97,7 +97,7 @@ class WindowDialog(wx.Dialog):
             #if name in [c.widget.klass for c in common.app_tree.root.children or []]:
             if name in self.class_names:
                 # if the class name is in use already, indicate in yellow
-                self.klass.SetBackgroundColour(wx.YELLOW)
+                self.klass.SetBackgroundColour( wx.Colour(255, 255, 0, 255) )
                 compat.SetToolTip(self.klass, "Class name not unique")
                 if self.toplevel: OK = False
             else:
