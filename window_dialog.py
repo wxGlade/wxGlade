@@ -87,7 +87,7 @@ class WindowDialog(wx.Dialog):
 
     def on_text(self, event):
         import re
-        validation_re  = re.compile(r'^[a-zA-Z_]+[\w-]*(\[\w*\])*$')
+        validation_re = re.compile(r'^[a-zA-Z_]+[\w:.0-9-]*$')
         name = event.GetString()
         OK = bool( validation_re.match( name ) )
         if not OK:
