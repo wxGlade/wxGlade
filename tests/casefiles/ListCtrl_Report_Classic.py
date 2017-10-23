@@ -27,10 +27,10 @@ class MyFrame(wx.Frame):
     def __set_properties(self):
         # begin wxGlade: MyFrame.__set_properties
         self.SetTitle("frame")
-        self.list_ctrl_1.AppendColumn("A", format=wx.LIST_FORMAT_LEFT, width=-1)
-        self.list_ctrl_1.AppendColumn("B", format=wx.LIST_FORMAT_LEFT, width=-1)
-        self.list_ctrl_1.AppendColumn("C", format=wx.LIST_FORMAT_LEFT, width=-1)
-        self.list_ctrl_1.AppendColumn("D", format=wx.LIST_FORMAT_LEFT, width=-1)
+        self.list_ctrl_1.InsertColumn(0, "A", format=wx.LIST_FORMAT_LEFT, width=-1)
+        self.list_ctrl_1.InsertColumn(1, "B", format=wx.LIST_FORMAT_LEFT, width=-1)
+        self.list_ctrl_1.InsertColumn(2, "C", format=wx.LIST_FORMAT_LEFT, width=-1)
+        self.list_ctrl_1.InsertColumn(3, "D", format=wx.LIST_FORMAT_LEFT, width=-1)
         # end wxGlade
 
     def __do_layout(self):

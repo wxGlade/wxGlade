@@ -26,7 +26,8 @@ class ListCtrlPropertyGeneratorMixin(object):
         columns = cols_p.value
 
         for i, (heading,width) in enumerate(columns):
-            out.append( self.tmpl_append_column % (name, self.codegen.quote_str(heading), width) )
+            values = {"name":name, "heading":self.codegen.quote_str(heading), "width":width, "col":i}
+            out.append( self.tmpl_append_column % values )
 
         if self.codegen.preview:
             for r in range(rows_number):
@@ -39,17 +40,18 @@ class PythonListCtrlGenerator(ListCtrlPropertyGeneratorMixin, wcodegen.PythonWid
     tmpl = '%(name)s = %(klass)s(%(parent)s, %(id)s%(style)s)\n'
 
     # templates for adding columns and rows (rows are for preview only)
-    tmpl_append_column = '%s.AppendColumn(%s, format=wx.LIST_FORMAT_LEFT, width=%d)\n'
     if compat.IS_PHOENIX:
+        tmpl_append_column = '%(name)s.AppendColumn(%(heading)s, format=wx.LIST_FORMAT_LEFT, width=%(width)d)\n'
         tmpl_append_row = '%s.InsertItem(%d, "")\n'
     else:
+        tmpl_append_column ='%(name)s.InsertColumn(%(col)d, %(heading)s, format=wx.LIST_FORMAT_LEFT, width=%(width)d)\n'
         tmpl_append_row = '%s.InsertStringItem(%d, "")\n'
 
 
 class CppListCtrlGenerator(ListCtrlPropertyGeneratorMixin, wcodegen.CppWidgetCodeWriter):
     import_modules = ['<wx/listctrl.h>']
     tmpl = '%(name)s = new %(klass)s(%(parent)s, %(id)s%(style)s);\n'
-    tmpl_append_column = '%s->AppendColumn(%s, wxLIST_FORMAT_LEFT, %d)\n'
+    tmpl_append_column = '%(name)s->AppendColumn(%(heading)s, wxLIST_FORMAT_LEFT, %(width)d)\n'
 
 
 def xrc_code_generator(obj):

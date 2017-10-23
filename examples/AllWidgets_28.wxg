@@ -479,6 +479,12 @@
                                 <flag>wxALL|wxEXPAND</flag>
                                 <object class="wxListCtrl" name="list_ctrl_1" base="EditListCtrl">
                                     <style>wxLC_REPORT|wxSUNKEN_BORDER</style>
+                                    <columns>
+                                        <column size="-1">A</column>
+                                        <column size="-1">B</column>
+                                        <column size="-1">C</column>
+                                    </columns>
+                                    <rows_number>2</rows_number>
                                 </object>
                             </object>
                         </object>
