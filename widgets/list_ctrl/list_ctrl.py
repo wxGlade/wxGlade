@@ -22,7 +22,8 @@ class EditListCtrl(ManagedBase, EditStylesMixin):
 
     _PROPERTIES = ["Widget", "style", "columns", "rows_number"]
     PROPERTIES = ManagedBase.PROPERTIES + _PROPERTIES + ManagedBase.EXTRA_PROPERTIES
-    _PROPERTY_HELP = {"rows_number":"This is just used for the design and preview windows."}
+    _PROPERTY_HELP = {"rows_number":"This is just used for the design and preview windows.",
+                      "columns":"Only for style LC_REPORT."}
 
     def __init__(self, name, parent, id, sizer, pos, style=wx.LC_REPORT | wx.BORDER_SUNKEN):
         ManagedBase.__init__(self, name, 'wxListCtrl', parent, id, sizer, pos)
