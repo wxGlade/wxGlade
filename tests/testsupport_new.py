@@ -53,6 +53,9 @@ class WXGladeBaseTest(unittest.TestCase):
         config.preferences.show_progress = False
         config.version = '"faked test version"'
 
+        # make e.g. the preview raise Exceptions
+        config.testing = True
+
         # Determinate case and output directory
         cls.caseDirectory = os.path.join( os.path.dirname(__file__), cls.caseDirectory )
         cls.outDirectory  = os.path.join( os.path.dirname(__file__), cls.outDirectory )

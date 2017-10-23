@@ -77,6 +77,7 @@ tooltip_time = 3    # Number of seconds a tooltip will be shown
 tooltip_width = 50  # Maximum width to split tooltips into
 
 debugging = ('WINGDB_ACTIVE' in os.environ)  # if True, at many places exceptions will be raised instead of handled
+testing = False  # to be set by the testing framework
 
 ########################################################################################################################
 # Dictionary to store widget generic widget details like tooltips, different names, ...
