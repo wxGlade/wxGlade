@@ -521,7 +521,6 @@ def get_xpm_bitmap(path):
                     logging.exception(_('Internal Error'))
                     bmp = wx.NullBitmap
     else:
-        wx.InitAllImageHandlers()
         bmp = wx.Bitmap(path, wx.BITMAP_TYPE_XPM)
     return bmp
 
