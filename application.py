@@ -479,7 +479,7 @@ class Application(np.PropertyOwner):
                 name = os.path.join(preview_path, preview_module_name+".py")
                 if os.path.isfile(name): os.unlink(name)
         except Exception as inst:
-            if config.debugging: raise
+            if config.debugging or config.testing: raise
             widget.preview_widget = None
             widget.properties["preview"].set_label(_('Show Preview'))
             bugdialog.Show(_("Generate Preview"), inst)
