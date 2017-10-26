@@ -358,7 +358,7 @@ class ClipboardXmlWidgetBuilder(XmlWidgetBuilder):
 
         # fake parent window object
         fake_parent = XmlClipboardObject(obj=parent, parent=parent)
-        if parent.is_sizer:
+        if parent and parent.is_sizer:
             fake_parent.in_sizers = True
             fake_parent.in_windows = False
         else:
