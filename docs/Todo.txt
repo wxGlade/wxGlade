@@ -44,6 +44,10 @@ Use either gettext or wx.GetTranslation for _
 
 
 Additional Widgets:
+ * lib.buttons
+ * matplotlib
+ * Py (shell)
+ * html2
  * WrapSizer
  * Ribbons 
  * stc.StyledTextCtrl
