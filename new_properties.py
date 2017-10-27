@@ -137,7 +137,6 @@ class Property(object):
 
     def _check_for_user_modification(self, new_value, force=False, activate=False):
         # force: set to True when e.g. called from self.toggle_activate
-        #new_value =
         if new_value == self.value:
             if activate and not self.deactivated: activate = False
             if not force and not activate:
@@ -1115,10 +1114,8 @@ class TextProperty(Property):
             #hsizer.AddSpacer(20)
         # the text control
         value = self.value
-        if value is None:
-            value = ""
-        elif not isinstance(value, compat.basestring):
-            value = self._value_to_str(value)
+        if value is None: value = ""
+        value = self._convert_to_text(value)
         self.text = self.create_text_ctrl(panel, value)
         if self.blocked:
             self.text.Enable(False)
@@ -1200,10 +1197,11 @@ class TextProperty(Property):
         # when the value has changed
         if start_editing: self.editing = True
         if not self.editing: return
-        self.text.SetValue(self._value_to_str(self.value) or "")
+        self.text.SetValue(self._convert_to_text(self.value) or "")
 
-    def _value_to_str(self, value):
-        # change in derived classes where value might be a tuple or similar
+    def _convert_to_text(self, value):
+        """convert from self.value to string that will be displayed/edited in TextCtrl
+        change in derived classes where value might be a tuple or similar"""
         return value
 
     def on_char(self, event):
@@ -1231,16 +1229,15 @@ class TextProperty(Property):
             new_value = self._convert_from_text(self.text.GetValue())
         if new_value is None:  # e.g. validation failed
             wx.Bell()
-            self.text.SetValue( self._value_to_str(self.value))
+            self.text.SetValue( self._convert_to_text(self.value))
             return
         self.previous_value = self.value
         return Property._check_for_user_modification(self, new_value, force, activate)
 
-    def _convert_from_text(self, value=None):
-        """Convert newline and tab characters to a character sequences (FROM input widget TO property)
-        Derived classes may return None to indicate a validation fail."""
-        if value is None: value = self.text.GetValue()
-        return value
+    def _convert_from_text(self, text=None):
+        "convert from TextCtrl input value to self.value; change in derived classes"
+        if text is None: value = self.text.GetValue()
+        return text
 
     def check(self, value):
         "checks whether the string value matches the validation regular expression"
@@ -1499,7 +1496,7 @@ class DialogProperty(TextProperty):
         if dialog is None or dialog.ShowModal()!=wx.ID_OK: return
         # the dialog needs to return a valid value!
         value = dialog.get_value()
-        self.text.SetValue( self._value_to_str(value) )
+        self.text.SetValue( self._convert_to_text(value) )
         self._check_for_user_modification(value, activate=True)
         self.update_display()
         #self.text.ProcessEvent( wx.FocusEvent(wx.wxEVT_KILL_FOCUS, self.text.GetId()) )
@@ -1723,7 +1720,7 @@ class FontProperty(DialogProperty):
         if isinstance(value, compat.basestring): value = self._convert_from_text(value)
         return value
 
-    def _value_to_str(self, value):
+    def _convert_to_text(self, value):
         return self.normalization%tuple(value)
 
 
