@@ -117,12 +117,12 @@ class BaseSizerBuilder(object):
         layout = result[-1]
         del result[-1]
 
-        if 'growable_rows' in obj.properties and obj.growable_rows:
-            for row in obj.properties["growable_rows"].get_string_value().split(","): # get_string_value is 0 based
+        if 'growable_rows' in obj.properties:
+            for row in obj.growable_rows:
                 self.tmpl_dict['row'] = row
                 layout.append(self.tmpl_AddGrowableRow % self.tmpl_dict)
-        if 'growable_cols' in obj.properties and obj.growable_cols:
-            for col in obj.properties["growable_cols"].get_string_value().split(","): # get_string_value is 0 based
+        if 'growable_cols' in obj.properties:
+            for col in obj.growable_cols:
                 self.tmpl_dict['col'] = col
                 layout.append(self.tmpl_AddGrowableCol % self.tmpl_dict)
 
@@ -1610,7 +1610,7 @@ class GridSizerBase(SizerBase):
             self._insert_slot( n+1 + add_row*cols )
 
         if "growable_rows" in self.PROPERTIES:
-            self.properties["growable_rows"].shift_items(add_row+1)  # 1 based
+            self.properties["growable_rows"].shift_items(add_row)
 
         if self.widget:
             if "growable_rows" in self.PROPERTIES:
@@ -1647,7 +1647,7 @@ class GridSizerBase(SizerBase):
             self._insert_slot( self._get_pos(r,add_col) )
 
         if "growable_cols" in self.PROPERTIES:
-            self.properties["growable_cols"].shift_items(add_col+1)  # 1 based
+            self.properties["growable_cols"].shift_items(add_col)
 
         if self.widget:
             if self.widget.GetCols()!=cols+1: self.widget.SetCols(cols+1)
@@ -1672,7 +1672,7 @@ class GridSizerBase(SizerBase):
         for slot in reversed(slots): slot.remove()
         
         if "growable_rows" in self.PROPERTIES:
-            self.properties["growable_rows"].remove_item(row+1)  # 1 based
+            self.properties["growable_rows"].remove_item(row)
 
         if self.widget:
             if "growable_rows" in self.PROPERTIES:
@@ -1694,7 +1694,7 @@ class GridSizerBase(SizerBase):
         for slot in reversed(slots): slot.remove()
 
         if "growable_cols" in self.PROPERTIES:
-            self.properties["growable_cols"].remove_item(col+1)  # 1 based
+            self.properties["growable_cols"].remove_item(col)
 
         if self.widget:
             if not self._IS_GRIDBAG:
@@ -1815,68 +1815,71 @@ class _GrowablePropertyD(np.DialogPropertyD):
         rows, cols = self.owner._get_actual_rows_cols()
         row_or_col_count = rows  if "rows" in self.name else  cols
 
-        choices = [ str(n) for n in range(1, row_or_col_count+1) ]
-        selected = self.get_list()
+        choices = [ str(n)   for n in range(1, row_or_col_count+1) ]  # dialog is 1 based
+        selected = [str(n+1) for n in self.value]
         self.dialog.set_choices(choices, selected)
         self.dialog.sizer.Fit(self.dialog)
         return self.dialog
 
     def _set_converter(self, value):
-        # 0-based -> 1 based
-        if not value: return ""
-        ret = [str(int(n)+1) for n in value.split(",")]
-        return ",".join(ret)
+        # used by set()
+        if isinstance(value, compat.basestring):
+            try:
+                value = sorted( [int(n) for n in value.split(",") ] )
+            except:
+                return None
+        return value
 
-    def _convert_from_text(self, value=None):
-        if value is None: value = self.text.GetValue()
+    def _convert_from_text(self, text=None):
+        if text is None: text = self.text.GetValue()
         row_or_col_count = getattr(self.owner, self.name.split("_")[-1])
         try:
-            numbers = [int(n) for n in value.split(",")]
-            if len(numbers)!=len(set(numbers)):  return None                 # double numbers
-            if numbers and not row_or_col_count: return None                 # no rows/cols
-            if min(numbers)<1 or max(numbers)>row_or_col_count: return None  # number out of range
+            value = [int(n)-1 for n in text.split(",")]  # text is 1-based, value is 0-based
+            value.sort()
+            if len(value)!=len(set(value)):  return None                 # double numbers
+            if value and not row_or_col_count: return None                 # no rows/cols
+            if min(value)<0 or max(value)>=row_or_col_count: return None  # number out of range
         except:
             return None
         return value
 
-    def get_list(self):
-        return self.value.split(",")
-
-    def get_string_value(self):
-        # for XML file writing; 0-based
-        ret = [str(int(n)-1) for n in self.get_list()]
+    def _convert_to_text(self, value):
+        # from internal 0-based string value to text control 1-based: "0,1" -> "1,2"
+        ret = [str(n+1) for n in self.value]
         return ",".join(ret)
 
+    def get_string_value(self):
+        # for XML file writing
+        return ",".join( [str(n) for n in self.value] )
+
     def remove_item(self, item):
+        # called when a column is deleted
         if not self.value: return
         new = []
-        for n in self.get_list():
-            n = int(n)
+        for n in self.value:
             if n!=item:
                 if n<item:
-                    new.append(str(n))
+                    new.append(n)
                 else:
-                    new.append(str(n-1))
+                    new.append(n-1)
         deactivate = not new
-        self.set( ",".join(new), deactivate=deactivate )
+        self.set( new, deactivate=deactivate )
 
     def shift_items(self, item):
         # when a row/col is added, the values above need to be shifted by 1
         if not self.value: return
         new = []
-        for n in self.get_list():
-            n = int(n)
+        for n in self.value:
             if n<item:
-                new.append(str(n-1))
+                new.append(n)
             else:
-                new.append(str(n))
-        self.set( ",".join(new) )
+                new.append(n+1)
+        self.set( new )
 
     def keep_items(self, indices):
         if not self.value: return
-        current = [int(n)-1 for n in self.get_list()] # 1 based -> 0 based
-        new = [str(indices.index(n)) for n in current if n in indices]  # self._set_converter adds 1
-        self.set( ",".join(new) )
+        new = [indices.index(n) for n in self.value if n in indices]
+        self.set( new )
 
 
 class EditFlexGridSizer(GridSizerBase):
@@ -1889,8 +1892,8 @@ class EditFlexGridSizer(GridSizerBase):
 
     def __init__(self, name, window, rows=3, cols=3, vgap=0, hgap=0, toplevel=True):
         GridSizerBase.__init__(self, name, self.WX_CLASS, window, rows, cols, vgap, hgap, toplevel)
-        self.growable_rows = _GrowablePropertyD("", default_value="")
-        self.growable_cols = _GrowablePropertyD("", default_value="")
+        self.growable_rows = _GrowablePropertyD([], default_value=[])
+        self.growable_cols = _GrowablePropertyD([], default_value=[])
         self.properties["growable_rows"].title = 'Select growable rows'
         self.properties["growable_cols"].title = 'Select growable cols'
 
@@ -1903,8 +1906,8 @@ class EditFlexGridSizer(GridSizerBase):
             self.sizer.add_item(self, self.pos)
 
     def _set_growable(self):
-        rows = [int(r)-1 for r in self.growable_rows.split(",") if r.strip()]  # the text property is 1-based
-        cols = [int(c)-1 for c in self.growable_cols.split(",") if c.strip()]
+        rows = self.growable_rows
+        cols = self.growable_cols
         rowcount,colcount = self._get_actual_rows_cols()
         for r in range(rowcount):
             growable = self.widget.IsRowGrowable(r)
