@@ -526,9 +526,12 @@ class CheckBoxProperty(Property):
             return int(value) # keep 0/1 instead of False/True for writing to XML file
         return value
 
+    def _display_value(self):
+        self.checkbox.SetValue( bool(self.value) )
+
     def create_editor(self, panel, sizer):
         self.checkbox = wx.CheckBox(panel, -1, '')
-        self.checkbox.SetValue( bool(self.value) )
+        self._display_value()
         label = self._find_label()
         label_width = max(config.label_width, panel.GetTextExtent(label)[0])
         label = wx.lib.stattext.GenStaticText(panel, -1, label, size=(label_width, -1))
@@ -547,10 +550,20 @@ class CheckBoxProperty(Property):
     def update_display(self, start_editing=False):
         if start_editing: self.editing = True
         if not self.editing: return
-        self.checkbox.SetValue(self.value)
+        self._display_value()
 
     def on_change_val(self, event):
         new_value = event.IsChecked()
+        self._check_for_user_modification(new_value)
+
+
+class InvCheckBoxProperty(CheckBoxProperty):
+    # display is inverted; used for application.overwrite
+    def _display_value(self):
+        self.checkbox.SetValue( not bool(self.value) )
+
+    def on_change_val(self, event):
+        new_value = not event.IsChecked()
         self._check_for_user_modification(new_value)
 
 
