@@ -592,10 +592,7 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
             # this may happen if we're not generating multiple files, and one of the container class names is changed
             self._content_notfound( self.previous_source )
 
-            tag = r'<%swxGlade event_handlers \w+>' % self.nonce
-            while tag in self.previous_source.content:
-                #self.previous_source.replace(tag, "")
-                self.previous_source.content.remove(tag)
+            self._remove_tag_re(self.previous_source, r'<%swxGlade event_handlers \w+>')
 
             # write the new file contents to disk
             content = "".join(self.previous_source.content)
@@ -1454,6 +1451,13 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
         "Show a warning message"
         if self._show_warnings:
             self._logger.warning(msg)
+
+    def _remove_tag_re(self, source, re_string):
+        "Remove all tags that match the regular expression"
+        tags = re.compile( re_string%self.nonce )
+        remove = [i for i,line in enumerate(source.content) if tags.match(line)]
+        for i in reversed(remove):
+            del source.content[i]
 
     def _content_notfound(self, source):
         """Remove all the remaining <123415wxGlade ...> tags from the source and add a warning instead.
