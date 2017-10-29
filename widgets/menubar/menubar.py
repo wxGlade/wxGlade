@@ -363,8 +363,12 @@ class MenuItemDialog(wx.Dialog):
         """adds the content of 'menus' to self.menu_items. menus is a sequence of
         trees which describes the structure of the menus"""
         indent = " " * 4
-        set_item = self.menu_items.SetStringItem
-        add_item = self.menu_items.InsertStringItem
+        if compat.IS_CLASSIC:
+            set_item = self.menu_items.SetStringItem
+            add_item = self.menu_items.InsertStringItem
+        else:
+            set_item = self.menu_items.SetItem
+            add_item = self.menu_items.InsertItem
         index = [0]
 
         def add(node, level):
