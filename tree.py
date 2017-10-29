@@ -484,7 +484,15 @@ class WidgetTree(wx.TreeCtrl, Tree):
         new_value = evt.Label
         if new_value==self._build_label(node): return
 
-        new_name = new_label = new_title = new_tab = None
+        new_name = new_label = new_title = new_tab = new_class = None
+        
+        if node.widget.klass != node.widget.base and node.widget.klass != 'wxScrolledWindow':
+            if new_value.count("(")==1 and new_value.count(")")==1:
+                pre, new_class = new_value.split("(")
+                new_class, post = new_class.split(")")
+                if pre.endswith(" "): pre = pre[:-1]
+                new_value = pre+post
+
         if "label" in widget.properties and self._label_editable(widget):
             new_name, new_label = self._split_name_label(new_value)
         elif "label" in widget.properties:
@@ -507,14 +515,23 @@ class WidgetTree(wx.TreeCtrl, Tree):
             if new_name==name_p.get(): new_name = None
         if new_name:
             # check
-            name_OK = name_p.check(new_name)
-            if not name_OK: new_name = None
+            OK = name_p.check(new_name)
+            if not OK: new_name = None
+
+        # check class/klass
+        if new_class:
+            class_p = widget.properties["klass"]
+            if new_class==class_p.get(): new_class = None
+        if new_class:
+            # check
+            OK = class_p.check(new_class)
+            if not OK: new_class = None
 
         # check label
         if new_label is not None:
             label_p = widget.properties["label"]
             if new_label==label_p.get(): new_label = None
-        if not new_name and new_label is None and new_title is None and new_tab is None:
+        if not new_name and new_label is None and new_title is None and new_tab is None and new_class is None:
             # no change or an error
             wx.Bell()
             evt.Veto()
@@ -543,6 +560,10 @@ class WidgetTree(wx.TreeCtrl, Tree):
             name_p.previous_value = name_p.value
             name_p.set(new_name, notify=False)
             modified.add("name")
+        if new_class:
+            class_p.previous_value = class_p.value
+            class_p.set(new_class, notify=False)
+            modified.add("class")
         if new_label:
             label_p.previous_value = label_p.value
             label_p.set(new_label, notify=False)
@@ -577,6 +598,9 @@ class WidgetTree(wx.TreeCtrl, Tree):
         if node.widget.klass != node.widget.base and node.widget.klass != 'wxScrolledWindow':
             # special case...
             s += ' (%s)' % node.widget.klass
+            if getattr(node.widget, "has_title", None):
+                # include title
+                s += ': "%s"'%node.widget.title
         elif "label" in node.widget.properties and node.widget.properties["label"].is_active():
             # include label of control
             label = node.widget.label
