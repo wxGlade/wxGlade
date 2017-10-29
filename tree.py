@@ -742,7 +742,17 @@ class WidgetTree(wx.TreeCtrl, Tree):
         common.adding_window = None
 
     def on_left_dclick(self, event):
-        self.show_toplevel(event)
+        x, y = event.GetPosition()
+        node = self._find_node_by_pos(x, y)
+        widget = node.widget
+        if widget.klass=='wxMenuBar':
+            widget.properties["menus"].edit_menus()
+        elif widget.klass=='wxToolBar':
+            widget.properties["tools"].edit_tools()
+        elif node.parent is self.root:
+            self.show_toplevel(None, widget)
+        else:
+            event.Skip()
 
     def on_leave_window(self, event):
         self.SetCursor(wx.STANDARD_CURSOR)
@@ -847,7 +857,7 @@ class WidgetTree(wx.TreeCtrl, Tree):
                 node = self._GetItemData(self.GetSelection())
                 self.expand(node)  # if we are here, the widget must be shown
             else:
-                node = self._find_node_by_pos(x, y, True)
+                node = self._find_node_by_pos(x, y, toplevels_only=True)
         else:
             node = widget.node
 
