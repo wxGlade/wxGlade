@@ -1309,6 +1309,47 @@ class NameProperty(TextProperty):
         return True
 
 
+class ClassProperty(TextProperty):
+    validation_re = re.compile(r'^[a-zA-Z_]+[\w:.0-9-]*$')
+
+    def create_text_ctrl(self, panel, value):
+        text = TextProperty.create_text_ctrl(self, panel, value)
+        self._check(value, text)
+        return text
+
+    def _check_class_uniqueness(self, klass):
+        # check whether the class name is unique, as otherwise the source code would be overwritten
+        if not self.owner._is_toplevel: return True
+        siblings = self.owner.node.parent.children
+        for node in siblings:
+            if node.widget is self.owner: continue
+            if node.widget.klass==klass:
+                return False
+        return True
+
+    def _check(self, klass, ctrl=None):
+        # called by _on_text and create_text_ctrl to validate and indicate
+        if not self.text and not ctrl: return
+        if ctrl is None: ctrl = self.text
+        match = self.validation_re.match(klass)
+        if match:
+            if self._check_class_uniqueness(klass):
+                ctrl.SetBackgroundColour(wx.WHITE)
+                compat.SetToolTip(ctrl, self.TOOLTIP)
+            else:
+                ctrl.SetBackgroundColour( wx.Colour(255, 255, 0, 255) )  # YELLOW
+                ctrl.SetToolTip("Name not unique; code will only be created for one window.")
+        else:
+            ctrl.SetBackgroundColour(wx.RED)
+            compat.SetToolTip(ctrl, "Name is not valid.")
+        ctrl.Refresh()
+
+    def _on_text(self, event):
+        if self.deactivated or self.blocked: return
+        klass = event.GetString()
+        self._check(klass)
+        event.Skip()
+
 
 class IntPairPropertyD(TextPropertyD):
     # the value is still a string, but it's guaranteed to have the right format

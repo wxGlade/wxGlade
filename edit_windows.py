@@ -109,10 +109,8 @@ class EditBase(EventsMixin, np.PropertyOwner):
         # initialise instance properties
         self.name  = name_p  = np.NameProperty(name)
         self.classname = klass
-        self.klass = klass_p = np.TextProperty(klass, name="class") # Name of the object's class: read/write or read only
+        self.klass = klass_p = np.ClassProperty(klass, name="class") # Name of the object's class: read/write or read only
         if not custom_class: klass_p.readonly = True
-        # validation for class
-        klass_p.validation_re = re.compile(r'^[a-zA-Z_]+[\w:.0-9-]*$')
 
         # Name of object's wxWidget class; base and klass are mostly the same, except e.g. wxDialog:
         self.base = np.TextProperty(klass, "base")
