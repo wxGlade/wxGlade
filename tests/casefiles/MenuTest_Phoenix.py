@@ -181,6 +181,7 @@ class MenuTestFrame(wx.Frame):
         event.Skip()
 
 # end of class MenuTestFrame
+
 class MenuTestClass(wx.App):
     def OnInit(self):
         self.MenuTest = MenuTestFrame(None, wx.ID_ANY, "")

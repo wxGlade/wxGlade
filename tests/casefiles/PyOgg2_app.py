@@ -11,6 +11,7 @@ import wx
 import gettext
 from PyOgg2_MyDialog import PyOgg2_MyDialog
 
+
 if __name__ == "__main__":
     gettext.install("PyOgg2_app") # replace with the appropriate catalog name
 

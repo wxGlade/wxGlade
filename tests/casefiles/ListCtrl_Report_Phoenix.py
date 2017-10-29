@@ -43,6 +43,7 @@ class MyFrame(wx.Frame):
         # end wxGlade
 
 # end of class MyFrame
+
 class MyApp(wx.App):
     def OnInit(self):
         self.frame = MyFrame(None, wx.ID_ANY, "")

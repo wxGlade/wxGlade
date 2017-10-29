@@ -437,6 +437,7 @@ class All_Widgets_Frame(wx.Frame):
         event.Skip()
 
 # end of class All_Widgets_Frame
+
 if __name__ == "__main__":
     gettext.install("AllWidgets30App") # replace with the appropriate catalog name
 
