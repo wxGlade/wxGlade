@@ -483,7 +483,13 @@ class ToolsProperty(np.Property):
         self.edit_btn.Bind(wx.EVT_BUTTON, self.edit_tools)
 
     def edit_tools(self, event=None):
-        dialog = ToolsDialog( self.edit_btn.GetTopLevelParent(), self.owner, items=self.value )
+        if hasattr(self, "edit_btn"):
+            parent = self.edit_btn.GetTopLevelParent()
+        elif self.owner.widget:
+            parent = self.owner.widget.GetTopLevelParent()
+        else:
+            parent = None
+        dialog = ToolsDialog( parent, self.owner, items=self.value )
         if dialog.ShowModal() == wx.ID_OK:
             self.on_value_edited(dialog.get_items())
         dialog.Destroy()
