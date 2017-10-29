@@ -214,7 +214,7 @@ from %(top_win_module)s import %(top_win_class)s\n\n"""
 
     def _get_app_template(self, app, top_win):
         'build template string for application'
-        ret = []
+        ret = ['']
 
         klass = app.klass
         if klass:
@@ -226,7 +226,7 @@ from %(top_win_module)s import %(top_win_class)s\n\n"""
             else:
                 # use Show() for other toplevel windows
                 show_code = ['%(tab)s%(tab)sself.%(top_win)s.Show()']
-            
+
             ret += ['class %(klass)s(%(cn_wxApp)s):',
                     '%(tab)sdef OnInit(self):',
                     '%(tab)s%(tab)sself.%(top_win)s = %(top_win_class)s(None, %(cn_wxIDANY)s, "")',
@@ -257,7 +257,7 @@ from %(top_win_module)s import %(top_win_class)s\n\n"""
                     '%(tab)s%(name)s.SetTopWindow(%(top_win)s)'
                     ] + show_code + [
                     '%(tab)s%(name)s.MainLoop()']
-    
+        ret.append('')
         return '\n'.join(ret)
 
     def __init__(self):
