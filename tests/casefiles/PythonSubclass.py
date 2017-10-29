@@ -11,6 +11,7 @@ import wx
 import gettext
 from PythonSubclass.PythonSubclass import PythonSubclass
 
+
 class MyApp(wx.App):
     def OnInit(self):
         self.frame = PythonSubclass(None, wx.ID_ANY, "")

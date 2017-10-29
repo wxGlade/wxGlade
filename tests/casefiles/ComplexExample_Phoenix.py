@@ -196,6 +196,7 @@ class MyFrameGrid(wx.Frame):
         # end wxGlade
 
 # end of class MyFrameGrid
+
 if __name__ == "__main__":
     gettext.install("ComplexExampleApp") # replace with the appropriate catalog name
 

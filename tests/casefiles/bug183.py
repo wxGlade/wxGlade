@@ -65,6 +65,7 @@ class Bug173_UI_SomeDialog(wx.Dialog):
         # end wxGlade
 
 # end of class Bug173_UI_SomeDialog
+
 class MyApp(wx.App):
     def OnInit(self):
         self.Frame183 = Bug183_UI_Frame(None, wx.ID_ANY, "")

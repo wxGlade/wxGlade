@@ -71,6 +71,7 @@ class MyDialog(wx.Dialog):
         # end wxGlade
 
 # end of class MyDialog
+
 class MyApp(wx.App):
     def OnInit(self):
         self.dialog_1 = MyDialog(None, wx.ID_ANY, "")
