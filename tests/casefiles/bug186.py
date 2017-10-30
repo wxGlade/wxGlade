@@ -65,6 +65,7 @@ class Frame186(wx.Frame):
         # end wxGlade
 
 # end of class Frame186
+
 class MyApp(wx.App):
     def OnInit(self):
         self.Bug186_Frame = Frame186(None, wx.ID_ANY, "")
