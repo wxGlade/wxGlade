@@ -19,6 +19,7 @@ class EditGauge(ManagedBase, EditStylesMixin):
 
     _PROPERTIES = ["Widget", "range", "style"]
     PROPERTIES = ManagedBase.PROPERTIES + _PROPERTIES + ManagedBase.EXTRA_PROPERTIES
+    recreate_on_style_change = True
 
     def __init__(self, name, parent, id, style, sizer, pos):
         ManagedBase.__init__(self, name, 'wxGauge', parent, id, sizer, pos)
