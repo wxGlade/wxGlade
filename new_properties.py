@@ -1335,10 +1335,10 @@ class ClassProperty(TextProperty):
         if match:
             if self._check_class_uniqueness(klass):
                 ctrl.SetBackgroundColour(wx.WHITE)
-                compat.SetToolTip(ctrl, self.TOOLTIP)
+                compat.SetToolTip( ctrl, self._find_tooltip() )
             else:
                 ctrl.SetBackgroundColour( wx.Colour(255, 255, 0, 255) )  # YELLOW
-                ctrl.SetToolTip("Name not unique; code will only be created for one window.")
+                ctrl.SetToolTip( "Name not unique; code will only be created for one window." )
         else:
             ctrl.SetBackgroundColour(wx.RED)
             compat.SetToolTip(ctrl, "Name is not valid.")
