@@ -3,7 +3,7 @@ Base classes for windows used by wxGlade
 
 @copyright: 2002-2007 Alberto Griggio
 @copyright: 2014-2016 Carsten Grohmann
-@copyright: 2016 Dietmar Schwertberger
+@copyright: 2016-2017 Dietmar Schwertberger
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
@@ -901,6 +901,7 @@ class EditStylesMixin(np.PropertyOwner):
     """
     codegen = None             # Code generator class; @see: L{codegen.BaseLangCodeWriter}
     update_widget_style = True # Flag to update the widget style if a style is set using L{set_style()}
+    recreate_on_style_change = False
 
     def __init__(self, klass='', styles=[]):
         """Initialise instance
@@ -950,21 +951,28 @@ class EditStylesMixin(np.PropertyOwner):
         @note:
             Quote from wxWidgets documentation about changing styles dynamically:
 
-            Note that alignment styles (wxTE_LEFT, wxTE_CENTRE and
-            wxTE_RIGHT) can be changed dynamically after control creation
-            on wxMSW and wxGTK. wxTE_READONLY, wxTE_PASSWORD and
-            wrapping styles can be dynamically changed under wxGTK but
-            not wxMSW. The other styles can be only set during
-            control creation.
+            Note that alignment styles (wxTE_LEFT, wxTE_CENTRE and wxTE_RIGHT) can be changed dynamically after control
+            creation on wxMSW and wxGTK.
+            wxTE_READONLY, wxTE_PASSWORD and wrapping styles can be dynamically changed under wxGTK but not wxMSW.
+            The other styles can be only set during control creation.
 
-        @see: L{EditBase.widget}
-        """
+        @see: L{EditBase.widget}"""
         if not self.widget or not self.update_widget_style: return
         old_style = self.widget.GetWindowStyleFlag()
         new_style = self.style
-        if old_style != new_style:
+        if old_style == new_style: return
+        if not self.recreate_on_style_change:
+            # update style without re-creating the widget
             self.widget.SetWindowStyleFlag(new_style)
             self.widget.Refresh()
+        else:
+            # some widgets can't be updated, e.g. Gauge can't be switched between horizontal and vertical after creation
+            old_widget = self.widget
+            si = self.sizer.widget.GetItem(old_widget)
+            self.create_widget()
+            compat.SizerItem_SetWindow(si, self.widget)
+            compat.DestroyLater(old_widget)
+            self.sizer.item_properties_modified(self)
 
     @decorators.memoize
     def wxname2attr(self, name):
