@@ -998,7 +998,7 @@ class SizerBase(Sizer, np.PropertyOwner):
             item.SetFlag(widget.flag)
         if modified is None or "border" in modified:
             item.SetBorder(widget.border)
-        if modified is None or "span" in modified and self._IS_GRIDBAG:
+        if (modified is None or "span" in modified) and self._IS_GRIDBAG:
             self._check_slots(remove_only=True)
             item.SetSpan(widget.span)
             self._check_slots(add_only=True)
