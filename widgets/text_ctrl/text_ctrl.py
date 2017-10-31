@@ -21,6 +21,7 @@ class EditTextCtrl(ManagedBase, EditStylesMixin):
     # we want these pages: Common, Layout, Widget, Events, Code
     _PROPERTIES = ["Widget", "value", "style"]
     PROPERTIES = ManagedBase.PROPERTIES + _PROPERTIES + ManagedBase.EXTRA_PROPERTIES
+    recreate_on_style_change = True
 
     def __init__(self, name, parent, id, sizer, pos):
         # initialize base classes
@@ -43,30 +44,6 @@ class EditTextCtrl(ManagedBase, EditStylesMixin):
             self.widget.SetValue(self.value)
         EditStylesMixin.properties_changed(self, modified)
         ManagedBase.properties_changed(self, modified)
-
-    def _set_widget_style(self):
-        # Quote from wxWidgets documentation about changing styles dynamically:
-        #
-        # Note that alignment styles (wxTE_LEFT, wxTE_CENTRE and wxTE_RIGHT) can be changed dynamically
-        # after control creation on wxMSW and wxGTK.
-        # wxTE_READONLY, wxTE_PASSWORD and wrapping styles can be dynamically changed under wxGTK but not wxMSW.
-        # The other styles can be only set during control creation.
-        if not self.widget: return
-        old_style = self.widget.GetWindowStyleFlag()
-        if self.style==old_style: return
-        focused = misc.focused_widget is self
-        self.sel_marker.Destroy()
-        self.sel_marker = None
-        # hide old frame, create_widget() creates a new one
-        self.widget.Hide()
-        self.create_widget()
-        if not self.properties['size'].is_active():
-            self.widget.SetSize(self.widget.GetBestSize())
-        self.finish_widget_creation()
-        self.sizer.layout()
-        if focused:
-            misc.focused_widget = self
-            self.sel_marker.Show(True)
 
 
 

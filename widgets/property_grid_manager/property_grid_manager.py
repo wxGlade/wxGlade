@@ -19,6 +19,7 @@ class EditPropertyGridManager(ManagedBase, EditStylesMixin):
     "Class to handle wxPropertyGridManager objects"
     _PROPERTIES = ["Widget", "style"]
     PROPERTIES = ManagedBase.PROPERTIES + _PROPERTIES + ManagedBase.EXTRA_PROPERTIES
+    recreate_on_style_change = True
 
     def __init__(self, name, parent, id, sizer, pos):
         ManagedBase.__init__(self, name, 'wxPropertyGridManager', parent, id, sizer, pos)
@@ -84,23 +85,6 @@ class EditPropertyGridManager(ManagedBase, EditStylesMixin):
         pg.AddPage( "Page 2 - Almost Empty" )
         pg.Append( wxpg.PropertyCategory("1 - Basic Properties") )
         pg.Append( wxpg.StringProperty("String 2",value="Some Text") )
-
-
-    def _set_widget_style(self):
-        "re-create widget on style changes"
-        if not self.widget: return
-        old_style = self.widget.GetWindowStyleFlag()
-        new_style = self.style
-        if old_style == new_style: return
-        self.widget.Hide()
-        #sizer_item = self.sizer.widget.GetItem(self.widget)
-        #sizer_item.AssignWindow(None)
-        #if self.sizer and not self.sizer.is_virtual(): self.sizer.widget.Detach(self.widget)
-        old_widget = self.widget
-        self.widget = None
-        self.create_widget()
-        self.finish_widget_creation()
-        if old_widget: compat.DestroyLater(old_widget)  # it may have been destroyed already, e.g. by a virtual sizer
 
     def get_property_handler(self, name):
         return ManagedBase.get_property_handler(self, name)
