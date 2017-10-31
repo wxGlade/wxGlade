@@ -1592,8 +1592,7 @@ class GridSizerBase(SizerBase):
     # context menu actions #############################################################################################
     def insert_row(self, pos=-1):
         "inserts slots for a new row"
-        rows = self.rows
-        cols = self.cols
+        rows, cols = self._get_actual_rows_cols()
 
         # calculate the row (0 based) to be inserted
         if pos==-1:
