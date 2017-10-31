@@ -913,7 +913,7 @@ class WidgetTree(wx.TreeCtrl, Tree):
             # added by rlawson to collapse only the toplevel node, not collapse back to root node
             self.select_item(node)
             misc.set_focused_widget(node.widget)
-            event.Skip()
+            if event: event.Skip()
         if "design" in node.widget.properties: node.widget.design.update_label()
 
     def _find_node_by_pos(self, x, y, toplevels_only=False):
