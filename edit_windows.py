@@ -244,6 +244,10 @@ class EditBase(EventsMixin, np.PropertyOwner):
         self._dont_destroy = False  # always destroy when explicitly asked
         common.app_tree.remove(self.node)
 
+    def duplicate(self, *args):
+        clipboard.copy(self)
+        clipboard.paste(common.app_tree.root.widget)
+
     def on_set_focus(self, event):
         """Event handler called when a window receives the focus: this in fact is
         connected to a EVT_LEFT_DOWN and not to an EVT_FOCUS, but the effect is the same"""
@@ -745,6 +749,9 @@ class TopLevelBase(WindowBase, PreviewMixin):
         menu.AppendSeparator()
         i = misc.append_menu_item(menu, -1, _('Remove %s\tDel')%widgetclass, wx.ART_DELETE)
         misc.bind_menu_item_after(widget, i, self.remove)
+
+        i = misc.append_menu_item(menu, -1, _('Duplicate %s')%widgetclass, wx.ART_COPY)
+        misc.bind_menu_item_after(widget, i, self.duplicate)
 
         # paste
         i = misc.append_menu_item(menu, -1, _('Paste Sizer\tCtrl+V'), wx.ART_PASTE)
