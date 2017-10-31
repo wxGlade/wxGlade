@@ -947,21 +947,14 @@ class EditStylesMixin(np.PropertyOwner):
         self.style = np.WidgetStyleProperty()  # this will read it's default value
 
     def _set_widget_style(self):
-        """Set a new widget style if the style has changed
-
-        @note:
-            Quote from wxWidgets documentation about changing styles dynamically:
-
-            Note that alignment styles (wxTE_LEFT, wxTE_CENTRE and wxTE_RIGHT) can be changed dynamically after control
-            creation on wxMSW and wxGTK.
-            wxTE_READONLY, wxTE_PASSWORD and wrapping styles can be dynamically changed under wxGTK but not wxMSW.
-            The other styles can be only set during control creation.
-
-        @see: L{EditBase.widget}"""
+        """Set a new widget style if the style has changed.
+        For some widgets style changes are not possible, so they need to be re-created.
+        The attribute recreate_on_style_change needs to be True in this case."""
         if not self.widget or not self.update_widget_style: return
         old_style = self.widget.GetWindowStyleFlag()
         new_style = self.style
         if old_style == new_style: return
+
         if not self.recreate_on_style_change:
             # update style without re-creating the widget
             self.widget.SetWindowStyleFlag(new_style)
