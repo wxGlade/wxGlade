@@ -29,20 +29,23 @@ class EditComboBox(ManagedBase, EditStylesMixin):
         EditStylesMixin.__init__(self)
 
         # initialise instance properties
-        self.selection = np.SpinProperty(0, val_range=(-1,len(choices)-1), immediate=True )
+        self.selection = np.SpinProperty(-1, val_range=(-1,len(choices)-1), immediate=True )
         self.choices = ChoicesProperty( choices, [(_('Label'), np.GridProperty.STRING)] )
 
     def create_widget(self):
+        choices = [c[0] for c in self.choices]
+        selection = self.selection
         if compat.IS_PHOENIX:
             # we prefer ComboCtrl as EVT_LEFT_DOWN does not work otherwise (ComboBox has no GetTextCtrl method)
-            selection = self.selection
-            value = self.choices[selection][0] if selection!=-1 else ""
+            if selection!=-1 and choices:
+                value = choices[selection][0]
+            else:
+                value = ""
             self.widget = wx.ComboCtrl(self.parent.widget, self.id, value=value)
             self.widget.GetTextCtrl().Bind(wx.EVT_LEFT_DOWN, self.on_set_focus)
         else:
-            choices = [c[0] for c in self.choices]
             self.widget = wx.ComboBox(self.parent.widget, self.id, choices=choices)
-            self.widget.SetSelection(self.selection)
+            self.widget.SetSelection(selection)
 
     def get_property_handler(self, prop_name):
         if prop_name == 'choices':
