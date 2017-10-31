@@ -1311,37 +1311,65 @@ class NameProperty(TextProperty):
 
 class ClassProperty(TextProperty):
     validation_re = re.compile(r'^[a-zA-Z_]+[\w:.0-9-]*$')
+    _UNIQUENESS_MSG1 = "Name not unique; code will only be created for one window/widget."
+    _UNIQUENESS_MSG2 = ("Name not unique; imported class may be overwritten, as\n"
+                        "wxGlade is currently creating code like from '... import ...'.")
 
     def create_text_ctrl(self, panel, value):
         text = TextProperty.create_text_ctrl(self, panel, value)
-        self._check(value, text)
+        self._check(value, text)  # do the check now, not only on changes; to indicated non-unique class names
         return text
 
     def _check_class_uniqueness(self, klass):
-        # check whether the class name is unique, as otherwise the source code would be overwritten
-        if not self.owner._is_toplevel: return True
-        siblings = self.owner.node.parent.children
+        """Check whether the class name is unique, as otherwise the source code would be overwritten.
+        Returns string message if not unique, None else."""
+        if klass==self.owner.base: return None
+        if "." in klass:
+            leaf = klass.rsplit(".",1)[-1]
+        else:
+            leaf = None
+        this_node = self.owner.node
+
+        # shortcut: check sibilings first
+        siblings = this_node.parent.children
         for node in siblings:
             if node.widget is self.owner: continue
             if node.widget.klass==klass:
-                return False
-        return True
+                return self._UNIQUENESS_MSG1
+            if leaf and "." in node.widget.klass and leaf==node.widget.klass.rsplit(".",1)[-1]:
+                return self._UNIQUENESS_MSG2
+
+        # check recursively, starting from root
+        def check(children):
+            for c in children:
+                if c.children:
+                    result = check(c.children)
+                    if result: return result
+                if node is not this_node:
+                    w = node.widget
+                    if w.klass==w.base: continue
+                    if w.klass==klass:
+                        return self._UNIQUENESS_MSG1
+                    if leaf and "." in w.klass and leaf==w.klass.rsplit(".",1)[-1]:
+                        return self._UNIQUENESS_MSG2
+            return None
+        return check(common.app_tree.root.children)
 
     def _check(self, klass, ctrl=None):
         # called by _on_text and create_text_ctrl to validate and indicate
         if not self.text and not ctrl: return
         if ctrl is None: ctrl = self.text
-        match = self.validation_re.match(klass)
-        if match:
-            if self._check_class_uniqueness(klass):
+        if not self.validation_re.match(klass):
+            ctrl.SetBackgroundColour(wx.RED)
+            compat.SetToolTip(ctrl, "Name is not valid.")
+        else:
+            msg = self._check_class_uniqueness(klass)
+            if not msg:
                 ctrl.SetBackgroundColour(wx.WHITE)
                 compat.SetToolTip( ctrl, self._find_tooltip() )
             else:
                 ctrl.SetBackgroundColour( wx.Colour(255, 255, 0, 255) )  # YELLOW
-                ctrl.SetToolTip( "Name not unique; code will only be created for one window." )
-        else:
-            ctrl.SetBackgroundColour(wx.RED)
-            compat.SetToolTip(ctrl, "Name is not valid.")
+                compat.SetToolTip(ctrl, msg)
         ctrl.Refresh()
 
     def _on_text(self, event):
