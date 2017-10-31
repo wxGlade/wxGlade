@@ -556,15 +556,16 @@ class ManagedBase(WindowBase):
         if not flag_p.value_set.intersection(flag_p.FLAG_DESCRIPTION["Border"]):
             flag_p.add("wxALL", notify=False)
 
-    def finish_widget_creation(self, sel_marker_parent=None):
+    def finish_widget_creation(self, sel_marker_parent=None, re_add=True):
         if sel_marker_parent is None: sel_marker_parent = self.parent.widget
         self.sel_marker = misc.SelectionMarker(self.widget, sel_marker_parent)
         WindowBase.finish_widget_creation(self)
         self.widget.Bind(wx.EVT_LEFT_DOWN, self.on_set_focus)
         self.widget.Bind(wx.EVT_MOUSE_EVENTS, self.on_mouse_events)
         self.widget.Bind(wx.EVT_MOVE, self.on_move)
-        # re-add the item to update it
-        self.sizer.add_item( self, self.pos )
+        if re_add:
+            # re-add the item to update it; this is not to be done when a widget is replaced due to style change
+            self.sizer.add_item( self, self.pos )
 
     def update_view(self, selected):
         if self.sel_marker: self.sel_marker.Show(selected)
@@ -965,14 +966,28 @@ class EditStylesMixin(np.PropertyOwner):
             # update style without re-creating the widget
             self.widget.SetWindowStyleFlag(new_style)
             self.widget.Refresh()
-        else:
-            # some widgets can't be updated, e.g. Gauge can't be switched between horizontal and vertical after creation
-            old_widget = self.widget
-            si = self.sizer.widget.GetItem(old_widget)
-            self.create_widget()
-            compat.SizerItem_SetWindow(si, self.widget)
-            compat.DestroyLater(old_widget)
-            self.sizer.item_properties_modified(self)
+            return
+
+        # some widgets can't be updated, e.g. Gauge can't be switched between horizontal and vertical after creation
+        # this is for ManagedBase derived classes only
+        focused = misc.focused_widget is self
+        if self.sel_marker:
+            self.sel_marker.Destroy()
+            self.sel_marker = None
+        old_widget = self.widget
+        old_widget.Hide()
+        si = self.sizer.widget.GetItem(old_widget)
+        self.create_widget()
+        compat.SizerItem_SetWindow(si, self.widget)
+        compat.DestroyLater(old_widget)
+        self.sizer.item_properties_modified(self)
+
+        self.finish_widget_creation(re_add=False)
+        self.sizer.layout()
+        if focused:
+            misc.focused_widget = self
+            if self.sel_marker: self.sel_marker.Show(True)
+
 
     @decorators.memoize
     def wxname2attr(self, name):
