@@ -1641,6 +1641,8 @@ class FileNameProperty(DialogProperty):
             directory = self.value or app_filename
             if directory and not os.path.isdir(directory):
                 directory = os.path.dirname(directory)
+            if directory and not os.path.isabs(directory) and app_filename:
+                directory = os.path.join(app_filename, directory)
             if not os.path.isdir(directory):
                 if not app_filename: return
                 directory = os.path.dirname(app_filename)
