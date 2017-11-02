@@ -35,8 +35,8 @@ done:
  * get rid of obsolete options -> convert when opening file
 
 Internal:
- * refactor edit_sizers and ManagedBase
 done:
+ * refactor edit_sizers and ManagedBase
  * refactor Property handling
 
 
@@ -54,6 +54,9 @@ Additional Widgets:
 done:
  * GridBagSizer
 
+Bitmaps:
+ * better property editor; DropTarget
+ * application options for relative paths, resource files, installer etc.
 
 Widget properties etc.:
  * Splitter: ask user whether to add panels
