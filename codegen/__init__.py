@@ -1471,7 +1471,8 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
 
         tags = re.compile( r'(<%swxGlade replace ([a-zA-Z_]\w*) +[.\w]+>)' % self.nonce)
         for i,line in enumerate(source.content):
-            if not tags.match(line): continue
+            match = tags.match(line)
+            if not match: continue
             # re.findall() returned a list of tuples (caused by grouping)
             # first element in tuple:  the whole match
             # second element in tuple: the class / block name
