@@ -1,0 +1,236 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Reference: Keyboard and Mouse Actions &#8212; wxGlade 0.8.0 documentation</title>
+    <link rel="stylesheet" href="_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="_static/css/custom.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.8.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Further reading:" href="further_reading.html" />
+    <link rel="prev" title="Custom Widget" href="custom_widgets.html" /> 
+  </head>
+  <body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="further_reading.html" title="Further reading:"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="custom_widgets.html" title="Custom Widget"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">wxGlade 0.8.0 documentation</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="reference-keyboard-and-mouse-actions">
+<h1>Reference: Keyboard and Mouse Actions<a class="headerlink" href="#reference-keyboard-and-mouse-actions" title="Permalink to this headline">¶</a></h1>
+<p><strong>Tree Window:</strong></p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="47%" />
+<col width="53%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head" rowspan="2">Key/Mouse</th>
+<th class="head" rowspan="2">Action</th>
+</tr>
+<tr class="row-even"></tr>
+</thead>
+<tbody valign="top">
+<tr class="row-odd"><td>Double Click on toplevel control like Frame</td>
+<td>Show Design Window Expand child items</td>
+</tr>
+<tr class="row-even"><td>Cursor Up/Down</td>
+<td>Navigate through tree</td>
+</tr>
+<tr class="row-odd"><td>Right Click on Application right after loading</td>
+<td>Expand all items</td>
+</tr>
+<tr class="row-even"><td>Drag &amp; Drop to empty sizer slot</td>
+<td>Move item(s) to another slot</td>
+</tr>
+<tr class="row-odd"><td>Drag &amp; Drop to slot with widget</td>
+<td>Insert item(s) before (new slot is inserted)</td>
+</tr>
+<tr class="row-even"><td>Drag &amp; Drop to sizer</td>
+<td>Append item to sizer (new slot is appended)</td>
+</tr>
+<tr class="row-odd"><td>Ctrl Drag &amp; Drop</td>
+<td>Copy item(s) to another slot</td>
+</tr>
+<tr class="row-even"><td><code class="kbd docutils literal"><span class="pre">F2</span></code></td>
+<td>Edit control name (and label for some controls)</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Tree and Design Window</strong></p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="47%" />
+<col width="53%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head" rowspan="2">Key/Mouse</th>
+<th class="head" rowspan="2">Action</th>
+</tr>
+<tr class="row-even"></tr>
+</thead>
+<tbody valign="top">
+<tr class="row-odd"><td>Ctrl when adding a sizer/control</td>
+<td>stay in edit mode, to place multiple controls</td>
+</tr>
+<tr class="row-even"><td>Drag &amp; Drop between Tree and Design Window</td>
+<td>supported</td>
+</tr>
+<tr class="row-odd"><td><code class="kbd docutils literal"><span class="pre">Del</span></code></td>
+<td>Remove Control from slot <br/> Remove empty slot</td>
+</tr>
+<tr class="row-even"><td><code class="kbd docutils literal"><span class="pre">Ctrl-I</span></code></td>
+<td>Insert sizer slot</td>
+</tr>
+<tr class="row-odd"><td><code class="kbd docutils literal"><span class="pre">Ctrl-A</span></code></td>
+<td>Add sizer slot</td>
+</tr>
+<tr class="row-even"><td><code class="kbd docutils literal"><span class="pre">Ctrl-Y</span></code></td>
+<td>Re-do single property modification</td>
+</tr>
+<tr class="row-odd"><td><code class="kbd docutils literal"><span class="pre">Ctrl-R</span></code></td>
+<td>Re-do property modifications</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Menu Editor</strong></p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="47%" />
+<col width="53%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head" rowspan="2">Key/Mouse</th>
+<th class="head" rowspan="2">Action</th>
+</tr>
+<tr class="row-even"></tr>
+</thead>
+<tbody valign="top">
+<tr class="row-odd"><td>Arrow up/down</td>
+<td>go to previous/next menu item</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Palette Window / All</strong></p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="47%" />
+<col width="53%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head" rowspan="2">Key/Mouse</th>
+<th class="head" rowspan="2">Action</th>
+</tr>
+<tr class="row-even"></tr>
+</thead>
+<tbody valign="top">
+<tr class="row-odd"><td><code class="kbd docutils literal"><span class="pre">F2</span></code></td>
+<td>Show Tree Window</td>
+</tr>
+<tr class="row-even"><td><code class="kbd docutils literal"><span class="pre">F3</span></code></td>
+<td>Show Properties Window</td>
+</tr>
+<tr class="row-odd"><td><code class="kbd docutils literal"><span class="pre">F5</span></code></td>
+<td>Show/Refresh Preview Window</td>
+</tr>
+<tr class="row-even"><td><code class="kbd docutils literal"><span class="pre">Ctrl+S</span></code></td>
+<td>Save file</td>
+</tr>
+<tr class="row-odd"><td><code class="kbd docutils literal"><span class="pre">Ctrl+G</span></code></td>
+<td>Generate Code</td>
+</tr>
+</tbody>
+</table>
+<p>Some more keyboard shortcuts can be found in the menus.</p>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="index.html">
+              <img class="logo" src="_static/wxglade.png" alt="Logo"/>
+            </a></p>
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="custom_widgets.html"
+                        title="previous chapter">Custom Widget</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="further_reading.html"
+                        title="next chapter">Further reading:</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/reference.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="further_reading.html" title="Further reading:"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="custom_widgets.html" title="Custom Widget"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">wxGlade 0.8.0 documentation</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2017, Dietmar Schwertberger.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.6.4.
+    </div>
+  </body>
+</html>

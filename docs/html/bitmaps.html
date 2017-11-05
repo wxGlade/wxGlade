@@ -1,0 +1,296 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Bitmaps &#8212; wxGlade 0.8.0 documentation</title>
+    <link rel="stylesheet" href="_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="_static/css/custom.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.8.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Custom Widget" href="custom_widgets.html" />
+    <link rel="prev" title="Menu, Status Bar, Tool Bar" href="menu_status_tool.html" /> 
+  </head>
+  <body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="custom_widgets.html" title="Custom Widget"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="menu_status_tool.html" title="Menu, Status Bar, Tool Bar"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">wxGlade 0.8.0 documentation</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="bitmaps">
+<h1>Bitmaps<a class="headerlink" href="#bitmaps" title="Permalink to this headline">¶</a></h1>
+<dl class="docutils">
+<dt>For some widgets you need to specify one or more bitmaps. There are several options how to do this:</dt>
+<dd><ul class="first last simple">
+<li>from a bitmap file</li>
+<li>from a named variable: statement “var:”</li>
+<li>empty bitmap: statement “empty:”</li>
+<li>from wxArtProvider: statement “art:”</li>
+<li>from literal code: statement “code:”</li>
+</ul>
+</dd>
+</dl>
+<div class="section" id="from-bitmap-file-path">
+<h2>From Bitmap File / Path<a class="headerlink" href="#from-bitmap-file-path" title="Permalink to this headline">¶</a></h2>
+<p>Specify the absolute or relative path to the bitmap file.</p>
+<p>For an absolute path, you may use the file dialog by clicking the button “…”.</p>
+<table border="1" class="colwidths-given docutils">
+<colgroup>
+<col width="20%" />
+<col width="80%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><strong>Example</strong></td>
+<td><div class="first highlight-default"><div class="highlight"><pre><span></span><span class="o">/</span><span class="n">usr</span><span class="o">/</span><span class="n">share</span><span class="o">/</span><span class="n">icons</span><span class="o">/</span><span class="n">application</span><span class="o">.</span><span class="n">png</span>
+</pre></div>
+</div>
+<p class="last"><img alt="BitmapPath" src="_images/BitmapPath.png" /></p>
+</td>
+</tr>
+<tr class="row-even"><td><strong>Created code</strong> <br/>
+C++</td>
+<td><div class="first last highlight-default"><div class="highlight"><pre><span></span><span class="n">wxBitmap</span><span class="p">(</span><span class="s2">&quot;/usr/share/icons/application.png&quot;</span><span class="p">,</span> <span class="n">wxBITMAP_TYPE_ANY</span><span class="p">)</span>
+</pre></div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="from-named-variable-statement-var">
+<h2>From named variable: Statement <strong>var</strong><a class="headerlink" href="#from-named-variable-statement-var" title="Permalink to this headline">¶</a></h2>
+<table border="1" class="colwidths-given docutils">
+<colgroup>
+<col width="20%" />
+<col width="80%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><strong>Syntax</strong></td>
+<td><div class="first last highlight-default"><div class="highlight"><pre><span></span><span class="n">var</span><span class="p">:</span><span class="o">&lt;</span><span class="n">variable</span> <span class="n">name</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-even"><td><strong>Example</strong></td>
+<td><div class="first last highlight-default"><div class="highlight"><pre><span></span><span class="n">var</span><span class="p">:</span><span class="n">my_bitmap_path</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td><strong>Created code</strong> <br/>
+C++</td>
+<td><div class="first last highlight-default"><div class="highlight"><pre><span></span><span class="n">wxBitmap</span><span class="p">(</span><span class="n">my_bitmap_path</span><span class="p">,</span> <span class="n">wxBITMAP_TYPE_ANY</span><span class="p">)</span>
+</pre></div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="empty-bitmap-statement-empty">
+<h2>Empty Bitmap: Statement <strong>empty</strong><a class="headerlink" href="#empty-bitmap-statement-empty" title="Permalink to this headline">¶</a></h2>
+<p>Creates an empty bitmap of the specified size (min. 1,1)</p>
+<table border="1" class="colwidths-given docutils">
+<colgroup>
+<col width="20%" />
+<col width="80%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><strong>Syntax</strong></td>
+<td><div class="first last highlight-default"><div class="highlight"><pre><span></span><span class="n">empty</span><span class="p">:</span><span class="o">&lt;</span><span class="n">width</span><span class="o">&gt;</span><span class="p">,</span><span class="o">&lt;</span><span class="n">height</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-even"><td><strong>Example</strong></td>
+<td><div class="first last highlight-default"><div class="highlight"><pre><span></span><span class="n">empty</span><span class="p">:</span><span class="mi">32</span><span class="p">,</span><span class="mi">32</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td><strong>Created code</strong> <br/>
+C++</td>
+<td><div class="first last highlight-default"><div class="highlight"><pre><span></span><span class="n">wx</span><span class="o">.</span><span class="n">EmptyBitmap</span><span class="p">(</span><span class="mi">32</span><span class="p">,</span> <span class="mi">32</span><span class="p">)</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-even"><td><br/> Python</td>
+<td><div class="first last highlight-default"><div class="highlight"><pre><span></span><span class="n">wxBitmap</span><span class="p">(</span><span class="mi">32</span><span class="p">,</span> <span class="mi">32</span><span class="p">)</span>
+</pre></div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="from-wxartprovider-statement-art">
+<h2>From wxArtProvider: Statement <strong>art</strong><a class="headerlink" href="#from-wxartprovider-statement-art" title="Permalink to this headline">¶</a></h2>
+<p>Create a bitmap using wxArtProvider.</p>
+<p>See <a class="reference external" href="https://docs.wxpython.org/wx.ArtProvider.html">https://docs.wxpython.org/wx.ArtProvider.html</a> for usage of wxArtProvider.</p>
+<table border="1" class="colwidths-given docutils">
+<colgroup>
+<col width="20%" />
+<col width="80%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><strong>Syntax</strong></td>
+<td><div class="first highlight-default"><div class="highlight"><pre><span></span><span class="n">art</span><span class="p">:</span><span class="o">&lt;</span><span class="n">ArtID</span><span class="o">&gt;</span><span class="p">,</span><span class="o">&lt;</span><span class="n">ArtClient</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+<p>or:</p>
+<div class="last highlight-default"><div class="highlight"><pre><span></span><span class="n">art</span><span class="p">:</span><span class="o">&lt;</span><span class="n">ArtID</span><span class="o">&gt;</span><span class="p">,</span><span class="o">&lt;</span><span class="n">ArtClient</span><span class="o">&gt;</span><span class="p">,</span><span class="o">&lt;</span><span class="n">width</span><span class="o">&gt;</span><span class="p">,</span><span class="o">&lt;</span><span class="n">height</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-even"><td><strong>Example</strong></td>
+<td><div class="first last highlight-default"><div class="highlight"><pre><span></span><span class="n">art</span><span class="p">:</span><span class="n">wxART_GO_UP</span><span class="p">,</span><span class="n">wxART_OTHER</span><span class="p">,</span><span class="mi">32</span><span class="p">,</span><span class="mi">32</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td><strong>Created code</strong> <br/>
+Perl</td>
+<td><div class="first last highlight-default"><div class="highlight"><pre><span></span><span class="n">Wx</span><span class="p">::</span><span class="n">ArtProvider</span><span class="p">::</span><span class="n">GetBitmap</span><span class="p">(</span><span class="n">wxART_GO_UP</span><span class="p">,</span> <span class="n">wxART_OTHER</span><span class="p">,</span> <span class="n">Wx</span><span class="p">::</span><span class="n">Size</span><span class="o">-&gt;</span><span class="n">new</span><span class="p">(</span><span class="mi">32</span><span class="p">,</span> <span class="mi">32</span><span class="p">))</span>
+</pre></div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="from-code-statement-code">
+<h2>From Code: Statement <strong>code</strong><a class="headerlink" href="#from-code-statement-code" title="Permalink to this headline">¶</a></h2>
+<p>This just inserts the given code.</p>
+<table border="1" class="colwidths-given docutils">
+<colgroup>
+<col width="20%" />
+<col width="80%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><strong>Syntax</strong></td>
+<td><div class="first last highlight-default"><div class="highlight"><pre><span></span><span class="n">code</span><span class="p">:</span><span class="o">&lt;</span><span class="n">code</span> <span class="n">chunk</span> <span class="n">to</span> <span class="k">return</span> <span class="n">a</span> <span class="n">wxBitmap</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-even"><td><strong>Example</strong></td>
+<td><div class="first last highlight-default"><div class="highlight"><pre><span></span><span class="n">code</span><span class="p">:</span><span class="k">if</span> <span class="p">(</span><span class="n">x</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="n">get_bitmap1</span><span class="p">()</span> <span class="k">else</span> <span class="n">get_bitmap2</span><span class="p">();</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td><strong>Created code</strong> <br/>
+C++</td>
+<td><div class="first last highlight-default"><div class="highlight"><pre><span></span><span class="k">if</span> <span class="p">(</span><span class="n">x</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="n">get_bitmap1</span><span class="p">()</span> <span class="k">else</span> <span class="n">get_bitmap2</span><span class="p">();</span>
+</pre></div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="index.html">
+              <img class="logo" src="_static/wxglade.png" alt="Logo"/>
+            </a></p>
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Bitmaps</a><ul>
+<li><a class="reference internal" href="#from-bitmap-file-path">From Bitmap File / Path</a></li>
+<li><a class="reference internal" href="#from-named-variable-statement-var">From named variable: Statement <strong>var</strong></a></li>
+<li><a class="reference internal" href="#empty-bitmap-statement-empty">Empty Bitmap: Statement <strong>empty</strong></a></li>
+<li><a class="reference internal" href="#from-wxartprovider-statement-art">From wxArtProvider: Statement <strong>art</strong></a></li>
+<li><a class="reference internal" href="#from-code-statement-code">From Code: Statement <strong>code</strong></a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="menu_status_tool.html"
+                        title="previous chapter">Menu, Status Bar, Tool Bar</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="custom_widgets.html"
+                        title="next chapter">Custom Widget</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/bitmaps.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="custom_widgets.html" title="Custom Widget"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="menu_status_tool.html" title="Menu, Status Bar, Tool Bar"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">wxGlade 0.8.0 documentation</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2017, Dietmar Schwertberger.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.6.4.
+    </div>
+  </body>
+</html>

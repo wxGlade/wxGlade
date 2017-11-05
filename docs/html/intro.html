@@ -1,0 +1,204 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>wxGlade Overview &#8212; wxGlade 0.8.0 documentation</title>
+    <link rel="stylesheet" href="_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="_static/css/custom.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.8.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="wx Basics" href="wxbasics.html" />
+    <link rel="prev" title="Welcome to wxGlade’s documentation!" href="index.html" /> 
+  </head>
+  <body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="wxbasics.html" title="wx Basics"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="Welcome to wxGlade’s documentation!"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">wxGlade 0.8.0 documentation</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="wxglade-overview">
+<h1>wxGlade Overview<a class="headerlink" href="#wxglade-overview" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="running-wxglade">
+<h2>Running wxGlade<a class="headerlink" href="#running-wxglade" title="Permalink to this headline">¶</a></h2>
+<p><strong>Start:</strong>
+To run wxGlade, start the wxglade.py or wxglade.pyw program file with the Python interpreter.</p>
+<p><strong>Other Prerequisites:</strong>
+On Windows, the win32 extensions should be installed: <a class="reference external" href="https://sourceforge.net/projects/pywin32/">https://sourceforge.net/projects/pywin32/</a></p>
+<dl class="docutils">
+<dt><strong>Supported Python and wxPython Versions:</strong></dt>
+<dd><ul class="first last simple">
+<li>The <em>classic</em> wxPython versions 2.8 and 3.0 are supported as well as wxPython <em>Phoenix</em> running under Python 3</li>
+<li>Phoenix plus Python 2 will probably also work, but this is not tested at all. wxPython 2.8 is generally less tested than the more recent versions.</li>
+<li>When running Python 3 + Phoenix or Python 2 + Classic, the generated Python code will not be compatible to the other version.</li>
+</ul>
+</dd>
+</dl>
+</div>
+<div class="section" id="program-windows">
+<h2>Program Windows<a class="headerlink" href="#program-windows" title="Permalink to this headline">¶</a></h2>
+<p>wxGlade consists of five main windows:</p>
+<p>(click on one of the images to see it full size)</p>
+<table border="1" class="colwidths-given docutils align-center">
+<colgroup>
+<col width="20%" />
+<col width="80%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><a class="reference internal" href="_images/wPalette.png"><img alt="wPalette" class="align-middle" src="_images/wPalette.png" style="width: 200px;" /></a></td>
+<td>Main <strong>Palette</strong> window: <br/>
+This is the main window with the main window. <br/>
+There is an icon for each window and control type that can be added to a project.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="_images/wTree.png"><img alt="wTree" class="align-middle" src="_images/wTree.png" style="width: 200px;" /></a></td>
+<td><strong>Tree</strong> window: <br/>
+This window visualizes and allows to edit the structure of the project with it’s
+application, windows, sizers and controls. <br/>
+On selection of an item, it’s properties will be shown in the Properties window.</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="_images/wProperties.png"><img alt="wProperties" class="align-middle" src="_images/wProperties.png" style="width: 200px;" /></a></td>
+<td><strong>Properties</strong> window: <br/>
+This allows to display and edit properties of applications, windows and controls. <br/>
+To edit an item, select it in the Tree or Design window.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="_images/wDesign.png"><img alt="wDesign" class="align-middle" src="_images/wDesign.png" style="width: 200px;" /></a></td>
+<td><strong>Design</strong> window: <br/>
+Visualizes the design of the window; it is not 100% identical to the final window. <br/>
+To open this window, double-click a window’s icon in the Tree window.</td>
+</tr>
+<tr class="row-odd"><td>&#160;</td>
+<td><strong>Preview</strong> window <br/>
+A preview of the current window; should be 100% identical to the window as when it
+is used later on.</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition seealso">
+<p class="first admonition-title">See also</p>
+<p class="last"><a class="reference internal" href="reference.html"><span class="doc">Reference: Keyboard and Mouse Actions</span></a> <strong>for keyboard shortcuts and mouse actions.</strong></p>
+</div>
+</div>
+<div class="section" id="examples">
+<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h2>
+<p>Before doing anything else, you may want to open an example file showing most of the supported controls:</p>
+<ul class="simple">
+<li>for wxPython 3.0 and Phoenix: <code class="file docutils literal"><span class="pre">examples/AllControls_30.wxg</span></code></li>
+<li>for wxPython 2.8: <code class="file docutils literal"><span class="pre">examples/AllControls_28.wxg</span></code></li>
+</ul>
+<p>Each example file includes a frame with most of the supported widgets and also a menu bar, a tool bar and a status bar.</p>
+<dl class="docutils">
+<dt><strong>Required steps:</strong></dt>
+<dd><ul class="first last simple">
+<li>open the file by dragging it to the main window or by selecting the menu item File-&gt;Open</li>
+<li>double-click “All_Widgets” in the <em>Tree</em> window to open the <em>Design</em> window and have a look around</li>
+<li>create Python source code:<ul>
+<li>press <code class="kbd docutils literal"><span class="pre">Ctrl-G</span></code> or</li>
+<li>select the toplevel object “Application” and hit the button “Generate Source” in the <em>Properties</em> window</li>
+</ul>
+</li>
+<li>press <code class="kbd docutils literal"><span class="pre">F5</span></code> to create a preview</li>
+</ul>
+</dd>
+</dl>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="index.html">
+              <img class="logo" src="_static/wxglade.png" alt="Logo"/>
+            </a></p>
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">wxGlade Overview</a><ul>
+<li><a class="reference internal" href="#running-wxglade">Running wxGlade</a></li>
+<li><a class="reference internal" href="#program-windows">Program Windows</a></li>
+<li><a class="reference internal" href="#examples">Examples</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="index.html"
+                        title="previous chapter"> Welcome to wxGlade’s documentation!</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="wxbasics.html"
+                        title="next chapter">wx Basics</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/intro.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="wxbasics.html" title="wx Basics"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="Welcome to wxGlade’s documentation!"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">wxGlade 0.8.0 documentation</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2017, Dietmar Schwertberger.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.6.4.
+    </div>
+  </body>
+</html>
