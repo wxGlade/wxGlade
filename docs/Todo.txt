@@ -1,10 +1,3 @@
-For release 0.8:
- * Tutorial update; add some HowTos?
-
-don't fix:
- * static text: change Widget->Align left, Layout->Expand -> with border
-   -> re-create required on style change
-
 
 User Interface:
  * better icons for GridSizers and grid sizer slots
@@ -80,3 +73,8 @@ Data structures:
 
 Development process:
  * move to GitHub
+
+
+don't fix:
+ * static text: change Widget->Align left, Layout->Expand -> with border
+   -> re-create required on style change
