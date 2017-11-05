@@ -230,8 +230,8 @@ class wxGladeFrame(wx.Frame):
 
         # create the property and the tree frame
         self.create_property_panel(frame_style, icon, main_geometry)
-        self.create_tree_frame(frame_style, icon, main_geometry)  # also creates Application object
         common.property_panel = self.property_frame
+        self.create_tree_frame(frame_style, icon, main_geometry)  # also creates Application object
 
         # last visited directory, used on GTK for wxFileDialog
         self.cur_dir = config.preferences.open_save_path

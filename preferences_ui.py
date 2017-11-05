@@ -52,7 +52,7 @@ class wxGladePreferencesUI(wx.Dialog):
         self.sizer_6_staticbox = wx.StaticBox(self.notebook_1_pane_2, wx.ID_ANY, _("Local widget path"))
         self.ok = wx.Button(self, wx.ID_OK, "")
         self.cancel = wx.Button(self, wx.ID_CANCEL, "")
-
+        
         self.__set_properties()
         self.__do_layout()
         # end wxGlade
@@ -65,6 +65,7 @@ class wxGladePreferencesUI(wx.Dialog):
         self.SetIcon(_icon)
         self.use_menu_icons.SetValue(1)
         self.frame_tool_win.SetValue(1)
+        self.frame_tool_win.SetToolTipString(_("Small frames do not appear in the taskbar under Windows or GTK+"))
         self.show_progress.SetValue(1)
         self.remember_geometry.SetValue(1)
         self.show_sizer_handle.SetValue(1)
