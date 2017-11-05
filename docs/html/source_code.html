@@ -1,0 +1,505 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Create and Use Source Code &#8212; wxGlade 0.8.0 documentation</title>
+    <link rel="stylesheet" href="_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="_static/css/custom.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.8.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Menu, Status Bar, Tool Bar" href="menu_status_tool.html" />
+    <link rel="prev" title="Tutorial Project: Calculator" href="tutorial.html" /> 
+  </head>
+  <body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="menu_status_tool.html" title="Menu, Status Bar, Tool Bar"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="tutorial.html" title="Tutorial Project: Calculator"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">wxGlade 0.8.0 documentation</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="create-and-use-source-code">
+<h1>Create and Use Source Code<a class="headerlink" href="#create-and-use-source-code" title="Permalink to this headline">¶</a></h1>
+<p>The main purpose of wxGlade is to create code which will create the required windows.</p>
+<p>In addition, empty handlers for the most common events can be generated.</p>
+<p>The examples on this page are for Python, but the other supported languages will work similar.</p>
+<div class="section" id="prerequisites-and-code-generation">
+<h2>Prerequisites and Code Generation<a class="headerlink" href="#prerequisites-and-code-generation" title="Permalink to this headline">¶</a></h2>
+<p>The options for code generation can be defined in the <em>Properties</em> window when the application object is selected in the <em>Tree</em> window:</p>
+<p>For our example project from the previous page ‘Tutorial’ we want to generate:</p>
+<blockquote>
+<div><ul class="simple">
+<li>Python code for wxWidgets 3.0 or Phoenix</li>
+<li>all code in a single file</li>
+<li>output file name <code class="docutils literal"><span class="pre">Calculator.py</span></code></li>
+<li>an application should be created, not just the window</li>
+</ul>
+</div></blockquote>
+<p>So we select the root element “Application” in the <em>Tree</em> window and set the properties accordingly:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="100%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><a class="first last reference internal image-reference" href="_images/Calculator_06_ApplicationProperties.png"><img alt="Application Properties" src="_images/Calculator_06_ApplicationProperties.png" style="width: 200px;" /></a>
+</td>
+</tr>
+</tbody>
+</table>
+<p>To actually create the source code, press the button <code class="docutils literal"><span class="pre">Generate</span> <span class="pre">Source</span></code> or hit <code class="kbd docutils literal"><span class="pre">Ctrl-G</span></code>.</p>
+<p>The <strong>generated source</strong> looks like this:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="100%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><a class="first last reference internal image-reference" href="_images/Calculator_06_PythonCode.png"><img alt="Generated Python Source Code" src="_images/Calculator_06_PythonCode.png" style="width: 200px;" /></a>
+</td>
+</tr>
+</tbody>
+</table>
+<p>In this screenshot some parts were folded where the controls are created and placed in sizers. Especially for learning wxPython you may have a look at this code.</p>
+</div>
+<div class="section" id="application-toplevel-windows">
+<h2>Application, Toplevel Windows<a class="headerlink" href="#application-toplevel-windows" title="Permalink to this headline">¶</a></h2>
+<p>A wxGlade project may contain any number of toplevel Frames or Dialog.</p>
+<p>In the application properties you need to select one frame or dialog as “Top window”.</p>
+<img alt="wxGlade title" src="_images/Toplevel_App.png" />
+<img alt="wxGlade title" src="_images/Toplevel_Frame.png" />
+<p>The toplevel window will be invoked from the generated application code:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">MyApp</span><span class="p">(</span><span class="n">wx</span><span class="o">.</span><span class="n">App</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">OnInit</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">frame</span> <span class="o">=</span> <span class="n">CalculatorFrame</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">wx</span><span class="o">.</span><span class="n">ID_ANY</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">SetTopWindow</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">frame</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">frame</span><span class="o">.</span><span class="n">Show</span><span class="p">()</span>
+        <span class="k">return</span> <span class="kc">True</span>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">app</span> <span class="o">=</span> <span class="n">MyApp</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">app</span><span class="o">.</span><span class="n">MainLoop</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>In the example code, you should be able to identify the uses of <code class="docutils literal"><span class="pre">app</span></code>, <code class="docutils literal"><span class="pre">Myapp</span></code>, <code class="docutils literal"><span class="pre">frame</span></code> and <code class="docutils literal"><span class="pre">CalculatorFrame</span></code>.</p>
+<p>If <code class="docutils literal"><span class="pre">Application-&gt;Name</span></code> and <code class="docutils literal"><span class="pre">Application-&gt;Class</span></code> are deactivated, no application code will be generated. Usually you want to implement the application yourself, but still you can use the generated code as starting point.</p>
+<p>The other, non-toplevel windows are usually called from your own code. Have a look at the generated code to see how to call them.</p>
+<p>Be aware that you need to use different class names for your toplevel windows.
+wxGlade will display the class name with a yellow background if it’s not unique.</p>
+</div>
+<div class="section" id="code-for-windows">
+<h2>Code for Windows<a class="headerlink" href="#code-for-windows" title="Permalink to this headline">¶</a></h2>
+<p>This is the full code for our main window <code class="docutils literal"><span class="pre">CalculatorFrame</span></code>.</p>
+<p>The code is separated into creation of controls, definition of properties and layout generation:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">CalculatorFrame</span><span class="p">(</span><span class="n">wx</span><span class="o">.</span><span class="n">Frame</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwds</span><span class="p">):</span>
+        <span class="c1"># begin wxGlade: CalculatorFrame.__init__</span>
+        <span class="n">kwds</span><span class="p">[</span><span class="s2">&quot;style&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">wx</span><span class="o">.</span><span class="n">DEFAULT_FRAME_STYLE</span>
+        <span class="n">wx</span><span class="o">.</span><span class="n">Frame</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwds</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">panel_1</span> <span class="o">=</span> <span class="n">wx</span><span class="o">.</span><span class="n">Panel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">wx</span><span class="o">.</span><span class="n">ID_ANY</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">text_value1</span> <span class="o">=</span> <span class="n">wx</span><span class="o">.</span><span class="n">TextCtrl</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">panel_1</span><span class="p">,</span> <span class="n">wx</span><span class="o">.</span><span class="n">ID_ANY</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">radiobox_operator</span> <span class="o">=</span> <span class="n">wx</span><span class="o">.</span><span class="n">RadioBox</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">panel_1</span><span class="p">,</span> <span class="n">wx</span><span class="o">.</span><span class="n">ID_ANY</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+            <span class="n">choices</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;+&quot;</span><span class="p">,</span> <span class="s2">&quot;-&quot;</span><span class="p">,</span> <span class="s2">&quot;*&quot;</span><span class="p">,</span> <span class="s2">&quot;/&quot;</span><span class="p">],</span> <span class="n">majorDimension</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">style</span><span class="o">=</span><span class="n">wx</span><span class="o">.</span><span class="n">RA_SPECIFY_ROWS</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">text_value2</span> <span class="o">=</span> <span class="n">wx</span><span class="o">.</span><span class="n">TextCtrl</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">panel_1</span><span class="p">,</span> <span class="n">wx</span><span class="o">.</span><span class="n">ID_ANY</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">text_result</span> <span class="o">=</span> <span class="n">wx</span><span class="o">.</span><span class="n">TextCtrl</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">panel_1</span><span class="p">,</span> <span class="n">wx</span><span class="o">.</span><span class="n">ID_ANY</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+            <span class="n">style</span><span class="o">=</span><span class="n">wx</span><span class="o">.</span><span class="n">TE_MULTILINE</span> <span class="o">|</span> <span class="n">wx</span><span class="o">.</span><span class="n">TE_READONLY</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">btn_execute</span> <span class="o">=</span> <span class="n">wx</span><span class="o">.</span><span class="n">Button</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">panel_1</span><span class="p">,</span> <span class="n">wx</span><span class="o">.</span><span class="n">ID_ANY</span><span class="p">,</span> <span class="s2">&quot;Execute&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">btn_reset</span> <span class="o">=</span> <span class="n">wx</span><span class="o">.</span><span class="n">Button</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">panel_1</span><span class="p">,</span> <span class="n">wx</span><span class="o">.</span><span class="n">ID_ANY</span><span class="p">,</span> <span class="s2">&quot;Reset&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">__set_properties</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__do_layout</span><span class="p">()</span>
+
+        <span class="c1"># end wxGlade</span>
+
+    <span class="k">def</span> <span class="nf">__set_properties</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># begin wxGlade: CalculatorFrame.__set_properties</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">SetTitle</span><span class="p">(</span><span class="s2">&quot;Calculator&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">radiobox_operator</span><span class="o">.</span><span class="n">SetSelection</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">text_result</span><span class="o">.</span><span class="n">SetBackgroundColour</span><span class="p">(</span><span class="n">wx</span><span class="o">.</span><span class="n">Colour</span><span class="p">(</span><span class="mi">212</span><span class="p">,</span> <span class="mi">208</span><span class="p">,</span> <span class="mi">200</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">btn_execute</span><span class="o">.</span><span class="n">SetDefault</span><span class="p">()</span>
+        <span class="c1"># end wxGlade</span>
+
+    <span class="k">def</span> <span class="nf">__do_layout</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># begin wxGlade: CalculatorFrame.__do_layout</span>
+        <span class="n">sizer_1</span> <span class="o">=</span> <span class="n">wx</span><span class="o">.</span><span class="n">BoxSizer</span><span class="p">(</span><span class="n">wx</span><span class="o">.</span><span class="n">VERTICAL</span><span class="p">)</span>
+        <span class="n">sizer_2</span> <span class="o">=</span> <span class="n">wx</span><span class="o">.</span><span class="n">BoxSizer</span><span class="p">(</span><span class="n">wx</span><span class="o">.</span><span class="n">VERTICAL</span><span class="p">)</span>
+        <span class="n">sizer_6</span> <span class="o">=</span> <span class="n">wx</span><span class="o">.</span><span class="n">BoxSizer</span><span class="p">(</span><span class="n">wx</span><span class="o">.</span><span class="n">HORIZONTAL</span><span class="p">)</span>
+        <span class="n">sizer_5</span> <span class="o">=</span> <span class="n">wx</span><span class="o">.</span><span class="n">BoxSizer</span><span class="p">(</span><span class="n">wx</span><span class="o">.</span><span class="n">HORIZONTAL</span><span class="p">)</span>
+        <span class="n">sizer_4</span> <span class="o">=</span> <span class="n">wx</span><span class="o">.</span><span class="n">BoxSizer</span><span class="p">(</span><span class="n">wx</span><span class="o">.</span><span class="n">HORIZONTAL</span><span class="p">)</span>
+        <span class="n">sizer_7</span> <span class="o">=</span> <span class="n">wx</span><span class="o">.</span><span class="n">BoxSizer</span><span class="p">(</span><span class="n">wx</span><span class="o">.</span><span class="n">HORIZONTAL</span><span class="p">)</span>
+        <span class="n">sizer_3</span> <span class="o">=</span> <span class="n">wx</span><span class="o">.</span><span class="n">BoxSizer</span><span class="p">(</span><span class="n">wx</span><span class="o">.</span><span class="n">HORIZONTAL</span><span class="p">)</span>
+        <span class="n">label_1</span> <span class="o">=</span> <span class="n">wx</span><span class="o">.</span><span class="n">StaticText</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">panel_1</span><span class="p">,</span> <span class="n">wx</span><span class="o">.</span><span class="n">ID_ANY</span><span class="p">,</span> <span class="s2">&quot;Value 1:&quot;</span><span class="p">)</span>
+        <span class="n">sizer_3</span><span class="o">.</span><span class="n">Add</span><span class="p">(</span><span class="n">label_1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">wx</span><span class="o">.</span><span class="n">ALIGN_CENTER_VERTICAL</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="n">sizer_3</span><span class="o">.</span><span class="n">Add</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">text_value1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="n">sizer_2</span><span class="o">.</span><span class="n">Add</span><span class="p">(</span><span class="n">sizer_3</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">wx</span><span class="o">.</span><span class="n">EXPAND</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="n">label_4</span> <span class="o">=</span> <span class="n">wx</span><span class="o">.</span><span class="n">StaticText</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">panel_1</span><span class="p">,</span> <span class="n">wx</span><span class="o">.</span><span class="n">ID_ANY</span><span class="p">,</span> <span class="s2">&quot;Operator:&quot;</span><span class="p">)</span>
+        <span class="n">sizer_7</span><span class="o">.</span><span class="n">Add</span><span class="p">(</span><span class="n">label_4</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">wx</span><span class="o">.</span><span class="n">ALIGN_CENTER_VERTICAL</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="n">sizer_7</span><span class="o">.</span><span class="n">Add</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">radiobox_operator</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="n">sizer_2</span><span class="o">.</span><span class="n">Add</span><span class="p">(</span><span class="n">sizer_7</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">wx</span><span class="o">.</span><span class="n">EXPAND</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="n">label_2</span> <span class="o">=</span> <span class="n">wx</span><span class="o">.</span><span class="n">StaticText</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">panel_1</span><span class="p">,</span> <span class="n">wx</span><span class="o">.</span><span class="n">ID_ANY</span><span class="p">,</span> <span class="s2">&quot;Value 2:&quot;</span><span class="p">)</span>
+        <span class="n">sizer_4</span><span class="o">.</span><span class="n">Add</span><span class="p">(</span><span class="n">label_2</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">wx</span><span class="o">.</span><span class="n">ALIGN_CENTER_VERTICAL</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="n">sizer_4</span><span class="o">.</span><span class="n">Add</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">text_value2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="n">sizer_2</span><span class="o">.</span><span class="n">Add</span><span class="p">(</span><span class="n">sizer_4</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">wx</span><span class="o">.</span><span class="n">EXPAND</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="n">static_line_1</span> <span class="o">=</span> <span class="n">wx</span><span class="o">.</span><span class="n">StaticLine</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">panel_1</span><span class="p">,</span> <span class="n">wx</span><span class="o">.</span><span class="n">ID_ANY</span><span class="p">)</span>
+        <span class="n">sizer_2</span><span class="o">.</span><span class="n">Add</span><span class="p">(</span><span class="n">static_line_1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">wx</span><span class="o">.</span><span class="n">BOTTOM</span> <span class="o">|</span> <span class="n">wx</span><span class="o">.</span><span class="n">EXPAND</span> <span class="o">|</span> <span class="n">wx</span><span class="o">.</span><span class="n">TOP</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
+        <span class="n">label_3</span> <span class="o">=</span> <span class="n">wx</span><span class="o">.</span><span class="n">StaticText</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">panel_1</span><span class="p">,</span> <span class="n">wx</span><span class="o">.</span><span class="n">ID_ANY</span><span class="p">,</span> <span class="s2">&quot;Result:&quot;</span><span class="p">)</span>
+        <span class="n">sizer_5</span><span class="o">.</span><span class="n">Add</span><span class="p">(</span><span class="n">label_3</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="n">sizer_5</span><span class="o">.</span><span class="n">Add</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">text_result</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">wx</span><span class="o">.</span><span class="n">EXPAND</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="n">sizer_2</span><span class="o">.</span><span class="n">Add</span><span class="p">(</span><span class="n">sizer_5</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">wx</span><span class="o">.</span><span class="n">EXPAND</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="n">sizer_6</span><span class="o">.</span><span class="n">Add</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">btn_execute</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">wx</span><span class="o">.</span><span class="n">ALL</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
+        <span class="n">sizer_6</span><span class="o">.</span><span class="n">Add</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">btn_reset</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">wx</span><span class="o">.</span><span class="n">ALL</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
+        <span class="n">sizer_2</span><span class="o">.</span><span class="n">Add</span><span class="p">(</span><span class="n">sizer_6</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">wx</span><span class="o">.</span><span class="n">ALIGN_CENTER</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">panel_1</span><span class="o">.</span><span class="n">SetSizer</span><span class="p">(</span><span class="n">sizer_2</span><span class="p">)</span>
+        <span class="n">sizer_1</span><span class="o">.</span><span class="n">Add</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">panel_1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">wx</span><span class="o">.</span><span class="n">EXPAND</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">SetSizer</span><span class="p">(</span><span class="n">sizer_1</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Layout</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">SetSize</span><span class="p">((</span><span class="mi">400</span><span class="p">,</span> <span class="mi">300</span><span class="p">))</span>
+        <span class="c1"># end wxGlade</span>
+</pre></div>
+</div>
+<p>When you run the Python file, the application is run and the frame created:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="100%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><a class="first last reference internal image-reference" href="_images/Calculator_06_Screenshot.png"><img alt="Screenshot" src="_images/Calculator_06_Screenshot.png" style="width: 200px;" /></a>
+</td>
+</tr>
+</tbody>
+</table>
+<p>The code just creates the windows. There’s no functionality yet.</p>
+<p>In the generated code you can see assignments like <code class="docutils literal"><span class="pre">self.text_result</span> <span class="pre">=</span> <span class="pre">wx.TextCtrl(...)</span></code>.
+This allows you to access the control via the attribute <code class="docutils literal"><span class="pre">result_text</span></code>.
+You may e.g. call <code class="docutils literal"><span class="pre">frame.text_result.SetValue(str(result))</span></code> to display a value in the Result text control.</p>
+<p>Some widgets like <code class="docutils literal"><span class="pre">StaticText</span></code> are not accessible as attributes by default.
+You can change this by going to <em>Properties</em>-&gt;Widget and checking ‘Store as attribute’.
+For Sizers you can achieve the same on the “Common” tab.</p>
+<p>As of now, nothing will happen if the user hits the “Execute” button. So we need an event handler for this.</p>
+</div>
+<div class="section" id="code-for-event-handlers">
+<h2>Code for Event Handlers<a class="headerlink" href="#code-for-event-handlers" title="Permalink to this headline">¶</a></h2>
+<p>Traditional programs or scripts usually have a defined flow.</p>
+<p>GUI programs on the other hand, are event-driven and the flow depends on the user’s actions. The events like mouse clicks are delivered from the operating system or window manager to the application. The receiving side is an infinite loop, called “event loop” or “main loop”. When you have a look at the last lines of a Python file that wxGlade wrote, you will see that the <code class="docutils literal"><span class="pre">MainLoop</span></code> method of your application is called. The main loop receives events from e.g. the Windows operating sytem and dispatches it to windows and controls. To handle things like mouse clicks, menu selections, button clicks etc. you need to register handlers.</p>
+<p>wxGlade allows you to enter handler names. For any of these names, empty method stubs will be generated in the source code file and the methods will be bound when the window is created. Alternatively, you may define and register handlers yourself.</p>
+<p><strong>Example: button event EVT_BUTTON</strong></p>
+<p>The main event of a button is <code class="docutils literal"><span class="pre">EVT_BUTTON</span></code>. In the following example we want to call a method <code class="docutils literal"><span class="pre">on_execute_button_clicked</span></code> whenever the “Execute” button is clicked.</p>
+<p><strong>Method 1: use wxGlade</strong></p>
+<p>In the <em>Properties</em> window you can see the events (most controls have more than just one event) and enter the handler name:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="100%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><a class="first last reference internal image-reference" href="_images/Calculator_06_EVT_BUTTON.png"><img alt="EVT_BUTTON Event Handler" src="_images/Calculator_06_EVT_BUTTON.png" style="width: 200px;" /></a>
+</td>
+</tr>
+</tbody>
+</table>
+<p>The generated code will look like this:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwds</span><span class="p">):</span>
+    <span class="o">...</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">execute_button</span> <span class="o">=</span> <span class="n">wx</span><span class="o">.</span><span class="n">Button</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">notebook_1_pane_1</span><span class="p">,</span> <span class="n">wx</span><span class="o">.</span><span class="n">ID_ANY</span><span class="p">,</span> <span class="s2">&quot;Execute&quot;</span><span class="p">)</span>
+    <span class="o">...</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">Bind</span><span class="p">(</span><span class="n">wx</span><span class="o">.</span><span class="n">EVT_BUTTON</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">on_button_clicked</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">execute_button</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">on_execute_button_clicked</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>  <span class="c1"># wxGlade: MyFrame.&lt;event_handler&gt;</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Event handler &#39;on_execute_button_clicked&#39; not implemented!&quot;</span><span class="p">)</span>
+    <span class="n">event</span><span class="o">.</span><span class="n">Skip</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>The default handler just prints a message to the console and calls <code class="docutils literal"><span class="pre">event.Skip()</span></code> to forward the event to the the parent of the button.</p>
+<p><strong>Method 2: register event handler</strong></p>
+<p>Alternatively, you can also register an event handler yourself, using code like this:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="bp">self</span><span class="o">.</span><span class="n">execute_button</span><span class="o">.</span><span class="n">Bind</span><span class="p">(</span><span class="n">wx</span><span class="o">.</span><span class="n">EVT_BUTTON</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">on_execute_button_clicked</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>wxGlade will only help you with the most important events, e.g. for the button it will just offer to generate a handler for <code class="docutils literal"><span class="pre">EVT_BUTTON</span></code>. You may want to register and handle other events like mouse movements as well.</p>
+</div>
+<div class="section" id="user-code-implement-functionality">
+<h2>User Code: Implement Functionality<a class="headerlink" href="#user-code-implement-functionality" title="Permalink to this headline">¶</a></h2>
+<dl class="docutils">
+<dt>There are two ways to implement functionality for your application:</dt>
+<dd><ul class="first last simple">
+<li>Directly edit the code file()s) written by wxGlade.</li>
+<li>Import the generated module(s) and override class and event handler in your own code files.</li>
+</ul>
+</dd>
+</dl>
+<p>For anything else than simple glue code, the latter is the recommended approach.</p>
+<div class="section" id="example-1-edit-in-place-keep-user-code">
+<h3>Example 1: Edit in place / “Keep user code”<a class="headerlink" href="#example-1-edit-in-place-keep-user-code" title="Permalink to this headline">¶</a></h3>
+<p>If you want to use the first approach, you need to set “Keep user code” for the application in the <em>Properties</em> window:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="100%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><a class="first last reference internal image-reference" href="_images/Calculator_06_ApplicationKeepUserCode.png"><img alt="Option: Keep User Code" src="_images/Calculator_06_ApplicationKeepUserCode.png" style="width: 200px;" /></a>
+</td>
+</tr>
+</tbody>
+</table>
+<p>In this case, when you hit the <code class="docutils literal"><span class="pre">Generate</span> <span class="pre">Source</span></code> button, wxGlade will read the file and only overwrite the sections that were marked with <code class="docutils literal"><span class="pre">#</span> <span class="pre">begin</span> <span class="pre">wxGlade:...</span></code> and <code class="docutils literal"><span class="pre">#</span> <span class="pre">end</span> <span class="pre">wxGlade</span></code>.</p>
+<p><strong>Please be aware that this is not too robust when you e.g. rename objects. Always keep backups!</strong></p>
+<p>Event handlers are marked with <code class="docutils literal"><span class="pre">#</span> <span class="pre">wxGlade:</span> <span class="pre">MyFrame.&lt;event_handler&gt;</span></code>.
+They will be read and written back unchanged. Don’t modify the marker.</p>
+<p>To implement functionality, replace the default handler, e.g.:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">on_execute_button_clicked</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>  <span class="c1"># wxGlade: MyFrame.&lt;event_handler&gt;</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Event handler &#39;on_execute_button_clicked&#39; not implemented!&quot;</span><span class="p">)</span>
+    <span class="n">event</span><span class="o">.</span><span class="n">Skip</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>with your own code like this (of course you should add also validation and error reporting):</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">on_execute_button_clicked</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>  <span class="c1"># wxGlade: MyFrame.&lt;event_handler&gt;</span>
+    <span class="n">value1</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span> <span class="bp">self</span><span class="o">.</span><span class="n">text_value1</span><span class="o">.</span><span class="n">GetValue</span><span class="p">()</span> <span class="p">)</span>
+    <span class="n">value2</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span> <span class="bp">self</span><span class="o">.</span><span class="n">text_value2</span><span class="o">.</span><span class="n">GetValue</span><span class="p">()</span> <span class="p">)</span>
+    <span class="n">operator</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">radiobox_operator</span><span class="o">.</span><span class="n">GetSelection</span><span class="p">()</span> <span class="c1"># a number from 0 to 3</span>
+    <span class="k">if</span> <span class="n">operator</span><span class="o">==</span><span class="mi">0</span><span class="p">:</span>    <span class="n">result</span> <span class="o">=</span> <span class="n">value1</span> <span class="o">+</span> <span class="n">value2</span>
+    <span class="k">elif</span> <span class="n">operator</span><span class="o">==</span><span class="mi">1</span><span class="p">:</span>  <span class="n">result</span> <span class="o">=</span> <span class="n">value1</span> <span class="o">-</span> <span class="n">value2</span>
+    <span class="k">elif</span> <span class="n">operator</span><span class="o">==</span><span class="mi">2</span><span class="p">:</span>  <span class="n">result</span> <span class="o">=</span> <span class="n">value1</span> <span class="o">*</span> <span class="n">value2</span>
+    <span class="k">elif</span> <span class="n">operator</span><span class="o">==</span><span class="mi">3</span><span class="p">:</span>  <span class="n">result</span> <span class="o">=</span> <span class="n">value1</span> <span class="o">/</span> <span class="n">value2</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">text_result</span><span class="o">.</span><span class="n">AppendText</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">%</span><span class="n">result</span><span class="p">)</span>
+    <span class="n">event</span><span class="o">.</span><span class="n">Skip</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>The result:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="100%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><a class="first last reference internal image-reference" href="_images/Calculator_Simple.png"><img alt="Option: Keep User Code" src="_images/Calculator_Simple.png" style="width: 200px;" /></a>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="docutils">
+<dt>The files can be found in the folder <code class="docutils literal"><span class="pre">wxglade/examples/Calculator</span></code>:</dt>
+<dd><ul class="first last simple">
+<li><a class="reference external" href="../../examples/Calculator/Calculator-07-Keep.wxg">Calculator-07-Keep.wxg</a></li>
+<li><a class="reference external" href="../../examples/Calculator/Calculator.py">Calculator.py</a></li>
+</ul>
+</dd>
+<dt>In these files, the event handlers for the two buttons are defined in <em>Properties</em> -&gt; Events -&gt; <code class="docutils literal"><span class="pre">EVT_BUTTON</span></code>:</dt>
+<dd><ul class="first last simple">
+<li><code class="docutils literal"><span class="pre">on_execute_button_clicked</span></code></li>
+<li><code class="docutils literal"><span class="pre">on_reset_button_clicked</span></code></li>
+</ul>
+</dd>
+</dl>
+<p>Please be aware that this example code is far far away from any good coding style.
+Please do better in your own code!</p>
+<dl class="docutils">
+<dt>It would be good practice to:</dt>
+<dd><ul class="first last simple">
+<li>separate the business logic from the user interface by implementing e.g. methods like <br/>
+<code class="docutils literal"><span class="pre">validate_value(value)</span></code>, <code class="docutils literal"><span class="pre">calculate(value1,</span> <span class="pre">operator,</span> <span class="pre">value2)</span></code></li>
+<li>validate the contents of <code class="docutils literal"><span class="pre">text_value1/2</span></code> on every change of content (<code class="docutils literal"><span class="pre">EVT_TEXT</span></code>)</li>
+<li>report failed validation by colorizing the controls</li>
+<li>catch and log exceptions like <code class="docutils literal"><span class="pre">ZeroDivisionError</span></code></li>
+</ul>
+</dd>
+</dl>
+</div>
+<div class="section" id="example-2-import-and-override">
+<h3>Example 2: Import and override<a class="headerlink" href="#example-2-import-and-override" title="Permalink to this headline">¶</a></h3>
+<p>To actually <strong>use the generated event handler code</strong> and extend it with the required functionality, it’s best to
+create another Python file, import the generated code and use <code class="docutils literal"><span class="pre">app</span></code>/<code class="docutils literal"><span class="pre">MyApp</span></code> as template.</p>
+<p>For example, set wxGlade output file name to <code class="docutils literal"><span class="pre">Calculator_GUI.py</span></code> and let it generate the GUI code.
+Now create a file Calculator_Main.py:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="ch">#!/usr/bin/env python</span>
+<span class="c1"># -*- coding: UTF-8 -*-</span>
+
+<span class="kn">import</span> <span class="nn">wx</span>
+<span class="kn">import</span> <span class="nn">gettext</span>
+<span class="kn">from</span> <span class="nn">Calculator_GUI</span> <span class="k">import</span> <span class="n">CalculatorFrame</span>
+
+
+<span class="k">class</span> <span class="nc">MyFrame</span><span class="p">(</span><span class="n">CalculatorFrame</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwds</span><span class="p">):</span>
+        <span class="n">CalculatorFrame</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwds</span><span class="p">)</span>
+        <span class="c1"># if required, insert more initialization code here and create data structures</span>
+
+    <span class="k">def</span> <span class="nf">on_execute_button_clicked</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="c1"># XXX add validation and error reporting!</span>
+        <span class="n">value1</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span> <span class="bp">self</span><span class="o">.</span><span class="n">text_value1</span><span class="o">.</span><span class="n">GetValue</span><span class="p">()</span> <span class="p">)</span>
+        <span class="n">value2</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span> <span class="bp">self</span><span class="o">.</span><span class="n">text_value2</span><span class="o">.</span><span class="n">GetValue</span><span class="p">()</span> <span class="p">)</span>
+        <span class="n">operator</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">radiobox_operator</span><span class="o">.</span><span class="n">GetSelection</span><span class="p">()</span> <span class="c1"># a number from 0 to 3</span>
+        <span class="k">if</span> <span class="n">operator</span><span class="o">==</span><span class="mi">0</span><span class="p">:</span>    <span class="n">result</span> <span class="o">=</span> <span class="n">value1</span> <span class="o">+</span> <span class="n">value2</span>
+        <span class="k">elif</span> <span class="n">operator</span><span class="o">==</span><span class="mi">1</span><span class="p">:</span>  <span class="n">result</span> <span class="o">=</span> <span class="n">value1</span> <span class="o">-</span> <span class="n">value2</span>
+        <span class="k">elif</span> <span class="n">operator</span><span class="o">==</span><span class="mi">2</span><span class="p">:</span>  <span class="n">result</span> <span class="o">=</span> <span class="n">value1</span> <span class="o">*</span> <span class="n">value2</span>
+        <span class="k">elif</span> <span class="n">operator</span><span class="o">==</span><span class="mi">3</span><span class="p">:</span>  <span class="n">result</span> <span class="o">=</span> <span class="n">value1</span> <span class="o">/</span> <span class="n">value2</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">text_result</span><span class="o">.</span><span class="n">AppendText</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">%</span><span class="n">result</span><span class="p">)</span>
+        <span class="n">event</span><span class="o">.</span><span class="n">Skip</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">on_reset_button_clicked</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">text_result</span><span class="o">.</span><span class="n">Clear</span><span class="p">()</span>
+        <span class="n">event</span><span class="o">.</span><span class="n">Skip</span><span class="p">()</span>
+
+
+<span class="k">class</span> <span class="nc">MyApp</span><span class="p">(</span><span class="n">wx</span><span class="o">.</span><span class="n">App</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">OnInit</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">frame</span> <span class="o">=</span> <span class="n">MyFrame</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">wx</span><span class="o">.</span><span class="n">ID_ANY</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">SetTopWindow</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">frame</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">frame</span><span class="o">.</span><span class="n">Show</span><span class="p">()</span>
+        <span class="k">return</span> <span class="kc">True</span>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">gettext</span><span class="o">.</span><span class="n">install</span><span class="p">(</span><span class="s2">&quot;app&quot;</span><span class="p">)</span> <span class="c1"># replace with the appropriate catalog name</span>
+    <span class="n">app</span> <span class="o">=</span> <span class="n">MyApp</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">app</span><span class="o">.</span><span class="n">MainLoop</span><span class="p">()</span>
+</pre></div>
+</div>
+<dl class="docutils">
+<dt>The files can be found in the folder <code class="docutils literal"><span class="pre">wxglade/examples/Calculator</span></code>:</dt>
+<dd><ul class="first last simple">
+<li><a class="reference external" href="../../examples/Calculator/Calculator-07-Import.wxg">Calculator-07-Import.wxg</a></li>
+<li><a class="reference external" href="../../examples/Calculator/Calculator_GUI.py">Calculator_GUI.py</a></li>
+<li><a class="reference external" href="../../examples/Calculator/Calculator_Main.py">Calculator_Main.py</a></li>
+</ul>
+</dd>
+</dl>
+<p>Additionally, these files demonstrate a menu bar which will be explained in the next section <a class="reference internal" href="menu_status_tool.html"><span class="doc">Menu, Status Bar, Tool Bar</span></a>.</p>
+</div>
+</div>
+<div class="section" id="hints-and-tips">
+<h2>Hints and Tips<a class="headerlink" href="#hints-and-tips" title="Permalink to this headline">¶</a></h2>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p>Implementing event handlers is easiest if you use an IDE with a debugger, like Wing IDE Professional. <br/>
+Just set a breakpoint at the event handler and the introspection features and code completion will
+save you a lot of time:</p>
+<table border="1" class="last docutils">
+<colgroup>
+<col width="100%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><a class="first last reference internal image-reference" href="_images/Calculator_Debugger.png"><img alt="Debug Probe" src="_images/Calculator_Debugger.png" style="width: 400px;" /></a>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p>During development, you should always run your program from or within a console window. <br/>
+This way you will see if there are any exceptions being reported at stderr:</p>
+<table border="1" class="last docutils">
+<colgroup>
+<col width="100%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><a class="first last reference internal image-reference" href="_images/Calculator_Console.png"><img alt="Windows console window with exception" src="_images/Calculator_Console.png" style="width: 400px;" /></a>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="index.html">
+              <img class="logo" src="_static/wxglade.png" alt="Logo"/>
+            </a></p>
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Create and Use Source Code</a><ul>
+<li><a class="reference internal" href="#prerequisites-and-code-generation">Prerequisites and Code Generation</a></li>
+<li><a class="reference internal" href="#application-toplevel-windows">Application, Toplevel Windows</a></li>
+<li><a class="reference internal" href="#code-for-windows">Code for Windows</a></li>
+<li><a class="reference internal" href="#code-for-event-handlers">Code for Event Handlers</a></li>
+<li><a class="reference internal" href="#user-code-implement-functionality">User Code: Implement Functionality</a><ul>
+<li><a class="reference internal" href="#example-1-edit-in-place-keep-user-code">Example 1: Edit in place / “Keep user code”</a></li>
+<li><a class="reference internal" href="#example-2-import-and-override">Example 2: Import and override</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#hints-and-tips">Hints and Tips</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="tutorial.html"
+                        title="previous chapter">Tutorial Project: Calculator</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="menu_status_tool.html"
+                        title="next chapter">Menu, Status Bar, Tool Bar</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/source_code.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="menu_status_tool.html" title="Menu, Status Bar, Tool Bar"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="tutorial.html" title="Tutorial Project: Calculator"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">wxGlade 0.8.0 documentation</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2017, Dietmar Schwertberger.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.6.4.
+    </div>
+  </body>
+</html>

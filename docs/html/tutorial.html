@@ -1,0 +1,656 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Tutorial Project: Calculator &#8212; wxGlade 0.8.0 documentation</title>
+    <link rel="stylesheet" href="_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="_static/css/custom.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.8.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Create and Use Source Code" href="source_code.html" />
+    <link rel="prev" title="wx Basics" href="wxbasics.html" /> 
+  </head>
+  <body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="source_code.html" title="Create and Use Source Code"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="wxbasics.html" title="wx Basics"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">wxGlade 0.8.0 documentation</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="tutorial-project-calculator">
+<h1>Tutorial Project: Calculator<a class="headerlink" href="#tutorial-project-calculator" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="part-1-create-calculator-window-and-the-first-widget">
+<h2>Part 1: Create Calculator window and the first widget<a class="headerlink" href="#part-1-create-calculator-window-and-the-first-widget" title="Permalink to this headline">¶</a></h2>
+<p>In this section we will go through the steps to create the simple calculator window from above. In later sections we will modify it to highlight certain features like other sizer types, menus and status bars.</p>
+<p><strong>For the basic structure:</strong></p>
+<ol class="arabic simple">
+<li>Select File-&gt;New to <strong>create a new file</strong> and save it to a directory.</li>
+<li><strong>Add the frame</strong>:<ul>
+<li>click on the Frame icon <img alt="frame" src="_images/frame.png" /> in the section “Windows”</li>
+<li>for the class Name, enter “CalculatorFrame”: <a class="reference internal" href="_images/NewFrame_CalculatorFrame.png"><img alt="New Frame dialog" src="_images/NewFrame_CalculatorFrame.png" style="width: 30px;" /></a></li>
+</ul>
+</li>
+<li>A frame with a sizer <img alt="sizer" src="_images/sizer.png" /> and one slot is now visible in the <em>Tree</em> and <em>Design</em> window
+(there the slot is visualized by a hatched area)</li>
+<li>It would be possible to place controls directly on the frame, but usually a <strong>panel</strong> is added first, as a frame is really just a frame around the other things. <br/>
+To add the panel:<ul>
+<li>in the <em>Palette</em> window click on the panel icon <img alt="panel" src="_images/panel.png" /> to start the placement</li>
+<li>in the <em>Tree</em> or <em>Design</em> window, click in the slot to place the panel there</li>
+</ul>
+</li>
+<li>On the panel we need a <strong>vertical sizer</strong> with six slots:<ul>
+<li>in the Palette window click on the sizer icon <img alt="sizer" src="_images/sizer.png" /> to start the placement</li>
+<li>in the Tree or Design window, click on the panel to place the sizer there</li>
+<li>a dialog will open</li>
+<li>set “Orientation”  to “Vertical” and the number of slots to “6”  <a class="reference internal" href="_images/NewSizer_CalculatorVertical.png"><img alt="New Sizer dialog" src="_images/NewSizer_CalculatorVertical.png" style="width: 30px;" /></a></li>
+</ul>
+</li>
+<li>Now add a <strong>horizontal box sizer</strong> to the first slot: do as before, but keep “Orientation” as “Horizontal”
+and set the number of slots to “2”</li>
+<li>Place a <strong>label</strong> <img alt="static_text" src="_images/static_text.png" /> in the top left slot and a <strong>text control</strong> <img alt="text_ctrl" src="_images/text_ctrl.png" /> in the right</li>
+</ol>
+<p><strong>Your design should now look like this:</strong></p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="100%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><a class="first last reference internal image-reference" href="_images/Calculator_01.png"><img alt="_images/Calculator_01.png" src="_images/Calculator_01.png" style="width: 200px;" /></a>
+</td>
+</tr>
+</tbody>
+</table>
+<p>The label does not yet display anything useful and the window title is not meaningful. <br/>
+Also, layout and alignment need to be changed, but we’ll change this later on.</p>
+<p><strong>So, some properties of the label and the text need to be modified:</strong></p>
+<ol class="arabic simple">
+<li>Select the label in the <em>Tree</em> or <em>Design</em> window.</li>
+<li>If not yet visible, open the <em>Properties</em> window.</li>
+<li>In the <em>Properties</em> window:<ul>
+<li>Edit the label to display “Value 1:” by entering this on the editor tab “Widget”. <br/>
+(You could also edit the label directly in the <em>Tree</em> window by clicking into the label and/or pressing <code class="kbd docutils literal"><span class="pre">F2</span></code>.)</li>
+</ul>
+</li>
+<li>Select the frame in the <em>Tree</em> window and go to <em>Properties</em> -&gt; Widget -&gt; Title and change it to <code class="docutils literal"><span class="pre">Calculator</span></code>.</li>
+<li>You may want to define a default size for the frame: <br/>
+Go to <em>Properties</em> -&gt; Common -&gt; Size and set it to <code class="docutils literal"><span class="pre">400,300</span></code>. <br/>
+Without this, the frame will be created with the minimum possible size to fit all controls.</li>
+</ol>
+<p>This file can be found in the folder <code class="docutils literal"><span class="pre">wxglade/examples/Calculator</span></code>:
+<a class="reference external" href="../../examples/Calculator/Calculator-01.wxg">Calculator-01.wxg</a></p>
+</div>
+<div class="section" id="part-2-add-the-remaining-rows-and-widgets">
+<h2>Part 2: Add the remaining rows and widgets<a class="headerlink" href="#part-2-add-the-remaining-rows-and-widgets" title="Permalink to this headline">¶</a></h2>
+<p>We need almost the same combination of sizer+label+text for the second value and the result, so we’ll copy the horizontal sizer including it’s content from the first to the third and fith slot of the vertical sizer .
+<br/>
+After that, we’ll add “Operator” and the buttons.</p>
+<div class="section" id="there-are-several-methods-to-copy">
+<h3>There are several methods to copy:<a class="headerlink" href="#there-are-several-methods-to-copy" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><strong>Copy &amp; Paste in Design Window:</strong></li>
+</ul>
+<blockquote>
+<div><ul class="simple">
+<li>select the “handle” of the sizer, which is shown in red here: <a class="reference internal" href="_images/SizerHandle.png"><img alt="Sizer Handle" src="_images/SizerHandle.png" style="width: 30px;" /></a></li>
+<li>then hit <code class="kbd docutils literal"><span class="pre">Ctrl-C</span></code> to copy the selected sizer (or use the context menu)</li>
+<li>select the third, empty slot, where you want to place a copy; it will be hatched in blue</li>
+<li>then hit <code class="kbd docutils literal"><span class="pre">Ctrl-V</span></code> (or use the context menu)</li>
+<li>select the fith, empty slot</li>
+<li>then hit <code class="kbd docutils literal"><span class="pre">Ctrl-V</span></code> (or use the context menu)</li>
+</ul>
+</div></blockquote>
+<ul class="simple">
+<li><strong>Copy &amp; Paste in Tree Window:</strong></li>
+</ul>
+<blockquote>
+<div><ul class="simple">
+<li>select the sizer node</li>
+<li>then hit <code class="kbd docutils literal"><span class="pre">Ctrl-C</span></code> to copy the selected sizer (or use the context menu)</li>
+<li>select the third, empty slot, where you want to place a copy</li>
+<li>then hit <code class="kbd docutils literal"><span class="pre">Ctrl-V</span></code> (or use the context menu)</li>
+<li>select the fith, empty slot</li>
+<li>then hit <code class="kbd docutils literal"><span class="pre">Ctrl-V</span></code> (or use the context menu)</li>
+</ul>
+</div></blockquote>
+<p>You may of course copy in the Design window and paste in the Tree or vice versa.</p>
+<ul class="simple">
+<li><strong>Drag &amp; Drop in Design Window:</strong></li>
+</ul>
+<blockquote>
+<div><ul class="simple">
+<li>drag the sizer handle to the empty slot while holding the <code class="kbd docutils literal"><span class="pre">Ctrl</span></code> key</li>
+</ul>
+</div></blockquote>
+<ul class="simple">
+<li><strong>Drag &amp; Drop in Tree Window:</strong></li>
+</ul>
+<blockquote>
+<div><ul class="simple">
+<li>drag the sizer node / icon in the <em>Tree</em> window to the empty slot, holding the <code class="kbd docutils literal"><span class="pre">Ctrl</span></code> key</li>
+</ul>
+</div></blockquote>
+<p>If you don’t hold the <code class="kbd docutils literal"><span class="pre">Ctrl</span></code> key, the item will not be copied, but moved.</p>
+<p>You may drag items between different windows, e.g. from <em>Design</em> to <em>Tree</em> or to another running wxGlade instance.</p>
+</div>
+<div class="section" id="further-editing">
+<h3>Further Editing<a class="headerlink" href="#further-editing" title="Permalink to this headline">¶</a></h3>
+<dl class="docutils">
+<dt>The Result text control should display multiple lines of text and should not be editable:</dt>
+<dd><ul class="first last simple">
+<li>select <code class="docutils literal"><span class="pre">text_result</span></code></li>
+<li>go to <em>Properties</em> -&gt; Widget</li>
+<li>enable Style -&gt; <code class="docutils literal"><span class="pre">wxTE_MULTILINE</span></code> and <code class="docutils literal"><span class="pre">wxTE_READONLY</span></code></li>
+<li>go to <em>Properties</em> -&gt; Common</li>
+<li>click the “…” button right to <code class="docutils literal"><span class="pre">Background</span></code> and select grey color or <br/>
+just enter <code class="docutils literal"><span class="pre">#d4d0c8</span></code> into the text control</li>
+</ul>
+</dd>
+</dl>
+<p>The last step is to have a grey background.
+For single line readonly text controls, this is done automatically by wx, but not with multiple lines.</p>
+<p><strong>In the next steps fill the remaining slots of the main sizer:</strong></p>
+<ul class="simple">
+<li>insert a horizontal sizer with a label and a radio box into SLOT 2 <img alt="radio_box" src="_images/radio_box.png" /></li>
+<li>place a horizontal line into SLOT 4 <img alt="static_line" src="_images/static_line.png" /></li>
+<li>insert a horizontal sizer with two buttons into SLOT 6 <img alt="button" src="_images/button.png" /></li>
+<li>For the first button, select the checkbox <em>Properties</em> -&gt; Widget -&gt; Default. <br/>
+This will make this button the default one, i.e. when the user hits Enter it will have the same effect as
+pressing this default button.</li>
+</ul>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<ul class="last simple">
+<li>when you want to place multiple elements of the same type,
+just hold the <code class="kbd docutils literal"><span class="pre">Ctrl</span></code> key when placing an element to stay in placement mode (on Mac OS use the <code class="kbd docutils literal"><span class="pre">Shift</span></code> key).</li>
+<li>When you have placed an element in the wrong slot,
+just drag it to the right slot or delete it with the <code class="kbd docutils literal"><span class="pre">Del</span></code> key or the context menu.</li>
+</ul>
+</div>
+<p><strong>Define the options “+-*/” for the radio box by going to the “Widget” tab:</strong></p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="50%" />
+<col width="50%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><ul class="first last simple">
+<li>Select the label in the Tree or Design window.</li>
+<li>Hit “Add” to add choices, modify them and then hit the “Apply” button.</li>
+<li>See the bottom part of the image:</li>
+</ul>
+</td>
+<td><a class="reference internal" href="_images/Calculator_Radio.png"><img alt="Calculator_Radio" src="_images/Calculator_Radio.png" style="height: 160px;" /></a></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="change-labels-and-names">
+<h3>Change labels and names:<a class="headerlink" href="#change-labels-and-names" title="Permalink to this headline">¶</a></h3>
+<p>After copying, the controls will have default values and names. Usually you have to change them.
+You can do this in the <em>Properties</em> window or directly in the <em>Tree</em> window.
+To edit in the <em>Tree</em> window, you can select and then click on the label or press <code class="kbd docutils literal"><span class="pre">F2</span></code>.</p>
+<p>This needs to be done now:</p>
+<ul class="simple">
+<li>Set the names of the text controls to <code class="docutils literal"><span class="pre">text_value1</span></code>, <code class="docutils literal"><span class="pre">text_value2</span></code> and <code class="docutils literal"><span class="pre">text_result</span></code>.</li>
+<li>Set the name of the radio box to <code class="docutils literal"><span class="pre">radiobox_operator</span></code></li>
+<li>Set the labels to <code class="docutils literal"><span class="pre">Value</span> <span class="pre">1:</span></code>, <code class="docutils literal"><span class="pre">Operator:</span></code>, <code class="docutils literal"><span class="pre">Value</span> <span class="pre">2:</span></code> and <code class="docutils literal"><span class="pre">Result:</span></code></li>
+<li>Set the name of the first button to <code class="docutils literal"><span class="pre">button_execute</span></code> and the label to <code class="docutils literal"><span class="pre">Execute</span></code>.</li>
+<li>Set the name of the second button to <code class="docutils literal"><span class="pre">button_reset</span></code> and the label to <code class="docutils literal"><span class="pre">Reset</span></code>.</li>
+</ul>
+<p>For our example project where multiple labels and names have to be modified, it’s much faster to do so in the <em>Tree</em>
+window.</p>
+<p>Example for editing in the <em>Tree</em> window:</p>
+<blockquote>
+<div></div></blockquote>
+<ul class="simple">
+<li>The name is <code class="docutils literal"><span class="pre">button_1</span></code> and the label is <code class="docutils literal"><span class="pre">button_1</span></code></li>
+<li>The displayed text in the <em>Tree</em> window is <code class="docutils literal"><span class="pre">button_1:</span> <span class="pre">&quot;button_1&quot;</span></code>  <br/>
+<img alt="Tree_Rename0" src="_images/Tree_Rename0.png" /></li>
+<li>Change to <code class="docutils literal"><span class="pre">button_execute:</span> <span class="pre">&quot;Execute&quot;</span></code>  <br/>
+<img alt="Tree_Rename1" src="_images/Tree_Rename1.png" /></li>
+</ul>
+<p><strong>The Tree structure of your design should now look like this:</strong></p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="100%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><a class="first last reference internal image-reference" href="_images/Calculator_02_Tree.png"><img alt="_images/Calculator_02_Tree.png" src="_images/Calculator_02_Tree.png" style="width: 150px;" /></a>
+</td>
+</tr>
+</tbody>
+</table>
+<p>The file can be found in the folder <code class="docutils literal"><span class="pre">wxglade/examples/Calculator</span></code>:
+<a class="reference external" href="../../examples/Calculator/Calculator-02.wxg">Calculator-02.wxg</a></p>
+</div>
+<div class="section" id="final-steps-layout">
+<h3>Final Steps: Layout<a class="headerlink" href="#final-steps-layout" title="Permalink to this headline">¶</a></h3>
+<p><strong>Your design should now look like this:</strong></p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="100%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><a class="first last reference internal image-reference" href="_images/Calculator_02.png"><img alt="_images/Calculator_02.png" src="_images/Calculator_02.png" style="width: 150px;" /></a>
+</td>
+</tr>
+</tbody>
+</table>
+<p>So all elements are there, but the layout is not yet what we want to have:</p>
+<ol class="arabic simple">
+<li>We want the rows with the values, operators and buttons <strong>not to grow vertically</strong>:<ul>
+<li>select one of the horizontal sizers (e.g. <code class="docutils literal"><span class="pre">sizer_3</span></code> around <code class="docutils literal"><span class="pre">Value</span> <span class="pre">1</span></code>)</li>
+<li>set <em>Properties</em> -&gt; Layout -&gt; Proportion to <code class="docutils literal"><span class="pre">0</span></code></li>
+<li>select the next of the sizers (e.g. around <code class="docutils literal"><span class="pre">Operator</span></code>)</li>
+<li>either set <em>Properties</em> -&gt; Layout -&gt; Proportion to <code class="docutils literal"><span class="pre">0</span></code>
+or just hit <code class="kbd docutils literal"><span class="pre">Ctrl-Y</span></code> to apply the last change to the selected sizer</li>
+<li>do the same for the remaining sizers (e.g. around <code class="docutils literal"><span class="pre">Value</span> <span class="pre">2</span></code> and the buttons)</li>
+</ul>
+</li>
+<li>We want the text controls to <strong>grow horizontally</strong> to fill the available space:<ul>
+<li>select one of the text controls (e.g. text_value1)</li>
+<li>set <em>Properties</em> -&gt; Layout -&gt; Proportion to <code class="docutils literal"><span class="pre">1</span></code></li>
+<li>do the same for the other controls, either by modifying the Proportion properties
+or by hitting <code class="kbd docutils literal"><span class="pre">Ctrl-Y</span></code> to apply the last change to the selected control</li>
+</ul>
+</li>
+<li>The labels <code class="docutils literal"><span class="pre">Value</span> <span class="pre">1</span></code>, <code class="docutils literal"><span class="pre">Operator</span></code> and <code class="docutils literal"><span class="pre">Value</span> <span class="pre">2</span></code> should better
+<strong>align vertically</strong> with their text controls:<ul>
+<li>select label</li>
+<li>set the checkbox <em>Properties</em> -&gt; Layout -&gt; Alignment -&gt; <code class="docutils literal"><span class="pre">wxALIGN_CENTER_VERTICAL</span></code></li>
+<li>do the same for the other two labels</li>
+</ul>
+</li>
+<li>We want the Result text control to <strong>fill the available vertical space</strong>:<ul>
+<li>select text control</li>
+<li>set the checkbox <em>Properties</em> -&gt; Layout -&gt; Alignment -&gt; <code class="docutils literal"><span class="pre">wxEXPAND</span></code></li>
+</ul>
+</li>
+<li>We want the buttons at the bottom to be <strong>centered</strong>; so the layout of the sizer around them needs to be set:<ul>
+<li>go to <em>Properties</em> -&gt; Layout</li>
+<li>de-select the checkbox Alignment -&gt;``wxEXPAND``</li>
+<li>select the checkbox Alignment -&gt; <code class="docutils literal"><span class="pre">wxALIGN_CENTER_HORIZONTAL</span></code></li>
+</ul>
+</li>
+<li>We want a small <strong>border</strong> above and beyond the horizontal line and around each of the buttons:<ul>
+<li>select the horizontal line</li>
+<li>set <em>Properties</em> -&gt; Layout -&gt; Border to <code class="docutils literal"><span class="pre">5</span></code></li>
+<li>uncheck <em>Properties</em> -&gt; Layout -&gt; Border <code class="docutils literal"><span class="pre">wxLEFT</span></code> and <code class="docutils literal"><span class="pre">wxRIGHT</span></code></li>
+<li>select the first button</li>
+<li>set <em>Properties</em> -&gt; Layout -&gt; Border to <code class="docutils literal"><span class="pre">5</span></code></li>
+<li>do the same with the second button</li>
+</ul>
+</li>
+</ol>
+<p>At this point, it’s time for a <strong>preview</strong>: <br/>
+Select “Preview” from the context menu or the main menu or from the Properties window when the frame is selected.
+Alternatively, press <code class="kbd docutils literal"><span class="pre">F5</span></code></p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="100%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><a class="first last reference internal image-reference" href="_images/Calculator_03_preview.png"><img alt="_images/Calculator_03_preview.png" src="_images/Calculator_03_preview.png" style="width: 150px;" /></a>
+</td>
+</tr>
+</tbody>
+</table>
+<p>This file can be found in the folder <code class="docutils literal"><span class="pre">wxglade/examples/Calculator</span></code>:
+<a class="reference external" href="../../examples/Calculator/Calculator-03.wxg">Calculator-03.wxg</a>.</p>
+<p>If you are curious how a design turns into Python source code, you may have a look at the section <a class="reference internal" href="source_code.html"><span class="doc">Create and Use Source Code</span></a> before going through the next sections.
+<br/>
+Actually, “Preview” internally creates and executes Python source code.</p>
+</div>
+<div class="section" id="excursion-layout-properties-proportion-and-alignment-wxexpand">
+<h3>Excursion: Layout properties: Proportion and Alignment-&gt;wxEXPAND:<a class="headerlink" href="#excursion-layout-properties-proportion-and-alignment-wxexpand" title="Permalink to this headline">¶</a></h3>
+<p>The “Proportion” of 1 makes the element grow with a proportional factor of 1 when the horizontal sizer is growing. Please note that this growth happens only in the “main” direction of the sizer; the sizer is horizontal, so this change makes the text control grow in width.
+<br/>
+For a growth in the other direction, <code class="docutils literal"><span class="pre">wxEXPAND</span></code> in the “Alignment” box would need to be activated.</p>
+<p><br/>
+You may try this to see the difference:</p>
+<table border="1" class="docutils align-center">
+<colgroup>
+<col width="50%" />
+<col width="50%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td>Horizontal Sizer: Proportion 0 <br/>
+Text Ctrl: Proportion 0
+<br/> <br/>
+The first row occupies the minimum height as <br/>
+defined by the label and the text control.
+<br/> <br/>
+The text control occupies its minimum width, as defined.</td>
+<td><a class="reference internal" href="_images/Calculator06_P0P0.png"><img alt="Horizontal Sizer: Proportion 0, Text Ctrl: Proportion 0 -&gt; no growth" src="_images/Calculator06_P0P0.png" style="width: 200px;" /></a></td>
+</tr>
+<tr class="row-even"><td>Horizontal Sizer: <strong>Proportion 1</strong> <br/>
+Text Ctrl: Proportion 0 <br/> <br/>
+The first row consists of the horizontal sizer. <br/>
+It grew vertically, as it is placed in a vertical sizer.</td>
+<td><a class="reference internal" href="_images/Calculator06_P1P0.png"><img alt="Horizontal Sizer: Proportion 1 -&gt; the sizer slot grows vertically, as it is within a vertical sizer" src="_images/Calculator06_P1P0.png" style="width: 200px;" /></a></td>
+</tr>
+<tr class="row-odd"><td>Horizontal Sizer: Proportion 1 <br/>
+Text Ctrl: <strong>Proportion 1</strong> <br/> <br/>
+The text control grew in width, as it is in a horizontal sizer.
+<br/> <br/></td>
+<td><a class="reference internal" href="_images/Calculator06_P1P1.png"><img alt="Text Ctrl: Proportion 1 -&gt; the control grows horizontally, as it is within a horizontal sizer" src="_images/Calculator06_P1P1.png" style="width: 200px;" /></a></td>
+</tr>
+<tr class="row-even"><td>Horizontal Sizer: Proportion 1 <br/>
+Text Ctrl: Proportion 1, <strong>EXPAND</strong> <br/> <br/>
+The text control expanded vertically, i.e. perpendicular <br/>
+to the main direction of the surrounding horizontal sizer.
+<br/> <br/></td>
+<td><a class="reference internal" href="_images/Calculator06_P1P1EX.png"><img alt="Text Ctrl: EXPAND -&gt; the control expands vertically, as it is within a horizontal sizer" src="_images/Calculator06_P1P1EX.png" style="width: 200px;" /></a></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="section" id="part-3-add-a-notebook">
+<h2>Part 3: Add a Notebook<a class="headerlink" href="#part-3-add-a-notebook" title="Permalink to this headline">¶</a></h2>
+<p>For many applications it’s desirable to place the GUI elements on a notebook control. For our calculator e.g. we may want to have the controls on the first page and a log on the second page:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="100%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><a class="first reference internal image-reference" href="_images/Calculator_Notebook_Design.png"><img alt="Calculator with a notebook: Design Window" src="_images/Calculator_Notebook_Design.png" style="height: 120px;" /></a>
+<a class="reference internal image-reference" href="_images/Calculator_Notebook_Preview.png"><img alt="Calculator with a notebook: Preview, page 2" src="_images/Calculator_Notebook_Preview.png" style="height: 120px;" /></a>
+<a class="last reference internal image-reference" href="_images/Calculator_Notebook_Tree.png"><img alt="Calculator with a notebook: Tree Window" src="_images/Calculator_Notebook_Tree.png" style="height: 120px;" /></a>
+</td>
+</tr>
+</tbody>
+</table>
+<p>A notebook can only be added to an empty sizer slot. In our case, we want to keep the existing controls. So we add a slot to the toplevel sizer, create the notebook there and then move the controls to the first notebook page. After that we delete the empty slot.</p>
+<p><strong>Create a slot for the notebook:</strong></p>
+<ul class="simple">
+<li>Go to the toplevel sizer and select “Add Slot”:</li>
+</ul>
+<table border="1" class="docutils">
+<colgroup>
+<col width="100%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><a class="reference internal" href="_images/Calculator_Notebook_AddSlot.png"><img alt="Add Slot for Notebook" src="_images/Calculator_Notebook_AddSlot.png" style="height: 120px;" /></a>
+-&gt; the slot will be at the bottom:
+<a class="reference internal" href="_images/Calculator_Notebook_AddedSlot.png"><img alt="Slot for Notebook" src="_images/Calculator_Notebook_AddedSlot.png" style="height: 120px;" /></a>
+<a class="reference internal" href="_images/Calculator_Notebook_AddedSlot_Design.png"><img alt="Slot for Notebook" src="_images/Calculator_Notebook_AddedSlot_Design.png" style="height: 120px;" /></a></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Add a notebook:</strong></p>
+<ul class="simple">
+<li>click on the Notebook icon <img alt="notebook" src="_images/notebook.png" /> in the section “Containers” to start placing a notebook</li>
+<li>click on the hatched area in the Design window or on the sizer slot <img alt="sizer_slot" src="_images/sizer_slot.png" /> in the Tree window</li>
+<li>in the dialog, select wx.NB_TOP to place the notebook tabs at the top</li>
+</ul>
+<p>The newly created notebook will have one page already, which consists of just a panel. It will have a default name like “notebook_1_pane_1”.</p>
+<p><strong>Fill the first page:</strong></p>
+<p>Move the existing controls to the first notebook page:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="50%" />
+<col width="50%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><ul class="first last simple">
+<li>drag the containing sizer to the notebook pane <br/>
+(i.e. the panel for the first page) <br/> <br/>
+(alternatively, use Cut &amp; Paste)</li>
+</ul>
+</td>
+<td><a class="reference internal" href="_images/Calculator_Notebook_DragNDrop.png"><img alt="Drag main_sizer to notebook_1_pane_1" src="_images/Calculator_Notebook_DragNDrop.png" style="height: 120px;" /></a></td>
+</tr>
+<tr class="row-even"><td><ul class="first last simple">
+<li>delete the old, empty panel <br/>
+and then the empty slot:</li>
+</ul>
+</td>
+<td><a class="reference internal" href="_images/Calculator_Notebook_DragNDrop_Done.png"><img alt="After dragging main_sizer to notebook_1_pane_1; the original panel is empty now" src="_images/Calculator_Notebook_DragNDrop_Done.png" style="height: 120px;" /></a></td>
+</tr>
+<tr class="row-odd"><td><br/> The <em>Design</em> window should look like this, <br/>
+i.e. it has a notebook, but with only a single page:</td>
+<td><a class="reference internal" href="_images/Calculator_Notebook_DragNDrop_Done_Design.png"><img alt="Design window with single notebook page" src="_images/Calculator_Notebook_DragNDrop_Done_Design.png" style="height: 120px;" /></a></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Define the other notebook page and the tab labels:</strong></p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="50%" />
+<col width="50%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><ul class="first last simple">
+<li>click on the notebook <br/>
+in the <em>Design</em> window or the <em>Tree</em> window</li>
+<li>the <em>Properties</em> window should now display <br/>
+the property editor for the notebook</li>
+<li>go to the tab “Widget”, click “Add” to add a page and <br/>
+enter the headings for the notebook pages</li>
+<li>click the “Apply” button</li>
+</ul>
+</td>
+<td><a class="reference internal" href="_images/Calculator_Notebook.png"><img alt="Calculator_Notebook" src="_images/Calculator_Notebook.png" style="height: 160px;" /></a></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Fill the second page:</strong></p>
+<p>You should know how to do this by now:</p>
+<ul class="simple">
+<li>add a sizer to the notebook pane (with a single slot)</li>
+<li>add a text control to the sizer slot</li>
+<li>set the layout: Proportion 1 and <a href="#id1"><span class="problematic" id="id2">``</span></a>wxEXPAND?? such that the text control will fill the whole page</li>
+<li>set the widget style to wxTE_MULTILINE and wxTE_READONLY</li>
+<li>set the widget background color to <code class="docutils literal"><span class="pre">#d4d0c8</span></code></li>
+</ul>
+<p>This file can be found in the folder <code class="docutils literal"><span class="pre">wxglade/examples/Calculator</span></code>:
+<a class="reference external" href="../../examples/Calculator/Calculator-04-Notebook.wxg">Calculator-04-Notebook.wxg</a></p>
+</div>
+<div class="section" id="part-4-use-of-spacers">
+<h2>Part 4: Use of Spacers<a class="headerlink" href="#part-4-use-of-spacers" title="Permalink to this headline">¶</a></h2>
+<p>Sometimes you need to keep some space in a sizer, either with a fixed size or growable, e.g. to have a gap between two controls or to align two controls to the left and the right edge of a window or to align a control to the center.</p>
+<p>To add a spacer, click the spacer icon <img alt="spacer" src="_images/spacer.png" /> and place it in a sizer slot.</p>
+<p>In our example, we may place a spacer to the left and right of the operator radio box to center it:</p>
+<table border="1" class="docutils align-center">
+<colgroup>
+<col width="50%" />
+<col width="50%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><ul class="first last simple">
+<li>add two empty slots:</li>
+</ul>
+</td>
+<td><a class="reference internal" href="_images/Calculator_Spacers_Design0.png"><img alt="Calculator with empty slots for spacers" src="_images/Calculator_Spacers_Design0.png" style="width: 180px;" /></a></td>
+</tr>
+<tr class="row-even"><td><ul class="first last simple">
+<li>insert spacers into these slots <br/> (e.g. with width 20 and height 0)</li>
+<li>set their Layout properties to “Proportion: 1” <br/>
+to make them grow</li>
+</ul>
+</td>
+<td><a class="reference internal" href="_images/Calculator_Spacers_Design.png"><img alt="Calculator with Spacers" src="_images/Calculator_Spacers_Design.png" style="width: 180px;" /></a></td>
+</tr>
+<tr class="row-odd"><td><br/> In the <em>Tree</em> view you can see the structure:</td>
+<td><a class="reference internal" href="_images/Calculator_Spacers_Tree.png"><img alt="Calculator with Spacers: Tree" src="_images/Calculator_Spacers_Tree.png" style="width: 180px;" /></a></td>
+</tr>
+<tr class="row-even"><td><br/> In the <em>Properties</em> window you can see <br/>
+the settings to make the spacers grow:</td>
+<td><a class="reference internal" href="_images/Calculator_Spacers_Properties.png"><img alt="Spacer Properties" src="_images/Calculator_Spacers_Properties.png" style="width: 180px;" /></a></td>
+</tr>
+<tr class="row-odd"><td>As the spacers have a height of 0, you will not see them in the design window. <br/> <br/>
+If you don’t like this, you may actually set the Height property to a different value and
+maybe even set “EXPAND”. For the actual window this will not make a difference,
+as the spacers are invisible, but the spacers will be visible in the design window:</td>
+<td><a class="reference internal" href="_images/Calculator_Spacers2.png"><img alt="One spacer with height 10 and one with 20" src="_images/Calculator_Spacers2.png" style="width: 180px;" /></a></td>
+</tr>
+</tbody>
+</table>
+<p>This file can be found in the folder <code class="docutils literal"><span class="pre">wxglade/examples/Calculator</span></code>:
+<a class="reference external" href="../../examples/Calculator/Calculator-05-Spacers.wxg">Calculator-05-Spacers.wxg</a></p>
+</div>
+<div class="section" id="part-5-use-of-grid-sizers">
+<h2>Part 5: Use of Grid Sizers<a class="headerlink" href="#part-5-use-of-grid-sizers" title="Permalink to this headline">¶</a></h2>
+<p>The current version doesn’t look perfect as the controls are not vertically aligned.
+To change this, the labels can be modified to have the same fixed size.
+This may cause problems when running on a different platform with a different font size.
+Instead, we will now move the controls into a grid sizer.</p>
+<p>There are three grid sizers which are supported by wxGlade:</p>
+<ul class="simple">
+<li><em>GridSizer</em>: all columns have the same width, all rows have the same height</li>
+<li><em>FlexGridSizer</em>: all rows and columns may have different sizes. <br/>
+Any row(s) and/or column(s) can be defined to be ‘growable’</li>
+<li><em>GridBagSizer</em>: a grid that allows items to span multiple rows or columns. <br/>
+The editing logic is a bit different from the other sizers.</li>
+</ul>
+<p>For our calculator we need the FlexGridSizer as the first column is fixed and the second column should grow.
+The result will look like this:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="100%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><a class="reference internal" href="_images/CalculatorFlexGridSizerDesign.png"><img alt="CalculatorFlexGridSizer Design" src="_images/CalculatorFlexGridSizerDesign.png" style="height: 150px;" /></a> <a class="reference internal" href="_images/CalculatorFlexGridSizerTree.png"><img alt="CalculatorFlexGridSizer Tree" src="_images/CalculatorFlexGridSizerTree.png" style="height: 150px;" /></a></td>
+</tr>
+</tbody>
+</table>
+<p><strong>To get there:</strong></p>
+<ul class="simple">
+<li>Add a slot to the vertical sizer</li>
+<li>Add a grid sizer to this slot: <img alt="grid_sizer" src="_images/grid_sizer.png" /></li>
+<li>In the grid sizer dialog, select <code class="docutils literal"><span class="pre">FlexGrid</span></code>, 4 rows and 2 cols: <br/>
+<a class="reference internal" href="_images/FlexGridSizerDlg.png"><img alt="FlexGridSizer Dialog" src="_images/FlexGridSizerDlg.png" style="height: 80px;" /></a></li>
+<li>Move the labels and controls to the slots of the newly created sizer</li>
+<li>Delete the old sizer</li>
+<li>In <em>Properties</em> “Grid”: make column 2 and row 4 growable: <br/>
+<a class="reference internal" href="_images/FlexGridSizer_Properties.png"><img alt="FlexGridSizer Properties" src="_images/FlexGridSizer_Properties.png" style="height: 80px;" /></a></li>
+<li>To make the text controls <code class="docutils literal"><span class="pre">text_value1</span></code> and <code class="docutils literal"><span class="pre">text_value2</span></code> actually fill the growable column: <br/>
+activate <em>Properties</em> -&gt; Layout -&gt; Alignment <code class="docutils literal"><span class="pre">wxEXPAND</span></code> for both of them</li>
+</ul>
+<p>The logic with <code class="docutils literal"><span class="pre">wxEXPAND</span></code> is a bit different than with non-grid sizers.
+If it is active, the control will grow horizontally and vertically.
+If you want to avoid this, you need to add a horizontal or vertical sizer ‘between’ grid sizer and control.</p>
+<p>This file can be found in the folder <code class="docutils literal"><span class="pre">wxglade/examples/Calculator</span></code>:
+<a class="reference external" href="../../examples/Calculator/Calculator-06-GridSizer.wxg">Calculator-06-GridSizer.wxg</a></p>
+</div>
+<div class="section" id="next-steps">
+<h2>Next steps:<a class="headerlink" href="#next-steps" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div><ul class="simple">
+<li>create source code and add event handlers - see <a class="reference internal" href="source_code.html"><span class="doc">Create and Use Source Code</span></a></li>
+<li>add a menu - see <a class="reference internal" href="menu_status_tool.html"><span class="doc">Menu, Status Bar, Tool Bar</span></a></li>
+</ul>
+</div></blockquote>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="index.html">
+              <img class="logo" src="_static/wxglade.png" alt="Logo"/>
+            </a></p>
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Tutorial Project: Calculator</a><ul>
+<li><a class="reference internal" href="#part-1-create-calculator-window-and-the-first-widget">Part 1: Create Calculator window and the first widget</a></li>
+<li><a class="reference internal" href="#part-2-add-the-remaining-rows-and-widgets">Part 2: Add the remaining rows and widgets</a><ul>
+<li><a class="reference internal" href="#there-are-several-methods-to-copy">There are several methods to copy:</a></li>
+<li><a class="reference internal" href="#further-editing">Further Editing</a></li>
+<li><a class="reference internal" href="#change-labels-and-names">Change labels and names:</a></li>
+<li><a class="reference internal" href="#final-steps-layout">Final Steps: Layout</a></li>
+<li><a class="reference internal" href="#excursion-layout-properties-proportion-and-alignment-wxexpand">Excursion: Layout properties: Proportion and Alignment-&gt;wxEXPAND:</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#part-3-add-a-notebook">Part 3: Add a Notebook</a></li>
+<li><a class="reference internal" href="#part-4-use-of-spacers">Part 4: Use of Spacers</a></li>
+<li><a class="reference internal" href="#part-5-use-of-grid-sizers">Part 5: Use of Grid Sizers</a></li>
+<li><a class="reference internal" href="#next-steps">Next steps:</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="wxbasics.html"
+                        title="previous chapter">wx Basics</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="source_code.html"
+                        title="next chapter">Create and Use Source Code</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/tutorial.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="source_code.html" title="Create and Use Source Code"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="wxbasics.html" title="wx Basics"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">wxGlade 0.8.0 documentation</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2017, Dietmar Schwertberger.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.6.4.
+    </div>
+  </body>
+</html>

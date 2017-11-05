@@ -1,0 +1,296 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Menu, Status Bar, Tool Bar &#8212; wxGlade 0.8.0 documentation</title>
+    <link rel="stylesheet" href="_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="_static/css/custom.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.8.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Bitmaps" href="bitmaps.html" />
+    <link rel="prev" title="Create and Use Source Code" href="source_code.html" /> 
+  </head>
+  <body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="bitmaps.html" title="Bitmaps"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="source_code.html" title="Create and Use Source Code"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">wxGlade 0.8.0 documentation</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="menu-status-bar-tool-bar">
+<h1>Menu, Status Bar, Tool Bar<a class="headerlink" href="#menu-status-bar-tool-bar" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="menu-editor">
+<h2>Menu Editor<a class="headerlink" href="#menu-editor" title="Permalink to this headline">¶</a></h2>
+<p>wxGlade includes a simple menu editor.</p>
+<p>To attach a menu to a frame, go to <em>Properties</em> -&gt; Widget and check <code class="docutils literal"><span class="pre">Has</span> <span class="pre">MenuBar</span></code>. <br/>
+This will add a menubar icon to the Tree window, just below the frame’s icon. <br/>
+To open the menu editor, click the <code class="docutils literal"><span class="pre">Edit</span> <span class="pre">menus...</span></code> button.</p>
+<p>The following screenshots are from the file <a class="reference external" href="../../examples/Allwidgets_28.wxg">wxglade/examples/Allwidgets_28.wxg</a>.</p>
+<table border="1" class="colwidths-given docutils align-center">
+<colgroup>
+<col width="40%" />
+<col width="60%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><strong>Properties Window:</strong> <br/> <br/>
+Example of a frame with a menu bar <br/> <br/>
+<code class="docutils literal"><span class="pre">Has</span> <span class="pre">MenuBar</span></code> is checked</td>
+<td><a class="reference internal" href="_images/AllWidgets_28_Properties_w_MenuBar.png"><img alt="AllWidgets_28_Properties_w_MenuBar" src="_images/AllWidgets_28_Properties_w_MenuBar.png" style="height: 140px;" /></a></td>
+</tr>
+<tr class="row-even"><td><strong>Tree Window:</strong> <br/> <br/>
+Example of a frame with a menu bar</td>
+<td><a class="reference internal" href="_images/AllWidgets_28_Tree_w_MenuBar.png"><img alt="AllWidgets_28_Tree_w_MenuBar" src="_images/AllWidgets_28_Tree_w_MenuBar.png" style="height: 140px;" /></a></td>
+</tr>
+<tr class="row-odd"><td><strong>Properties Window:</strong> <br/>
+<br/> Press the <code class="docutils literal"><span class="pre">Edit</span> <span class="pre">menus...</span></code> button <br/>
+to open the Menu Editor</td>
+<td><a class="reference internal" href="_images/AllWidgets_28_Properties_EditMenus.png"><img alt="AllWidgets_28_Properties_EditMenus" src="_images/AllWidgets_28_Properties_EditMenus.png" style="height: 140px;" /></a></td>
+</tr>
+<tr class="row-even"><td><strong>Menu Editor</strong> <br/> <br/>
+The bottom part just lists the items, <br/> where the hierarchy is visualized by indentation.</td>
+<td><a class="reference internal" href="_images/AllWidgets_28_MenuEditor.png"><img alt="AllWidgets_28_MenuEditor" src="_images/AllWidgets_28_MenuEditor.png" style="height: 220px;" /></a></td>
+</tr>
+<tr class="row-odd"><td><strong>The Menu</strong> <br/> <br/>
+(In the example, “Unix” and Windows” <br/> are Radio type menu items.)</td>
+<td><img alt="AllWidgets_28_MenuPreview" src="_images/AllWidgets_28_MenuPreview.png" /></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Example:</strong></p>
+<p>As an exercise, we will now add a “File” menu with two entries to our calculator window.</p>
+<blockquote>
+<div><ul class="simple">
+<li>When you hit <code class="docutils literal"><span class="pre">Edit</span> <span class="pre">menus...</span></code> for the first time, the bottom part of the editor window is almost empty. It will just contain a default entry “item”.</li>
+<li>To create the required menu structure, change the label to “File”.</li>
+<li>To create the first item, hit “Add” and then the “&gt;” button to turn it into a submenu item and then change the label to “Reset”. Give this item a name <code class="docutils literal"><span class="pre">i_reset</span></code></li>
+<li>Do the same again for an item “Exit”.</li>
+</ul>
+</div></blockquote>
+<p>As of now, these items would not yet call any code when selected. So the “Event Handler” field needs to be filled with e.g. “on_menu_File_Reset” and “on_menu_File_Exit” for the two items.</p>
+<p>When done and after hitting the “Start generating source files”, the editor and the created code should look like this:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="50%" />
+<col width="50%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><strong>Menu Editor</strong> <br/> <br/>
+with two items: <br/> <br/>
+For the “Reset” item, <br/>
+we set a name <code class="docutils literal"><span class="pre">i_reset</span></code>.</td>
+<td><a class="first last reference internal image-reference" href="_images/Calculator07_Menu_Editor.png"><img alt="_images/Calculator07_Menu_Editor.png" src="_images/Calculator07_Menu_Editor.png" style="height: 200px;" /></a>
+</td>
+</tr>
+<tr class="row-even"><td><strong>Generated code</strong> <br/> <br/>
+including two event handlers <br/> <br/>
+The “Reset” menu item is assigned to <br/>
+<code class="docutils literal"><span class="pre">self.frame_menubar.i_reset</span></code> <br/>
+such that it can be accessed easily, <br/>
+e.g. for disabling it.</td>
+<td><div class="first last highlight-default"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">CalculatorFrame</span><span class="p">(</span><span class="n">wx</span><span class="o">.</span><span class="n">Frame</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwds</span><span class="p">):</span>
+        <span class="c1"># begin wxGlade: CalculatorFrame.__init__</span>
+        <span class="n">kwds</span><span class="p">[</span><span class="s2">&quot;style&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">wx</span><span class="o">.</span><span class="n">DEFAULT_FRAME_STYLE</span>
+        <span class="n">wx</span><span class="o">.</span><span class="n">Frame</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwds</span><span class="p">)</span>
+        <span class="o">...</span>
+        <span class="c1"># Menu Bar</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">frame_menubar</span> <span class="o">=</span> <span class="n">wx</span><span class="o">.</span><span class="n">MenuBar</span><span class="p">()</span>
+        <span class="n">wxglade_tmp_menu</span> <span class="o">=</span> <span class="n">wx</span><span class="o">.</span><span class="n">Menu</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">frame_menubar</span><span class="o">.</span><span class="n">i_reset</span> <span class="o">=</span> \
+            <span class="n">wxglade_tmp_menu</span><span class="o">.</span><span class="n">Append</span><span class="p">(</span><span class="n">wx</span><span class="o">.</span><span class="n">ID_ANY</span><span class="p">,</span> <span class="s2">&quot;Reset&quot;</span><span class="p">,</span> <span class="s2">&quot;Reset results&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Bind</span><span class="p">(</span> <span class="n">wx</span><span class="o">.</span><span class="n">EVT_MENU</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">on_menu_File_Reset</span><span class="p">,</span>
+                   <span class="nb">id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">frame_menubar</span><span class="o">.</span><span class="n">i_reset</span><span class="o">.</span><span class="n">GetId</span><span class="p">()</span> <span class="p">)</span>
+        <span class="n">item</span> <span class="o">=</span> <span class="n">wxglade_tmp_menu</span><span class="o">.</span><span class="n">Append</span><span class="p">(</span><span class="n">wx</span><span class="o">.</span><span class="n">ID_ANY</span><span class="p">,</span> <span class="s2">&quot;Exit&quot;</span><span class="p">,</span> <span class="s2">&quot;Exit application&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Bind</span><span class="p">(</span> <span class="n">wx</span><span class="o">.</span><span class="n">EVT_MENU</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">on_menu_File_Exit</span><span class="p">,</span> <span class="nb">id</span><span class="o">=</span><span class="n">item</span><span class="o">.</span><span class="n">GetId</span><span class="p">()</span> <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">frame_menubar</span><span class="o">.</span><span class="n">Append</span><span class="p">(</span><span class="n">wxglade_tmp_menu</span><span class="p">,</span> <span class="s2">&quot;File&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">SetMenuBar</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">frame_menubar</span><span class="p">)</span>
+        <span class="c1"># Menu Bar end</span>
+        <span class="o">...</span>
+
+    <span class="k">def</span> <span class="nf">on_menu_File_Reset</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>  <span class="c1"># wxGlade: MyFrame.&lt;event_handler&gt;</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Event handler &#39;on_menu_File_Reset&#39; not implemented!&quot;</span><span class="p">)</span>
+        <span class="n">event</span><span class="o">.</span><span class="n">Skip</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">on_menu_File_Exit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>  <span class="c1"># wxGlade: MyFrame.&lt;event_handler&gt;</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Event handler &#39;on_menu_File_Exit&#39; not implemented!&quot;</span><span class="p">)</span>
+        <span class="n">event</span><span class="o">.</span><span class="n">Skip</span><span class="p">()</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td><strong>Handler implementation</strong> <br/> <br/>
+in derived class <br/>
+including initial disabling of <br/>
+<code class="docutils literal"><span class="pre">self.frame_menubar.i_reset</span></code></td>
+<td><div class="first last highlight-default"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">MyFrame</span><span class="p">(</span><span class="n">CalculatorFrame</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwds</span><span class="p">):</span>
+        <span class="n">CalculatorFrame</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwds</span><span class="p">)</span>
+        <span class="c1"># insert more initialization code here</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">frame_menubar</span><span class="o">.</span><span class="n">i_reset</span><span class="o">.</span><span class="n">Enable</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">on_menu_File_Reset</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">text_result</span><span class="o">.</span><span class="n">Clear</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">frame_menubar</span><span class="o">.</span><span class="n">i_reset</span><span class="o">.</span><span class="n">Enable</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>   <span class="c1"># cleared already</span>
+
+    <span class="k">def</span> <span class="nf">on_menu_File_Exit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Close</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">on_execute_button_clicked</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="c1"># ....</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">frame_menubar</span><span class="o">.</span><span class="n">i_reset</span><span class="o">.</span><span class="n">Enable</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">event</span><span class="o">.</span><span class="n">Skip</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">on_reset_button_clicked</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">text_result</span><span class="o">.</span><span class="n">Clear</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">frame_menubar</span><span class="o">.</span><span class="n">i_reset</span><span class="o">.</span><span class="n">Enable</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>   <span class="c1"># cleared already</span>
+        <span class="n">event</span><span class="o">.</span><span class="n">Skip</span><span class="p">()</span>
+</pre></div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+<p>You can implement the handler either in a derived class or directly in the file that wxGlade has written. <br/>
+In the latter case, you should have enabled Application -&gt; <code class="docutils literal"><span class="pre">Keep</span> <span class="pre">user</span> <span class="pre">sources</span></code>.</p>
+<dl class="docutils">
+<dt>The example menu is part of the example at wxglade/examples/Calculator:</dt>
+<dd><ul class="first last simple">
+<li><a class="reference external" href="../../examples/Calculator/Calculator-07-Import.wxg">Calculator-07-Import.wxg</a>.</li>
+<li><a class="reference external" href="../../examples/Calculator/Calculator_GUI.py">Calculator_GUI.py</a>.</li>
+<li><a class="reference external" href="../../examples/Calculator/Calculator_Main.py">Calculator_Main.py</a>.</li>
+</ul>
+</dd>
+</dl>
+</div>
+<div class="section" id="status-bar-editor">
+<h2>Status Bar Editor<a class="headerlink" href="#status-bar-editor" title="Permalink to this headline">¶</a></h2>
+<p>To attach a status bar to a frame, go to <em>Properties</em>-&gt;Widget and check <code class="docutils literal"><span class="pre">Has</span> <span class="pre">StatusBar</span></code>.
+This will add a statusbar icon to the <em>Tree</em> window, just below the frame’s icon.
+(Similar to <code class="docutils literal"><span class="pre">Has</span> <span class="pre">MenuBar</span></code> in the first screenshot on this page.)</p>
+<p>To add/remove fields to the status bar, go to <em>Properties</em> -&gt; Widget -&gt; Fields and use
+the <code class="docutils literal"><span class="pre">Add</span></code>/<code class="docutils literal"><span class="pre">Insert</span></code>/<code class="docutils literal"><span class="pre">Remove</span></code>/<code class="docutils literal"><span class="pre">Apply</span></code> buttons.
+If you set the size of a field to a negative value like <code class="docutils literal"><span class="pre">-1</span></code> or <code class="docutils literal"><span class="pre">-2</span></code>, it will <strong>grow to fill</strong> the available space.</p>
+<p><strong>Example:</strong></p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="50%" />
+<col width="50%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><strong>Statusbar: Properties / Field Editor:</strong> <br/> <br/> <br/>
+two growing and two fixed size fields</td>
+<td><a class="reference internal" href="_images/Calculator_06_statusbar_Properties.png"><img alt="Example Field List" class="align-middle" src="_images/Calculator_06_statusbar_Properties.png" style="height: 120px;" /></a></td>
+</tr>
+<tr class="row-even"><td><strong>Toolbar</strong> <br/> <br/> <br/>
+two growing and two fixed size fields</td>
+<td><a class="reference internal" href="_images/Calculator_06_statusbar.png"><img alt="Example Status Bar" class="align-middle" src="_images/Calculator_06_statusbar.png" style="height: 120px;" /></a></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="tool-bar-editor">
+<h2>Tool Bar Editor<a class="headerlink" href="#tool-bar-editor" title="Permalink to this headline">¶</a></h2>
+<p>The logic for creating and editing a toolbar is the same as with menu bars.</p>
+<p>Buttons and other controls are not supported yet</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="index.html">
+              <img class="logo" src="_static/wxglade.png" alt="Logo"/>
+            </a></p>
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Menu, Status Bar, Tool Bar</a><ul>
+<li><a class="reference internal" href="#menu-editor">Menu Editor</a></li>
+<li><a class="reference internal" href="#status-bar-editor">Status Bar Editor</a></li>
+<li><a class="reference internal" href="#tool-bar-editor">Tool Bar Editor</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="source_code.html"
+                        title="previous chapter">Create and Use Source Code</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="bitmaps.html"
+                        title="next chapter">Bitmaps</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/menu_status_tool.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="bitmaps.html" title="Bitmaps"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="source_code.html" title="Create and Use Source Code"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">wxGlade 0.8.0 documentation</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2017, Dietmar Schwertberger.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.6.4.
+    </div>
+  </body>
+</html>
