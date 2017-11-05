@@ -351,8 +351,8 @@ class wxGladeFrame(wx.Frame):
 
         MANUAL = append_menu_item(help_menu, -1, _('Manual\tF1'), wx.ART_HELP)
         misc.bind_menu_item(self, MANUAL, self.show_manual)
-        item = append_menu_item(help_menu, -1, _('Tutorial'))
-        misc.bind_menu_item(self, item, self.show_tutorial)
+        #item = append_menu_item(help_menu, -1, _('Tutorial'))
+        #misc.bind_menu_item(self, item, self.show_tutorial)
 
         help_menu.AppendSeparator() # ----------------------------------------------------------------------------------
 
@@ -822,12 +822,11 @@ class wxGladeFrame(wx.Frame):
 
     def show_manual(self):
         "Show the wxGlade user manual"
-        #self._show_html(config.manual_file)
-        self._show_html(config.tutorial_file)  # at the moment there's no new manual
+        self._show_html(config.manual_file)
 
-    def show_tutorial(self):
-        "Show the wxGlade tutorial"
-        self._show_html(config.tutorial_file)
+    #def show_tutorial(self):
+        #"Show the wxGlade tutorial"
+        #self._show_html(config.tutorial_file)
 
     def _show_html(self, html_file):
         "Open browser and show an HTML documentation"
