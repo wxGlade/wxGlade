@@ -44,6 +44,8 @@ Additional Widgets:
  * WrapSizer
  * Ribbons 
  * stc.StyledTextCtrl
+ * MediaCtrl?
+ * SpinCtrlDouble?
 done:
  * GridBagSizer
 
