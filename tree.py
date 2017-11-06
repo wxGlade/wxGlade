@@ -768,6 +768,9 @@ class WidgetTree(wx.TreeCtrl, Tree):
     def on_left_dclick(self, event):
         x, y = event.GetPosition()
         node = self._find_node_by_pos(x, y)
+        if not node:
+            event.Skip()
+            return
         widget = node.widget
         if widget.klass=='wxMenuBar':
             widget.properties["menus"].edit_menus()
