@@ -2181,7 +2181,7 @@ class CodePropertyD(TextPropertyD):
 
     def create_editor(self, panel, sizer):
         TextPropertyD.create_editor(self, panel, sizer)
-        font = wx.Font(12, wx.FONTFAMILY_MODERN, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL)
+        font = wx.Font(9, wx.FONTFAMILY_MODERN, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL)
         self.text.SetFont(font)
 
 
