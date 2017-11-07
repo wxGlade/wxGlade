@@ -5,7 +5,7 @@ based on wxGlade/widgets/spin_ctrl/
 
 @copyright: 2004 D.H. aka crazyinsomniac at users.sourceforge.net
 @copyright: 2014-2016 Carsten Grohmann
-@copyright: 2016 Dietmar Schwertberger
+@copyright: 2016-2017 Dietmar Schwertberger
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
@@ -21,6 +21,7 @@ class EditSpinButton(ManagedBase, EditStylesMixin):
     # XXX unify with EditSpinCtrl?
     _PROPERTIES = ["Widget", "range", "value", "style"]
     PROPERTIES = ManagedBase.PROPERTIES + _PROPERTIES + ManagedBase.EXTRA_PROPERTIES
+    recreate_on_style_change = True
 
     def __init__(self, name, parent, id, sizer, pos):
         ManagedBase.__init__(self, name, 'wxSpinButton', parent, id, sizer, pos)
