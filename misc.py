@@ -532,9 +532,11 @@ def get_relative_path(path, for_preview=False):
     p = common.app_tree.app.output_path
     if for_preview:
         p = getattr(common.app_tree.app, 'real_output_path', u'')
-    d = os.path.dirname(p)
-    if d:
-        path = os.path.join(d, path)
-    else:
-        path = os.path.abspath(path)
-    return path
+    if not os.path.isabs(p):
+        # a path relative to the application filename
+        appdir = os.path.dirname(common.app_tree.app.filename)
+        p = os.path.abspath( os.path.join(appdir, p) )
+
+    if not os.path.isdir(p): p = os.path.dirname(p)
+
+    return os.path.abspath( os.path.join(p, path) )
