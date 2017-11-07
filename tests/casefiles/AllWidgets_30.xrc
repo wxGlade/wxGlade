@@ -637,7 +637,6 @@
                                 <object class="wxSpinButton" name="spin_button">
                                     <min>0</min>
                                     <max> 100</max>
-                                    <style>wxSP_VERTICAL</style>
                                     <value>20</value>
                                 </object>
                             </object>
