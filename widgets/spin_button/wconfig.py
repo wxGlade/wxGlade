@@ -11,9 +11,11 @@ config = {
     'style_defs': {
         'wxSP_HORIZONTAL': {
             'desc': _('Specifies a horizontal spin button (note that this style is not supported in wxGTK).'),
+            'exclude': 'wxSP_VERTICAL',
         },
         'wxSP_VERTICAL': {
             'desc': _('Specifies a vertical spin button.'),
+            'exclude': 'wxSP_HORIZONTAL',
         },
         'wxSP_ARROW_KEYS': {
             'desc': _('The user can use arrow keys to change the value.'),
