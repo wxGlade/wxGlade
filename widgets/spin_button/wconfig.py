@@ -2,6 +2,7 @@
 wxSpinButton widget configuration
 
 @copyright: 2014-2016 Carsten Grohmann
+@copyright: 2017 Dietmar Schwertberger
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
@@ -9,8 +10,7 @@ config = {
     'wxklass': 'wxSpinButton',
     'style_defs': {
         'wxSP_HORIZONTAL': {
-            'desc': _('Specifies a horizontal spin button (note that this '
-                      'style is not supported in wxGTK).'),
+            'desc': _('Specifies a horizontal spin button (note that this style is not supported in wxGTK).'),
         },
         'wxSP_VERTICAL': {
             'desc': _('Specifies a vertical spin button.'),
@@ -22,9 +22,8 @@ config = {
             'desc': _('The value wraps at the minimum and maximum.'),
         },
     },
-    'default_style': 'wxSP_HORIZONTAL',
-    'style_list': ['wxSP_HORIZONTAL', 'wxSP_VERTICAL', 'wxSP_ARROW_KEYS',
-                   'wxSP_WRAP'],
+    'default_style': 'wxSP_VERTICAL',
+    'style_list': ['wxSP_HORIZONTAL', 'wxSP_VERTICAL', 'wxSP_ARROW_KEYS', 'wxSP_WRAP'],
     'events': {
         'default': {
             'type': 'wxSpinEvent',
