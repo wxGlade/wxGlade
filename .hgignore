@@ -32,3 +32,5 @@ wxglade.log
 version.py
 wxgladeDS.py
 tests/generated/*.*
+sphinx/images/*.*
+tests/generated/PythonSubclass/PythonSubclass.py
