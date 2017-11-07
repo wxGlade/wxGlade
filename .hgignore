@@ -34,3 +34,5 @@ wxgladeDS.py
 tests/generated/*.*
 sphinx/images/*.*
 tests/generated/PythonSubclass/PythonSubclass.py
+docs/doctrees/*.*
+docs/html/_sources/*.*
