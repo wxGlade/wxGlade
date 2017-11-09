@@ -24,6 +24,12 @@ except:
 import wx
 
 
+
+version = wx.VERSION_STRING[:3]  # Version string of major dot minor version number
+if version == "4.0": version = "3.0"
+version = (int(version[0]), int(version[2]) ) # major,minor
+
+
 GridSizer_GetRows = None
 GridSizer_GetCols = None
 SizerItem_SetWindow = None

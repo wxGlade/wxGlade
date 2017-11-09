@@ -146,9 +146,8 @@ class Application(np.PropertyOwner):
 
         # gettext?
         self.use_gettext = np.CheckBoxProperty(config.default_use_gettext)
-        # wx Version
-        version = wx.VERSION_STRING[:3]  # Version string of major dot minor version number
-        if version == "4.0": version = "3.0"  # wxPython Phoenix identifies itself as 4.0, but is still wx 3.0
+        # wx Version: string of major dot minor version number
+        version = "%d.%d"%compat.version
         self.for_version = np.RadioProperty( version, self.all_supported_versions, tooltips=self._VERSION_TOOLTIPS)
 
         # encoding
