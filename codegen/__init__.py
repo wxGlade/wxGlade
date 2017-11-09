@@ -402,7 +402,10 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
             self._overwrite = app.overwrite
             self._use_gettext = app.use_gettext
 
-        self.for_version = tuple([int(t) for t in app.for_version.split('.')[:2]])
+        if not preview:
+            self.for_version = tuple([int(t) for t in app.for_version.split('.')[:2]])
+        else:
+            self.for_version = compat.version
         self.is_template = app.is_template
 
         if self.multiple_files:
