@@ -1874,24 +1874,32 @@ class GridProperty(Property):
         extra_flag = wx.FIXED_MINSIZE
         if self.can_add or self.can_insert or self.can_remove:
             btn_sizer = wx.BoxSizer(wx.HORIZONTAL)
-            apply_btn = wx.Button(panel, wx.ID_ANY, _("  Apply  "), style=wx.BU_EXACTFIT)
+            apply_btn = wx.Button(panel, wx.ID_ANY, _("  &Apply  "), style=wx.BU_EXACTFIT)
             btn_sizer.Add(apply_btn, 0, extra_flag | wx.RIGHT, 16)
 
             # the add/insert/remove buttons
             add_btn = insert_btn = remove_btn = None
             if self.can_add:
-                add_btn = wx.Button(panel, wx.ID_ANY, _("  Add  "), style=wx.BU_EXACTFIT)
+                add_btn = wx.Button(panel, wx.ID_ANY, _("  A&dd  "), style=wx.BU_EXACTFIT)
+                compat.SetToolTip(add_btn, "Ctrl-A")
                 add_btn.Bind(wx.EVT_BUTTON, self.add_row)
             if self.can_insert:
-                insert_btn = wx.Button(panel, wx.ID_ANY, _("  Insert  "), style=wx.BU_EXACTFIT)
+                insert_btn = wx.Button(panel, wx.ID_ANY, _("  &Insert  "), style=wx.BU_EXACTFIT)
                 insert_btn.Bind(wx.EVT_BUTTON, self.insert_row)
+                compat.SetToolTip(insert_btn, "Ctrl-I")
             if self.can_remove:
-                remove_btn = wx.Button(panel, wx.ID_ANY, _("  Remove  "), style=wx.BU_EXACTFIT)
+                remove_btn = wx.Button(panel, wx.ID_ANY, _("  &Remove  "), style=wx.BU_EXACTFIT)
                 remove_btn.Bind(wx.EVT_BUTTON, self.remove_row)
+                compat.SetToolTip(remove_btn, "Ctrl-R")
             self.buttons = [add_btn, insert_btn, remove_btn]
             for btn in self.buttons:
                 if btn: btn_sizer.Add( btn, 0, wx.LEFT | wx.RIGHT | extra_flag, 4 )
             self.buttons.insert(0, apply_btn)
+            reset_btn = wx.Button(panel, wx.ID_ANY, _("  Rese&t  "), style=wx.BU_EXACTFIT)
+            reset_btn.Bind(wx.EVT_BUTTON, self.reset)
+            btn_sizer.AddStretchSpacer()
+            btn_sizer.Add(reset_btn, 0, extra_flag | wx.LEFT, 16)
+            self.buttons.append(reset_btn)
         else:
             self.buttons = []
 
@@ -1931,7 +1939,20 @@ class GridProperty(Property):
         self._set_tooltip(self.grid.GetGridWindow(), *self.buttons)
 
         self.grid.Bind(wx.EVT_SIZE, self.on_size)
+        self.grid.Bind(wx.EVT_KEY_DOWN, self.on_key)
         self._width_delta = None
+
+    def on_key(self, event):
+        # handle Ctrl-I, Ctrl-A, Ctrl-R; Alt-A will be handled by the button itself
+        key = (event.GetKeyCode(), event.GetModifiers())
+        if key==(73,2): # Ctrl-I
+            self.insert_row(event)
+        elif key==(65,2): # Ctrl-A
+            self.add_row(event)
+        elif key==(82,2): # Ctrl-R
+            self.remove_row(event)
+        else:
+            event.Skip()
 
     def on_size(self, event):
         # resize last column to fill the space
@@ -2008,6 +2029,12 @@ class GridProperty(Property):
         self._update_indices()
 
         self._update_apply_button()
+        event.Skip()
+
+    def reset(self, event):
+        "Discard the changes."
+        self.editing_values = None
+        self.update_display()
         event.Skip()
 
     def _get_new_value(self):
@@ -2141,7 +2168,8 @@ class GridProperty(Property):
 
     def _update_apply_button(self):
         if not self.grid or not self.buttons: return
-        self.buttons[0].Enable( self.editing_values is not None)
+        self.buttons[0].Enable(  self.editing_values is not None)  # the apply button
+        self.buttons[-1].Enable( self.editing_values is not None)  # the reset button
 
     # helpers ##########################################################################################################
     def _set_col_sizes(self, sizes):
