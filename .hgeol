@@ -5,3 +5,4 @@ only-consistent = False
 Makefile = LF
 ** = native
 **.bat = CRLF
+**.html = LF
