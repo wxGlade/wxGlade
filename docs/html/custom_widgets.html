@@ -53,8 +53,9 @@
 <h1>Custom Widget<a class="headerlink" href="#custom-widget" title="Permalink to this headline">¶</a></h1>
 <p>Very often you may want to use a widget that is not supported by wxGlade.</p>
 <p>For this, just insert a Custom Widget <img alt="custom" src="_images/custom.png" /> as placeholder.
-You will be prompted for a class name. In the Design and Preview windows, just a placeholder will be shown.</p>
-<p><strong>The *Properties* window for an example “ImagePanel” could look like this:</strong></p>
+<br/>
+You will be prompted for a class name. In the <em>Design</em> and <em>Preview</em> windows, just a placeholder will be shown.</p>
+<p><strong>The Properties window for an example “ImagePanel” could look like this:</strong></p>
 <table border="1" class="colwidths-given docutils align-center">
 <colgroup>
 <col width="40%" />
@@ -62,16 +63,20 @@ You will be prompted for a class name. In the Design and Preview windows, just a
 </colgroup>
 <tbody valign="top">
 <tr class="row-odd"><td><strong>Properties -&gt; Common:</strong> <br/> <br/>
-Property “Class” is the name of the class that will be instantiated.</td>
+Property “Class” is the name of the class that will be instantiated. <br/>
+In this example: <code class="docutils literal"><span class="pre">ImagePanel</span></code></td>
 <td><a class="reference internal" href="_images/CustomWidgetPropertiesCommon.png"><img alt="CustomWidgetPropertiesCommon" class="align-middle" src="_images/CustomWidgetPropertiesCommon.png" style="width: 300px;" /></a></td>
 </tr>
 <tr class="row-even"><td><strong>Properties -&gt; Widget:</strong> <br/> <br/>
 The arguments for instantiation of the class.
-<br/> Usually you will at least enter $parent$ here.</td>
+<br/> Usually you will at least enter <code class="docutils literal"><span class="pre">$parent</span></code> here.</td>
 <td><a class="reference internal" href="_images/CustomWidgetProperties.png"><img alt="CustomWidgetProperties" class="align-middle" src="_images/CustomWidgetProperties.png" style="width: 300px;" /></a></td>
 </tr>
 <tr class="row-odd"><td><strong>Properties -&gt; Code:</strong> <br/> <br/>
-Enter the import statement here, if required.</td>
+Enter the import statement here, if required. <br/> <br/>
+For our example, <code class="docutils literal"><span class="pre">import</span> <span class="pre">ImagePanel</span></code> could be used, <br/>
+but then the “Class” property must be fully qualified:<br/>
+<code class="docutils literal"><span class="pre">ImagePanel.ImagePanel</span></code></td>
 <td><a class="reference internal" href="_images/CustomWidgetPropertiesCode.png"><img alt="CustomWidgetPropertiesCode" class="align-middle" src="_images/CustomWidgetPropertiesCode.png" style="width: 300px;" /></a></td>
 </tr>
 </tbody>
@@ -87,7 +92,7 @@ Enter the import statement here, if required.</td>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="bp">self</span><span class="o">.</span><span class="n">panel_image_left</span> <span class="o">=</span> <span class="n">ImagePanel</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">main_panel</span><span class="p">,</span> <span class="n">wx</span><span class="o">.</span><span class="n">ID_ANY</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>The Arguments $parent and $id were replaced with the required code. There are two more magic arguments: $width and $height</p>
+<p>The Arguments <code class="docutils literal"><span class="pre">$parent</span></code> and <code class="docutils literal"><span class="pre">$id</span></code> were replaced with the required code. There are two more magic arguments: <code class="docutils literal"><span class="pre">$width</span></code> and <code class="docutils literal"><span class="pre">$height</span></code>.</p>
 </div>
 
 
