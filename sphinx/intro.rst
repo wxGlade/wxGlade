@@ -22,6 +22,11 @@ On Windows, the win32 extensions should be installed: https://sourceforge.net/pr
  * Phoenix plus Python 2 will probably also work, but this is not tested at all. wxPython 2.8 is generally less tested than the more recent versions.
  * When running Python 3 + Phoenix or Python 2 + Classic, the generated Python code will not be compatible to the other version.
 
+.. note::
+    For the best user experience, run wxGlade with your target wxPython revision (i.e. 2.8 or 3.0).
+    If you use a different revision, the *Design* and *Preview* window might not look identical to your final
+    program, as some styles are not supported under all revisions.
+
 
 ***************
 Program Windows

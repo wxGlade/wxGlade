@@ -35,6 +35,11 @@ See here for an overview, including Hello World application example: https://wxp
 Here you can find a more comprehensive Getting Started guide: https://wiki.wxpython.org/Getting%20Started
 
 
+The wxGlade documentation is intended to be readable without previous wx knowledge.
+It will teach you how to create windows, handle events and how to integrate with your 'business logic' code.
+Sooner or later you will have to look into the wx documentation, though.
+
+
 
 ************************
 Sizers (Layout Managers)
@@ -85,7 +90,9 @@ Examples
 
    * - **vertical BoxSizer**
 
-       * with three buttons
+       * with three buttons |br|
+         i.e. three slots, filled |br|
+         with a button each
 
      - |vertical| 
    * - **horizontal BoxSizer**
