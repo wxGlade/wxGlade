@@ -1561,7 +1561,7 @@ class DialogProperty(TextProperty):
         self.dialog = self.button = None
     def create_additional_controls(self, panel, sizer, hsizer):
         # used e.g. by DialogProperty to create the button
-        self.button = wx.Button(panel, -1, " ... ")
+        self.button = wx.Button(panel, -1, " ... ", size=(40,-1))
         self.button.Bind(wx.EVT_BUTTON, self.display_dialog)
         hsizer.Add(self.button, 0, wx.ALL | wx.ALIGN_CENTER, 3)
         self._update_button()
