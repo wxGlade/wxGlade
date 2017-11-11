@@ -293,7 +293,7 @@ sub %(handler)s {
                     'unless(caller){'] + gettext1 + [
                     '%(tab)smy $%(name)s = %(klass)s->new();',
                     '%(tab)s$%(name)s->MainLoop();',
-                    '}']
+                    '}', '']
         else:
             ret = ['1;',
                     '',
@@ -309,7 +309,7 @@ sub %(handler)s {
                     '%(tab)s$%(name)s->SetTopWindow($%(top_win)s);',
                     '%(tab)s$%(top_win)s->Show(1);',
                     '%(tab)s$%(name)s->MainLoop();',
-                    '}']
+                    '}', '']
         return '\n'.join(ret)
 
     def init_lang(self, app_attrs):

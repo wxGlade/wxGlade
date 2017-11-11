@@ -363,7 +363,7 @@ class CPPCodeWriter(BaseLangCodeWriter, wcodegen.CppMixin):
                 '%(tab)sSetTopWindow(%(top_win)s);',
                 '%(tab)s%(top_win)s->Show();',
                 '%(tab)sreturn true;',
-                '}']
+                '}', '']
         return '\n'.join(ret)
 
     tmpl_empty_string = 'wxEmptyString'
