@@ -11,7 +11,7 @@ Interface to owner modified; see below for class PropertyOwner
 
 import common, config, compat, logging, misc
 from collections import OrderedDict
-import re, sys
+import re, sys, os
 import wx
 
 class _DefaultArgument(object):
@@ -242,6 +242,14 @@ class Property(object):
         if "enabler" in self.CONTROLNAMES and self.enabler is not None:
             self.enabler.Enable(not self.blocked)
             self.enabler.SetValue(not self.deactivated)
+    def has_control(self, control):
+        "check whether control belongs to this property (e.g. for dropping onto property"
+        for controlname in self.CONTROLNAMES:
+            c = getattr(self, controlname, None)
+            if c is None: continue
+            if c is control: return True
+        # if hasattr(self, "label") and c is self.label: return True# this doesn't work f. wx.lib.stattext.GenStaticText
+        return False
 
     ####################################################################################################################
     # helpers
@@ -319,7 +327,7 @@ class SpinProperty(Property):
         hsizer = wx.BoxSizer(wx.HORIZONTAL)
         # label
         label = self._find_label()
-        label = wx.lib.stattext.GenStaticText( panel, -1, label, size=(config.label_width, -1) )
+        self.label_ctrl = label = wx.lib.stattext.GenStaticText( panel, -1, label, size=(config.label_width, -1) )
         #hsizer.Add(label, 2, wx.ALL | wx.ALIGN_CENTER, 3)
         hsizer.Add(label, 0, wx.ALL | wx.ALIGN_CENTER, 3)
         # checkbox, if applicable
@@ -458,7 +466,7 @@ class LayoutSpanProperty(Property):
         hsizer = wx.BoxSizer(wx.HORIZONTAL)
         # label
         label = self._find_label()
-        label = wx.lib.stattext.GenStaticText( panel, -1, label, size=(config.label_width, -1) )
+        self.label_ctrl = label = wx.lib.stattext.GenStaticText( panel, -1, label, size=(config.label_width, -1) )
         #hsizer.Add(label, 2, wx.ALL | wx.ALIGN_CENTER, 3)
         hsizer.Add(label, 0, wx.ALL | wx.ALIGN_CENTER, 3)
         # checkbox, if applicable
@@ -534,7 +542,7 @@ class CheckBoxProperty(Property):
         self._display_value()
         label = self._find_label()
         label_width = max(config.label_width, panel.GetTextExtent(label)[0])
-        label = wx.lib.stattext.GenStaticText(panel, -1, label, size=(label_width, -1))
+        self.label_ctrl = label = wx.lib.stattext.GenStaticText(panel, -1, label, size=(label_width, -1))
         hsizer = wx.BoxSizer(wx.HORIZONTAL)
         #hsizer.Add(label, 2, wx.ALIGN_CENTER_VERTICAL | wx.ALL, 3)
         hsizer.Add(label, 0, wx.ALIGN_CENTER_VERTICAL | wx.ALL, 3)
@@ -1112,7 +1120,7 @@ class TextProperty(Property):
         hsizer = wx.BoxSizer(wx.HORIZONTAL)
         # label
         label = self._find_label()
-        label = wx.lib.stattext.GenStaticText( panel, -1, label, size=(config.label_width, -1) )
+        self.label_ctrl = label = wx.lib.stattext.GenStaticText( panel, -1, label, size=(config.label_width, -1) )
         #hsizer.Add(label, 2, wx.ALL | wx.ALIGN_CENTER, 3)
         hsizer.Add(label, 0, wx.ALL | wx.ALIGN_CENTER, 3)
         # checkbox, if applicable
@@ -1256,7 +1264,6 @@ class TextProperty(Property):
         "checks whether the string value matches the validation regular expression"
         if not self.validation_re: return True
         return bool( self.validation_re.match(value) )
-
 
 
 class TextPropertyA(TextProperty):
@@ -1590,6 +1597,11 @@ class DialogProperty(TextProperty):
     def update_display(self, start_editing=False):
         TextProperty.update_display(self, start_editing)
         self._update_button()
+        
+    def has_control(self, control):
+        if TextProperty.has_control(self, control): return True
+        if self.button and control is self.button:  return True
+        return False
 
 
 class DialogPropertyD(DialogProperty):
@@ -1652,6 +1664,20 @@ class FileNameProperty(DialogProperty):
                 subprocess.call(['explorer', directory])
             elif sys.platform=="darwin":
                 subprocess.call(["open", directory])
+                
+    def on_drop_file(self, filename):
+        if not wx.GetKeyState(wx.WXK_ALT) and not wx.GetKeyState(wx.WXK_CONTROL):
+            # insert relative filename, if available and the filename is under the project directory
+            project_path = common.app_tree.app.filename
+            if project_path:
+                project_path = os.path.abspath( os.path.dirname(project_path) )
+                if filename.startswith(project_path):
+                    filename = "./" + os.path.relpath(filename, project_path)
+
+        self._check_for_user_modification(filename, activate=True)
+        self.update_display()
+        return True
+
 
 
 class FileNamePropertyD(FileNameProperty):

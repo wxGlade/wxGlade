@@ -525,7 +525,7 @@ def get_xpm_bitmap(path):
     return bmp
 
 
-def get_relative_path(path, for_preview=False):
+def get_absolute_path(path, for_preview=False):
     "Get an absolute path relative to the current output directory (where the code is generated)."
     if os.path.isabs(path):
         return path

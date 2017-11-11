@@ -24,6 +24,16 @@ from xml_parse import XmlWidgetBuilder, ProgressXmlWidgetBuilder, XmlParsingErro
 
 
 
+# D&D support for FileNameProperty, e.g. for bitmap file names
+class FileDropTarget(wx.FileDropTarget):
+    def __init__(self, parent):
+        wx.FileDropTarget.__init__(self)
+        self.parent = parent
+
+    def OnDropFiles(self, x, y, filenames):
+        return self.parent.on_drop_files(x,y,filenames)
+
+
 class wxGladePropertyPanel(wx.Frame):
     "Panel used to display the Properties of the various widgets"
     def __init__(self, parent, frame_style):
@@ -36,6 +46,27 @@ class wxGladePropertyPanel(wx.Frame):
 
         self.notebook = wx.Notebook(self, -1)
         self.Bind(wx.EVT_CLOSE, self.hide_frame)
+        
+        self.drop_target = FileDropTarget(self)
+        self.SetDropTarget(self.drop_target)
+
+    def on_drop_files(self, x,y, filenames):
+        if len(filenames) > 1:
+            misc.error_message( _("Please only drop one file at a time") )
+            return False
+        # find the control and then the property
+        screen_xy = self.ClientToScreen( (x,y) )
+        ctrl = wx.FindWindowAtPoint( screen_xy )
+        if not ctrl: return False
+        
+        for p_name in self.current_widget.PROPERTIES:
+            if p_name[0].isupper(): continue
+            prop = self.current_widget.properties.get(p_name)
+            if not prop or not hasattr(prop, "on_drop_file"): continue
+            if ( hasattr(prop, "label_ctrl") and prop.label_ctrl.ScreenRect.Contains( screen_xy ) and
+                 prop.label_ctrl.IsShownOnScreen() ) or prop.has_control(ctrl):
+                return prop.on_drop_file(filenames[0])
+        return False
 
     def hide_frame(self, event):
         #menu_bar.Check(PROPS_ID, False)
@@ -88,8 +119,6 @@ class wxGladePropertyPanel(wx.Frame):
             #self.notebook.DeleteAllPages()  # deletes also the windows on the pages
             while self.notebook.PageCount:
                 self.notebook.DeletePage(self.notebook.PageCount-1)
-
-        self.editors = editors = {}
 
         self.pagenames = pagenames = []
         self.sizers = []
