@@ -298,7 +298,7 @@ def check(*formats):
     return False
 
 
-# D&D support (thanks to Chris Liechti)
+# D&D support for .wxg files (thanks to Chris Liechti)
 class FileDropTarget(wx.FileDropTarget):
     def __init__(self, parent):
         wx.FileDropTarget.__init__(self)

@@ -481,7 +481,7 @@ class BaseWidgetWriter(StylesMixin, BaseCodeWriter):
         if bitmap.startswith('code:'):  return '%s' % self.codegen.cn(bitmap[5:].strip())
 
         if preview:
-            bitmap = misc.get_relative_path(bitmap, True)
+            bitmap = misc.get_absolute_path(bitmap, True)
 
         return self.tmpl_inline_bitmap % { 'name': self.codegen.cn('wxBitmap'),
                                            'bitmap': self.codegen.quote_path(bitmap),

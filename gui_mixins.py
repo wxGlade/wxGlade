@@ -202,8 +202,9 @@ class StylesMixin(object):
 
 class BitmapMixin(object):
     "Class mixin to create wxBitmap instances from the given statement"
-    bitmap_tooltip_text = _('Choose a bitmap to show.\n\nYou can either select a file or you can specify the bitmap'
-                            ' using hand-crafted statements with the prefixes "art:", "code:", "empty:" or "var:".\n'
+    bitmap_tooltip_text = _('Choose a bitmap to show.\n\nYou can either drop or select a file or you can specify '
+                            'the bitmap using hand-crafted statements with the prefixes '
+                            '"art:", "code:", "empty:" or "var:".\n'
                             'The wxGlade documentation describes how to write such statements.')
 
     def get_preview_obj_bitmap(self, bitmap=None):
@@ -226,7 +227,7 @@ class BitmapMixin(object):
         elif bitmap.startswith('art:'):
             return self.get_preview_obj_artprovider(bitmap)
         else:
-            bitmap = misc.get_relative_path(bitmap)
+            bitmap = misc.get_absolute_path(bitmap)
             return wx.Bitmap(bitmap, wx.BITMAP_TYPE_ANY)
 
     def get_preview_obj_artprovider(self, bitmap):
