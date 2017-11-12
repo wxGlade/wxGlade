@@ -66,6 +66,9 @@
 <h2>From Bitmap File / Path<a class="headerlink" href="#from-bitmap-file-path" title="Permalink to this headline">¶</a></h2>
 <p>Specify the absolute or relative path to the bitmap file.</p>
 <p>For an absolute path, you may use the file dialog by clicking the button “…”.</p>
+<p>You may drag a file to the field. If the file is located below the project file’s directory, the relative path will be entered. For the absolute path just hold the <code class="kbd docutils literal"><span class="pre">Alt</span></code> or <code class="kbd docutils literal"><span class="pre">Ctrl</span></code> key.</p>
+<p>Sometimes, depending on your runtime environment, you may have to customize the loading of the bitmap files.
+See below for an example.</p>
 <table border="1" class="colwidths-given docutils">
 <colgroup>
 <col width="20%" />
@@ -223,6 +226,42 @@ C++</td>
 </tbody>
 </table>
 </div>
+<div class="section" id="customizing-bitmap-loading">
+<h2>Customizing Bitmap loading<a class="headerlink" href="#customizing-bitmap-loading" title="Permalink to this headline">¶</a></h2>
+<p>If at runtime the image files are at a non-standard location, you need to customize the loading of image files such
+that the files will be found.</p>
+<p>For example, if you use PyInstaller to create a single-file executable, then the bitmaps need to be loaded from a temporary directory <cite>sys._MEIPASS</cite>.</p>
+<p>This example code would replace wx.Bitmap with an implementation that is aware of this remapping:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">wx</span>
+<span class="kn">import</span> <span class="nn">sys</span><span class="o">,</span> <span class="nn">os</span>
+
+<span class="c1"># taken from stackoverflow re accessing data files within pyinstaller bundle.</span>
+<span class="k">def</span> <span class="nf">resource_path</span><span class="p">(</span><span class="n">relative_path</span><span class="p">):</span>
+    <span class="s2">&quot;Get absolute path to resource, works for dev and for PyInstaller.&quot;</span>
+    <span class="n">base_path</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">sys</span><span class="p">,</span> <span class="s1">&#39;_MEIPASS&#39;</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)))</span>
+    <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">base_path</span><span class="p">,</span> <span class="n">relative_path</span><span class="p">)</span>
+
+<span class="c1"># get a reference to original wx.Bitmap (just in case)</span>
+<span class="n">wxBitmap</span> <span class="o">=</span> <span class="n">wx</span><span class="o">.</span><span class="n">Bitmap</span>
+
+<span class="c1"># customised wx.Bitmap, which obtains the location of the bitmap</span>
+<span class="c1"># using the `resource_path` function above.</span>
+<span class="k">class</span> <span class="nc">MyBitmap</span><span class="p">(</span><span class="n">wxBitmap</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">resource_path</span><span class="p">(</span><span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">])</span>
+        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+            <span class="n">args</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
+            <span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">resource_path</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="c1"># call original wx.Bitmap</span>
+        <span class="n">wxBitmap</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+<span class="c1"># Remap wx.Bitmap to our customised version.</span>
+<span class="n">wx</span><span class="o">.</span><span class="n">Bitmap</span> <span class="o">=</span> <span class="n">MyBitmap</span>
+</pre></div>
+</div>
+<p>(Courtesy of Brendan Simon)</p>
+</div>
 </div>
 
 
@@ -242,6 +281,7 @@ C++</td>
 <li><a class="reference internal" href="#empty-bitmap-statement-empty">Empty Bitmap: Statement <strong>empty</strong></a></li>
 <li><a class="reference internal" href="#from-wxartprovider-statement-art">From wxArtProvider: Statement <strong>art</strong></a></li>
 <li><a class="reference internal" href="#from-code-statement-code">From Code: Statement <strong>code</strong></a></li>
+<li><a class="reference internal" href="#customizing-bitmap-loading">Customizing Bitmap loading</a></li>
 </ul>
 </li>
 </ul>
