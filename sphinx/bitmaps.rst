@@ -26,6 +26,11 @@ Specify the absolute or relative path to the bitmap file.
 
 For an absolute path, you may use the file dialog by clicking the button "...".
 
+You may drag a file to the field. If the file is located below the project file's directory, the relative path will be entered. For the absolute path just hold the :kbd:`Alt` or :kbd:`Ctrl` key.
+
+Sometimes, depending on your runtime environment, you may have to customize the loading of the bitmap files.
+See below for an example.
+
 .. list-table::
     :widths: 20 80
 
@@ -157,3 +162,43 @@ This just inserts the given code.
 
 
 
+Customizing Bitmap loading
+==========================
+
+If at runtime the image files are at a non-standard location, you need to customize the loading of image files such
+that the files will be found.
+
+
+For example, if you use PyInstaller to create a single-file executable, then the bitmaps need to be loaded from a temporary directory `sys._MEIPASS`.
+
+This example code would replace wx.Bitmap with an implementation that is aware of this remapping::
+
+    import wx
+    import sys, os
+    
+    # taken from stackoverflow re accessing data files within pyinstaller bundle.
+    def resource_path(relative_path):
+        "Get absolute path to resource, works for dev and for PyInstaller."
+        base_path = getattr(sys, '_MEIPASS', os.path.dirname(os.path.abspath(__file__)))
+        return os.path.join(base_path, relative_path)
+    
+    # get a reference to original wx.Bitmap (just in case)
+    wxBitmap = wx.Bitmap
+    
+    # customised wx.Bitmap, which obtains the location of the bitmap
+    # using the `resource_path` function above.
+    class MyBitmap(wxBitmap):
+        def __init__(self, *args, **kwargs):
+            try:
+                kwargs['name'] = resource_path(kwargs['name'])
+            except KeyError:
+                args = list(args)
+                args[0] = resource_path(args[0])
+            # call original wx.Bitmap
+            wxBitmap.__init__(self, *args, **kwargs)
+    
+    # Remap wx.Bitmap to our customised version.
+    wx.Bitmap = MyBitmap
+
+
+(Courtesy of Brendan Simon)
