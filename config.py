@@ -33,7 +33,7 @@ default_indent_amount = 4    # value for indentation amount
 
 default_multiple_files = 0   # value for writing multiple files (each class in a separate file)
 default_overwrite = 1        # value for overwriting existing sources
-default_use_gettext = 1      # value to usage of gettext
+default_use_gettext = False  # value to usage of gettext
 
 for_version = (2, 8) # version to generate code for
 
