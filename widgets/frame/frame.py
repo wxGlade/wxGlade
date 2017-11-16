@@ -168,6 +168,7 @@ def builder(parent, sizer, pos, klass=None, base=None, name=None):
     frame = base_class(name, parent, wx.NewId(), name, klass=klass)
     #frame.properties["style"].set_to_default()
     frame.properties["style"].set("wxDEFAULT_FRAME_STYLE")
+    frame.properties['size'].set( (400,300), activate=True )
     node = Node(frame)
     frame.node = node
     common.app_tree.add(node)
