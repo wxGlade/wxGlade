@@ -223,7 +223,8 @@ class wxGladeFrame(wx.Frame):
         maxlen = max([len(all_widgets[sect]) for sect in all_widgets])  # the maximum number of buttons in a section
         for section in all_widgets:
             if section:
-                sizer.Add(wx.StaticText(self, -1, "%s:" % section.replace('&', '&&')), 1, wx.ALIGN_CENTER_VERTICAL)
+                label = wx.StaticText(self, -1, "%s:" % section.replace('&', '&&'))
+                sizer.Add( label, 1, wx.ALIGN_CENTER_VERTICAL | wx.LEFT, 2 )
 
             bsizer = wx.GridSizer(cols=maxlen, hgap=2, vgap=2)
             for button in all_widgets[section]:
