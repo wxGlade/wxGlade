@@ -241,12 +241,8 @@ def make_object_button(widget, icon_path, toplevel=False, tip=None):
 
     if not os.path.isabs(icon_path):
         icon_path = os.path.join(config.icons_path, icon_path)
-    if wx.Platform == '__WXGTK__':
-        style = wx.NO_BORDER
-    else:
-        style = wx.BU_AUTODRAW
     bmp = misc.get_xpm_bitmap(icon_path)
-    tmp = wx.BitmapButton(palette, -1, bmp, size=(31, 31), style=style)
+    tmp = wx.BitmapButton(palette, -1, bmp, size=(31, 31))
     if not toplevel:
         tmp.Bind(wx.EVT_BUTTON, add_object)
     else:
