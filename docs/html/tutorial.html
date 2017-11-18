@@ -166,18 +166,19 @@ After that, we’ll add “Operator” and the buttons.</p>
 </div>
 <div class="section" id="further-editing">
 <h3>Further Editing<a class="headerlink" href="#further-editing" title="Permalink to this headline">¶</a></h3>
-<dl class="docutils">
-<dt>The Result text control should display multiple lines of text and should not be editable:</dt>
-<dd><ul class="first last simple">
-<li>select <code class="docutils literal"><span class="pre">text_result</span></code></li>
-<li>go to <em>Properties</em> -&gt; Widget</li>
-<li>enable Style -&gt; <code class="docutils literal"><span class="pre">wxTE_MULTILINE</span></code> and <code class="docutils literal"><span class="pre">wxTE_READONLY</span></code></li>
-<li>go to <em>Properties</em> -&gt; Common</li>
-<li>click the “…” button right to <code class="docutils literal"><span class="pre">Background</span></code> and select grey color or <br/>
-just enter <code class="docutils literal"><span class="pre">#d4d0c8</span></code> into the text control</li>
-</ul>
-</dd>
-</dl>
+<p>The Result text control should display multiple lines of text and should not be editable.
+To modify accordingly, just follow these steps:</p>
+<blockquote>
+<div><ol class="arabic simple">
+<li>Select <code class="docutils literal"><span class="pre">text_result</span></code></li>
+<li>Go to <em>Properties</em> -&gt; Widget</li>
+<li>Enable Style -&gt; <code class="docutils literal"><span class="pre">wxTE_MULTILINE</span></code> and <code class="docutils literal"><span class="pre">wxTE_READONLY</span></code></li>
+<li>Go to <em>Properties</em> -&gt; Common</li>
+<li>Click the “…” button right to <code class="docutils literal"><span class="pre">Background</span></code> and select grey color or <br/></li>
+</ol>
+<blockquote>
+<div>just enter <code class="docutils literal"><span class="pre">#d4d0c8</span></code> into the text control.</div></blockquote>
+</div></blockquote>
 <p>The last step is to have a grey background.
 For single line readonly text controls, this is done automatically by wx, but not with multiple lines.</p>
 <p><strong>In the next steps fill the remaining slots of the main sizer:</strong></p>

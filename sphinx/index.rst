@@ -30,4 +30,4 @@
    custom_widgets
    reference
    further_reading
-
+   acknowledgements
