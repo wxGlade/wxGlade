@@ -165,13 +165,15 @@ You may drag items between different windows, e.g. from *Design* to *Tree* or to
 Further Editing
 ===============
 
-The Result text control should display multiple lines of text and should not be editable:
- * select ``text_result``
- * go to *Properties* -> Widget
- * enable Style -> ``wxTE_MULTILINE`` and ``wxTE_READONLY``
- * go to *Properties* -> Common
- * click the "..." button right to ``Background`` and select grey color or |br|
-   just enter ``#d4d0c8`` into the text control
+The Result text control should display multiple lines of text and should not be editable.
+To modify accordingly, just follow these steps:
+
+ 1. Select ``text_result``
+ 2. Go to *Properties* -> Widget
+ 3. Enable Style -> ``wxTE_MULTILINE`` and ``wxTE_READONLY``
+ 4. Go to *Properties* -> Common
+ 5. Click the "..." button right to ``Background`` and select grey color or |br|
+   just enter ``#d4d0c8`` into the text control.
 
 The last step is to have a grey background.
 For single line readonly text controls, this is done automatically by wx, but not with multiple lines.

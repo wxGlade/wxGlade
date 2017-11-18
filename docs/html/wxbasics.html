@@ -53,9 +53,17 @@
 <h1>wx Basics<a class="headerlink" href="#wx-basics" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="concept">
 <h2>Concept<a class="headerlink" href="#concept" title="Permalink to this headline">¶</a></h2>
-<p><a class="reference external" href="https://wxpython.org/">wxPython</a> is a Wrapper around the <a class="reference external" href="https://www.wxwidgets.org/">wxWidgets</a> GUI library, which is written in C++.</p>
-<p>See here for an overview, including Hello World application example: <a class="reference external" href="https://wxpython.org/pages/overview/">https://wxpython.org/pages/overview/</a></p>
-<p>Here you can find a more comprehensive Getting Started guide: <a class="reference external" href="https://wiki.wxpython.org/Getting%20Started">https://wiki.wxpython.org/Getting%20Started</a></p>
+<p>wxPython is a Wrapper around the wxWidgets GUI library, which is written in C++.</p>
+<dl class="docutils">
+<dt>You may want to visit these pages for more information:</dt>
+<dd><ul class="first last simple">
+<li>The wxPython home page: <a class="reference external" href="https://wxpython.org/">https://wxpython.org/</a></li>
+<li>An overview including a <cite>Hello World</cite> application example: <a class="reference external" href="https://wxpython.org/pages/overview/">https://wxpython.org/pages/overview/</a></li>
+<li>A more comprehensive <cite>Getting Started</cite> guide: <a class="reference external" href="https://wiki.wxpython.org/Getting%20Started">https://wiki.wxpython.org/Getting%20Started</a></li>
+<li>The wxWidgets home page: <a class="reference external" href="https://www.wxwidgets.org/">https://www.wxwidgets.org/</a></li>
+</ul>
+</dd>
+</dl>
 <p>The wxGlade documentation is intended to be readable without previous wx knowledge.
 It will teach you how to create windows, handle events and how to integrate with your ‘business logic’ code.
 Sooner or later you will have to look into the wx documentation, though.</p>
@@ -66,86 +74,113 @@ Sooner or later you will have to look into the wx documentation, though.</p>
 <dt>With wxWidgets/wxPython and similar toolkits, usually controls are not placed at pixel positions on their windows, but the layout of a window is managed by <em>sizers</em>.</dt>
 <dd><ul class="first last simple">
 <li>There are <em>horizontal box sizers</em>, <em>vertical box sizers</em> and <em>grid sizers</em>.</li>
-<li>The <em>box sizers</em> may have a label and a box around them. In this case they’re called <em>static box sizers</em>.</li>
+<li>The <em>box sizers</em> may have a label and a box around them. In that case they’re called <em>static box sizers</em>.</li>
 <li>Each sizer and contained sizer items can be fixed size or grow to fill the available space, e.g. when the window is resized.</li>
 </ul>
 </dd>
 </dl>
-<div class="section" id="examples">
-<h3>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="sizer-examples">
+<h3>Sizer Examples<a class="headerlink" href="#sizer-examples" title="Permalink to this headline">¶</a></h3>
 <table border="1" class="colwidths-given docutils align-center">
 <colgroup>
-<col width="40%" />
 <col width="60%" />
+<col width="40%" />
 </colgroup>
 <tbody valign="top">
-<tr class="row-odd"><td><p class="first"><strong>vertical BoxSizer</strong></p>
+<tr class="row-odd"><td><p class="first"><strong>Vertical BoxSizer</strong></p>
 <ul class="last simple">
-<li>with three buttons <br/>
-i.e. three slots, filled <br/>
-with a button each</li>
+<li>This sizer stacks the controls it manages one above the other.</li>
+<li>This example shows three buttons arranged in this way.</li>
 </ul>
 </td>
 <td><a class="reference internal" href="_images/vertical.png"><img alt="vertical" src="_images/vertical.png" style="width: 120px;" /></a></td>
 </tr>
-<tr class="row-even"><td><p class="first"><strong>horizontal BoxSizer</strong></p>
+<tr class="row-even"><td><p class="first"><strong>Horizontal BoxSizer</strong></p>
 <ul class="last simple">
-<li>with three buttons</li>
+<li>This sizer arranges its controls alongside of one another.</li>
+<li>This example shows three button arranged in this way.</li>
 </ul>
 </td>
 <td><a class="reference internal" href="_images/horizontal.png"><img alt="horizontal" src="_images/horizontal.png" style="width: 280px;" /></a></td>
 </tr>
-<tr class="row-odd"><td><p class="first">same sizer,</p>
-<ul class="last simple">
-<li>but one button <strong>growing</strong> (horizontally) and <br/>
-one <strong>expanding</strong> (vertically)</li>
+<tr class="row-odd"><td><p class="first"><strong>Allowing controls to grow and/or expand</strong></p>
+<ul class="simple">
+<li>Controls in a horizontal sizer can “grow” horizontally, or “expand” vertically in response to changes in window size.</li>
+<li>In this three button example, using a Horizontal BoxSizer:</li>
 </ul>
+<blockquote class="last">
+<div><ul class="simple">
+<li>The middle button has been allowed to grow horizontally.</li>
+<li>The third button has been allowed to expand vertically.</li>
+</ul>
+</div></blockquote>
 </td>
 <td><a class="reference internal" href="_images/horizontal2.png"><img alt="horizontal2" src="_images/horizontal2.png" style="width: 280px;" /></a></td>
 </tr>
-<tr class="row-even"><td><p class="first">same sizer,</p>
-<ul class="last simple">
-<li>but one button <strong>aligned</strong> top,</li>
-<li>one bottom and</li>
-<li>one with a border</li>
+<tr class="row-even"><td><p class="first"><strong>Alignment of controls</strong></p>
+<ul class="simple">
+<li>The alignment of controls within a sizer can also be specified. <br/>
+This example also uses a Horizontal BoxSizer to specify that:</li>
 </ul>
+<blockquote class="last">
+<div><ul class="simple">
+<li>The first button is “top” aligned.</li>
+<li>The middle button is “bottom” aligned.</li>
+<li>The third button has been given a border that provides some space around it on all sides.</li>
+</ul>
+</div></blockquote>
 </td>
 <td><a class="reference internal" href="_images/horizontal3.png"><img alt="horizontal3" src="_images/horizontal3.png" style="width: 280px;" /></a></td>
 </tr>
-<tr class="row-odd"><td>same as <strong>horizontal StaticBoxSizer</strong></td>
+<tr class="row-odd"><td><p class="first"><strong>StaticBoxSizer</strong></p>
+<ul class="last simple">
+<li>In this example, a Horizontal StaticBoxSizer has been used to contain the three buttons
+(which have the same properties set as those in the previous example). <br/></li>
+<li>This sizer puts a border around its edges and provides a label with which to describe its contents.</li>
+<li>StaticBoxSizers can be either Horizontal or Vertical, just like their “non-static” equivalents.</li>
+</ul>
+</td>
 <td><a class="reference internal" href="_images/static_horizontal.png"><img alt="static_horizontal" src="_images/static_horizontal.png" style="width: 280px;" /></a></td>
 </tr>
 <tr class="row-even"><td><p class="first"><strong>GridSizer</strong></p>
 <ul class="last simple">
-<li>with two rows and two columns,</li>
-<li>all columns and all rows have the same size,</li>
-<li>all buttons are centered</li>
+<li>GridSizers arrange their contained controls in a grid made up of equally sized rows and columns.</li>
+<li>In this example, the grid has been set to two rows and two columns.</li>
+<li>Each cell in the example contains a button, which has been centred in the cell.</li>
 </ul>
 </td>
 <td><a class="reference internal" href="_images/grid1.png"><img alt="grid1" src="_images/grid1.png" style="width: 300px;" /></a></td>
 </tr>
-<tr class="row-odd"><td><p class="first">same,</p>
-<ul class="last simple">
-<li>with one button aligned left,</li>
-<li>one aligned bottom,</li>
-<li>one expanding and</li>
-<li>one aligned right/center</li>
+<tr class="row-odd"><td><p class="first"><strong>Expanding, growing and aligning in a grid cell</strong></p>
+<dl class="last docutils">
+<dt>In this example:</dt>
+<dd><ul class="first last simple">
+<li>The first button has been aligned LEFT.</li>
+<li>The second button has been aligned BOTTOM.</li>
+<li>The third button has been allowed to expand.</li>
+<li>The fourth button has been aligned RIGHT and CENTER.</li>
 </ul>
+</dd>
+</dl>
 </td>
 <td><a class="reference internal" href="_images/grid2.png"><img alt="grid2" src="_images/grid2.png" style="width: 300px;" /></a></td>
 </tr>
-<tr class="row-even"><td><p class="first">same as <strong>FlexGridSizer</strong></p>
+<tr class="row-even"><td><p class="first"><strong>FlexGridSizer</strong></p>
 <ul class="last simple">
-<li>with growing column #1 and</li>
-<li>one growing row #2</li>
+<li>The FlexGridSizer allows a little more flexibility over cell sizes by allowing individual
+rows and columns to grow and/or expand.</li>
+<li>In this example, the first column has been allowed to grow horizontally and
+the second one allowed to grow vertically. <br/>
+Note that this becomes obvious when the window is resized by the user.</li>
 </ul>
 </td>
 <td><a class="reference internal" href="_images/flex_grid.png"><img alt="flex_grid" src="_images/flex_grid.png" style="width: 300px;" /></a></td>
 </tr>
 <tr class="row-odd"><td><p class="first"><strong>GridBagSizer</strong></p>
 <ul class="last simple">
-<li>with 3x3 cells and five buttons;</li>
-<li>three buttons are spanning multiple rows/cols</li>
+<li>This example uses a 3x3 grid and five buttons.</li>
+<li>It shows how a GridBagSizer can allow controls to span multiple columns and/or rows.</li>
+<li>All the buttons have their EXPAND property set so that they fill all the space in the cell(s).</li>
 </ul>
 </td>
 <td><a class="reference internal" href="_images/gridbag.png"><img alt="gridbag" src="_images/gridbag.png" style="width: 300px;" /></a></td>
@@ -165,7 +200,7 @@ one <strong>expanding</strong> (vertically)</li>
 </tr>
 </tbody>
 </table>
-<p>This window is managed by <font color="green"> <strong>one vertical box sizer with six slots</strong> </font> for the five rows plus a horizontal line and five <font color="blue"> <strong>horizontal box sizers</strong> </font> for e.g. one label and one button:</p>
+<p>This window is managed by <font color="green"> <strong>one vertical box sizer with six slots</strong> </font> for the five rows, plus a horizontal line and five <font color="blue"> <strong>horizontal box sizers</strong> </font> for the horizontally arranged controls they contain (e.g. one label and one button):</p>
 <table border="1" class="docutils align-center">
 <colgroup>
 <col width="50%" />
@@ -186,10 +221,10 @@ Note that horizontal and vertical sizers are <br/> visualized with different ico
 </table>
 <p>Later we’ll have a look at alternative structures which allow better alignment of the fields.</p>
 </div>
-<div class="section" id="wxglade-requirements-restrictions">
-<h3>wxGlade Requirements / Restrictions<a class="headerlink" href="#wxglade-requirements-restrictions" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="wxglade-requirements-and-restrictions">
+<h3>wxGlade Requirements and Restrictions<a class="headerlink" href="#wxglade-requirements-and-restrictions" title="Permalink to this headline">¶</a></h3>
 <p>The user interface and internal data structures of wxGlade impose some restrictions on the structure of a window.
-A frame or panel can’t have a widget as direct child; they always need a toplevel sizer first. So don’t be surprised to see constructions like:</p>
+A frame or panel cannnot have a widget as direct child. They always need a toplevel sizer first. So don’t be surprised to see constructions like these:</p>
 <blockquote>
 <div><ul class="simple">
 <li>frame -&gt; sizer with single slot -&gt; panel -&gt; sizer ….</li>
@@ -215,9 +250,9 @@ A frame or panel can’t have a widget as direct child; they always need a tople
 <li><a class="reference internal" href="#">wx Basics</a><ul>
 <li><a class="reference internal" href="#concept">Concept</a></li>
 <li><a class="reference internal" href="#sizers-layout-managers">Sizers (Layout Managers)</a><ul>
-<li><a class="reference internal" href="#examples">Examples</a></li>
+<li><a class="reference internal" href="#sizer-examples">Sizer Examples</a></li>
 <li><a class="reference internal" href="#example-application-calculator-window">Example application: Calculator window</a></li>
-<li><a class="reference internal" href="#wxglade-requirements-restrictions">wxGlade Requirements / Restrictions</a></li>
+<li><a class="reference internal" href="#wxglade-requirements-and-restrictions">wxGlade Requirements and Restrictions</a></li>
 </ul>
 </li>
 </ul>

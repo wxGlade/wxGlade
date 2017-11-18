@@ -27,12 +27,14 @@ wx Basics
 Concept
 *******
 
+wxPython is a Wrapper around the wxWidgets GUI library, which is written in C++.
 
-`wxPython <https://wxpython.org/>`_ is a Wrapper around the `wxWidgets <https://www.wxwidgets.org/>`_ GUI library, which is written in C++.
+You may want to visit these pages for more information:
+ * The wxPython home page: https://wxpython.org/
+ * An overview including a `Hello World` application example: https://wxpython.org/pages/overview/
+ * A more comprehensive `Getting Started` guide: https://wiki.wxpython.org/Getting%20Started
+ * The wxWidgets home page: https://www.wxwidgets.org/
 
-See here for an overview, including Hello World application example: https://wxpython.org/pages/overview/
-
-Here you can find a more comprehensive Getting Started guide: https://wiki.wxpython.org/Getting%20Started
 
 
 The wxGlade documentation is intended to be readable without previous wx knowledge.
@@ -48,11 +50,11 @@ Sizers (Layout Managers)
 
 With wxWidgets/wxPython and similar toolkits, usually controls are not placed at pixel positions on their windows, but the layout of a window is managed by *sizers*.
  - There are *horizontal box sizers*, *vertical box sizers* and *grid sizers*.
- - The *box sizers* may have a label and a box around them. In this case they're called *static box sizers*.
+ - The *box sizers* may have a label and a box around them. In that case they're called *static box sizers*.
  - Each sizer and contained sizer items can be fixed size or grow to fill the available space, e.g. when the window is resized.
 
-Examples
-========
+Sizer Examples
+==============
 
 
 
@@ -84,62 +86,79 @@ Examples
     :width: 300
 
 .. list-table::
-   :widths: 40 60
+   :widths: 60 40
    :header-rows: 0
    :align: center
 
-   * - **vertical BoxSizer**
+   * - **Vertical BoxSizer**
 
-       * with three buttons |br|
-         i.e. three slots, filled |br|
-         with a button each
+       * This sizer stacks the controls it manages one above the other.
+       * This example shows three buttons arranged in this way.
 
      - |vertical| 
-   * - **horizontal BoxSizer**
+   * - **Horizontal BoxSizer**
 
-       * with three buttons
+       * This sizer arranges its controls alongside of one another.
+       * This example shows three button arranged in this way.
 
      - |horizontal| 
-   * - same sizer,
+   * - **Allowing controls to grow and/or expand**
 
-       * but one button **growing** (horizontally) and |br|
-         one **expanding** (vertically)
+       * Controls in a horizontal sizer can "grow" horizontally, or "expand" vertically in response to changes in window size.
+       * In this three button example, using a Horizontal BoxSizer:
+
+        * The middle button has been allowed to grow horizontally.
+        * The third button has been allowed to expand vertically.
 
      - |horizontal2| 
-   * - same sizer,
+   * - **Alignment of controls**
 
-       * but one button **aligned** top,
-       * one bottom and
-       * one with a border
+       * The alignment of controls within a sizer can also be specified. |br|
+         This example also uses a Horizontal BoxSizer to specify that:
+
+        * The first button is "top" aligned.
+        * The middle button is "bottom" aligned.
+        * The third button has been given a border that provides some space around it on all sides.
 
      - |horizontal3|
-   * - same as **horizontal StaticBoxSizer**
+   * - **StaticBoxSizer**
+
+       * In this example, a Horizontal StaticBoxSizer has been used to contain the three buttons
+         (which have the same properties set as those in the previous example). |br|
+       * This sizer puts a border around its edges and provides a label with which to describe its contents.
+       * StaticBoxSizers can be either Horizontal or Vertical, just like their "non-static" equivalents.
+
      - |static_horizontal|
    * - **GridSizer**
 
-       * with two rows and two columns,
-       * all columns and all rows have the same size,
-       * all buttons are centered
+       * GridSizers arrange their contained controls in a grid made up of equally sized rows and columns.
+       * In this example, the grid has been set to two rows and two columns.
+       * Each cell in the example contains a button, which has been centred in the cell.
 
      - |grid1|
-   * - same,
+   * - **Expanding, growing and aligning in a grid cell**
 
-       * with one button aligned left,
-       * one aligned bottom,
-       * one expanding and
-       * one aligned right/center
+       In this example:
+        * The first button has been aligned LEFT.
+        * The second button has been aligned BOTTOM.
+        * The third button has been allowed to expand.
+        * The fourth button has been aligned RIGHT and CENTER.
 
      - |grid2|
-   * - same as **FlexGridSizer**
+   * - **FlexGridSizer**
 
-       * with growing column #1 and
-       * one growing row #2
+       * The FlexGridSizer allows a little more flexibility over cell sizes by allowing individual
+         rows and columns to grow and/or expand.
+       * In this example, the first column has been allowed to grow horizontally and
+         the second one allowed to grow vertically. |br|
+         Note that this becomes obvious when the window is resized by the user.
 
      - |flex_grid|
    * - **GridBagSizer**
 
-       * with 3x3 cells and five buttons;
-       * three buttons are spanning multiple rows/cols
+       * This example uses a 3x3 grid and five buttons.
+       * It shows how a GridBagSizer can allow controls to span multiple columns and/or rows.
+       * All the buttons have their EXPAND property set so that they fill all the space in the cell(s).
 
      - |gridbag|
 
@@ -166,9 +185,8 @@ Example application: Calculator window
 |     :width: 200                                                      |
 +----------------------------------------------------------------------+
 
-This window is managed by |green| **one vertical box sizer with six slots** |endcolor| for the five rows plus a horizontal line and five |blue| **horizontal box sizers** |endcolor| for e.g. one label and one button:
+This window is managed by |green| **one vertical box sizer with six slots** |endcolor| for the five rows, plus a horizontal line and five |blue| **horizontal box sizers** |endcolor| for the horizontally arranged controls they contain (e.g. one label and one button):
 
-   
 .. list-table::
    :header-rows: 0
    :align: center
@@ -184,21 +202,18 @@ This window is managed by |green| **one vertical box sizer with six slots** |end
        Note that horizontal and vertical sizers are |br| visualized with different icons: |sizer_h| |sizer| .
 
 
-
-
 Later we'll have a look at alternative structures which allow better alignment of the fields.
-
 
 .. |wPalette| image:: images/wPalette.png
    :width: 200
    :align: middle
 
 
-wxGlade Requirements / Restrictions
-===================================
+wxGlade Requirements and Restrictions
+=====================================
 
 The user interface and internal data structures of wxGlade impose some restrictions on the structure of a window.
-A frame or panel can't have a widget as direct child; they always need a toplevel sizer first. So don't be surprised to see constructions like:
+A frame or panel cannnot have a widget as direct child. They always need a toplevel sizer first. So don't be surprised to see constructions like these:
 
  - frame -> sizer with single slot -> panel -> sizer ....
  - frame -> sizer with single slot -> notebook -> ...

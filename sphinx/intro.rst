@@ -60,26 +60,26 @@ wxGlade consists of five main windows:
    :align: center
 
    * - |wPalette| 
-     - Main **Palette** window: |br|
-       This is the main window with the main window. |br|
+     - Main **Palette** window: |br| |br|
+       This is the main window with the main menu. |br|
        There is an icon for each window and control type that can be added to a project.
    * - |wTree|
-     - **Tree** window: |br|
-       This window visualizes and allows to edit the structure of the project with it's
+     - **Tree** window: |br| |br|
+       This window visualizes and allows editing the structure of the project with it's
        application, windows, sizers and controls. |br|
-       On selection of an item, it's properties will be shown in the Properties window.
+       On selection of an item, it's properties will be shown in the *Properties* window.
    * - |wProperties|
-     - **Properties** window: |br|
-       This allows to display and edit properties of applications, windows and controls. |br|
-       To edit an item, select it in the Tree or Design window.            
+     - **Properties** window: |br| |br|
+       This lets you display and edit the properties of applications, windows and controls. |br|
+       To edit an item, select it in the *Tree* or *Design* window.
    * - |wDesign|
-     - **Design** window: |br|
-       Visualizes the design of the window; it is not 100% identical to the final window. |br|
-       To open this window, double-click a window's icon in the Tree window.
+     - **Design** window: |br| |br|
+       This one visualizes the design of the window. It is not 100% identical to the final window. |br|
+       To open this window, double-click a window's icon in the *Tree* window.
    * -
-     - **Preview** window |br|
-       A preview of the current window; should be 100% identical to the window as when it
-       is used later on.  
+     - **Preview** window |br| |br|
+       A preview of the current window. |br|
+       It should look 100% identical to the window when it is used in the application.
 
 
 .. seealso:: :doc:`reference` **for keyboard shortcuts and mouse actions.**
