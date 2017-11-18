@@ -19,7 +19,7 @@ import new_properties as np
 class EventsProperty(np.GridProperty):
     "Class EventsProperty"
     LABEL = 'Events'
-    validation_res = [False, re.compile(r'^(([a-zA-Z_]+[a-zA-Z0-9_-]*)|())$')]
+    validation_res = [False, re.compile(r'^(([a-zA-Z_]+[a-zA-Z0-9_-]*)|()|(lambda .*))$')]
     def __init__(self, events):
         # initialise instance
         cols = [(_('Event'), np.GridProperty.STRING),
