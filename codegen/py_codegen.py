@@ -381,11 +381,14 @@ from %(top_win_module)s import %(top_win_class)s\n\n"""
                 win_id = win_id[1:]
             else:
                 win_id = 'id=%s' % win_id
+            
+            if not handler.startswith("lambda "):
+                handler = 'self.%s'%handler
 
             if 'EVT_NAVIGATION_KEY' in event:
-                tmpl = '%(tab)sself.Bind(%(event)s, self.%(handler)s)\n'
+                tmpl = '%(tab)sself.Bind(%(event)s, %(handler)s)\n'
             else:
-                tmpl = '%(tab)sself.Bind(%(event)s, self.%(handler)s, %(win_id)s)\n'
+                tmpl = '%(tab)sself.Bind(%(event)s, %(handler)s, %(win_id)s)\n'
             details = {'tab':tab, 'event':self.cn(event), 'handler':handler, 'win_id':win_id}
             write(tmpl % details)
 
@@ -401,6 +404,7 @@ def %(handler)s(self, event):  # wxGlade: %(klass)s.<event_handler>
 %(tab)sprint("Event handler '%(handler)s' not implemented!")
 %(tab)sevent.Skip()
 """
+        event_handlers = [handler for handler in event_handlers if not handler[2].startswith("lambda ")]
         return BaseLangCodeWriter.generate_code_event_handler( self, code_obj, is_new, tab, prev_src, event_handlers )
 
     def generate_code_id(self, obj, id=None):
