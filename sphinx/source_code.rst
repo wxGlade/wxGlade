@@ -198,16 +198,17 @@ wxGlade allows you to enter handler names. For any of these names, empty method 
 
 **Example: button event EVT_BUTTON**
 
-The main event of a button is ``EVT_BUTTON``. In the following example we want to call a method ``on_execute_button_clicked`` whenever the "Execute" button is clicked.
+The main event of a button is ``EVT_BUTTON``.
+In the following example we want to call a method ``on_button_pressed`` whenever the button_1 is clicked.
 
 
-**Method 1: use wxGlade**
+**Method 1: use wxGlade to create a handler method**
 
 In the *Properties* window you can see the events (most controls have more than just one event) and enter the handler name:
 
 +-----------------------------------------------------------------------+
-|.. image:: images/Calculator_06_EVT_BUTTON.png                         |
-|    :width: 200                                                        |
+|.. image:: images/EVT_BUTTON_Method.png                                |
+|    :width: 385                                                        |
 |    :alt: EVT_BUTTON Event Handler                                     |
 +-----------------------------------------------------------------------+
 
@@ -215,18 +216,44 @@ The generated code will look like this::
 
     def __init__(self, *args, **kwds):
         ...
-        self.execute_button = wx.Button(self.notebook_1_pane_1, wx.ID_ANY, "Execute")
+        self.button_1 = wx.Button(self.panel_1, wx.ID_ANY, "1")
         ...
-        self.Bind(wx.EVT_BUTTON, self.on_button_clicked, self.execute_button)
+        self.Bind(wx.EVT_BUTTON, self.on_button_pressed, self.execute_button)
 
-    def on_execute_button_clicked(self, event):  # wxGlade: MyFrame.<event_handler>
-        print("Event handler 'on_execute_button_clicked' not implemented!")
+    def on_button_pressed(self, event):  # wxGlade: MyFrame.<event_handler>
+        print("Event handler 'on_button_pressed' not implemented!")
         event.Skip()
 
 The default handler just prints a message to the console and calls ``event.Skip()`` to forward the event to the the parent of the button.
 
+**Method 2 (Python only): enter a lambda function**
 
-**Method 2: register event handler**
+If you're generating Python code, then you may enter an anonymous lambda function as handler.
+
+In the example, the method ``on_button_pressed`` should be called back with the argument ``1``. |br|
+E.g. if you have a keypad of buttons ``0`` to ``9`` then you might prefer to handle the events like this to keep
+your business logic in the handler free from GUI related code.
+
+
++-----------------------------------------------------------------------+
+|.. image:: images/EVT_BUTTON_Lambda.png                                |
+|    :width: 385                                                        |
+|    :alt: lambda function as EVT_BUTTON Event Handler                  |
++-----------------------------------------------------------------------+
+
+The generated code will look like this::
+
+    def __init__(self, *args, **kwds):
+        ...
+        self.button_1 = wx.Button(self.panel_1, wx.ID_ANY, "1")
+        ....
+        self.Bind(wx.EVT_BUTTON, lambda event: self.on_button_pressed('1'), self.button_1)
+
+
+For anything non-trivial, the above 'Method 1' is recommended.
+
+
+**Method 3: register event handler**
 
 Alternatively, you can also register an event handler yourself, using code like this::
 
