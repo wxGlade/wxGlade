@@ -212,15 +212,16 @@ For Sizers you can achieve the same on the “Common” tab.</p>
 <p>GUI programs on the other hand, are event-driven and the flow depends on the user’s actions. The events like mouse clicks are delivered from the operating system or window manager to the application. The receiving side is an infinite loop, called “event loop” or “main loop”. When you have a look at the last lines of a Python file that wxGlade wrote, you will see that the <code class="docutils literal"><span class="pre">MainLoop</span></code> method of your application is called. The main loop receives events from e.g. the Windows operating sytem and dispatches it to windows and controls. To handle things like mouse clicks, menu selections, button clicks etc. you need to register handlers.</p>
 <p>wxGlade allows you to enter handler names. For any of these names, empty method stubs will be generated in the source code file and the methods will be bound when the window is created. Alternatively, you may define and register handlers yourself.</p>
 <p><strong>Example: button event EVT_BUTTON</strong></p>
-<p>The main event of a button is <code class="docutils literal"><span class="pre">EVT_BUTTON</span></code>. In the following example we want to call a method <code class="docutils literal"><span class="pre">on_execute_button_clicked</span></code> whenever the “Execute” button is clicked.</p>
-<p><strong>Method 1: use wxGlade</strong></p>
+<p>The main event of a button is <code class="docutils literal"><span class="pre">EVT_BUTTON</span></code>.
+In the following example we want to call a method <code class="docutils literal"><span class="pre">on_button_pressed</span></code> whenever the button_1 is clicked.</p>
+<p><strong>Method 1: use wxGlade to create a handler method</strong></p>
 <p>In the <em>Properties</em> window you can see the events (most controls have more than just one event) and enter the handler name:</p>
 <table border="1" class="docutils">
 <colgroup>
 <col width="100%" />
 </colgroup>
 <tbody valign="top">
-<tr class="row-odd"><td><a class="first last reference internal image-reference" href="_images/Calculator_06_EVT_BUTTON.png"><img alt="EVT_BUTTON Event Handler" src="_images/Calculator_06_EVT_BUTTON.png" style="width: 200px;" /></a>
+<tr class="row-odd"><td><a class="first last reference internal image-reference" href="_images/EVT_BUTTON_Method.png"><img alt="EVT_BUTTON Event Handler" src="_images/EVT_BUTTON_Method.png" style="width: 385px;" /></a>
 </td>
 </tr>
 </tbody>
@@ -228,17 +229,41 @@ For Sizers you can achieve the same on the “Common” tab.</p>
 <p>The generated code will look like this:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwds</span><span class="p">):</span>
     <span class="o">...</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">execute_button</span> <span class="o">=</span> <span class="n">wx</span><span class="o">.</span><span class="n">Button</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">notebook_1_pane_1</span><span class="p">,</span> <span class="n">wx</span><span class="o">.</span><span class="n">ID_ANY</span><span class="p">,</span> <span class="s2">&quot;Execute&quot;</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">button_1</span> <span class="o">=</span> <span class="n">wx</span><span class="o">.</span><span class="n">Button</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">panel_1</span><span class="p">,</span> <span class="n">wx</span><span class="o">.</span><span class="n">ID_ANY</span><span class="p">,</span> <span class="s2">&quot;1&quot;</span><span class="p">)</span>
     <span class="o">...</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">Bind</span><span class="p">(</span><span class="n">wx</span><span class="o">.</span><span class="n">EVT_BUTTON</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">on_button_clicked</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">execute_button</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">Bind</span><span class="p">(</span><span class="n">wx</span><span class="o">.</span><span class="n">EVT_BUTTON</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">on_button_pressed</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">execute_button</span><span class="p">)</span>
 
-<span class="k">def</span> <span class="nf">on_execute_button_clicked</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>  <span class="c1"># wxGlade: MyFrame.&lt;event_handler&gt;</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Event handler &#39;on_execute_button_clicked&#39; not implemented!&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">on_button_pressed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>  <span class="c1"># wxGlade: MyFrame.&lt;event_handler&gt;</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Event handler &#39;on_button_pressed&#39; not implemented!&quot;</span><span class="p">)</span>
     <span class="n">event</span><span class="o">.</span><span class="n">Skip</span><span class="p">()</span>
 </pre></div>
 </div>
 <p>The default handler just prints a message to the console and calls <code class="docutils literal"><span class="pre">event.Skip()</span></code> to forward the event to the the parent of the button.</p>
-<p><strong>Method 2: register event handler</strong></p>
+<p><strong>Method 2 (Python only): enter a lambda function</strong></p>
+<p>If you’re generating Python code, then you may enter an anonymous lambda function as handler.</p>
+<p>In the example, the method <code class="docutils literal"><span class="pre">on_button_pressed</span></code> should be called back with the argument <code class="docutils literal"><span class="pre">1</span></code>. <br/>
+E.g. if you have a keypad of buttons <code class="docutils literal"><span class="pre">0</span></code> to <code class="docutils literal"><span class="pre">9</span></code> then you might prefer to handle the events like this to keep
+your business logic in the handler free from GUI related code.</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="100%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><a class="first last reference internal image-reference" href="_images/EVT_BUTTON_Lambda.png"><img alt="lambda function as EVT_BUTTON Event Handler" src="_images/EVT_BUTTON_Lambda.png" style="width: 385px;" /></a>
+</td>
+</tr>
+</tbody>
+</table>
+<p>The generated code will look like this:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwds</span><span class="p">):</span>
+    <span class="o">...</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">button_1</span> <span class="o">=</span> <span class="n">wx</span><span class="o">.</span><span class="n">Button</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">panel_1</span><span class="p">,</span> <span class="n">wx</span><span class="o">.</span><span class="n">ID_ANY</span><span class="p">,</span> <span class="s2">&quot;1&quot;</span><span class="p">)</span>
+    <span class="o">....</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">Bind</span><span class="p">(</span><span class="n">wx</span><span class="o">.</span><span class="n">EVT_BUTTON</span><span class="p">,</span> <span class="k">lambda</span> <span class="n">event</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">on_button_pressed</span><span class="p">(</span><span class="s1">&#39;1&#39;</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">button_1</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>For anything non-trivial, the above ‘Method 1’ is recommended.</p>
+<p><strong>Method 3: register event handler</strong></p>
 <p>Alternatively, you can also register an event handler yourself, using code like this:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="bp">self</span><span class="o">.</span><span class="n">execute_button</span><span class="o">.</span><span class="n">Bind</span><span class="p">(</span><span class="n">wx</span><span class="o">.</span><span class="n">EVT_BUTTON</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">on_execute_button_clicked</span><span class="p">)</span>
 </pre></div>

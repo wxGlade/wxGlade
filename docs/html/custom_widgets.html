@@ -93,6 +93,73 @@ but then the “Class” property must be fully qualified:<br/>
 </pre></div>
 </div>
 <p>The Arguments <code class="docutils literal"><span class="pre">$parent</span></code> and <code class="docutils literal"><span class="pre">$id</span></code> were replaced with the required code. There are two more magic arguments: <code class="docutils literal"><span class="pre">$width</span></code> and <code class="docutils literal"><span class="pre">$height</span></code>.</p>
+<div class="section" id="example-matplotlib-canvas">
+<h2>Example: matplotlib canvas<a class="headerlink" href="#example-matplotlib-canvas" title="Permalink to this headline">¶</a></h2>
+<p>The above example was rather simple to implement as the class <code class="docutils literal"><span class="pre">ImagePanel</span></code> was implemented such that no extra
+arguments or code were required. It was just called with the parent window and the default ID as arguments. <br/>
+Sometimes, the widget to be used needs some things to be set up before it can be created. <br/>
+E.g. if you want to use the matplotlib <code class="docutils literal"><span class="pre">FigureCanvas</span></code>, this needs a <code class="docutils literal"><span class="pre">Figure</span></code> instance to be created and supplied as argument.</p>
+<p>This code creates a canvas and plots a sine function:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span> <span class="kn">import</span> <span class="nn">matplotlib</span>
+ <span class="kn">from</span> <span class="nn">matplotlib.figure</span> <span class="k">import</span> <span class="n">Figure</span>
+ <span class="kn">from</span> <span class="nn">matplotlib.backends.backend_wxagg</span> <span class="k">import</span> <span class="n">FigureCanvasWxAgg</span> <span class="k">as</span> <span class="n">FigureCanvas</span>
+
+ <span class="c1"># create the figure with a single plot and create a canvas with the figure</span>
+ <span class="n">figure</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">matplotlib_figure</span> <span class="o">=</span> <span class="n">Figure</span><span class="p">()</span>
+ <span class="bp">self</span><span class="o">.</span><span class="n">matplotlib_axes</span> <span class="o">=</span> <span class="n">figure</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="mi">111</span><span class="p">)</span>  <span class="c1"># 1x1 grid, first subplot</span>
+ <span class="bp">self</span><span class="o">.</span><span class="n">matplotlib_canvas</span> <span class="o">=</span> <span class="n">FigureCanvas</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">panel_1</span><span class="p">,</span> <span class="n">wx</span><span class="o">.</span><span class="n">ID_ANY</span><span class="p">,</span> <span class="n">figure</span><span class="p">)</span>
+
+<span class="c1"># draw a sine function</span>
+<span class="kn">import</span> <span class="nn">numpy</span>
+<span class="n">x</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">10</span><span class="p">,</span><span class="mf">0.1</span><span class="p">)</span>
+<span class="n">y</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+<span class="bp">self</span><span class="o">.</span><span class="n">matplotlib_axes</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+<span class="c1"># show the plot</span>
+<span class="bp">self</span><span class="o">.</span><span class="n">matplotlib_canvas</span><span class="o">.</span><span class="n">draw</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>This example shows how to use the wxGlade Custom Widget <img alt="custom" src="_images/custom.png" /> to include a matplotlib canvas in your application:</p>
+<table border="1" class="colwidths-given docutils align-center">
+<colgroup>
+<col width="40%" />
+<col width="60%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><strong>Properties -&gt; Common:</strong> <br/> <br/>
+The class <code class="docutils literal"><span class="pre">FigureCanvas</span></code> will be instantiated.</td>
+<td><a class="reference internal" href="_images/matplotlib_class.png"><img alt="Class name" class="align-middle" src="_images/matplotlib_class.png" style="width: 460px;" /></a></td>
+</tr>
+<tr class="row-even"><td><strong>Properties -&gt; Widget:</strong> <br/> <br/>
+The class will be instantiated with the arguments <code class="docutils literal"><span class="pre">$parent</span></code>, <code class="docutils literal"><span class="pre">$id</span></code> and <code class="docutils literal"><span class="pre">figure</span></code>. <br/>
+The argument <code class="docutils literal"><span class="pre">figure</span></code> is non-standard.
+It will be defined in <em>Properties</em> -&gt; Code.</td>
+<td><a class="reference internal" href="_images/matplotlib_arguments.png"><img alt="Class instantiation arguments" class="align-middle" src="_images/matplotlib_arguments.png" style="width: 460px;" /></a></td>
+</tr>
+<tr class="row-odd"><td><strong>Properties -&gt; Code:</strong> <br/> <br/>
+The import statement will make the required classes and modules available on module level. <br/> <br/>
+Right before class instantiation, a Figure instance with a single subplot will be created.</td>
+<td><a class="reference internal" href="_images/matplotlib_code.png"><img alt="extra import and setup code" class="align-middle" src="_images/matplotlib_code.png" style="width: 460px;" /></a></td>
+</tr>
+<tr class="row-even"><td><strong>Result:</strong> <br/> <br/>
+The Python file has a very basic function plotter in it’s event handler for the “Plot” button.</td>
+<td><a class="reference internal" href="_images/matplotlib_screenshot.png"><img alt="the running application" class="align-middle" src="_images/matplotlib_screenshot.png" style="width: 320px;" /></a></td>
+</tr>
+</tbody>
+</table>
+<dl class="docutils">
+<dt>The files can be found in the folder <code class="docutils literal"><span class="pre">wxglade/examples/matplotlib</span></code>:</dt>
+<dd><ul class="first last simple">
+<li><a class="reference external" href="../../examples/matplotlib/matplotlib_example.wxg">matplotlib_example.wxg</a></li>
+<li><a class="reference external" href="../../examples/matplotlib/matplotlib_example.py">matplotlib_example.py</a></li>
+</ul>
+</dd>
+</dl>
+<p>To run the example, you need to have numpy and matplotlib installed, of course.</p>
+<p>The above approach is OK for a quick &amp; dirty prototype. The advantage is that all code is contained within wxGlade
+and therefore you may just copy it from one project or window to another.</p>
+<p>Once things get more complex, it’s better to implement a custom class which does not require such extra code.
+The resulting code will be cleaner and also easier to maintain and extend.</p>
+</div>
 </div>
 
 
@@ -104,6 +171,14 @@ but then the “Class” property must be fully qualified:<br/>
             <p class="logo"><a href="index.html">
               <img class="logo" src="_static/wxglade.png" alt="Logo"/>
             </a></p>
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Custom Widget</a><ul>
+<li><a class="reference internal" href="#example-matplotlib-canvas">Example: matplotlib canvas</a></li>
+</ul>
+</li>
+</ul>
+
   <h4>Previous topic</h4>
   <p class="topless"><a href="bitmaps.html"
                         title="previous chapter">Bitmaps</a></p>
