@@ -71,7 +71,7 @@ backed_up = {}      # Set of file names already backed up during this session (a
 preferences = None  # User preferences;  @type: common.Preferences   @see: L{common.Preferences}
 
 
-label_width = 110   # width of new created labels; new version
+label_width = 96     # width of labels in Property window
 
 tooltip_time = 3    # Number of seconds a tooltip will be shown
 tooltip_width = 50  # Maximum width to split tooltips into

@@ -251,6 +251,12 @@ class Property(object):
         # if hasattr(self, "label") and c is self.label: return True# this doesn't work f. wx.lib.stattext.GenStaticText
         return False
 
+    # editor helpers
+    def _get_label(self, label, panel):
+        width, height = panel.GetTextExtent(label)
+        width = max(width, config.label_width)
+        return wx.lib.stattext.GenStaticText( panel, -1, label, size=(width,height) )
+
     ####################################################################################################################
     # helpers
     def _mangle(self, label):
@@ -326,8 +332,7 @@ class SpinProperty(Property):
 
         hsizer = wx.BoxSizer(wx.HORIZONTAL)
         # label
-        label = self._find_label()
-        self.label_ctrl = label = wx.lib.stattext.GenStaticText( panel, -1, label, size=(config.label_width, -1) )
+        label = self.label_ctrl = self._get_label(self._find_label(), panel)
         #hsizer.Add(label, 2, wx.ALL | wx.ALIGN_CENTER, 3)
         hsizer.Add(label, 0, wx.ALL | wx.ALIGN_CENTER, 3)
         # checkbox, if applicable
@@ -465,8 +470,7 @@ class LayoutSpanProperty(Property):
 
         hsizer = wx.BoxSizer(wx.HORIZONTAL)
         # label
-        label = self._find_label()
-        self.label_ctrl = label = wx.lib.stattext.GenStaticText( panel, -1, label, size=(config.label_width, -1) )
+        self.label_ctrl = label = self._get_label(self._find_label(), panel)
         #hsizer.Add(label, 2, wx.ALL | wx.ALIGN_CENTER, 3)
         hsizer.Add(label, 0, wx.ALL | wx.ALIGN_CENTER, 3)
         # checkbox, if applicable
@@ -540,9 +544,7 @@ class CheckBoxProperty(Property):
     def create_editor(self, panel, sizer):
         self.checkbox = wx.CheckBox(panel, -1, '')
         self._display_value()
-        label = self._find_label()
-        label_width = max(config.label_width, panel.GetTextExtent(label)[0])
-        self.label_ctrl = label = wx.lib.stattext.GenStaticText(panel, -1, label, size=(label_width, -1))
+        self.label_ctrl = label = self._get_label(self._find_label(), panel)
         hsizer = wx.BoxSizer(wx.HORIZONTAL)
         #hsizer.Add(label, 2, wx.ALIGN_CENTER_VERTICAL | wx.ALL, 3)
         hsizer.Add(label, 0, wx.ALIGN_CENTER_VERTICAL | wx.ALL, 3)
@@ -1119,8 +1121,7 @@ class TextProperty(Property):
 
         hsizer = wx.BoxSizer(wx.HORIZONTAL)
         # label
-        label = self._find_label()
-        self.label_ctrl = label = wx.lib.stattext.GenStaticText( panel, -1, label, size=(config.label_width, -1) )
+        self.label_ctrl = label = self._get_label(self._find_label(), panel)
         #hsizer.Add(label, 2, wx.ALL | wx.ALIGN_CENTER, 3)
         hsizer.Add(label, 0, wx.ALL | wx.ALIGN_CENTER, 3)
         # checkbox, if applicable
