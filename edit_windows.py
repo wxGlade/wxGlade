@@ -80,7 +80,7 @@ class EditBase(EventsMixin, np.PropertyOwner):
     PROPERTIES = _PROPERTIES
 
     # the following will be placed on the last tab
-    _EXTRA_PROPERTIES = ["Events", "events", "Code", "extracode", "extraproperties"]
+    _EXTRA_PROPERTIES = ["Events", "events", "Code", "extracode", "extracode_pre", "extracode_post", "extraproperties"]
     EXTRA_PROPERTIES = _EXTRA_PROPERTIES
 
     _PROPERTY_HELP={ "class": _("If you change the default value, it will be interpreted as the name "
@@ -93,8 +93,22 @@ class EditBase(EventsMixin, np.PropertyOwner):
                      "custom_base": _("A comma-separated list of custom base classes. The first will be invoked\n"
                                       "with the same parameters as this class, while for the others the default\n"
                                       "constructor will be used. You should probably not use this if \n"
-                                      "overwrite existing sources is not set.") }
-    _PROPERTY_LABELS = {"custom_base":'Base class(es)'}
+                                      "overwrite existing sources is not set."),
+                     "extracode":"This code will be inserted at the beginning of the file.\n"
+                                 "Use this to add e.g. import statements.\n\n"
+                                 "The code will be added to the section marked with '# begin wxGlade: extracode'",
+                     "extracode_pre":"This code will be inserted right before the widget is created.\n"
+                                     "Use this e.g. to create argument values for the widget.\n\n"
+                                     "This is an experimental feature; please provide feedback whether you"
+                                     "like it or not.",
+                     "extracode_post":"This code will be inserted right after the widget is created.\n"
+                                      "Use this to set properties that are not added by wxGlade itself.\n\n"
+                                      "This is an experimental feature; please provide feedback whether you"
+                                      "like it or not."}
+    _PROPERTY_LABELS = {"custom_base":'Base class(es)',
+                        "extracode":"Extra (import) code for this widget",
+                        "extracode_pre":"Code to be inserted before",
+                        "extracode_post":"Code to be inserted after"}
     is_sizer = False
 
     def __init__(self, name, klass, parent, id, custom_class=True):
@@ -122,7 +136,9 @@ class EditBase(EventsMixin, np.PropertyOwner):
         else:
             self.custom_base = None
 
-        self.extracode       = np.CodePropertyD()
+        self.extracode       = np.CodeProperty()
+        self.extracode_pre   = np.CodeProperty()
+        self.extracode_post  = np.CodeProperty()
         self.extraproperties = np.ExtraPropertiesProperty()
 
         self.widget = None  # this is the reference to the actual wxWindow widget, created when required

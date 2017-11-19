@@ -734,14 +734,8 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
         # try to see if there's some extra code to add to this class
         if not self.preview:
             extra_code = getattr(builder, 'extracode', getattr(code_obj, 'extracode', "") or "")
-            if extra_code:
-                extra_code = re.sub(r'\\n', '\n', extra_code)
+            if extra_code and not extra_code in self.classes[klass].extra_code:
                 self.classes[klass].extra_code.append(extra_code)
-                if not is_new:
-                    self.warning( '%s has extra code, but you are not overwriting '
-                                  'existing sources: please check that the resulting '
-                                  'code is correct!' % code_obj.name )
-
             # Don't add extra_code to self._current_extra_code here, that is  handled later.
             # Otherwise we'll emit duplicate extra code for frames.
 
@@ -845,10 +839,6 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
 
                 # insert the extra code of this class
                 extra_code = self.classes[klass].extra_code[::-1]
-                # if there's extra code but we are not overwriting existing sources, warn the user
-                if extra_code:
-                    self.warning( '%s (or one of its children) has extra code classes, but you are not overwriting '
-                                  'existing sources: please check that the resulting code is correct!' % code_obj.name )
                 code = self._tagcontent('extracode', extra_code)
                 prev_src.replace('<%swxGlade replace extracode>' % self.nonce, code)
 
@@ -915,10 +905,16 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
 
         if not sub_obj.is_sizer:  # the object is a wxWindow instance
             if sub_obj.node.children and not sub_obj.is_toplevel:
-                init.reverse()
+                init.reverse()  # parents_init will be reversed in the end
                 klass.parents_init.extend(init)
             else:
                 klass.init.extend(init)
+
+            if not self.preview:
+                if "extracode_pre" in sub_obj.properties and sub_obj.extracode_pre:
+                    init = sub_obj.properties["extracode_pre"].get_lines() + init
+                if "extracode_post" in sub_obj.properties and sub_obj.extracode_post:
+                    init += sub_obj.properties["extracode_post"].get_lines()
 
             # Add a dependency of the current object on its parent
             klass.deps.append((sub_obj, sub_obj.parent))
@@ -931,15 +927,9 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
 
             # try to see if there's some extra code to add to this class
             if not self.preview:
-                #extra_code = getattr(builder, 'extracode', sub_obj.properties.get('extracode', ""))
                 extra_code = getattr(builder, 'extracode', getattr(sub_obj, 'extracode', "") or "" )
-                if extra_code:
-                    extra_code = re.sub(r'\\n', '\n', extra_code)
+                if extra_code and not extra_code in klass.extra_code:
                     klass.extra_code.append(extra_code)
-                    # if we are not overwriting existing source, warn the user about the presence of extra code
-                    if not self.multiple_files and self.previous_source:
-                        self.warning( '%s has extra code, but you are not overwriting existing sources: please check '
-                                      'that the resulting code is correct!' % sub_obj.name )
         else:  # the object is a sizer
             klass.sizers_init.extend(init)
 
