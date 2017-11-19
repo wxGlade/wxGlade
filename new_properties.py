@@ -1061,6 +1061,7 @@ class TextProperty(Property):
     CONTROLNAMES = ["enabler", "text"]
     validation_re = None # for derived classes
     STRIP = False
+    _PROPORTION = 1
     def __init__(self, value="", multiline=False, strip=False, default_value=_DefaultArgument, name=None, fixed_height=False):
         self.multiline = multiline
         self.text = self.previous_value = None
@@ -1158,7 +1159,7 @@ class TextProperty(Property):
             #sizer.Add(hsizer, 0, wx.EXPAND)
         else:
             sizer.Add(hsizer, 0, wx.EXPAND)
-            sizer.Add(self.text, 1, wx.ALL |wx.EXPAND, 3)
+            sizer.Add(self.text, self._PROPORTION, wx.ALL |wx.EXPAND, 3)
             if self.multiline: # for multiline make it higher
                 h = self.text.GetCharHeight()
                 hsizer.SetItemMinSize(self.text, -1, h * 3)
@@ -1863,6 +1864,7 @@ class GridProperty(Property):
 
     CONTROLNAMES = ["btn", "buttons", "grid"]
     GROW = True
+    _PROPORTION = 5
     validation_res = None # one per column
     def __init__(self, value, cols, default_row=None,
                  can_add=True, can_remove=True, can_insert=True, can_remove_last=True,
@@ -1950,7 +1952,7 @@ class GridProperty(Property):
             box_sizer.Add(btn_sizer, 0, wx.BOTTOM | wx.EXPAND, 2)
         box_sizer.Add(self.grid, 1, wx.EXPAND)
         # add our sizer to the main sizer   XXX change if required
-        sizer.Add(box_sizer, 5, wx.EXPAND)
+        sizer.Add(box_sizer, self._PROPORTION, wx.EXPAND)
 
         self.update_display(start_editing=True)
 
@@ -2245,6 +2247,7 @@ class ExtraPropertiesProperty(GridProperty):
     TOOLTIP = ('You can use this property to add some extra custom properties to this widget.\n\n'
                'For each property "prop" with value "val", wxGlade will generate a'
                '"widget.SetProp(val)" line (or a "<prop>val</prop>" line for XRC).')
+    _PROPORTION = 3
 
     def __init__(self):
         cols = [(_('Property'), GridProperty.STRING),
