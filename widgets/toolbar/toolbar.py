@@ -43,8 +43,10 @@ class ToolsDialog(wx.Dialog):
         self.long_help = wx.TextCtrl(self, wx.ID_ANY, "")
         self.id = wx.TextCtrl(self, wx.ID_ANY, "")
         self.type = wx.RadioBox(self, wx.ID_ANY, "Type", choices=["Normal", "Checkable", "Radio"], majorDimension=1, style=wx.RA_SPECIFY_COLS)
-        self.ok = wx.Button(self, wx.ID_OK, "")
-        self.cancel = wx.Button(self, wx.ID_CANCEL, "")
+        # dialog action buttons; these will be handled, instead of using stock OK/Cancel buttons
+        self.ok     = wx.Button(self, wx.ID_ANY, "OK")
+        self.cancel = wx.Button(self, wx.ID_ANY, "Cancel")
+        # editor action buttons
         self.move_up = wx.Button(self, wx.ID_ANY, "Up")
         self.move_down = wx.Button(self, wx.ID_ANY, "Down")
         self.add = wx.Button(self, wx.ID_ANY, "&Add")
