@@ -372,7 +372,7 @@ class ToolsDialog(wx.Dialog):
         self.items.Select(self.selected_index)
 
     def _insert_item(self, index, item):
-        compat.ListCtrl_InsertStringItem(self.items, index, item.label)
+        compat.ListCtrl_InsertStringItem(self.items, index, item[0])
         for col, value in enumerate(item):
             if col==0: continue
             compat.ListCtrl_SetStringItem(self.items, index, col, compat.unicode(value))
