@@ -3,6 +3,7 @@ Mixin class for 'events' property
 
 @copyright: 2002-2004 Alberto Griggio
 @copyright: 2016 Carsten Grohmann
+@copyright: 2017 Dietmar Schwertberger
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
@@ -19,6 +20,13 @@ import new_properties as np
 class EventsProperty(np.GridProperty):
     "Class EventsProperty"
     LABEL = 'Events'
+    TOOLTIP = ("Enter a handler name for each event that should be handled.\n"
+               "wxGlade will then create a method with that name and register it as event handler.\n"
+               "\nFor Python, you may also enter a lambda function as handler.\n\n"
+               "If you need to handle event types that are not listed here,\n"
+               "then you need to create and register the handler yourself.\n"
+               "You can do so in your own source that you derive from the\n"
+               "wxGlade generated code or within wxGlade on the 'Code' tab.")
     validation_res = [False, re.compile(r'^(([a-zA-Z_]+[a-zA-Z0-9_-]*)|()|(lambda .*))$')]
     def __init__(self, events):
         # initialise instance
