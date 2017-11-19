@@ -584,6 +584,10 @@ class BaseWidgetWriter(StylesMixin, BaseCodeWriter):
                 self._logger.warn( _('Ignore unknown event %s for %s'), (event, obj.klass) )
                 continue
 
+            if self.codegen.preview and handler.startswith("lambda "):
+                if self.codegen.language!='python': continue
+                handler = "lambda event: print('event handler: lambda function')"
+
             major = 'wx%d' % self.codegen.for_version[0]
             detailed = 'wx%d%d' % self.codegen.for_version
             try:
