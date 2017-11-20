@@ -246,6 +246,7 @@ class wxGladeFrame(wx.Frame):
 
         # set window geometry
         main_geometry = None
+        extend_Y = False
         if config.preferences.remember_geometry:
             main_geometry = config.preferences.get_geometry('main')
             if isinstance(main_geometry, tuple):
@@ -254,7 +255,12 @@ class wxGladeFrame(wx.Frame):
             main_geometry = wx.Rect()
             main_geometry.TopLeft = wx.Display().GetClientArea().GetTopLeft()
             main_geometry.Size = (-1, -1)
+            extend_Y = True
         self._set_geometry(self, main_geometry)
+        if extend_Y:
+            # expand in Y by 40 pixels
+            size = self.GetSize()
+            self.SetSize( (size[0], size[1]+20) )
         self.Show()
         main_geometry.Size = self.GetSize()
 
@@ -288,19 +294,19 @@ class wxGladeFrame(wx.Frame):
         misc.set_focused_widget(common.app_tree.app)
 
         # disable autosave checks during unittests
-        if not getattr(sys, '_called_from_test', False):
-            if common.check_autosaved(None):
-                res = wx.MessageBox(
-                    _('There seems to be auto saved data from last wxGlade session: do you want to restore it?'),
-                    _('Auto save detected'), style=wx.ICON_QUESTION | wx.YES_NO)
-                if res == wx.YES:
-                    filename = common.get_name_for_autosave()
-                    if self._open_app(filename, add_to_history=False):
-                        self.cur_dir = os.path.dirname(filename)
-                        common.app_tree.app.saved = False
-                        common.app_tree.app.filename = None
-                        self.user_message(_('Auto save loaded'))
-                common.remove_autosaved()
+        if config.testing: return
+        if common.check_autosaved(None):
+            res = wx.MessageBox(
+                _('There seems to be auto saved data from last wxGlade session: do you want to restore it?'),
+                _('Auto save detected'), style=wx.ICON_QUESTION | wx.YES_NO)
+            if res == wx.YES:
+                filename = common.get_name_for_autosave()
+                if self._open_app(filename, add_to_history=False):
+                    self.cur_dir = os.path.dirname(filename)
+                    common.app_tree.app.saved = False
+                    common.app_tree.app.filename = None
+                    self.user_message(_('Auto save loaded'))
+            common.remove_autosaved()
 
     # menu and actions #################################################################################################
     def create_menu(self, parent):
@@ -478,11 +484,12 @@ class wxGladeFrame(wx.Frame):
         if not property_geometry:
             property_geometry = wx.Rect()
             property_geometry.Position = main_geometry.BottomLeft
-            property_geometry.Size = (345, 350)
+            width = max( self.Size[0], 345 )
+            property_geometry.Size = (width, 550)
             # sometimes especially on GTK GetSize seems to ignore window decorations (bug still exists on wx3)
             if wx.Platform != '__WXMSW__': property_geometry.Y += 40
             # set size on Mac manually
-            if wx.Platform == '__WXMAC__': property_geometry.Size = (345, 384)
+            if wx.Platform == '__WXMAC__': property_geometry.Size = (width, 584)
 
         self._set_geometry(self.property_frame, property_geometry)
         self.property_frame.Show()
@@ -493,7 +500,7 @@ class wxGladeFrame(wx.Frame):
 
         app = application.Application()
         common.app_tree = WidgetTree(self.tree_frame, app)
-        self.tree_frame.SetSize((300, 300))
+        self.tree_frame.SetSize((350, 700))
 
         def on_tree_frame_close(event):
             #menu_bar.Check(TREE_ID, False)
@@ -509,7 +516,7 @@ class wxGladeFrame(wx.Frame):
         if not tree_geometry:
             tree_geometry = wx.Rect()
             tree_geometry.Position = main_geometry.TopRight
-            tree_geometry.Size = (250, 350)
+            tree_geometry.Size = (350, 700)
             # sometimes especially on GTK GetSize seems to ignore window decorations (bug still exists on wx3)
             if wx.Platform != '__WXMSW__':
                 tree_geometry.X += 10
