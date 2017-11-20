@@ -1904,6 +1904,7 @@ class GridProperty(Property):
         if self.can_add or self.can_insert or self.can_remove:
             btn_sizer = wx.BoxSizer(wx.HORIZONTAL)
             apply_btn = wx.Button(panel, wx.ID_ANY, _("  &Apply  "), style=wx.BU_EXACTFIT)
+            compat.SetToolTip(apply_btn, "Alt-A")
             btn_sizer.Add(apply_btn, 0, extra_flag | wx.RIGHT, 16)
 
             # the add/insert/remove buttons
@@ -1925,6 +1926,7 @@ class GridProperty(Property):
                 if btn: btn_sizer.Add( btn, 0, wx.LEFT | wx.RIGHT | extra_flag, 4 )
             self.buttons.insert(0, apply_btn)
             reset_btn = wx.Button(panel, wx.ID_ANY, _("  Rese&t  "), style=wx.BU_EXACTFIT)
+            compat.SetToolTip(reset_btn, "Alt-T or Ctrl-T")
             reset_btn.Bind(wx.EVT_BUTTON, self.reset)
             btn_sizer.AddStretchSpacer()
             btn_sizer.Add(reset_btn, 0, extra_flag | wx.LEFT, 16)
@@ -1974,12 +1976,17 @@ class GridProperty(Property):
     def on_key(self, event):
         # handle Ctrl-I, Ctrl-A, Ctrl-R; Alt-A will be handled by the button itself
         key = (event.GetKeyCode(), event.GetModifiers())
-        if key==(73,2): # Ctrl-I
+        print("on_key", key)
+        if key in ((73,2),(73,1)): # Ctrl-I, Alt-I
             self.insert_row(event)
-        elif key==(65,2): # Ctrl-A
+        elif key in ((65,2),(68,1)): # Ctrl-A, Alt-D
             self.add_row(event)
+        elif key==(65,1): # Alt-A
+            self.apply(event)
         elif key==(82,2): # Ctrl-R
             self.remove_row(event)
+        elif key in ((84,2),(84,1)): # Ctrl-T, Alt-T
+            self.reset(event)
         else:
             event.Skip()
 
