@@ -70,12 +70,13 @@ The Arguments ``$parent`` and ``$id`` were replaced with the required code. Ther
 Example: matplotlib canvas
 ==========================
 
-The above example was rather simple to implement as the class ``ImagePanel`` was implemented such that no extra
-arguments or code were required. It was just called with the parent window and the default ID as arguments. |br|
+The above example was rather simple to implement as the class ``ImagePanel`` did not require any extra
+arguments or code. It was just called with the parent window and the default ID as arguments. |br|
 Sometimes, the widget to be used needs some things to be set up before it can be created. |br|
-E.g. if you want to use the matplotlib ``FigureCanvas``, this needs a ``Figure`` instance to be created and supplied as argument.
+E.g. if you want to use the matplotlib ``FigureCanvas``, this needs a ``Figure`` instance to be created and supplied as argument. To use it from within wxGlade, you may write a wrapper class around it or enter the required extra code in wxGlade.
 
-This code creates a canvas and plots a sine function::
+
+This code creates a matplotlib canvas and plots a sine function::
 
     import matplotlib
     from matplotlib.figure import Figure
