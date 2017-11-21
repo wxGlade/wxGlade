@@ -61,7 +61,7 @@ class StylesMixin(object):
             flags = self.combine_styles(flags)
 
         if hasattr(self, 'cn') and getattr(self, 'format_flags', True):
-            flags = [self.cn(f) for f in flags]
+            flags = [self.cn(f) for f in flags if f]
 
         tmpl_flag_join = getattr(self, 'tmpl_flag_join', '|')
         flags = tmpl_flag_join.join(sorted(flags))
