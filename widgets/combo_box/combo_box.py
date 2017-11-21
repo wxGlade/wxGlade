@@ -38,7 +38,7 @@ class EditComboBox(ManagedBase, EditStylesMixin):
         if compat.IS_PHOENIX:
             # we prefer ComboCtrl as EVT_LEFT_DOWN does not work otherwise (ComboBox has no GetTextCtrl method)
             if selection!=-1 and choices:
-                value = choices[selection][0]
+                value = choices[selection]
             else:
                 value = ""
             self.widget = wx.ComboCtrl(self.parent.widget, self.id, value=value)
