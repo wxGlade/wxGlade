@@ -95,11 +95,11 @@ but then the “Class” property must be fully qualified:<br/>
 <p>The Arguments <code class="docutils literal"><span class="pre">$parent</span></code> and <code class="docutils literal"><span class="pre">$id</span></code> were replaced with the required code. There are two more magic arguments: <code class="docutils literal"><span class="pre">$width</span></code> and <code class="docutils literal"><span class="pre">$height</span></code>.</p>
 <div class="section" id="example-matplotlib-canvas">
 <h2>Example: matplotlib canvas<a class="headerlink" href="#example-matplotlib-canvas" title="Permalink to this headline">¶</a></h2>
-<p>The above example was rather simple to implement as the class <code class="docutils literal"><span class="pre">ImagePanel</span></code> was implemented such that no extra
-arguments or code were required. It was just called with the parent window and the default ID as arguments. <br/>
+<p>The above example was rather simple to implement as the class <code class="docutils literal"><span class="pre">ImagePanel</span></code> did not require any extra
+arguments or code. It was just called with the parent window and the default ID as arguments. <br/>
 Sometimes, the widget to be used needs some things to be set up before it can be created. <br/>
-E.g. if you want to use the matplotlib <code class="docutils literal"><span class="pre">FigureCanvas</span></code>, this needs a <code class="docutils literal"><span class="pre">Figure</span></code> instance to be created and supplied as argument.</p>
-<p>This code creates a canvas and plots a sine function:</p>
+E.g. if you want to use the matplotlib <code class="docutils literal"><span class="pre">FigureCanvas</span></code>, this needs a <code class="docutils literal"><span class="pre">Figure</span></code> instance to be created and supplied as argument. To use it from within wxGlade, you may write a wrapper class around it or enter the required extra code in wxGlade.</p>
+<p>This code creates a matplotlib canvas and plots a sine function:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span> <span class="kn">import</span> <span class="nn">matplotlib</span>
  <span class="kn">from</span> <span class="nn">matplotlib.figure</span> <span class="k">import</span> <span class="n">Figure</span>
  <span class="kn">from</span> <span class="nn">matplotlib.backends.backend_wxagg</span> <span class="k">import</span> <span class="n">FigureCanvasWxAgg</span> <span class="k">as</span> <span class="n">FigureCanvas</span>
