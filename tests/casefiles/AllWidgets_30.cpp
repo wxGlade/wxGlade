@@ -29,11 +29,11 @@ All_Widgets_Frame::All_Widgets_Frame(wxWindow* parent, wxWindowID id, const wxSt
     notebook_1_wxStaticLine = new wxPanel(notebook_1, wxID_ANY);
     notebook_1_wxStaticBitmap = new wxPanel(notebook_1, wxID_ANY);
     notebook_1_wxSplitterWindow_vertical = new wxScrolledWindow(notebook_1, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL);
-    splitter_2 = new wxSplitterWindow(notebook_1_wxSplitterWindow_vertical, wxID_ANY);
+    splitter_2 = new wxSplitterWindow(notebook_1_wxSplitterWindow_vertical, wxID_ANY, wxDefaultPosition, wxDefaultSize, 0);
     splitter_2_pane_2 = new wxPanel(splitter_2, wxID_ANY);
     splitter_2_pane_1 = new wxPanel(splitter_2, wxID_ANY);
     notebook_1_wxSplitterWindow_horizontal = new wxScrolledWindow(notebook_1, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL);
-    splitter_1 = new wxSplitterWindow(notebook_1_wxSplitterWindow_horizontal, wxID_ANY);
+    splitter_1 = new wxSplitterWindow(notebook_1_wxSplitterWindow_horizontal, wxID_ANY, wxDefaultPosition, wxDefaultSize, 0);
     splitter_1_pane_2 = new wxPanel(splitter_1, wxID_ANY);
     splitter_1_pane_1 = new wxPanel(splitter_1, wxID_ANY);
     notebook_1_wxSpinCtrl = new wxPanel(notebook_1, wxID_ANY);
@@ -114,18 +114,18 @@ All_Widgets_Frame::All_Widgets_Frame(wxWindow* parent, wxWindowID id, const wxSt
     };
     choice_filled = new wxChoice(notebook_1_wxChoice, wxID_ANY, wxDefaultPosition, wxDefaultSize, 2, choice_filled_choices);
     const wxString combo_box_empty_choices[] = {};
-    combo_box_empty = new wxComboBox(notebook_1_wxComboBox, wxID_ANY, wxT(""), wxDefaultPosition, wxDefaultSize, 0, combo_box_empty_choices, wxCB_DROPDOWN);
+    combo_box_empty = new wxComboBox(notebook_1_wxComboBox, wxID_ANY, wxT(""), wxDefaultPosition, wxDefaultSize, 0, combo_box_empty_choices, 0);
     const wxString combo_box_filled_choices[] = {
         _("Item 1 (pre-selected)"),
         _("Item 2"),
     };
-    combo_box_filled = new wxComboBox(notebook_1_wxComboBox, wxID_ANY, wxT(""), wxDefaultPosition, wxDefaultSize, 2, combo_box_filled_choices, wxCB_DROPDOWN);
+    combo_box_filled = new wxComboBox(notebook_1_wxComboBox, wxID_ANY, wxT(""), wxDefaultPosition, wxDefaultSize, 2, combo_box_filled_choices, 0);
     datepicker_ctrl_1 = new wxDatePickerCtrl(notebook_1_wxDatePickerCtrl, wxID_ANY, wxDefaultDateTime, wxDefaultPosition, wxDefaultSize, wxDP_SHOWCENTURY);
     gauge_1 = new wxGauge(notebook_1_wxGauge, wxID_ANY, 20);
     grid_1 = new wxGrid(notebook_1_wxGrid, wxID_ANY);
     hyperlink_1 = new wxHyperlinkCtrl(notebook_1_wxHyperlinkCtrl, wxID_ANY, _("Homepage wxGlade"), _("http://wxglade.sf.net"));
     const wxString list_box_empty_choices[] = {};
-    list_box_empty = new wxListBox(notebook_1_wxListBox, wxID_ANY, wxDefaultPosition, wxDefaultSize, 0, list_box_empty_choices, wxLB_SINGLE);
+    list_box_empty = new wxListBox(notebook_1_wxListBox, wxID_ANY, wxDefaultPosition, wxDefaultSize, 0, list_box_empty_choices, 0);
     const wxString list_box_filled_choices[] = {
         _("Item 1"),
         _("Item 2 (pre-selected)"),
@@ -154,7 +154,7 @@ All_Widgets_Frame::All_Widgets_Frame(wxWindow* parent, wxWindowID id, const wxSt
     text_ctrl_2 = new wxTextCtrl(notebook_1_wxRadioButton, wxID_ANY, wxEmptyString);
     radio_btn_3 = new wxRadioButton(notebook_1_wxRadioButton, wxID_ANY, _("Malroy"));
     text_ctrl_3 = new wxTextCtrl(notebook_1_wxRadioButton, wxID_ANY, wxEmptyString);
-    slider_1 = new wxSlider(notebook_1_wxSlider, wxID_ANY, 5, 0, 10);
+    slider_1 = new wxSlider(notebook_1_wxSlider, wxID_ANY, 5, 0, 10, wxDefaultPosition, wxDefaultSize, 0);
     tc_spin_button = new wxTextCtrl(notebook_1_wxSpinButton, wxID_ANY, _("1"), wxDefaultPosition, wxDefaultSize, wxTE_RIGHT);
     spin_button = new wxSpinButton(notebook_1_wxSpinButton, wxID_ANY);
     spin_ctrl_1 = new wxSpinCtrl(notebook_1_wxSpinCtrl, wxID_ANY, wxT("4"), wxDefaultPosition, wxDefaultSize, wxSP_ARROW_KEYS|wxTE_RIGHT, 0, 100);
@@ -178,7 +178,7 @@ All_Widgets_Frame::All_Widgets_Frame(wxWindow* parent, wxWindowID id, const wxSt
     text_ctrl = new wxTextCtrl(notebook_1_wxTextCtrl, wxID_ANY, _("This\nis\na\nmultiline\nwxTextCtrl"), wxDefaultPosition, wxDefaultSize, wxTE_CHARWRAP|wxTE_MULTILINE|wxTE_WORDWRAP);
     button_2 = new wxToggleButton(notebook_1_wxToggleButton, wxID_ANY, _("Toggle Button 1"));
     button_4 = new wxToggleButton(notebook_1_wxToggleButton, wxID_ANY, _("Toggle Button 2"), wxDefaultPosition, wxDefaultSize, wxBU_BOTTOM|wxBU_EXACTFIT);
-    tree_ctrl_1 = new wxTreeCtrl(notebook_1_wxTreeCtrl, wxID_ANY);
+    tree_ctrl_1 = new wxTreeCtrl(notebook_1_wxTreeCtrl, wxID_ANY, wxDefaultPosition, wxDefaultSize, 0);
     static_line_1 = new wxStaticLine(this, wxID_ANY);
     button_5 = new wxButton(this, wxID_CLOSE, wxEmptyString);
     button_1 = new wxButton(this, wxID_OK, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxBU_TOP);
