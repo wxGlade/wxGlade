@@ -500,7 +500,7 @@ class wxGladeFrame(wx.Frame):
 
         app = application.Application()
         common.app_tree = WidgetTree(self.tree_frame, app)
-        self.tree_frame.SetSize((350, 700))
+        self.tree_frame.SetSize((400, 700))
 
         def on_tree_frame_close(event):
             #menu_bar.Check(TREE_ID, False)
@@ -516,7 +516,7 @@ class wxGladeFrame(wx.Frame):
         if not tree_geometry:
             tree_geometry = wx.Rect()
             tree_geometry.Position = main_geometry.TopRight
-            tree_geometry.Size = (350, 700)
+            tree_geometry.Size = (400, 700)
             # sometimes especially on GTK GetSize seems to ignore window decorations (bug still exists on wx3)
             if wx.Platform != '__WXMSW__':
                 tree_geometry.X += 10
@@ -936,7 +936,8 @@ class wxGladeFrame(wx.Frame):
             if client_area.Contains(geometry):
                 win.SetPosition(geometry)
         else:
-            if client_area.Contains(geometry.TopLeft):
+            intersection = client_area.Intersect(geometry)
+            if intersection.width>150 and intersection.height>150 or geometry.width==-1 or geometry.height==-1:
                 if compat.IS_CLASSIC:
                     win.SetDimensions(*geometry.Get())
                 else:
