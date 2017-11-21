@@ -34,7 +34,7 @@ sub new {
         unless defined $style;
 
     $self = $self->SUPER::new( $parent, $id, $title, $pos, $size, $style, $name );
-    $self->{calendar_ctrl_1} = Wx::CalendarCtrl->new($self, wxID_ANY, Wx::DateTime->new);
+    $self->{calendar_ctrl_1} = Wx::CalendarCtrl->new($self, wxID_ANY, Wx::DateTime->new, wxDefaultPosition, wxDefaultSize, 0);
 
     $self->__set_properties();
     $self->__do_layout();

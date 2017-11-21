@@ -20,7 +20,7 @@ MyDialog::MyDialog(wxWindow* parent, wxWindowID id, const wxString& title, const
     wxDialog(parent, id, title, pos, size, wxDEFAULT_DIALOG_STYLE)
 {
     // begin wxGlade: MyDialog::MyDialog
-    calendar_ctrl_1 = new wxCalendarCtrl(this, wxID_ANY, wxDefaultDateTime);
+    calendar_ctrl_1 = new wxCalendarCtrl(this, wxID_ANY, wxDefaultDateTime, wxDefaultPosition, wxDefaultSize, 0);
 
     set_properties();
     do_layout();
