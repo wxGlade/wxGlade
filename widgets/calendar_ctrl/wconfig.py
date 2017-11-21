@@ -15,7 +15,7 @@ config = {
             'desc': _('Show Monday as the first day in the week')
         },
         'wxCAL_SHOW_HOLIDAYS': {
-            'desc': _('Show Monday as the first day in the week')
+            'desc': _('Highlight holidays in the calendar (only generic)')
         },
         'wxCAL_NO_YEAR_CHANGE': {
             'desc': _('Disable the year changing')
@@ -38,6 +38,7 @@ config = {
             'supported_by': ('wx3',),
         },
     },
+    'default_style': 'wxCAL_SHOW_HOLIDAYS',
     'style_list': ['wxCAL_SUNDAY_FIRST', 'wxCAL_MONDAY_FIRST',
                    'wxCAL_SHOW_HOLIDAYS', 'wxCAL_NO_YEAR_CHANGE',
                    'wxCAL_NO_MONTH_CHANGE', 'wxCAL_SHOW_SURROUNDING_WEEKS',
