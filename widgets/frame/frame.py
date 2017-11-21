@@ -47,7 +47,7 @@ class EditFrame(TopLevelBase, EditStylesMixin, BitmapMixin):
         else:
             #parent = common.palette
             parent = None
-        self.widget = wx.Frame(parent, self.id, self.title)
+        self.widget = wx.Frame(parent, self.id, self.title, style=self.style)
         self._set_widget_icon()
 
     def finish_widget_creation(self):
