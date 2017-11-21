@@ -361,11 +361,16 @@ class BaseWidgetWriter(StylesMixin, BaseCodeWriter):
 
     def _prepare_style(self, style):
         "Process and format style string with cn_f(); returns string; see _prepare_tmpl_content(), tmpl_flags"
-        fmt_style = self.cn_f(style.get_string_value())
+        style_s = style.get_string_value()
+        # style_s has all styles; cn_f may omit unsupported styles
+        fmt_style = self.cn_f(style_s)
         fmt_default_style = self.cn_f(self.default_style)
 
         if fmt_style and fmt_style != fmt_default_style:
             style = self.tmpl_flags % fmt_style
+        elif not style_s and fmt_default_style:
+            # explicitely no style set
+            style = self.tmpl_flags % '0'
         else:
             if self.set_default_style:
                 if style and not fmt_style:
@@ -374,7 +379,7 @@ class BaseWidgetWriter(StylesMixin, BaseCodeWriter):
             else:
                 style = ''
         if style and self.prefix_style:
-            style = ', %s, %s, %s' % ( self.cn('wxDefaultPosition'), self.cn('wxDefaultSize'), fmt_style )
+            style = ', %s, %s, %s' % ( self.cn('wxDefaultPosition'), self.cn('wxDefaultSize'), style )
         return style
 
     def _prepare_tmpl_content(self, obj):
