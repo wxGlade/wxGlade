@@ -20,7 +20,7 @@ wxGladePreferencesUI::wxGladePreferencesUI(wxWindow* parent, wxWindowID id, cons
     wxDialog(parent, id, title, pos, size, wxDEFAULT_DIALOG_STYLE)
 {
     // begin wxGlade: wxGladePreferencesUI::wxGladePreferencesUI
-    notebook_1 = new wxNotebook(this, wxID_ANY);
+    notebook_1 = new wxNotebook(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, 0);
     notebook_1_pane_2 = new wxPanel(notebook_1, wxID_ANY);
     notebook_1_pane_1 = new wxPanel(notebook_1, wxID_ANY);
     use_menu_icons = new wxCheckBox(notebook_1_pane_1, wxID_ANY, _("Use icons in menu items"));
@@ -31,16 +31,16 @@ wxGladePreferencesUI::wxGladePreferencesUI(wxWindow* parent, wxWindowID id, cons
     use_kde_dialogs = new wxCheckBox(notebook_1_pane_1, wxID_ANY, _("Use native file dialogs on KDE"));
     open_save_path = new wxTextCtrl(notebook_1_pane_1, wxID_ANY, wxEmptyString);
     codegen_path = new wxTextCtrl(notebook_1_pane_1, wxID_ANY, wxEmptyString);
-    number_history = new wxSpinCtrl(notebook_1_pane_1, wxID_ANY, wxT("4"), wxDefaultPosition, wxDefaultSize, wxSP_ARROW_KEYS, 0, 100);
-    buttons_per_row = new wxSpinCtrl(notebook_1_pane_1, wxID_ANY, wxT("5"), wxDefaultPosition, wxDefaultSize, wxSP_ARROW_KEYS, 1, 100);
+    number_history = new wxSpinCtrl(notebook_1_pane_1, wxID_ANY, wxT("4"), wxDefaultPosition, wxDefaultSize, 0, 0, 100);
+    buttons_per_row = new wxSpinCtrl(notebook_1_pane_1, wxID_ANY, wxT("5"), wxDefaultPosition, wxDefaultSize, 0, 1, 100);
     use_dialog_units = new wxCheckBox(notebook_1_pane_2, wxID_ANY, _("Use dialog units by default for size properties"));
     wxg_backup = new wxCheckBox(notebook_1_pane_2, wxID_ANY, _("Create backup wxg files"));
     codegen_backup = new wxCheckBox(notebook_1_pane_2, wxID_ANY, _("Create backup files for generated source"));
     allow_duplicate_names = new wxCheckBox(notebook_1_pane_2, wxID_ANY, _("Allow duplicate widget names"));
     default_border = new wxCheckBox(notebook_1_pane_2, wxID_ANY, _("Default border width for widgets"));
-    default_border_size = new wxSpinCtrl(notebook_1_pane_2, wxID_ANY, wxT(""), wxDefaultPosition, wxDefaultSize, wxSP_ARROW_KEYS, 0, 20);
+    default_border_size = new wxSpinCtrl(notebook_1_pane_2, wxID_ANY, wxT(""), wxDefaultPosition, wxDefaultSize, 0, 0, 20);
     autosave = new wxCheckBox(notebook_1_pane_2, wxID_ANY, _("Auto save wxg files every "));
-    autosave_delay = new wxSpinCtrl(notebook_1_pane_2, wxID_ANY, wxT("120"), wxDefaultPosition, wxDefaultSize, wxSP_ARROW_KEYS, 30, 300);
+    autosave_delay = new wxSpinCtrl(notebook_1_pane_2, wxID_ANY, wxT("120"), wxDefaultPosition, wxDefaultSize, 0, 30, 300);
     write_timestamp = new wxCheckBox(notebook_1_pane_2, wxID_ANY, _("Insert timestamp on generated source files"));
     write_generated_from = new wxCheckBox(notebook_1_pane_2, wxID_ANY, _("Insert .wxg file name on generated source files"));
     const wxString backup_suffix_choices[] = {

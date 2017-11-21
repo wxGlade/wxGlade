@@ -19,10 +19,10 @@ class MyDialog(wx.Dialog):
         # begin wxGlade: MyDialog.__init__
         kwds["style"] = wx.DEFAULT_DIALOG_STYLE
         wx.Dialog.__init__(self, *args, **kwds)
-        self.list_box_1 = wx.ListBox(self, wx.ID_ANY, choices=[])
+        self.list_box_1 = wx.ListBox(self, wx.ID_ANY, choices=[], style=0)
         self.button_4 = wx.Button(self, wx.ID_ADD, "")
         self.button_5 = wx.Button(self, wx.ID_REMOVE, "")
-        self.list_box_2 = wx.ListBox(self, wx.ID_ANY, choices=[])
+        self.list_box_2 = wx.ListBox(self, wx.ID_ANY, choices=[], style=0)
         self.static_line_1 = wx.StaticLine(self, wx.ID_ANY)
         self.button_2 = wx.Button(self, wx.ID_OK, "")
         self.button_1 = wx.Button(self, wx.ID_CANCEL, "")

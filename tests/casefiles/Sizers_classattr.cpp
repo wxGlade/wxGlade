@@ -21,11 +21,11 @@ MyDialog::MyDialog(wxWindow* parent, wxWindowID id, const wxString& title, const
 {
     // begin wxGlade: MyDialog::MyDialog
     const wxString list_box_1_choices[] = {};
-    list_box_1 = new wxListBox(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, 0, list_box_1_choices, wxLB_SINGLE);
+    list_box_1 = new wxListBox(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, 0, list_box_1_choices, 0);
     button_4 = new wxButton(this, wxID_ADD, wxEmptyString);
     button_5 = new wxButton(this, wxID_REMOVE, wxEmptyString);
     const wxString list_box_2_choices[] = {};
-    list_box_2 = new wxListBox(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, 0, list_box_2_choices, wxLB_SINGLE);
+    list_box_2 = new wxListBox(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, 0, list_box_2_choices, 0);
     static_line_1 = new wxStaticLine(this, wxID_ANY);
     button_2 = new wxButton(this, wxID_OK, wxEmptyString);
     button_1 = new wxButton(this, wxID_CANCEL, wxEmptyString);
