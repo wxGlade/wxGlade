@@ -95,9 +95,14 @@ For properties with multiple lines (e.g. list of notebook tabs):
 +-----------------------------------------------+------------------------------------------------------+
 | :kbd:`F5`                                     | Show/Refresh *Preview* Window                        |
 +-----------------------------------------------+------------------------------------------------------+
+| :kbd:`F6`                                     | Show/Hide *Design* Window                            |
++-----------------------------------------------+------------------------------------------------------+
 | :kbd:`Ctrl+S`                                 | Save file                                            |
 +-----------------------------------------------+------------------------------------------------------+
 | :kbd:`Ctrl+G`                                 | Generate Code                                        |
 +-----------------------------------------------+------------------------------------------------------+
+
+On *Classic* versions of wxPython, the keyboard shortcuts will not work in the *Preview* window.
+
 
 Some more keyboard shortcuts can be found in the menus.
