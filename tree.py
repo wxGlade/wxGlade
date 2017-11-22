@@ -570,7 +570,9 @@ class WidgetTree(wx.TreeCtrl, Tree):
             title_p.previous_value = title_p.value
             title_p.set(new_title, notify=False)
             modified.add("title")
-        if modified: widget.properties_changed(modified)
+        if modified:
+            widget.properties_changed(modified)
+            self.app.saved = False  # update the status of the app
         if new_tab:
             tabs_p.previous_value = tabs_p.value
             tabs_p.set(new_tabs, notify=True)
