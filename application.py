@@ -466,7 +466,9 @@ class Application(np.PropertyOwner):
                 frame = preview_class(None, -1, '')
 
             def on_close(event):
-                frame.Destroy()
+                if misc.preview_event_filter:
+                    frame.RemoveFilter(misc.preview_event_filter)
+                compat.DestroyLater(frame)
                 widget.preview_widget = None
                 widget.properties["preview"].set_label(_('Show Preview'))
 
@@ -475,6 +477,9 @@ class Application(np.PropertyOwner):
             # raise the frame
             frame.CenterOnScreen()
             frame.Show()
+            # install handler for key down events
+            if misc.preview_event_filter:
+                frame.AddFilter(misc.preview_event_filter)
             # remove the temporary file
             if not config.debugging:
                 name = os.path.join(preview_path, preview_module_name+".py")

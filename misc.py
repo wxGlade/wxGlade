@@ -397,19 +397,21 @@ accel_table = [
     (wx.ACCEL_CTRL,                ord('G'),      (common,"app_tree","app","generate_code"), ()),
 ]
 
-def on_key_down_event(event):
+def on_key_down_event(event, is_filter=False):
     "centralized handler for Ctrl+C/X/V or Del key"
     evt_flags = 0
     if event.ControlDown(): evt_flags |= wx.ACCEL_CTRL
     if event.ShiftDown():   evt_flags |= wx.ACCEL_SHIFT
     evt_key = event.GetKeyCode()
-    if focused_widget and evt_key in (wx.WXK_UP, wx.WXK_DOWN):
-        obj = event.GetEventObject()
-        toplevel_obj = obj.GetTopLevelParent()
-        if toplevel_obj!=common.app_tree.GetParent() and toplevel_obj!=common.palette and toplevel_obj!=common.property_panel:
-            # must be a design window
-            navigate( evt_key==wx.WXK_UP )
-            return
+    print("on_key_down_event", evt_flags, evt_key)
+    if not is_filter:
+        if focused_widget and evt_key in (wx.WXK_UP, wx.WXK_DOWN):
+            obj = event.GetEventObject()
+            toplevel_obj = obj.GetTopLevelParent()
+            if toplevel_obj!=common.app_tree.GetParent() and toplevel_obj!=common.palette and toplevel_obj!=common.property_panel:
+                # must be a design window
+                navigate( evt_key==wx.WXK_UP )
+                return
 
     for flags, key, function, args in accel_table:
         if evt_flags != flags or evt_key != key:
@@ -423,9 +425,28 @@ def on_key_down_event(event):
         if isinstance(args, str):
             args = (globals()[args],)
         wx.CallAfter(function, *args)
-        return
+        return True
     # not handled
-    event.Skip()
+    if not is_filter:
+        event.Skip()
+    else:
+        return False
+
+if config.use_gui and hasattr(wx, "EventFilter"):
+    # for filtering key down events
+    class PreviewEventFilter(wx.EventFilter):
+        def FilterEvent(self, event):
+            t = event.GetEventType()
+            if t == wx.EVT_KEY_DOWN.typeId:
+                handled = on_key_down_event(event, is_filter=True)
+                if handled:
+                    return self.Event_Processed
+            # Continue processing the event normally as well.
+            return self.Event_Skip
+    preview_event_filter = PreviewEventFilter()
+else:
+    preview_event_filter = None
+
 
 
 def navigate(up):
