@@ -392,6 +392,7 @@ accel_table = [
     (0,                            wx.WXK_F3,     (common,"palette","show_props_window"),    ()),
     (0,                            wx.WXK_F4,     (common,"palette","raise_all"),            ()),
     (0,                            wx.WXK_F5,     (common,"palette","preview"),              ()),
+    (0,                            wx.WXK_F6,     (common,"palette","show_design_window"),   ()),
     (wx.ACCEL_CTRL,                ord('S'),      (common,"palette","save_app"),             ()),
     (wx.ACCEL_CTRL,                ord('G'),      (common,"app_tree","app","generate_code"), ()),
 ]
