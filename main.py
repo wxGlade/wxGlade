@@ -370,6 +370,9 @@ class wxGladeFrame(wx.Frame):
         RAISE = append_menu_item(view_menu, -1, _("&Raise All\tF4"))
         misc.bind_menu_item(self, RAISE, self.raise_all)
 
+        DESIGN = append_menu_item(view_menu, -1, _("Show &Design\tF6"))
+        misc.bind_menu_item(self, DESIGN, self.show_design_window)
+
         view_menu.AppendSeparator() # ----------------------------------------------------------------------------------
 
         item = append_menu_item(view_menu, -1, _('Template Manager...'))
@@ -431,6 +434,7 @@ class wxGladeFrame(wx.Frame):
             (0, wx.WXK_F1, MANUAL.GetId()),
             (wx.ACCEL_CTRL, ord('Q'), EXIT.GetId()),
             (0, wx.WXK_F5, wx.ID_REFRESH),
+            (0, wx.WXK_F6, DESIGN.GetId()),
             (0, wx.WXK_F2, TREE.GetId()),
             (0, wx.WXK_F3, PROPS.GetId()),
             (0, wx.WXK_F4, RAISE.GetId()),
@@ -547,26 +551,33 @@ class wxGladeFrame(wx.Frame):
             dialog.set_preferences()
         dialog.Destroy()
 
+    def _get_toplevel(self):
+        # return the toplevel for a preview or design window
+        if misc.focused_widget and not isinstance(misc.focused_widget, application.Application):
+            # a widget is selected, find the toplevel window for it
+            return misc.get_toplevel_widget(misc.focused_widget)
+        # find main toplevel window
+        toplevel_name = common.app_tree.app.top_window
+        toplevel = None
+        for c in common.app_tree.app.node.children or []:
+            if c.widget.name==toplevel_name:
+                toplevel = c.widget
+        return toplevel
     def preview(self):
         """Generate preview of the current loaded project.
         
         A preview can be triggered by keyboard shortcut or by pressing the preview button.
         The preview can be triggered for all selected widgets.
         This doesn't mean that the widget is opened for editing."""
+        toplevel = self._get_toplevel()
+        if toplevel is None: return
 
-        if not common.app_tree.cur_widget or isinstance(common.app_tree.cur_widget, application.Application):
-            preview_widget = common.app_tree.root.children and common.app_tree.root.children[0].widget
-        else:
-            preview_widget = misc.get_toplevel_widget(common.app_tree.cur_widget)
-
-        if preview_widget is None: return
-
-        if preview_widget.preview_widget:
+        if toplevel.preview_widget:
             # preview is already active: close and re-generate
-            preview_widget.preview_widget.Close()
-            wx.CallAfter(preview_widget.preview, None)
+            toplevel.preview_widget.Close()
+            wx.CallAfter(toplevel.preview, None)
         else:
-            preview_widget.preview(None)
+            toplevel.preview(None)
 
     def show_tree(self):
         self.tree_frame.Show()
@@ -581,6 +592,22 @@ class wxGladeFrame(wx.Frame):
             if c: c[0].GetWindow().SetFocus()
         except (AttributeError, TypeError):
             self.property_frame.SetFocus()
+
+    def show_design_window(self):
+        print("show_design_window 1")
+        toplevel = self._get_toplevel()
+        if not toplevel: return
+
+        if toplevel.widget:
+            focus = toplevel.widget.FindFocus()
+            focused = focus and focus.GetTopLevelParent() is toplevel.widget
+
+        if toplevel.widget and toplevel.widget.IsShownOnScreen() and not focused:
+            # just raise it
+            toplevel.widget.Raise()
+            return
+        # open or close
+        common.app_tree.show_toplevel(None, widget=toplevel)
 
     def raise_all(self):
         # when one window is raised, raise all
