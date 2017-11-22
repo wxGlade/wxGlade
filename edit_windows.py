@@ -870,7 +870,9 @@ class TopLevelBase(WindowBase, PreviewMixin):
 
     def delete(self, *args):
         if self.preview_widget is not None:
-            self.preview_widget.Destroy()
+            if misc.preview_event_filter:
+                self.preview_widget.RemoveFilter(misc.preview_event_filter)
+            compat.DestroyLater(self.preview_widget)
             self.preview_widget = None
         WindowBase.delete(self)
 
