@@ -20,7 +20,7 @@ class MyFrame(wx.Frame):
         kwds["style"] = wx.DEFAULT_FRAME_STYLE
         wx.Frame.__init__(self, *args, **kwds)
         self.panel_1 = wx.Panel(self, wx.ID_ANY)
-        self.text_ctrl = wx.TextCtrl(self.panel_1, wx.ID_ANY, "self.text_ctrl\n\nUse the shell to append text here:\napp.frame.text_ctrl.AppendText(\"text\")", style=wx.TE_MULTILINE | wx.TE_READONLY)
+        self.text_ctrl = wx.TextCtrl(self.panel_1, wx.ID_ANY, "This is text_ctrl.\n\nUse the shell to append text here.\nE.g. enter this:\napp.frame.text_ctrl.AppendText(\"text\")\n\n", style=wx.TE_MULTILINE | wx.TE_READONLY)
         self.shell = wx.py.shell.Shell(self.panel_1, wx.ID_ANY, introText = "\nThis is the shell.\nHave a look at the variables 'app' and 'app.frame'.\n\n")
 
         self.__set_properties()
