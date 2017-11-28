@@ -88,12 +88,12 @@ def builder(parent, sizer, pos, number=[0]):
     if base == "wxDialog":
         is_panel = False
         dialog = EditDialog(name, parent, wx.NewId(), name, klass=klass)
+        dialog.properties["style"].set("wxDEFAULT_DIALOG_STYLE")
     else:
         is_panel = True
         import panel
         dialog = panel.EditTopLevelPanel(name, parent, wx.NewId(), klass=klass)
     #dialog.properties["style"].set_to_default()
-    dialog.properties["style"].set("wxDEFAULT_DIALOG_STYLE")
     node = Node(dialog)
     dialog.node = node
     dialog.create()
