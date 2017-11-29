@@ -98,13 +98,9 @@ class EditBase(EventsMixin, np.PropertyOwner):
                                  "Use this to add e.g. import statements.\n\n"
                                  "The code will be added to the section marked with '# begin wxGlade: extracode'",
                      "extracode_pre":"This code will be inserted right before the widget is created.\n"
-                                     "Use this e.g. to create argument values for the widget.\n\n"
-                                     "This is an experimental feature; please provide feedback whether you"
-                                     "like it or not.",
+                                     "Use this e.g. to create argument values for the widget.",
                      "extracode_post":"This code will be inserted right after the widget is created.\n"
-                                      "Use this to set properties that are not added by wxGlade itself.\n\n"
-                                      "This is an experimental feature; please provide feedback whether you"
-                                      "like it or not."}
+                                      "Use this to set properties that are not added by wxGlade itself."}
     _PROPERTY_LABELS = {"custom_base":'Base class(es)',
                         "extracode":"Extra (import) code for this widget",
                         "extracode_pre":"Code to be inserted before",
