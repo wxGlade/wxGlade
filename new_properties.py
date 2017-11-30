@@ -1930,6 +1930,8 @@ class GridProperty(Property):
     GROW = True
     _PROPORTION = 5
     validation_res = None # one per column
+    EDITABLE_COLS = None
+    SKIP_EMPTY = False
     def __init__(self, value, cols, default_row=None,
                  can_add=True, can_remove=True, can_insert=True, can_remove_last=True,
                  col_sizes=None, with_index=False, name=None):
@@ -1948,7 +1950,7 @@ class GridProperty(Property):
             self.col_sizes = []
         else:
             self.col_sizes = col_sizes
-        self.cur_row = 0
+        self.cur_row = self.cur_col = 0
         self.editing_values = None # before pressing Apply; stored here because the editor grid might be deleted
         self.grid = None
 
@@ -2148,12 +2150,26 @@ class GridProperty(Property):
         # returns None if not edited
         if self.editing_values is None: return None
         ret = self.editing_values[:]
+        if self.with_index:
+            indices = self.indices
         modified = False
+        if self.SKIP_EMPTY:
+            delete = set()
+            for i,row in enumerate(ret):
+                if self.with_index and self.indices[i]: continue
+                if row is not None and not any( r.strip() for r in row ): row = None
+                if row is None:
+                    delete.add(i)
+                    continue
+            if self.with_index:
+                indices = [index for i,index in enumerate(indices) if not i in delete]
+            ret = [row for i,row in enumerate(ret) if not i in delete]
+
         # compare the lengths of the original vs. current values
         if len(self.value) != len(ret):
             modified = True
         # compare the indices
-        if self.with_index and self.indices!=[str(i) for i in range(len(self.value))]:
+        if self.with_index and indices!=[str(i) for i in range(len(self.value))]:
             modified = True
         # go through the rows
         for i,row in enumerate(ret):
@@ -2336,6 +2352,7 @@ class ExtraPropertiesProperty(GridProperty):
                'For each property "prop" with value "val", wxGlade will generate a'
                '"widget.SetProp(val)" line (or a "<prop>val</prop>" line for XRC).')
     _PROPORTION = 3
+    SKIP_EMPTY = True
 
     def __init__(self):
         cols = [(_('Property'), GridProperty.STRING),
