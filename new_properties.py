@@ -2263,6 +2263,7 @@ class CodeProperty(TextProperty):
         TextProperty.__init__(self, value, multiline=True, name=name, default_value="")
 
     def create_editor(self, panel, sizer):
+        # we want a monospaced font
         TextProperty.create_editor(self, panel, sizer)
         font = wx.Font(9, wx.FONTFAMILY_MODERN, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL)
         self.text.SetFont(font)
