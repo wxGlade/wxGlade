@@ -7,7 +7,9 @@ User Interface:
  * alternatively, use WrapSizer for the Palette window
  * implement undo/re-do; use this for GUI scripting (testing)
  * better avoid overlapping / invisible design window; maybe do the same for the main windows
+ * code properties: use stc and resize dynamically
 done:
+ * flush properties before saving
  * implement "re-do / Ctrl-Y" and "repeat / Ctrl-R" to apply last property modification(s) to currently selected widget
  * new dialog for Toolbar (similar to the new menu dialog)
  * ask user whether he really wants a standalone menu/toolbar
