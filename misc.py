@@ -432,7 +432,7 @@ def on_key_down_event(event, is_filter=False):
     else:
         return False
 
-if config.use_gui and hasattr(wx, "EventFilter"):
+if config.use_gui and hasattr(wx, "EventFilter") and not config.testing:
     # for filtering key down events
     class PreviewEventFilter(wx.EventFilter):
         def FilterEvent(self, event):
