@@ -1991,6 +1991,7 @@ class GridProperty(Property):
             event.Skip()
 
     def on_size(self, event):
+        event.Skip()
         # resize last column to fill the space
         if not self.grid: return
         if self._width_delta is None:
