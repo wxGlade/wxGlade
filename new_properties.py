@@ -29,6 +29,20 @@ _comma    = r"\s*,\s*"             # a comma, optionally with surrounding whites
 _trailing = r"\s*\)?\s*$"          # whitespace, optionally including a closing ")"
 
 
+# track current property and allow flushing it before saving
+current_property = None
+
+def set_current_property(prop):
+    'called e.g. when focus is set to a property'
+    global current_property
+    current_property = prop
+
+def flush_current_property():
+    'called before a file is saved or code is generated'
+    if not current_property or not current_property.editing: return
+    current_property.flush()
+
+
 class Property(object):
     "Base class for property editors"
     deactivated = None # None: can not be deactivated; otherwise bool value
@@ -257,6 +271,15 @@ class Property(object):
         width = max(width, config.label_width)
         return wx.lib.stattext.GenStaticText( panel, -1, label, size=(width,height) )
 
+    def on_focus(self, event=None):
+        global current_property
+        current_property = self
+        if event is not None:
+            event.Skip()
+
+    def flush(self):
+        pass
+
     ####################################################################################################################
     # helpers
     def _mangle(self, label):
@@ -366,13 +389,17 @@ class SpinProperty(Property):
         self._set_tooltip(label, self.spin, self.enabler)
 
         self.spin.Bind(wx.EVT_KILL_FOCUS, self.on_kill_focus) # by default, the value is only set when the focus is lost
+        self.spin.Bind(wx.EVT_SET_FOCUS, self.on_focus)
         if wx.Platform == '__WXMAC__' or self.immediate:
             self.spin.Bind(wx.EVT_SPINCTRL, self.on_spin)
             self.spin.Bind(wx.EVT_TEXT_ENTER, self.on_spin)   # we want the enter key (see style above)
         self.editing = True
 
-    def on_kill_focus(self, event):
-        event.Skip()
+    def on_kill_focus(self, event=None):
+        if event is not None: event.Skip()
+        self.flush()
+
+    def flush(self):
         if self.spin is None: return
         if self.spin.IsBeingDeleted(): return
         if not compat.wxWindow_IsEnabled(self.spin): return  # XXX delete this?
@@ -385,6 +412,7 @@ class SpinProperty(Property):
 
     def on_spin(self, event):
         event.Skip()
+        set_current_property(self)
         if self.spin:
             self._check_for_user_modification(self.spin.GetValue())
 
@@ -494,6 +522,8 @@ class LayoutSpanProperty(Property):
 
         self.rowspin.Bind(wx.EVT_KILL_FOCUS, self.on_kill_focus) # by default, the value is only set when the focus is lost
         self.colspin.Bind(wx.EVT_KILL_FOCUS, self.on_kill_focus)
+        self.rowspin.Bind(wx.EVT_SET_FOCUS, self.on_focus)
+        self.colspin.Bind(wx.EVT_SET_FOCUS, self.on_focus)
         if self.immediate:
             self.rowspin.Bind(wx.EVT_SPINCTRL, self.on_spin)
             self.rowspin.Bind(wx.EVT_TEXT_ENTER, self.on_spin)   # we want the enter key (see style above)
@@ -501,8 +531,11 @@ class LayoutSpanProperty(Property):
             self.colspin.Bind(wx.EVT_TEXT_ENTER, self.on_spin)
         self.editing = True
 
-    def on_kill_focus(self, event):
-        event.Skip()
+    def on_kill_focus(self, event=None):
+        if event is not None: event.Skip()
+        self.flush()
+
+    def flush(self):
         if self.rowspin is None or self.colspin is None: return
         if self.rowspin.IsBeingDeleted() or self.colspin.IsBeingDeleted(): return
         self._check_for_user_modification( (self.rowspin.GetValue(),self.colspin.GetValue() ) )
@@ -515,6 +548,7 @@ class LayoutSpanProperty(Property):
 
     def on_spin(self, event):
         event.Skip()
+        set_current_property(self)
         if self.rowspin and self.colspin:
             self._check_for_user_modification( (self.rowspin.GetValue(),self.colspin.GetValue() ) )
             # update ranges
@@ -564,6 +598,7 @@ class CheckBoxProperty(Property):
 
     def on_change_val(self, event):
         new_value = event.IsChecked()
+        self.on_focus()
         self._check_for_user_modification(new_value)
 
 
@@ -574,6 +609,7 @@ class InvCheckBoxProperty(CheckBoxProperty):
 
     def on_change_val(self, event):
         new_value = not event.IsChecked()
+        self.on_focus()
         self._check_for_user_modification(new_value)
 
 
@@ -623,12 +659,14 @@ class RadioProperty(Property):
 
     def on_radio(self, event):
         event.Skip()
+        self.on_focus()
         new_value = self.values[event.GetInt()]
         self._check_for_user_modification(new_value)
 
     def enable_item(self, index, enable=True):
         if not self.editing: return
         self.options.EnableItem(index, enable)
+
 
 class IntRadioProperty(RadioProperty):
     #def set(self, value, activate=False, deactivate=False):
@@ -754,6 +792,7 @@ class _CheckListProperty(Property):
         value = self._names[index]
         checked = event.IsChecked()
         event.Skip()
+        self.on_focus()
         self._change_value(value, checked)
 
     def _change_value(self, value, checked):
@@ -1215,6 +1254,7 @@ class TextProperty(Property):
             text = wx.TextCtrl( panel, -1, value or "", style=style )
         # bind KILL_FOCUS and Enter for non-multilines
         text.Bind(wx.EVT_KILL_FOCUS, self.on_kill_focus)
+        text.Bind(wx.EVT_SET_FOCUS, self.on_focus)
         # XXX
         text.Bind(wx.EVT_CHAR, self.on_char)
         if self.validation_re:
@@ -1262,10 +1302,7 @@ class TextProperty(Property):
 
     def on_kill_focus(self, event):
         event.Skip()
-        if self.text is None: return
-        if self.text.IsBeingDeleted(): return
-        if not compat.wxWindow_IsEnabled(self.text): return
-        self._check_for_user_modification()
+        self.flush()
 
     def _check_for_user_modification(self, new_value=None, force=False, activate=False):
         if new_value is None:
@@ -1286,6 +1323,12 @@ class TextProperty(Property):
         "checks whether the string value matches the validation regular expression"
         if not self.validation_re: return True
         return bool( self.validation_re.match(value) )
+    
+    def flush(self):
+        if self.text is None: return
+        if self.text.IsBeingDeleted(): return
+        if not compat.wxWindow_IsEnabled(self.text): return
+        self._check_for_user_modification()
 
 
 class TextPropertyA(TextProperty):
@@ -1324,6 +1367,7 @@ class NameProperty(TextProperty):
             self.text.SetBackgroundColour(wx.RED)
         self.text.Refresh()
         event.Skip()
+
     def _convert_from_text(self, value):
         "normalize string to e.g. '-1, -1'; return None if invalid"
         match = self.validation_re.match(value)
@@ -1331,6 +1375,7 @@ class NameProperty(TextProperty):
         if not match: return None
         if not self._check_name_uniqueness(value): return None
         return value
+
     def check(self, value):
         # check whether it's valid to set value
         check = self._convert_from_text(value)
@@ -1516,6 +1561,7 @@ class ComboBoxProperty(TextProperty):
             combo.SetSelection(-1)
         combo.Bind(wx.EVT_COMBOBOX, self.on_combobox)
         combo.Bind(wx.EVT_KILL_FOCUS, self.on_kill_focus)
+        combo.Bind(wx.EVT_SET_FOCUS, self.on_focus)
         combo.Bind(wx.EVT_CHAR, self.on_char)
         return combo
 
@@ -1547,10 +1593,7 @@ class ComboBoxProperty(TextProperty):
 
     def on_combobox(self, event):
         event.Skip()
-        if self.text is None: return
-        if self.text.IsBeingDeleted(): return
-        if not compat.wxWindow_IsEnabled(self.text): return
-        self._check_for_user_modification()
+        self.flush()
 
 
 class ComboBoxPropertyA(ComboBoxProperty):
@@ -1603,6 +1646,7 @@ class DialogProperty(TextProperty):
         return self.dialog
 
     def display_dialog(self, event):
+        self.on_focus()
         dialog = self._create_dialog()
         if dialog is None or dialog.ShowModal()!=wx.ID_OK: return
         # the dialog needs to return a valid value!
@@ -1986,6 +2030,7 @@ class GridProperty(Property):
         else:
             self.grid.Bind(wx.grid.EVT_GRID_CELL_CHANGED, self.on_cell_changed)
             self.grid.Bind(wx.grid.EVT_GRID_CELL_CHANGING, self.on_cell_changing)  # for validation
+        self.grid.Bind(wx.EVT_SET_FOCUS, self.on_focus)
 
         self._set_tooltip(self.grid.GetGridWindow(), *self.buttons)
 
@@ -1995,6 +2040,7 @@ class GridProperty(Property):
 
     def on_key(self, event):
         # handle Ctrl-I, Ctrl-A, Ctrl-R; Alt-A will be handled by the button itself
+        self.on_focus()
         key = (event.GetKeyCode(), event.GetModifiers())
         print("on_key", key)
         if key in ((73,2),(73,1)): # Ctrl-I, Alt-I
@@ -2026,6 +2072,7 @@ class GridProperty(Property):
     def on_select_cell(self, event):
         self.cur_row = event.GetRow()
         event.Skip()
+        self.on_focus()
 
     def update_display(self, start_editing=False):
         if start_editing: self.editing = True
@@ -2054,7 +2101,7 @@ class GridProperty(Property):
         self._update_remove_button()
         self._update_indices()
 
-    def apply(self, event):
+    def apply(self, event=None):
         """Apply the edited value; called by Apply button.
 
         If self.with_index and self.owner.set_... exists, this will be called with values and indices.
@@ -2063,7 +2110,7 @@ class GridProperty(Property):
         self.grid.SaveEditControlValue() # end editing of the current cell
         new_value = self._get_new_value()
         if new_value is None:  # not modified
-            event.Skip()
+            if event is not None: event.Skip()
             return
 
         if self.with_index:
@@ -2072,7 +2119,7 @@ class GridProperty(Property):
         if not self.with_index or not setter:
             self.on_value_edited(new_value)
             self._update_apply_button()
-            event.Skip()
+            if event is not None: event.Skip()
             return
 
         indices = [int(i) if i else None  for i in self.indices]
@@ -2086,7 +2133,10 @@ class GridProperty(Property):
         self._update_indices()
 
         self._update_apply_button()
-        event.Skip()
+        if event is not None: event.Skip()
+    
+    def flush(self):
+        self.apply()
 
     def reset(self, event):
         "Discard the changes."
@@ -2132,11 +2182,13 @@ class GridProperty(Property):
     # edit handlers; add/remove/insert button handlers #################################################################
     def on_cell_changing(self, event):
         # XXX validate; event.Veto if not valid
+        self.on_focus()
         if not self.validation_res: return
         row,col = event.Row, event.Col
 
     def on_cell_changed(self, event):
         # user has entered a value
+        self.on_focus()
         row,col = event.Row, event.Col
         value = event.GetEventObject().GetCellValue(row,col)  # the new value
         if self.validation_res and self.validation_res[col]:
@@ -2170,6 +2222,7 @@ class GridProperty(Property):
         event.Skip()
 
     def add_row(self, event):
+        self.on_focus()
         self.grid.AppendRows()
         self.grid.MakeCellVisible(len(self.value), 0)
         self.grid.ForceRefresh()
@@ -2182,6 +2235,7 @@ class GridProperty(Property):
         self._update_indices()
 
     def remove_row(self, event):
+        self.on_focus()
         if not self.can_remove_last and self.grid.GetNumberRows()==1:
             self._logger.warning( _('You can not remove the last entry!') )
             return
@@ -2199,6 +2253,7 @@ class GridProperty(Property):
         self._update_indices()
 
     def insert_row(self, event):
+        self.on_focus()
         self.grid.InsertRows(self.cur_row)
         self.grid.MakeCellVisible(self.cur_row, 0)
         self.grid.ForceRefresh()
@@ -2330,6 +2385,7 @@ class ActionButtonProperty(Property):
                 self.button.SetBackgroundColour(self.background_color)
 
     def on_button(self, event):
+        self.on_focus()
         self.callback()
 
     def __call__(self, *args, **kwargs):
