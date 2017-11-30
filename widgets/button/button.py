@@ -32,7 +32,7 @@ class EditButton(ManagedBase, EditStylesMixin):
         EditStylesMixin.__init__(self)
 
         # initialise instance properties
-        self.label     = np.TextProperty(label, default_value="", multiline=True, fixed_height=True)
+        self.label     = np.TextProperty(label, default_value="", multiline="grow")
         self.default   = np.CheckBoxProperty(False, default_value=False)
         self.stockitem = np.ComboBoxPropertyD(self.STOCKITEMS[0], choices=self.STOCKITEMS)
 

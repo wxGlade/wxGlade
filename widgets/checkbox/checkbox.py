@@ -30,7 +30,7 @@ class EditCheckBox(ManagedBase, EditStylesMixin):
         EditStylesMixin.__init__(self)
 
         # initialise instance properties
-        self.label = np.TextProperty("", multiline=True, fixed_height=True)
+        self.label = np.TextProperty("", multiline="grow")
 
         # value: Checkbox state (0 = unchecked, 1 = checked, 2 = undetermined)
         values = [0,1,2]

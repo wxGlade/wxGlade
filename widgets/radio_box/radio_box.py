@@ -28,7 +28,7 @@ class EditRadioBox(ManagedBase):
         self.static_box = None
         
         # initialise instance properties
-        self.label     = np.TextProperty("", multiline=True, fixed_height=True)
+        self.label     = np.TextProperty("", multiline="grow")
         self.dimension = np.SpinProperty(major_dim)
         self.selection = np.SpinProperty(0, val_range=(0,len(choices)-1), immediate=True )
         self.choices   = ChoicesProperty( choices, [(_('Label'), np.GridProperty.STRING)] )
