@@ -2329,7 +2329,7 @@ class GridProperty(Property):
 
 class CodeProperty(TextProperty):
     _HORIZONTAL_LAYOUT = False
-    _PROPORTION = 5
+    _PROPORTION = 3
 
     def __init__(self, value="", name=None):
         TextProperty.__init__(self, value, multiline=True, name=name, default_value="")
