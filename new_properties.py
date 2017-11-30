@@ -1054,7 +1054,6 @@ class WidgetStyleProperty(_CheckListProperty):
             output.extend( common.format_xml_tag(self.name, value, tabs) )
 
 
-#from wx.lib.expando import ExpandoTextCtrl, EVT_ETC_LAYOUT_NEEDED, wxEVT_ETC_LAYOUT_NEEDED
 import wx.lib.expando
 
 class ExpandoTextCtrl(wx.lib.expando.ExpandoTextCtrl):
