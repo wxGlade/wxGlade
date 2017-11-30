@@ -28,6 +28,8 @@ class EventsProperty(np.GridProperty):
                "You can do so in your own source that you derive from the\n"
                "wxGlade generated code or within wxGlade on the 'Code' tab.")
     validation_res = [False, re.compile(r'^(([a-zA-Z_]+[a-zA-Z0-9_-]*)|()|(lambda .*))$')]
+    EDITABLE_COLS = [1]
+    SKIP_EMPTY = True
     def __init__(self, events):
         # initialise instance
         cols = [(_('Event'), np.GridProperty.STRING),
