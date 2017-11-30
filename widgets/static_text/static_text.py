@@ -28,7 +28,7 @@ class EditStaticText(ManagedBase, EditStylesMixin):
         EditStylesMixin.__init__(self)
 
         # initialise instance properties
-        self.label     = np.TextProperty(label, multiline=True)
+        self.label     = np.TextProperty(label, multiline="grow")
         self.attribute = np.CheckBoxProperty(False, default_value=False)
 
     def create_widget(self):

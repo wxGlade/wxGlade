@@ -27,7 +27,7 @@ class EditToggleButton(ManagedBase, EditStylesMixin):
         EditStylesMixin.__init__(self)
 
         # initialise instance variable
-        self.label = np.TextProperty("", multiline=True, fixed_height=True)
+        self.label = np.TextProperty("", multiline="grow")
         self.value = np.CheckBoxProperty(False, default_value=False)
 
     def create_widget(self):

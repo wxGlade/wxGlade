@@ -1054,6 +1054,13 @@ class WidgetStyleProperty(_CheckListProperty):
             output.extend( common.format_xml_tag(self.name, value, tabs) )
 
 
+#from wx.lib.expando import ExpandoTextCtrl, EVT_ETC_LAYOUT_NEEDED, wxEVT_ETC_LAYOUT_NEEDED
+import wx.lib.expando
+
+class ExpandoTextCtrl(wx.lib.expando.ExpandoTextCtrl):
+    def GetNumberOfLines(self):
+        return max( wx.lib.expando.ExpandoTextCtrl.GetNumberOfLines(self), 2)
+
 
 class TextProperty(Property):
     # text
@@ -1151,18 +1158,26 @@ class TextProperty(Property):
             hsizer.Add(self.text, 5, wx.ALL | wx.ALIGN_CENTER | wx.EXPAND, 3)
             if self.multiline: # for multiline make it higher
                 h = self.text.GetCharHeight()
-                hsizer.SetItemMinSize(self.text, 100, h * 4)
-            if self.fixed_height:
+                if self.multiline=="grow":
+                    hsizer.SetItemMinSize(self.text, 100, h * 1.5)
+                else:
+                    hsizer.SetItemMinSize(self.text, 100, h * 4)
+            if self.fixed_height or self.multiline=="grow":
                 sizer.Add(hsizer, 0, wx.EXPAND)
             else:
                 sizer.Add(hsizer, 5 if self.multiline else 0, wx.EXPAND)
             #sizer.Add(hsizer, 0, wx.EXPAND)
         else:
             sizer.Add(hsizer, 0, wx.EXPAND)
-            sizer.Add(self.text, self._PROPORTION, wx.ALL |wx.EXPAND, 3)
+            proportion = self._PROPORTION
             if self.multiline: # for multiline make it higher
                 h = self.text.GetCharHeight()
-                hsizer.SetItemMinSize(self.text, -1, h * 3)
+                if self.multiline=="grow":
+                    hsizer.SetItemMinSize(self.text, -1, h * 1.5)
+                    proportion = 0
+                else:
+                    hsizer.SetItemMinSize(self.text, -1, h * 3)
+            sizer.Add(self.text, proportion, wx.ALL |wx.EXPAND, 3)
 
         self.additional_controls = self.create_additional_controls(panel, sizer, hsizer)
 
@@ -1192,7 +1207,13 @@ class TextProperty(Property):
         else:                           style |= wx.TE_PROCESS_ENTER
         if not self._HORIZONTAL_LAYOUT: style |= wx.HSCROLL
 
-        text = wx.TextCtrl( panel, -1, value or "", style=style )
+        if self.multiline=="grow":
+            text = ExpandoTextCtrl( panel, -1, value or "", style=style )
+            #text.Bind(EVT_ETC_LAYOUT_NEEDED, self.on_layout_needed)
+            text.SetWindowStyle(wx.TE_MULTILINE | wx.TE_RICH2)
+            text.SetMaxHeight(200)
+        else:
+            text = wx.TextCtrl( panel, -1, value or "", style=style )
         # bind KILL_FOCUS and Enter for non-multilines
         text.Bind(wx.EVT_KILL_FOCUS, self.on_kill_focus)
         # XXX
