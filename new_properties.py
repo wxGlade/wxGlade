@@ -2073,6 +2073,7 @@ class GridProperty(Property):
 
     def on_select_cell(self, event):
         self.cur_row = event.GetRow()
+        self.cur_col = event.GetCol()
         event.Skip()
         self.on_focus()
 
