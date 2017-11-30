@@ -19,7 +19,9 @@ t.install("wxglade")
 import common
 common.init_paths()
 
-import config, wxglade, codegen, compat, log
+import config
+config.testing = True
+import wxglade, codegen, compat, log
 
 if compat.PYTHON2:
     from StringIO import StringIO
