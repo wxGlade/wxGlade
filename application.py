@@ -317,6 +317,7 @@ class Application(np.PropertyOwner):
         self._set_language()
 
     def generate_code(self, preview=False, out_path=None, widget=None):
+        common.property_panel.flush()
         if out_path is None:
             out_path = os.path.expanduser(self.output_path.strip())
             if not os.path.isabs(out_path) and (out_path and self.filename):

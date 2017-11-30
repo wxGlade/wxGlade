@@ -15,7 +15,7 @@ from xml.sax import SAXParseException
 
 # import project modules
 import application
-import common, config, compat, misc, clipboard, history
+import common, config, compat, misc, clipboard, history, new_properties
 import preferencesdialog, msgdialog, bugdialog, about
 import log
 import template
@@ -181,6 +181,8 @@ class wxGladePropertyPanel(wx.Frame):
         self.notebook.AddPage(panel, _(header),select=select)
         panel.SetScrollbars(1, 5, 1, int(math.ceil(h/5.0)))
 
+    def flush(self):
+        new_properties.flush_current_property()
 
 
 class wxGladeArtProvider(wx.ArtProvider):
@@ -792,6 +794,7 @@ class wxGladeFrame(wx.Frame):
 
     def save_app(self):
         "saves a wxGlade project onto an xml file"
+        self.property_frame.flush()
         if not common.app_tree.app.filename or common.app_tree.app.is_template:
             self.save_app_as()
         else:
