@@ -388,7 +388,7 @@ class Application(np.PropertyOwner):
                 if not os.path.exists(out_name): break
         return out_name
 
-    def preview(self, widget):
+    def preview(self, widget, position=None):
         """Generate and instantiate preview widget.
         None will be returned in case of errors. The error details are written to the application log file."""
         # some checks
@@ -476,7 +476,15 @@ class Application(np.PropertyOwner):
             frame.Bind(wx.EVT_CLOSE, on_close)
             frame.SetTitle(_('<Preview> - %s') % frame.GetTitle())
             # raise the frame
-            frame.CenterOnScreen()
+            if position:
+                frame.SetPosition(position)
+            else:
+                frame.CenterOnScreen()
+                if widget.widget:
+                    # avoid Design and Preview window at the same position
+                    pos = widget.widget.GetPosition()
+                    if frame.GetPosition()==pos:
+                        frame.SetPosition( (pos[0]+200, pos[1]+100))
             frame.Show()
             # install handler for key down events
             if misc.preview_event_filter:

@@ -565,6 +565,7 @@ class wxGladeFrame(wx.Frame):
             if c.widget.name==toplevel_name:
                 toplevel = c.widget
         return toplevel
+
     def preview(self):
         """Generate preview of the current loaded project.
         
@@ -572,14 +573,8 @@ class wxGladeFrame(wx.Frame):
         The preview can be triggered for all selected widgets.
         This doesn't mean that the widget is opened for editing."""
         toplevel = self._get_toplevel()
-        if toplevel is None: return
-
-        if toplevel.preview_widget:
-            # preview is already active: close and re-generate
-            toplevel.preview_widget.Close()
-            wx.CallAfter(toplevel.preview, None)
-        else:
-            toplevel.preview(None)
+        if toplevel is not None:
+            toplevel.preview(refresh=True)
 
     def show_tree(self):
         self.tree_frame.Show()
