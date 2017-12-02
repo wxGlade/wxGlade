@@ -264,6 +264,8 @@ from %(top_win_module)s import %(top_win_class)s\n\n"""
         BaseLangCodeWriter.__init__(self)
 
     def init_lang(self, app):
+        if self.preview and compat.PYTHON2:
+            self.header_lines.append('from __future__ import print_function\n')
         self.header_lines.append('import wx\n')
 
     def add_app(self, app, top_win):
