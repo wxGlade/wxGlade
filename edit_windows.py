@@ -665,6 +665,7 @@ class PreviewMixin(object):
         self.preview = np.ActionButtonProperty(self.on_preview)
         self.preview.set_label( _('Show Preview') )
         self.preview_widget = None
+        self._preview_position = None
 
     def preview_is_visible(self):
         "True if the preview_widget was created"
@@ -673,10 +674,11 @@ class PreviewMixin(object):
     def on_preview(self, refresh=False):
         new_label = None
         if self.preview_widget is None:
-            self.preview_widget = common.app_tree.app.preview(self)
+            self.preview_widget = common.app_tree.app.preview(self, self._preview_position)
             if self.preview_widget:
                 new_label = _('Close Preview')
         else:
+            self._preview_position = self.preview_widget.GetPosition()  # remember position
             self.preview_widget.Close()
             self.preview_widget = None
             new_label = _('Show Preview')
