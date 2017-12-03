@@ -2048,7 +2048,6 @@ class GridProperty(Property):
         # handle Ctrl-I, Ctrl-A, Ctrl-R; Alt-A will be handled by the button itself
         self.on_focus()
         key = (event.GetKeyCode(), event.GetModifiers())
-        print("on_key", key)
         if key in ((73,2),(73,1)): # Ctrl-I, Alt-I
             self.insert_row(event)
         elif key in ((65,2),(68,1)): # Ctrl-A, Alt-D
@@ -2059,8 +2058,151 @@ class GridProperty(Property):
             self.remove_row(event)
         elif key in ((84,2),(84,1)): # Ctrl-T, Alt-T
             self.reset(event)
+        elif key==(67,2):  # Ctrl-C
+            if not self._copy(): event.Skip()
+        elif key==(86,2):  # Ctrl-V
+            if not self._paste(): event.Skip()
+        elif key==(88,2):  # Ctrl-X
+            if not self._cut(): event.Skip()
+        #elif key in ((71,2), (83,2)): # Ctrl-G, Ctrl-S -> apply changes before creating code or saving the file
+            #if self.editing:
+                #self.apply(None)
+            #event.Skip()
         else:
             event.Skip()
+
+    ####################################################################################################################
+    # clipboard
+    def _get_selection(self, restrict=False):
+        # return (selected_rows, selected_cols); selected_cols might be restricted to the editable ones
+        # non-contiguous selections are not really handled correctly
+        selected_rows = set()
+        selected_cols = set()
+        if self.grid.SelectedCells: # non-contiguous
+            for cell in self.grid.SelectedCells:
+                selected_rows.add(cell[0])
+                selected_cols.add(cell[1])
+        if self.grid.SelectionBlockTopLeft:
+            for tl, br in zip(self.grid.SelectionBlockTopLeft, self.grid.SelectionBlockBottomRight):
+                top,left = tl
+                bottom,right = br
+                selected_cols.update( range(left,right+1) )
+                selected_rows.update( range(top,bottom+1) )
+        if self.grid.SelectedCols:
+            selected_cols.update(self.grid.SelectedCols)
+            selected_rows.update(range(self.grid.NumberRows))
+        if self.grid.SelectedRows:
+            selected_rows.update(self.grid.SelectedRows)
+            selected_cols.update(range(self.grid.NumberCols))
+        if not selected_rows:
+            if self.cur_row>=self.grid.NumberRows:
+                selected_rows.add(self.grid.NumberRows)
+            else:
+                selected_rows.add(self.cur_row)
+            selected_cols.add(self.cur_col)
+
+        # XXX check this:
+        #if restrict and self.EDITABLE_COLS:
+            #selected_cols = [col for col in selected_cols if col in self.EDITABLE_COLS]
+        #else:
+        selected_cols = sorted(selected_cols)
+        selected_rows = sorted(selected_rows)
+        return selected_rows, selected_cols
+
+    def _to_clipboard(self, selection):
+        # place selection on clipboard
+        selected_rows, selected_cols = selection
+        all_values = self.editing_values or self.value
+        text = []
+        for r in selected_rows:
+            row = all_values[r]
+            if row is not None:
+                text.append( "\t".join( [str(row[c]) for c in selected_cols] ) )
+            else:
+                text.append( "\t".join( [""]*len(selected_cols) ) )
+        text = "\n".join(text)
+        if wx.TheClipboard.Open():
+            wx.TheClipboard.SetData(wx.TextDataObject(text))
+            wx.TheClipboard.Close()
+
+    def _from_clipboard(self):
+        if not wx.TheClipboard.Open():
+            return None
+        do = wx.TextDataObject()
+        if wx.TheClipboard.IsSupported(do.GetFormat()):
+            success = wx.TheClipboard.GetData(do)
+        else:
+            success = False
+        wx.TheClipboard.Close()
+        if success:
+            ret = do.GetText().split("\n")
+            ret = [row.split("\t") for row in ret]
+            lengths = set( [len(row) for row in ret] )
+            if len(lengths)==1: return ret
+        return None
+
+    def _cut(self):
+        selection = self._get_selection()
+        if not selection: return False
+        self._to_clipboard(selection)
+        selected_rows, selected_cols = selection
+        values = self._ensure_editing_copy()
+        if len(selected_cols)==len(self.col_defs) and self.can_remove:
+            # delete complete rows
+            for row in reversed(selected_rows):
+                del values[row]
+        else:
+            editable_columns = self.EDITABLE_COLS or list( range(len(self.col_defs)) )
+            for row in selected_rows:
+                for col in selected_cols:
+                    if col in editable_columns:
+                        values[row][col] = ""
+        self.update_display()
+        self._notify()
+
+    def _copy(self):
+        selection = self._get_selection()
+        if not selection: return False
+        self._to_clipboard(selection)
+
+    def _paste(self):
+        selected_rows, selected_cols = self._get_selection()
+        value = self._from_clipboard()
+        if not value: return
+        columns = len(value[0])
+        editable_columns = self.EDITABLE_COLS or list( range(len(self.col_defs)) )
+        if columns != len(editable_columns):
+            wx.Bell()
+            return
+        values = self._ensure_editing_copy()
+        # the cases:
+        # single item to single or multiple cells
+        # multiple to multiple -> dimensions must match
+        # multiple to single -> starting from the selected line, must have enough lines or be extendable
+        if len(value)==1:
+            for row in selected_rows:
+                if values[row] is None: values[row] = self.default_row[:]
+                for v,col in zip(value[0], editable_columns):
+                    values[row][col] = v
+        elif len(value)==len(selected_rows):
+            for row,row_value in zip(selected_rows, value):
+                if values[row] is None: values[row] = self.default_row[:]
+                for v,col in zip(row_value, editable_columns):
+                    values[row][col] = v
+        elif len(selected_rows)==1 and (self.can_add or (min(selected_rows)+len(value) <= len(values))):
+            row = selected_rows.pop()
+            for row_value in value:
+                if len(values)==row: values.append( None )
+                if values[row] is None: values[row] = self.default_row[:]
+                for v,col in zip(row_value, editable_columns):
+                    values[row][col] = v
+                row += 1
+        else:
+            wx.Bell()
+            return
+        self.update_display()
+        self._notify()
+    ####################################################################################################################
 
     def on_size(self, event):
         event.Skip()
