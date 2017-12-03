@@ -435,12 +435,16 @@ def on_key_down_event(event, is_filter=False):
 if config.use_gui and hasattr(wx, "EventFilter") and not config.testing:
     # for filtering key down events
     class PreviewEventFilter(wx.EventFilter):
+        windows = []
         def FilterEvent(self, event):
             t = event.GetEventType()
             if t == wx.EVT_KEY_DOWN.typeId:
-                handled = on_key_down_event(event, is_filter=True)
-                if handled:
-                    return self.Event_Processed
+                # handle the event only for Preview windows
+                toplevel = event.GetEventObject().GetTopLevelParent()
+                if toplevel in self.windows:
+                    handled = on_key_down_event(event, is_filter=True)
+                    if handled:
+                        return self.Event_Processed
             # Continue processing the event normally as well.
             return self.Event_Skip
     preview_event_filter = PreviewEventFilter()
