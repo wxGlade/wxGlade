@@ -142,7 +142,7 @@ class Property(object):
         common.history.property_changing(self)
         if active is not None:
             self.deactivated = not active
-        self.previous_value = self.value
+        self.previous_value = self.value  # this does not work always, e.g. for GridProperty which may edit in place
         previous_modified = self.modified
         self.set(value)
         self._notify()
@@ -1934,6 +1934,7 @@ class GridProperty(Property):
     SKIP_EMPTY = False
     def __init__(self, value, cols, default_row=None,
                  can_add=True, can_remove=True, can_insert=True, can_remove_last=True,
+                 immediate=False,
                  col_sizes=None, with_index=False, name=None):
 
         Property.__init__(self, value, name) # , label=label)
@@ -1942,6 +1943,7 @@ class GridProperty(Property):
         self.default_row = default_row  # when a row is inserted, these values will be taken
         self.with_index = with_index # display index; also provide the original indices to the owner when updating value
         self.col_defs = cols
+        self.immediate = immediate  # e.g. for notebook pages immediate is False
         self.can_add = can_add
         self.can_remove = can_remove
         self.can_insert = can_insert
@@ -1969,9 +1971,10 @@ class GridProperty(Property):
         extra_flag = wx.FIXED_MINSIZE
         if self.can_add or self.can_insert or self.can_remove:
             btn_sizer = wx.BoxSizer(wx.HORIZONTAL)
-            apply_btn = wx.Button(panel, wx.ID_ANY, _("  &Apply  "), style=wx.BU_EXACTFIT)
-            compat.SetToolTip(apply_btn, "Alt-A")
-            btn_sizer.Add(apply_btn, 0, extra_flag | wx.RIGHT, 16)
+            if not self.immediate:
+                apply_btn = wx.Button(panel, wx.ID_ANY, _("  &Apply  "), style=wx.BU_EXACTFIT)
+                compat.SetToolTip(apply_btn, "Alt-A")
+                btn_sizer.Add(apply_btn, 0, extra_flag | wx.RIGHT, 16)
 
             # the add/insert/remove buttons
             add_btn = insert_btn = remove_btn = None
@@ -1990,13 +1993,14 @@ class GridProperty(Property):
             self.buttons = [add_btn, insert_btn, remove_btn]
             for btn in self.buttons:
                 if btn: btn_sizer.Add( btn, 0, wx.LEFT | wx.RIGHT | extra_flag, 4 )
-            self.buttons.insert(0, apply_btn)
-            reset_btn = wx.Button(panel, wx.ID_ANY, _("  Rese&t  "), style=wx.BU_EXACTFIT)
-            compat.SetToolTip(reset_btn, "Alt-T or Ctrl-T")
-            reset_btn.Bind(wx.EVT_BUTTON, self.reset)
-            btn_sizer.AddStretchSpacer()
-            btn_sizer.Add(reset_btn, 0, extra_flag | wx.LEFT, 16)
-            self.buttons.append(reset_btn)
+            if not self.immediate:
+                self.buttons.insert(0, apply_btn)
+                reset_btn = wx.Button(panel, wx.ID_ANY, _("  Rese&t  "), style=wx.BU_EXACTFIT)
+                compat.SetToolTip(reset_btn, "Alt-T or Ctrl-T")
+                reset_btn.Bind(wx.EVT_BUTTON, self.reset)
+                btn_sizer.AddStretchSpacer()
+                btn_sizer.Add(reset_btn, 0, extra_flag | wx.LEFT, 16)
+                self.buttons.append(reset_btn)
         else:
             self.buttons = []
 
@@ -2025,7 +2029,7 @@ class GridProperty(Property):
         self.update_display(start_editing=True)
 
         self.grid.Bind(wx.grid.EVT_GRID_SELECT_CELL, self.on_select_cell)
-        if self.buttons:
+        if self.buttons and not self.immediate:
             apply_btn.Bind(wx.EVT_BUTTON, self.apply)
         if compat.IS_CLASSIC:
             self.grid.Bind(wx.grid.EVT_GRID_CMD_CELL_CHANGE, self.on_cell_changed)
@@ -2216,8 +2220,10 @@ class GridProperty(Property):
                 event.Veto()
                 return
 
-        if not self.can_add and not self.can_insert and not self.can_insert:
+        if self.immediate or (not self.can_add and not self.can_insert and not self.can_insert):
             # immediate
+            if self.value[row] is None:
+                self.value[row] = self.default_row[:]
             self.value[row][col] = value
             self._notify()
             event.Skip()
@@ -2243,8 +2249,8 @@ class GridProperty(Property):
         self.grid.AppendRows()
         self.grid.MakeCellVisible(len(self.value), 0)
         self.grid.ForceRefresh()
-        self._ensure_editing_copy()
-        self.editing_values.append( None )
+        values = self._ensure_editing_copy()
+        values.append( None )
         if self.with_index:
             self.indices.append("")
         self._update_remove_button()
@@ -2256,13 +2262,13 @@ class GridProperty(Property):
         if not self.can_remove_last and self.grid.GetNumberRows()==1:
             self._logger.warning( _('You can not remove the last entry!') )
             return
-        self._ensure_editing_copy()
-        if self.editing_values:
+        values = self._ensure_editing_copy()
+        if values:
             self.grid.DeleteRows(self.cur_row)
-            del self.editing_values[self.cur_row]
+            del values[self.cur_row]
             if self.with_index:
                 del self.indices[self.cur_row]
-            if self.cur_row>=len(self.editing_values):
+            if self.cur_row>=len(values):
                 self.cur_row -= 1
 
         self._update_remove_button()
@@ -2274,8 +2280,8 @@ class GridProperty(Property):
         self.grid.InsertRows(self.cur_row)
         self.grid.MakeCellVisible(self.cur_row, 0)
         self.grid.ForceRefresh()
-        self._ensure_editing_copy()
-        self.editing_values.insert(self.cur_row, None)
+        values = self._ensure_editing_copy()
+        values.insert(self.cur_row, None)
         if self.with_index:
             self.indices.insert(self.cur_row, "")
         self._update_remove_button()
@@ -2283,6 +2289,7 @@ class GridProperty(Property):
         self._update_indices()
 
     def _ensure_editing_copy(self):
+        if self.immediate: return self.value
         if self.editing_values is None:
             self.editing_values = [[col for col in row] for row in self.value]
         return self.editing_values
@@ -2296,7 +2303,7 @@ class GridProperty(Property):
             self.buttons[-1].Enable(self.grid.GetNumberRows() > 1)
 
     def _update_apply_button(self):
-        if not self.grid or not self.buttons: return
+        if not self.grid or not self.buttons or self.immediate: return
         self.buttons[0].Enable(  self.editing_values is not None)  # the apply button
         self.buttons[-1].Enable( self.editing_values is not None)  # the reset button
 
@@ -2359,12 +2366,14 @@ class ExtraPropertiesProperty(GridProperty):
         cols = [(_('Property'), GridProperty.STRING),
                 (_('Value'),    GridProperty.STRING)]
         value = []
-        GridProperty.__init__(self, value, cols, can_insert=False)
+        GridProperty.__init__(self, value, cols, immediate=True)
 
     def write(self, output, tabs):
         if not self.value: return
         inner_xml = []
-        for name, value in self.value:
+        for row in self.value:
+            if row is None: continue
+            name, value = row
             if value:
                 inner_xml += common.format_xml_tag( u'property', value.strip(), tabs+1, name=name )
         if inner_xml:
