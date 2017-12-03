@@ -35,7 +35,8 @@ class EventsProperty(np.GridProperty):
         cols = [(_('Event'), np.GridProperty.STRING),
                 (_('Handler'), np.GridProperty.STRING)]
         value = [[name, ''] for name in sorted(events)]
-        np.GridProperty.__init__( self, value, cols, can_add=False, can_remove=False, can_insert=False)
+        np.GridProperty.__init__( self, value, cols, can_add=False, can_remove=False, can_insert=False,
+                                  immediate=True)
 
     def create_editor(self, panel, sizer):
         np.GridProperty.create_editor(self, panel, sizer)

@@ -16,6 +16,8 @@ from edit_windows import ManagedBase
 
 class ArgumentsProperty(np.GridProperty):
     SKIP_EMPTY = True
+    def __init__(self, arguments, cols):
+        np.GridProperty.__init__( self, arguments, cols, immediate=True)
     def write(self, output, tabs):
         arguments = self.get()
         if arguments:
