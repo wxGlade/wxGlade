@@ -9,11 +9,13 @@ User Interface:
  * better avoid overlapping / invisible design window; maybe do the same for the main windows
  * code properties: use stc and resize dynamically
  * toolbar and maybe menu editor: add Drop target for images
+ * grid properties: implement validation in 'on_cell_changing'
 done:
  * flush properties before saving
  * implement "re-do / Ctrl-Y" and "repeat / Ctrl-R" to apply last property modification(s) to currently selected widget
  * new dialog for Toolbar (similar to the new menu dialog)
  * ask user whether he really wants a standalone menu/toolbar
+ * remember preview window position; place it away from Design window
 
 
 Code generation:
