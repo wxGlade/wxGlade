@@ -5,6 +5,7 @@
     <object class="MyFrame" name="frame" base="EditFrame">
         <size>600, 400</size>
         <title>frame</title>
+        <style>wxDEFAULT_FRAME_STYLE</style>
         <object class="wxBoxSizer" name="sizer_1" base="EditBoxSizer">
             <orient>wxVERTICAL</orient>
             <object class="sizeritem">

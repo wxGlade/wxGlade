@@ -4,6 +4,7 @@
 <resource version="2.3.0.1">
     <object class="wxFrame" name="frame" subclass="MyFrame">
         <size>600, 400</size>
+        <style>wxDEFAULT_FRAME_STYLE</style>
         <title>frame</title>
         <object class="wxBoxSizer">
             <orient>wxVERTICAL</orient>
