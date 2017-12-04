@@ -160,11 +160,11 @@ class SizerSlot(np.PropertyOwner):
         self.klass = self.classname = self.base = "sizerslot"
         self.label = label
 
-        self.sizer = sizer       # Sizer object (SizerBase instance)
+        self.sizer = sizer  # Sizer object (SizerBase instance)
 
         # initialise instance properties
         self.parent = parent
-        self.pos = p = np.LayoutPosProperty(pos)  # position within the sizer, 1-based
+        self.pos = np.LayoutPosProperty(pos)  # position within the sizer, 1-based
         # the following are just set to use the same Add call as with widgets
         self.proportion = 1
         self.span = (1,1)
