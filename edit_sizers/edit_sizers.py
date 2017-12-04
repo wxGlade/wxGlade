@@ -1207,7 +1207,7 @@ class SizerBase(Sizer, np.PropertyOwner):
     def insert_slot(self, pos, multiple=False):
         # insert before current
         count = self._ask_count() if multiple else 1
-        with self.sizer.window.frozen():
+        with self.window.frozen():
             for n in range(count):
                 self._insert_slot(pos)
             if self.widget: self.layout(True)
@@ -1216,7 +1216,7 @@ class SizerBase(Sizer, np.PropertyOwner):
     def add_slot(self, multiple=False):
         # add to the end
         count = self._ask_count(insert=False) if multiple else 1
-        with self.sizer.window.frozen():
+        with self.window.frozen():
             for n in range(count):
                 self._add_slot()
             if self.widget: self.layout()
