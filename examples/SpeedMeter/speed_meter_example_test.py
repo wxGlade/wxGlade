@@ -34,7 +34,7 @@ class MyFrame(wx.Frame):
         # SM_DRAW_SECTORS: Full Sectors Will Be Drawn, To Indicate Different Intervals
         # SM_DRAW_MIDDLE_TEXT: We Draw Some Text In The Center Of SpeedMeter
         # SM_DRAW_SECONDARY_TICKS: We Draw Secondary (Intermediate) Ticks Between the Main Ticks (Intervals)
-        self.speed_meter = SM.SpeedMeter(self.panel_1, wx.ID_ANY, agwStyle=SM.SM_DRAW_HAND | SM.SM_DRAW_SECTORS | SM.SM_DRAW_MIDDLE_TEXT | SM.SM_DRAW_SECONDARY_TICKS, sdfasdfasdf)
+        self.speed_meter = SM.SpeedMeter(self.panel_1, wx.ID_ANY, agwStyle=SM.SM_DRAW_HAND | SM.SM_DRAW_SECTORS | SM.SM_DRAW_MIDDLE_TEXT | SM.SM_DRAW_SECONDARY_TICKS)
         # see also extra properties
         
         intervals = list(range(0, 201, 20))
