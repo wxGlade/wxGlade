@@ -855,24 +855,26 @@ class WidgetTree(wx.TreeCtrl, Tree):
             node.widget.finish_widget_creation()
             node.widget.drop_target = clipboard.DropTarget(node.widget)
             node.widget.widget.SetDropTarget(node.widget.drop_target)
+        
+        with node.widget.frozen():
+            if node.children:
+                for c in node.children:
+                    self.create_widgets(c)
+            node.widget.post_load()
+            node.widget.create()
+            if node.widget.widget.TopLevel:
+                node.widget.widget.Show()
+            else:
+                node.widget.widget.GetParent().Show()
     
-        if node.children:
-            for c in node.children:
-                self.create_widgets(c)
-        node.widget.post_load()
-        node.widget.create()
-        if node.widget.widget.TopLevel:
-            node.widget.widget.Show()
-        else:
-            node.widget.widget.GetParent().Show()
+            misc.set_focused_widget(node.widget)
+    
+            node.widget.widget.Raise()
+            # set the best size for the widget (if no one is given)
+            props = node.widget.properties
+            if 'size' in props and not props['size'].is_active() and node.widget.sizer:
+                node.widget.sizer.fit_parent()
 
-        misc.set_focused_widget(node.widget)
-
-        node.widget.widget.Raise()
-        # set the best size for the widget (if no one is given)
-        props = node.widget.properties
-        if 'size' in props and not props['size'].is_active() and node.widget.sizer:
-            node.widget.sizer.fit_parent()
         if wx.IsBusy(): wx.EndBusyCursor()
 
     def show_toplevel(self, event, widget=None):

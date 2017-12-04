@@ -275,7 +275,8 @@ def _paste(parent, sizer, pos, clipboard_data):
         # widget representation is still unicode, but parser need UTF8
         xml_utf8 = xml_unicode.encode('utf8')
         parser = xml_parse.ClipboardXmlWidgetBuilder(parent, sizer, pos, option, span, flag, border)
-        parser.parse_string(xml_utf8)
+        with parent.frozen():
+            parser.parse_string(xml_utf8)
         common.app_tree.saved = False
         return True  # Widget hierarchy pasted.
     except xml_parse.XmlParsingError:
