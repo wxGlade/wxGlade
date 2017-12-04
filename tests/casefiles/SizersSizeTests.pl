@@ -31,6 +31,9 @@ sub new {
     $name   = ""                 unless defined $name;
 
     # begin wxGlade: MyFrame::new
+    $style = wxDEFAULT_FRAME_STYLE
+        unless defined $style;
+
     $self = $self->SUPER::new( $parent, $id, $title, $pos, $size, $style, $name );
     $self->{notebook_1} = Wx::Notebook->new($self, wxID_ANY);
     $self->{notebook_1_pane_1} = Wx::Panel->new($self->{notebook_1}, wxID_ANY);
