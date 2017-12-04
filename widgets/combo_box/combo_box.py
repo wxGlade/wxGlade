@@ -91,13 +91,14 @@ def builder(parent, sizer, pos, number=[1]):
     while common.app_tree.has_name(name):
         number[0] += 1
         name = 'combo_box_%d' % number[0]
-    combo = EditComboBox(name, parent, wx.NewId(), [], sizer, pos)
-    combo.properties["style"].set_to_default()
-    combo.check_defaults()
-    node = Node(combo)
-#    sizer.set_item(pos, size=choice.GetBestSize())
-    combo.node = node
-    if parent.widget: combo.create()
+    with parent.frozen():
+        combo = EditComboBox(name, parent, wx.NewId(), [], sizer, pos)
+        combo.properties["style"].set_to_default()
+        combo.check_defaults()
+        node = Node(combo)
+    #    sizer.set_item(pos, size=choice.GetBestSize())
+        combo.node = node
+        if parent.widget: combo.create()
     common.app_tree.insert(node, sizer.node, pos-1)
 
 

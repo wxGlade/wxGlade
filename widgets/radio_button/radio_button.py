@@ -62,12 +62,13 @@ def builder(parent, sizer, pos, number=[1]):
     while common.app_tree.has_name(label):
         number[0] += 1
         label = u'radio_btn_%d' % number[0]
-    radio = EditRadioButton(label, parent, wx.NewId(), label, sizer, pos)
-    radio.properties["style"].set_to_default()
-    radio.check_defaults()
-    node = Node(radio)
-    radio.node = node
-    if parent.widget: radio.create()
+    with parent.frozen():
+        radio = EditRadioButton(label, parent, wx.NewId(), label, sizer, pos)
+        radio.properties["style"].set_to_default()
+        radio.check_defaults()
+        node = Node(radio)
+        radio.node = node
+        if parent.widget: radio.create()
     common.app_tree.insert(node, sizer.node, pos-1)
 
 

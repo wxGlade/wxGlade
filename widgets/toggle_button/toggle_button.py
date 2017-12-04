@@ -55,12 +55,13 @@ def builder(parent, sizer, pos, number=[1]):
     while common.app_tree.has_name(label):
         number[0] += 1
         label = u'button_%d' % number[0]
-    button = EditToggleButton(label, parent, wx.NewId(), label, sizer, pos)
-    button.properties["style"].set_to_default()
-    button.check_defaults()
-    node = Node(button)
-    button.node = node
-    if parent.widget: button.create()
+    with parent.frozen():
+        button = EditToggleButton(label, parent, wx.NewId(), label, sizer, pos)
+        button.properties["style"].set_to_default()
+        button.check_defaults()
+        node = Node(button)
+        button.node = node
+        if parent.widget: button.create()
     common.app_tree.insert(node, sizer.node, pos-1)
 
 

@@ -266,30 +266,31 @@ def builder(parent, sizer, pos, number=[1]):
         number[0] += 1
         label = '%s_%d' % (tmpl_label, number[0])
 
-    widget = editor_class(label, parent, -1, None, None, orientation, sizer, pos)
-    widget.properties["style"].set_to_default()
-    widget._window_1 = pane1 = EditPanel(label + '_pane_1', widget, wx.NewId(), widget.virtual_sizer, 1)
-    widget._window_2 = pane2 = EditPanel(label + '_pane_2', widget, wx.NewId(), widget.virtual_sizer, 2)
-
-    node = Node(widget)
-    widget.node = node
-    widget.virtual_sizer.node = node
-
-    widget.properties["proportion"].set(1)
-    widget.properties["flag"].set("wxEXPAND")
-
-    common.app_tree.insert(node, sizer.node, pos-1)
-
-    node2 = Node(widget._window_1)
-    widget._window_1.node = node2
-    common.app_tree.add(node2, widget.node)
-
-    node3 = Node(widget._window_2)
-    widget._window_2.node = node3
-    common.app_tree.add(node3, widget.node)
-
-    if parent.widget: widget.create()
-    #sizer.set_item(widget.pos, 1, wx.EXPAND)
+    with parent.frozen():
+        widget = editor_class(label, parent, -1, None, None, orientation, sizer, pos)
+        widget.properties["style"].set_to_default()
+        widget._window_1 = pane1 = EditPanel(label + '_pane_1', widget, wx.NewId(), widget.virtual_sizer, 1)
+        widget._window_2 = pane2 = EditPanel(label + '_pane_2', widget, wx.NewId(), widget.virtual_sizer, 2)
+    
+        node = Node(widget)
+        widget.node = node
+        widget.virtual_sizer.node = node
+    
+        widget.properties["proportion"].set(1)
+        widget.properties["flag"].set("wxEXPAND")
+    
+        common.app_tree.insert(node, sizer.node, pos-1)
+    
+        node2 = Node(widget._window_1)
+        widget._window_1.node = node2
+        common.app_tree.add(node2, widget.node)
+    
+        node3 = Node(widget._window_2)
+        widget._window_2.node = node3
+        common.app_tree.add(node3, widget.node)
+    
+        if parent.widget: widget.create()
+        #sizer.set_item(widget.pos, 1, wx.EXPAND)
 
 
 def xml_builder(attrs, parent, sizer, sizeritem, pos=None):

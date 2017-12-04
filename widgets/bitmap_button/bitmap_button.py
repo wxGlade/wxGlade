@@ -85,12 +85,13 @@ def builder(parent, sizer, pos, number=[1]):
         number[0] += 1
         name = 'bitmap_button_%s' % number[0]
     bitmap = wx.FileSelector(_("Select the image for the button"))
-    button = EditBitmapButton(name, parent, wx.NewId(), bitmap, sizer, pos)
-    button.properties["style"].set_to_default()
-    button.check_defaults()
-    node = Node(button)
-    button.node = node
-    if parent.widget: button.create()
+    with parent.frozen():
+        button = EditBitmapButton(name, parent, wx.NewId(), bitmap, sizer, pos)
+        button.properties["style"].set_to_default()
+        button.check_defaults()
+        node = Node(button)
+        button.node = node
+        if parent.widget: button.create()
     common.app_tree.insert(node, sizer.node, pos-1)
 
 

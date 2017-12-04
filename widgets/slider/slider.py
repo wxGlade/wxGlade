@@ -88,11 +88,12 @@ def builder(parent, sizer, pos, number=[1]):
     while common.app_tree.has_name(label):
         number[0] += 1
         label = '%s_%d' % (tmpl_label, number[0])
-    widget = editor_class(label, parent, wx.ID_ANY, style, sizer, pos)
-    node = Node(widget)
-    widget.node = node
-    widget.properties["flag"].set("wxEXPAND")
-    if parent.widget: widget.create()
+    with parent.frozen():
+        widget = editor_class(label, parent, wx.ID_ANY, style, sizer, pos)
+        node = Node(widget)
+        widget.node = node
+        widget.properties["flag"].set("wxEXPAND")
+        if parent.widget: widget.create()
     common.app_tree.insert(node, sizer.node, pos-1)
 
 

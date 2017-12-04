@@ -321,13 +321,14 @@ def builder(parent, sizer, pos, number=[1]):
     while common.app_tree.has_name(label):
         number[0] += 1
         label = 'grid_%d' % number[0]
-    grid = EditGrid(label, parent, wx.NewId(), sizer, pos)
-    # A grid should be wx.EXPANDed and 'option' should be 1, or you can't see it.
-    grid.properties["proportion"].set(1)
-    grid.properties["flag"].set("wxEXPAND")
-    node = Node(grid)
-    grid.node = node
-    if parent.widget: grid.create()
+    with parent.frozen():
+        grid = EditGrid(label, parent, wx.NewId(), sizer, pos)
+        # A grid should be wx.EXPANDed and 'option' should be 1, or you can't see it.
+        grid.properties["proportion"].set(1)
+        grid.properties["flag"].set("wxEXPAND")
+        node = Node(grid)
+        grid.node = node
+        if parent.widget: grid.create()
     common.app_tree.insert(node, sizer.node, pos-1)
 
 

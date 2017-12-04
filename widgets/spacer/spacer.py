@@ -101,10 +101,11 @@ def builder(parent, sizer, pos):
         return
 
     name = 'spacer'
-    spacer = EditSpacer( name, parent, wx.NewId(), width, height, sizer, pos )
-    node = Node(spacer)
-    spacer.node = node
-    if parent.widget: spacer.create()
+    with parent.frozen():
+        spacer = EditSpacer( name, parent, wx.NewId(), width, height, sizer, pos )
+        node = Node(spacer)
+        spacer.node = node
+        if parent.widget: spacer.create()
     common.app_tree.insert(node, sizer.node, pos-1)
 
 

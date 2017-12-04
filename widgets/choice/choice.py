@@ -87,12 +87,13 @@ def builder(parent, sizer, pos, number=[1]):
     while common.app_tree.has_name(name):
         number[0] += 1
         name = 'choice_%d' % number[0]
-    choice = EditChoice(name, parent, wx.NewId(), [(u'choice 1',)], sizer, pos)
-    choice.check_defaults()
-    node = Node(choice)
-    #sizer.set_item(pos, size=choice.GetBestSize())
-    choice.node = node
-    if parent.widget: choice.create()
+    with parent.frozen():
+        choice = EditChoice(name, parent, wx.NewId(), [(u'choice 1',)], sizer, pos)
+        choice.check_defaults()
+        node = Node(choice)
+        #sizer.set_item(pos, size=choice.GetBestSize())
+        choice.node = node
+        if parent.widget: choice.create()
     common.app_tree.insert(node, sizer.node, pos-1)
 
 

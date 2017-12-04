@@ -64,12 +64,13 @@ def builder(parent, sizer, pos, number=[1]):
         number[0] += 1
         name = 'bitmap_%s' % number[0]
     bitmap = wx.FileSelector(_("Select the image"))
-    static_bitmap = EditStaticBitmap(name, parent, wx.NewId(), bitmap, sizer, pos)
-    static_bitmap.properties["style"].set_to_default()
-    static_bitmap.check_defaults()
-    node = Node(static_bitmap)
-    static_bitmap.node = node
-    if parent.widget: static_bitmap.create()
+    with parent.frozen():
+        static_bitmap = EditStaticBitmap(name, parent, wx.NewId(), bitmap, sizer, pos)
+        static_bitmap.properties["style"].set_to_default()
+        static_bitmap.check_defaults()
+        node = Node(static_bitmap)
+        static_bitmap.node = node
+        if parent.widget: static_bitmap.create()
     common.app_tree.insert(node, sizer.node, pos-1)
 
 
