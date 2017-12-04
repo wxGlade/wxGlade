@@ -59,13 +59,14 @@ def builder(parent, sizer, pos, number=[1]):
     while common.app_tree.has_name(name):
         number[0] += 1
         name = 'tree_ctrl_%d' % number[0]
-    tree_ctrl = EditTreeCtrl(name, parent, wx.NewId(), sizer, pos)
-    tree_ctrl.properties["style"].set_to_default()
-    node = Node(tree_ctrl)
-    tree_ctrl.node = node
-    tree_ctrl.properties["proportion"].set(1)
-    tree_ctrl.properties["flag"].set("wxEXPAND")
-    if parent.widget: tree_ctrl.create()
+    with parent.frozen():
+        tree_ctrl = EditTreeCtrl(name, parent, wx.NewId(), sizer, pos)
+        tree_ctrl.properties["style"].set_to_default()
+        node = Node(tree_ctrl)
+        tree_ctrl.node = node
+        tree_ctrl.properties["proportion"].set(1)
+        tree_ctrl.properties["flag"].set("wxEXPAND")
+        if parent.widget: tree_ctrl.create()
     common.app_tree.insert(node, sizer.node, pos-1)
     #sizer.set_item(tree_ctrl.pos, 1, wx.EXPAND)
 

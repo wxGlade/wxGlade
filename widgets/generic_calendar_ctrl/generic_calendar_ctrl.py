@@ -63,12 +63,13 @@ def builder(parent, sizer, pos, number=[1]):
     while common.app_tree.has_name(label):
         number[0] += 1
         label = 'generic_calendar_ctrl_%d' % number[0]
-    calendar_ctrl = EditGenericCalendarCtrl(label, parent, wx.NewId(), sizer, pos)
-    calendar_ctrl.properties["style"].set_to_default()
-    calendar_ctrl.check_defaults()
-    node = Node(calendar_ctrl)
-    calendar_ctrl.node = node
-    if parent.widget: calendar_ctrl.create()
+    with parent.frozen():
+        calendar_ctrl = EditGenericCalendarCtrl(label, parent, wx.NewId(), sizer, pos)
+        calendar_ctrl.properties["style"].set_to_default()
+        calendar_ctrl.check_defaults()
+        node = Node(calendar_ctrl)
+        calendar_ctrl.node = node
+        if parent.widget: calendar_ctrl.create()
     common.app_tree.insert(node, sizer.node, pos-1)
 
 

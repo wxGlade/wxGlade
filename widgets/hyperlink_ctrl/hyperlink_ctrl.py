@@ -72,13 +72,14 @@ def builder(parent, sizer, pos, number=[1]):
     while common.app_tree.has_name(name):
         number[0] += 1
         name = u'hyperlink_%d' % number[0]
-    hyperlink_ctrl = EditHyperlinkCtrl(name, parent, wx.NewId(), name, sizer, pos)
-    hyperlink_ctrl.properties["style"].set_to_default()
-    hyperlink_ctrl.properties["attribute"].set(True)  # allow to modificate it later on...
-    hyperlink_ctrl.check_defaults()
-    node = Node(hyperlink_ctrl)
-    hyperlink_ctrl.node = node
-    if parent.widget: hyperlink_ctrl.create()
+    with parent.frozen():
+        hyperlink_ctrl = EditHyperlinkCtrl(name, parent, wx.NewId(), name, sizer, pos)
+        hyperlink_ctrl.properties["style"].set_to_default()
+        hyperlink_ctrl.properties["attribute"].set(True)  # allow to modificate it later on...
+        hyperlink_ctrl.check_defaults()
+        node = Node(hyperlink_ctrl)
+        hyperlink_ctrl.node = node
+        if parent.widget: hyperlink_ctrl.create()
     common.app_tree.insert(node, sizer.node, pos-1)
 
 

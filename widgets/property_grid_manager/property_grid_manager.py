@@ -100,14 +100,15 @@ def builder(parent, sizer, pos, number=[1]):
     while common.app_tree.has_name(label):
         number[0] += 1
         label = 'property_grid_%d' % number[0]
-    property_grid_manager = EditPropertyGridManager(label, parent, wx.NewId(), sizer, pos)
-    property_grid_manager.properties["style"].set_to_default()
-    # A grid should be wx.EXPANDed and 'option' should be 1, or you can't see it.
-    property_grid_manager.properties["proportion"].set(1)
-    property_grid_manager.properties["flag"].set("wxEXPAND")
-    node = Node(property_grid_manager)
-    property_grid_manager.node = node
-    if parent.widget: property_grid_manager.create()
+    with parent.frozen():
+        property_grid_manager = EditPropertyGridManager(label, parent, wx.NewId(), sizer, pos)
+        property_grid_manager.properties["style"].set_to_default()
+        # A grid should be wx.EXPANDed and 'option' should be 1, or you can't see it.
+        property_grid_manager.properties["proportion"].set(1)
+        property_grid_manager.properties["flag"].set("wxEXPAND")
+        node = Node(property_grid_manager)
+        property_grid_manager.node = node
+        if parent.widget: property_grid_manager.create()
     common.app_tree.insert(node, sizer.node, pos-1)
 
 

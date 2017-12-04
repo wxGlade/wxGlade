@@ -189,10 +189,11 @@ def builder(parent, sizer, pos, number=[1]):
     while common.app_tree.has_name(label):
         number[0] += 1
         label = u'radio_box_%d' % number[0]
-    radio_box = EditRadioBox(label, parent, wx.NewId(), label, [[u'choice 1'],], 1, 0, sizer, pos)
-    node = Node(radio_box)
-    radio_box.node = node
-    if parent.widget: radio_box.create()
+    with parent.frozen():
+        radio_box = EditRadioBox(label, parent, wx.NewId(), label, [[u'choice 1'],], 1, 0, sizer, pos)
+        node = Node(radio_box)
+        radio_box.node = node
+        if parent.widget: radio_box.create()
     common.app_tree.insert(node, sizer.node, pos-1)
 
 

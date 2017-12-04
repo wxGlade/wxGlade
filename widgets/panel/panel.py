@@ -331,12 +331,13 @@ def builder(parent, sizer, pos, number=[1]):
     while common.app_tree.has_name(name):
         number[0] += 1
         name = 'panel_%d' % number[0]
-    panel = EditPanel(name, parent, wx.NewId(), sizer, pos, style='')
-    node = Node(panel)
-    panel.node = node
-    panel.properties["proportion"].set(1)
-    panel.properties["flag"].set("wxEXPAND")
-    if parent.widget: panel.create()
+    with parent.frozen():
+        panel = EditPanel(name, parent, wx.NewId(), sizer, pos, style='')
+        node = Node(panel)
+        panel.node = node
+        panel.properties["proportion"].set(1)
+        panel.properties["flag"].set("wxEXPAND")
+        if parent.widget: panel.create()
     common.app_tree.insert(node, sizer.node, pos-1)
     #sizer.set_item(panel.pos, 1, wx.EXPAND)
 

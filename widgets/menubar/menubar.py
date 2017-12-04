@@ -838,11 +838,12 @@ def builder(parent, sizer, pos, number=[0]):
         toplevel_widget.properties["menubar"].set(True, notify=True)
         return
     name = dialog.get_next_name("menubar")
-    mb = EditMenuBar(name, klass, parent)
-    mb.node = Node(mb)
-    common.app_tree.add(mb.node)
-    mb.create()
-    mb.widget.Show()
+    with parent.frozen():
+        mb = EditMenuBar(name, klass, parent)
+        mb.node = Node(mb)
+        common.app_tree.add(mb.node)
+        mb.create()
+        mb.widget.Show()
 
 
 

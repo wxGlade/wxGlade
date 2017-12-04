@@ -113,16 +113,17 @@ def builder(parent, sizer, pos, number=[1]):
     while common.app_tree.has_name(name):
         number[0] += 1
         name = 'list_ctrl_%d' % number[0]
-    list_ctrl = EditListCtrl(name, parent, wx.NewId(), sizer, pos)
-    #list_ctrl.properties["style"].set_to_default()  # default is wxLC_ICON
-    list_ctrl.properties["columns"].set( [['A', -1], ['B', -1], ['C', -1]] )
-    list_ctrl.properties["rows_number"].set(10)
-    list_ctrl.properties["style"].set( ["wxLC_REPORT", "wxLC_HRULES", "wxLC_VRULES"] )
-    node = Node(list_ctrl)
-    list_ctrl.node = node
-    list_ctrl.properties["proportion"].set(1)
-    list_ctrl.properties["flag"].set("wxEXPAND")
-    if parent.widget: list_ctrl.create()
+    with parent.frozen():
+        list_ctrl = EditListCtrl(name, parent, wx.NewId(), sizer, pos)
+        #list_ctrl.properties["style"].set_to_default()  # default is wxLC_ICON
+        list_ctrl.properties["columns"].set( [['A', -1], ['B', -1], ['C', -1]] )
+        list_ctrl.properties["rows_number"].set(10)
+        list_ctrl.properties["style"].set( ["wxLC_REPORT", "wxLC_HRULES", "wxLC_VRULES"] )
+        node = Node(list_ctrl)
+        list_ctrl.node = node
+        list_ctrl.properties["proportion"].set(1)
+        list_ctrl.properties["flag"].set("wxEXPAND")
+        if parent.widget: list_ctrl.create()
     common.app_tree.insert(node, sizer.node, pos-1)
     #sizer.set_item(list_ctrl.pos, 1, wx.EXPAND)
 

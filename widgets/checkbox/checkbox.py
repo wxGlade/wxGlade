@@ -84,12 +84,13 @@ def builder(parent, sizer, pos, number=[1]):
     while common.app_tree.has_name(label):
         number[0] += 1
         label = 'checkbox_%d' % number[0]
-    checkbox = EditCheckBox(label, parent, wx.NewId(), label, sizer, pos)
-    checkbox.properties["style"].set_to_default()
-    checkbox.check_defaults()
-    node = Node(checkbox)
-    checkbox.node = node
-    if parent.widget: checkbox.create()
+    with parent.frozen():
+        checkbox = EditCheckBox(label, parent, wx.NewId(), label, sizer, pos)
+        checkbox.properties["style"].set_to_default()
+        checkbox.check_defaults()
+        node = Node(checkbox)
+        checkbox.node = node
+        if parent.widget: checkbox.create()
     common.app_tree.insert(node, sizer.node, pos-1)
 
 

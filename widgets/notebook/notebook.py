@@ -427,18 +427,18 @@ def builder(parent, sizer, pos, number=[1]):
     dialog.Destroy()
     if res != wx.ID_OK:
         return
-
-    widget = editor_class(None, parent, wx.ID_ANY, style, sizer, pos)
-    node = Node(widget)
-    widget.node = node
-    widget.virtual_sizer.node = node
-    widget.properties["proportion"].set(1)
-    widget.properties["flag"].set("wxEXPAND")
-    if parent.widget: widget.create()
-    common.app_tree.insert(node, sizer.node, pos-1)
-
-    widget.insert_tab(0, widget.next_pane_name()) # next_pane_name will be used as label and as pane name, if possible
-    #sizer.set_item(widget.pos, 1, wx.EXPAND)
+    with parent.frozen():
+        widget = editor_class(None, parent, wx.ID_ANY, style, sizer, pos)
+        node = Node(widget)
+        widget.node = node
+        widget.virtual_sizer.node = node
+        widget.properties["proportion"].set(1)
+        widget.properties["flag"].set("wxEXPAND")
+        if parent.widget: widget.create()
+        common.app_tree.insert(node, sizer.node, pos-1)
+    
+        widget.insert_tab(0, widget.next_pane_name()) # next_pane_name will be used as label and as pane name, if possible
+        #sizer.set_item(widget.pos, 1, wx.EXPAND)
 
 
 def xml_builder(attrs, parent, sizer, sizeritem, pos=None):

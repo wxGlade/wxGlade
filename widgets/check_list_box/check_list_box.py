@@ -77,12 +77,13 @@ def builder(parent, sizer, pos, number=[1]):
     while common.app_tree.has_name(name):
         number[0] += 1
         name = 'check_list_box_%d' % number[0]
-    check_list_box = EditCheckListBox(name, parent, wx.NewId(), [u'choice 1'], sizer, pos)
-    check_list_box.properties["style"].set_to_default()
-    node = Node(check_list_box)
-##     sizer.set_item(pos, size=check_list_box.GetBestSize())
-    check_list_box.node = node
-    if parent.widget: check_list_box.create()
+    with parent.frozen():
+        check_list_box = EditCheckListBox(name, parent, wx.NewId(), [u'choice 1'], sizer, pos)
+        check_list_box.properties["style"].set_to_default()
+        node = Node(check_list_box)
+    ##     sizer.set_item(pos, size=check_list_box.GetBestSize())
+        check_list_box.node = node
+        if parent.widget: check_list_box.create()
     common.app_tree.insert(node, sizer.node, pos-1)
 
 

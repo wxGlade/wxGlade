@@ -52,8 +52,7 @@ tmpl_label = 'gauge'
 
 def builder(parent, sizer, pos, number=[1]):
     "Factory function for editor objects from GUI"
-    dialog = wcodegen.WidgetStyleSelectionDialog(
-            dlg_title, box_title, choices)
+    dialog = wcodegen.WidgetStyleSelectionDialog( dlg_title, box_title, choices)
     res = dialog.ShowModal()
     style = dialog.get_selection()
     dialog.Destroy()
@@ -64,11 +63,12 @@ def builder(parent, sizer, pos, number=[1]):
     while common.app_tree.has_name(label):
         number[0] += 1
         label = '%s_%d' % (tmpl_label, number[0])
-    widget = editor_class(label, parent, wx.ID_ANY, style, sizer, pos)
-    node = Node(widget)
-    widget.node = node
-    widget.properties["flag"].set("wxEXPAND")
-    if parent.widget: widget.create()
+    with parent.frozen():
+        widget = editor_class(label, parent, wx.ID_ANY, style, sizer, pos)
+        node = Node(widget)
+        widget.node = node
+        widget.properties["flag"].set("wxEXPAND")
+        if parent.widget: widget.create()
     common.app_tree.insert(node, sizer.node, pos-1)
 
 

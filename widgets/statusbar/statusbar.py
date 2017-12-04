@@ -178,10 +178,11 @@ def builder(parent, sizer, pos):
         number[0] += 1
         name = 'statusbar_%d' % number[0]
 
-    widget = EditStatusBar(name, klass, parent)
-    widget.node = Node(widget)
-    common.app_tree.add(widget.node)
-    if parent.widget: widget.create()
+    with parent.frozen():
+        widget = EditStatusBar(name, klass, parent)
+        widget.node = Node(widget)
+        common.app_tree.add(widget.node)
+        if parent.widget: widget.create()
 
 
 

@@ -67,12 +67,13 @@ def builder(parent, sizer, pos, number=[1]):
     while common.app_tree.has_name(name):
         number[0] += 1
         name = 'spin_button_%d' % number[0]
-    text = EditSpinButton(name, parent, wx.NewId(), sizer, pos)
-    text.properties["style"].set_to_default()
-    text.check_defaults()
-    node = Node(text)
-    text.node = node
-    if parent.widget: text.create()
+    with parent.frozen():
+        text = EditSpinButton(name, parent, wx.NewId(), sizer, pos)
+        text.properties["style"].set_to_default()
+        text.check_defaults()
+        node = Node(text)
+        text.node = node
+        if parent.widget: text.create()
     common.app_tree.insert(node, sizer.node, pos-1)
 
 

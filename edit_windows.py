@@ -12,7 +12,7 @@ import wx
 
 import new_properties as np
 import misc, common, compat, config, clipboard
-import decorators
+import decorators, contextlib
 from wcodegen.taghandler import BaseXmlBuilderTagHandler
 
 from events_mixin import EventsMixin
@@ -339,6 +339,18 @@ class EditBase(EventsMixin, np.PropertyOwner):
             if not len(self.property_blocking[key]):
                 del self.property_blocking[key]
 
+    @contextlib.contextmanager
+    def frozen(self):
+        if self.widget:
+            toplevel = self.widget.GetTopLevelParent()
+            toplevel.Freeze()
+        else:
+            toplevel = None
+        try:
+            yield
+        finally:
+            if toplevel:
+                toplevel.Thaw()
 
 
 class WindowBase(EditBase):
@@ -647,7 +659,8 @@ class ManagedBase(WindowBase):
         return self.sizer.free_slot(self.pos)
 
     def remove(self):
-        slot = self._remove()
+        with self.frozen():
+            slot = self._remove()
         misc.set_focused_widget(slot)
 
     def on_mouse_events(self, event):

@@ -161,13 +161,14 @@ def builder(parent, sizer, pos, number=[1]):
     while common.app_tree.has_name(name):
         number[0] += 1
         name = 'window_%d' % number[0]
-    win = CustomWidget(name, klass, parent, wx.NewId(), sizer, pos)
-    node = Node(win)
-    win.node = node
-
-    win.properties["proportion"].set(1)
-    win.properties["flag"].set("wxEXPAND")
-    if parent.widget: win.create()
+    with parent.frozen():
+        win = CustomWidget(name, klass, parent, wx.NewId(), sizer, pos)
+        node = Node(win)
+        win.node = node
+    
+        win.properties["proportion"].set(1)
+        win.properties["flag"].set("wxEXPAND")
+        if parent.widget: win.create()
 
     common.app_tree.insert(node, sizer.node, pos-1)
     #sizer.set_item(win.pos, 1, wx.EXPAND)
