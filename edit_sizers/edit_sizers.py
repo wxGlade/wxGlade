@@ -157,7 +157,7 @@ class SizerSlot(np.PropertyOwner):
         np.PropertyOwner.__init__(self)
         # initialise instance logger
         self._logger = logging.getLogger(self.__class__.__name__)
-        self.klass = self.classname = "sizerslot"
+        self.klass = self.classname = self.base = "sizerslot"
         self.label = label
 
         self.sizer = sizer       # Sizer object (SizerBase instance)
