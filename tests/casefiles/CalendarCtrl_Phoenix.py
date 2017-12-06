@@ -17,7 +17,7 @@ import wx.adv
 class MyDialog(wx.Dialog):
     def __init__(self, *args, **kwds):
         # begin wxGlade: MyDialog.__init__
-        kwds["style"] = wx.DEFAULT_DIALOG_STYLE
+        kwds["style"] = kwds.get("style", 0) | wx.DEFAULT_DIALOG_STYLE
         wx.Dialog.__init__(self, *args, **kwds)
         self.calendar_ctrl_1 = wx.adv.CalendarCtrl(self, wx.ID_ANY, style=0)
 

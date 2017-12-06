@@ -31,7 +31,7 @@ class PyOgg1_MyDialog(wx.Dialog):
 class PyOgg1_MyDialog(wx.Dialog):
     def __init__(self, *args, **kwds):
         # begin wxGlade: PyOgg1_MyDialog.__init__
-        kwds["style"] = wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER
+        kwds["style"] = kwds.get("style", 0) | wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER
         wx.Dialog.__init__(self, *args, **kwds)
         self.notebook_1 = wx.Notebook(self, wx.ID_ANY, style=0)
         self.notebook_1_pane_1 = wx.Panel(self.notebook_1, wx.ID_ANY)

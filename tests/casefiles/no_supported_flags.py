@@ -17,7 +17,7 @@ import gettext
 class MyFrame(wx.Frame):
     def __init__(self, *args, **kwds):
         # begin wxGlade: MyFrame.__init__
-        kwds["style"] = wx.DEFAULT_FRAME_STYLE
+        kwds["style"] = kwds.get("style", 0) | wx.DEFAULT_FRAME_STYLE
         wx.Frame.__init__(self, *args, **kwds)
         self.label_1 = wx.StaticText(self, wx.ID_ANY, _("Flag wxST_ELLIPSIZE_END is set but not\nsupported with wx 2.8. Thereby the generated\ncode should not contain this flag."))
 

@@ -14,7 +14,7 @@ import wx
 class PythonSubclass(wx.Frame):
     def __init__(self, *args, **kwds):
         # begin wxGlade: PythonSubclass.__init__
-        kwds["style"] = wx.DEFAULT_FRAME_STYLE
+        kwds["style"] = kwds.get("style", 0) | wx.DEFAULT_FRAME_STYLE
         wx.Frame.__init__(self, *args, **kwds)
 
         self.__set_properties()

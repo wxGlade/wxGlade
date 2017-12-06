@@ -18,7 +18,7 @@ import gettext
 class PyOgg2_MyFrame(wx.Frame):
     def __init__(self, *args, **kwds):
         # begin wxGlade: PyOgg2_MyFrame.__init__
-        kwds["style"] = wx.DEFAULT_FRAME_STYLE
+        kwds["style"] = kwds.get("style", 0) | wx.DEFAULT_FRAME_STYLE
         wx.Frame.__init__(self, *args, **kwds)
         
         # Menu Bar
@@ -161,7 +161,7 @@ class PyOgg2_MyFrame(wx.Frame):
 class MyFrameGrid(wx.Frame):
     def __init__(self, *args, **kwds):
         # begin wxGlade: MyFrameGrid.__init__
-        kwds["style"] = wx.DEFAULT_FRAME_STYLE
+        kwds["style"] = kwds.get("style", 0) | wx.DEFAULT_FRAME_STYLE
         wx.Frame.__init__(self, *args, **kwds)
         self.grid = wx.grid.Grid(self, wx.ID_ANY, size=(1, 1))
         self.static_line = wx.StaticLine(self, wx.ID_ANY)
