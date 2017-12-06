@@ -80,6 +80,7 @@ def self_%s_on_paint(event):
         for line in on_paint_code.splitlines():
             append(line + '\n')
         append( 'self.%s.Bind(wx.EVT_PAINT, self_%s_on_paint)\n' % (widget.name, widget.name) )
+        append( 'self.%s.Bind(wx.EVT_ERASE_BACKGROUND, lambda event: None)\n' % widget.name )
         return init, [], []
 
 
