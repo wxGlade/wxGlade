@@ -8,6 +8,7 @@
         <instructions>Open it and play with it in whatever way you want!</instructions>
     </templatedata>
     <object class="MyFrame" name="frame_1" base="EditFrame">
+        <style>wxDEFAULT_FRAME_STYLE</style>
         <title>frame_1</title>
         <size>300, 300</size>
         <object class="wxBoxSizer" name="sizer_1" base="EditBoxSizer">
