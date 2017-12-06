@@ -310,9 +310,10 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
     tmpl_overwrite = "%(comment_sign)s This is an automatically generated file.\n" \
                      "%(comment_sign)s Manual changes will be overwritten without warning!\n\n"
 
-    tmpl_sizeritem = ''   # Template for adding a widget to a sizer; see add_sizeritem()
+    tmpl_sizeritem = ''           # Template for adding a widget to a sizer; see add_sizeritem()
     tmpl_spacersize = '(%s, %s)'  # Python and Lisp need the braces
-    tmpl_style = ''       # Template for setting style in constructor; see _format_style()
+    tmpl_style = ''               # Template for setting style in constructor; see _format_style()
+    tmpl_toplevel_style = ''      # same for a toplevel object
 
     # templates used by add_app():
     tmpl_appfile = None           # file header for standalone files with application start code
@@ -1527,6 +1528,8 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
     def _format_style(self, style, code_obj):
         """Return the formatted styles to insert into constructor code.
         The function just returned L{tmpl_style}. Write a derived version implementation if more logic is needed."""
+        if code_obj.is_toplevel:
+            return self.tmpl_toplevel_style
         return self.tmpl_style
 
     def _generic_code(self, obj, prop_name):

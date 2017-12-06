@@ -206,6 +206,7 @@ class PythonCodeWriter(BaseLangCodeWriter, wcodegen.PythonMixin):
     tmpl_sizeritem = '%s.Add(%s, %s, %s, %s)\n'
     tmpl_gridbagsizeritem = '%s.Add(%s, %s, %s, %s, %s)\n'
     tmpl_style = '%(tab)skwds["style"] = %(style)s\n'
+    tmpl_toplevel_style = '%(tab)skwds["style"] = kwds.get("style", 0) | %(style)s\n'
     tmpl_appfile = """\
 %(overwrite)s\
 %(header_lines)s\
