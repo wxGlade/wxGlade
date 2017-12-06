@@ -17,7 +17,7 @@ import gettext
 class MyFrame(wx.Frame):
     def __init__(self, *args, **kwds):
         # begin wxGlade: MyFrame.__init__
-        kwds["style"] = wx.DEFAULT_FRAME_STYLE
+        kwds["style"] = kwds.get("style", 0) | wx.DEFAULT_FRAME_STYLE
         wx.Frame.__init__(self, *args, **kwds)
         self.text_ctrl_1 = wx.TextCtrl(self, wx.ID_ANY, _("Some Input"), style=wx.TE_READONLY)
 

@@ -19,7 +19,7 @@ import gettext
 class All_Widgets_Frame(wx.Frame):
     def __init__(self, *args, **kwds):
         # begin wxGlade: All_Widgets_Frame.__init__
-        kwds["style"] = wx.DEFAULT_FRAME_STYLE
+        kwds["style"] = kwds.get("style", 0) | wx.DEFAULT_FRAME_STYLE
         wx.Frame.__init__(self, *args, **kwds)
         
         # Menu Bar
