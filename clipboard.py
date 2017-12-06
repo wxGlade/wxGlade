@@ -148,9 +148,12 @@ class DropTarget(wx.DropTarget):
         self.fmt = None
 
         if _current_drag_source and not copy:
-            src_widget.remove()
+            with src_widget.frozen():
+                src_widget.remove()
+                dst_widget.clipboard_paste(data)
+        else:
+            dst_widget.clipboard_paste(data)
 
-        dst_widget.clipboard_paste(data)
         common.app_tree.expand(dst_node)
         return default
 
