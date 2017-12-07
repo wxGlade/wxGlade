@@ -335,12 +335,16 @@ def _remove():
 @restore_focus
 def _cut():
     global focused_widget
-    if not _can_remove(): return
+    if not _can_remove() or focused_widget.klass=="sizerslot":
+        wx.Bell()
+        return
     clipboard.cut(focused_widget)
     #focused_widget = None
 
 def _copy():
-    if focused_widget is None: return
+    if focused_widget is None or focused_widget.klass=="sizerslot":
+        wx.Bell()
+        return
     clipboard.copy(focused_widget)
 
 @restore_focus
