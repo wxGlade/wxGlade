@@ -112,7 +112,7 @@ class EditRadioBox(ManagedBase):
     def _set_choices(self):
         if not self.widget: return
         for b in self.buttons or []:
-            compat.DestroyLater(b)
+            if b: compat.DestroyLater(b)
         self.static_box = self._create_static_box()
         self.buttons = [self._create_button(c) for (c,) in self.choices]
         self._do_layout()
