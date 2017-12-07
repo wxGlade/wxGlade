@@ -253,6 +253,7 @@ sub %(handler)s {
         '%(tab)s$style = %(style)s\n' \
         '%(tab)s%(tab)sunless defined $style;\n' \
         '\n'
+    tmpl_toplevel_style = tmpl_style
 
     tmpl_appfile = """%(overwrite)s%(header_lines)s"""
 
