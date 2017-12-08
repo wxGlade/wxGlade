@@ -743,6 +743,9 @@ class SizerBase(Sizer, np.PropertyOwner):
         self.widget = None    # actual wxSizer instance
         self._btn = None      # "handle" to activate a Sizer and to access its popup menu (SizerHandleButton)
 
+    def create_widgets(self):
+        common.app_tree.create_widgets(self.node)
+
     def create_widget(self):
         "Creates the wxSizer self.widget"
         raise NotImplementedError
