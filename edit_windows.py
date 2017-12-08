@@ -148,6 +148,9 @@ class EditBase(EventsMixin, np.PropertyOwner):
         PROPERTIES.remove( move_property )
         PROPERTIES.insert( PROPERTIES.index(after_property)+1, move_property )
 
+    def create_widgets(self):
+        common.app_tree.create_widgets(self.node)
+
     def create(self):
         "create the wx widget"
         if self.parent is not None and self.parent.widget is None: return

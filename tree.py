@@ -845,7 +845,7 @@ class WidgetTree(wx.TreeCtrl, Tree):
         if node.children:
             for c in node.children:
                 self.create_widgets(c)
-        node.widget.post_load()
+        node.widget.post_load()  # only edit_sizers.SizerBase has this method implemented and calls it for toplevel
 
     def _show_widget_toplevel(self, node):
         # creates/shows the widget of the given toplevel node and all its children
@@ -860,7 +860,7 @@ class WidgetTree(wx.TreeCtrl, Tree):
             if node.children:
                 for c in node.children:
                     self.create_widgets(c)
-            node.widget.post_load()
+            node.widget.post_load()  # only edit_sizers.SizerBase has this method implemented and calls it for toplevel
             node.widget.create()
             if node.widget.widget.TopLevel:
                 node.widget.widget.Show()
