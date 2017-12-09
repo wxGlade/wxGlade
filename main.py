@@ -344,7 +344,7 @@ class wxGladeFrame(wx.Frame):
         SAVE = append_menu_item(file_menu, -1, _("&Save\tCtrl+S"), wx.ART_FILE_SAVE)
         misc.bind_menu_item(self, SAVE, self.save_app)
 
-        SAVE_AS = append_menu_item(file_menu, -1, _("Save As...\tShift+Ctrl+S"), wx.ART_FILE_SAVE_AS)
+        SAVE_AS = append_menu_item(file_menu, -1, _("Save As..."), wx.ART_FILE_SAVE_AS)
         misc.bind_menu_item(self, SAVE_AS, self.save_app_as)
 
         item = append_menu_item(file_menu, -1, _("Save As Template..."))
