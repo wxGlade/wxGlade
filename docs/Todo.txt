@@ -10,12 +10,16 @@ User Interface:
  * code properties: use stc and resize dynamically
  * toolbar and maybe menu editor: add Drop target for images
  * grid properties: implement validation in 'on_cell_changing'
+ * Frame, Notebook, Calendar: re-create on style change, depending on changed flags and platform
+   e.g. on MacOS and GTK the main Frame styles can't be modified (see patch_recreate.txt)
 done:
  * flush properties before saving
  * implement "re-do / Ctrl-Y" and "repeat / Ctrl-R" to apply last property modification(s) to currently selected widget
  * new dialog for Toolbar (similar to the new menu dialog)
  * ask user whether he really wants a standalone menu/toolbar
  * remember preview window position; place it away from Design window
+ * use Freeze/Thaw on updates
+ * grid property editors: support clipboard
 
 
 Code generation:
@@ -46,10 +50,10 @@ Use either gettext or wx.GetTranslation for _
 
 
 Additional Widgets:
- * lib.buttons
- * matplotlib
- * Py (shell)
- * html2
+ * lib.buttons (feature request #45 Add support for generic buttons)
+ * matplotlib (example is supplied already)
+ * Py (shell) (example is supplied already)
+ * html2 (example is supplied already)
  * WrapSizer
  * Ribbons 
  * stc.StyledTextCtrl
