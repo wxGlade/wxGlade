@@ -216,6 +216,11 @@ class SizerSlot(np.PropertyOwner):
         self.widget.Bind(wx.EVT_ENTER_WINDOW, self.on_enter)
         self.widget.Bind(wx.EVT_LEAVE_WINDOW, self.on_leave)
         self.widget.Bind(wx.EVT_KEY_DOWN, misc.on_key_down_event)
+        self.widget.Bind(wx.EVT_CHAR_HOOK, self.on_key_event)  # catch cursor keys
+    
+    def on_key_event(self, event):
+        if event.GetKeyCode() in (wx.WXK_UP, wx.WXK_DOWN):
+            misc.on_key_down_event(event)
 
     def is_visible(self):
         return False

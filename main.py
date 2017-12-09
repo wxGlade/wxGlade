@@ -15,7 +15,8 @@ from xml.sax import SAXParseException
 
 # import project modules
 import application
-import common, config, compat, misc, clipboard, history, new_properties
+import common, config, compat, misc, clipboard, history
+import new_properties as np
 import preferencesdialog, msgdialog, bugdialog, about
 import log
 import template
@@ -46,7 +47,9 @@ class wxGladePropertyPanel(wx.Frame):
 
         self.notebook = wx.Notebook(self, -1)
         self.Bind(wx.EVT_CLOSE, self.hide_frame)
-        
+        self.Bind(wx.EVT_KEY_DOWN, self.on_key_event)
+        self.Bind(wx.EVT_CHAR_HOOK, self.on_key_event)
+
         self.drop_target = FileDropTarget(self)
         self.SetDropTarget(self.drop_target)
 
@@ -74,6 +77,16 @@ class wxGladePropertyPanel(wx.Frame):
 
     def is_visible(self):
         return self.IsShown()
+
+    def on_key_event(self, event):
+        if event.GetKeyCode()==wx.WXK_F2:
+            # for a grid property: start editing
+            if np.current_property and isinstance(np.current_property, np.GridProperty):
+                focus = self.FindFocus()
+                if focus is np.current_property.grid:
+                    event.Skip()  # this will start the editing
+                    return
+        misc.on_key_down_event(event)
 
     ####################################################################################################################
     # new editor interface
@@ -182,7 +195,7 @@ class wxGladePropertyPanel(wx.Frame):
         panel.SetScrollbars(1, 5, 1, int(math.ceil(h/5.0)))
 
     def flush(self):
-        new_properties.flush_current_property()
+        np.flush_current_property()
 
 
 class wxGladeArtProvider(wx.ArtProvider):
@@ -288,9 +301,6 @@ class wxGladeFrame(wx.Frame):
             self.autosave_timer.Start( int(config.preferences.autosave_delay) * 1000 )
 
         self.create_statusbar()  # create statusbar for display of messages
-
-        self.property_frame.SetAcceleratorTable(self.accel_table)
-        self.tree_frame.SetAcceleratorTable(self.accel_table)
 
         self.Raise()
         misc.set_focused_widget(common.app_tree.app)
@@ -425,22 +435,6 @@ class wxGladeFrame(wx.Frame):
             self.file_history.AddFileToHistory(path.strip())
 
         self.Bind(wx.EVT_MENU_RANGE, self.open_from_history, id=wx.ID_FILE1, id2=wx.ID_FILE9)
-
-        self.accel_table = wx.AcceleratorTable([
-            (wx.ACCEL_CTRL, ord('N'), NEW.GetId()),
-            (wx.ACCEL_CTRL, ord('O'), OPEN.GetId()),
-            (wx.ACCEL_CTRL, ord('S'), SAVE.GetId()),
-            (wx.ACCEL_CTRL|wx.ACCEL_SHIFT, ord('S'), SAVE_AS.GetId()),
-            (wx.ACCEL_CTRL, ord('G'), GENERATE_CODE.GetId()),
-            #(wx.ACCEL_CTRL, ord('I'), IMPORT_ID),
-            (0, wx.WXK_F1, MANUAL.GetId()),
-            (wx.ACCEL_CTRL, ord('Q'), EXIT.GetId()),
-            (0, wx.WXK_F5, wx.ID_REFRESH),
-            (0, wx.WXK_F6, DESIGN.GetId()),
-            (0, wx.WXK_F2, TREE.GetId()),
-            (0, wx.WXK_F3, PROPS.GetId()),
-            (0, wx.WXK_F4, RAISE.GetId()),
-            ])
 
     def open_from_history(self, event):
         if not self.ask_save():
