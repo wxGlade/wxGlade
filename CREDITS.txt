@@ -19,6 +19,7 @@
 
  Contributors:
  ---------------------------------------------------------------------------
+ - Peter Bradley: editorial work on the new documentation
  - Johan Vromans
  - Richard Lawson <richard.lawson@colinx.com>
  - Alex Thuering <ntalex@web.de>: general virtual sizers support and
