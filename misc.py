@@ -20,6 +20,8 @@ currently_under_mouse = None
 _get_xpm_bitmap_re = re.compile(r'"(?:[^"]|\\")*"')
 _item_bitmaps = {}
 
+design_windows = []
+
 focused_widget = None  # the currently selected widget in GUI mode (for tree and property_panel)
 
 def set_focused_widget(widget, force=False):
@@ -378,20 +380,29 @@ def _cancel():
     if not common.adding_widget: return
     common.adding_widget = common.adding_sizer = False
     common.widget_to_add = None
+    if currently_under_mouse is not None:
+        currently_under_mouse.SetCursor(wx.STANDARD_CURSOR)
+    common.app_tree.SetCursor(wx.STANDARD_CURSOR)
+    compat.SetToolTip(common.app_tree, "")
+    common.palette.user_message("Canceled")
 
 
-# accelerator table to enable keyboard shortcuts for the popup menus of the various widgets (remove, cut, copy, paste)
-accel_table = {
+# accelerator tables to enable keyboard shortcuts for the popup menus of the various widgets (remove, cut, copy, paste)
+# only for the editing windows:
+accel_table_editors = {
     ("",  wx.WXK_DELETE):(_remove, ()),
     ("C", ord('C')):     (_copy,   ()),
     ("C", ord('X')):     (_cut,    ()),
     ("C", ord('V')):     (_paste,  ()),
+    ("C", ord('I')):     (_insert, ()),
+    ("C", ord('A')):     (_add,    ()),
+    ("",  wx.WXK_ESCAPE):(_cancel, ())
+}
+# for all windows
+accel_table = {
     ("C", ord('Z')):     ((common, "history","undo"), "focused_widget"),
     ("C", ord('Y')):     ((common, "history","redo"), "focused_widget"),
     ("C", ord('R')):     ((common, "history","repeat"), "focused_widget"),
-    ("C", ord('I')):     (_insert, ()),
-    ("C", ord('A')):     (_add,    ()),
-    ("",  wx.WXK_ESCAPE):(_cancel, ()),
     ("",  wx.WXK_F2):    ((common,"palette","show_tree"),            ()),
     ("",  wx.WXK_F3):    ((common,"palette","show_props_window"),    ()),
     ("",  wx.WXK_F4):    ((common,"palette","raise_all"),            ()),
@@ -424,7 +435,13 @@ def handle_key_event(event, is_filter=False):
     evt_flags = "".join(evt_flags)
 
     handler = accel_table.get( (evt_flags,evt_key) )
-    if not handler: return False
+    if not handler:
+        obj = event.GetEventObject()
+        toplevel_obj = obj.GetTopLevelParent()
+        if toplevel_obj in design_windows or toplevel_obj is common.app_tree:
+            handler = accel_table_editors.get( (evt_flags,evt_key) )
+    if not handler:
+        return False
 
     function, args = handler
     if isinstance(function, tuple):
