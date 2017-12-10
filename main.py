@@ -320,6 +320,14 @@ class wxGladeFrame(wx.Frame):
                     self.user_message(_('Auto save loaded'))
             common.remove_autosaved()
 
+        self.Bind(wx.EVT_CHAR_HOOK, self.on_key_event)
+
+    def on_key_event(self, event):
+        if event.GetKeyCode()==wx.WXK_ESCAPE and not event.HasModifiers() and common.adding_widget:
+            misc._cancel()
+            return
+        event.Skip()
+
     # menu and actions #################################################################################################
     def create_menu(self, parent):
         menu_bar = wx.MenuBar()

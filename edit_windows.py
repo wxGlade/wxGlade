@@ -762,6 +762,7 @@ class TopLevelBase(WindowBase, PreviewMixin):
                 self.widget.SetSize((-1, h))
             elif self.sizer:
                 self.sizer.fit_parent()
+        misc.design_windows.append(self.widget)
 
     def _create_popup_menu(self, widget):
         # remove, hide
@@ -888,7 +889,9 @@ class TopLevelBase(WindowBase, PreviewMixin):
                 self.preview_widget.RemoveFilter(misc.preview_event_filter)
             compat.DestroyLater(self.preview_widget)
             self.preview_widget = None
+        widget = self.widget
         WindowBase.delete(self)
+        if widget is not None: misc.design_windows.remove(widget)
 
     def _find_widget_by_pos(self, w, x,y, level=1):
         "helper for find_widget_by_pos; w is the parent window/widget"

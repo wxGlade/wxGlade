@@ -254,23 +254,6 @@ def make_object_button(widget, icon_path, toplevel=False, tip=None):
 
     WidgetTree.images[widget] = icon_path
 
-    # add support for ESC key. We bind the handler to the button, because
-    # (at least on GTK) EVT_CHAR are not generated for wxFrame objects...
-    def on_char(event):
-        if event.HasModifiers() or event.GetKeyCode() != wx.WXK_ESCAPE:
-            event.Skip()
-            return
-        global adding_widget, adding_sizer, widget_to_add
-        adding_widget = False
-        adding_sizer = False
-        widget_to_add = None
-        import misc
-        if misc.currently_under_mouse is not None:
-            misc.currently_under_mouse.SetCursor(wx.STANDARD_CURSOR)
-        event.Skip()
-
-    tmp.Bind(wx.EVT_CHAR, on_char)
-
     return tmp
 
 
