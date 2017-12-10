@@ -1961,6 +1961,24 @@ class GridProperty(Property):
         self._initialize_indices()
         self.editing_values = None
 
+    def get(self):
+        if self.deactivated:
+            return self.default_value
+        if not self.SKIP_EMPTY:
+            return self.value
+        ret = []
+        for row in self.value:
+            if not row: continue
+            for col, col_def in zip(row, self.col_defs):
+                if col_def is self.STRING:
+                    if col.strip():
+                        ret.append(row)
+                        break
+                else:
+                    ret.append(row)
+                    break
+        return ret
+
     def create_editor(self, panel, sizer):
         "Actually builds the grid to set the value of the property interactively"
 
@@ -2006,7 +2024,9 @@ class GridProperty(Property):
 
         # the grid #####################################################################################################
         self.grid = wx.grid.Grid(panel, -1)
-        self.grid.CreateGrid( len(self.value), len(self.col_defs) )
+        rowcount = len(self.value)
+        if self.can_add: rowcount += 1
+        self.grid.CreateGrid( rowcount, len(self.col_defs) )
         self.grid.SetMargins(0, 0)
 
         for i, (label,datatype) in enumerate(self.col_defs):
@@ -2122,6 +2142,7 @@ class GridProperty(Property):
         all_values = self.editing_values or self.value
         text = []
         for r in selected_rows:
+            if r>=len(all_values): continue
             row = all_values[r]
             if row is not None:
                 text.append( "\t".join( [str(row[c]) for c in selected_cols] ) )
@@ -2188,7 +2209,10 @@ class GridProperty(Property):
         # multiple to single -> starting from the selected line, must have enough lines or be extendable
         if len(value)==1:
             for row in selected_rows:
-                if values[row] is None: values[row] = self.default_row[:]
+                if row>=len(values):
+                    values.append(self.default_row[:])
+                elif values[row] is None:
+                    values[row] = self.default_row[:]
                 for v,col in zip(value[0], editable_columns):
                     values[row][col] = v
         elif len(value)==len(selected_rows):
@@ -2237,6 +2261,7 @@ class GridProperty(Property):
         # values is a list of lists with the values of the cells
         value = self.editing_values if self.editing_values is not None else self.value
         rows_new = len(value)
+        if self.can_add: rows_new += 1
 
         # add or remove rows
         rows = self.grid.GetNumberRows()
@@ -2250,6 +2275,10 @@ class GridProperty(Property):
         for i,row in enumerate(value):
             for j, col in enumerate(row or []):
                 self.grid.SetCellValue(i, j, compat.unicode(col))
+        if self.can_add:
+            for j, col in enumerate(self.default_row):
+                self.grid.SetCellValue(rows_new-1, j, compat.unicode(col))
+
         self._changing_value = False
 
         # update state of the remove button and the row label
@@ -2370,6 +2399,8 @@ class GridProperty(Property):
                 return
 
         if self.immediate or (not self.can_add and not self.can_insert and not self.can_insert):
+            if row>=len(self.value):
+                self.add_row(None)
             # immediate
             if self.value[row] is None:
                 self.value[row] = self.default_row[:]
@@ -2395,11 +2426,11 @@ class GridProperty(Property):
 
     def add_row(self, event):
         self.on_focus()
-        self.grid.AppendRows()
-        self.grid.MakeCellVisible(len(self.value), 0)
-        self.grid.ForceRefresh()
         values = self._ensure_editing_copy()
-        values.append( None )
+        self.grid.AppendRows()
+        self.grid.MakeCellVisible(len(values), 0)
+        self.grid.ForceRefresh()
+        values.append( self.default_row[:] )
         if self.with_index:
             self.indices.append("")
         self._update_remove_button()
@@ -2408,6 +2439,8 @@ class GridProperty(Property):
 
     def remove_row(self, event):
         self.on_focus()
+        if self.immediate and self.can_add and self.cur_row==self.grid.GetNumberRows()-1:
+            return
         if not self.can_remove_last and self.grid.GetNumberRows()==1:
             self._logger.warning( _('You can not remove the last entry!') )
             return
@@ -2430,7 +2463,7 @@ class GridProperty(Property):
         self.grid.MakeCellVisible(self.cur_row, 0)
         self.grid.ForceRefresh()
         values = self._ensure_editing_copy()
-        values.insert(self.cur_row, None)
+        values.insert(self.cur_row, self.default_row[:])
         if self.with_index:
             self.indices.insert(self.cur_row, "")
         self._update_remove_button()

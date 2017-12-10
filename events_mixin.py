@@ -54,7 +54,6 @@ class EventsProperty(np.GridProperty):
     def write(self, output, tabs):
         inner_xml = []
         for event, handler in self.get():
-            handler = handler.strip()
             if handler:
                 inner_xml += common.format_xml_tag('handler', handler, tabs+1, event=event)
         if inner_xml:
