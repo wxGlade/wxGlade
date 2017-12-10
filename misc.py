@@ -416,14 +416,16 @@ accel_table = {
     ("C", ord('Q')):     ((common,"palette","Close"),                ()),
 }
 
-def handle_key_event(event, is_filter=False):
+def handle_key_event(event, is_filter=False, toplevel_obj=None):
     "centralized handler for Ctrl+C/X/V or Del key"
     evt_key = event.GetKeyCode()
+    if toplevel_obj is None:
+        obj = event.GetEventObject()
+        if obj is not None:
+            toplevel_obj = obj.GetTopLevelParent()
 
     if not is_filter:
-        if focused_widget and evt_key in (wx.WXK_UP, wx.WXK_DOWN):
-            obj = event.GetEventObject()
-            toplevel_obj = obj.GetTopLevelParent()
+        if focused_widget and evt_key in (wx.WXK_UP, wx.WXK_DOWN) and toplevel_obj:
             if toplevel_obj!=common.app_tree.GetParent() and toplevel_obj!=common.palette and toplevel_obj!=common.property_panel:
                 # must be a design window
                 navigate( evt_key==wx.WXK_UP )
@@ -435,10 +437,8 @@ def handle_key_event(event, is_filter=False):
     evt_flags = "".join(evt_flags)
 
     handler = accel_table.get( (evt_flags,evt_key) )
-    if not handler:
-        obj = event.GetEventObject()
-        toplevel_obj = obj.GetTopLevelParent()
-        if toplevel_obj in design_windows or toplevel_obj is common.app_tree:
+    if not handler and toplevel_obj:
+        if toplevel_obj in design_windows or toplevel_obj is common.app_tree.GetTopLevelParent():
             handler = accel_table_editors.get( (evt_flags,evt_key) )
     if not handler:
         return False
@@ -455,9 +455,9 @@ def handle_key_event(event, is_filter=False):
     wx.CallAfter(function, *args)
     return True
 
-def on_key_down_event(event):
+def on_key_down_event(event, toplevel_obj=None):
     "centralized event handler for Ctrl+C/X/V or Del key; this will call event.Skip() for unhandled keys"
-    handled = handle_key_event(event)
+    handled = handle_key_event(event, toplevel_obj=toplevel_obj)
     if not handled: event.Skip()
 
 
