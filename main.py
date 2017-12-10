@@ -86,7 +86,7 @@ class wxGladePropertyPanel(wx.Frame):
                 if focus is np.current_property.grid:
                     event.Skip()  # this will start the editing
                     return
-        misc.on_key_down_event(event)
+        misc.on_key_down_event(event, toplevel_obj=self)
 
     ####################################################################################################################
     # new editor interface

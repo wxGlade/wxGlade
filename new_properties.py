@@ -2041,20 +2041,31 @@ class GridProperty(Property):
         self._set_tooltip(self.grid.GetGridWindow(), *self.buttons)
 
         self.grid.Bind(wx.EVT_SIZE, self.on_size)
-        self.grid.Bind(wx.EVT_KEY_DOWN, self.on_key)
+        if wx.VERSION[:2] >= (2, 9):
+            self.grid.Bind(wx.EVT_CHAR_HOOK, self.on_char)
+        else:
+            self.grid.Bind(wx.EVT_KEY_DOWN, self.on_char)
         self._width_delta = None
 
-    def on_key(self, event):
+    def on_char(self, event):
+        if isinstance(self.grid.FindFocus(), wx.TextCtrl):
+            # a cell is being edited
+            event.Skip()
+            return
         # handle Ctrl-I, Ctrl-A, Ctrl-R; Alt-A will be handled by the button itself
         self.on_focus()
         key = (event.GetKeyCode(), event.GetModifiers())
-        if key in ((73,2),(73,1)): # Ctrl-I, Alt-I
+        if key in ((73,2),(73,1)) and self.can_insert:
+            # Ctrl-I, Alt-I
             self.insert_row(event)
-        elif key in ((65,2),(68,1)): # Ctrl-A, Alt-D
+        elif key in ((65,2),(68,1)) and self.can_add:
+            # Ctrl-A, Alt-D
             self.add_row(event)
-        elif key==(65,1): # Alt-A
+        elif key==(65,1) and not self.immediate:
+            # Alt-A
             self.apply(event)
-        elif key==(82,2): # Ctrl-R
+        elif key==(82,2) and self.can_remove:
+            # Ctrl-R
             self.remove_row(event)
         elif key in ((84,2),(84,1)): # Ctrl-T, Alt-T
             self.reset(event)
@@ -2064,10 +2075,6 @@ class GridProperty(Property):
             if not self._paste(): event.Skip()
         elif key==(88,2):  # Ctrl-X
             if not self._cut(): event.Skip()
-        #elif key in ((71,2), (83,2)): # Ctrl-G, Ctrl-S -> apply changes before creating code or saving the file
-            #if self.editing:
-                #self.apply(None)
-            #event.Skip()
         else:
             event.Skip()
 
