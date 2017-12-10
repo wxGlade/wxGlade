@@ -163,6 +163,9 @@ class NotebookPagesProperty(np.GridProperty):
                 inner_xml += common.format_xml_tag(u'tab', name, tabs+1, window=window.name)
         output.extend( common.format_xml_tag(u'tabs', inner_xml, tabs, is_xml=True) )
 
+    def flush(self):
+        # for this one, we don't want an automatic update on Ctrl-S / Ctrl-G
+        pass
 
 
 class TabsHandler(BaseXmlBuilderTagHandler):
