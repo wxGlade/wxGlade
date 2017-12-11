@@ -17,7 +17,7 @@ import clipboard
 import common, compat, config, misc
 
 
-def frozen(method):
+def _frozen(method):
     "freeze toplevel parent during update"
     def _frozen(sizer, *args):
         if sizer.window.widget:
@@ -743,6 +743,9 @@ class SizerBase(Sizer, np.PropertyOwner):
         self.widget = None    # actual wxSizer instance
         self._btn = None      # "handle" to activate a Sizer and to access its popup menu (SizerHandleButton)
 
+    def frozen(self):
+        return self.window.frozen()
+
     def create_widgets(self):
         common.app_tree.create_widgets(self.node)
 
@@ -1006,7 +1009,7 @@ class SizerBase(Sizer, np.PropertyOwner):
         if force_layout:
             self.layout(True)
 
-    @frozen
+    @_frozen
     def item_properties_modified(self, widget, modified=None, force_layout=True):
         "update layout properties"
         if not self.widget or not widget.widget:
@@ -1225,7 +1228,7 @@ class SizerBase(Sizer, np.PropertyOwner):
             if self.widget: self.layout()
         common.app_tree.app.saved = False
 
-    @frozen
+    @_frozen
     def free_slot(self, pos, force_layout=True):
         "Replaces the element at pos with an empty slot"
         # called from ManagedBase context menu when removing an item
@@ -1616,7 +1619,7 @@ class GridSizerBase(SizerBase):
         if rows_new!=rows_p.value: rows_p.set(rows_new)
 
     # context menu actions #############################################################################################
-    @frozen
+    @_frozen
     def insert_row(self, pos=-1):
         "inserts slots for a new row"
         rows, cols = self._get_actual_rows_cols()
@@ -1644,7 +1647,7 @@ class GridSizerBase(SizerBase):
             self.layout(True)
         common.app_tree.app.saved = False
 
-    @frozen
+    @_frozen
     def insert_col(self, pos=-1):
         "inserts slots for a new column"
         rows, cols = self._get_actual_rows_cols()
@@ -1683,7 +1686,7 @@ class GridSizerBase(SizerBase):
             self.layout(True)
         common.app_tree.app.saved = False
 
-    @frozen
+    @_frozen
     def remove_row(self, pos):
         rows = self.rows
         cols = self.cols
@@ -1707,7 +1710,7 @@ class GridSizerBase(SizerBase):
                 self._set_growable()
             self.layout(True)
 
-    @frozen
+    @_frozen
     def remove_col(self, pos):
         cols = self.cols
         # calculate row and pos of the slot
@@ -1733,7 +1736,7 @@ class GridSizerBase(SizerBase):
             self.layout(True)
 
     ####################################################################################################################
-    @frozen
+    @_frozen
     def properties_changed(self, modified):
         rows, cols = self._get_actual_rows_cols()
         if rows*cols < len(self.children) + 1:
@@ -2072,7 +2075,7 @@ class EditGridBagSizer(EditFlexGridSizer):
                     if not remove_only: child.set_overlap(False, add_to_sizer=add_to_sizer)
 
     # context menu actions #############################################################################################
-    @frozen
+    @_frozen
     def _recreate(self, rows, cols, previous_rows, previous_cols):
         "rows, cols: list of indices to keep or None for new rows/cols"
 
