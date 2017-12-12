@@ -651,6 +651,7 @@ class wxGladeFrame(wx.Frame):
         "creates a new wxGlade project"
         if self.ask_save():
             common.app_tree.clear()
+            common.app_tree.app.new()
             common.app_tree.app.filename = None
             common.app_tree.app.saved = True
             self.user_message("")
@@ -705,6 +706,7 @@ class wxGladeFrame(wx.Frame):
         start = time.clock()
 
         common.app_tree.clear()
+        common.app_tree.app.init()
         common.app_tree.auto_expand = False  # disable auto-expansion of nodes
 
         try:
@@ -751,6 +753,7 @@ class wxGladeFrame(wx.Frame):
 
             if error_msg:
                 common.app_tree.clear()
+                common.app_tree.app.new()
                 common.app_tree.app.saved = True
                 common.app_tree.auto_expand = True  # re-enable auto-expansion of nodes
 
@@ -864,6 +867,7 @@ class wxGladeFrame(wx.Frame):
                 prefs.set_geometry('properties', self._get_geometry(self.property_frame))
                 prefs.changed = True
             common.app_tree.clear()
+            common.app_tree.app.new()
             try:
                 common.save_preferences()
             except Exception as e:

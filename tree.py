@@ -257,8 +257,8 @@ class Tree(object):
 
         attrs = ["name","class","language","top_window","encoding","use_gettext", "overwrite",
                  "for_version","is_template","indent_amount"]
-
-        attrs = dict( (prop,self.app.properties[prop].get_string_value()) for prop in attrs )
+        props = [self.app.properties[attr] for attr in attrs]
+        attrs = dict( (attr,prop.get_string_value()) for attr,prop in zip(attrs,props) if not prop.deactivated )
         attrs["option"] = self.app.properties["multiple_files"].get_string_value()
         attrs["indent_symbol"] = self.app.properties["indent_mode"].get_string_value()
         attrs["path"] = self.app.properties["output_path"].get_string_value()
@@ -694,6 +694,7 @@ class WidgetTree(wx.TreeCtrl, Tree):
             wx.TreeCtrl.Destroy(self)
 
     def clear(self):
+        # delete all children; call common.app_tree.app.new() or .init() afterwards
         self.skip_select = True
         if self.root.children:
             while self.root.children:
@@ -701,7 +702,6 @@ class WidgetTree(wx.TreeCtrl, Tree):
                 if c.widget: c.widget.remove()
             self.root.children = None
         self.skip_select = False
-        self.app.reset()
 
     def refresh_name(self, node, previous_name=None):
         names = self.names.setdefault(self._find_toplevel(node), {})
