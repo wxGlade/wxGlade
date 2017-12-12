@@ -937,7 +937,7 @@ def format_xml_attrs(**kwargs):
         return u''
 
     attr_list = []
-    for name in kwargs:
+    for name in sorted(kwargs):
         value = encode_to_unicode(kwargs[name])
         value = quoteattr(value)
         value = value.strip()

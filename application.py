@@ -115,8 +115,8 @@ class Application(np.PropertyOwner):
         # initialise instance properties
         self.is_template = np.Property(False)  # hidden property
         # name and derived class name, including validation
-        self.name  = np.TextPropertyA("app",   default_value="")
-        self.klass = np.TextPropertyA("MyApp", default_value="", name="class")
+        self.name  = np.TextPropertyD("app",   default_value="")
+        self.klass = np.TextPropertyD("MyApp", default_value="", name="class")
         self.properties["name"].validation_re = re.compile(r'^[a-zA-Z]+[\w0-9-]*$')
         self.properties["class"].validation_re = re.compile(r'^[a-zA-Z]+[\w:.0-9-]*$')
 
@@ -296,12 +296,9 @@ class Application(np.PropertyOwner):
         if not modified or "language" in modified:
             self._set_language() # update language-dependent choices
 
-
-    def reset(self):
-        "resets the default values of the attributes of the app"""
+    def _init(self):
+        # common part for init and new
         p = self.properties
-        p["class"].set("MyApp", activate=True)
-        p["name" ].set("app",   activate=True)
         p["multiple_files"].set( config.default_multiple_files )
         p["indent_mode"].set(1)
         p["indent_amount"].set(config.default_indent_amount)
@@ -315,6 +312,20 @@ class Application(np.PropertyOwner):
         p["top_window"].set_choices([])
         # do not reset language, but call set_language anyway to update the wildcard of the file dialog
         self._set_language()
+
+    def init(self):
+        "initializes the attributes of the app before loading a file"
+        p = self.properties
+        p["class"].set("MyApp", deactivate=True)
+        p["name" ].set("app",   deactivate=True)
+        self._init()
+
+    def new(self):
+        "resets the default values of the attributes of the app"
+        p = self.properties
+        p["class"].set("MyApp", activate=True)
+        p["name" ].set("app",   activate=True)
+        self._init()
 
     def generate_code(self, preview=False, out_path=None, widget=None):
         common.property_panel.flush()
