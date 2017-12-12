@@ -46,6 +46,7 @@ def flush_current_property():
 class Property(object):
     "Base class for property editors"
     deactivated = None # None: can not be deactivated; otherwise bool value
+    auto_activated = False # if True, it can be deactivated, but not by the user
     readonly = False
     TOOLTIP = None
     LABEL = None # defaults to property name
@@ -1172,7 +1173,7 @@ class TextProperty(Property):
         hsizer.Add(label, 0, wx.ALL | wx.ALIGN_CENTER, 3)
         # checkbox, if applicable
         self.enabler = None
-        if self.deactivated is not None:
+        if self.deactivated is not None and not self.auto_activated:
             self.enabler = wx.CheckBox(panel, -1, '')#, size=(1,-1))
             self.enabler.SetValue(not self.deactivated)
             self.enabler.Bind( wx.EVT_CHECKBOX, lambda event: self.toggle_active(event.IsChecked()) )
