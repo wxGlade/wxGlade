@@ -155,7 +155,8 @@ class Application(np.PropertyOwner):
         self.encoding = np.ComboBoxProperty(config.default_encoding, encodings)
 
         # top window name for the generated app
-        self.top_window = np.ListBoxProperty("", choices=[])
+        self.top_window = prop = np.ListBoxProperty("", choices=[])
+        prop.auto_activated = True
         self.generate_code = np.ActionButtonProperty(self.generate_code)
 
         self.widget = None  # always None, just to keep interface to Tree similar to other editors
@@ -295,6 +296,9 @@ class Application(np.PropertyOwner):
         # XXX any other to be handled?
         if not modified or "language" in modified:
             self._set_language() # update language-dependent choices
+        if not modified or "name" in modified or "class" in modified:
+            # enable/disable to_window
+            self.properties["top_window"].set_active(self.name or self.klass)
 
     def _init(self):
         # common part for init and new
