@@ -346,6 +346,7 @@ class TestGui(WXGladeGUITest):
 
         #common.palette._open_app(infilename, use_progress_dialog=False, add_to_history=False)
         common.app_tree.clear()
+        common.app_tree.app.init()
         import widgets.frame.frame
         widgets.frame.frame.builder(None,None,0, "wxFrame", "MyFrame", "frame")
 
