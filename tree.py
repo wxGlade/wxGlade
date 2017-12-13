@@ -259,6 +259,9 @@ class Tree(object):
                  "for_version","is_template","indent_amount"]
         props = [self.app.properties[attr] for attr in attrs]
         attrs = dict( (attr,prop.get_string_value()) for attr,prop in zip(attrs,props) if not prop.deactivated )
+        top_window_p = self.app.properties["top_window"]
+        if top_window_p.deactivated and top_window_p.value:
+            attrs["top_window"] = top_window_p.value
         attrs["option"] = self.app.properties["multiple_files"].get_string_value()
         attrs["indent_symbol"] = self.app.properties["indent_mode"].get_string_value()
         attrs["path"] = self.app.properties["output_path"].get_string_value()

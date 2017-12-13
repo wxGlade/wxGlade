@@ -332,7 +332,8 @@ class CPPCodeWriter(BaseLangCodeWriter, wcodegen.CppMixin):
 
     def _get_app_template(self, app, top_win):
         'build template string for application'
-        
+        if not self.app_name: return None
+
         # XXX use Show() for frames/panels and ShowModal()/Destroy for dialogs
         klass = app.klass
         

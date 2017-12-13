@@ -215,9 +215,10 @@ from %(top_win_module)s import %(top_win_class)s\n\n"""
 
     def _get_app_template(self, app, top_win):
         'build template string for application'
+        klass = app.klass
+        if not self.app_name and not app.klass: return None
         ret = ['']
 
-        klass = app.klass
         if klass:
             # create application class
             if top_win and top_win.base=="wxDialog":
@@ -237,28 +238,30 @@ from %(top_win_module)s import %(top_win_class)s\n\n"""
                     '',
                     '# end of class %(klass)s\n']
 
-        ret.append( 'if __name__ == "__main__":' )
-
-        if self._use_gettext:
-            ret.append( '%(tab)sgettext.install("%(textdomain)s") # replace with the appropriate catalog name\n' )
-
-        if klass:
-            ret.append( '%(tab)s%(name)s = %(klass)s(0)' )
-            ret.append( '%(tab)s%(name)s.MainLoop()' )
-        else:
-            # use PySimpleApp
-            if top_win and top_win.base=="wxDialog":
-                show_code = ['%(tab)s%(top_win)s.ShowModal()',
-                             '%(tab)s%(top_win)s.Destroy()']
+        if self.app_name:
+            # instantiate application class or PySimpleApp
+            ret.append( 'if __name__ == "__main__":' )
+    
+            if self._use_gettext:
+                ret.append( '%(tab)sgettext.install("%(textdomain)s") # replace with the appropriate catalog name\n' )
+    
+            if klass:
+                ret.append( '%(tab)s%(name)s = %(klass)s(0)' )
+                ret.append( '%(tab)s%(name)s.MainLoop()' )
             else:
-                show_code = ['%(tab)s%(top_win)s.Show()']
-
-            ret += ['%(tab)s%(name)s = wx.PySimpleApp()',
-                    '%(tab)s%(top_win)s = %(top_win_class)s(None, %(cn_wxIDANY)s, "")',
-                    '%(tab)s%(name)s.SetTopWindow(%(top_win)s)'
-                    ] + show_code + [
-                    '%(tab)s%(name)s.MainLoop()']
-        ret.append('')
+                # use PySimpleApp
+                if top_win and top_win.base=="wxDialog":
+                    show_code = ['%(tab)s%(top_win)s.ShowModal()',
+                                 '%(tab)s%(top_win)s.Destroy()']
+                else:
+                    show_code = ['%(tab)s%(top_win)s.Show()']
+    
+                ret += ['%(tab)s%(name)s = wx.PySimpleApp()',
+                        '%(tab)s%(top_win)s = %(top_win_class)s(None, %(cn_wxIDANY)s, "")',
+                        '%(tab)s%(name)s.SetTopWindow(%(top_win)s)'
+                        ] + show_code + [
+                        '%(tab)s%(name)s.MainLoop()']
+            ret.append('')
         return '\n'.join(ret)
 
     def __init__(self):

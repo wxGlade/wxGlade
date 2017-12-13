@@ -1228,7 +1228,7 @@ class TextProperty(Property):
             label.SetForegroundColour(wx.BLUE)
 
     def _on_text_click(self, event):
-        if self.deactivated:
+        if self.deactivated and not self.auto_activated and self.text:
             text_rect = self.text.GetClientRect()
             text_rect.Offset(self.text.Position)
             if text_rect.Contains(event.Position):

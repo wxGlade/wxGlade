@@ -273,7 +273,7 @@ class Application(np.PropertyOwner):
     def add_top_window(self, name):
         p = self.properties["top_window"]
         p.add_choice(name)
-        if not p.get():
+        if not p.get() and not p.deactivated:
             p.set(name)
 
     def remove_top_window(self, name):

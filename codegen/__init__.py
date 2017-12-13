@@ -562,7 +562,7 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
         if topwin:
             topwin = topwin[0]
         elif root.children:
-            topwin = root.children[0]
+            topwin = root.children[0].widget
         else:
             topwin = None
         self.add_app(root.widget, topwin)
@@ -631,7 +631,6 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
 
         see: tmpl_appfile, tmpl_detailed, tmpl_gettext_detailed, tmpl_simple, tmpl_gettext_simple, app_mapping,
              lang_mapping"""
-        self._app_added = True
 
         if not self.multiple_files:
             prev_src = self.previous_source
@@ -646,8 +645,14 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
         klass = app.klass
 
         # top window and application name are mandatory
-        if not app.top_window or not self.app_name:
+        if not app.top_window:
             return
+        
+        # get and fill language dependent template
+        tmpl = self._get_app_template(app, top_win)
+        if not tmpl: return
+
+        self._app_added = True
 
         # map to substitute template variables
         self.app_mapping = {'comment_sign': self.comment_sign,
@@ -664,8 +669,6 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
         if self.lang_mapping:
             self.app_mapping.update(self.lang_mapping)
 
-        # get and fill language dependent template
-        tmpl = self._get_app_template(app, top_win)
         code = tmpl % self.app_mapping
 
         if self.multiple_files:
