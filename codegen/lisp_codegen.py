@@ -276,6 +276,7 @@ class LispCodeWriter(BaseLangCodeWriter, wcodegen.LispMixin):
 
     def _get_app_template(self, app, top_win):
         # check for templates for detailed startup code
+        if not self.app_name: return None
         klass = app.klass
         if klass and self._use_gettext:
             return self.tmpl_gettext_detailed
