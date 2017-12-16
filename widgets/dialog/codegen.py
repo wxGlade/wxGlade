@@ -70,8 +70,7 @@ def xrc_code_generator(obj):
     class DialogXrcObject(xrcgen.DefaultXrcObject):
         def write_property(self, name, val, outfile, ntabs):
             if name != 'sizehints':
-                xrcgen.DefaultXrcObject.write_property(
-                    self, name, val, outfile, ntabs)
+                xrcgen.DefaultXrcObject.write_property(self, name, val, outfile, ntabs)
     # end of class DialogXrcObject
 
     return DialogXrcObject(obj)

@@ -568,10 +568,12 @@ class BaseWidgetWriter(StylesMixin, BaseCodeWriter):
 
         ret = []
         if not obj.events: return ret
+        events = [(name,handler) for name, handler in obj.events if handler.strip()]
+        if not events: return ret
 
         if 'events' not in self.config:
             self._logger.warn( _('Object %(name)s(%(klass)s contains unknown events: %(events)s)'),
-                               {'name':obj.name,'klass': obj.klass, 'events':obj.properties ['events']})
+                               {'name':obj.name,'klass': obj.klass, 'events':events})
             return ret
 
         win_id = self.codegen.generate_code_id(obj)[1]
@@ -583,7 +585,7 @@ class BaseWidgetWriter(StylesMixin, BaseCodeWriter):
         except KeyError:
             default_event = 'wxCommandEvent'
 
-        for event, handler in sorted( obj.events ):
+        for event, handler in sorted( events ):
             if not handler: continue
             if event not in self.config['events']:
                 self._logger.warn( _('Ignore unknown event %s for %s'), (event, obj.klass) )
