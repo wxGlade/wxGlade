@@ -2026,7 +2026,7 @@ class GridProperty(Property):
         # the grid #####################################################################################################
         self.grid = wx.grid.Grid(panel, -1)
         rowcount = len(self.value)
-        if self.can_add: rowcount += 1
+        if self.can_add and self.immediate: rowcount += 1
         self.grid.CreateGrid( rowcount, len(self.col_defs) )
         self.grid.SetMargins(0, 0)
 
@@ -2198,11 +2198,28 @@ class GridProperty(Property):
         selected_rows, selected_cols = self._get_selection()
         value = self._from_clipboard()
         if not value: return
-        columns = len(value[0])
-        editable_columns = self.EDITABLE_COLS or list( range(len(self.col_defs)) )
-        if columns != len(editable_columns):
+        clipboard_columns = len(value[0])
+        paste_columns = self.EDITABLE_COLS or list( range(len(self.col_defs)) )
+        if clipboard_columns == len(paste_columns):
+            pass
+        elif clipboard_columns==len(selected_cols):
+            paste_columns = selected_cols
+        else:
             wx.Bell()
             return
+        # check and convert values; XXX use validation_res
+        for row_value in value:
+            for i,v in enumerate(row_value):
+                col = paste_columns[i]
+                try:
+                    if self.col_defs[col][1]==self.INT:
+                        row_value[i] = int(v)
+                    elif self.col_defs[col][1]==self.FLOAT:
+                        row_value[i] = float(v)
+                except ValueError:
+                    wx.Bell()
+                    return
+
         values = self._ensure_editing_copy()
         # the cases:
         # single item to single or multiple cells
@@ -2214,19 +2231,19 @@ class GridProperty(Property):
                     values.append(self.default_row[:])
                 elif values[row] is None:
                     values[row] = self.default_row[:]
-                for v,col in zip(value[0], editable_columns):
+                for v,col in zip(value[0], paste_columns):
                     values[row][col] = v
         elif len(value)==len(selected_rows):
             for row,row_value in zip(selected_rows, value):
                 if values[row] is None: values[row] = self.default_row[:]
-                for v,col in zip(row_value, editable_columns):
+                for v,col in zip(row_value, paste_columns):
                     values[row][col] = v
         elif len(selected_rows)==1 and (self.can_add or (min(selected_rows)+len(value) <= len(values))):
             row = selected_rows.pop()
             for row_value in value:
                 if len(values)==row: values.append( None )
                 if values[row] is None: values[row] = self.default_row[:]
-                for v,col in zip(row_value, editable_columns):
+                for v,col in zip(row_value, paste_columns):
                     values[row][col] = v
                 row += 1
         else:
@@ -2262,7 +2279,7 @@ class GridProperty(Property):
         # values is a list of lists with the values of the cells
         value = self.editing_values if self.editing_values is not None else self.value
         rows_new = len(value)
-        if self.can_add: rows_new += 1
+        if self.can_add and self.immediate: rows_new += 1
 
         # add or remove rows
         rows = self.grid.GetNumberRows()
@@ -2276,7 +2293,7 @@ class GridProperty(Property):
         for i,row in enumerate(value):
             for j, col in enumerate(row or []):
                 self.grid.SetCellValue(i, j, compat.unicode(col))
-        if self.can_add:
+        if self.can_add and self.immediate:
             for j, col in enumerate(self.default_row):
                 self.grid.SetCellValue(rows_new-1, j, compat.unicode(col))
 
@@ -2437,6 +2454,7 @@ class GridProperty(Property):
         self._update_remove_button()
         self._update_apply_button()
         self._update_indices()
+        self.grid.GoToCell( (len(values)-1,self.cur_col) )
 
     def remove_row(self, event):
         self.on_focus()
@@ -2457,6 +2475,7 @@ class GridProperty(Property):
         self._update_remove_button()
         self._update_apply_button()
         self._update_indices()
+        self.grid.GoToCell( (self.cur_row,self.cur_col) )
 
     def insert_row(self, event):
         self.on_focus()
@@ -2470,6 +2489,7 @@ class GridProperty(Property):
         self._update_remove_button()
         self._update_apply_button()
         self._update_indices()
+        self.grid.GoToCell( (self.cur_row,self.cur_col) )
 
     def _ensure_editing_copy(self):
         if self.immediate: return self.value

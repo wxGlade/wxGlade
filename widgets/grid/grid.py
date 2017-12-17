@@ -17,6 +17,11 @@ from wcodegen.taghandler import BaseXmlBuilderTagHandler
 
 
 class GridColsProperty(np.GridProperty):
+    def __init__(self, value):
+        definition = [('Label', np.GridProperty.STRING), ('Size', np.GridProperty.INT)]
+        default = ['', -1]
+        np.GridProperty.__init__(self, value, definition, default)
+
     def write(self, output, tabs):
         value = self.get()
         if value:
@@ -33,6 +38,7 @@ class GridColsProperty(np.GridProperty):
             if col < 0: break
         s.reverse()
         return "".join(s)
+
     def _check_label(self, label, i):
         "return True if it's not the default value"
         return label != self._get_label(i)
@@ -82,9 +88,10 @@ class ColsHandler(BaseXmlBuilderTagHandler):
         return False
 
 
-class GridRowsProperty(np.GridProperty):
+class GridRowsProperty(GridColsProperty):
     def _get_label(self, row):
         return str(row)
+
     def _check_label(self, label, i):
         "return True if it's not the default value"
         return label != self._get_label(i)
@@ -176,9 +183,9 @@ class EditGrid(ManagedBase):
         # instance properties
         self.create_grid = np.CheckBoxProperty(True)
         columns = [['A', -1], ['B', -1], ['C', -1]]
-        self.columns = GridColsProperty( [], [('Label', np.GridProperty.STRING), ('Size', np.GridProperty.INT)] )
+        self.columns = GridColsProperty([])
         rows =  [[str(n),-1] for n in range(10)]
-        self.rows = GridRowsProperty( rows, [('Label', np.GridProperty.STRING), ('Size', np.GridProperty.INT)] )
+        self.rows = GridRowsProperty( rows )
         self.properties["rows_number"] = self.properties["rows"]  # backward compatibility
         #self.rows_number        = np.SpinProperty(10, immediate=True)
         self.row_label_size     = np.SpinPropertyD(30, default_value=30, immediate=True)
