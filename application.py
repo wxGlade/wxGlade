@@ -323,6 +323,7 @@ class Application(np.PropertyOwner):
         p["class"].set("MyApp", deactivate=True)
         p["name" ].set("app",   deactivate=True)
         self._init()
+        self.properties_changed(None)
 
     def new(self):
         "resets the default values of the attributes of the app"
@@ -330,6 +331,7 @@ class Application(np.PropertyOwner):
         p["class"].set("MyApp", activate=True)
         p["name" ].set("app",   activate=True)
         self._init()
+        self.properties_changed(None)
 
     def generate_code(self, preview=False, out_path=None, widget=None):
         common.property_panel.flush()
