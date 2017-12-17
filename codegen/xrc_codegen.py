@@ -304,6 +304,16 @@ class XRCCodeWriter(BaseLangCodeWriter, wcodegen.XRCMixin):
         self.save_file( self.output_file_name, self.out_file )
         self.out_file = None
 
+    def _clean_up_node(self, node):
+        if hasattr(node.widget, "xrc"):
+            del node.widget.xrc
+        for c in node.children or []:
+            self._clean_up_node(c)
+
+    def clean_up(self, root):
+        # root is a Tree node
+        self._clean_up_node(root)
+
     def add_app(self, app, top_win_class):
         "In the case of XRC output, there's no wxApp code to generate"
         pass

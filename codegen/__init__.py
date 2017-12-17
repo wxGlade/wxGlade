@@ -618,6 +618,9 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
             self.save_file(self.output_file_name, self.output_file, self._app_added)
             self.output_file = None
 
+    def clean_up(self, root):
+        pass
+
     def add_app(self, app, top_win):
         """Generates the code for a wxApp instance.
         If the file to write into already exists, this function does nothing.

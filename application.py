@@ -361,19 +361,24 @@ class Application(np.PropertyOwner):
             writer.finalize()
         except errors.WxgBaseException as inst:
             misc.error_message( _("Error generating code:\n%s")%inst )
+            return
         except EnvironmentError as inst:
             bugdialog.ShowEnvironmentError(_('An IO/OS related error is occurred:'), inst)
             bugdialog.Show(_('Generate Code'), inst)
+            return
+        finally:
+            writer.clean_up(self.node)
+
+        if preview: return
+        if config.preferences.show_completion:
+            # Show informational dialog
+            misc.info_message("Code generation completed successfully")
         else:
-            if not preview:
-                if config.preferences.show_completion:
-                    # Show informational dialog
-                    misc.info_message("Code generation completed successfully")
-                else:
-                    # Show message in application status bar
-                    app = wx.GetApp()
-                    frame = app.GetTopWindow()
-                    frame.user_message(_('Code generated'))
+            # Show message in application status bar
+            app = wx.GetApp()
+            frame = app.GetTopWindow()
+            frame.user_message(_('Code generated'))
+
 
     def is_visible(self):
         return True
