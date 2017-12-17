@@ -29,7 +29,7 @@ class EditListCtrl(ManagedBase, EditStylesMixin):
         ManagedBase.__init__(self, name, 'wxListCtrl', parent, id, sizer, pos)
         EditStylesMixin.__init__(self)
         if style: self.properties["style"].set(style)
-        self.columns = GridColsProperty( [], [('Label', np.GridProperty.STRING), ('Size', np.GridProperty.INT)] )
+        self.columns = GridColsProperty([])
         self.rows_number = np.SpinProperty(0, immediate=True, default_value=0)
 
     def create_widget(self):
