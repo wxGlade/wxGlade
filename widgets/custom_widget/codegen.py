@@ -122,6 +122,8 @@ def xrc_code_generator(obj):
             args_p = self.widget.properties['arguments']
             if args_p.is_active() and args_p.value!=args_p.default_value:
                 for arg in args_p.value:
+                    arg = arg[0].strip()
+                    if arg in ("$parent", "$id"): continue
                     try:
                         name, val = [s.strip() for s in arg.split(':', 1)]
                     except Exception:
