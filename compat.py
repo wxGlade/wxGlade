@@ -248,7 +248,8 @@ if len(wx.VERSION)==5:
 
     ListCtrl_SetStringItem    = wx.ListCtrl.SetStringItem
     ListCtrl_InsertStringItem = wx.ListCtrl.InsertStringItem
-
+    def SetStockCursor(window, cursor):
+        window.SetCursor(wx.StockCursor(cursor))
 else:
     # wxPython Phoenix
     IS_CLASSIC = False
@@ -272,3 +273,5 @@ else:
 
     ListCtrl_SetStringItem    = wx.ListCtrl.SetItem
     ListCtrl_InsertStringItem = wx.ListCtrl.InsertItem
+    def SetStockCursor(window, cursor):
+        window.SetCursor(wx.Cursor(cursor))
