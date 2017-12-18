@@ -429,9 +429,9 @@ class wxGladeFrame(wx.Frame):
                 wx.PyApp.SetMacExitMenuItemId(wx.ID_EXIT)
                 wx.PyApp.SetMacHelpMenuTitleName(_('&Help'))
             else:
-                wx.App_SetMacAboutMenuItemId(ABOUT_ID)
-                wx.App_SetMacPreferencesMenuItemId(PREFS_ID)
-                wx.App_SetMacExitMenuItemId(EXIT_ID)
+                wx.App_SetMacAboutMenuItemId(wx.ID_ABOUT)
+                wx.App_SetMacPreferencesMenuItemId(wx.ID_PREFERENCES)
+                wx.App_SetMacExitMenuItemId(wx.ID_EXIT)
                 wx.App_SetMacHelpMenuTitleName(_('&Help'))
 
         # file history support
