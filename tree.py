@@ -810,7 +810,7 @@ class WidgetTree(wx.TreeCtrl, Tree):
                     if compatible:
                         self.SetCursor(wx.CROSS_CURSOR)
                     else:
-                        self.SetCursor(wx.StockCursor(wx.CURSOR_NO_ENTRY)) # https://wxpython.org/docs/api/wx.Cursor-class.html
+                        compat.SetStockCursor(self, wx.CURSOR_NO_ENTRY)
             else:
                 self.SetCursor(wx.STANDARD_CURSOR)
             compat.SetToolTip(self, message or "")
