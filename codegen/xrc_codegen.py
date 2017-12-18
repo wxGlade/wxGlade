@@ -194,9 +194,6 @@ class DefaultXrcObject(XrcObject):
                     properties['enabled'] = '0'
                 else:
                     continue
-            elif name=='extracode':
-                output.append(prop.get().replace('\\n', '\n'))
-                #raise ValueError("XXX  use quoted value")
             elif name=='custom_base' in self.properties:
                 # custom base classes are ignored for XRC...
                 continue
