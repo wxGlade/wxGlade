@@ -67,9 +67,8 @@ class CustomWidget(ManagedBase):
         ManagedBase.__init__(self, name, klass, parent, id, sizer, pos)
 
         # initialise instance properties
-        arguments = [['$parent'], ['$id']]  # ,['$width'],['$height']]
         cols      = [('Arguments', np.GridProperty.STRING)]
-        self.arguments   = ArgumentsProperty( arguments, cols )
+        self.arguments   = ArgumentsProperty( [], cols )
         self.custom_ctor = np.TextPropertyD("", name="custom_constructor", strip=True, default_value="")
 
     def create_widget(self):
@@ -166,7 +165,8 @@ def builder(parent, sizer, pos, number=[1]):
         win = CustomWidget(name, klass, parent, wx.NewId(), sizer, pos)
         node = Node(win)
         win.node = node
-    
+
+        win.properties["arguments"].set( [['$parent'], ['$id']] )  # ,['$width'],['$height']]
         win.properties["proportion"].set(1)
         win.properties["flag"].set("wxEXPAND")
         if parent.widget: win.create()
