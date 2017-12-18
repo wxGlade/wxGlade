@@ -435,7 +435,7 @@ class Application(np.PropertyOwner):
         widget_class = '_%d_%s' % (random.randrange(10 ** 8, 10 ** 9), widget_class)
         widget.properties["class"].set(widget_class)
 
-        if wx.Platform == "__WXMAC__":
+        if wx.Platform == "__WXMAC__" and not compat.PYTHON2:
             # workaround for Mac OS testing: sometimes the caches need to be invalidated
             import importlib
             importlib.invalidate_caches()
