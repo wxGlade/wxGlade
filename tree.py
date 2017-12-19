@@ -808,9 +808,9 @@ class WidgetTree(wx.TreeCtrl, Tree):
                     # check whether the item can be dropped here
                     compatible, message = node.widget.check_drop_compatibility()
                     if compatible:
-                        self.SetCursor(wx.CROSS_CURSOR)
+                        self.SetCursor(wx.CROSS_CURSOR) # a Cursor instance
                     else:
-                        compat.SetStockCursor(self, wx.CURSOR_NO_ENTRY)
+                        compat.SetCursor(self, wx.CURSOR_NO_ENTRY)
             else:
                 self.SetCursor(wx.STANDARD_CURSOR)
             compat.SetToolTip(self, message or "")
