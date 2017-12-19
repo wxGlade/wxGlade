@@ -731,7 +731,8 @@ class TopLevelBase(WindowBase, PreviewMixin):
         self._oldname = name
         self.has_title = "title" in self.PROPERTIES
         if self.has_title:
-            self.title = np.TextProperty(title or self.name)
+            if title is None: title = self.name
+            self.title = np.TextProperty(title)
         self.sizer = None  # sizer that controls the layout of the children of the window
         PreviewMixin.__init__(self)
         self.design = DesignButtonProperty(self.on_design_button)
