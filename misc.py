@@ -466,6 +466,14 @@ if config.use_gui and hasattr(wx, "EventFilter") and not config.testing:
     # for filtering key down events
     class PreviewEventFilter(wx.EventFilter):
         windows = []
+        def add_window(self, window):
+            if not self.windows:
+                common.palette.AddFilter(self)
+            self.windows.append(window)
+        def remove_window(self, window):
+            self.windows.remove(window)
+            if not self.windows:
+                common.palette.RemoveFilter(self)
         def FilterEvent(self, event):
             t = event.GetEventType()
             if t == wx.EVT_KEY_DOWN.typeId:
