@@ -1097,6 +1097,10 @@ class WidgetStyleProperty(_CheckListProperty):
 import wx.lib.expando
 
 class ExpandoTextCtrl(wx.lib.expando.ExpandoTextCtrl):
+    def _adjustCtrl(self):
+        # avoid PyDeadObjectError
+        if not self: return
+        wx.lib.expando.ExpandoTextCtrl._adjustCtrl(self)
     def GetNumberOfLines(self):
         return max( wx.lib.expando.ExpandoTextCtrl.GetNumberOfLines(self), 2)
 
