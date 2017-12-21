@@ -488,6 +488,8 @@ class SizerHandleButton(GenButton):
         self.SetUseFocusIndicator(False)
         self.Bind(wx.EVT_RIGHT_DOWN, self.sizer.popup_menu )
         self.Bind(wx.EVT_KEY_DOWN, misc.on_key_down_event)
+        color = compat.wx_SystemSettings_GetColour(wx.SYS_COLOUR_BTNFACE)
+        self.SetBackgroundColour(color)
 
 
 def change_sizer(old, new):
