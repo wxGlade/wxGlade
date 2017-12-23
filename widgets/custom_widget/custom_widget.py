@@ -27,10 +27,8 @@ class ArgumentsProperty(np.GridProperty):
             output.extend( common.format_xml_tag( u'arguments', inner_xml, tabs, is_xml=True) )
     def get(self):
         "get the value, or the default value if deactivated; usually not used directly, as owner.property will call it"
-        if not self.deactivated:
-            return [row[0] for row in self.value]
-        return self.default_value
-
+        ret = np.GridProperty.get(self) or []
+        return [row[0] for row in ret]
 
 
 class ArgumentsHandler(BaseXmlBuilderTagHandler):
