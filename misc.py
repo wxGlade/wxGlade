@@ -45,8 +45,8 @@ def show_widget(widget):
     while True:
         if not widget.node or not widget.node.parent: break  # Application.node is None
         parent = widget.node.parent.widget
-        if parent.klass=="wxNotebook":
-            # a wiget under a wxNotebook without a panel: select page
+        if parent.__class__.__name__=="EditNotebook":
+            # a widget under a wxNotebook without a panel: select page
             if parent.widget and widget in parent.pages:
                 parent.widget.SetSelection( parent.pages.index(widget) )
 
