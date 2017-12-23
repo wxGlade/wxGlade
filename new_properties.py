@@ -1973,7 +1973,7 @@ class GridProperty(Property):
             return self.value
         ret = []
         for row in self.value:
-            if not row: continue
+            if not row or not any(row): continue
             for col, col_def in zip(row, self.col_defs):
                 if col_def is self.STRING:
                     if col.strip():
