@@ -10,11 +10,9 @@ import wx
 # end wxGlade
 
 # begin wxGlade: extracode
-try:
-    from agw import speedmeter as SM
-except ImportError: # if it's not there locally, try the wxPython lib.
-    import wx.lib.agw.speedmeter as SM
+import wx.lib.agw.speedmeter as SM
 
+# import these on module level to use them in the Extra Properties
 from math import pi, sqrt
 # end wxGlade
 
@@ -22,14 +20,13 @@ from math import pi, sqrt
 class MyFrame(wx.Frame):
     def __init__(self, *args, **kwds):
         # begin wxGlade: MyFrame.__init__
-        kwds["style"] = wx.DEFAULT_FRAME_STYLE
+        kwds["style"] = kwds.get("style", 0) | wx.DEFAULT_FRAME_STYLE
         wx.Frame.__init__(self, *args, **kwds)
         self.panel_1 = wx.Panel(self, wx.ID_ANY)
-        #################################################################
-        # the custom widget:
         
-        # First SpeedMeter: We Use The Following Styles:
-        #
+        #################################################################
+        # the custom widget SpeedMeter:
+        # we use the following styles:
         # SM_DRAW_HAND: We Want To Draw The Hand (Arrow) Indicator
         # SM_DRAW_SECTORS: Full Sectors Will Be Drawn, To Indicate Different Intervals
         # SM_DRAW_MIDDLE_TEXT: We Draw Some Text In The Center Of SpeedMeter
@@ -46,13 +43,12 @@ class MyFrame(wx.Frame):
         ticks = [str(interval) for interval in intervals]
         self.speed_meter.SetTicks(ticks)
         
-        
         # Do Not Draw The External (Container) Arc.
         # Drawing The External Arc May Sometimes Create Uglier Controls.
         # Try To Comment This Line And See It For Yourself!
         self.speed_meter.DrawExternalArc(False)
-        
         #################################################################
+        
         self.slider_1 = wx.Slider(self.panel_1, wx.ID_ANY, 44, 0, 200)
 
         self.__set_properties()
