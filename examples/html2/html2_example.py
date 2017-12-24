@@ -17,11 +17,11 @@ import wx.html2
 class MyFrame(wx.Frame):
     def __init__(self, *args, **kwds):
         # begin wxGlade: MyFrame.__init__
-        kwds["style"] = wx.DEFAULT_FRAME_STYLE
+        kwds["style"] = kwds.get("style", 0) | wx.DEFAULT_FRAME_STYLE
         wx.Frame.__init__(self, *args, **kwds)
         self.panel_1 = wx.Panel(self, wx.ID_ANY)
-        self.button_1 = wx.Button(self.panel_1, wx.ID_ANY, "<--")
-        self.button_2 = wx.Button(self.panel_1, wx.ID_ANY, "-->")
+        self.button_back = wx.Button(self.panel_1, wx.ID_ANY, "<--")
+        self.button_forward = wx.Button(self.panel_1, wx.ID_ANY, "-->")
         self.text_url = wx.TextCtrl(self.panel_1, wx.ID_ANY, "http://www.python.org/")
         self.button_go = wx.Button(self.panel_1, wx.ID_ANY, "Open")
         self.html2 = wx.html2.WebView.New(self.panel_1)
@@ -29,16 +29,16 @@ class MyFrame(wx.Frame):
         self.__set_properties()
         self.__do_layout()
 
-        self.Bind(wx.EVT_BUTTON, lambda event: self.html2.CanGoBack() and self.html2.GoBack(), self.button_1)
-        self.Bind(wx.EVT_BUTTON, lambda event: self.html2.CanGoForward() and self.html2.GoForward(), self.button_2)
+        self.Bind(wx.EVT_BUTTON, lambda event: self.html2.CanGoBack() and self.html2.GoBack(), self.button_back)
+        self.Bind(wx.EVT_BUTTON, lambda event: self.html2.CanGoForward() and self.html2.GoForward(), self.button_forward)
         self.Bind(wx.EVT_BUTTON, lambda event:self.html2.LoadURL( self.text_url.GetValue() ), self.button_go)
         # end wxGlade
 
     def __set_properties(self):
         # begin wxGlade: MyFrame.__set_properties
         self.SetTitle("html2 example")
-        self.button_1.SetMinSize((30, -1))
-        self.button_2.SetMinSize((30, -1))
+        self.button_back.SetMinSize((30, -1))
+        self.button_forward.SetMinSize((30, -1))
         self.button_go.SetDefault()
         # end wxGlade
 
@@ -47,8 +47,8 @@ class MyFrame(wx.Frame):
         sizer_1 = wx.BoxSizer(wx.VERTICAL)
         sizer_2 = wx.BoxSizer(wx.VERTICAL)
         sizer_3 = wx.BoxSizer(wx.HORIZONTAL)
-        sizer_3.Add(self.button_1, 0, 0, 0)
-        sizer_3.Add(self.button_2, 0, 0, 0)
+        sizer_3.Add(self.button_back, 0, 0, 0)
+        sizer_3.Add(self.button_forward, 0, 0, 0)
         label_1 = wx.StaticText(self.panel_1, wx.ID_ANY, "Location:")
         sizer_3.Add(label_1, 0, wx.ALIGN_CENTER_VERTICAL | wx.LEFT, 5)
         sizer_3.Add(self.text_url, 1, 0, 0)
