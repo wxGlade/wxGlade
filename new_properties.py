@@ -2183,7 +2183,7 @@ class GridProperty(Property):
         if len(selected_cols)==len(self.col_defs) and self.can_remove:
             # delete complete rows
             for row in reversed(selected_rows):
-                del values[row]
+                if row<len(values): del values[row]
         else:
             editable_columns = self.EDITABLE_COLS or list( range(len(self.col_defs)) )
             for row in selected_rows:
@@ -2239,6 +2239,7 @@ class GridProperty(Property):
                     values[row][col] = v
         elif len(value)==len(selected_rows):
             for row,row_value in zip(selected_rows, value):
+                if len(values)==row: values.append( None )
                 if values[row] is None: values[row] = self.default_row[:]
                 for v,col in zip(row_value, paste_columns):
                     values[row][col] = v
