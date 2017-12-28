@@ -163,7 +163,7 @@ class Property(object):
         if activate or force:
             self.deactivated = not activate
         self.on_value_edited(new_value)
-        if activate:
+        if activate or force:
             self.activate_controls()
         return True
 
