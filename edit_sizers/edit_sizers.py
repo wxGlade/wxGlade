@@ -1635,7 +1635,9 @@ class GridSizerBase(SizerBase):
         else:
             add_row, dummy = self._get_row_col(pos)
 
-        if rows: self.properties["rows"].set( rows+1 )
+        if rows:
+            self.properties["rows"].set( rows+1 )
+            if self.widget: self.widget.SetRows(rows+1)
 
         for n in range(cols):
             self._insert_slot( n+1 + add_row*cols )
@@ -1670,7 +1672,9 @@ class GridSizerBase(SizerBase):
                 self._insert_slot( last_pos+1+i )
 
         # insert the new colum
-        if self.cols: self.properties["cols"].set( cols+1 )
+        if self.cols:
+            self.properties["cols"].set( cols+1 )
+            if self.widget: self.widget.SetCols(cols+1)
         # insert placeholders to avoid problems with GridBagSizers and overlap tests
         for r in range(rows-1,-1,-1):
             self.children.insert( add_col+1 + r*cols, None )
