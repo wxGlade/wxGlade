@@ -31,7 +31,7 @@ class EditStaticBitmap(ManagedBase, EditStylesMixin, BitmapMixin):
 
         # initialise instance properties
         filedialog_style = wx.FD_OPEN | wx.FD_FILE_MUST_EXIST  # for the following two properties
-        self.bitmap    = np.FileNameProperty(bmp_file, style=filedialog_style)
+        self.bitmap    = np.BitmapProperty(bmp_file)
         self.attribute = np.CheckBoxProperty(False, default_value=False)
 
     def create_widget(self):

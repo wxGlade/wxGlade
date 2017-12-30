@@ -14,6 +14,7 @@ from xml.sax.saxutils import escape, quoteattr
 from codegen import BaseLangCodeWriter
 from collections import OrderedDict
 import common, compat, errors
+import new_properties as np
 import wcodegen
 
 
@@ -108,8 +109,14 @@ class DefaultXrcObject(XrcObject):
         if not val:
             return
 
-        if name in ['icon', 'bitmap']:
-            prop = self._format_bitmap_property(name, val, ntabs)
+        if isinstance(val, np.BitmapProperty):
+            # rename: no '..._bitmap' and some renames
+            if name.endswith('_bitmap'):
+                name = name[:-7]
+            if   name=="pressed": name = "selected"
+            elif name=="current": name = "hover"
+
+            prop = self._format_bitmap_property(name, val.get_value(), ntabs)
         else:
             prop = common.format_xml_prop(name, val, ntabs)
 
@@ -202,14 +209,17 @@ class DefaultXrcObject(XrcObject):
                 if value:
                     properties.update(value)
                 continue
-            if value is None: value = prop.get_string_value()
-            if value is None: continue
+            if isinstance(prop, np.BitmapProperty):
+                value = prop
+            else:
+                if value is None: value = prop.get_string_value()
+                if value is None: continue
             properties[name] = value
 
         for name in sorted( properties.keys() ):
             value = properties[name]
             if value is None: continue
-            self.write_property(str(name), value, output, ntabs + 1)
+            self.write_property( name, value, output, ntabs + 1)
         # write the font, if present
         if font:
             output.append(tab_str + '<font>\n')

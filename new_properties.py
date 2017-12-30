@@ -1750,9 +1750,28 @@ class FileNameProperty(DialogProperty):
         return True
 
 
-
 class FileNamePropertyD(FileNameProperty):
     deactivated = True
+
+
+class BitmapProperty(FileNameProperty):
+    def __init__(self, value="", name=None):
+        style = wx.FD_OPEN | wx.FD_FILE_MUST_EXIST
+        FileNameProperty.__init__(self, value, style, _DefaultArgument, name)
+    def _find_tooltip(self):
+        ret = FileNameProperty._find_tooltip(self)
+        if ret:
+            ret +=('\n\nYou can either drop or select a file or you can specify '
+                    'the bitmap using hand-crafted statements with the prefixes '
+                    '"art:", "code:", "empty:" or "var:".\n'
+                    'The wxGlade documentation describes how to write such statements.')
+        return ret
+
+class BitmapPropertyD(BitmapProperty):
+    deactivated = True
+    def __init__(self, value="", name=None):
+        style = wx.FD_OPEN | wx.FD_FILE_MUST_EXIST
+        FileNameProperty.__init__(self, value, style, '', name)
 
 
 class ColorProperty(DialogProperty):

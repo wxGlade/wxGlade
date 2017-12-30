@@ -21,18 +21,14 @@ class EditBitmapButton(ManagedBase, EditStylesMixin, BitmapMixin):
     _PROPERTIES = ["Widget", "bitmap", "disabled_bitmap", "default", "style"]
     PROPERTIES = ManagedBase.PROPERTIES + _PROPERTIES + ManagedBase.EXTRA_PROPERTIES
 
-    _PROPERTY_HELP = {"bitmap": BitmapMixin.bitmap_tooltip_text,
-                      "disabled_bitmap": BitmapMixin.bitmap_tooltip_text}
-
     def __init__(self, name, parent, id, bmp_file, sizer, pos):
         ManagedBase.__init__(self, name, 'wxBitmapButton', parent, id, sizer, pos)
         EditStylesMixin.__init__(self)
         BitmapMixin.__init__(self)
 
         # initialise instance properties
-        filedialog_style = wx.FD_OPEN | wx.FD_FILE_MUST_EXIST  # for the following two properties
-        self.bitmap          = np.FileNameProperty(bmp_file, style=filedialog_style)
-        self.disabled_bitmap = np.FileNamePropertyD("", default_value="", style=filedialog_style)
+        self.bitmap          = np.BitmapProperty(bmp_file)
+        self.disabled_bitmap = np.BitmapPropertyD("")
         self.default         = np.CheckBoxProperty(False, default_value=False)
 
     def create_widget(self):
