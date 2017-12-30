@@ -13,14 +13,17 @@ from edit_windows import ManagedBase, EditStylesMixin
 from tree import Node
 import new_properties as np
 from .button_stockitems import *
+from gui_mixins import BitmapMixin
 
 
-class EditButton(ManagedBase, EditStylesMixin):
+class EditButton(ManagedBase, EditStylesMixin, BitmapMixin):
     "Class to handle wxButton objects"
 
     STOCKITEMS = sorted( ButtonStockItems.stock_ids.keys())
 
-    _PROPERTIES = ["Widget", "label", "stockitem", "default", "style"]
+    _PROPERTIES = ["Widget", "label", "stockitem",
+                   "bitmap", "disabled_bitmap", "pressed_bitmap", "current_bitmap", "focus_bitmap",
+                   "default", "style"]
     PROPERTIES = ManagedBase.PROPERTIES + _PROPERTIES + ManagedBase.EXTRA_PROPERTIES
 
     _PROPERTY_HELP = {"default":"This sets the button to be the default item for the panel or dialog box.",
@@ -36,6 +39,12 @@ class EditButton(ManagedBase, EditStylesMixin):
         self.default   = np.CheckBoxProperty(False, default_value=False)
         self.stockitem = np.ComboBoxPropertyD(self.STOCKITEMS[0], choices=self.STOCKITEMS)
 
+        self.bitmap          = np.BitmapPropertyD()
+        self.disabled_bitmap = np.BitmapPropertyD()
+        self.pressed_bitmap  = np.BitmapPropertyD()
+        self.current_bitmap  = np.BitmapPropertyD()
+        self.focus_bitmap    = np.BitmapPropertyD()
+
     def create_widget(self):
         stockitem_p = self.properties["stockitem"]
         if stockitem_p.is_active():
@@ -43,6 +52,12 @@ class EditButton(ManagedBase, EditStylesMixin):
         else:
             label = self.label
         self.widget = wx.Button(self.parent.widget, self.id, label, style=self.style)
+        # set bitmaps
+        if self.bitmap:          self.widget.SetBitmap(self.bitmap)
+        if self.disabled_bitmap: self.widget.SetBitmapDisabled(self.bitmap)
+        if self.pressed_bitmap:  self.widget.SetBitmapPressed(self.bitmap)
+        if self.current_bitmap:  self.widget.SetBitmapCurrent(self.bitmap)
+        if self.focus_bitmap:    self.widget.SetBitmapFocus(self.bitmap)
 
     def properties_changed(self, modified=None):
         "update label (and size if label/stockitem have changed)"
