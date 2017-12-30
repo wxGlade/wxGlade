@@ -19,7 +19,7 @@ from gui_mixins import BitmapMixin
 class EditFrame(TopLevelBase, EditStylesMixin, BitmapMixin):
     _PROPERTIES =["Widget", "title", "icon", "centered", "sizehints","menubar", "toolbar", "statusbar", "style"]
     PROPERTIES = TopLevelBase.PROPERTIES + _PROPERTIES
-    _PROPERTY_HELP   = { 'icon':BitmapMixin.bitmap_tooltip_text }
+    _PROPERTY_HELP   = { 'icon':'Icon for this window.' }
     _PROPERTY_LABELS = { "sizehints":'Set Size Hints', "menubar":'Has MenuBar', "toolbar":'Has ToolBar',
                          "statusbar":'Has StatusBar' }
 
@@ -29,7 +29,7 @@ class EditFrame(TopLevelBase, EditStylesMixin, BitmapMixin):
         EditStylesMixin.__init__(self)
 
         # initialise instance properties
-        self.icon      = np.FileNamePropertyD("", default_value="")
+        self.icon      = np.BitmapPropertyD("")
         self.centered  = np.CheckBoxProperty(False, default_value=False)
         self.sizehints = np.CheckBoxProperty(False, default_value=False)
         self.menubar   = np.CheckBoxProperty(False, default_value=False)

@@ -282,7 +282,7 @@ def import_module(widget_dir, module_name):
             imported_module = __import__(module_name, {}, {}, ['just_not_empty'])
             return imported_module
         except ImportError:
-            if config.debugging and not module_name.endswith(".wconfig") and not "lisp" in module_name: raise
+            if config.debugging and not module_name.endswith(".wconfig") and not "lisp" in module_name and not "generic_calendar_ctrl" in module_name and not "property_grid" in module_name: raise
             return None
         except (AttributeError, NameError, SyntaxError, ValueError):
             if zip_filename:
