@@ -2264,7 +2264,7 @@ class GridProperty(Property):
         if not self.grid: return
         if self._width_delta is None:
             self._width_delta = self.grid.GetParent().GetSize()[0] - self.grid.GetSize()[0] + 30
-        self.grid.SetColSize(1, 10)
+        self.grid.SetColSize(len(self.col_defs)-1, 10)
         col_widths = 0
         for n in range(len(self.col_defs)-1):
             col_widths += self.grid.GetColSize(n)
@@ -2459,7 +2459,9 @@ class GridProperty(Property):
         self._update_remove_button()
         self._update_apply_button()
         self._update_indices()
-        self.grid.GoToCell( (len(values)-1,self.cur_col) )
+        if compat.version >= (3,0):
+            self.grid.GoToCell( len(values)-1, self.cur_col )
+            self.grid.SetFocus()
 
     def remove_row(self, event):
         self.on_focus()
@@ -2480,7 +2482,9 @@ class GridProperty(Property):
         self._update_remove_button()
         self._update_apply_button()
         self._update_indices()
-        self.grid.GoToCell( (self.cur_row,self.cur_col) )
+        if compat.version >= (3,0):
+            self.grid.GoToCell( self.cur_row, self.cur_col )
+            self.grid.SetFocus()
 
     def insert_row(self, event):
         self.on_focus()
@@ -2494,7 +2498,9 @@ class GridProperty(Property):
         self._update_remove_button()
         self._update_apply_button()
         self._update_indices()
-        self.grid.GoToCell( (self.cur_row,self.cur_col) )
+        if compat.version >= (3,0):
+            self.grid.GoToCell( self.cur_row, self.cur_col )
+            self.grid.SetFocus()
 
     def _ensure_editing_copy(self):
         if self.immediate: return self.value
