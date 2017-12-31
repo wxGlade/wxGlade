@@ -56,9 +56,9 @@
 <p>In this section we will go through the steps to create the simple calculator window from above. In later sections we will modify it to highlight certain features like other sizer types, menus and status bars.</p>
 <p><strong>For the basic structure:</strong></p>
 <ol class="arabic simple">
-<li>Select File-&gt;New to <strong>create a new file</strong> and save it to a directory.</li>
+<li>Select “File-&gt;New” to <strong>create a new file</strong> and “File-&gt;Save” to save a .wxg file to a directory.</li>
 <li><strong>Add the frame</strong>:<ul>
-<li>click on the Frame icon <img alt="frame" src="_images/frame.png" /> in the section “Windows”</li>
+<li>click on the Frame icon <img alt="frame" src="_images/frame.png" /> on the “Windows” line of the <em>Palette</em> window</li>
 <li>for the class Name, enter “CalculatorFrame”: <a class="reference internal" href="_images/NewFrame_CalculatorFrame.png"><img alt="New Frame dialog" src="_images/NewFrame_CalculatorFrame.png" style="width: 30px;" /></a></li>
 </ul>
 </li>
@@ -66,12 +66,12 @@
 (there the slot is visualized by a hatched area)</li>
 <li>It would be possible to place controls directly on the frame, but usually a <strong>panel</strong> is added first, as a frame is really just a frame around the other things. <br/>
 To add the panel:<ul>
-<li>in the <em>Palette</em> window click on the panel icon <img alt="panel" src="_images/panel.png" /> to start the placement</li>
+<li>in the <em>Palette</em> window (again on the “Windows” line) click on the panel icon <img alt="panel" src="_images/panel.png" /> to start the placement</li>
 <li>in the <em>Tree</em> or <em>Design</em> window, click in the slot to place the panel there</li>
 </ul>
 </li>
 <li>On the panel we need a <strong>vertical sizer</strong> with six slots:<ul>
-<li>in the Palette window click on the sizer icon <img alt="sizer" src="_images/sizer.png" /> to start the placement</li>
+<li>in the <em>Palette</em> window on the “Sizer” line click on the sizer icon <img alt="sizer" src="_images/sizer.png" /> to start the placement</li>
 <li>in the Tree or Design window, click on the panel to place the sizer there</li>
 <li>a dialog will open</li>
 <li>set “Orientation”  to “Vertical” and the number of slots to “6”  <a class="reference internal" href="_images/NewSizer_CalculatorVertical.png"><img alt="New Sizer dialog" src="_images/NewSizer_CalculatorVertical.png" style="width: 30px;" /></a></li>
@@ -79,7 +79,7 @@ To add the panel:<ul>
 </li>
 <li>Now add a <strong>horizontal box sizer</strong> to the first slot: do as before, but keep “Orientation” as “Horizontal”
 and set the number of slots to “2”</li>
-<li>Place a <strong>label</strong> <img alt="static_text" src="_images/static_text.png" /> in the top left slot and a <strong>text control</strong> <img alt="text_ctrl" src="_images/text_ctrl.png" /> in the right</li>
+<li>Place a <strong>static text</strong> <img alt="static_text" src="_images/static_text.png" /> as label (found on the “Static” line of <em>Palette</em>) in the top left slot and a <strong>text control</strong> <img alt="text_ctrl" src="_images/text_ctrl.png" /> (found on the “Inputs” line) in the right</li>
 </ol>
 <p><strong>Your design should now look like this:</strong></p>
 <table border="1" class="docutils">
@@ -103,7 +103,7 @@ Also, layout and alignment need to be changed, but we’ll change this later on.
 (You could also edit the label directly in the <em>Tree</em> window by clicking into the label and/or pressing <code class="kbd docutils literal"><span class="pre">F2</span></code>.)</li>
 </ul>
 </li>
-<li>Select the frame in the <em>Tree</em> window and go to <em>Properties</em> -&gt; Widget -&gt; Title and change it to <code class="docutils literal"><span class="pre">Calculator</span></code>.</li>
+<li>Select the frame in the <em>Tree</em> window and go to <em>Properties</em> -&gt; Widget -&gt; Title and change it from <code class="docutils literal"><span class="pre">frame</span></code> to <code class="docutils literal"><span class="pre">Calculator</span></code>.</li>
 <li>You may want to define a default size for the frame: <br/>
 Go to <em>Properties</em> -&gt; Common -&gt; Size and set it to <code class="docutils literal"><span class="pre">400,300</span></code>. <br/>
 Without this, the frame will be created with the minimum possible size to fit all controls.</li>
@@ -113,9 +113,10 @@ Without this, the frame will be created with the minimum possible size to fit al
 </div>
 <div class="section" id="part-2-add-the-remaining-rows-and-widgets">
 <h2>Part 2: Add the remaining rows and widgets<a class="headerlink" href="#part-2-add-the-remaining-rows-and-widgets" title="Permalink to this headline">¶</a></h2>
-<p>We need almost the same combination of sizer+label+text for the second value and the result, so we’ll copy the horizontal sizer including it’s content from the first to the third and fith slot of the vertical sizer .
+<p>We need almost the same combination of sizer+label+text for the second value and the result, so we’ll copy the horizontal sizer including it’s content from the first to the third and fifth slot of the vertical sizer.
+Having done so, we will modify the label fields of the newly copied wxStaticText widgets to <code class="docutils literal"><span class="pre">Value</span> <span class="pre">2</span></code> and <code class="docutils literal"><span class="pre">Result</span></code> (consistent with the layout for the calculator presented on the <a class="reference internal" href="wxbasics.html"><span class="doc">wx Basics</span></a> page).
 <br/>
-After that, we’ll add “Operator” and the buttons.</p>
+After that, we’ll add the “Operator” radio box and the buttons.</p>
 <div class="section" id="there-are-several-methods-to-copy">
 <h3>There are several methods to copy:<a class="headerlink" href="#there-are-several-methods-to-copy" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
@@ -166,26 +167,25 @@ After that, we’ll add “Operator” and the buttons.</p>
 </div>
 <div class="section" id="further-editing">
 <h3>Further Editing<a class="headerlink" href="#further-editing" title="Permalink to this headline">¶</a></h3>
-<p>The Result text control should display multiple lines of text and should not be editable.
+<p>The wxTextCtrl adjacent to the “Result” wxStaticText should display multiple lines of text and should not be editable.
 To modify accordingly, just follow these steps:</p>
 <blockquote>
 <div><ol class="arabic simple">
-<li>Select <code class="docutils literal"><span class="pre">text_result</span></code></li>
+<li>Select the text control <code class="docutils literal"><span class="pre">txt_ctrl_3</span></code> <br/> (depending on the exact steps of editing, the name might be slightly different)</li>
 <li>Go to <em>Properties</em> -&gt; Widget</li>
 <li>Enable Style -&gt; <code class="docutils literal"><span class="pre">wxTE_MULTILINE</span></code> and <code class="docutils literal"><span class="pre">wxTE_READONLY</span></code></li>
 <li>Go to <em>Properties</em> -&gt; Common</li>
-<li>Click the “…” button right to <code class="docutils literal"><span class="pre">Background</span></code> and select grey color or <br/></li>
+<li>Click the “…” button right to <code class="docutils literal"><span class="pre">Background</span></code> and select grey color or <br/>
+just enter <code class="docutils literal"><span class="pre">#d4d0c8</span></code> into the text control.</li>
 </ol>
-<blockquote>
-<div>just enter <code class="docutils literal"><span class="pre">#d4d0c8</span></code> into the text control.</div></blockquote>
 </div></blockquote>
 <p>The last step is to have a grey background.
 For single line readonly text controls, this is done automatically by wx, but not with multiple lines.</p>
 <p><strong>In the next steps fill the remaining slots of the main sizer:</strong></p>
 <ul class="simple">
-<li>insert a horizontal sizer with a label and a radio box into SLOT 2 <img alt="radio_box" src="_images/radio_box.png" /></li>
+<li>insert a two-slot horizontal sizer with a label and a radio box into SLOT 2 <img alt="radio_box" src="_images/radio_box.png" /></li>
 <li>place a horizontal line into SLOT 4 <img alt="static_line" src="_images/static_line.png" /></li>
-<li>insert a horizontal sizer with two buttons into SLOT 6 <img alt="button" src="_images/button.png" /></li>
+<li>insert a two-slot horizontal sizer with two buttons into SLOT 6 <img alt="button" src="_images/button.png" /></li>
 <li>For the first button, select the checkbox <em>Properties</em> -&gt; Widget -&gt; Default. <br/>
 This will make this button the default one, i.e. when the user hits Enter it will have the same effect as
 pressing this default button.</li>
@@ -473,7 +473,7 @@ enter the headings for the notebook pages</li>
 <ul class="simple">
 <li>add a sizer to the notebook pane (with a single slot)</li>
 <li>add a text control to the sizer slot</li>
-<li>set the layout: Proportion 1 and <a href="#id1"><span class="problematic" id="id2">``</span></a>wxEXPAND?? such that the text control will fill the whole page</li>
+<li>set the layout: Proportion 1 and <code class="docutils literal"><span class="pre">wxEXPAND</span></code> such that the text control will fill the whole page</li>
 <li>set the widget style to wxTE_MULTILINE and wxTE_READONLY</li>
 <li>set the widget background color to <code class="docutils literal"><span class="pre">#d4d0c8</span></code></li>
 </ul>
@@ -492,7 +492,8 @@ enter the headings for the notebook pages</li>
 </colgroup>
 <tbody valign="top">
 <tr class="row-odd"><td><ul class="first last simple">
-<li>add two empty slots:</li>
+<li>add two empty slots to the left and right:  <br/>
+(To add the slots, right-click on the radio box in the <em>Tree</em> or <em>Design</em> window and select “Insert Slot before” and “Add Slot”.)</li>
 </ul>
 </td>
 <td><a class="reference internal" href="_images/Calculator_Spacers_Design0.png"><img alt="Calculator with empty slots for spacers" src="_images/Calculator_Spacers_Design0.png" style="width: 180px;" /></a></td>
