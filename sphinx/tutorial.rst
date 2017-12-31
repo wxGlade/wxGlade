@@ -57,10 +57,10 @@ In this section we will go through the steps to create the simple calculator win
 
 
 
-1. Select File->New to **create a new file** and save it to a directory.
+1. Select "File->New" to **create a new file** and "File->Save" to save a .wxg file to a directory.
 2. **Add the frame**:
 
-   * click on the Frame icon |frame| in the section "Windows"
+   * click on the Frame icon |frame| on the "Windows" line of the *Palette* window
    * for the class Name, enter "CalculatorFrame": |NewFrame_CalculatorFrame|
 
 3. A frame with a sizer |sizer| and one slot is now visible in the *Tree* and *Design* window
@@ -68,19 +68,19 @@ In this section we will go through the steps to create the simple calculator win
 4. It would be possible to place controls directly on the frame, but usually a **panel** is added first, as a frame is really just a frame around the other things. |br|
    To add the panel:
 
-   * in the *Palette* window click on the panel icon |panel| to start the placement
+   * in the *Palette* window (again on the "Windows" line) click on the panel icon |panel| to start the placement
    * in the *Tree* or *Design* window, click in the slot to place the panel there
 
 5. On the panel we need a **vertical sizer** with six slots:
 
-   * in the Palette window click on the sizer icon |sizer| to start the placement
+   * in the *Palette* window on the "Sizer" line click on the sizer icon |sizer| to start the placement
    * in the Tree or Design window, click on the panel to place the sizer there
    * a dialog will open
    * set "Orientation"  to "Vertical" and the number of slots to "6"  |NewSizer_CalculatorVertical|
 
 6. Now add a **horizontal box sizer** to the first slot: do as before, but keep "Orientation" as "Horizontal"
    and set the number of slots to "2"
-7. Place a **label** |static_text| in the top left slot and a **text control** |text_ctrl| in the right
+7. Place a **static text** |static_text| as label (found on the "Static" line of *Palette*) in the top left slot and a **text control** |text_ctrl| (found on the "Inputs" line) in the right
 
 
 **Your design should now look like this:**
@@ -104,7 +104,7 @@ Also, layout and alignment need to be changed, but we'll change this later on.
    * Edit the label to display "Value 1:" by entering this on the editor tab "Widget". |br|
      (You could also edit the label directly in the *Tree* window by clicking into the label and/or pressing :kbd:`F2`.)
 
-4. Select the frame in the *Tree* window and go to *Properties* -> Widget -> Title and change it to ``Calculator``.
+4. Select the frame in the *Tree* window and go to *Properties* -> Widget -> Title and change it from ``frame`` to ``Calculator``.
 5. You may want to define a default size for the frame: |br|
    Go to *Properties* -> Common -> Size and set it to ``400,300``. |br|
    Without this, the frame will be created with the minimum possible size to fit all controls.
@@ -118,9 +118,10 @@ This file can be found in the folder ``wxglade/examples/Calculator``:
 Part 2: Add the remaining rows and widgets
 *********************************************************************
 
-We need almost the same combination of sizer+label+text for the second value and the result, so we'll copy the horizontal sizer including it's content from the first to the third and fith slot of the vertical sizer .
+We need almost the same combination of sizer+label+text for the second value and the result, so we'll copy the horizontal sizer including it's content from the first to the third and fifth slot of the vertical sizer.
+Having done so, we will modify the label fields of the newly copied wxStaticText widgets to ``Value 2`` and ``Result`` (consistent with the layout for the calculator presented on the :doc:`wxbasics` page).
 |br|
-After that, we'll add "Operator" and the buttons.
+After that, we'll add the "Operator" radio box and the buttons.
 
 
 There are several methods to copy:
@@ -152,9 +153,13 @@ There are several methods to copy:
 You may of course copy in the Design window and paste in the Tree or vice versa.
  
 * **Drag & Drop in Design Window:**
+
  * drag the sizer handle to the empty slot while holding the :kbd:`Ctrl` key
+
 * **Drag & Drop in Tree Window:**
+
  * drag the sizer node / icon in the *Tree* window to the empty slot, holding the :kbd:`Ctrl` key
+
 
 If you don't hold the :kbd:`Ctrl` key, the item will not be copied, but moved.
 
@@ -165,15 +170,15 @@ You may drag items between different windows, e.g. from *Design* to *Tree* or to
 Further Editing
 ===============
 
-The Result text control should display multiple lines of text and should not be editable.
+The wxTextCtrl adjacent to the "Result" wxStaticText should display multiple lines of text and should not be editable.
 To modify accordingly, just follow these steps:
 
- 1. Select ``text_result``
+ 1. Select the text control ``txt_ctrl_3`` |br| (depending on the exact steps of editing, the name might be slightly different)
  2. Go to *Properties* -> Widget
  3. Enable Style -> ``wxTE_MULTILINE`` and ``wxTE_READONLY``
  4. Go to *Properties* -> Common
  5. Click the "..." button right to ``Background`` and select grey color or |br|
-   just enter ``#d4d0c8`` into the text control.
+    just enter ``#d4d0c8`` into the text control.
 
 The last step is to have a grey background.
 For single line readonly text controls, this is done automatically by wx, but not with multiple lines.
@@ -181,9 +186,9 @@ For single line readonly text controls, this is done automatically by wx, but no
 
 **In the next steps fill the remaining slots of the main sizer:**
 
-* insert a horizontal sizer with a label and a radio box into SLOT 2 |radio_box|
+* insert a two-slot horizontal sizer with a label and a radio box into SLOT 2 |radio_box|
 * place a horizontal line into SLOT 4 |static_line|
-* insert a horizontal sizer with two buttons into SLOT 6 |button|
+* insert a two-slot horizontal sizer with two buttons into SLOT 6 |button|
 * For the first button, select the checkbox *Properties* -> Widget -> Default. |br|
   This will make this button the default one, i.e. when the user hits Enter it will have the same effect as
   pressing this default button.
@@ -511,7 +516,7 @@ You should know how to do this by now:
 
 * add a sizer to the notebook pane (with a single slot)
 * add a text control to the sizer slot
-* set the layout: Proportion 1 and ``wxEXPAND´´ such that the text control will fill the whole page
+* set the layout: Proportion 1 and ``wxEXPAND`` such that the text control will fill the whole page
 * set the widget style to wxTE_MULTILINE and wxTE_READONLY
 * set the widget background color to ``#d4d0c8``
 
@@ -557,7 +562,8 @@ In our example, we may place a spacer to the left and right of the operator radi
    :align: center
 
    * - 
-       * add two empty slots:
+       * add two empty slots to the left and right:  |br|
+         (To add the slots, right-click on the radio box in the *Tree* or *Design* window and select "Insert Slot before" and "Add Slot".)
      - |Calculator_Spacers_Design0|
 
    * - 
