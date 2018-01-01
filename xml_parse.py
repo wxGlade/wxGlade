@@ -340,6 +340,7 @@ class ClipboardXmlWidgetBuilder(XmlWidgetBuilder):
 
     def __init__(self, parent, sizer, pos, proportion, span, flag, border):
         XmlWidgetBuilder.__init__(self)
+        self._renamed = {}
         if parent is not None:
             self.parent_node = parent.node
         else:
@@ -391,6 +392,14 @@ class ClipboardXmlWidgetBuilder(XmlWidgetBuilder):
         self._appl_started = True  # no application tag when parsing from the clipboard
 
     def _get_new_name(self, oldname):
+        if self._renamed:
+            # e.g. if notebook_1 was renamed to notebook_2, try notebook_1_panel_1 -> notebook_2_panel_1 first
+            for old,new in self._renamed.items():
+                if oldname.startswith(old):
+                    newname = new + oldname[len(old):]
+                    if not common.app_tree.has_name(newname, node=self.parent_node):
+                        return newname
+
         newname = oldname
         if "_" in oldname:
             # if the old name ends with an underscore and a number, just increase the number
@@ -412,7 +421,6 @@ class ClipboardXmlWidgetBuilder(XmlWidgetBuilder):
                 return newname
             except:
                 pass
-
 
         # add _copy to the old name
         i = 0
@@ -436,16 +444,22 @@ class ClipboardXmlWidgetBuilder(XmlWidgetBuilder):
         return newname
 
     def startElement(self, name, attrs):
+        renamed = None
         if name == 'object' and 'name' in attrs:
             # generate a unique name for the copy
             oldname = str(attrs['name'])
-            newname = self._get_new_name(oldname)
+            if not common.app_tree.has_name(oldname, node=self.parent_node):
+                newname = oldname
+            else:
+                newname = self._get_new_name(oldname)
             attrs = dict(attrs)
             attrs['name'] = newname
             if newname!=oldname:
                 attrs['original_name'] = oldname  # for finding position in a virtual sizer
-                self._renamed = (oldname, newname)
+                self._renamed[oldname] = newname
+                renamed = (oldname, newname)
         XmlWidgetBuilder.startElement(self, name, attrs)
+        if renamed: self.top()._renamed = renamed
         if name == 'object':
             if not self.depth_level:
                 common.app_tree.auto_expand = False
@@ -475,7 +489,7 @@ class ClipboardXmlWidgetBuilder(XmlWidgetBuilder):
         if name == 'label':
             # if e.g. a button_1 is copied to button_2, also change the label if it was "button_1"
             obj = self.top()
-            renamed = getattr(self, "_renamed", None)
+            renamed = getattr(obj, "_renamed", None)
             if renamed:
                 oldname, newname = renamed
                 if obj.obj.name==newname and self._curr_prop_val and self._curr_prop_val[0]==oldname:
