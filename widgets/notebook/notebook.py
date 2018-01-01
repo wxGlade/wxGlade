@@ -141,7 +141,9 @@ class NotebookVirtualSizer(Sizer):
     def get_itempos(self, attrs):
         "Get position of sizer item (used in xml_parse)"
         try:
-            return self.window.pages.index(attrs["name"]) + 1
+            name = attrs.get("original_name")
+            if name is None: name = attrs["name"]
+            return self.window.pages.index(name) + 1
         except ValueError:
             raise XmlParsingError( _('Notebook widget "%s" does not have tab "%s"!')%(self.window.name, attrs["name"]) )
 
