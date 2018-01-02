@@ -231,6 +231,11 @@ class EditNotebook(ManagedBase, EditStylesMixin):
                 self.widget.AddPage(c.widget, label[0])
         self.widget.Bind(wx.EVT_KEY_DOWN, misc.on_key_down_event)
 
+    def post_load(self):
+        # at this time, all children should be available
+        # no longer required when the data structure is changed
+        self.sizer.item_properties_modified2(self)
+
     def on_set_focus(self, event):
         # allow switching of pages
         misc.set_focused_widget(self)
