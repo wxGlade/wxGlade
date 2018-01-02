@@ -20,6 +20,7 @@ class PyOgg2_MyFrame(wx.Frame):
         # begin wxGlade: PyOgg2_MyFrame.__init__
         kwds["style"] = kwds.get("style", 0) | wx.DEFAULT_FRAME_STYLE
         wx.Frame.__init__(self, *args, **kwds)
+        self.SetSize((600, 500))
         
         # Menu Bar
         self.Mp3_To_Ogg_menubar = wx.MenuBar()
@@ -137,7 +138,6 @@ class PyOgg2_MyFrame(wx.Frame):
         sizer_1.AddGrowableCol(0)
         self.Layout()
         self.Centre()
-        self.SetSize((600, 500))
         # end wxGlade
 
     def OnOpen(self, event):  # wxGlade: PyOgg2_MyFrame.<event_handler>
@@ -163,6 +163,7 @@ class MyFrameGrid(wx.Frame):
         # begin wxGlade: MyFrameGrid.__init__
         kwds["style"] = kwds.get("style", 0) | wx.DEFAULT_FRAME_STYLE
         wx.Frame.__init__(self, *args, **kwds)
+        self.SetSize((492, 300))
         self.grid = wx.grid.Grid(self, wx.ID_ANY, size=(1, 1))
         self.static_line = wx.StaticLine(self, wx.ID_ANY)
         self.button = wx.Button(self, wx.ID_CLOSE, "")
@@ -192,7 +193,6 @@ class MyFrameGrid(wx.Frame):
         self.SetSizer(self._szr_frame)
         self._szr_frame.SetSizeHints(self)
         self.Layout()
-        self.SetSize((492, 300))
         # end wxGlade
 
 # end of class MyFrameGrid

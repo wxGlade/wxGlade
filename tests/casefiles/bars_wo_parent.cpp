@@ -74,6 +74,7 @@ MyFrame::MyFrame(wxWindow* parent, wxWindowID id, const wxString& title, const w
     wxFrame(parent, id, title, pos, size, style)
 {
     // begin wxGlade: MyFrame::MyFrame
+    SetSize(wxSize(200, 200));
     label_1 = new wxStaticText(this, wxID_ANY, wxT("placeholder - every design\nneeds a toplevel window"), wxDefaultPosition, wxDefaultSize, wxALIGN_CENTER);
 
     set_properties();
@@ -97,7 +98,6 @@ void MyFrame::do_layout()
     sizer_1->Add(label_1, 1, wxALIGN_CENTER|wxALL|wxEXPAND, 0);
     SetSizer(sizer_1);
     Layout();
-    SetSize(wxSize(200, 200));
     // end wxGlade
 }
 

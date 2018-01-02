@@ -31,6 +31,7 @@ sub new {
 
     # begin wxGlade: MyFrame::new
     $self = $self->SUPER::new( $parent, $id, $title, $pos, $size, $style, $name );
+    $self->SetSize(Wx::Size->new(200, 200));
     
     # Tool Bar
     $self->{frame_1_toolbar} = Wx::ToolBar->new($self, -1);
@@ -63,7 +64,6 @@ sub __do_layout {
     $self->{sizer_1}->Add($self->{label_1}, 1, wxALIGN_CENTER|wxALL|wxEXPAND, 0);
     $self->SetSizer($self->{sizer_1});
     $self->Layout();
-    $self->SetSize(Wx::Size->new(200, 200));
     # end wxGlade
 }
 

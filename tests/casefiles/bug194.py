@@ -18,6 +18,7 @@ class Frame194(wx.Frame):
     def __init__(self, *args, **kwds):
         # begin wxGlade: Frame194.__init__
         wx.Frame.__init__(self, *args, **kwds)
+        self.SetSize((800, 600))
         self.list_box_single = wx.ListBox(self, wx.ID_ANY, choices=[_("Listbox wxLB_SINGLE")])
         self.list_box_multiple = wx.ListBox(self, wx.ID_ANY, choices=[_("Listbox wxLB_MULTIPLE")], style=wx.LB_MULTIPLE)
         self.list_box_extended = wx.ListBox(self, wx.ID_ANY, choices=[_("Listbox wxLB_EXTENDED")], style=wx.LB_EXTENDED)
@@ -51,7 +52,6 @@ class Frame194(wx.Frame):
         sizer_1.Add(self.check_list_box_extended, 1, wx.ALL | wx.EXPAND, 5)
         self.SetSizer(sizer_1)
         self.Layout()
-        self.SetSize((800, 600))
         # end wxGlade
 
 # end of class Frame194

@@ -34,6 +34,7 @@ sub new {
         unless defined $style;
 
     $self = $self->SUPER::new( $parent, $id, $title, $pos, $size, $style, $name );
+    $self->SetSize(Wx::Size->new(800, 417));
     
 
     # Menu Bar
@@ -179,7 +180,6 @@ sub __do_layout {
     # begin wxGlade: MenuTestFrame::__do_layout
     $self->Layout();
     $self->Centre();
-    $self->SetSize(Wx::Size->new(800, 417));
     # end wxGlade
 }
 

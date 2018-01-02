@@ -18,6 +18,7 @@ class Frame186(wx.Frame):
     def __init__(self, *args, **kwds):
         # begin wxGlade: Frame186.__init__
         wx.Frame.__init__(self, *args, **kwds)
+        self.SetSize((300, 300))
         
         # Menu Bar
         self.Bug186_Frame_menubar = wx.MenuBar()
@@ -61,7 +62,6 @@ class Frame186(wx.Frame):
         sizer_1.Add(sizer_2, 1, wx.EXPAND, 0)
         self.SetSizer(sizer_1)
         self.Layout()
-        self.SetSize((300, 300))
         # end wxGlade
 
 # end of class Frame186

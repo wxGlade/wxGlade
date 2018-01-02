@@ -42,6 +42,7 @@
 (defmethod init ((obj MyFrame))
 "Method creates the objects contained in the class."
         ;;; begin wxGlade: MyFrame.__init__
+        (slot-top-window obj).wxWindow_SetSize((200, 200))
         
 	;;; Tool Bar
         (setf (slot-frame-1-toolbar obj) (wxToolBar_Create (slot-top-window obj) -1 -1 -1 -1 -1 wxTB_HORIZONTAL))
@@ -65,7 +66,6 @@
         (wxSizer_AddWindow (slot-sizer-1 obj) (slot-label-1 obj) 1 (logior wxALIGN_CENTER wxALL wxEXPAND) 0 nil)
         (wxWindow_SetSizer (slot-top-window obj) (slot-sizer-1 obj))
         (wxFrame_layout (slot-frame-1 self))
-        (slot-top-window obj).wxWindow_SetSize((200, 200))
         ;;; end wxGlade
         )
 

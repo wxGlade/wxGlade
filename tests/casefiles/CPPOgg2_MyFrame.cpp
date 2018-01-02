@@ -20,6 +20,7 @@ CPPOgg2_MyFrame::CPPOgg2_MyFrame(wxWindow* parent, wxWindowID id, const wxString
     wxFrame(parent, id, title, pos, size, wxDEFAULT_FRAME_STYLE)
 {
     // begin wxGlade: CPPOgg2_MyFrame::CPPOgg2_MyFrame
+    SetSize(wxSize(400, 300));
     grid_1 = new wxGrid(this, wxID_ANY);
     static_line_2 = new wxStaticLine(this, wxID_ANY);
     button_6 = new wxButton(this, wxID_CLOSE, wxEmptyString);
@@ -54,7 +55,6 @@ void CPPOgg2_MyFrame::do_layout()
     sizer_5->Add(grid_sizer_3, 1, wxEXPAND, 0);
     SetSizer(sizer_5);
     Layout();
-    SetSize(wxSize(400, 300));
     // end wxGlade
 }
 

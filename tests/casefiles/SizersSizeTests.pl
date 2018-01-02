@@ -35,6 +35,7 @@ sub new {
         unless defined $style;
 
     $self = $self->SUPER::new( $parent, $id, $title, $pos, $size, $style, $name );
+    $self->SetSize(Wx::Size->new(600, 400));
     $self->{notebook_1} = Wx::Notebook->new($self, wxID_ANY);
     $self->{notebook_1_pane_1} = Wx::Panel->new($self->{notebook_1}, wxID_ANY);
     $self->{_0_N_N} = Wx::TextCtrl->new($self->{notebook_1_pane_1}, wxID_ANY, "");
@@ -935,7 +936,6 @@ sub __do_layout {
     $self->{sizer_1}->Add($self->{notebook_1}, 1, wxEXPAND, 0);
     $self->SetSizer($self->{sizer_1});
     $self->Layout();
-    $self->SetSize(Wx::Size->new(600, 400));
     # end wxGlade
 }
 

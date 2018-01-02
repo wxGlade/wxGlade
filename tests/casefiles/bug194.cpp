@@ -20,6 +20,7 @@ Frame194::Frame194(wxWindow* parent, wxWindowID id, const wxString& title, const
     wxFrame(parent, id, title, pos, size, style)
 {
     // begin wxGlade: Frame194::Frame194
+    SetSize(wxSize(800, 600));
     const wxString list_box_single_choices[] = {
         _("Listbox wxLB_SINGLE"),
     };
@@ -77,7 +78,6 @@ void Frame194::do_layout()
     sizer_1->Add(check_list_box_extended, 1, wxALL|wxEXPAND, 5);
     SetSizer(sizer_1);
     Layout();
-    SetSize(wxSize(800, 600));
     // end wxGlade
 }
 

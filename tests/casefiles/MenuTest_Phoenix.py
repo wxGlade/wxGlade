@@ -18,6 +18,7 @@ class MenuTestFrame(wx.Frame):
         # begin wxGlade: MenuTestFrame.__init__
         kwds["style"] = kwds.get("style", 0) | wx.DEFAULT_FRAME_STYLE
         wx.Frame.__init__(self, *args, **kwds)
+        self.SetSize((800, 417))
         
         # Menu Bar
         self.test_menubar = wx.MenuBar()
@@ -145,7 +146,6 @@ class MenuTestFrame(wx.Frame):
         # begin wxGlade: MenuTestFrame.__do_layout
         self.Layout()
         self.Centre()
-        self.SetSize((800, 417))
         # end wxGlade
 
     def onShowManual(self, event):  # wxGlade: MenuTestFrame.<event_handler>

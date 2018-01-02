@@ -20,6 +20,7 @@ class PyOgg2_MyFrame(wx.Frame):
         # begin wxGlade: PyOgg2_MyFrame.__init__
         kwds["style"] = kwds.get("style", 0) | wx.DEFAULT_FRAME_STYLE
         wx.Frame.__init__(self, *args, **kwds)
+        self.SetSize((400, 300))
         self.grid_1 = wx.grid.Grid(self, wx.ID_ANY, size=(1, 1))
         self.static_line_2 = wx.StaticLine(self, wx.ID_ANY)
         self.button_6 = wx.Button(self, wx.ID_CLOSE, "")
@@ -48,7 +49,6 @@ class PyOgg2_MyFrame(wx.Frame):
         sizer_5.Add(grid_sizer_3, 1, wx.EXPAND, 0)
         self.SetSizer(sizer_5)
         self.Layout()
-        self.SetSize((400, 300))
         # end wxGlade
 
 # end of class PyOgg2_MyFrame
