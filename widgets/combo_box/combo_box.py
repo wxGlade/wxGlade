@@ -3,7 +3,7 @@ wxComboBox objects
 
 @copyright: 2002-2007 Alberto Griggio
 @copyright: 2014-2016 Carsten Grohmann
-@copyright: 2016 Dietmar Schwertberger
+@copyright: 2016-2018 Dietmar Schwertberger
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
@@ -35,17 +35,9 @@ class EditComboBox(ManagedBase, EditStylesMixin):
     def create_widget(self):
         choices = [c[0] for c in self.choices]
         selection = self.selection
-        if compat.IS_PHOENIX:
-            # we prefer ComboCtrl as EVT_LEFT_DOWN does not work otherwise (ComboBox has no GetTextCtrl method)
-            if selection!=-1 and choices:
-                value = choices[selection]
-            else:
-                value = ""
-            self.widget = wx.ComboCtrl(self.parent.widget, self.id, value=value)
-            self.widget.GetTextCtrl().Bind(wx.EVT_LEFT_DOWN, self.on_set_focus)
-        else:
-            self.widget = wx.ComboBox(self.parent.widget, self.id, choices=choices)
-            self.widget.SetSelection(selection)
+        self.widget = wx.ComboBox(self.parent.widget, self.id, choices=choices)
+        self.widget.Bind(wx.EVT_SET_FOCUS, self.on_set_focus)
+        self.widget.SetSelection(selection)
 
     def get_property_handler(self, prop_name):
         if prop_name == 'choices':
@@ -64,8 +56,7 @@ class EditComboBox(ManagedBase, EditStylesMixin):
             if self.widget:
                 # update widget
                 self.widget.Clear()
-                if compat.IS_CLASSIC:
-                    for c in choices: self.widget.Append(c[0])
+                for c in choices: self.widget.Append(c[0])
                 if not self.properties['size'].is_active():
                     self.sizer.set_item_best_size(self, size=self.widget.GetBestSize())
 
@@ -74,12 +65,7 @@ class EditComboBox(ManagedBase, EditStylesMixin):
             if self.selection>max_selection:
                 self.properties['selection'].set(max_selection)
         if self.widget and set_selection and self.widget.GetSelection()!=self.selection:
-            if compat.IS_CLASSIC:
-                self.widget.SetSelection(self.selection)
-            else:
-                selection = self.selection
-                value = self.choices[selection][0] if selection!=-1 else ""
-                self.widget.SetValue(value)
+            self.widget.SetSelection(self.selection)
 
         EditStylesMixin.properties_changed(self, modified)
         ManagedBase.properties_changed(self, modified)
