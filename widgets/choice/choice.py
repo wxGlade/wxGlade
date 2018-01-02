@@ -3,7 +3,7 @@ wxChoice objects
 
 @copyright: 2002-2007 Alberto Griggio
 @copyright: 2016 Carsten Grohmann
-@copyright: 2016 Dietmar Schwertberger
+@copyright: 2016-2018 Dietmar Schwertberger
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
@@ -15,19 +15,6 @@ import new_properties as np
 
 from ChoicesProperty import *
 
-
-if wx.Platform == '__WXMSW__':
-    # On windows GetBestSize considers also the drop down menu, while we don't want it to be included.
-    class wxChoice2(wx.Choice):
-        def GetBestSize(self):
-            w, h = wx.Choice.GetBestSize(self)
-            n = self.GetCount()
-            return w, h//(n+1)
-
-        def GetSize(self):
-            return self.GetClientSize()
-else:
-    wxChoice2 = wx.Choice
 
 
 class EditChoice(ManagedBase):
@@ -44,7 +31,7 @@ class EditChoice(ManagedBase):
 
     def create_widget(self):
         choices = [c[0] for c in self.choices]
-        self.widget = wxChoice2(self.parent.widget, self.id, choices=choices)
+        self.widget = wx.Choice(self.parent.widget, self.id, choices=choices)
         self.widget.SetSelection(self.selection)
         self.widget.Bind(wx.EVT_LEFT_DOWN, self.on_set_focus)
 
