@@ -31,8 +31,6 @@ class PythonFrameCodeGenerator(wcodegen.PythonWidgetCodeWriter):
         ret = ['self.Layout()\n']
         if "centered" in obj.properties and obj.centered:
             ret.append('self.Centre()\n')
-        if 'size' in obj.properties and obj.properties["size"].is_active():
-            ret.append( self.codegen.generate_code_size(obj) )
         return ret
 
 
@@ -93,8 +91,6 @@ class CppFrameCodeGenerator(wcodegen.CppWidgetCodeWriter):
         ret = ['Layout();\n']
         if obj.centered:
             ret.append('Centre();\n')
-        if obj.properties["size"].is_active():
-            ret.append( self.codegen.generate_code_size(obj) )
         return ret
 
 
