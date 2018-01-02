@@ -46,6 +46,7 @@ done:
 Internal:
  * separate items and tree
  * use a structure of EditBase instances as main data structure; use tree only for the representation
+   then remove workaround changeset 2840 (9c2a9ce615f7) again
  * use consistent names? e.g.:
     node: tree nodes
     item: EditBase instances; with parent and children[...] attributes
