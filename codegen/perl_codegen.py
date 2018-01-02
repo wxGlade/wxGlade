@@ -414,6 +414,10 @@ sub %(handler)s {
         # class parent constructor
         write(tab + '$self = $self->SUPER::new( %s );\n' % ", ".join(new_signature))
 
+        # set size here to avoid problems with splitter windows
+        if 'size' in code_obj.properties and code_obj.properties["size"].is_active():
+            write( tab+ self.generate_code_size(code_obj) )
+
         # classes[code_obj.klass].deps now contains a mapping of child to
         # parent for all children we processed...
         object_order = []

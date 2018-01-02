@@ -749,6 +749,10 @@ class CPPCodeWriter(BaseLangCodeWriter, wcodegen.CppMixin):
             swrite('\n%s::%s(%s):\n%s%s\n{\n' % (fmt_klass, fmt_klass, sign_decl2, self.tabs(1), base) )
         swrite(self.tabs(1) + '// begin wxGlade: %s::%s\n' % (fmt_klass, fmt_klass))
 
+        # set size here to avoid problems with splitter windows
+        if 'size' in code_obj.properties and code_obj.properties["size"].is_active():
+            swrite( self.tabs(1) + self.generate_code_size(code_obj) )
+
         tab = self.tabs(1)
         init_lines = self.classes[klass].init
         parents_init = self.classes[klass].parents_init

@@ -338,6 +338,10 @@ from %(top_win_module)s import %(top_win_class)s\n\n"""
         else:
             write(tab + '%s.__init__(self, *args, **kwds)\n' % mycn(code_obj.base))
 
+        # set size here to avoid problems with splitter windows
+        if 'size' in code_obj.properties and code_obj.properties["size"].is_active():
+            write( tab + self.generate_code_size(code_obj) )
+
         # classes[code_obj.klass].deps now contains a mapping of child to parent for all children we processed...
         object_order = []
         for obj in self.classes[code_obj.klass].child_order:
