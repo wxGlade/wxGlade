@@ -49,6 +49,7 @@
 (defmethod init ((obj Frame186))
 "Method creates the objects contained in the class."
         ;;; begin wxGlade: Frame186.__init__
+        (slot-top-window obj).wxWindow_SetSize((300, 300))
         
         ;;; Menu Bar
         (setf (slot-Bug186-Frame-menubar obj) (wxMenuBar_Create 0))
@@ -92,7 +93,6 @@
         (wxSizer_AddSizer (slot-sizer-1 obj) (slot-sizer-2 obj) 1 wxEXPAND 0 nil)
         (wxWindow_SetSizer (slot-top-window obj) (slot-sizer-1 obj))
         (wxFrame_layout (slot-Bug186-Frame self))
-        (slot-top-window obj).wxWindow_SetSize((300, 300))
         ;;; end wxGlade
         )
 

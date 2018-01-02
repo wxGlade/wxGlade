@@ -34,6 +34,7 @@ sub new {
         unless defined $style;
 
     $self = $self->SUPER::new( $parent, $id, $title, $pos, $size, $style, $name );
+    $self->SetSize(Wx::Size->new(400, 300));
     $self->{grid_1} = Wx::Grid->new($self, wxID_ANY);
     $self->{static_line_2} = Wx::StaticLine->new($self, wxID_ANY);
     $self->{button_6} = Wx::Button->new($self, wxID_CLOSE, "");
@@ -70,7 +71,6 @@ sub __do_layout {
     $self->{sizer_5}->Add($self->{grid_sizer_3}, 1, wxEXPAND, 0);
     $self->SetSizer($self->{sizer_5});
     $self->Layout();
-    $self->SetSize(Wx::Size->new(400, 300));
     # end wxGlade
 }
 

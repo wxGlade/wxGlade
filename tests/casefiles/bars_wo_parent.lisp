@@ -106,6 +106,7 @@
 (defmethod init ((obj MyFrame))
 "Method creates the objects contained in the class."
         ;;; begin wxGlade: MyFrame.__init__
+        (slot-top-window obj).wxWindow_SetSize((200, 200))
         (setf (slot-label-1 obj) (wxStaticText_Create (slot-top-window obj) wxID_ANY "placeholder - every design\nneeds a toplevel window" -1 -1 -1 -1 wxALIGN_CENTER))
         ;;; end wxGlade
         )
@@ -122,7 +123,6 @@
         (wxSizer_AddWindow (slot-sizer-1 obj) (slot-label-1 obj) 1 (logior wxALIGN_CENTER wxALL wxEXPAND) 0 nil)
         (wxWindow_SetSizer (slot-top-window obj) (slot-sizer-1 obj))
         (wxFrame_layout (slot-frame-1 self))
-        (slot-top-window obj).wxWindow_SetSize((200, 200))
         ;;; end wxGlade
         )
 

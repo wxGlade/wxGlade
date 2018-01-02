@@ -75,6 +75,7 @@
 "Method creates the objects contained in the class."
         ;;; begin wxGlade: LispOgg2_MyFrame.__init__
         (setf (slot-top-window obj) (wxFrame_create nil wxID_ANY "" -1 -1 -1 -1 wxDEFAULT_FRAME_STYLE))
+        (slot-top-window obj).wxWindow_SetSize((400, 300))
         (setf (slot-grid-1 obj) (wxGrid_Create (slot-top-window obj) wxID_ANY -1 -1 -1 -1 wxWANTS_CHARS))
         (setf (slot-static-line-2 obj) (wxStaticLine_Create (slot-top-window obj) wxID_ANY -1 -1 -1 -1 wxLI_HORIZONTAL))
         (setf (slot-button-6 obj) (wxButton_Create (slot-top-window obj) wxID_CLOSE "" -1 -1 -1 -1 0))
@@ -102,7 +103,6 @@
         (wxSizer_AddSizer (slot-sizer-5 obj) (slot-grid-sizer-3 obj) 1 wxEXPAND 0 nil)
         (wxWindow_SetSizer (slot-top-window obj) (slot-sizer-5 obj))
         (wxFrame_layout (slot-FrameOggCompressionDetails self))
-        (slot-top-window obj).wxWindow_SetSize((400, 300))
         ;;; end wxGlade
         )
 

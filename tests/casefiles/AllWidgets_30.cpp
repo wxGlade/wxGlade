@@ -20,6 +20,7 @@ All_Widgets_Frame::All_Widgets_Frame(wxWindow* parent, wxWindowID id, const wxSt
     wxFrame(parent, id, title, pos, size, wxDEFAULT_FRAME_STYLE)
 {
     // begin wxGlade: All_Widgets_Frame::All_Widgets_Frame
+    SetSize(wxSize(800, 417));
     notebook_1 = new wxNotebook(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxNB_BOTTOM);
     notebook_1_wxTreeCtrl = new wxPanel(notebook_1, wxID_ANY);
     notebook_1_wxToggleButton = new wxPanel(notebook_1, wxID_ANY);
@@ -429,7 +430,6 @@ void All_Widgets_Frame::do_layout()
     sizer_1->AddGrowableCol(0);
     Layout();
     Centre();
-    SetSize(wxSize(800, 417));
     // end wxGlade
 }
 

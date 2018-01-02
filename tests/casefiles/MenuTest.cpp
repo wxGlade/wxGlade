@@ -20,6 +20,7 @@ MenuTestFrame::MenuTestFrame(wxWindow* parent, wxWindowID id, const wxString& ti
     wxFrame(parent, id, title, pos, size, wxDEFAULT_FRAME_STYLE)
 {
     // begin wxGlade: MenuTestFrame::MenuTestFrame
+    SetSize(wxSize(800, 417));
     test_menubar = new wxMenuBar();
     wxMenu *wxglade_tmp_menu;
     wxMenuItem *wxglade_tmp_item;
@@ -139,7 +140,6 @@ void MenuTestFrame::do_layout()
     // begin wxGlade: MenuTestFrame::do_layout
     Layout();
     Centre();
-    SetSize(wxSize(800, 417));
     // end wxGlade
 }
 

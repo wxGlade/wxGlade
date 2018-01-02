@@ -20,6 +20,7 @@ PyOgg2_MyFrame::PyOgg2_MyFrame(wxWindow* parent, wxWindowID id, const wxString& 
     wxFrame(parent, id, title, pos, size, wxDEFAULT_FRAME_STYLE)
 {
     // begin wxGlade: PyOgg2_MyFrame::PyOgg2_MyFrame
+    SetSize(wxSize(600, 500));
     notebook_1 = new wxNotebook(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxNB_BOTTOM);
     notebook_1_pane_5 = new wxPanel(notebook_1, wxID_ANY);
     notebook_1_pane_4 = new wxPanel(notebook_1, wxID_ANY);
@@ -144,7 +145,6 @@ void PyOgg2_MyFrame::do_layout()
     sizer_1->AddGrowableCol(0);
     Layout();
     Centre();
-    SetSize(wxSize(600, 500));
     // end wxGlade
 }
 
@@ -193,6 +193,7 @@ MyFrameGrid::MyFrameGrid(wxWindow* parent, wxWindowID id, const wxString& title,
     wxFrame(parent, id, title, pos, size, wxDEFAULT_FRAME_STYLE)
 {
     // begin wxGlade: MyFrameGrid::MyFrameGrid
+    SetSize(wxSize(492, 300));
     grid = new wxGrid(this, wxID_ANY);
     static_line = new wxStaticLine(this, wxID_ANY);
     button = new wxButton(this, wxID_CLOSE, wxEmptyString);
@@ -228,7 +229,6 @@ void MyFrameGrid::do_layout()
     SetSizer(_szr_frame);
     _szr_frame->SetSizeHints(this);
     Layout();
-    SetSize(wxSize(492, 300));
     // end wxGlade
 }
 

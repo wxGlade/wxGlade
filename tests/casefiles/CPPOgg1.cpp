@@ -20,6 +20,7 @@ CPPOgg1_MyDialog::CPPOgg1_MyDialog(wxWindow* parent, wxWindowID id, const wxStri
     wxDialog(parent, id, title, pos, size, wxDEFAULT_DIALOG_STYLE|wxRESIZE_BORDER)
 {
     // begin wxGlade: CPPOgg1_MyDialog::CPPOgg1_MyDialog
+    SetSize(wxSize(500, 300));
     notebook_1 = new wxNotebook(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, 0);
     notebook_1_pane_4 = new wxPanel(notebook_1, wxID_ANY);
     notebook_1_pane_3 = new wxPanel(notebook_1, wxID_ANY);

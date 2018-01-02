@@ -203,6 +203,7 @@
 "Method creates the objects contained in the class."
         ;;; begin wxGlade: All_Widgets_Frame.__init__
         (setf (slot-top-window obj) (wxFrame_create nil wxID_ANY "" -1 -1 -1 -1 wxDEFAULT_FRAME_STYLE))
+        (slot-top-window obj).wxWindow_SetSize((800, 417))
         
         ;;; Menu Bar
         (setf (slot-All-Widgets-menubar obj) (wxMenuBar_Create 0))
@@ -562,7 +563,6 @@
         (wxFlexGridSizer_AddGrowableCol (slot-sizer-1 obj) 0)
         (wxFrame_layout (slot-All-Widgets self))
         (wxFrame_Centre (slot-top-window obj) wxBOTH)
-        (slot-top-window obj).wxWindow_SetSize((800, 417))
         ;;; end wxGlade
         )
 

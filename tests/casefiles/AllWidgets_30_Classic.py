@@ -22,6 +22,7 @@ class All_Widgets_Frame(wx.Frame):
         # begin wxGlade: All_Widgets_Frame.__init__
         kwds["style"] = kwds.get("style", 0) | wx.DEFAULT_FRAME_STYLE
         wx.Frame.__init__(self, *args, **kwds)
+        self.SetSize((800, 417))
         
         # Menu Bar
         self.All_Widgets_menubar = wx.MenuBar()
@@ -401,7 +402,6 @@ class All_Widgets_Frame(wx.Frame):
         sizer_1.AddGrowableCol(0)
         self.Layout()
         self.Centre()
-        self.SetSize((800, 417))
         # end wxGlade
 
     def onSelectUnix(self, event):  # wxGlade: All_Widgets_Frame.<event_handler>

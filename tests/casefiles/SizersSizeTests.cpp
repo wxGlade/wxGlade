@@ -20,6 +20,7 @@ MyFrame::MyFrame(wxWindow* parent, wxWindowID id, const wxString& title, const w
     wxFrame(parent, id, title, pos, size, wxDEFAULT_FRAME_STYLE)
 {
     // begin wxGlade: MyFrame::MyFrame
+    SetSize(wxSize(600, 400));
     notebook_1 = new wxNotebook(this, wxID_ANY);
     notebook_1_BorderTest = new wxPanel(notebook_1, wxID_ANY);
     notebook_1_GridBagSizer = new wxPanel(notebook_1, wxID_ANY);
@@ -918,7 +919,6 @@ void MyFrame::do_layout()
     sizer_1->Add(notebook_1, 1, wxEXPAND, 0);
     SetSizer(sizer_1);
     Layout();
-    SetSize(wxSize(600, 400));
     // end wxGlade
 }
 

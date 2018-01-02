@@ -32,6 +32,7 @@ sub new {
 
     # begin wxGlade: Frame186::new
     $self = $self->SUPER::new( $parent, $id, $title, $pos, $size, $style, $name );
+    $self->SetSize(Wx::Size->new(300, 300));
     
 
     # Menu Bar
@@ -88,7 +89,6 @@ sub __do_layout {
     $self->{sizer_1}->Add($self->{sizer_2}, 1, wxEXPAND, 0);
     $self->SetSizer($self->{sizer_1});
     $self->Layout();
-    $self->SetSize(Wx::Size->new(300, 300));
     # end wxGlade
 }
 

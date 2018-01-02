@@ -83,6 +83,7 @@
 "Method creates the objects contained in the class."
         ;;; begin wxGlade: PyOgg2_MyFrame.__init__
         (setf (slot-top-window obj) (wxFrame_create nil wxID_ANY "" -1 -1 -1 -1 wxDEFAULT_FRAME_STYLE))
+        (slot-top-window obj).wxWindow_SetSize((600, 500))
         
         ;;; Menu Bar
         (setf (slot-Mp3-To-Ogg-menubar obj) (wxMenuBar_Create 0))
@@ -194,7 +195,6 @@
         (wxFlexGridSizer_AddGrowableCol (slot-sizer-1 obj) 0)
         (wxFrame_layout (slot-Mp3-To-Ogg self))
         (wxFrame_Centre (slot-top-window obj) wxBOTH)
-        (slot-top-window obj).wxWindow_SetSize((600, 500))
         ;;; end wxGlade
         )
 
@@ -258,6 +258,7 @@
 "Method creates the objects contained in the class."
         ;;; begin wxGlade: MyFrameGrid.__init__
         (setf (slot-top-window obj) (wxFrame_create nil wxID_ANY "" -1 -1 -1 -1 wxDEFAULT_FRAME_STYLE))
+        (slot-top-window obj).wxWindow_SetSize((492, 300))
         (setf (slot-grid obj) (wxGrid_Create (slot-top-window obj) wxID_ANY -1 -1 -1 -1 wxWANTS_CHARS))
         (setf (slot-static-line obj) (wxStaticLine_Create (slot-top-window obj) wxID_ANY -1 -1 -1 -1 wxLI_HORIZONTAL))
         (setf (slot-button obj) (wxButton_Create (slot-top-window obj) wxID_CLOSE "" -1 -1 -1 -1 0))
@@ -286,7 +287,6 @@
         (wxWindow_SetSizer (slot-top-window obj) (slot--szr-frame obj))
         (wxSizer_SetSizeHints (slot-slot--szr-frame obj) (slot-top-window obj))
         (wxFrame_layout (slot-FrameGrid self))
-        (slot-top-window obj).wxWindow_SetSize((492, 300))
         ;;; end wxGlade
         )
 

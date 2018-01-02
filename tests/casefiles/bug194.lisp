@@ -46,6 +46,7 @@
 (defmethod init ((obj Frame194))
 "Method creates the objects contained in the class."
         ;;; begin wxGlade: Frame194.__init__
+        (slot-top-window obj).wxWindow_SetSize((800, 600))
         (setf (slot-list-box-single obj) (wxListBox_Create (slot-top-window obj) wxID_ANY -1 -1 -1 -1 1 (vector (_"Listbox wxLB_SINGLE")) wxLB_SINGLE))
         (setf (slot-list-box-multiple obj) (wxListBox_Create (slot-top-window obj) wxID_ANY -1 -1 -1 -1 1 (vector (_"Listbox wxLB_MULTIPLE")) wxLB_MULTIPLE))
         (setf (slot-list-box-extended obj) (wxListBox_Create (slot-top-window obj) wxID_ANY -1 -1 -1 -1 1 (vector (_"Listbox wxLB_EXTENDED")) wxLB_EXTENDED))
@@ -78,7 +79,6 @@
         (wxSizer_AddWindow (slot-sizer-1 obj) (slot-check-list-box-extended obj) 1 (logior wxALL wxEXPAND) 5 nil)
         (wxWindow_SetSizer (slot-frame obj) (slot-sizer-1 obj))
         (wxFrame_layout (slot-Bug194-Frame self))
-        (slot-top-window obj).wxWindow_SetSize((800, 600))
         ;;; end wxGlade
         )
 

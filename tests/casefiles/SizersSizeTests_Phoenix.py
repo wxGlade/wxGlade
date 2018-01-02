@@ -19,6 +19,7 @@ class MyFrame(wx.Frame):
         # begin wxGlade: MyFrame.__init__
         kwds["style"] = kwds.get("style", 0) | wx.DEFAULT_FRAME_STYLE
         wx.Frame.__init__(self, *args, **kwds)
+        self.SetSize((600, 400))
         self.notebook_1 = wx.Notebook(self, wx.ID_ANY)
         self.notebook_1_pane_1 = wx.Panel(self.notebook_1, wx.ID_ANY)
         self._0_N_N = wx.TextCtrl(self.notebook_1_pane_1, wx.ID_ANY, "")
@@ -911,7 +912,6 @@ class MyFrame(wx.Frame):
         sizer_1.Add(self.notebook_1, 1, wx.EXPAND, 0)
         self.SetSizer(sizer_1)
         self.Layout()
-        self.SetSize((600, 400))
         # end wxGlade
 
 # end of class MyFrame
