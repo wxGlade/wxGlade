@@ -451,9 +451,10 @@ def %(handler)s(self, event):  # wxGlade: %(klass)s.<event_handler>
 
         return BaseLangCodeWriter.generate_code_set_properties( self, builder, code_obj, is_new, tab )
 
-    def generate_code_size(self, obj):
+    def generate_code_size(self, obj, size=None):
         objname = self.format_generic_access(obj)
-        size = obj.properties["size"].get_string_value()
+        if size is None:
+            size = obj.properties["size"].get_string_value()
         use_dialog_units = (size[-1] == 'd')
         if not obj.parent:
             method = 'SetSize'

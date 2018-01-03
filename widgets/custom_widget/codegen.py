@@ -57,7 +57,12 @@ class PythonCustomWidgetGenerator(wcodegen.PythonWidgetCodeWriter):
         parent = self.format_widget_access(widget.parent)
         init = []
         append = init.append
-        append('self.%s = wx.Window(%s, -1)\n' % (widget.name, parent))
+        append('self.%s = wx.Window(%s, -1, style=wx.FULL_REPAINT_ON_RESIZE)\n' % (widget.name, parent))
+        if widget.check_prop('size'):
+            append( self.codegen.generate_code_size(widget) )
+        else:
+            # set a minimum size
+            append( self.codegen.generate_code_size(widget, "10, 10") )
         on_paint_code = """\
 def self_%s_on_paint(event):
     widget = self.%s
