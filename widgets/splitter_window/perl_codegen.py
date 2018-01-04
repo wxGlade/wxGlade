@@ -3,6 +3,7 @@ Perl generator functions for wxSplitterWindow objects
 
 @copyright: 2002-2004 D. H. aka crazyinsomniac on sourceforge
 @copyright: 2014-2016 Carsten Grohmann
+@copyright: 2018 Dietmar Schwertberger
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
@@ -69,6 +70,8 @@ class PerlSplitterWindowGenerator(wcodegen.PerlWidgetCodeWriter):
 
         if window.min_pane_size:
             props_buf.append( '$self->{%s}->SetMinimumPaneSize(%s);\n' % (window.name, window.min_pane_size) )
+        if window.properties["sash_gravity"].is_active():
+            props_buf.append( '$self->{%s}->SetSashGravity(%s);\n' % (window.name, window.sash_gravity) )
 
         return init, props_buf, layout_buf
 
