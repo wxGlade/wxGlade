@@ -3,7 +3,7 @@ wxSplitterWindow objects
 
 @copyright: 2002-2007 Alberto Griggio
 @copyright: 2014-2016 Carsten Grohmann
-@copyright: 2016-2017 Dietmar Schwertberger
+@copyright: 2016-2018 Dietmar Schwertberger
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
@@ -113,11 +113,14 @@ class EditSplitterWindow(ManagedBase, EditStylesMixin):
 
     _custom_base_classes = True
 
-    _PROPERTIES = ["Widget", "no_custom_class", "style", "sash_pos", "min_pane_size"]
+    _PROPERTIES = ["Widget", "no_custom_class", "style", "sash_pos", "sash_gravity", "min_pane_size"]
     PROPERTIES = ManagedBase._PROPERTIES + _PROPERTIES + ManagedBase._EXTRA_PROPERTIES
     _PROPERTY_LABELS = {'no_custom_class':"Don't generate code for this class",
                         'sash_pos':"Sash position"}
-    _PROPERTY_HELP = {'no_custom_class':"Don't generate code for this class"}
+    _PROPERTY_HELP = {'no_custom_class':"Don't generate code for this class",
+                      'sash_gravity':"0.0: only the bottom/right window is automatically resized\n"
+                                     "0.5: both windows grow by equal size\n"
+                                     "1.0: only left/top window grows"}
 
     def __init__(self, name, parent, id, win_1, win_2, orientation, sizer, pos):
         ManagedBase.__init__(self, name, 'wxSplitterWindow', parent, id, sizer, pos)
@@ -126,6 +129,7 @@ class EditSplitterWindow(ManagedBase, EditStylesMixin):
         # initialise instance properties
         self.no_custom_class = np.CheckBoxProperty(False, default_value=False)
         self.sash_pos = np.SpinPropertyD(0, default_value="")
+        self.sash_gravity = np.SpinDoublePropertyD(0.5, (0.0,1.0), default_value="", immediate=True)
         self.min_pane_size = np.SpinProperty(20)
 
         # hidden properties: orientation string, window_1, window_2
@@ -150,6 +154,10 @@ class EditSplitterWindow(ManagedBase, EditStylesMixin):
             self.widget.SetSashPosition(sash_pos_p.get())
         else:
             sash_pos_p.set(self.widget.GetSashPosition())
+
+        sash_gravity_p = self.properties['sash_gravity']
+        if sash_gravity_p.is_active():
+            self.widget.SetSashPosition(sash_gravity_p.get())
 
         min_pane_size_p = self.properties['min_pane_size']
         if min_pane_size_p.is_active():
@@ -197,6 +205,8 @@ class EditSplitterWindow(ManagedBase, EditStylesMixin):
     def properties_changed(self, modified):
         if not modified or "sash_pos" in modified and self.widget:
             self.widget.SetSashPosition(self.sash_pos)
+        if not modified or "sash_gravity" in modified and self.widget:
+            self.widget.SetSashGravity(self.sash_gravity)
         if not modified or "min_pane_size" in modified and self.widget:
             self.widget.SetMinimumPaneSize(self.min_pane_size)
 

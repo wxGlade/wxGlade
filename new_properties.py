@@ -335,7 +335,7 @@ class SpinProperty(Property):
     CONTROLNAMES = ["enabler", "spin"]
     def __init__(self, value, val_range=(0,1000), immediate=False, default_value=_DefaultArgument, name=None):
         # val_range: (min_value,max_value)
-        if isinstance(val_range, int):    # we allow val_range to be supplied as integer
+        if isinstance(val_range, (int,float)):    # we allow val_range to be supplied as integer
             if val_range<0 and value>=0:  # typically val_range is len(choices)-1  for empty choices
                 value = val_range
                 val_range = (val_range,val_range)
@@ -372,11 +372,7 @@ class SpinProperty(Property):
         #if self.val_range[1] is None:
             #self.spin = wx.SpinCtrl( panel, -1, min=self.val_range[0] )
         #else:
-        style = wx.TE_PROCESS_ENTER | wx.SP_ARROW_KEYS
-        self.spin = wx.SpinCtrl( panel, -1, style=style, min=self.val_range[0], max=self.val_range[1] )
-        val = self.value
-        if not val: self.spin.SetValue(1)  # needed for GTK to display a '0'
-        self.spin.SetValue(val)
+        self._create_spin_ctrl(panel)
 
         if self.deactivated is not None:
             self.spin.Enable(not self.deactivated)
@@ -395,6 +391,13 @@ class SpinProperty(Property):
             self.spin.Bind(wx.EVT_SPINCTRL, self.on_spin)
             self.spin.Bind(wx.EVT_TEXT_ENTER, self.on_spin)   # we want the enter key (see style above)
         self.editing = True
+
+    def _create_spin_ctrl(self, panel):
+        style = wx.TE_PROCESS_ENTER | wx.SP_ARROW_KEYS
+        self.spin = wx.SpinCtrl( panel, -1, style=style, min=self.val_range[0], max=self.val_range[1] )
+        val = self.value
+        if not val: self.spin.SetValue(1)  # needed for GTK to display a '0'
+        self.spin.SetValue(val)
 
     def on_kill_focus(self, event=None):
         if event is not None: event.Skip()
@@ -434,6 +437,38 @@ class SpinPropertyA(SpinProperty):
     deactivated = False
 class SpinPropertyD(SpinProperty):
     deactivated = True
+
+
+class SpinDoubleProperty(SpinProperty):
+    # float
+    def _set_converter(self, value):
+        return float(value)
+
+    def _create_spin_ctrl(self, panel):
+        style = wx.TE_PROCESS_ENTER | wx.SP_ARROW_KEYS
+        self.spin = wx.SpinCtrlDouble( panel, -1, style=style, min=self.val_range[0], max=self.val_range[1] )
+        self.spin.SetValue(self.value)
+        range_ = abs(self.val_range[1]-self.val_range[0])
+        if range_<=1.0:
+            self.spin.SetIncrement(0.1)
+        else:
+            self.spin.SetIncrement(1.0)
+
+    def set_range(self, min_v, max_v):
+        new_range = (min_v, max_v)
+        if new_range==self.val_range: return
+        self.val_range = new_range
+        try:
+            self.spin.SetRange(min_v, max_v)
+        except AttributeError:
+            pass
+
+class SpinDoublePropertyA(SpinDoubleProperty):
+    deactivated = False
+class SpinDoublePropertyD(SpinDoubleProperty):
+    deactivated = True
+
+
 
 
 def _is_gridbag(sizer):

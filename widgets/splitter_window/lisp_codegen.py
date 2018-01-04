@@ -3,6 +3,7 @@ Lisp generator functions for wxSplitterWindow objects
 
 @copyright: 2002-2004 D. H. aka crazyinsomniac on sourceforge
 @copyright: 2014-2016 Carsten Grohmann
+@copyright: 2018 Dietmar Schwertberger
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
@@ -46,7 +47,6 @@ class LispSplitterWindowGenerator(wcodegen.LispWidgetCodeWriter):
             sash_pos = window.sash_pos
             if sash_pos!="": sash_pos = ', %s' % sash_pos
 
-
             if orientation == 'wxSPLIT_VERTICAL':
                 f_name = 'SplitVertically'
             else:
@@ -64,6 +64,8 @@ class LispSplitterWindowGenerator(wcodegen.LispWidgetCodeWriter):
 
         if window.min_pane_size:
             props_buf.append( 'wxSplitterWindow_SetMinimumPaneSize (slot-%s obj) %s)\n' % (window_name, window.min_pane_size) )
+        if window.properties["sash_gravity"].is_active():
+            props_buf.append( 'wxSplitterWindow_SetSashGravity (slot-%s obj) %s)\n' % (window_name, window.sash_gravity) )
 
         return init, props_buf, layout_buf
 
