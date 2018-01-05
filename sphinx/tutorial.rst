@@ -490,7 +490,7 @@ Move the existing controls to the first notebook page:
        i.e. it has a notebook, but with only a single page:
      - |Calculator_Notebook_DragNDrop_Done_Design|
 
-**Define the other notebook page and the tab labels:**
+**Add second notebook page and set the tab labels:**
 
 .. |Calculator_Notebook| image:: images/Calculator_Notebook.png
     :height: 160
