@@ -2349,6 +2349,7 @@ class GridProperty(Property):
     def reset(self, event):
         "Discard the changes."
         self.editing_values = None
+        self._initialize_indices()
         self.update_display()
         event.Skip()
 
