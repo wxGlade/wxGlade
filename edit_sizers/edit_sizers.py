@@ -1020,9 +1020,12 @@ class SizerBase(Sizer, np.PropertyOwner):
         item = self.widget.GetItem(widget.widget)  # a SizerItem or GBSizerItem instance
         if not item: return
 
+        size_was_reduced = False  # will the new scaled/expanded size be smaller than the previous?
         if modified is None or ("proportion" in modified or "option" in modified) and not self._IS_GRIDBAG:
+            if widget.proportion<item.GetProportion(): size_was_reduced = True
             item.SetProportion(widget.proportion)
         if modified is None or "flag" in modified and widget.flag is not None:
+            if (item.GetFlag() & wx.EXPAND) and not (widget.flag & wx.EXPAND): size_was_reduced = True
             item.SetFlag(widget.flag)
         if modified is None or "border" in modified:
             item.SetBorder(widget.border)
@@ -1041,7 +1044,12 @@ class SizerBase(Sizer, np.PropertyOwner):
                 if w == -1: w = best_size[0]
                 if h == -1: h = best_size[1]
             else:
-                w,h = best_size
+                if size_was_reduced and  widget.__class__.__name__ in ("EditPanel","CustomWidget"):
+                    # if proportion is reduced and no size defined, set to a minimum size of 20,20
+                    # as GetBestSize returns the current size
+                    w,h = 20,20
+                else:
+                    w,h = best_size
             self.widget.SetItemMinSize(widget.widget, w, h)
 
         if force_layout:
