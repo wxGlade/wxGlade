@@ -1,18 +1,29 @@
+=============================================
 wxGlade: A GUI builder for wxPython/wxWidgets
 =============================================
 
+.. image:: docs/html/_images/wxglade_large.png
+   :align: center
+   
 Version: 0.8.0b2
 License: MIT (see LICENSE.txt)
 
 THIS PROGRAM COMES WITH NO WARRANTY
 
+   
+Introduction
+------------
+
+wxGlade is a GUI builder for wxWidgets/wxPython.
+It can create Python, C++, Perl, Lisp and XRC output.
+
 
 Requirements
 ------------
 
- - Python (http://www.python.org) 2.7, 3.4 or later
- - wxPython (http://www.wxpython.org) >= 2.8
-   (wxPython Phoenix, i.e. release >=4.0.0, is supported)
+* Python (http://www.python.org) 2.7, 3.4 or later
+* wxPython (http://www.wxpython.org) >= 2.8
+  (wxPython Phoenix, i.e. release >=4.0.0, is supported)
 
 If you have a choice, you should prefer wxPython Phoenix running on Python 3.x.
 
@@ -30,7 +41,7 @@ create Phoenix code.
 Documentation
 -------------
 
-The documentation is at docs\html\index.html and includes a tutorial.
+The documentation is at docs/html/index.html and includes a tutorial.
 You can view it from the help menu as well.
 
 The target audience includes people who have not yet been using wxPython
@@ -61,11 +72,11 @@ mailing list.
 
 Please include the following information:
 
-- What did you? May you want to include a screenshot.
-- What do you want to happen?
-- What actually happened?
-- Provide a short example to reproduce the issue.
-- Include the internal error log file ``wxglade.log``
+* What did you? May you want to include a screenshot.
+* What do you want to happen?
+* What actually happened?
+* Provide a short example to reproduce the issue.
+* Include the internal error log file ``wxglade.log``
 
 
 
