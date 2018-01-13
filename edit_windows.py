@@ -898,14 +898,19 @@ class TopLevelBase(WindowBase, PreviewMixin):
         "helper for find_widget_by_pos; w is the parent window/widget"
         if w.HasMultiplePages():
             page = w.GetPage(w.GetSelection())
-            x0,y0,width,height = page.GetRect() # c.GetClientRect()
+            x0,y0,width,height = w.GetRect()
             return self._find_widget_by_pos(page, x-x0,y-y0, level+1)
         ret = []
         # check the widget itself
-        x0,y0,width,height = w.GetRect() # c.GetClientRect()
+        if w.IsTopLevel():  # for a Frame, Rect is the screen position
+            x0,y0,width,height = w.GetClientRect()
+        else:
+            x0,y0,width,height = w.GetRect() # c.GetClientRect()
         if x0 <= x <= x0+width and y0 <= y <= y0+height:
             ret.append(w)
-        # and the children
+        # check the children; these are relative to this widget, so adjust x/y
+        x -= x0
+        y -= y0
         for c in w.GetChildren():
             x0,y0,width,height = c.GetRect() # c.GetClientRect()
             if x0 <= x <= x0+width and y0 <= y <= y0+height:
