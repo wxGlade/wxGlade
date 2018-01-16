@@ -205,6 +205,7 @@ class XmlWidgetBuilder(XmlParser):
                 modified.append( "header_extension" )
 
             app.properties_changed(modified)
+            self._delayed_app_properties = {"for_version":attrs['for_version']}
             return
 
         if not self._appl_started:
@@ -233,6 +234,10 @@ class XmlWidgetBuilder(XmlParser):
     def endElement(self, name):
         if name == 'application':
             self._appl_started = False
+            app = common.app_tree.app
+            for key, value in self._delayed_app_properties.items():
+                app.properties[key].set( value )
+            app.properties_changed( sorted(self._delayed_app_properties.keys()) )
             return
         if name == 'object':
             # remove last object from Stack

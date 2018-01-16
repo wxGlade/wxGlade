@@ -275,6 +275,8 @@ class Application(np.PropertyOwner):
         p.add_choice(name)
         if not p.get() and not p.deactivated:
             p.set(name)
+        if p.deactivated:
+            p.set_active()
 
     def remove_top_window(self, name):
         p = self.properties["top_window"]
