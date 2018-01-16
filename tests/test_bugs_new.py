@@ -92,5 +92,10 @@ class TestBugs(WXGladeGUITest):
         """Test bug #194 - LB_EXTENDED for ListBox they never show up in generated code"""
         self.load_and_generate('bug194', test_GUI=False)
 
+    def test_bugs_20180116(self):
+        """Test top_window property and addition of notebook pages with base classes"""
+        self.load_and_generate('Bugs_2018-01-16', test_GUI=False)
+
+
 if __name__ == '__main__':
     unittest.main(exit=False)
