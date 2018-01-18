@@ -788,6 +788,9 @@ class SizerBase(Sizer, np.PropertyOwner):
 
     def properties_changed(self, modified):
         # "class" and "orient" will only display; "class_orient"
+        if modified and "name" in modified:
+            previous_name = self.properties["name"].previous_value
+            common.app_tree.refresh_name(self.node, previous_name)
         if not modified or "class" in modified:
             self.properties["class_orient"].set(self.get_class_orient())
         if not modified or "orient" in modified:
