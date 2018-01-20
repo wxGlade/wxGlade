@@ -459,6 +459,10 @@ class TestGui(WXGladeGUITest):
         self.frame._open_app(generated_filename, use_progress_dialog=False, add_to_history=False)
         self.assertFalse(self._messageBox,'Loading test wxg file caused an error message: %s'%self._messageBox)
 
+    def test_toplevels_no_size(self):
+        "Test frame, panel, dialog without size"
+        self.load_and_generate('toplevels_no_size', test_GUI=True)
+
     def test_unsupported_flags(self):
         "Test code generation with unsupported flags"
         self.load_and_generate('no_supported_flags', test_GUI=False)
