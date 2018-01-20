@@ -264,7 +264,8 @@ class ToolsDialog(wx.Dialog):
                 coltype = self.coltypes.get(colname,None)
                 value = self.items.GetItem(index, i).GetText()
                 if coltype is None:
-                    s.SetBackgroundColour(wx.WHITE) # at this point, the value should be validated already
+                    # at this point, the value should be validated already
+                    s.SetBackgroundColour( compat.wx_SystemSettings_GetColour(wx.SYS_COLOUR_WINDOW) )
                     s.SetValue(value)
                 elif coltype is int:
                     s.SetSelection( int(value) )
@@ -301,7 +302,7 @@ class ToolsDialog(wx.Dialog):
     def on_event_handler_edited(self, event):
         value = self.handler.GetValue()
         if not value or self.handler_re.match(value):
-            self.handler.SetBackgroundColour(wx.WHITE)
+            self.handler.SetBackgroundColour( compat.wx_SystemSettings_GetColour(wx.SYS_COLOUR_WINDOW) )
             valid = True
         else:
             self.handler.SetBackgroundColour(wx.RED)
