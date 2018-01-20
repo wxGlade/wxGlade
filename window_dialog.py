@@ -101,7 +101,7 @@ class WindowDialog(wx.Dialog):
                 compat.SetToolTip(self.klass, "Class name not unique")
                 if self.toplevel: OK = False
             else:
-                self.klass.SetBackgroundColour(wx.WHITE)
+                self.klass.SetBackgroundColour( compat.wx_SystemSettings_GetColour(wx.SYS_COLOUR_WINDOW) )
                 compat.SetToolTip(self.klass, "")
         self.klass.Refresh()
         self.btnOK.Enable(OK)

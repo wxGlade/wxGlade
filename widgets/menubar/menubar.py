@@ -250,7 +250,8 @@ class MenuItemDialog(wx.Dialog):
         if self.menu_items.GetItem(index, 2).GetText() != '---':
             # skip if the selected item is a separator
             for (s, i) in ((self.label, 0), (self.event_handler, 1), (self.name, 2), (self.help_str, 4), (self.id, 5)):
-                s.SetBackgroundColour(wx.WHITE) # at this point, the value should be validated already
+                # at this point, the value should be validated already
+                s.SetBackgroundColour( compat.wx_SystemSettings_GetColour(wx.SYS_COLOUR_WINDOW) )
                 s.SetValue(self.menu_items.GetItem(index, i).GetText())
             self.label.SetValue(self.label.GetValue().lstrip())
             try:
@@ -291,7 +292,7 @@ class MenuItemDialog(wx.Dialog):
     def on_event_handler_edited(self, event):
         value = self.event_handler.GetValue()
         if not value or self.handler_re.match(value):
-            self.event_handler.SetBackgroundColour(wx.WHITE)
+            self.event_handler.SetBackgroundColour( compat.wx_SystemSettings_GetColour(wx.SYS_COLOUR_WINDOW) )
             valid = True
         else:
             self.event_handler.SetBackgroundColour(wx.RED)
@@ -304,7 +305,7 @@ class MenuItemDialog(wx.Dialog):
     def on_name_edited(self, event):
         value = self.name.GetValue()
         if not value or self.name_re.match(value):
-            self.name.SetBackgroundColour(wx.WHITE)
+            self.name.SetBackgroundColour( compat.wx_SystemSettings_GetColour(wx.SYS_COLOUR_WINDOW) )
             valid = True
         else:
             self.name.SetBackgroundColour(wx.RED)

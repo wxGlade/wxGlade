@@ -1270,7 +1270,7 @@ class TextProperty(Property):
         if self.deactivated or self.blocked: return
         match = self.validation_re.match(event.GetString())
         if match:
-            self.text.SetBackgroundColour(wx.WHITE)
+            self.text.SetBackgroundColour( compat.wx_SystemSettings_GetColour(wx.SYS_COLOUR_WINDOW) )
             self.text.Refresh()
         else:
             self.text.SetBackgroundColour(wx.RED)
@@ -1365,7 +1365,7 @@ class NameProperty(TextProperty):
         match = self.validation_re.match(name)
         if match:
             if self._check_name_uniqueness(name):
-                self.text.SetBackgroundColour(wx.WHITE)
+                self.text.SetBackgroundColour( compat.wx_SystemSettings_GetColour(wx.SYS_COLOUR_WINDOW) )
             else:
                 self.text.SetBackgroundColour( wx.Colour(255, 255, 0, 255) )  # YELLOW
         else:
@@ -1444,7 +1444,7 @@ class ClassProperty(TextProperty):
         else:
             msg = self._check_class_uniqueness(klass)
             if not msg:
-                ctrl.SetBackgroundColour(wx.WHITE)
+                ctrl.SetBackgroundColour( compat.wx_SystemSettings_GetColour(wx.SYS_COLOUR_WINDOW) )
                 compat.SetToolTip( ctrl, self._find_tooltip() )
             else:
                 ctrl.SetBackgroundColour( wx.Colour(255, 255, 0, 255) )  # YELLOW
