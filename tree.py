@@ -918,7 +918,7 @@ class WidgetTree(wx.TreeCtrl, Tree):
                 toplevel_widget = node.widget.widget  # above it was not yet created
                 wx.CallAfter(toplevel_widget.SetSize, set_size)
         else:
-            toplevel_widget.Hide()
+            toplevel_widget.GetTopLevelParent().Hide()
 
             # added by rlawson to collapse only the toplevel node, not collapse back to root node
             self.select_item(node)
