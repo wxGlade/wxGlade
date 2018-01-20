@@ -877,8 +877,12 @@ class WidgetTree(wx.TreeCtrl, Tree):
             node.widget.widget.Raise()
             # set the best size for the widget (if no one is given)
             props = node.widget.properties
-            if 'size' in props and not props['size'].is_active() and node.widget.sizer:
-                node.widget.sizer.fit_parent()
+            if 'size' in props and not props['size'].is_active():
+                if node.widget.sizer:
+                    node.widget.sizer.fit_parent()
+                elif getattr(node.widget,"top_sizer",None):
+                    wx.Yield()  # by now, there are probably many EVT_SIZE in the queue
+                    node.widget.top_sizer.fit_parent()
 
         if wx.IsBusy(): wx.EndBusyCursor()
 
