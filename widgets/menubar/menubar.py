@@ -3,7 +3,7 @@ wxMenuBar objects
 
 @copyright: 2002-2007 Alberto Griggio
 @copyright: 2014-2016 Carsten Grohmann
-@copyright: 2016-2017 Dietmar Schwertberger
+@copyright: 2016-2018 Dietmar Schwertberger
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
@@ -839,7 +839,7 @@ def builder(parent, sizer, pos, number=[0]):
         toplevel_widget.properties["menubar"].set(True, notify=True)
         return
     name = dialog.get_next_name("menubar")
-    with parent.frozen():
+    with parent and parent.frozen() or misc.dummy_contextmanager():
         mb = EditMenuBar(name, klass, parent)
         mb.node = Node(mb)
         common.app_tree.add(mb.node)

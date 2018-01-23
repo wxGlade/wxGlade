@@ -533,6 +533,14 @@ def _reverse_dict(src):
         ret[val] = key
     return ret
 
+
+import contextlib
+@contextlib.contextmanager
+def dummy_contextmanager():
+    # used like 'with parent and parent.frozen() or dummy_contextmanager()
+    yield
+
+
 ########################################################################################################################
 # key handlers
 if wx.Platform == '__WXMAC__':

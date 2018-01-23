@@ -3,7 +3,7 @@ wxToolBar objects
 
 @copyright: 2002-2007 Alberto Griggio
 @copyright: 2014-2016 Carsten Grohmann
-@copyright: 2017 Dietmar Schwertberger
+@copyright: 2017-2018 Dietmar Schwertberger
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
@@ -786,7 +786,7 @@ def builder(parent, sizer, pos):
         toplevel_widget.properties["toolbar"].set(True, notify=True)
         return
     name = dialog.get_next_name("toolbar")
-    with parent.frozen():
+    with parent and parent.frozen() or misc.dummy_contextmanager():
         tb = EditToolBar(name, klass, parent)
         tb.node = Node(tb)
         common.app_tree.add(tb.node)
