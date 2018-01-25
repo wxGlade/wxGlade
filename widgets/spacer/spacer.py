@@ -27,8 +27,8 @@ class EditSpacer(ManagedBase):
         self.height = np.SpinProperty(height, immediate=True)
 
     def create_widget(self):
-        size = (self.width, self.height)
-        self.widget = wx.Window(self.parent.widget, self.id, size=size, style=wx.SIMPLE_BORDER)
+        style = wx.SIMPLE_BORDER | wx.FULL_REPAINT_ON_RESIZE
+        self.widget = wx.Window(self.parent.widget, self.id, size=(self.width, self.height), style=style)
         self.widget.GetBestSize = self.widget.GetSize
         self.widget.Bind(wx.EVT_PAINT, self.on_paint)
 
