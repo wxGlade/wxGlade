@@ -913,7 +913,10 @@ class SizerBase(Sizer, np.PropertyOwner):
     def fit_parent(self, *args):
         "Tell the sizer to resize the window to match the sizer's minimal size"
         if self.widget and self.window.widget:
-            self.widget.Fit(self.window.widget)
+            if self.window._is_toplevel:
+                self.widget.Fit(self.window.widget.GetTopLevelParent())
+            else:
+                self.widget.Fit(self.window.widget)
             # self.widget.SetSizeHints(self.window.widget)
             self.window.widget.Layout()
 
