@@ -1192,6 +1192,8 @@ class TextProperty(Property):
         self.text = self.create_text_ctrl(panel, value)
         if self.blocked:
             self.text.Enable(False)
+            if self.deactivated is not None:
+                self.enabler.Disable()
         elif self.deactivated is not None:
             self.text.Enable(not self.deactivated)
             panel.Bind( wx.EVT_LEFT_DOWN, self._on_text_click )
@@ -2704,4 +2706,6 @@ class PropertyOwner(object):
         return ret
     def check_prop(self, name):
         if not name in self.properties: return False
-        return self.properties[name].is_active()
+        prop = self.properties[name]
+        if prop.blocked: return False
+        return prop.is_active()
