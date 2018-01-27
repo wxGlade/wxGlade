@@ -438,6 +438,45 @@ class WindowBase(EditBase):
         self.widget.Refresh()
         self.widget.Bind(wx.EVT_KEY_DOWN, misc.on_key_down_event)
 
+    def _reparent_widget(self, widget):
+        "call Reparent(self.widget) for all direct children, including those in sizers"
+        if isinstance(widget, wx.Window):
+            widget.Reparent(self.widget)
+        elif isinstance(widget, wx.Sizer):
+            # go through all children
+            for si in widget.GetChildren():
+                child = si.GetWindow() or si.GetSizer()
+                if child: self._reparent_widget(child)
+
+    def recreate_widget(self):
+        "currently used by EditTopLevelPanel to re-create after switch between ScrolledWindow and Panel"
+        old_widget = self.widget
+        size = self.widget.GetSize()
+        with self.frozen():
+            self.create_widget()
+            self.widget.SetSize(size)
+            old_widget.Hide()
+
+            if self.sizer:
+                self.sizer.widget.GetItem(old_widget)
+                si.SetWindow(self.widget)
+
+            sizer = old_widget.GetSizer()
+            if sizer:
+                self.widget.SetSizer(sizer)
+                old_widget.SetSizer(None, False)
+                self._reparent_widget(sizer)
+                sizer.Layout()
+            else:
+                for child in self.widget.GetChildren():
+                    # actually, for now a panel may only have a sizer as child, so this code is not executed
+                    self._reparent_widget(child)
+            if old_widget in misc.design_windows:
+                misc.design_windows.remove(old_widget)
+                misc.design_windows.append(self.widget)
+            compat.DestroyLater(old_widget)
+            self.finish_widget_creation()
+
     def on_size(self, event):
         "Update the value of the 'size' property"
         event.Skip()  # skip first before doing something else
