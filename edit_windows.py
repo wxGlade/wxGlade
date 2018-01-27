@@ -727,6 +727,11 @@ class PreviewMixin(object):
         return self.preview_widget is not None
 
     def on_preview(self, refresh=False):
+        if self.preview_widget and config.debugging and wx.KeyboardState().ShiftDown():
+            # print structure for debugging
+            import utilities
+            utilities.StructurePrinter(self.preview_widget)
+            return
         new_label = None
         if self.preview_widget is None:
             self.preview_widget = common.app_tree.app.preview(self, self._preview_position)
@@ -838,6 +843,10 @@ class TopLevelBase(WindowBase, PreviewMixin):
 
     def on_design_button(self):
         "Button 'Show Design Window' was pressed"
+        if self.widget and config.debugging and wx.KeyboardState().ShiftDown():
+            import utilities
+            utilities.StructurePrinter(self.widget)
+            return
         if not self.widget or not self.is_visible():
             common.app_tree.show_toplevel(None, self)
         else:
