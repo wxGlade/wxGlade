@@ -41,14 +41,14 @@ class LispPanelGenerator(wcodegen.LispWidgetCodeWriter):
         init.append( '(setf (slot-%s obj) (wxPanel_Create %s %s -1 -1 -1 -1 %s))\n' % (panel_name, parent, id, style) )
 
         props_buf = self.codegen.generate_common_properties(panel)
-        if scrollable:
+        if scrollable and panel.check_prop("scroll_rate"):
             sr = panel.scroll_rate.replace(',', ' ')
             props_buf.append( '(wxScrolledWindow:wxScrolledWindow_SetScrollRate (slot-%s obj) %s)\n'% (panel_name, sr) )
         return init, props_buf, []
 
     def get_properties_code(self, obj):
         props_buf = self.codegen.generate_common_properties(obj)
-        if obj.scrollable:
+        if obj.scrollable and obj.check_prop("scroll_rate"):
             sr = obj.scroll_rate.replace(',', ' ')
             props_buf.append('(wxScrolledWindow:wxScrolledWindow_SetScrollRate (slot-%s obj))\n' % sr)
         return props_buf
