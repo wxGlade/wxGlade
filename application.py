@@ -481,12 +481,16 @@ class Application(np.PropertyOwner):
                 if issubclass(preview_class, wx.MenuBar):
                     menubar = preview_class()
                     frame.SetMenuBar(menubar)
+                    panel = wx.Panel(frame)
                 elif issubclass(preview_class, wx.ToolBar):
                     toolbar = preview_class(frame, -1)
                     frame.SetToolBar(toolbar)
+                    panel = wx.Panel(frame)
+                    frame.SetMinSize( toolbar.GetBestSize() )
+                    frame.Fit()
                 else:
                     panel = preview_class(frame, -1)
-                frame.Fit()
+                    frame.Fit()
             else:
                 frame = preview_class(None, -1, '')
 
