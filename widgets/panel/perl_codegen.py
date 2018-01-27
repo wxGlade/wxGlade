@@ -57,13 +57,13 @@ class PerlPanelGenerator(wcodegen.PerlWidgetCodeWriter):
         init.append( '$self->{%s} = %s->new(%s, %s%s);\n' % (panel.name, klass, parent, id, extra) )
 
         props_buf = self.codegen.generate_common_properties(panel)
-        if scrollable:
+        if scrollable and panel.check_prop("scroll_rate"):
             props_buf.append( '$self->{%s}->SetScrollRate(%s);\n' % (panel.name, panel.scroll_rate) )
         return init, props_buf, []
 
     def get_properties_code(self, obj):
         props_buf = self.codegen.generate_common_properties(obj)
-        if obj.scrollable:
+        if obj.scrollable and obj.check_prop("scroll_rate"):
             props_buf.append('$self->SetScrollRate(%s);\n' % obj.scroll_rate)
         return props_buf
 
