@@ -10,7 +10,7 @@ wxPanel objects
 import logging
 import wx
 import clipboard
-import common, config, misc
+import common, compat, config, misc
 from tree import Node
 import new_properties as np
 from edit_windows import ManagedBase, TopLevelBase, EditStylesMixin
@@ -38,15 +38,14 @@ class PanelBase(EditStylesMixin):
         # initialise properties
         self.no_custom_class = np.CheckBoxProperty(False, default_value=False)
         self.scrollable      = np.CheckBoxProperty(False, default_value=False)
-        self.scroll_rate     = np.IntPairPropertyD( "10, 10" )
+        self.scroll_rate = prop = np.IntPairPropertyD( "10, 10" )
+        prop.set_blocked(True)
 
         if style: self.properties["style"].set(style)
 
     def finish_widget_creation(self):
         super(PanelBase, self).finish_widget_creation(sel_marker_parent=self.widget)
-        if not self.scrollable:
-            self.widget.SetScrollRate(0, 0)
-        else:
+        if self.scrollable:
             self.widget.SetScrollRate( *self.properties["scroll_rate"].get_tuple() )
         # this must be done here since ManagedBase.finish_widget_creation normally sets EVT_LEFT_DOWN to update_view
         if not self.widget.Disconnect(-1, -1, wx.wxEVT_LEFT_DOWN):
@@ -102,7 +101,7 @@ class PanelBase(EditStylesMixin):
         if self.top_sizer and self.widget.GetSizer():
             self.top_sizer.fit_parent()
             return self.widget.GetSize()
-        return wx.ScrolledWindow.GetBestSize(self.widget)
+        return self.widget.GetBestSize()
 
     def properties_changed(self, modified):
         if not modified or "scrollable" in modified:
@@ -110,17 +109,18 @@ class PanelBase(EditStylesMixin):
                 if self.klass == 'wxPanel':
                     self.properties["class"].set('wxScrolledWindow')
                 self.properties['scroll_rate'].toggle_active(True)
+                self.properties['scroll_rate'].set_blocked(False)
             else:
                 if self.klass == 'wxScrolledWindow':
                     self.properties["class"].set('wxPanel')
                 self.properties['scroll_rate'].toggle_active(False)
+                self.properties['scroll_rate'].set_blocked(True)
 
-        if not modified or "scroll_rate" in modified or "scrollable" in modified:
-            if self.widget:
-                if self.scrollable:
-                    self.widget.SetScrollRate( *self.properties["scroll_rate"].get_tuple() )
-                else:
-                    self.widget.SetScrollRate(0, 0)
+        if self.widget and modified:
+            if "scrollable" in modified and self.properties["scrollable"].previous_value!=self.scrollable:
+                self.recreate_widget()
+            elif "scroll_rate" in modified and self.scrollable and isinstance(self.widget, wx.ScrolledWindow):
+                self.widget.SetScrollRate( *self.properties["scroll_rate"].get_tuple() )
         EditStylesMixin.properties_changed(self, modified)
 
     def __getstate__(self):
@@ -147,16 +147,17 @@ class EditPanel(PanelBase, ManagedBase):
 
     def create_widget(self):
         # to be done: use ScrolledWindow only if scrolling is required
-        self.widget = wx.ScrolledWindow(self.parent.widget, self.id, style=0)
-        #self.widget = wx.Panel(self.parent.widget, self.id, style=0)
+        if self.scrollable:
+            self.widget = wx.ScrolledWindow(self.parent.widget, self.id, style=0)
+        else:
+            self.widget = wx.Panel(self.parent.widget, self.id, style=0)
         self.widget.Bind(wx.EVT_ENTER_WINDOW, self.on_enter)
         self.widget.GetBestSize = self.get_widget_best_size
         if self.sizer.is_virtual():
             def GetBestSize():
                 if self.widget and self.widget.GetSizer():
                     return self.widget.GetSizer().GetMinSize()
-                #return wx.Panel.GetBestSize(self.widget)
-                return wx.ScrolledWindow.GetBestSize(self.widget)
+                return self.widget.GetBestSize()
             self.widget.GetBestSize = GetBestSize
 
     def set_sizer(self, sizer):
@@ -250,21 +251,27 @@ class EditTopLevelPanel(PanelBase, TopLevelBase):
         self.skip_on_size = False
 
     def create_widget(self):
-        win = wx.Frame( common.palette, -1, misc.design_title(self.name), size=(400, 300) )
-        import os, compat
-        icon = compat.wx_EmptyIcon()
-        xpm = os.path.join(config.icons_path, 'panel.xpm')
-        icon.CopyFromBitmap(misc.get_xpm_bitmap(xpm))
-        win.SetIcon(icon)
-        #self.widget = wx.Panel(win, self.id, style=0)
-        self.widget = wx.ScrolledWindow(win, self.id, style=0)
+        if self.widget:
+            # re-creating -> use old frame
+            win = self.widget.GetTopLevelParent()
+        else:
+            win = wx.Frame( common.palette, -1, misc.design_title(self.name), size=(400, 300) )
+            import os, compat
+            icon = compat.wx_EmptyIcon()
+            xpm = os.path.join(config.icons_path, 'panel.xpm')
+            icon.CopyFromBitmap(misc.get_xpm_bitmap(xpm))
+            win.SetIcon(icon)
+            win.Bind(wx.EVT_CLOSE, self.hide_widget)  # CLOSE event of the frame, not the panel
+            if wx.Platform == '__WXMSW__':
+                win.CentreOnScreen()
+
+        if self.scrollable:
+            self.widget = wx.ScrolledWindow(win, self.id, style=0)
+        else:
+            self.widget = wx.Panel(win, self.id, style=0)
         self.widget.Bind(wx.EVT_ENTER_WINDOW, self.on_enter)
         self.widget.GetBestSize = self.get_widget_best_size
         #self.widget.SetSize = win.SetSize
-        win.Bind(wx.EVT_CLOSE, self.hide_widget)  # CLOSE event of the frame, not the panel
-        if wx.Platform == '__WXMSW__':
-            win.CentreOnScreen()
-
     def create(self):
         # XXX refactor this
         size_p = self.properties['size']
