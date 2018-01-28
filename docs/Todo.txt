@@ -64,6 +64,9 @@ done:
 Use either gettext or wx.GetTranslation for _
 
 
+Widgets:
+ * Panel: use ScrolledWindow only when "Scrolled" is checked
+
 Additional Widgets:
  * lib.buttons (feature request #45 Add support for generic buttons) (-> rev. 0.9)
  * matplotlib (example is supplied already)
