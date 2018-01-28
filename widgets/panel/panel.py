@@ -101,7 +101,7 @@ class PanelBase(EditStylesMixin):
         if self.top_sizer and self.widget.GetSizer():
             self.top_sizer.fit_parent()
             return self.widget.GetSize()
-        return self.widget.GetBestSize()
+        return self.widget.__class__.GetBestSize(self.widget)
 
     def properties_changed(self, modified):
         if not modified or "scrollable" in modified:
@@ -157,7 +157,7 @@ class EditPanel(PanelBase, ManagedBase):
             def GetBestSize():
                 if self.widget and self.widget.GetSizer():
                     return self.widget.GetSizer().GetMinSize()
-                return self.widget.GetBestSize()
+                return self.widget.__class__.GetBestSize(self)
             self.widget.GetBestSize = GetBestSize
 
     def set_sizer(self, sizer):
