@@ -4,7 +4,7 @@ widgets and initializes all the stuff (tree, frame_property, etc.)
 
 @copyright: 2002-2007 Alberto Griggio
 @copyright: 2011-2016 Carsten Grohmann
-@copyright: 2016-2017 Dietmar Schwertberger
+@copyright: 2016-2018 Dietmar Schwertberger
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
@@ -861,7 +861,7 @@ class wxGladeFrame(wx.Frame):
         if self.ask_save():
             # first, let's see if we have to save the geometry...
             prefs = config.preferences
-            if prefs.remember_geometry:
+            if prefs.remember_geometry and self.tree_frame:  # on system shutdown, tree_frame might be None already
                 prefs.set_geometry('main', self._get_geometry(self))
                 prefs.set_geometry('tree', self._get_geometry(self.tree_frame))
                 prefs.set_geometry('properties', self._get_geometry(self.property_frame))

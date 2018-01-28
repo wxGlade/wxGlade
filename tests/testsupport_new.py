@@ -1,7 +1,7 @@
 
 """
 @copyright: 2012-2016 Carsten Grohmann (as file __init__.py)
-@copyright: 2016 Dietmar Schwertberger
+@copyright: 2016-2018 Dietmar Schwertberger
 
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
