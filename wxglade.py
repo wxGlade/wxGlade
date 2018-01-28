@@ -4,7 +4,7 @@ Entry point of wxGlade
 
 @copyright: 2002-2007 Alberto Griggio
 @copyright: 2013-2016 Carsten Grohmann
-@copyright: 2016-2017 Dietmar Schwertberger
+@copyright: 2016-2018 Dietmar Schwertberger
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
