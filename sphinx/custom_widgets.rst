@@ -11,7 +11,7 @@ Custom Widget
 
 Very often you may want to use a widget that is not supported by wxGlade.
 
-For this, just insert a Custom Widget |custom| as placeholder.
+For this, just insert a CustomWidget |custom| as placeholder.
 |br|
 You will be prompted for a class name. In the *Design* and *Preview* windows, just a placeholder will be shown.
 
@@ -96,7 +96,7 @@ This code creates a matplotlib canvas and plots a sine function::
    self.matplotlib_canvas.draw()
 
 
-This example shows how to use the wxGlade Custom Widget |custom| to include a matplotlib canvas in your application:
+This example shows how to use the wxGlade CustomWidget |custom| to include a matplotlib canvas in your application:
 
 .. |matplotlib_class| image:: images/matplotlib_class.png
    :width: 460

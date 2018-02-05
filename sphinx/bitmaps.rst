@@ -13,10 +13,10 @@ Bitmaps
 
 For some widgets you need to specify one or more bitmaps. There are several options how to do this:
  * from a bitmap file
- * from a named variable: statement "var:"
- * empty bitmap: statement "empty:"
- * from wxArtProvider: statement "art:"
- * from literal code: statement "code:"
+ * from a named variable: statement ``var:``
+ * empty bitmap: statement ``empty:``
+ * from wxArtProvider: statement ``art:``
+ * from literal code: statement ``code:``
 
 
 From Bitmap File / Path
@@ -169,9 +169,9 @@ If at runtime the image files are at a non-standard location, you need to custom
 that the files will be found.
 
 
-For example, if you use PyInstaller to create a single-file executable, then the bitmaps need to be loaded from a temporary directory `sys._MEIPASS`.
+For example, if you use PyInstaller to create a single-file executable, then the bitmaps need to be loaded from a temporary directory ``sys._MEIPASS``.
 
-This example code would replace wx.Bitmap with an implementation that is aware of this remapping::
+This example code would replace ``wx.Bitmap`` with an implementation that is aware of this remapping::
 
     import wx
     import sys, os

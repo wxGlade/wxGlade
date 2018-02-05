@@ -43,9 +43,10 @@ Tutorial Project: Calculator
 Part 1: Create Calculator window and the first widget
 *********************************************************************
 
-In this section we will go through the steps to create the simple calculator window from above. In later sections we will modify it to highlight certain features like other sizer types, menus and status bars.
+In this section we will go through the steps to create the simple calculator window from the previous page. In later sections we will modify it to highlight certain features like other sizer types, menus and status bars.
 
-**For the basic structure:**
+Create the basic structure:
+===========================
 
 .. |NewFrame_CalculatorFrame| image:: images/NewFrame_CalculatorFrame.png
     :width: 30
@@ -61,27 +62,30 @@ In this section we will go through the steps to create the simple calculator win
 2. **Add the frame**:
 
    * click on the Frame icon |frame| on the "Windows" line of the *Palette* window
-   * for the class Name, enter "CalculatorFrame": |NewFrame_CalculatorFrame|
+   * as class name, enter ``CalculatorFrame``: |NewFrame_CalculatorFrame|
 
 3. A frame with a sizer |sizer| and one slot is now visible in the *Tree* and *Design* window
    (there the slot is visualized by a hatched area)
 4. It would be possible to place controls directly on the frame, but usually a **panel** is added first, as a frame is really just a frame around the other things. |br|
    To add the panel:
 
-   * in the *Palette* window (again on the "Windows" line) click on the panel icon |panel| to start the placement
+   * in the *Palette* window (again on the "Windows" line) click on the Panel icon |panel| to start the placement
    * in the *Tree* or *Design* window, click in the slot to place the panel there
 
-5. On the panel we need a **vertical sizer** with six slots:
+5. On the panel we need a **vertical box sizer** with six slots:
 
-   * in the *Palette* window on the "Sizer" line click on the sizer icon |sizer| to start the placement
+   * in the *Palette* window on the "Sizer" line click on the BoxSizer icon |sizer| to start the placement
    * in the Tree or Design window, click on the panel to place the sizer there
    * a dialog will open
-   * set "Orientation"  to "Vertical" and the number of slots to "6"  |NewSizer_CalculatorVertical|
+   * set "Orientation"  to ``Vertical`` and the number of slots to ``6``  |NewSizer_CalculatorVertical|
 
-6. Now add a **horizontal box sizer** to the first slot: do as before, but keep "Orientation" as "Horizontal"
-   and set the number of slots to "2"
-7. Place a **static text** |static_text| as label (found on the "Static" line of *Palette*) in the top left slot and a **text control** |text_ctrl| (found on the "Inputs" line) in the right
+6. Now add a **horizontal box sizer** to the first slot: do as before, but keep "Orientation" as ``Horizontal``
+   and set the number of slots to ``2``
+7. Place a **StaticText** |static_text| as label (found on the "Static" line of *Palette*) in the top left slot and a **TextControl** |text_ctrl| (found on the "Inputs" line) in the right
 
+
+Adjust properties:
+==================
 
 **Your design should now look like this:**
 
@@ -101,12 +105,12 @@ Also, layout and alignment need to be changed, but we'll change this later on.
 2. If not yet visible, open the *Properties* window.
 3. In the *Properties* window:
 
-   * Edit the label to display "Value 1:" by entering this on the editor tab "Widget". |br|
+   * Edit the label to display ``Value 1:`` by entering this on the editor's notebook tab "Widget". |br|
      (You could also edit the label directly in the *Tree* window by clicking into the label and/or pressing :kbd:`F2`.)
 
-4. Select the frame in the *Tree* window and go to *Properties* -> Widget -> Title and change it from ``frame`` to ``Calculator``.
+4. Select the frame in the *Tree* window and go to *Properties -> Widget -> Title* and change it from ``frame`` to ``Calculator``.
 5. You may want to define a default size for the frame: |br|
-   Go to *Properties* -> Common -> Size and set it to ``400,300``. |br|
+   Go to *Properties -> Common -> Size* and set it to ``400,300``. |br|
    Without this, the frame will be created with the minimum possible size to fit all controls.
 
 
@@ -150,15 +154,15 @@ There are several methods to copy:
  * select the fith, empty slot
  * then hit :kbd:`Ctrl-V` (or use the context menu)
 
-You may of course copy in the Design window and paste in the Tree or vice versa.
+You may of course copy in the *Design* window and paste in the *Tree* or vice versa.
  
 * **Drag & Drop in Design Window:**
 
- * drag the sizer handle to the empty slot while holding the :kbd:`Ctrl` key
+ * hold the :kbd:`Ctrl` key and drag the sizer handle to the empty slot
 
 * **Drag & Drop in Tree Window:**
 
- * drag the sizer node / icon in the *Tree* window to the empty slot, holding the :kbd:`Ctrl` key
+ * hold the :kbd:`Ctrl` key and drag the sizer node / icon in the *Tree* window to the empty slot
 
 
 If you don't hold the :kbd:`Ctrl` key, the item will not be copied, but moved.
@@ -170,18 +174,18 @@ You may drag items between different windows, e.g. from *Design* to *Tree* or to
 Further Editing
 ===============
 
-The wxTextCtrl adjacent to the "Result" wxStaticText should display multiple lines of text and should not be editable.
+The TextCtrl adjacent to the "Result" StaticText should display multiple lines of text and should not be editable.
 To modify accordingly, just follow these steps:
 
  1. Select the text control ``txt_ctrl_3`` |br| (depending on the exact steps of editing, the name might be slightly different)
- 2. Go to *Properties* -> Widget
- 3. Enable Style -> ``wxTE_MULTILINE`` and ``wxTE_READONLY``
- 4. Go to *Properties* -> Common
- 5. Click the "..." button right to ``Background`` and select grey color or |br|
+ 2. Go to *Properties -> Widget*
+ 3. In the section "Style", enable ``wxTE_MULTILINE`` and ``wxTE_READONLY``
+ 4. Go to *Properties -> Common*
+ 5. Click the "..." button right to ``Background`` and select grey colour or |br|
     just enter ``#d4d0c8`` into the text control.
 
 The last step is to have a grey background.
-For single line readonly text controls, this is done automatically by wx, but not with multiple lines.
+For single line read-only text controls, this is done automatically by wx, but not with multiple lines.
 
 
 **In the next steps fill the remaining slots of the main sizer:**
@@ -189,7 +193,7 @@ For single line readonly text controls, this is done automatically by wx, but no
 * insert a two-slot horizontal sizer with a label and a radio box into SLOT 2 |radio_box|
 * place a horizontal line into SLOT 4 |static_line|
 * insert a two-slot horizontal sizer with two buttons into SLOT 6 |button|
-* For the first button, select the checkbox *Properties* -> Widget -> Default. |br|
+* For the first button, select the checkbox *Properties -> Widget -> Default*. |br|
   This will make this button the default one, i.e. when the user hits Enter it will have the same effect as
   pressing this default button.
 
@@ -211,9 +215,9 @@ For single line readonly text controls, this is done automatically by wx, but no
    :header-rows: 0
 
    * -
-       * Select the label in the Tree or Design window.
+       * Select the label in the *Tree* or *Design* window.
        * Hit "Add" to add choices, modify them and then hit the "Apply" button.
-       * See the bottom part of the image:
+       * See the bottom part of the screenshot:
 
      - |Calculator_Radio|
 
@@ -276,16 +280,16 @@ So all elements are there, but the layout is not yet what we want to have:
 1. We want the rows with the values, operators and buttons **not to grow vertically**:
 
    * select one of the horizontal sizers (e.g. ``sizer_3`` around ``Value 1``)
-   * set *Properties* -> Layout -> Proportion to ``0``
+   * set *Properties -> Layout -> Proportion* to ``0``
    * select the next of the sizers (e.g. around ``Operator``)
-   * either set *Properties* -> Layout -> Proportion to ``0``
+   * either set *Properties -> Layout -> Proportion* to ``0``
      or just hit :kbd:`Ctrl-Y` to apply the last change to the selected sizer
    * do the same for the remaining sizers (e.g. around ``Value 2`` and the buttons)
 
 2. We want the text controls to **grow horizontally** to fill the available space:
 
    * select one of the text controls (e.g. text_value1)
-   * set *Properties* -> Layout -> Proportion to ``1``
+   * set *Properties -> Layout -> Proportion* to ``1``
    * do the same for the other controls, either by modifying the Proportion properties
      or by hitting :kbd:`Ctrl-Y` to apply the last change to the selected control
 
@@ -293,32 +297,32 @@ So all elements are there, but the layout is not yet what we want to have:
    **align vertically** with their text controls:
 
    * select label
-   * set the checkbox *Properties* -> Layout -> Alignment -> ``wxALIGN_CENTER_VERTICAL``
+   * set the checkbox *Properties -> Layout -> Alignment ->* ``wxALIGN_CENTER_VERTICAL``
    * do the same for the other two labels
 
 4. We want the Result text control to **fill the available vertical space**:
 
    * select text control
-   * set the checkbox *Properties* -> Layout -> Alignment -> ``wxEXPAND`` 
+   * set the checkbox *Properties -> Layout -> Alignment ->* ``wxEXPAND`` 
 
 5. We want the buttons at the bottom to be **centered**; so the layout of the sizer around them needs to be set:
 
-   * go to *Properties* -> Layout
-   * de-select the checkbox Alignment ->``wxEXPAND``
-   * select the checkbox Alignment -> ``wxALIGN_CENTER_HORIZONTAL``
+   * go to *Properties -> Layout -> Alignment*
+   * de-select the checkbox ``wxEXPAND``
+   * select the checkbox ``wxALIGN_CENTER_HORIZONTAL``
 
 6. We want a small **border** above and beyond the horizontal line and around each of the buttons:
 
    * select the horizontal line
-   * set *Properties* -> Layout -> Border to ``5``
-   * uncheck *Properties* -> Layout -> Border ``wxLEFT`` and ``wxRIGHT``
+   * set *Properties -> Layout -> Border* to ``5``
+   * uncheck *Properties -> Layout -> Border ->* ``wxLEFT`` and ``wxRIGHT``
    * select the first button
-   * set *Properties* -> Layout -> Border to ``5``
-   * do the same with the second button
+   * set *Properties -> Layout -> Border* to ``5``
+   * do the same with the second button (e.g. by selecting it and then hitting :kbd:`Ctrl-Y`)
 
 
 At this point, it's time for a **preview**: |br|
-Select "Preview" from the context menu or the main menu or from the Properties window when the frame is selected.
+Select "Preview" from the context menu or the main menu or from the *Properties* window when the frame is selected.
 Alternatively, press :kbd:`F5`
 
 +----------------------------------------------+
@@ -356,9 +360,9 @@ Excursion: Layout properties: Proportion and Alignment->wxEXPAND:
     :alt: Text Ctrl: EXPAND -> the control expands vertically, as it is within a horizontal sizer
 
 
-The "Proportion" of 1 makes the element grow with a proportional factor of 1 when the horizontal sizer is growing. Please note that this growth happens only in the "main" direction of the sizer; the sizer is horizontal, so this change makes the text control grow in width.
+The "Proportion" of ``1`` makes the element grow with a proportional factor of 1 when the horizontal sizer is growing. Please note that this growth happens only in the "main" direction of the sizer; the sizer is horizontal, so this change makes the text control grow in width.
 |br|
-For a growth in the other direction, ``wxEXPAND`` in the "Alignment" box would need to be activated.
+For a growth in the other direction, ``wxEXPAND`` in the "Alignment" box would need to be checked.
 
 |br|
 You may try this to see the difference:
@@ -369,7 +373,7 @@ You may try this to see the difference:
    :align: center
 
    * - Horizontal Sizer: Proportion 0 |br|
-       Text Ctrl: Proportion 0
+       TextCtrl: Proportion 0
        |br| |br|
        The first row occupies the minimum height as |br|
        defined by the label and the text control.
@@ -378,19 +382,19 @@ You may try this to see the difference:
      - |Calculator06_P0P0|
 
    * - Horizontal Sizer: **Proportion 1** |br|
-       Text Ctrl: Proportion 0 |br| |br|
+       TextCtrl: Proportion 0 |br| |br|
        The first row consists of the horizontal sizer. |br|
        It grew vertically, as it is placed in a vertical sizer.
      - |Calculator06_P1P0|
 
    * - Horizontal Sizer: Proportion 1 |br|
-       Text Ctrl: **Proportion 1** |br| |br|
+       TextCtrl: **Proportion 1** |br| |br|
        The text control grew in width, as it is in a horizontal sizer.
        |br| |br|
      - |Calculator06_P1P1|
 
    * - Horizontal Sizer: Proportion 1 |br|
-       Text Ctrl: Proportion 1, **EXPAND** |br| |br|
+       TextCtrl: Proportion 1, **EXPAND** |br| |br|
        The text control expanded vertically, i.e. perpendicular |br|
        to the main direction of the surrounding horizontal sizer.
        |br| |br|
@@ -451,11 +455,11 @@ A notebook can only be added to an empty sizer slot. In our case, we want to kee
 
 **Add a notebook:**
 
-* click on the Notebook icon |notebook| in the section "Containers" to start placing a notebook
-* click on the hatched area in the Design window or on the sizer slot |sizer_slot| in the Tree window
-* in the dialog, select wx.NB_TOP to place the notebook tabs at the top
+* click on the Notebook icon |notebook| in the section "Containers" of the *Palette* window to start placing a notebook
+* click on the hatched area in the *Design* window or on the sizer slot |sizer_slot| in the *Tree* window
+* in the dialog, select ``wxNB_TOP`` to place the notebook tabs at the top
 
-The newly created notebook will have one page already, which consists of just a panel. It will have a default name like "notebook_1_pane_1".
+The newly created notebook will have one page already, which consists of just a panel. It will have a default name like ``notebook_1_pane_1``.
 
 **Fill the first page:**
 
@@ -516,8 +520,8 @@ You should know how to do this by now:
 
 * add a sizer to the notebook pane (with a single slot)
 * add a text control to the sizer slot
-* set the layout: Proportion 1 and ``wxEXPAND`` such that the text control will fill the whole page
-* set the widget style to wxTE_MULTILINE and wxTE_READONLY
+* set the layout: a "Proportion" of ``1`` and ``wxEXPAND`` such that the text control will fill the whole page
+* set the widget style to ``wxTE_MULTILINE`` and ``wxTE_READONLY``
 * set the widget background color to ``#d4d0c8``
 
 This file can be found in the folder ``wxglade/examples/Calculator``:
@@ -531,7 +535,7 @@ Part 4: Use of Spacers
 
 Sometimes you need to keep some space in a sizer, either with a fixed size or growable, e.g. to have a gap between two controls or to align two controls to the left and the right edge of a window or to align a control to the center.
 
-To add a spacer, click the spacer icon |spacer| and place it in a sizer slot.
+To add a spacer, click the Spacer icon |spacer| and place it in a sizer slot.
 
 In our example, we may place a spacer to the left and right of the operator radio box to center it:
 
@@ -567,8 +571,8 @@ In our example, we may place a spacer to the left and right of the operator radi
      - |Calculator_Spacers_Design0|
 
    * - 
-       * insert spacers into these slots |br| (e.g. with width 20 and height 0) 
-       * set their Layout properties to "Proportion: 1" |br| 
+       * insert spacers into these slots |br| (e.g. with "Width" ``20`` and "Height" ``0``) 
+       * set "Proportion" to ``1`` |br| 
          to make them grow 
      - |Calculator_Spacers_Design|
 
@@ -578,9 +582,9 @@ In our example, we may place a spacer to the left and right of the operator radi
        the settings to make the spacers grow:
      - |Calculator_Spacers_Properties|
    * - As the spacers have a height of 0, you will not see them in the design window. |br| |br|
-       If you don't like this, you may actually set the Height property to a different value and
-       maybe even set "EXPAND". For the actual window this will not make a difference,
-       as the spacers are invisible, but the spacers will be visible in the design window:
+       If you don't like this, you may actually set the "Height" property to a different value and
+       maybe even set ``EXPAND``. For the actual window this will not make a difference,
+       as the spacers are invisible, but the spacers will be visible in the *Design* window:
      - |Calculator_Spacers2|
 
 
@@ -637,15 +641,15 @@ The result will look like this:
 **To get there:**
 
 * Add a slot to the vertical sizer
-* Add a grid sizer to this slot: |grid_sizer|
-* In the grid sizer dialog, select ``FlexGrid``, 4 rows and 2 cols: |br|
+* Add a GridSizer |grid_sizer| to this slot
+* In the grid sizer dialog, select ``FlexGrid``, ``4`` rows and ``2`` cols: |br|
   |FlexGridSizerDlg|
 * Move the labels and controls to the slots of the newly created sizer
 * Delete the old sizer
-* In *Properties* "Grid": make column 2 and row 4 growable: |br|
+* In *Properties -> Grid*: make column 2 and row 4 growable: |br|
   |FlexGridSizer_Properties|
 * To make the text controls ``text_value1`` and ``text_value2`` actually fill the growable column: |br|
-  activate *Properties* -> Layout -> Alignment ``wxEXPAND`` for both of them
+  activate *Properties -> Layout -> Alignment ->* ``wxEXPAND`` for both of them
 
 The logic with ``wxEXPAND`` is a bit different than with non-grid sizers.
 If it is active, the control will grow horizontally and vertically.

@@ -23,21 +23,3 @@ Further reading
 
 Maybe also have a look at the samples directory.
 
-
-
-.. note::
-    |br| On Windows, you may prefer the single file **.chm documentation**, even though it's for C++: |br|
-    https://github.com/wxWidgets/wxWidgets/releases/download/v3.0.3/wxWidgets-3.0.3-docs-chm.zip |br| |br|
-    For a start look at:
-
-    * Categories:
-    
-      * Class List by Category:
-
-        * Controls
-        * Window Layout
-        * Events
-        * Managed Windows
-        * Miscellaneous Windows
-        * Common Dialogs
-

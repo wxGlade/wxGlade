@@ -93,8 +93,10 @@
 </div>
 <div class="section" id="application-toplevel-windows">
 <h2>Application, Toplevel Windows<a class="headerlink" href="#application-toplevel-windows" title="Permalink to this headline">¶</a></h2>
-<p>A wxGlade project may contain any number of toplevel Frames or Dialog.</p>
-<p>In the application properties you need to select one frame or dialog as “Top window”.</p>
+<p>A wxGlade project may contain any number of toplevel frames or dialogs. Code will be generated for each of these.</p>
+<p>By default, also code for a basic application will be created.
+<br/>
+The Properties could look like these:</p>
 <img alt="wxGlade title" src="_images/Toplevel_App.png" />
 <img alt="wxGlade title" src="_images/Toplevel_Frame.png" />
 <p>The toplevel window will be invoked from the generated application code:</p>
@@ -202,7 +204,7 @@ wxGlade will display the class name with a yellow background if it’s not uniqu
 This allows you to access the control via the attribute <code class="docutils literal"><span class="pre">result_text</span></code>.
 You may e.g. call <code class="docutils literal"><span class="pre">frame.text_result.SetValue(str(result))</span></code> to display a value in the Result text control.</p>
 <p>Some widgets like <code class="docutils literal"><span class="pre">StaticText</span></code> are not accessible as attributes by default.
-You can change this by going to <em>Properties</em>-&gt;Widget and checking ‘Store as attribute’.
+You can change this by going to <em>Properties -&gt; Widget</em> and checking <code class="docutils literal"><span class="pre">Store</span> <span class="pre">as</span> <span class="pre">attribute</span></code>.
 For Sizers you can achieve the same on the “Common” tab.</p>
 <p>As of now, nothing will happen if the user hits the “Execute” button. So we need an event handler for this.</p>
 </div>
@@ -213,7 +215,7 @@ For Sizers you can achieve the same on the “Common” tab.</p>
 <p>wxGlade allows you to enter handler names. For any of these names, empty method stubs will be generated in the source code file and the methods will be bound when the window is created. Alternatively, you may define and register handlers yourself.</p>
 <p><strong>Example: button event EVT_BUTTON</strong></p>
 <p>The main event of a button is <code class="docutils literal"><span class="pre">EVT_BUTTON</span></code>.
-In the following example we want to call a method <code class="docutils literal"><span class="pre">on_button_pressed</span></code> whenever the button_1 is clicked.</p>
+In the following example we want to call a method <code class="docutils literal"><span class="pre">on_button_pressed</span></code> whenever the <code class="docutils literal"><span class="pre">button_1</span></code> is clicked.</p>
 <p><strong>Method 1: use wxGlade to create a handler method</strong></p>
 <p>In the <em>Properties</em> window you can see the events (most controls have more than just one event) and enter the handler name:</p>
 <table border="1" class="docutils">
@@ -283,7 +285,7 @@ your business logic in the handler free from GUI related code.</p>
 <p>For anything else than simple glue code, the latter is the recommended approach.</p>
 <div class="section" id="example-1-edit-in-place-keep-user-code">
 <h3>Example 1: Edit in place / “Keep user code”<a class="headerlink" href="#example-1-edit-in-place-keep-user-code" title="Permalink to this headline">¶</a></h3>
-<p>If you want to use the first approach, you need to set “Keep user code” for the application in the <em>Properties</em> window:</p>
+<p>If you want to use the first approach, you need to set <code class="docutils literal"><span class="pre">Keep</span> <span class="pre">user</span> <span class="pre">code</span></code> for the application in the <em>Properties</em> window:</p>
 <table border="1" class="docutils">
 <colgroup>
 <col width="100%" />
@@ -294,7 +296,7 @@ your business logic in the handler free from GUI related code.</p>
 </tr>
 </tbody>
 </table>
-<p>In this case, when you hit the <code class="docutils literal"><span class="pre">Generate</span> <span class="pre">Source</span></code> button, wxGlade will read the file and only overwrite the sections that were marked with <code class="docutils literal"><span class="pre">#</span> <span class="pre">begin</span> <span class="pre">wxGlade:...</span></code> and <code class="docutils literal"><span class="pre">#</span> <span class="pre">end</span> <span class="pre">wxGlade</span></code>.</p>
+<p>In this case, when you hit the “Generate Source” button, wxGlade will read the file and only overwrite the sections that were marked with <code class="docutils literal"><span class="pre">#</span> <span class="pre">begin</span> <span class="pre">wxGlade:...</span></code> and <code class="docutils literal"><span class="pre">#</span> <span class="pre">end</span> <span class="pre">wxGlade</span></code>.</p>
 <p><strong>Please be aware that this is not too robust when you e.g. rename objects. Always keep backups!</strong></p>
 <p>Event handlers are marked with <code class="docutils literal"><span class="pre">#</span> <span class="pre">wxGlade:</span> <span class="pre">MyFrame.&lt;event_handler&gt;</span></code>.
 They will be read and written back unchanged. Don’t modify the marker.</p>
@@ -335,7 +337,7 @@ They will be read and written back unchanged. Don’t modify the marker.</p>
 <li><a class="reference external" href="../../examples/Calculator/Calculator.py">Calculator.py</a></li>
 </ul>
 </dd>
-<dt>In these files, the event handlers for the two buttons are defined in <em>Properties</em> -&gt; Events -&gt; <code class="docutils literal"><span class="pre">EVT_BUTTON</span></code>:</dt>
+<dt>In these files, the event handlers for the two buttons are defined in <em>Properties -&gt; Events -&gt;</em> <code class="docutils literal"><span class="pre">EVT_BUTTON</span></code>:</dt>
 <dd><ul class="first last simple">
 <li><code class="docutils literal"><span class="pre">on_execute_button_clicked</span></code></li>
 <li><code class="docutils literal"><span class="pre">on_reset_button_clicked</span></code></li>
