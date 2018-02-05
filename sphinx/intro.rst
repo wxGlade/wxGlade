@@ -16,9 +16,10 @@ To run wxGlade, start the wxglade.py or wxglade.pyw program file with the Python
 
 **Other Prerequisites:**
 On Windows, the win32 extensions should be installed: https://sourceforge.net/projects/pywin32/
+If they are available, wxGlade will register for .wxg files such that you can open them via double-click.
 
 **Supported Python and wxPython Versions:**
- * The *classic* wxPython versions 2.8 and 3.0 are supported as well as wxPython *Phoenix* running under Python 3
+ * The *Classic* wxPython versions 2.8 and 3.0 are supported as well as wxPython *Phoenix* running under Python 3
  * Phoenix plus Python 2 will probably also work, but this is not tested at all. wxPython 2.8 is generally less tested than the more recent versions.
  * When running Python 3 + Phoenix or Python 2 + Classic, the generated Python code will not be compatible to the other version.
 

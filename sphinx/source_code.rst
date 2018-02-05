@@ -55,9 +55,11 @@ In this screenshot some parts were folded where the controls are created and pla
 Application, Toplevel Windows
 *****************************
 
-A wxGlade project may contain any number of toplevel Frames or Dialog.
+A wxGlade project may contain any number of toplevel frames or dialogs. Code will be generated for each of these.
 
-In the application properties you need to select one frame or dialog as "Top window".
+By default, also code for a basic application will be created.
+|br|
+The Properties could look like these:
 
 .. image:: images/Toplevel_App.png
     :alt: wxGlade title
@@ -179,7 +181,7 @@ This allows you to access the control via the attribute ``result_text``.
 You may e.g. call ``frame.text_result.SetValue(str(result))`` to display a value in the Result text control.
 
 Some widgets like ``StaticText`` are not accessible as attributes by default.
-You can change this by going to *Properties*->Widget and checking 'Store as attribute'.
+You can change this by going to *Properties -> Widget* and checking ``Store as attribute``.
 For Sizers you can achieve the same on the "Common" tab.
 
 As of now, nothing will happen if the user hits the "Execute" button. So we need an event handler for this.
@@ -199,7 +201,7 @@ wxGlade allows you to enter handler names. For any of these names, empty method 
 **Example: button event EVT_BUTTON**
 
 The main event of a button is ``EVT_BUTTON``.
-In the following example we want to call a method ``on_button_pressed`` whenever the button_1 is clicked.
+In the following example we want to call a method ``on_button_pressed`` whenever the ``button_1`` is clicked.
 
 
 **Method 1: use wxGlade to create a handler method**
@@ -276,7 +278,7 @@ Example 1: Edit in place / "Keep user code"
 ===========================================
 
 
-If you want to use the first approach, you need to set "Keep user code" for the application in the *Properties* window:
+If you want to use the first approach, you need to set ``Keep user code`` for the application in the *Properties* window:
 
 +-----------------------------------------------------------------------+
 |.. image:: images/Calculator_06_ApplicationKeepUserCode.png            |
@@ -285,7 +287,7 @@ If you want to use the first approach, you need to set "Keep user code" for the 
 +-----------------------------------------------------------------------+
 
 
-In this case, when you hit the ``Generate Source`` button, wxGlade will read the file and only overwrite the sections that were marked with ``# begin wxGlade:...`` and ``# end wxGlade``.
+In this case, when you hit the "Generate Source" button, wxGlade will read the file and only overwrite the sections that were marked with ``# begin wxGlade:...`` and ``# end wxGlade``.
 
 **Please be aware that this is not too robust when you e.g. rename objects. Always keep backups!**
 
@@ -325,7 +327,7 @@ The files can be found in the folder ``wxglade/examples/Calculator``:
  * `Calculator-07-Keep.wxg <../../examples/Calculator/Calculator-07-Keep.wxg>`_
  * `Calculator.py <../../examples/Calculator/Calculator.py>`_
 
-In these files, the event handlers for the two buttons are defined in *Properties* -> Events -> ``EVT_BUTTON``:
+In these files, the event handlers for the two buttons are defined in *Properties -> Events ->* ``EVT_BUTTON``:
  * ``on_execute_button_clicked``
  * ``on_reset_button_clicked``
 

@@ -54,9 +54,9 @@
 <div class="section" id="menu-editor">
 <h2>Menu Editor<a class="headerlink" href="#menu-editor" title="Permalink to this headline">¶</a></h2>
 <p>wxGlade includes a simple menu editor.</p>
-<p>To attach a menu to a frame, go to <em>Properties</em> -&gt; Widget and check <code class="docutils literal"><span class="pre">Has</span> <span class="pre">MenuBar</span></code>. <br/>
-This will add a menubar icon to the Tree window, just below the frame’s icon. <br/>
-To open the menu editor, click the <code class="docutils literal"><span class="pre">Edit</span> <span class="pre">menus...</span></code> button.</p>
+<p>To attach a menu to a frame, go to <em>Properties -&gt; Widget</em> and check <code class="docutils literal"><span class="pre">Has</span> <span class="pre">MenuBar</span></code>. <br/>
+This will add a menubar icon to the <em>Tree</em> window, just below the frame’s icon. <br/>
+To open the menu editor, click the “Edit menus…” button.</p>
 <p>The following screenshots are from the file <a class="reference external" href="../../examples/Allwidgets_28.wxg">wxglade/examples/Allwidgets_28.wxg</a>.</p>
 <table border="1" class="colwidths-given docutils align-center">
 <colgroup>
@@ -74,8 +74,8 @@ Example of a frame with a menu bar</td>
 <td><a class="reference internal" href="_images/AllWidgets_28_Tree_w_MenuBar.png"><img alt="AllWidgets_28_Tree_w_MenuBar" src="_images/AllWidgets_28_Tree_w_MenuBar.png" style="height: 140px;" /></a></td>
 </tr>
 <tr class="row-odd"><td><strong>Properties Window:</strong> <br/>
-<br/> Press the <code class="docutils literal"><span class="pre">Edit</span> <span class="pre">menus...</span></code> button <br/>
-to open the Menu Editor</td>
+<br/> Press the “Edit menus…” button <br/>
+to open the menu editor</td>
 <td><a class="reference internal" href="_images/AllWidgets_28_Properties_EditMenus.png"><img alt="AllWidgets_28_Properties_EditMenus" src="_images/AllWidgets_28_Properties_EditMenus.png" style="height: 140px;" /></a></td>
 </tr>
 <tr class="row-even"><td><strong>Menu Editor</strong> <br/> <br/>
@@ -83,7 +83,7 @@ The bottom part just lists the items, <br/> where the hierarchy is visualized by
 <td><a class="reference internal" href="_images/AllWidgets_28_MenuEditor.png"><img alt="AllWidgets_28_MenuEditor" src="_images/AllWidgets_28_MenuEditor.png" style="height: 220px;" /></a></td>
 </tr>
 <tr class="row-odd"><td><strong>The Menu</strong> <br/> <br/>
-(In the example, “Unix” and Windows” <br/> are Radio type menu items.)</td>
+(In the example, “Unix” and Windows” <br/> are radio type menu items.)</td>
 <td><img alt="AllWidgets_28_MenuPreview" src="_images/AllWidgets_28_MenuPreview.png" /></td>
 </tr>
 </tbody>
@@ -92,13 +92,13 @@ The bottom part just lists the items, <br/> where the hierarchy is visualized by
 <p>As an exercise, we will now add a “File” menu with two entries to our calculator window.</p>
 <blockquote>
 <div><ul class="simple">
-<li>When you hit <code class="docutils literal"><span class="pre">Edit</span> <span class="pre">menus...</span></code> for the first time, the bottom part of the editor window is almost empty. It will just contain a default entry “item”.</li>
-<li>To create the required menu structure, change the label to “File”.</li>
-<li>To create the first item, hit “Add” and then the “&gt;” button to turn it into a submenu item and then change the label to “Reset”. Give this item a name <code class="docutils literal"><span class="pre">i_reset</span></code></li>
+<li>When you hit “Edit menus…” for the first time, the bottom part of the editor window is almost empty. It will just contain a default entry “item”.</li>
+<li>To create the required menu structure, change the label to <code class="docutils literal"><span class="pre">File</span></code>.</li>
+<li>To create the first item, hit “Add” and then the “&gt;” button to turn it into a submenu item and then change the label to <code class="docutils literal"><span class="pre">Reset</span></code>. Give this item a name <code class="docutils literal"><span class="pre">i_reset</span></code></li>
 <li>Do the same again for an item “Exit”.</li>
 </ul>
 </div></blockquote>
-<p>As of now, these items would not yet call any code when selected. So the “Event Handler” field needs to be filled with e.g. “on_menu_File_Reset” and “on_menu_File_Exit” for the two items.</p>
+<p>As of now, these items would not yet call any code when selected. So the “Event Handler” field needs to be filled with e.g. <code class="docutils literal"><span class="pre">on_menu_File_Reset</span></code> and <code class="docutils literal"><span class="pre">on_menu_File_Exit</span></code> for the two items.</p>
 <p>When done and after hitting the “Start generating source files”, the editor and the created code should look like this:</p>
 <table border="1" class="docutils">
 <colgroup>
@@ -151,7 +151,7 @@ e.g. for disabling it.</td>
 </td>
 </tr>
 <tr class="row-odd"><td><strong>Handler implementation</strong> <br/> <br/>
-in derived class <br/>
+in derived class <br/> <br/>
 including initial disabling of <br/>
 <code class="docutils literal"><span class="pre">self.frame_menubar.i_reset</span></code></td>
 <td><div class="first last highlight-default"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">MyFrame</span><span class="p">(</span><span class="n">CalculatorFrame</span><span class="p">):</span>
@@ -196,12 +196,12 @@ In the latter case, you should have enabled Application -&gt; <code class="docut
 </div>
 <div class="section" id="status-bar-editor">
 <h2>Status Bar Editor<a class="headerlink" href="#status-bar-editor" title="Permalink to this headline">¶</a></h2>
-<p>To attach a status bar to a frame, go to <em>Properties</em>-&gt;Widget and check <code class="docutils literal"><span class="pre">Has</span> <span class="pre">StatusBar</span></code>.
+<p>To attach a status bar to a frame, go to <em>Properties -&gt; Widget</em> and check <code class="docutils literal"><span class="pre">Has</span> <span class="pre">StatusBar</span></code>.
 This will add a statusbar icon to the <em>Tree</em> window, just below the frame’s icon.
 (Similar to <code class="docutils literal"><span class="pre">Has</span> <span class="pre">MenuBar</span></code> in the first screenshot on this page.)</p>
-<p>To add/remove fields to the status bar, go to <em>Properties</em> -&gt; Widget -&gt; Fields and use
-the <code class="docutils literal"><span class="pre">Add</span></code>/<code class="docutils literal"><span class="pre">Insert</span></code>/<code class="docutils literal"><span class="pre">Remove</span></code>/<code class="docutils literal"><span class="pre">Apply</span></code> buttons.
-If you set the size of a field to a negative value like <code class="docutils literal"><span class="pre">-1</span></code> or <code class="docutils literal"><span class="pre">-2</span></code>, it will <strong>grow to fill</strong> the available space.</p>
+<p>To add/remove fields to the status bar, go to <em>Properties -&gt; Widget -&gt; Fields</em> and use
+the “Add”/”Insert”/”Remove”/”Apply” buttons.
+If you set the “Size” of a field to a negative value like <code class="docutils literal"><span class="pre">-1</span></code> or <code class="docutils literal"><span class="pre">-2</span></code>, it will <strong>grow to fill</strong> the available space.</p>
 <p><strong>Example:</strong></p>
 <table border="1" class="docutils">
 <colgroup>

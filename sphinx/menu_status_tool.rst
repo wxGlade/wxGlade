@@ -14,9 +14,9 @@ Menu Editor
 
 wxGlade includes a simple menu editor.
 
-To attach a menu to a frame, go to *Properties* -> Widget and check ``Has MenuBar``. |br|
-This will add a menubar icon to the Tree window, just below the frame's icon. |br|
-To open the menu editor, click the ``Edit menus...`` button.
+To attach a menu to a frame, go to *Properties -> Widget* and check ``Has MenuBar``. |br|
+This will add a menubar icon to the *Tree* window, just below the frame's icon. |br|
+To open the menu editor, click the "Edit menus..." button.
 
 .. |AllWidgets_28_Properties_w_MenuBar| image:: images/AllWidgets_28_Properties_w_MenuBar.png
    :height: 140
@@ -49,14 +49,14 @@ The following screenshots are from the file `wxglade/examples/Allwidgets_28.wxg 
        Example of a frame with a menu bar
      - |AllWidgets_28_Tree_w_MenuBar| 
    * - **Properties Window:** |br|
-       |br| Press the ``Edit menus...`` button |br|
-       to open the Menu Editor
+       |br| Press the "Edit menus..." button |br|
+       to open the menu editor
      - |AllWidgets_28_Properties_EditMenus| 
    * - **Menu Editor** |br| |br|
        The bottom part just lists the items, |br| where the hierarchy is visualized by indentation.
      - |AllWidgets_28_MenuEditor|
    * - **The Menu** |br| |br|
-       (In the example, "Unix" and Windows" |br| are Radio type menu items.)
+       (In the example, "Unix" and Windows" |br| are radio type menu items.)
      - |AllWidgets_28_MenuPreview|
    
 
@@ -64,12 +64,12 @@ The following screenshots are from the file `wxglade/examples/Allwidgets_28.wxg 
 
 As an exercise, we will now add a "File" menu with two entries to our calculator window.
 
- * When you hit ``Edit menus...`` for the first time, the bottom part of the editor window is almost empty. It will just contain a default entry "item".
- * To create the required menu structure, change the label to "File".
- * To create the first item, hit "Add" and then the ">" button to turn it into a submenu item and then change the label to "Reset". Give this item a name ``i_reset``
+ * When you hit "Edit menus..." for the first time, the bottom part of the editor window is almost empty. It will just contain a default entry "item".
+ * To create the required menu structure, change the label to ``File``.
+ * To create the first item, hit "Add" and then the ">" button to turn it into a submenu item and then change the label to ``Reset``. Give this item a name ``i_reset``
  * Do the same again for an item "Exit".
  
-As of now, these items would not yet call any code when selected. So the "Event Handler" field needs to be filled with e.g. "on_menu_File_Reset" and "on_menu_File_Exit" for the two items.
+As of now, these items would not yet call any code when selected. So the "Event Handler" field needs to be filled with e.g. ``on_menu_File_Reset`` and ``on_menu_File_Exit`` for the two items.
 
 When done and after hitting the "Start generating source files", the editor and the created code should look like this:
 
@@ -121,7 +121,7 @@ When done and after hitting the "Start generating source files", the editor and 
                     event.Skip()
 
     * - **Handler implementation** |br| |br|
-        in derived class |br|
+        in derived class |br| |br|
         including initial disabling of |br|
         ``self.frame_menubar.i_reset``
       - ::
@@ -164,13 +164,13 @@ The example menu is part of the example at wxglade/examples/Calculator:
 Status Bar Editor
 *********************************************************************
 
-To attach a status bar to a frame, go to *Properties*->Widget and check ``Has StatusBar``.
+To attach a status bar to a frame, go to *Properties -> Widget* and check ``Has StatusBar``.
 This will add a statusbar icon to the *Tree* window, just below the frame's icon.
 (Similar to ``Has MenuBar`` in the first screenshot on this page.)
 
-To add/remove fields to the status bar, go to *Properties* -> Widget -> Fields and use
-the ``Add``/``Insert``/``Remove``/``Apply`` buttons.
-If you set the size of a field to a negative value like ``-1`` or ``-2``, it will **grow to fill** the available space.
+To add/remove fields to the status bar, go to *Properties -> Widget -> Fields* and use
+the "Add"/"Insert"/"Remove"/"Apply" buttons.
+If you set the "Size" of a field to a negative value like ``-1`` or ``-2``, it will **grow to fill** the available space.
 
 **Example:**
 

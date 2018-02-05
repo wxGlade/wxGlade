@@ -105,7 +105,7 @@ Sizer Examples
    * - **Allowing controls to grow and/or expand**
 
        * Controls in a horizontal sizer can "grow" horizontally, or "expand" vertically in response to changes in window size.
-       * In this three button example, using a Horizontal BoxSizer:
+       * In this three button example, using a horizontal BoxSizer:
 
         * The middle button has been allowed to grow horizontally.
         * The third button has been allowed to expand vertically.
@@ -114,7 +114,7 @@ Sizer Examples
    * - **Alignment of controls**
 
        * The alignment of controls within a sizer can also be specified. |br|
-         This example also uses a Horizontal BoxSizer to specify that:
+         This example also uses a horizontal BoxSizer to specify that:
 
         * The first button is "top" aligned.
         * The middle button is "bottom" aligned.
@@ -123,10 +123,10 @@ Sizer Examples
      - |horizontal3|
    * - **StaticBoxSizer**
 
-       * In this example, a Horizontal StaticBoxSizer has been used to contain the three buttons
+       * In this example, a horizontal StaticBoxSizer has been used to contain the three buttons
          (which have the same properties set as those in the previous example). |br|
        * This sizer puts a border around its edges and provides a label with which to describe its contents.
-       * StaticBoxSizers can be either Horizontal or Vertical, just like their "non-static" equivalents.
+       * StaticBoxSizers can be either horizontal or vertical, just like their "non-static" equivalents.
 
      - |static_horizontal|
    * - **GridSizer**
