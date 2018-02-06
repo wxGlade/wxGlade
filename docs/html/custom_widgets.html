@@ -64,19 +64,19 @@ You will be prompted for a class name. In the <em>Design</em> and <em>Preview</e
 <tbody valign="top">
 <tr class="row-odd"><td><strong>Properties -&gt; Common:</strong> <br/> <br/>
 Property “Class” is the name of the class that will be instantiated. <br/>
-In this example: <code class="docutils literal"><span class="pre">ImagePanel</span></code></td>
+In this example: <span class="guilabel">ImagePanel</span></td>
 <td><a class="reference internal" href="_images/CustomWidgetPropertiesCommon.png"><img alt="CustomWidgetPropertiesCommon" class="align-middle" src="_images/CustomWidgetPropertiesCommon.png" style="width: 300px;" /></a></td>
 </tr>
 <tr class="row-even"><td><strong>Properties -&gt; Widget:</strong> <br/> <br/>
 The arguments for instantiation of the class.
-<br/> Usually you will at least enter <code class="docutils literal"><span class="pre">$parent</span></code> here.</td>
+<br/> Usually you will at least enter <span class="guilabel">$parent</span> here.</td>
 <td><a class="reference internal" href="_images/CustomWidgetProperties.png"><img alt="CustomWidgetProperties" class="align-middle" src="_images/CustomWidgetProperties.png" style="width: 300px;" /></a></td>
 </tr>
 <tr class="row-odd"><td><strong>Properties -&gt; Code:</strong> <br/> <br/>
 Enter the import statement here, if required. <br/> <br/>
-For our example, <code class="docutils literal"><span class="pre">import</span> <span class="pre">ImagePanel</span></code> could be used, <br/>
+For our example, <code class="code docutils literal"><span class="pre">import</span> <span class="pre">ImagePanel</span></code> could be used, <br/>
 but then the “Class” property must be fully qualified:<br/>
-<code class="docutils literal"><span class="pre">ImagePanel.ImagePanel</span></code></td>
+<span class="guilabel">ImagePanel.ImagePanel</span></td>
 <td><a class="reference internal" href="_images/CustomWidgetPropertiesCode.png"><img alt="CustomWidgetPropertiesCode" class="align-middle" src="_images/CustomWidgetPropertiesCode.png" style="width: 300px;" /></a></td>
 </tr>
 </tbody>
@@ -92,13 +92,13 @@ but then the “Class” property must be fully qualified:<br/>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="bp">self</span><span class="o">.</span><span class="n">panel_image_left</span> <span class="o">=</span> <span class="n">ImagePanel</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">main_panel</span><span class="p">,</span> <span class="n">wx</span><span class="o">.</span><span class="n">ID_ANY</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>The Arguments <code class="docutils literal"><span class="pre">$parent</span></code> and <code class="docutils literal"><span class="pre">$id</span></code> were replaced with the required code. There are two more magic arguments: <code class="docutils literal"><span class="pre">$width</span></code> and <code class="docutils literal"><span class="pre">$height</span></code>.</p>
-<div class="section" id="example-matplotlib-canvas">
-<h2>Example: matplotlib canvas<a class="headerlink" href="#example-matplotlib-canvas" title="Permalink to this headline">¶</a></h2>
-<p>The above example was rather simple to implement as the class <code class="docutils literal"><span class="pre">ImagePanel</span></code> did not require any extra
+<p>The Arguments <span class="guilabel">$parent</span> and <span class="guilabel">$id</span> were replaced with the required code. There are two more magic arguments: <span class="guilabel">$width</span> and <span class="guilabel">$height</span>.</p>
+<div class="section" id="example-matplotlib-matplotlib-canvas-quick-and-dirty">
+<h2>Example ‘matplotlib’: matplotlib canvas, quick and dirty<a class="headerlink" href="#example-matplotlib-matplotlib-canvas-quick-and-dirty" title="Permalink to this headline">¶</a></h2>
+<p>The above example was rather simple to implement as the class <code class="code docutils literal"><span class="pre">ImagePanel</span></code> did not require any extra
 arguments or code. It was just called with the parent window and the default ID as arguments. <br/>
 Sometimes, the widget to be used needs some things to be set up before it can be created. <br/>
-E.g. if you want to use the matplotlib <code class="docutils literal"><span class="pre">FigureCanvas</span></code>, this needs a <code class="docutils literal"><span class="pre">Figure</span></code> instance to be created and supplied as argument. To use it from within wxGlade, you may write a wrapper class around it or enter the required extra code in wxGlade.</p>
+E.g. if you want to use the matplotlib <code class="code docutils literal"><span class="pre">FigureCanvas</span></code>, this needs a <code class="code docutils literal"><span class="pre">Figure</span></code> instance to be created and supplied as argument. To use it from within wxGlade, you may write a wrapper class around it or enter the required extra code in wxGlade.</p>
 <p>This code creates a matplotlib canvas and plots a sine function:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span> <span class="kn">import</span> <span class="nn">matplotlib</span>
  <span class="kn">from</span> <span class="nn">matplotlib.figure</span> <span class="k">import</span> <span class="n">Figure</span>
@@ -126,12 +126,12 @@ E.g. if you want to use the matplotlib <code class="docutils literal"><span clas
 </colgroup>
 <tbody valign="top">
 <tr class="row-odd"><td><strong>Properties -&gt; Common:</strong> <br/> <br/>
-The class <code class="docutils literal"><span class="pre">FigureCanvas</span></code> will be instantiated.</td>
+The class <span class="guilabel">FigureCanvas</span> will be instantiated.</td>
 <td><a class="reference internal" href="_images/matplotlib_class.png"><img alt="Class name" class="align-middle" src="_images/matplotlib_class.png" style="width: 460px;" /></a></td>
 </tr>
 <tr class="row-even"><td><strong>Properties -&gt; Widget:</strong> <br/> <br/>
-The class will be instantiated with the arguments <code class="docutils literal"><span class="pre">$parent</span></code>, <code class="docutils literal"><span class="pre">$id</span></code> and <code class="docutils literal"><span class="pre">figure</span></code>. <br/>
-The argument <code class="docutils literal"><span class="pre">figure</span></code> is non-standard.
+The class will be instantiated with the arguments <span class="guilabel">$parent</span>, <span class="guilabel">$id</span> and <span class="guilabel">figure</span>. <br/>
+The argument <span class="guilabel">figure</span> is non-standard.
 It will be defined in <em>Properties</em> -&gt; Code.</td>
 <td><a class="reference internal" href="_images/matplotlib_arguments.png"><img alt="Class instantiation arguments" class="align-middle" src="_images/matplotlib_arguments.png" style="width: 460px;" /></a></td>
 </tr>
@@ -160,6 +160,31 @@ and therefore you may just copy it from one project or window to another.</p>
 <p>Once things get more complex, it’s better to implement a custom class which does not require such extra code.
 The resulting code will be cleaner and also easier to maintain and extend.</p>
 </div>
+<div class="section" id="example-matplotlib2-matplotlib-canvas-well-structured">
+<h2>Example ‘matplotlib2’: matplotlib canvas, well structured<a class="headerlink" href="#example-matplotlib2-matplotlib-canvas-well-structured" title="Permalink to this headline">¶</a></h2>
+<p>This example has the same functionality, but shows how the code can be structured in a more readable and maintainable way.</p>
+<blockquote>
+<div><ul class="simple">
+<li><code class="docutils literal"><span class="pre">matplotlib_canvas.py</span></code>: a class <code class="code docutils literal"><span class="pre">MatplotlibCanvas</span></code> as layer between <code class="code docutils literal"><span class="pre">Matplotlib.FigureCanvas</span></code></li>
+<li><code class="docutils literal"><span class="pre">matplotlib_GUI.py</span></code>: the GUI code, generated from wxGlade</li>
+<li><code class="docutils literal"><span class="pre">matplotlib_example.py</span></code>: the main file with the <cite>business logic</cite></li>
+</ul>
+</div></blockquote>
+<dl class="docutils">
+<dt>The files can be found in the folder <code class="docutils literal"><span class="pre">wxglade/examples/matplotlib2</span></code>:</dt>
+<dd><ul class="first last simple">
+<li><a class="reference external" href="../../examples/matplotlib2/matplotlib_canvas.wxg">matplotlib_canvas.wxg</a></li>
+<li><a class="reference external" href="../../examples/matplotlib2/matplotlib_GUI.py">matplotlib_GUI.py</a></li>
+<li><a class="reference external" href="../../examples/matplotlib2/matplotlib_example.wxg">matplotlib_example.wxg</a></li>
+</ul>
+</dd>
+</dl>
+</div>
+<div class="section" id="example-matplotlib3-matplotlib-canvas-comprehensive-embedding-example">
+<h2>Example ‘matplotlib3’: matplotlib canvas, comprehensive embedding example<a class="headerlink" href="#example-matplotlib3-matplotlib-canvas-comprehensive-embedding-example" title="Permalink to this headline">¶</a></h2>
+<p>This example shows most of the building blocks that you will need for integration of a Matplotlib canvas.
+It shows how to plot and draw, zoom and drag, select items, export images and so on.</p>
+</div>
 </div>
 
 
@@ -174,7 +199,9 @@ The resulting code will be cleaner and also easier to maintain and extend.</p>
   <h3><a href="index.html">Table Of Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#">Custom Widget</a><ul>
-<li><a class="reference internal" href="#example-matplotlib-canvas">Example: matplotlib canvas</a></li>
+<li><a class="reference internal" href="#example-matplotlib-matplotlib-canvas-quick-and-dirty">Example ‘matplotlib’: matplotlib canvas, quick and dirty</a></li>
+<li><a class="reference internal" href="#example-matplotlib2-matplotlib-canvas-well-structured">Example ‘matplotlib2’: matplotlib canvas, well structured</a></li>
+<li><a class="reference internal" href="#example-matplotlib3-matplotlib-canvas-comprehensive-embedding-example">Example ‘matplotlib3’: matplotlib canvas, comprehensive embedding example</a></li>
 </ul>
 </li>
 </ul>

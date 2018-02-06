@@ -55,10 +55,10 @@
 <dt>For some widgets you need to specify one or more bitmaps. There are several options how to do this:</dt>
 <dd><ul class="first last simple">
 <li>from a bitmap file</li>
-<li>from a named variable: statement <code class="docutils literal"><span class="pre">var:</span></code></li>
-<li>empty bitmap: statement <code class="docutils literal"><span class="pre">empty:</span></code></li>
-<li>from wxArtProvider: statement <code class="docutils literal"><span class="pre">art:</span></code></li>
-<li>from literal code: statement <code class="docutils literal"><span class="pre">code:</span></code></li>
+<li>from a named variable: statement <span class="guilabel">var:</span></li>
+<li>empty bitmap: statement <span class="guilabel">empty:</span></li>
+<li>from wxArtProvider: statement <span class="guilabel">art:</span></li>
+<li>from literal code: statement <span class="guilabel">code:</span></li>
 </ul>
 </dd>
 </dl>
@@ -230,8 +230,8 @@ C++</td>
 <h2>Customizing Bitmap loading<a class="headerlink" href="#customizing-bitmap-loading" title="Permalink to this headline">¶</a></h2>
 <p>If at runtime the image files are at a non-standard location, you need to customize the loading of image files such
 that the files will be found.</p>
-<p>For example, if you use PyInstaller to create a single-file executable, then the bitmaps need to be loaded from a temporary directory <code class="docutils literal"><span class="pre">sys._MEIPASS</span></code>.</p>
-<p>This example code would replace <code class="docutils literal"><span class="pre">wx.Bitmap</span></code> with an implementation that is aware of this remapping:</p>
+<p>For example, if you use PyInstaller to create a single-file executable, then the bitmaps need to be loaded from a temporary directory <code class="code docutils literal"><span class="pre">sys._MEIPASS</span></code>.</p>
+<p>This example code would replace <code class="code docutils literal"><span class="pre">wx.Bitmap</span></code> with an implementation that is aware of this remapping:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">wx</span>
 <span class="kn">import</span> <span class="nn">sys</span><span class="o">,</span> <span class="nn">os</span>
 

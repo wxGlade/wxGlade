@@ -25,3 +25,15 @@ table tr:nth-child(even) td{
 }
 
 code { white-space: pre; }
+
+.guilabel {
+  background-color: #CEE3F6;
+}
+
+code.code {
+    background-color: #eeffcc;
+    color: #333333;
+    padding: 0 1px 0 1px;
+    font-size: 1em;
+}
+

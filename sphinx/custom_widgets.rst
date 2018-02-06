@@ -38,17 +38,17 @@ You will be prompted for a class name. In the *Design* and *Preview* windows, ju
 
    * - **Properties -> Common:** |br| |br|
        Property "Class" is the name of the class that will be instantiated. |br|
-       In this example: ``ImagePanel``
+       In this example: :guilabel:`ImagePanel`
      - |CustomWidgetPropertiesCommon| 
    * - **Properties -> Widget:** |br| |br|
        The arguments for instantiation of the class.
-       |br| Usually you will at least enter ``$parent`` here.
+       |br| Usually you will at least enter :guilabel:`$parent` here.
      - |CustomWidgetProperties| 
    * - **Properties -> Code:** |br| |br|
        Enter the import statement here, if required. |br| |br|
-       For our example, ``import ImagePanel`` could be used, |br|
+       For our example, :code:`import ImagePanel` could be used, |br|
        but then the "Class" property must be fully qualified:|br|
-       ``ImagePanel.ImagePanel``
+       :guilabel:`ImagePanel.ImagePanel`
      - |CustomWidgetPropertiesCode| 
 
 
@@ -64,16 +64,16 @@ You will be prompted for a class name. In the *Design* and *Preview* windows, ju
 
     self.panel_image_left = ImagePanel(self.main_panel, wx.ID_ANY)
 
-The Arguments ``$parent`` and ``$id`` were replaced with the required code. There are two more magic arguments: ``$width`` and ``$height``.
+The Arguments :guilabel:`$parent` and :guilabel:`$id` were replaced with the required code. There are two more magic arguments: :guilabel:`$width` and :guilabel:`$height`.
 
 
-Example: matplotlib canvas
-==========================
+Example 'matplotlib': matplotlib canvas, quick and dirty
+========================================================
 
-The above example was rather simple to implement as the class ``ImagePanel`` did not require any extra
+The above example was rather simple to implement as the class :code:`ImagePanel` did not require any extra
 arguments or code. It was just called with the parent window and the default ID as arguments. |br|
 Sometimes, the widget to be used needs some things to be set up before it can be created. |br|
-E.g. if you want to use the matplotlib ``FigureCanvas``, this needs a ``Figure`` instance to be created and supplied as argument. To use it from within wxGlade, you may write a wrapper class around it or enter the required extra code in wxGlade.
+E.g. if you want to use the matplotlib :code:`FigureCanvas`, this needs a :code:`Figure` instance to be created and supplied as argument. To use it from within wxGlade, you may write a wrapper class around it or enter the required extra code in wxGlade.
 
 
 This code creates a matplotlib canvas and plots a sine function::
@@ -125,11 +125,11 @@ This example shows how to use the wxGlade CustomWidget |custom| to include a mat
    :align: center
 
    * - **Properties -> Common:** |br| |br|
-       The class ``FigureCanvas`` will be instantiated.
+       The class :guilabel:`FigureCanvas` will be instantiated.
      - |matplotlib_class| 
    * - **Properties -> Widget:** |br| |br|
-       The class will be instantiated with the arguments ``$parent``, ``$id`` and ``figure``. |br|
-       The argument ``figure`` is non-standard.
+       The class will be instantiated with the arguments :guilabel:`$parent`, :guilabel:`$id` and :guilabel:`figure`. |br|
+       The argument :guilabel:`figure` is non-standard.
        It will be defined in *Properties* -> Code.
      - |matplotlib_arguments| 
    * - **Properties -> Code:** |br| |br|
@@ -154,3 +154,26 @@ and therefore you may just copy it from one project or window to another.
 
 Once things get more complex, it's better to implement a custom class which does not require such extra code.
 The resulting code will be cleaner and also easier to maintain and extend.
+
+
+Example 'matplotlib2': matplotlib canvas, well structured
+=========================================================
+
+This example has the same functionality, but shows how the code can be structured in a more readable and maintainable way.
+
+ * ``matplotlib_canvas.py``: a class :code:`MatplotlibCanvas` as layer between :code:`Matplotlib.FigureCanvas`
+ * ``matplotlib_GUI.py``: the GUI code, generated from wxGlade
+ * ``matplotlib_example.py``: the main file with the `business logic`
+
+The files can be found in the folder ``wxglade/examples/matplotlib2``:
+ * `matplotlib_canvas.wxg <../../examples/matplotlib2/matplotlib_canvas.wxg>`_
+ * `matplotlib_GUI.py <../../examples/matplotlib2/matplotlib_GUI.py>`_
+ * `matplotlib_example.wxg <../../examples/matplotlib2/matplotlib_example.wxg>`_
+
+
+Example 'matplotlib3': matplotlib canvas, comprehensive embedding example
+=========================================================================
+
+This example shows most of the building blocks that you will need for integration of a Matplotlib canvas.
+It shows how to plot and draw, zoom and drag, select items, export images and so on.
+
