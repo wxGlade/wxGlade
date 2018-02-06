@@ -24,7 +24,7 @@ For our example project from the previous page 'Tutorial' we want to generate:
 
  * Python code for wxWidgets 3.0 or Phoenix
  * all code in a single file
- * output file name ``Calculator.py``
+ * output file name "Calculator.py"
  * an application should be created, not just the window
 
 So we select the root element "Application" in the *Tree* window and set the properties accordingly:
@@ -35,7 +35,7 @@ So we select the root element "Application" in the *Tree* window and set the pro
 |    :alt: Application Properties                                       |
 +-----------------------------------------------------------------------+
 
-To actually create the source code, press the button ``Generate Source`` or hit :kbd:`Ctrl-G`.
+To actually create the source code, press the button "Generate Source" or hit :kbd:`Ctrl-G`.
 
 The **generated source** looks like this:
 
@@ -80,9 +80,9 @@ The toplevel window will be invoked from the generated application code::
         app = MyApp(0)
         app.MainLoop()
 
-In the example code, you should be able to identify the uses of ``app``, ``Myapp``, ``frame`` and ``CalculatorFrame``.
+In the example code, you should be able to identify the uses of :guilabel:`app`, :guilabel:`Myapp`, :guilabel:`frame` and :guilabel:`CalculatorFrame`.
 
-If ``Application->Name`` and ``Application->Class`` are deactivated, no application code will be generated. Usually you want to implement the application yourself, but still you can use the generated code as starting point.
+If *Application -> Name* and *Application -> Class* are deactivated, no application code will be generated. Usually you want to implement the application yourself, but still you can use the generated code as starting point.
 
 The other, non-toplevel windows are usually called from your own code. Have a look at the generated code to see how to call them.
 
@@ -94,7 +94,7 @@ wxGlade will display the class name with a yellow background if it's not unique.
 Code for Windows
 *********************************
 
-This is the full code for our main window ``CalculatorFrame``.
+This is the full code for our main window :code:`CalculatorFrame`.
 
 
 The code is separated into creation of controls, definition of properties and layout generation::
@@ -176,12 +176,12 @@ When you run the Python file, the application is run and the frame created:
 
 The code just creates the windows. There's no functionality yet.
 
-In the generated code you can see assignments like ``self.text_result = wx.TextCtrl(...)``.
-This allows you to access the control via the attribute ``result_text``.
-You may e.g. call ``frame.text_result.SetValue(str(result))`` to display a value in the Result text control.
+In the generated code you can see assignments like :code:`self.text_result = wx.TextCtrl(...)`.
+This allows you to access the control via the attribute :code:`text_result`.
+You may e.g. call :code:`frame.text_result.SetValue(str(result))` to display a value in the Result text control.
 
-Some widgets like ``StaticText`` are not accessible as attributes by default.
-You can change this by going to *Properties -> Widget* and checking ``Store as attribute``.
+Some widgets like :code:`StaticText` are not accessible as attributes by default.
+You can change this by going to *Properties -> Widget* and checking :guilabel:`Store as attribute`.
 For Sizers you can achieve the same on the "Common" tab.
 
 As of now, nothing will happen if the user hits the "Execute" button. So we need an event handler for this.
@@ -193,15 +193,15 @@ Code for Event Handlers
 
 Traditional programs or scripts usually have a defined flow.
 
-GUI programs on the other hand, are event-driven and the flow depends on the user's actions. The events like mouse clicks are delivered from the operating system or window manager to the application. The receiving side is an infinite loop, called "event loop" or "main loop". When you have a look at the last lines of a Python file that wxGlade wrote, you will see that the ``MainLoop`` method of your application is called. The main loop receives events from e.g. the Windows operating sytem and dispatches it to windows and controls. To handle things like mouse clicks, menu selections, button clicks etc. you need to register handlers.
+GUI programs on the other hand, are event-driven and the flow depends on the user's actions. The events like mouse clicks are delivered from the operating system or window manager to the application. The receiving side is an infinite loop, called "event loop" or "main loop". When you have a look at the last lines of a Python file that wxGlade wrote, you will see that the :code:`MainLoop` method of your application is called. The main loop receives events from e.g. the Windows operating sytem and dispatches it to windows and controls. To handle things like mouse clicks, menu selections, button clicks etc. you need to register handlers.
 
 wxGlade allows you to enter handler names. For any of these names, empty method stubs will be generated in the source code file and the methods will be bound when the window is created. Alternatively, you may define and register handlers yourself.
 
 
 **Example: button event EVT_BUTTON**
 
-The main event of a button is ``EVT_BUTTON``.
-In the following example we want to call a method ``on_button_pressed`` whenever the ``button_1`` is clicked.
+The main event of a button is :code:`EVT_BUTTON`.
+In the following example we want to call a method :code:`on_button_pressed` whenever the :guilabel:`button_1` is clicked.
 
 
 **Method 1: use wxGlade to create a handler method**
@@ -226,14 +226,14 @@ The generated code will look like this::
         print("Event handler 'on_button_pressed' not implemented!")
         event.Skip()
 
-The default handler just prints a message to the console and calls ``event.Skip()`` to forward the event to the the parent of the button.
+The default handler just prints a message to the console and calls :code:`event.Skip()` to forward the event to the the parent of the button.
 
 **Method 2 (Python only): enter a lambda function**
 
 If you're generating Python code, then you may enter an anonymous lambda function as handler.
 
-In the example, the method ``on_button_pressed`` should be called back with the argument ``1``. |br|
-E.g. if you have a keypad of buttons ``0`` to ``9`` then you might prefer to handle the events like this to keep
+In the example, the method :code:`on_button_pressed` should be called back with the argument :code:`1`. |br|
+E.g. if you have a keypad of buttons :guilabel:`0` to :guilabel:`9` then you might prefer to handle the events like this to keep
 your business logic in the handler free from GUI related code.
 
 
@@ -262,7 +262,7 @@ Alternatively, you can also register an event handler yourself, using code like 
     self.execute_button.Bind(wx.EVT_BUTTON, self.on_execute_button_clicked)
 
 
-wxGlade will only help you with the most important events, e.g. for the button it will just offer to generate a handler for ``EVT_BUTTON``. You may want to register and handle other events like mouse movements as well.
+wxGlade will only help you with the most important events, e.g. for the button it will just offer to generate a handler for :code:`EVT_BUTTON`. You may want to register and handle other events like mouse movements as well.
 
 **********************************
 User Code: Implement Functionality
@@ -278,7 +278,7 @@ Example 1: Edit in place / "Keep user code"
 ===========================================
 
 
-If you want to use the first approach, you need to set ``Keep user code`` for the application in the *Properties* window:
+If you want to use the first approach, you need to set :guilabel:`Keep user code` for the application in the *Properties* window:
 
 +-----------------------------------------------------------------------+
 |.. image:: images/Calculator_06_ApplicationKeepUserCode.png            |
@@ -287,12 +287,12 @@ If you want to use the first approach, you need to set ``Keep user code`` for th
 +-----------------------------------------------------------------------+
 
 
-In this case, when you hit the "Generate Source" button, wxGlade will read the file and only overwrite the sections that were marked with ``# begin wxGlade:...`` and ``# end wxGlade``.
+In this case, when you hit the "Generate Source" button, wxGlade will read the file and only overwrite the sections that were marked with :code:`# begin wxGlade:...` and :code:`# end wxGlade`.
 
 **Please be aware that this is not too robust when you e.g. rename objects. Always keep backups!**
 
 
-Event handlers are marked with ``# wxGlade: MyFrame.<event_handler>``.
+Event handlers are marked with :code:`# wxGlade: MyFrame.<event_handler>`.
 They will be read and written back unchanged. Don't modify the marker.
 
 To implement functionality, replace the default handler, e.g.::
@@ -327,9 +327,9 @@ The files can be found in the folder ``wxglade/examples/Calculator``:
  * `Calculator-07-Keep.wxg <../../examples/Calculator/Calculator-07-Keep.wxg>`_
  * `Calculator.py <../../examples/Calculator/Calculator.py>`_
 
-In these files, the event handlers for the two buttons are defined in *Properties -> Events ->* ``EVT_BUTTON``:
- * ``on_execute_button_clicked``
- * ``on_reset_button_clicked``
+In these files, the event handlers for the two buttons are defined in *Properties -> Events -> EVT_BUTTON*:
+ * :guilabel:`on_execute_button_clicked`
+ * :guilabel:`on_reset_button_clicked`
 
 
 Please be aware that this example code is far far away from any good coding style.
@@ -337,10 +337,11 @@ Please do better in your own code!
 
 It would be good practice to:
  * separate the business logic from the user interface by implementing e.g. methods like |br|
-   ``validate_value(value)``, ``calculate(value1, operator, value2)``
- * validate the contents of ``text_value1/2`` on every change of content (``EVT_TEXT``)
+   :code:`validate_value(value)`, |br|
+   :code:`calculate(value1, operator, value2)`
+ * validate the contents of :code:`text_value1/2` on every change of content (:code:`EVT_TEXT`)
  * report failed validation by colorizing the controls
- * catch and log exceptions like ``ZeroDivisionError``
+ * catch and log exceptions like :code:`ZeroDivisionError`
 
 
 
@@ -348,10 +349,10 @@ Example 2: Import and override
 ===============================
 
 To actually **use the generated event handler code** and extend it with the required functionality, it's best to
-create another Python file, import the generated code and use ``app``/``MyApp`` as template.
+create another Python file, import the generated code and use :code:`app` / :code:`MyApp` as template.
 
-For example, set wxGlade output file name to ``Calculator_GUI.py`` and let it generate the GUI code.
-Now create a file Calculator_Main.py::
+For example, set wxGlade output file name to :guilabel:`Calculator_GUI.py` and let it generate the GUI code. |br|
+Now create a file ``Calculator_Main.py`` where you can import and use the Calculator_GUI module::
 
     #!/usr/bin/env python
     # -*- coding: UTF-8 -*-
@@ -401,9 +402,6 @@ The files can be found in the folder ``wxglade/examples/Calculator``:
  * `Calculator-07-Import.wxg <../../examples/Calculator/Calculator-07-Import.wxg>`_
  * `Calculator_GUI.py <../../examples/Calculator/Calculator_GUI.py>`_
  * `Calculator_Main.py <../../examples/Calculator/Calculator_Main.py>`_
-
-
-
 
 
 

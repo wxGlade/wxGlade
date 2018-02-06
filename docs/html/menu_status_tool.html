@@ -54,7 +54,7 @@
 <div class="section" id="menu-editor">
 <h2>Menu Editor<a class="headerlink" href="#menu-editor" title="Permalink to this headline">¶</a></h2>
 <p>wxGlade includes a simple menu editor.</p>
-<p>To attach a menu to a frame, go to <em>Properties -&gt; Widget</em> and check <code class="docutils literal"><span class="pre">Has</span> <span class="pre">MenuBar</span></code>. <br/>
+<p>To attach a menu to a frame, go to <em>Properties -&gt; Widget</em> and check <span class="guilabel">Has MenuBar</span>. <br/>
 This will add a menubar icon to the <em>Tree</em> window, just below the frame’s icon. <br/>
 To open the menu editor, click the “Edit menus…” button.</p>
 <p>The following screenshots are from the file <a class="reference external" href="../../examples/Allwidgets_28.wxg">wxglade/examples/Allwidgets_28.wxg</a>.</p>
@@ -93,12 +93,12 @@ The bottom part just lists the items, <br/> where the hierarchy is visualized by
 <blockquote>
 <div><ul class="simple">
 <li>When you hit “Edit menus…” for the first time, the bottom part of the editor window is almost empty. It will just contain a default entry “item”.</li>
-<li>To create the required menu structure, change the label to <code class="docutils literal"><span class="pre">File</span></code>.</li>
-<li>To create the first item, hit “Add” and then the “&gt;” button to turn it into a submenu item and then change the label to <code class="docutils literal"><span class="pre">Reset</span></code>. Give this item a name <code class="docutils literal"><span class="pre">i_reset</span></code></li>
-<li>Do the same again for an item “Exit”.</li>
+<li>To create the required menu structure, change the label to <span class="guilabel">File</span>.</li>
+<li>To create the first item, hit “Add” and then the “&gt;” button to turn it into a submenu item and then change the label to <span class="guilabel">Reset</span>. Give this item a name <span class="guilabel">i_reset</span>. The item will then be stored with this attribute name, such that it can e.g. enabled and disabled programmatically.</li>
+<li>Create an item <span class="guilabel">Exit</span> with event handler <span class="guilabel">on_menu_File_Exit</span></li>
 </ul>
 </div></blockquote>
-<p>As of now, these items would not yet call any code when selected. So the “Event Handler” field needs to be filled with e.g. <code class="docutils literal"><span class="pre">on_menu_File_Reset</span></code> and <code class="docutils literal"><span class="pre">on_menu_File_Exit</span></code> for the two items.</p>
+<p>As of now, these items would not yet call any code when selected. So the “Event Handler” field needs to be filled with e.g. <span class="guilabel">on_menu_File_Reset</span> and <span class="guilabel">on_menu_File_Exit</span> for the two items.</p>
 <p>When done and after hitting the “Start generating source files”, the editor and the created code should look like this:</p>
 <table border="1" class="docutils">
 <colgroup>
@@ -108,15 +108,15 @@ The bottom part just lists the items, <br/> where the hierarchy is visualized by
 <tbody valign="top">
 <tr class="row-odd"><td><strong>Menu Editor</strong> <br/> <br/>
 with two items: <br/> <br/>
-For the “Reset” item, <br/>
-we set a name <code class="docutils literal"><span class="pre">i_reset</span></code>.</td>
+For the <span class="guilabel">Reset</span> item, <br/>
+we set a name <span class="guilabel">i_reset</span>.</td>
 <td><a class="first last reference internal image-reference" href="_images/Calculator07_Menu_Editor.png"><img alt="_images/Calculator07_Menu_Editor.png" src="_images/Calculator07_Menu_Editor.png" style="height: 200px;" /></a>
 </td>
 </tr>
 <tr class="row-even"><td><strong>Generated code</strong> <br/> <br/>
-including two event handlers <br/> <br/>
-The “Reset” menu item is assigned to <br/>
-<code class="docutils literal"><span class="pre">self.frame_menubar.i_reset</span></code> <br/>
+including two event handlers <br/> <br/> <br/>
+The <span class="guilabel">Reset</span> menu item is assigned to <br/>
+<code class="code docutils literal"><span class="pre">self.frame_menubar.i_reset</span></code> <br/>
 such that it can be accessed easily, <br/>
 e.g. for disabling it.</td>
 <td><div class="first last highlight-default"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">CalculatorFrame</span><span class="p">(</span><span class="n">wx</span><span class="o">.</span><span class="n">Frame</span><span class="p">):</span>
@@ -153,7 +153,7 @@ e.g. for disabling it.</td>
 <tr class="row-odd"><td><strong>Handler implementation</strong> <br/> <br/>
 in derived class <br/> <br/>
 including initial disabling of <br/>
-<code class="docutils literal"><span class="pre">self.frame_menubar.i_reset</span></code></td>
+<code class="code docutils literal"><span class="pre">self.frame_menubar.i_reset</span></code></td>
 <td><div class="first last highlight-default"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">MyFrame</span><span class="p">(</span><span class="n">CalculatorFrame</span><span class="p">):</span>
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwds</span><span class="p">):</span>
         <span class="n">CalculatorFrame</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwds</span><span class="p">)</span>
@@ -183,7 +183,7 @@ including initial disabling of <br/>
 </tbody>
 </table>
 <p>You can implement the handler either in a derived class or directly in the file that wxGlade has written. <br/>
-In the latter case, you should have enabled Application -&gt; <code class="docutils literal"><span class="pre">Keep</span> <span class="pre">user</span> <span class="pre">sources</span></code>.</p>
+In the latter case, you should have enabled <em>Properties -&gt; Application -&gt;</em> <span class="guilabel">Keep user sources</span>.</p>
 <dl class="docutils">
 <dt>The example menu is part of the example at wxglade/examples/Calculator:</dt>
 <dd><ul class="first last simple">
@@ -196,12 +196,12 @@ In the latter case, you should have enabled Application -&gt; <code class="docut
 </div>
 <div class="section" id="status-bar-editor">
 <h2>Status Bar Editor<a class="headerlink" href="#status-bar-editor" title="Permalink to this headline">¶</a></h2>
-<p>To attach a status bar to a frame, go to <em>Properties -&gt; Widget</em> and check <code class="docutils literal"><span class="pre">Has</span> <span class="pre">StatusBar</span></code>.
+<p>To attach a status bar to a frame, go to <em>Properties -&gt; Widget</em> and check <span class="guilabel">Has StatusBar</span>.
 This will add a statusbar icon to the <em>Tree</em> window, just below the frame’s icon.
-(Similar to <code class="docutils literal"><span class="pre">Has</span> <span class="pre">MenuBar</span></code> in the first screenshot on this page.)</p>
+(Similar to <span class="guilabel">Has MenuBar</span> in the first screenshot on this page.)</p>
 <p>To add/remove fields to the status bar, go to <em>Properties -&gt; Widget -&gt; Fields</em> and use
 the “Add”/”Insert”/”Remove”/”Apply” buttons.
-If you set the “Size” of a field to a negative value like <code class="docutils literal"><span class="pre">-1</span></code> or <code class="docutils literal"><span class="pre">-2</span></code>, it will <strong>grow to fill</strong> the available space.</p>
+If you set the “Size” of a field to a negative value like <span class="guilabel">-1</span> or <span class="guilabel">-2</span>, it will <strong>grow to fill</strong> the available space.</p>
 <p><strong>Example:</strong></p>
 <table border="1" class="docutils">
 <colgroup>

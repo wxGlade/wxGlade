@@ -62,7 +62,7 @@
 <div><ul class="simple">
 <li>Python code for wxWidgets 3.0 or Phoenix</li>
 <li>all code in a single file</li>
-<li>output file name <code class="docutils literal"><span class="pre">Calculator.py</span></code></li>
+<li>output file name “Calculator.py”</li>
 <li>an application should be created, not just the window</li>
 </ul>
 </div></blockquote>
@@ -77,7 +77,7 @@
 </tr>
 </tbody>
 </table>
-<p>To actually create the source code, press the button <code class="docutils literal"><span class="pre">Generate</span> <span class="pre">Source</span></code> or hit <code class="kbd docutils literal"><span class="pre">Ctrl-G</span></code>.</p>
+<p>To actually create the source code, press the button “Generate Source” or hit <code class="kbd docutils literal"><span class="pre">Ctrl-G</span></code>.</p>
 <p>The <strong>generated source</strong> looks like this:</p>
 <table border="1" class="docutils">
 <colgroup>
@@ -112,15 +112,15 @@ The Properties could look like these:</p>
     <span class="n">app</span><span class="o">.</span><span class="n">MainLoop</span><span class="p">()</span>
 </pre></div>
 </div>
-<p>In the example code, you should be able to identify the uses of <code class="docutils literal"><span class="pre">app</span></code>, <code class="docutils literal"><span class="pre">Myapp</span></code>, <code class="docutils literal"><span class="pre">frame</span></code> and <code class="docutils literal"><span class="pre">CalculatorFrame</span></code>.</p>
-<p>If <code class="docutils literal"><span class="pre">Application-&gt;Name</span></code> and <code class="docutils literal"><span class="pre">Application-&gt;Class</span></code> are deactivated, no application code will be generated. Usually you want to implement the application yourself, but still you can use the generated code as starting point.</p>
+<p>In the example code, you should be able to identify the uses of <span class="guilabel">app</span>, <span class="guilabel">Myapp</span>, <span class="guilabel">frame</span> and <span class="guilabel">CalculatorFrame</span>.</p>
+<p>If <em>Application -&gt; Name</em> and <em>Application -&gt; Class</em> are deactivated, no application code will be generated. Usually you want to implement the application yourself, but still you can use the generated code as starting point.</p>
 <p>The other, non-toplevel windows are usually called from your own code. Have a look at the generated code to see how to call them.</p>
 <p>Be aware that you need to use different class names for your toplevel windows.
 wxGlade will display the class name with a yellow background if it’s not unique.</p>
 </div>
 <div class="section" id="code-for-windows">
 <h2>Code for Windows<a class="headerlink" href="#code-for-windows" title="Permalink to this headline">¶</a></h2>
-<p>This is the full code for our main window <code class="docutils literal"><span class="pre">CalculatorFrame</span></code>.</p>
+<p>This is the full code for our main window <code class="code docutils literal"><span class="pre">CalculatorFrame</span></code>.</p>
 <p>The code is separated into creation of controls, definition of properties and layout generation:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">CalculatorFrame</span><span class="p">(</span><span class="n">wx</span><span class="o">.</span><span class="n">Frame</span><span class="p">):</span>
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwds</span><span class="p">):</span>
@@ -200,22 +200,22 @@ wxGlade will display the class name with a yellow background if it’s not uniqu
 </tbody>
 </table>
 <p>The code just creates the windows. There’s no functionality yet.</p>
-<p>In the generated code you can see assignments like <code class="docutils literal"><span class="pre">self.text_result</span> <span class="pre">=</span> <span class="pre">wx.TextCtrl(...)</span></code>.
-This allows you to access the control via the attribute <code class="docutils literal"><span class="pre">result_text</span></code>.
-You may e.g. call <code class="docutils literal"><span class="pre">frame.text_result.SetValue(str(result))</span></code> to display a value in the Result text control.</p>
-<p>Some widgets like <code class="docutils literal"><span class="pre">StaticText</span></code> are not accessible as attributes by default.
-You can change this by going to <em>Properties -&gt; Widget</em> and checking <code class="docutils literal"><span class="pre">Store</span> <span class="pre">as</span> <span class="pre">attribute</span></code>.
+<p>In the generated code you can see assignments like <code class="code docutils literal"><span class="pre">self.text_result</span> <span class="pre">=</span> <span class="pre">wx.TextCtrl(...)</span></code>.
+This allows you to access the control via the attribute <code class="code docutils literal"><span class="pre">text_result</span></code>.
+You may e.g. call <code class="code docutils literal"><span class="pre">frame.text_result.SetValue(str(result))</span></code> to display a value in the Result text control.</p>
+<p>Some widgets like <code class="code docutils literal"><span class="pre">StaticText</span></code> are not accessible as attributes by default.
+You can change this by going to <em>Properties -&gt; Widget</em> and checking <span class="guilabel">Store as attribute</span>.
 For Sizers you can achieve the same on the “Common” tab.</p>
 <p>As of now, nothing will happen if the user hits the “Execute” button. So we need an event handler for this.</p>
 </div>
 <div class="section" id="code-for-event-handlers">
 <h2>Code for Event Handlers<a class="headerlink" href="#code-for-event-handlers" title="Permalink to this headline">¶</a></h2>
 <p>Traditional programs or scripts usually have a defined flow.</p>
-<p>GUI programs on the other hand, are event-driven and the flow depends on the user’s actions. The events like mouse clicks are delivered from the operating system or window manager to the application. The receiving side is an infinite loop, called “event loop” or “main loop”. When you have a look at the last lines of a Python file that wxGlade wrote, you will see that the <code class="docutils literal"><span class="pre">MainLoop</span></code> method of your application is called. The main loop receives events from e.g. the Windows operating sytem and dispatches it to windows and controls. To handle things like mouse clicks, menu selections, button clicks etc. you need to register handlers.</p>
+<p>GUI programs on the other hand, are event-driven and the flow depends on the user’s actions. The events like mouse clicks are delivered from the operating system or window manager to the application. The receiving side is an infinite loop, called “event loop” or “main loop”. When you have a look at the last lines of a Python file that wxGlade wrote, you will see that the <code class="code docutils literal"><span class="pre">MainLoop</span></code> method of your application is called. The main loop receives events from e.g. the Windows operating sytem and dispatches it to windows and controls. To handle things like mouse clicks, menu selections, button clicks etc. you need to register handlers.</p>
 <p>wxGlade allows you to enter handler names. For any of these names, empty method stubs will be generated in the source code file and the methods will be bound when the window is created. Alternatively, you may define and register handlers yourself.</p>
 <p><strong>Example: button event EVT_BUTTON</strong></p>
-<p>The main event of a button is <code class="docutils literal"><span class="pre">EVT_BUTTON</span></code>.
-In the following example we want to call a method <code class="docutils literal"><span class="pre">on_button_pressed</span></code> whenever the <code class="docutils literal"><span class="pre">button_1</span></code> is clicked.</p>
+<p>The main event of a button is <code class="code docutils literal"><span class="pre">EVT_BUTTON</span></code>.
+In the following example we want to call a method <code class="code docutils literal"><span class="pre">on_button_pressed</span></code> whenever the <span class="guilabel">button_1</span> is clicked.</p>
 <p><strong>Method 1: use wxGlade to create a handler method</strong></p>
 <p>In the <em>Properties</em> window you can see the events (most controls have more than just one event) and enter the handler name:</p>
 <table border="1" class="docutils">
@@ -240,11 +240,11 @@ In the following example we want to call a method <code class="docutils literal"
     <span class="n">event</span><span class="o">.</span><span class="n">Skip</span><span class="p">()</span>
 </pre></div>
 </div>
-<p>The default handler just prints a message to the console and calls <code class="docutils literal"><span class="pre">event.Skip()</span></code> to forward the event to the the parent of the button.</p>
+<p>The default handler just prints a message to the console and calls <code class="code docutils literal"><span class="pre">event.Skip()</span></code> to forward the event to the the parent of the button.</p>
 <p><strong>Method 2 (Python only): enter a lambda function</strong></p>
 <p>If you’re generating Python code, then you may enter an anonymous lambda function as handler.</p>
-<p>In the example, the method <code class="docutils literal"><span class="pre">on_button_pressed</span></code> should be called back with the argument <code class="docutils literal"><span class="pre">1</span></code>. <br/>
-E.g. if you have a keypad of buttons <code class="docutils literal"><span class="pre">0</span></code> to <code class="docutils literal"><span class="pre">9</span></code> then you might prefer to handle the events like this to keep
+<p>In the example, the method <code class="code docutils literal"><span class="pre">on_button_pressed</span></code> should be called back with the argument <code class="code docutils literal"><span class="pre">1</span></code>. <br/>
+E.g. if you have a keypad of buttons <span class="guilabel">0</span> to <span class="guilabel">9</span> then you might prefer to handle the events like this to keep
 your business logic in the handler free from GUI related code.</p>
 <table border="1" class="docutils">
 <colgroup>
@@ -270,7 +270,7 @@ your business logic in the handler free from GUI related code.</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="bp">self</span><span class="o">.</span><span class="n">execute_button</span><span class="o">.</span><span class="n">Bind</span><span class="p">(</span><span class="n">wx</span><span class="o">.</span><span class="n">EVT_BUTTON</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">on_execute_button_clicked</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>wxGlade will only help you with the most important events, e.g. for the button it will just offer to generate a handler for <code class="docutils literal"><span class="pre">EVT_BUTTON</span></code>. You may want to register and handle other events like mouse movements as well.</p>
+<p>wxGlade will only help you with the most important events, e.g. for the button it will just offer to generate a handler for <code class="code docutils literal"><span class="pre">EVT_BUTTON</span></code>. You may want to register and handle other events like mouse movements as well.</p>
 </div>
 <div class="section" id="user-code-implement-functionality">
 <h2>User Code: Implement Functionality<a class="headerlink" href="#user-code-implement-functionality" title="Permalink to this headline">¶</a></h2>
@@ -285,7 +285,7 @@ your business logic in the handler free from GUI related code.</p>
 <p>For anything else than simple glue code, the latter is the recommended approach.</p>
 <div class="section" id="example-1-edit-in-place-keep-user-code">
 <h3>Example 1: Edit in place / “Keep user code”<a class="headerlink" href="#example-1-edit-in-place-keep-user-code" title="Permalink to this headline">¶</a></h3>
-<p>If you want to use the first approach, you need to set <code class="docutils literal"><span class="pre">Keep</span> <span class="pre">user</span> <span class="pre">code</span></code> for the application in the <em>Properties</em> window:</p>
+<p>If you want to use the first approach, you need to set <span class="guilabel">Keep user code</span> for the application in the <em>Properties</em> window:</p>
 <table border="1" class="docutils">
 <colgroup>
 <col width="100%" />
@@ -296,9 +296,9 @@ your business logic in the handler free from GUI related code.</p>
 </tr>
 </tbody>
 </table>
-<p>In this case, when you hit the “Generate Source” button, wxGlade will read the file and only overwrite the sections that were marked with <code class="docutils literal"><span class="pre">#</span> <span class="pre">begin</span> <span class="pre">wxGlade:...</span></code> and <code class="docutils literal"><span class="pre">#</span> <span class="pre">end</span> <span class="pre">wxGlade</span></code>.</p>
+<p>In this case, when you hit the “Generate Source” button, wxGlade will read the file and only overwrite the sections that were marked with <code class="code docutils literal"><span class="pre">#</span> <span class="pre">begin</span> <span class="pre">wxGlade:...</span></code> and <code class="code docutils literal"><span class="pre">#</span> <span class="pre">end</span> <span class="pre">wxGlade</span></code>.</p>
 <p><strong>Please be aware that this is not too robust when you e.g. rename objects. Always keep backups!</strong></p>
-<p>Event handlers are marked with <code class="docutils literal"><span class="pre">#</span> <span class="pre">wxGlade:</span> <span class="pre">MyFrame.&lt;event_handler&gt;</span></code>.
+<p>Event handlers are marked with <code class="code docutils literal"><span class="pre">#</span> <span class="pre">wxGlade:</span> <span class="pre">MyFrame.&lt;event_handler&gt;</span></code>.
 They will be read and written back unchanged. Don’t modify the marker.</p>
 <p>To implement functionality, replace the default handler, e.g.:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">on_execute_button_clicked</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>  <span class="c1"># wxGlade: MyFrame.&lt;event_handler&gt;</span>
@@ -337,10 +337,10 @@ They will be read and written back unchanged. Don’t modify the marker.</p>
 <li><a class="reference external" href="../../examples/Calculator/Calculator.py">Calculator.py</a></li>
 </ul>
 </dd>
-<dt>In these files, the event handlers for the two buttons are defined in <em>Properties -&gt; Events -&gt;</em> <code class="docutils literal"><span class="pre">EVT_BUTTON</span></code>:</dt>
+<dt>In these files, the event handlers for the two buttons are defined in <em>Properties -&gt; Events -&gt; EVT_BUTTON</em>:</dt>
 <dd><ul class="first last simple">
-<li><code class="docutils literal"><span class="pre">on_execute_button_clicked</span></code></li>
-<li><code class="docutils literal"><span class="pre">on_reset_button_clicked</span></code></li>
+<li><span class="guilabel">on_execute_button_clicked</span></li>
+<li><span class="guilabel">on_reset_button_clicked</span></li>
 </ul>
 </dd>
 </dl>
@@ -350,10 +350,11 @@ Please do better in your own code!</p>
 <dt>It would be good practice to:</dt>
 <dd><ul class="first last simple">
 <li>separate the business logic from the user interface by implementing e.g. methods like <br/>
-<code class="docutils literal"><span class="pre">validate_value(value)</span></code>, <code class="docutils literal"><span class="pre">calculate(value1,</span> <span class="pre">operator,</span> <span class="pre">value2)</span></code></li>
-<li>validate the contents of <code class="docutils literal"><span class="pre">text_value1/2</span></code> on every change of content (<code class="docutils literal"><span class="pre">EVT_TEXT</span></code>)</li>
+<code class="code docutils literal"><span class="pre">validate_value(value)</span></code>, <br/>
+<code class="code docutils literal"><span class="pre">calculate(value1,</span> <span class="pre">operator,</span> <span class="pre">value2)</span></code></li>
+<li>validate the contents of <code class="code docutils literal"><span class="pre">text_value1/2</span></code> on every change of content (<code class="code docutils literal"><span class="pre">EVT_TEXT</span></code>)</li>
 <li>report failed validation by colorizing the controls</li>
-<li>catch and log exceptions like <code class="docutils literal"><span class="pre">ZeroDivisionError</span></code></li>
+<li>catch and log exceptions like <code class="code docutils literal"><span class="pre">ZeroDivisionError</span></code></li>
 </ul>
 </dd>
 </dl>
@@ -361,9 +362,9 @@ Please do better in your own code!</p>
 <div class="section" id="example-2-import-and-override">
 <h3>Example 2: Import and override<a class="headerlink" href="#example-2-import-and-override" title="Permalink to this headline">¶</a></h3>
 <p>To actually <strong>use the generated event handler code</strong> and extend it with the required functionality, it’s best to
-create another Python file, import the generated code and use <code class="docutils literal"><span class="pre">app</span></code>/<code class="docutils literal"><span class="pre">MyApp</span></code> as template.</p>
-<p>For example, set wxGlade output file name to <code class="docutils literal"><span class="pre">Calculator_GUI.py</span></code> and let it generate the GUI code.
-Now create a file Calculator_Main.py:</p>
+create another Python file, import the generated code and use <code class="code docutils literal"><span class="pre">app</span></code> / <code class="code docutils literal"><span class="pre">MyApp</span></code> as template.</p>
+<p>For example, set wxGlade output file name to <span class="guilabel">Calculator_GUI.py</span> and let it generate the GUI code. <br/>
+Now create a file <code class="docutils literal"><span class="pre">Calculator_Main.py</span></code> where you can import and use the Calculator_GUI module:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="ch">#!/usr/bin/env python</span>
 <span class="c1"># -*- coding: UTF-8 -*-</span>
 

@@ -62,7 +62,7 @@ Create the basic structure:
 2. **Add the frame**:
 
    * click on the Frame icon |frame| on the "Windows" line of the *Palette* window
-   * as class name, enter ``CalculatorFrame``: |NewFrame_CalculatorFrame|
+   * as class name, enter :guilabel:`CalculatorFrame`: |NewFrame_CalculatorFrame|
 
 3. A frame with a sizer |sizer| and one slot is now visible in the *Tree* and *Design* window
    (there the slot is visualized by a hatched area)
@@ -77,10 +77,10 @@ Create the basic structure:
    * in the *Palette* window on the "Sizer" line click on the BoxSizer icon |sizer| to start the placement
    * in the Tree or Design window, click on the panel to place the sizer there
    * a dialog will open
-   * set "Orientation"  to ``Vertical`` and the number of slots to ``6``  |NewSizer_CalculatorVertical|
+   * set "Orientation"  to :guilabel:`Vertical` and the number of slots to :guilabel:`6`  |NewSizer_CalculatorVertical|
 
-6. Now add a **horizontal box sizer** to the first slot: do as before, but keep "Orientation" as ``Horizontal``
-   and set the number of slots to ``2``
+6. Now add a **horizontal box sizer** to the first slot: do as before, but keep "Orientation" as :guilabel:`Horizontal`
+   and set the number of slots to :guilabel:`2`
 7. Place a **StaticText** |static_text| as label (found on the "Static" line of *Palette*) in the top left slot and a **TextControl** |text_ctrl| (found on the "Inputs" line) in the right
 
 
@@ -105,12 +105,12 @@ Also, layout and alignment need to be changed, but we'll change this later on.
 2. If not yet visible, open the *Properties* window.
 3. In the *Properties* window:
 
-   * Edit the label to display ``Value 1:`` by entering this on the editor's notebook tab "Widget". |br|
+   * Edit the label to display :guilabel:`Value 1:` by entering this on the editor's notebook tab "Widget". |br|
      (You could also edit the label directly in the *Tree* window by clicking into the label and/or pressing :kbd:`F2`.)
 
-4. Select the frame in the *Tree* window and go to *Properties -> Widget -> Title* and change it from ``frame`` to ``Calculator``.
+4. Select the frame in the *Tree* window and go to *Properties -> Widget -> Title* and change it from :guilabel:`frame` to :guilabel:`Calculator`.
 5. You may want to define a default size for the frame: |br|
-   Go to *Properties -> Common -> Size* and set it to ``400,300``. |br|
+   Go to *Properties -> Common -> Size* and set it to :guilabel:`400,300`. |br|
    Without this, the frame will be created with the minimum possible size to fit all controls.
 
 
@@ -123,7 +123,7 @@ Part 2: Add the remaining rows and widgets
 *********************************************************************
 
 We need almost the same combination of sizer+label+text for the second value and the result, so we'll copy the horizontal sizer including it's content from the first to the third and fifth slot of the vertical sizer.
-Having done so, we will modify the label fields of the newly copied wxStaticText widgets to ``Value 2`` and ``Result`` (consistent with the layout for the calculator presented on the :doc:`wxbasics` page).
+Having done so, we will modify the label fields of the newly copied wxStaticText widgets to :guilabel:`Value 2` and :guilabel:`Result` (consistent with the layout for the calculator presented on the :doc:`wxbasics` page).
 |br|
 After that, we'll add the "Operator" radio box and the buttons.
 
@@ -177,12 +177,12 @@ Further Editing
 The TextCtrl adjacent to the "Result" StaticText should display multiple lines of text and should not be editable.
 To modify accordingly, just follow these steps:
 
- 1. Select the text control ``txt_ctrl_3`` |br| (depending on the exact steps of editing, the name might be slightly different)
+ 1. Select the text control :guilabel:`txt_ctrl_3` |br| (depending on the exact steps of editing, the name might be slightly different)
  2. Go to *Properties -> Widget*
- 3. In the section "Style", enable ``wxTE_MULTILINE`` and ``wxTE_READONLY``
+ 3. In the section "Style", enable :guilabel:`wxTE_MULTILINE` and :guilabel:`wxTE_READONLY`
  4. Go to *Properties -> Common*
- 5. Click the "..." button right to ``Background`` and select grey colour or |br|
-    just enter ``#d4d0c8`` into the text control.
+ 5. Click the "..." button right to :guilabel:`Background` and select grey colour or |br|
+    just enter :guilabel:`#d4d0c8` into the text control.
 
 The last step is to have a grey background.
 For single line read-only text controls, this is done automatically by wx, but not with multiple lines.
@@ -232,11 +232,11 @@ To edit in the *Tree* window, you can select and then click on the label or pres
 
 This needs to be done now:
 
-* Set the names of the text controls to ``text_value1``, ``text_value2`` and ``text_result``.
-* Set the name of the radio box to ``radiobox_operator``
-* Set the labels to ``Value 1:``, ``Operator:``, ``Value 2:`` and ``Result:``
-* Set the name of the first button to ``button_execute`` and the label to ``Execute``.
-* Set the name of the second button to ``button_reset`` and the label to ``Reset``.
+* Set the names of the text controls to :guilabel:`text_value1`, :guilabel:`text_value2` and :guilabel:`text_result`.
+* Set the name of the radio box to :guilabel:`radiobox_operator`
+* Set the labels to :guilabel:`Value 1:`, :guilabel:`Operator:`, :guilabel:`Value 2:` and :guilabel:`Result:`
+* Set the name of the first button to :guilabel:`button_execute` and the label to :guilabel:`Execute`.
+* Set the name of the second button to :guilabel:`button_reset` and the label to :guilabel:`Reset`.
 
 
 For our example project where multiple labels and names have to be modified, it's much faster to do so in the *Tree*
@@ -248,10 +248,10 @@ Example for editing in the *Tree* window:
 
   .. |Tree_Rename1| image:: images/Tree_Rename1.png
 
-* The name is ``button_1`` and the label is ``button_1``
-* The displayed text in the *Tree* window is ``button_1: "button_1"``  |br|
+* The name is :guilabel:`button_1` and the label is :guilabel:`button_1`
+* The displayed text in the *Tree* window is :guilabel:`button_1: "button_1"`  |br|
   |Tree_Rename0|
-* Change to ``button_execute: "Execute"``  |br|
+* Change to :guilabel:`button_execute: "Execute"`  |br|
   |Tree_Rename1|
 
 
@@ -279,45 +279,45 @@ So all elements are there, but the layout is not yet what we want to have:
 
 1. We want the rows with the values, operators and buttons **not to grow vertically**:
 
-   * select one of the horizontal sizers (e.g. ``sizer_3`` around ``Value 1``)
-   * set *Properties -> Layout -> Proportion* to ``0``
-   * select the next of the sizers (e.g. around ``Operator``)
-   * either set *Properties -> Layout -> Proportion* to ``0``
+   * select one of the horizontal sizers (e.g. :guilabel:`sizer_3` around :guilabel:`Value 1`)
+   * set *Properties -> Layout -> Proportion* to :guilabel:`0`
+   * select the next of the sizers (e.g. around :guilabel:`Operator`)
+   * either set *Properties -> Layout -> Proportion* to :guilabel:`0`
      or just hit :kbd:`Ctrl-Y` to apply the last change to the selected sizer
-   * do the same for the remaining sizers (e.g. around ``Value 2`` and the buttons)
+   * do the same for the remaining sizers (e.g. around :guilabel:`Value 2` and the buttons)
 
 2. We want the text controls to **grow horizontally** to fill the available space:
 
    * select one of the text controls (e.g. text_value1)
-   * set *Properties -> Layout -> Proportion* to ``1``
+   * set *Properties -> Layout -> Proportion* to :guilabel:`1`
    * do the same for the other controls, either by modifying the Proportion properties
      or by hitting :kbd:`Ctrl-Y` to apply the last change to the selected control
 
-3. The labels ``Value 1``, ``Operator`` and ``Value 2`` should better
+3. The labels :guilabel:`Value 1`, :guilabel:`Operator` and :guilabel:`Value 2` should better
    **align vertically** with their text controls:
 
    * select label
-   * set the checkbox *Properties -> Layout -> Alignment ->* ``wxALIGN_CENTER_VERTICAL``
+   * set the checkbox *Properties -> Layout -> Alignment ->* :guilabel:`wxALIGN_CENTER_VERTICAL`
    * do the same for the other two labels
 
 4. We want the Result text control to **fill the available vertical space**:
 
    * select text control
-   * set the checkbox *Properties -> Layout -> Alignment ->* ``wxEXPAND`` 
+   * set the checkbox *Properties -> Layout -> Alignment ->* :guilabel:`wxEXPAND` 
 
 5. We want the buttons at the bottom to be **centered**; so the layout of the sizer around them needs to be set:
 
    * go to *Properties -> Layout -> Alignment*
-   * de-select the checkbox ``wxEXPAND``
-   * select the checkbox ``wxALIGN_CENTER_HORIZONTAL``
+   * de-select the checkbox :guilabel:`wxEXPAND`
+   * select the checkbox :guilabel:`wxALIGN_CENTER_HORIZONTAL`
 
 6. We want a small **border** above and beyond the horizontal line and around each of the buttons:
 
    * select the horizontal line
-   * set *Properties -> Layout -> Border* to ``5``
-   * uncheck *Properties -> Layout -> Border ->* ``wxLEFT`` and ``wxRIGHT``
+   * set *Properties -> Layout -> Border* to :guilabel:`5`
+   * uncheck *Properties -> Layout -> Border ->* :guilabel:`wxLEFT` and :guilabel:`wxRIGHT`
    * select the first button
-   * set *Properties -> Layout -> Border* to ``5``
+   * set *Properties -> Layout -> Border* to :guilabel:`5`
    * do the same with the second button (e.g. by selecting it and then hitting :kbd:`Ctrl-Y`)
 
 
@@ -360,9 +360,9 @@ Excursion: Layout properties: Proportion and Alignment->wxEXPAND:
     :alt: Text Ctrl: EXPAND -> the control expands vertically, as it is within a horizontal sizer
 
 
-The "Proportion" of ``1`` makes the element grow with a proportional factor of 1 when the horizontal sizer is growing. Please note that this growth happens only in the "main" direction of the sizer; the sizer is horizontal, so this change makes the text control grow in width.
+The "Proportion" of :guilabel:`1` makes the element grow with a proportional factor of 1 when the horizontal sizer is growing. Please note that this growth happens only in the "main" direction of the sizer; the sizer is horizontal, so this change makes the text control grow in width.
 |br|
-For a growth in the other direction, ``wxEXPAND`` in the "Alignment" box would need to be checked.
+For a growth in the other direction, :guilabel:`wxEXPAND` in the "Alignment" box would need to be checked.
 
 |br|
 You may try this to see the difference:
@@ -457,9 +457,9 @@ A notebook can only be added to an empty sizer slot. In our case, we want to kee
 
 * click on the Notebook icon |notebook| in the section "Containers" of the *Palette* window to start placing a notebook
 * click on the hatched area in the *Design* window or on the sizer slot |sizer_slot| in the *Tree* window
-* in the dialog, select ``wxNB_TOP`` to place the notebook tabs at the top
+* in the dialog, select :guilabel:`wxNB_TOP` to place the notebook tabs at the top
 
-The newly created notebook will have one page already, which consists of just a panel. It will have a default name like ``notebook_1_pane_1``.
+The newly created notebook will have one page already, which consists of just a panel. It will have a default name like :guilabel:`notebook_1_pane_1`.
 
 **Fill the first page:**
 
@@ -520,9 +520,9 @@ You should know how to do this by now:
 
 * add a sizer to the notebook pane (with a single slot)
 * add a text control to the sizer slot
-* set the layout: a "Proportion" of ``1`` and ``wxEXPAND`` such that the text control will fill the whole page
-* set the widget style to ``wxTE_MULTILINE`` and ``wxTE_READONLY``
-* set the widget background color to ``#d4d0c8``
+* set the layout: a "Proportion" of :guilabel:`1` and :guilabel:`wxEXPAND` such that the text control will fill the whole page
+* set the widget style to :guilabel:`wxTE_MULTILINE` and :guilabel:`wxTE_READONLY`
+* set the widget background color to :guilabel:`#d4d0c8`
 
 This file can be found in the folder ``wxglade/examples/Calculator``:
 `Calculator-04-Notebook.wxg <../../examples/Calculator/Calculator-04-Notebook.wxg>`_
@@ -571,8 +571,8 @@ In our example, we may place a spacer to the left and right of the operator radi
      - |Calculator_Spacers_Design0|
 
    * - 
-       * insert spacers into these slots |br| (e.g. with "Width" ``20`` and "Height" ``0``) 
-       * set "Proportion" to ``1`` |br| 
+       * insert spacers into these slots |br| (e.g. with "Width" :guilabel:`20` and "Height" :guilabel:`0`) 
+       * set "Proportion" to :guilabel:`1` |br| 
          to make them grow 
      - |Calculator_Spacers_Design|
 
@@ -583,7 +583,7 @@ In our example, we may place a spacer to the left and right of the operator radi
      - |Calculator_Spacers_Properties|
    * - As the spacers have a height of 0, you will not see them in the design window. |br| |br|
        If you don't like this, you may actually set the "Height" property to a different value and
-       maybe even set ``EXPAND``. For the actual window this will not make a difference,
+       maybe even set :guilabel:`EXPAND`. For the actual window this will not make a difference,
        as the spacers are invisible, but the spacers will be visible in the *Design* window:
      - |Calculator_Spacers2|
 
@@ -642,16 +642,16 @@ The result will look like this:
 
 * Add a slot to the vertical sizer
 * Add a GridSizer |grid_sizer| to this slot
-* In the grid sizer dialog, select ``FlexGrid``, ``4`` rows and ``2`` cols: |br|
+* In the grid sizer dialog, select :guilabel:`FlexGrid`, :guilabel:`4` rows and :guilabel:`2` cols: |br|
   |FlexGridSizerDlg|
 * Move the labels and controls to the slots of the newly created sizer
 * Delete the old sizer
 * In *Properties -> Grid*: make column 2 and row 4 growable: |br|
   |FlexGridSizer_Properties|
-* To make the text controls ``text_value1`` and ``text_value2`` actually fill the growable column: |br|
-  activate *Properties -> Layout -> Alignment ->* ``wxEXPAND`` for both of them
+* To make the text controls :guilabel:`text_value1` and :guilabel:`text_value2` actually fill the growable column: |br|
+  activate *Properties -> Layout -> Alignment ->* :guilabel:`wxEXPAND` for both of them
 
-The logic with ``wxEXPAND`` is a bit different than with non-grid sizers.
+The logic with :guilabel:`wxEXPAND` is a bit different than with non-grid sizers.
 If it is active, the control will grow horizontally and vertically.
 If you want to avoid this, you need to add a horizontal or vertical sizer 'between' grid sizer and control.
 
@@ -659,7 +659,7 @@ This file can be found in the folder ``wxglade/examples/Calculator``:
 `Calculator-06-GridSizer.wxg <../../examples/Calculator/Calculator-06-GridSizer.wxg>`_
 
 *********************************************************************
-Next steps:
+Next steps
 *********************************************************************
 
  - create source code and add event handlers - see :doc:`source_code`

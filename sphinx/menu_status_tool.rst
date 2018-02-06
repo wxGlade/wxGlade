@@ -14,7 +14,7 @@ Menu Editor
 
 wxGlade includes a simple menu editor.
 
-To attach a menu to a frame, go to *Properties -> Widget* and check ``Has MenuBar``. |br|
+To attach a menu to a frame, go to *Properties -> Widget* and check :guilabel:`Has MenuBar`. |br|
 This will add a menubar icon to the *Tree* window, just below the frame's icon. |br|
 To open the menu editor, click the "Edit menus..." button.
 
@@ -65,11 +65,11 @@ The following screenshots are from the file `wxglade/examples/Allwidgets_28.wxg 
 As an exercise, we will now add a "File" menu with two entries to our calculator window.
 
  * When you hit "Edit menus..." for the first time, the bottom part of the editor window is almost empty. It will just contain a default entry "item".
- * To create the required menu structure, change the label to ``File``.
- * To create the first item, hit "Add" and then the ">" button to turn it into a submenu item and then change the label to ``Reset``. Give this item a name ``i_reset``
- * Do the same again for an item "Exit".
+ * To create the required menu structure, change the label to :guilabel:`File`.
+ * To create the first item, hit "Add" and then the ">" button to turn it into a submenu item and then change the label to :guilabel:`Reset`. Give this item a name :guilabel:`i_reset`. The item will then be stored with this attribute name, such that it can e.g. enabled and disabled programmatically.
+ * Create an item :guilabel:`Exit` with event handler :guilabel:`on_menu_File_Exit`
  
-As of now, these items would not yet call any code when selected. So the "Event Handler" field needs to be filled with e.g. ``on_menu_File_Reset`` and ``on_menu_File_Exit`` for the two items.
+As of now, these items would not yet call any code when selected. So the "Event Handler" field needs to be filled with e.g. :guilabel:`on_menu_File_Reset` and :guilabel:`on_menu_File_Exit` for the two items.
 
 When done and after hitting the "Start generating source files", the editor and the created code should look like this:
 
@@ -79,15 +79,15 @@ When done and after hitting the "Start generating source files", the editor and 
 
     * - **Menu Editor** |br| |br| 
         with two items: |br| |br|
-        For the "Reset" item, |br|
-        we set a name ``i_reset``.
+        For the :guilabel:`Reset` item, |br|
+        we set a name :guilabel:`i_reset`.
       - .. image:: images/Calculator07_Menu_Editor.png
             :height: 200
 
     * - **Generated code** |br| |br|
-        including two event handlers |br| |br|
-        The "Reset" menu item is assigned to |br|
-        ``self.frame_menubar.i_reset`` |br|
+        including two event handlers |br| |br| |br|
+        The :guilabel:`Reset` menu item is assigned to |br|
+        :code:`self.frame_menubar.i_reset` |br|
         such that it can be accessed easily, |br|
         e.g. for disabling it.
       - ::
@@ -123,7 +123,7 @@ When done and after hitting the "Start generating source files", the editor and 
     * - **Handler implementation** |br| |br|
         in derived class |br| |br|
         including initial disabling of |br|
-        ``self.frame_menubar.i_reset``
+        :code:`self.frame_menubar.i_reset`
       - ::
 
             class MyFrame(CalculatorFrame):
@@ -151,7 +151,7 @@ When done and after hitting the "Start generating source files", the editor and 
 
 
 You can implement the handler either in a derived class or directly in the file that wxGlade has written. |br|
-In the latter case, you should have enabled Application -> ``Keep user sources``.
+In the latter case, you should have enabled *Properties -> Application ->* :guilabel:`Keep user sources`.
 
 
 The example menu is part of the example at wxglade/examples/Calculator:
@@ -164,13 +164,13 @@ The example menu is part of the example at wxglade/examples/Calculator:
 Status Bar Editor
 *********************************************************************
 
-To attach a status bar to a frame, go to *Properties -> Widget* and check ``Has StatusBar``.
+To attach a status bar to a frame, go to *Properties -> Widget* and check :guilabel:`Has StatusBar`.
 This will add a statusbar icon to the *Tree* window, just below the frame's icon.
-(Similar to ``Has MenuBar`` in the first screenshot on this page.)
+(Similar to :guilabel:`Has MenuBar` in the first screenshot on this page.)
 
 To add/remove fields to the status bar, go to *Properties -> Widget -> Fields* and use
 the "Add"/"Insert"/"Remove"/"Apply" buttons.
-If you set the "Size" of a field to a negative value like ``-1`` or ``-2``, it will **grow to fill** the available space.
+If you set the "Size" of a field to a negative value like :guilabel:`-1` or :guilabel:`-2`, it will **grow to fill** the available space.
 
 **Example:**
 

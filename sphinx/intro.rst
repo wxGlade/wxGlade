@@ -105,3 +105,17 @@ Each example file includes a frame with most of the supported widgets and also a
       * select the toplevel object "Application" and hit the button "Generate Source" in the *Properties* window
     
     * press :kbd:`F5` to create a preview
+
+**More examples:**
+
+There are additional examples in ``wxglade/examples`` showing how to use the CustomWidget to integrate some widgets that are not directly supported by wxGlade. The wxGlade design window will only display a placeholder for these.
+
+ * ``html``: use :code:`wx.html.HtmlWindow` to display simple HTML pages
+ * ``html2``: use :code:`wx.html2.WebView` to display HTML with Javascript and CSS
+ * ``lib_plot``: use :code:`wx.lib.plot.PlotCanvas` for plotting
+ * ``matplotlib``: use a Matplotlib canvas for plotting, quick and dirty version
+ * ``matplotlib2``: use a Matplotlib canvas for plotting, better structured
+ * ``matplotlib3``: full Matplotlib embedding example
+ * ``SpeedMeter``: demonstrate :code:`wx.lib.agw.speedmeter.SpeedMeter`
+ * ``py_shell``: show how to embed a Python shell :code:`wx.py.shell.Shell`
+Some of these are explained in :doc:`custom_widgets`.

@@ -60,7 +60,7 @@
 <li>Select “File-&gt;New” to <strong>create a new file</strong> and “File-&gt;Save” to save a .wxg file to a directory.</li>
 <li><strong>Add the frame</strong>:<ul>
 <li>click on the Frame icon <img alt="frame" src="_images/frame.png" /> on the “Windows” line of the <em>Palette</em> window</li>
-<li>as class name, enter <code class="docutils literal"><span class="pre">CalculatorFrame</span></code>: <a class="reference internal" href="_images/NewFrame_CalculatorFrame.png"><img alt="New Frame dialog" src="_images/NewFrame_CalculatorFrame.png" style="width: 30px;" /></a></li>
+<li>as class name, enter <span class="guilabel">CalculatorFrame</span>: <a class="reference internal" href="_images/NewFrame_CalculatorFrame.png"><img alt="New Frame dialog" src="_images/NewFrame_CalculatorFrame.png" style="width: 30px;" /></a></li>
 </ul>
 </li>
 <li>A frame with a sizer <img alt="sizer" src="_images/sizer.png" /> and one slot is now visible in the <em>Tree</em> and <em>Design</em> window
@@ -75,11 +75,11 @@ To add the panel:<ul>
 <li>in the <em>Palette</em> window on the “Sizer” line click on the BoxSizer icon <img alt="sizer" src="_images/sizer.png" /> to start the placement</li>
 <li>in the Tree or Design window, click on the panel to place the sizer there</li>
 <li>a dialog will open</li>
-<li>set “Orientation”  to <code class="docutils literal"><span class="pre">Vertical</span></code> and the number of slots to <code class="docutils literal"><span class="pre">6</span></code>  <a class="reference internal" href="_images/NewSizer_CalculatorVertical.png"><img alt="New Sizer dialog" src="_images/NewSizer_CalculatorVertical.png" style="width: 30px;" /></a></li>
+<li>set “Orientation”  to <span class="guilabel">Vertical</span> and the number of slots to <span class="guilabel">6</span>  <a class="reference internal" href="_images/NewSizer_CalculatorVertical.png"><img alt="New Sizer dialog" src="_images/NewSizer_CalculatorVertical.png" style="width: 30px;" /></a></li>
 </ul>
 </li>
-<li>Now add a <strong>horizontal box sizer</strong> to the first slot: do as before, but keep “Orientation” as <code class="docutils literal"><span class="pre">Horizontal</span></code>
-and set the number of slots to <code class="docutils literal"><span class="pre">2</span></code></li>
+<li>Now add a <strong>horizontal box sizer</strong> to the first slot: do as before, but keep “Orientation” as <span class="guilabel">Horizontal</span>
+and set the number of slots to <span class="guilabel">2</span></li>
 <li>Place a <strong>StaticText</strong> <img alt="static_text" src="_images/static_text.png" /> as label (found on the “Static” line of <em>Palette</em>) in the top left slot and a <strong>TextControl</strong> <img alt="text_ctrl" src="_images/text_ctrl.png" /> (found on the “Inputs” line) in the right</li>
 </ol>
 </div>
@@ -103,13 +103,13 @@ Also, layout and alignment need to be changed, but we’ll change this later on.
 <li>Select the label in the <em>Tree</em> or <em>Design</em> window.</li>
 <li>If not yet visible, open the <em>Properties</em> window.</li>
 <li>In the <em>Properties</em> window:<ul>
-<li>Edit the label to display <code class="docutils literal"><span class="pre">Value</span> <span class="pre">1:</span></code> by entering this on the editor’s notebook tab “Widget”. <br/>
+<li>Edit the label to display <span class="guilabel">Value 1:</span> by entering this on the editor’s notebook tab “Widget”. <br/>
 (You could also edit the label directly in the <em>Tree</em> window by clicking into the label and/or pressing <code class="kbd docutils literal"><span class="pre">F2</span></code>.)</li>
 </ul>
 </li>
-<li>Select the frame in the <em>Tree</em> window and go to <em>Properties -&gt; Widget -&gt; Title</em> and change it from <code class="docutils literal"><span class="pre">frame</span></code> to <code class="docutils literal"><span class="pre">Calculator</span></code>.</li>
+<li>Select the frame in the <em>Tree</em> window and go to <em>Properties -&gt; Widget -&gt; Title</em> and change it from <span class="guilabel">frame</span> to <span class="guilabel">Calculator</span>.</li>
 <li>You may want to define a default size for the frame: <br/>
-Go to <em>Properties -&gt; Common -&gt; Size</em> and set it to <code class="docutils literal"><span class="pre">400,300</span></code>. <br/>
+Go to <em>Properties -&gt; Common -&gt; Size</em> and set it to <span class="guilabel">400,300</span>. <br/>
 Without this, the frame will be created with the minimum possible size to fit all controls.</li>
 </ol>
 <p>This file can be found in the folder <code class="docutils literal"><span class="pre">wxglade/examples/Calculator</span></code>:
@@ -119,7 +119,7 @@ Without this, the frame will be created with the minimum possible size to fit al
 <div class="section" id="part-2-add-the-remaining-rows-and-widgets">
 <h2>Part 2: Add the remaining rows and widgets<a class="headerlink" href="#part-2-add-the-remaining-rows-and-widgets" title="Permalink to this headline">¶</a></h2>
 <p>We need almost the same combination of sizer+label+text for the second value and the result, so we’ll copy the horizontal sizer including it’s content from the first to the third and fifth slot of the vertical sizer.
-Having done so, we will modify the label fields of the newly copied wxStaticText widgets to <code class="docutils literal"><span class="pre">Value</span> <span class="pre">2</span></code> and <code class="docutils literal"><span class="pre">Result</span></code> (consistent with the layout for the calculator presented on the <a class="reference internal" href="wxbasics.html"><span class="doc">wx Basics</span></a> page).
+Having done so, we will modify the label fields of the newly copied wxStaticText widgets to <span class="guilabel">Value 2</span> and <span class="guilabel">Result</span> (consistent with the layout for the calculator presented on the <a class="reference internal" href="wxbasics.html"><span class="doc">wx Basics</span></a> page).
 <br/>
 After that, we’ll add the “Operator” radio box and the buttons.</p>
 <div class="section" id="there-are-several-methods-to-copy">
@@ -176,12 +176,12 @@ After that, we’ll add the “Operator” radio box and the buttons.</p>
 To modify accordingly, just follow these steps:</p>
 <blockquote>
 <div><ol class="arabic simple">
-<li>Select the text control <code class="docutils literal"><span class="pre">txt_ctrl_3</span></code> <br/> (depending on the exact steps of editing, the name might be slightly different)</li>
+<li>Select the text control <span class="guilabel">txt_ctrl_3</span> <br/> (depending on the exact steps of editing, the name might be slightly different)</li>
 <li>Go to <em>Properties -&gt; Widget</em></li>
-<li>In the section “Style”, enable <code class="docutils literal"><span class="pre">wxTE_MULTILINE</span></code> and <code class="docutils literal"><span class="pre">wxTE_READONLY</span></code></li>
+<li>In the section “Style”, enable <span class="guilabel">wxTE_MULTILINE</span> and <span class="guilabel">wxTE_READONLY</span></li>
 <li>Go to <em>Properties -&gt; Common</em></li>
-<li>Click the “…” button right to <code class="docutils literal"><span class="pre">Background</span></code> and select grey colour or <br/>
-just enter <code class="docutils literal"><span class="pre">#d4d0c8</span></code> into the text control.</li>
+<li>Click the “…” button right to <span class="guilabel">Background</span> and select grey colour or <br/>
+just enter <span class="guilabel">#d4d0c8</span> into the text control.</li>
 </ol>
 </div></blockquote>
 <p>The last step is to have a grey background.
@@ -229,11 +229,11 @@ You can do this in the <em>Properties</em> window or directly in the <em>Tree</e
 To edit in the <em>Tree</em> window, you can select and then click on the label or press <code class="kbd docutils literal"><span class="pre">F2</span></code>.</p>
 <p>This needs to be done now:</p>
 <ul class="simple">
-<li>Set the names of the text controls to <code class="docutils literal"><span class="pre">text_value1</span></code>, <code class="docutils literal"><span class="pre">text_value2</span></code> and <code class="docutils literal"><span class="pre">text_result</span></code>.</li>
-<li>Set the name of the radio box to <code class="docutils literal"><span class="pre">radiobox_operator</span></code></li>
-<li>Set the labels to <code class="docutils literal"><span class="pre">Value</span> <span class="pre">1:</span></code>, <code class="docutils literal"><span class="pre">Operator:</span></code>, <code class="docutils literal"><span class="pre">Value</span> <span class="pre">2:</span></code> and <code class="docutils literal"><span class="pre">Result:</span></code></li>
-<li>Set the name of the first button to <code class="docutils literal"><span class="pre">button_execute</span></code> and the label to <code class="docutils literal"><span class="pre">Execute</span></code>.</li>
-<li>Set the name of the second button to <code class="docutils literal"><span class="pre">button_reset</span></code> and the label to <code class="docutils literal"><span class="pre">Reset</span></code>.</li>
+<li>Set the names of the text controls to <span class="guilabel">text_value1</span>, <span class="guilabel">text_value2</span> and <span class="guilabel">text_result</span>.</li>
+<li>Set the name of the radio box to <span class="guilabel">radiobox_operator</span></li>
+<li>Set the labels to <span class="guilabel">Value 1:</span>, <span class="guilabel">Operator:</span>, <span class="guilabel">Value 2:</span> and <span class="guilabel">Result:</span></li>
+<li>Set the name of the first button to <span class="guilabel">button_execute</span> and the label to <span class="guilabel">Execute</span>.</li>
+<li>Set the name of the second button to <span class="guilabel">button_reset</span> and the label to <span class="guilabel">Reset</span>.</li>
 </ul>
 <p>For our example project where multiple labels and names have to be modified, it’s much faster to do so in the <em>Tree</em>
 window.</p>
@@ -241,10 +241,10 @@ window.</p>
 <blockquote>
 <div></div></blockquote>
 <ul class="simple">
-<li>The name is <code class="docutils literal"><span class="pre">button_1</span></code> and the label is <code class="docutils literal"><span class="pre">button_1</span></code></li>
-<li>The displayed text in the <em>Tree</em> window is <code class="docutils literal"><span class="pre">button_1:</span> <span class="pre">&quot;button_1&quot;</span></code>  <br/>
+<li>The name is <span class="guilabel">button_1</span> and the label is <span class="guilabel">button_1</span></li>
+<li>The displayed text in the <em>Tree</em> window is <span class="guilabel">button_1: “button_1”</span>  <br/>
 <img alt="Tree_Rename0" src="_images/Tree_Rename0.png" /></li>
-<li>Change to <code class="docutils literal"><span class="pre">button_execute:</span> <span class="pre">&quot;Execute&quot;</span></code>  <br/>
+<li>Change to <span class="guilabel">button_execute: “Execute”</span>  <br/>
 <img alt="Tree_Rename1" src="_images/Tree_Rename1.png" /></li>
 </ul>
 <p><strong>The Tree structure of your design should now look like this:</strong></p>
@@ -277,45 +277,45 @@ window.</p>
 <p>So all elements are there, but the layout is not yet what we want to have:</p>
 <ol class="arabic simple">
 <li>We want the rows with the values, operators and buttons <strong>not to grow vertically</strong>:<ul>
-<li>select one of the horizontal sizers (e.g. <code class="docutils literal"><span class="pre">sizer_3</span></code> around <code class="docutils literal"><span class="pre">Value</span> <span class="pre">1</span></code>)</li>
-<li>set <em>Properties -&gt; Layout -&gt; Proportion</em> to <code class="docutils literal"><span class="pre">0</span></code></li>
-<li>select the next of the sizers (e.g. around <code class="docutils literal"><span class="pre">Operator</span></code>)</li>
-<li>either set <em>Properties -&gt; Layout -&gt; Proportion</em> to <code class="docutils literal"><span class="pre">0</span></code>
+<li>select one of the horizontal sizers (e.g. <span class="guilabel">sizer_3</span> around <span class="guilabel">Value 1</span>)</li>
+<li>set <em>Properties -&gt; Layout -&gt; Proportion</em> to <span class="guilabel">0</span></li>
+<li>select the next of the sizers (e.g. around <span class="guilabel">Operator</span>)</li>
+<li>either set <em>Properties -&gt; Layout -&gt; Proportion</em> to <span class="guilabel">0</span>
 or just hit <code class="kbd docutils literal"><span class="pre">Ctrl-Y</span></code> to apply the last change to the selected sizer</li>
-<li>do the same for the remaining sizers (e.g. around <code class="docutils literal"><span class="pre">Value</span> <span class="pre">2</span></code> and the buttons)</li>
+<li>do the same for the remaining sizers (e.g. around <span class="guilabel">Value 2</span> and the buttons)</li>
 </ul>
 </li>
 <li>We want the text controls to <strong>grow horizontally</strong> to fill the available space:<ul>
 <li>select one of the text controls (e.g. text_value1)</li>
-<li>set <em>Properties -&gt; Layout -&gt; Proportion</em> to <code class="docutils literal"><span class="pre">1</span></code></li>
+<li>set <em>Properties -&gt; Layout -&gt; Proportion</em> to <span class="guilabel">1</span></li>
 <li>do the same for the other controls, either by modifying the Proportion properties
 or by hitting <code class="kbd docutils literal"><span class="pre">Ctrl-Y</span></code> to apply the last change to the selected control</li>
 </ul>
 </li>
-<li>The labels <code class="docutils literal"><span class="pre">Value</span> <span class="pre">1</span></code>, <code class="docutils literal"><span class="pre">Operator</span></code> and <code class="docutils literal"><span class="pre">Value</span> <span class="pre">2</span></code> should better
+<li>The labels <span class="guilabel">Value 1</span>, <span class="guilabel">Operator</span> and <span class="guilabel">Value 2</span> should better
 <strong>align vertically</strong> with their text controls:<ul>
 <li>select label</li>
-<li>set the checkbox <em>Properties -&gt; Layout -&gt; Alignment -&gt;</em> <code class="docutils literal"><span class="pre">wxALIGN_CENTER_VERTICAL</span></code></li>
+<li>set the checkbox <em>Properties -&gt; Layout -&gt; Alignment -&gt;</em> <span class="guilabel">wxALIGN_CENTER_VERTICAL</span></li>
 <li>do the same for the other two labels</li>
 </ul>
 </li>
 <li>We want the Result text control to <strong>fill the available vertical space</strong>:<ul>
 <li>select text control</li>
-<li>set the checkbox <em>Properties -&gt; Layout -&gt; Alignment -&gt;</em> <code class="docutils literal"><span class="pre">wxEXPAND</span></code></li>
+<li>set the checkbox <em>Properties -&gt; Layout -&gt; Alignment -&gt;</em> <span class="guilabel">wxEXPAND</span></li>
 </ul>
 </li>
 <li>We want the buttons at the bottom to be <strong>centered</strong>; so the layout of the sizer around them needs to be set:<ul>
 <li>go to <em>Properties -&gt; Layout -&gt; Alignment</em></li>
-<li>de-select the checkbox <code class="docutils literal"><span class="pre">wxEXPAND</span></code></li>
-<li>select the checkbox <code class="docutils literal"><span class="pre">wxALIGN_CENTER_HORIZONTAL</span></code></li>
+<li>de-select the checkbox <span class="guilabel">wxEXPAND</span></li>
+<li>select the checkbox <span class="guilabel">wxALIGN_CENTER_HORIZONTAL</span></li>
 </ul>
 </li>
 <li>We want a small <strong>border</strong> above and beyond the horizontal line and around each of the buttons:<ul>
 <li>select the horizontal line</li>
-<li>set <em>Properties -&gt; Layout -&gt; Border</em> to <code class="docutils literal"><span class="pre">5</span></code></li>
-<li>uncheck <em>Properties -&gt; Layout -&gt; Border -&gt;</em> <code class="docutils literal"><span class="pre">wxLEFT</span></code> and <code class="docutils literal"><span class="pre">wxRIGHT</span></code></li>
+<li>set <em>Properties -&gt; Layout -&gt; Border</em> to <span class="guilabel">5</span></li>
+<li>uncheck <em>Properties -&gt; Layout -&gt; Border -&gt;</em> <span class="guilabel">wxLEFT</span> and <span class="guilabel">wxRIGHT</span></li>
 <li>select the first button</li>
-<li>set <em>Properties -&gt; Layout -&gt; Border</em> to <code class="docutils literal"><span class="pre">5</span></code></li>
+<li>set <em>Properties -&gt; Layout -&gt; Border</em> to <span class="guilabel">5</span></li>
 <li>do the same with the second button (e.g. by selecting it and then hitting <code class="kbd docutils literal"><span class="pre">Ctrl-Y</span></code>)</li>
 </ul>
 </li>
@@ -341,9 +341,9 @@ Actually, “Preview” internally creates and executes Python source code.</p>
 </div>
 <div class="section" id="excursion-layout-properties-proportion-and-alignment-wxexpand">
 <h3>Excursion: Layout properties: Proportion and Alignment-&gt;wxEXPAND:<a class="headerlink" href="#excursion-layout-properties-proportion-and-alignment-wxexpand" title="Permalink to this headline">¶</a></h3>
-<p>The “Proportion” of <code class="docutils literal"><span class="pre">1</span></code> makes the element grow with a proportional factor of 1 when the horizontal sizer is growing. Please note that this growth happens only in the “main” direction of the sizer; the sizer is horizontal, so this change makes the text control grow in width.
+<p>The “Proportion” of <span class="guilabel">1</span> makes the element grow with a proportional factor of 1 when the horizontal sizer is growing. Please note that this growth happens only in the “main” direction of the sizer; the sizer is horizontal, so this change makes the text control grow in width.
 <br/>
-For a growth in the other direction, <code class="docutils literal"><span class="pre">wxEXPAND</span></code> in the “Alignment” box would need to be checked.</p>
+For a growth in the other direction, <span class="guilabel">wxEXPAND</span> in the “Alignment” box would need to be checked.</p>
 <p><br/>
 You may try this to see the difference:</p>
 <table border="1" class="docutils align-center">
@@ -420,9 +420,9 @@ to the main direction of the surrounding horizontal sizer.
 <ul class="simple">
 <li>click on the Notebook icon <img alt="notebook" src="_images/notebook.png" /> in the section “Containers” of the <em>Palette</em> window to start placing a notebook</li>
 <li>click on the hatched area in the <em>Design</em> window or on the sizer slot <img alt="sizer_slot" src="_images/sizer_slot.png" /> in the <em>Tree</em> window</li>
-<li>in the dialog, select <code class="docutils literal"><span class="pre">wxNB_TOP</span></code> to place the notebook tabs at the top</li>
+<li>in the dialog, select <span class="guilabel">wxNB_TOP</span> to place the notebook tabs at the top</li>
 </ul>
-<p>The newly created notebook will have one page already, which consists of just a panel. It will have a default name like <code class="docutils literal"><span class="pre">notebook_1_pane_1</span></code>.</p>
+<p>The newly created notebook will have one page already, which consists of just a panel. It will have a default name like <span class="guilabel">notebook_1_pane_1</span>.</p>
 <p><strong>Fill the first page:</strong></p>
 <p>Move the existing controls to the first notebook page:</p>
 <table border="1" class="docutils">
@@ -478,9 +478,9 @@ enter the headings for the notebook pages</li>
 <ul class="simple">
 <li>add a sizer to the notebook pane (with a single slot)</li>
 <li>add a text control to the sizer slot</li>
-<li>set the layout: a “Proportion” of <code class="docutils literal"><span class="pre">1</span></code> and <code class="docutils literal"><span class="pre">wxEXPAND</span></code> such that the text control will fill the whole page</li>
-<li>set the widget style to <code class="docutils literal"><span class="pre">wxTE_MULTILINE</span></code> and <code class="docutils literal"><span class="pre">wxTE_READONLY</span></code></li>
-<li>set the widget background color to <code class="docutils literal"><span class="pre">#d4d0c8</span></code></li>
+<li>set the layout: a “Proportion” of <span class="guilabel">1</span> and <span class="guilabel">wxEXPAND</span> such that the text control will fill the whole page</li>
+<li>set the widget style to <span class="guilabel">wxTE_MULTILINE</span> and <span class="guilabel">wxTE_READONLY</span></li>
+<li>set the widget background color to <span class="guilabel">#d4d0c8</span></li>
 </ul>
 <p>This file can be found in the folder <code class="docutils literal"><span class="pre">wxglade/examples/Calculator</span></code>:
 <a class="reference external" href="../../examples/Calculator/Calculator-04-Notebook.wxg">Calculator-04-Notebook.wxg</a></p>
@@ -504,8 +504,8 @@ enter the headings for the notebook pages</li>
 <td><a class="reference internal" href="_images/Calculator_Spacers_Design0.png"><img alt="Calculator with empty slots for spacers" src="_images/Calculator_Spacers_Design0.png" style="width: 180px;" /></a></td>
 </tr>
 <tr class="row-even"><td><ul class="first last simple">
-<li>insert spacers into these slots <br/> (e.g. with “Width” <code class="docutils literal"><span class="pre">20</span></code> and “Height” <code class="docutils literal"><span class="pre">0</span></code>)</li>
-<li>set “Proportion” to <code class="docutils literal"><span class="pre">1</span></code> <br/>
+<li>insert spacers into these slots <br/> (e.g. with “Width” <span class="guilabel">20</span> and “Height” <span class="guilabel">0</span>)</li>
+<li>set “Proportion” to <span class="guilabel">1</span> <br/>
 to make them grow</li>
 </ul>
 </td>
@@ -520,7 +520,7 @@ the settings to make the spacers grow:</td>
 </tr>
 <tr class="row-odd"><td>As the spacers have a height of 0, you will not see them in the design window. <br/> <br/>
 If you don’t like this, you may actually set the “Height” property to a different value and
-maybe even set <code class="docutils literal"><span class="pre">EXPAND</span></code>. For the actual window this will not make a difference,
+maybe even set <span class="guilabel">EXPAND</span>. For the actual window this will not make a difference,
 as the spacers are invisible, but the spacers will be visible in the <em>Design</em> window:</td>
 <td><a class="reference internal" href="_images/Calculator_Spacers2.png"><img alt="One spacer with height 10 and one with 20" src="_images/Calculator_Spacers2.png" style="width: 180px;" /></a></td>
 </tr>
@@ -558,23 +558,23 @@ The result will look like this:</p>
 <ul class="simple">
 <li>Add a slot to the vertical sizer</li>
 <li>Add a GridSizer <img alt="grid_sizer" src="_images/grid_sizer.png" /> to this slot</li>
-<li>In the grid sizer dialog, select <code class="docutils literal"><span class="pre">FlexGrid</span></code>, <code class="docutils literal"><span class="pre">4</span></code> rows and <code class="docutils literal"><span class="pre">2</span></code> cols: <br/>
+<li>In the grid sizer dialog, select <span class="guilabel">FlexGrid</span>, <span class="guilabel">4</span> rows and <span class="guilabel">2</span> cols: <br/>
 <a class="reference internal" href="_images/FlexGridSizerDlg.png"><img alt="FlexGridSizer Dialog" src="_images/FlexGridSizerDlg.png" style="height: 80px;" /></a></li>
 <li>Move the labels and controls to the slots of the newly created sizer</li>
 <li>Delete the old sizer</li>
 <li>In <em>Properties -&gt; Grid</em>: make column 2 and row 4 growable: <br/>
 <a class="reference internal" href="_images/FlexGridSizer_Properties.png"><img alt="FlexGridSizer Properties" src="_images/FlexGridSizer_Properties.png" style="height: 80px;" /></a></li>
-<li>To make the text controls <code class="docutils literal"><span class="pre">text_value1</span></code> and <code class="docutils literal"><span class="pre">text_value2</span></code> actually fill the growable column: <br/>
-activate <em>Properties -&gt; Layout -&gt; Alignment -&gt;</em> <code class="docutils literal"><span class="pre">wxEXPAND</span></code> for both of them</li>
+<li>To make the text controls <span class="guilabel">text_value1</span> and <span class="guilabel">text_value2</span> actually fill the growable column: <br/>
+activate <em>Properties -&gt; Layout -&gt; Alignment -&gt;</em> <span class="guilabel">wxEXPAND</span> for both of them</li>
 </ul>
-<p>The logic with <code class="docutils literal"><span class="pre">wxEXPAND</span></code> is a bit different than with non-grid sizers.
+<p>The logic with <span class="guilabel">wxEXPAND</span> is a bit different than with non-grid sizers.
 If it is active, the control will grow horizontally and vertically.
 If you want to avoid this, you need to add a horizontal or vertical sizer ‘between’ grid sizer and control.</p>
 <p>This file can be found in the folder <code class="docutils literal"><span class="pre">wxglade/examples/Calculator</span></code>:
 <a class="reference external" href="../../examples/Calculator/Calculator-06-GridSizer.wxg">Calculator-06-GridSizer.wxg</a></p>
 </div>
 <div class="section" id="next-steps">
-<h2>Next steps:<a class="headerlink" href="#next-steps" title="Permalink to this headline">¶</a></h2>
+<h2>Next steps<a class="headerlink" href="#next-steps" title="Permalink to this headline">¶</a></h2>
 <blockquote>
 <div><ul class="simple">
 <li>create source code and add event handlers - see <a class="reference internal" href="source_code.html"><span class="doc">Create and Use Source Code</span></a></li>
@@ -612,7 +612,7 @@ If you want to avoid this, you need to add a horizontal or vertical sizer ‘bet
 <li><a class="reference internal" href="#part-3-add-a-notebook">Part 3: Add a Notebook</a></li>
 <li><a class="reference internal" href="#part-4-use-of-spacers">Part 4: Use of Spacers</a></li>
 <li><a class="reference internal" href="#part-5-use-of-grid-sizers">Part 5: Use of Grid Sizers</a></li>
-<li><a class="reference internal" href="#next-steps">Next steps:</a></li>
+<li><a class="reference internal" href="#next-steps">Next steps</a></li>
 </ul>
 </li>
 </ul>
