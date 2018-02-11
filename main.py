@@ -874,9 +874,9 @@ class wxGladeFrame(wx.Frame):
                 wx.MessageBox( _('Error saving preferences:\n%s') % e,
                                _('Error'), wx.OK|wx.CENTRE|wx.ICON_ERROR )
             #self._skip_activate = True
-            self.property_frame.Destroy()
+            if self.property_frame: self.property_frame.Destroy()
             self.property_frame = None
-            self.tree_frame.Destroy()
+            if self.tree_frame: self.tree_frame.Destroy()
             self.tree_frame = None
             self.Destroy()
             common.remove_autosaved()  # ALB 2004-10-15
