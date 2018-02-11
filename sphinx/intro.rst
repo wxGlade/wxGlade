@@ -118,4 +118,5 @@ There are additional examples in ``wxglade/examples`` showing how to use the Cus
  * ``matplotlib3``: full Matplotlib embedding example
  * ``SpeedMeter``: demonstrate :code:`wx.lib.agw.speedmeter.SpeedMeter`
  * ``py_shell``: show how to embed a Python shell :code:`wx.py.shell.Shell`
-Some of these are explained in :doc:`custom_widgets`.
+
+Some of these are explained in :doc:`custom_widgets`, some have `Readme.txt` files.

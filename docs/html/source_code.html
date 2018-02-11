@@ -94,7 +94,7 @@
 <div class="section" id="application-toplevel-windows">
 <h2>Application, Toplevel Windows<a class="headerlink" href="#application-toplevel-windows" title="Permalink to this headline">¶</a></h2>
 <p>A wxGlade project may contain any number of toplevel frames or dialogs. Code will be generated for each of these.</p>
-<p>By default, also code for a basic application will be created.
+<p>By default, also boilerplate code for a basic application will be created.
 <br/>
 The Properties could look like these:</p>
 <img alt="wxGlade title" src="_images/Toplevel_App.png" />
@@ -205,7 +205,7 @@ This allows you to access the control via the attribute <code class="code docuti
 You may e.g. call <code class="code docutils literal"><span class="pre">frame.text_result.SetValue(str(result))</span></code> to display a value in the Result text control.</p>
 <p>Some widgets like <code class="code docutils literal"><span class="pre">StaticText</span></code> are not accessible as attributes by default.
 You can change this by going to <em>Properties -&gt; Widget</em> and checking <span class="guilabel">Store as attribute</span>.
-For Sizers you can achieve the same on the “Common” tab.</p>
+For sizers you can achieve the same on the “Common” tab.</p>
 <p>As of now, nothing will happen if the user hits the “Execute” button. So we need an event handler for this.</p>
 </div>
 <div class="section" id="code-for-event-handlers">
