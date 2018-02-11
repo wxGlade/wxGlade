@@ -9,13 +9,13 @@ Custom Widget
 .. |custom| image:: images/custom.png
 
 
-Very often you may want to use a widget that is not supported by wxGlade.
+Sometimes you may want to use a widget that is not supported by wxGlade.
 
 For this, just insert a CustomWidget |custom| as placeholder.
 |br|
 You will be prompted for a class name. In the *Design* and *Preview* windows, just a placeholder will be shown.
 
-**The Properties window for an example "ImagePanel" could look like this:**
+**E.g. the Properties window to integrate "wx.html.HtmlWindow" could look like this:**
 
 .. |CustomWidgetPropertiesCommon| image:: images/CustomWidgetPropertiesCommon.png
    :width: 300
@@ -38,17 +38,14 @@ You will be prompted for a class name. In the *Design* and *Preview* windows, ju
 
    * - **Properties -> Common:** |br| |br|
        Property "Class" is the name of the class that will be instantiated. |br|
-       In this example: :guilabel:`ImagePanel`
+       In this example: :guilabel:`wx.html.HtmlWindow`
      - |CustomWidgetPropertiesCommon| 
    * - **Properties -> Widget:** |br| |br|
        The arguments for instantiation of the class.
        |br| Usually you will at least enter :guilabel:`$parent` here.
      - |CustomWidgetProperties| 
    * - **Properties -> Code:** |br| |br|
-       Enter the import statement here, if required. |br| |br|
-       For our example, :code:`import ImagePanel` could be used, |br|
-       but then the "Class" property must be fully qualified:|br|
-       :guilabel:`ImagePanel.ImagePanel`
+       Enter the import statement here, if required.
      - |CustomWidgetPropertiesCode| 
 
 
@@ -57,14 +54,31 @@ You will be prompted for a class name. In the *Design* and *Preview* windows, ju
 **Import** statement at the head of the file::
 
     # begin wxGlade: extracode
-    from ImagePanel import ImagePanel
+    import wx.html
     # end wxGlade
 
 **Instantiation** of the class::
 
-    self.panel_image_left = ImagePanel(self.main_panel, wx.ID_ANY)
+    self.html = wx.html.HtmlWindow(self.panel_1, wx.ID_ANY)
 
 The Arguments :guilabel:`$parent` and :guilabel:`$id` were replaced with the required code. There are two more magic arguments: :guilabel:`$width` and :guilabel:`$height`.
+
+The files can be found in the folder ``wxglade/examples/html``:
+ * `matplotlib_example.wxg <../../examples/html/html_example.wxg>`_
+ * `matplotlib_example.py <../../examples/html/html_example.py>`_
+
+Custom constructor
+==================
+
+For most applications you would probably be more interested in using :code:`wx.html2.WebView` as this will
+display non-trivial HTML, JavaScript and CSS pages.
+
+See ``wxglade/examples/html2`` for an example application.
+
+The :code:`html2.WebView` class is a bit special as it is not to be instantiated directly.
+Instead, :code:`wx.html2.WebView.New` is to be called. In the .wxg file this is handled by setting
+*Properties -> Widget -> Custom constructor ->* to :guilabel:`wx.html2.WebView.New`.
+
 
 
 Example 'matplotlib': matplotlib canvas, quick and dirty
@@ -176,4 +190,6 @@ Example 'matplotlib3': matplotlib canvas, comprehensive embedding example
 
 This example shows most of the building blocks that you will need for integration of a Matplotlib canvas.
 It shows how to plot and draw, zoom and drag, select items, export images and so on.
+
+This example is only for Matplotlib versions >=2.2.
 

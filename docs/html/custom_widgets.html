@@ -51,11 +51,11 @@
             
   <div class="section" id="custom-widget">
 <h1>Custom Widget<a class="headerlink" href="#custom-widget" title="Permalink to this headline">¶</a></h1>
-<p>Very often you may want to use a widget that is not supported by wxGlade.</p>
+<p>Sometimes you may want to use a widget that is not supported by wxGlade.</p>
 <p>For this, just insert a CustomWidget <img alt="custom" src="_images/custom.png" /> as placeholder.
 <br/>
 You will be prompted for a class name. In the <em>Design</em> and <em>Preview</em> windows, just a placeholder will be shown.</p>
-<p><strong>The Properties window for an example “ImagePanel” could look like this:</strong></p>
+<p><strong>E.g. the Properties window to integrate “wx.html.HtmlWindow” could look like this:</strong></p>
 <table border="1" class="colwidths-given docutils align-center">
 <colgroup>
 <col width="40%" />
@@ -64,7 +64,7 @@ You will be prompted for a class name. In the <em>Design</em> and <em>Preview</e
 <tbody valign="top">
 <tr class="row-odd"><td><strong>Properties -&gt; Common:</strong> <br/> <br/>
 Property “Class” is the name of the class that will be instantiated. <br/>
-In this example: <span class="guilabel">ImagePanel</span></td>
+In this example: <span class="guilabel">wx.html.HtmlWindow</span></td>
 <td><a class="reference internal" href="_images/CustomWidgetPropertiesCommon.png"><img alt="CustomWidgetPropertiesCommon" class="align-middle" src="_images/CustomWidgetPropertiesCommon.png" style="width: 300px;" /></a></td>
 </tr>
 <tr class="row-even"><td><strong>Properties -&gt; Widget:</strong> <br/> <br/>
@@ -73,10 +73,7 @@ The arguments for instantiation of the class.
 <td><a class="reference internal" href="_images/CustomWidgetProperties.png"><img alt="CustomWidgetProperties" class="align-middle" src="_images/CustomWidgetProperties.png" style="width: 300px;" /></a></td>
 </tr>
 <tr class="row-odd"><td><strong>Properties -&gt; Code:</strong> <br/> <br/>
-Enter the import statement here, if required. <br/> <br/>
-For our example, <code class="code docutils literal"><span class="pre">import</span> <span class="pre">ImagePanel</span></code> could be used, <br/>
-but then the “Class” property must be fully qualified:<br/>
-<span class="guilabel">ImagePanel.ImagePanel</span></td>
+Enter the import statement here, if required.</td>
 <td><a class="reference internal" href="_images/CustomWidgetPropertiesCode.png"><img alt="CustomWidgetPropertiesCode" class="align-middle" src="_images/CustomWidgetPropertiesCode.png" style="width: 300px;" /></a></td>
 </tr>
 </tbody>
@@ -84,15 +81,32 @@ but then the “Class” property must be fully qualified:<br/>
 <p><strong>The generated code for this example will look like this:</strong></p>
 <p><strong>Import</strong> statement at the head of the file:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="c1"># begin wxGlade: extracode</span>
-<span class="kn">from</span> <span class="nn">ImagePanel</span> <span class="k">import</span> <span class="n">ImagePanel</span>
+<span class="kn">import</span> <span class="nn">wx.html</span>
 <span class="c1"># end wxGlade</span>
 </pre></div>
 </div>
 <p><strong>Instantiation</strong> of the class:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="bp">self</span><span class="o">.</span><span class="n">panel_image_left</span> <span class="o">=</span> <span class="n">ImagePanel</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">main_panel</span><span class="p">,</span> <span class="n">wx</span><span class="o">.</span><span class="n">ID_ANY</span><span class="p">)</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="bp">self</span><span class="o">.</span><span class="n">html</span> <span class="o">=</span> <span class="n">wx</span><span class="o">.</span><span class="n">html</span><span class="o">.</span><span class="n">HtmlWindow</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">panel_1</span><span class="p">,</span> <span class="n">wx</span><span class="o">.</span><span class="n">ID_ANY</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>The Arguments <span class="guilabel">$parent</span> and <span class="guilabel">$id</span> were replaced with the required code. There are two more magic arguments: <span class="guilabel">$width</span> and <span class="guilabel">$height</span>.</p>
+<dl class="docutils">
+<dt>The files can be found in the folder <code class="docutils literal"><span class="pre">wxglade/examples/html</span></code>:</dt>
+<dd><ul class="first last simple">
+<li><a class="reference external" href="../../examples/html/html_example.wxg">matplotlib_example.wxg</a></li>
+<li><a class="reference external" href="../../examples/html/html_example.py">matplotlib_example.py</a></li>
+</ul>
+</dd>
+</dl>
+<div class="section" id="custom-constructor">
+<h2>Custom constructor<a class="headerlink" href="#custom-constructor" title="Permalink to this headline">¶</a></h2>
+<p>For most applications you would probably be more interested in using <code class="code docutils literal"><span class="pre">wx.html2.WebView</span></code> as this will
+display non-trivial HTML, JavaScript and CSS pages.</p>
+<p>See <code class="docutils literal"><span class="pre">wxglade/examples/html2</span></code> for an example application.</p>
+<p>The <code class="code docutils literal"><span class="pre">html2.WebView</span></code> class is a bit special as it is not to be instantiated directly.
+Instead, <code class="code docutils literal"><span class="pre">wx.html2.WebView.New</span></code> is to be called. In the .wxg file this is handled by setting
+<em>Properties -&gt; Widget -&gt; Custom constructor -&gt;</em> to <span class="guilabel">wx.html2.WebView.New</span>.</p>
+</div>
 <div class="section" id="example-matplotlib-matplotlib-canvas-quick-and-dirty">
 <h2>Example ‘matplotlib’: matplotlib canvas, quick and dirty<a class="headerlink" href="#example-matplotlib-matplotlib-canvas-quick-and-dirty" title="Permalink to this headline">¶</a></h2>
 <p>The above example was rather simple to implement as the class <code class="code docutils literal"><span class="pre">ImagePanel</span></code> did not require any extra
@@ -184,6 +198,7 @@ The resulting code will be cleaner and also easier to maintain and extend.</p>
 <h2>Example ‘matplotlib3’: matplotlib canvas, comprehensive embedding example<a class="headerlink" href="#example-matplotlib3-matplotlib-canvas-comprehensive-embedding-example" title="Permalink to this headline">¶</a></h2>
 <p>This example shows most of the building blocks that you will need for integration of a Matplotlib canvas.
 It shows how to plot and draw, zoom and drag, select items, export images and so on.</p>
+<p>This example is only for Matplotlib versions &gt;=2.2.</p>
 </div>
 </div>
 
@@ -199,6 +214,7 @@ It shows how to plot and draw, zoom and drag, select items, export images and so
   <h3><a href="index.html">Table Of Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#">Custom Widget</a><ul>
+<li><a class="reference internal" href="#custom-constructor">Custom constructor</a></li>
 <li><a class="reference internal" href="#example-matplotlib-matplotlib-canvas-quick-and-dirty">Example ‘matplotlib’: matplotlib canvas, quick and dirty</a></li>
 <li><a class="reference internal" href="#example-matplotlib2-matplotlib-canvas-well-structured">Example ‘matplotlib2’: matplotlib canvas, well structured</a></li>
 <li><a class="reference internal" href="#example-matplotlib3-matplotlib-canvas-comprehensive-embedding-example">Example ‘matplotlib3’: matplotlib canvas, comprehensive embedding example</a></li>
