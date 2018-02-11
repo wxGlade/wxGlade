@@ -148,6 +148,8 @@ class Application(np.PropertyOwner):
         self.use_gettext = np.CheckBoxProperty(config.default_use_gettext)
         # wx Version: string of major dot minor version number
         version = "%d.%d"%compat.version
+        if not version in self.all_supported_versions:
+            version = "2.8"  if version[0]=="2" else  "3.0"
         self.for_version = np.RadioProperty( version, self.all_supported_versions, tooltips=self._VERSION_TOOLTIPS)
 
         # encoding
