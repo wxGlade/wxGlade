@@ -57,7 +57,7 @@ Application, Toplevel Windows
 
 A wxGlade project may contain any number of toplevel frames or dialogs. Code will be generated for each of these.
 
-By default, also code for a basic application will be created.
+By default, also boilerplate code for a basic application will be created.
 |br|
 The Properties could look like these:
 
@@ -182,7 +182,7 @@ You may e.g. call :code:`frame.text_result.SetValue(str(result))` to display a v
 
 Some widgets like :code:`StaticText` are not accessible as attributes by default.
 You can change this by going to *Properties -> Widget* and checking :guilabel:`Store as attribute`.
-For Sizers you can achieve the same on the "Common" tab.
+For sizers you can achieve the same on the "Common" tab.
 
 As of now, nothing will happen if the user hits the "Execute" button. So we need an event handler for this.
 
