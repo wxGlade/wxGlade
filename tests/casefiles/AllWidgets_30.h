@@ -144,6 +144,8 @@ protected:
     wxStaticBitmap* bitmap_file;
     wxStaticBitmap* bitmap_nofile;
     wxStaticBitmap* bitmap_art;
+    wxStaticBitmap* bitmap_null;
+    wxStaticBitmap* bitmap_null_sized;
     wxPanel* notebook_1_wxStaticBitmap;
     wxStaticLine* static_line_2;
     wxStaticLine* static_line_3;
