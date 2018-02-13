@@ -114,6 +114,14 @@ class WXGladeBaseTest(unittest.TestCase):
         self.assertFalse( diff, "Generated file and expected result differs:\n%s" % "\n".join(diff) )
         return True
 
+    def _get_inputfile_path(self, filename):
+        "return the absolute path of a .wxg input file"
+        basename, extension = os.path.splitext(filename)
+        fn = os.path.join(self.caseDirectory, filename)
+        if os.path.exists(fn):
+            return fn
+        return None
+
     def _get_casefile_path(self, filename):
         "return the absolute path of an input file or directory; for .py files, this might include _Phoenix/_Classic"
         basename, extension = os.path.splitext(filename)
@@ -254,7 +262,7 @@ class WXGladeGUITest(WXGladeBaseTest):
             languages -= set(excluded)
 
         # open file
-        infilename = self._get_casefile_path('%s.wxg' % basename)
+        infilename = self._get_inputfile_path('%s.wxg' % basename)
         common.palette._open_app(infilename, use_progress_dialog=False, add_to_history=False)
 
         # some shortcuts
@@ -291,11 +299,11 @@ class WXGladeGUITest(WXGladeBaseTest):
             compare_filename = self._get_casefile_path(infilename)  # some properties may have changed on loading
             common.palette._save_app(generated_filename)
             if compat.PYTHON2:
-                if self._compare_files(infilename, generated_filename):
+                if self._compare_files(compare_filename, generated_filename):
                     diff_fails.append("wxg")
             else:
                 with self.subTest(subtest):
-                    self._compare_files(infilename, generated_filename)
+                    self._compare_files(compare_filename, generated_filename)
                 subtest += 1
 
         # try to generate code with empty output path -> will fail
