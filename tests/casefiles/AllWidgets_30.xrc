@@ -790,6 +790,21 @@
                                     <bitmap stock_id="wxART_PRINT" />
                                 </object>
                             </object>
+                            <object class="sizeritem">
+                                <option>1</option>
+                                <flag>wxALIGN_CENTER|wxALL|wxEXPAND</flag>
+                                <border>5</border>
+                                <object class="wxStaticBitmap" name="bitmap_null">
+                                </object>
+                            </object>
+                            <object class="sizeritem">
+                                <option>1</option>
+                                <flag>wxALIGN_CENTER|wxALL|wxEXPAND</flag>
+                                <border>5</border>
+                                <object class="wxStaticBitmap" name="bitmap_null_sized">
+                                    <size>50, 50</size>
+                                </object>
+                            </object>
                         </object>
                     </object>
                     </object>

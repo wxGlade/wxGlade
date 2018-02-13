@@ -158,6 +158,8 @@ sub new {
     $self->{bitmap_file} = Wx::StaticBitmap->new($self->{notebook_1_wxStaticBitmap}, wxID_ANY, Wx::Bitmap->new("icon.xpm", wxBITMAP_TYPE_ANY));
     $self->{bitmap_nofile} = Wx::StaticBitmap->new($self->{notebook_1_wxStaticBitmap}, wxID_ANY, Wx::Bitmap->new("non-existing.bmp", wxBITMAP_TYPE_ANY));
     $self->{bitmap_art} = Wx::StaticBitmap->new($self->{notebook_1_wxStaticBitmap}, wxID_ANY, Wx::ArtProvider::GetBitmap(wxART_PRINT, wxART_OTHER, Wx::Size->new(32, 32)));
+    $self->{bitmap_null} = Wx::StaticBitmap->new($self->{notebook_1_wxStaticBitmap}, wxID_ANY, wxNullBitmap);
+    $self->{bitmap_null_sized} = Wx::StaticBitmap->new($self->{notebook_1_wxStaticBitmap}, wxID_ANY, wxNullBitmap);
     $self->{notebook_1_wxStaticLine} = Wx::Panel->new($self->{notebook_1}, wxID_ANY);
     $self->{static_line_2} = Wx::StaticLine->new($self->{notebook_1_wxStaticLine}, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxLI_VERTICAL);
     $self->{static_line_3} = Wx::StaticLine->new($self->{notebook_1_wxStaticLine}, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxLI_VERTICAL);
@@ -236,7 +238,7 @@ sub __set_properties {
     $self->{combo_box_filled}->SetSelection(0);
     $self->{grid_1}->CreateGrid(10, 3);
     $self->{grid_1}->SetSelectionMode(wxGridSelectColumns);
-    $self->{grid_1}->SetColLabelValue(1, _T("B\nC"));
+    $self->{grid_1}->SetColLabelValue(1, _T("B\nB"));
     $self->{list_box_filled}->SetSelection(1);
     $self->{radio_box_filled1}->SetSelection(1);
     $self->{radio_box_filled2}->SetSelection(1);
@@ -244,6 +246,7 @@ sub __set_properties {
     $self->{notebook_1_wxSplitterWindow_horizontal}->SetScrollRate(10, 10);
     $self->{splitter_2}->SetMinimumPaneSize(20);
     $self->{notebook_1_wxSplitterWindow_vertical}->SetScrollRate(10, 10);
+    $self->{bitmap_null_sized}->SetMinSize(Wx::Size->new(50, 50));
     $self->{label_1}->SetForegroundColour(Wx::Colour->new(255, 0, 0));
     $self->{label_4}->SetBackgroundColour(Wx::Colour->new(255, 0, 0));
     $self->{label_4}->SetToolTip(_T("Background colour won't show, check documentation for more details"));
@@ -378,6 +381,8 @@ sub __do_layout {
     $self->{sizer_11}->Add($self->{bitmap_file}, 1, wxALIGN_CENTER|wxALL|wxEXPAND, 5);
     $self->{sizer_11}->Add($self->{bitmap_nofile}, 1, wxALIGN_CENTER|wxALL|wxEXPAND, 5);
     $self->{sizer_11}->Add($self->{bitmap_art}, 1, wxALIGN_CENTER|wxALL|wxEXPAND, 5);
+    $self->{sizer_11}->Add($self->{bitmap_null}, 1, wxALIGN_CENTER|wxALL|wxEXPAND, 5);
+    $self->{sizer_11}->Add($self->{bitmap_null_sized}, 1, wxALIGN_CENTER|wxALL|wxEXPAND, 5);
     $self->{notebook_1_wxStaticBitmap}->SetSizer($self->{sizer_11});
     $self->{sizer_10}->Add($self->{static_line_2}, 1, wxALL|wxEXPAND, 5);
     $self->{sizer_10}->Add($self->{static_line_3}, 1, wxALL|wxEXPAND, 5);

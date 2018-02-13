@@ -167,6 +167,8 @@ All_Widgets_Frame::All_Widgets_Frame(wxWindow* parent, wxWindowID id, const wxSt
     bitmap_file = new wxStaticBitmap(notebook_1_wxStaticBitmap, wxID_ANY, wxBitmap(wxT("icon.xpm"), wxBITMAP_TYPE_ANY));
     bitmap_nofile = new wxStaticBitmap(notebook_1_wxStaticBitmap, wxID_ANY, wxBitmap(wxT("non-existing.bmp"), wxBITMAP_TYPE_ANY));
     bitmap_art = new wxStaticBitmap(notebook_1_wxStaticBitmap, wxID_ANY, wxArtProvider::GetBitmap(wxART_PRINT, wxART_OTHER, wxSize(32, 32)));
+    bitmap_null = new wxStaticBitmap(notebook_1_wxStaticBitmap, wxID_ANY, wxNullBitmap);
+    bitmap_null_sized = new wxStaticBitmap(notebook_1_wxStaticBitmap, wxID_ANY, wxNullBitmap);
     static_line_2 = new wxStaticLine(notebook_1_wxStaticLine, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxLI_VERTICAL);
     static_line_3 = new wxStaticLine(notebook_1_wxStaticLine, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxLI_VERTICAL);
     static_line_4 = new wxStaticLine(notebook_1_wxStaticLine, wxID_ANY);
@@ -225,7 +227,7 @@ void All_Widgets_Frame::set_properties()
     combo_box_filled->SetSelection(0);
     grid_1->CreateGrid(10, 3);
     grid_1->SetSelectionMode(wxGrid::wxGridSelectColumns);
-    grid_1->SetColLabelValue(1, _("B\nC"));
+    grid_1->SetColLabelValue(1, _("B\nB"));
     list_box_filled->SetSelection(1);
     radio_box_filled1->SetSelection(1);
     radio_box_filled2->SetSelection(1);
@@ -233,6 +235,7 @@ void All_Widgets_Frame::set_properties()
     notebook_1_wxSplitterWindow_horizontal->SetScrollRate(10, 10);
     splitter_2->SetMinimumPaneSize(20);
     notebook_1_wxSplitterWindow_vertical->SetScrollRate(10, 10);
+    bitmap_null_sized->SetMinSize(wxSize(50, 50));
     label_1->SetForegroundColour(wxColour(255, 0, 0));
     label_4->SetBackgroundColour(wxColour(255, 0, 0));
     label_4->SetToolTip(_("Background colour won't show, check documentation for more details"));
@@ -368,6 +371,8 @@ void All_Widgets_Frame::do_layout()
     sizer_11->Add(bitmap_file, 1, wxALIGN_CENTER|wxALL|wxEXPAND, 5);
     sizer_11->Add(bitmap_nofile, 1, wxALIGN_CENTER|wxALL|wxEXPAND, 5);
     sizer_11->Add(bitmap_art, 1, wxALIGN_CENTER|wxALL|wxEXPAND, 5);
+    sizer_11->Add(bitmap_null, 1, wxALIGN_CENTER|wxALL|wxEXPAND, 5);
+    sizer_11->Add(bitmap_null_sized, 1, wxALIGN_CENTER|wxALL|wxEXPAND, 5);
     notebook_1_wxStaticBitmap->SetSizer(sizer_11);
     sizer_10->Add(static_line_2, 1, wxALL|wxEXPAND, 5);
     sizer_10->Add(static_line_3, 1, wxALL|wxEXPAND, 5);
