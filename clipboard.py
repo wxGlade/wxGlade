@@ -7,7 +7,7 @@ Support for cut & paste of wxGlade widgets
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
-import logging, os.path
+import logging, sys, os.path
 import compat, common, config, misc
 import edit_sizers
 
@@ -200,7 +200,8 @@ def clipboard2widget(clipboard_data):
     """Convert widget data prepared in widget2clipboard() back to single values.
 
     Returns a list [option (proportions), flag, border and widget in XML representation]"""
-
+    if isinstance(clipboard_data, memoryview) and sys.version_info[0]<3:
+        clipboard_data = clipboard_data.tobytes()
     option, span, flag, border, xml_unicode = compat.pickle.loads(clipboard_data)
 
     # remove the dirt at the end of XML representation
