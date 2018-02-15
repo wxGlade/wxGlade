@@ -39,6 +39,7 @@ radio_box
 
 [Numeric & Dates]
 spin_ctrl
+spin_ctrl_double
 slider
 gauge
 calendar_ctrl

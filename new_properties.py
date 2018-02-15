@@ -28,6 +28,8 @@ _ge_0     = r"(\d+)"               # a number group matching integers >=0
 _comma    = r"\s*,\s*"             # a comma, optionally with surrounding whitespace
 _trailing = r"\s*\)?\s*$"          # whitespace, optionally including a closing ")"
 
+_float    = r"([+-]?\d*(?:\.\d*))"  # a number group matching a float
+
 
 # track current property and allow flushing it before saving
 current_property = None
@@ -350,6 +352,14 @@ class SpinProperty(Property):
     def _set_converter(self, value):
         return int(value)
 
+    def create_spin_ctrl(self, panel):
+        style = wx.TE_PROCESS_ENTER | wx.SP_ARROW_KEYS
+        spin = wx.SpinCtrl( panel, -1, style=style, min=self.val_range[0], max=self.val_range[1] )
+        val = self.value
+        if not val: spin.SetValue(1)  # needed for GTK to display a '0'
+        spin.SetValue(val)
+        return spin
+
     def create_editor(self, panel, sizer):
         if self.val_range is None:
             self.val_range = (0, 1000)
@@ -372,11 +382,7 @@ class SpinProperty(Property):
         #if self.val_range[1] is None:
             #self.spin = wx.SpinCtrl( panel, -1, min=self.val_range[0] )
         #else:
-        style = wx.TE_PROCESS_ENTER | wx.SP_ARROW_KEYS
-        self.spin = wx.SpinCtrl( panel, -1, style=style, min=self.val_range[0], max=self.val_range[1] )
-        val = self.value
-        if not val: self.spin.SetValue(1)  # needed for GTK to display a '0'
-        self.spin.SetValue(val)
+        self.spin = self.create_spin_ctrl(panel)
 
         if self.deactivated is not None:
             self.spin.Enable(not self.deactivated)
@@ -434,6 +440,29 @@ class SpinPropertyA(SpinProperty):
     deactivated = False
 class SpinPropertyD(SpinProperty):
     deactivated = True
+
+
+class SpinDoublePropertyA(SpinProperty):
+    deactivated = False
+    def __init__(self, value, val_range=(0.0,1000.0), immediate=False, default_value=_DefaultArgument, name=None):
+        SpinProperty.__init__(self, value, val_range=val_range, immediate=immediate, default_value=default_value, name=name)
+
+    def create_spin_ctrl(self, panel):
+        style = wx.TE_PROCESS_ENTER | wx.SP_ARROW_KEYS
+        spin = wx.SpinCtrlDouble( panel, -1, style=style, min=self.val_range[0], max=self.val_range[1] )
+        val = self.value
+        if not val: spin.SetValue(1.0)  # needed for GTK to display a '0'
+        spin.SetValue(val)
+        return spin
+
+    def _set_converter(self, value):
+        return float(value)
+
+    def on_spin(self, event):
+        event.Skip()
+        set_current_property(self)
+        if self.spin:
+            self._check_for_user_modification(event.GetString())
 
 
 def _is_gridbag(sizer):
@@ -1469,7 +1498,7 @@ class IntPairPropertyD(TextPropertyD):
             return value
         if isinstance(value, wx.Size):
             return '%d, %d' % (value.x, value.y)
-        return '%d, %d' % value
+        return '%s, %s' % value
 
     def _convert_from_text(self, value):
         "normalize string to e.g. '-1, -1'; return None if invalid"
@@ -1479,8 +1508,8 @@ class IntPairPropertyD(TextPropertyD):
         return self.normalization%match.groups()
 
     def get_tuple(self, widget=None):
-        w, h = self.value.split(",")
-        return (int(w), int(h))
+        a, b = self.value.split(",")
+        return (int(a), int(b))
 
 
 class SizePropertyD(IntPairPropertyD):
@@ -1551,7 +1580,24 @@ class IntRangePropertyA(IntPairPropertyD):
         self.set(self.normalization%(mi,ma), activate, deactivate, notify)
 
 
-del _leading, _ge_m1, _g_0, _ge_0, _comma, _trailing
+class FloatRangePropertyA(IntRangePropertyA):
+    validation_re = re.compile( _leading + _float + _comma + _float + _trailing )  # match pair of floats
+
+    def _convert_from_text(self, value):
+        # check that min is smaller than max
+        match = self.validation_re.match(value)
+        if not match: return None
+        mi, ma = match.groups()
+        if float(mi)>float(ma): return None
+        if self.notnull and float(mi)==float(ma): return None
+        return self.normalization%(mi,ma)
+
+    def get_tuple(self, widget=None):
+        a, b = self.value.split(",")
+        return (float(a), float(b))
+
+
+del _leading, _ge_m1, _g_0, _ge_0, _comma, _trailing, _float, _int
 ########################################################################################################################
 
 class ComboBoxProperty(TextProperty):
