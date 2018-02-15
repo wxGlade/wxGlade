@@ -1,9 +1,9 @@
 """\
-wxSpinCtrl objects
+wxSpinCtrlDouble objects
 
 @copyright: 2002-2007 Alberto Griggio
 @copyright: 2014-2016 Carsten Grohmann
-@copyright: 2016-2018 Dietmar Schwertberger
+@copyright: 2016 Dietmar Schwertberger
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
@@ -14,26 +14,26 @@ import common, config
 import new_properties as np
 
 
-class EditSpinCtrl(ManagedBase, EditStylesMixin):
-    "Class to handle wxSpinCtrl objects"
+class EditSpinCtrlDouble(ManagedBase, EditStylesMixin):
+    "Class to handle wxSpinCtrlDouble objects"
     # XXX unify with EditSpinButton?
     _PROPERTIES = ["Widget", "range", "value", "style"]
     PROPERTIES = ManagedBase.PROPERTIES + _PROPERTIES + ManagedBase.EXTRA_PROPERTIES
 
     def __init__(self, name, parent, id, sizer, pos):
-        ManagedBase.__init__(self, name, 'wxSpinCtrl', parent, id, sizer, pos)
+        ManagedBase.__init__(self, name, 'wxSpinCtrlDouble', parent, id, sizer, pos)
         EditStylesMixin.__init__(self)
 
         # initialise instance properties
-        self.range = np.IntRangePropertyA( "0, 100" )
-        self.value = np.SpinPropertyA(0, val_range=(0,100), immediate=True, default_value="")
+        self.range = np.FloatRangePropertyA( "0.0, 100.0" )
+        self.value = np.SpinDoublePropertyA(0, val_range=(0.0,100.0), immediate=True, default_value="")
 
     def create_widget(self):
         mi,ma = self.properties["range"].get_tuple()
         if self.properties["value"].is_active():
-            self.widget = wx.SpinCtrl(self.parent.widget, self.id, min=mi, max=ma, initial=self.value)
+            self.widget = wx.SpinCtrlDouble(self.parent.widget, self.id, min=mi, max=ma, initial=self.value)
         else:
-            self.widget = wx.SpinCtrl(self.parent.widget, self.id, min=mi, max=ma)
+            self.widget = wx.SpinCtrlDouble(self.parent.widget, self.id, min=mi, max=ma)
 
     def properties_changed(self, modified):  # from EditSlider
         if not modified or "range" in modified and self.widget:
@@ -62,12 +62,12 @@ class EditSpinCtrl(ManagedBase, EditStylesMixin):
 
 def builder(parent, sizer, pos, number=[1]):
     "factory function for EditSpinCtrl objects"
-    name = 'spin_ctrl_%d' % number[0]
+    name = 'spin_ctrl_double_%d' % number[0]
     while common.app_tree.has_name(name):
         number[0] += 1
-        name = 'spin_ctrl_%d' % number[0]
+        name = 'spin_ctrl_double_%d' % number[0]
     with parent.frozen():
-        spin = EditSpinCtrl(name, parent, wx.NewId(), sizer, pos)
+        spin = EditSpinCtrlDouble(name, parent, wx.NewId(), sizer, pos)
         spin.properties["style"].set_to_default()
         spin.check_defaults()
         node = Node(spin)
@@ -77,7 +77,7 @@ def builder(parent, sizer, pos, number=[1]):
 
 
 def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
-    "factory function to build EditSpinCtrl objects from a XML file"
+    "factory function to build EditSpinCtrlDouble objects from a XML file"
     from xml_parse import XmlParsingError
     try:
         name = attrs['name']
@@ -85,7 +85,7 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
         raise XmlParsingError(_("'name' attribute missing"))
     if sizer is None or sizeritem is None:
         raise XmlParsingError(_("sizer or sizeritem object cannot be None"))
-    spin = EditSpinCtrl( name, parent, wx.NewId(), sizer, pos )
+    spin = EditSpinCtrlDouble( name, parent, wx.NewId(), sizer, pos )
     spin.properties["value"].set_active(False)
     #sizer.set_item( spin.pos, proportion=sizeritem.proportion, flag=sizeritem.flag, border=sizeritem.border )
     node = Node(spin)
@@ -99,7 +99,7 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
 
 def initialize():
     "initialization function for the module: returns a wxBitmapButton to be added to the main palette"
-    common.widgets['EditSpinCtrl'] = builder
-    common.widgets_from_xml['EditSpinCtrl'] = xml_builder
+    common.widgets['EditSpinCtrlDouble'] = builder
+    common.widgets_from_xml['EditSpinCtrlDouble'] = xml_builder
 
-    return common.make_object_button('EditSpinCtrl', 'spin_ctrl.xpm')
+    return common.make_object_button('EditSpinCtrlDouble', 'spin_ctrl_double.xpm')

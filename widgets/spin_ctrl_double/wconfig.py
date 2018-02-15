@@ -7,7 +7,7 @@ wxSpinCtrl widget configuration
 
 # keep synchronous between wxSpinCtrl and wxTextCtrl
 config = {
-    'wxklass': 'wxSpinCtrl',
+    'wxklass': 'wxSpinCtrlDouble',
     'style_defs': {
         'wxSP_ARROW_KEYS': {
             'desc': _('The user can use arrow keys to change the value.'),
@@ -140,7 +140,7 @@ config = {
                    'wxTE_BESTWRAP', 'wxTE_CAPITALIZE', 'wxNO_BORDER'],
     'events': {
         'EVT_SPINCTRLDOUBLE': {
-            'type': 'wxSpinEvent',
+            'type': 'wxSpinEventDouble',
         },
     },
 }
