@@ -97,7 +97,7 @@ class Application(np.PropertyOwner):
                                   "wxGlade will just write the blocks that are marked 'begin wxGlade'/'end wxGlade'.\n"
                                   "Be aware that this feature is not too robust against e.g. renaming of frames.\n"
                                   "Always keep backups and don't touch the wxGlade begin/end markers!",
-                      "output_path": "Output file or directory"
+                      "output_path": "Output file or directory: absolute or relative path"
                       }
     if sys.platform=="win32":
         _PROPERTY_HELP["output_path"] = "Output file or directory; double click label to show in Explorer"

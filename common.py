@@ -658,11 +658,13 @@ def _set_file_paths():
         config.credits_file  = os.path.join(config.wxglade_path, 'CREDITS.txt')
         config.license_file  = os.path.join(config.wxglade_path, 'LICENSE.txt')
         config.manual_file   = os.path.join(config.docs_path, 'html', 'index.html')
+        config.bmp_manual_file = os.path.join(config.docs_path, 'html', 'bitmaps.html')
         #config.tutorial_file = os.path.join(config.docs_path, 'Tutorial.html')
     else:
         config.credits_file  = os.path.join(config.docs_path, 'CREDITS.txt')
         config.license_file  = os.path.join(config.docs_path, 'LICENSE.txt')
         config.manual_file   = os.path.join(config.docs_path, 'html', 'index.html')
+        config.bmp_manual_file = os.path.join(config.docs_path, 'html', 'bitmaps.html')
         #config.tutorial_file = os.path.join(config.docs_path, 'html', 'tutorial.html')
 
     if not os.path.exists(config.credits_file):

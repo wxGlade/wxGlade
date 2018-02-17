@@ -51,6 +51,7 @@ templates_path = 'templates'         # System template path
 license_file = ''                    # Path of the license file "LICENSE.txt"
 manual_file = 'docs/html/index.html' # Path to wxGlade HTML manual
 tutorial_file = 'docs/tutorial.html' # Path to wxGlade HTML Tutorial
+bmp_manual_file = 'docs/html/bitmaps.html' # Path to bitmaps help
 
 platform = 'not_set'                 # Current platform string (mostly wx.Platform)
 version = 'not_set'                  # wxGlade version string; see: get_version()
