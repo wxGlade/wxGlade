@@ -178,8 +178,8 @@ class XmlWidgetBuilder(XmlParser):
 
             p["encoding"].set( attrs['encoding'] )
             p["output_path"].set( attrs['path'] or "" )
-            p["class"].set( attrs['class'] or "", activate=bool(attrs.get("class")) )
-            p["name"].set( attrs['name'] or "", activate=bool(attrs.get("name")) )
+            p["class"].set( attrs['class'] or "MyApp", activate=bool(attrs.get("class")) )
+            p["name"].set( attrs['name'] or "app", activate=bool(attrs.get("name")) )
             p["multiple_files"].set( attrs['option'] )
             p["language"].set( attrs['language'] )
             p["top_window"].set( attrs['top_window'] or "" )
