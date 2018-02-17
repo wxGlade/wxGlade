@@ -23,7 +23,9 @@ class EditStaticBitmap(ManagedBase, EditStylesMixin, BitmapMixin):
     ManagedBase.MOVE_PROPERTY(PROPERTIES, "attribute", "name")
     _PROPERTY_LABELS = {"attribute":'Store as attribute'}
     _PROPERTY_HELP = {"attribute":'Store instance as attribute of window class; e.g. self.bitmap_1 = wx.wxStaticBitmap'
-                                  '(...)\nWithout this, you can not access the bitmap from your program.'}
+                                  '(...)\nWithout this, you can not access the bitmap from your program.',
+                                  
+                      "bitmap": BitmapMixin.bitmap_tooltip_text,}
 
     def __init__(self, name, parent, id, bmp_file, sizer, pos):
         ManagedBase.__init__(self, name, 'wxStaticBitmap', parent, id, sizer, pos)
@@ -31,7 +33,7 @@ class EditStaticBitmap(ManagedBase, EditStylesMixin, BitmapMixin):
 
         # initialise instance properties
         filedialog_style = wx.FD_OPEN | wx.FD_FILE_MUST_EXIST  # for the following two properties
-        self.bitmap    = np.FileNameProperty(bmp_file, style=filedialog_style)
+        self.bitmap    = np.BitmapProperty(bmp_file, style=filedialog_style)
         self.attribute = np.CheckBoxProperty(False, default_value=False)
 
     def create_widget(self):

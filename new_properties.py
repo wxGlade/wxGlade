@@ -1798,8 +1798,23 @@ class FileNameProperty(DialogProperty):
         return True
 
 
-
 class FileNamePropertyD(FileNameProperty):
+    deactivated = True
+
+class BitmapProperty(FileNameProperty):
+    # these can be set on an instance
+    message = _("Choose a bitmap file")
+    wildcard = _("All files|*")
+    default_extension = ""
+    #def __init__(self, value="", style=0, default_value=_DefaultArgument, name=None):
+        #self.style = style
+        #DialogProperty.__init__(self, value, False, True, default_value, name)
+
+    def _on_label_dblclick(self, event):
+        # show help
+        common.palette._show_html( config.bmp_manual_file )
+
+class BitmapPropertyD(BitmapProperty):
     deactivated = True
 
 
