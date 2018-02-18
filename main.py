@@ -961,18 +961,27 @@ class wxGladeFrame(wx.Frame):
         "Set position and/or size of widget; geometry must be wx.Point or wx.Rect"
         assert isinstance(geometry, (wx.Point, wx.Rect))
         if not geometry: return
-        client_area = wx.Display().ClientArea
-
-        if isinstance(geometry, wx.Point):
-            if client_area.Contains(geometry):
-                win.SetPosition(geometry)
-        else:
-            intersection = client_area.Intersect(geometry)
-            if intersection.width>150 and intersection.height>150 or geometry.width==-1 or geometry.height==-1:
-                if compat.IS_CLASSIC:
-                    win.SetDimensions(*geometry.Get())
-                else:
-                    win.SetSize(*geometry.Get())
+        d = 0
+        while True:
+            try:
+                display = wx.Display(d)
+            except:
+                return
+            client_area = display.ClientArea
+    
+            if isinstance(geometry, wx.Point):
+                if client_area.Contains(geometry):
+                    win.SetPosition(geometry)
+                    break
+            else:
+                intersection = client_area.Intersect(geometry)
+                if intersection.width>150 and intersection.height>150 or geometry.width==-1 or geometry.height==-1:
+                    if compat.IS_CLASSIC:
+                        win.SetDimensions(*geometry.Get())
+                    else:
+                        win.SetSize(*geometry.Get())
+                    break
+            d += 1
 
     def _get_geometry(self, widget):
         "Return widget position and size as wx.Rect"
