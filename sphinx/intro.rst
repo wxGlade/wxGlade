@@ -111,7 +111,7 @@ Each example file includes a frame with most of the supported widgets and also a
 There are additional examples in ``wxglade/examples`` showing how to use the CustomWidget to integrate some widgets that are not directly supported by wxGlade. The wxGlade design window will only display a placeholder for these.
 
  * ``html``: use :code:`wx.html.HtmlWindow` to display simple HTML pages
- * ``html2``: use :code:`wx.html2.WebView` to display HTML with Javascript and CSS
+ * ``html2``: use :code:`wx.html2.WebView` to display HTML with Javascript and CSS (not available on wxPython 2.8)
  * ``lib_plot``: use :code:`wx.lib.plot.PlotCanvas` for plotting
  * ``matplotlib``: use a Matplotlib canvas for plotting, quick and dirty version
  * ``matplotlib2``: use a Matplotlib canvas for plotting, better structured
