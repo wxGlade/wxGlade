@@ -443,6 +443,10 @@ class WindowBase(EditBase):
         if isinstance(widget, wx.Window):
             widget.Reparent(self.widget)
         elif isinstance(widget, wx.Sizer):
+            if isinstance(widget, wx.StaticBoxSizer):
+                # the StaticBox is a widget
+                sb = widget.GetStaticBox()
+                sb.Reparent(self.widget)
             # go through all children
             for si in widget.GetChildren():
                 child = si.GetWindow() or si.GetSizer()
@@ -456,17 +460,21 @@ class WindowBase(EditBase):
             self.create_widget()
             self.widget.SetSize(size)
             old_widget.Hide()
+            if self.sel_marker:
+                self.sel_marker.Destroy()
+                self.sel_marker = None
 
             if self.sizer:
-                self.sizer.widget.GetItem(old_widget)
-                si.SetWindow(self.widget)
+                self.sizer.widget.Detach(old_widget)
+                # finish_widget_creation below will add the new widget to the sizer; alternatively add it here
 
             sizer = old_widget.GetSizer()
             if sizer:
                 self.widget.SetSizer(sizer)
                 old_widget.SetSizer(None, False)
+                sizer.SetContainingWindow(self.widget)
                 self._reparent_widget(sizer)
-                sizer.Layout()
+                #sizer.Layout()
             else:
                 for child in self.widget.GetChildren():
                     # actually, for now a panel may only have a sizer as child, so this code is not executed
@@ -475,7 +483,7 @@ class WindowBase(EditBase):
                 misc.design_windows.remove(old_widget)
                 misc.design_windows.append(self.widget)
             compat.DestroyLater(old_widget)
-            self.finish_widget_creation()
+            self.finish_widget_creation()  # this will add the new widget to the sizer (default argument re_add=True)
 
     def on_size(self, event):
         "Update the value of the 'size' property"
