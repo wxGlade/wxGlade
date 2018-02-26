@@ -1,6 +1,5 @@
 This (Python only) example shows how to use the Custom Widget to include the
-SpeedMeter widget from wx.lib.agw.speedmeter .
-
+SpeedMeter widget from wx.lib.agw.speedmeter:
 
  - the property "Class" is set to "SM.SpeedMeter"
  - on the "Widget" page, the "Arguments" are defined to include the style
