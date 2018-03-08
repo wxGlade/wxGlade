@@ -292,23 +292,17 @@ class EditGrid(ManagedBase):
                 self.widget.SetColLabelValue(i, label.replace('\\n', '\n'))
         if m("rows"):
             rows = self.rows
-            # adjust number of columns
+            # adjust number of rows
             delta = len(rows) - self.widget.GetNumberRows()
             if   delta>0: self.widget.AppendRows(delta)
-            elif delta<0: self.widget.AppendRows(0, -delta)
-            # set column widths and labels
+            elif delta<0: self.widget.DeleteRows(0, -delta)
+            # set row heights and labels
             for i, (label,size) in enumerate(rows):
                 size = int(size or "0") 
                 if size>0:
                     self.widget.SetRowSize(i, size)
                 self.widget.SetRowLabelValue(i, label.replace('\\n', '\n'))
-        #if m("rows_number"):  # adjust number of rows
-            #rows_number = self.rows_number
-            #if rows_number>=0:
-                #delta = rows_number - self.widget.GetNumberRows()  # the number of rows to be added
-                #if   delta>0: self.widget.AppendRows(delta)
-                #elif delta<0: self.widget.DeleteRows(rows_number, -delta)
-        
+
         self.widget.ForceRefresh()
 
     def properties_changed(self, modified):
