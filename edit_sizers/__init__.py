@@ -17,8 +17,8 @@ _builder = None       # Shortcut for edit_sizers._builder
 
 
 def init_gui():
-    if not config.use_gui:
-        return {}
+    #if not config.use_gui:
+    #    return {}
 
     from . import edit_sizers
     global Sizer, SizerSlot, SizerBase, GridSizerBase, _builder

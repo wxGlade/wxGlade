@@ -10,10 +10,10 @@ def initialize():
     import config
     from . import codegen
     codegen.initialize()
-    if config.use_gui:
-        from . import panel
-        global EditTopLevelPanel
-        global EditPanel
-        EditTopLevelPanel = panel.EditTopLevelPanel
-        EditPanel = panel.EditPanel
-        return panel.initialize()
+    #if config.use_gui:
+    from . import panel
+    global EditTopLevelPanel
+    global EditPanel
+    EditTopLevelPanel = panel.EditTopLevelPanel
+    EditPanel = panel.EditPanel
+    return panel.initialize()

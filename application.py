@@ -375,7 +375,7 @@ class Application(np.PropertyOwner):
         finally:
             writer.clean_up(self.node)
 
-        if preview: return
+        if preview or not config.use_gui: return
         if config.preferences.show_completion:
             # Show informational dialog
             misc.info_message("Code generation completed successfully")

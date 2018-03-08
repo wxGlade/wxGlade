@@ -11,8 +11,8 @@ def initialize():
     import config
     from . import codegen
     codegen.initialize()
-    if config.use_gui:
-        from . import statusbar
-        global EditStatusBar
-        EditStatusBar = statusbar.EditStatusBar
-        return statusbar.initialize()
+    #if config.use_gui:
+    from . import statusbar
+    global EditStatusBar
+    EditStatusBar = statusbar.EditStatusBar
+    return statusbar.initialize()

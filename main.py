@@ -231,22 +231,23 @@ class wxGladeFrame(wx.Frame):
 
         # load the available code generators
         all_widgets = common.init_codegen()
-        # build the palette for all_widgets
-        sizer = wx.FlexGridSizer(0, 2, 0, 0)
-        sizer.AddGrowableCol(0)
-        self.SetAutoLayout(True)
-        maxlen = max([len(all_widgets[sect]) for sect in all_widgets])  # the maximum number of buttons in a section
-        for section in all_widgets:
-            if section:
-                label = wx.StaticText(self, -1, "%s:" % section.replace('&', '&&'))
-                sizer.Add( label, 1, wx.ALIGN_CENTER_VERTICAL | wx.LEFT, 2 )
-
-            bsizer = wx.GridSizer(cols=maxlen, hgap=2, vgap=2)
-            for button in all_widgets[section]:
-                bsizer.Add(button, flag=wx.ALL, border=1)
-            sizer.Add(bsizer)
-        self.SetSizer(sizer)
-        sizer.Fit(self)
+        if config.use_gui:
+            # build the palette for all_widgets
+            sizer = wx.FlexGridSizer(0, 2, 0, 0)
+            sizer.AddGrowableCol(0)
+            self.SetAutoLayout(True)
+            maxlen = max([len(all_widgets[sect]) for sect in all_widgets])  # the maximum number of buttons in a section
+            for section in all_widgets:
+                if section:
+                    label = wx.StaticText(self, -1, "%s:" % section.replace('&', '&&'))
+                    sizer.Add( label, 1, wx.ALIGN_CENTER_VERTICAL | wx.LEFT, 2 )
+    
+                bsizer = wx.GridSizer(cols=maxlen, hgap=2, vgap=2)
+                for button in all_widgets[section]:
+                    bsizer.Add(button, flag=wx.ALL, border=1)
+                sizer.Add(bsizer)
+            self.SetSizer(sizer)
+            sizer.Fit(self)
 
         self.Bind(wx.EVT_CLOSE, self.cleanup)
 
