@@ -13,6 +13,8 @@ import logging
 from xml.sax import SAXException, make_parser
 from xml.sax.handler import ContentHandler
 
+import time
+
 import common, config, compat
 import edit_sizers
 
@@ -282,7 +284,6 @@ class XmlWidgetBuilder(XmlParser):
         self._curr_prop_val.append(data)
 
 
-
 class ProgressXmlWidgetBuilder(XmlWidgetBuilder):
     "Adds support for a progress dialog to the widget builder parser"
 
@@ -295,6 +296,7 @@ class ProgressXmlWidgetBuilder(XmlWidgetBuilder):
             self.progress = wx.ProgressDialog( _("Loading..."), _("Please wait while loading the app"), 20 )
             self.step = 4
             self.i = 1
+            self._last_progress_update = time.time()
         else:
             self.size = 0
             self.progress = None
@@ -313,7 +315,9 @@ class ProgressXmlWidgetBuilder(XmlWidgetBuilder):
                     # we don't have any information, so we update the progress bar "randomly"
                     value = (self.step * self.i) % 20
                     self.i += 1
-                self.progress.Update(value)
+                if time.time()-self._last_progress_update > 0.25:
+                    self.progress.Update(value)
+                    self._last_progress_update = time.time()
         XmlWidgetBuilder.endElement(self, name)
 
     def parse(self, *args):
