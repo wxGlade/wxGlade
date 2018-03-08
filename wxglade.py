@@ -151,6 +151,35 @@ def command_line_code_generation(filename, language, out_path=None):
     sys.exit(0)
 
 
+def command_line_code_generation(filename, language, out_path=None):
+    """Starts a code generator without starting the GUI.
+
+    filename: Name of wxg file to generate code from
+    language: Code generator language
+    out_path: output file / output directory"""
+
+    from main import wxGlade
+    app = wxGlade()
+    if filename is not None:
+        win = app.GetTopWindow()
+        win._open_app(filename, False)
+        win.cur_dir = os.path.dirname(filename)
+    try:
+        if language not in common.code_writers:
+            raise errors.WxgMissingCodeWriter(language)
+        common.app_tree.app.properties["language"].set(language)
+        common.app_tree.app.generate_code(out_path=out_path)
+    except errors.WxgBaseException as inst:
+        logging.error(inst)
+        sys.exit(inst)
+    except Exception:
+        logging.error( _("An exception occurred while generating the code for the application.\n"
+                         "If you think this is a wxGlade bug, please report it.") )
+        logging.exception(_('Internal Error'))
+        sys.exit(1)
+    sys.exit(0)
+
+
 def init_stage1():
     """Initialise paths for wxGlade (first stage)
     Initialisation is split because the test suite doesn't work with proper initialised paths."""

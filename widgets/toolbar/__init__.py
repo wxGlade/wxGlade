@@ -10,8 +10,8 @@ def initialize():
     import config
     from . import codegen
     codegen.initialize()
-    if config.use_gui:
-        from . import toolbar
-        global EditToolBar
-        EditToolBar = toolbar.EditToolBar
-        return toolbar.initialize()
+    #if config.use_gui:
+    from . import toolbar
+    global EditToolBar
+    EditToolBar = toolbar.EditToolBar
+    return toolbar.initialize()

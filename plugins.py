@@ -216,17 +216,17 @@ def _init_codegen_gui(widget_dir, widget_name):
         return False, None
     codegen_module.initialize()
 
-    # initialise GUI part
-    if config.use_gui:
-        gui_name = '%s.%s' % (widget_name, widget_name)
-        gui_module = import_module(widget_dir, gui_name)
-        if not gui_module:
-            # error already logged
-            return False, None
-        if not hasattr(gui_module, 'initialize'):
-            logging.warning(_('Missing function "initialize()" in imported module %s. Skip initialisation.'), gui_name)
-            return False, None
-        widget_button = gui_module.initialize()
+    ## initialise GUI part
+    #if config.use_gui:
+    gui_name = '%s.%s' % (widget_name, widget_name)
+    gui_module = import_module(widget_dir, gui_name)
+    if not gui_module:
+        # error already logged
+        return False, None
+    if not hasattr(gui_module, 'initialize'):
+        logging.warning(_('Missing function "initialize()" in imported module %s. Skip initialisation.'), gui_name)
+        return False, None
+    widget_button = gui_module.initialize()
 
     return True, widget_button
 

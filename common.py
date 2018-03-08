@@ -235,6 +235,7 @@ def make_object_button(widget, icon_path, toplevel=False, tip=None):
     tip: Tool tip to display
 
     return: The newly created wxBitmapButton instance"""
+    if not config.use_gui: return None
     import wx
     import misc
     from tree import WidgetTree
