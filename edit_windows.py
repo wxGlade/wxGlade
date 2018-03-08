@@ -464,7 +464,7 @@ class WindowBase(EditBase):
                 self.sel_marker.Destroy()
                 self.sel_marker = None
 
-            if self.sizer:
+            if self.sizer and not self.sizer.is_virtual():
                 self.sizer.widget.Detach(old_widget)
                 # finish_widget_creation below will add the new widget to the sizer; alternatively add it here
 
