@@ -5,7 +5,7 @@ The main program is "matplotlib_example.py"
 
 
 This example does not work with wxPython 2.8.
-A matplotlib version 2 should be fine. Only version 2.1.1 has been tested.
+A matplotlib version >= 2.2 is required.
 
 
 
