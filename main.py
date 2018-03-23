@@ -413,7 +413,14 @@ class wxGladeFrame(wx.Frame):
         misc.bind_menu_item(self, MANUAL, self.show_manual)
         #item = append_menu_item(help_menu, -1, _('Tutorial'))
         #misc.bind_menu_item(self, item, self.show_tutorial)
+        help_menu.AppendSeparator() # ----------------------------------------------------------------------------------
 
+        i = append_menu_item(help_menu, -1, _('Mailing list'))
+        misc.bind_menu_item(self, i, self.show_mailing_list)
+        i = append_menu_item(help_menu, -1, _('Bug tracker'))
+        misc.bind_menu_item(self, i, self.show_bug_tracker)
+        i = append_menu_item(help_menu, -1, _('Releases'))
+        misc.bind_menu_item(self, i, self.show_releases)
         help_menu.AppendSeparator() # ----------------------------------------------------------------------------------
 
         item = append_menu_item(help_menu, wx.ID_ABOUT, _('About'))
@@ -896,6 +903,13 @@ class wxGladeFrame(wx.Frame):
     #def show_tutorial(self):
         #"Show the wxGlade tutorial"
         #self._show_html(config.tutorial_file)
+
+    def show_bug_tracker(self):
+        self._show_html("https://github.com/wxGlade/wxGlade/issues")
+    def show_mailing_list(self):
+        self._show_html("https://sourceforge.net/p/wxglade/mailman/wxglade-general/")
+    def show_releases(self):
+        self._show_html("https://github.com/wxGlade/wxGlade/releases")
 
     def _show_html(self, html_file):
         "Open browser and show an HTML documentation"
