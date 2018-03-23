@@ -41,4 +41,3 @@ Thanks go to:
  * Carsten Grohmann, for further development and maintenance from 2011 to 2016.
  * Robin Dunn and the wxPython team, for creation of the Python wxWidget bindings and for their re-invention in the Phoenix project.
  * The wxWidgets team, for implementation and maintenance of the wxWidgets library.
- * Peter Bradley, for editorial work on the new documentation.

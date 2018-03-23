@@ -180,7 +180,7 @@ The resulting code will be cleaner and also easier to maintain and extend.</p>
 <blockquote>
 <div><ul class="simple">
 <li><code class="docutils literal"><span class="pre">matplotlib_canvas.py</span></code>: a class <code class="code docutils literal"><span class="pre">MatplotlibCanvas</span></code> as layer between <code class="code docutils literal"><span class="pre">Matplotlib.FigureCanvas</span></code></li>
-<li><code class="docutils literal"><span class="pre">matplotlib_GUI.py</span></code>: the GUI code, generated from wxGlade</li>
+<li><code class="docutils literal"><span class="pre">matplotlib_GUI.py</span></code>: the GUI code, generated from wxGlade file <code class="docutils literal"><span class="pre">matplotlib_GUI.wxg</span></code></li>
 <li><code class="docutils literal"><span class="pre">matplotlib_example.py</span></code>: the main file with the <cite>business logic</cite></li>
 </ul>
 </div></blockquote>
@@ -189,16 +189,45 @@ The resulting code will be cleaner and also easier to maintain and extend.</p>
 <dd><ul class="first last simple">
 <li><a class="reference external" href="../../examples/matplotlib2/matplotlib_canvas.wxg">matplotlib_canvas.wxg</a></li>
 <li><a class="reference external" href="../../examples/matplotlib2/matplotlib_GUI.py">matplotlib_GUI.py</a></li>
-<li><a class="reference external" href="../../examples/matplotlib2/matplotlib_example.wxg">matplotlib_example.wxg</a></li>
+<li><a class="reference external" href="../../examples/matplotlib2/matplotlib_GUI.wxg">matplotlib_GUI.wxg</a></li>
 </ul>
 </dd>
 </dl>
 </div>
 <div class="section" id="example-matplotlib3-matplotlib-canvas-comprehensive-embedding-example">
 <h2>Example ‘matplotlib3’: matplotlib canvas, comprehensive embedding example<a class="headerlink" href="#example-matplotlib3-matplotlib-canvas-comprehensive-embedding-example" title="Permalink to this headline">¶</a></h2>
-<p>This example shows most of the building blocks that you will need for integration of a Matplotlib canvas.
-It shows how to plot and draw, zoom and drag, select items, export images and so on.</p>
-<p>This example is only for Matplotlib versions &gt;=2.2.</p>
+<p>This example shows most of the building blocks that you will need for integration of a Matplotlib canvas.</p>
+<p>It shows how to plot and draw, zoom and drag, select items, export images and so on.
+It shows also how to draw graphics primitives like lines or circles on the whole canvas, i.e without plot axes.</p>
+<p>This example is only for Python 3 and Matplotlib versions &gt;=2.2.</p>
+<blockquote>
+<div><ul class="simple">
+<li><code class="docutils literal"><span class="pre">matplotlib_canvas.py</span></code>: a class <code class="code docutils literal"><span class="pre">MatplotlibCanvas</span></code> as layer between <code class="code docutils literal"><span class="pre">Matplotlib.FigureCanvas</span></code></li>
+<li><code class="docutils literal"><span class="pre">matplotlib_GUI.py</span></code>: the GUI code, generated from wxGlade file <code class="docutils literal"><span class="pre">matplotlib_GUI.wxg</span></code></li>
+<li><code class="docutils literal"><span class="pre">matplotlib_example.py</span></code>: the main file with the <cite>business logic</cite></li>
+</ul>
+</div></blockquote>
+<dl class="docutils">
+<dt>The files can be found in the folder <code class="docutils literal"><span class="pre">wxglade/examples/matplotlib2</span></code>:</dt>
+<dd><ul class="first last simple">
+<li><a class="reference external" href="../../examples/matplotlib3/matplotlib_canvas.wxg">matplotlib_canvas.wxg</a></li>
+<li><a class="reference external" href="../../examples/matplotlib3/matplotlib_GUI.py">matplotlib_GUI.py</a></li>
+<li><a class="reference external" href="../../examples/matplotlib3/matplotlib_GUI.wxg">matplotlib_GUI.wxg</a></li>
+</ul>
+</dd>
+</dl>
+</div>
+<div class="section" id="more-examples">
+<h2>More Examples<a class="headerlink" href="#more-examples" title="Permalink to this headline">¶</a></h2>
+<p>In subfolders of <code class="docutils literal"><span class="pre">wxglade/examples/matplotlib2</span></code> there are more examples:</p>
+<blockquote>
+<div><ul class="simple">
+<li><code class="docutils literal"><span class="pre">html2</span></code>: use <code class="code docutils literal"><span class="pre">wx.html2.WebView</span></code> to display HTML with Javascript and CSS (not available on wxPython 2.8)</li>
+<li><code class="docutils literal"><span class="pre">lib_plot</span></code>: use <code class="code docutils literal"><span class="pre">wx.lib.plot.PlotCanvas</span></code> for plotting</li>
+<li><code class="docutils literal"><span class="pre">SpeedMeter</span></code>: demonstrate <code class="code docutils literal"><span class="pre">wx.lib.agw.speedmeter.SpeedMeter</span></code></li>
+<li><code class="docutils literal"><span class="pre">py_shell</span></code>: show how to embed a Python shell <code class="code docutils literal"><span class="pre">wx.py.shell.Shell</span></code></li>
+</ul>
+</div></blockquote>
 </div>
 </div>
 
@@ -218,6 +247,7 @@ It shows how to plot and draw, zoom and drag, select items, export images and so
 <li><a class="reference internal" href="#example-matplotlib-matplotlib-canvas-quick-and-dirty">Example ‘matplotlib’: matplotlib canvas, quick and dirty</a></li>
 <li><a class="reference internal" href="#example-matplotlib2-matplotlib-canvas-well-structured">Example ‘matplotlib2’: matplotlib canvas, well structured</a></li>
 <li><a class="reference internal" href="#example-matplotlib3-matplotlib-canvas-comprehensive-embedding-example">Example ‘matplotlib3’: matplotlib canvas, comprehensive embedding example</a></li>
+<li><a class="reference internal" href="#more-examples">More Examples</a></li>
 </ul>
 </li>
 </ul>
