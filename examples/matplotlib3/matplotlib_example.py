@@ -39,46 +39,15 @@ class MyFrame(matplotlib_GUI.MyFrame):
 
     def __init__(self, *args, **kwargs):
         matplotlib_GUI.MyFrame.__init__(self, *args, **kwargs)
+        self.figure = self.canvas.figure
 
-        self.toolmanager = matplotlib.backend_managers.ToolManager(self.canvas.figure)
-
-        self.toolmanager.add_tool('viewpos', 'ToolViewsPositions')  # required for pan/zoom/home/back/forward
-        self.toolmanager.add_tool('pan', 'ToolPan')
-        self.toolmanager.add_tool('zoom', 'ToolZoom')
-        self.toolmanager.add_tool('home', 'ToolHome')
-        self.toolmanager.add_tool('back', 'ToolBack')
-        self.toolmanager.add_tool('forward', 'ToolForward')
-        self.toolmanager.add_tool('save', 'ToolSaveFigure')
-
-        self.toolmanager.add_tool('rubberband', 'ToolRubberband')
-        self.toolmanager.add_tool('setcursor', 'ToolSetCursor')
-
-        self.toolmanager.toolmanager_connect("tool_trigger_home", self.set_history_buttons)
-        self.toolmanager.toolmanager_connect("tool_trigger_back", self.set_history_buttons)
-        self.toolmanager.toolmanager_connect("tool_trigger_forward", self.set_history_buttons)
-
+        self.init_toolmanager()
+        self.init_events()
         # where to save figures by default?
         matplotlib.rcParams['savefig.directory'] = "" # defaults to current directory
 
         self.Bind(wx.EVT_CLOSE, self.OnClose)
-        
-        # connect to matplotlib events
 
-        # for picking elements
-        self.canvas.mpl_connect( 'pick_event', self.on_pick)
-        self._last_pick_mouseevent = None  # store info, as we will act only once per pick event
-
-        self.canvas.mpl_connect( 'motion_notify_event', self.on_mouse_move)
-
-        # button_release_event may be the end of a zoom; use CallAfter as we may receive the event too early
-        self.canvas.mpl_connect("button_release_event", lambda event: wx.CallAfter(self.set_history_buttons))
-        
-        # register a handler for all canvas events except 'motion_notify_event', which would cause too much traffic
-        for event in ('button_press_event', 'button_release_event', 'key_press_event', 'key_release_event',
-                      'draw_event', 'pick_event', 'resize_event', 'scroll_event',
-                      'figure_enter_event', 'figure_leave_event', 'axes_enter_event', 'axes_leave_event'):
-            self.canvas.mpl_connect(event, self.on_canvas_event)
-        # in addition, there are events from the axes: 'xlim_changed', 'ylim_changed' (see self.get_axes())
 
         # initialize values from control values; so the .wxg file needs to have correct initialization values!
         self.on_choice_line_style()
@@ -91,6 +60,53 @@ class MyFrame(matplotlib_GUI.MyFrame):
 
         self.multicursor = None
 
+    def init_toolmanager(self):
+        self.toolmanager = matplotlib.backend_managers.ToolManager(self.canvas.figure)
+
+        self.toolmanager.add_tool('viewpos', 'ToolViewsPositions')  # required for pan/zoom/home/back/forward
+        self.toolmanager.add_tool('pan', 'ToolPan')  # pan w. mouse and zoom w. wheel with 'p' key
+        self.toolmanager.add_tool('zoom', 'ToolZoom') # zoom to rect with 'o' key
+        self.toolmanager.add_tool('home', 'ToolHome') # 'h', 'r', 'home'
+        self.toolmanager.add_tool('back', 'ToolBack') # 'left', 'c', 'backspace'
+        self.toolmanager.add_tool('forward', 'ToolForward') # 'right', 'v'
+        self.toolmanager.add_tool('save', 'ToolSaveFigure') # 's', 'ctrl+s'
+        self.toolmanager.add_tool('grid', 'ToolGrid')              # toggle throug major h/v grids with 'g' key
+        self.toolmanager.add_tool('grid_minor', 'ToolMinorGrid')   # toggle throug major/minor grids with 'G' key
+        
+        self.toolmanager.add_tool('yscale', 'ToolYScale')          # toggle lin/log scaling with 'l' key
+        self.toolmanager.add_tool('xscale', 'ToolXScale')          # toggle lin/log scaling with 'k','L' keys
+
+        # some tools will only be available with matplotlib 3.0:
+        if hasattr(matplotlib.backend_managers, "ToolCopyToClipboard"):
+            self.toolmanager.add_tool('copy', 'ToolCopyToClipboard')
+
+        self.toolmanager.add_tool('rubberband', 'ToolRubberband')
+        self.toolmanager.add_tool('setcursor', 'ToolSetCursor')
+
+        self.toolmanager.toolmanager_connect("tool_trigger_home", self.set_history_buttons)
+        self.toolmanager.toolmanager_connect("tool_trigger_back", self.set_history_buttons)
+        self.toolmanager.toolmanager_connect("tool_trigger_forward", self.set_history_buttons)
+
+    def init_events(self):
+        # connect to matplotlib events
+
+        # for picking elements
+        self.canvas.mpl_connect( 'pick_event', self.on_pick)
+        self._last_pick_mouseevent = None  # store info, as we will act only once per pick event
+
+        # for displaying cursor position
+        self.canvas.mpl_connect( 'motion_notify_event', self.on_mouse_move)
+
+        # button_release_event may be the end of a zoom; use CallAfter as we may receive the event too early
+        self.canvas.mpl_connect("button_release_event", lambda event: wx.CallAfter(self.set_history_buttons))
+
+        # register a handler for all canvas events except 'motion_notify_event', which would cause too much traffic
+        for event in ('button_press_event', 'button_release_event', 'key_press_event', 'key_release_event',
+                          'draw_event', 'pick_event', 'resize_event', 'scroll_event',
+                          'figure_enter_event', 'figure_leave_event', 'axes_enter_event', 'axes_leave_event'):
+            self.canvas.mpl_connect(event, self.on_canvas_event)
+        # in addition, there are events from the axes: 'xlim_changed', 'ylim_changed' (see self.get_axes())
+
     ###################################################################################################################
     # print messages
     def on_canvas_event(self, event):
@@ -100,7 +116,9 @@ class MyFrame(matplotlib_GUI.MyFrame):
     # global actions: add plot or clear plots or all
     def get_axes(self):
         # return the axes that are selected acc. to "Subplots" and "Subplot position"
-        ret = self.canvas.ensure_axes( self._SUBPLOT_POSITIONS[self.subplots][self.subplot] )
+        subplots = self._SUBPLOT_POSITIONS[self.subplots][self.subplot]
+        # subplots = (row, col, position), e.g. (2,2,1) for the top left of 2x2 plots
+        ret = self.figure.add_subplot(*subplots)
         # we could register event handlers when x or y limits are changing:
         #ret.callbacks.connect( 'xlim_changed', lambda evt: print("callback xlim_changed:", evt) )
         return ret
@@ -109,8 +127,14 @@ class MyFrame(matplotlib_GUI.MyFrame):
         if self.multicursor:
             self.multicursor.disconnect()
             self.multicursor = None
+            self.button_multicursor.SetValue(False)
 
-        self.canvas.clear(types)
+        if types=="plots":
+            for axes in self.figure.axes:
+                axes.clear()
+        elif types in ("figures","all"):
+            self.figure.clear()
+        self.canvas.draw()
 
         if types in ("plots","all"):
             # reset zoom history
@@ -183,7 +207,7 @@ class MyFrame(matplotlib_GUI.MyFrame):
         axes = self.get_axes()
         colour, width, style = self._get_styles()
         patch = matplotlib.patches.Rectangle((x,y), width, height, angle, figure=self.canvas.figure,
-                                    color=colour, linewidth=width, linestyle=style)
+                                    color=colour, linewidth=width, linestyle=style, fill=False)
         patch.set_picker(5)  # enable picking, i.e. the user can select this with the mouse
         axes.add_patch(patch)
         axes.autoscale(True, 'both', True)  # ensure that it is visible
@@ -212,6 +236,7 @@ class MyFrame(matplotlib_GUI.MyFrame):
     ####################################################################################################################
     # draw elements on canvas (by pixels)
     # see https://matplotlib.org/api/artist_api.html
+    # rectangles, arrows, circles: https://matplotlib.org/api/patches_api.html
     def on_button_draw_line(self, event):
         # draw a line; canvas coordinates / pixels
         x0,y0,x1,y1 = self._get_floats("text_line_", ("x0","y0","x1","y1"))
@@ -236,7 +261,7 @@ class MyFrame(matplotlib_GUI.MyFrame):
 
         colour, width, style = self._get_styles()
         # implement method? self.matplotlib_canvas.draw_rectangle( (x,y), width, height, angle )
-        patch = matplotlib.patches.Rectangle((x,y), w, h, angle, figure=self.canvas.figure, #pickradius=5,
+        patch = matplotlib.patches.Rectangle((x,y), w, h, angle, figure=self.canvas.figure,
                                 color=colour, linewidth=width, linestyle=style)
         patch.set_picker(5)  # enable picking, i.e. the user can select this with the mouse
         self.canvas.figure.patches.append(patch)
@@ -295,10 +320,18 @@ class MyFrame(matplotlib_GUI.MyFrame):
             return
         self._last_pick_mouseevent = id(event.mouseevent)
 
-        delete = self.button_pick_delete.GetValue()
+        delete = self.checkbox_pick_delete.GetValue()
+
+        artist = event.artist
 
         s = ""
-        artist = event.artist
+        if isinstance(artist, matplotlib.lines.Line2D):
+            s = "line"
+        elif isinstance(artist, matplotlib.patches.Rectangle):
+            s = "rectangle"
+        elif isinstance(artist, matplotlib.patches.Circle):
+            s = "circle"
+
         if artist.axes:
             # data plotted on axes
             if hasattr(artist, "get_data"):
@@ -310,11 +343,7 @@ class MyFrame(matplotlib_GUI.MyFrame):
             if delete: artist.remove()
         else:
             # no axes -> drawn directly on figure by pixel coordinates
-            if isinstance(artist, matplotlib.lines.Line2D):
-                s = "line"
-                if delete: self.canvas.figure.lines.remove(artist)
-            elif isinstance(artist, matplotlib.patches.Patch):
-                if delete: self.canvas.figure.patches.remove(artist)
+            if delete: self.canvas.figure.patches.remove(artist)
         self.text_picked.SetValue(s)
         self.canvas.draw()
 
