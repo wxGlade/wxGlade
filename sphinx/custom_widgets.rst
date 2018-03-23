@@ -176,20 +176,42 @@ Example 'matplotlib2': matplotlib canvas, well structured
 This example has the same functionality, but shows how the code can be structured in a more readable and maintainable way.
 
  * ``matplotlib_canvas.py``: a class :code:`MatplotlibCanvas` as layer between :code:`Matplotlib.FigureCanvas`
- * ``matplotlib_GUI.py``: the GUI code, generated from wxGlade
+ * ``matplotlib_GUI.py``: the GUI code, generated from wxGlade file ``matplotlib_GUI.wxg``
  * ``matplotlib_example.py``: the main file with the `business logic`
 
 The files can be found in the folder ``wxglade/examples/matplotlib2``:
  * `matplotlib_canvas.wxg <../../examples/matplotlib2/matplotlib_canvas.wxg>`_
  * `matplotlib_GUI.py <../../examples/matplotlib2/matplotlib_GUI.py>`_
- * `matplotlib_example.wxg <../../examples/matplotlib2/matplotlib_example.wxg>`_
+ * `matplotlib_GUI.wxg <../../examples/matplotlib2/matplotlib_GUI.wxg>`_
 
 
 Example 'matplotlib3': matplotlib canvas, comprehensive embedding example
 =========================================================================
 
 This example shows most of the building blocks that you will need for integration of a Matplotlib canvas.
+
 It shows how to plot and draw, zoom and drag, select items, export images and so on.
+It shows also how to draw graphics primitives like lines or circles on the whole canvas, i.e without plot axes.
 
-This example is only for Matplotlib versions >=2.2.
 
+This example is only for Python 3 and Matplotlib versions >=2.2.
+
+ * ``matplotlib_canvas.py``: a class :code:`MatplotlibCanvas` as layer between :code:`Matplotlib.FigureCanvas`
+ * ``matplotlib_GUI.py``: the GUI code, generated from wxGlade file ``matplotlib_GUI.wxg``
+ * ``matplotlib_example.py``: the main file with the `business logic`
+
+The files can be found in the folder ``wxglade/examples/matplotlib2``:
+ * `matplotlib_canvas.wxg <../../examples/matplotlib3/matplotlib_canvas.wxg>`_
+ * `matplotlib_GUI.py <../../examples/matplotlib3/matplotlib_GUI.py>`_
+ * `matplotlib_GUI.wxg <../../examples/matplotlib3/matplotlib_GUI.wxg>`_
+
+
+More Examples
+=============
+
+In subfolders of ``wxglade/examples/matplotlib2`` there are more examples:
+
+ * ``html2``: use :code:`wx.html2.WebView` to display HTML with Javascript and CSS (not available on wxPython 2.8)
+ * ``lib_plot``: use :code:`wx.lib.plot.PlotCanvas` for plotting
+ * ``SpeedMeter``: demonstrate :code:`wx.lib.agw.speedmeter.SpeedMeter`
+ * ``py_shell``: show how to embed a Python shell :code:`wx.py.shell.Shell`

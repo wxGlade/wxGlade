@@ -14,6 +14,7 @@ User Interface:
    e.g. on MacOS and GTK the main Frame styles can't be modified (see patch_recreate.txt)
  * add a template manager for (custom) widgets or complete parts of a design?
  * Notebook: add context menu entries 'add page' / 'remove page' (-> rev. 0.9)
+ * remove config.preferences.show_progress and always show ProgressDialog
 done:
  * flush properties before saving
  * implement "re-do / Ctrl-Y" and "repeat / Ctrl-R" to apply last property modification(s) to currently selected widget
@@ -88,6 +89,7 @@ done:
 
 
 Bitmaps:
+ * better user interface (popup dialog?)
 done:
  * better property editor; DropTarget
  * application options for relative paths, resource files, installer etc.
