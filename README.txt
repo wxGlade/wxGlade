@@ -49,10 +49,10 @@ For any kind of question, there's a mailing list:
  https://lists.sourceforge.net/lists/listinfo/wxglade-general
 
 If you observe a bug, please check the bug tracker for current open bugs:
- https://sourceforge.net/p/wxglade/bugs/
+ https://github.com/wxGlade/wxGlade.git
 
 For new bugs, please open a bug report in the tracker.
-You have to register and log in at Sourceforge to file a bug report.
+You have to register and log in at GitHub to file a bug report.
 
 Alternatively you can send the bug report to the wxGlade mailing list.
 Keep in mind that you need a subscription for sending emails to this
@@ -65,7 +65,7 @@ Please include the following information:
 - What do you want to happen?
 - What actually happened?
 - Provide a short example to reproduce the issue.
-- Include the internal error log file ``wxglade.log``
+- Maybe, include the internal error log file ``wxglade.log``
 
 
 
