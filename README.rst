@@ -60,7 +60,7 @@ For any kind of question, there's a mailing list:
  https://lists.sourceforge.net/lists/listinfo/wxglade-general
 
 If you observe a bug, please check the bug tracker for current open bugs:
- https://github.com/wxGlade/wxGlade.git
+ https://github.com/wxGlade/wxGlade/issues
 
 For new bugs, please open a bug report in the tracker.
 You have to register and log in at GitHub to file a bug report.
