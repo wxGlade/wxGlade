@@ -1258,7 +1258,7 @@ class TextProperty(Property):
             sizer.Add(self.text, proportion, wx.ALL |wx.EXPAND, 3)
 
         self.additional_controls = self.create_additional_controls(panel, sizer, hsizer)
-
+        self._set_colours()
         self._set_tooltip(label, self.text, self.enabler, *self.additional_controls)
         self.editing = True
         
@@ -1321,6 +1321,10 @@ class TextProperty(Property):
         if start_editing: self.editing = True
         if not self.editing: return
         self.text.SetValue(self._convert_to_text(self.value) or "")
+        self._set_colours()
+
+    def _set_colours(self):
+        pass
 
     def _convert_to_text(self, value):
         """convert from self.value to string that will be displayed/edited in TextCtrl
@@ -1779,6 +1783,8 @@ class FileNameProperty(DialogProperty):
                 project_path = os.path.abspath( os.path.dirname(project_path) )
                 if filename.startswith(project_path):
                     filename = "./" + os.path.relpath(filename, project_path)
+        if os.path.sep=="\\":
+            filename = filename.replace("\\", "/")
 
         self._check_for_user_modification(filename, activate=True)
         self.update_display()
@@ -1791,20 +1797,54 @@ class FileNamePropertyD(FileNameProperty):
 
 class BitmapProperty(FileNameProperty):
     def __init__(self, value="", name=None):
+        self._size = self._warning = self._error = None
         style = wx.FD_OPEN | wx.FD_FILE_MUST_EXIST
         FileNameProperty.__init__(self, value, style, _DefaultArgument, name)
+
+    def set_bitmap(self, bmp):
+        if bmp is wx.NullBitmap:
+            self._size = None
+        else:
+            self._size = bmp.Size
+        if self.text: compat.SetToolTip(self.text, self._find_tooltip())
+
+    def set_check_result(self, warning=None, error=None):
+        self._warning = warning
+        self._error = error
+
+        if not self.text: return
+        compat.SetToolTip(self.text, self._find_tooltip())
+        self._set_colours()
+
+    def _set_colours(self):
+        # set color to indicate errors and warnings
+        bgcolor = wx.WHITE
+        if self._warning:
+            bgcolor = Colour(255, 255, 0, 255)  # yellow
+        if self._error:
+            bgcolor = wx.RED
+        self.text.SetBackgroundColour( bgcolor )
+        self.text.Refresh()
+
     def _find_tooltip(self):
-        ret = FileNameProperty._find_tooltip(self)
-        if ret:
-            ret +=('\n\nYou can either drop or select a file or you can specify '
-                    'the bitmap using hand-crafted statements with the prefixes '
-                    '"art:", "code:", "empty:" or "var:".\n'
-                    'The wxGlade documentation describes how to write such statements.')
-        return ret
+        ret = []
+        if self._error:   ret.append(self._error)
+        if self._warning: ret.append(self._warning)
+        if self._size:
+            if ret: ret.append("")
+            ret.append( "Size: %s\n"%self._size )
+        t = FileNameProperty._find_tooltip(self)
+        if t: ret.append( t )
+        if ret and not self._warning and not self._error:
+            ret.append( '\n\nYou can either drop or select a file or you can specify the bitmap using '
+                        'hand-crafted statements with the prefixes "art:", "code:", "empty:" or "var:".\n'
+                        'The wxGlade documentation describes how to write such statements.' )
+        return "\n".join(ret)
 
 class BitmapPropertyD(BitmapProperty):
     deactivated = True
     def __init__(self, value="", name=None):
+        self._size = self._warning = self._error = None
         style = wx.FD_OPEN | wx.FD_FILE_MUST_EXIST
         FileNameProperty.__init__(self, value, style, '', name)
 

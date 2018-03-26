@@ -436,6 +436,8 @@ class BaseWidgetWriter(StylesMixin, BaseCodeWriter):
                 # property to be set after construction, e.g.: ...SetBitmapDisabled(disabled_bitmap)
                 self.tmpl_dict[p_name] = self.generate_code_bitmap(value)
                 setname = p_name.replace( "_bitmap", "").capitalize()
+                if compat.IS_CLASSIC and setname=="Pressed":
+                    setname = "Selected"  # probably only wx 2.8
                 if setname=="Bitmap": setname = ""
                 # build template, e.g. '%(name)s.SetBitmapDisabled(%(disabled_bitmap)s)\n'
                 tmpl = self.tmpl2_bitmap_property%(setname, p_name)

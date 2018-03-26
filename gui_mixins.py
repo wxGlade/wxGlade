@@ -199,15 +199,81 @@ class StylesMixin(object):
         return flags
 
 
-
 class BitmapMixin(object):
     "Class mixin to create wxBitmap instances from the given statement"
 
-    _PROPERTY_HELP = {"bitmap":         "Bitmap to be shown on the widget.",
+    _PROPERTY_HELP = {"bitmap":         "Bitmap to be shown on the widget normally.",
                       "disabled_bitmap":"Bitmap to be shown when the widget is disabled.",
                       "pressed_bitmap": "Bitmap to be shown when the widget is pressed/selected.",
                       "current_bitmap": "Bitmap to be shown when the mouse pointer is hovering over the widget.",
                       "focus_bitmap":   "Bitmap to be shown when the widget has the keyboard focus."}
+    _NAMES = ( ("disabled_bitmap", "Disabled"), ("pressed_bitmap", "Pressed"),
+               ("current_bitmap", "Current"),   ("focus_bitmap", "Focus") )
+    def __init__(self):
+        self.bitmap_reference = None # size of reference bitmap
+
+    def _check_bitmaps(self, modified=None):
+        # check that "bitmap" is defined if any other is defined
+        # check that all have the same size as "bitmap"
+        active = []
+        for p_name, name in self._NAMES:
+            p = self.properties[p_name]
+            if p.is_active():
+                active.append( (p,name) )
+        if not active: return
+        normal_p = self.properties["bitmap"]
+        warn = False
+        if not normal_p.is_active() or normal_p._error:
+            for p, name in active:
+                p.set_check_result(warning="'Bitmap' property must be set first")
+                if modified and p.name in modified: warn = True  # show a dialog
+            if warn:
+                self._logger.warning("'Bitmap' property must be set first")
+            return
+        # normal is set and has no error -> check sizes
+        if not self.widget: return
+        ref_size = normal_p._size
+        set_size = False
+        for p, name in active:
+            method = getattr(self.widget, "GetBitmap%s"%name)
+            current = method()
+            if current.Size != ref_size or (modified and p.name in modified):
+                self._set_preview_bitmap(p, name, ref_size)
+        if set_size or not modified or "bitmap" in modified:
+            self._set_widget_best_size()
+
+    def _set_preview_bitmap(self, prop, name, ref_size=None):
+        bmp = prop.get_value()
+        OK = True
+        if bmp:
+            bmp_d = self.get_preview_obj_bitmap(bmp)
+            if ref_size and bmp_d.Size != ref_size:
+                prop.set_check_result(error="Size %s is different from normal bitmap %s."%(bmp_d.Size, ref_size))
+                OK = False
+            else:
+                prop.set_check_result(error=None)
+        else:
+            bmp_d = wx.NullBitmap
+        prop.set_bitmap(bmp_d)
+        if self.widget:
+            if compat.IS_CLASSIC and name=="Pressed":
+                method = getattr(self.widget, "SetBitmapSelected")  # probably only wx 2.8
+            else:
+                method = getattr(self.widget, "SetBitmap%s"%name)
+            method(bmp_d if OK else wx.NullBitmap)
+
+    def _set_preview_bitmaps(self):#, include_bitmap=True):
+        # set bitmaps after the widget has been created
+        self.widget._bitmap_size = None
+        if self.bitmap:
+            self._set_preview_bitmap(self.properties["bitmap"], "")
+        self._check_bitmaps()
+
+    def _properties_changed(self, modified):
+        if "bitmap" in modified:
+            # set normal bitmap here; the others will be set in _check_bitmaps
+            self._set_preview_bitmap(self.properties["bitmap"], "")
+        self._check_bitmaps(modified)
 
     def get_preview_obj_bitmap(self, bitmap=None):
         """Create a wx.Bitmap or wx.EmptyBitmap from the given statement.

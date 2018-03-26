@@ -8,7 +8,7 @@ wxButton objects
 """
 
 import wx
-import config, common
+import config, common, compat
 from edit_windows import ManagedBase, EditStylesMixin
 from tree import Node
 import new_properties as np
@@ -20,7 +20,6 @@ class EditButton(ManagedBase, EditStylesMixin, BitmapMixin):
     "Class to handle wxButton objects"
 
     STOCKITEMS = sorted( ButtonStockItems.stock_ids.keys())
-
     _PROPERTIES = ["Widget", "label", "stockitem",
                    "bitmap", "disabled_bitmap", "pressed_bitmap", "current_bitmap", "focus_bitmap",
                    "default", "style"]
@@ -33,6 +32,7 @@ class EditButton(ManagedBase, EditStylesMixin, BitmapMixin):
         # Initialise parent classes
         ManagedBase.__init__(self, name, 'wxButton', parent, id, sizer, pos)
         EditStylesMixin.__init__(self)
+        BitmapMixin.__init__(self)
 
         # initialise instance properties
         self.label     = np.TextProperty(label, default_value="", multiline="grow")
@@ -52,12 +52,8 @@ class EditButton(ManagedBase, EditStylesMixin, BitmapMixin):
         else:
             label = self.label
         self.widget = wx.Button(self.parent.widget, self.id, label, style=self.style)
-        # set bitmaps
-        if self.bitmap:          self.widget.SetBitmap(self.bitmap)
-        if self.disabled_bitmap: self.widget.SetBitmapDisabled(self.bitmap)
-        if self.pressed_bitmap:  self.widget.SetBitmapPressed(self.bitmap)
-        if self.current_bitmap:  self.widget.SetBitmapCurrent(self.bitmap)
-        if self.focus_bitmap:    self.widget.SetBitmapFocus(self.bitmap)
+        if compat.IS_PHOENIX:
+            self._set_preview_bitmaps()
 
     def properties_changed(self, modified=None):
         "update label (and size if label/stockitem have changed)"
@@ -89,6 +85,8 @@ class EditButton(ManagedBase, EditStylesMixin, BitmapMixin):
 
         if label_modified or "name" in modified:
             common.app_tree.refresh(self.node, refresh_label=True)
+
+        BitmapMixin._properties_changed(self, modified)
 
         if resize and self.widget: self._set_widget_best_size()
 
