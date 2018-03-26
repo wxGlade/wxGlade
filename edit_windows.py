@@ -440,8 +440,11 @@ class WindowBase(EditBase):
 
     def on_size(self, event):
         "Update the value of the 'size' property"
-        event.Skip()  # skip first before doing something else
         if not self.widget: return  # this can happen on destruction
+
+        obj = event.GetEventObject()
+        if obj and obj.IsTopLevel():  # checking event object for toplevel is much faster than self.widget.IsTopLevel()
+            event.Skip()              # skip first before doing something else; this is time consuming!
         try:
             prop_size = self.properties['size']
 
