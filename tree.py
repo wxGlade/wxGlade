@@ -599,7 +599,8 @@ class WidgetTree(wx.TreeCtrl, Tree):
             else:
                 return "SLOT %d"%(pos)
         s = node.widget.name
-        if node.widget.klass != node.widget.base and node.widget.klass != 'wxScrolledWindow':
+        if (node.widget.__class__.__name__=="CustomWidget" or
+            (node.widget.klass != node.widget.base and node.widget.klass != 'wxScrolledWindow') ):
             # special case...
             s += ' (%s)' % node.widget.klass
             if getattr(node.widget, "has_title", None):

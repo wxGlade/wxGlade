@@ -110,13 +110,10 @@ class CustomWidget(ManagedBase):
 class Dialog(wx.Dialog):
     import re
     validation_re  = re.compile(r'^[a-zA-Z_]+[\w-]*(\[\w*\])*$')
-    def __init__(self, number=[0]):
+    def __init__(self):
         title = _('Select widget class')
         wx.Dialog.__init__(self, None, -1, title)
         klass = 'CustomWidget'
-        if number[0]:
-            klass = 'CustomWidget%s' % (number[0] - 1)
-        number[0] += 1
 
         self.classname = wx.TextCtrl(self, -1, klass)
         sizer = wx.BoxSizer(wx.VERTICAL)
