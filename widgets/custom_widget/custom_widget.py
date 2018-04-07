@@ -180,7 +180,8 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
         raise XmlParsingError(_("'name' attribute missing"))
     if not sizer or not sizeritem:
         raise XmlParsingError(_("sizer or sizeritem object cannot be None"))
-    win = CustomWidget(name, 'CustomWidget', parent, wx.NewId(), sizer, pos)
+    klass = attrs.get("class", "CustomWidget")
+    win = CustomWidget(name, klass, parent, wx.NewId(), sizer, pos)
     #sizer.set_item(win.pos, proportion=sizeritem.proportion, span=sizeritem.span, flag=sizeritem.flag, border=sizeritem.border)
     node = Node(win)
     win.node = node
