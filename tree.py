@@ -178,7 +178,7 @@ class Tree(object):
 
     def get_toplevel_class_names(self):
         ret = []
-        for c in self.root.children:
+        for c in self.root.children or []:
             ret.append(c.widget.klass)
         return ret
 
