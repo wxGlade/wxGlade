@@ -24,6 +24,7 @@ class WindowDialog(wx.Dialog):
 
         self.number = 1
         self.class_names = set( common.app_tree.get_all_class_names() )
+        self.toplevel_names = set( common.app_tree.get_toplevel_class_names() )
         self.toplevel = toplevel  # if this is True, the name must be unique, as the generated class will have it
         # class
         self._klass = klass
@@ -95,11 +96,15 @@ class WindowDialog(wx.Dialog):
             compat.SetToolTip(self.klass, "Class name not valid")
         else:
             #if name in [c.widget.klass for c in common.app_tree.root.children or []]:
-            if name in self.class_names:
+            if self.toplevel and name in self.toplevel_names:
+                self.klass.SetBackgroundColour( wx.RED )
+                compat.SetToolTip(self.klass, "Class name already in use for toplevel window")
+                OK = False
+            elif name in self.class_names:
                 # if the class name is in use already, indicate in yellow
                 self.klass.SetBackgroundColour( wx.Colour(255, 255, 0, 255) )
                 compat.SetToolTip(self.klass, "Class name not unique")
-                if self.toplevel: OK = False
+                if self.toplevel and name in self.toplevel_names: OK = False
             else:
                 self.klass.SetBackgroundColour( compat.wx_SystemSettings_GetColour(wx.SYS_COLOUR_WINDOW) )
                 compat.SetToolTip(self.klass, "")

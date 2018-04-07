@@ -176,6 +176,12 @@ class Tree(object):
             node = node.parent
         return node
 
+    def get_toplevel_class_names(self):
+        ret = []
+        for c in self.root.children:
+            ret.append(c.widget.klass)
+        return ret
+
     def get_all_class_names(self, node=None):
         if node is None: node = self.root
         ret = []
