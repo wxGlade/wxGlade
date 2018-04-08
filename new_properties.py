@@ -337,7 +337,7 @@ class SpinProperty(Property):
     CONTROLNAMES = ["enabler", "spin"]
     def __init__(self, value, val_range=(0,1000), immediate=False, default_value=_DefaultArgument, name=None):
         # val_range: (min_value,max_value)
-        if isinstance(val_range, int):    # we allow val_range to be supplied as integer
+        if isinstance(val_range, (int,float)):    # we allow val_range to be supplied as integer
             if val_range<0 and value>=0:  # typically val_range is len(choices)-1  for empty choices
                 value = val_range
                 val_range = (val_range,val_range)
@@ -402,6 +402,13 @@ class SpinProperty(Property):
             self.spin.Bind(wx.EVT_TEXT_ENTER, self.on_spin)   # we want the enter key (see style above)
         self.editing = True
 
+    def _create_spin_ctrl(self, panel):
+        style = wx.TE_PROCESS_ENTER | wx.SP_ARROW_KEYS
+        self.spin = wx.SpinCtrl( panel, -1, style=style, min=self.val_range[0], max=self.val_range[1] )
+        val = self.value
+        if not val: self.spin.SetValue(1)  # needed for GTK to display a '0'
+        self.spin.SetValue(val)
+
     def on_kill_focus(self, event=None):
         if event is not None: event.Skip()
         self.flush()
@@ -442,27 +449,45 @@ class SpinPropertyD(SpinProperty):
     deactivated = True
 
 
-class SpinDoublePropertyA(SpinProperty):
+class SpinDoubleProperty(SpinProperty):
+    # float
     deactivated = False
-    def __init__(self, value, val_range=(0.0,1000.0), immediate=False, default_value=_DefaultArgument, name=None):
-        SpinProperty.__init__(self, value, val_range=val_range, immediate=immediate, default_value=default_value, name=name)
+    def _set_converter(self, value):
+        return float(value)
 
     def create_spin_ctrl(self, panel):
         style = wx.TE_PROCESS_ENTER | wx.SP_ARROW_KEYS
-        spin = wx.SpinCtrlDouble( panel, -1, style=style, min=self.val_range[0], max=self.val_range[1] )
-        val = self.value
-        if not val: spin.SetValue(1.0)  # needed for GTK to display a '0'
-        spin.SetValue(val)
+        self.spin = wx.SpinCtrlDouble( panel, -1, style=style, min=self.val_range[0], max=self.val_range[1] )
+        self.spin.SetValue(self.value)
+        range_ = abs(self.val_range[1]-self.val_range[0])
+        if range_<=1.0:
+            self.spin.SetIncrement(0.1)
+        else:
+            self.spin.SetIncrement(1.0)
         return spin
 
-    def _set_converter(self, value):
-        return float(value)
+    def set_range(self, min_v, max_v):
+        new_range = (min_v, max_v)
+        if new_range==self.val_range: return
+        self.val_range = new_range
+        try:
+            self.spin.SetRange(min_v, max_v)
+        except AttributeError:
+            pass
 
     def on_spin(self, event):
         event.Skip()
         set_current_property(self)
         if self.spin:
             self._check_for_user_modification(event.GetString())
+
+
+class SpinDoublePropertyA(SpinDoubleProperty):
+    deactivated = False
+class SpinDoublePropertyD(SpinDoubleProperty):
+    deactivated = True
+
+
 
 
 def _is_gridbag(sizer):
@@ -1254,7 +1279,7 @@ class TextProperty(Property):
             sizer.Add(self.text, proportion, wx.ALL |wx.EXPAND, 3)
 
         self.additional_controls = self.create_additional_controls(panel, sizer, hsizer)
-
+        self._set_colours()
         self._set_tooltip(label, self.text, self.enabler, *self.additional_controls)
         self.editing = True
         
@@ -1317,6 +1342,10 @@ class TextProperty(Property):
         if start_editing: self.editing = True
         if not self.editing: return
         self.text.SetValue(self._convert_to_text(self.value) or "")
+        self._set_colours()
+
+    def _set_colours(self):
+        pass
 
     def _convert_to_text(self, value):
         """convert from self.value to string that will be displayed/edited in TextCtrl
@@ -1792,6 +1821,8 @@ class FileNameProperty(DialogProperty):
                 project_path = os.path.abspath( os.path.dirname(project_path) )
                 if filename.startswith(project_path):
                     filename = "./" + os.path.relpath(filename, project_path)
+        if os.path.sep=="\\":
+            filename = filename.replace("\\", "/")
 
         self._check_for_user_modification(filename, activate=True)
         self.update_display()
@@ -1800,6 +1831,60 @@ class FileNameProperty(DialogProperty):
 
 class FileNamePropertyD(FileNameProperty):
     deactivated = True
+
+
+class BitmapProperty(FileNameProperty):
+    def __init__(self, value="", name=None):
+        self._size = self._warning = self._error = None
+        style = wx.FD_OPEN | wx.FD_FILE_MUST_EXIST
+        FileNameProperty.__init__(self, value, style, _DefaultArgument, name)
+
+    def set_bitmap(self, bmp):
+        if bmp is wx.NullBitmap:
+            self._size = None
+        else:
+            self._size = bmp.Size
+        if self.text: compat.SetToolTip(self.text, self._find_tooltip())
+
+    def set_check_result(self, warning=None, error=None):
+        self._warning = warning
+        self._error = error
+
+        if not self.text: return
+        compat.SetToolTip(self.text, self._find_tooltip())
+        self._set_colours()
+
+    def _set_colours(self):
+        # set color to indicate errors and warnings
+        bgcolor = wx.WHITE
+        if self._warning:
+            bgcolor = Colour(255, 255, 0, 255)  # yellow
+        if self._error:
+            bgcolor = wx.RED
+        self.text.SetBackgroundColour( bgcolor )
+        self.text.Refresh()
+
+    def _find_tooltip(self):
+        ret = []
+        if self._error:   ret.append(self._error)
+        if self._warning: ret.append(self._warning)
+        if self._size:
+            if ret: ret.append("")
+            ret.append( "Size: %s\n"%self._size )
+        t = FileNameProperty._find_tooltip(self)
+        if t: ret.append( t )
+        if ret and not self._warning and not self._error:
+            ret.append( '\n\nYou can either drop or select a file or you can specify the bitmap using '
+                        'hand-crafted statements with the prefixes "art:", "code:", "empty:" or "var:".\n'
+                        'The wxGlade documentation describes how to write such statements.' )
+        return "\n".join(ret)
+
+class BitmapPropertyD(BitmapProperty):
+    deactivated = True
+    def __init__(self, value="", name=None):
+        self._size = self._warning = self._error = None
+        style = wx.FD_OPEN | wx.FD_FILE_MUST_EXIST
+        FileNameProperty.__init__(self, value, style, '', name)
 
 class BitmapProperty(FileNameProperty):
     # these can be set on an instance

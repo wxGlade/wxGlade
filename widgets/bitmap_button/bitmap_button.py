@@ -18,11 +18,9 @@ import new_properties as np
 class EditBitmapButton(ManagedBase, EditStylesMixin, BitmapMixin):
     "Class to handle wxBitmapButton objects"
 
-    _PROPERTIES = ["Widget", "bitmap", "disabled_bitmap", "default", "style"]
+    _PROPERTIES = ["Widget", "bitmap", "disabled_bitmap", "pressed_bitmap", "current_bitmap", "focus_bitmap",
+                   "default", "style"]
     PROPERTIES = ManagedBase.PROPERTIES + _PROPERTIES + ManagedBase.EXTRA_PROPERTIES
-
-    _PROPERTY_HELP = {"bitmap": BitmapMixin.bitmap_tooltip_text,
-                      "disabled_bitmap": BitmapMixin.bitmap_tooltip_text}
 
     def __init__(self, name, parent, id, bmp_file, sizer, pos):
         ManagedBase.__init__(self, name, 'wxBitmapButton', parent, id, sizer, pos)
@@ -30,50 +28,26 @@ class EditBitmapButton(ManagedBase, EditStylesMixin, BitmapMixin):
         BitmapMixin.__init__(self)
 
         # initialise instance properties
-        filedialog_style = wx.FD_OPEN | wx.FD_FILE_MUST_EXIST  # for the following two properties
-        self.bitmap          = np.BitmapProperty(bmp_file, style=filedialog_style)
-        self.disabled_bitmap = np.BitmapPropertyD("", default_value="", style=filedialog_style)
+        self.bitmap          = np.BitmapProperty(bmp_file)
+        self.disabled_bitmap = np.BitmapPropertyD("")
+        self.pressed_bitmap  = np.BitmapPropertyD()
+        self.current_bitmap  = np.BitmapPropertyD()
+        self.focus_bitmap    = np.BitmapPropertyD()
         self.default         = np.CheckBoxProperty(False, default_value=False)
 
     def create_widget(self):
         bmp = self.get_preview_obj_bitmap()
         #try:
         self.widget = wx.BitmapButton(self.parent.widget, self.id, bmp, style=self.style)
-        if self.disabled_bitmap:
-            bmp_d = self.get_preview_obj_bitmap(self.disabled_bitmap)
-            if bmp.Size==bmp_d.Size:
-                self.widget.SetBitmapDisabled(bmp_d)
-            else:
-                self._logger.warning("bitmap button with disabled bitmap of different size")
+        self.widget._bitmap_size = tuple(bmp.Size)
+        self._set_preview_bitmaps()#include_bitmap=False)
 
         #except AttributeError:
             #self.widget = wx.BitmapButton(self.parent.widget, self.id, bmp)
 
     def properties_changed(self, modified=None):
         "update label (and size if label/stockitem have changed)"
-        if self.widget:
-            resize = False
-            if not modified or "bitmap" in modified:
-                bmp = self.get_preview_obj_bitmap(self.bitmap)
-                self.widget.SetBitmapLabel(bmp)
-                if compat.IS_CLASSIC:
-                    self.widget.SetBitmapSelected(bmp)
-                else:
-                    self.widget.SetBitmapPressed(bmp)
-                self.widget.SetBitmapFocus(bmp)
-                resize = True
-            if not modified or "disabled_bitmap" in modified:
-                bmp = self.get_preview_obj_bitmap(self.disabled_bitmap)
-                self.widget.SetBitmapDisabled(bmp)
-                resize = True
-
-            if resize: self._set_widget_best_size()
-            #size_p = self.properties["size"]
-            #if resize and size_p.get()=="-1, -1":
-                #self.sizer.set_item(self.pos, size=self.widget.GetBestSize())
-                #if not size_p.is_active():
-                    #size_p.set( self.widget.GetBestSize() )
-
+        BitmapMixin._properties_changed(self, modified)
         EditStylesMixin.properties_changed(self, modified)
         ManagedBase.properties_changed(self, modified)
 

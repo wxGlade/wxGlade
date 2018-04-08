@@ -8,6 +8,7 @@ Common code used by all widget code generators
 from __future__ import absolute_import
 
 import common, config, misc, compat
+import new_properties as np
 
 import copy, logging, os.path
 from .dialogs import *
@@ -418,25 +419,41 @@ class BaseWidgetWriter(StylesMixin, BaseCodeWriter):
 
     default_style = property(_get_default_style)
 
-    def _prepare_bitmap(self, obj, first='bitmap', second='disabled_bitmap'):
-        "Prepare content for widgets with bitmaps; obj is xml_parse.CodeObject; see generate_code_bitmap(), get_code()"
-        bmp_first = obj.properties[first].get_value()
-        self.tmpl_dict[first] = self.generate_code_bitmap(bmp_first)
+    def _prepare_bitmaps(self, obj):
+        "Prepare content for widgets with bitmaps"
 
-        if second in obj.properties:
-            bmp_second = obj.properties[second].get_value()
-            if bmp_second:
-                self.tmpl_dict[second] = self.generate_code_bitmap(bmp_second)
-                self.tmpl_props.append(self.tmpl_bitmap_disabled)
-        else:
-            bmp_second = ""
+        need_artprovider = have_constructor_argument = False
+        for p_name in obj.property_names:
+            p = obj.properties[p_name]
+            if not isinstance(p, np.BitmapProperty): continue
+            value = p.get_value()
+            if value.startswith('art:'): need_artprovider = True
+            if '%%(%s)s'%p_name in self.tmpl:
+                # constructor argument
+                self.tmpl_dict[p_name] = self.generate_code_bitmap(value)
+                have_constructor_argument = True
+            elif value:
+                # property to be set after construction, e.g.: ...SetBitmapDisabled(disabled_bitmap)
+                self.tmpl_dict[p_name] = self.generate_code_bitmap(value)
+                setname = p_name.replace( "_bitmap", "").capitalize()
+                if compat.IS_CLASSIC and setname=="Pressed":
+                    setname = "Selected"  # probably only wx 2.8
+                if setname=="Bitmap": setname = ""
+                # build template, e.g. '%(name)s.SetBitmapDisabled(%(disabled_bitmap)s)\n'
+                tmpl = self.tmpl2_bitmap_property%(setname, p_name)
+                self.tmpl_props.append(tmpl)
 
-        if self.tmpl_import_artprovider and (bmp_first.startswith('art:') or bmp_second.startswith('art:')):
+        # import artprovider?
+        if need_artprovider:
             self.import_modules.append(self.tmpl_import_artprovider)
 
-        if not obj.check_prop('size') and self.tmpl_SetBestSize:
+        # size
+        if have_constructor_argument and not obj.check_prop('size') and self.tmpl_SetBestSize:
             self.tmpl_props.append(self.tmpl_SetBestSize)
 
+        # default
+        # XXX move this somewhere else?
+        # its used by bitmap_button, button, calendar_ctrl, generic_calendar_ctrl
         self.has_setdefault = "default" in obj.properties and obj.default or False
 
     def _prepare_choice(self, obj):
@@ -505,9 +522,8 @@ class BaseWidgetWriter(StylesMixin, BaseCodeWriter):
         if '%(choices)s' in self.tmpl or '%(choices_len)s' in self.tmpl:
             self._prepare_choice(obj)
 
-        # generate wxBitmap code automatically if the template contains '%(bitmap)s'.
-        if '%(bitmap)s' in self.tmpl:
-            self._prepare_bitmap(obj)
+        # generate wxBitmap code
+        self._prepare_bitmaps(obj)
 
         if self.tmpl_dict['id_name']:
             init_lines.append(self.tmpl_dict['id_name'])
@@ -750,7 +766,7 @@ class CppWidgetCodeWriter(CppMixin, BaseWidgetWriter):
     tmpl_inline_artprovider = 'wxArtProvider::GetBitmap(%(art_id)s, %(art_client)s, %(size)s)'
     tmpl_inline_bitmap      = '%(name)s(%(bitmap)s, %(bitmap_type)s)'
     tmpl_inline_emptybitmap = 'wxBitmap(%(width)s, %(height)s)'
-    tmpl_bitmap_disabled    = '%(name)s->SetBitmapDisabled(%(disabled_bitmap)s);\n'
+    tmpl2_bitmap_property   = '%%(name)s->SetBitmap%s(%%(%s)s);\n'
 
     tmpl_selection   = '%(name)s->SetSelection(%(selection)s);\n'
     tmpl_setvalue    = '%(name)s->SetValue(%(value_unquoted)s);\n'
@@ -829,7 +845,7 @@ class LispWidgetCodeWriter(LispMixin, BaseWidgetWriter):
     tmpl_inline_artprovider = 'wxArtProvider_GetBitmap(%(art_id)s %(art_client)s %(size)s)'
     tmpl_inline_bitmap      = '(%(name)s_CreateLoad %(bitmap)s %(bitmap_type)s)'
     tmpl_inline_emptybitmap = 'wxBitmap_Create(%(width)s %(height)s)'
-    tmpl_bitmap_disabled    = '(wxBitmapButton_SetBitmapDisabled (slot-%(name)s obj) %(disabled_bitmap)s)\n'
+    tmpl2_bitmap_property   = '(wxBitmapButton_SetBitmap%s (slot-%%(name)s obj) %%(%s)s)\n'
 
     tmpl_concatenate_choices = ' '
     tmpl_selection   = '(%(klass)s_SetSelection %(name)s %(selection)s)\n'
@@ -872,7 +888,7 @@ class PerlWidgetCodeWriter(PerlMixin, BaseWidgetWriter):
     tmpl_inline_artprovider = 'Wx::ArtProvider::GetBitmap(%(art_id)s, %(art_client)s, %(size)s)'
     tmpl_inline_bitmap      = '%(name)s->new(%(bitmap)s, %(bitmap_type)s)'
     tmpl_inline_emptybitmap = 'Wx::Bitmap->new(%(width)s, %(height)s)'
-    tmpl_bitmap_disabled    = '%(name)s->SetBitmapDisabled(%(disabled_bitmap)s);\n'
+    tmpl2_bitmap_property   = '%%(name)s->SetBitmap%s(%%(%s)s);\n'
 
     tmpl_selection   = '%(name)s->SetSelection(%(selection)s);\n'
     tmpl_setvalue    = '%(name)s->SetValue(%(value_unquoted)s);\n'
@@ -912,7 +928,7 @@ class PythonWidgetCodeWriter(PythonMixin, BaseWidgetWriter):
         tmpl_inline_emptybitmap = 'wx.EmptyBitmap(%(width)s, %(height)s)'
     else:
         tmpl_inline_emptybitmap = 'wx.Bitmap(%(width)s, %(height)s)'
-    tmpl_bitmap_disabled = '%(name)s.SetBitmapDisabled(%(disabled_bitmap)s)\n'
+    tmpl2_bitmap_property = '%%(name)s.SetBitmap%s(%%(%s)s)\n'
 
     tmpl_flags       = ', style=%s'
     tmpl_selection   = '%(name)s.SetSelection(%(selection)s)\n'

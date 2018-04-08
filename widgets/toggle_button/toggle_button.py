@@ -11,14 +11,17 @@ import wx
 
 import common, config
 from edit_windows import ManagedBase, EditStylesMixin
+from gui_mixins import BitmapMixin
 from tree import Node
 import new_properties as np
 
 
-class EditToggleButton(ManagedBase, EditStylesMixin):
+class EditToggleButton(ManagedBase, EditStylesMixin, BitmapMixin):
     "Class to handle wxToggleButton objects"
 
-    _PROPERTIES = ["Widget", "label", "value", "style"]
+    _PROPERTIES = ["Widget", "label", "value",
+                   "bitmap", "disabled_bitmap", "pressed_bitmap", "current_bitmap", "focus_bitmap",
+                   "style"]
     PROPERTIES = ManagedBase.PROPERTIES + _PROPERTIES + ManagedBase.EXTRA_PROPERTIES
     _PROPERTY_LABELS = {"value":"Clicked"}
 
@@ -29,11 +32,18 @@ class EditToggleButton(ManagedBase, EditStylesMixin):
         # initialise instance variable
         self.label = np.TextProperty("", multiline="grow")
         self.value = np.CheckBoxProperty(False, default_value=False)
+        # XXX bitmaps are only for >= 3.0
+        self.bitmap          = np.BitmapPropertyD()
+        self.disabled_bitmap = np.BitmapPropertyD()
+        self.pressed_bitmap  = np.BitmapPropertyD()
+        self.current_bitmap  = np.BitmapPropertyD()
+        self.focus_bitmap    = np.BitmapPropertyD()
 
     def create_widget(self):
         self.widget = wx.ToggleButton(self.parent.widget, self.id, self.label)
         self.widget.SetValue(self.value)
         self.widget.Bind(wx.EVT_TOGGLEBUTTON, self.on_set_focus, id=self.id)
+        BitmapMixin._set_preview_bitmaps(self)
 
     def properties_changed(self, modified):
         if not modified or "value" in modified and self.widget:
@@ -44,6 +54,11 @@ class EditToggleButton(ManagedBase, EditStylesMixin):
                 self.widget.SetLabel(self.label)
                 self._set_widget_best_size()
             common.app_tree.refresh(self.node, refresh_label=True)
+
+        if self.widget and modified:
+            BitmapMixin._properties_changed(self, modified)
+            if self.label and any( "bitmap" in p_name for p_name in modified):
+                self._set_widget_best_size()
 
         EditStylesMixin.properties_changed(self, modified)
         ManagedBase.properties_changed(self, modified)
