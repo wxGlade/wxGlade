@@ -139,7 +139,7 @@ config = {
                    'wxTE_LINEWRAP', 'wxTE_CHARWRAP', 'wxTE_WORDWRAP',
                    'wxTE_BESTWRAP', 'wxTE_CAPITALIZE', 'wxNO_BORDER'],
     'events': {
-        'EVT_SPINCTRLDOUBLE': {
+        'EVT_SPINCTRL': {
             'type': 'wxSpinEvent',
         },
     },
