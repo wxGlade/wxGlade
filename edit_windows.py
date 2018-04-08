@@ -490,8 +490,6 @@ class WindowBase(EditBase):
         if not self.widget: return  # this can happen on destruction
         if event.GetEventObject() is None: return
         event.Skip()
-        if obj and obj.IsTopLevel():  # checking event object for toplevel is much faster than self.widget.IsTopLevel()
-            event.Skip()              # skip first before doing something else; this is time consuming!
         try:
             prop_size = self.properties['size']
 

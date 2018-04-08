@@ -457,13 +457,13 @@ class SpinDoubleProperty(SpinProperty):
 
     def create_spin_ctrl(self, panel):
         style = wx.TE_PROCESS_ENTER | wx.SP_ARROW_KEYS
-        self.spin = wx.SpinCtrlDouble( panel, -1, style=style, min=self.val_range[0], max=self.val_range[1] )
-        self.spin.SetValue(self.value)
+        spin = wx.SpinCtrlDouble( panel, -1, style=style, min=self.val_range[0], max=self.val_range[1] )
+        spin.SetValue(self.value)
         range_ = abs(self.val_range[1]-self.val_range[0])
         if range_<=1.0:
-            self.spin.SetIncrement(0.1)
+            spin.SetIncrement(0.1)
         else:
-            self.spin.SetIncrement(1.0)
+            spin.SetIncrement(1.0)
         return spin
 
     def set_range(self, min_v, max_v):
@@ -1837,7 +1837,7 @@ class BitmapProperty(FileNameProperty):
     def __init__(self, value="", name=None):
         self._size = self._warning = self._error = None
         style = wx.FD_OPEN | wx.FD_FILE_MUST_EXIST
-        FileNameProperty.__init__(self, value, style, _DefaultArgument, name)
+        FileNameProperty.__init__(self, value, style, "", name)
 
     def set_bitmap(self, bmp):
         if bmp is wx.NullBitmap:
@@ -1876,8 +1876,13 @@ class BitmapProperty(FileNameProperty):
         if ret and not self._warning and not self._error:
             ret.append( '\n\nYou can either drop or select a file or you can specify the bitmap using '
                         'hand-crafted statements with the prefixes "art:", "code:", "empty:" or "var:".\n'
-                        'The wxGlade documentation describes how to write such statements.' )
+                        'Double-click to see the wxGlade documentation how to write such statements.' )
         return "\n".join(ret)
+
+    def _on_label_dblclick(self, event):
+        # show help
+        common.palette._show_html( config.bmp_manual_file )
+
 
 class BitmapPropertyD(BitmapProperty):
     deactivated = True
@@ -1885,22 +1890,6 @@ class BitmapPropertyD(BitmapProperty):
         self._size = self._warning = self._error = None
         style = wx.FD_OPEN | wx.FD_FILE_MUST_EXIST
         FileNameProperty.__init__(self, value, style, '', name)
-
-class BitmapProperty(FileNameProperty):
-    # these can be set on an instance
-    message = _("Choose a bitmap file")
-    wildcard = _("All files|*")
-    default_extension = ""
-    #def __init__(self, value="", style=0, default_value=_DefaultArgument, name=None):
-        #self.style = style
-        #DialogProperty.__init__(self, value, False, True, default_value, name)
-
-    def _on_label_dblclick(self, event):
-        # show help
-        common.palette._show_html( config.bmp_manual_file )
-
-class BitmapPropertyD(BitmapProperty):
-    deactivated = True
 
 
 class ColorProperty(DialogProperty):

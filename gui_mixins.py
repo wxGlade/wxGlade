@@ -201,10 +201,6 @@ class StylesMixin(object):
 
 class BitmapMixin(object):
     "Class mixin to create wxBitmap instances from the given statement"
-    bitmap_tooltip_text = _('Choose a bitmap to show.\n\nYou can either drop or select a file or you can specify '
-                            'the bitmap using hand-crafted statements with the prefixes '
-                            '"art:", "code:", "empty:" or "var:".\n\n'
-                            'Double-click to see the wxGlade documentation how to write such statements.')
     _PROPERTY_HELP = {"bitmap":         "Bitmap to be shown on the widget normally.",
                       "disabled_bitmap":"Bitmap to be shown when the widget is disabled.",
                       "pressed_bitmap": "Bitmap to be shown when the widget is pressed/selected.",
