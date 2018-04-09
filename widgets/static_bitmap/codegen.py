@@ -15,12 +15,12 @@ class PythonStaticBitmapGenerator(wcodegen.PythonWidgetCodeWriter):
     tmpl = '%(name)s = %(klass)s(%(parent)s, %(id)s, %(bitmap)s%(style)s)\n'
     tmpl_SetBestSize = ''
 
-    def _prepare_bitmap(self, obj, first='bitmap', second='disabled_bitmap'):
-        super(PythonStaticBitmapGenerator, self)._prepare_bitmap(obj, first, second)
-        bmp_first = obj.properties.get(first, '')
+    def _prepare_bitmaps(self, obj):
+        super(PythonStaticBitmapGenerator, self)._prepare_bitmaps(obj)
+        bmp_first = obj.properties.get("bitmap", '')
         if not bmp_first.value.strip() and obj.check_prop("size"):
             # overwrite code with sized EmptyBitmap instead of NullBitmap
-            self.tmpl_dict[first] = self.get_inline_stmt_emptybitmap('empty:%s'%obj.size)
+            self.tmpl_dict["bitmap"] = self.get_inline_stmt_emptybitmap('empty:%s'%obj.size)
 
 
 

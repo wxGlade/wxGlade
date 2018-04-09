@@ -28,7 +28,7 @@ class EditDialog(TopLevelBase, EditStylesMixin, BitmapMixin):
         EditStylesMixin.__init__(self)
 
         # initialise instance properties
-        self.icon      = np.BitmapPropertyD("", default_value="")
+        self.icon      = np.BitmapPropertyD("")
         self.centered  = np.CheckBoxProperty(False, default_value=False)
         self.sizehints = np.CheckBoxProperty(False, default_value=False)
 

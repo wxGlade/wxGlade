@@ -258,8 +258,9 @@ class BitmapMixin(object):
             if compat.IS_CLASSIC and name=="Pressed":
                 method = getattr(self.widget, "SetBitmapSelected")  # probably only wx 2.8
             else:
-                method = getattr(self.widget, "SetBitmap%s"%name)
-            method(bmp_d if OK else wx.NullBitmap)
+                method = getattr(self.widget, "SetBitmap%s"%name, None)
+            if method is not None:
+                method(bmp_d if OK else wx.NullBitmap)
 
     def _set_preview_bitmaps(self):#, include_bitmap=True):
         # set bitmaps after the widget has been created
