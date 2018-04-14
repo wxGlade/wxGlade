@@ -327,7 +327,11 @@ class TestGui(WXGladeGUITest):
         self._assert_error_message( "Code generation from a template is not possible" )
 
     def test_SizersSize(self):
-        self.load_and_generate('SizersSizeTests', test_GUI=True)
+        HAVE_WRAP_SIZER = hasattr(wx, "WrapSizer")  # only for 3.0
+        if HAVE_WRAP_SIZER:
+            self.load_and_generate('SizersSizeTests', test_GUI=True)
+        else:
+            self.load_and_generate('SizersSizeTests_nowrap', test_GUI=True)
 
     def test_Menu(self):
         self.load_and_generate('MenuTest', excluded=["lisp"], test_GUI=True)

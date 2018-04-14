@@ -16,6 +16,7 @@ from tree import WidgetTree, Node, SlotNode
 import clipboard
 import common, compat, config, misc
 
+HAVE_WRAP_SIZER = hasattr(wx, "WrapSizer")  # only for 3.0
 
 def _frozen(method):
     "freeze toplevel parent during update"
@@ -679,10 +680,12 @@ class ClassOrientProperty(np.RadioProperty):
     CHOICES = [ ('wxBoxSizer (wxVERTICAL)', 'without box and label'),
                 ('wxBoxSizer (wxHORIZONTAL)', 'without box and label'),
                 ('wxStaticBoxSizer (wxVERTICAL)', 'with box and label'),
-                ('wxStaticBoxSizer (wxHORIZONTAL)', 'with box and label'),
+                ('wxStaticBoxSizer (wxHORIZONTAL)', 'with box and label') ]
+    if HAVE_WRAP_SIZER:
+        CHOICES += [
                 ('wxWrapSizer (wxVERTICAL)', 'without box and label; wraps around'),
-                ('wxWrapSizer (wxHORIZONTAL)', 'without box and label; wraps around'),
-                ('wxGridSizer', None),
+                ('wxWrapSizer (wxHORIZONTAL)', 'without box and label; wraps around') ]
+    CHOICES += [('wxGridSizer', None),
                 ('wxFlexGridSizer', "with columns/rows of different widths"),
                 ('wxGridBagSizer', "with cell spanning (i.e. item may populate multiple grid cells)")]
 
@@ -1399,49 +1402,50 @@ class EditBoxSizer(BoxSizerBase):
             self.sizer.add_item( self, self.pos, self.widget.GetMinSize() )
 
 
-class wxGladeWrapSizer(wx.WrapSizer):
-    def SetItemMinSize(self, item, w, h):
-        if w==-1 or h==-1:
-            try:
-                w2, h2 = item.GetBestSize()
-                if w == -1: w = w2
-                if h == -1: h = h2
-            except AttributeError:
-                pass
-        wx.BoxSizer.SetItemMinSize(self, item, w, h)
+if HAVE_WRAP_SIZER:
+    class wxGladeWrapSizer(wx.WrapSizer):
+        def SetItemMinSize(self, item, w, h):
+            if w==-1 or h==-1:
+                try:
+                    w2, h2 = item.GetBestSize()
+                    if w == -1: w = w2
+                    if h == -1: h = h2
+                except AttributeError:
+                    pass
+            wx.BoxSizer.SetItemMinSize(self, item, w, h)
 
 
-class EditWrapSizer(BoxSizerBase):
-    "Class to handle wxWrapSizer objects"
-    WX_CLASS = "wxWrapSizer"
-
-    def create_widget(self):
-        self.widget = wxGladeWrapSizer(self.orient)
-        self.widget.Add(self._btn, 0, wx.EXPAND)
-        to_lay_out = []
-        for c in self.children[1:]:  # we've already added self._btn
-            c.create()
-            if isinstance(c, SizerSlot):
-                self.widget.Add(c.widget, 1, wx.EXPAND)
-                self.widget.SetItemMinSize(c.widget, 20, 20)
-            else:
-                sp = c.properties.get('size')
-                if sp and sp.is_active():
-                    if (c.proportion != 0 or (c.flag & wx.EXPAND)) and not (c.flag & wx.FIXED_MINSIZE):
-                        c.widget.Layout()
-                        size = sp.get_size(c.widget)
-                        c.widget.SetMinSize(size)
-                    else:
-                        size = sp.get_size(c.widget)
-                        # now re-set the item to update the size correctly...
-                        to_lay_out.append((c.pos, size) )
-        for pos, size in to_lay_out:
-            self.set_item_best_size(self.children[pos], size)
-        self.layout(True)
-        if not self.toplevel and getattr(self, 'sizer'):
-            # hasattr(self, 'sizer') is False only in case of a 'change_sizer' call
-            self.sizer.add_item( self, self.pos, self.widget.GetMinSize() )
-
+    class EditWrapSizer(BoxSizerBase):
+        "Class to handle wxWrapSizer objects"
+        WX_CLASS = "wxWrapSizer"
+    
+        def create_widget(self):
+            self.widget = wxGladeWrapSizer(self.orient)
+            self.widget.Add(self._btn, 0, wx.EXPAND)
+            to_lay_out = []
+            for c in self.children[1:]:  # we've already added self._btn
+                c.create()
+                if isinstance(c, SizerSlot):
+                    self.widget.Add(c.widget, 1, wx.EXPAND)
+                    self.widget.SetItemMinSize(c.widget, 20, 20)
+                else:
+                    sp = c.properties.get('size')
+                    if sp and sp.is_active():
+                        if (c.proportion != 0 or (c.flag & wx.EXPAND)) and not (c.flag & wx.FIXED_MINSIZE):
+                            c.widget.Layout()
+                            size = sp.get_size(c.widget)
+                            c.widget.SetMinSize(size)
+                        else:
+                            size = sp.get_size(c.widget)
+                            # now re-set the item to update the size correctly...
+                            to_lay_out.append((c.pos, size) )
+            for pos, size in to_lay_out:
+                self.set_item_best_size(self.children[pos], size)
+            self.layout(True)
+            if not self.toplevel and getattr(self, 'sizer'):
+                # hasattr(self, 'sizer') is False only in case of a 'change_sizer' call
+                self.sizer.add_item( self, self.pos, self.widget.GetMinSize() )
+    
 
 
 
@@ -2400,10 +2404,11 @@ class _SizerDialog(wx.Dialog):
         tmp.Add(self.label, 1)
         szr.Add(tmp, 0, wx.ALL | wx.EXPAND, 4)
 
-        self.checkbox_wrap = wx.CheckBox(self, -1, _('Wraps around'))
-        compat.SetToolTip(self.checkbox_wrap, "Use wxWrapSizer")
-        self.checkbox_wrap.Bind(wx.EVT_CHECKBOX, self.on_check_wrapbox)
-        szr.Add(self.checkbox_wrap, 0, wx.ALL | wx.EXPAND, 4)
+        if HAVE_WRAP_SIZER:
+            self.checkbox_wrap = wx.CheckBox(self, -1, _('Wraps around'))
+            compat.SetToolTip(self.checkbox_wrap, "Use wxWrapSizer")
+            self.checkbox_wrap.Bind(wx.EVT_CHECKBOX, self.on_check_wrapbox)
+            szr.Add(self.checkbox_wrap, 0, wx.ALL | wx.EXPAND, 4)
 
         # horizontal sizer for action buttons
         hsizer = wx.BoxSizer(wx.HORIZONTAL)
@@ -2424,13 +2429,15 @@ class _SizerDialog(wx.Dialog):
         self.checkbox_static.SetValue(0)
         self.label.SetValue("")
         self.label.Enable(False)
-        self.checkbox_wrap.SetValue(0)
+        if HAVE_WRAP_SIZER:
+            self.checkbox_wrap.SetValue(0)
 
     def on_check_statbox(self, event):
         checked = event.IsChecked()
         self.label.Enable(checked)
-        self.checkbox_wrap.Enable(not checked)
-        if checked: self.checkbox_wrap.SetValue(False)
+        if HAVE_WRAP_SIZER:
+            self.checkbox_wrap.Enable(not checked)
+            if checked: self.checkbox_wrap.SetValue(False)
 
     def on_check_wrapbox(self, event):
         checked = event.IsChecked()
@@ -2640,7 +2647,8 @@ def init_all():
 
     cwx = common.widgets_from_xml
     cwx['EditBoxSizer'] = xml_builder
-    cwx['EditWrapSizer'] = xml_builder
+    if HAVE_WRAP_SIZER:
+        cwx['EditWrapSizer'] = xml_builder
     cwx['EditStaticBoxSizer'] = xml_builder
     cwx['EditGridSizer'] = grid_xml_builder
     cwx['EditFlexGridSizer'] = grid_xml_builder
@@ -2648,7 +2656,8 @@ def init_all():
 
     import os.path
 
-    WidgetTree.images['EditWrapSizer'] = os.path.join( config.icons_path, 'sizer.xpm')
+    if HAVE_WRAP_SIZER:
+        WidgetTree.images['EditWrapSizer'] = os.path.join( config.icons_path, 'sizer.xpm')
     WidgetTree.images['EditStaticBoxSizer'] = os.path.join( config.icons_path, 'sizer.xpm')
     WidgetTree.images['EditFlexGridSizer']  = os.path.join( config.icons_path, 'grid_sizer.xpm' )
     WidgetTree.images['EditGridBagSizer']  = os.path.join( config.icons_path, 'grid_sizer.xpm' )
