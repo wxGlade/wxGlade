@@ -209,11 +209,8 @@ class PerlCodeWriter(BaseLangCodeWriter, wcodegen.PerlMixin):
                      '}\n' \
                      '\n'
 
-    tmpl_class_end = '\n' \
-                     '%(comment)s end of class %(klass)s\n' \
-                     '\n' \
-                     '1;\n' \
-                     '\n'
+    tmpl_class_end = '\n%(comment)s end of class %(klass)s\n\n1;\n\n'
+    tmpl_class_end_nomarker = '\n\n1;\n\n'
 
     tmpl_ctor_call_layout = '\n' \
                             '%(tab)s$self->__set_properties();\n' \
@@ -287,9 +284,10 @@ sub %(handler)s {
                     '%(tab)s$%(top_win)s->Show(1);',
                     '',
                     '%(tab)sreturn 1;',
-                    '}',
-                    '# end of class %(klass)s',
-                    '',
+                    '}']
+            if self._mark_blocks:
+                ret.append('# end of class %(klass)s')
+            ret += ['',
                     'package main;',
                     '',
                     'unless(caller){'] + gettext1 + [
@@ -394,14 +392,11 @@ sub %(handler)s {
             self.warning( '%s has custom base classes, but you are not overwriting existing sources: '
                           'please check that the resulting code is correct!' % code_obj.name )
 
-        # __init__ begin tag
-        write(self.tmpl_block_begin % {
-            'class_separator': self.class_separator,
-            'comment_sign':    self.comment_sign,
-            'function':        self.name_ctor,
-            'klass':           self.cn_class(code_obj.klass),
-            'tab':             tab,
-            })
+        if self._mark_blocks:
+            # __init__ begin tag
+            write(self.tmpl_block_begin % {'class_separator':self.class_separator, 'comment_sign':self.comment_sign,
+                                           'function':self.name_ctor, 'klass':self.cn_class(code_obj.klass),
+                                           'tab':tab} )
 
         style_p = code_obj.properties.get("style")
         if style_p and style_p.value_set != style_p.default_value:

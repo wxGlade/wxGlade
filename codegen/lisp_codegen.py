@@ -190,10 +190,8 @@ class LispCodeWriter(BaseLangCodeWriter, wcodegen.LispMixin):
 
     tmpl_cfunc_end = '%(tab)s)\n'
 
-    tmpl_class_end = '\n' \
-                     '%(comment)s end of class %(klass)s\n' \
-                     '\n' \
-                     '\n'
+    tmpl_class_end = '\n%(comment)s end of class %(klass)s\n\n\n'
+    tmpl_class_end_nomarker = '\n\n\n'
 
     tmpl_func_do_layout = '\n' \
                           '(defmethod do-layout ((obj %(klass)s))\n' \
@@ -234,6 +232,7 @@ class LispCodeWriter(BaseLangCodeWriter, wcodegen.LispMixin):
 %(tab)s(ffi:close-foreign-library "../miscellaneous/wxc-msw2.6.2.dll"))
 """
 
+    # ZZZ merge tmpl_gettext_detailed  and tmpl_simple
     tmpl_gettext_detailed = """\
 (defun init-func (fun data evt)
 %(tab)s%(tab)s(let ((%(top_win)s (make-%(top_win_class)s)))
@@ -278,10 +277,16 @@ class LispCodeWriter(BaseLangCodeWriter, wcodegen.LispMixin):
         # check for templates for detailed startup code
         if not self.app_name: return None
         klass = app.klass
+        ret = None
         if klass and self._use_gettext:
-            return self.tmpl_gettext_detailed
+            ret = self.tmpl_gettext_detailed
         elif klass and not self._use_gettext:
-            return self.tmpl_detailed
+            ret = self.tmpl_detailed
+        if ret:
+            if not self._mark_blocks:
+                ret.replace(";;; end of class %(klass)s\n", "")
+            return ret
+        
         # check for templates for simple startup code
         elif not klass and self._use_gettext:
             return self.tmpl_gettext_simple
@@ -407,9 +412,11 @@ class LispCodeWriter(BaseLangCodeWriter, wcodegen.LispMixin):
             self.warning( '%s has custom base classes, but you are not overwriting existing sources: please check that '
                           'the resulting code is correct!' % code_obj.name )
 
-        # __init__ begin tag
-        write( self.tmpl_block_begin % {'class_separator':self.class_separator, 'comment_sign':self.comment_sign,
-                                        'function':self.name_ctor, 'klass':self.cn_class(code_obj.klass), 'tab':tab} )
+        if self._mark_blocks:
+            # __init__ begin tag
+            write( self.tmpl_block_begin % {'class_separator':self.class_separator, 'comment_sign':self.comment_sign,
+                                            'function':self.name_ctor, 'klass':self.cn_class(code_obj.klass),
+                                            'tab':tab} )
 
         style_p = code_obj.properties.get("style")
         if style_p and style_p.value_set != style_p.default_value:

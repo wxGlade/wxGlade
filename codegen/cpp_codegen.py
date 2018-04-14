@@ -628,7 +628,8 @@ class CPPCodeWriter(BaseLangCodeWriter, wcodegen.CppMixin):
             hwrite('\nclass %s: public %s {\n' % (fmt_klass, base))
             hwrite('public:\n')
             # the first thing to add it the enum of the various ids
-            hwrite(self.tabs(1) + '// begin wxGlade: %s::ids\n' % fmt_klass)
+            if self._mark_blocks:
+                hwrite(self.tabs(1) + '// begin wxGlade: %s::ids\n' % fmt_klass)
             ids = self.classes[klass].ids
 
             # let's try to see if there are extra ids to add to the enum
@@ -640,15 +641,18 @@ class CPPCodeWriter(BaseLangCodeWriter, wcodegen.CppMixin):
                 for id_name in ids:
                     hwrite('%s%s,\n' % (self.tabs(2), id_name))
                 hwrite(self.tabs(1) + '};\n')
-            hwrite(self.tabs(1) + '// end wxGlade\n\n')
+            if self._mark_blocks:
+                hwrite(self.tabs(1) + '// end wxGlade\n\n')
             # constructor prototype
             hwrite(self.tabs(1) + '%s(%s);\n' % (fmt_klass, sign_decl1))
             hwrite('\nprivate:\n')
             # set_properties and do_layout prototypes
-            hwrite(self.tabs(1) + '// begin wxGlade: %s::methods\n' % fmt_klass)
+            if self._mark_blocks:
+                hwrite(self.tabs(1) + '// begin wxGlade: %s::methods\n' % fmt_klass)
             hwrite(self.tabs(1) + 'void set_properties();\n')
             hwrite(self.tabs(1) + 'void do_layout();\n')
-            hwrite(self.tabs(1) + '// end wxGlade\n')
+            if self._mark_blocks:
+                hwrite(self.tabs(1) + '// end wxGlade\n')
             # declarations of the attributes
             hwrite('\n')
             hwrite('protected:\n')
@@ -670,7 +674,8 @@ class CPPCodeWriter(BaseLangCodeWriter, wcodegen.CppMixin):
             hwrite('}; // wxGlade: end class\n\n')
 
         elif prev_src:
-            hwrite(self.tabs(1) + '// begin wxGlade: %s::ids\n' % fmt_klass)
+            if self._mark_blocks:
+                hwrite(self.tabs(1) + '// begin wxGlade: %s::ids\n' % fmt_klass)
             ids = self.classes[klass].ids
 
             # let's try to see if there are extra ids to add to the enum
@@ -682,17 +687,19 @@ class CPPCodeWriter(BaseLangCodeWriter, wcodegen.CppMixin):
                 for id_name in ids:
                     hwrite('%s%s,\n' % (self.tabs(2), id_name))
                 hwrite(self.tabs(1) + '};\n')
-            hwrite(self.tabs(1) + '// end wxGlade\n')
+            if self._mark_blocks:
+                hwrite(self.tabs(1) + '// end wxGlade\n')
             tag = '<%swxGlade replace %s ids>' % (self.nonce, klass)
             if not prev_src.replace_header( tag, "".join(header_buffer) ):
                 # no ids tag found, issue a warning and do nothing
                 self.warning("wxGlade ids block not found for %s, ids declarations code NOT generated" % code_obj.name)
-            header_buffer = [
-                self.tabs(1) + '// begin wxGlade: %s::methods\n' % fmt_klass,
-                self.tabs(1) + 'void set_properties();\n',
-                self.tabs(1) + 'void do_layout();\n',
+            header_buffer = []
+            if self._mark_blocks:
+                header_buffer.append( self.tabs(1) + '// begin wxGlade: %s::methods\n' % fmt_klass )
+            header_buffer.append( self.tabs(1) + 'void set_properties();\n' )
+            header_buffer.append( self.tabs(1) + 'void do_layout();\n' )
+            if self._mark_blocks:
                 self.tabs(1) + '// end wxGlade\n',
-                ]
             tag = '<%swxGlade replace %s methods>' % (self.nonce, klass)
             if not prev_src.replace_header(tag, "".join(header_buffer)):
                 # no methods tag found, issue a warning and do nothing
@@ -700,10 +707,12 @@ class CPPCodeWriter(BaseLangCodeWriter, wcodegen.CppMixin):
                     "wxGlade methods block not found for %s, methods declarations code NOT generated" % code_obj.name )
             header_buffer = []
             hwrite = header_buffer.append
-            hwrite(self.tabs(1) + '// begin wxGlade: %s::attributes\n' % fmt_klass)
+            if self._mark_blocks:
+                hwrite(self.tabs(1) + '// begin wxGlade: %s::attributes\n' % fmt_klass)
             for o_type, o_name in self.classes[klass].sub_objs:
                 hwrite(self.tabs(1) + '%s* %s;\n' % (o_type, o_name))
-            hwrite(self.tabs(1) + '// end wxGlade\n')
+            if self._mark_blocks:
+                hwrite(self.tabs(1) + '// end wxGlade\n')
             tag = '<%swxGlade replace %s attributes>' % (self.nonce, klass)
             if not prev_src.replace_header(tag, "".join(header_buffer)):
                 # no attributes tag found, issue a warning and do nothing
@@ -747,7 +756,8 @@ class CPPCodeWriter(BaseLangCodeWriter, wcodegen.CppMixin):
                         base += ", " + rest
 
             swrite('\n%s::%s(%s):\n%s%s\n{\n' % (fmt_klass, fmt_klass, sign_decl2, self.tabs(1), base) )
-        swrite(self.tabs(1) + '// begin wxGlade: %s::%s\n' % (fmt_klass, fmt_klass))
+        if self._mark_blocks:
+            swrite(self.tabs(1) + '// begin wxGlade: %s::%s\n' % (fmt_klass, fmt_klass))
 
         # set size here to avoid problems with splitter windows
         if 'size' in code_obj.properties and code_obj.properties["size"].is_active():
@@ -769,8 +779,9 @@ class CPPCodeWriter(BaseLangCodeWriter, wcodegen.CppMixin):
 
         swrite( self.tmpl_ctor_call_layout % {'tab':tab} )
 
-        # end tag
-        swrite('%s%s end wxGlade\n' % (tab, self.comment_sign))
+        if self._mark_blocks:
+            # end tag
+            swrite('%s%s end wxGlade\n' % (tab, self.comment_sign))
 
         # write class function end statement
         if self.tmpl_cfunc_end and is_new:

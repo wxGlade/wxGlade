@@ -76,7 +76,8 @@ class Application(np.PropertyOwner):
                          "Generate source files for wxWidgets version 3.0\nOld style import are not supported anymore.")
 
     PROPERTIES = ["Application", "name", "class", "encoding", "use_gettext", "top_window", "multiple_files",
-                                 "language", "for_version", "overwrite", "output_path", "generate_code",
+                                 "language", "for_version", "overwrite", "mark_blocks",
+                                 "output_path", "generate_code",
                   "Settings",    "indent_mode", "indent_amount", "source_extension", "header_extension"]
     _PROPERTY_LABELS = {"source_extension":     'C++ source file ext',
                         "header_extension":     'C++ header file ext',
@@ -84,6 +85,7 @@ class Application(np.PropertyOwner):
                         "indent_mode":          "Indentation mode",
                         "multiple_files":       "Code Generation",
                         "overwrite":            "Keep user code",
+                        "mark_blocks":          "Mark code blocks",
                         "generate_code":        "Generate Source"}
     _PROPERTY_HELP = {"name":            'Name of the instance created from "Class";\n'
                                          ' also used as (main) file name in case of "Separate file for each class"',
@@ -97,7 +99,10 @@ class Application(np.PropertyOwner):
                                   "wxGlade will just write the blocks that are marked 'begin wxGlade'/'end wxGlade'.\n"
                                   "Be aware that this feature is not too robust against e.g. renaming of frames.\n"
                                   "Always keep backups and don't touch the wxGlade begin/end markers!",
-                      "output_path": "Output file or directory: absolute or relative path"
+                      "output_path": "Output file or directory: absolute or relative path",
+                      "mark_blocks":"Mark auto-generated code blocks with BEGIN/END wxGlade comments.\n"
+                                    "This allows to identify user code in source files.\n"
+                                    "Therefore it can not be disabled if 'Keep user code' is selected."
                       }
     if sys.platform=="win32":
         _PROPERTY_HELP["output_path"] = "Output file or directory; double click label to show in Explorer"
@@ -138,6 +143,8 @@ class Application(np.PropertyOwner):
         self._update_output_path('python')
 
         self.overwrite = np.InvCheckBoxProperty(config.default_overwrite)
+        # YYY 
+        self.mark_blocks = np.CheckBoxProperty(True)
 
         # output language
         languages = sorted( common.code_writers.keys() )
@@ -303,6 +310,12 @@ class Application(np.PropertyOwner):
         if not modified or "name" in modified or "class" in modified:
             # enable/disable to_window
             self.properties["top_window"].set_active(self.name or self.klass)
+        if not modified or "overwrite" in modified:
+            block = not self.overwrite
+            self.properties["mark_blocks"].set_blocked(block)
+            if block:
+                self.properties["mark_blocks"].set(True)
+            self.properties["mark_blocks"].set_blocked(block)
 
     def _init(self):
         # common part for init and new

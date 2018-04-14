@@ -129,6 +129,15 @@ class XmlParser(ContentHandler):
             overwrite = config.default_overwrite
         res['overwrite'] = bool(overwrite)
 
+        try:
+            mark_blocks = int(attrs['mark_blocks'])
+        except (KeyError, ValueError):
+            mark_blocks = True # config.mark_blocks
+        if not overwrite and not mark_blocks:
+            mark_blocks = True
+        res['mark_blocks'] = bool(mark_blocks)
+
+
         res['path'] = attrs.get('path')
 
         res['header_extension'] = attrs.get('header_extension', config.default_header_extension)
@@ -188,13 +197,14 @@ class XmlWidgetBuilder(XmlParser):
             p["use_gettext"].set( attrs['use_gettext'] )
             p["is_template"].set( attrs['is_template'] )
             p["overwrite"].set( attrs['overwrite'] )
+            p["mark_blocks"].set( attrs['mark_blocks'] )
             p["indent_mode"].set( attrs['indent_symbol'] )
             p["indent_amount"].set( attrs['indent_amount'] )
             p["for_version"].set( attrs['for_version'] )
 
             modified = ["encoding", "output_path", "class", "name", "multiple_files", "language", "top_window",
-                        "use_gettext", "use_gettext", "is_template", "overwrite", "indent_mode", "indent_amount",
-                        "for_version"]
+                        "use_gettext", "is_template", "overwrite", "mark_blocks",
+                        "indent_mode", "indent_amount", "for_version"]
 
             source_extension = attrs['source_extension']
             if source_extension and source_extension[0] == '.':

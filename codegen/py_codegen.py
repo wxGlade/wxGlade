@@ -201,6 +201,7 @@ class PythonCodeWriter(BaseLangCodeWriter, wcodegen.PythonMixin):
     tmpl_name_set_properties = '__set_properties'
     tmpl_encoding = "# -*- coding: %s -*-\n#\n"
     tmpl_class_end = '\n%(comment)s end of class %(klass)s\n'
+    tmpl_class_end_nomarker = '\n'
     tmpl_ctor_call_layout = '\n%(tab)sself.__set_properties()\n%(tab)sself.__do_layout()\n'
     tmpl_func_empty = '%(tab)spass\n'
     tmpl_sizeritem = '%s.Add(%s, %s, %s, %s)\n'
@@ -235,8 +236,10 @@ from %(top_win_module)s import %(top_win_class)s\n\n"""
                     '%(tab)s%(tab)sself.SetTopWindow(self.%(top_win)s)'
                     ] + show_code + [
                     '%(tab)s%(tab)sreturn True',
-                    '',
-                    '# end of class %(klass)s\n']
+                    '']
+            if self._mark_blocks:
+                ret.append( '# end of class %(klass)s\n' )
+            ret.append("")
 
         if self.app_name:
             # instantiate application class or PySimpleApp
@@ -315,9 +318,10 @@ from %(top_win_module)s import %(top_win_class)s\n\n"""
             self.warning( '%s has custom base classes, but you are not overwriting '
                           'existing sources: please check that the resulting code is correct!' % code_obj.name )
 
-        # __init__ begin tag
-        write(self.tmpl_block_begin % {'class_separator': self.class_separator, 'comment_sign': self.comment_sign,
-                                       'function':self.name_ctor, 'klass':fmt_klass, 'tab':tab} )
+        if self._mark_blocks:
+            # __init__ begin tag
+            write(self.tmpl_block_begin % {'class_separator': self.class_separator, 'comment_sign': self.comment_sign,
+                                           'function':self.name_ctor, 'klass':fmt_klass, 'tab':tab} )
 
         style_p = code_obj.properties.get("style")
         if style_p and style_p.value_set != style_p.default_value:
@@ -404,16 +408,17 @@ from %(top_win_module)s import %(top_win_class)s\n\n"""
 
         return code_lines
 
-    def generate_code_event_handler(self, code_obj, is_new, tab, prev_src,
-                                    event_handlers):
+    def generate_code_event_handler(self, code_obj, is_new, tab, prev_src, event_handlers):
+        # generate default event handler, calling event.Skip()
         # Python has two indentation levels
         #  1st) for function declaration
         #  2nd) for function body
-        self.tmpl_func_event_stub = self.tabs(1) + """\
-def %(handler)s(self, event):  # wxGlade: %(klass)s.<event_handler>
-%(tab)sprint("Event handler '%(handler)s' not implemented!")
-%(tab)sevent.Skip()
-"""
+        stub = [self.tabs(1), "def %(handler)s(self, event):"]
+        if self._mark_blocks: stub.append("  # wxGlade: %(klass)s.<event_handler>")
+        stub.append( """\n%(tab)sprint("Event handler '%(handler)s' not implemented!")\n""" )
+        stub.append( '%(tab)sevent.Skip()\n' )
+        self.tmpl_func_event_stub = "".join(stub)
+
         event_handlers = [handler for handler in event_handlers if not handler[2].startswith("lambda ")]
         return BaseLangCodeWriter.generate_code_event_handler( self, code_obj, is_new, tab, prev_src, event_handlers )
 

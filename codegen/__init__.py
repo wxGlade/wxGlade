@@ -284,7 +284,8 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
     tmpl_block_begin = '%(tab)s%(comment_sign)s begin wxGlade: %(klass)s%(class_separator)s%(function)s\n'
 
     tmpl_cfunc_end = ''        # Statement to add at the end of a class function. e.g. 'return $self;' for Perl.
-    tmpl_class_end = ''        # Statement to add at the end of a class.
+    tmpl_class_end = ''        # Statement to add at the end of a class, with 'end of class' marker
+    tmpl_class_end_nomarker='' # same without marker
     tmpl_ctor_call_layout = '' # Code add to the contructor to call '__do_layout()' and '__set_properties()'.
 
 
@@ -362,6 +363,7 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
         self._current_extra_code = []
         self._current_extra_modules = {}
         self._overwrite = config.default_overwrite
+        self._mark_blocks = True # YYY config.mark_blocks
         self._textdomain = 'app'
         self._use_gettext = config.default_use_gettext
         self._widget_extra_modules = {}
@@ -397,10 +399,12 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
         if preview:
             self.multiple_files = False
             self._overwrite = True
+            self._mark_blocks = False
             self._use_gettext = False
         else:
             self.multiple_files = app.multiple_files
             self._overwrite = app.overwrite
+            self._mark_blocks = app.mark_blocks if self._overwrite else False
             self._use_gettext = app.use_gettext
 
         if not preview:
@@ -763,12 +767,13 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
         code_lines = self.generate_code_event_bind( code_obj, tab, event_handlers )
         obuffer.extend(code_lines)
 
-        # end tag
-        obuffer.append( '%s%s end wxGlade\n' % (tab, self.comment_sign) )
+        if self._mark_blocks:
+            # end tag
+            obuffer.append( '%s%s end wxGlade\n' % (tab, self.comment_sign) )
 
-        # write class function end statement
-        if self.tmpl_cfunc_end and is_new:
-            obuffer.append( self.tmpl_cfunc_end%{'tab':tab} )
+            # write class function end statement
+            if self.tmpl_cfunc_end and is_new:
+                obuffer.append( self.tmpl_cfunc_end%{'tab':tab} )
 
         # end of ctor generation
 
@@ -827,8 +832,10 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
         self.classes[klass].done = True
 
         # write "end of class" statement
-        if self.tmpl_class_end:
+        if self.tmpl_class_end and self._mark_blocks:
             obuffer.append( self.tmpl_class_end % { 'klass': self.cn_class(klass), 'comment': self.comment_sign } )
+        elif self.tmpl_class_end_nomarker:
+            obuffer.append( self.tmpl_class_end_nomarker )
 
         if self.multiple_files:
             if prev_src:
@@ -1625,9 +1632,10 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
         code_lines = []
         write = code_lines.append
 
-        # begin tag
-        write( self.tmpl_block_begin % { 'class_separator': self.class_separator, 'comment_sign': self.comment_sign,
-                                         'function': fname, 'klass': self.cn_class(code_obj.klass), 'tab': tab} )
+        if self._mark_blocks:
+            # begin tag
+            write( self.tmpl_block_begin % { 'class_separator': self.class_separator, 'comment_sign': self.comment_sign,
+                                             'function': fname, 'klass': self.cn_class(code_obj.klass), 'tab': tab} )
 
         if body:
             for l in body:
@@ -1635,8 +1643,9 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
         else:
             write(self.tmpl_func_empty % {'tab': tab})
 
-        # end tag
-        write('%s%s end wxGlade\n' % (tab, self.comment_sign))
+        if self._mark_blocks:
+            # end tag
+            write('%s%s end wxGlade\n' % (tab, self.comment_sign))
 
         # embed the content into function template
         if is_new:
@@ -1717,7 +1726,8 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
         @param content: Content to enter as string or list of strings
         @param newline: Add a tailing empty line?"""
         code_list = []
-        code_list.append( '%s begin wxGlade: %s' % (self.comment_sign, tag) )
+        if self._mark_blocks:
+            code_list.append( '%s begin wxGlade: %s' % (self.comment_sign, tag) )
         if isinstance(content, list):
             for entry in content:
                 code_list.append(entry.rstrip())
@@ -1728,7 +1738,8 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
                 code_list.append(_content)
         else:
             raise AssertionError('Unknown content type: %s' % type(content))
-        code_list.append( '%s end wxGlade' % self.comment_sign )
+        if self._mark_blocks:
+            code_list.append( '%s end wxGlade' % self.comment_sign )
         # newline for "end wxGlade" line
         code_list.append('')
         if newline:
