@@ -79,7 +79,7 @@
             </fields>
         </object>
         <object class="wxFlexGridSizer" name="object_1" base="EditFlexGridSizer">
-            <rows>2</rows>
+            <rows>3</rows>
             <cols>1</cols>
             <vgap>0</vgap>
             <hgap>0</hgap>
