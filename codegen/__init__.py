@@ -404,7 +404,7 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
         else:
             self.multiple_files = app.multiple_files
             self._overwrite = app.overwrite
-            self._mark_blocks = app.mark_blocks if self._overwrite else False
+            self._mark_blocks = True if self._overwrite else app.mark_blocks
             self._use_gettext = app.use_gettext
 
         if not preview:
