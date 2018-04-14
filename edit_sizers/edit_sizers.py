@@ -592,7 +592,7 @@ def change_sizer(old, new):
         if szr.toplevel:
             szr.window.set_sizer(szr)
         szr.layout(True)
-    
+        if szr.widget: szr.window.widget.Refresh()
         misc.set_focused_widget(szr)
 
 
@@ -988,6 +988,8 @@ class SizerBase(Sizer, np.PropertyOwner):
         except Exception:
             # production version: exceptions to be ignored
             if config.debugging: raise
+        if self.widget:
+            self.window.widget.Refresh()
         if force_layout:
             self.layout()  # update the layout of self
 
@@ -1886,6 +1888,7 @@ class GridSizerBase(SizerBase):
 
         if layout:
             self.layout(True)
+            if self.widget: self.window.widget.Refresh()
 
         SizerBase.properties_changed(self, modified)
 
