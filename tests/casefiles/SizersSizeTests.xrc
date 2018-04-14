@@ -412,6 +412,404 @@
                     </object>
                     </object>
                     <object class="notebookpage">
+                    <label>WrapSizer</label>
+                    <object class="wxPanel" name="notebook_1_WrapSizer">
+                        <style>wxTAB_TRAVERSAL</style>
+                        <object class="wxBoxSizer">
+                            <orient>wxHORIZONTAL</orient>
+                            <object class="sizeritem">
+                                <option>1</option>
+                                <flag>wxEXPAND</flag>
+                                <object class="wxWrapSizer">
+                                    <orient>wxHORIZONTAL</orient>
+                                    <object class="sizeritem">
+                                        <object class="wxTextCtrl" name="_0_N_N_copy_30">
+                                        </object>
+                                    </object>
+                                    <object class="sizeritem">
+                                        <option>1</option>
+                                        <object class="wxTextCtrl" name="_1_N_N_copy_30">
+                                        </object>
+                                    </object>
+                                    <object class="sizeritem">
+                                        <flag>wxEXPAND</flag>
+                                        <object class="wxTextCtrl" name="_0_X_N_copy_30">
+                                        </object>
+                                    </object>
+                                    <object class="sizeritem">
+                                        <option>1</option>
+                                        <flag>wxEXPAND</flag>
+                                        <object class="wxTextCtrl" name="_1_X_N_copy_30">
+                                        </object>
+                                    </object>
+                                    <object class="sizeritem">
+                                        <flag>wxFIXED_MINSIZE</flag>
+                                        <object class="wxTextCtrl" name="_0_N_F_copy_30">
+                                        </object>
+                                    </object>
+                                    <object class="sizeritem">
+                                        <option>1</option>
+                                        <flag>wxFIXED_MINSIZE</flag>
+                                        <object class="wxTextCtrl" name="_1_N_F_copy_30">
+                                        </object>
+                                    </object>
+                                    <object class="sizeritem">
+                                        <flag>wxEXPAND|wxFIXED_MINSIZE</flag>
+                                        <object class="wxTextCtrl" name="_0_X_F_copy_30">
+                                        </object>
+                                    </object>
+                                    <object class="sizeritem">
+                                        <option>1</option>
+                                        <flag>wxEXPAND|wxFIXED_MINSIZE</flag>
+                                        <object class="wxTextCtrl" name="_1_X_F_copy_30">
+                                        </object>
+                                    </object>
+                                </object>
+                            </object>
+                            <object class="sizeritem">
+                                <option>1</option>
+                                <flag>wxEXPAND</flag>
+                                <object class="wxWrapSizer">
+                                    <orient>wxHORIZONTAL</orient>
+                                    <object class="sizeritem">
+                                        <object class="wxTextCtrl" name="_0_N_N_copy_30_copy">
+                                            <size>100, 21</size>
+                                        </object>
+                                    </object>
+                                    <object class="sizeritem">
+                                        <option>1</option>
+                                        <object class="wxTextCtrl" name="_1_N_N_copy_30_copy">
+                                            <size>100, 21</size>
+                                        </object>
+                                    </object>
+                                    <object class="sizeritem">
+                                        <flag>wxEXPAND</flag>
+                                        <object class="wxTextCtrl" name="_0_X_N_copy_30_copy">
+                                            <size>100, 21</size>
+                                        </object>
+                                    </object>
+                                    <object class="sizeritem">
+                                        <option>1</option>
+                                        <flag>wxEXPAND</flag>
+                                        <object class="wxTextCtrl" name="_1_X_N_copy_30_copy">
+                                            <size>100, 21</size>
+                                        </object>
+                                    </object>
+                                    <object class="sizeritem">
+                                        <flag>wxFIXED_MINSIZE</flag>
+                                        <object class="wxTextCtrl" name="_0_N_F_copy_30_copy">
+                                            <size>100, 21</size>
+                                        </object>
+                                    </object>
+                                    <object class="sizeritem">
+                                        <option>1</option>
+                                        <flag>wxFIXED_MINSIZE</flag>
+                                        <object class="wxTextCtrl" name="_1_N_F_copy_30_copy">
+                                            <size>100, 21</size>
+                                        </object>
+                                    </object>
+                                    <object class="sizeritem">
+                                        <flag>wxEXPAND|wxFIXED_MINSIZE</flag>
+                                        <object class="wxTextCtrl" name="_0_X_F_copy_30_copy">
+                                            <size>100, 21</size>
+                                        </object>
+                                    </object>
+                                    <object class="sizeritem">
+                                        <option>1</option>
+                                        <flag>wxEXPAND|wxFIXED_MINSIZE</flag>
+                                        <object class="wxTextCtrl" name="_1_X_F_copy_30_copy">
+                                            <size>100, 21</size>
+                                        </object>
+                                    </object>
+                                </object>
+                            </object>
+                            <object class="sizeritem">
+                                <option>1</option>
+                                <flag>wxEXPAND</flag>
+                                <object class="wxWrapSizer">
+                                    <orient>wxHORIZONTAL</orient>
+                                    <object class="sizeritem">
+                                        <object class="wxTextCtrl" name="_0_N_N_copy_30_copy_1">
+                                            <size>100, 21d</size>
+                                        </object>
+                                    </object>
+                                    <object class="sizeritem">
+                                        <option>1</option>
+                                        <object class="wxTextCtrl" name="_1_N_N_copy_30_copy_1">
+                                            <size>100, 21d</size>
+                                        </object>
+                                    </object>
+                                    <object class="sizeritem">
+                                        <flag>wxEXPAND</flag>
+                                        <object class="wxTextCtrl" name="_0_X_N_copy_30_copy_1">
+                                            <size>100, 21d</size>
+                                        </object>
+                                    </object>
+                                    <object class="sizeritem">
+                                        <option>1</option>
+                                        <flag>wxEXPAND</flag>
+                                        <object class="wxTextCtrl" name="_1_X_N_copy_30_copy_1">
+                                            <size>100, 21d</size>
+                                        </object>
+                                    </object>
+                                    <object class="sizeritem">
+                                        <flag>wxFIXED_MINSIZE</flag>
+                                        <object class="wxTextCtrl" name="_0_N_F_copy_30_copy_1">
+                                            <size>100, 21d</size>
+                                        </object>
+                                    </object>
+                                    <object class="sizeritem">
+                                        <option>1</option>
+                                        <flag>wxFIXED_MINSIZE</flag>
+                                        <object class="wxTextCtrl" name="_1_N_F_copy_30_copy_1">
+                                            <size>100, 21d</size>
+                                        </object>
+                                    </object>
+                                    <object class="sizeritem">
+                                        <flag>wxEXPAND|wxFIXED_MINSIZE</flag>
+                                        <object class="wxTextCtrl" name="_0_X_F_copy_30_copy_1">
+                                            <size>100, 21d</size>
+                                        </object>
+                                    </object>
+                                    <object class="sizeritem">
+                                        <option>1</option>
+                                        <flag>wxEXPAND|wxFIXED_MINSIZE</flag>
+                                        <object class="wxTextCtrl" name="_1_X_F_copy_30_copy_1">
+                                            <size>100, 21d</size>
+                                        </object>
+                                    </object>
+                                </object>
+                            </object>
+                            <object class="sizeritem">
+                                <option>1</option>
+                                <flag>wxEXPAND</flag>
+                                <object class="wxWrapSizer">
+                                    <orient>wxHORIZONTAL</orient>
+                                    <object class="sizeritem">
+                                        <object class="wxTextCtrl" name="_0_N_N_copy_30_copy_2">
+                                            <size>-1, 21</size>
+                                        </object>
+                                    </object>
+                                    <object class="sizeritem">
+                                        <option>1</option>
+                                        <object class="wxTextCtrl" name="_1_N_N_copy_30_copy_2">
+                                            <size>-1, 21</size>
+                                        </object>
+                                    </object>
+                                    <object class="sizeritem">
+                                        <flag>wxEXPAND</flag>
+                                        <object class="wxTextCtrl" name="_0_X_N_copy_30_copy_2">
+                                            <size>-1, 21</size>
+                                        </object>
+                                    </object>
+                                    <object class="sizeritem">
+                                        <option>1</option>
+                                        <flag>wxEXPAND</flag>
+                                        <object class="wxTextCtrl" name="_1_X_N_copy_30_copy_2">
+                                            <size>-1, 21</size>
+                                        </object>
+                                    </object>
+                                    <object class="sizeritem">
+                                        <flag>wxFIXED_MINSIZE</flag>
+                                        <object class="wxTextCtrl" name="_0_N_F_copy_30_copy_2">
+                                            <size>-1, 21</size>
+                                        </object>
+                                    </object>
+                                    <object class="sizeritem">
+                                        <option>1</option>
+                                        <flag>wxFIXED_MINSIZE</flag>
+                                        <object class="wxTextCtrl" name="_1_N_F_copy_30_copy_2">
+                                            <size>-1, 21</size>
+                                        </object>
+                                    </object>
+                                    <object class="sizeritem">
+                                        <flag>wxEXPAND|wxFIXED_MINSIZE</flag>
+                                        <object class="wxTextCtrl" name="_0_X_F_copy_30_copy_2">
+                                            <size>-1, 21</size>
+                                        </object>
+                                    </object>
+                                    <object class="sizeritem">
+                                        <option>1</option>
+                                        <flag>wxEXPAND|wxFIXED_MINSIZE</flag>
+                                        <object class="wxTextCtrl" name="_1_X_F_copy_30_copy_2">
+                                            <size>-1, 21</size>
+                                        </object>
+                                    </object>
+                                </object>
+                            </object>
+                            <object class="sizeritem">
+                                <option>1</option>
+                                <flag>wxEXPAND</flag>
+                                <object class="wxWrapSizer">
+                                    <orient>wxHORIZONTAL</orient>
+                                    <object class="sizeritem">
+                                        <object class="wxTextCtrl" name="_0_N_N_copy_30_copy_3">
+                                            <size>100, -1</size>
+                                        </object>
+                                    </object>
+                                    <object class="sizeritem">
+                                        <option>1</option>
+                                        <object class="wxTextCtrl" name="_1_N_N_copy_30_copy_3">
+                                            <size>100, -1</size>
+                                        </object>
+                                    </object>
+                                    <object class="sizeritem">
+                                        <flag>wxEXPAND</flag>
+                                        <object class="wxTextCtrl" name="_0_X_N_copy_30_copy_3">
+                                            <size>100, -1</size>
+                                        </object>
+                                    </object>
+                                    <object class="sizeritem">
+                                        <option>1</option>
+                                        <flag>wxEXPAND</flag>
+                                        <object class="wxTextCtrl" name="_1_X_N_copy_30_copy_3">
+                                            <size>100, -1</size>
+                                        </object>
+                                    </object>
+                                    <object class="sizeritem">
+                                        <flag>wxFIXED_MINSIZE</flag>
+                                        <object class="wxTextCtrl" name="_0_N_F_copy_30_copy_3">
+                                            <size>100, -1</size>
+                                        </object>
+                                    </object>
+                                    <object class="sizeritem">
+                                        <option>1</option>
+                                        <flag>wxFIXED_MINSIZE</flag>
+                                        <object class="wxTextCtrl" name="_1_N_F_copy_30_copy_3">
+                                            <size>100, -1</size>
+                                        </object>
+                                    </object>
+                                    <object class="sizeritem">
+                                        <flag>wxEXPAND|wxFIXED_MINSIZE</flag>
+                                        <object class="wxTextCtrl" name="_0_X_F_copy_30_copy_3">
+                                            <size>100, -1</size>
+                                        </object>
+                                    </object>
+                                    <object class="sizeritem">
+                                        <option>1</option>
+                                        <flag>wxEXPAND|wxFIXED_MINSIZE</flag>
+                                        <object class="wxTextCtrl" name="_1_X_F_copy_30_copy_3">
+                                            <size>100, -1</size>
+                                        </object>
+                                    </object>
+                                </object>
+                            </object>
+                            <object class="sizeritem">
+                                <option>1</option>
+                                <flag>wxEXPAND</flag>
+                                <object class="wxWrapSizer">
+                                    <orient>wxHORIZONTAL</orient>
+                                    <object class="sizeritem">
+                                        <object class="wxTextCtrl" name="_0_N_N_copy_30_copy_4">
+                                            <size>-1, 100d</size>
+                                        </object>
+                                    </object>
+                                    <object class="sizeritem">
+                                        <option>1</option>
+                                        <object class="wxTextCtrl" name="_1_N_N_copy_30_copy_4">
+                                            <size>-1, 100d</size>
+                                        </object>
+                                    </object>
+                                    <object class="sizeritem">
+                                        <flag>wxEXPAND</flag>
+                                        <object class="wxTextCtrl" name="_0_X_N_copy_30_copy_4">
+                                            <size>-1, 100d</size>
+                                        </object>
+                                    </object>
+                                    <object class="sizeritem">
+                                        <option>1</option>
+                                        <flag>wxEXPAND</flag>
+                                        <object class="wxTextCtrl" name="_1_X_N_copy_30_copy_4">
+                                            <size>-1, 100d</size>
+                                        </object>
+                                    </object>
+                                    <object class="sizeritem">
+                                        <flag>wxFIXED_MINSIZE</flag>
+                                        <object class="wxTextCtrl" name="_0_N_F_copy_30_copy_4">
+                                            <size>-1, 100d</size>
+                                        </object>
+                                    </object>
+                                    <object class="sizeritem">
+                                        <option>1</option>
+                                        <flag>wxFIXED_MINSIZE</flag>
+                                        <object class="wxTextCtrl" name="_1_N_F_copy_30_copy_4">
+                                            <size>-1, 100d</size>
+                                        </object>
+                                    </object>
+                                    <object class="sizeritem">
+                                        <flag>wxEXPAND|wxFIXED_MINSIZE</flag>
+                                        <object class="wxTextCtrl" name="_0_X_F_copy_30_copy_4">
+                                        </object>
+                                    </object>
+                                    <object class="sizeritem">
+                                        <option>1</option>
+                                        <flag>wxEXPAND|wxFIXED_MINSIZE</flag>
+                                        <object class="wxTextCtrl" name="_1_X_F_copy_30_copy_4">
+                                        </object>
+                                    </object>
+                                </object>
+                            </object>
+                            <object class="sizeritem">
+                                <option>1</option>
+                                <flag>wxEXPAND</flag>
+                                <object class="wxWrapSizer">
+                                    <orient>wxHORIZONTAL</orient>
+                                    <object class="sizeritem">
+                                        <object class="wxTextCtrl" name="_0_N_N_copy_30_copy_5">
+                                            <size>100, -1d</size>
+                                        </object>
+                                    </object>
+                                    <object class="sizeritem">
+                                        <option>1</option>
+                                        <object class="wxTextCtrl" name="_1_N_N_copy_30_copy_5">
+                                            <size>100, -1d</size>
+                                        </object>
+                                    </object>
+                                    <object class="sizeritem">
+                                        <flag>wxEXPAND</flag>
+                                        <object class="wxTextCtrl" name="_0_X_N_copy_30_copy_5">
+                                            <size>100, -1d</size>
+                                        </object>
+                                    </object>
+                                    <object class="sizeritem">
+                                        <option>1</option>
+                                        <flag>wxEXPAND</flag>
+                                        <object class="wxTextCtrl" name="_1_X_N_copy_30_copy_5">
+                                            <size>100, -1d</size>
+                                        </object>
+                                    </object>
+                                    <object class="sizeritem">
+                                        <flag>wxFIXED_MINSIZE</flag>
+                                        <object class="wxTextCtrl" name="_0_N_F_copy_30_copy_5">
+                                            <size>100, -1d</size>
+                                        </object>
+                                    </object>
+                                    <object class="sizeritem">
+                                        <option>1</option>
+                                        <flag>wxFIXED_MINSIZE</flag>
+                                        <object class="wxTextCtrl" name="_1_N_F_copy_30_copy_5">
+                                            <size>100, -1d</size>
+                                        </object>
+                                    </object>
+                                    <object class="sizeritem">
+                                        <flag>wxEXPAND|wxFIXED_MINSIZE</flag>
+                                        <object class="wxTextCtrl" name="_0_X_F_copy_30_copy_5">
+                                            <size>100, -1d</size>
+                                        </object>
+                                    </object>
+                                    <object class="sizeritem">
+                                        <option>1</option>
+                                        <flag>wxEXPAND|wxFIXED_MINSIZE</flag>
+                                        <object class="wxTextCtrl" name="_1_X_F_copy_30_copy_5">
+                                            <size>100, -1d</size>
+                                        </object>
+                                    </object>
+                                </object>
+                            </object>
+                        </object>
+                    </object>
+                    </object>
+                    <object class="notebookpage">
                     <label>StaticBoxSizer</label>
                     <object class="wxPanel" name="notebook_1_StaticBoxSizer">
                         <style>wxTAB_TRAVERSAL</style>
