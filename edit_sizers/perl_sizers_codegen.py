@@ -34,6 +34,10 @@ class PerlBoxSizerBuilder(BasePerlSizerBuilder):
     tmpl = '%(sizer_name)s = %(klass)s->new(%(orient)s);\n'
 
 
+class PerlWrapSizerBuilder(PerlBoxSizerBuilder):
+    klass = 'wxWrapSizer'
+
+
 class PerlStaticBoxSizerBuilder(BasePerlSizerBuilder):
     klass = 'wxStaticBoxSizer'
     tmpl = '%(sizer_name)s = %(klass)s->new(Wx::StaticBox->new(%(parent_widget)s, wxID_ANY, %(label)s), %(orient)s);\n'
@@ -68,6 +72,7 @@ class PerlSizerSlotGenerator(wcodegen.PerlWidgetCodeWriter):
 def initialize():
     cn = common.class_names
     cn['EditBoxSizer'] = 'wxBoxSizer'
+    cn['EditWrapSizer'] = 'wxWrapSizer'
     cn['EditStaticBoxSizer'] = 'wxStaticBoxSizer'
     cn['EditGridSizer'] = 'wxGridSizer'
     cn['EditFlexGridSizer'] = 'wxFlexGridSizer'
@@ -77,6 +82,7 @@ def initialize():
     if plgen:
         awh = plgen.add_widget_handler
         awh('wxBoxSizer', PerlBoxSizerBuilder())
+        awh('wxWrapSizer', PerlWrapSizerBuilder())
         awh('wxStaticBoxSizer', PerlStaticBoxSizerBuilder())
         awh('wxGridSizer', PerlGridSizerBuilder())
         awh('wxFlexGridSizer', PerlFlexGridSizerBuilder())

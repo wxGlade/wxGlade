@@ -47,6 +47,7 @@ def xrc_wxFlexGridSizer_builder(obj):
 def initialize():
     cn = common.class_names
     cn['EditBoxSizer'] = 'wxBoxSizer'
+    cn['EditWrapSizer'] = 'wxWrapSizer'
     cn['EditStaticBoxSizer'] = 'wxStaticBoxSizer'
     cn['EditGridSizer'] = 'wxGridSizer'
     cn['EditFlexGridSizer'] = 'wxFlexGridSizer'
@@ -54,6 +55,7 @@ def initialize():
     xrcgen = common.code_writers.get("XRC")
     if xrcgen:
         xrcgen.add_widget_handler( 'wxBoxSizer', xrc_wxSizer_builder )
+        xrcgen.add_widget_handler( 'wxWrapSizer', xrc_wxSizer_builder )
         xrcgen.add_widget_handler( 'wxStaticBoxSizer', xrc_wxSizer_builder )
         xrcgen.add_widget_handler( 'wxGridSizer', xrc_wxSizer_builder )
         xrcgen.add_widget_handler( 'wxFlexGridSizer', xrc_wxFlexGridSizer_builder )

@@ -46,6 +46,10 @@ class LispBoxSizerBuilder(BaseLispSizerBuilder):
 
     tmpl_wparent = '(slot-top-window obj)'
 
+class LispWrapSizerBuilder(LispBoxSizerBuilder):
+    klass = 'wxWrapSizer'
+    tmpl = '(setf (%(sizer_name)s obj) (wxWrapSizer_Create %(orient)s))\n'
+
 
 class LispStaticBoxSizerBuilder(BaseLispSizerBuilder):
     klass = 'wxStaticBoxSizer'
@@ -81,6 +85,7 @@ class LispSizerSlotGenerator(wcodegen.LispWidgetCodeWriter):
 def initialize():
     cn = common.class_names
     cn['EditBoxSizer'] = 'wxBoxSizer'
+    cn['EditWrapSizer'] = 'wxWrapSizer'
     cn['EditStaticBoxSizer'] = 'wxStaticBoxSizer'
     cn['EditGridSizer'] = 'wxGridSizer'
     cn['EditFlexGridSizer'] = 'wxFlexGridSizer'
@@ -90,6 +95,7 @@ def initialize():
     if lispgen:
         awh = lispgen.add_widget_handler
         awh('wxBoxSizer', LispBoxSizerBuilder())
+        awh('wxWrapSizer', LispWrapSizerBuilder())
         awh('wxStaticBoxSizer', LispStaticBoxSizerBuilder())
         awh('wxGridSizer', LispGridSizerBuilder())
         awh('wxFlexGridSizer', LispFlexGridSizerBuilder())

@@ -36,6 +36,9 @@ class PythonBoxSizerBuilder(BasePythonSizerBuilder):
     tmpl = '%(sizer_name)s = %(klass)s(%(orient)s)\n'
 
 
+class PythonWrapSizerBuilder(PythonBoxSizerBuilder):
+    klass = 'wxWrapSizer'
+
 
 class PythonStaticBoxSizerBuilder(BasePythonSizerBuilder):
     klass = 'wxStaticBoxSizer'
@@ -73,6 +76,7 @@ class PythonSizerSlotGenerator(wcodegen.PythonWidgetCodeWriter):
 def initialize():
     cn = common.class_names
     cn['EditBoxSizer'] = 'wxBoxSizer'
+    cn['EditWrapSizer'] = 'wxWrapSizer'
     cn['EditStaticBoxSizer'] = 'wxStaticBoxSizer'
     cn['EditGridSizer'] = 'wxGridSizer'
     cn['EditFlexGridSizer'] = 'wxFlexGridSizer'
@@ -82,6 +86,7 @@ def initialize():
     if pygen:
         awh = pygen.add_widget_handler
         awh('wxBoxSizer', PythonBoxSizerBuilder())
+        awh('wxWrapSizer', PythonWrapSizerBuilder())
         awh('wxStaticBoxSizer', PythonStaticBoxSizerBuilder())
         awh('wxGridSizer', PythonGridSizerBuilder())
         awh('wxFlexGridSizer', PythonFlexGridSizerBuilder())
