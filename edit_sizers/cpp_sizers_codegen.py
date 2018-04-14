@@ -78,6 +78,10 @@ class CppBoxSizerBuilder(BaseCPPSizerBuilder):
     tmpl = '%(assignment)s = new %(klass)s(%(orient)s);\n'
 
 
+class CppWrapSizerBuilder(CppBoxSizerBuilder):
+    klass = 'wxWrapSizer'
+
+
 class CppStaticBoxSizerBuilder(BaseCPPSizerBuilder):
     klass = 'wxStaticBoxSizer'
     tmpl = '%(assignment)s = new %(klass)s(new wxStaticBox(%(parent_widget)s, wxID_ANY, %(label)s), %(orient)s);\n'
@@ -112,6 +116,7 @@ class CppSizerSlotGenerator(wcodegen.CppWidgetCodeWriter):
 def initialize():
     cn = common.class_names
     cn['EditBoxSizer'] = 'wxBoxSizer'
+    cn['EditWrapSizer'] = 'wxWrapSizer'
     cn['EditStaticBoxSizer'] = 'wxStaticBoxSizer'
     cn['EditGridSizer'] = 'wxGridSizer'
     cn['EditFlexGridSizer'] = 'wxFlexGridSizer'
@@ -120,6 +125,7 @@ def initialize():
     if cppgen:
         awh = cppgen.add_widget_handler
         awh('wxBoxSizer', CppBoxSizerBuilder())
+        awh('wxWrapSizer', CppWrapSizerBuilder())
         awh('wxStaticBoxSizer', CppStaticBoxSizerBuilder())
         awh('wxGridSizer', CppGridSizerBuilder())
         awh('wxFlexGridSizer', CppFlexGridSizerBuilder())
