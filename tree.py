@@ -597,8 +597,9 @@ class WidgetTree(wx.TreeCtrl, Tree):
             if node.widget.sizer and isinstance(node.widget.sizer, edit_sizers.GridSizerBase):
                 # row/col
                 sizer = node.widget.sizer
-                row = (pos-1) // sizer.cols + 1  # 1 based at the moment
-                col = (pos-1) %  sizer.cols + 1
+                rows, cols = sizer._get_actual_rows_cols()
+                row = (pos-1) // cols + 1  # 1 based at the moment
+                col = (pos-1) %  cols + 1
                 return "SLOT  %d/%d"%(row, col)
             elif isinstance(node.widget.sizer, notebook.notebook.NotebookVirtualSizer):
                 return "Notebook Page %d"%(pos)
