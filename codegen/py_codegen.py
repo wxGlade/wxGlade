@@ -239,7 +239,6 @@ from %(top_win_module)s import %(top_win_class)s\n\n"""
                     '']
             if self._mark_blocks:
                 ret.append( '# end of class %(klass)s\n' )
-            ret.append("")
 
         if self.app_name:
             # instantiate application class or PySimpleApp
