@@ -1783,11 +1783,11 @@ class GridSizerBase(SizerBase):
     @_frozen
     def properties_changed(self, modified):
         rows, cols = self._get_actual_rows_cols()
-        if rows*cols < len(self.children) + 1:
+        if rows*cols < len(self.children) - 1:
             # number of rows/cols too low; this is not called if rows or col==0
             if not modified or "cols" in modified:
                 # adjust number of rows if required
-                if rows*cols < len(self.children) + 1:
+                if rows*cols < len(self.children) - 1:
                     # more rows required
                     rows = (len(self.children)-1) // (cols or 1)
                     if (len(self.children)-1) % (cols or 1): rows += 1
@@ -1799,16 +1799,26 @@ class GridSizerBase(SizerBase):
                 self.properties["cols"].set(cols)
                 if modified and not "cols" in modified: modified.append("cols")
 
+        if self.WX_CLASS != "wxGridBagSizer":
+            if self.rows==0:
+                self.properties["cols"].set_range(1,1000)
+            else:
+                self.properties["cols"].set_range(0,1000)
+            if self.cols==0:
+                self.properties["rows"].set_range(1,1000)
+            elif self.WX_CLASS != "wxGridBagSizer":
+                self.properties["rows"].set_range(0,1000)
+
         layout = False
 
         if not "class_orient" in modified:  # otherwise, change_sizer will be called and we can skip the following
             if not modified or "rows" in modified and self.widget:
-                if self.widget.GetRows()!=rows:
-                    self.widget.SetRows(rows)
+                if self.widget.GetRows()!=self.rows:
+                    self.widget.SetRows(self.rows)
                     layout = True
             if not modified or "cols" in modified and self.widget:
-                if self.widget.GetCols()!=cols:
-                    self.widget.SetCols(cols)
+                if self.widget.GetCols()!=self.cols:
+                    self.widget.SetCols(self.cols)
                     layout = True
             if not modified or "hgap" in modified and self.widget:
                 if self.widget.GetHGap()!=self.hgap:
