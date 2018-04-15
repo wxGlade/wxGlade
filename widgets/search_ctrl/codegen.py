@@ -13,8 +13,16 @@ class PythonSearchCtrlGenerator(wcodegen.PythonWidgetCodeWriter):
     tmpl = '%(name)s = %(klass)s(%(parent)s, %(id)s, %(value)s%(style)s)\n'
     def get_more_properties_code(self, obj):
         ret = []
+        name = self.tmpl_dict['name']
+        if not obj.search_button:
+            ret.append( '%s.ShowSearchButton(False)\n'%name )
         if obj.cancel_button:
-            ret.append( '%(name)s.ShowCancelButton(True)\n'%self.tmpl_dict )
+            ret.append( '%s.ShowCancelButton(True)\n'%name )
+        if obj.properties["descriptive_text"].is_active():
+            text =  self.codegen.quote_str(obj.descriptive_text)
+            ret.append( '%s.SetDescriptiveText(%s)\n'%(name, text) )
+        if obj.properties["max_length"].is_active():
+            ret.append( '%s.SetMaxLength(%d)\n'%(name, obj.max_length) )
         return ret
 
 
@@ -22,8 +30,16 @@ class CppSearchCtrlGenerator(wcodegen.CppWidgetCodeWriter):
     tmpl = '%(name)s = new %(klass)s(%(parent)s, %(id)s, %(value)s%(style)s);\n'
     def get_more_properties_code(self, obj):
         ret = []
+        name = self.tmpl_dict['name']
+        if not obj.search_button:
+            ret.append( '%s.ShowSearchButton(false);\n'%name )
         if obj.cancel_button:
-            ret.append( '%(name)s.ShowCancelButton(true)\n'%self.tmpl_dict )
+            ret.append( '%s.ShowCancelButton(true);\n'%name )
+        if obj.properties["descriptive_text"].is_active():
+            text =  self.codegen.quote_str(obj.descriptive_text)
+            ret.append( '%s.SetDescriptiveText(%s);\n'%(name, text) )
+        if obj.properties["max_length"].is_active():
+            ret.append( '%s.SetMaxLength(%d);\n'%(name, obj.max_length) )
         return ret
 
 

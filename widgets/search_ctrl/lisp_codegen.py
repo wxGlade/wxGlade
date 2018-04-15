@@ -14,8 +14,17 @@ class LispSearchCtrlGenerator(wcodegen.LispWidgetCodeWriter):
 
     def get_more_properties_code(self, obj):
         ret = []
+        klass = self.tmpl_dict['klass']
+        name = self.tmpl_dict['name']
+        if not obj.search_button:
+            ret.append( '(%s_ShowSearchButton %s nil)\n'%(klass, name) )
         if obj.cancel_button:
-            ret.append( '(%(klass)s_ShowCancelButton %(name)s t)\n'%self.tmpl_dict )
+            ret.append( '(%s_ShowCancelButton %s t)\n'%(klass, name) )
+        if obj.descriptive_text:
+            text = self.codegen.quote_str(obj.descriptive_text)
+            ret.append( '(%s_SetDescriptiveText %s %s)\n'%(klass, name, text) )
+        if obj.properties["max_length"].is_active():
+            ret.append( '(%s_SetMaxLength %s %d)\n'%(klass, name, obj.max_length) )
         return ret
 
 
