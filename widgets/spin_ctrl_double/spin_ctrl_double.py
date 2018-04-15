@@ -3,7 +3,7 @@ wxSpinCtrlDouble objects
 
 @copyright: 2002-2007 Alberto Griggio
 @copyright: 2014-2016 Carsten Grohmann
-@copyright: 2016 Dietmar Schwertberger
+@copyright: 2016-2018 Dietmar Schwertberger
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
@@ -34,6 +34,11 @@ class EditSpinCtrlDouble(ManagedBase, EditStylesMixin):
             self.widget = wx.SpinCtrlDouble(self.parent.widget, self.id, min=mi, max=ma, initial=self.value)
         else:
             self.widget = wx.SpinCtrlDouble(self.parent.widget, self.id, min=mi, max=ma)
+
+    def finish_widget_creation(self, sel_marker_parent=None, re_add=True):
+        ManagedBase.finish_widget_creation(self, sel_marker_parent, re_add)
+        self.widget.Bind(wx.EVT_CHILD_FOCUS, self.on_set_focus)
+        self.widget.Bind(wx.EVT_SPIN, self.on_set_focus)
 
     def properties_changed(self, modified):  # from EditSlider
         if not modified or "range" in modified and self.widget:

@@ -35,6 +35,10 @@ class EditSpinCtrl(ManagedBase, EditStylesMixin):
         else:
             self.widget = wx.SpinCtrl(self.parent.widget, self.id, min=mi, max=ma)
 
+    def finish_widget_creation(self, sel_marker_parent=None, re_add=True):
+        ManagedBase.finish_widget_creation(self, sel_marker_parent, re_add)
+        self.widget.Bind(wx.EVT_CHILD_FOCUS, self.on_set_focus)
+
     def properties_changed(self, modified):  # from EditSlider
         if not modified or "range" in modified and self.widget:
             mi,ma = self.properties["range"].get_tuple()
