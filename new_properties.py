@@ -270,6 +270,7 @@ class Property(object):
 
     # editor helpers
     def _get_label(self, label, panel):
+        import wx.lib.stattext
         width, height = panel.GetTextExtent(label)
         width = max(width, config.label_width)
         return wx.lib.stattext.GenStaticText( panel, -1, label, size=(width,height) )
