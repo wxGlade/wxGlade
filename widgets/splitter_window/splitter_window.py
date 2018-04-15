@@ -264,9 +264,10 @@ tmpl_label = 'window'
 
 def builder(parent, sizer, pos, number=[1]):
     "Factory function for EditSplitterWindow objects"
-    dialog = wcodegen.WidgetStyleSelectionDialog( dlg_title, box_title, choices)
+    dialog = wcodegen.WidgetStyleSelectionDialog( dlg_title, box_title, choices, ["Create panels"],[True])
     res = dialog.ShowModal()
     orientation = dialog.get_selection().split(" ")[0]
+    create_panels = dialog.get_options()[0]
     dialog.Destroy()
     if res != wx.ID_OK:
         return
@@ -279,8 +280,9 @@ def builder(parent, sizer, pos, number=[1]):
     with parent.frozen():
         widget = editor_class(label, parent, -1, None, None, orientation, sizer, pos)
         widget.properties["style"].set_to_default()
-        widget._window_1 = pane1 = EditPanel(label + '_pane_1', widget, wx.NewId(), widget.virtual_sizer, 1)
-        widget._window_2 = pane2 = EditPanel(label + '_pane_2', widget, wx.NewId(), widget.virtual_sizer, 2)
+        if create_panels:
+            widget._window_1 = pane1 = EditPanel(label + '_pane_1', widget, wx.NewId(), widget.virtual_sizer, 1)
+            widget._window_2 = pane2 = EditPanel(label + '_pane_2', widget, wx.NewId(), widget.virtual_sizer, 2)
     
         node = Node(widget)
         widget.node = node
@@ -290,14 +292,18 @@ def builder(parent, sizer, pos, number=[1]):
         widget.properties["flag"].set("wxEXPAND")
     
         common.app_tree.insert(node, sizer.node, pos-1)
-    
-        node2 = Node(widget._window_1)
+
+        if create_panels:
+            node2 = Node(widget._window_1)
+            node3 = Node(widget._window_2)
+        else:
+            node2 = SlotNode(widget._window_1)
+            node3 = SlotNode(widget._window_2)
         widget._window_1.node = node2
         common.app_tree.add(node2, widget.node)
-    
-        node3 = Node(widget._window_2)
         widget._window_2.node = node3
         common.app_tree.add(node3, widget.node)
+
     
         if parent.widget: widget.create()
         #sizer.set_item(widget.pos, 1, wx.EXPAND)

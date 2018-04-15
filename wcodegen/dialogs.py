@@ -11,7 +11,7 @@ import wx
 
 class WidgetStyleSelectionDialog(wx.Dialog):
     "User dialog to select a style during widget creation"
-    def __init__(self, dlg_title, box_label, choices):
+    def __init__(self, dlg_title, box_label, choices, options=None, defaults=None):
         """Initialise the dialog and draw the content
 
         dlg_title: Dialog title
@@ -26,6 +26,14 @@ class WidgetStyleSelectionDialog(wx.Dialog):
         self.box.SetSelection(0)
         szr.Add(self.box, 5, wx.ALL | wx.EXPAND, 10)
 
+        if options:
+            self.options = []
+            for o, option in enumerate(options):
+                cb = wx.CheckBox(self, -1, option)
+                cb.SetValue(defaults and defaults[o])
+                szr.Add(cb, 0, wx.ALL, 10)
+                self.options.append(cb)
+
         btn = wx.Button(self, wx.ID_OK, _('OK'))
         btn.SetDefault()
         szr.Add(btn, 0, wx.BOTTOM | wx.ALIGN_CENTER, 10)
@@ -38,3 +46,6 @@ class WidgetStyleSelectionDialog(wx.Dialog):
     def get_selection(self):
         "Return the selected choice."
         return self.box.GetStringSelection()
+
+    def get_options(self):
+        return [o.GetValue() for o in self.options]
