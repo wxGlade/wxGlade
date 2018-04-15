@@ -1109,6 +1109,7 @@ class SizerBase(Sizer, np.PropertyOwner):
             elem.sizer = None
             if force_layout:
                 self.layout(True)
+                self.window.widget.Refresh()
                 # if not self.toplevel: self.sizer.Layout()
 
     def layout(self, recursive=True):
