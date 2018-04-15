@@ -1,0 +1,34 @@
+"""\
+Code generator functions for wxSearchCtrl objects
+
+@copyright: 2018 Dietmar Schwertberger
+@license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
+"""
+
+import common
+import wcodegen
+
+
+class PythonSearchCtrlGenerator(wcodegen.PythonWidgetCodeWriter):
+    tmpl = '%(name)s = %(klass)s(%(parent)s, %(id)s, %(value)s%(style)s)\n'
+    def get_more_properties_code(self, obj):
+        ret = []
+        if obj.cancel_button:
+            ret.append( '%(name)s.ShowCancelButton(True)\n'%self.tmpl_dict )
+        return ret
+
+
+class CppSearchCtrlGenerator(wcodegen.CppWidgetCodeWriter):
+    tmpl = '%(name)s = new %(klass)s(%(parent)s, %(id)s, %(value)s%(style)s);\n'
+    def get_more_properties_code(self, obj):
+        ret = []
+        if obj.cancel_button:
+            ret.append( '%(name)s.ShowCancelButton(true)\n'%self.tmpl_dict )
+        return ret
+
+
+def initialize():
+    klass = 'wxSearchCtrl'
+    common.class_names['EditSearchCtrl'] = klass
+    common.register('python', klass, PythonSearchCtrlGenerator(klass))
+    common.register('C++', klass, CppSearchCtrlGenerator(klass))

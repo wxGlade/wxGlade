@@ -60,6 +60,7 @@ spacer
 
 [Misc]
 property_grid_manager
+search_ctrl
 custom_widget
 
 [Menu & Bars]
