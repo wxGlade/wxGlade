@@ -2,6 +2,7 @@
 wxTextCtrl widget configuration
 
 @copyright: 2014-2016 Carsten Grohmann
+@copyright: 2017-2018 Dietmar Schwertberger
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
@@ -10,10 +11,8 @@ config = {
     'wxklass': 'wxTextCtrl',
     'style_defs': {
         'wxTE_PROCESS_ENTER': {
-            'desc': _('The control will generate the event '
-                      'wxEVT_TEXT_ENTER (otherwise pressing Enter key is '
-                      'either processed internally by the control or used '
-                      'for navigation between dialog controls).'),
+            'desc': _('The control will generate the event wxEVT_TEXT_ENTER (otherwise pressing Enter key is '
+                      'either processed internally by the control or used for navigation between dialog controls).'),
         },
         'wxTE_PROCESS_TAB': {
             'desc': _('The control will receive wxEVT_CHAR events for TAB '
@@ -69,52 +68,40 @@ config = {
             'supported_by': ('wx3',),
         },
         'wxTE_LEFT': {
-            'desc': _('The text in the control will be left-justified '
-                      '(default).'),
+            'desc': _('The text in the control will be left-justified (default).'),
         },
         'wxTE_CENTRE': {
-            'desc': _('The text in the control will be centered (currently '
-                      'wxMSW and wxGTK2 only).'),
+            'desc': _('The text in the control will be centered (currently wxMSW and wxGTK2 only).'),
         },
         'wxTE_RIGHT': {
-            'desc': _('The text in the control will be right-justified '
-                      '(currently wxMSW and wxGTK2 only).'),
+            'desc': _('The text in the control will be right-justified (currently wxMSW and wxGTK2 only).'),
         },
         'wxTE_DONTWRAP': {
-            'desc': _("Same as wxHSCROLL style: don't wrap at all, show "
-                      "horizontal scrollbar instead."),
+            'desc': _("Same as wxHSCROLL style: don't wrap at all, show horizontal scrollbar instead."),
         },
         'wxTE_LINEWRAP': {
-            'desc': _('Wrap the lines too long to be shown entirely at any '
-                      'position (wxUnix and wxGTK2 only).'),
+            'desc': _('Wrap the lines too long to be shown entirely at any position (wxUnix and wxGTK2 only).'),
             'supported_by': ('wx2',),
             'rename_to': 'wxTE_CHARWRAP',
         },
         'wxTE_CHARWRAP': {
-            'desc': _('Wrap the lines too long to be shown entirely at any '
-                      'position (wxUnix and wxGTK2 only).'),
+            'desc': _('Wrap the lines too long to be shown entirely at any position (wxUnix and wxGTK2 only).'),
         },
         'wxTE_WORDWRAP': {
-            'desc': _('Wrap the lines too long to be shown entirely at '
-                      'word boundaries (wxUnix and wxGTK2 only).'),
+            'desc': _('Wrap the lines too long to be shown entirely at word boundaries (wxUnix and wxGTK2 only).'),
         },
         'wxTE_BESTWRAP': {
-            'desc': _('Wrap the lines at word boundaries or at any other '
-                      'character if there are words longer than the window '
-                      'width (this is the default).'),
-        },
-        'wxTE_CAPITALIZE': {
-            'desc': _('On PocketPC and Smartphone, causes the first letter '
-                      'to be capitalized.'),
+            'desc': _('Wrap the lines at word boundaries or at any other character if there are words longer than '
+                      'the window width (this is the default).'),
         },
     },
     'style_list': ['wxTE_PROCESS_ENTER', 'wxTE_PROCESS_TAB',
                    'wxTE_MULTILINE', 'wxTE_PASSWORD', 'wxTE_READONLY',
                    'wxTE_RICH', 'wxTE_RICH2', 'wxTE_AUTO_URL',
                    'wxTE_NOHIDESEL', 'wxHSCROLL', 'wxTE_NO_VSCROLL',
-                   'wxTE_LEFT', 'wxTE_CENTRE', 'wxTE_RIGHT', 'wxTE_DONTWRAP',
-                   'wxTE_LINEWRAP', 'wxTE_CHARWRAP', 'wxTE_WORDWRAP',
-                   'wxTE_BESTWRAP', 'wxTE_CAPITALIZE', 'wxNO_BORDER'],
+                   'wxTE_LEFT', 'wxTE_CENTRE', 'wxTE_RIGHT',
+                   'wxTE_DONTWRAP', 'wxTE_LINEWRAP', 'wxTE_CHARWRAP', 'wxTE_WORDWRAP', 'wxTE_BESTWRAP',
+                   'wxNO_BORDER'],
     'events': {
         'EVT_TEXT': {},
         'EVT_TEXT_ENTER': {},

@@ -9,8 +9,7 @@ config = {
     'wxklass': 'wxComboBox',
     'style_defs': {
         'wxCB_SIMPLE': {
-            'desc': _('Creates a combobox with a permanently displayed list. '
-                      'Windows only.'),
+            'desc': _('Creates a combobox with a permanently displayed list. Windows only.'),
         },
         'wxCB_DROPDOWN': {
             'desc': _('Creates a combobox with a drop-down list.'),
@@ -22,7 +21,7 @@ config = {
                       'which is not in the choices list.'),
         },
         'wxCB_SORT': {
-            'desc': _('	Sorts the entries in the list alphabetically.'),
+            'desc': _('Sorts the entries in the list alphabetically.'),
         },
         'wxTE_PROCESS_ENTER': {
             'desc': _('The control will generate the event '

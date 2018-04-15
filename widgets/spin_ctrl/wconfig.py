@@ -124,10 +124,6 @@ config = {
                       'character if there are words longer than the window '
                       'width (this is the default).'),
         },
-        'wxTE_CAPITALIZE': {
-            'desc': _('On PocketPC and Smartphone, causes the first letter '
-                      'to be capitalized.'),
-        },
     },
     'default_style': 'wxSP_ARROW_KEYS',
     'style_list': ['wxSP_ARROW_KEYS', 'wxSP_WRAP',
@@ -137,7 +133,7 @@ config = {
                    'wxTE_NOHIDESEL', 'wxHSCROLL', 'wxTE_NO_VSCROLL',
                    'wxTE_LEFT', 'wxTE_CENTRE', 'wxTE_RIGHT', 'wxTE_DONTWRAP',
                    'wxTE_LINEWRAP', 'wxTE_CHARWRAP', 'wxTE_WORDWRAP',
-                   'wxTE_BESTWRAP', 'wxTE_CAPITALIZE', 'wxNO_BORDER'],
+                   'wxTE_BESTWRAP', 'wxNO_BORDER'],
     'events': {
         'EVT_SPINCTRL': {
             'type': 'wxSpinEvent',
