@@ -317,31 +317,6 @@ class EditBase(EventsMixin, np.PropertyOwner):
         The default implementation does nothing."""
         pass
 
-    def create_extracode_property(self):
-        try:
-            self.properties['extracode']._show(self.notebook)
-            self.properties['extraproperties']._show(self.notebook)
-        except KeyError:
-            pass
-
-    def set_property_blocking(self, key, item):
-        if key in self.property_blocking:
-            self.property_blocking[key].append(item)
-        else:
-            self.property_blocking[key] = [item]
-
-    def get_property_blocking(self, key):
-        if key in self.property_blocking:
-            return self.property_blocking[key]
-        return None
-
-    def remove_property_blocking(self, key, item):
-        if key in self.property_blocking:
-            for i in range(self.property_blocking[key].count(item)):
-                self.property_blocking[key].remove(item)
-            if not len(self.property_blocking[key]):
-                del self.property_blocking[key]
-
     @contextlib.contextmanager
     def frozen(self):
         if self.widget:
