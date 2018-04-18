@@ -12,6 +12,11 @@ import wcodegen
 
 class PerlStaticTextGenerator(wcodegen.PerlWidgetCodeWriter):
     tmpl = '%(name)s = %(klass)s->new(%(parent)s, %(id)s, %(label)s%(style)s);\n'
+    def get_more_properties_code(self, obj):
+        ret = []
+        if obj.wrap>0:
+            ret.append( '%s->Wrap(%d);\n'%(self.tmpl_dict['name'], obj.wrap) )
+        return ret
 
 
 def initialize():

@@ -12,6 +12,11 @@ import wcodegen
 
 class LispStaticTextGenerator(wcodegen.LispWidgetCodeWriter):
     tmpl = '(setf %(name)s (%(klass)s_Create %(parent)s %(id)s %(label)s -1 -1 -1 -1 %(style)s))\n'
+    def get_more_properties_code(self, obj):
+        ret = []
+        if obj.wrap>0:
+            ret.append( '(%s_Wrap %s %d)\n'%(self.tmpl_dict['klass'], self.tmpl_dict['name'], obj.wrap) )
+        return ret
 
 
 def initialize():
