@@ -424,6 +424,7 @@ class WindowBase(EditBase):
                 sb.Reparent(self.widget)
             # go through all children
             for si in widget.GetChildren():
+                if si is None: continue
                 child = si.GetWindow() or si.GetSizer()
                 if child: self._reparent_widget(child)
 
