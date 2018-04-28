@@ -16,6 +16,7 @@ import gettext
 class MyFrame(wx.Frame):
     def __init__(self, *args, **kwds):
         # begin wxGlade: MyFrame.__init__
+        kwds["style"] = kwds.get("style", 0)
         wx.Frame.__init__(self, *args, **kwds)
         self.statusbar_without_labels = self.CreateStatusBar(3)
         self.label_1 = wx.StaticText(self, wx.ID_ANY, _("Example of a statusbar with three fields\nbut without labels in those fields."))

@@ -17,6 +17,7 @@ import gettext
 class Bug184_Frame(wx.Frame):
     def __init__(self, *args, **kwds):
         # begin wxGlade: Bug184_Frame.__init__
+        kwds["style"] = kwds.get("style", 0)
         wx.Frame.__init__(self, *args, **kwds)
         self.label_1 = wx.StaticText(self, wx.ID_ANY, _("Just a label"))
 

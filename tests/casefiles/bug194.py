@@ -17,6 +17,7 @@ import gettext
 class Frame194(wx.Frame):
     def __init__(self, *args, **kwds):
         # begin wxGlade: Frame194.__init__
+        kwds["style"] = kwds.get("style", 0)
         wx.Frame.__init__(self, *args, **kwds)
         self.SetSize((800, 600))
         self.list_box_single = wx.ListBox(self, wx.ID_ANY, choices=[_("Listbox wxLB_SINGLE")])

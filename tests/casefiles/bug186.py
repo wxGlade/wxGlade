@@ -17,6 +17,7 @@ import gettext
 class Frame186(wx.Frame):
     def __init__(self, *args, **kwds):
         # begin wxGlade: Frame186.__init__
+        kwds["style"] = kwds.get("style", 0)
         wx.Frame.__init__(self, *args, **kwds)
         self.SetSize((300, 300))
         

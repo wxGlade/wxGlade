@@ -17,6 +17,7 @@ import gettext
 class MyFrame(wx.Frame):
     def __init__(self, *args, **kwds):
         # begin wxGlade: MyFrame.__init__
+        kwds["style"] = kwds.get("style", 0)
         wx.Frame.__init__(self, *args, **kwds)
 
         self.__set_properties()
@@ -39,6 +40,6 @@ class MyFrame(wx.Frame):
         # end wxGlade
 
     # just an Unicode comment to raise an UnicodeDecodeError
-    # German umlauts are: äöü ÄÖÜ ß
+    # German umlauts are: ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½
 
 # end of class MyFrame

@@ -16,6 +16,7 @@ import wx
 class MyFrame(wx.Frame):
     def __init__(self, *args, **kwds):
         # begin wxGlade: MyFrame.__init__
+        kwds["style"] = kwds.get("style", 0)
         wx.Frame.__init__(self, *args, **kwds)
         self.choice_1 = wx.Choice(self, wx.ID_ANY, choices=["Pure ASCII", u"German Umlauts \u00e4\u00f6\u00fc\u00c4\u00d6\u00dc\u00df"])
         self.label_1 = wx.StaticText(self, wx.ID_ANY, u"German Umlauts \u00e4\u00f6\u00fc\u00c4\u00d6\u00dc\u00df", style=wx.ALIGN_CENTER)

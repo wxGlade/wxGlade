@@ -16,6 +16,7 @@ import gettext
 class awxNotebook(wx.Notebook):
     def __init__(self, *args, **kwds):
         # begin wxGlade: awxNotebook.__init__
+        kwds["style"] = kwds.get("style", 0)
         wx.Notebook.__init__(self, *args, **kwds)
         self.notebook_1_pane_1 = wx.Panel(self, wx.ID_ANY)
 
@@ -38,6 +39,7 @@ class awxNotebook(wx.Notebook):
 class MyFrame(wx.Frame):
     def __init__(self, *args, **kwds):
         # begin wxGlade: MyFrame.__init__
+        kwds["style"] = kwds.get("style", 0)
         wx.Frame.__init__(self, *args, **kwds)
         self.notebook_1 = awxNotebook(self, wx.ID_ANY)
 

@@ -39,6 +39,7 @@ class MyMenuBar(wx.MenuBar):
 class MyToolBar(wx.ToolBar):
     def __init__(self, *args, **kwds):
         # begin wxGlade: MyToolBar.__init__
+        kwds["style"] = kwds.get("style", 0)
         wx.ToolBar.__init__(self, *args, **kwds)
 
         self.__set_properties()
@@ -60,6 +61,7 @@ class MyToolBar(wx.ToolBar):
 class MyFrame(wx.Frame):
     def __init__(self, *args, **kwds):
         # begin wxGlade: MyFrame.__init__
+        kwds["style"] = kwds.get("style", 0)
         wx.Frame.__init__(self, *args, **kwds)
         self.SetSize((200, 200))
         self.label_1 = wx.StaticText(self, wx.ID_ANY, "placeholder - every design\nneeds a toplevel window", style=wx.ALIGN_CENTER)

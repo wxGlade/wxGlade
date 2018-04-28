@@ -17,6 +17,7 @@ import gettext
 class Bug183_UI_Frame(wx.Frame):
     def __init__(self, *args, **kwds):
         # begin wxGlade: Bug183_UI_Frame.__init__
+        kwds["style"] = kwds.get("style", 0)
         wx.Frame.__init__(self, *args, **kwds)
         self.label_1 = wx.StaticText(self, wx.ID_ANY, _("Just a label"))
 
@@ -43,6 +44,7 @@ class Bug183_UI_Frame(wx.Frame):
 class Bug173_UI_SomeDialog(wx.Dialog):
     def __init__(self, *args, **kwds):
         # begin wxGlade: Bug173_UI_SomeDialog.__init__
+        kwds["style"] = kwds.get("style", 0)
         wx.Dialog.__init__(self, *args, **kwds)
         self.label_2 = wx.StaticText(self, wx.ID_ANY, _("Just another label"))
 
