@@ -404,7 +404,7 @@ class BaseWidgetWriter(StylesMixin, BaseCodeWriter):
         if obj.check_prop('style'): self.tmpl_dict['style'] = self._prepare_style(obj.properties["style"])
         if obj.check_prop('label'):
             self.tmpl_dict['label'] = self.codegen.quote_str( obj.label )
-        if obj.check_prop('value'): self.tmpl_dict['value'] = self.codegen.quote_str( str(obj.value) )
+        if obj.check_prop('value'): self.tmpl_dict['value'] = self.codegen.quote_str( compat.unicode(obj.value) )
         if obj.check_prop('value_unquoted'): self.tmpl_dict['value_unquoted'] = obj.value
 
         return
