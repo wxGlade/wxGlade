@@ -2074,6 +2074,7 @@ class GridProperty(Property):
     _PROPORTION = 5
     validation_res = None # one per column
     EDITABLE_COLS = None
+    IS_KEY_VALUE = False # set to True if the values in the first column are unique
     SKIP_EMPTY = False
     def __init__(self, value, cols, default_row=None,
                  can_add=True, can_remove=True, can_insert=True, can_remove_last=True,
@@ -2367,31 +2368,48 @@ class GridProperty(Property):
         # single item to single or multiple cells
         # multiple to multiple -> dimensions must match
         # multiple to single -> starting from the selected line, must have enough lines or be extendable
-        if len(value)==1:
-            for row in selected_rows:
-                if row>=len(values):
-                    values.append(self.default_row[:])
-                elif values[row] is None:
-                    values[row] = self.default_row[:]
-                for v,col in zip(value[0], paste_columns):
-                    values[row][col] = v
-        elif len(value)==len(selected_rows):
-            for row,row_value in zip(selected_rows, value):
-                if len(values)==row: values.append( None )
-                if values[row] is None: values[row] = self.default_row[:]
-                for v,col in zip(row_value, paste_columns):
-                    values[row][col] = v
-        elif len(selected_rows)==1 and (self.can_add or (min(selected_rows)+len(value) <= len(values))):
-            row = selected_rows.pop()
-            for row_value in value:
-                if len(values)==row: values.append( None )
-                if values[row] is None: values[row] = self.default_row[:]
-                for v,col in zip(row_value, paste_columns):
-                    values[row][col] = v
-                row += 1
+        if not self.IS_KEY_VALUE or not 0 in paste_columns:
+            if len(value)==1:
+                for row in selected_rows:
+                    if row>=len(values):
+                        values.append(self.default_row[:])
+                    elif values[row] is None:
+                        values[row] = self.default_row[:]
+                    for v,col in zip(value[0], paste_columns):
+                        values[row][col] = v
+            elif len(value)==len(selected_rows):
+                for row,row_value in zip(selected_rows, value):
+                    if len(values)==row: values.append( None )
+                    if values[row] is None: values[row] = self.default_row[:]
+                    for v,col in zip(row_value, paste_columns):
+                        values[row][col] = v
+            elif len(selected_rows)==1 and (self.can_add or (min(selected_rows)+len(value) <= len(values))):
+                row = selected_rows.pop()
+                for row_value in value:
+                    if len(values)==row: values.append( None )
+                    if values[row] is None: values[row] = self.default_row[:]
+                    for v,col in zip(row_value, paste_columns):
+                        values[row][col] = v
+                    row += 1
+            else:
+                wx.Bell()
+                return
         else:
-            wx.Bell()
-            return
+            # first column is key
+            keys = [row[0] for row in values]
+            for row in value:
+                if len(row_value)>len(self.col_defs):
+                    row = row[:len(self.col_defs)]
+                else:
+                    row += [''] * (len(self.col_defs) - len(row))
+                key = row[0]
+                if key in keys:
+                    values[keys.index(key)][1:] = row[1:]
+                elif self.can_add:
+                    values.append( row )
+                else:
+                    raise ValueError("not implemented")  # not used so far
+
         self.update_display()
         self._notify()
     ####################################################################################################################

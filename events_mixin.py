@@ -27,22 +27,22 @@ class EventsProperty(np.GridProperty):
                "then you need to create and register the handler yourself.\n"
                "You can do so in your own source that you derive from the\n"
                "wxGlade generated code or within wxGlade on the 'Code' tab.")
-    validation_res = [False, re.compile(r'^(([a-zA-Z_]+[a-zA-Z0-9_-]*)|()|(lambda .*))$')]
-    EDITABLE_COLS = [1]
+    validation_res = [re.compile(r'^EVT_[a-zA-Z0-9_]+$'),
+                      re.compile(r'^(([a-zA-Z_]+[a-zA-Z0-9_-]*)|()|(lambda .*))$')]
+    EDITABLE_COLS = [0,1]
     SKIP_EMPTY = True
+    IS_KEY_VALUE = True
+    CAN_ADD_GROUPS = True
     def __init__(self, events):
         # initialise instance
         cols = [(_('Event'), np.GridProperty.STRING),
                 (_('Handler'), np.GridProperty.STRING)]
         value = [[name, ''] for name in sorted(events)]
-        np.GridProperty.__init__( self, value, cols, can_add=False, can_remove=False, can_insert=False,
+        np.GridProperty.__init__( self, value, cols, can_add=True, can_remove=True, can_insert=True,
                                   immediate=True)
 
     def create_editor(self, panel, sizer):
         np.GridProperty.create_editor(self, panel, sizer)
-        attr = wx.grid.GridCellAttr()
-        attr.SetReadOnly(True)
-        self.grid.SetColAttr(0, attr)
         self.grid.AutoSizeColumn(0, False)
         self.grid.AutoSizeColumn(1, False)
 
