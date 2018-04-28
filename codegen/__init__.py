@@ -315,6 +315,8 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
     tmpl_spacersize = '(%s, %s)'  # Python and Lisp need the braces
     tmpl_style = ''               # Template for setting style in constructor; see _format_style()
     tmpl_toplevel_style = ''      # same for a toplevel object
+    tmpl_style0 = ''              # same for style == 0
+    tmpl_toplevel_style0 = ''     # same for style == 0
 
     # templates used by add_app():
     tmpl_appfile = None           # file header for standalone files with application start code
@@ -1542,8 +1544,12 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
         """Return the formatted styles to insert into constructor code.
         The function just returned L{tmpl_style}. Write a derived version implementation if more logic is needed."""
         if code_obj.is_toplevel:
-            return self.tmpl_toplevel_style
-        return self.tmpl_style
+            if style:
+                return self.tmpl_toplevel_style
+            return self.tmpl_toplevel_style0
+        if style:
+            return self.tmpl_style
+        return self.tmpl_style0
 
     def _generic_code(self, obj, prop_name):
         """Create a code statement for calling a method e.g. to hide a widget.

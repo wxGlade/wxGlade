@@ -208,6 +208,8 @@ class PythonCodeWriter(BaseLangCodeWriter, wcodegen.PythonMixin):
     tmpl_gridbagsizeritem = '%s.Add(%s, %s, %s, %s, %s)\n'
     tmpl_style = '%(tab)skwds["style"] = %(style)s\n'
     tmpl_toplevel_style = '%(tab)skwds["style"] = kwds.get("style", 0) | %(style)s\n'
+    tmpl_style0 = '%(tab)skwds["style"] = 0\n'
+    tmpl_toplevel_style0 = '%(tab)skwds["style"] = kwds.get("style", 0)\n'
     tmpl_appfile = """\
 %(overwrite)s\
 %(header_lines)s\
@@ -323,11 +325,11 @@ from %(top_win_module)s import %(top_win_class)s\n\n"""
                                            'function':self.name_ctor, 'klass':fmt_klass, 'tab':tab} )
 
         style_p = code_obj.properties.get("style")
-        if style_p and style_p.value_set != style_p.default_value:
+        if style_p:# and style_p.value_set != style_p.default_value:
             style = style_p.get_string_value()
             m_style = mycn_f( style )
-            if m_style:
-                stmt_style = self._format_style(style, code_obj)
+            stmt_style = self._format_style(style, code_obj)
+            if stmt_style:
                 write(stmt_style % {'style': m_style, 'tab': tab} )
 
         # initialise custom base class
