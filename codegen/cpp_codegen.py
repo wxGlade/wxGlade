@@ -699,7 +699,7 @@ class CPPCodeWriter(BaseLangCodeWriter, wcodegen.CppMixin):
             header_buffer.append( self.tabs(1) + 'void set_properties();\n' )
             header_buffer.append( self.tabs(1) + 'void do_layout();\n' )
             if self._mark_blocks:
-                self.tabs(1) + '// end wxGlade\n',
+                header_buffer.append( self.tabs(1) + '// end wxGlade\n' )
             tag = '<%swxGlade replace %s methods>' % (self.nonce, klass)
             if not prev_src.replace_header(tag, "".join(header_buffer)):
                 # no methods tag found, issue a warning and do nothing
