@@ -647,11 +647,13 @@ class WidgetTree(wx.TreeCtrl, Tree):
         def _SetItemData(self, item, data):
             self.SetPyData(item, data)
         def _GetItemData(self, item):
+            if not bool(item): return None
             return self.GetPyData(item)
     else:
         def _SetItemData(self, item, data):
             self.SetItemData(item, data)
         def _GetItemData(self, item):
+            if not bool(item): return None
             return self.GetItemData(item)
 
     def add(self, child, parent=None, select=True):
@@ -847,7 +849,7 @@ class WidgetTree(wx.TreeCtrl, Tree):
         if value is None: value = ""
         self.title = value
         try:
-            self.GetParent().SetTitle(_('wxGlade: Tree %s') % value)
+            self.GetTopLevelParent().SetTitle(_('wxGlade: %s') % value)
         except:
             pass
 

@@ -301,23 +301,3 @@ def check(*formats):
         finally:
             wx.TheClipboard.Close()
     return False
-
-
-# D&D support for .wxg files (thanks to Chris Liechti)
-class FileDropTarget(wx.FileDropTarget):
-    def __init__(self, parent):
-        wx.FileDropTarget.__init__(self)
-        self.parent = parent
-
-    def OnDropFiles(self, x, y, filenames):
-        if len(filenames) > 1:
-            wx.MessageBox( _("Please only drop one file at a time"), "wxGlade", wx.ICON_ERROR )
-            return False
-        elif filenames:
-            path = filenames[0]
-            if os.path.exists(path) and self.parent.ask_save():
-                self.parent._open_app(path)
-                self.parent.cur_dir = os.path.dirname(path)
-            return True
-        return False
-

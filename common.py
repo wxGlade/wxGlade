@@ -810,33 +810,29 @@ class Preferences(ConfigParser.ConfigParser):
         self.set('wxglade', attr, str(val))
         self.changed = True
 
-    def set_geometry(self, name, geometry):
-        "Save the current widget position and size"
-        if geometry is not None:
-            section = 'geometry_%s' % name
-            if not self.has_section(section):
-                self.add_section(section)
-            self.set(section, 'x', str(geometry[0]))
-            self.set(section, 'y', str(geometry[1]))
-            self.set(section, 'w', str(geometry[2]))
-            self.set(section, 'h', str(geometry[3]))
-
-    def get_geometry(self, name):
-        "Return saved widget position and size (x,y,width,height)"
-        section = 'geometry_%s' % name
+    def set_struct(self, section, option, value):
+        # recursively store a dictionary
         if not self.has_section(section):
-            return None
-        try:
-            x = int(self.get(section, 'x'))
-            y = int(self.get(section, 'y'))
-            w = int(self.get(section, 'w'))
-            h = int(self.get(section, 'h'))
-            return x, y, w, h
-        except:
-            pass
-        return None
+            self.add_section(section)
+        if not isinstance(option, list):
+            option = [option]
+        if isinstance(value, dict):
+            for key in sorted(value.keys()):
+                self.set_struct(section, option+[key], value[key])
+        elif isinstance(value, list):
+            for i,item in enumerate(value):
+                self.set_struct(section, option+["l%d"%i], item)
+        elif isinstance(value, tuple):
+            for i,item in enumerate(value):
+                self.set_struct(section, option+["t%d"%i], item)
+        else:
+            option = "_".join(option)
+            self.set(section, option, str(value))
+    def set_dict(self, section, value):
+        self.set_struct(section, [], value)
 
-
+    def get_int(self, section, option):
+        return int(self.get(section, option))
 
 
 ########################################################################################################################
