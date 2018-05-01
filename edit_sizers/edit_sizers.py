@@ -2658,7 +2658,9 @@ def init_all():
     import os.path
 
     if HAVE_WRAP_SIZER:
-        WidgetTree.images['EditWrapSizer'] = os.path.join( config.icons_path, 'sizer.xpm')
+        WidgetTree.images['EditWrapSizer'] = os.path.join( config.icons_path, 'wrap_sizer_h.xpm')
+        WidgetTree.images['EditHorizontalWrapSizer'] = os.path.join( config.icons_path, 'wrap_sizer_h.xpm')
+        WidgetTree.images['EditVerticalWrapSizer'] = os.path.join( config.icons_path, 'wrap_sizer.xpm')
     WidgetTree.images['EditStaticBoxSizer'] = os.path.join( config.icons_path, 'sizer.xpm')
     WidgetTree.images['EditFlexGridSizer']  = os.path.join( config.icons_path, 'grid_sizer.xpm' )
     WidgetTree.images['EditGridBagSizer']  = os.path.join( config.icons_path, 'grid_sizer.xpm' )

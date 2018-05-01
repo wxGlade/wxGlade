@@ -135,6 +135,11 @@ class Node(object):
                 name = "EditHorizontalSizer"
             else:
                 name = "EditSpacer"
+        elif name=="EditWrapSizer":
+            if widget.orient & wx.VERTICAL:
+                name = "EditVerticalWrapSizer"
+            else:
+                name = "EditHorizontalWrapSizer"
 
         elif name == "EditSplitterWindow":
             if widget.orientation=="wxSPLIT_HORIZONTAL":
