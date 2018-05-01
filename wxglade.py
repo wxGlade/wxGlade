@@ -253,8 +253,6 @@ def init_stage2(use_gui):
     else:
         # use_gui has to be set before importing config
         common.init_preferences()
-        if config.preferences.log_debug_info:
-            log.setDebugLevel()
         common.init_codegen()
 
 

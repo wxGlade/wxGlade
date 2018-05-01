@@ -26,8 +26,6 @@ class wxGladePreferences(wxGladePreferencesUI):
 
     def set_values(self):
         try:
-            self.use_menu_icons.SetValue(self.preferences.use_menu_icons)
-            self.frame_tool_win.SetValue(self.preferences.frame_tool_win)
             self.open_save_path.SetValue(self.preferences.open_save_path)
             self.codegen_path.SetValue(self.preferences.codegen_path)
             self.use_dialog_units.SetValue( self.preferences.use_dialog_units )
@@ -48,7 +46,6 @@ class wxGladePreferences(wxGladePreferencesUI):
             self.show_completion.SetValue(self.preferences.show_completion)
             self.write_timestamp.SetValue(self.preferences.write_timestamp)
             self.write_generated_from.SetValue( self.preferences.write_generated_from )
-            self.log_debug_info.SetValue(self.preferences.log_debug_info)
             self._fix_spin_ctrls()
         except Exception as inst:
             bugdialog.Show(_('Read Configuration'), inst)
@@ -79,8 +76,6 @@ class wxGladePreferences(wxGladePreferencesUI):
 
     def set_preferences(self):
         prefs = self.preferences
-        prefs['use_menu_icons'] = self.use_menu_icons.GetValue()
-        prefs['frame_tool_win'] = self.frame_tool_win.GetValue()
         prefs['open_save_path'] = self.open_save_path.GetValue()
         prefs['codegen_path'] = self.codegen_path.GetValue()
         prefs['use_dialog_units'] = self.use_dialog_units.GetValue()
@@ -105,7 +100,6 @@ class wxGladePreferences(wxGladePreferencesUI):
 
         prefs['write_timestamp'] = self.write_timestamp.GetValue()
         prefs['write_generated_from'] = self.write_generated_from.GetValue()
-        prefs['log_debug_info'] = self.log_debug_info.GetValue()
 
     def on_widget_path(self, event):
         "Create a file choice dialog"

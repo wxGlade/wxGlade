@@ -12,7 +12,6 @@ import logging, os, re
 import wx
 
 
-use_menu_icons = None
 
 # the SizerSlot which has the "mouse focus"; used to restore the mouse cursor if the user cancelled adding a widget
 currently_under_mouse = None
@@ -247,18 +246,12 @@ def warning_message(msg, title="Warning"):
 # menu helpers
 
 def append_menu_item(menu, id, text, xpm_file_or_artid=None): # XXX change: move id to the end of the argument list?
-    global use_menu_icons
-    if use_menu_icons is None:
-        use_menu_icons = config.preferences.use_menu_icons
     item = wx.MenuItem(menu, id, text)
-    if wx.Platform == '__WXMSW__':
-        path = 'msw/'
-    else:
-        path = 'gtk/'
-    path = os.path.join(config.icons_path, path)
-    if use_menu_icons and xpm_file_or_artid is not None:
+    if xpm_file_or_artid is not None:
+        path = 'msw/'  if wx.Platform == '__WXMSW__'  else  'gtk/'
+        path = os.path.join(config.icons_path, path)
         bmp = None
-        if not xpm_file_or_artid.startswith(b'wxART_'):
+        if not isinstance(xpm_file_or_artid, bytes) or not xpm_file_or_artid.startswith(b'wxART_'):
             try:
                 bmp = _item_bitmaps[xpm_file_or_artid]
             except KeyError:

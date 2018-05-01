@@ -733,8 +733,6 @@ def load_file_history():
 
 class Preferences(ConfigParser.ConfigParser):
     _defaults = {
-        'use_menu_icons': config.use_gui and config.platform != '__WXGTK__',
-        'frame_tool_win': True,
         'open_save_path': '',
         'codegen_path': '',
         'use_dialog_units': False,
@@ -753,8 +751,7 @@ class Preferences(ConfigParser.ConfigParser):
         'autosave_delay': 120,  # in seconds
         'show_completion': True,
         'write_timestamp': True,
-        'write_generated_from': False,
-        'log_debug_info': False,
+        'write_generated_from': False
         }
 
     def __init__(self, defaults=None):
