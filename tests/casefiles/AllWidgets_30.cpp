@@ -158,7 +158,7 @@ All_Widgets_Frame::All_Widgets_Frame(wxWindow* parent, wxWindowID id, const wxSt
     slider_1 = new wxSlider(notebook_1_wxSlider, wxID_ANY, 5, 0, 10, wxDefaultPosition, wxDefaultSize, 0);
     tc_spin_button = new wxTextCtrl(notebook_1_wxSpinButton, wxID_ANY, _("1"), wxDefaultPosition, wxDefaultSize, wxTE_RIGHT);
     spin_button = new wxSpinButton(notebook_1_wxSpinButton, wxID_ANY);
-    spin_ctrl_1 = new wxSpinCtrl(notebook_1_wxSpinCtrl, wxID_ANY, wxT("4"), wxDefaultPosition, wxDefaultSize, wxSP_ARROW_KEYS|wxTE_RIGHT, 0, 100);
+    spin_ctrl_1 = new wxSpinCtrl(notebook_1_wxSpinCtrl, wxID_ANY, wxT("4"), wxDefaultPosition, wxDefaultSize, wxALIGN_RIGHT|wxSP_ARROW_KEYS, 0, 100);
     label_top_pane = new wxStaticText(splitter_1_pane_1, wxID_ANY, _("top pane"));
     label_buttom_pane = new wxStaticText(splitter_1_pane_2, wxID_ANY, _("bottom pane"));
     label_left_pane = new wxStaticText(splitter_2_pane_1, wxID_ANY, _("left pane"));

@@ -656,7 +656,7 @@
                                 <object class="wxSpinCtrl" name="spin_ctrl_1">
                                     <min>0</min>
                                     <max> 100</max>
-                                    <style>wxSP_ARROW_KEYS|wxTE_RIGHT</style>
+                                    <style>wxALIGN_RIGHT|wxSP_ARROW_KEYS</style>
                                     <value>4</value>
                                 </object>
                             </object>
