@@ -13,11 +13,11 @@ config = {
         'wxSP_ARROW_KEYS': { 'desc': _('The user can use arrow keys to change the value.') },
         'wxSP_WRAP':       { 'desc': _('The value wraps at the minimum and maximum.') },
         'wxALIGN_LEFT': {
-            'desc': _('Same as wxTE_LEFT for wxTextCtrl: the text is left '
+            'desc': _('Same as wxTE_LEFT for wxTextCtrl: the text is left aligned.'),
             'exclude': 'wxALIGN_CENTRE_HORIZONTAL|wxALIGN_RIGHT',
             'supported_by': ('wx3',) },
         'wxALIGN_CENTRE_HORIZONTAL': {
-            'desc': _('Same as wxTE_CENTRE for wxTextCtrl: the text is '
+            'desc': _('Same as wxTE_CENTRE for wxTextCtrl: the text is centered.'),
             'exclude': 'wxALIGN_LEFT|wxALIGN_RIGHT',
             'supported_by': ('wx3',) },
         'wxALIGN_RIGHT': {
@@ -25,7 +25,7 @@ config = {
             'exclude': 'wxALIGN_LEFT|wxALIGN_CENTRE_HORIZONTAL',
             'supported_by': ('wx3',) },
         'wxTE_PROCESS_ENTER': {
-            'desc': _('The control will generate the event '
+            'desc': _('The control will generate the event wxEVT_TEXT_ENTER (otherwise pressing Enter key is '
                       'either processed internally by the control or used for navigation between dialog controls).'), },
         'wxTE_PROCESS_TAB':  {'obsolete':True},
         'wxTE_MULTILINE':    {'obsolete':True},
@@ -46,9 +46,7 @@ config = {
         'wxTE_WORDWRAP':     {'obsolete':True},
         'wxTE_BESTWRAP':     {'obsolete':True},
         'wxTE_CAPITALIZE':   {'obsolete':True}
-        },
-
-
+    },
     'default_style': 'wxSP_ARROW_KEYS',
     'style_list': ['wxSP_ARROW_KEYS', 'wxSP_WRAP',
                    'wxTE_PROCESS_ENTER',
