@@ -69,12 +69,15 @@ config = {
         },
         'wxTE_LEFT': {
             'desc': _('The text in the control will be left-justified (default).'),
+            'exclude': 'wxTE_CENTRE|wxTE_RIGHT',
         },
         'wxTE_CENTRE': {
             'desc': _('The text in the control will be centered (currently wxMSW and wxGTK2 only).'),
+            'exclude': 'wxTE_LEFT|wxTE_RIGHT',
         },
         'wxTE_RIGHT': {
             'desc': _('The text in the control will be right-justified (currently wxMSW and wxGTK2 only).'),
+            'exclude': 'wxTE_LEFT|wxTE_CENTRE',
         },
         'wxTE_DONTWRAP': {
             'desc': _("Same as wxHSCROLL style: don't wrap at all, show horizontal scrollbar instead."),
