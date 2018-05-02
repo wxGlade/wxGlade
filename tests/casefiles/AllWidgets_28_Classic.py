@@ -114,7 +114,7 @@ class All_Widgets_Frame(wx.Frame):
         self.tc_spin_button = wx.TextCtrl(self.notebook_1_wxSpinButton, wx.ID_ANY, _("1"), style=wx.TE_RIGHT)
         self.spin_button = wx.SpinButton(self.notebook_1_wxSpinButton, wx.ID_ANY )
         self.notebook_1_wxSpinCtrl = wx.Panel(self.notebook_1, wx.ID_ANY)
-        self.spin_ctrl_1 = wx.SpinCtrl(self.notebook_1_wxSpinCtrl, wx.ID_ANY, "4", min=0, max=100, style=wx.SP_ARROW_KEYS | wx.TE_RIGHT)
+        self.spin_ctrl_1 = wx.SpinCtrl(self.notebook_1_wxSpinCtrl, wx.ID_ANY, "4", min=0, max=100)
         self.notebook_1_wxSplitterWindow_horizontal = wx.ScrolledWindow(self.notebook_1, wx.ID_ANY, style=wx.TAB_TRAVERSAL)
         self.splitter_1 = wx.SplitterWindow(self.notebook_1_wxSplitterWindow_horizontal, wx.ID_ANY, style=0)
         self.splitter_1_pane_1 = wx.Panel(self.splitter_1, wx.ID_ANY)

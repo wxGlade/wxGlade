@@ -295,7 +295,7 @@
         (setf (slot-tc-spin-button obj) (wxTextCtrl_Create (slot-notebook-1-wxSpinButton obj) wxID_ANY (_"1") -1 -1 -1 -1 wxTE_RIGHT))
         (setf (slot-spin-button obj) (wxSpinButton_Create (slot-notebook-1-wxSpinButton obj) wxID_ANY -1 -1 -1 -1 wxSP_VERTICAL))
         (setf (slot-notebook-1-wxSpinCtrl obj) (wxPanel_Create (slot-notebook-1 obj) wxID_ANY -1 -1 -1 -1 wxTAB_TRAVERSAL))
-        (setf (slot-spin-ctrl-1 obj) (wxSpinCtrl_Create (slot-notebook-1-wxSpinCtrl obj) wxID_ANY 4 -1 -1 -1 -1 (logior wxSP_ARROW_KEYS wxTE_RIGHT) 0 100 4))
+        (setf (slot-spin-ctrl-1 obj) (wxSpinCtrl_Create (slot-notebook-1-wxSpinCtrl obj) wxID_ANY 4 -1 -1 -1 -1 wxSP_ARROW_KEYS 0 100 4))
         (setf (slot-notebook-1-wxSplitterWindow-horizontal obj) (wxPanel_Create (slot-notebook-1 obj) wxID_ANY -1 -1 -1 -1 wxTAB_TRAVERSAL))
         (setf (slot-splitter-1 obj) (wxSplitterWindow_Create (slot-notebook-1-wxSplitterWindow-horizontal obj) wxID_ANY -1 -1 -1 -1 0))
         (setf (slot-splitter-1-pane-1 obj) (wxPanel_Create (slot-splitter-1 obj) wxID_ANY -1 -1 -1 -1 wxTAB_TRAVERSAL))

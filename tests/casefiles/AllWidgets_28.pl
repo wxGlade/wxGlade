@@ -134,7 +134,7 @@ sub new {
     $self->{tc_spin_button} = Wx::TextCtrl->new($self->{notebook_1_wxSpinButton}, wxID_ANY, _T("1"), wxDefaultPosition, wxDefaultSize, wxTE_RIGHT);
     $self->{spin_button} = Wx::SpinButton->new($self->{notebook_1_wxSpinButton}, wxID_ANY,);
     $self->{notebook_1_wxSpinCtrl} = Wx::Panel->new($self->{notebook_1}, wxID_ANY);
-    $self->{spin_ctrl_1} = Wx::SpinCtrl->new($self->{notebook_1_wxSpinCtrl}, wxID_ANY, "4", wxDefaultPosition, wxDefaultSize, wxSP_ARROW_KEYS|wxTE_RIGHT, 0, 100, 4);
+    $self->{spin_ctrl_1} = Wx::SpinCtrl->new($self->{notebook_1_wxSpinCtrl}, wxID_ANY, "4", wxDefaultPosition, wxDefaultSize, wxSP_ARROW_KEYS, 0, 100, 4);
     $self->{notebook_1_wxSplitterWindow_horizontal} = Wx::ScrolledWindow->new($self->{notebook_1}, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL);
     $self->{splitter_1} = Wx::SplitterWindow->new($self->{notebook_1_wxSplitterWindow_horizontal}, wxID_ANY, wxDefaultPosition, wxDefaultSize, 0);
     $self->{splitter_1_pane_1} = Wx::Panel->new($self->{splitter_1}, wxID_ANY);

@@ -702,7 +702,7 @@
                                 <border>5</border>
                                 <flag>wxALL</flag>
                                 <object class="wxSpinCtrl" name="spin_ctrl_1" base="EditSpinCtrl">
-                                    <style>wxSP_ARROW_KEYS|wxTE_RIGHT</style>
+                                    <style>wxSP_ARROW_KEYS|wxALIGN_RIGHT</style>
                                     <range>0, 100</range>
                                     <value>4</value>
                                 </object>
