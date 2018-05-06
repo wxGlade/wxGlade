@@ -380,111 +380,8 @@ def _cancel():
     common.palette.user_message("Canceled")
 
 
-# accelerator tables to enable keyboard shortcuts for the popup menus of the various widgets (remove, cut, copy, paste)
-# only for the editing windows:
-accel_table_editors = {
-    ("",  wx.WXK_DELETE):(_remove, ()),
-    ("C", ord('C')):     (_copy,   ()),
-    ("C", ord('X')):     (_cut,    ()),
-    ("C", ord('V')):     (_paste,  ()),
-    ("C", ord('I')):     (_insert, ()),
-    ("C", ord('A')):     (_add,    ()),
-    ("",  wx.WXK_ESCAPE):(_cancel, ())
-}
-# for all windows
-accel_table = {
-    ("C", ord('Z')):     ((common, "history","undo"), "focused_widget"),
-    ("C", ord('Y')):     ((common, "history","redo"), "focused_widget"),
-    ("C", ord('R')):     ((common, "history","repeat"), "focused_widget"),
-    ("",  wx.WXK_F2):    ((common,"palette","show_tree"),            ()),
-    ("",  wx.WXK_F3):    ((common,"palette","show_props_window"),    ()),
-    ("",  wx.WXK_F4):    ((common,"palette","raise_all"),            ()),
-    ("",  wx.WXK_F5):    ((common,"palette","preview"),              ()),
-    ("",  wx.WXK_F6):    ((common,"palette","show_design_window"),   ()),
-    ("C", ord('S')):     ((common,"palette","save_app"),             ()),
-    ("C", ord('G')):     ((common,"app_tree","app","generate_code"), ()),
-
-    ("C", ord('N')):     ((common,"palette","new_app"),          ()), 
-    ("C", ord('O')):     ((common,"palette","open_app"),             ()),
-    ("C", ord('Q')):     ((common,"palette","Close"),                ()),
-}
-
-def handle_key_event(event, is_filter=False, toplevel_obj=None):
-    "centralized handler for Ctrl+C/X/V or Del key"
-    evt_key = event.GetKeyCode()
-    if toplevel_obj is None:
-        obj = event.GetEventObject()
-        if obj is not None:
-            toplevel_obj = obj.GetTopLevelParent()
-
-    if not is_filter:
-        if focused_widget and evt_key in (wx.WXK_UP, wx.WXK_DOWN) and toplevel_obj:
-            if toplevel_obj!=common.app_tree.GetParent() and toplevel_obj!=common.palette and toplevel_obj!=common.property_panel:
-                # must be a design window
-                navigate( evt_key==wx.WXK_UP )
-                return True
-
-    evt_flags = []
-    if event.ControlDown(): evt_flags.append("C")
-    if event.ShiftDown():   evt_flags.append("S")
-    evt_flags = "".join(evt_flags)
-
-    handler = accel_table.get( (evt_flags,evt_key) )
-    if not handler and toplevel_obj:
-        if toplevel_obj in design_windows or toplevel_obj is common.app_tree.GetTopLevelParent():
-            handler = accel_table_editors.get( (evt_flags,evt_key) )
-    if not handler:
-        return False
-
-    function, args = handler
-    if isinstance(function, tuple):
-        # turn tuple of (modulename,...) into a function
-        obj = function[0]
-        for i in range(1,len(function)):
-            obj = getattr(obj, function[i])
-        function = obj
-    if isinstance(args, str):
-        args = (globals()[args],)
-    wx.CallAfter(function, *args)
-    return True
-
-def on_key_down_event(event, toplevel_obj=None):
-    "centralized event handler for Ctrl+C/X/V or Del key; this will call event.Skip() for unhandled keys"
-    handled = handle_key_event(event, toplevel_obj=toplevel_obj)
-    if not handled: event.Skip()
-
-
-
-if config.use_gui and hasattr(wx, "EventFilter") and not config.testing:
-    # for filtering key down events
-    class PreviewEventFilter(wx.EventFilter):
-        windows = []
-        def add_window(self, window):
-            if not self.windows:
-                common.palette.AddFilter(self)
-            self.windows.append(window)
-        def remove_window(self, window):
-            self.windows.remove(window)
-            if not self.windows:
-                common.palette.RemoveFilter(self)
-        def FilterEvent(self, event):
-            t = event.GetEventType()
-            if t == wx.EVT_KEY_DOWN.typeId:
-                # handle the event only for Preview windows
-                toplevel = event.GetEventObject().GetTopLevelParent()
-                if toplevel in self.windows:
-                    handled = handle_key_event(event, is_filter=True)
-                    if handled:
-                        return self.Event_Processed
-            # Continue processing the event normally as well.
-            return self.Event_Skip
-    preview_event_filter = PreviewEventFilter()
-else:
-    preview_event_filter = None
-
-
-
 def navigate(up):
+    # XXX reafactor this into Tree?
     # must be a design window
     focused_item = focused_widget.node.item
     if up:
@@ -517,6 +414,81 @@ def navigate(up):
     if not widget: return
     set_focused_widget(widget)
 
+
+# accelerator tables to enable keyboard shortcuts for the popup menus of the various widgets (remove, cut, copy, paste)
+# only for the editing windows:
+accel_table_editors = {
+    ("",  wx.WXK_DELETE):(_remove, ()),
+    ("C", ord('C')):     (_copy,   ()),
+    ("C", ord('X')):     (_cut,    ()),
+    ("C", ord('V')):     (_paste,  ()),
+    ("C", ord('I')):     (_insert, ()),
+    ("C", ord('A')):     (_add,    ()),
+
+    ("", wx.WXK_UP):     (navigate,  (True, )),
+    ("", wx.WXK_DOWN):   (navigate,  (False,)),
+
+    ("",  wx.WXK_ESCAPE):(_cancel, ())
+}
+
+# for the palette window
+accel_table_editors_palette = {
+    ("",  wx.WXK_ESCAPE):(_cancel, ())
+}
+
+# for all windows
+accel_table = {
+    ("C", ord('Z')):     ((common, "history","undo"), "focused_widget"),
+    ("C", ord('Y')):     ((common, "history","redo"), "focused_widget"),
+    ("C", ord('R')):     ((common, "history","repeat"), "focused_widget"),
+    ("",  wx.WXK_F2):    ((common,"palette","show_tree"),            ()),
+    ("",  wx.WXK_F3):    ((common,"palette","show_props_window"),    ()),
+    ("",  wx.WXK_F4):    ((common,"palette","raise_all"),            ()),
+    ("",  wx.WXK_F5):    ((common,"palette","preview"),              ()),
+    ("",  wx.WXK_F6):    ((common,"palette","show_design_window"),   ()),
+    ("C", ord('S')):     ((common,"palette","save_app"),             ()),
+    ("C", ord('G')):     ((common,"app_tree","app","generate_code"), ()),
+
+    ("C", ord('N')):     ((common,"palette","new_app"),          ()), 
+    ("C", ord('O')):     ((common,"palette","open_app"),             ()),
+    ("C", ord('Q')):     ((common,"palette","Close"),                ()),
+}
+
+
+def handle_key_event(event, window_type, window=None):
+    "centralized key event handler; called from EVT_CHAR_HOOK handlers"
+    # window_type: "design", "preview", "editor", "tree"    "properties", "palette" or None
+    evt_key = event.GetKeyCode()
+
+    tables = [accel_table]  # for all windows
+    if window_type in ("editor", "design", "tree"):
+        tables += [accel_table_editors]
+    elif window_type == "palette":
+        tables.append( accel_table_editors_palette )
+
+    evt_flags = []
+    if event.ControlDown(): evt_flags.append("C")
+    if event.ShiftDown():   evt_flags.append("S")
+    evt_flags = "".join(evt_flags)
+
+    handler = None
+    for table in tables:
+        handler = table.get( (evt_flags,evt_key) )
+        if handler: break
+    if not handler:
+        event.Skip()
+        return
+
+    function, args = handler
+    if isinstance(function, tuple):
+        # turn tuple of (modulename,...) into a function
+        obj = function[0]
+        for i in range(1,len(function)):
+            obj = getattr(obj, function[i])
+        function = obj
+    if isinstance(args, str):
+        args = (globals()[args],)
+    wx.CallAfter(function, *args)
 
 
 def _reverse_dict(src):

@@ -411,7 +411,11 @@ class WindowBase(EditBase):
         self.widget.Bind(wx.EVT_SIZE, self.on_size)
         # after setting various Properties, we must Refresh widget in order to see changes
         self.widget.Refresh()
-        self.widget.Bind(wx.EVT_KEY_DOWN, misc.on_key_down_event)
+        #self.widget.Bind(wx.EVT_KEY_DOWN, misc.on_key_down_event)
+        self.widget.Bind(wx.EVT_CHAR_HOOK, self.on_char_hook)
+    
+    def on_char_hook(self, event):
+        misc.handle_key_event(event, "design")
 
     def _reparent_widget(self, widget):
         "call Reparent(self.widget) for all direct children, including those in sizers"
@@ -712,7 +716,7 @@ class PreviewMixin(object):
         return self.preview_widget is not None
 
     def on_preview(self, refresh=False):
-        if self.preview_widget and config.debugging and wx.KeyboardState().ShiftDown():
+        if self.preview_widget and compat.IS_PHOENIX and config.debugging and wx.KeyboardState().ShiftDown():
             # print structure for debugging
             import utilities
             utilities.StructurePrinter(self.preview_widget)
@@ -919,8 +923,7 @@ class TopLevelBase(WindowBase, PreviewMixin):
 
     def delete(self, *args):
         if self.preview_widget is not None:
-            if misc.preview_event_filter:
-                self.preview_widget.RemoveFilter(misc.preview_event_filter)
+            self.preview_widget.Unbind(wx.EVT_CHAR_HOOK)
             compat.DestroyLater(self.preview_widget)
             self.preview_widget = None
         widget = self.widget

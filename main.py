@@ -82,8 +82,6 @@ class wxGladePropertyPanel(wx.Panel):
         self.notebook = wx.Notebook(self, -1)
         sizer.Add(self.notebook, 1, wx.EXPAND, 0)
 
-        self.Bind(wx.EVT_KEY_DOWN, self.on_key_event)
-        self.Bind(wx.EVT_CHAR_HOOK, self.on_key_event)
         self.SetSizer(sizer)
         self.Layout()
 
@@ -96,16 +94,6 @@ class wxGladePropertyPanel(wx.Panel):
                  prop.label_ctrl.IsShownOnScreen() ) or prop.has_control(ctrl):
                 return prop.on_drop_file(filename)
         return False
-
-    def on_key_event(self, event):
-        if event.GetKeyCode()==wx.WXK_F2:
-            # for a grid property: start editing
-            if np.current_property and isinstance(np.current_property, np.GridProperty):
-                focus = self.FindFocus()
-                if focus is np.current_property.grid:
-                    event.Skip()  # this will start the editing
-                    return
-        misc.on_key_down_event(event, toplevel_obj=self)
 
     ####################################################################################################################
     # new editor interface
@@ -298,12 +286,13 @@ class wxGladeFrame(wx.Frame):
         self.init_autosave()
         self.check_autosaved()
 
-        self.Bind(wx.EVT_CHAR_HOOK, self.on_key_event)
+        self.Bind(wx.EVT_CHAR_HOOK, self.on_char_hook)
         if config.debugging:
             self.splitter1.Bind(wx.EVT_SPLITTER_SASH_POS_CHANGED, self.on_sash)
             self.splitter2.Bind(wx.EVT_SPLITTER_SASH_POS_CHANGED, self.on_sash)
 
     def on_sash(self, event):
+        # XXX not yet used, but it could be used to re-format the palette panel
         layout = self.layout_settings["layout"]
         if layout==0:
             size = (self.splitter1.GetSashPosition(), self.splitter2.GetSashPosition())
@@ -313,11 +302,35 @@ class wxGladeFrame(wx.Frame):
             size = (self.GetClientSize()[0], self.splitter2.GetSashPosition())
         print("Palette size", size)
 
-    def on_key_event(self, event):
-        if event.GetKeyCode()==wx.WXK_ESCAPE and not event.HasModifiers() and common.adding_widget:
-            misc._cancel()
-            return
-        event.Skip()
+    def on_char_hook(self, event):
+        # bound to EVT_CHAR_HOOK
+        focus = parent = self.FindFocus()
+        grid = None  # will be set if a grid or a grid's child is focused
+        window_type = None
+        while parent:
+            # go up and identify parent: Palette, Property or Tree
+            if isinstance(parent, wx.grid.Grid):
+                grid = parent
+            if parent is self.palette:
+                window_type = "palette"
+            elif parent is self.tree:
+                window_type = "tree"
+            elif parent is self.property_panel:
+                window_type = "properties"
+            if window_type: break
+            parent = parent.GetParent()
+
+        # forward to specific controls / properties? (on wx 2.8 installing EVT_CHAR_HOOK on controls does not work)
+        if window_type=="properties" and grid and grid.Name!="grid":
+            # forward event to grid property?
+            if misc.focused_widget.properties[grid.Name].on_char(event):
+                return
+        if window_type=="tree":
+            if common.app_tree.on_char(event):
+                return
+
+        # global handler
+        misc.handle_key_event(event, window_type)
 
     # menu and actions #################################################################################################
     def create_menu(self):
@@ -623,18 +636,11 @@ class wxGladeFrame(wx.Frame):
             toplevel.preview(refresh=True)
 
     def show_tree(self):
-        self.tree_panel.Show()
-        self.tree_panel.Raise()
         common.app_tree.SetFocus()
 
     def show_props_window(self):
-        self.property_panel.Show()
-        self.property_panel.Raise()
-        try:
-            c = self.property_panel.GetSizer().GetChildren()
-            if c: c[0].GetWindow().SetFocus()
-        except (AttributeError, TypeError):
-            self.property_panel.SetFocus()
+        if self.property_panel.notebook:
+            self.property_panel.notebook.SetFocus()
 
     def show_design_window(self):
         toplevel = self._get_toplevel()
@@ -1014,7 +1020,7 @@ class wxGladeFrame(wx.Frame):
         height = display_area.height
         width = 800
         default_size = (width,height)
-        
+
         self.layout_settings = {}
         self.layout_settings["layout"] = 0
         self.layout_settings["sash_positions"] = [[400,     380       ],   # 0: palette and properties left; tree right

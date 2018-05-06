@@ -411,7 +411,7 @@ class WidgetTree(wx.TreeCtrl, Tree):
         self.Bind(wx.EVT_TREE_END_LABEL_EDIT, self.end_edit_label)
         #self.Bind(wx.EVT_KEY_DOWN, misc.on_key_down_event)
         self.Bind(wx.EVT_KEY_DOWN, self.on_key_down_event)
-        self.Bind(wx.EVT_CHAR_HOOK, self.on_char)
+        #self.Bind(wx.EVT_CHAR_HOOK, self.on_char)  # on wx 2.8 the event will not be delivered to the child
 
     def _label_editable(self, widget=None):
         if widget is None: widget = self.cur_widget
@@ -429,10 +429,12 @@ class WidgetTree(wx.TreeCtrl, Tree):
         if event.GetKeyCode()==wx.WXK_F2 and self.cur_widget and self._label_editable():
             # start label editing
             self.EditLabel( self.cur_widget.node.item )
-            return
-        event.Skip()
+            return True
+        return False
+        #event.Skip()
 
     def on_key_down_event(self, event):
+        print("WidgetTree.on_key_event")
         #if event.GetKeyCode()==13:
             ## go to property editor
             #common.property_panel.SetFocus()
@@ -446,7 +448,8 @@ class WidgetTree(wx.TreeCtrl, Tree):
                     pos = (rect.right, (rect.top+rect.bottom)//2)
                     self.cur_widget.popup_menu(event, pos=pos)
                     return
-        misc.on_key_down_event(event)
+        #misc.on_key_down_event(event)
+        event.Skip()
 
     def begin_drag(self, evt):
         # start drag & drop
@@ -623,13 +626,13 @@ class WidgetTree(wx.TreeCtrl, Tree):
             label = node.widget.label
             label = label.replace("\n","\\n").replace("\t","\\t")
             if '"' in label:
-                if len(label)>24:
-                    s += ": '%s..."%(label[:18])
+                if len(label)>36:
+                    s += ": '%s..."%(label[:30])
                 else:
                     s += ": '%s'"%label
             else:
                 if len(label)>24:
-                    s += ': "%s...'%(label[:18])
+                    s += ': "%s...'%(label[:30])
                 else:
                     s += ': "%s"'%label
         elif getattr(node.widget, "has_title", None):

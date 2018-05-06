@@ -2168,6 +2168,7 @@ class GridProperty(Property):
 
         # the grid #####################################################################################################
         self.grid = wx.grid.Grid(panel, -1)
+        self.grid.Name = self.name
         rowcount = len(self.value)
         if self.can_add and self.immediate: rowcount += 1
         self.grid.CreateGrid( rowcount, len(self.col_defs) )
@@ -2205,20 +2206,25 @@ class GridProperty(Property):
         self._set_tooltip(self.grid.GetGridWindow(), *self.buttons)
 
         self.grid.Bind(wx.EVT_SIZE, self.on_size)
-        if wx.VERSION[:2] >= (2, 9):
-            self.grid.Bind(wx.EVT_CHAR_HOOK, self.on_char)
-        else:
-            self.grid.Bind(wx.EVT_KEY_DOWN, self.on_char)
+        # On wx 2.8 the EVT_CHAR_HOOK handler for the control does not get called, so on_char will be called from main
+        #self.grid.Bind(wx.EVT_CHAR_HOOK, self.on_char)
         self._width_delta = None
 
     def on_char(self, event):
         if isinstance(self.grid.FindFocus(), wx.TextCtrl):
             # a cell is being edited
             event.Skip()
-            return
-        # handle Ctrl-I, Ctrl-A, Ctrl-R; Alt-A will be handled by the button itself
+            return True  # avoid propagation
         self.on_focus()
         key = (event.GetKeyCode(), event.GetModifiers())
+
+        # handle F2 key
+        if key==(wx.WXK_F2,0) and self.grid.CanEnableCellControl():
+            #self.grid.MakeCellVisible(...)
+            self.grid.EnableCellEditControl(enable=True)
+            return True
+
+        # handle Ctrl-I, Ctrl-A, Ctrl-R; Alt-A will be handled by the button itself
         if key in ((73,2),(73,1)) and self.can_insert:
             # Ctrl-I, Alt-I
             self.insert_row(event)
@@ -2240,7 +2246,9 @@ class GridProperty(Property):
         elif key==(88,2):  # Ctrl-X
             if not self._cut(): event.Skip()
         else:
-            event.Skip()
+            #event.Skip()
+            return False
+        return True  # handled
 
     ####################################################################################################################
     # clipboard

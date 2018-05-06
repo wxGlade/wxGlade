@@ -510,8 +510,7 @@ class Application(np.PropertyOwner):
                 frame = preview_class(None, -1, '')
 
             def on_close(event):
-                if misc.preview_event_filter:
-                    misc.preview_event_filter.add_window(frame)
+                frame.Unbind(wx.EVT_CHAR_HOOK)
                 compat.DestroyLater(frame)
                 widget.preview_widget = None
                 widget.properties["preview"].set_label(_('Show Preview'))
@@ -530,8 +529,8 @@ class Application(np.PropertyOwner):
                         frame.SetPosition( (pos[0]+200, pos[1]+100))
             frame.Show()
             # install handler for key down events
-            if misc.preview_event_filter:
-                misc.preview_event_filter.add_window(frame)
+            frame.Bind(wx.EVT_CHAR_HOOK, self.on_char_hook)
+
             # remove the temporary file
             if not config.debugging:
                 name = os.path.join(preview_path, preview_module_name+".py")
@@ -544,6 +543,14 @@ class Application(np.PropertyOwner):
         # XXX restore app state
         widget.properties["class"].set(widget_class_name)
         return frame
+    
+    def on_char_hook(self, event):
+        # handler for EVT_CHAR_HOOK events on preview windows
+        if event.GetKeyCode()==wx.WXK_ESCAPE:
+            wx.FindWindowById(event.GetId()).GetTopLevelParent().Close()
+            return
+        misc.handle_key_event(event, "preview")
+
     def update_view(self, selected=False):
         pass
 
