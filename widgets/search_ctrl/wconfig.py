@@ -5,7 +5,6 @@ wxSearchCtrl widget configuration
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
-# keep synchronous between wxSpinCtrl and wxSearchCtrl
 config = {
     'wxklass': 'wxSearchCtrl',
     'style_defs': {

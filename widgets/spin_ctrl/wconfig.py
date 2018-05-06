@@ -45,6 +45,7 @@ config = {
         'wxTE_CHARWRAP':     {'obsolete':True},
         'wxTE_WORDWRAP':     {'obsolete':True},
         'wxTE_BESTWRAP':     {'obsolete':True},
+        'wxTE_CAPITALIZE':   {'obsolete':True},
     },
     'default_style': 'wxSP_ARROW_KEYS',
     'style_list': ['wxSP_ARROW_KEYS', 'wxSP_WRAP',
