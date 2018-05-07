@@ -1358,8 +1358,7 @@ class TextProperty(Property):
         keycode = event.GetKeyCode()
         if keycode == wx.WXK_ESCAPE:
             # reset
-            #self.text.SetValue(self._unescape(self.value))
-            self.text.SetValue(self.value)
+            self.text.SetValue(self.value or "")
             self.text.SetInsertionPointEnd()
         if not self.multiline and keycode==13:
             # enter
