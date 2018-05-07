@@ -139,7 +139,7 @@ class TestGui(WXGladeGUITest):
         self._copy_and_modify(expected_filename, generate_filename, b"SetSize((500, 300))", b"SetSize((300, 300))")
 
         # load and set up project
-        common.palette._open_app(infilename, use_progress_dialog=False, add_to_history=False)
+        common.main._open_app(infilename, use_progress_dialog=False, add_to_history=False)
         common.app_tree.app.properties["overwrite"].set(False)  # overwrite is 0 in the file
         common.app_tree.app.properties["output_path"].set(generate_filename)
         common.app_tree.app.properties["language"].set("python")
@@ -164,7 +164,7 @@ class TestGui(WXGladeGUITest):
         self._copy_and_modify(expected_frame,  generate_frame,  b"SetSize((400, 300))", b"SetSize((300, 300))")
 
         # load and set up project
-        common.palette._open_app(infilename, use_progress_dialog=False, add_to_history=False)
+        common.main._open_app(infilename, use_progress_dialog=False, add_to_history=False)
         common.app_tree.app.properties["overwrite"].set(False)  # overwrite is 0 in the file
         common.app_tree.app.properties["output_path"].set(self.outDirectory)
         common.app_tree.app.properties["language"].set("python")
@@ -191,7 +191,7 @@ class TestGui(WXGladeGUITest):
                 self._copy_and_modify(expected_filename_h, generate_filename_h)
     
             # load and set up project
-            common.palette._open_app(infilename, use_progress_dialog=False, add_to_history=False)
+            common.main._open_app(infilename, use_progress_dialog=False, add_to_history=False)
             common.app_tree.app.properties["overwrite"].set(False)  # overwrite is 0 in the file already
             common.app_tree.app.properties["output_path"].set(generate_filename)
             common.app_tree.app.properties["language"].set(language)
@@ -215,7 +215,7 @@ class TestGui(WXGladeGUITest):
                 self._copy_and_modify(expected_filename_h, generate_filename_h)
     
             # load and set up project
-            common.palette._open_app(infilename, use_progress_dialog=False, add_to_history=False)
+            common.main._open_app(infilename, use_progress_dialog=False, add_to_history=False)
             common.app_tree.app.properties["overwrite"].set(False)  # overwrite is 0 in the file
             common.app_tree.app.properties["output_path"].set(generate_filename)
             common.app_tree.app.properties["language"].set(language)
@@ -253,7 +253,7 @@ class TestGui(WXGladeGUITest):
                 self._copy_and_modify(expected_filename_frame_h,  generate_filename_frame_h)
 
             # load and set up project
-            common.palette._open_app(infilename, use_progress_dialog=False, add_to_history=False)
+            common.main._open_app(infilename, use_progress_dialog=False, add_to_history=False)
             common.app_tree.app.properties["overwrite"].set(False)  # overwrite is 0 in the file
             common.app_tree.app.properties["output_path"].set(self.outDirectory)
             common.app_tree.app.properties["language"].set(language)
@@ -270,7 +270,7 @@ class TestGui(WXGladeGUITest):
     def test_OutputFileAndDirectory(self):
         "Test check for output file and directory"
         infilename = self._get_casefile_path('Python_Preferences.wxg')
-        common.palette._open_app(infilename, use_progress_dialog=False, add_to_history=False)
+        common.main._open_app(infilename, use_progress_dialog=False, add_to_history=False)
 
         # Single output file out_path shouldn't be a directory, non-existing file or non-writable directory
         common.app_tree.app.properties["output_path"].set(self.outDirectory)
@@ -298,7 +298,7 @@ class TestGui(WXGladeGUITest):
     def test_PythonSubclass(self):
         "check for correct import: from package.name import name"
         infilename = self._get_casefile_path('PythonSubclass.wxg')
-        common.palette._open_app(infilename, use_progress_dialog=False, add_to_history=False)
+        common.main._open_app(infilename, use_progress_dialog=False, add_to_history=False)
         common.app_tree.app.filename = self._get_outputfile_path('PythonSubclass.wxg')
         common.app_tree.root.widget.generate_code()
 
@@ -312,7 +312,7 @@ class TestGui(WXGladeGUITest):
     def test_WxgXRCMultipleFilesNotSupported(self):
         "Test for multi file XRC projects."
         infilename = self._get_casefile_path('Python_Preferences.wxg')
-        common.palette._open_app(infilename, use_progress_dialog=False, add_to_history=False)
+        common.main._open_app(infilename, use_progress_dialog=False, add_to_history=False)
         common.app_tree.app.properties["multiple_files"].set(1)
         common.app_tree.app.properties["language"].set("XRC")
         common.app_tree.root.widget.generate_code()
@@ -321,7 +321,7 @@ class TestGui(WXGladeGUITest):
     def test_WxgTemplateCodegenNotPossible(self):
         "Test for code generation from a template"
         infilename = self._get_casefile_path('Python_Preferences.wxg')
-        common.palette._open_app(infilename, use_progress_dialog=False, add_to_history=False)
+        common.main._open_app(infilename, use_progress_dialog=False, add_to_history=False)
         common.app_tree.app.properties["is_template"].set(True)
         common.app_tree.root.widget.generate_code()
         self._assert_error_message( "Code generation from a template is not possible" )
@@ -482,11 +482,11 @@ class TestGui(WXGladeGUITest):
     def test_import_xrc(self):
         "Test importing XRC files: just import_test.xrc at the moment"
         infilename = self._get_casefile_path("import_test.xrc")
-        common.palette.import_xrc(infilename)
+        common.main.import_xrc(infilename)
         # save file to wxg and check
         generated_filename = self._get_outputfile_path("import_test.wxg")
         compare_filename = self._get_casefile_path("import_test.wxg")
-        common.palette._save_app(generated_filename)
+        common.main._save_app(generated_filename)
         self._compare_files(compare_filename, generated_filename)
 
     def stop(self):

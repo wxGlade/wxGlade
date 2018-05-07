@@ -31,7 +31,8 @@ class_names = {} # maps the name of the classes used by wxGlade to the correspon
 toplevels = {}   # names of the Edit classes that can be toplevels, i.e. class declaration will be generated in the code
 
 # references to windows:
-palette = None         # main window (the palette which contains the various buttons to add the different widgets)
+main = None            # main window
+palette = None         # the panel which contains the various buttons to add the different widgets
 property_panel = None  # panel for editing the current widgets properties
 app_tree = None        # widget hierarchy of the application; root is application itself; a tree.WidgetTree instance
 
@@ -40,6 +41,8 @@ adding_widget = False # If True, the user is adding a widget to some sizer
 adding_sizer = False  # "Needed to add toplevel sizers"
 widget_to_add = None  # widget class name that is being added
 adding_window = None  # the tree or the design window; used for centering dialogs
+
+pin_design_window = False
 
 # Dictionary which maps the ids used in the event handlers to the corresponding widgets:
 # used to call the appropriate builder function when a dropping of a widget occurs, knowing only the id of the event
@@ -210,7 +213,7 @@ def add_object(event):
     adding_sizer = "Sizer" in widget_to_add
 
     msg = "Adding %s; click on free (hatched) sizer slot to place it"
-    palette.user_message( msg%widget_to_add.lstrip("Edit") )
+    main.user_message( msg%widget_to_add.lstrip("Edit") )
 
 
 def add_toplevel_object(event):
@@ -244,6 +247,7 @@ def make_object_button(widget, icon_path, toplevel=False, tip=None):
         icon_path = os.path.join(config.icons_path, icon_path)
     bmp = misc.get_xpm_bitmap(icon_path)
     tmp = wx.BitmapButton(palette, -1, bmp, size=(31, 31))
+    #tmp = wx.Button(palette, -1, widget.replace('Edit', ''))
     if not toplevel:
         tmp.Bind(wx.EVT_BUTTON, add_object)
     else:
@@ -705,8 +709,8 @@ def save_preferences():
     if config.use_file_history:
         content = u'# -*- coding: utf-8 -*-\n'
         for pos in range(min(config.preferences.number_history,
-                             palette.file_history.GetCount())):
-            content += u'%s\n' % palette.file_history.GetHistoryFile(pos)
+                             main.file_history.GetCount())):
+            content += u'%s\n' % main.file_history.GetHistoryFile(pos)
         outfile = codecs.open(config.history_file, 'w', encoding='utf-8')
         outfile.write(content)
         outfile.close()

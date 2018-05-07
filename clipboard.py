@@ -44,7 +44,7 @@ def begin_drag(window, widget):
         msg = "Move window to application object; hold Ctrl to copy"
     else:
         msg = "Move control to empty or populated slot to insert, to a sizer to append; hold Ctrl to copy"
-    common.palette.user_message( msg )
+    common.main.user_message( msg )
 
     drop_source = wx.DropSource(window)
     drop_source.SetData(do)

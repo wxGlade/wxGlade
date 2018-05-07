@@ -684,7 +684,7 @@ class EditMenuBar(EditBase, PreviewMixin):
 
     def create_widget(self):
         if wx.Platform == '__WXGTK__' and not EditMenuBar.__hidden_frame:
-            EditMenuBar.__hidden_frame = wx.Frame(common.palette, -1, "")
+            EditMenuBar.__hidden_frame = wx.Frame(common.main, -1, "")
             EditMenuBar.__hidden_frame.Hide()
         if self.parent:
             self.widget = self._mb = wx.MenuBar()

@@ -1882,7 +1882,7 @@ class BitmapProperty(FileNameProperty):
 
     def _on_label_dblclick(self, event):
         # show help
-        common.palette._show_html( config.bmp_manual_file )
+        common.main._show_html( config.bmp_manual_file )
 
 
 class BitmapPropertyD(BitmapProperty):

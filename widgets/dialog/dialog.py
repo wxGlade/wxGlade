@@ -36,11 +36,12 @@ class EditDialog(TopLevelBase, EditStylesMixin, BitmapMixin):
         if self.parent:
             parent = self.parent.widget
         else:
-            parent = common.palette
+            parent = common.main
 
         # we set always a default style because this is the best one for editing the dialog
         # (for example, a dialog without a caption would be hard to move, etc.)
         default_style = wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER
+        if common.pin_design_window: default_style |= wx.STAY_ON_TOP
 
         # change 2002-10-09: now we create a wxFrame instead of a wxDialog,
         # because the latter gives troubles I wasn't able to solve when using wxPython 2.3.3.1 :-/

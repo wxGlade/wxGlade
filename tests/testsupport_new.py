@@ -263,7 +263,7 @@ class WXGladeGUITest(WXGladeBaseTest):
 
         # open file
         infilename = self._get_inputfile_path('%s.wxg' % basename)
-        common.palette._open_app(infilename, use_progress_dialog=False, add_to_history=False)
+        common.main._open_app(infilename, use_progress_dialog=False, add_to_history=False)
 
         # some shortcuts
         tree = common.app_tree
@@ -297,7 +297,7 @@ class WXGladeGUITest(WXGladeBaseTest):
             # save file again and check
             generated_filename = self._get_outputfile_path(infilename)
             compare_filename = self._get_casefile_path(infilename)  # some properties may have changed on loading
-            common.palette._save_app(generated_filename)
+            common.main._save_app(generated_filename)
             if compat.PYTHON2:
                 if self._compare_files(compare_filename, generated_filename):
                     diff_fails.append("wxg")

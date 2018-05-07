@@ -239,7 +239,6 @@ class wxGladePalettePanel(wx.Panel):
 
 class wxGladeFrame(wx.Frame):
     "Main frame of wxGlade"
-
     def __init__(self):
         self._logger = logging.getLogger(self.__class__.__name__)
         version = config.version
@@ -249,6 +248,7 @@ class wxGladeFrame(wx.Frame):
         wx.Frame.__init__(self, None, -1, "wxGlade v%s" % version, pos=pos, size=size,
                           style=wx.DEFAULT_FRAME_STYLE, name='MainFrame')
 
+        common.main = self
         self._set_icon()
         self.create_menu()
         self.create_toolbar()
@@ -256,14 +256,13 @@ class wxGladeFrame(wx.Frame):
         self.splitter1 = wx.SplitterWindow(self)
         self.splitter2 = wx.SplitterWindow(self.splitter1)
         self.palette = wxGladePalettePanel(self.splitter2)
-        common.palette = self
 
         # create the property and the tree frame
         common.property_panel = self.property_panel = wxGladePropertyPanel(self.splitter2)
         app = application.Application()
-        common.app_tree = self.tree = tree = WidgetTree(self.splitter1, app)
-        # 
-        self.splitter1.SplitVertically(self.splitter2, tree)
+        common.app_tree = self.tree = WidgetTree(self.splitter1, app)
+
+        self.splitter1.SplitVertically(self.splitter2, self.tree)
         self.splitter2.SplitHorizontally(self.palette, self.property_panel)
 
         self.switch_layout(layout, initial=True)
@@ -382,20 +381,46 @@ class wxGladeFrame(wx.Frame):
 
         menu_bar.Append(file_menu, _("&File"))
 
-        # View menu
+        # Windows menu: layout and focus ===============================================================================
         view_menu = wx.Menu(style=wx.MENU_TEAROFF)
+
+        i = append_menu_item(view_menu, -1, _("Layout &1: Tree\tAlt-1"), "../layout1.xpm")
+        misc.bind_menu_item(self, i, self.switch_layout, 0)
+        
+        i = append_menu_item(view_menu, -1, _("Layout &2: Properties\tAlt-2"), "../layout2.xpm")
+        misc.bind_menu_item(self, i, self.switch_layout, 1)
+
+        i = append_menu_item(view_menu, -1, _("Layout &3: Narrow\tAlt-3"), "../layout3.xpm")
+        misc.bind_menu_item(self, i, self.switch_layout, 2)
+        view_menu.AppendSeparator()
 
         TREE = append_menu_item(view_menu, -1, _("Focus &Tree\tF2"))
         misc.bind_menu_item(self, TREE, self.show_tree)
 
-        PROPS = append_menu_item(view_menu, -1, _("Focus &Properties\tF3"))
-        misc.bind_menu_item(self, PROPS, self.show_props_window)
+        i = append_menu_item(view_menu, -1, _("Focus &Properties\tF3"))
+        misc.bind_menu_item(self, i, self.show_props_window )
 
-        RAISE = append_menu_item(view_menu, -1, _("&Raise All\tF4"))
-        misc.bind_menu_item(self, RAISE, self.raise_all)
+        # focus sections -----------------------------------------------------------------------------------------------
+        view_props_menu = wx.Menu()
+        i = append_menu_item(view_props_menu, -1, _("Focus &Common\tF8,Ctrl-M"))
+        misc.bind_menu_item(self, i, self.show_props_window, "Common")
+        i = append_menu_item(view_props_menu, -1, _("Focus &Layout\tF9,Ctrl-L"))
+        misc.bind_menu_item(self, i, self.show_props_window, "Layout")
+        i = append_menu_item(view_props_menu, -1, _("Focus &Widget\tF10,Ctrl-W"))
+        misc.bind_menu_item(self, i, self.show_props_window, "Widget")
+        i = append_menu_item(view_props_menu, -1, _("Focus &Events\tF11,Ctrl-E"))
+        misc.bind_menu_item(self, i, self.show_props_window, "Events")
+        i = append_menu_item(view_props_menu, -1, _("Focus &Code\tF12,Ctrl-D"))
+        misc.bind_menu_item(self, i, self.show_props_window, "Code")
+        view_menu.AppendSubMenu(view_props_menu, "Focus Properties &Section")
+        view_menu.AppendSeparator() # ----------------------------------------------------------------------------------
 
-        DESIGN = append_menu_item(view_menu, -1, _("Show &Design\tF6"))
-        misc.bind_menu_item(self, DESIGN, self.show_design_window)
+        i = append_menu_item(view_menu, -1, _("Show &Design\tF6"))  # XXX Show/Hide ?
+        misc.bind_menu_item(self, i, self.show_design_window)
+        self._m_pin_design_window = i = append_menu_item(view_menu, -1, _("&Pin &Design\tCtrl-P"),  kind=wx.ITEM_CHECK)
+        misc.bind_menu_item(self, i, self.pin_design_window)
+
+        # XXX keep design window on top
 
         view_menu.AppendSeparator() # ----------------------------------------------------------------------------------
 
@@ -407,9 +432,9 @@ class wxGladeFrame(wx.Frame):
         item = append_menu_item(view_menu, wx.ID_PREFERENCES, _('Preferences...'), "prefs.xpm")
         misc.bind_menu_item(self, item, self.edit_preferences)
 
-        menu_bar.Append(view_menu, _("&View"))
+        menu_bar.Append(view_menu, _("&Windows"))
 
-        # Help menu
+        # Help menu ====================================================================================================
         help_menu = wx.Menu(style=wx.MENU_TEAROFF)
 
         MANUAL = append_menu_item(help_menu, -1, _('Manual\tF1'), wx.ART_HELP_BOOK)
@@ -482,48 +507,58 @@ class wxGladeFrame(wx.Frame):
             t.Enable(False)
             
             # XXX switch between wx.ART_DELETE for filled slots and wx.ART_MINUS for empty slots
-            t = tb.AddLabelTool(wx.ID_SAVE, _("Remove"), wx.ArtProvider.GetBitmap(wx.ART_MINUS, wx.ART_OTHER, size),
-                                      wx.NullBitmap, wx.ITEM_NORMAL, _("Add widget (Ctrl+A)"), _("Add widget (Ctrl+A)"))
+            t = tb.AddLabelTool( wx.ID_SAVE, _("Remove"), wx.ArtProvider.GetBitmap(wx.ART_MINUS, wx.ART_OTHER, size),
+                                 wx.NullBitmap, wx.ITEM_NORMAL, _("Add widget (Ctrl+A)"), _("Add widget (Ctrl+A)"))
             #self.Bind(wx.EVT_TOOL, self.save_app, t)
             t.Enable(False)
 
             tb.AddSeparator()
 
         if config.debugging:
-            t = tb.AddLabelTool(wx.ID_SAVE, _("Re-do"), wx.ArtProvider.GetBitmap(wx.ART_REDO, wx.ART_OTHER, size),
-                                      wx.NullBitmap, wx.ITEM_NORMAL, _("Add widget (Ctrl+Y)"), _("Add widget (Ctrl+Y)"))
+            t = tb.AddLabelTool( wx.ID_SAVE, _("Re-do"), wx.ArtProvider.GetBitmap(wx.ART_REDO, wx.ART_OTHER, size),
+                                 wx.NullBitmap, wx.ITEM_NORMAL,
+                                 _("Add widget (Ctrl+Y)"), _("Add widget (Ctrl+Y)"))
             #self.Bind(wx.EVT_TOOL, self.save_app, t)
             t.Enable(False)
-            t = tb.AddLabelTool(wx.ID_SAVE, _("Re-do"), wx.ArtProvider.GetBitmap(wx.ART_REDO, wx.ART_OTHER, size),
-                                      wx.NullBitmap, wx.ITEM_NORMAL, _("Add widget (Ctrl+Y)"), _("Add widget (Ctrl+Y)"))
+            t = tb.AddLabelTool( wx.ID_SAVE, _("Re-do"), wx.ArtProvider.GetBitmap(wx.ART_REDO, wx.ART_OTHER, size),
+                                 wx.NullBitmap, wx.ITEM_NORMAL,
+                                 _("Add widget (Ctrl+Y)"), _("Add widget (Ctrl+Y)"))
             #self.Bind(wx.EVT_TOOL, self.save_app, t)
             t.Enable(False)
 
 
         tb.AddSeparator()
         t = tb.AddLabelTool(-1, _("Generate Code"), wx.ArtProvider.GetBitmap(wx.ART_EXECUTABLE_FILE, wx.ART_OTHER, size),
-                                wx.NullBitmap, wx.ITEM_NORMAL, _("Generate Code (Ctrl+G)"), _("Generate Code (Ctrl+G)"))
+                                wx.NullBitmap, wx.ITEM_NORMAL,
+                                _("Generate Code (Ctrl+G)"), _("Generate Code (Ctrl+G)"))
         self.Bind(wx.EVT_TOOL, lambda event: common.app_tree.app.generate_code(), t)
         tb.AddSeparator()
         
         t1 = tb.AddLabelTool(-1, _("Layout 1"), wx.Bitmap( os.path.join(config.icons_path, "layout1.xpm"), wx.BITMAP_TYPE_XPM ),
-                                           wx.NullBitmap, wx.ITEM_RADIO,
-                                           _("Switch layout: Tree"),
-                                           _("Switch layout: Palette and Properties left, Tree right"))
+                                wx.NullBitmap, wx.ITEM_RADIO,
+                                _("Switch layout: Tree"),
+                                _("Switch layout: Palette and Properties left, Tree right"))
         self.Bind(wx.EVT_TOOL, lambda event: self.switch_layout(0), t1)
         t2 = tb.AddLabelTool(-1, _("Layout 2"), wx.Bitmap( os.path.join(config.icons_path, "layout2.xpm"), wx.BITMAP_TYPE_XPM ),
-                                wx.NullBitmap, wx.ITEM_RADIO, _("Switch layout: Properties"), _("Switch layout: Palette and Tree top, Properties bottom"))
+                                 wx.NullBitmap, wx.ITEM_RADIO,
+                                 _("Switch layout: Properties"),
+                                 _("Switch layout: Palette and Tree top,  Properties bottom"))
         self.Bind(wx.EVT_TOOL, lambda event: self.switch_layout(1), t2)
         t3 = tb.AddLabelTool(-1, _("Layout 3"), wx.Bitmap( os.path.join(config.icons_path, "layout3.xpm"), wx.BITMAP_TYPE_XPM ),
-                                wx.NullBitmap, wx.ITEM_RADIO, _("Switch layout: narrow"), _("Switch layout: Palette, Tree and Properties on top of each other"))
+                                wx.NullBitmap, wx.ITEM_RADIO,
+                                _("Switch layout: narrow"),
+                                _("Switch layout: Palette, Tree and Properties on top of each other"))
         self.Bind(wx.EVT_TOOL, lambda event: self.switch_layout(2), t3)
         self._layout_tools = [t1,t2,t3]
 
-        if config.debugging:
-            tb.AddSeparator()
-            t3 = tb.AddLabelTool(-1, _("Pin Design Window"), wx.Bitmap( os.path.join(config.icons_path, "pin_design.xpm"), wx.BITMAP_TYPE_XPM ),
-                                    wx.NullBitmap, wx.ITEM_CHECK, _("Pin Design Window"), _("Pin Design Window to stay on top"))
-            self.Bind(wx.EVT_TOOL, lambda event: self.switch_layout(2), t3)
+        tb.AddSeparator()
+        t = tb.AddLabelTool(-1, _("Pin Design Window"),
+                            wx.Bitmap( os.path.join(config.icons_path, "pin_design.xpm"), wx.BITMAP_TYPE_XPM ),
+                            wx.NullBitmap, wx.ITEM_CHECK,
+                            _("Pin Design Window"),
+                            _("Pin Design Window to stay on top"))
+        self.Bind(wx.EVT_TOOL, lambda event: self.pin_design_window(), t)
+        self._t_pin_design_window = t
 
         tb.AddSeparator()
 
@@ -638,9 +673,18 @@ class wxGladeFrame(wx.Frame):
     def show_tree(self):
         common.app_tree.SetFocus()
 
-    def show_props_window(self):
-        if self.property_panel.notebook:
+    def show_props_window(self, section=None):
+        # XXX implement: if a section is active already, then go to first property of the page
+        if not self.property_panel.notebook: return
+        # current page: self.property_panel.notebook.Selection
+        # self.property_panel.notebook.FindWindowByName("Layout")
+        self.property_panel.pagenames
+        if not section:
             self.property_panel.notebook.SetFocus()
+        else:
+            if not section in self.property_panel.pagenames:
+                return
+            self.property_panel.notebook.ChangeSelection( self.property_panel.pagenames.index(section) )
 
     def show_design_window(self):
         toplevel = self._get_toplevel()
@@ -652,18 +696,33 @@ class wxGladeFrame(wx.Frame):
 
         if toplevel.widget and toplevel.widget.IsShownOnScreen() and not focused:
             # just raise it
+            if toplevel.widget.IsIconized():
+                toplevel.widget.Iconize(False)
             toplevel.widget.Raise()
             return
         # open or close
         common.app_tree.show_toplevel(None, widget=toplevel)
 
-    def raise_all(self):
-        # when one window is raised, raise all
-        children = self.GetChildren()
-        for child in children:
-            child = misc.get_toplevel_parent(child)
-            if child.IsShown() and child.GetTitle(): child.Raise()
-        self.Raise()
+    def pin_design_window(self):
+        common.pin_design_window = not common.pin_design_window
+        self._t_pin_design_window.Toggle(common.pin_design_window)
+        self._m_pin_design_window.Check(common.pin_design_window)
+        self.toolbar.Realize()
+
+        toplevel = self._get_toplevel()
+        if not toplevel or not toplevel.widget: return
+        frame = toplevel.widget.GetTopLevelParent()
+        if not isinstance(frame, wx.Frame): return
+        style = frame.GetWindowStyle()
+        if common.pin_design_window:
+            frame.SetWindowStyle( style | wx.STAY_ON_TOP)
+        elif style & wx.STAY_ON_TOP:
+            frame.ToggleWindowStyle(wx.STAY_ON_TOP)
+            if wx.Platform=='__WXMSW__':
+                frame.Iconize(True)
+                frame.Iconize(False)
+            else:
+                toplevel.widget.Raise()
 
     # status bar for message display ###################################################################################
     def create_statusbar(self):
@@ -824,7 +883,7 @@ class wxGladeFrame(wx.Frame):
         self._logger.info(_('Loading time: %.5f'), end - start)
 
         common.app_tree.app.saved = True
-        common.property_panel.Raise()
+        #common.property_panel.Raise()
 
         if hasattr(self, 'file_history') and filename is not None and add_to_history and \
            (not common.app_tree.app.is_template):
@@ -1100,17 +1159,17 @@ class wxGladeFrame(wx.Frame):
             self.splitter2.SetMinimumPaneSize(1)
             self.splitter2.SetSashGravity(0)
             self.splitter1.SetMinimumPaneSize(2)
-            self.splitter1.SetSashGravity(0.2)
+            self.splitter1.SetSashGravity(0)
         elif new_layout==1:
             self.splitter2.SetMinimumPaneSize(1)
             self.splitter2.SetSashGravity(0)
             self.splitter1.SetMinimumPaneSize(2)
-            self.splitter1.SetSashGravity(0.2)
+            self.splitter1.SetSashGravity(0.5)
         elif new_layout==2:
             self.splitter2.SetMinimumPaneSize(1)
             self.splitter2.SetSashGravity(0)
             self.splitter1.SetMinimumPaneSize(2)
-            self.splitter1.SetSashGravity(0.2)
+            self.splitter1.SetSashGravity(0.5)
         positions = self.layout_settings["sash_positions"][new_layout]
         self.splitter1.SetSashPosition( positions[0] )
         self.splitter2.SetSashPosition( positions[1] )
@@ -1274,4 +1333,8 @@ def main(filename=None):
         win = app.GetTopWindow()
         win._open_app(filename, False)
         win.cur_dir = os.path.dirname(filename)
+    #win = app.GetTopWindow()
+    ##win.import_xrc(r"D:\Python\Sources35\wxglade\wxglade_dev\tests\casefiles\CalendarCtrl.xrc")
+    #win.import_xrc(r"D:\Python\Sources35\wxglade\wxglade_dev\tests\casefiles\AllWidgets_30.xrc")
+
     app.MainLoop()
