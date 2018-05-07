@@ -255,7 +255,9 @@ class EditTopLevelPanel(PanelBase, TopLevelBase):
             # re-creating -> use old frame
             win = self.widget.GetTopLevelParent()
         else:
-            win = wx.Frame( common.palette, -1, misc.design_title(self.name), size=(400, 300) )
+            style = wx.DEFAULT_FRAME_STYLE
+            if common.pin_design_window: style |= wx.STAY_ON_TOP
+            win = wx.Frame( common.main, -1, misc.design_title(self.name), size=(400, 300), style=style )
             import os, compat
             icon = compat.wx_EmptyIcon()
             xpm = os.path.join(config.icons_path, 'panel.xpm')
@@ -272,6 +274,7 @@ class EditTopLevelPanel(PanelBase, TopLevelBase):
         self.widget.Bind(wx.EVT_ENTER_WINDOW, self.on_enter)
         self.widget.GetBestSize = self.get_widget_best_size
         #self.widget.SetSize = win.SetSize
+
     def create(self):
         # XXX refactor this
         size_p = self.properties['size']

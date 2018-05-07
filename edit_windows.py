@@ -783,8 +783,6 @@ class TopLevelBase(WindowBase, PreviewMixin):
         if wx.Platform == '__WXMSW__':
             # MSW isn't smart enough to avoid overlapping windows, so at least move it away from the 3 wxGlade frames
             self.widget.Center()
-        # ALB 2004-10-15
-        #self.widget.SetAcceleratorTable(common.palette.accel_table)
 
     def create(self):
         WindowBase.create(self)

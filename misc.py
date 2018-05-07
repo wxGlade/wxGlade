@@ -245,8 +245,8 @@ def warning_message(msg, title="Warning"):
 ########################################################################################################################
 # menu helpers
 
-def append_menu_item(menu, id, text, xpm_file_or_artid=None): # XXX change: move id to the end of the argument list?
-    item = wx.MenuItem(menu, id, text)
+def append_menu_item(menu, id, text, xpm_file_or_artid=None, **kwargs): # XXX change: move id to the end of the argument list?
+    item = wx.MenuItem(menu, id, text, **kwargs)
     if xpm_file_or_artid is not None:
         path = 'msw/'  if wx.Platform == '__WXMSW__'  else  'gtk/'
         path = os.path.join(config.icons_path, path)
@@ -377,7 +377,7 @@ def _cancel():
         currently_under_mouse.SetCursor(wx.STANDARD_CURSOR)
     common.app_tree.SetCursor(wx.STANDARD_CURSOR)
     compat.SetToolTip(common.app_tree, "")
-    common.palette.user_message("Canceled")
+    common.main.user_message("Canceled")
 
 
 def navigate(up):
@@ -441,17 +441,39 @@ accel_table = {
     ("C", ord('Z')):     ((common, "history","undo"), "focused_widget"),
     ("C", ord('Y')):     ((common, "history","redo"), "focused_widget"),
     ("C", ord('R')):     ((common, "history","repeat"), "focused_widget"),
-    ("",  wx.WXK_F2):    ((common,"palette","show_tree"),            ()),
-    ("",  wx.WXK_F3):    ((common,"palette","show_props_window"),    ()),
-    ("",  wx.WXK_F4):    ((common,"palette","raise_all"),            ()),
-    ("",  wx.WXK_F5):    ((common,"palette","preview"),              ()),
-    ("",  wx.WXK_F6):    ((common,"palette","show_design_window"),   ()),
-    ("C", ord('S')):     ((common,"palette","save_app"),             ()),
+
+    ("",  wx.WXK_F2):    ((common,"main","show_tree"),            ()),
+    ("",  wx.WXK_F3):    ((common,"main","show_props_window"),    ()),
+    ("",  wx.WXK_F4):    ((common,"main","show_design_window"),   ()),
+    ("",  wx.WXK_F5):    ((common,"main","preview"),              ()),
+
+    ("",  wx.WXK_F8):    ((common,"main","show_props_window"),    ("Common",)),
+    ("C", ord('M')):     ((common,"main","show_props_window"),    ("Common",)),
+
+    ("",  wx.WXK_F9):    ((common,"main","show_props_window"),    ("Layout",)),
+    ("C", ord('L')):     ((common,"main","show_props_window"),    ("Layout",)),
+
+    ("",  wx.WXK_F10):   ((common,"main","show_props_window"),    ("Widget",)),
+    ("C", ord('W')):     ((common,"main","show_props_window"),    ("Widget",)),
+
+    ("",  wx.WXK_F11):   ((common,"main","show_props_window"),    ("Events",)),
+    ("C", ord('E')):     ((common,"main","show_props_window"),    ("Events",)),
+
+    ("",  wx.WXK_F12):   ((common,"main","show_props_window"),    ("Code",)),
+    ("C", ord('D')):     ((common,"main","show_props_window"),    ("Code",)),  # -> 'O'? and use 'D' for Design window?
+
+    ("C", ord('P')):     ((common,"main","pin_design_window"),    ()),
+
+    ("A", ord('1')):     ((common,"main","switch_layout"),        (0,)),
+    ("A", ord('2')):     ((common,"main","switch_layout"),        (1,)),
+    ("A", ord('3')):     ((common,"main","switch_layout"),        (2,)),
+
+    ("C", ord('S')):     ((common,"main","save_app"),             ()),
     ("C", ord('G')):     ((common,"app_tree","app","generate_code"), ()),
 
-    ("C", ord('N')):     ((common,"palette","new_app"),          ()), 
-    ("C", ord('O')):     ((common,"palette","open_app"),             ()),
-    ("C", ord('Q')):     ((common,"palette","Close"),                ()),
+    ("C", ord('N')):     ((common,"main","new_app"),              ()), 
+    ("C", ord('O')):     ((common,"main","open_app"),             ()),
+    ("C", ord('Q')):     ((common,"main","Close"),                ()),
 }
 
 
@@ -469,6 +491,7 @@ def handle_key_event(event, window_type, window=None):
     evt_flags = []
     if event.ControlDown(): evt_flags.append("C")
     if event.ShiftDown():   evt_flags.append("S")
+    if event.AltDown():     evt_flags.append("A")
     evt_flags = "".join(evt_flags)
 
     handler = None

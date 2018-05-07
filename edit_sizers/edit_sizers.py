@@ -217,7 +217,7 @@ class SizerSlot(np.PropertyOwner):
         self.widget.Bind(wx.EVT_MIDDLE_DOWN, misc.exec_after(self.on_select_and_paste))
         self.widget.Bind(wx.EVT_ENTER_WINDOW, self.on_enter)
         self.widget.Bind(wx.EVT_LEAVE_WINDOW, self.on_leave)
-        self.widget.Bind(wx.EVT_CHAR_HOOK, misc.on_key_down_event)  # catch cursor keys
+        #self.widget.Bind(wx.EVT_CHAR_HOOK, misc.on_key_down_event)  # catch cursor keys   XXX still required?
 
     def is_visible(self):
         return False
@@ -489,7 +489,7 @@ class SizerHandleButton(GenButton):
         self.sizer = sizer
         self.SetUseFocusIndicator(False)
         self.Bind(wx.EVT_RIGHT_DOWN, self.sizer.popup_menu )
-        self.Bind(wx.EVT_KEY_DOWN, misc.on_key_down_event)
+        #self.Bind(wx.EVT_KEY_DOWN, misc.on_key_down_event)
         color = compat.wx_SystemSettings_GetColour(wx.SYS_COLOUR_BTNFACE)
         self.SetBackgroundColour(color)
 
