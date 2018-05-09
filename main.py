@@ -80,7 +80,14 @@ class wxGladePropertyPanel(wx.Panel):
         self.heading = wx.TextCtrl(self, style=wx.TE_READONLY)
         sizer.Add(self.heading, 0, wx.EXPAND, 0)
         self.notebook = wx.Notebook(self, -1)
+        self.notebook.Bind(wx.EVT_SIZE, self.on_notebook_size)
+
         sizer.Add(self.notebook, 1, wx.EXPAND, 0)
+
+        # for GTK3: add a panel to determine page size
+        p = wx.Panel(self.notebook)
+        self.notebook.AddPage(p, "")
+        self._notebook_decoration_size = None
 
         self.SetSizer(sizer)
         self.Layout()
@@ -130,6 +137,13 @@ class wxGladePropertyPanel(wx.Panel):
 
         self.notebook.Hide()
 
+        if self._notebook_decoration_size is None:
+            # calculate decoration size from the dummy panel that was added initially
+            wp, hp = self.notebook.GetPage(0).GetSize()  # page/panel size
+            wn, hn = self.notebook.GetSize()             # notebook size
+            self._notebook_decoration_size = (wn-wp, hn-hp)
+            self.notebook.DeletePage(0)
+
         # remember the notebook page to be selected
         selection = self.notebook.GetSelection()
         select_page = self.pagenames[selection]  if selection!=-1  else None
@@ -149,8 +163,6 @@ class wxGladePropertyPanel(wx.Panel):
             if prop[0].isupper():
                 # end previous page
                 if current_page is not None:
-                    if property_instance and not property_instance.GROW:
-                        current_sizer.AddStretchSpacer(prop=5)
                     self.end_page(current_page, current_sizer, current_pagename)
                     current_page = None
 
@@ -187,20 +199,47 @@ class wxGladePropertyPanel(wx.Panel):
         self.notebook.Show()
 
     def start_page(self, name):
-        panel = wx.ScrolledWindow( self.notebook, wx.ID_ANY, style=wx.TAB_TRAVERSAL | wx.FULL_REPAINT_ON_RESIZE,
-                                   name=name )
+        # create a ScrolledWindow and a Panel; with only ScrolledWindow, scrolling on gtk 3 does not work
+        scrolled = wx.ScrolledWindow( self.notebook, name=name)
+        panel = wx.Panel(scrolled)
+        if wx.VERSION[0]<3:
+            panel.SetBackgroundColour(scrolled.GetBackgroundColour())
         return panel
 
     def end_page(self, panel, sizer, header, select=False):
         panel.SetAutoLayout(1)
-        #compat.SizerItem_SetSizer(panel, sizer)
         panel.SetSizer(sizer)
         sizer.Layout()
         sizer.Fit(panel)
 
-        w, h = panel.GetClientSize()
-        self.notebook.AddPage(panel, _(header),select=select)
-        panel.SetScrollbars(1, 5, 1, int(math.ceil(h/5.0)))
+        scrolled = panel.GetParent()
+        self.notebook.AddPage(scrolled, _(header),select=select)
+        self._set_page_size(scrolled)
+
+    def _set_page_size(self, scrolled):
+        # set ScrolledWindow and Panel to available size; enable scrolling, if required
+        ws, hs = self.notebook.GetSize()
+        ws -= self._notebook_decoration_size[0]
+        hs -= self._notebook_decoration_size[1]
+        w_scrollbar = wx.SystemSettings.GetMetric(wx.SYS_VSCROLL_X)  # width a of a scrollbar
+
+        panel = scrolled.GetChildren()[0]
+        wm, hm = panel.GetSizer().GetMinSize()
+        w,  h  = panel.GetSize()
+        scrolled.SetSize( (ws,hs) )
+        if hs<hm:
+            # best size is smaller than the available height -> enable scrolling
+            scrolled.SetScrollbars(1, 5, 1, int(math.ceil(hm/5.0)))
+            panel.SetSize( (ws-w_scrollbar, hm) )
+        else:
+            panel.SetSize( (ws, hs) )
+
+    def on_notebook_size(self, event):
+        # calculate available size for pages
+        if self._notebook_decoration_size:
+            for scrolled in self.notebook.GetChildren():
+                self._set_page_size(scrolled)
+        event.Skip()
 
     def flush(self):
         np.flush_current_property()
