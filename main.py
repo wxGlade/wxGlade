@@ -400,27 +400,23 @@ class wxGladeFrame(wx.Frame):
         i = append_menu_item(view_menu, -1, _("Focus &Properties\tF3"))
         misc.bind_menu_item(self, i, self.show_props_window )
 
-        # focus sections -----------------------------------------------------------------------------------------------
+        # submenu focus sections >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
         view_props_menu = wx.Menu()
-        i = append_menu_item(view_props_menu, -1, _("Focus &Common\tF8,Ctrl-M"))
-        misc.bind_menu_item(self, i, self.show_props_window, "Common")
-        i = append_menu_item(view_props_menu, -1, _("Focus &Layout\tF9,Ctrl-L"))
-        misc.bind_menu_item(self, i, self.show_props_window, "Layout")
-        i = append_menu_item(view_props_menu, -1, _("Focus &Widget\tF10,Ctrl-W"))
-        misc.bind_menu_item(self, i, self.show_props_window, "Widget")
-        i = append_menu_item(view_props_menu, -1, _("Focus &Events\tF11,Ctrl-E"))
-        misc.bind_menu_item(self, i, self.show_props_window, "Events")
-        i = append_menu_item(view_props_menu, -1, _("Focus &Code\tF12,Ctrl-D"))
-        misc.bind_menu_item(self, i, self.show_props_window, "Code")
-        view_menu.AppendSubMenu(view_props_menu, "Focus Properties &Section")
-        view_menu.AppendSeparator() # ----------------------------------------------------------------------------------
+        # randomly select set of shortcuts to be displayed:
+        if int(math.ceil(time.time())) % 2:
+            shortcuts = ["F8", "F9", "F10", "F11", "F12"]
+        else:
+            shortcuts = ["Ctrl-M", "Ctrl-L", "Ctrl-W", "Ctrl-E", "Ctrl-D"]
+        for sc, section in zip(shortcuts, ("Common", "Layout", "Widget", "Events", "Code")):
+            i = append_menu_item(view_props_menu, -1, _("Focus &%s\t%s"%(section, sc)))
+            misc.bind_menu_item(self, i, self.show_props_window, section)
+        view_menu.AppendSubMenu(view_props_menu, _("Focus Properties &Section"))
+        view_menu.AppendSeparator() # <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
         i = append_menu_item(view_menu, -1, _("Show &Design\tF6"))  # XXX Show/Hide ?
         misc.bind_menu_item(self, i, self.show_design_window)
         self._m_pin_design_window = i = append_menu_item(view_menu, -1, _("&Pin &Design\tCtrl-P"),  kind=wx.ITEM_CHECK)
         misc.bind_menu_item(self, i, self.pin_design_window)
-
-        # XXX keep design window on top
 
         view_menu.AppendSeparator() # ----------------------------------------------------------------------------------
 
