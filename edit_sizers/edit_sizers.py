@@ -2452,7 +2452,8 @@ def builder(parent, sizer, pos, number=[1]):
     "factory function for box sizers"
 
     dialog = _SizerDialog(common.adding_window or parent)
-    res = dialog.ShowModal()
+    with misc.disable_stay_on_top(common.adding_window or parent):
+        res = dialog.ShowModal()
     if dialog.orientation.GetStringSelection() == _('Horizontal'):
         orientation = wx.HORIZONTAL
     else:

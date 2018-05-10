@@ -529,6 +529,26 @@ def dummy_contextmanager():
     yield
 
 
+if wx.Platform == '__WXMAC__':
+    # on Mac OS we need to disable STAY_ON_TOP when a dialog is to be shown
+    @contextlib.contextmanager
+    def disable_stay_on_top(widget):
+        # used like 'with parent and parent.frozen() or dummy_contextmanager()
+        restore = False
+        tl = get_toplevel_parent(widget)
+        if isinstance(tl, wx.Frame) and tl.GetWindowStyle() & wx.STAY_ON_TOP:
+            tl.ToggleWindowStyle(wx.STAY_ON_TOP)
+            restore = True
+        yield
+        if restore:
+            tl.ToggleWindowStyle(wx.STAY_ON_TOP)
+else:
+    # on other platforms, we don't need it
+    @contextlib.contextmanager
+    def disable_stay_on_top(widget):
+        yield
+    
+
 ########################################################################################################################
 # key handlers
 if wx.Platform == '__WXMAC__':
