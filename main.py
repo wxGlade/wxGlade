@@ -748,9 +748,10 @@ class wxGladeFrame(wx.Frame):
 
     def pin_design_window(self):
         common.pin_design_window = not common.pin_design_window
-        self._t_pin_design_window.Toggle(common.pin_design_window)
+        if common.pin_design_window != self._t_pin_design_window.IsToggled():
+            self._t_pin_design_window.Toggle()
+            self.toolbar.Realize()
         self._m_pin_design_window.Check(common.pin_design_window)
-        self.toolbar.Realize()
 
         toplevel = self._get_toplevel()
         if not toplevel or not toplevel.widget: return
