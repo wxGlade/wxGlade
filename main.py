@@ -79,14 +79,15 @@ class wxGladePropertyPanel(wx.Panel):
         sizer = wx.BoxSizer(wx.VERTICAL)
         self.heading = wx.TextCtrl(self, style=wx.TE_READONLY)
         sizer.Add(self.heading, 0, wx.EXPAND, 0)
-        self.notebook = wx.Notebook(self, -1)
+        self.notebook = wx.Notebook(self)
         self.notebook.Bind(wx.EVT_SIZE, self.on_notebook_size)
 
         sizer.Add(self.notebook, 1, wx.EXPAND, 0)
 
         # for GTK3: add a panel to determine page size
         p = wx.Panel(self.notebook)
-        self.notebook.AddPage(p, "")
+        p.Bind(wx.EVT_SIZE, self.on_panel_size)
+        self.notebook.AddPage(p, "panel")
         self._notebook_decoration_size = None
 
         self.SetSizer(sizer)
@@ -120,6 +121,10 @@ class wxGladePropertyPanel(wx.Panel):
         if edit_widget is not self.next_widget:
             # wait for another call...
             return
+        if self._notebook_decoration_size is None:
+            # try again later
+            wx.CallLater( 150, self.edit_properties, edit_widget )
+            return
 
         self.current_widget = None
         self.create_editor(edit_widget)
@@ -134,15 +139,7 @@ class wxGladePropertyPanel(wx.Panel):
         # fill the frame with a notebook of property editors
         if not self.notebook: return  # already deleted
         self.current_widget_class = edit_widget.__class__
-
         self.notebook.Hide()
-
-        if self._notebook_decoration_size is None:
-            # calculate decoration size from the dummy panel that was added initially
-            wp, hp = self.notebook.GetPage(0).GetSize()  # page/panel size
-            wn, hn = self.notebook.GetSize()             # notebook size
-            self._notebook_decoration_size = (wn-wp, hn-hp)
-            self.notebook.DeletePage(0)
 
         # remember the notebook page to be selected
         selection = self.notebook.GetSelection()
@@ -218,6 +215,7 @@ class wxGladePropertyPanel(wx.Panel):
 
     def _set_page_size(self, scrolled):
         # set ScrolledWindow and Panel to available size; enable scrolling, if required
+        # gets available size for notebook pages
         ws, hs = self.notebook.GetSize()
         ws -= self._notebook_decoration_size[0]
         hs -= self._notebook_decoration_size[1]
@@ -225,8 +223,6 @@ class wxGladePropertyPanel(wx.Panel):
 
         panel = scrolled.GetChildren()[0]
         wm, hm = panel.GetSizer().GetMinSize()
-        w,  h  = panel.GetSize()
-        scrolled.SetSize( (ws,hs) )
         if hs<hm:
             # best size is smaller than the available height -> enable scrolling
             scrolled.SetScrollbars(1, 5, 1, int(math.ceil(hm/5.0)))
@@ -239,7 +235,15 @@ class wxGladePropertyPanel(wx.Panel):
         if self._notebook_decoration_size:
             for scrolled in self.notebook.GetChildren():
                 self._set_page_size(scrolled)
-        event.Skip()
+        if event: event.Skip()
+
+    def on_panel_size(self, event):
+        # when the dummy panel receives a size event, we know that things are ready to calculate the notebook pages size
+        # calculate decoration size from the dummy panel that was added initially
+        wp, hp = self.notebook.GetPage(0).GetSize()  # page/panel size
+        wn, hn = self.notebook.GetSize()             # notebook size
+        self._notebook_decoration_size = (wn-wp, hn-hp)
+        self.notebook.DeletePage(0)
 
     def flush(self):
         np.flush_current_property()
