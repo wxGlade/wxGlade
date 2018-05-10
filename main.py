@@ -56,9 +56,9 @@ class wxGladePropertyPanel(wx.Frame):
 
         # for GTK3: add a panel to determine page size
         p = wx.Panel(self.notebook)
-        p.Bind(wx.EVT_SIZE, self.on_panel_size)
         self.notebook.AddPage(p, "panel")
         self._notebook_decoration_size = None
+        p.Bind(wx.EVT_SIZE, self.on_panel_size)
 
     def on_drop_files(self, x,y, filenames):
         if len(filenames) > 1:
@@ -213,7 +213,7 @@ class wxGladePropertyPanel(wx.Frame):
         hs -= self._notebook_decoration_size[1]
         w_scrollbar = wx.SystemSettings.GetMetric(wx.SYS_VSCROLL_X)  # width a of a scrollbar
 
-        panel = scrolled.GetChildren()[0]
+        panel = [w for w in scrolled.GetChildren() if isinstance(w, wx.Panel)][0]
         wm, hm = panel.GetSizer().GetMinSize()
         if hs<hm:
             # best size is smaller than the available height -> enable scrolling
@@ -232,10 +232,14 @@ class wxGladePropertyPanel(wx.Frame):
     def on_panel_size(self, event):
         # when the dummy panel receives a size event, we know that things are ready to calculate the notebook pages size
         # calculate decoration size from the dummy panel that was added initially
-        wp, hp = self.notebook.GetPage(0).GetSize()  # page/panel size
-        wn, hn = self.notebook.GetSize()             # notebook size
-        self._notebook_decoration_size = (wn-wp, hn-hp)
-        self.notebook.DeletePage(0)
+        if event.GetSize() != (0,0):
+            wp, hp = self.notebook.GetPage(0).GetSize()  # page/panel size
+            wn, hn = self.notebook.GetSize()             # notebook size
+            self._notebook_decoration_size = (wn-wp, hn-hp)
+            self.notebook.DeletePage(0)
+        else:
+            # Mac OS: inital event on creation
+            event.Skip()
 
     def flush(self):
         np.flush_current_property()
