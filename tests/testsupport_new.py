@@ -209,6 +209,8 @@ class WXGladeGUITest(WXGladeBaseTest):
         cls.locale = wx.Locale(wx.LANGUAGE_DEFAULT)
         compat.wx_ArtProviderPush(main.wxGladeArtProvider())
         cls.frame = main.wxGladeFrame()
+        if not hasattr(common, "main"):
+            common.main = common.palette # for Rev. 0.8
 
         # suppress wx error messages
         cls.nolog = wx.LogNull()
