@@ -1059,6 +1059,9 @@ class SizerBase(Sizer, np.PropertyOwner):
                 w, h = size
                 if w == -1: w = best_size[0]
                 if h == -1: h = best_size[1]
+            elif widget.__class__.__name__=="EditSpacer":
+                w = widget.width
+                h = widget.height
             else:
                 if size_was_reduced and  widget.__class__.__name__ in ("EditPanel","CustomWidget"):
                     # if proportion is reduced and no size defined, set to a minimum size of 20,20
