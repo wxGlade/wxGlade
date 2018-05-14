@@ -425,10 +425,14 @@ class WidgetTree(wx.TreeCtrl, Tree):
         return True
 
     def on_char(self, event):
-        "start label editing on F2; called from main"
+        "called from main: start label editing on F2; skip events while editing"
         if event.GetKeyCode()==wx.WXK_F2 and self.cur_widget and self._label_editable():
             # start label editing
             self.EditLabel( self.cur_widget.node.item )
+            return True
+        if isinstance(self.FindFocus(), wx.TextCtrl):
+            # currently editing
+            event.Skip()
             return True
         return False
 
