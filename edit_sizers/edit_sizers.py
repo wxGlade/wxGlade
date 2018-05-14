@@ -2462,12 +2462,14 @@ def builder(parent, sizer, pos, number=[1]):
     else:
         orientation = wx.VERTICAL
     num = dialog.num.GetValue()
+    wrap = HAVE_WRAP_SIZER and dialog.checkbox_wrap.GetValue() or False
+    label = dialog.label.GetValue()
+    static = dialog.checkbox_static.GetValue()
 
     dialog.Destroy()
     if res != wx.ID_OK: return
     with parent.frozen():
-        _builder( parent, sizer, pos, orientation, num, dialog.checkbox_static.GetValue(), dialog.label.GetValue(),
-                  dialog.checkbox_wrap.GetValue() )
+        _builder( parent, sizer, pos, orientation, num, static, label, wrap )
 
 
 def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
