@@ -904,9 +904,11 @@ class SizerBase(Sizer, np.PropertyOwner):
     def remove(self):
         if self.toplevel:
             parent = self.window
-        self._remove()
+        slot = self._remove()
         if self.toplevel:
             misc.set_focused_widget(parent)
+        else:
+            misc.set_focused_widget(slot)
 
     def Destroy(self):
         GenButton.Destroy(self)
