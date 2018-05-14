@@ -1009,7 +1009,7 @@ class EditStylesMixin(np.PropertyOwner):
         # set code generator only once per class
         if not self.codegen:
             self.codegen = common.code_writers['python'].copy()
-            self.codegen.for_version = wx.VERSION[0:2]
+            self.codegen.for_version = compat.version
             EditStylesMixin.codegen = self.codegen
 
         try:
