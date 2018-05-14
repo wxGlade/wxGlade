@@ -13,7 +13,8 @@ class WindowDialog(wx.Dialog):
     # dialog for builder function
     parent = parent_property = None  # used by StandaloneOrChildDialog
     def __init__(self, klass, base_classes=None, message="Select Class", toplevel=True):
-        wx.Dialog.__init__(self, None, -1, _(message))
+        pos = wx.GetMousePosition()
+        wx.Dialog.__init__(self, common.main, -1, _(message), pos)
 
         self.standalone = self.base = None
 
@@ -66,7 +67,6 @@ class WindowDialog(wx.Dialog):
         self.SetAutoLayout(True)
         self.SetSizer(szr)
         szr.Fit(self)
-        self.CenterOnScreen()
 
     def get_next_class_name(self, name):
         #names = [c.widget.klass for c in common.app_tree.root.children or []]
