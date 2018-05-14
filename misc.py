@@ -383,7 +383,12 @@ def _cancel():
 def navigate(up):
     # XXX reafactor this into Tree?
     # must be a design window
-    focused_item = focused_widget.node.item
+    if focused_widget:
+        focused_item = focused_widget.node.item
+    else:
+        focused_item = common.app_tree.GetFocusedItem()
+    if focused_item is None:
+        return
     if up:
         item = common.app_tree.GetPrevSibling(focused_item)
         if not item:
