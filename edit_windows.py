@@ -1055,6 +1055,9 @@ class EditStylesMixin(np.PropertyOwner):
         self.create_widget()
         compat.SizerItem_SetWindow(si, self.widget)
         compat.DestroyLater(old_widget)
+        if self.__class__.__name__=="EditTextCtrl":
+            # GetBestSize often returns too large value otherwise
+            si.SetMinSize(-1,-1)
         self.sizer.item_properties_modified(self)
 
         self.finish_widget_creation(re_add=False)
