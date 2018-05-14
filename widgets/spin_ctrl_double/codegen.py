@@ -25,6 +25,13 @@ class PythonSpinCtrlDoubleGenerator(wcodegen.PythonWidgetCodeWriter):
         self.tmpl_dict['maxValue'] = maxValue
         return
 
+    def get_more_properties_code(self, obj):
+        ret = []
+        if obj.properties["increment"].is_active():
+            name = self.tmpl_dict['name']
+            ret.append( '%s.SetIncrement(%s)\n'%(name, obj.increment) )
+        return ret
+
 
 
 class CppSpinCtrlDoubleGenerator(wcodegen.CppWidgetCodeWriter):
@@ -45,6 +52,12 @@ class CppSpinCtrlDoubleGenerator(wcodegen.CppWidgetCodeWriter):
         self.tmpl_dict['maxValue'] = maxValue
         return
 
+    def get_more_properties_code(self, obj):
+        ret = []
+        if obj.properties["increment"].is_active():
+            name = self.tmpl_dict['name']
+            ret.append( '%s.SetIncrement(%s);\n'%(name, obj.increment) )
+        return ret
 
 
 def xrc_code_generator(obj):

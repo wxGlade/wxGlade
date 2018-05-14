@@ -17,7 +17,7 @@ import new_properties as np
 class EditSpinCtrlDouble(ManagedBase, EditStylesMixin):
     "Class to handle wxSpinCtrlDouble objects"
     # XXX unify with EditSpinButton?
-    _PROPERTIES = ["Widget", "range", "value", "style"]
+    _PROPERTIES = ["Widget", "range", "value", "increment", "style"]
     PROPERTIES = ManagedBase.PROPERTIES + _PROPERTIES + ManagedBase.EXTRA_PROPERTIES
 
     def __init__(self, name, parent, id, sizer, pos):
@@ -27,13 +27,16 @@ class EditSpinCtrlDouble(ManagedBase, EditStylesMixin):
         # initialise instance properties
         self.range = np.FloatRangePropertyA( "0.0, 100.0" )
         self.value = np.SpinDoublePropertyA(0, val_range=(0.0,100.0), immediate=True, default_value="")
+        self.increment = np.SpinDoublePropertyD(1.0, val_range=(0.0,100.0), immediate=True, default_value=1.0)
 
     def create_widget(self):
         mi,ma = self.properties["range"].get_tuple()
+        kwargs = {}
         if self.properties["value"].is_active():
-            self.widget = wx.SpinCtrlDouble(self.parent.widget, self.id, min=mi, max=ma, initial=self.value)
-        else:
-            self.widget = wx.SpinCtrlDouble(self.parent.widget, self.id, min=mi, max=ma)
+            kwargs["initial"] = self.value
+        if self.properties["increment"].is_active():
+            kwargs["inc"] = self.value
+        self.widget = wx.SpinCtrlDouble(self.parent.widget, self.id, min=mi, max=ma, **kwargs)
 
     def finish_widget_creation(self, sel_marker_parent=None, re_add=True):
         ManagedBase.finish_widget_creation(self, sel_marker_parent, re_add)
@@ -45,6 +48,10 @@ class EditSpinCtrlDouble(ManagedBase, EditStylesMixin):
             mi,ma = self.properties["range"].get_tuple()
             self.widget.SetRange(mi, ma)
             self.properties["value"].set_range(mi,ma)
+            self.properties["increment"].set_range(mi,ma)
+
+        if not modified or "increment" in modified and self.widget:
+            self.widget.SetIncrement(self.increment)
 
         if not modified or "value" in modified or "range" in modified:
             # check that value is inside range

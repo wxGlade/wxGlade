@@ -26,6 +26,14 @@ class LispSpinCtrlDoubleGenerator(wcodegen.LispWidgetCodeWriter):
         self.tmpl_dict['maxValue'] = maxValue
         return
 
+    def get_more_properties_code(self, obj):
+        ret = []
+        if obj.properties["increment"].is_active():
+            klass = self.tmpl_dict['klass']
+            name = self.tmpl_dict['name']
+            ret.append( '(%s_SetIncrement %s %s)\n'%(klass, name, obj.increment) )
+        return ret
+
 
 def initialize():
     klass = 'wxSpinCtrlDouble'
