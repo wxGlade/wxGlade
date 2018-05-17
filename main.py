@@ -714,6 +714,7 @@ class wxGladeFrame(wx.Frame):
             toplevel.preview(refresh=True)
 
     def show_tree(self):
+        if self.IsIconized(): self.Iconize(False)
         common.app_tree.SetFocus()
 
     def show_props_window(self, section=None):
@@ -721,6 +722,7 @@ class wxGladeFrame(wx.Frame):
         if not self.property_panel.notebook: return
         # current page: self.property_panel.notebook.Selection
         # self.property_panel.notebook.FindWindowByName("Layout")
+        if self.IsIconized(): self.Iconize(False)
         self.property_panel.pagenames
         if not section:
             self.property_panel.notebook.SetFocus()
