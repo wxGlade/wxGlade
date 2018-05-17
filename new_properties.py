@@ -2425,6 +2425,8 @@ class GridProperty(Property):
         event.Skip()
         # resize last column to fill the space
         if not self.grid: return
+        #self.grid.ShowScrollbars(wx.SHOW_SB_DEFAULT,wx.SHOW_SB_NEVER)  # keep horizontal scroll bar
+        self.grid.ShowScrollbars(wx.SHOW_SB_NEVER,wx.SHOW_SB_NEVER)  # no scroll bar
         if self._width_delta is None:
             self._width_delta = self.grid.GetParent().GetSize()[0] - self.grid.GetSize()[0] + 30
         self.grid.SetColSize(len(self.col_defs)-1, 10)
