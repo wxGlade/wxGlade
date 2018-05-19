@@ -137,8 +137,11 @@ class wxGladePropertyPanel(wx.Panel):
 
     def create_editor(self, edit_widget):
         # fill the frame with a notebook of property editors
+        
         if not self.notebook: return  # already deleted
         self.current_widget_class = edit_widget.__class__
+        if wx.Platform == "__WXMAC__":
+            focus_before = self.FindFocus()
         self.notebook.Hide()
 
         # remember the notebook page to be selected
@@ -194,6 +197,9 @@ class wxGladePropertyPanel(wx.Panel):
             self.notebook.SetSelection(0)
 
         self.notebook.Show()
+
+        if wx.Platform == "__WXMAC__" and focus_before is common.app_tree:
+            focus_before.SetFocus()
 
     def start_page(self, name):
         # create a ScrolledWindow and a Panel; with only ScrolledWindow, scrolling on gtk 3 does not work
