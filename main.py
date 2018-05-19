@@ -736,6 +736,7 @@ class wxGladeFrame(wx.Frame):
             if not section in self.property_panel.pagenames:
                 return
             self.property_panel.notebook.ChangeSelection( self.property_panel.pagenames.index(section) )
+        self.Raise()
 
     def show_design_window(self):
         toplevel = self._get_toplevel()
