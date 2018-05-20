@@ -432,7 +432,7 @@ class BaseWidgetWriter(StylesMixin, BaseCodeWriter):
                 # constructor argument
                 self.tmpl_dict[p_name] = self.generate_code_bitmap(value)
                 have_constructor_argument = True
-            elif value:
+            elif value and (not p.min_version or self.codegen.for_version>=p.min_version):
                 # property to be set after construction, e.g.: ...SetBitmapDisabled(disabled_bitmap)
                 self.tmpl_dict[p_name] = self.generate_code_bitmap(value)
                 setname = p_name.replace( "_bitmap", "").capitalize()

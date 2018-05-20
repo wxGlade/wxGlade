@@ -39,11 +39,11 @@ class EditButton(ManagedBase, EditStylesMixin, BitmapMixin):
         self.default   = np.CheckBoxProperty(False, default_value=False)
         self.stockitem = np.ComboBoxPropertyD(self.STOCKITEMS[0], choices=self.STOCKITEMS)
 
-        self.bitmap          = np.BitmapPropertyD()
-        self.disabled_bitmap = np.BitmapPropertyD()
-        self.pressed_bitmap  = np.BitmapPropertyD()
-        self.current_bitmap  = np.BitmapPropertyD()
-        self.focus_bitmap    = np.BitmapPropertyD()
+        self.bitmap          = np.BitmapPropertyD(min_version=(3,0))
+        self.disabled_bitmap = np.BitmapPropertyD(min_version=(3,0))
+        self.pressed_bitmap  = np.BitmapPropertyD(min_version=(3,0))
+        self.current_bitmap  = np.BitmapPropertyD(min_version=(3,0))
+        self.focus_bitmap    = np.BitmapPropertyD(min_version=(3,0))
 
     def create_widget(self):
         stockitem_p = self.properties["stockitem"]

@@ -30,9 +30,9 @@ class EditBitmapButton(ManagedBase, EditStylesMixin, BitmapMixin):
         # initialise instance properties
         self.bitmap          = np.BitmapProperty(bmp_file)
         self.disabled_bitmap = np.BitmapPropertyD("")
-        self.pressed_bitmap  = np.BitmapPropertyD()
-        self.current_bitmap  = np.BitmapPropertyD()
-        self.focus_bitmap    = np.BitmapPropertyD()
+        self.pressed_bitmap  = np.BitmapPropertyD(min_version=(3,0))
+        self.current_bitmap  = np.BitmapPropertyD(min_version=(3,0))
+        self.focus_bitmap    = np.BitmapPropertyD(min_version=(3,0))
         self.default         = np.CheckBoxProperty(False, default_value=False)
 
     def create_widget(self):
