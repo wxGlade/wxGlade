@@ -55,6 +55,7 @@ class Property(object):
     CONTROLNAMES = ["enabler"]  # for activation; also these attributes will be set to None when the editor is destroyed
     GROW = False # if this is True, no spacer is added after the control, so it may grow down to the lower edge
     HAS_DATA = True
+    min_version = None  # can be overwritten in instances; currently only used by BitmapProperty
     def __init__(self, value, default_value=_DefaultArgument, name=None):#, write_always=False):
         self._logger = logging.getLogger(self.__class__.__name__)
         self.value = value
@@ -306,17 +307,26 @@ class Property(object):
         import inspect
 
         classes = inspect.getmro(self.owner.__class__)
+        help = None
         for cls in classes:
-            if not hasattr(cls, "_PROPERTY_HELP"): continue
-            if self.name in cls._PROPERTY_HELP:
-                return cls._PROPERTY_HELP[self.name]
-        return None
+            if hasattr(cls, "_PROPERTY_HELP") and self.name in cls._PROPERTY_HELP:
+                help = cls._PROPERTY_HELP[self.name]
+                break
+        if self.min_version:
+            min_version_s = ".".join( (str(v) for v in self.min_version) )
+            min_version_s = "This property is only supported on wx %s or later."%min_version_s
+            if help:
+                help = "%s\n\n%s"%(help, min_version_s)
+        return help
     def _set_tooltip(self, *controls):
         tooltip = self._find_tooltip()
         if not tooltip: return
         for c in controls:
-            if not c or c.GetToolTip(): continue
-            compat.SetToolTip(c, tooltip)
+            if not c: continue
+            if not c.GetToolTip():
+                compat.SetToolTip(c, tooltip)
+            if self.min_version and isinstance(c, wx.TextCtrl):
+                c.SetForegroundColour(wx.BLUE)
 
 
 # these classes are not really used, as they don't have an editor:
@@ -1834,10 +1844,11 @@ class FileNamePropertyD(FileNameProperty):
 
 
 class BitmapProperty(FileNameProperty):
-    def __init__(self, value="", name=None):
+    def __init__(self, value="", name=None, min_version=None):
         self._size = self._warning = self._error = None
         style = wx.FD_OPEN | wx.FD_FILE_MUST_EXIST
         FileNameProperty.__init__(self, value, style, "", name)
+        self.min_version = min_version
 
     def set_bitmap(self, bmp):
         if bmp is wx.NullBitmap:
@@ -1886,9 +1897,10 @@ class BitmapProperty(FileNameProperty):
 
 class BitmapPropertyD(BitmapProperty):
     deactivated = True
-    def __init__(self, value="", name=None):
+    def __init__(self, value="", name=None, min_version=None):
         self._size = self._warning = self._error = None
         style = wx.FD_OPEN | wx.FD_FILE_MUST_EXIST
+        self.min_version = min_version
         FileNameProperty.__init__(self, value, style, '', name)
 
 
