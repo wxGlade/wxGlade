@@ -1,3 +1,18 @@
+Version 0.9
+General:
+ - new user interface; use Alt-1,-2,-3, the menu or the toolbar to switch between layouts
+ - many new keyboard shortcuts
+
+Widgets:
+ - WrapSizer
+ - SpinCtrlDouble
+ - Splitter: ask user whether to add panels; add support for SashGravity
+ - StaticText: support for Wrap property
+ 
+Generated Code:
+ - option to remove all the BEGIN/END wxGlade comments in the generated code (only with overwrite True)
+
+
 Version 0.8.0
 General:
   - support for wxPython Phoenix and Python 3
