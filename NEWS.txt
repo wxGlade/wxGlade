@@ -5,9 +5,11 @@ General:
 
 Widgets:
  - WrapSizer
+ - SearchCtrl
  - SpinCtrlDouble
  - Splitter: ask user whether to add panels; add support for SashGravity
  - StaticText: support for Wrap property
+ - Button, ToggleButton, BitmapButton: support more bitmap properties (e.g. BitmapCurrent)
  
 Generated Code:
  - option to remove all the BEGIN/END wxGlade comments in the generated code (only with overwrite True)

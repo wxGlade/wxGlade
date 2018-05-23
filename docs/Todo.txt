@@ -85,6 +85,7 @@ done:
  * GridBagSizer
  * WrapSizer
  * SpinCtrlDouble
+ * SearchCtrl
 probably not:
  * StdDialogButtonSizer
  * Ribbons
