@@ -668,11 +668,15 @@ class ManagedBase(WindowBase):
             if not self.sizer.is_virtual():
                 self.sizer.item_properties_modified(self, modified)
 
-    def _set_widget_best_size(self):
+    def _set_widget_best_size(self, resize_first=None):
         # called when the widget has been modified and this might affect the automatic size
         if not self.widget: return
         size_p = self.properties["size"]
         if size_p.is_active() and size_p.get() != "-1, -1": return # fixed size
+        if resize_first is not None:
+            # currently used by Button when the label size is reduced
+            # maybe refactoring is required; search for RRR
+            self.widget.SetMinSize(resize_first)
         # find best size, apply; display if size property is not active
         best_size = self.widget.GetBestSize()
         self.sizer.set_item_best_size(self, best_size)
@@ -1057,6 +1061,7 @@ class EditStylesMixin(np.PropertyOwner):
         compat.DestroyLater(old_widget)
         if self.__class__.__name__=="EditTextCtrl":
             # GetBestSize often returns too large value otherwise
+            # maybe refactoring is required; search for RRR
             si.SetMinSize(-1,-1)
         self.sizer.item_properties_modified(self)
 

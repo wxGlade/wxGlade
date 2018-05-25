@@ -1056,6 +1056,7 @@ class SizerBase(Sizer, np.PropertyOwner):
         if item.IsWindow():
             # if widget is a re-created TextCtrl, it's size has been set to -1,-1 in _set_widget_style
             # if this has to be done for others as well, we need to refactor
+            # maybe refactoring is required; search for RRR
             best_size = widget.widget.GetBestSize()
             size_p = widget.properties["size"]
             if size_p.is_active():
@@ -1070,6 +1071,7 @@ class SizerBase(Sizer, np.PropertyOwner):
                 if size_was_reduced and  widget.__class__.__name__ in ("EditPanel","CustomWidget"):
                     # if proportion is reduced and no size defined, set to a minimum size of 20,20
                     # as GetBestSize returns the current size
+                    # maybe refactoring is required; search for RRR
                     w,h = 20,20
                 else:
                     w,h = best_size

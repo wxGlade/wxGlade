@@ -88,7 +88,9 @@ class EditButton(ManagedBase, EditStylesMixin, BitmapMixin):
 
         BitmapMixin._properties_changed(self, modified)
 
-        if resize and self.widget: self._set_widget_best_size()
+        if resize and self.widget:
+            # maybe refactoring is required; search for RRR
+            self._set_widget_best_size(resize_first=(10,10))
 
         EditStylesMixin.properties_changed(self, modified)
         ManagedBase.properties_changed(self, modified)
