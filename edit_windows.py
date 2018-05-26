@@ -668,16 +668,13 @@ class ManagedBase(WindowBase):
             if not self.sizer.is_virtual():
                 self.sizer.item_properties_modified(self, modified)
 
-    def _set_widget_best_size(self, resize_first=None):
+    def _set_widget_best_size(self):
         # called when the widget has been modified and this might affect the automatic size
         if not self.widget: return
         size_p = self.properties["size"]
         if size_p.is_active() and size_p.get() != "-1, -1": return # fixed size
-        if resize_first is not None:
-            # currently used by Button when the label size is reduced
-            # maybe refactoring is required; search for RRR
-            self.widget.SetMinSize(resize_first)
         # find best size, apply; display if size property is not active
+        self.widget.SetMinSize( (-1,-1) )  # otherwise the size would often not be reduced, e.g. for buttons
         best_size = self.widget.GetBestSize()
         self.sizer.set_item_best_size(self, best_size)
         if not size_p.is_active():
@@ -1049,27 +1046,25 @@ class EditStylesMixin(np.PropertyOwner):
 
         # some widgets can't be updated, e.g. Gauge can't be switched between horizontal and vertical after creation
         # this is for ManagedBase derived classes only
-        focused = misc.focused_widget is self
-        if self.sel_marker:
-            self.sel_marker.Destroy()
-            self.sel_marker = None
-        old_widget = self.widget
-        old_widget.Hide()
-        si = self.sizer.widget.GetItem(old_widget)
-        self.create_widget()
-        compat.SizerItem_SetWindow(si, self.widget)
-        compat.DestroyLater(old_widget)
-        if self.__class__.__name__=="EditTextCtrl":
-            # GetBestSize often returns too large value otherwise
-            # maybe refactoring is required; search for RRR
-            si.SetMinSize(-1,-1)
-        self.sizer.item_properties_modified(self)
+        with self.frozen():
+            focused = misc.focused_widget is self
+            if self.sel_marker:
+                self.sel_marker.Destroy()
+                self.sel_marker = None
+            old_widget = self.widget
+            old_widget.Hide()
+            si = self.sizer.widget.GetItem(old_widget)
+            self.create_widget()
+            compat.SizerItem_SetWindow(si, self.widget)
+            self.widget.GetParent().Refresh()
+            compat.DestroyLater(old_widget)
+            self.sizer.item_properties_modified(self)
 
-        self.finish_widget_creation(re_add=False)
-        self.sizer.layout()
-        if focused:
-            misc.focused_widget = self
-            if self.sel_marker: self.sel_marker.Show(True)
+            self.finish_widget_creation(re_add=False)
+            self.sizer.layout()
+            if focused:
+                misc.focused_widget = self
+                if self.sel_marker: self.sel_marker.Show(True)
 
 
     @decorators.memoize

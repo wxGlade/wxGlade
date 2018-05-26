@@ -59,7 +59,6 @@ class EditButton(ManagedBase, EditStylesMixin, BitmapMixin):
         "update label (and size if label/stockitem have changed)"
 
         label_modified = not modified or "label" in modified
-        resize = False
 
         if not modified or "stockitem" in modified:
             # if stockitem is set, label needs to be deactivated and window id is wxID_...
@@ -72,7 +71,6 @@ class EditButton(ManagedBase, EditStylesMixin, BitmapMixin):
                 l = ButtonStockItems.stock_ids[self.stockitem]
                 if self.widget:
                     self.widget.SetLabel(l)
-                    resize = True
             else:
                 self.properties["label"].set_blocked(False)
                 #self.properties["id"].default_value = "wxID_ANY"
@@ -81,17 +79,12 @@ class EditButton(ManagedBase, EditStylesMixin, BitmapMixin):
         if label_modified and self.properties["label"].is_active():
             if self.widget:
                 self.widget.SetLabel(self.label)
-                resize = True
 
         if label_modified or "name" in modified:
             common.app_tree.refresh(self.node, refresh_label=True)
 
         BitmapMixin._properties_changed(self, modified)
-
-        if resize and self.widget:
-            # maybe refactoring is required; search for RRR
-            self._set_widget_best_size(resize_first=(10,10))
-
+        self._set_widget_best_size()
         EditStylesMixin.properties_changed(self, modified)
         ManagedBase.properties_changed(self, modified)
 

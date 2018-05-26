@@ -1054,9 +1054,7 @@ class SizerBase(Sizer, np.PropertyOwner):
 
         # set either specified size or GetBestSize
         if item.IsWindow():
-            # if widget is a re-created TextCtrl, it's size has been set to -1,-1 in _set_widget_style
-            # if this has to be done for others as well, we need to refactor
-            # maybe refactoring is required; search for RRR
+            widget.widget.SetMinSize( (-1,-1) )  # needed e.g. for TextCtrl after a style change
             best_size = widget.widget.GetBestSize()
             size_p = widget.properties["size"]
             if size_p.is_active():

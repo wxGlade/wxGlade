@@ -55,12 +55,8 @@ class EditToggleButton(ManagedBase, EditStylesMixin, BitmapMixin):
                 self._set_widget_best_size()
             common.app_tree.refresh(self.node, refresh_label=True)
 
-        if self.widget and modified:
-            BitmapMixin._properties_changed(self, modified)
-            if self.label and any( "bitmap" in p_name for p_name in modified):
-                # maybe refactoring is required; search for RRR
-                self._set_widget_best_size(resize_first=(10,10))
-
+        BitmapMixin._properties_changed(self, modified)
+        self._set_widget_best_size()
         EditStylesMixin.properties_changed(self, modified)
         ManagedBase.properties_changed(self, modified)
 
