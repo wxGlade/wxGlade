@@ -573,7 +573,9 @@ class XmlWidgetObject(object):
             if pos is not None: pos = int(pos)
             self.obj = common.widgets_from_xml[base](attrs, parent, sizer, sizeritem, pos)
             p = self.obj.properties.get("class")
-            if p: p.set(self.klass)
+            if p:
+                p.set(self.klass)
+                common.app_tree.refresh(self.obj.node)
 
             if isinstance(self.obj, edit_sizers.SizerBase):
                 self.in_sizers = True
