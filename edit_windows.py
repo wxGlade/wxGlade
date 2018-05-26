@@ -1056,7 +1056,6 @@ class EditStylesMixin(np.PropertyOwner):
             si = self.sizer.widget.GetItem(old_widget)
             self.create_widget()
             compat.SizerItem_SetWindow(si, self.widget)
-            self.widget.GetParent().Refresh()
             compat.DestroyLater(old_widget)
             self.sizer.item_properties_modified(self)
 

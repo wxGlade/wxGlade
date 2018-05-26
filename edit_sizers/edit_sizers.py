@@ -30,6 +30,7 @@ def _frozen(method):
             return method(sizer, *args)
         finally:
             if toplevel:
+                toplevel.Refresh()
                 toplevel.Thaw()
     return _frozen
 
