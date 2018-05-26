@@ -1057,7 +1057,7 @@ class EditStylesMixin(np.PropertyOwner):
             self.create_widget()
             compat.SizerItem_SetWindow(si, self.widget)
             compat.DestroyLater(old_widget)
-            self.sizer.item_properties_modified(self)
+            self.sizer.item_properties_modified(self)  # will call toplevel Refresh as well
 
             self.finish_widget_creation(re_add=False)
             self.sizer.layout()
