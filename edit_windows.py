@@ -1038,7 +1038,11 @@ class EditStylesMixin(np.PropertyOwner):
         new_style = self.style
         if old_style == new_style: return
 
-        if not self.recreate_on_style_change:
+        recreate = self.recreate_on_style_change
+        if self.base == "wxButton" and (old_style & wx.BU_EXACTFIT != new_style & wx.BU_EXACTFIT):
+            recreate = True  # workaround
+
+        if not recreate:
             # update style without re-creating the widget
             self.widget.SetWindowStyleFlag(new_style)
             self.widget.Refresh()

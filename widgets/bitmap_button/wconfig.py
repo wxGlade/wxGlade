@@ -19,8 +19,13 @@ config = {
         'wxBU_TOP':      {'desc':_('Aligns the bitmap label to the top of the button. WIN32 only.'), },
         'wxBU_EXACTFIT': {'desc': _('Creates the button as small as possible instead of making it of the standard size '
                                     '(which is the default behaviour ).'), },
-    },
+        'wxBU_NOTEXT':   {'desc':_('Disables the display of the text label in the button even if it has one '
+                                   'or its id is one of the standard stock ids with an associated label: '
+                                   'without using this style a button which is only supposed to show a bitmap but '
+                                   'uses a standard id would display a label too. '), },
+        },
+    'default_style': 'wxBU_EXACTFIT|wxBU_NOTEXT|wxBU_AUTODRAW',
     'style_list': ['wxBU_AUTODRAW', 'wxBU_LEFT', 'wxBU_RIGHT', 'wxBU_TOP', 'wxBU_BOTTOM', 'wxBU_EXACTFIT',
-                   'wxBORDER_NONE', 'wxNO_BORDER'], # NO_BORDER is obsolete
+                   'wxBU_NOTEXT', 'wxBORDER_NONE', 'wxNO_BORDER'], # NO_BORDER is obsolete
     'events': {'EVT_BUTTON': {}, },
 }
