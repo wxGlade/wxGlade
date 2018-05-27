@@ -79,6 +79,8 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
     if sizer is None or sizeritem is None:
         raise XmlParsingError(_("sizer or sizeritem object cannot be None"))
     button = EditBitmapButton(label, parent, wx.NewId(), '', sizer, pos)
+    if attrs.input_file_version and attrs.input_file_version<(0,9):
+        button.properties["style"].set_to_default()
     #sizer.set_item(button.pos, proportion=sizeritem.proportion, span=sizeritem.span, flag=sizeritem.flag, border=sizeritem.border)
     node = Node(button)
     button.node = node

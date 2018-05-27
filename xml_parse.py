@@ -176,7 +176,9 @@ class XmlParser(ContentHandler):
 class XmlWidgetBuilder(XmlParser):
     "Parser used to build the tree of widgets from a given XML file"
 
-    def __init__(self):
+    def __init__(self, filename=None, input_file_version=None):
+        self.filename = filename
+        self.input_file_version = input_file_version
         XmlParser.__init__(self)
 
     def startElement(self, name, attrs):
@@ -523,6 +525,8 @@ class XmlWidgetObject(object):
     def __init__(self, attrs, parser):
         # initialise instance logger
         self._logger = logging.getLogger(self.__class__.__name__)
+
+        attrs.input_file_version = parser.input_file_version  # for handling backwards compatibility on loading
 
         self.prop_handlers = Stack()  # a stack of custom handler functions to set properties of this object
         self.parser = parser
