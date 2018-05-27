@@ -239,8 +239,8 @@
         ;;; Tool Bar end
         (setf (slot-notebook-1 obj) (wxNotebook_Create (slot-top-window obj) wxID_ANY -1 -1 -1 -1 wxNB_BOTTOM))
         (setf (slot-notebook-1-wxBitmapButton obj) (wxPanel_Create (slot-notebook-1 obj) wxID_ANY -1 -1 -1 -1 wxTAB_TRAVERSAL))
-        (setf (slot-bitmap-button-icon1 obj) (wxBitmapButton_Create (slot-notebook-1-wxBitmapButton obj) wxID_ANY (wxBitmap_CreateLoad "icon.xpm" wxBITMAP_TYPE_ANY) -1 -1 -1 -1 0))
-        (setf (slot-bitmap-button-empty1 obj) (wxBitmapButton_Create (slot-notebook-1-wxBitmapButton obj) wxID_ANY wxBitmap_Create(10 10) -1 -1 -1 -1 0))
+        (setf (slot-bitmap-button-icon1 obj) (wxBitmapButton_Create (slot-notebook-1-wxBitmapButton obj) wxID_ANY (wxBitmap_CreateLoad "icon.xpm" wxBITMAP_TYPE_ANY) -1 -1 -1 -1 wxBU_EXACTFIT|wxBU_NOTEXT|wxBU_AUTODRAW))
+        (setf (slot-bitmap-button-empty1 obj) (wxBitmapButton_Create (slot-notebook-1-wxBitmapButton obj) wxID_ANY wxBitmap_Create(10 10) -1 -1 -1 -1 wxBU_EXACTFIT|wxBU_NOTEXT|wxBU_AUTODRAW))
         (setf (slot-bitmap-button-icon2 obj) (wxBitmapButton_Create (slot-notebook-1-wxBitmapButton obj) wxID_ANY (wxBitmap_CreateLoad "icon.xpm" wxBITMAP_TYPE_ANY) -1 -1 -1 -1 (logior wxBORDER_NONE wxBU_BOTTOM)))
         (setf (slot-bitmap-button-art obj) (wxBitmapButton_Create (slot-notebook-1-wxBitmapButton obj) wxID_ANY wxArtProvider_GetBitmap(wxART_GO_UP wxART_OTHER wxSize_Create(32 32)) -1 -1 -1 -1 (logior wxBORDER_NONE wxBU_BOTTOM)))
         (setf (slot-notebook-1-wxButton obj) (wxPanel_Create (slot-notebook-1 obj) wxID_ANY -1 -1 -1 -1 wxTAB_TRAVERSAL))
