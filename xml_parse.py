@@ -349,6 +349,9 @@ class ProgressXmlWidgetBuilder(XmlWidgetBuilder):
                 self.progress = None
 
 
+class _own_dict(dict):
+    pass  # just be able to add attributes
+
 
 class ClipboardXmlWidgetBuilder(XmlWidgetBuilder):
     """Parser used to cut&paste widgets.
@@ -473,7 +476,7 @@ class ClipboardXmlWidgetBuilder(XmlWidgetBuilder):
                 newname = oldname
             else:
                 newname = self._get_new_name(oldname)
-            attrs = dict(attrs)
+            attrs = _own_dict(attrs)
             attrs['name'] = newname
             if newname!=oldname:
                 attrs['original_name'] = oldname  # for finding position in a virtual sizer
