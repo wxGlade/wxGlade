@@ -275,6 +275,7 @@ class CPPCodeWriter(BaseLangCodeWriter, wcodegen.CppMixin):
                             "%(style)s, %(weight)s, %(underlined)s, wxT(%(face)s)));\n",
         'tooltip':          "%(objname)sSetToolTip(%(tooltip)s);\n",
         'wxcolour':         "wxColour(%(value)s)",
+        'wxnullcolour':     "wxNullColour",
         'wxsystemcolour':   "wxSystemSettings::GetColour(%(value)s)",
         }
 

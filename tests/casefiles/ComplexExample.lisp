@@ -137,6 +137,7 @@
         (wxStatusBar_SetStatusText (slot-Mp3-To-Ogg-statusbar obj) (_"Mp3_To_Ogg_statusbar") 0)
         (wxStatusBar_SetStatusText (slot-Mp3-To-Ogg-statusbar obj) "" 1)
         (wxToolBar_Realize (slot-Mp3-To-Ogg-toolbar obj))
+        (wxWindow_SetBackgroundColour (slot-text-ctrl-1 obj) wxNullColour)
         (wxRadioBox_SetSelection (slot-rbx-sampling-rate obj) 0)
         (wxWindow_SetToolTip (slot-cbx-love obj)(_"Yes!\nWe ♥ it!"))
         (wxCheckBox_SetValue (slot-cbx-love obj) 1)

@@ -179,7 +179,8 @@ class PythonCodeWriter(BaseLangCodeWriter, wcodegen.PythonMixin):
                         'setfont':          "%(objname)s.SetFont(%(cnfont)s(%(size)s, %(family)s, "
                                             "%(style)s, %(weight)s, %(underlined)s, %(face)s))\n",
                         'tooltip':          "%(objname)s.SetToolTipString(%(tooltip)s)\n",
-                        'wxcolour':         "wxColour(%(value)s)"}
+                        'wxcolour':         "wxColour(%(value)s)",
+                        'wxnullcolour':     "wxNullColour"}
     if compat.IS_CLASSIC:
         _code_statements['wxsystemcolour'] = "wxSystemSettings_GetColour(%(value)s)"
         _code_statements['tooltip_3'     ] = "%(objname)s.SetToolTip(wx.ToolTip(%(tooltip)s))\n"

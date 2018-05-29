@@ -81,6 +81,7 @@ class PyOgg2_MyFrame(wx.Frame):
         for i in range(len(Mp3_To_Ogg_statusbar_fields)):
             self.Mp3_To_Ogg_statusbar.SetStatusText(Mp3_To_Ogg_statusbar_fields[i], i)
         self.Mp3_To_Ogg_toolbar.Realize()
+        self.text_ctrl_1.SetBackgroundColour(wx.NullColour)
         self.rbx_sampling_rate.SetSelection(0)
         self.cbx_love.SetToolTipString(_(u"Yes!\nWe \u2665 it!"))
         self.cbx_love.SetValue(1)

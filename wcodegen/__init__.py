@@ -181,7 +181,7 @@ class PerlMixin(BaseLanguageMixin):
         'wxSTANDARD_CURSOR', 'wxHOURGLASS_CURSOR', 'wxCROSS_CURSOR',
 
         'wxTheClipboard', 'wxFormatInvalid', 'wxThePrintPaperDatabase',
-        'wxNullAnimation', 'wxNullBitmap', 'wxNullIcon', 'wxNullColour',
+        'wxNullAnimation', 'wxNullBitmap', 'wxNullIcon',
         'wxNullColour', 'wxNullCursor', 'wxNullFont', 'wxNullPen',
         'wxNullBrush', 'wxNullPalette', 'wxNullAcceleratorTable',
 

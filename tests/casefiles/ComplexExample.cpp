@@ -85,6 +85,7 @@ void PyOgg2_MyFrame::set_properties()
     for(int i = 0; i < Mp3_To_Ogg_statusbar->GetFieldsCount(); ++i) {
         Mp3_To_Ogg_statusbar->SetStatusText(Mp3_To_Ogg_statusbar_fields[i], i);
     }
+    text_ctrl_1->SetBackgroundColour(wxNullColour);
     rbx_sampling_rate->SetSelection(0);
     cbx_love->SetToolTip(_("Yes!\nWe ♥ it!"));
     cbx_love->SetValue(1);

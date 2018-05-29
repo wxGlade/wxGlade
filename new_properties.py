@@ -1943,9 +1943,12 @@ class ColorProperty(DialogProperty):
     def __init__(self, value="", multiline=False, strip=True, default_value=wx.NullColour, name=None):
         DialogProperty.__init__(self, value, multiline, strip, default_value, name)
     def _create_dialog(self):
+        pos = self.button.GetScreenPosition() + (10,10)
         if self.dialog is None:
             from color_dialog import wxGladeColorDialog
-            self.dialog = wxGladeColorDialog(self.str_to_colors)
+            self.dialog = wxGladeColorDialog(self.str_to_colors, pos=pos)
+        else:
+            self.dialog.SetPosition(pos)
         self.dialog.set_value(self.value or "")
         return self.dialog
 
@@ -1959,6 +1962,7 @@ class ColorProperty(DialogProperty):
         if not self.is_active(): return self.default_value
         color = self.get()
         if color is None: return self.default_value
+        if color=="wxNullColour": return wx.NullColour
         if color in self.str_to_colors:
             # e.g. 'wxSYS_COLOUR_SCROLLBAR'
             return compat.wx_SystemSettings_GetColour(self.str_to_colors[color])

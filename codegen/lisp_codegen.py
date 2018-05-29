@@ -165,6 +165,7 @@ class LispCodeWriter(BaseLangCodeWriter, wcodegen.LispMixin):
                             "%(style)s %(weight)s %(underlined)s %(face)s wxFONTENCODING_DEFAULT))\n",
         'tooltip':          "(wxWindow_SetToolTip %(objname)s%(tooltip)s)\n",
         'wxcolour':         "(wxColour_CreateRGB %(value)s)",
+        'wxnullcolour':     "wxNullColour",
         'wxsystemcolour':   "(wxSystemSettings_GetColour %(value)s)",
         }
 

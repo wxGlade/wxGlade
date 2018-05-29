@@ -179,6 +179,7 @@ class PerlCodeWriter(BaseLangCodeWriter, wcodegen.PerlMixin):
         'tooltip':          "%(objname)s->SetToolTipString(%(tooltip)s);\n",
         'tooltip_3':        "%(objname)s->SetToolTip(%(tooltip)s);\n",
         'wxcolour':         "Wx::Colour->new(%(value)s)",
+        'wxnullcolour':     "Wx::NullColour",
         'wxsystemcolour':   "Wx::SystemSettings::GetColour(%(value)s)",
         }
 

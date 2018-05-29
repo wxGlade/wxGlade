@@ -112,6 +112,7 @@ sub __set_properties {
         for 0 .. $#Mp3_To_Ogg_statusbar_fields ;
     }
     $self->{Mp3_To_Ogg_toolbar}->Realize();
+    $self->{text_ctrl_1}->SetBackgroundColour(Wx::NullColour);
     $self->{rbx_sampling_rate}->SetSelection(0);
     $self->{cbx_love}->SetToolTipString(_T("Yes!\nWe \N{U+2665} it!"));
     $self->{cbx_love}->SetValue(1);

@@ -1601,6 +1601,8 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
     def _get_colour(self, colourvalue):
         "Returns the language specific colour statement"
         # check if there is an code template for this properties
+        if colourvalue == 'wxNullColour':
+            return self.cn(self._get_code_statement('wxnullcolour'))
         tmpl_wxcolour = self._get_code_statement('wxcolour' )
         if not tmpl_wxcolour:
             msg = " %s WARNING: no code template for property '%s' registered!\n" % (self.comment_sign, 'wxcolour')
