@@ -12,17 +12,18 @@ from wx.lib.colourchooser import PyColourChooser
 import misc
 
 
-import sys
-if sys.version_info[0]<3 and wx.VERSION[:2]==(4,0) and (wx.VERSION[2] in (0,1) or (wx.VERSION[2]==2 and wx.VERSION[3])):
-    import wx.lib.colourchooser as cc
-    class ColourChangedEvent(cc.ColourChangedEventBase):
+from wx.lib.colourchooser import ColourChangedEvent, ColourChangedEventBase
+try:
+    ColourChangedEvent(None)
+except TypeError:
+    class ColourChangedEvent(ColourChangedEventBase):
         """Adds GetColour()/GetValue() for compatibility with ColourPickerCtrl and colourselect"""
         def __init__(self, newColour):
             super(ColourChangedEvent, self).__init__(newColour = newColour)
-    
+
         def GetColour(self):
             return self.newColour
-    
+
         def GetValue(self):
             return self.newColour
 
