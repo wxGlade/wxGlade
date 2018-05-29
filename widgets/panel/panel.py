@@ -179,7 +179,7 @@ class EditPanel(PanelBase, ManagedBase):
         misc.bind_menu_item_after(widget, i, clipboard.paste, self)
         if self.top_sizer is not None or not clipboard.check("sizer"): i.Enable(False)
 
-        if self.sizer and not self.sizer.is_virtual():
+        if self.sizer and not self.sizer.is_virtual() and self.sizer._can_add_insert_slots():
             menu.AppendSeparator()
             # slots
             i = misc.append_menu_item(menu, -1, _('Insert Slot before\tCtrl+I') )
