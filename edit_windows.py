@@ -222,7 +222,7 @@ class EditBase(EventsMixin, np.PropertyOwner):
                 misc.bind_menu_item_after(widget, i, self.sizer.insert_col, -1)
             menu.AppendSeparator()
 
-        if not self.sizer.is_virtual() and not self.sizer._IS_GRIDBAG:
+        if not self.sizer.is_virtual() and self.sizer._can_add_insert_slots:
             # slots
             i = misc.append_menu_item(menu, -1, _('Insert Slot before\tCtrl+I') )
             misc.bind_menu_item_after(widget, i, self.sizer.insert_slot, self.pos)
