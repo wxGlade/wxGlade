@@ -510,11 +510,12 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
 
         old_class = old_base = None
         # XXX check for alternatives
+        # classname is used only for 'EditTopLevelScrolledWindow' vs. 'EditTopLevelPanel'
         classname = getattr(obj, '_classname', obj.__class__.__name__)
         base = common.class_names[classname]
         if base!=obj.base:
             old_base = obj.base
-            obj.properties["base"].set(base)
+            obj.base = base
         
         if (not self.toplevels or obj.klass != obj.base) and can_be_toplevel:
             obj.is_toplevel = True
@@ -550,10 +551,11 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
             flag = obj.properties["flag"].get_string_value()  # as string, joined with "|"
             self.add_sizeritem(topl, parent, obj, obj.proportion, flag, obj.border)
 
+        # XXX handle this in a different way
         if old_class is not None:
-            obj.properties["klass"].set(old_class) # XXX handle this in a different way
+            obj.properties["klass"].set(old_class)
         if old_base is not None:
-            obj.properties["base"].set(old_base)
+            obj.base = old_base
 
     def generate_code(self, root, widget=None):
         # root must be application.Application instance for now

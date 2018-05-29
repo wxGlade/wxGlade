@@ -24,7 +24,7 @@ class EditDialog(TopLevelBase, EditStylesMixin, BitmapMixin):
     
     def __init__(self, name, parent, id, title, style=wx.DEFAULT_DIALOG_STYLE, klass='wxDialog'):
         TopLevelBase.__init__(self, name, klass, parent, id, title=title)
-        self.properties["base"].set('wxDialog')
+        self.base = 'wxDialog'
         EditStylesMixin.__init__(self)
 
         # initialise instance properties
