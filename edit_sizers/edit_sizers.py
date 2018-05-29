@@ -333,7 +333,7 @@ class SizerSlot(np.PropertyOwner):
                 if not col_is_empty or cols<=1: i.Enable(False)
                 menu.AppendSeparator()
 
-            if not self.sizer._IS_GRIDBAG:
+            if self.sizer._can_add_insert_slots():
                 # for all sizers except GridBag: insert/add slots
                 i = misc.append_menu_item(menu, -1, _('Insert Slot before\tCtrl+I') )
                 misc.bind_menu_item_after(widget, i, self.sizer.insert_slot, self.pos)
@@ -845,6 +845,9 @@ class SizerBase(Sizer, np.PropertyOwner):
         event_widget.PopupMenu(menu, pos)
         menu.Destroy()
 
+    def _can_add_insert_slots(self):
+        return True
+
     def _create_popup_menu(self, widget):
         # provide popup menu for removal
         menu = misc.wxGladePopupMenu(self.name)
@@ -853,13 +856,14 @@ class SizerBase(Sizer, np.PropertyOwner):
         i = misc.append_menu_item(menu, -1, _('Remove %s\tDel')%widgetclass, wx.ART_DELETE)
         misc.bind_menu_item_after(widget, i, self._remove)
 
-        if not self.toplevel and self.sizer and not self.sizer._IS_GRIDBAG:
+        if not self.toplevel and self.sizer and self.sizer._can_add_insert_slots():
             i = misc.append_menu_item( menu, -1, _('Insert slot before\tCtrl+I') )
             misc.bind_menu_item_after(widget, i, self.sizer.insert_slot, self.pos)
             menu.AppendSeparator()
         # other menu items: add/insert slot, copy, cut
-        i = misc.append_menu_item( menu, -1, _('Add slot\tCtrl+A') )
-        misc.bind_menu_item_after(widget, i, self.add_slot)
+        if self._can_add_insert_slots():
+            i = misc.append_menu_item( menu, -1, _('Add slot\tCtrl+A') )
+            misc.bind_menu_item_after(widget, i, self.add_slot)
 
         if "cols" in self.PROPERTIES:  # a grid sizer
             i = misc.append_menu_item( menu, -1, _('Add row') )
@@ -1271,6 +1275,9 @@ class SizerBase(Sizer, np.PropertyOwner):
 
     def insert_slot(self, pos, multiple=False):
         # insert before current
+        if not self._can_add_insert_slots():
+            wx.Bell()
+            return
         count = self._ask_count() if multiple else 1
         with self.window.frozen():
             for n in range(count):
@@ -1280,6 +1287,9 @@ class SizerBase(Sizer, np.PropertyOwner):
 
     def add_slot(self, multiple=False):
         # add to the end
+        if not self._can_add_insert_slots():
+            wx.Bell()
+            return
         count = self._ask_count(insert=False) if multiple else 1
         with self.window.frozen():
             for n in range(count):
@@ -1697,6 +1707,12 @@ class GridSizerBase(SizerBase):
         if self.widget and self.window.widget:
             self.widget.Fit(self.window.widget)
             self.widget.SetSizeHints(self.window.widget)
+
+    def _can_add_insert_slots(self):
+        if self.rows and self.cols:
+            # if both are defined, a re-sizing would need to be done
+            return False
+        return True
 
     # helpers ##########################################################################################################
     def _get_actual_rows_cols(self):
@@ -2193,6 +2209,8 @@ class EditGridBagSizer(EditFlexGridSizer):
                     if not add_only: child.set_overlap(True, add_to_sizer=add_to_sizer)
                 else:
                     if not remove_only: child.set_overlap(False, add_to_sizer=add_to_sizer)
+    def _can_add_insert_slots(self):
+        return False
 
     # context menu actions #############################################################################################
     @_frozen
