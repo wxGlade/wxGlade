@@ -251,6 +251,10 @@ if len(wx.VERSION)==5:
     ListCtrl_InsertStringItem = wx.ListCtrl.InsertStringItem
     def SetCursor(window, cursor):
         window.SetCursor(wx.StockCursor(cursor))
+        
+    BRUSHSTYLE_BDIAGONAL_HATCH = wx.BDIAGONAL_HATCH
+    BRUSHSTYLE_CROSSDIAG_HATCH = wx.CROSSDIAG_HATCH
+    BRUSHSTYLE_FDIAGONAL_HATCH = wx.FDIAGONAL_HATCH
 else:
     # wxPython Phoenix
     IS_CLASSIC = False
@@ -276,3 +280,7 @@ else:
     ListCtrl_InsertStringItem = wx.ListCtrl.InsertItem
     def SetCursor(window, cursor):
         window.SetCursor(wx.Cursor(cursor))
+
+    BRUSHSTYLE_BDIAGONAL_HATCH = wx.BRUSHSTYLE_BDIAGONAL_HATCH
+    BRUSHSTYLE_CROSSDIAG_HATCH = wx.BRUSHSTYLE_CROSSDIAG_HATCH
+    BRUSHSTYLE_FDIAGONAL_HATCH = wx.BRUSHSTYLE_FDIAGONAL_HATCH

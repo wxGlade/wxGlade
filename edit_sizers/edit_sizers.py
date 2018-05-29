@@ -259,15 +259,31 @@ class SizerSlot(np.PropertyOwner):
     def _draw_background(self, dc, clear=True):
         "draw the hatches on device context dc (red if selected)"
         # fill background first; propably needed only on MSW and not for on_erase_background
+        size = self.widget.GetSize()
+        small = size[0]<10 or size[1]<10
+        focused = misc.focused_widget is self
         if clear:
-            dc.SetBackground(wx.Brush(wx.LIGHT_GREY))
+            if small and focused:
+                dc.SetBackground(wx.Brush(wx.BLUE))
+            else:
+                dc.SetBackground(wx.Brush(wx.LIGHT_GREY))
             dc.Clear()
-        color = wx.BLUE  if misc.focused_widget is self  else  wx.BLACK
-        if not "cols" in self.sizer.PROPERTIES:  # horizontal/vertical sizer or grid sizer?
-            pos = self.pos
+        if small and focused:
+            color = wx.WHITE
+        elif small or not focused:
+            color = wx.BLACK
         else:
-            pos = sum( self.sizer._get_row_col(self.pos) )
-        brush = wx.Brush(color, wx.FDIAGONAL_HATCH  if pos%2 else  wx.BDIAGONAL_HATCH)
+            color = wx.BLUE
+
+        if focused:
+            hatch = compat.BRUSHSTYLE_CROSSDIAG_HATCH
+        else:
+            if not "cols" in self.sizer.PROPERTIES:  # horizontal/vertical sizer or grid sizer?
+                pos = self.pos
+            else:
+                pos = sum( self.sizer._get_row_col(self.pos) )
+            hatch = compat.BRUSHSTYLE_FDIAGONAL_HATCH  if pos%2 else  compat.BRUSHSTYLE_BDIAGONAL_HATCH
+        brush = wx.Brush(color, hatch)
         # draw hatched lines in foreground
         dc.SetBrush(brush)
         size = self.widget.GetClientSize()
