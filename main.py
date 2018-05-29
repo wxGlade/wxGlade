@@ -306,8 +306,9 @@ class wxGladeFrame(wx.Frame):
         self.create_menu()
         self.create_toolbar()
 
-        self.splitter1 = wx.SplitterWindow(self)
-        self.splitter2 = wx.SplitterWindow(self.splitter1)
+        style = wx.SP_3D | wx.SP_LIVE_UPDATE
+        self.splitter1 = wx.SplitterWindow(self, style=style)
+        self.splitter2 = wx.SplitterWindow(self.splitter1, style=style)
         self.palette = wxGladePalettePanel(self.splitter2)
 
         # create the property and the tree frame
