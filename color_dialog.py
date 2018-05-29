@@ -12,8 +12,8 @@ from wx.lib.colourchooser import PyColourChooser
 import misc
 
 
-from wx.lib.colourchooser import ColourChangedEvent, ColourChangedEventBase
 try:
+    from wx.lib.colourchooser import ColourChangedEvent, ColourChangedEventBase
     ColourChangedEvent(None)
 except TypeError:
     class ColourChangedEvent(ColourChangedEventBase):
@@ -33,6 +33,8 @@ except TypeError:
             self.solid.SetColour(colour)
             evt = ColourChangedEvent(newColour=colour)
             wx.PostEvent(self, evt)
+except ImportError:
+    pass  # for wxPython 2.8
 
 
 class wxGladeColorDialog(wx.Dialog):
