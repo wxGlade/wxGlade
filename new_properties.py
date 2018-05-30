@@ -1167,7 +1167,13 @@ class ExpandoTextCtrl(wx.lib.expando.ExpandoTextCtrl):
         if not self: return
         wx.lib.expando.ExpandoTextCtrl._adjustCtrl(self)
     def GetNumberOfLines(self):
-        return max( wx.lib.expando.ExpandoTextCtrl.GetNumberOfLines(self), 2)
+        numLines = max( wx.lib.expando.ExpandoTextCtrl.GetNumberOfLines(self), 2)
+        if self.maxHeight != -1:
+            # ensure that calculated height is less than self.maxHeight
+            charHeight = self.GetCharHeight()
+            maxLines = (self.maxHeight - self.extraHeight-1) / (charHeight+self._leading)
+            if numLines > maxLines: numLines = maxLines
+        return numLines
 
 
 class TextProperty(Property):
