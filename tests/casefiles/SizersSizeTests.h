@@ -22,6 +22,7 @@
 
 
 // begin wxGlade: ::dependencies
+#include <wx/gbsizer.h>
 #include <wx/notebook.h>
 // end wxGlade
 
