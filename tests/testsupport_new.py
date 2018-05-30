@@ -350,6 +350,7 @@ class WXGladeGUITest(WXGladeBaseTest):
                     expected_filename_h  = '%s.%s' % ( os.path.splitext(expected_filename )[0], app.header_extension )
                     generated_filename_h = '%s.%s' % ( os.path.splitext(generated_filename)[0], app.header_extension )
                     compare_files.append( (expected_filename, generated_filename) )
+                    compare_files.append( (expected_filename_h, generated_filename_h) )
                 else:
                     for toplevel in app.node.children:
                         classname = toplevel.widget.klass
