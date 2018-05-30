@@ -32,10 +32,10 @@ void MyFrame::set_properties()
 {
     // begin wxGlade: MyFrame::set_properties
     SetTitle(wxT("frame"));
-    list_ctrl_1->AppendColumn(wxT("A"), wxLIST_FORMAT_LEFT, -1)
-    list_ctrl_1->AppendColumn(wxT("B"), wxLIST_FORMAT_LEFT, -1)
-    list_ctrl_1->AppendColumn(wxT("C"), wxLIST_FORMAT_LEFT, -1)
-    list_ctrl_1->AppendColumn(wxT("D"), wxLIST_FORMAT_LEFT, -1)
+    list_ctrl_1->AppendColumn(wxT("A"), wxLIST_FORMAT_LEFT, -1);
+    list_ctrl_1->AppendColumn(wxT("B"), wxLIST_FORMAT_LEFT, -1);
+    list_ctrl_1->AppendColumn(wxT("C"), wxLIST_FORMAT_LEFT, -1);
+    list_ctrl_1->AppendColumn(wxT("D"), wxLIST_FORMAT_LEFT, -1);
     // end wxGlade
 }
 

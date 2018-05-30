@@ -100,6 +100,7 @@ class CppFlexGridSizerBuilder(CppGridSizerBuilder):
 
 
 class CppGridBagSizerBuilder(CppFlexGridSizerBuilder):
+    import_modules = ['<wx/gbsizer.h>']
     klass = 'wxGridBagSizer'
     tmpl = '%(assignment)s = new %(klass)s(%(vgap)s, %(hgap)s);\n'
 

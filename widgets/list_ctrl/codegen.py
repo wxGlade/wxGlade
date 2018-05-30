@@ -51,7 +51,7 @@ class PythonListCtrlGenerator(ListCtrlPropertyGeneratorMixin, wcodegen.PythonWid
 class CppListCtrlGenerator(ListCtrlPropertyGeneratorMixin, wcodegen.CppWidgetCodeWriter):
     import_modules = ['<wx/listctrl.h>']
     tmpl = '%(name)s = new %(klass)s(%(parent)s, %(id)s%(style)s);\n'
-    tmpl_append_column = '%(name)s->AppendColumn(%(heading)s, wxLIST_FORMAT_LEFT, %(width)d)\n'
+    tmpl_append_column = '%(name)s->AppendColumn(%(heading)s, wxLIST_FORMAT_LEFT, %(width)d);\n'
 
 
 def xrc_code_generator(obj):
