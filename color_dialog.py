@@ -9,7 +9,7 @@ Dialog to select a color
 
 import wx
 from wx.lib.colourchooser import PyColourChooser
-import misc
+import misc, compat
 
 
 try:
@@ -38,9 +38,8 @@ except ImportError:
 
 
 class wxGladeColorDialog(wx.Dialog):
-    def __init__(self, colors_dict, parent=None, pos=None):
-        if pos is None: pos = wx.GetMousePosition()
-        wx.Dialog.__init__(self, parent, -1, "", pos)
+    def __init__(self, colors_dict, parent=None):
+        wx.Dialog.__init__(self, parent, -1, "")
         self.colors_dict = colors_dict
         choices = list( self.colors_dict.keys() )
         choices.sort()
@@ -49,6 +48,8 @@ class wxGladeColorDialog(wx.Dialog):
         self.use_null_color = wx.RadioButton( self.panel_1, -1, "wxNullColour", style=wx.RB_GROUP )
         self.use_sys_color = wx.RadioButton( self.panel_1, -1, _("System Color") )
         self.sys_color = wx.ComboBox( self.panel_1, -1, choices=choices, style=wx.CB_DROPDOWN | wx.CB_READONLY)
+        self.sys_color_panel = wx.Panel(self.panel_1, -1, size=(250, 20))
+        self.sys_color_panel.SetBackgroundColour(wx.RED)
         self.use_chooser = wx.RadioButton(self.panel_1, -1, _("Custom Color"))
         self.color_chooser = PyColourChooser(self, -1)
         self.ok = wx.Button(self, wx.ID_OK, _("OK"))
@@ -60,8 +61,25 @@ class wxGladeColorDialog(wx.Dialog):
         self.use_null_color.Bind(wx.EVT_RADIOBUTTON, self.on_use_null_color)
         self.use_sys_color.Bind(wx.EVT_RADIOBUTTON, self.on_use_sys_color)
         self.use_chooser.Bind(wx.EVT_RADIOBUTTON, self.on_use_chooser)
+        self.sys_color.Bind(wx.EVT_COMBOBOX, self.display_sys_color)
+        self.display_sys_color()
         for ctrl in (self.use_null_color, self.use_sys_color, self.use_chooser):
             ctrl.Bind(wx.EVT_LEFT_DCLICK, lambda evt: self.EndModal(wx.ID_OK) )
+
+    def display_sys_color(self, event=None):
+        colour = self.sys_color.GetValue().strip()
+        if colour.startswith("wxSYS_COLOUR_"):
+            colour = getattr(wx, colour[2:], None)
+        else:
+            colour = None
+        if colour:
+            self.sys_color.SetBackgroundColour(wx.WHITE)
+            colour = compat.wx_SystemSettings_GetColour(colour)
+        else:
+            self.sys_color.SetBackgroundColour(wx.RED)
+            colour = wx.NullColour
+        self.sys_color_panel.SetBackgroundColour(colour)
+        self.sys_color_panel.Refresh()
 
     def on_use_null_color(self, event):
         self.sys_color.Enable(False)
@@ -129,6 +147,7 @@ class wxGladeColorDialog(wx.Dialog):
         sizer_2.Add(wx.StaticLine(self.panel_1, -1), 0, wx.ALL|wx.EXPAND, 5)
         sizer_2.Add(self.use_sys_color, 0, wx.LEFT|wx.RIGHT|wx.TOP|wx.EXPAND, 5)
         sizer_2.Add(self.sys_color, 0, wx.ALL|wx.EXPAND, 5)
+        sizer_2.Add(self.sys_color_panel, 0, wx.ALL|wx.EXPAND, 5)
         sizer_2.Add(wx.StaticLine(self.panel_1, -1), 0, wx.ALL|wx.EXPAND, 5)
         sizer_2.Add(self.use_chooser, 0, wx.LEFT|wx.RIGHT|wx.TOP|wx.EXPAND, 5)
         self.panel_1.SetAutoLayout(1)

@@ -1171,7 +1171,8 @@ class ExpandoTextCtrl(wx.lib.expando.ExpandoTextCtrl):
         if self.maxHeight != -1:
             # ensure that calculated height is less than self.maxHeight
             charHeight = self.GetCharHeight()
-            maxLines = (self.maxHeight - self.extraHeight-1) / (charHeight+self._leading)
+            leading = getattr(self, "_leading", 0)
+            maxLines = (self.maxHeight - self.extraHeight-1) / (charHeight+leading)
             if numLines > maxLines: numLines = maxLines
         return numLines
 
@@ -1743,10 +1744,43 @@ class DialogProperty(TextProperty):
         # create or update
         return self.dialog
 
+    def _position_dialog(self, dialog, obj=None, pos=None, event=None):
+        if obj is None and pos is None and event is not None:
+            obj = event.GetEventObject()
+        if obj is not None:
+            display = wx.Display.GetFromWindow(obj)
+            rect = obj.GetScreenRect()
+            #pos = (rect.x + rect.width/2, rect.y + rect.height/2)
+            pos = rect.TopLeft + (rect.width/2, rect.height/2)
+        else:
+            display = wx.Display.GetFromPoint(pos)
+        if display<0:
+            dialog.CenterOnScreen()
+            return
+        display = wx.Display( display ).ClientArea
+        #d_pos = dialog.GetPosition()
+        d_rect = dialog.GetScreenRect()
+        shift = pos - d_rect.TopLeft
+        #new_rect = wx.Rect( d_rect.TopLeft + shift, d_rect.Size )  # not for Classic
+        new_rect = wx.Rect(d_rect.x+shift.x, d_rect.y+shift.y, d_rect.width, d_rect.height)
+        if display.Contains(new_rect.TopLeft) and display.Contains(new_rect.BottomRight):
+            dialog.SetPosition( new_rect.TopLeft )
+            return
+        # shift required
+        left, top = new_rect.TopLeft
+        if not display.Contains( new_rect.BottomRight ):
+            left += min(0, ( display.x + display.width  ) - ( new_rect.x + new_rect.width  ) )
+            top  += min(0, ( display.y + display.height ) - ( new_rect.y + new_rect.height ) )
+        if top  < display.Top:  top  = display.Top
+        if left < display.Left: left = display.Left
+        dialog.SetPosition( (left,top) )
+
     def display_dialog(self, event):
         self.on_focus()
         dialog = self._create_dialog()
-        if dialog is None or dialog.ShowModal()!=wx.ID_OK: return
+        if dialog is None: return
+        self._position_dialog(dialog, self.button)
+        if dialog.ShowModal()!=wx.ID_OK: return
         # the dialog needs to return a valid value!
         value = dialog.get_value()
         self.text.SetValue( self._convert_to_text(value) )
@@ -1948,13 +1982,11 @@ class ColorProperty(DialogProperty):
     colors_to_str = misc._reverse_dict(str_to_colors)
     def __init__(self, value="", multiline=False, strip=True, default_value=wx.NullColour, name=None):
         DialogProperty.__init__(self, value, multiline, strip, default_value, name)
+
     def _create_dialog(self):
-        pos = self.button.GetScreenPosition() + (10,10)
         if self.dialog is None:
             from color_dialog import wxGladeColorDialog
-            self.dialog = wxGladeColorDialog(self.str_to_colors, pos=pos)
-        else:
-            self.dialog.SetPosition(pos)
+            self.dialog = wxGladeColorDialog(self.str_to_colors)
         self.dialog.set_value(self.value or "")
         return self.dialog
 
