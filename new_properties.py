@@ -1758,10 +1758,9 @@ class DialogProperty(TextProperty):
             dialog.CenterOnScreen()
             return
         display = wx.Display( display ).ClientArea
-        #d_pos = dialog.GetPosition()
         d_rect = dialog.GetScreenRect()
         shift = pos - d_rect.TopLeft
-        #new_rect = wx.Rect( d_rect.TopLeft + shift, d_rect.Size )  # not for Classic
+        #new_rect = wx.Rect( d_rect.TopLeft + shift, d_rect.Size )  # for Classic, RectPS would be required
         new_rect = wx.Rect(d_rect.x+shift.x, d_rect.y+shift.y, d_rect.width, d_rect.height)
         if display.Contains(new_rect.TopLeft) and display.Contains(new_rect.BottomRight):
             dialog.SetPosition( new_rect.TopLeft )
