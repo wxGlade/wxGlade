@@ -910,9 +910,9 @@ class wxGladeFrame(wx.Frame):
             except (EnvironmentError, SAXParseException, XmlParsingError) as msg:
                 if config.debugging: raise
                 if infile is not None:
-                    error_msg = _("Error loading file %s: %s") % (misc.wxstr(filename), misc.wxstr(msg))
+                    error_msg = _("Error loading file %s:\n%s") % (misc.wxstr(filename), misc.wxstr(msg))
                 else:
-                    error_msg = _("Error loading from a file-like object: %s") % misc.wxstr(msg)
+                    error_msg = _("Error loading from a file-like object:\n%s") % misc.wxstr(msg)
             except Exception as inst:
                 if config.debugging: raise
                 if filename:
