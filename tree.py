@@ -745,8 +745,20 @@ class WidgetTree(wx.TreeCtrl, Tree):
         self.skip_select = True
         self.SelectItem(node.item)
         self.skip_select = False
-        self.cur_widget = node.widget
+        self._set_cur_widget(node.widget)
         misc.set_focused_widget(self.cur_widget)
+
+    def _set_cur_widget(self, widget):
+        # set self.cur_widget; adjust label colors and bold if required (on Windows)
+        if self.cur_widget and wx.Platform == "__WXMSW__":
+            item = self.cur_widget.node.item
+            self.SetItemTextColour(item, wx.NullColour)
+            self.SetItemBold( item, False )
+        self.cur_widget = widget
+        if wx.Platform == "__WXMSW__":
+            item = widget.node.item
+            self.SetItemBold(item, True)
+            self.SetItemTextColour(item, wx.BLUE)
 
     def set_current_widget(self, widget):
         # interface from common.set_focused_widget
@@ -758,13 +770,13 @@ class WidgetTree(wx.TreeCtrl, Tree):
         self.skip_select = True
         self.SelectItem(node.item)
         self.skip_select = False
-        self.cur_widget = widget
+        self._set_cur_widget(widget)
 
     def on_change_selection(self, event):
         if self.skip_select: return  # triggered by self.SelectItem in self.set_current_widget
         item = event.GetItem()
         widget = self._GetItemData(item).widget
-        self.cur_widget = widget
+        self._set_cur_widget(widget)
         misc.set_focused_widget(widget)
         if not self.IsExpanded(item):
             self.Expand(item)
@@ -1075,7 +1087,7 @@ class WidgetTree(wx.TreeCtrl, Tree):
                 itemok = item
                 if parent is None:
                     parent = self._GetItemData(itemok)
-                self.cur_widget = widget
+                self._set_cur_widget(widget)
                 item, cookie = self._get_first_child(item)
                 index += 1
             else:
