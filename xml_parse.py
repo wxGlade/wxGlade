@@ -561,7 +561,9 @@ class XmlWidgetObject(object):
 
             # build the widget
             if pos is not None: pos = int(pos)
-            self.obj = common.widgets_from_xml[base](attrs, parent, sizer, sizeritem, pos)
+            builder = common.widgets_from_xml.get(base, None)
+            if builder is None: raise XmlParsingError("Widget '%s' not supported."%base)
+            self.obj = builder(attrs, parent, sizer, sizeritem, pos)
             p = self.obj.properties.get("class")
             if p: p.set(self.klass)
 
