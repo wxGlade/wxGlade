@@ -417,9 +417,6 @@ class wxGladeFrame(wx.Frame):
 
         file_menu.AppendSeparator() # ----------------------------------------------------------------------------------
 
-        item = append_menu_item(file_menu, wx.ID_REFRESH, _("&Refresh Preview\tF5"), "refresh.xpm")
-        misc.bind_menu_item(self, item, self.preview)
-
         GENERATE_CODE = append_menu_item(file_menu, -1, _("&Generate Code\tCtrl+G"), wx.ART_EXECUTABLE_FILE)
         misc.bind_menu_item(self, GENERATE_CODE, lambda: common.app_tree.app.generate_code())
 
@@ -448,8 +445,8 @@ class wxGladeFrame(wx.Frame):
         misc.bind_menu_item(self, i, self.switch_layout, 2)
         view_menu.AppendSeparator()
 
-        TREE = append_menu_item(view_menu, -1, _("Focus &Tree\tF2"))
-        misc.bind_menu_item(self, TREE, self.show_tree)
+        i = append_menu_item(view_menu, -1, _("Focus &Tree\tF2"))
+        misc.bind_menu_item(self, i, self.show_tree)
 
         i = append_menu_item(view_menu, -1, _("Focus &Properties\tF3"))
         misc.bind_menu_item(self, i, self.show_props_window )
@@ -467,16 +464,18 @@ class wxGladeFrame(wx.Frame):
         view_menu.AppendSubMenu(view_props_menu, _("Focus Properties &Section"))
         view_menu.AppendSeparator() # <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
-        i = append_menu_item(view_menu, -1, _("Show &Design\tF6"))  # XXX Show/Hide ?
+        i = append_menu_item(view_menu, -1, _("Show/Hide &Design\tF4"))
         misc.bind_menu_item(self, i, self.show_design_window)
         self._m_pin_design_window = i = append_menu_item(view_menu, -1, _("&Pin &Design\tCtrl-P"),  kind=wx.ITEM_CHECK)
         misc.bind_menu_item(self, i, self.pin_design_window)
+        view_menu.AppendSeparator() # ----------------------------------------------------------------------------------
 
+        item = append_menu_item(view_menu, wx.ID_REFRESH, _("&Refresh Preview\tF5"), "refresh.xpm")
+        misc.bind_menu_item(self, item, self.preview)
         view_menu.AppendSeparator() # ----------------------------------------------------------------------------------
 
         item = append_menu_item(view_menu, -1, _('Template Manager...'))
         misc.bind_menu_item(self, item, self.manage_templates)
-
         view_menu.AppendSeparator() # ----------------------------------------------------------------------------------
 
         item = append_menu_item(view_menu, wx.ID_PREFERENCES, _('Preferences...'), "prefs.xpm")
