@@ -24,6 +24,7 @@
 // begin wxGlade: ::dependencies
 #include <wx/gbsizer.h>
 #include <wx/notebook.h>
+#include <wx/wrapsizer.h>
 // end wxGlade
 
 // begin wxGlade: ::extracode

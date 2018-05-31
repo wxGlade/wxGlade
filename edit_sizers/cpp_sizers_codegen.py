@@ -79,6 +79,7 @@ class CppBoxSizerBuilder(BaseCPPSizerBuilder):
 
 
 class CppWrapSizerBuilder(CppBoxSizerBuilder):
+    import_modules = ['<wx/wrapsizer.h>']
     klass = 'wxWrapSizer'
 
 
