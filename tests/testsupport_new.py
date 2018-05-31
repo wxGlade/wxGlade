@@ -103,9 +103,16 @@ class WXGladeBaseTest(unittest.TestCase):
         # open files, split into lines and convert to str/unicode
         expected  = self._read_file_lines(expected_filename)
         generated = self._read_file_lines(generated_filename)
-        if expected==generated: return False
+        if expected == generated: return False
         expected  = [s.decode('ascii', 'replace') for s in expected]
         generated = [s.decode('ascii', 'replace') for s in generated]
+        if wx.Platform == '__WXGTK__':
+            # on gtk, the frames get resized after creation
+            if len(expected)==len(generated):
+                expected_  = [l for l in expected  if not l.strip().startswith("<size>") and not "SetSize" in l]
+                generated_ = [l for l in generated if not l.strip().startswith("<size>") and not "SetSize" in l]
+                if expected_ == generated_: return False
+        
         diff = difflib.unified_diff(expected, generated, fromfile=expected_filename, tofile=generated_filename, lineterm='')
         diff = list(diff)
         print( '\n'.join(diff[:40]) )
