@@ -1229,7 +1229,7 @@ class TextProperty(Property):
         # layout of the controls / sizers
         if self._HORIZONTAL_LAYOUT:
             #self.text.SetMaxSize( (-1,200) )
-            hsizer.Add(self.text, 5, wx.ALL | wx.ALIGN_CENTER | wx.EXPAND, 3)
+            hsizer.Add(self.text, 5, wx.ALL | wx.EXPAND, 3)
             if self.multiline: # for multiline make it higher
                 h = self.text.GetCharHeight()
                 if self.multiline=="grow":
@@ -2677,7 +2677,7 @@ class ActionButtonProperty(Property):
     def create_editor(self, panel, sizer):
         if self.label is None: self.label = self._find_label()
         self.button = wx.Button( panel, -1, self.label )
-        sizer.Add(self.button, 0, wx.EXPAND)
+        sizer.Add(self.button, 0, wx.EXPAND|wx.TOP|wx.LEFT|wx.RIGHT, 4)
         tooltip = self._find_tooltip()
         if tooltip: compat.SetToolTip(self.button, tooltip)
         self.button.Bind(wx.EVT_BUTTON, self.on_button)

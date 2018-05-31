@@ -119,8 +119,8 @@ class Dialog(wx.Dialog):
         sizer = wx.BoxSizer(wx.VERTICAL)
         hsizer = wx.BoxSizer(wx.HORIZONTAL)
         hsizer.Add(wx.StaticText(self, -1, _('class')), 0, wx.ALL | wx.ALIGN_CENTER_VERTICAL, 5)
-        hsizer.Add(self.classname)
-        sizer.Add(hsizer)
+        hsizer.Add(self.classname, 1, wx.ALIGN_CENTER_VERTICAL|wx.TOP|wx.BOTTOM|wx.RIGHT, 3)
+        sizer.Add(hsizer, 0, wx.EXPAND)
 
         # horizontal sizer for action buttons
         hsizer = wx.BoxSizer(wx.HORIZONTAL)
@@ -128,7 +128,7 @@ class Dialog(wx.Dialog):
         self.OK_button = btn = wx.Button(self, wx.ID_OK, _('OK') )
         btn.SetDefault()
         hsizer.Add(btn, 1, wx.ALL, 5)
-        sizer.Add(hsizer, 0, wx.EXPAND|wx.ALIGN_CENTER )
+        sizer.Add(hsizer, 0, wx.EXPAND)
 
         self.SetAutoLayout(True)
         self.SetSizer(sizer)

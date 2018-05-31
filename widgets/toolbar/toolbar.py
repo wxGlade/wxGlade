@@ -174,18 +174,18 @@ class ToolsDialog(wx.Dialog):
         grid_sizer.AddGrowableCol(1)
         sizer_5.Add(grid_sizer, 2, wx.EXPAND, 0)
         sizer_5.Add(self.type, 0, wx.ALL, 4)
-        sizer_5.Add((20, 20), 1, wx.ALIGN_CENTER_VERTICAL | wx.EXPAND, 0)
+        sizer_5.Add((20, 20), 1, 0, 0)
         sizer_6.Add(self.ok, 0, wx.ALL, 5)
         sizer_6.Add(self.cancel, 0, wx.ALL, 5)
         sizer_5.Add(sizer_6, 0, wx.EXPAND, 0)
         sizer_1.Add(sizer_5, 0, wx.EXPAND, 0)
         sizer_2.Add(self.move_up, 0, wx.BOTTOM | wx.LEFT | wx.TOP, 8)
         sizer_2.Add(self.move_down, 0, wx.BOTTOM | wx.RIGHT | wx.TOP, 8)
-        sizer_2.Add((20, 20), 1, wx.ALIGN_CENTER_VERTICAL, 0)
+        sizer_2.Add((20, 20), 1, 0, 0)
         sizer_2.Add(self.add, 0, wx.BOTTOM | wx.LEFT | wx.TOP, 8)
         sizer_2.Add(self.remove, 0, wx.BOTTOM | wx.TOP, 8)
         sizer_2.Add(self.add_sep, 0, wx.ALL, 8)
-        sizer_2.Add((20, 20), 2, wx.ALIGN_CENTER_VERTICAL, 0)
+        sizer_2.Add((20, 20), 2, 0, 0)
         sizer_1.Add(sizer_2, 0, wx.EXPAND, 0)
         sizer_1.Add(self.items, 1, wx.EXPAND, 0)
         self.SetSizer(sizer_1)
@@ -446,7 +446,7 @@ class ToolsProperty(np.Property):
 
     def create_editor(self, panel, sizer):
         self.edit_btn = wx.Button(panel, -1, _("Edit tools..."))
-        sizer.Add(self.edit_btn, 1, wx.EXPAND|wx.ALIGN_CENTER|wx.TOP|wx.BOTTOM, 4)
+        sizer.Add(self.edit_btn, 0, wx.EXPAND|wx.TOP|wx.LEFT|wx.RIGHT, 4)
         self.edit_btn.Bind(wx.EVT_BUTTON, self.edit_tools)
 
     def edit_tools(self, event=None):
@@ -510,7 +510,7 @@ class ToolsHandler(BaseXmlBuilderTagHandler):
 class EditToolBar(EditBase, PreviewMixin, EditStylesMixin, BitmapMixin):
     "Class to handle wxToolBar objects"
 
-    _PROPERTIES = ["bitmapsize", "margins", "packing", "separation", "style", "tools", "preview"]
+    _PROPERTIES = ["Widget", "bitmapsize", "margins", "packing", "separation", "style", "tools", "preview"]
     PROPERTIES = EditBase.PROPERTIES + _PROPERTIES + EditBase.EXTRA_PROPERTIES
 
     def __init__(self, name, klass, parent):

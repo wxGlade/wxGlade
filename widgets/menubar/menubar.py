@@ -566,7 +566,7 @@ class MenuProperty(np.Property):
 
     def create_editor(self, panel, sizer):
         self.edit_btn = wx.Button(panel, -1, _("Edit menus..."))
-        sizer.Add(self.edit_btn, 0, wx.EXPAND|wx.ALIGN_CENTER|wx.TOP|wx.BOTTOM, 4)
+        sizer.Add(self.edit_btn, 0, wx.EXPAND|wx.TOP|wx.LEFT|wx.RIGHT, 4)
         self.edit_btn.Bind(wx.EVT_BUTTON, self.edit_menus)
 
     def edit_menus(self, event=None):
