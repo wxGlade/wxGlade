@@ -9,7 +9,7 @@ widgets and initializes all the stuff (tree, frame_property, etc.)
 """
 
 # import general python modules
-import logging, os, os.path, sys, math, time
+import logging, os, os.path, sys, math, time, functools
 import wx
 from xml.sax import SAXParseException
 
@@ -529,6 +529,21 @@ class wxGladeFrame(wx.Frame):
 
         self.Bind(wx.EVT_MENU_RANGE, self.open_from_history, id=wx.ID_FILE1, id2=wx.ID_FILE9)
 
+    def _add_label_tool(self, tb, size, id, label, bmp, itemtype, msg, msg_long=None):
+        os.path.join(config.icons_path, "layout2.xpm")
+        ADD = tb.AddLabelTool  if compat.IS_CLASSIC else  tb.AddTool
+        if compat.IS_PHOENIX:
+            method = getattr(tb, "AddTool")
+        else:
+            method = getattr(tb, "AddLabelTool")
+
+        if isinstance(bmp, str):
+            bmp = wx.Bitmap( os.path.join(config.icons_path, bmp) )
+        else:
+            # a wx.ART_... constant
+            bmp = wx.ArtProvider.GetBitmap(bmp, wx.ART_OTHER, size)
+        return ADD(-1, _(label), bmp, wx.NullBitmap, itemtype, _(msg), _(msg_long or msg))
+
     def create_toolbar(self):
         # new, open, save, generate, add, delete, re-do,  Layout 1, 2, 3,  pin,    help
         #   insert slot/page?
@@ -537,82 +552,58 @@ class wxGladeFrame(wx.Frame):
         self.toolbar = tb = wx.ToolBar(self, -1)
         self.SetToolBar(tb)
         size = (21,21)
-        
-        t = tb.AddLabelTool(wx.ID_NEW, _("New"),
-                       wx.ArtProvider.GetBitmap(wx.ART_NEW, wx.ART_OTHER, size), wx.NullBitmap, wx.ITEM_NORMAL,
-                       _("Open a new file (Ctrl+N)") )
+        add = functools.partial(self._add_label_tool, tb, size)
+        t = add( wx.ID_NEW, "New", wx.ART_NEW, wx.ITEM_NORMAL, "Open a new file (Ctrl+N)")
         self.Bind(wx.EVT_TOOL, self.new_app, t)
-        t = tb.AddLabelTool(wx.ID_OPEN, _("Open"), wx.ArtProvider.GetBitmap(wx.ART_FILE_OPEN, wx.ART_OTHER, size),
-                                   wx.NullBitmap, wx.ITEM_NORMAL, _("Open a file (Ctrl+O)"), _("Open a file (Ctrl+O)"))
+        
+        t = add( wx.ID_OPEN, "Open", wx.ART_FILE_OPEN, wx.ITEM_NORMAL, "Open a file (Ctrl+O)")
         self.Bind(wx.EVT_TOOL, self.open_app, t)
-        t = tb.AddLabelTool(wx.ID_SAVE, _("Save"), wx.ArtProvider.GetBitmap(wx.ART_FILE_SAVE, wx.ART_OTHER, size),
-                                  wx.NullBitmap, wx.ITEM_NORMAL, _("Save file (Ctrl+S)"), _("Save file (Ctrl+S)"))
+        
+        t = add( wx.ID_SAVE, "Save", wx.ART_FILE_SAVE, wx.ITEM_NORMAL, "Save file (Ctrl+S)")
         self.Bind(wx.EVT_TOOL, self.save_app, t)
 
         if config.debugging and hasattr(wx, "ART_PLUS"):
-            t = tb.AddLabelTool(wx.ID_SAVE, _("Add"), wx.ArtProvider.GetBitmap(wx.ART_PLUS, wx.ART_OTHER, size),
-                                      wx.NullBitmap, wx.ITEM_NORMAL, _("Add widget (Ctrl+A)"), _("Add widget (Ctrl+A)"))
-            #self.Bind(wx.EVT_TOOL, self.save_app, t)
+            t = add( wx.ID_SAVE, "Add", wx.ART_PLUS, wx.ITEM_NORMAL, "Add widget (Ctrl+A)")
             t.Enable(False)
-            
+
             # XXX switch between wx.ART_DELETE for filled slots and wx.ART_MINUS for empty slots
-            t = tb.AddLabelTool( wx.ID_SAVE, _("Remove"), wx.ArtProvider.GetBitmap(wx.ART_MINUS, wx.ART_OTHER, size),
-                                 wx.NullBitmap, wx.ITEM_NORMAL, _("Add widget (Ctrl+A)"), _("Add widget (Ctrl+A)"))
-            #self.Bind(wx.EVT_TOOL, self.save_app, t)
+            t = add( wx.ID_SAVE, "Remove", wx.ART_MINUS, wx.ITEM_NORMAL, "Add widget (Ctrl+A)")
             t.Enable(False)
 
             tb.AddSeparator()
 
         if config.debugging:
-            t = tb.AddLabelTool( wx.ID_SAVE, _("Re-do"), wx.ArtProvider.GetBitmap(wx.ART_REDO, wx.ART_OTHER, size),
-                                 wx.NullBitmap, wx.ITEM_NORMAL,
-                                 _("Add widget (Ctrl+Y)"), _("Add widget (Ctrl+Y)"))
-            #self.Bind(wx.EVT_TOOL, self.save_app, t)
+            t = add( wx.ID_SAVE, "Re-do", wx.ART_REDO, wx.ITEM_NORMAL, "Add widget (Ctrl+Y)" )
             t.Enable(False)
-            t = tb.AddLabelTool( wx.ID_SAVE, _("Re-do"), wx.ArtProvider.GetBitmap(wx.ART_REDO, wx.ART_OTHER, size),
-                                 wx.NullBitmap, wx.ITEM_NORMAL,
-                                 _("Add widget (Ctrl+Y)"), _("Add widget (Ctrl+Y)"))
-            #self.Bind(wx.EVT_TOOL, self.save_app, t)
+            t = add( wx.ID_SAVE, "Re-do", wx.ART_REDO, wx.ITEM_NORMAL, "Add widget (Ctrl+Y)" )
             t.Enable(False)
 
 
         tb.AddSeparator()
-        t = tb.AddLabelTool(-1, _("Generate Code"), wx.ArtProvider.GetBitmap(wx.ART_EXECUTABLE_FILE, wx.ART_OTHER, size),
-                                wx.NullBitmap, wx.ITEM_NORMAL,
-                                _("Generate Code (Ctrl+G)"), _("Generate Code (Ctrl+G)"))
+        t = add(-1, "Generate Code", wx.ART_EXECUTABLE_FILE, wx.ITEM_NORMAL, "Generate Code (Ctrl+G)" )
         self.Bind(wx.EVT_TOOL, lambda event: common.app_tree.app.generate_code(), t)
         tb.AddSeparator()
         
-        t1 = tb.AddLabelTool(-1, _("Layout 1"), wx.Bitmap( os.path.join(config.icons_path, "layout1.xpm"), wx.BITMAP_TYPE_XPM ),
-                                wx.NullBitmap, wx.ITEM_RADIO,
-                                _("Switch layout: Tree"),
-                                _("Switch layout: Palette and Properties left, Tree right"))
+        t1 = add(-1, "Layout 1", "layout1.xpm", wx.ITEM_RADIO, "Switch layout: Tree", 
+                                                               "Switch layout: Palette and Properties left, Tree right")
         self.Bind(wx.EVT_TOOL, lambda event: self.switch_layout(0), t1)
-        t2 = tb.AddLabelTool(-1, _("Layout 2"), wx.Bitmap( os.path.join(config.icons_path, "layout2.xpm"), wx.BITMAP_TYPE_XPM ),
-                                 wx.NullBitmap, wx.ITEM_RADIO,
-                                 _("Switch layout: Properties"),
-                                 _("Switch layout: Palette and Tree top,  Properties bottom"))
+        t2 = add(-1, "Layout 2", "layout2.xpm", wx.ITEM_RADIO,"Switch layout: Properties",
+                                                              "Switch layout: Palette and Tree top,  Properties bottom") 
         self.Bind(wx.EVT_TOOL, lambda event: self.switch_layout(1), t2)
-        t3 = tb.AddLabelTool(-1, _("Layout 3"), wx.Bitmap( os.path.join(config.icons_path, "layout3.xpm"), wx.BITMAP_TYPE_XPM ),
-                                wx.NullBitmap, wx.ITEM_RADIO,
-                                _("Switch layout: narrow"),
-                                _("Switch layout: Palette, Tree and Properties on top of each other"))
+        t3 = add(-1, "Layout 3", "layout3.xpm", wx.ITEM_RADIO, "Switch layout: narrow",
+                                                     "Switch layout: Palette, Tree and Properties on top of each other")
         self.Bind(wx.EVT_TOOL, lambda event: self.switch_layout(2), t3)
         self._layout_tools = [t1,t2,t3]
 
         tb.AddSeparator()
-        t = tb.AddLabelTool(-1, _("Pin Design Window"),
-                            wx.Bitmap( os.path.join(config.icons_path, "pin_design.xpm"), wx.BITMAP_TYPE_XPM ),
-                            wx.NullBitmap, wx.ITEM_CHECK,
-                            _("Pin Design Window"),
-                            _("Pin Design Window to stay on top"))
+        t = add(-1, "Pin Design Window", "pin_design.xpm", wx.ITEM_CHECK, "Pin Design Window",
+                                                                          "Pin Design Window to stay on top")
         self.Bind(wx.EVT_TOOL, lambda event: self.pin_design_window(), t)
         self._t_pin_design_window = t
 
         tb.AddSeparator()
 
-        t = tb.AddLabelTool(wx.ID_HELP, _("Help"), wx.ArtProvider.GetBitmap(wx.ART_HELP_BOOK, wx.ART_OTHER, size),
-                                   wx.NullBitmap, wx.ITEM_NORMAL, _("Show manual (F1)"), _("Show manual (F1)"))
+        t = add(wx.ID_HELP, "Help", wx.ART_HELP_BOOK, wx.ITEM_NORMAL, "Show manual (F1)")
         self.Bind(wx.EVT_TOOL, self.show_manual, t)
 
         self.toolbar.Realize()
