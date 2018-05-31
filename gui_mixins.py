@@ -237,7 +237,7 @@ class BitmapMixin(object):
             method = getattr(self.widget, "GetBitmap%s"%name, None)
             if method is None: continue
             current = method()
-            if current.Size != ref_size or (modified and p.name in modified):
+            if not current.IsOk() or current.Size != ref_size or (modified and p.name in modified):
                 self._set_preview_bitmap(p, name, ref_size)
         if set_size or not modified or "bitmap" in modified:
             self._set_widget_best_size()
