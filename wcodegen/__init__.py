@@ -319,7 +319,7 @@ class BaseWidgetWriter(StylesMixin, BaseCodeWriter):
         # call inherited constructor
         BaseCodeWriter.__init__(self)
         self.config = {}
-        self.klass = klass
+        self.klass = klass  # the .base attribute of the widgets, e.g. EditFrame.base='wxFrame'
 
         # store initial content
         if hasattr(self, 'import_modules'):
