@@ -26,6 +26,7 @@ class EditDialog(TopLevelBase, EditStylesMixin, BitmapMixin):
         TopLevelBase.__init__(self, name, klass, parent, id, title=title)
         self.base = 'wxDialog'
         EditStylesMixin.__init__(self)
+        self.properties["style"].set(style)
 
         # initialise instance properties
         self.icon      = np.BitmapPropertyD("")
@@ -88,13 +89,11 @@ def builder(parent, sizer, pos, number=[0]):
 
     if base == "wxDialog":
         is_panel = False
-        dialog = EditDialog(name, parent, wx.NewId(), name, klass=klass)
-        dialog.properties["style"].set("wxDEFAULT_DIALOG_STYLE")
+        dialog = EditDialog(name, parent, wx.NewId(), name, "wxDEFAULT_DIALOG_STYLE", klass=klass)
     else:
         is_panel = True
         import panel
         dialog = panel.EditTopLevelPanel(name, parent, wx.NewId(), klass=klass)
-    #dialog.properties["style"].set_to_default()
     node = Node(dialog)
     dialog.node = node
     dialog.create()

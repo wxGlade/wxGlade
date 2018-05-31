@@ -27,6 +27,7 @@ class EditFrame(TopLevelBase, EditStylesMixin, BitmapMixin):
         TopLevelBase.__init__(self, name, klass, parent, id, title=title)
         self.base = 'wxFrame'
         EditStylesMixin.__init__(self)
+        self.properties["style"].set(style)
 
         # initialise instance properties
         self.icon      = np.BitmapPropertyD("")
@@ -167,9 +168,7 @@ def builder(parent, sizer, pos, klass=None, base=None, name=None):
         base_class = EditFrame
     else:
         base_class = EditMDIChildFrame
-    frame = base_class(name, parent, wx.NewId(), name, klass=klass)
-    #frame.properties["style"].set_to_default()
-    frame.properties["style"].set("wxDEFAULT_FRAME_STYLE")
+    frame = base_class(name, parent, wx.NewId(), name, "wxDEFAULT_FRAME_STYLE", klass=klass)
     frame.properties['size'].set( (400,300), activate=True )
     node = Node(frame)
     frame.node = node
@@ -196,7 +195,12 @@ def _make_builder(base_class):
             label = attrs['name']
         except KeyError:
             raise XmlParsingError(_("'name' attribute missing"))
-        frame = base_class(label, parent, wx.NewId(), "", style=0)
+        if attrs.input_file_version and attrs.input_file_version<(0,8):
+            # backwards compatibility
+            style = "wxDEFAULT_FRAME_STYLE"
+        else:
+            style = 0
+        frame = base_class(label, parent, wx.NewId(), "", style)
         node = Node(frame)
         frame.node = node
         common.app_tree.add(node)
