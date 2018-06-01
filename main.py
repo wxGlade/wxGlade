@@ -490,14 +490,15 @@ class wxGladeFrame(wx.Frame):
                 wx.App_SetMacHelpMenuTitleName(_('&Help'))
 
         # file history support
-        self.file_history = wx.FileHistory(config.preferences.number_history)
+        num_entries = config.preferences.number_history
+        self.file_history = wx.FileHistory(num_entries)
         self.file_history.UseMenu(file_menu)
         files = common.load_file_history()
         files.reverse()
         for path in files:
             self.file_history.AddFileToHistory(path.strip())
 
-        self.Bind(wx.EVT_MENU_RANGE, self.open_from_history, id=wx.ID_FILE1, id2=wx.ID_FILE9)
+        self.Bind(wx.EVT_MENU_RANGE, self.open_from_history, id=wx.ID_FILE1, id2=wx.ID_FILE1+num_entries-1)
 
     def open_from_history(self, event):
         if not self.ask_save():
