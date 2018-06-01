@@ -755,11 +755,15 @@ class WidgetTree(wx.TreeCtrl, Tree):
             self.SetItemTextColour(item, wx.NullColour)
             self.SetItemBold( item, False )
         self.cur_widget = widget
+        item = widget.node.item
+        self.EnsureVisible(item)
+        # ensure that the icon is visible
+        text_rect = self.GetBoundingRect(item, True)
+        if text_rect.x<22:
+            self.SetScrollPos(wx.HORIZONTAL, self.GetScrollPos(wx.HORIZONTAL) - 22 + text_rect.x)
         if wx.Platform == "__WXMSW__":
-            item = widget.node.item
             self.SetItemBold(item, True)
             self.SetItemTextColour(item, wx.BLUE)
-
     def set_current_widget(self, widget):
         # interface from common.set_focused_widget
         if widget is None or widget is self.cur_widget: return
@@ -903,9 +907,8 @@ class WidgetTree(wx.TreeCtrl, Tree):
                 node.widget.widget.Show()
             else:
                 node.widget.widget.GetParent().Show()
-    
-            misc.set_focused_widget(node.widget)
-    
+
+            #misc.set_focused_widget(node.widget)
             node.widget.widget.Raise()
             # set the best size for the widget (if no one is given)
             props = node.widget.properties
@@ -957,8 +960,8 @@ class WidgetTree(wx.TreeCtrl, Tree):
             toplevel_widget.GetTopLevelParent().Hide()
 
             # added by rlawson to collapse only the toplevel node, not collapse back to root node
-            self.select_item(node)
-            misc.set_focused_widget(node.widget)
+            #self.select_item(node)
+            #misc.set_focused_widget(node.widget)
             if event: event.Skip()
         if "design" in node.widget.properties: node.widget.design.update_label()
 
@@ -1096,6 +1099,7 @@ class WidgetTree(wx.TreeCtrl, Tree):
             node = self._GetItemData(itemok)
             if parent is not None:
                 self._show_widget_toplevel(parent)
+                common.app_tree.expand(parent)
                 if pos is not None:
                     misc.get_toplevel_parent(parent.widget).SetPosition(pos)
             self.select_item(node)
