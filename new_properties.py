@@ -1841,27 +1841,29 @@ class FileNameProperty(DialogProperty):
         dlg.set_value(self.value)
         return dlg
 
-    if sys.platform in ("win32","darwin"):
-        def _on_label_dblclick(self, event):
-            # show directory in explorer/finder
-            app_filename = common.app_tree.app.filename
-            if not self.value and not app_filename: return
-            import os,sys
-            directory = self.value or app_filename
-            if directory and not os.path.isdir(directory):
-                directory = os.path.dirname(directory)
-            if directory and not os.path.isabs(directory) and app_filename:
-                directory = os.path.join(app_filename, directory)
-            if not os.path.isdir(directory):
-                if not app_filename: return
-                directory = os.path.dirname(app_filename)
-                if not os.path.isdir(directory): return
-            import subprocess
-            if sys.platform=="win32":
-                subprocess.call(['explorer', directory])
-            elif sys.platform=="darwin":
-                subprocess.call(["open", directory])
-                
+    def _on_label_dblclick(self, event):
+        # show directory in explorer/finder
+        app_filename = common.app_tree.app.filename
+        if not self.value and not app_filename: return
+        import os,sys
+        directory = self.value or app_filename
+        if directory and not os.path.isdir(directory):
+            directory = os.path.dirname(directory)
+        if directory and not os.path.isabs(directory) and app_filename:
+            directory = os.path.join(app_filename, directory)
+        if not os.path.isdir(directory):
+            if not app_filename: return
+            directory = os.path.dirname(app_filename)
+            if not os.path.isdir(directory): return
+        import subprocess
+        if sys.platform=="win32":
+            subprocess.call(['explorer', directory])
+        elif sys.platform=="darwin":
+            subprocess.call(["open", directory])
+        else:
+            directory = directory.replace(r'\\', "\\\\").replace('"', r'\"').replace(' ', r'\ ')
+            subprocess.call(["xdg-open", directory])
+
     def on_drop_file(self, filename):
         if not wx.GetKeyState(wx.WXK_ALT) and not wx.GetKeyState(wx.WXK_CONTROL):
             # insert relative filename, if available and the filename is under the project directory
