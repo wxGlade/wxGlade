@@ -246,6 +246,9 @@ def warning_message(msg, title="Warning"):
 # menu helpers
 
 def append_menu_item(menu, id, text, xpm_file_or_artid=None, **kwargs): # XXX change: move id to the end of the argument list?
+    if compat.IS_CLASSIC and "helpString" in kwargs:
+        kwargs["help"] = kwargs["helpString"]
+        del kwargs["helpString"]
     item = wx.MenuItem(menu, id, text, **kwargs)
     if xpm_file_or_artid is not None:
         path = 'msw/'  if wx.Platform == '__WXMSW__'  else  'gtk/'
