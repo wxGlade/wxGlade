@@ -432,6 +432,25 @@ class wxGladeFrame(wx.Frame):
 
         menu_bar.Append(file_menu, _("&File"))
 
+
+        # Edit menu ====================================================================================================
+        edit_menu = wx.Menu(style=wx.MENU_TEAROFF)
+
+        # XXX update menu items
+        item = append_menu_item(edit_menu, -1, _('Re-do\tCtrl+Y'), helpString="Re-do the last property modification on another widget")
+        misc.bind_menu_item(self, item, lambda: common.history.repeat(misc.focused_widget))
+
+        item = append_menu_item(edit_menu, -1, _('Repeat\tCtrl-R'), helpString="Repeat the last property modifications on another widget (multiple modifications, if applicable)")
+        misc.bind_menu_item(self, item, lambda: common.history.repeat(misc.focused_widget))
+
+        item = append_menu_item(edit_menu, -1, _('Template Manager...'))
+        misc.bind_menu_item(self, item, self.manage_templates)
+
+        item = append_menu_item(edit_menu, wx.ID_PREFERENCES, _('Preferences...'), "prefs.xpm")
+        misc.bind_menu_item(self, item, self.edit_preferences)
+
+        menu_bar.Append(edit_menu, _("&Edit"))
+
         # Windows menu: layout and focus ===============================================================================
         view_menu = wx.Menu(style=wx.MENU_TEAROFF)
 
@@ -472,14 +491,6 @@ class wxGladeFrame(wx.Frame):
 
         item = append_menu_item(view_menu, wx.ID_REFRESH, _("&Refresh Preview\tF5"), "refresh.xpm")
         misc.bind_menu_item(self, item, self.preview)
-        view_menu.AppendSeparator() # ----------------------------------------------------------------------------------
-
-        item = append_menu_item(view_menu, -1, _('Template Manager...'))
-        misc.bind_menu_item(self, item, self.manage_templates)
-        view_menu.AppendSeparator() # ----------------------------------------------------------------------------------
-
-        item = append_menu_item(view_menu, wx.ID_PREFERENCES, _('Preferences...'), "prefs.xpm")
-        misc.bind_menu_item(self, item, self.edit_preferences)
 
         menu_bar.Append(view_menu, _("&Windows"))
 

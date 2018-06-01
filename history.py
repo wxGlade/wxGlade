@@ -65,6 +65,7 @@ class History(object):
 
     def repeat(self, focused_widget, multiple=True):
         "apply action(s) to another widget"
+        if focused_widget is None: return
         if not self.actions or not isinstance(self.actions[0], HistoryPropertyItem): return
         if not self._redo_widget: return
         path = common.app_tree.get_widget_path(focused_widget)
