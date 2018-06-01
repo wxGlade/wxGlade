@@ -171,7 +171,10 @@ def get_data_object(widget):
     else:
         do = wx.CustomDataObject(widget_data_format)
     do.SetData(data)
-    return do
+    cdo = wx.DataObjectComposite()
+    cdo.Add(do)
+    if widget.name: cdo.Add(wx.TextDataObject(widget.name), True)  # the widget name as text, preferred
+    return cdo
 
 
 def dump_widget(widget):
