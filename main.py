@@ -140,7 +140,7 @@ class wxGladePropertyPanel(wx.Panel):
         
         if not self.notebook: return  # already deleted
         self.current_widget_class = edit_widget.__class__
-        if wx.Platform == "__WXMAC__":
+        if wx.Platform != "__WXMSW__" :
             focus_before = self.FindFocus()
         self.notebook.Hide()
 
@@ -198,7 +198,7 @@ class wxGladePropertyPanel(wx.Panel):
 
         self.notebook.Show()
 
-        if wx.Platform == "__WXMAC__" and focus_before is common.app_tree:
+        if wx.Platform != "__WXMSW__" and focus_before is common.app_tree:
             focus_before.SetFocus()
 
     def start_page(self, name):
