@@ -317,7 +317,6 @@ class SizerSlot(np.PropertyOwner):
         if not clipboard.check("widget","sizer"): i.Enable(False)
         menu.AppendSeparator()
 
-
         # slot actions
         if not self.sizer.is_virtual():
             # we can add/remove items only from non-virtual sizers
@@ -861,7 +860,7 @@ class SizerBase(Sizer, np.PropertyOwner):
         event_widget.PopupMenu(menu, pos)
         menu.Destroy()
 
-    def _can_add_insert_slots(self):
+    def _can_add_insert_slots(self, report=False):
         return True
 
     def _create_popup_menu(self, widget):
@@ -1291,8 +1290,7 @@ class SizerBase(Sizer, np.PropertyOwner):
 
     def insert_slot(self, pos, multiple=False):
         # insert before current
-        if not self._can_add_insert_slots():
-            wx.Bell()
+        if not self._can_add_insert_slots(report=True):
             return
         count = self._ask_count() if multiple else 1
         with self.window.frozen():
@@ -1303,8 +1301,7 @@ class SizerBase(Sizer, np.PropertyOwner):
 
     def add_slot(self, multiple=False):
         # add to the end
-        if not self._can_add_insert_slots():
-            wx.Bell()
+        if not self._can_add_insert_slots(report=True):
             return
         count = self._ask_count(insert=False) if multiple else 1
         with self.window.frozen():
@@ -1724,9 +1721,11 @@ class GridSizerBase(SizerBase):
             self.widget.Fit(self.window.widget)
             self.widget.SetSizeHints(self.window.widget)
 
-    def _can_add_insert_slots(self):
+    def _can_add_insert_slots(self, report=False):
         if self.rows and self.cols:
             # if both are defined, a re-sizing would need to be done
+            if report:
+                misc.error_message("Can't add or insert slots as sizer's Rows and Cols are fixed (see Properties -> Grid).")
             return False
         return True
 
@@ -2225,7 +2224,9 @@ class EditGridBagSizer(EditFlexGridSizer):
                     if not add_only: child.set_overlap(True, add_to_sizer=add_to_sizer)
                 else:
                     if not remove_only: child.set_overlap(False, add_to_sizer=add_to_sizer)
-    def _can_add_insert_slots(self):
+    def _can_add_insert_slots(self, report=False):
+        if report:
+            misc.error_message("Can't insert or add slots as sizer's Rows and Cols are fixed (see Properties -> Grid).")
         return False
 
     # context menu actions #############################################################################################
