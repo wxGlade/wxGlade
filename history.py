@@ -53,7 +53,18 @@ class History(object):
         self.depth = depth
         self._buffer = None
         self._redo_widget = None # the widget that originally was modified
+        self._redo_info = []  # name of properties
         self._repeating = False
+        self.can_redo = self.can_repeat = False
+
+    def set_widget(self, widget):
+        # for enabling/disabling tools and menus
+        path = common.app_tree.get_widget_path(widget)
+        if path==self._redo_widget or self._redo_widget is None:
+            self.can_repeat = self.can_redo = False
+        else:
+            self.can_redo = True
+            self.can_repeat = len(self._redo_info) > 1
 
     def undo(self, focused_widget):
         pass
@@ -108,7 +119,13 @@ class History(object):
         if len(self.actions)>self.depth:
             del self.actions[-1]
         if not self._repeating and isinstance(item, HistoryPropertyItem):
-            self._redo_widget = item.path
+            path = item.path
+            if path != self._redo_widget:
+                self._redo_widget = path
+                del self._redo_info[:]
+            key = item.get_key()
+            if not key in self._redo_info:
+                self._redo_info.append(key)
 
         if self.actions_redo:
             del self.actions_redo[:]

@@ -385,8 +385,19 @@ class wxGladeFrame(wx.Frame):
         # global handler
         misc.handle_key_event(event, window_type)
 
+    def set_widget(self, widget):
+        # update redo/repeat tools and menus
+        if self._previous_redo_state == (common.history.can_redo, common.history.can_repeat): return
+        self._menu_redo.Enable(common.history.can_redo)
+        self._menu_repeat.Enable(common.history.can_repeat)
+        if not self._tool_redo: return
+        self._tool_redo.Enable(common.history.can_redo)
+        self._tool_repeat.Enable(common.history.can_repeat)
+        self.toolbar.Realize()
+
     # menu and actions #################################################################################################
     def create_menu(self):
+        self._previous_redo_state = None
         menu_bar = wx.MenuBar()
 
         compat.wx_ToolTip_SetDelay(1000)
@@ -436,12 +447,16 @@ class wxGladeFrame(wx.Frame):
         # Edit menu ====================================================================================================
         edit_menu = wx.Menu(style=wx.MENU_TEAROFF)
 
-        # XXX update menu items
-        item = append_menu_item(edit_menu, -1, _('Re-do\tCtrl+Y'), helpString="Re-do the last property modification on another widget")
+        # these menu items will be updated
+        self._menu_redo = item = append_menu_item(edit_menu, -1, _('Re-do\tCtrl+Y'),
+                                                  helpString="Re-do the last property modification on another widget")
         misc.bind_menu_item(self, item, lambda: common.history.repeat(misc.focused_widget))
 
-        item = append_menu_item(edit_menu, -1, _('Repeat\tCtrl-R'), helpString="Repeat the last property modifications on another widget (multiple modifications, if applicable)")
+        self._menu_repeat = item = append_menu_item(edit_menu, -1, _('Repeat\tCtrl-R'),
+          helpString="Repeat the last property modifications on another widget (multiple modifications, if applicable)")
         misc.bind_menu_item(self, item, lambda: common.history.repeat(misc.focused_widget))
+
+        edit_menu.AppendSeparator() # ----------------------------------------------------------------------------------
 
         item = append_menu_item(edit_menu, -1, _('Template Manager...'))
         misc.bind_menu_item(self, item, self.manage_templates)
@@ -584,12 +599,10 @@ class wxGladeFrame(wx.Frame):
 
             tb.AddSeparator()
 
-        if config.debugging:
-            t = add( wx.ID_SAVE, "Re-do", wx.ART_REDO, wx.ITEM_NORMAL, "Add widget (Ctrl+Y)" )
-            t.Enable(False)
-            t = add( wx.ID_SAVE, "Re-do", wx.ART_REDO, wx.ITEM_NORMAL, "Add widget (Ctrl+Y)" )
-            t.Enable(False)
-
+        self._tool_redo = t = add( wx.ID_SAVE, "Re-do", wx.ART_REDO, wx.ITEM_NORMAL, "Re-do (Ctrl+Y)" )
+        t.Enable(False)
+        self._tool_repeat = t = add( wx.ID_SAVE, "Repeat", wx.ART_REDO, wx.ITEM_NORMAL, "Repeat  (Ctrl+R)" )
+        t.Enable(False)
 
         tb.AddSeparator()
         t = add(-1, "Generate Code", wx.ART_EXECUTABLE_FILE, wx.ITEM_NORMAL, "Generate Code (Ctrl+G)" )
