@@ -67,6 +67,8 @@ class MyFrame(matplotlib_GUI.MyFrame):
         self.toolmanager.add_tool('pan', 'ToolPan')  # pan w. mouse and zoom w. wheel with 'p' key
         self.toolmanager.add_tool('zoom', 'ToolZoom') # zoom to rect with 'o' key
         self.toolmanager.add_tool('home', 'ToolHome') # 'h', 'r', 'home'
+        if hasattr(matplotlib.backend_managers, "ToolHelp"):
+            self.toolmanager.add_tool('help', 'ToolHelp') # 'F1'
         self.toolmanager.add_tool('back', 'ToolBack') # 'left', 'c', 'backspace'
         self.toolmanager.add_tool('forward', 'ToolForward') # 'right', 'v'
         self.toolmanager.add_tool('save', 'ToolSaveFigure') # 's', 'ctrl+s'
