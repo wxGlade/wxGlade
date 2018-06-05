@@ -1745,6 +1745,8 @@ class DialogProperty(TextProperty):
         return self.dialog
 
     def _position_dialog(self, dialog, obj=None, pos=None, event=None):
+        if not hasattr(dialog, "GetScreenRect"):
+            return  # e.g. _FileDialog is not really a dialog
         if obj is None and pos is None and event is not None:
             obj = event.GetEventObject()
         if obj is not None:
