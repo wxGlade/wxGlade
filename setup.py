@@ -86,7 +86,7 @@ the moment it can generate Python, C++, Perl, Lisp and XRC (wxWidgets'
 XML resources) code."""
 
 text_files = ['CHANGES.txt', 'CONTRIBUTING.txt', 'CREDITS.txt',
-              'LICENSE.txt', 'NEWS.txt', 'README.txt', 'TODO.txt', ]
+              'LICENSE.txt', 'NEWS.txt', 'README.txt', 'docs/Todo.txt',]
 
 data_files = [
     ['share/wxglade/icons', glob('icons/*.*')],
@@ -98,7 +98,7 @@ data_files = [
     ['share/doc/wxglade/tutorial/img', glob('docs/img/*.*')],
     ['share/doc/wxglade/manual_html', glob('docs/html/*.*')],
     ['share/doc/wxglade/manual_pdf', glob('docs/pdf/*.pdf')],
-    ['share/man/man1', ['docs/man/wxglade.1']],
+    ['share/man/man1', ['docs_old/man/wxglade.1']],
 ]
 
 packages = ['wxglade.%s' % pkg for pkg in find_packages(exclude=['tests'])]
