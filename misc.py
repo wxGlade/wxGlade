@@ -32,7 +32,7 @@ def set_focused_widget(widget, force=False):
     focused_widget = widget
     common.app_tree.set_current_widget(widget)
     common.property_panel.set_widget(widget, force)
-    common.history.set_widget(widget)
+    if common.history: common.history.set_widget(widget)
     common.main.set_widget(widget)  # to update menu and toolbar
     if widget and widget.widget:
         # ensure that it is visible and selection is displayed, if applicable

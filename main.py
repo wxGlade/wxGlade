@@ -388,6 +388,7 @@ class wxGladeFrame(wx.Frame):
 
     def set_widget(self, widget):
         # update redo/repeat tools and menus
+        if not common.history: return
         if self._previous_redo_state == (common.history.can_redo, common.history.can_repeat): return
         self._menu_redo.Enable(common.history.can_redo)
         self._menu_repeat.Enable(common.history.can_repeat)
