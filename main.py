@@ -210,6 +210,7 @@ class wxGladePropertyPanel(wx.Panel):
         return panel
 
     def end_page(self, panel, sizer, header, select=False):
+        sizer.AddSpacer(30)
         panel.SetAutoLayout(1)
         panel.SetSizer(sizer)
         sizer.Layout()
