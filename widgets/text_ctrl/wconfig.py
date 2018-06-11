@@ -104,7 +104,7 @@ config = {
                    'wxTE_NOHIDESEL', 'wxHSCROLL', 'wxTE_NO_VSCROLL',
                    'wxTE_LEFT', 'wxTE_CENTRE', 'wxTE_RIGHT',
                    'wxTE_DONTWRAP', 'wxTE_LINEWRAP', 'wxTE_CHARWRAP', 'wxTE_WORDWRAP', 'wxTE_BESTWRAP',
-                   'wxNO_BORDER'],
+                   'wxBORDER_NONE'],
     'events': {
         'EVT_TEXT': {},
         'EVT_TEXT_ENTER': {},
