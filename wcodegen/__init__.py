@@ -592,9 +592,13 @@ class BaseWidgetWriter(StylesMixin, BaseCodeWriter):
                                {'name':obj.name,'klass': obj.klass, 'events':events})
             return ret
 
-        win_id = self.codegen.generate_code_id(obj)[1]
-        if self.use_names_for_binding_events and (win_id == '-1' or win_id == self.codegen.cn('wxID_ANY')):
+        #win_id = self.codegen.generate_code_id(obj)[1]
+        #if self.use_names_for_binding_events and (win_id == '-1' or win_id == self.codegen.cn('wxID_ANY')):
+            #win_id = self.codegen.add_object_format_name(obj.name)
+        if self.use_names_for_binding_events:
             win_id = self.codegen.add_object_format_name(obj.name)
+        else:
+            win_id = self.codegen.generate_code_id(obj)[1]
 
         try:
             default_event = self.config['events']['default']['type']

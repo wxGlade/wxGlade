@@ -115,7 +115,7 @@ void CPPOgg1_MyDialog::do_layout()
 
 BEGIN_EVENT_TABLE(CPPOgg1_MyDialog, wxDialog)
     // begin wxGlade: CPPOgg1_MyDialog::event_table
-    EVT_BUTTON(wxID_ANY, CPPOgg1_MyDialog::startConverting)
+    EVT_BUTTON(wxID_OK, CPPOgg1_MyDialog::startConverting)
     // end wxGlade
 END_EVENT_TABLE();
 

@@ -152,7 +152,7 @@ void PyOgg2_MyFrame::do_layout()
 BEGIN_EVENT_TABLE(PyOgg2_MyFrame, wxFrame)
     // begin wxGlade: PyOgg2_MyFrame::event_table
     EVT_TOOL(wxID_OPEN, PyOgg2_MyFrame::OnOpen)
-    EVT_BUTTON(wxID_ANY, PyOgg2_MyFrame::startConverting)
+    EVT_BUTTON(wxID_OK, PyOgg2_MyFrame::startConverting)
     // end wxGlade
 END_EVENT_TABLE();
 

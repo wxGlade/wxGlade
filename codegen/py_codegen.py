@@ -430,6 +430,8 @@ from %(top_win_module)s import %(top_win_class)s\n\n"""
         if id is None:
             id = obj.window_id
         if not id:
+            if obj is not None and "stockitem" in obj.properties and obj.stockitem:
+                return '', self.cn("wxID_" + obj.stockitem)
             return '', self.cn('wxID_ANY')
         id = str(id)
         tokens = id.split('=', 1)

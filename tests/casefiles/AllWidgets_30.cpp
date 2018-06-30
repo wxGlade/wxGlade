@@ -444,7 +444,7 @@ BEGIN_EVENT_TABLE(All_Widgets_Frame, wxFrame)
     EVT_NAVIGATION_KEY(All_Widgets_Frame::OnBitmapButtonPanelNavigationKey)
     EVT_NOTEBOOK_PAGE_CHANGED(wxID_ANY, All_Widgets_Frame::OnNotebookPageChanged)
     EVT_NOTEBOOK_PAGE_CHANGING(wxID_ANY, All_Widgets_Frame::OnNotebookPageChanging)
-    EVT_BUTTON(wxID_ANY, All_Widgets_Frame::onStartConverting)
+    EVT_BUTTON(wxID_OK, All_Widgets_Frame::onStartConverting)
     // end wxGlade
 END_EVENT_TABLE();
 
