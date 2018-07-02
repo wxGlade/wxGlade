@@ -14,11 +14,8 @@
 #  3. in a parallel Python module directory
 
 # search order for Python interpreter
-INTERPRETER_LIST="python2 \
+INTERPRETER_LIST="python3 python2 \
                   python2.7 python27 \
-                  python2.6 python26 \
-                  python2.5 python25 \
-                  python2.4 python24 \
                   python"
 
 # Use the binary from PYTHON_BIN, if this environment variable is set
@@ -32,26 +29,20 @@ for INTERPRETER in $INTERPRETER_LIST; do
     continue
   fi
 
-  # check if interpreter is for Python 2
-  ${INTERPRETER} -V 2>&1 | grep -q "Python 2"
-  if [ $? -ne 0 ]; then
-    continue
-  fi
-  
-  # Python 2 interpreter found
+  # Python interpreter found
   PYTHON_BIN=$INTERPRETER
 
   break
 done
 
 if [ ! "$PYTHON_BIN" ]; then
-  echo "ERROR: No interpreter for Python 2 found!"
-  echo "       Please install Python 2 to run wxGlade!"
+  echo "ERROR: No interpreter for Python found!"
+  echo "       Please install Python to run wxGlade!"
   exit 1
 fi
 
 # determined current python version
-PY_VERSION=$(${PYTHON_BIN} -c 'import sys; print sys.version[:3]')
+PY_VERSION=$(${PYTHON_BIN} -c 'import sys; print(sys.version[:3])')
 
 # determined prefix of the Python module directory structure
 if [ -d "/usr/lib/pymodules/python${PY_VERSION}/wxglade" ]; then
