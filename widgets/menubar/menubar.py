@@ -231,8 +231,8 @@ class MenuItemDialog(wx.Dialog):
         elif index > 0:
             label = "    " * self.item_level(index-1) + '---'
         self.menu_items.InsertStringItem(index, label)
-        self.menu_items.SetStringItem(index, 1, '---')
-        self.menu_items.SetStringItem(index, 2, '---')
+        self.menu_items.SetStringItem(index, 2, '---')  # name
+        self.menu_items.SetStringItem(index, 5, '---')  # id
         # fix bug 698074
         self.menu_items.SetItemState(index, wx.LIST_STATE_SELECTED, wx.LIST_STATE_SELECTED)
 
@@ -379,16 +379,18 @@ class MenuItemDialog(wx.Dialog):
             set_item(i, 2, misc.wxstr(node.name))
             set_item(i, 4, misc.wxstr(node.help_str))
             set_item(i, 5, misc.wxstr(node.id))
-
-            item_type = 0
-            try:
-                if node.checkable and int(node.checkable):
-                    item_type = 1
-                elif int(node.radio):
-                    item_type = 2
-            except ValueError:
-                pass
-            set_item(i, 3, misc.wxstr(item_type))
+            if node.label==node.name==node.id=='---':
+                set_item(i, 3, '')
+            else:
+                item_type = 0
+                try:
+                    if node.checkable and int(node.checkable):
+                        item_type = 1
+                    elif int(node.radio):
+                        item_type = 2
+                except ValueError:
+                    pass
+                set_item(i, 3, misc.wxstr(item_type))
             index[0] += 1
             for item in node.children:
                 add(item, level+1)
@@ -637,6 +639,10 @@ class MenuHandler(BaseXmlBuilderTagHandler):
 
     def end_elem(self, name):
         if name == 'item':
+            if self.curr_item.handler == self.curr_item.name == self.curr_item.label == '---' and not self.curr_item.id:
+                # fix bug from 0.8 where separators were created with handler '---' instead of id
+                self.curr_item.id = '---'
+                self.curr_item.handler = ''
             try: cm = self.curr_menu[-1]
             except IndexError:
                 from xml_parse import XmlParsingError

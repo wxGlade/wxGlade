@@ -83,7 +83,6 @@ protected:
 public:
     void onShowManual(wxCommandEvent &event); // wxGlade: <event_handler>
     void onCloseFile(wxCommandEvent &event); // wxGlade: <event_handler>
-    void ---(wxCommandEvent &event); // wxGlade: <event_handler>
     void on_named2(wxCommandEvent &event); // wxGlade: <event_handler>
     void on_named3(wxCommandEvent &event); // wxGlade: <event_handler>
     void on_auto2(wxCommandEvent &event); // wxGlade: <event_handler>

@@ -132,28 +132,24 @@ sub new {
 
     Wx::Event::EVT_MENU($self, wxID_HELP, $self->can('onShowManual'));
     Wx::Event::EVT_MENU($self, $self->{m_Close}->GetId, $self->can('onCloseFile'));
-    Wx::Event::EVT_MENU($self, $self->{---}->GetId, $self->can('---'));
     Wx::Event::EVT_MENU($self, wxID_HELP, $self->can('onShowManual'));
     Wx::Event::EVT_MENU($self, $self->{m_Close}->GetId, $self->can('onCloseFile'));
     Wx::Event::EVT_MENU($self, wxID_HELP, $self->can('onShowManual'));
     Wx::Event::EVT_MENU($self, $self->{m_Close}->GetId, $self->can('onCloseFile'));
     Wx::Event::EVT_MENU($self, mn_ID2, $self->can('on_named2'));
     Wx::Event::EVT_MENU($self, $self->{m_named}->GetId, $self->can('on_named3'));
-    Wx::Event::EVT_MENU($self, $self->{---}->GetId, $self->can('---'));
     Wx::Event::EVT_MENU($self, mn_ID2C, $self->can('on_named2'));
     Wx::Event::EVT_MENU($self, $self->{m_named3C}->GetId, $self->can('on_named3'));
     Wx::Event::EVT_MENU($self, mn_ID2R, $self->can('on_named2'));
     Wx::Event::EVT_MENU($self, $self->{m_named3R}->GetId, $self->can('on_named3'));
     Wx::Event::EVT_MENU($self, wxID_ANY, $self->can('on_auto2'));
     Wx::Event::EVT_MENU($self, $self->{m_auto3}->GetId, $self->can('on_auto3'));
-    Wx::Event::EVT_MENU($self, $self->{---}->GetId, $self->can('---'));
     Wx::Event::EVT_MENU($self, wxID_ANY, $self->can('on_auto2'));
     Wx::Event::EVT_MENU($self, $self->{m_auto3C}->GetId, $self->can('on_auto3'));
     Wx::Event::EVT_MENU($self, wxID_ANY, $self->can('on_auto2'));
     Wx::Event::EVT_MENU($self, $self->{m_auto3R}->GetId, $self->can('on_auto3'));
     Wx::Event::EVT_MENU($self, -1, $self->can('on_Minus12'));
     Wx::Event::EVT_MENU($self, $self->{m_Minus13}->GetId, $self->can('on_Minus13'));
-    Wx::Event::EVT_MENU($self, $self->{---}->GetId, $self->can('---'));
     Wx::Event::EVT_MENU($self, -1, $self->can('on_Minus12'));
     Wx::Event::EVT_MENU($self, $self->{m_Minus13C}->GetId, $self->can('on_Minus13'));
     Wx::Event::EVT_MENU($self, -1, $self->can('on_Minus12'));
@@ -196,15 +192,6 @@ sub onCloseFile {
     my ($self, $event) = @_;
     # wxGlade: MenuTestFrame::onCloseFile <event_handler>
     warn "Event handler (onCloseFile) not implemented";
-    $event->Skip;
-    # end wxGlade
-}
-
-
-sub --- {
-    my ($self, $event) = @_;
-    # wxGlade: MenuTestFrame::--- <event_handler>
-    warn "Event handler (---) not implemented";
     $event->Skip;
     # end wxGlade
 }

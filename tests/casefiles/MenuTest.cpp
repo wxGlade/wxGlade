@@ -164,13 +164,6 @@ void MenuTestFrame::onCloseFile(wxCommandEvent &event)  // wxGlade: MenuTestFram
     wxLogDebug(wxT("Event handler (MenuTestFrame::onCloseFile) not implemented yet"));
 }
 
-void MenuTestFrame::---(wxCommandEvent &event)  // wxGlade: MenuTestFrame.<event_handler>
-{
-    event.Skip();
-    // notify the user that he hasn't implemented the event handler yet
-    wxLogDebug(wxT("Event handler (MenuTestFrame::---) not implemented yet"));
-}
-
 void MenuTestFrame::on_named2(wxCommandEvent &event)  // wxGlade: MenuTestFrame.<event_handler>
 {
     event.Skip();
