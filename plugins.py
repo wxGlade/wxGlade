@@ -183,8 +183,7 @@ def _process_widget_config(module):
     try:
         # process widget related style attributes
         common.style_attrs_to_sets(config_dict['style_defs'])
-        config.widget_config[config_dict['wxklass']] = \
-            config_dict
+        config.widget_config[config_dict['wxklass']] = config_dict
     except KeyError:
         pass
 
