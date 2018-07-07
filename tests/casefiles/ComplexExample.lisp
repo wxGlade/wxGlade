@@ -298,9 +298,9 @@
     (setf (textdomain) "ComplexExampleApp") ;; replace with the appropriate catalog name
     (defun _ (msgid) (gettext msgid "ComplexExampleApp"))
 
-    (let ((Mp3-To-Ogg (make-PyOgg2_MyFrame)))
-    (ELJApp_SetTopWindow (slot-top-window Mp3-To-Ogg))
-    (wxWindow_Show (slot-top-window Mp3-To-Ogg))))
+    (let ((FrameGrid (make-MyFrameGrid)))
+    (ELJApp_SetTopWindow (slot-top-window FrameGrid))
+    (wxWindow_Show (slot-top-window FrameGrid))))
 
 (unwind-protect
     (Eljapp_initializeC (wxclosure_Create #'init-func nil) 0 nil)

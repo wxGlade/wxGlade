@@ -292,9 +292,9 @@ unless(caller){
     my $ComplexExampleApp = Wx::App->new();
     Wx::InitAllImageHandlers();
 
-    my $Mp3_To_Ogg = PyOgg2_MyFrame->new();
+    my $FrameGrid = MyFrameGrid->new();
 
-    $ComplexExampleApp->SetTopWindow($Mp3_To_Ogg);
-    $Mp3_To_Ogg->Show(1);
+    $ComplexExampleApp->SetTopWindow($FrameGrid);
+    $FrameGrid->Show(1);
     $ComplexExampleApp->MainLoop();
 }

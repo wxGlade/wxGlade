@@ -309,7 +309,7 @@ class Application(np.PropertyOwner):
         if not modified or "language" in modified:
             self._set_language() # update language-dependent choices
         if not modified or "name" in modified or "class" in modified:
-            # enable/disable to_window
+            # enable/disable top_window
             self.properties["top_window"].set_active(self.name or self.klass)
         if not modified or "overwrite" in modified:
             block = not self.overwrite

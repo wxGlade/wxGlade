@@ -251,8 +251,8 @@ bool MyApp::OnInit()
     m_locale.AddCatalog(wxT(APP_CATALOG));
 
     wxInitAllImageHandlers();
-    PyOgg2_MyFrame* Mp3_To_Ogg = new PyOgg2_MyFrame(NULL, wxID_ANY, wxEmptyString);
-    SetTopWindow(Mp3_To_Ogg);
-    Mp3_To_Ogg->Show();
+    MyFrameGrid* FrameGrid = new MyFrameGrid(NULL, wxID_ANY, wxEmptyString);
+    SetTopWindow(FrameGrid);
+    FrameGrid->Show();
     return true;
 }
