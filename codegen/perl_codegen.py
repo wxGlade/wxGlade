@@ -245,6 +245,7 @@ sub %(handler)s {
 
     tmpl_sizeritem = '%s->Add(%s, %s, %s, %s);\n'
     tmpl_gridbagsizeritem = '%s->Add(%s, %s, %s, %s, %s);\n'
+    tmpl_gridbagsizerspacer = '%s->Add(%s, %s, %s, %s, %s, %s);\n'
     tmpl_spacersize = '%s, %s'
 
     tmpl_style = \

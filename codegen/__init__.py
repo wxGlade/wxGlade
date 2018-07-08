@@ -1065,9 +1065,15 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
             size = (obj.width, obj.height)
         else:
             size = (0, 0)
-        size = self.tmpl_spacersize%size
         flag = self.cn_f(flag) or '0'
-        klass.layout.append( self.tmpl_sizeritem % ( sizer_name, size, proportion,flag, border ) )
+        if sizer.klass!="wxGridBagSizer":
+            size = self.tmpl_spacersize%size
+            stmt = self.tmpl_sizeritem % ( sizer_name, size, proportion,flag, border )
+        else:
+            # GridBagSizer
+            pos = sizer._get_row_col(obj.pos)
+            stmt = self.tmpl_gridbagsizerspacer % ( sizer_name, size[0], size[1], pos, obj.span, flag, border )
+        klass.layout.append( stmt )
 
     def add_widget_handler(self, widget_name, handler, *args, **kwds):
         self.obj_builders[widget_name] = handler

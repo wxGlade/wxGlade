@@ -130,24 +130,26 @@ class BaseSizerBuilder(object):
         "Set sizer specific properties and generate the code"
         result = self.get_code_wxGridSizer(obj)
 
-        # convert tuple to list
-        result = list(result)
+        if self.codegen.preview and obj.klass=="wxGridBagSizer":
+            max_row, max_col = obj._get_max_row_col()
+        else:
+            max_row = max_col = None
 
-        # extract layout lines
-        layout = result[-1]
-        del result[-1]
-
+        layout = []
         if 'growable_rows' in obj.properties:
             for row in obj.growable_rows:
-                self.tmpl_dict['row'] = row
-                layout.append(self.tmpl_AddGrowableRow % self.tmpl_dict)
+                if max_row is None or row<=max_row:
+                    self.tmpl_dict['row'] = row
+                    layout.append(self.tmpl_AddGrowableRow % self.tmpl_dict)
         if 'growable_cols' in obj.properties:
             for col in obj.growable_cols:
-                self.tmpl_dict['col'] = col
-                layout.append(self.tmpl_AddGrowableCol % self.tmpl_dict)
+                if max_col is None or col<=max_col:
+                    self.tmpl_dict['col'] = col
+                    layout.append(self.tmpl_AddGrowableCol % self.tmpl_dict)
 
-        # reappend layout lines
-        result.append(layout)
+        # convert tuple to list and append the layout lines
+        result = list(result)
+        result[-1] += layout
         return result
 
 
@@ -2642,8 +2644,10 @@ def grid_builder(parent, sizer, pos, number=[1]):
         # add the slots
         for i in range(rows*cols):
             sz._add_slot()
+        if rows!=0:
+            sz.properties["rows"].set(rows)
         sz.layout()
-    
+
         if parent.widget: sz.create()
     
         if sizer is not None:

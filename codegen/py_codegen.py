@@ -207,6 +207,7 @@ class PythonCodeWriter(BaseLangCodeWriter, wcodegen.PythonMixin):
     tmpl_func_empty = '%(tab)spass\n'
     tmpl_sizeritem = '%s.Add(%s, %s, %s, %s)\n'
     tmpl_gridbagsizeritem = '%s.Add(%s, %s, %s, %s, %s)\n'
+    tmpl_gridbagsizerspacer = '%s.Add(%s, %s, %s, %s, %s, %s)\n'
     tmpl_style = '%(tab)skwds["style"] = %(style)s\n'
     tmpl_toplevel_style = '%(tab)skwds["style"] = kwds.get("style", 0) | %(style)s\n'
     tmpl_style0 = '%(tab)skwds["style"] = 0\n'
