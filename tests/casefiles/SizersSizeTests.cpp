@@ -22,6 +22,7 @@ MyFrame::MyFrame(wxWindow* parent, wxWindowID id, const wxString& title, const w
     // begin wxGlade: MyFrame::MyFrame
     SetSize(wxSize(600, 400));
     notebook_1 = new wxNotebook(this, wxID_ANY);
+    notebook_1_GridBagSizer_Spacers = new wxPanel(notebook_1, wxID_ANY);
     notebook_1_BorderTest = new wxPanel(notebook_1, wxID_ANY);
     notebook_1_GridBagSizer = new wxPanel(notebook_1, wxID_ANY);
     notebook_1_FlexGridSizer = new wxPanel(notebook_1, wxID_ANY);
@@ -372,6 +373,7 @@ MyFrame::MyFrame(wxWindow* parent, wxWindowID id, const wxString& title, const w
     _0_N_N_copy_copy_1 = new wxTextCtrl(notebook_1_BorderTest, wxID_ANY, wxEmptyString);
     _0_N_N_copy_31 = new wxTextCtrl(notebook_1_BorderTest, wxID_ANY, wxEmptyString);
     _0_N_N_copy_32 = new wxTextCtrl(notebook_1_BorderTest, wxID_ANY, wxEmptyString);
+    button_1 = new wxButton(notebook_1_GridBagSizer_Spacers, wxID_ANY, _("button_1"));
 
     set_properties();
     do_layout();
@@ -670,6 +672,7 @@ void MyFrame::do_layout()
 {
     // begin wxGlade: MyFrame::do_layout
     wxBoxSizer* sizer_1 = new wxBoxSizer(wxVERTICAL);
+    wxGridBagSizer* grid_sizer_1 = new wxGridBagSizer(0, 0);
     wxBoxSizer* sizer_7 = new wxBoxSizer(wxHORIZONTAL);
     wxBoxSizer* sizer_border_15_BOTTOM = new wxBoxSizer(wxVERTICAL);
     wxBoxSizer* sizer_border_5_LEFTRIGHT = new wxBoxSizer(wxVERTICAL);
@@ -1085,6 +1088,14 @@ void MyFrame::do_layout()
     sizer_border_15_BOTTOM->Add(_0_N_N_copy_32, 0, 0, 0);
     sizer_7->Add(sizer_border_15_BOTTOM, 1, wxALIGN_RIGHT, 15);
     notebook_1_BorderTest->SetSizer(sizer_7);
+    grid_sizer_1->Add(button_1, wxGBPosition(0, 0), wxGBSpan(1, 1), 0, 0);
+    grid_sizer_1->Add(20, 20, wxGBPosition(2, 0), wxGBSpan(1, 1), wxEXPAND, 0);
+    grid_sizer_1->Add(20, 20, wxGBPosition(2, 1), wxGBSpan(1, 1), wxEXPAND, 0);
+    notebook_1_GridBagSizer_Spacers->SetSizer(grid_sizer_1);
+    grid_sizer_1->AddGrowableRow(0);
+    grid_sizer_1->AddGrowableRow(2);
+    grid_sizer_1->AddGrowableCol(0);
+    grid_sizer_1->AddGrowableCol(2);
     notebook_1->AddPage(notebook_1_pane_1, _("BoxSizer"));
     notebook_1->AddPage(notebook_1_WrapSizer, _("WrapSizer"));
     notebook_1->AddPage(notebook_1_StaticBoxSizer, _("StaticBoxSizer"));
@@ -1092,6 +1103,7 @@ void MyFrame::do_layout()
     notebook_1->AddPage(notebook_1_FlexGridSizer, _("FlexGridSizer"));
     notebook_1->AddPage(notebook_1_GridBagSizer, _("GridBagSizer"));
     notebook_1->AddPage(notebook_1_BorderTest, _("BorderTest"));
+    notebook_1->AddPage(notebook_1_GridBagSizer_Spacers, _("GridBagSizer_Spacers"));
     sizer_1->Add(notebook_1, 1, wxEXPAND, 0);
     SetSizer(sizer_1);
     Layout();

@@ -2326,6 +2326,34 @@
                         </object>
                     </object>
                     </object>
+                    <object class="notebookpage">
+                    <label>GridBagSizer_Spacers</label>
+                    <object class="wxPanel" name="notebook_1_GridBagSizer_Spacers">
+                        <style>wxTAB_TRAVERSAL</style>
+                        <object class="wxGridBagSizer">
+                            <class_orient>wxGridBagSizer</class_orient>
+                            <cols>3</cols>
+                            <growable_cols>0,2</growable_cols>
+                            <growable_rows>0,2</growable_rows>
+                            <hgap>0</hgap>
+                            <rows>3</rows>
+                            <vgap>0</vgap>
+                            <object class="sizeritem">
+                                <object class="wxButton" name="button_1">
+                                    <label>button_1</label>
+                                </object>
+                            </object>
+                            <object class="spacer">
+                                <size>20, 20</size>
+                                <flag>wxEXPAND</flag>
+                            </object>
+                            <object class="spacer">
+                                <size>20, 20</size>
+                                <flag>wxEXPAND</flag>
+                            </object>
+                        </object>
+                    </object>
+                    </object>
                 </object>
             </object>
         </object>

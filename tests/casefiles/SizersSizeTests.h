@@ -396,6 +396,8 @@ protected:
     wxTextCtrl* _0_N_N_copy_31;
     wxTextCtrl* _0_N_N_copy_32;
     wxPanel* notebook_1_BorderTest;
+    wxButton* button_1;
+    wxPanel* notebook_1_GridBagSizer_Spacers;
     wxNotebook* notebook_1;
     // end wxGlade
 }; // wxGlade: end class
