@@ -856,7 +856,7 @@ class TopLevelBase(WindowBase, PreviewMixin):
             return (True,None)
         import edit_sizers
         if not isinstance(widget, edit_sizers.Sizer):
-            return 'Only sizers can be pasted here'
+            return (False, 'Only sizers can be pasted here')
         return (True,None)
 
     def clipboard_paste(self, clipboard_data):

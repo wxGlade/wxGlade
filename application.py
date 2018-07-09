@@ -109,6 +109,7 @@ class Application(np.PropertyOwner):
     elif sys.platform=="darwin":
         _PROPERTY_HELP["output_path"] = "Output file or directory; double click label to show in Finder"
     is_sizer = False
+    _is_toplevel = False
     base = None
 
     def __init__(self):
