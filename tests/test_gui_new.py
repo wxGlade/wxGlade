@@ -81,6 +81,11 @@ class TestGui(WXGladeGUITest):
         "Test code generation for fonts and colours"
         self.load_and_generate('FontColour', test_GUI=True)
 
+    def test_Font(self):
+        "Test code generation for fonts"
+        self.load_and_generate('FontTest28', test_GUI=True)
+        self.load_and_generate('FontTest', test_GUI=False)
+
     def test_Grid(self):
         "Test code generation with a grid widgets and handling events"
         self.load_and_generate('Grid', test_GUI=False)

@@ -2050,11 +2050,11 @@ class FontProperty(DialogProperty):
     normalization = "[%s, '%s', '%s', '%s', %s, '%s']"
 
     # for writing code
-    font_families = {'default': 'wxDEFAULT', 'decorative': 'wxDECORATIVE',
-                     'roman': 'wxROMAN', 'swiss': 'wxSWISS', 'script': 'wxSCRIPT', 'modern': 'wxMODERN',
-                     'teletype': 'wxTELETYPE'}
-    font_styles = {'normal': 'wxNORMAL', 'slant': 'wxSLANT', 'italic': 'wxITALIC'}
-    font_weights = {'normal': 'wxNORMAL', 'light': 'wxLIGHT', 'bold': 'wxBOLD'}
+    font_families = {'default': 'wxFONTFAMILY_DEFAULT', 'decorative': 'wxFONTFAMILY_DECORATIVE',
+                     'roman': 'wxFONTFAMILY_ROMAN', 'swiss': 'wxFONTFAMILY_SWISS', 'script': 'wxFONTFAMILY_SCRIPT', 'modern': 'wxFONTFAMILY_MODERN',
+                     'teletype': 'wxFONTFAMILY_TELETYPE'}
+    font_styles = {'normal': 'wxFONTSTYLE_NORMAL', 'slant': 'wxFONTSTYLE_SLANT', 'italic': 'wxFONTSTYLE_ITALIC'}
+    font_weights = {'normal': 'wxFONTWEIGHT_NORMAL', 'light': 'wxFONTWEIGHT_LIGHT', 'bold': 'wxFONTWEIGHT_BOLD'}
 
     def write(self, output, tabs=0):
         if not self.is_active(): return

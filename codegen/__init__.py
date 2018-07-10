@@ -1237,6 +1237,11 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
         family  = font_p.font_families[family]  # e.g. 'roman' -> 'wxROMAN'
         style   = font_p.font_styles[style]
         weight  = font_p.font_weights[weight]
+        if self.for_version[0]<3:
+            # use old constants
+            family = family.replace('wxFONTFAMILY_', 'wx')
+            style  = style.replace( 'wxFONTSTYLE_',  'wx')
+            weight = weight.replace('wxFONTWEIGHT_', 'wx')
 
         face = '"%s"' % face.replace('"', r'\"')
         stmt = tmpl % { 'objname':objname, 'cnfont':cnfont, 'face':face, 'family':self.cn(family), 'size':size,
