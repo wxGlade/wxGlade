@@ -41,7 +41,7 @@ class EditTreeCtrl(ManagedBase, EditStylesMixin):
     def finish_widget_creation(self):
         ManagedBase.finish_widget_creation(self, sel_marker_parent=self.widget)
 
-    def _set_name(self, name):
+    def _set_name(self):
         if not self.widget or not self._item_with_name: return
         self.widget.SetItemText(self._item_with_name, ' ' + self.name)
 
