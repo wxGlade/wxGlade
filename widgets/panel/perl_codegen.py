@@ -70,7 +70,7 @@ class PerlPanelGenerator(wcodegen.PerlWidgetCodeWriter):
 
     def get_layout_code(self, obj):
         ret = ['$self->Layout();\n']
-        if obj.centered:
+        if "centered" in obj.properties and obj.centered:
             ret.append('$self->Centre();\n')
         return ret
 
