@@ -17,7 +17,7 @@ t = gettext.translation(domain="wxglade", localedir="locale", fallback=True)
 t.install("wxglade")
 
 import common
-common.init_paths()
+common.init_paths(None)
 
 import config
 config.testing = True

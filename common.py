@@ -477,7 +477,7 @@ def restore_from_autosaved(filename):
     return False
 
 
-def init_paths():
+def init_paths(options):
     "Set all wxGlade related paths; the paths will be stored in L{config}."
     # use directory of the exe in case of frozen packages e.g. PyInstaller or py2exe
     if hasattr(sys, 'frozen'):
@@ -503,7 +503,7 @@ def init_paths():
 
     _set_home_path()
     _set_appdata_path()
-    _set_file_paths()
+    _set_file_paths(options)
     _normalise_paths()
     _create_appdata_path()
 
@@ -656,7 +656,7 @@ def _normalise_paths():
         setattr(config, name, path)
 
 
-def _set_file_paths():
+def _set_file_paths(options):
     "Set the full path for all files (config.*_file except default_output_file)"
     install_method = _get_install_method()
     if install_method == 'single_directory':
@@ -682,7 +682,9 @@ def _set_file_paths():
     config.widgets_path = os.path.join(config.wxglade_path, 'widgets')
 
     # complete path to rc file
-    if os.name == 'nt':
+    if options and options.rc_file:
+        config.rc_file = options.rc_file
+    elif os.name == 'nt':
         config.rc_file = os.path.join(config.appdata_path, 'wxglade.ini')
     else:
         config.rc_file = os.path.join(config.appdata_path, 'wxgladerc')

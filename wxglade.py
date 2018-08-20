@@ -74,6 +74,9 @@ def parse_command_line():
     parser.add_option("-o", "--output", metavar="PATH", dest="output",
                             help=_("(optional) output file in single-file mode or output directory in multi-file mode"))
 
+    parser.add_option("-c", "--use-config", dest="rc_file",
+                            help=_("use specified wxgladerc config file instead of the default one") )
+
     options, args = parser.parse_args()
 
     # print epilog because OptionParser.epilog isn't available to Python 2.3
@@ -180,11 +183,11 @@ def command_line_code_generation(filename, language, out_path=None):
     sys.exit(0)
 
 
-def init_stage1():
+def init_stage1(options):
     """Initialise paths for wxGlade (first stage)
     Initialisation is split because the test suite doesn't work with proper initialised paths."""
     config.version = config.get_version()
-    common.init_paths()
+    common.init_paths(options)
 
     # initialise own logging extensions
     log.init(filename=config.log_file, encoding='utf-8', level='INFO')
@@ -262,7 +265,7 @@ def run_main():
     options = parse_command_line()
 
     # initialise wxGlade (first stage and second stage)
-    init_stage1()
+    init_stage1(options)
     init_stage2(options.start_gui)
 
     if options.start_gui:
