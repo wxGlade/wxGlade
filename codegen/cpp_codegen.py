@@ -586,7 +586,7 @@ class CPPCodeWriter(BaseLangCodeWriter, wcodegen.CppMixin):
                 self.warning( '%s has extra code, but you are not overwriting existing sources:'
                               ' please check that the resulting code is correct!' % code_obj.name )
 
-        if not self.multiple_files and extra_code:
+        if not self.multiple_files:
             if self.classes[klass].extra_code_h:
                 self._current_extra_code_h.append( "".join( self.classes[klass].extra_code_h[::-1] ) )
             if self.classes[klass].extra_code_cpp:
@@ -967,11 +967,17 @@ class CPPCodeWriter(BaseLangCodeWriter, wcodegen.CppMixin):
             raise  # this shouldn't happen
 
         if not sub_obj.is_sizer:  # the object is a wxWindow instance
+            if "extracode_pre" in sub_obj.properties and sub_obj.extracode_pre:
+                init = sub_obj.properties["extracode_pre"].get_lines() + init
+            if "extracode_post" in sub_obj.properties and sub_obj.extracode_post:
+                init += sub_obj.properties["extracode_post"].get_lines()
+
             if sub_obj.node.children and not sub_obj.is_toplevel:
                 init.reverse()
                 klass.parents_init.extend(init)
             else:
                 klass.init.extend(init)
+
             mycn = getattr(builder, 'cn', self.cn)
             for win_id, evt, handler, evt_type in builder.get_event_handlers(sub_obj):
                 klass.event_handlers.append( (win_id, mycn(evt), handler, evt_type) )
