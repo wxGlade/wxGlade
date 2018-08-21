@@ -235,13 +235,22 @@ def check_wx_version(major, minor=0, release=0, revision=0):
 ########################################################################################################################
 # error/warning/info messages
 def error_message(msg, title="Error", display_traceback=False):
-    wx.MessageBox( _(msg), _(title), wx.OK | wx.CENTRE | wx.ICON_ERROR )
+    if config.use_gui:
+        wx.MessageBox( _(msg), _(title), wx.OK | wx.CENTRE | wx.ICON_ERROR )
+    else:
+        logging.error(msg)
 
 def info_message(msg, title="Information"):
-    wx.MessageBox( _(msg), _(title), wx.OK | wx.CENTRE | wx.ICON_INFORMATION )
+    if config.use_gui:
+        wx.MessageBox( _(msg), _(title), wx.OK | wx.CENTRE | wx.ICON_INFORMATION )
+    else:
+        logging.info(msg)
 
 def warning_message(msg, title="Warning"):
-    wx.MessageBox( _(msg), _(title), wx.OK | wx.CENTRE | wx.ICON_WARNING )
+    if config.use_gui:
+        wx.MessageBox( _(msg), _(title), wx.OK | wx.CENTRE | wx.ICON_WARNING )
+    else:
+        logging.warning(msg)
 
 
 ########################################################################################################################

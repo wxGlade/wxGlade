@@ -243,6 +243,8 @@ class BitmapMixin(object):
             self._set_widget_best_size()
 
     def _set_preview_bitmap(self, prop, name, ref_size=None):
+        if not config.use_gui:
+            return
         bmp = prop.get_value()
         OK = True
         if bmp:

@@ -1397,7 +1397,7 @@ class BoxSizerBase(SizerBase):
         return '%s (%s)'%( self.WX_CLASS, self.properties["orient"].get_string_value() )
 
     def properties_changed(self, modified):
-        if not modified or "orient" in modified and self.node:
+        if not modified or "orient" in modified and self.node and config.use_gui:
             # update the image
             common.app_tree.SetItemImage(self.node.item, self.node.get_image() )
 

@@ -366,8 +366,11 @@ class WindowBase(EditBase):
         # font
         if "font" in self.PROPERTIES:
             self._font_changed = False # this is True if the user has selected a custom font
-            font = self._build_from_font( compat.wx_SystemSettings_GetFont(wx.SYS_DEFAULT_GUI_FONT) )
-            font[1] = 'default'
+            if config.use_gui:
+                font = self._build_from_font( compat.wx_SystemSettings_GetFont(wx.SYS_DEFAULT_GUI_FONT) )
+                font[1] = 'default'
+            else:
+                font = (9, 'default', 'normal', 'normal', 0, 'Segoe UI')
             self.font = np.FontPropertyD(tuple(font))
 
         # tooltip, focused, hiden

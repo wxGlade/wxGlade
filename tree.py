@@ -21,6 +21,7 @@ class Node(object):
         self.widget = widget      # e.g. EditPanel or EditBoxSizer
         self.children = children  # list of Node or SlotNode instances
         self.parent = None        # parent node; will be set in Tree.add/insert
+        self.item = None
     @property
     def is_toplevel(self):
         if self.parent.parent is None:
@@ -46,7 +47,7 @@ class Node(object):
             pass
 
     def has_ancestor(self, node):
-        # returns True if node is parent or parents parent ...
+        "Returns True if node is parent or parents parent ..."
         parent = self.parent
         if parent is None: return False
         while True:
@@ -105,7 +106,7 @@ class Node(object):
         output.append(u'%s</object>\n' % outer_tabs)
 
     def get_image(self, image=None):
-        # get an image for this node
+        "Get an image for this node"
         if image is not None:
             return image
 
@@ -222,17 +223,29 @@ class Tree(object):
         self.names.setdefault(self._find_toplevel(child), {})[child.widget.name] = 1
         if parent is self.root and getattr(child.widget.__class__, '_is_toplevel_window', False):
             self.app.add_top_window(child.widget.name)
+            
+        if not isinstance(child.widget, edit_sizers.SizerSlot):
+            self.app.check_codegen(child.widget)
 
     def insert(self, child, parent, index):
         # if at index there is a SlotNode, replace this, otherwise insert
         if parent is None: parent = self.root
-        if parent.children is None: parent.children = []
+        if parent.children is None or index>=len(parent.children):
+            self.add(child, parent)
+            return
+        if isinstance( parent.children[index], SlotNode ):
+            if not isinstance(child, SlotNode):
+                self.remove( parent.children[index] )
+
         parent.children.insert(index, child)
         child.parent = parent
         self.current = child
         self.names.setdefault(self._find_toplevel(child), {})[child.widget.name] = 1
         if parent is self.root:
             self.app.add_top_window(child.widget.name)
+            
+        if not isinstance(child.widget, edit_sizers.SizerSlot):
+            self.app.check_codegen(child.widget)
 
     def clear_name_rec(self, n):
         if n.parent is self.root:
@@ -364,8 +377,35 @@ class Tree(object):
         if start_node is None: start_node = self.root
         self._prn(start_node, 0)
 
+    def clear(self):
+        # delete all children; call common.app_tree.app.new() or .init() afterwards
+        self.skip_select = True
+        if self.root.children:
+            while self.root.children:
+                c = self.root.children[-1]
+                if c.widget: c.widget.remove()
+            self.root.children = None
+        self.skip_select = False
 
+    def set_title(self, value):
+        if value is None: value = ""
+        self.title = value
 
+    def get_title(self):
+        if not self.title: self.title = ' '
+        return self.title
+
+    def refresh_name(self, node, previous_name=None):
+        names = self.names.setdefault(self._find_toplevel(node), {})
+        if previous_name is not None and previous_name in names:
+            del names[previous_name]
+        names[node.widget.name] = 1
+
+    def refresh(self, node, refresh_label=True, refresh_image=True):
+        # nothing to, do when there is no GUI
+        pass
+        
+    
 class WidgetTree(wx.TreeCtrl, Tree):
     "Tree with the ability to display the hierarchy of widgets"
     images = {} # Dictionary of icons of the widgets displayed
@@ -675,8 +715,6 @@ class WidgetTree(wx.TreeCtrl, Tree):
             if select:
                 self.select_item(child)
 
-        if not isinstance(child.widget, edit_sizers.SizerSlot):
-            self.app.check_codegen(child.widget)
 
     def insert(self, child, parent, index, select=True):
         "inserts child to the list of parent's children at index; a SlotNode at index is overwritten"
@@ -692,10 +730,6 @@ class WidgetTree(wx.TreeCtrl, Tree):
             self.add(child, parent, select=select)
             return
 
-        if isinstance( parent.children[index], SlotNode ):
-            if not isinstance(child, SlotNode):
-                self.remove( parent.children[index] )
-
         Tree.insert(self, child, parent, index)
         image = child.get_image()
         child.item = compat.wx_Tree_InsertItemBefore(self, parent.item, index, self._build_label(child), image)
@@ -704,8 +738,6 @@ class WidgetTree(wx.TreeCtrl, Tree):
             self.Expand(parent.item)
             if select:
                 self.select_item(child)
-        if not isinstance(child.widget, edit_sizers.SizerSlot):
-            self.app.check_codegen(child.widget)
 
     def remove(self, node=None, delete=True):
         self.app.saved = False  # update the status of the app
@@ -716,21 +748,8 @@ class WidgetTree(wx.TreeCtrl, Tree):
         else:
             wx.TreeCtrl.Destroy(self)
 
-    def clear(self):
-        # delete all children; call common.app_tree.app.new() or .init() afterwards
-        self.skip_select = True
-        if self.root.children:
-            while self.root.children:
-                c = self.root.children[-1]
-                if c.widget: c.widget.remove()
-            self.root.children = None
-        self.skip_select = False
-
     def refresh_name(self, node, previous_name=None):
-        names = self.names.setdefault(self._find_toplevel(node), {})
-        if previous_name is not None and previous_name in names:
-            del names[previous_name]
-        names[node.widget.name] = 1
+        Tree.refresh_name(self, node, previous_name)
         self.SetItemText(node.item, self._build_label(node))
 
     def refresh(self, node, refresh_label=True, refresh_image=True):
@@ -867,16 +886,11 @@ class WidgetTree(wx.TreeCtrl, Tree):
         else: self.Collapse(node.item)
 
     def set_title(self, value):
-        if value is None: value = ""
-        self.title = value
+        Tree.set_title(self, value)
         try:
             self.GetTopLevelParent().SetTitle(_('wxGlade: %s') % value)
         except:
             pass
-
-    def get_title(self):
-        if not self.title: self.title = ' '
-        return self.title
 
     def create_widgets(self, node):
         "Shows the widget of the given node and all its children"
