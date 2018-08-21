@@ -683,6 +683,8 @@ def _set_file_paths(options):
 
     # complete path to rc file
     if options and options.rc_file:
+        if not os.path.exists(options.rc_file):
+            logging.error(_('Specified config file does not exist'))
         config.rc_file = options.rc_file
     elif os.name == 'nt':
         config.rc_file = os.path.join(config.appdata_path, 'wxglade.ini')
