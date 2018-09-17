@@ -199,8 +199,7 @@ class DefaultXrcObject(XrcObject):
                 # 'disabled' property is actually 'enabled' for XRC
                 if prop.get():
                     properties['enabled'] = '0'
-                else:
-                    continue
+                continue
             elif name=='custom_base' in self.properties:
                 # custom base classes are ignored for XRC...
                 continue
