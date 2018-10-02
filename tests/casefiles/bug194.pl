@@ -36,9 +36,9 @@ sub new {
     $self->{list_box_single} = Wx::ListBox->new($self, wxID_ANY, wxDefaultPosition, wxDefaultSize, [_T("Listbox wxLB_SINGLE")], wxLB_SINGLE);
     $self->{list_box_multiple} = Wx::ListBox->new($self, wxID_ANY, wxDefaultPosition, wxDefaultSize, [_T("Listbox wxLB_MULTIPLE")], wxLB_MULTIPLE);
     $self->{list_box_extended} = Wx::ListBox->new($self, wxID_ANY, wxDefaultPosition, wxDefaultSize, [_T("Listbox wxLB_EXTENDED")], wxLB_EXTENDED);
-    $self->{check_list_box_single} = Wx::CheckListBox->new($self, wxID_ANY, wxDefaultPosition, wxDefaultSize, [_T("CheckListBox wxLB_SINGLE")], , wxDefaultPosition, wxDefaultSize, wxLB_SINGLE);
-    $self->{check_list_box_multiple} = Wx::CheckListBox->new($self, wxID_ANY, wxDefaultPosition, wxDefaultSize, [_T("CheckListBox wxLB_MULTIPLE")], , wxDefaultPosition, wxDefaultSize, wxLB_MULTIPLE);
-    $self->{check_list_box_extended} = Wx::CheckListBox->new($self, wxID_ANY, wxDefaultPosition, wxDefaultSize, [_T("CheckListBox wxLB_EXTENDED")], , wxDefaultPosition, wxDefaultSize, wxLB_EXTENDED);
+    $self->{check_list_box_single} = Wx::CheckListBox->new($self, wxID_ANY, wxDefaultPosition, wxDefaultSize, [_T("CheckListBox wxLB_SINGLE")], wxLB_SINGLE);
+    $self->{check_list_box_multiple} = Wx::CheckListBox->new($self, wxID_ANY, wxDefaultPosition, wxDefaultSize, [_T("CheckListBox wxLB_MULTIPLE")], wxLB_MULTIPLE);
+    $self->{check_list_box_extended} = Wx::CheckListBox->new($self, wxID_ANY, wxDefaultPosition, wxDefaultSize, [_T("CheckListBox wxLB_EXTENDED")], wxLB_EXTENDED);
 
     $self->__set_properties();
     $self->__do_layout();

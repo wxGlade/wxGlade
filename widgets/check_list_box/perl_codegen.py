@@ -16,6 +16,7 @@ import wcodegen
 class PerlCheckListBoxGenerator(wcodegen.PerlWidgetCodeWriter):
     tmpl = '%(name)s = %(klass)s->new(%(parent)s, %(id)s, ' \
            'wxDefaultPosition, wxDefaultSize, [%(choices)s], %(style)s);\n'
+    prefix_style = False
 
 
 def initialize():
