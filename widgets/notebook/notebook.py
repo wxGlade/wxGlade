@@ -234,7 +234,8 @@ class EditNotebook(ManagedBase, EditStylesMixin):
     def post_load(self):
         # at this time, all children should be available
         # no longer required when the data structure is changed
-        self.sizer.item_properties_modified2(self)
+        if not self.sizer.is_virtual():
+            self.sizer.item_properties_modified2(self)
 
     def on_set_focus(self, event):
         # allow switching of pages
