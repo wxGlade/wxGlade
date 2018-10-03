@@ -927,7 +927,7 @@ class TopLevelBase(WindowBase, PreviewMixin):
             self.preview_widget = None
         widget = self.widget
         WindowBase.delete(self)
-        if widget is not None: misc.design_windows.remove(widget)
+        if widget is not None and widget in misc.design_windows: misc.design_windows.remove(widget)
 
     def _find_widget_by_pos(self, w, x,y, level=1):
         "helper for find_widget_by_pos; w is the parent window/widget"
