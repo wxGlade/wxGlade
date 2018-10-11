@@ -79,7 +79,8 @@ config = {
         'EVT_COMMAND_SCROLL_PAGEDOWN': {},
         'EVT_COMMAND_SCROLL_THUMBTRACK': {},
         'EVT_COMMAND_SCROLL_THUMBRELEASE': {},
-        'EVT_COMMAND_SCROLL_ENDSCROLL': {},
+        'EVT_COMMAND_SCROLL_CHANGED': {},
+        'EVT_SLIDER':{'type': 'wxCommandEvent'},
     },
 }
 
