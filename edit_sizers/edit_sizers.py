@@ -462,30 +462,32 @@ class SizerSlot(np.PropertyOwner):
 
     def delete(self):
         # mainly deletes the widget
+        self.destroy_widget()
+        common.app_tree.app.saved = False
+
+    def destroy_widget(self):
+        if self.widget is None: return
         if misc.currently_under_mouse is self.widget:
             misc.currently_under_mouse = None
 
-        if self.widget:
-            self.widget.Hide()
+        self.widget.Hide()
 
-            # unbind events to prevent new created (and queued) events
-            self.widget.Bind(wx.EVT_PAINT, None)
-            self.widget.Bind(wx.EVT_RIGHT_DOWN, None)
-            self.widget.Bind(wx.EVT_LEFT_DOWN, None)
-            self.widget.Bind(wx.EVT_MIDDLE_DOWN, None)
-            self.widget.Bind(wx.EVT_ENTER_WINDOW, None)
-            self.widget.Bind(wx.EVT_LEAVE_WINDOW, None)
-            self.widget.Bind(wx.EVT_KEY_DOWN, None)
-            if self.sizer and not self.sizer.is_virtual and self.sizer.widget:
-                self.sizer.widget.Detach(self.widget)  # this will happen during recursive removal only
-                self.sizer = None
-            compat.DestroyLater(self.widget)
-            self.widget = None
+        # unbind events to prevent new created (and queued) events
+        self.widget.Bind(wx.EVT_PAINT, None)
+        self.widget.Bind(wx.EVT_RIGHT_DOWN, None)
+        self.widget.Bind(wx.EVT_LEFT_DOWN, None)
+        self.widget.Bind(wx.EVT_MIDDLE_DOWN, None)
+        self.widget.Bind(wx.EVT_ENTER_WINDOW, None)
+        self.widget.Bind(wx.EVT_LEAVE_WINDOW, None)
+        self.widget.Bind(wx.EVT_KEY_DOWN, None)
+        if self.sizer and not self.sizer.is_virtual and self.sizer.widget:
+            self.sizer.widget.Detach(self.widget)  # this will happen during recursive removal only
+            self.sizer = None
+        compat.DestroyLater(self.widget)
+        self.widget = None
 
         if misc.focused_widget is self:
             misc.set_focused_widget(None)
-        common.app_tree.app.saved = False
-
 
     def __getstate__(self):
         state = self.__dict__.copy()
@@ -1183,14 +1185,17 @@ class SizerBase(Sizer, np.PropertyOwner):
 
     def delete(self):
         "Destructor"
+        self.destroy_widget()
+        if self.toplevel:
+            self.window.set_sizer(None)
+
+    def destroy_widget(self):
+        # actually, the sizer widget is not destroyed
+        if not self.widget: return
         if self._btn:
             self._btn.Destroy()
             self._btn = None
-        for c in self.children:
-            if c and isinstance(c, SizerSlot):
-                c.delete()
-        if self.toplevel:
-            self.window.set_sizer(None)
+        self.widget.Clear()  # without deleting window items; but sets the sizer of the windows to NULL
 
     if wx.Platform == '__WXMSW__':
         def finish_set(self):  # previously called after self.set_option(...)
@@ -1540,10 +1545,10 @@ class EditStaticBoxSizer(BoxSizerBase):
 
         BoxSizerBase.properties_changed(self, modified)
 
-    def delete(self):
+    def destroy_widget(self):
         if self.widget:
             self.widget.GetStaticBox().Destroy()
-        SizerBase.delete(self)
+        SizerBase.destroy_widget(self)
 
 
 

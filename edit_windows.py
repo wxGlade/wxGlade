@@ -170,15 +170,16 @@ class EditBase(EventsMixin, np.PropertyOwner):
         """Destructor. deallocates the popup menu, the notebook and all the properties.
         Why we need explicit deallocation? Well, basically because otherwise we get a lot of memory leaks... :)"""
         # XXX tell property editor
-
-        # ...finally, destroy our widget (if needed)
-        if self.widget and not self._dont_destroy:
-            if getattr(self, "sizer", None) and not self.sizer.is_virtual():
-                self.sizer.widget.Detach(self.widget)  # remove from sizer without destroying
-            compat.DestroyLater(self.widget)
-            self.widget = None
+        self.destroy_widget()
         if misc.focused_widget is self:
             misc.focused_widget = None
+    
+    def destroy_widget(self):
+        if not self.widget or self._dont_destroy: return
+        if getattr(self, "sizer", None) and not self.sizer.is_virtual():
+            self.sizer.widget.Detach(self.widget)  # remove from sizer without destroying
+        compat.DestroyLater(self.widget)
+        self.widget = None
 
     # context menu #####################################################################################################
     def popup_menu(self, event, pos=None):
@@ -680,11 +681,11 @@ class ManagedBase(WindowBase):
         if not size_p.is_active():
             size_p.set( best_size )
 
-    def delete(self):
+    def destroy_widget(self):
         if self.sel_marker:
             self.sel_marker.Destroy()  # destroy the selection markers
             self.sel_marker = None
-        WindowBase.delete(self)
+        WindowBase.destroy_widget(self)
 
     def _remove(self):
         "don't set focus"
