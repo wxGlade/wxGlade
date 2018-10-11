@@ -28,6 +28,9 @@ class StructurePrinter:
 
         # list all by sizer
         for si in sizer.GetChildren():
+            if si is None:
+                print("Child is None")
+                continue
             child = si.GetWindow()
             if child is not None:
                 self.window(child, si, indent+1)
