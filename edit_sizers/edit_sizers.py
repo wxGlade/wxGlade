@@ -1136,7 +1136,10 @@ class SizerBase(Sizer, np.PropertyOwner):
         if "rows" in self.PROPERTIES and not self._IS_GRIDBAG:
             self._adjust_rows_cols()  # for GridSizer
         if self.widget and elem.widget:
-            self.widget.Detach(elem.pos)
+            if not self._IS_GRIDBAG:
+                self.widget.Detach(elem.pos)
+            else:
+                self.widget.Detach(elem.widget)  # don't use pos, as for gridbag it might be invalid
             elem.sizer = None
             if force_layout:
                 self.layout(True)
@@ -1668,8 +1671,8 @@ class CustomGridBagSizer(CustomFlexGridSizer):
         else:
             self._grid.Add( widget, pos, span, flag, border )
 
-    def Detach(self, pos_or_obj):
-        self._grid.Detach(pos_or_obj)
+    def Detach(self, obj):
+        self._grid.Detach(obj)
 
 
 class GridSizerBase(SizerBase):
