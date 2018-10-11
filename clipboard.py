@@ -88,7 +88,7 @@ class DropTarget(wx.DropTarget):
         if widget is None:
             return (False, "No widget found")
 
-        if not widget._is_toplevel and getattr(widget,"sizer",None):  # for a toplevel window, sizer is the child
+        if not widget.is_sizer and not widget._is_toplevel and getattr(widget,"sizer",None):  # for a toplevel window, sizer is the child
             if widget.sizer._IS_GRIDBAG and not isinstance(widget, edit_sizers.SizerSlot):
                 # for GridBagSizer we have cells, so we don't shift items
                 return (False, "Can only paste into empty slots")
