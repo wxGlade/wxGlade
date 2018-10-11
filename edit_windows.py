@@ -832,7 +832,7 @@ class TopLevelBase(WindowBase, PreviewMixin):
 
     def on_design_button(self):
         "Button 'Show Design Window' was pressed"
-        if self.widget and config.debugging and wx.KeyboardState().ShiftDown():
+        if self.widget and config.debugging and wx.GetKeyState(wx.WXK_SHIFT):
             import utilities
             utilities.StructurePrinter(self.widget)
             return
