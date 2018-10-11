@@ -140,7 +140,7 @@ class EditSplitterWindow(ManagedBase, EditStylesMixin):
         self.virtual_sizer = SplitterWindowSizer(self)
         labels = ("SLOT Left","SLOT Right") if orientation=="wxSPLIT_VERTICAL" else ("SLOT Top","SLOT Bottom")
         self._window_1 = win_1 or SizerSlot(self, self.virtual_sizer, 1, label=labels[0])
-        self._window_2 = win_2 or SizerSlot(self, self.virtual_sizer, 2, label=labels[0])
+        self._window_2 = win_2 or SizerSlot(self, self.virtual_sizer, 2, label=labels[1])
 
     def create_widget(self):
         self.widget = wx.SplitterWindow(self.parent.widget, self.id, style=self.style)
