@@ -158,6 +158,7 @@ class SizerSlot(np.PropertyOwner):
     "A window to represent a slot in a sizer"
     PROPERTIES = ["Slot", "pos"]
     is_sizer = False
+    _is_toplevel = False
     def __init__(self, parent, sizer, pos=0, label=None):
         np.PropertyOwner.__init__(self)
         # initialise instance logger
