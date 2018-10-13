@@ -854,6 +854,7 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
                 dep_list.sort()
                 code = self._tagcontent('dependencies', dep_list)
                 prev_src.replace('<%swxGlade replace dependencies>' % self.nonce, code)
+                prev_src.replace('<%swxGlade replace %s dependencies>' % (self.nonce, klass), code)  # for Perl
 
                 # insert the extra code of this class
                 extra_code = self.classes[klass].extra_code[::-1]
