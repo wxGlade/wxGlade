@@ -150,6 +150,17 @@ class NotebookVirtualSizer(Sizer):
     def is_virtual(self):
         return True
 
+    def _add_popup_menu_items(self, menu, item, widget):
+        # called from managed widget items' _create_popup_menu method
+        i = misc.append_menu_item(menu, -1, _('Insert Notebook Tab before\tCtrl+I') )
+        #misc.bind_menu_item_after(widget, i, self.insert_tab, item.pos)
+        misc.bind_menu_item_after(widget, i, self.window.insert_tab, item.pos-1, "new tab")
+
+        if item.pos==len(self.window.tabs): # last slot -> allow to add
+            i = misc.append_menu_item(menu, -1, _('Add Notebook Tab\tCtrl+A') )
+            #misc.bind_menu_item_after(widget, i, self.insert_tab, item.pos+1)
+            misc.bind_menu_item_after(widget, i, self.window.insert_tab, item.pos, "new tab")
+        menu.AppendSeparator()
 
 
 class NotebookPagesProperty(np.GridProperty):
@@ -247,27 +258,30 @@ class EditNotebook(ManagedBase, EditStylesMixin):
     # new implementation:
     # together with NotebookVirtualSizer insert_tab, remove_tab, free_tab
     def insert_tab(self, index, label):
-
         # add tab/page this needs to be done before EditPanel calls self.virtual_sizer.add_item
         tabs_p = self.properties["tabs"]
-        tabs = tabs_p.get()
+        tabs = tabs_p.get()   # the value will be modified in place
         tabs.insert(index, [label,])
         tabs_p.set(tabs)
         self.pages.insert(index, None)
+
         # adjust pos of the following pages
         for i, page in enumerate(self.pages[index+1:]):
             pos_p = page.properties["pos"]
             pos_p.set(index+2+i)
 
+        # create panel and node, add to tree
         pos = index+1
-        window = EditPanel( self.next_pane_name(suggestion=label), self, -1, self.virtual_sizer, pos )
+        window = EditPanel( self.next_pane_name(), self, -1, self.virtual_sizer, pos )
         window._dont_destroy = True
-        node = Node(window)
+        window.node = node = Node(window)
 
-        window.node = node
-        common.app_tree.add(node, self.node)
+        #common.app_tree.add(node, self.node, index)
+        self.virtual_sizer.add_item(window, pos)
+        common.app_tree.insert(node, self.node, index)
 
         if self.widget:
+            # add to widget
             window.create()
             compat.SetToolTip(window.widget, _("Notebook page pane:\nAdd a sizer here") )
             self.virtual_sizer.insert_tab(index)
@@ -277,10 +291,13 @@ class EditNotebook(ManagedBase, EditStylesMixin):
             except AttributeError:
                 #self._logger.exception(_('Internal Error'))
                 if config.debugging: raise
+
+            self.widget.SetSelection(index)
+
         self.properties["tabs"].update_display()
 
     @misc.restore_focus
-    def set_tabs(self, old_names, indices):
+    def set_tabs(self, old_names, indices):  # called from tabs proberty on Apply button
         """tabs: list of strings
         indices: the current indices of the tabs or None for a new tab; re-ordering is currently not supported"""
         keep_indices = [i for i in indices if i is not None]
@@ -334,8 +351,9 @@ class EditNotebook(ManagedBase, EditStylesMixin):
 
             self.virtual_sizer.add_item(window, pos)
             common.app_tree.insert(node, self.node, i, select=False)
-            # add to widget
+
             if self.widget:
+                # add to widget
                 window.create()
                 compat.SetToolTip(window.widget, _("Notebook page pane:\nAdd a sizer here") )
                 self.virtual_sizer.insert_tab(i)

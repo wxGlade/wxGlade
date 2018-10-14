@@ -2160,6 +2160,7 @@ class GridProperty(Property):
         Property.set(self, value, *args, **kwargs)
         self._initialize_indices()
         self.editing_values = None
+        self.update_display()
 
     def get(self):
         if self.deactivated:
