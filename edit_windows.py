@@ -206,36 +206,8 @@ class EditBase(EventsMixin, np.PropertyOwner):
         misc.bind_menu_item_after(widget, i, clipboard.cut, self)
         menu.AppendSeparator()
 
-        # rows/cols if inside a grid sizer
-        if "rows" in self.sizer.PROPERTIES:
-            row, col = self.sizer._get_row_col(self.pos)
-            i = misc.append_menu_item(menu, -1, _('Insert Row before') )
-            misc.bind_menu_item_after(widget, i, self.sizer.insert_row, self.pos)
-            i = misc.append_menu_item(menu, -1, _('Insert Column before') )
-            misc.bind_menu_item_after(widget, i, self.sizer.insert_col, self.pos)
-            if row==self.sizer.rows-1:
-                # last row
-                i = misc.append_menu_item(menu, -1, _('Add Row') )
-                misc.bind_menu_item_after(widget, i, self.sizer.insert_row, -1)
-            if col==self.sizer.cols-1:
-                # last col
-                i = misc.append_menu_item(menu, -1, _('Add Column') )
-                misc.bind_menu_item_after(widget, i, self.sizer.insert_col, -1)
-            menu.AppendSeparator()
-
-        if not self.sizer.is_virtual() and self.sizer._can_add_insert_slots():
-            # slots
-            i = misc.append_menu_item(menu, -1, _('Insert Slot before\tCtrl+I') )
-            misc.bind_menu_item_after(widget, i, self.sizer.insert_slot, self.pos)
-            i = misc.append_menu_item(menu, -1, _('Insert Slots before...\tCtrl+Shift+I') )
-            misc.bind_menu_item_after(widget, i, self.sizer.insert_slot, self.pos, True)
-
-            if self.pos==len(self.sizer.children)-1: # last slot -> allow to add
-                i = misc.append_menu_item(menu, -1, _('Add Slot\tCtrl+A') )
-                misc.bind_menu_item_after(widget, i, self.sizer.add_slot)
-                i = misc.append_menu_item(menu, -1, _('Add Slots...\tCtrl+Shift+A') )
-                misc.bind_menu_item_after(widget, i, self.sizer.add_slot, True)
-            menu.AppendSeparator()
+        if self.sizer:
+            self.sizer._add_popup_menu_items(menu, self, widget)
 
         # preview (create or close?)
         p = misc.get_toplevel_widget(self)

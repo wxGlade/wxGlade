@@ -351,20 +351,7 @@ class SizerSlot(np.PropertyOwner):
                 if not col_is_empty or cols<=1: i.Enable(False)
                 menu.AppendSeparator()
 
-            if self.sizer._can_add_insert_slots():
-                # for all sizers except GridBag: insert/add slots
-                i = misc.append_menu_item(menu, -1, _('Insert Slot before\tCtrl+I') )
-                misc.bind_menu_item_after(widget, i, self.sizer.insert_slot, self.pos)
-                i = misc.append_menu_item(menu, -1, _('Insert Slots before...\tCtrl+Shift+I') )
-                misc.bind_menu_item_after(widget, i, self.sizer.insert_slot, self.pos, True)
-    
-                if self.pos==len(self.sizer.children)-1: # last slot -> allow to add
-                    i = misc.append_menu_item(menu, -1, _('Add Slot\tCtrl+A') )
-                    misc.bind_menu_item_after(widget, i, self.sizer.add_slot)
-                    i = misc.append_menu_item(menu, -1, _('Add Slots...\tCtrl+Shift+A') )
-                    misc.bind_menu_item_after(widget, i, self.sizer.add_slot, True)
-            menu.AppendSeparator()
-
+            self.sizer._add_popup_menu_items(menu, self)
 
         p = misc.get_toplevel_widget(self.sizer)
         if p is not None and p.preview_is_visible():
@@ -880,6 +867,7 @@ class SizerBase(Sizer, np.PropertyOwner):
             i = misc.append_menu_item( menu, -1, _('Insert slot before\tCtrl+I') )
             misc.bind_menu_item_after(widget, i, self.sizer.insert_slot, self.pos)
             menu.AppendSeparator()
+
         # other menu items: add/insert slot, copy, cut
         if self._can_add_insert_slots():
             i = misc.append_menu_item( menu, -1, _('Add slot\tCtrl+A') )
@@ -908,6 +896,41 @@ class SizerBase(Sizer, np.PropertyOwner):
         misc.bind_menu_item_after(widget, i, self.preview_parent)
 
         return menu
+
+    def _add_popup_menu_items(self, menu, item, widget):
+        # called from managed widget items' _create_popup_menu method
+        if self.is_virtual(): return
+
+        # rows/cols if inside a grid sizer
+        if "rows" in self.PROPERTIES:
+            row, col = self._get_row_col(item.pos)
+            i = misc.append_menu_item(menu, -1, _('Insert Row before') )
+            misc.bind_menu_item_after(widget, i, self.insert_row, item.pos)
+            i = misc.append_menu_item(menu, -1, _('Insert Column before') )
+            misc.bind_menu_item_after(widget, i, self.insert_col, item.pos)
+            if row==self.rows-1:
+                # last row
+                i = misc.append_menu_item(menu, -1, _('Add Row') )
+                misc.bind_menu_item_after(widget, i, self.insert_row, -1)
+            if col==self.cols-1:
+                # last col
+                i = misc.append_menu_item(menu, -1, _('Add Column') )
+                misc.bind_menu_item_after(widget, i, self.insert_col, -1)
+            menu.AppendSeparator()
+
+        if self._can_add_insert_slots():
+            # slots
+            i = misc.append_menu_item(menu, -1, _('Insert Slot before\tCtrl+I') )
+            misc.bind_menu_item_after(widget, i, self.insert_slot, item.pos)
+            i = misc.append_menu_item(menu, -1, _('Insert Slots before...\tCtrl+Shift+I') )
+            misc.bind_menu_item_after(widget, i, self.insert_slot, item.pos, True)
+    
+            if item.pos==len(self.children)-1: # last slot -> allow to add
+                i = misc.append_menu_item(menu, -1, _('Add Slot\tCtrl+A') )
+                misc.bind_menu_item_after(widget, i, self.add_slot)
+                i = misc.append_menu_item(menu, -1, _('Add Slots...\tCtrl+Shift+A') )
+                misc.bind_menu_item_after(widget, i, self.add_slot, True)
+            menu.AppendSeparator()
 
         ####################################################################################################################
     def _remove(self):

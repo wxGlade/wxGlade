@@ -178,22 +178,10 @@ class EditPanel(PanelBase, ManagedBase):
         i = misc.append_menu_item(menu, -1, _('Paste Sizer\tCtrl+V'), wx.ART_PASTE)
         misc.bind_menu_item_after(widget, i, clipboard.paste, self)
         if self.top_sizer is not None or not clipboard.check("sizer"): i.Enable(False)
-
-        if self.sizer and not self.sizer.is_virtual() and self.sizer._can_add_insert_slots():
-            menu.AppendSeparator()
-            # slots
-            i = misc.append_menu_item(menu, -1, _('Insert Slot before\tCtrl+I') )
-            misc.bind_menu_item_after(widget, i, self.sizer.insert_slot, self.pos)
-            i = misc.append_menu_item(menu, -1, _('Insert Slots before...\tCtrl+Shift+I') )
-            misc.bind_menu_item_after(widget, i, self.sizer.insert_slot, self.pos, True)
-
-            if self.pos==len(self.sizer.children)-1: # last slot -> allow to add
-                i = misc.append_menu_item(menu, -1, _('Add Slot\tCtrl+A') )
-                misc.bind_menu_item_after(widget, i, self.sizer.add_slot)
-                i = misc.append_menu_item(menu, -1, _('Add Slots...\tCtrl+Shift+A') )
-                misc.bind_menu_item_after(widget, i, self.sizer.add_slot, True)
-
         menu.AppendSeparator()
+
+        if self.sizer: self.sizer._add_popup_menu_items(menu, self, widget)
+
         i = misc.append_menu_item(menu, -1, _('Preview'))
         misc.bind_menu_item_after(widget, i, self.preview_parent)
 
