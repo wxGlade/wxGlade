@@ -22,7 +22,7 @@ class PythonNotebookGenerator(wcodegen.PythonWidgetCodeWriter):
         for label, tab_win in zip(window.tabs, window.pages):
             label = label[0]
             if tab_win.klass == "sizerslot":
-                tab_win = "wx.Panel(self)"
+                tab_win = "wx.Panel(self.%s)"%window.name
             else:
                 tab_win = 'self.%s'%tab_win.name
             layout_props.append('self.%s.AddPage(%s, %s)\n'%(window.name, tab_win, self.codegen.quote_str(label)))
