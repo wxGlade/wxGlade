@@ -219,8 +219,9 @@ class XmlWidgetBuilder(XmlParser):
                 modified.append( "header_extension" )
 
             app.properties_changed(modified)
-            self._delayed_app_properties = {"for_version":attrs['for_version'],
-                                            "top_window":attrs['top_window'] or ""}
+            self._delayed_app_properties = {"for_version":attrs['for_version']}
+            if attrs['top_window']:
+                self._delayed_app_properties['top_window'] = attrs['top_window']
             return
 
         if not self._appl_started:
