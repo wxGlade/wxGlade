@@ -152,13 +152,11 @@ class NotebookVirtualSizer(Sizer):
 
     def _add_popup_menu_items(self, menu, item, widget):
         # called from managed widget items' _create_popup_menu method
-        i = misc.append_menu_item(menu, -1, _('Insert Notebook Tab before\tCtrl+I') )
-        #misc.bind_menu_item_after(widget, i, self.insert_tab, item.pos)
+        i = misc.append_menu_item(menu, -1, _('Insert Notebook Tab before') ) # \tCtrl+I') )
         misc.bind_menu_item_after(widget, i, self.window.insert_tab, item.pos-1, "new tab")
 
         if item.pos==len(self.window.tabs): # last slot -> allow to add
-            i = misc.append_menu_item(menu, -1, _('Add Notebook Tab\tCtrl+A') )
-            #misc.bind_menu_item_after(widget, i, self.insert_tab, item.pos+1)
+            i = misc.append_menu_item(menu, -1, _('Add Notebook Tab') ) # \tCtrl+A') )
             misc.bind_menu_item_after(widget, i, self.window.insert_tab, item.pos, "new tab")
         menu.AppendSeparator()
 
