@@ -933,7 +933,7 @@ class wxGladeFrame(wx.Frame):
                     error_msg = _("Error loading from a file-like object:\n%s") % misc.wxstr(msg)
             except Exception as inst:
                 if config.debugging: raise
-                if filename:
+                if filename and not isinstance(filename, list):
                     fn = os.path.basename(filename).encode('ascii','replace')
                     msg = _('loading file "%s"') % fn
                 else:
