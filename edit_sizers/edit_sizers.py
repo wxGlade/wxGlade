@@ -351,7 +351,7 @@ class SizerSlot(np.PropertyOwner):
                 if not col_is_empty or cols<=1: i.Enable(False)
                 menu.AppendSeparator()
 
-            self.sizer._add_popup_menu_items(menu, self)
+            self.sizer._add_popup_menu_items(menu, self, widget)
 
         p = misc.get_toplevel_widget(self.sizer)
         if p is not None and p.preview_is_visible():
