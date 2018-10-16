@@ -55,12 +55,12 @@ _widgets = [
     'wxBitmapButton', 'wxBoxSizer', 'wxButton', 'wxCalendarCtrl',
     'wxCheckBox', 'wxCheckListBox', 'wxChoice', 'wxComboBox',
     'wxDatePickerCtrl', 'wxDialog', 'wxFlexGridSizer', 'wxFrame',
-    'wxGauge', 'wxGrid', 'wxGridSizer', 'wxListBox', 'wxListCtrl',
+    'wxGauge', 'wxGrid', 'wxGridSizer', 'wxGridBagSizer', 'wxListBox', 'wxListCtrl',
     'wxMenuBar', 'wxMenu', 'wxNotebook', 'wxPanel', 'wxRadioBox',
     'wxRadioButton', 'wxScrolledWindow', 'wxSlider', 'wxSpinButton',
     'wxSpinCtrl', 'wxSplitterWindow', 'wxStaticBitmap', 'wxStaticBoxSizer',
     'wxStaticLine', 'wxStaticText', 'wxStatusBar', 'wxTextCtrl',
-    'wxToggleButton', 'wxToolBar', 'wxTreeCtrl',
+    'wxToggleButton', 'wxToolBar', 'wxTreeCtrl', 'wxWrapSizer', 
 ]
 
 # Widget names with special meaning
