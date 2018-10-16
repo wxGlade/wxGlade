@@ -114,7 +114,7 @@ class EditSplitterWindow(ManagedBase, EditStylesMixin):
     _custom_base_classes = True
 
     _PROPERTIES = ["Widget", "no_custom_class", "style", "sash_pos", "sash_gravity", "min_pane_size"]
-    PROPERTIES = ManagedBase._PROPERTIES + _PROPERTIES + ManagedBase._EXTRA_PROPERTIES
+    PROPERTIES = ManagedBase.PROPERTIES + _PROPERTIES + ManagedBase._EXTRA_PROPERTIES
     _PROPERTY_LABELS = {'no_custom_class':"Don't generate code for this class",
                         'sash_pos':"Sash position"}
     _PROPERTY_HELP = {'no_custom_class':"Don't generate code for this class",
