@@ -1538,6 +1538,7 @@ class ClassProperty(TextProperty):
 class IntPairPropertyD(TextPropertyD):
     # the value is still a string, but it's guaranteed to have the right format
     validation_re = re.compile(_leading + _ge_0 + _comma + _ge_0 + _trailing )  # match a pair of positive integers
+    normalization = "%s, %s" # for normalization % valiation_re.match(...).groups()
     def _set_converter(self, value):
         # value can be a tuple
         if isinstance(value, compat.basestring):
