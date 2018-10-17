@@ -329,6 +329,8 @@ class WindowBase(EditBase):
         self.window_id = np.TextPropertyD( "wxID_ANY", name="id", default_value=None )
         self.size      = np.SizePropertyD( "-1, -1", default_value="-1, -1" )
 
+        self.sel_marker = None  # selection markers (a SelectionMarker instance)
+
         # background, foreground, font properties
         # their actual values will be stored/modified after widget creation in 'finish_widget_creation'
         # before that, the actual values will be stored in this dict from the actual values of the widget:
@@ -570,8 +572,6 @@ class ManagedBase(WindowBase):
         # if True, the user is able to control the layout of the widget
         # inside the sizer (proportion, borders, alignment...)
         self._has_layout = not sizer.is_virtual()
-
-        self.sel_marker = None  # selection markers (a SelectionMarker instance)
 
         # attributes to keep the values of the sizer properties
         self.pos        = np.LayoutPosProperty(pos)            # position within the sizer, 1-based
