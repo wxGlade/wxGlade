@@ -1655,10 +1655,7 @@ class ComboBoxProperty(TextProperty):
 
     def create_text_ctrl(self, panel, value):
         combo = wx.ComboBox( panel, -1, self.value, choices=self.choices, style=self._CB_STYLE )
-        if self.value in self.choices:
-            combo.SetStringSelection(self.value)
-        else:
-            combo.SetSelection(-1)
+        combo.SetStringSelection(self.value)
         combo.Bind(wx.EVT_COMBOBOX, self.on_combobox)
         combo.Bind(wx.EVT_KILL_FOCUS, self.on_kill_focus)
         combo.Bind(wx.EVT_SET_FOCUS, self.on_focus)
