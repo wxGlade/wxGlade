@@ -30,6 +30,8 @@ _default_props = {
     'growablerows': 'growable_rows',
     'item': 'choice',
     'sashpos': 'sash_pos',
+    'cellspan': 'span',  # for GridBagSizer items
+    'scrollrate':'scroll_rate',
 }
 
 
@@ -192,6 +194,7 @@ def fix_widgets(document):
     fix_scrolled_windows(document)
     fix_toplevel_names(document)
     fix_statusbar(document)
+    fix_gridbag_sizers(document)
 
 
 def fix_custom_widgets(document):
@@ -225,6 +228,70 @@ def fix_sizeritems(document):
         for child in filter(isobject, get_child_elems(sitem)):
             sitem.appendChild(sitem.removeChild(child))
     fix_flag_property(document)
+
+
+def fix_gridbag_sizers(document):
+    # sizers:
+    #     wxg needs
+    #         <rows>1</rows>
+    #         <cols>5</cols>
+    # sizer items:
+    #     xrc has:
+    #         <cellpos>0,2</cellpos>
+    #         <cellspan>1,1</cellspan>
+    #     wxg needs empty sizer slots and these spans, if different from 1,1:
+    #         <span>1, 2</span>
+
+    def isgbsizer(node):
+        return node.getAttribute('class') == 'wxGridBagSizer'
+
+    for szr in filter(isgbsizer, document.getElementsByTagName('object')):
+        # collect informations
+        cells = {}  # (row,col)  0-based
+        rows = 0
+        cols = 0
+        for child in get_child_elems(szr):
+            if child.tagName!="object": continue
+            cellpos = child.getElementsByTagName("cellpos")
+            if cellpos:
+                child.removeChild(cellpos[0])
+                cellpos = cellpos[0].firstChild.nodeValue.split(",")
+                row = int(cellpos[0])
+                col = int(cellpos[1])
+            else:  # if required, that could be changed, but then the number of cols needs to be specified
+                raise ValueError("cellpos is required")
+            cellspan = child.getElementsByTagName("span")  # renamed already from cellspan
+            if cellspan:
+                cellspan = cellspan[0].firstChild.nodeValue.split(",")
+                cellspan_rows = int(cellspan[0])
+                cellspan_cols = int(cellspan[1])
+            else:
+                cellspan_cols = cellspan_rows = 1
+            rows = max(rows, row + cellspan_rows)
+            cols = max(cols, col + cellspan_cols)
+
+            cells[row,col] = child
+            szr.removeChild(child)
+
+        # sizer: set number of rows and cols
+        cols_ = document.createElement('cols')
+        cols_.appendChild( document.createTextNode(str(cols)) )
+        szr.insertBefore(cols_, szr.firstChild)
+
+        rows_ = document.createElement('rows')
+        rows_.appendChild( document.createTextNode(str(rows)) )
+        szr.insertBefore(rows_, szr.firstChild)
+
+        # insert empty sizer slots
+        for row in range(rows):
+            for col in range(cols):
+                if (row,col) in cells:
+                    szr.appendChild( cells[row,col] )
+                else:
+                    # append an empty sizer slot
+                    slot = document.createElement("object")
+                    slot.setAttribute("class", "sizerslot")
+                    szr.appendChild( slot )
 
 
 def fix_flag_property(document):
