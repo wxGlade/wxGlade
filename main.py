@@ -57,12 +57,15 @@ class FileDropTarget(wx.FileDropTarget):
                     break
             c = c.GetParent()
 
-        if self.parent.ask_save():
-            path = filenames[0]
+        if not self.parent.ask_save(): return False
+
+        path = filenames[0]
+        if os.path.splitext(path)[1].upper() == ".XRC":
+            self.parent.import_xrc(path, ask_save=False)
+        else:
             self.parent._open_app(path)
-            self.parent.cur_dir = os.path.dirname(path)
-            return True
-        return False
+        self.parent.cur_dir = os.path.dirname(path)
+        return True
 
 
 class wxGladePropertyPanel(wx.Panel):
@@ -1116,10 +1119,10 @@ class wxGladeFrame(wx.Frame):
         self.tree_panel.Hide()
         self.property_panel.Hide()
 
-    def import_xrc(self, infilename=None):
+    def import_xrc(self, infilename=None, ask_save=True):
         import xrc2wxg
 
-        if not self.ask_save():
+        if ask_save and not self.ask_save():
             return
 
         if not infilename:
@@ -1415,7 +1418,10 @@ def main(filename=None):
     app = wxGlade()
     if filename is not None:
         win = app.GetTopWindow()
-        win._open_app(filename, False)
+        if os.path.splitext(filename)[1].upper() == ".XRC":
+            win.import_xrc(filename)
+        else:
+            win._open_app(filename, False)
         win.cur_dir = os.path.dirname(filename)
     #win = app.GetTopWindow()
     ##win.import_xrc(r"D:\Python\Sources35\wxglade\wxglade_dev\tests\casefiles\CalendarCtrl.xrc")
