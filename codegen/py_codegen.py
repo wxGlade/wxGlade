@@ -510,14 +510,20 @@ from %(top_win_module)s import %(top_win_class)s\n\n"""
         except UnicodeError:
             pass
 
+        # escape the unicode characters if given encoding requires it
+        try:
+            s.encode(self.app_encoding)
+        except UnicodeEncodeError:
+            s = s.encode('raw-unicode-escape')
+            s = self._recode_x80_xff(s)
+            s = s.decode("ASCII")
+
         # convert unicode strings to pure ascii
         # use "raw-unicode-escape" just escaped unicode characters and not default escape sequences
-        s = s.encode('raw-unicode-escape')
-        s = self._recode_x80_xff(s)
         if self._use_gettext:
-            return '_(u"%s")' % s.decode("ASCII") # XXX omit u for Python 3
+            return '_(u"%s")' % s # XXX omit u for Python 3
         else:
-            return 'u"%s"' % s.decode("ASCII") # XXX omit u for Python 3
+            return 'u"%s"' % s # XXX omit u for Python 3
 
     def add_object_format_name(self, name):
         return '#self.%s' % name
