@@ -760,7 +760,7 @@ class _CheckListProperty(Property):
         if not value:
             return set()
         if isinstance(value, compat.basestring):
-            new_value = set( value.split("|") )
+            new_value = set( [v.strip() for v in value.split("|")] )
         elif isinstance(value, int):
             new_value = set()
             if value:
@@ -1085,7 +1085,7 @@ class WidgetStyleProperty(_CheckListProperty):
         # handle invalid combinations
         if isinstance(value, compat.basestring) and value:
             if value=="0": return set()
-            splitted = value.split("|")
+            splitted = [v.strip() for v in value.split("|")]
             value = set(splitted)
             for v in splitted:
                 style_def = self.style_defs[v]
