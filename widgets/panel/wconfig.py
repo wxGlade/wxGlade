@@ -8,7 +8,10 @@ wxPanel widget configuration
 # keep in sync: wxDialog, wxPanel and wxStaticBitmap
 config = {
     'wxklass': 'wxPanel',
-    'style_defs': {},
+    'style_defs': {
+        'wxHSCROLL': {'obsolete':True},
+        'wxVSCROLL': {'obsolete':True},
+    },
     'style_list': ['wxSIMPLE_BORDER', 'wxBORDER_SIMPLE',
                    'wxDOUBLE_BORDER', 'wxBORDER_DOUBLE',
                    'wxSUNKEN_BORDER', 'wxBORDER_SUNKEN',

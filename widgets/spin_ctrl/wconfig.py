@@ -36,6 +36,7 @@ config = {
         'wxTE_AUTO_URL':     {'obsolete':True},
         'wxTE_NOHIDESEL':    {'obsolete':True},
         'wxHSCROLL':         {'obsolete':True},
+        'wxVSCROLL':         {'obsolete':True},
         'wxTE_NO_VSCROLL':   {'obsolete':True},
         'wxTE_LEFT':         {'rename_to':'wxALIGN_LEFT'},
         'wxTE_CENTRE':       {'rename_to':'wxALIGN_CENTRE_HORIZONTAL'},
