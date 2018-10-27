@@ -10,7 +10,7 @@ Reference: Keyboard and Mouse Actions
 #####################################
 
 
-**Tree Window:**
+**Tree control in the main window:**
 
 
 +-----------------------------------------------+------------------------------------------------------+
@@ -34,7 +34,7 @@ Reference: Keyboard and Mouse Actions
 +-----------------------------------------------+------------------------------------------------------+
 
 
-**Tree and Design Window**
+**Tree control and Design window**
 
 +-----------------------------------------------+------------------------------------------------------+
 + Key/Mouse                                     | Action                                               |
@@ -54,7 +54,7 @@ Reference: Keyboard and Mouse Actions
 | :kbd:`Ctrl-R`                                 | Re-do property modifications                         |
 +-----------------------------------------------+------------------------------------------------------+
 
-**Property Window**
+**Properties notebook in the main window**
 
 For properties with multiple lines (e.g. list of notebook tabs):
 
@@ -82,7 +82,7 @@ For properties with multiple lines (e.g. list of notebook tabs):
 +-----------------------------------------------+------------------------------------------------------+
 
 
-**Palette Window / All**
+**Main Window / All**
 
 +-----------------------------------------------+------------------------------------------------------+
 + Key/Mouse                                     | Action                                               |

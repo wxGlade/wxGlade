@@ -15,7 +15,7 @@ Menu Editor
 wxGlade includes a simple menu editor.
 
 To attach a menu to a frame, go to *Properties -> Widget* and check :guilabel:`Has MenuBar`. |br|
-This will add a menubar icon to the *Tree* window, just below the frame's icon. |br|
+This will add a menubar icon to the *Tree*, just below the frame's icon. |br|
 To open the menu editor, click the "Edit menus..." button.
 
 .. |AllWidgets_28_Properties_w_MenuBar| image:: images/AllWidgets_28_Properties_w_MenuBar.png

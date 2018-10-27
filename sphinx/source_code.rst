@@ -18,7 +18,8 @@ The examples on this page are for Python, but the other supported languages will
 Prerequisites and Code Generation
 *********************************
 
-The options for code generation can be defined in the *Properties* window when the application object is selected in the *Tree* window:
+The options for code generation can be defined in the *Properties* notebook when the application object is selected in
+the *Tree* control:
 
 For our example project from the previous page 'Tutorial' we want to generate:
 
@@ -27,7 +28,7 @@ For our example project from the previous page 'Tutorial' we want to generate:
  * output file name "Calculator.py"
  * an application should be created, not just the window
 
-So we select the root element "Application" in the *Tree* window and set the properties accordingly:
+So we select the root element "Application" in the *Tree* control and set the properties accordingly:
 
 +-----------------------------------------------------------------------+
 |.. image:: images/Calculator_06_ApplicationProperties.png              |
@@ -278,7 +279,7 @@ Example 1: Edit in place / "Keep user code"
 ===========================================
 
 
-If you want to use the first approach, you need to set :guilabel:`Keep user code` for the application in the *Properties* window:
+If you want to use the first approach, you need to set :guilabel:`Keep user code` for the application in the *Properties* notebook:
 
 +-----------------------------------------------------------------------+
 |.. image:: images/Calculator_06_ApplicationKeepUserCode.png            |

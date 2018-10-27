@@ -61,21 +61,22 @@ Create the basic structure:
 1. Select "File->New" to **create a new file** and "File->Save" to save a .wxg file to a directory.
 2. **Add the frame**:
 
-   * click on the Frame icon |frame| on the "Windows" line of the *Palette* window
+   * click on the Frame icon |frame| on the "Windows" line of the *Palette*
    * as class name, enter :guilabel:`CalculatorFrame`: |NewFrame_CalculatorFrame|
 
-3. A frame with a sizer |sizer| and one slot is now visible in the *Tree* and *Design* window
+3. A frame with a sizer |sizer| and one slot is now visible in the *Tree* and the *Design* window
    (there the slot is visualized by a hatched area)
 4. It would be possible to place controls directly on the frame, but usually a **panel** is added first, as a frame is really just a frame around the other things. |br|
    To add the panel:
 
-   * in the *Palette* window (again on the "Windows" line) click on the Panel icon |panel| to start the placement
-   * in the *Tree* or *Design* window, click in the slot to place the panel there
+   * in the *Palette* of the main window (again on the "Windows" line) click on the Panel icon |panel|
+     to start the placement
+   * in the *Tree* control or the *Design* window, click in the slot to place the panel there
 
 5. On the panel we need a **vertical box sizer** with six slots:
 
-   * in the *Palette* window on the "Sizer" line click on the BoxSizer icon |sizer| to start the placement
-   * in the Tree or Design window, click on the panel to place the sizer there
+   * in the *Palette* on the "Sizer" line click on the BoxSizer icon |sizer| to start the placement
+   * in the *Tree* or the *Design* window, click on the panel to place the sizer there
    * a dialog will open
    * set "Orientation"  to :guilabel:`Vertical` and the number of slots to :guilabel:`6`  |NewSizer_CalculatorVertical|
 
@@ -101,14 +102,15 @@ Also, layout and alignment need to be changed, but we'll change this later on.
 **So, some properties of the label and the text need to be modified:**
 
 
-1. Select the label in the *Tree* or *Design* window.
-2. If not yet visible, open the *Properties* window.
-3. In the *Properties* window:
+1. Select the label in the *Tree* or the *Design* window.
+2. If not yet visible, make the *Properties* notebook of the main window visible by dragging the sashes
+   (the separators between the three parts of the main window).
+3. In the *Properties* notebook of the main window:
 
    * Edit the label to display :guilabel:`Value 1:` by entering this on the editor's notebook tab "Widget". |br|
      (You could also edit the label directly in the *Tree* window by clicking into the label and/or pressing :kbd:`F2`.)
 
-4. Select the frame in the *Tree* window and go to *Properties -> Widget -> Title* and change it from :guilabel:`frame` to :guilabel:`Calculator`.
+4. Select the frame in the *Tree* and go to *Properties -> Widget -> Title* and change it from :guilabel:`frame` to :guilabel:`Calculator`.
 5. You may want to define a default size for the frame: |br|
    Go to *Properties -> Common -> Size* and set it to :guilabel:`400,300`. |br|
    Without this, the frame will be created with the minimum possible size to fit all controls.
@@ -145,7 +147,7 @@ There are several methods to copy:
  * select the fith, empty slot
  * then hit :kbd:`Ctrl-V` (or use the context menu)
 
-* **Copy & Paste in Tree Window:**
+* **Copy & Paste in the Tree control of the main Window:**
 
  * select the sizer node
  * then hit :kbd:`Ctrl-C` to copy the selected sizer (or use the context menu)
@@ -160,14 +162,15 @@ You may of course copy in the *Design* window and paste in the *Tree* or vice ve
 
  * hold the :kbd:`Ctrl` key and drag the sizer handle to the empty slot
 
-* **Drag & Drop in Tree Window:**
+* **Drag & Drop in the Tree control of the main Window:**
 
  * hold the :kbd:`Ctrl` key and drag the sizer node / icon in the *Tree* window to the empty slot
 
 
 If you don't hold the :kbd:`Ctrl` key, the item will not be copied, but moved.
 
-You may drag items between different windows, e.g. from *Design* to *Tree* or to another running wxGlade instance.
+You may drag items between different windows, e.g. from *Design* window to *Tree* or to another running wxGlade
+instance.
 
 
 
@@ -215,7 +218,7 @@ For single line read-only text controls, this is done automatically by wx, but n
    :header-rows: 0
 
    * -
-       * Select the label in the *Tree* or *Design* window.
+       * Select the label in the *Tree* or the *Design* window.
        * Hit "Add" to add choices, modify them and then hit the "Apply" button.
        * See the bottom part of the screenshot:
 
@@ -227,8 +230,8 @@ Change labels and names:
 ========================
 
 After copying, the controls will have default values and names. Usually you have to change them.
-You can do this in the *Properties* window or directly in the *Tree* window.
-To edit in the *Tree* window, you can select and then click on the label or press :kbd:`F2`.
+You can do this in the *Properties* notebook or directly in the *Tree* control of the main window.
+To edit in the *Tree* control, you can select and then click on the label or press :kbd:`F2`.
 
 This needs to be done now:
 
@@ -242,7 +245,7 @@ This needs to be done now:
 For our example project where multiple labels and names have to be modified, it's much faster to do so in the *Tree*
 window.
 
-Example for editing in the *Tree* window:
+Example for editing in the *Tree* control of the main window:
 
   .. |Tree_Rename0| image:: images/Tree_Rename0.png
 
@@ -322,7 +325,7 @@ So all elements are there, but the layout is not yet what we want to have:
 
 
 At this point, it's time for a **preview**: |br|
-Select "Preview" from the context menu or the main menu or from the *Properties* window when the frame is selected.
+Select "Preview" from the context menu or the main menu or from the *Properties* notebook when the frame is selected.
 Alternatively, press :kbd:`F5`
 
 +----------------------------------------------+
@@ -455,8 +458,9 @@ A notebook can only be added to an empty sizer slot. In our case, we want to kee
 
 **Add a notebook:**
 
-* click on the Notebook icon |notebook| in the section "Containers" of the *Palette* window to start placing a notebook
-* click on the hatched area in the *Design* window or on the sizer slot |sizer_slot| in the *Tree* window
+* click on the Notebook icon |notebook| in the section "Containers" of the *Palette* panel to start placing a notebook
+* click on the hatched area in the *Design* window or on the sizer slot |sizer_slot| in the *Tree* control of the
+  main window
 * in the dialog, select :guilabel:`wxNB_TOP` to place the notebook tabs at the top
 
 The newly created notebook will have one page already, which consists of just a panel. It will have a default name like :guilabel:`notebook_1_pane_1`.
@@ -567,7 +571,8 @@ In our example, we may place a spacer to the left and right of the operator radi
 
    * - 
        * add two empty slots to the left and right:  |br|
-         (To add the slots, right-click on the radio box in the *Tree* or *Design* window and select "Insert Slot before" and "Add Slot".)
+         (To add the slots, right-click on the radio box in the *Tree* or the *Design* window and select
+         "Insert Slot before" and "Add Slot".)
      - |Calculator_Spacers_Design0|
 
    * - 
@@ -578,7 +583,7 @@ In our example, we may place a spacer to the left and right of the operator radi
 
    * - |br| In the *Tree* view you can see the structure:
      - |Calculator_Spacers_Tree|
-   * - |br| In the *Properties* window you can see |br|
+   * - |br| In the *Properties* notebook you can see |br|
        the settings to make the spacers grow:
      - |Calculator_Spacers_Properties|
    * - As the spacers have a height of 0, you will not see them in the design window. |br| |br|

@@ -33,9 +33,11 @@ If they are available, wxGlade will register for .wxg files such that you can op
 Program Windows
 ***************
 
-wxGlade consists of five main windows:
+wxGlade consists of three windows. The main window is split into three panels. The panels are separated by 
+draggable sashes. Also, the "Windows" menu allows to re-arrange the sections.
 
-(click on one of the images to see it full size)
+(click on one of the images to see it full size; the screenshots are a bit out of date as previously
+ Palette, Tree and Properties were three separate windows)
 
 
 .. |wPalette| image:: images/wPalette.png
@@ -61,16 +63,15 @@ wxGlade consists of five main windows:
    :align: center
 
    * - |wPalette| 
-     - Main **Palette** window: |br| |br|
-       This is the main window with the main menu. |br|
+     - Main window **Palette** panel: |br| |br|
        There is an icon for each window and control type that can be added to a project.
    * - |wTree|
-     - **Tree** window: |br| |br|
-       This window visualizes and allows editing the structure of the project with it's
+     - Main window **Tree** control: |br| |br|
+       This tree visualizes and allows editing the structure of the project with it's
        application, windows, sizers and controls. |br|
-       On selection of an item, it's properties will be shown in the *Properties* window.
+       On selection of an item, it's properties will be shown in the *Properties* notebook.
    * - |wProperties|
-     - **Properties** window: |br| |br|
+     - Main window **Properties** notebook: |br| |br|
        This lets you display and edit the properties of applications, windows and controls. |br|
        To edit an item, select it in the *Tree* or *Design* window.
    * - |wDesign|

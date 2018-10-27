@@ -5,14 +5,14 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>Tutorial Project: Calculator &#8212; wxGlade 0.8.0 documentation</title>
+    <title>Tutorial Project: Calculator &#8212; wxGlade 0.9.0 documentation</title>
     <link rel="stylesheet" href="_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="stylesheet" href="_static/css/custom.css" type="text/css" />
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '0.8.0',
+        VERSION:     '0.9.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true,
@@ -40,7 +40,7 @@
         <li class="right" >
           <a href="wxbasics.html" title="wx Basics"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">wxGlade 0.8.0 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">wxGlade 0.9.0 documentation</a> &#187;</li> 
       </ul>
     </div>  
 
@@ -59,21 +59,22 @@
 <ol class="arabic simple">
 <li>Select “File-&gt;New” to <strong>create a new file</strong> and “File-&gt;Save” to save a .wxg file to a directory.</li>
 <li><strong>Add the frame</strong>:<ul>
-<li>click on the Frame icon <img alt="frame" src="_images/frame.png" /> on the “Windows” line of the <em>Palette</em> window</li>
+<li>click on the Frame icon <img alt="frame" src="_images/frame.png" /> on the “Windows” line of the <em>Palette</em></li>
 <li>as class name, enter <span class="guilabel">CalculatorFrame</span>: <a class="reference internal" href="_images/NewFrame_CalculatorFrame.png"><img alt="New Frame dialog" src="_images/NewFrame_CalculatorFrame.png" style="width: 30px;" /></a></li>
 </ul>
 </li>
-<li>A frame with a sizer <img alt="sizer" src="_images/sizer.png" /> and one slot is now visible in the <em>Tree</em> and <em>Design</em> window
+<li>A frame with a sizer <img alt="sizer" src="_images/sizer.png" /> and one slot is now visible in the <em>Tree</em> and the <em>Design</em> window
 (there the slot is visualized by a hatched area)</li>
 <li>It would be possible to place controls directly on the frame, but usually a <strong>panel</strong> is added first, as a frame is really just a frame around the other things. <br/>
 To add the panel:<ul>
-<li>in the <em>Palette</em> window (again on the “Windows” line) click on the Panel icon <img alt="panel" src="_images/panel.png" /> to start the placement</li>
-<li>in the <em>Tree</em> or <em>Design</em> window, click in the slot to place the panel there</li>
+<li>in the <em>Palette</em> of the main window (again on the “Windows” line) click on the Panel icon <img alt="panel" src="_images/panel.png" />
+to start the placement</li>
+<li>in the <em>Tree</em> control or the <em>Design</em> window, click in the slot to place the panel there</li>
 </ul>
 </li>
 <li>On the panel we need a <strong>vertical box sizer</strong> with six slots:<ul>
-<li>in the <em>Palette</em> window on the “Sizer” line click on the BoxSizer icon <img alt="sizer" src="_images/sizer.png" /> to start the placement</li>
-<li>in the Tree or Design window, click on the panel to place the sizer there</li>
+<li>in the <em>Palette</em> on the “Sizer” line click on the BoxSizer icon <img alt="sizer" src="_images/sizer.png" /> to start the placement</li>
+<li>in the <em>Tree</em> or the <em>Design</em> window, click on the panel to place the sizer there</li>
 <li>a dialog will open</li>
 <li>set “Orientation”  to <span class="guilabel">Vertical</span> and the number of slots to <span class="guilabel">6</span>  <a class="reference internal" href="_images/NewSizer_CalculatorVertical.png"><img alt="New Sizer dialog" src="_images/NewSizer_CalculatorVertical.png" style="width: 30px;" /></a></li>
 </ul>
@@ -100,14 +101,15 @@ and set the number of slots to <span class="guilabel">2</span></li>
 Also, layout and alignment need to be changed, but we’ll change this later on.</p>
 <p><strong>So, some properties of the label and the text need to be modified:</strong></p>
 <ol class="arabic simple">
-<li>Select the label in the <em>Tree</em> or <em>Design</em> window.</li>
-<li>If not yet visible, open the <em>Properties</em> window.</li>
-<li>In the <em>Properties</em> window:<ul>
+<li>Select the label in the <em>Tree</em> or the <em>Design</em> window.</li>
+<li>If not yet visible, make the <em>Properties</em> notebook of the main window visible by dragging the sashes
+(the separators between the three parts of the main window).</li>
+<li>In the <em>Properties</em> notebook of the main window:<ul>
 <li>Edit the label to display <span class="guilabel">Value 1:</span> by entering this on the editor’s notebook tab “Widget”. <br/>
 (You could also edit the label directly in the <em>Tree</em> window by clicking into the label and/or pressing <code class="kbd docutils literal"><span class="pre">F2</span></code>.)</li>
 </ul>
 </li>
-<li>Select the frame in the <em>Tree</em> window and go to <em>Properties -&gt; Widget -&gt; Title</em> and change it from <span class="guilabel">frame</span> to <span class="guilabel">Calculator</span>.</li>
+<li>Select the frame in the <em>Tree</em> and go to <em>Properties -&gt; Widget -&gt; Title</em> and change it from <span class="guilabel">frame</span> to <span class="guilabel">Calculator</span>.</li>
 <li>You may want to define a default size for the frame: <br/>
 Go to <em>Properties -&gt; Common -&gt; Size</em> and set it to <span class="guilabel">400,300</span>. <br/>
 Without this, the frame will be created with the minimum possible size to fit all controls.</li>
@@ -138,7 +140,7 @@ After that, we’ll add the “Operator” radio box and the buttons.</p>
 </ul>
 </div></blockquote>
 <ul class="simple">
-<li><strong>Copy &amp; Paste in Tree Window:</strong></li>
+<li><strong>Copy &amp; Paste in the Tree control of the main Window:</strong></li>
 </ul>
 <blockquote>
 <div><ul class="simple">
@@ -160,7 +162,7 @@ After that, we’ll add the “Operator” radio box and the buttons.</p>
 </ul>
 </div></blockquote>
 <ul class="simple">
-<li><strong>Drag &amp; Drop in Tree Window:</strong></li>
+<li><strong>Drag &amp; Drop in the Tree control of the main Window:</strong></li>
 </ul>
 <blockquote>
 <div><ul class="simple">
@@ -168,7 +170,8 @@ After that, we’ll add the “Operator” radio box and the buttons.</p>
 </ul>
 </div></blockquote>
 <p>If you don’t hold the <code class="kbd docutils literal"><span class="pre">Ctrl</span></code> key, the item will not be copied, but moved.</p>
-<p>You may drag items between different windows, e.g. from <em>Design</em> to <em>Tree</em> or to another running wxGlade instance.</p>
+<p>You may drag items between different windows, e.g. from <em>Design</em> window to <em>Tree</em> or to another running wxGlade
+instance.</p>
 </div>
 <div class="section" id="further-editing">
 <h3>Further Editing<a class="headerlink" href="#further-editing" title="Permalink to this headline">¶</a></h3>
@@ -212,7 +215,7 @@ just drag it to the right slot or delete it with the <code class="kbd docutils l
 </colgroup>
 <tbody valign="top">
 <tr class="row-odd"><td><ul class="first last simple">
-<li>Select the label in the <em>Tree</em> or <em>Design</em> window.</li>
+<li>Select the label in the <em>Tree</em> or the <em>Design</em> window.</li>
 <li>Hit “Add” to add choices, modify them and then hit the “Apply” button.</li>
 <li>See the bottom part of the screenshot:</li>
 </ul>
@@ -225,8 +228,8 @@ just drag it to the right slot or delete it with the <code class="kbd docutils l
 <div class="section" id="change-labels-and-names">
 <h3>Change labels and names:<a class="headerlink" href="#change-labels-and-names" title="Permalink to this headline">¶</a></h3>
 <p>After copying, the controls will have default values and names. Usually you have to change them.
-You can do this in the <em>Properties</em> window or directly in the <em>Tree</em> window.
-To edit in the <em>Tree</em> window, you can select and then click on the label or press <code class="kbd docutils literal"><span class="pre">F2</span></code>.</p>
+You can do this in the <em>Properties</em> notebook or directly in the <em>Tree</em> control of the main window.
+To edit in the <em>Tree</em> control, you can select and then click on the label or press <code class="kbd docutils literal"><span class="pre">F2</span></code>.</p>
 <p>This needs to be done now:</p>
 <ul class="simple">
 <li>Set the names of the text controls to <span class="guilabel">text_value1</span>, <span class="guilabel">text_value2</span> and <span class="guilabel">text_result</span>.</li>
@@ -237,7 +240,7 @@ To edit in the <em>Tree</em> window, you can select and then click on the label 
 </ul>
 <p>For our example project where multiple labels and names have to be modified, it’s much faster to do so in the <em>Tree</em>
 window.</p>
-<p>Example for editing in the <em>Tree</em> window:</p>
+<p>Example for editing in the <em>Tree</em> control of the main window:</p>
 <blockquote>
 <div></div></blockquote>
 <ul class="simple">
@@ -321,7 +324,7 @@ or by hitting <code class="kbd docutils literal"><span class="pre">Ctrl-Y</span>
 </li>
 </ol>
 <p>At this point, it’s time for a <strong>preview</strong>: <br/>
-Select “Preview” from the context menu or the main menu or from the <em>Properties</em> window when the frame is selected.
+Select “Preview” from the context menu or the main menu or from the <em>Properties</em> notebook when the frame is selected.
 Alternatively, press <code class="kbd docutils literal"><span class="pre">F5</span></code></p>
 <table border="1" class="docutils">
 <colgroup>
@@ -418,8 +421,9 @@ to the main direction of the surrounding horizontal sizer.
 </table>
 <p><strong>Add a notebook:</strong></p>
 <ul class="simple">
-<li>click on the Notebook icon <img alt="notebook" src="_images/notebook.png" /> in the section “Containers” of the <em>Palette</em> window to start placing a notebook</li>
-<li>click on the hatched area in the <em>Design</em> window or on the sizer slot <img alt="sizer_slot" src="_images/sizer_slot.png" /> in the <em>Tree</em> window</li>
+<li>click on the Notebook icon <img alt="notebook" src="_images/notebook.png" /> in the section “Containers” of the <em>Palette</em> panel to start placing a notebook</li>
+<li>click on the hatched area in the <em>Design</em> window or on the sizer slot <img alt="sizer_slot" src="_images/sizer_slot.png" /> in the <em>Tree</em> control of the
+main window</li>
 <li>in the dialog, select <span class="guilabel">wxNB_TOP</span> to place the notebook tabs at the top</li>
 </ul>
 <p>The newly created notebook will have one page already, which consists of just a panel. It will have a default name like <span class="guilabel">notebook_1_pane_1</span>.</p>
@@ -498,7 +502,8 @@ enter the headings for the notebook pages</li>
 <tbody valign="top">
 <tr class="row-odd"><td><ul class="first last simple">
 <li>add two empty slots to the left and right:  <br/>
-(To add the slots, right-click on the radio box in the <em>Tree</em> or <em>Design</em> window and select “Insert Slot before” and “Add Slot”.)</li>
+(To add the slots, right-click on the radio box in the <em>Tree</em> or the <em>Design</em> window and select
+“Insert Slot before” and “Add Slot”.)</li>
 </ul>
 </td>
 <td><a class="reference internal" href="_images/Calculator_Spacers_Design0.png"><img alt="Calculator with empty slots for spacers" src="_images/Calculator_Spacers_Design0.png" style="width: 180px;" /></a></td>
@@ -514,7 +519,7 @@ to make them grow</li>
 <tr class="row-odd"><td><br/> In the <em>Tree</em> view you can see the structure:</td>
 <td><a class="reference internal" href="_images/Calculator_Spacers_Tree.png"><img alt="Calculator with Spacers: Tree" src="_images/Calculator_Spacers_Tree.png" style="width: 180px;" /></a></td>
 </tr>
-<tr class="row-even"><td><br/> In the <em>Properties</em> window you can see <br/>
+<tr class="row-even"><td><br/> In the <em>Properties</em> notebook you can see <br/>
 the settings to make the spacers grow:</td>
 <td><a class="reference internal" href="_images/Calculator_Spacers_Properties.png"><img alt="Spacer Properties" src="_images/Calculator_Spacers_Properties.png" style="width: 180px;" /></a></td>
 </tr>
@@ -656,11 +661,11 @@ If you want to avoid this, you need to add a horizontal or vertical sizer ‘bet
         <li class="right" >
           <a href="wxbasics.html" title="wx Basics"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">wxGlade 0.8.0 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">wxGlade 0.9.0 documentation</a> &#187;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
-        &#169; Copyright 2017, Dietmar Schwertberger.
+        &#169; Copyright 2017-2018, Dietmar Schwertberger.
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.6.4.
     </div>
   </body>
