@@ -608,11 +608,13 @@ def _get_share_path():
         assert config.wxglade_path.endswith('wxglade')
         # split path into single components to check the last four elements
         dir_list = split_path(os.path.normpath(config.wxglade_path))
-        if len(dir_list) > 4 and dir_list[-1] == 'wxglade' and \
-            dir_list[-2] in ['site-packages', 'dist-packages'] and \
-            dir_list[-3].startswith('python') and \
-            dir_list[-4].startswith('lib'):
+        if len(dir_list) > 4 and dir_list[-1] == 'wxglade' and dir_list[-2] in ['site-packages', 'dist-packages'] and \
+            dir_list[-3].startswith('python') and dir_list[-4].startswith('lib'):
             share_dir = os.path.join(*dir_list[:-4])
+            share_dir = os.path.join(share_dir, 'share')
+        elif len(dir_list) > 4 and dir_list[-1] == 'wxglade' and dir_list[-2].endswith('.egg'):
+            # egg installation
+            share_dir = os.path.join(*dir_list[:-1])
             share_dir = os.path.join(share_dir, 'share')
         else:
             logging.error(_('Unknown path structure %s'), config.wxglade_path)

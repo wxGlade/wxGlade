@@ -76,8 +76,7 @@ Topic :: Software Development :: User Interfaces
 User Interface :: Textual :: Command-line
 User Interface :: Toolkits/Libraries :: wxWidgets"""
 
-description = \
-    'GUI designer written in Python with the popular GUI toolkit wxPython'
+description = 'GUI designer written in Python with the popular GUI toolkit wxPython'
 
 long_description = """\
 wxGlade is a GUI designer written in Python with the popular GUI toolkit
@@ -97,8 +96,7 @@ data_files = [
     ['share/doc/wxglade/tutorial', glob('docs/Tutorial.html')],
     ['share/doc/wxglade/tutorial/img', glob('docs/img/*.*')],
     ['share/doc/wxglade/manual_html', glob('docs/html/*.*')],
-    ['share/doc/wxglade/manual_pdf', glob('docs/pdf/*.pdf')],
-    ['share/man/man1', ['docs_old/man/wxglade.1']],
+    ['share/doc/wxglade/manual_pdf', glob('docs/pdf/*.pdf')]
 ]
 
 packages = ['wxglade.%s' % pkg for pkg in find_packages(exclude=['tests'])]
@@ -123,8 +121,7 @@ if 'sdist' in sys.argv:
                                ])
 
     # add content of listed directories to the package_data_file list
-    for data_dir in ['docs', 'install', 'icons', 'locale', 'po', 'res',
-                     'tests', 'templates']:
+    for data_dir in ['docs', 'install', 'icons', 'locale', 'po', 'res', 'tests', 'templates']:
         package_data_files.extend(recursive(data_dir))
 
     package_data = {
