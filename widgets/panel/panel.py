@@ -282,19 +282,22 @@ class EditTopLevelPanel(PanelBase, TopLevelBase):
         self.design.update_label()
 
     def set_name(self, name):
+        # handle containing frame
         super(EditTopLevelPanel, self).set_name(name)
         if self.widget:
             self.widget.GetParent().SetTitle(misc.design_title(self.name))
 
-    def delete(self):
+    def destroy_widget(self):
+        # handle containing frame
         win = None
         if self.widget:
             win = self.widget.GetParent()
-        super(EditTopLevelPanel, self).delete()
+        super(EditTopLevelPanel, self).destroy_widget()
         if win is not None:
             win.Destroy()
 
     def on_size(self, event):
+        # handle containing frame
         w, h = event.GetSize()
         if self.skip_on_size:
             self.skip_on_size = False

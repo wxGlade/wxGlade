@@ -373,9 +373,9 @@ class EditNotebook(ManagedBase, EditStylesMixin):
 
     ####################################################################################################################
 
-    def delete(self):
+    def destroy_widget(self):
         if self.widget: self.widget.DeleteAllPages()
-        ManagedBase.delete(self)
+        ManagedBase.destroy_widget(self)
 
     def get_property_handler(self, name):
         if name == 'tabs':
