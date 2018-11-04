@@ -31,9 +31,9 @@ class EditHyperlinkCtrl(ManagedBase, EditStylesMixin):
                        "attribute":'Store instance as attribute of window class; e.g. self.bitmap_1 = wx.wxStaticBitmap'
                                    '(...)\nWithout this, you can not access the bitmap from your program.'}
 
-    def __init__(self, name, parent, id, label, sizer, pos):
+    def __init__(self, name, parent, label, sizer, pos):
         # Initialise parent classes
-        ManagedBase.__init__(self, name, 'wxHyperlinkCtrl', parent, id, sizer, pos)
+        ManagedBase.__init__(self, name, 'wxHyperlinkCtrl', parent, sizer, pos)
         EditStylesMixin.__init__(self)
 
         # initialise instance properties
@@ -73,7 +73,7 @@ def builder(parent, sizer, pos, number=[1]):
         number[0] += 1
         name = u'hyperlink_%d' % number[0]
     with parent.frozen():
-        hyperlink_ctrl = EditHyperlinkCtrl(name, parent, wx.NewId(), name, sizer, pos)
+        hyperlink_ctrl = EditHyperlinkCtrl(name, parent, name, sizer, pos)
         hyperlink_ctrl.properties["style"].set_to_default()
         hyperlink_ctrl.properties["attribute"].set(True)  # allow to modificate it later on...
         hyperlink_ctrl.check_defaults()
@@ -92,7 +92,7 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
         raise XmlParsingError(_("'name' attribute missing"))
     if sizer is None or sizeritem is None:
         raise XmlParsingError(_("sizer or sizeritem object cannot be None"))
-    hyperlink_ctrl = EditHyperlinkCtrl(name, parent, wx.NewId(), "", sizer, pos)
+    hyperlink_ctrl = EditHyperlinkCtrl(name, parent, "", sizer, pos)
     #sizer.set_item(hyperlink_ctrl.pos, proportion=sizeritem.proportion, span=sizeritem.span, flag=sizeritem.flag, border=sizeritem.border)
     node = Node(hyperlink_ctrl)
     hyperlink_ctrl.node = node

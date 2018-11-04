@@ -214,9 +214,9 @@ class EditNotebook(ManagedBase, EditStylesMixin):
     _PROPERTIES = ["Widget", "no_custom_class", "style", "tabs"]
     PROPERTIES = ManagedBase.PROPERTIES + _PROPERTIES + ManagedBase.EXTRA_PROPERTIES
 
-    def __init__(self, name, parent, id, style, sizer, pos):
+    def __init__(self, name, parent, style, sizer, pos):
         name = name or self.next_notebook_name()  # create new and (still) unused notebook name
-        ManagedBase.__init__(self, name, 'wxNotebook', parent, id, sizer, pos)
+        ManagedBase.__init__(self, name, 'wxNotebook', parent, sizer, pos)
         EditStylesMixin.__init__(self)
         self.properties["style"].set(style)
 
@@ -455,7 +455,7 @@ def builder(parent, sizer, pos, number=[1]):
     if res != wx.ID_OK:
         return
     with parent.frozen():
-        widget = editor_class(None, parent, wx.ID_ANY, style, sizer, pos)
+        widget = editor_class(None, parent, style, sizer, pos)
         node = Node(widget)
         widget.node = node
         widget.virtual_sizer.node = node
@@ -476,7 +476,7 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
         raise XmlParsingError(_("'name' attribute missing"))
     if sizer is None or sizeritem is None:
         raise XmlParsingError(_("sizer or sizeritem object cannot be None"))
-    widget = editor_class(name, parent, wx.ID_ANY, editor_style, sizer, pos)
+    widget = editor_class(name, parent, editor_style, sizer, pos)
     #sizer.set_item(widget.pos)
     node = Node(widget)
     widget.node = node

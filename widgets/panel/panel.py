@@ -141,8 +141,8 @@ class EditPanel(PanelBase, ManagedBase):
 
     PROPERTIES = ManagedBase.PROPERTIES + PanelBase._PROPERTIES + ManagedBase.EXTRA_PROPERTIES
 
-    def __init__(self, name, parent, id, sizer, pos, style='wxTAB_TRAVERSAL'):
-        ManagedBase.__init__(self, name, 'wxPanel', parent, id, sizer, pos)
+    def __init__(self, name, parent, sizer, pos, style='wxTAB_TRAVERSAL'):
+        ManagedBase.__init__(self, name, 'wxPanel', parent, sizer, pos)
         PanelBase.__init__(self, style)
 
     def create_widget(self):
@@ -332,7 +332,7 @@ def builder(parent, sizer, pos, number=[1]):
         number[0] += 1
         name = 'panel_%d' % number[0]
     with parent.frozen():
-        panel = EditPanel(name, parent, wx.NewId(), sizer, pos, style='')
+        panel = EditPanel(name, parent, sizer, pos, style='')
         node = Node(panel)
         panel.node = node
         panel.properties["proportion"].set(1)
@@ -351,7 +351,7 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
         raise XmlParsingError(_("'name' attribute missing"))
     if not sizer or not sizeritem:
         raise XmlParsingError(_("sizer or sizeritem object cannot be None"))
-    panel = EditPanel(name, parent, wx.NewId(), sizer, pos, style='')
+    panel = EditPanel(name, parent, sizer, pos, style='')
     #sizer.set_item(panel.pos, proportion=sizeritem.proportion, span=sizeritem.span, flag=sizeritem.flag, border=sizeritem.border)
     node = Node(panel)
     panel.node = node
@@ -368,7 +368,7 @@ def xml_toplevel_builder(attrs, parent, sizer, sizeritem, pos=None):
         label = attrs['name']
     except KeyError:
         raise XmlParsingError(_("'name' attribute missing"))
-    panel = EditTopLevelPanel( label, parent, wx.NewId(), style='' )
+    panel = EditTopLevelPanel( label, parent, style='' )
     node = Node(panel)
     panel.node = node
     common.app_tree.add(node)

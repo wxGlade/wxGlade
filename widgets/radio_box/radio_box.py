@@ -22,9 +22,9 @@ class EditRadioBox(ManagedBase):
     _PROPERTIES = ["Widget", "label", "style", "dimension", "selection", "choices"]
     PROPERTIES = ManagedBase.PROPERTIES + _PROPERTIES + ManagedBase.EXTRA_PROPERTIES
 
-    def __init__(self, name, parent, id, label, choices, major_dim, style, sizer, pos):
+    def __init__(self, name, parent, label, choices, major_dim, style, sizer, pos):
         "Class to handle wxRadioBox objects"
-        ManagedBase.__init__(self, name, 'wxRadioBox', parent, id, sizer, pos)
+        ManagedBase.__init__(self, name, 'wxRadioBox', parent, sizer, pos)
         self.static_box = None
         
         # initialise instance properties
@@ -190,7 +190,7 @@ def builder(parent, sizer, pos, number=[1]):
         number[0] += 1
         label = u'radio_box_%d' % number[0]
     with parent.frozen():
-        radio_box = EditRadioBox(label, parent, wx.NewId(), label, [[u'choice 1'],], 1, 0, sizer, pos)
+        radio_box = EditRadioBox(label, parent, label, [[u'choice 1'],], 1, 0, sizer, pos)
         node = Node(radio_box)
         radio_box.node = node
         if parent.widget: radio_box.create()
@@ -206,7 +206,7 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
         raise XmlParsingError(_("'name' attribute missing"))
     if sizer is None or sizeritem is None:
         raise XmlParsingError(_("sizer or sizeritem object cannot be None"))
-    radio_box = EditRadioBox(label, parent, wx.NewId(), '', [], 1, 0, sizer, pos)
+    radio_box = EditRadioBox(label, parent, '', [], 1, 0, sizer, pos)
     #size.set_item(radio_box.pos, proportion=sizeritem.proportion, span=sizeritem.span, flag=sizeritem.flag, border=sizeritem.border)
     node = Node(radio_box)
     radio_box.node = node

@@ -107,14 +107,14 @@ class EditBase(EventsMixin, np.PropertyOwner):
                         "extracode_post":"Code to be inserted after"}
     is_sizer = False
 
-    def __init__(self, name, klass, parent, id, custom_class=True):
+    def __init__(self, name, klass, parent, custom_class=True):
         np.PropertyOwner.__init__(self)
         # initialise instance logger
         self._logger = logging.getLogger(self.__class__.__name__)
 
         # initialise instance
         self.parent = parent
-        self.id = id          # id used for internal purpose events
+        self.id = wx.NewId()  # id used for internal purpose events
 
         # initialise instance properties
         self.name  = name_p  = np.NameProperty(name)
@@ -148,8 +148,9 @@ class EditBase(EventsMixin, np.PropertyOwner):
         PROPERTIES.remove( move_property )
         PROPERTIES.insert( PROPERTIES.index(after_property)+1, move_property )
 
-    def create_widgets(self):
-        common.app_tree.create_widgets(self.node)
+    #def create_widgets(self):
+        ## XXX only called from xml_parse as top_obj.create_widgets()
+        #common.app_tree.create_widgets(self.node)
 
     def create(self):
         "create the wx widget"
@@ -231,10 +232,6 @@ class EditBase(EventsMixin, np.PropertyOwner):
     def remove(self, *args):
         self._dont_destroy = False  # always destroy when explicitly asked
         common.app_tree.remove(self.node)
-
-    def duplicate(self, *args):
-        clipboard.copy(self)
-        clipboard.paste(common.app_tree.root.widget)
 
     def on_set_focus(self, event):
         """Event handler called when a window receives the focus: this in fact is
@@ -323,8 +320,8 @@ class WindowBase(EditBase):
     _PROPERTY_LABELS = {"attribute":'Store as attribute'}  # used in many derived widget editors
 
 
-    def __init__(self, name, klass, parent, id):
-        EditBase.__init__(self, name, klass, parent, id)
+    def __init__(self, name, klass, parent):
+        EditBase.__init__(self, name, klass, parent)
 
         self.window_id = np.TextPropertyD( "wxID_ANY", name="id", default_value=None )
         self.size      = np.SizePropertyD( "-1, -1", default_value="-1, -1" )
@@ -567,8 +564,8 @@ class ManagedBase(WindowBase):
 
     ####################################################################################################################
 
-    def __init__(self, name, klass, parent, id, sizer, pos):
-        WindowBase.__init__(self, name, klass, parent, id)
+    def __init__(self, name, klass, parent, sizer, pos):
+        WindowBase.__init__(self, name, klass, parent)
         # if True, the user is able to control the layout of the widget
         # inside the sizer (proportion, borders, alignment...)
         self._has_layout = not sizer.is_virtual()
@@ -736,8 +733,8 @@ class TopLevelBase(WindowBase, PreviewMixin):
     _custom_base_classes = True
     PROPERTIES = WindowBase.PROPERTIES + ["design","preview"]
 
-    def __init__(self, name, klass, parent, id, title=None):
-        WindowBase.__init__(self, name, klass, parent, id)
+    def __init__(self, name, klass, parent, title=None):
+        WindowBase.__init__(self, name, klass, parent)
         self._oldname = name
         self.has_title = "title" in self.PROPERTIES
         if self.has_title:
@@ -772,6 +769,10 @@ class TopLevelBase(WindowBase, PreviewMixin):
             elif self.sizer:
                 self.sizer.fit_parent()
         misc.design_windows.append(self.widget)
+
+    def duplicate(self, *args):
+        clipboard.copy(self)
+        clipboard.paste(common.app_tree.root.widget)
 
     def _create_popup_menu(self, widget):
         # remove, hide

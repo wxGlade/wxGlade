@@ -24,9 +24,9 @@ class EditCheckBox(ManagedBase, EditStylesMixin):
     # Convert the position of "checked" RadioProperty to wxCheckBoxState
     index2state = { 0: wx.CHK_UNCHECKED, 1: wx.CHK_CHECKED, 2: wx.CHK_UNDETERMINED }
 
-    def __init__(self, name, parent, id, label, sizer, pos):
+    def __init__(self, name, parent, label, sizer, pos):
         "Class to handle wxCheckBox objects"
-        ManagedBase.__init__(self, name, 'wxCheckBox', parent, id, sizer, pos)
+        ManagedBase.__init__(self, name, 'wxCheckBox', parent, sizer, pos)
         EditStylesMixin.__init__(self)
 
         # initialise instance properties
@@ -85,7 +85,7 @@ def builder(parent, sizer, pos, number=[1]):
         number[0] += 1
         label = 'checkbox_%d' % number[0]
     with parent.frozen():
-        checkbox = EditCheckBox(label, parent, wx.NewId(), label, sizer, pos)
+        checkbox = EditCheckBox(label, parent, label, sizer, pos)
         checkbox.properties["style"].set_to_default()
         checkbox.check_defaults()
         node = Node(checkbox)
@@ -103,7 +103,7 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
         raise XmlParsingError(_("'name' attribute missing"))
     if sizer is None or sizeritem is None:
         raise XmlParsingError(_("sizer or sizeritem object cannot be None"))
-    checkbox = EditCheckBox( label, parent, wx.NewId(), "", sizer, pos)
+    checkbox = EditCheckBox( label, parent, "", sizer, pos)
     #sizer.set_item(checkbox.pos, proportion=sizeritem.proportion, span=sizeritem.span, flag=sizeritem.flag, border=sizeritem.border)
     node = Node(checkbox)
     checkbox.node = node

@@ -62,8 +62,8 @@ class CustomWidget(ManagedBase):
     _PROPERTY_LABELS = { 'custom_constructor':'Custom constructor' }
     _PROPERTY_HELP   = { 'custom_constructor':'Specify a custom constructor like a factory method' }
 
-    def __init__(self, name, klass, parent, id, sizer, pos):
-        ManagedBase.__init__(self, name, klass, parent, id, sizer, pos)
+    def __init__(self, name, klass, parent, sizer, pos):
+        ManagedBase.__init__(self, name, klass, parent, sizer, pos)
 
         # initialise instance properties
         cols      = [('Arguments', np.GridProperty.STRING)]
@@ -158,7 +158,7 @@ def builder(parent, sizer, pos, number=[1]):
         number[0] += 1
         name = 'window_%d' % number[0]
     with parent.frozen():
-        win = CustomWidget(name, klass, parent, wx.NewId(), sizer, pos)
+        win = CustomWidget(name, klass, parent, sizer, pos)
         node = Node(win)
         win.node = node
 
@@ -181,7 +181,7 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
     if not sizer or not sizeritem:
         raise XmlParsingError(_("sizer or sizeritem object cannot be None"))
     klass = attrs.get("class", "CustomWidget")
-    win = CustomWidget(name, klass, parent, wx.NewId(), sizer, pos)
+    win = CustomWidget(name, klass, parent, sizer, pos)
     #sizer.set_item(win.pos, proportion=sizeritem.proportion, span=sizeritem.span, flag=sizeritem.flag, border=sizeritem.border)
     node = Node(win)
     win.node = node

@@ -21,8 +21,8 @@ class EditTreeCtrl(ManagedBase, EditStylesMixin):
     _PROPERTIES = ["Widget", "style"]
     PROPERTIES = ManagedBase.PROPERTIES + _PROPERTIES + ManagedBase.EXTRA_PROPERTIES
 
-    def __init__(self, name, parent, id, sizer, pos, style=wx.TR_HAS_BUTTONS|wx.BORDER_SUNKEN):
-        ManagedBase.__init__(self, name, 'wxTreeCtrl', parent, id, sizer, pos)
+    def __init__(self, name, parent, sizer, pos, style=wx.TR_HAS_BUTTONS|wx.BORDER_SUNKEN):
+        ManagedBase.__init__(self, name, 'wxTreeCtrl', parent, sizer, pos)
         EditStylesMixin.__init__(self)
 
         # initialise instance properties
@@ -60,7 +60,7 @@ def builder(parent, sizer, pos, number=[1]):
         number[0] += 1
         name = 'tree_ctrl_%d' % number[0]
     with parent.frozen():
-        tree_ctrl = EditTreeCtrl(name, parent, wx.NewId(), sizer, pos)
+        tree_ctrl = EditTreeCtrl(name, parent, sizer, pos)
         tree_ctrl.properties["style"].set_to_default()
         node = Node(tree_ctrl)
         tree_ctrl.node = node
@@ -80,7 +80,7 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
         raise XmlParsingError(_("'name' attribute missing"))
     if sizer is None or sizeritem is None:
         raise XmlParsingError(_("sizer or sizeritem object cannot be None"))
-    tree_ctrl = EditTreeCtrl(name, parent, wx.NewId(), sizer, pos, style=0)
+    tree_ctrl = EditTreeCtrl(name, parent, sizer, pos, style=0)
     #sizer.set_item(tree_ctrl.pos, proportion=sizeritem.proportion, span=sizeritem.span, flag=sizeritem.flag, border=sizeritem.border)
     node = Node(tree_ctrl)
     tree_ctrl.node = node

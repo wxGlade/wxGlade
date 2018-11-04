@@ -25,8 +25,8 @@ class EditListCtrl(ManagedBase, EditStylesMixin):
     _PROPERTY_HELP = {"rows_number":"This is just used for the design and preview windows.",
                       "columns":"Only for style LC_REPORT."}
 
-    def __init__(self, name, parent, id, sizer, pos, style=wx.LC_REPORT | wx.BORDER_SUNKEN):
-        ManagedBase.__init__(self, name, 'wxListCtrl', parent, id, sizer, pos)
+    def __init__(self, name, parent, sizer, pos, style=wx.LC_REPORT | wx.BORDER_SUNKEN):
+        ManagedBase.__init__(self, name, 'wxListCtrl', parent, sizer, pos)
         EditStylesMixin.__init__(self)
         if style: self.properties["style"].set(style)
         self.columns = GridColsProperty([])
@@ -114,7 +114,7 @@ def builder(parent, sizer, pos, number=[1]):
         number[0] += 1
         name = 'list_ctrl_%d' % number[0]
     with parent.frozen():
-        list_ctrl = EditListCtrl(name, parent, wx.NewId(), sizer, pos)
+        list_ctrl = EditListCtrl(name, parent, sizer, pos)
         #list_ctrl.properties["style"].set_to_default()  # default is wxLC_ICON
         list_ctrl.properties["columns"].set( [['A', -1], ['B', -1], ['C', -1]] )
         list_ctrl.properties["rows_number"].set(10)
@@ -137,7 +137,7 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
         raise XmlParsingError(_("'name' attribute missing"))
     if sizer is None or sizeritem is None:
         raise XmlParsingError(_("sizer or sizeritem object cannot be None"))
-    list_ctrl = EditListCtrl(name, parent, wx.NewId(), sizer, pos, style=0)
+    list_ctrl = EditListCtrl(name, parent, sizer, pos, style=0)
     #sizer.set_item(list_ctrl.pos, proportion=sizeritem.proportion, span=sizeritem.span, flag=sizeritem.flag, border=sizeritem.border)
     node = Node(list_ctrl)
     list_ctrl.node = node

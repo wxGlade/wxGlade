@@ -22,8 +22,8 @@ class EditRadioButton(ManagedBase, EditStylesMixin):
     _PROPERTIES = ["Widget", "label", "clicked", "style"]
     PROPERTIES = ManagedBase.PROPERTIES + _PROPERTIES + ManagedBase.EXTRA_PROPERTIES
 
-    def __init__(self, name, parent, id, label, sizer, pos):
-        ManagedBase.__init__(self, name, 'wxRadioButton', parent, id, sizer, pos)
+    def __init__(self, name, parent, label, sizer, pos):
+        ManagedBase.__init__(self, name, 'wxRadioButton', parent, sizer, pos)
         EditStylesMixin.__init__(self)
 
         # initialise instance properties
@@ -63,7 +63,7 @@ def builder(parent, sizer, pos, number=[1]):
         number[0] += 1
         label = u'radio_btn_%d' % number[0]
     with parent.frozen():
-        radio = EditRadioButton(label, parent, wx.NewId(), label, sizer, pos)
+        radio = EditRadioButton(label, parent, label, sizer, pos)
         radio.properties["style"].set_to_default()
         radio.check_defaults()
         node = Node(radio)
@@ -81,7 +81,7 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
         raise XmlParsingError(_("'name' attribute missing"))
     if sizer is None or sizeritem is None:
         raise XmlParsingError(_("sizer or sizeritem object cannot be None"))
-    radio = EditRadioButton(label, parent, wx.NewId(), "", sizer, pos)
+    radio = EditRadioButton(label, parent, "", sizer, pos)
     #sizer.set_item(radio.pos, proportion=sizeritem.proportion, span=sizeritem.span, flag=sizeritem.flag, border=sizeritem.border)
     node = Node(radio)
     radio.node = node

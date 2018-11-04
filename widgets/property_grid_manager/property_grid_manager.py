@@ -21,8 +21,8 @@ class EditPropertyGridManager(ManagedBase, EditStylesMixin):
     PROPERTIES = ManagedBase.PROPERTIES + _PROPERTIES + ManagedBase.EXTRA_PROPERTIES
     recreate_on_style_change = True
 
-    def __init__(self, name, parent, id, sizer, pos):
-        ManagedBase.__init__(self, name, 'wxPropertyGridManager', parent, id, sizer, pos)
+    def __init__(self, name, parent, sizer, pos):
+        ManagedBase.__init__(self, name, 'wxPropertyGridManager', parent, sizer, pos)
         EditStylesMixin.__init__(self)
 
     def create_widget(self):
@@ -101,7 +101,7 @@ def builder(parent, sizer, pos, number=[1]):
         number[0] += 1
         label = 'property_grid_%d' % number[0]
     with parent.frozen():
-        property_grid_manager = EditPropertyGridManager(label, parent, wx.NewId(), sizer, pos)
+        property_grid_manager = EditPropertyGridManager(label, parent, sizer, pos)
         property_grid_manager.properties["style"].set_to_default()
         # A grid should be wx.EXPANDed and 'option' should be 1, or you can't see it.
         property_grid_manager.properties["proportion"].set(1)
@@ -121,7 +121,7 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
         raise XmlParsingError(_("'name' attribute missing"))
     if sizer is None or sizeritem is None:
         raise XmlParsingError(_("sizer or sizeritem object cannot be None"))
-    property_grid_manager = EditPropertyGridManager( label, parent, wx.NewId(), sizer, pos )
+    property_grid_manager = EditPropertyGridManager( label, parent, sizer, pos )
     #sizer.set_item( property_grid_manager.pos, proportion=sizeritem.proportion, flag=sizeritem.flag,
     #                border=sizeritem.border)
     node = Node(property_grid_manager)

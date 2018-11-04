@@ -122,8 +122,8 @@ class EditSplitterWindow(ManagedBase, EditStylesMixin):
                                      "0.5: both windows grow by equal size\n"
                                      "1.0: only left/top window grows"}
 
-    def __init__(self, name, parent, id, win_1, win_2, orientation, sizer, pos):
-        ManagedBase.__init__(self, name, 'wxSplitterWindow', parent, id, sizer, pos)
+    def __init__(self, name, parent, win_1, win_2, orientation, sizer, pos):
+        ManagedBase.__init__(self, name, 'wxSplitterWindow', parent, sizer, pos)
         EditStylesMixin.__init__(self)
 
         # initialise instance properties
@@ -278,11 +278,11 @@ def builder(parent, sizer, pos, number=[1]):
         label = '%s_%d' % (tmpl_label, number[0])
 
     with parent.frozen():
-        widget = editor_class(label, parent, -1, None, None, orientation, sizer, pos)
+        widget = editor_class(label, parent, None, None, orientation, sizer, pos)
         widget.properties["style"].set_to_default()
         if create_panels:
-            widget._window_1 = pane1 = EditPanel(label + '_pane_1', widget, wx.NewId(), widget.virtual_sizer, 1)
-            widget._window_2 = pane2 = EditPanel(label + '_pane_2', widget, wx.NewId(), widget.virtual_sizer, 2)
+            widget._window_1 = pane1 = EditPanel(label + '_pane_1', widget, widget.virtual_sizer, 1)
+            widget._window_2 = pane2 = EditPanel(label + '_pane_2', widget, widget.virtual_sizer, 2)
     
         node = Node(widget)
         widget.node = node
@@ -318,7 +318,7 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
         raise XmlParsingError(_("'name' attribute missing"))
     if sizer is None or sizeritem is None:
         raise XmlParsingError(_("sizer or sizeritem object cannot be None"))
-    widget = editor_class(name, parent, wx.NewId(), None, None, editor_style, sizer, pos)
+    widget = editor_class(name, parent, None, None, editor_style, sizer, pos)
     #sizer.set_item(widget.pos, proportion=sizeritem.proportion, span=sizeritem.span, flag=sizeritem.flag, border=sizeritem.border)
     node = Node(widget)
     widget.node = node

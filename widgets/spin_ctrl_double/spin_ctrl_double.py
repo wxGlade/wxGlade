@@ -20,8 +20,8 @@ class EditSpinCtrlDouble(ManagedBase, EditStylesMixin):
     _PROPERTIES = ["Widget", "range", "value", "increment", "style"]
     PROPERTIES = ManagedBase.PROPERTIES + _PROPERTIES + ManagedBase.EXTRA_PROPERTIES
 
-    def __init__(self, name, parent, id, sizer, pos):
-        ManagedBase.__init__(self, name, 'wxSpinCtrlDouble', parent, id, sizer, pos)
+    def __init__(self, name, parent, sizer, pos):
+        ManagedBase.__init__(self, name, 'wxSpinCtrlDouble', parent, sizer, pos)
         EditStylesMixin.__init__(self)
 
         # initialise instance properties
@@ -79,7 +79,7 @@ def builder(parent, sizer, pos, number=[1]):
         number[0] += 1
         name = 'spin_ctrl_double_%d' % number[0]
     with parent.frozen():
-        spin = EditSpinCtrlDouble(name, parent, wx.NewId(), sizer, pos)
+        spin = EditSpinCtrlDouble(name, parent, sizer, pos)
         spin.properties["style"].set_to_default()
         spin.check_defaults()
         node = Node(spin)
@@ -97,7 +97,7 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
         raise XmlParsingError(_("'name' attribute missing"))
     if sizer is None or sizeritem is None:
         raise XmlParsingError(_("sizer or sizeritem object cannot be None"))
-    spin = EditSpinCtrlDouble( name, parent, wx.NewId(), sizer, pos )
+    spin = EditSpinCtrlDouble( name, parent, sizer, pos )
     spin.properties["value"].set_active(False)
     #sizer.set_item( spin.pos, proportion=sizeritem.proportion, flag=sizeritem.flag, border=sizeritem.border )
     node = Node(spin)

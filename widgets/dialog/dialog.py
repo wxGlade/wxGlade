@@ -22,8 +22,8 @@ class EditDialog(TopLevelBase, EditStylesMixin, BitmapMixin):
     PROPERTIES = TopLevelBase.PROPERTIES + _PROPERTIES + TopLevelBase.EXTRA_PROPERTIES
     _PROPERTY_LABELS = { "sizehints":'Set Size Hints'}
     
-    def __init__(self, name, parent, id, title, style=wx.DEFAULT_DIALOG_STYLE, klass='wxDialog'):
-        TopLevelBase.__init__(self, name, klass, parent, id, title=title)
+    def __init__(self, name, parent, title, style=wx.DEFAULT_DIALOG_STYLE, klass='wxDialog'):
+        TopLevelBase.__init__(self, name, klass, parent, title=title)
         self.base = 'wxDialog'
         EditStylesMixin.__init__(self)
         self.properties["style"].set(style)
@@ -89,11 +89,11 @@ def builder(parent, sizer, pos, number=[0]):
 
     if base == "wxDialog":
         is_panel = False
-        dialog = EditDialog(name, parent, wx.NewId(), name, "wxDEFAULT_DIALOG_STYLE", klass=klass)
+        dialog = EditDialog(name, parent, name, "wxDEFAULT_DIALOG_STYLE", klass=klass)
     else:
         is_panel = True
         import panel
-        dialog = panel.EditTopLevelPanel(name, parent, wx.NewId(), klass=klass)
+        dialog = panel.EditTopLevelPanel(name, parent, klass=klass)
     node = Node(dialog)
     dialog.node = node
     dialog.create()
@@ -119,7 +119,7 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
         label = attrs['name']
     except KeyError:
         raise XmlParsingError(_("'name' attribute missing"))
-    dialog = EditDialog(label, parent, wx.NewId(), "", style=0)
+    dialog = EditDialog(label, parent, "", style=0)
     node = Node(dialog)
     dialog.node = node
     common.app_tree.add(node)

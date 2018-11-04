@@ -19,8 +19,8 @@ class EditSpacer(ManagedBase):
     _PROPERTIES = ["Layout", "width", "height", "pos", "proportion", "border", "flag"]
     PROPERTIES = _PROPERTIES + ManagedBase.EXTRA_PROPERTIES
 
-    def __init__(self, name, parent, id, width, height, sizer, pos):
-        ManagedBase.__init__(self, name, 'spacer', parent, id, sizer, pos)
+    def __init__(self, name, parent, width, height, sizer, pos):
+        ManagedBase.__init__(self, name, 'spacer', parent, sizer, pos)
 
         # initialise instance properties
         self.width  = np.SpinProperty(width,  immediate=True)
@@ -102,7 +102,7 @@ def builder(parent, sizer, pos):
 
     name = 'spacer'
     with parent.frozen():
-        spacer = EditSpacer( name, parent, wx.NewId(), width, height, sizer, pos )
+        spacer = EditSpacer( name, parent, width, height, sizer, pos )
         node = Node(spacer)
         spacer.node = node
         if parent.widget: spacer.create()
@@ -114,7 +114,7 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
     from xml_parse import XmlParsingError
     if not sizer or not sizeritem:
         raise XmlParsingError(_("sizer or sizeritem object cannot be None"))
-    spacer = EditSpacer('spacer', parent, wx.NewId(), 1, 1, sizer, pos)
+    spacer = EditSpacer('spacer', parent, 1, 1, sizer, pos)
     #sizer.set_item(spacer.pos, proportion=sizeritem.proportion, span=sizeritem.span, flag=sizeritem.flag, border=sizeritem.border)
     node = Node(spacer)
     spacer.node = node

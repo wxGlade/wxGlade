@@ -28,9 +28,9 @@ class EditButton(ManagedBase, EditStylesMixin, BitmapMixin):
     _PROPERTY_HELP = {"default":"This sets the button to be the default item for the panel or dialog box.",
                       "stockitem":"Standard IDs for button identifiers"}
 
-    def __init__(self, name, parent, id, label, sizer, pos):
+    def __init__(self, name, parent, label, sizer, pos):
         # Initialise parent classes
-        ManagedBase.__init__(self, name, 'wxButton', parent, id, sizer, pos)
+        ManagedBase.__init__(self, name, 'wxButton', parent, sizer, pos)
         EditStylesMixin.__init__(self)
         BitmapMixin.__init__(self)
 
@@ -97,7 +97,7 @@ def builder(parent, sizer, pos, number=[1]):
         number[0] += 1
         name = u'button_%d' % number[0]
     with parent.frozen():
-        button = EditButton(name, parent, wx.NewId(), name, sizer, pos)
+        button = EditButton(name, parent, name, sizer, pos)
         button.properties["style"].set_to_default()
         button.check_defaults()
         node = Node(button)
@@ -115,7 +115,7 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
         raise XmlParsingError(_("'name' attribute missing"))
     if sizer is None or sizeritem is None:
         raise XmlParsingError(_("sizer or sizeritem object cannot be None"))
-    button = EditButton(name, parent, wx.NewId(), '', sizer, pos)
+    button = EditButton(name, parent, '', sizer, pos)
     #sizer.set_item(button.pos, proportion=sizeritem.proportion, span=sizeritem.span, flag=sizeritem.flag, border=sizeritem.border)
     node = Node(button)
     button.node = node

@@ -23,8 +23,8 @@ class EditFrame(TopLevelBase, EditStylesMixin, BitmapMixin):
     _PROPERTY_LABELS = { "sizehints":'Set Size Hints', "menubar":'Has MenuBar', "toolbar":'Has ToolBar',
                          "statusbar":'Has StatusBar' }
 
-    def __init__(self, name, parent, id, title, style=wx.DEFAULT_FRAME_STYLE, klass='wxFrame'): #XXX style is not used
-        TopLevelBase.__init__(self, name, klass, parent, id, title=title)
+    def __init__(self, name, parent, title, style=wx.DEFAULT_FRAME_STYLE, klass='wxFrame'): #XXX style is not used
+        TopLevelBase.__init__(self, name, klass, parent, title=title)
         self.base = 'wxFrame'
         EditStylesMixin.__init__(self)
         self.properties["style"].set(style)
@@ -168,7 +168,7 @@ def builder(parent, sizer, pos, klass=None, base=None, name=None):
         base_class = EditFrame
     else:
         base_class = EditMDIChildFrame
-    frame = base_class(name, parent, wx.NewId(), name, "wxDEFAULT_FRAME_STYLE", klass=klass)
+    frame = base_class(name, parent, name, "wxDEFAULT_FRAME_STYLE", klass=klass)
     frame.properties['size'].set( (400,300), activate=True )
     node = Node(frame)
     frame.node = node
@@ -200,7 +200,7 @@ def _make_builder(base_class):
             style = "wxDEFAULT_FRAME_STYLE"
         else:
             style = 0
-        frame = base_class(label, parent, wx.NewId(), "", style)
+        frame = base_class(label, parent, "", style)
         node = Node(frame)
         frame.node = node
         common.app_tree.add(node)

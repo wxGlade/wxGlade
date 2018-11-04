@@ -24,8 +24,8 @@ class EditComboBox(ManagedBase, EditStylesMixin):
 
     update_widget_style = False
 
-    def __init__(self, name, parent, id, choices, sizer, pos):
-        ManagedBase.__init__(self, name, 'wxComboBox', parent, id, sizer, pos)
+    def __init__(self, name, parent, choices, sizer, pos):
+        ManagedBase.__init__(self, name, 'wxComboBox', parent, sizer, pos)
         EditStylesMixin.__init__(self)
 
         # initialise instance properties
@@ -78,7 +78,7 @@ def builder(parent, sizer, pos, number=[1]):
         number[0] += 1
         name = 'combo_box_%d' % number[0]
     with parent.frozen():
-        combo = EditComboBox(name, parent, wx.NewId(), [], sizer, pos)
+        combo = EditComboBox(name, parent, [], sizer, pos)
         combo.properties["style"].set_to_default()
         combo.check_defaults()
         node = Node(combo)
@@ -97,7 +97,7 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
         raise XmlParsingError(_("'name' attribute missing"))
     if sizer is None or sizeritem is None:
         raise XmlParsingError(_("sizer or sizeritem object cannot be None"))
-    combo = EditComboBox(name, parent, wx.NewId(), [], sizer, pos)
+    combo = EditComboBox(name, parent, [], sizer, pos)
     #sizer.set_item(combo.pos, proportion=sizeritem.proportion, span=sizeritem.span, flag=sizeritem.flag, border=sizeritem.border)
     node = Node(combo)
     combo.node = node

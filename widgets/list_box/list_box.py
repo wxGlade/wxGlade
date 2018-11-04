@@ -19,8 +19,8 @@ class EditListBox(ManagedBase, EditStylesMixin):
     _PROPERTIES = ["Widget", "style", "selection", "choices"]
     PROPERTIES = ManagedBase.PROPERTIES + _PROPERTIES + ManagedBase.EXTRA_PROPERTIES
 
-    def __init__(self, name, parent, id, choices, sizer, pos):
-        ManagedBase.__init__(self, name, 'wxListBox', parent, id, sizer, pos)
+    def __init__(self, name, parent, choices, sizer, pos):
+        ManagedBase.__init__(self, name, 'wxListBox', parent, sizer, pos)
         EditStylesMixin.__init__(self)
 
         # initialise instance properties
@@ -75,7 +75,7 @@ def builder(parent, sizer, pos, number=[1]):
         number[0] += 1
         name = 'list_box_%d' % number[0]
     with parent.frozen():
-        list_box = EditListBox(name, parent, wx.NewId(), [u'choice 1', ], sizer, pos)
+        list_box = EditListBox(name, parent, [u'choice 1', ], sizer, pos)
         list_box.properties["style"].set_to_default()
         node = Node(list_box)
     ##     sizer.set_item(pos, size=list_box.GetBestSize())
@@ -93,7 +93,7 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
         raise XmlParsingError(_("'name' attribute missing"))
     if sizer is None or sizeritem is None:
         raise XmlParsingError(_("sizer or sizeritem object cannot be None"))
-    list_box = EditListBox(name, parent, wx.NewId(), [], sizer, pos)
+    list_box = EditListBox(name, parent, [], sizer, pos)
     #sizer.set_item(list_box.pos, proportion=sizeritem.proportion, span=sizeritem.span, flag=sizeritem.flag, border=sizeritem.border)
     node = Node(list_box)
     list_box.node = node

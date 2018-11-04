@@ -28,9 +28,9 @@ class EditCalendarCtrl(ManagedBase, EditStylesMixin):
     _PROPERTIES = ["Widget", "default", "style"]
     PROPERTIES = ManagedBase.PROPERTIES + _PROPERTIES + ManagedBase.EXTRA_PROPERTIES
 
-    def __init__(self, name, parent, id, sizer, pos):
+    def __init__(self, name, parent, sizer, pos):
         # Initialise parent classes
-        ManagedBase.__init__(self, name, 'wxCalendarCtrl', parent, id, sizer, pos)
+        ManagedBase.__init__(self, name, 'wxCalendarCtrl', parent, sizer, pos)
         EditStylesMixin.__init__(self)
 
         # initialise instance properties
@@ -64,7 +64,7 @@ def builder(parent, sizer, pos, number=[1]):
         number[0] += 1
         label = 'calendar_ctrl_%d' % number[0]
     with parent.frozen():
-        calendar_ctrl = EditCalendarCtrl(label, parent, wx.NewId(), sizer, pos)
+        calendar_ctrl = EditCalendarCtrl(label, parent, sizer, pos)
         calendar_ctrl.properties["style"].set_to_default()
         calendar_ctrl.check_defaults()
         node = Node(calendar_ctrl)
@@ -82,7 +82,7 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
         raise XmlParsingError(_("'name' attribute missing"))
     if sizer is None or sizeritem is None:
         raise XmlParsingError(_("sizer or sizeritem object cannot be None"))
-    calendar_ctrl = EditCalendarCtrl(label, parent, wx.NewId(), sizer, pos)
+    calendar_ctrl = EditCalendarCtrl(label, parent, sizer, pos)
     #sizer.set_item(calendar_ctrl.pos, proportion=sizeritem.proportion, span=sizeritem.span, flag=sizeritem.flag, border=sizeritem.border)
     node = Node(calendar_ctrl)
     calendar_ctrl.node = node

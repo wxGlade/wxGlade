@@ -22,8 +22,8 @@ class EditChoice(ManagedBase):
     _PROPERTIES = ["Widget", "selection", "choices"]
     PROPERTIES = ManagedBase.PROPERTIES + _PROPERTIES + ManagedBase.EXTRA_PROPERTIES
 
-    def __init__(self, name, parent, id, choices, sizer, pos):
-        ManagedBase.__init__(self, name, 'wxChoice', parent, id, sizer, pos)
+    def __init__(self, name, parent, choices, sizer, pos):
+        ManagedBase.__init__(self, name, 'wxChoice', parent, sizer, pos)
 
         # initialise instance properties
         self.selection = np.SpinProperty(0, val_range=(-1,len(choices)-1), immediate=True )
@@ -75,7 +75,7 @@ def builder(parent, sizer, pos, number=[1]):
         number[0] += 1
         name = 'choice_%d' % number[0]
     with parent.frozen():
-        choice = EditChoice(name, parent, wx.NewId(), [(u'choice 1',)], sizer, pos)
+        choice = EditChoice(name, parent, [(u'choice 1',)], sizer, pos)
         choice.check_defaults()
         node = Node(choice)
         #sizer.set_item(pos, size=choice.GetBestSize())
@@ -93,7 +93,7 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
         raise XmlParsingError(_("'name' attribute missing"))
     if sizer is None or sizeritem is None:
         raise XmlParsingError(_("sizer or sizeritem object cannot be None"))
-    choice = EditChoice(name, parent, wx.NewId(), [], sizer, pos)
+    choice = EditChoice(name, parent, [], sizer, pos)
     #sizer.set_item(choice.pos, proportion=sizeritem.proportion, span=sizeritem.span, flag=sizeritem.flag, border=sizeritem.border)
     node = Node(choice)
     choice.node = node

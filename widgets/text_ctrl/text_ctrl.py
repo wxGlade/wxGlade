@@ -23,9 +23,9 @@ class EditTextCtrl(ManagedBase, EditStylesMixin):
     PROPERTIES = ManagedBase.PROPERTIES + _PROPERTIES + ManagedBase.EXTRA_PROPERTIES
     recreate_on_style_change = True
 
-    def __init__(self, name, parent, id, sizer, pos):
+    def __init__(self, name, parent, sizer, pos):
         # initialize base classes
-        ManagedBase.__init__(self, name, 'wxTextCtrl', parent, id, sizer, pos)
+        ManagedBase.__init__(self, name, 'wxTextCtrl', parent, sizer, pos)
         EditStylesMixin.__init__(self)
 
         # initialize instance properties
@@ -54,7 +54,7 @@ def builder(parent, sizer, pos, number=[1]):
         number[0] += 1
         name = 'text_ctrl_%d' % number[0]
     with parent.frozen():
-        text = EditTextCtrl(name, parent, wx.NewId(), sizer, pos)
+        text = EditTextCtrl(name, parent, sizer, pos)
         text.properties["style"].set_to_default()
         text.check_defaults()
         node = Node(text)
@@ -72,7 +72,7 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
         raise XmlParsingError(_("'name' attribute missing"))
     if sizer is None or sizeritem is None:
         raise XmlParsingError(_("sizer or sizeritem object cannot be None"))
-    text = EditTextCtrl(name, parent, wx.NewId(), sizer, pos)
+    text = EditTextCtrl(name, parent, sizer, pos)
     #sizer.set_item(text.pos, proportion=sizeritem.proportion, span=sizeritem.span, flag=sizeritem.flag, border=sizeritem.border)
     node = Node(text)
     text.node = node

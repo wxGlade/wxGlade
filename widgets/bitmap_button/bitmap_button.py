@@ -22,8 +22,8 @@ class EditBitmapButton(ManagedBase, EditStylesMixin, BitmapMixin):
                    "default", "style"]
     PROPERTIES = ManagedBase.PROPERTIES + _PROPERTIES + ManagedBase.EXTRA_PROPERTIES
 
-    def __init__(self, name, parent, id, bmp_file, sizer, pos):
-        ManagedBase.__init__(self, name, 'wxBitmapButton', parent, id, sizer, pos)
+    def __init__(self, name, parent, bmp_file, sizer, pos):
+        ManagedBase.__init__(self, name, 'wxBitmapButton', parent, sizer, pos)
         EditStylesMixin.__init__(self)
         BitmapMixin.__init__(self)
 
@@ -60,7 +60,7 @@ def builder(parent, sizer, pos, number=[1]):
         name = 'bitmap_button_%s' % number[0]
     bitmap = wx.FileSelector(_("Select the image for the button"))
     with parent.frozen():
-        button = EditBitmapButton(name, parent, wx.NewId(), bitmap, sizer, pos)
+        button = EditBitmapButton(name, parent, bitmap, sizer, pos)
         button.properties["style"].set_to_default()
         button.check_defaults()
         node = Node(button)
@@ -78,7 +78,7 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
         raise XmlParsingError(_("'name' attribute missing"))
     if sizer is None or sizeritem is None:
         raise XmlParsingError(_("sizer or sizeritem object cannot be None"))
-    button = EditBitmapButton(label, parent, wx.NewId(), '', sizer, pos)
+    button = EditBitmapButton(label, parent, '', sizer, pos)
     if attrs.input_file_version and attrs.input_file_version<(0,9):
         # backwards compatibility
         button.properties["style"].set_to_default()

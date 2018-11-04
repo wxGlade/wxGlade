@@ -24,8 +24,8 @@ class EditStaticText(ManagedBase, EditStylesMixin):
                                  'Without this, you can not access the label from your program.',
                      "wrap":     'Wrap text to at most the given width.\nThe lines will be broken at word boundaries.'}
 
-    def __init__(self, name, parent, id, label, sizer, pos):
-        ManagedBase.__init__(self, name, 'wxStaticText', parent, id, sizer, pos)
+    def __init__(self, name, parent, label, sizer, pos):
+        ManagedBase.__init__(self, name, 'wxStaticText', parent, sizer, pos)
         EditStylesMixin.__init__(self)
 
         # initialise instance properties
@@ -69,7 +69,7 @@ def builder(parent, sizer, pos, number=[1]):
         number[0] += 1
         label = u'label_%d' % number[0]
     with parent.frozen():
-        static_text = EditStaticText(label, parent, wx.NewId(), label, sizer, pos)
+        static_text = EditStaticText(label, parent, label, sizer, pos)
         static_text.properties["style"].set_to_default()
         static_text.check_defaults()
         node = Node(static_text)
@@ -87,7 +87,7 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
         raise XmlParsingError(_("'name' attribute missing"))
     if sizer is None or sizeritem is None:
         raise XmlParsingError(_("sizer or sizeritem object cannot be None"))
-    static_text = EditStaticText(label, parent, wx.NewId(), "", sizer, pos)
+    static_text = EditStaticText(label, parent, "", sizer, pos)
     #sizer.set_item(static_text.pos, proportion=sizeritem.proportion, span=sizeritem.span, flag=sizeritem.flag, border=sizeritem.border)
     node = Node(static_text)
     static_text.node = node

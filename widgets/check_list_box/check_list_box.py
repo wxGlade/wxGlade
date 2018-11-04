@@ -22,8 +22,8 @@ class EditCheckListBox(ManagedBase, EditStylesMixin):
     _PROPERTIES = ["Widget", "style", "selection", "choices"]
     PROPERTIES = ManagedBase.PROPERTIES + _PROPERTIES + ManagedBase.EXTRA_PROPERTIES
 
-    def __init__(self, name, parent, id, choices, sizer, pos):
-        ManagedBase.__init__(self, name, 'wxCheckListBox', parent, id, sizer, pos)
+    def __init__(self, name, parent, choices, sizer, pos):
+        ManagedBase.__init__(self, name, 'wxCheckListBox', parent, sizer, pos)
         EditStylesMixin.__init__(self)
 
         # initialise instance properties
@@ -78,7 +78,7 @@ def builder(parent, sizer, pos, number=[1]):
         number[0] += 1
         name = 'check_list_box_%d' % number[0]
     with parent.frozen():
-        check_list_box = EditCheckListBox(name, parent, wx.NewId(), [u'choice 1'], sizer, pos)
+        check_list_box = EditCheckListBox(name, parent, [u'choice 1'], sizer, pos)
         check_list_box.properties["style"].set_to_default()
         node = Node(check_list_box)
     ##     sizer.set_item(pos, size=check_list_box.GetBestSize())
@@ -96,7 +96,7 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
         raise XmlParsingError(_("'name' attribute missing"))
     if sizer is None or sizeritem is None:
         raise XmlParsingError(_("sizer or sizeritem object cannot be None"))
-    check_list_box = EditCheckListBox(name, parent, wx.NewId(), [], sizer, pos)
+    check_list_box = EditCheckListBox(name, parent, [], sizer, pos)
     #sizer.set_item(check_list_box.pos, proportion=sizeritem.proportion, span=sizeritem.span, flag=sizeritem.flag, border=sizeritem.border)
     node = Node(check_list_box)
     check_list_box.node = node

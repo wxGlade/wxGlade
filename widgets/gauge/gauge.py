@@ -21,8 +21,8 @@ class EditGauge(ManagedBase, EditStylesMixin):
     PROPERTIES = ManagedBase.PROPERTIES + _PROPERTIES + ManagedBase.EXTRA_PROPERTIES
     recreate_on_style_change = True
 
-    def __init__(self, name, parent, id, style, sizer, pos):
-        ManagedBase.__init__(self, name, 'wxGauge', parent, id, sizer, pos)
+    def __init__(self, name, parent, style, sizer, pos):
+        ManagedBase.__init__(self, name, 'wxGauge', parent, sizer, pos)
         EditStylesMixin.__init__(self)
         if style: self.properties["style"].set(style)
 
@@ -64,7 +64,7 @@ def builder(parent, sizer, pos, number=[1]):
         number[0] += 1
         label = '%s_%d' % (tmpl_label, number[0])
     with parent.frozen():
-        widget = editor_class(label, parent, wx.ID_ANY, style, sizer, pos)
+        widget = editor_class(label, parent, style, sizer, pos)
         node = Node(widget)
         widget.node = node
         widget.properties["flag"].set("wxEXPAND")
@@ -81,7 +81,7 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
         raise XmlParsingError(_("'name' attribute missing"))
     if sizer is None or sizeritem is None:
         raise XmlParsingError(_("sizer or sizeritem object cannot be None"))
-    widget = editor_class(name, parent, wx.ID_ANY, editor_style, sizer, pos)
+    widget = editor_class(name, parent, editor_style, sizer, pos)
     #sizer.set_item(widget.pos, proportion=sizeritem.proportion, span=sizeritem.span, flag=sizeritem.flag, border=sizeritem.border)
     node = Node(widget)
     widget.node = node

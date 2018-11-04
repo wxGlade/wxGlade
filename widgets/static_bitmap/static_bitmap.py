@@ -25,8 +25,8 @@ class EditStaticBitmap(ManagedBase, EditStylesMixin, BitmapMixin):
     _PROPERTY_HELP = {"attribute":'Store instance as attribute of window class; e.g. self.bitmap_1 = wx.wxStaticBitmap'
                                   '(...)\nWithout this, you can not access the bitmap from your program.'}
 
-    def __init__(self, name, parent, id, bmp_file, sizer, pos):
-        ManagedBase.__init__(self, name, 'wxStaticBitmap', parent, id, sizer, pos)
+    def __init__(self, name, parent, bmp_file, sizer, pos):
+        ManagedBase.__init__(self, name, 'wxStaticBitmap', parent, sizer, pos)
         EditStylesMixin.__init__(self)
 
         # initialise instance properties
@@ -65,7 +65,7 @@ def builder(parent, sizer, pos, number=[1]):
         name = 'bitmap_%s' % number[0]
     bitmap = wx.FileSelector(_("Select the image"))
     with parent.frozen():
-        static_bitmap = EditStaticBitmap(name, parent, wx.NewId(), bitmap, sizer, pos)
+        static_bitmap = EditStaticBitmap(name, parent, bitmap, sizer, pos)
         static_bitmap.properties["style"].set_to_default()
         static_bitmap.check_defaults()
         node = Node(static_bitmap)
@@ -83,7 +83,7 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
         raise XmlParsingError(_("'name' attribute missing"))
     if sizer is None or sizeritem is None:
         raise XmlParsingError(_("sizer or sizeritem object cannot be None"))
-    bitmap = EditStaticBitmap(label, parent, wx.NewId(), '', sizer, pos)
+    bitmap = EditStaticBitmap(label, parent, '', sizer, pos)
     #sizer.set_item(bitmap.pos, proportion=sizeritem.proportion, span=sizeritem.span, flag=sizeritem.flag, border=sizeritem.border)
     node = Node(bitmap)
     bitmap.node = node
