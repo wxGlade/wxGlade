@@ -569,7 +569,7 @@ class wxGladeFrame(wx.Frame):
         else:
             method = getattr(tb, "AddLabelTool")
 
-        if isinstance(bmp, str):
+        if isinstance(bmp, str) and not bmp.startswith("wxART_"):
             bmp = wx.Bitmap( os.path.join(config.icons_path, bmp) )
         else:
             # a wx.ART_... constant
