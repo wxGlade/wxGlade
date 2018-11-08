@@ -464,11 +464,16 @@ class SpinDoubleProperty(SpinProperty):
     # float
     deactivated = False
     def _set_converter(self, value):
-        return float(value)
+        if isinstance(value, compat.unicode):
+            return float(value.replace(u",", u"."))
+        elif isinstance(value, bytes):
+            return float(value.replace(b",", b"."))
+        return value
 
     def create_spin_ctrl(self, panel):
         style = wx.TE_PROCESS_ENTER | wx.SP_ARROW_KEYS
         spin = wx.SpinCtrlDouble( panel, -1, style=style, min=self.val_range[0], max=self.val_range[1] )
+        spin.SetDigits(3)
         spin.SetValue(self.value)
         range_ = abs(self.val_range[1]-self.val_range[0])
         if range_<=1.0:
