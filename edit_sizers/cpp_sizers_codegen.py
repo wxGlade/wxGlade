@@ -20,35 +20,35 @@ class BaseCPPSizerBuilder(BaseSizerBuilder):
     tmpl_SetSizeHints = '%(sizer_name)s->SetSizeHints(%(parent_widget)s);\n'
 
     #def _get_wparent(self, obj):
-        #if not obj.parent.is_toplevel:
+        #if not obj.parent.IS_TOPLEVEL:
             #parent = '%s' % obj.parent.name
         #else:
             #parent = 'this'
         #return parent
 
     def _get_wparent(self, obj):
-        while obj.is_sizer:
+        while obj.IS_SIZER:
             obj = obj.node.parent.widget
-        if not obj.is_toplevel:
+        if not obj.IS_TOPLEVEL:
             parent = '%s' % obj.name
         else:
             parent = 'this'
         return parent
 
     def _get_parent_ref(self, obj):
-        #while obj.is_sizer:
-        if obj.is_sizer:
+        #while obj.IS_SIZER:
+        if obj.IS_SIZER:
             obj = obj.node.parent.widget
-        #if not obj.parent.is_toplevel:
-        if not obj.is_toplevel:
+        #if not obj.parent.IS_TOPLEVEL:
+        if not obj.IS_TOPLEVEL:
             parent_ref = '%s->' % obj.parent.name
         else:
             parent_ref = ''
         return parent_ref
 
     def _get_parent_ref(self, obj):
-        #if not obj.parent.is_toplevel:
-        if not obj.node.parent.is_toplevel:
+        #if not obj.parent.IS_TOPLEVEL:
+        if not obj.node.parent.IS_TOPLEVEL:
             #parent_ref = '%s->' % obj.parent.name
             parent_ref = '%s->' % obj.node.parent.widget.name
         else:

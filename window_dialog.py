@@ -9,6 +9,15 @@ import wx
 import common, compat
 
 
+def _get_all_class_names(item):
+    ret = []
+    for c in item.children or []:
+        name = getattr(c, "klass", None)
+        if name: ret.append(name)
+        ret += self.get_all_class_names(c)
+
+    return ret
+
 class WindowDialog(wx.Dialog):
     # dialog for builder function
     parent = parent_property = None  # used by StandaloneOrChildDialog
@@ -24,8 +33,10 @@ class WindowDialog(wx.Dialog):
             self.base.SetSelection(0)
 
         self.number = 1
-        self.class_names = set( common.app_tree.get_all_class_names() )
-        self.toplevel_names = set( common.app_tree.get_toplevel_class_names() )
+        #self.class_names = set( common.app_tree.get_all_class_names() )
+        self.class_names = set( _get_all_class_names(common.app_tree.app) )
+        #self.toplevel_names = set( common.app_tree.get_toplevel_class_names() )
+        self.toplevel_names = set( c.name for c in common.app_tree.app.children )
         self.toplevel = toplevel  # if this is True, the name must be unique, as the generated class will have it
         # class
         self._klass = klass
@@ -70,7 +81,6 @@ class WindowDialog(wx.Dialog):
 
     def get_next_class_name(self, name):
         #names = [c.widget.klass for c in common.app_tree.root.children or []]
-        
         if not name in self.class_names: return name
         while True:
             ret = '%s%d'%(name,self.number)
@@ -78,7 +88,8 @@ class WindowDialog(wx.Dialog):
             self.number += 1
 
     def get_next_name(self, name):
-        names = common.app_tree.get_all_names()
+        #names = common.app_tree.get_all_names()
+        names = [c.name for c in common.app_tree.app.children]
         names = [n for n in names if n.startswith(name)]
         if not name in names: return name
         while True:

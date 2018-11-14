@@ -25,7 +25,7 @@ class LispSplitterWindowGenerator(wcodegen.LispWidgetCodeWriter):
         window_name = self.codegen._format_name(window.name)
         parent = self.format_widget_access(window.parent)
 
-        if window.is_toplevel:
+        if window.IS_TOPLEVEL:
             l = []
             if id_name:
                 l.append(id_name)

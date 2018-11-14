@@ -96,7 +96,7 @@ class CppCustomWidgetGenerator(wcodegen.CppWidgetCodeWriter):
             ids = [id_name]
         else:
             ids = []
-        if not widget.parent.is_toplevel:
+        if not widget.parent.IS_TOPLEVEL:
             parent = '%s' % widget.parent.name
         else:
             parent = 'this'

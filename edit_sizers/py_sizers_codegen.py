@@ -21,9 +21,9 @@ class BasePythonSizerBuilder(BaseSizerBuilder):
     tmpl_SetSizeHints = '%(sizer_name)s.SetSizeHints(%(parent_widget)s)\n'
 
     def _get_wparent(self, obj):
-        while obj.is_sizer:
+        while obj.IS_SIZER:
             obj = obj.node.parent.widget
-        if not obj.is_toplevel:
+        if not obj.IS_TOPLEVEL:
             parent = 'self.%s' % obj.name
         else:
             parent = 'self'

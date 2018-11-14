@@ -415,7 +415,7 @@ def autosave_current():
     autosave_name = get_name_for_autosave()
     try:
         outfile = _Writer(autosave_name)
-        app_tree.write(outfile)
+        app_tree.app.write(outfile)
         outfile.close()
     except EnvironmentError as details:
         logging.warning( _('Saving the autosave file "%s" failed: %s'), autosave_name, details )

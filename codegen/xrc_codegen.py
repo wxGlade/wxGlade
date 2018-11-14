@@ -149,7 +149,7 @@ class DefaultXrcObject(XrcObject):
             del properties["name"]
         else:
             name = self.name
-        if self.widget.is_sizer:
+        if self.widget.IS_SIZER:
             output.append(self.tabs(ntabs) + '<object class=%s>\n' % quoteattr(self.klass))
         else:
             if self.subclass and self.subclass != self.klass:
@@ -328,7 +328,7 @@ class XRCCodeWriter(BaseLangCodeWriter, wcodegen.XRCMixin):
         "Adds the object sub_obj to the XRC tree. The first argument is unused."
         # what we need in XRC is not top_obj, but sub_obj's true parent we don't need the sizer, but the window
         top_obj = sub_obj.node.parent.widget
-        while top_obj.is_sizer:
+        while top_obj.IS_SIZER:
             top_obj = top_obj.node.parent.widget
         builder = self.obj_builders.get( sub_obj.base, DefaultXrcObject )
         try:
@@ -356,7 +356,7 @@ class XRCCodeWriter(BaseLangCodeWriter, wcodegen.XRCMixin):
         "Adds a sizeritem to the XRC tree. The first argument is unused."
         # what we need in XRC is not toplevel, but sub_obj's true parent
         toplevel = obj.node.parent.widget
-        while toplevel.is_sizer:
+        while toplevel.IS_SIZER:
             toplevel = toplevel.node.parent.widget
 
         top_xrc = toplevel.xrc

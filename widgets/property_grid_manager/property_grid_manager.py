@@ -121,7 +121,7 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
         raise XmlParsingError(_("'name' attribute missing"))
     if sizer is None or sizeritem is None:
         raise XmlParsingError(_("sizer or sizeritem object cannot be None"))
-    property_grid_manager = EditPropertyGridManager( label, parent, sizer, pos )
+    property_grid_manager = EditPropertyGridManager( label, parent, pos )
     #sizer.set_item( property_grid_manager.pos, proportion=sizeritem.proportion, flag=sizeritem.flag,
     #                border=sizeritem.border)
     node = Node(property_grid_manager)

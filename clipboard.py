@@ -88,7 +88,7 @@ class DropTarget(wx.DropTarget):
         if widget is None:
             return (False, "No widget found")
 
-        if not widget.is_sizer and not widget._is_toplevel and getattr(widget,"sizer",None):  # for a toplevel window, sizer is the child
+        if not widget.IS_SIZER and not widget._is_toplevel and getattr(widget,"sizer",None):  # for a toplevel window, sizer is the child
             if widget.sizer._IS_GRIDBAG and not isinstance(widget, edit_sizers.SizerSlot):
                 # for GridBagSizer we have cells, so we don't shift items
                 return (False, "Can only paste into empty slots")
@@ -181,7 +181,7 @@ def get_data_object(widget):
 def dump_widget(widget):
     "build the XML string and pickle it together with the layout properties"
     xml_unicode = []
-    widget.node.write(xml_unicode, 0)
+    widget.write(xml_unicode, 0)
     flag = option = span = border = None
     flag = widget.properties.get("flag")
     if flag is not None: flag = flag.get_string_value()

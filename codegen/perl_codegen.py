@@ -569,7 +569,7 @@ sub %(handler)s {
         elif obj.klass == 'spacer':
             return obj.name
         # Perl stores sizers always in class attributes
-        elif self.store_as_attr(obj) or obj.is_sizer:
+        elif self.store_as_attr(obj) or obj.IS_SIZER:
             return '$self->{%s}' % obj.name
         return '$%s' % obj.name
 
@@ -583,7 +583,7 @@ sub %(handler)s {
         return filename
 
     def format_generic_access(self, obj):
-        if obj.is_toplevel:
+        if obj.IS_TOPLEVEL:
             return '$self'
         return self._format_classattr(obj)
 

@@ -19,7 +19,7 @@ class LispCustomWidgetGenerator(wcodegen.LispWidgetCodeWriter):
         init = []
         id_name, id = self.codegen.generate_code_id(widget)
 
-        if not widget.parent.is_toplevel:
+        if not widget.parent.IS_TOPLEVEL:
             parent = '(object-%s self)' % self.codegen._format_name(widget.parent.name)
         else:
             parent = 'nil'

@@ -1928,7 +1928,7 @@
 	widgets/toolbar/lisp_codegen.py, widgets/toolbar/perl_codegen.py:
 	Unify generating widget access
 
-	The base change is: if not obj.is_toplevel: parent = 'self.%s' %
+	The base change is: if not obj.IS_TOPLEVEL: parent = 'self.%s' %
 	obj.name else: parent = 'self' to this: parent =
 	self.format_widget_access(obj)
 	[3f8c15d57d22]

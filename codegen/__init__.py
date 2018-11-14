@@ -501,9 +501,9 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
             self.add_spacer(topl, szr, obj, obj.proportion, obj.properties["flag"].get_string_value(), obj.border )
             return
 
-        obj.is_toplevel = node.is_toplevel  # this is from the position in the data structure
+        #obj.IS_TOPLEVEL = node.IS_TOPLEVEL  # this is from the position in the data structure
 
-        if obj.is_sizer:
+        if obj.IS_SIZER:
             self.sizers.append(obj)
 
         can_be_toplevel = obj.__class__.__name__ in common.toplevels
@@ -518,17 +518,17 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
             obj.base = base
         
         if (not self.toplevels or obj.klass != obj.base) and can_be_toplevel:
-            obj.is_toplevel = True
+            obj.IS_TOPLEVEL = True
             # for panel objects, if the user sets a custom class but (s)he doesn't want the code to be generated...
             if obj.check_prop("no_custom_class") and obj.no_custom_class and not self.preview:
-                obj.is_toplevel = False
+                obj.IS_TOPLEVEL = False
         elif self.preview and not can_be_toplevel and obj.base != 'CustomWidget':
             # if this is a custom class, but not a toplevel one, for the preview we have to use the "real" class
             # CustomWidgets handle this in a special way (see widgets/custom_widget/codegen.py)
             old_class = obj.properties["klass"].get()
             obj.properties["klass"].set(obj.base) # XXX handle this in a different way
 
-        if obj.is_toplevel:  # XXX as long as generate_code is called with 
+        if obj.IS_TOPLEVEL:  # XXX as long as generate_code is called with 
             self.toplevels.append(obj)
 
         # children first
@@ -536,18 +536,18 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
             self._generate_code(c)
 
         # clean up stacks
-        if obj.is_toplevel: del self.toplevels[-1]
-        if obj.is_sizer:    del self.sizers[-1]
+        if obj.IS_TOPLEVEL: del self.toplevels[-1]
+        if obj.IS_SIZER:    del self.sizers[-1]
 
         # then the item
-        if obj.is_toplevel and not obj.is_sizer:  # XXX as long as generate_code is called with 
+        if obj.IS_TOPLEVEL and not obj.IS_SIZER:  # XXX as long as generate_code is called with 
             self.add_class(obj)
         if self.toplevels:
             self.add_object(obj)
 
         # check whether the object belongs to some sizer; if applicable, add it to the sizer at the top of the stack
         parent = node.parent.widget
-        if parent.is_sizer:
+        if parent.IS_SIZER:
             flag = obj.properties["flag"].get_string_value()  # as string, joined with "|"
             self.add_sizeritem(topl, parent, obj, obj.proportion, flag, obj.border)
 
@@ -922,8 +922,8 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
             # this is an error, let the exception be raised the details are logged by the global exception handler
             raise
 
-        if not sub_obj.is_sizer:  # the object is a wxWindow instance
-            if sub_obj.node.children and not sub_obj.is_toplevel:
+        if not sub_obj.IS_SIZER:  # the object is a wxWindow instance
+            if sub_obj.node.children and not sub_obj.IS_TOPLEVEL:
                 init.reverse()  # parents_init will be reversed in the end
                 klass.parents_init.extend(init)
             else:
@@ -954,7 +954,7 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
 
         klass.props.extend(props)
         klass.layout.extend(layout)
-        if self.multiple_files and (sub_obj.is_toplevel and sub_obj.base != sub_obj.klass):
+        if self.multiple_files and (sub_obj.IS_TOPLEVEL and sub_obj.base != sub_obj.klass):
             key = self._format_import(sub_obj.klass)
             klass.dependencies[key] = 1
         for dep in getattr(self.obj_builders.get(sub_obj.base), 'import_modules', []):
@@ -1460,7 +1460,7 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
         if 'attribute' in obj.properties:
             return obj.attribute
 
-        if obj.is_sizer:
+        if obj.IS_SIZER:
             return False
         if obj.classname in ("wxStaticText","wxHyperlinkCtrl","wxStaticBitmap","wxStaticLine"):
             return False
@@ -1557,7 +1557,7 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
     def _format_style(self, style, code_obj):
         """Return the formatted styles to insert into constructor code.
         The function just returned L{tmpl_style}. Write a derived version implementation if more logic is needed."""
-        if code_obj.is_toplevel:
+        if code_obj.IS_TOPLEVEL:
             if style:
                 return self.tmpl_toplevel_style
             return self.tmpl_toplevel_style0

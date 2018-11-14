@@ -10,7 +10,7 @@ wxFrame objects (incl. wxMenuBar, wxToolBar and wxStatusBar)
 import wx
 import os
 import common, config, misc, compat
-from tree import Node
+#from tree import Node
 import new_properties as np
 from edit_windows import TopLevelBase, EditStylesMixin
 from gui_mixins import BitmapMixin

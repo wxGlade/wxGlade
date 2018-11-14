@@ -802,11 +802,12 @@ class CppWidgetCodeWriter(CppMixin, BaseWidgetWriter):
 
         # Toplevel widgets like wxFrame or wxDialog don't have a parent object.
         # The parent object is optional for MenuBar and ToolBar widgets.
-        if not obj.parent:
+        parent = obj.parent_window
+        if not parent:
             # this breaks the generated code
             self.tmpl_dict['parent'] = 'Do not use the "parent" substitution in code templates for toplevel windows'
-        elif not obj.parent.is_toplevel:
-            self.tmpl_dict['parent'] = '%s' % obj.parent.name
+        elif not parent.IS_TOPLEVEL:
+            self.tmpl_dict['parent'] = '%s' % parent.name
         else:
             self.tmpl_dict['parent'] = 'this'
 
@@ -837,7 +838,7 @@ class CppWidgetCodeWriter(CppMixin, BaseWidgetWriter):
         return init, ids, props_buf, layout
 
     def format_widget_access(self, obj):
-        if obj.is_toplevel:
+        if obj.IS_TOPLEVEL:
             return 'this'
         else:
             return '%s' % obj.name
@@ -863,11 +864,12 @@ class LispWidgetCodeWriter(LispMixin, BaseWidgetWriter):
 
         # Toplevel widgets like wxFrame or wxDialog don't have a parent object.
         # The parent object is optional for MenuBar and ToolBar widgets.
-        if not obj.parent:
+        parent = obj.parent_window
+        if not parent:
             # this breaks the generated code
             self.tmpl_dict['parent'] = 'Do not use the "parent" substitution in code templates for toplevel windows'
-        elif not obj.parent.is_toplevel:
-            self.tmpl_dict['parent'] = '(slot-%s obj)' % self.codegen._format_name(obj.parent.name)
+        elif not parent.IS_TOPLEVEL:
+            self.tmpl_dict['parent'] = '(slot-%s obj)' % self.codegen._format_name(parent.name)
         else:
             self.tmpl_dict['parent'] = '(slot-top-window obj)'
 
@@ -906,11 +908,12 @@ class PerlWidgetCodeWriter(PerlMixin, BaseWidgetWriter):
 
         # Toplevel widgets like wxFrame or wxDialog don't have a parent object.
         # The parent object is optional for MenuBar and ToolBar widgets.
-        if not obj.parent:
+        parent = obj.parent_window
+        if not parent:
             # this breaks the generated code
             self.tmpl_dict['parent'] = 'Do not use the "parent" substitution in code templates for toplevel windows'
-        elif not obj.parent.is_toplevel:
-            self.tmpl_dict['parent'] = '$self->{%s}' % obj.parent.name
+        elif not parent.IS_TOPLEVEL:
+            self.tmpl_dict['parent'] = '$self->{%s}' % parent.name
         else:
             self.tmpl_dict['parent'] = '$self'
 
@@ -946,11 +949,12 @@ class PythonWidgetCodeWriter(PythonMixin, BaseWidgetWriter):
 
         # Toplevel widgets like wxFrame or wxDialog don't have a parent object.
         # The parent object is optional for MenuBar and ToolBar widgets.
-        if not obj.parent:
+        parent = obj.parent_window
+        if not parent:
             # this breaks the generated code
             self.tmpl_dict['parent'] = 'Do not use the "parent" substitution in code templates for toplevel windows'
-        elif not obj.parent.is_toplevel:
-            self.tmpl_dict['parent'] = 'self.%s' % obj.parent.name
+        elif not parent.IS_TOPLEVEL:
+            self.tmpl_dict['parent'] = 'self.%s' % parent.name
         else:
             self.tmpl_dict['parent'] = 'self'
 

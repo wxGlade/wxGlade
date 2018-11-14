@@ -357,7 +357,7 @@ class LispCodeWriter(BaseLangCodeWriter, wcodegen.LispMixin):
 
     def add_sizeritem(self, toplevel, sizer, obj, option, flag, border):
         # XXX remove this hack
-        if obj.is_sizer:
+        if obj.IS_SIZER:
             self.tmpl_sizeritem = '(wxSizer_AddSizer (%s obj) (%s obj) %s %s %s nil)\n'
         else:
             self.tmpl_sizeritem = '(wxSizer_AddWindow (%s obj) (%s obj) %s %s %s nil)\n'
@@ -577,7 +577,7 @@ class LispCodeWriter(BaseLangCodeWriter, wcodegen.LispMixin):
         return filename
 
     def format_generic_access(self, obj):
-        if obj.is_toplevel:
+        if obj.IS_TOPLEVEL:
             return '(slot-top-window obj)'
         else:
             obj_name = self._format_name(obj.name)

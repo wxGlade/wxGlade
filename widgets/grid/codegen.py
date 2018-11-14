@@ -106,7 +106,7 @@ class CppCodeGenerator(wcodegen.CppWidgetCodeWriter):
     def get_properties_code(self, obj):
         out = []
         name = 'this'
-        if not obj.is_toplevel: name = obj.name
+        if not obj.IS_TOPLEVEL: name = obj.name
         prop = obj.properties
 
         if not obj.create_grid:

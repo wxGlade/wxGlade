@@ -1002,7 +1002,7 @@ class wxGladeFrame(wx.Frame):
     def _save_app(self, filename):
         try:
             obuffer = []
-            common.app_tree.write(obuffer)
+            common.app_tree.app.write(obuffer)
             common.save_file(filename, obuffer, 'wxg')
         except EnvironmentError as inst:
             if config.debugging: raise

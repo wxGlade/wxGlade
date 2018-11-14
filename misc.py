@@ -369,8 +369,10 @@ def _insert():
     global focused_widget
     if not focused_widget: return
     if not hasattr(focused_widget, "sizer") or not hasattr(focused_widget, "pos"): return
-    if focused_widget.sizer._IS_GRIDBAG: return
-    method = getattr(focused_widget.sizer, "insert_slot", None)
+    parent = focused_widget.parent
+    if parent and parent.IS_SIZER and parent._IS_GRIDBAG: return
+    #method = getattr(focused_widget.sizer, "insert_slot", None)
+    method = getattr(parent, "insert_slot", None)
     if method: method(focused_widget.pos)
 
 @restore_focus

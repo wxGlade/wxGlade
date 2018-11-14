@@ -21,7 +21,7 @@ class PerlPanelGenerator(wcodegen.PerlWidgetCodeWriter):
         id_name, id = self.codegen.generate_code_id(panel)
         parent = self.format_widget_access(panel.parent)
 
-        if panel.is_toplevel:
+        if panel.IS_TOPLEVEL:
             l = []
             if id_name:
                 l.append(id_name)

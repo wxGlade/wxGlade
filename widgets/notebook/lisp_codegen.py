@@ -29,7 +29,7 @@ class LispNotebookGenerator(wcodegen.LispWidgetCodeWriter):
 
         parent = self.format_widget_access(window.parent)
 
-        if window.is_toplevel:
+        if window.IS_TOPLEVEL:
             l = []
             if id_name:
                 l.append(id_name)

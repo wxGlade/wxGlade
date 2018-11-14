@@ -966,13 +966,13 @@ class CPPCodeWriter(BaseLangCodeWriter, wcodegen.CppMixin):
             print(sub_obj)
             raise  # this shouldn't happen
 
-        if not sub_obj.is_sizer:  # the object is a wxWindow instance
+        if not sub_obj.IS_SIZER:  # the object is a wxWindow instance
             if "extracode_pre" in sub_obj.properties and sub_obj.extracode_pre:
                 init = sub_obj.properties["extracode_pre"].get_lines() + init
             if "extracode_post" in sub_obj.properties and sub_obj.extracode_post:
                 init += sub_obj.properties["extracode_post"].get_lines()
 
-            if sub_obj.node.children and not sub_obj.is_toplevel:
+            if sub_obj.node.children and not sub_obj.IS_TOPLEVEL:
                 init.reverse()
                 klass.parents_init.extend(init)
             else:
@@ -1009,7 +1009,7 @@ class CPPCodeWriter(BaseLangCodeWriter, wcodegen.CppMixin):
 
         klass.props.extend(props)
         klass.layout.extend(layout)
-        if self.multiple_files and (sub_obj.is_toplevel and sub_obj.base != sub_obj.klass):
+        if self.multiple_files and (sub_obj.IS_TOPLEVEL and sub_obj.base != sub_obj.klass):
             klass.dependencies.append(sub_obj.klass)
         else:
             if sub_obj.base in self.obj_builders:
@@ -1124,7 +1124,7 @@ void %(klass)s::%(handler)s(%(evt_type)s &event)  // wxGlade: %(klass)s.<event_h
 
     def generate_code_size(self, obj):
         objname = self.format_generic_access(obj)
-        if obj.is_toplevel:
+        if obj.IS_TOPLEVEL:
             name2 = 'this'
         else:
             name2 = obj.name
@@ -1151,7 +1151,7 @@ void %(klass)s::%(handler)s(%(evt_type)s &event)  // wxGlade: %(klass)s.<event_h
             return 'wxT("%s")' % s
 
     def format_generic_access(self, obj):
-        if obj.is_toplevel:
+        if obj.IS_TOPLEVEL:
             return ''
         else:
             return '%s->' % obj.name

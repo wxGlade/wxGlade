@@ -385,7 +385,7 @@ class ClipboardXmlWidgetBuilder(XmlWidgetBuilder):
 
         # fake parent window object
         fake_parent = XmlClipboardObject(obj=parent, parent=parent)
-        if parent and parent.is_sizer:
+        if parent and parent.IS_SIZER:
             fake_parent.in_sizers = True
             fake_parent.in_windows = False
         else:
@@ -418,12 +418,13 @@ class ClipboardXmlWidgetBuilder(XmlWidgetBuilder):
         self._appl_started = True  # no application tag when parsing from the clipboard
 
     def _get_new_name(self, oldname):
+        names = self.parent_node.widget.toplevel_parent.names
         if self._renamed:
             # e.g. if notebook_1 was renamed to notebook_2, try notebook_1_panel_1 -> notebook_2_panel_1 first
             for old,new in self._renamed.items():
                 if oldname.startswith(old):
                     newname = new + oldname[len(old):]
-                    if not common.app_tree.has_name(newname, node=self.parent_node):
+                    if not newname in names:
                         return newname
 
         newname = oldname
@@ -435,7 +436,7 @@ class ClipboardXmlWidgetBuilder(XmlWidgetBuilder):
                 i = int(i)
                 template = template + '_%s'
                 if self.parent_node is not None:
-                    while common.app_tree.has_name(newname, node=self.parent_node):
+                    while newname in names:
                         newname = template%i
                         i += 1
                     return newname
@@ -451,7 +452,7 @@ class ClipboardXmlWidgetBuilder(XmlWidgetBuilder):
         # add _copy to the old name
         i = 0
         if self.parent_node is not None:
-            while common.app_tree.has_name(newname, node=self.parent_node):
+            while newname in names:
                 if not i:
                     newname = '%s_copy' % oldname
                 else:
@@ -474,7 +475,7 @@ class ClipboardXmlWidgetBuilder(XmlWidgetBuilder):
         if name == 'object' and 'name' in attrs:
             # generate a unique name for the copy
             oldname = str(attrs['name'])
-            if not common.app_tree.has_name(oldname, node=self.parent_node):
+            if not oldname in self.parent_node.widget.toplevel_parent.names:
                 newname = oldname
             else:
                 newname = self._get_new_name(oldname)
@@ -562,6 +563,8 @@ class XmlWidgetObject(object):
         while parent is None and stack:
             top = stack.pop()
             if top.in_windows: parent = top.obj
+        if parent is None:
+            parent = common.app_tree.app
 
         if base is not None:
             # if base is not None, the object is a widget (or sizer), and not a sizeritem
@@ -583,11 +586,11 @@ class XmlWidgetObject(object):
             if pos is not None: pos = int(pos)
             builder = common.widgets_from_xml.get(base, None)
             if builder is None: raise XmlParsingError("Widget '%s' not supported."%base)
-            self.obj = builder(attrs, parent, sizer, sizeritem, pos)
+            self.obj = builder(attrs, sizer or parent, sizeritem, pos)
             p = self.obj.properties.get("class")
             if p:
                 p.set(self.klass)
-                common.app_tree.refresh(self.obj.node)
+                #common.app_tree.refresh(self.obj.node)
 
             if isinstance(self.obj, edit_sizers.SizerBase):
                 self.in_sizers = True
