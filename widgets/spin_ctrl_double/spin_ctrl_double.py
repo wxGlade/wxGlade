@@ -9,7 +9,6 @@ wxSpinCtrlDouble objects
 
 import wx
 from edit_windows import ManagedBase, EditStylesMixin
-from tree import Node
 import common, config
 import new_properties as np
 
@@ -84,10 +83,8 @@ def builder(parent, pos, number=[1]):
         spin = EditSpinCtrlDouble(name, parent, pos)
         spin.properties["style"].set_to_default()
         spin.check_defaults()
-        node = Node(spin)
-        spin.node = node
         if parent.widget: spin.create()
-    common.app_tree.insert(node, parent.node, pos-1)
+    common.app_tree.insert(spin, parent, pos)
 
 
 def xml_builder(attrs, parent, sizeritem, pos=None):
@@ -102,43 +99,12 @@ def xml_builder(attrs, parent, sizeritem, pos=None):
     spin = EditSpinCtrlDouble( name, parent, pos )
     spin.properties["value"].set_active(False)
     #sizer.set_item( spin.pos, proportion=sizeritem.proportion, flag=sizeritem.flag, border=sizeritem.border )
-    node = Node(spin)
-    spin.node = node
     if pos is None:
-        common.app_tree.add(node, parent.node)
+        common.app_tree.add(spin, parent)
     else:
-        common.app_tree.insert(node, parent.node, pos-1)
+        common.app_tree.insert(spin, parent, pos)
     return spin
 
-
-#def builder(parent, pos, number=[1]):
-    #"factory function for EditSpinCtrl objects"
-    #name = 'spin_ctrl_double_%d' % number[0]
-    #while common.app_tree.has_name(name):
-        #number[0] += 1
-        #name = 'spin_ctrl_double_%d' % number[0]
-    #with parent.frozen():
-        #spin = EditSpinCtrlDouble(name, parent, pos)
-        #spin.properties["style"].set_to_default()
-        #spin.check_defaults()
-        #if parent.widget: spin.create()
-    #common.app_tree.build(spin)
-
-
-#def xml_builder(attrs, parent, sizeritem, pos=None):
-    #"factory function to build EditSpinCtrlDouble objects from a XML file"
-    #from xml_parse import XmlParsingError
-    #try:
-        #name = attrs['name']
-    #except KeyError:
-        #raise XmlParsingError(_("'name' attribute missing"))
-    #if sizeritem is None:
-        #raise XmlParsingError(_("sizer or sizeritem object cannot be None"))
-    #spin = EditSpinCtrlDouble( name, parent, pos )
-    #spin.properties["value"].set_active(False)
-    ##sizer.set_item( spin.pos, proportion=sizeritem.proportion, flag=sizeritem.flag, border=sizeritem.border )
-    #common.app_tree.build(spin)
-    #return spin
 
 def initialize():
     "initialization function for the module: returns a wxBitmapButton to be added to the main palette"

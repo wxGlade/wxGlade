@@ -11,7 +11,6 @@ import wx
 
 import common, compat, config, misc
 import wcodegen
-from tree import Node, SlotNode, WidgetTree
 import new_properties as np
 from edit_windows import ManagedBase, EditStylesMixin
 from edit_sizers.edit_sizers import Sizer, SizerSlot
@@ -346,6 +345,7 @@ def initialize():
     common.widgets_from_xml[editor_name] = xml_builder
 
     import os.path
+    from tree import WidgetTree
     WidgetTree.images['EditSplitterSlot-Left']   = os.path.join( config.icons_path, 'splitter_slot-left.xpm' )
     WidgetTree.images['EditSplitterSlot-Right']  = os.path.join( config.icons_path, 'splitter_slot-right.xpm' )
     WidgetTree.images['EditSplitterSlot-Top']    = os.path.join( config.icons_path, 'splitter_slot-top.xpm' )

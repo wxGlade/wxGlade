@@ -40,7 +40,7 @@ def begin_drag(window, widget):
 
     if isinstance(widget, edit_sizers.Sizer):
         msg = "Move sizer to empty or populated slot to insert, to a sizer to append; hold Ctrl to copy"
-    elif widget._is_toplevel:
+    elif widget.IS_TOPLEVEL:
         msg = "Move window to application object; hold Ctrl to copy"
     else:
         msg = "Move control to empty or populated slot to insert, to a sizer to append; hold Ctrl to copy"
@@ -88,15 +88,15 @@ class DropTarget(wx.DropTarget):
         if widget is None:
             return (False, "No widget found")
 
-        if not widget.IS_SIZER and not widget._is_toplevel and getattr(widget,"sizer",None):  # for a toplevel window, sizer is the child
+        if not widget.IS_SIZER and not widget.IS_TOPLEVEL and getattr(widget,"sizer",None):  # for a toplevel window, sizer is the child
             if widget.sizer._IS_GRIDBAG and not isinstance(widget, edit_sizers.SizerSlot):
                 # for GridBagSizer we have cells, so we don't shift items
                 return (False, "Can only paste into empty slots")
 
         if _current_drag_source is not None:
             # drag within application: avoid dragging of an item on itself or it's child
-            if widget.node is _current_drag_source.node:            return (False, "Can't paste item on itself")
-            if widget.node.has_ancestor(_current_drag_source.node): return (False, "Can't paste item into itself")
+            if widget is _current_drag_source:            return (False, "Can't paste item on itself")
+            if widget.has_ancestor(_current_drag_source): return (False, "Can't paste item into itself")
             return widget.check_compatibility(_current_drag_source)
 
         # drag from outside

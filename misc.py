@@ -44,12 +44,12 @@ def show_widget(widget):
     # ensure that notebook pages are selected such that widget is visible
     if not widget.widget: return
     while True:
-        if not widget.node or not widget.node.parent: break  # Application.node is None
-        parent = widget.node.parent.widget
+        if not widget.parent: break  # Application.node is None
+        parent = widget.parent
         if parent.__class__.__name__=="EditNotebook":
             # a widget under a wxNotebook without a panel: select page
-            if parent.widget and widget in parent.pages:
-                parent.widget.SetSelection( parent.pages.index(widget) )
+            if parent.widget and widget in parent.children:
+                parent.widget.SetSelection( parent.children.index(widget) )
 
         widget = parent  # go up one level
 
@@ -400,7 +400,7 @@ def navigate(up):
     # XXX reafactor this into Tree?
     # must be a design window
     if focused_widget:
-        focused_item = focused_widget.node.item
+        focused_item = focused_widget.item
     else:
         focused_item = common.app_tree.GetFocusedItem()
     if focused_item is None:
@@ -431,9 +431,8 @@ def navigate(up):
                             break
                     item = parent
 
-    widget = getattr(common.app_tree._GetItemData(item), "widget", None)
-    if not widget: return
-    set_focused_widget(widget)
+    widget = common.app_tree._GetItemData(item)
+    if widget: set_focused_widget(widget)
 
 
 # accelerator tables to enable keyboard shortcuts for the popup menus of the various widgets (remove, cut, copy, paste)
@@ -490,7 +489,7 @@ accel_table = {
     ("A", ord('3')):     ((common,"main","switch_layout"),        (2,)),
 
     ("C", ord('S')):     ((common,"main","save_app"),             ()),
-    ("C", ord('G')):     ((common,"app_tree","app","generate_code"), ()),
+    ("C", ord('G')):     ((common,"root","generate_code"), ()),
 
     ("C", ord('N')):     ((common,"main","new_app"),              ()), 
     ("C", ord('O')):     ((common,"main","open_app"),             ()),
@@ -592,7 +591,7 @@ def wxstr(s, encoding=None):
     if encoding is None:
         if common.app_tree is None:
             return str(s)
-        encoding = common.app_tree.app.encoding
+        encoding = common.root.encoding
     if isinstance(s, compat.unicode): return s
     s = str(s)
     if isinstance(s, compat.unicode): return s
@@ -630,12 +629,12 @@ def get_absolute_path(path, for_preview=False):
     "Get an absolute path relative to the current output directory (where the code is generated)."
     if os.path.isabs(path):
         return path
-    p = common.app_tree.app.output_path
+    p = common.root.output_path
     if for_preview:
-        p = getattr(common.app_tree.app, 'real_output_path', u'')
+        p = getattr(common.root, 'real_output_path', u'')
     if not os.path.isabs(p):
         # a path relative to the application filename
-        appdir = os.path.dirname(common.app_tree.app.filename)
+        appdir = os.path.dirname(common.root.filename)
         p = os.path.abspath( os.path.join(appdir, p) )
 
     if not os.path.isdir(p): p = os.path.dirname(p)

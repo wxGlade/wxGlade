@@ -10,7 +10,6 @@ wxFrame objects (incl. wxMenuBar, wxToolBar and wxStatusBar)
 import wx
 import os
 import common, config, misc, compat
-#from tree import Node
 import new_properties as np
 from edit_windows import TopLevelBase, EditStylesMixin
 from gui_mixins import BitmapMixin
@@ -155,7 +154,7 @@ def builder(parent, sizer, pos, klass=None, base=None, name=None):
     if klass is None or base is None:
         import window_dialog
         base_classes = ['wxFrame', 'wxMDIChildFrame']
-        klass = 'wxFrame' if common.app_tree.app.language.lower()=='xrc' else 'MyFrame'
+        klass = 'wxFrame' if common.root.language.lower()=='xrc' else 'MyFrame'
         
         dialog = window_dialog.WindowDialog(klass, base_classes, 'Select frame class', True)
         res = dialog.show()
@@ -201,9 +200,7 @@ def _make_builder(base_class):
         else:
             style = 0
         frame = base_class(label, parent, "", style)
-        node = Node(frame)
-        frame.node = node
-        common.app_tree.add(node)
+        common.app_tree.add(frame)
         return frame
     return xml_builder
 

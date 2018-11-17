@@ -10,7 +10,6 @@ wxNotebook objects
 import wx
 import common, compat, misc
 import wcodegen
-from tree import Node, SlotNode
 import new_properties as np
 from edit_windows import ManagedBase, EditStylesMixin
 from edit_sizers.edit_sizers import Sizer, SizerSlot

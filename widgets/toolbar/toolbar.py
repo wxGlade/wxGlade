@@ -13,7 +13,6 @@ import wx
 
 import common, compat, config, misc
 import os, re
-from tree import Node
 from .tool import *
 import new_properties as np
 from edit_windows import EditBase, PreviewMixin, EditStylesMixin
@@ -413,9 +412,9 @@ class ToolsDialog(wx.Dialog):
         elif directory and os.path.isdir(directory[0]):
             current = directory[1]
             directory = directory [0]
-        elif common.app_tree.app.filename:
+        elif common.root.filename:
             #directory = self.startDirectory
-            directory = common.app_tree.app.filename
+            directory = common.root.filename
             current = ""
         else:
             directory = ""
@@ -686,7 +685,7 @@ class EditToolBar(EditBase, PreviewMixin, EditStylesMixin, BitmapMixin):
             self.widget.Hide()
             common.app_tree.expand(self.node, False)
             common.app_tree.select_item(self.node.parent)
-            #common.app_tree.app.show_properties()
+            #common.root.show_properties()
 
     def get_property_handler(self, name):
         if name == 'tools':
@@ -729,7 +728,7 @@ class EditToolBar(EditBase, PreviewMixin, EditStylesMixin, BitmapMixin):
 def builder(parent, sizer, pos):
     "factory function for EditToolBar objects"
     import window_dialog as wd
-    klass = 'wxToolBar' if common.app_tree.app.language.lower()=='xrc' else 'MyToolBar'
+    klass = 'wxToolBar' if common.root.language.lower()=='xrc' else 'MyToolBar'
 
     # if e.g. on a frame, suggest the user to add the tool bar to this
     toplevel_widget = None

@@ -10,7 +10,6 @@ wxHyperlinkCtrl objects
 import wx
 import common, compat, config
 from edit_windows import ManagedBase, EditStylesMixin
-from tree import Node
 import new_properties as np
 import decorators
 

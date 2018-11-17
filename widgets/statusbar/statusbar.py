@@ -9,7 +9,6 @@ wxFrame and wxStatusBar objects
 
 import wx
 import common
-from tree import Node, WidgetTree
 from wcodegen.taghandler import BaseXmlBuilderTagHandler
 import new_properties as np
 from edit_windows import EditBase, EditStylesMixin
@@ -140,7 +139,7 @@ class Dialog(wx.Dialog):
         global _NUMBER
         wx.Dialog.__init__(self, None, -1, _('Select toolbar class'))
         
-        if common.app_tree.app.language.lower() == 'xrc':
+        if common.root.language.lower() == 'xrc':
             klass = 'wxToolBar'
         else:
             klass = 'MyToolBar%s' % (_NUMBER or "")
@@ -208,5 +207,6 @@ def initialize():
     #return common.make_object_button('EditStatusBar', 'statusbar.xpm')
     # no standalone status bar any more
     import config, os
+    from tree import WidgetTree
     WidgetTree.images['EditStatusBar'] = os.path.join(config.icons_path, 'statusbar.xpm')
     return []

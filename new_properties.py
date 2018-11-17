@@ -172,7 +172,7 @@ class Property(object):
 
     def _notify(self):
         self.modified = True
-        common.app_tree.app.saved = False
+        common.root.saved = False
         self.owner.properties_changed([self.name])
 
     def toggle_active(self, active=None, refresh=True):
@@ -523,7 +523,7 @@ class LayoutPosProperty(SpinProperty):
     TOOLTIP = "Position of item within sizer; 1-based"
 
     def __init__(self, value):
-        SpinProperty.__init__(self, value, val_range=(1,1000), immediate=False, default_value=_DefaultArgument, name="pos")
+        SpinProperty.__init__(self, value, val_range=(0,1000), immediate=False, default_value=_DefaultArgument, name="pos")
 
     #def create_editor(self, panel, sizer):
         #SpinProperty.create_editor(self, panel, sizer)
@@ -1484,32 +1484,31 @@ class ClassProperty(TextProperty):
             leaf = klass.rsplit(".",1)[-1]
         else:
             leaf = None
-        this_node = self.owner.node
 
         # shortcut: check sibilings first
-        siblings = this_node.parent.children
+        siblings = self.owner.parent.children
         for node in siblings:
-            if node.widget is self.owner: continue
-            if node.widget.klass==klass:
+            if node is self.owner: continue
+            if node.klass==klass:
                 return self._UNIQUENESS_MSG1
-            if leaf and "." in node.widget.klass and leaf==node.widget.klass.rsplit(".",1)[-1]:
+            if leaf and "." in node.klass and leaf==node.klass.rsplit(".",1)[-1]:
                 return self._UNIQUENESS_MSG2
 
         # check recursively, starting from root
         def check(children):
             for c in children:
+                if c.IS_SLOT: continue
                 if c.children:
                     result = check(c.children)
                     if result: return result
-                if node is not this_node:
-                    w = node.widget
-                    if w.klass==w.base: continue
-                    if w.klass==klass:
+                if c is not self.owner:
+                    if c.klass==c.base: continue
+                    if c.klass==klass:
                         return self._UNIQUENESS_MSG1
-                    if leaf and "." in w.klass and leaf==w.klass.rsplit(".",1)[-1]:
+                    if leaf and "." in c.klass and leaf==c.klass.rsplit(".",1)[-1]:
                         return self._UNIQUENESS_MSG2
             return None
-        return check(common.app_tree.root.children)
+        return check(common.root.children)
 
     def _check(self, klass, ctrl=None):
         # called by _on_text and create_text_ctrl to validate and indicate
@@ -1843,7 +1842,7 @@ class FileNameProperty(DialogProperty):
 
     def _on_label_dblclick(self, event):
         # show directory in explorer/finder
-        app_filename = common.app_tree.app.filename
+        app_filename = common.root.filename
         if not self.value and not app_filename: return
         import os,sys
         directory = self.value or app_filename
@@ -1867,7 +1866,7 @@ class FileNameProperty(DialogProperty):
     def on_drop_file(self, filename):
         if not wx.GetKeyState(wx.WXK_ALT) and not wx.GetKeyState(wx.WXK_CONTROL):
             # insert relative filename, if available and the filename is under the project directory
-            project_path = common.app_tree.app.filename
+            project_path = common.root.filename
             if project_path:
                 project_path = os.path.abspath( os.path.dirname(project_path) )
                 if filename.startswith(project_path):

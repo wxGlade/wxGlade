@@ -12,7 +12,6 @@ import wx
 import common, config, misc
 from edit_windows import ManagedBase, EditStylesMixin
 import new_properties as np
-from tree import Node
 
 
 class EditTextCtrl(ManagedBase, EditStylesMixin):

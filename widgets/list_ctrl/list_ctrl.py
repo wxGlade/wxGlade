@@ -11,7 +11,6 @@ import wx
 from edit_windows import ManagedBase, EditStylesMixin
 from widgets.grid.grid import GridColsProperty, ColsHandler
 import new_properties as np
-from tree import Node
 import common, misc, compat
 
 

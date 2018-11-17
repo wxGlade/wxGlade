@@ -69,6 +69,7 @@ class FileDirDialog(object):
 
 class EditRoot(np.PropertyOwner):
     IS_ROOT = True
+    parent = None
 
     def add_item(self, child, pos=None):
         # XXX pos is always None at the moment
@@ -79,6 +80,8 @@ class EditRoot(np.PropertyOwner):
             if len(self.children)<=i:
                 self.children += [None]*(i - len(self.children) + 1)
             self.children[i] = child
+        if child.IS_TOPLEVEL_WINDOW:
+            self.add_top_window(child.name)
 
     def write(self, output, tabs=0):
         """Writes the xml equivalent of this tree to the given output file.
@@ -109,9 +112,8 @@ class EditRoot(np.PropertyOwner):
             self.template_data.write(inner_xml, tabs+1)
 
         class_names = set()
-        if self.root.children is not None:
-            for c in self.root.children:
-                c.write(inner_xml, tabs+1, class_names)
+        for c in self.children:
+            c.write(inner_xml, tabs+1, class_names)
 
         output.extend( common.format_xml_tag( u'application', inner_xml, is_xml=True, **attrs ) )
 
@@ -348,6 +350,7 @@ class Application(EditRoot):
 
     def remove_top_window(self, name):
         p = self.properties["top_window"]
+        print("REMOVE TOP WINDOW", name, self)
         p.remove_choice(name)
 
     def update_top_window_name(self, oldname, newname):
@@ -439,7 +442,7 @@ class Application(EditRoot):
 
         try:
             writer.new_project(self, out_path, preview)
-            writer.generate_code(self.node, widget)
+            writer.generate_code(self, widget)
             writer.finalize()
         except errors.WxgBaseException as inst:
             misc.error_message( _("Error generating code:\n%s")%inst )
@@ -449,7 +452,7 @@ class Application(EditRoot):
             bugdialog.Show(_('Generate Code'), inst)
             return
         finally:
-            writer.clean_up(self.node)
+            writer.clean_up(self)
 
         if preview or not config.use_gui: return
         if config.preferences.show_completion:
@@ -643,8 +646,8 @@ class Application(EditRoot):
                 if node.children:
                     for c in node.children:
                         check_rec(c)
-            if common.app_tree.root.children:
-                for c in common.app_tree.root.children:
+            if common.root.children:
+                for c in common.root.children:
                     check_rec(c)
 
     def _update_output_path(self, language):
@@ -664,7 +667,7 @@ class Application(EditRoot):
     def popup_menu(self, event, pos=None):
         # right click event -> expand all or show context menu
         expanded = True
-        #for child_node in common.app_tree.root.children or []:
+        #for child_node in common.root.children or []:
             #if not common.app_tree.IsExpanded(child_node.item) and child_node.children:
                 #expanded = False
                 #break

@@ -10,7 +10,6 @@ wxChoice objects
 import wx
 import common, config
 from edit_windows import ManagedBase
-from tree import Node
 import new_properties as np
 
 from ChoicesProperty import *

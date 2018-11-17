@@ -167,7 +167,7 @@ def _guiless_open_app(filename):
     start = time.clock()
 
     common.app_tree.clear()
-    common.app_tree.app.init()
+    common.root.init()
 
     try:
         try:
@@ -175,7 +175,7 @@ def _guiless_open_app(filename):
             input_file_version = None
 
             if not isinstance(filename, list):
-                common.app_tree.app.filename = filename
+                common.root.filename = filename
                 # decoding will done automatically by SAX XML library
                 if compat.PYTHON2:
                     infile = open(filename)
@@ -194,7 +194,7 @@ def _guiless_open_app(filename):
                     infile.seek(0)
 
             else:
-                common.app_tree.app.filename = None
+                common.root.filename = None
 
             p = XmlWidgetBuilder(filename, input_file_version)
 
@@ -223,22 +223,22 @@ def _guiless_open_app(filename):
 
         if error_msg:
             common.app_tree.clear()
-            common.app_tree.app.new()
-            common.app_tree.app.saved = True
+            common.root.new()
+            common.root.saved = True
 
             logging.error(error_msg)
 
             return False
 
-    if common.app_tree.app.is_template:
+    if common.root.is_template:
         logging.info(_("Template loaded"))
-        common.app_tree.app.template_data = template.Template(filename)
-        common.app_tree.app.filename = None
+        common.root.template_data = template.Template(filename)
+        common.root.filename = None
 
     end = time.clock()
     logging.info(_('Loading time: %.5f'), end - start)
 
-    common.app_tree.app.saved = True
+    common.root.saved = True
     #common.property_panel.Raise()
 
     duration = end - start
@@ -277,8 +277,8 @@ def command_line_code_generation(filename, language, out_path=None):
     try:
         if language not in common.code_writers:
             raise errors.WxgMissingCodeWriter(language)
-        common.app_tree.app.properties["language"].set(language)
-        common.app_tree.app.generate_code(out_path=out_path)
+        common.root.properties["language"].set(language)
+        common.root.generate_code(out_path=out_path)
     except errors.WxgBaseException as inst:
         logging.error(inst)
         sys.exit(inst)

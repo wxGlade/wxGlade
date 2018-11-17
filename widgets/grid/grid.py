@@ -11,7 +11,6 @@ import wx
 from wx.grid import *
 import common, misc, compat
 from edit_windows import ManagedBase
-from tree import Node
 import new_properties as np
 from wcodegen.taghandler import BaseXmlBuilderTagHandler
 

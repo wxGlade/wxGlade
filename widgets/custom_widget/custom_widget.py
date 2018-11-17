@@ -9,7 +9,6 @@ Custom wxWindow objects
 
 import wx
 import common
-from tree import Node
 from wcodegen.taghandler import BaseXmlBuilderTagHandler
 import new_properties as np
 from edit_windows import ManagedBase

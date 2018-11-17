@@ -12,7 +12,6 @@ import wx
 from wx.propgrid import *
 import common, compat
 from edit_windows import ManagedBase, EditStylesMixin
-from tree import Node
 
 
 class EditPropertyGridManager(ManagedBase, EditStylesMixin):

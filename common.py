@@ -34,7 +34,8 @@ toplevels = {}   # names of the Edit classes that can be toplevels, i.e. class d
 main = None            # main window
 palette = None         # the panel which contains the various buttons to add the different widgets
 property_panel = None  # panel for editing the current widgets properties
-app_tree = None        # widget hierarchy of the application; root is application itself; a tree.WidgetTree instance
+#app_tree = None        # widget hierarchy of the application; root is application itself; a tree.WidgetTree instance
+root = None
 
 # these will be set when clicking an item on the palette window:
 adding_widget = False # If True, the user is adding a widget to some sizer
@@ -219,7 +220,7 @@ def add_object(event):
 def add_toplevel_object(event):
     "Adds a toplevel widget (Frame or Dialog) to the current app"
     widgets[refs[event.GetId()]](None, None, 0)
-    app_tree.app.saved = False
+    root.saved = False
 
 ########################################################################################################################
 # application GUI initialization
@@ -266,12 +267,12 @@ def encode_to_unicode(item, encoding=None):
     """Decode the item to a Unicode string. The encoding to UTF-8 will be done later.
 
     Non-string items will be converted to string automatically.
-    If no encoding given, app_tree.app.encoding or 'UFT-8' will be used."""
+    If no encoding given, root.encoding or 'UFT-8' will be used."""
     if not isinstance(item, compat.basestring):
         item = str(item)
     if isinstance(item, compat.unicode):
         return item
-    encoding = encoding or (app_tree and app_tree.app.encoding) or "UTF-8"
+    encoding = encoding or (app_tree and root.encoding) or "UTF-8"
     item = item.decode(encoding)
     return item
 
@@ -384,9 +385,9 @@ def save_file(filename, content, which='wxg'):
 # files and paths
 
 def get_name_for_autosave(filename=None):
-    "Return filename for the automatic backup of named file or current file (app_tree.app.filename)"
+    "Return filename for the automatic backup of named file or current file (root.filename)"
     if not filename:
-        filename = app_tree.app.filename
+        filename = root.filename
     if not filename:
         path, name = config.home_path, ""
     else:
@@ -409,13 +410,13 @@ class _Writer(object):
 
 def autosave_current():
     "Save automatic backup copy for the current and un-saved design;  returns 0: error; 1: no changes to save; 2: saved"
-    if app_tree.app.saved:
+    if root.saved:
         return 1            # do nothing in this case...
 
     autosave_name = get_name_for_autosave()
     try:
         outfile = _Writer(autosave_name)
-        app_tree.app.write(outfile)
+        root.write(outfile)
         outfile.close()
     except EnvironmentError as details:
         logging.warning( _('Saving the autosave file "%s" failed: %s'), autosave_name, details )
@@ -435,7 +436,7 @@ def remove_autosaved(filename=None):
 
 def check_autosaved(filename):
     "Returns True if there are an automatic backup for filename"
-    if filename is not None and filename == app_tree.app.filename:
+    if filename is not None and filename == root.filename:
         # this happens when reloading, no auto-save-restoring in this case...
         return False
     autosave_name = get_name_for_autosave(filename)

@@ -186,7 +186,7 @@ class XmlWidgetBuilder(XmlParser):
             # get properties of the app
             self._appl_started = True
             attrs = self._process_app_attrs(attrs)
-            app = common.app_tree.app
+            app = common.root
             p = app.properties
 
             p["encoding"].set( attrs['encoding'] )
@@ -250,7 +250,7 @@ class XmlWidgetBuilder(XmlParser):
     def endElement(self, name):
         if name == 'application':
             self._appl_started = False
-            app = common.app_tree.app
+            app = common.root
             for key, value in self._delayed_app_properties.items():
                 app.properties[key].set( value )
             app.properties_changed( sorted(self._delayed_app_properties.keys()) )
@@ -564,7 +564,7 @@ class XmlWidgetObject(object):
             top = stack.pop()
             if top.in_windows: parent = top.obj
         if parent is None:
-            parent = common.app_tree.app
+            parent = common.root
 
         if base is not None:
             # if base is not None, the object is a widget (or sizer), and not a sizeritem

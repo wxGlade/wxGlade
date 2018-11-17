@@ -11,7 +11,6 @@ import logging
 import wx
 import clipboard
 import common, compat, config, misc
-from tree import Node
 import new_properties as np
 from edit_windows import ManagedBase, TopLevelBase, EditStylesMixin
 
@@ -88,7 +87,7 @@ class PanelBase(EditStylesMixin):
         if event is None or not misc.event_modifier_copy(event):
             common.adding_widget = common.adding_sizer = False
             common.widget_to_add = None
-        common.app_tree.app.saved = False
+        common.root.saved = False
 
     def check_drop_compatibility(self):
         if self.top_sizer:

@@ -11,7 +11,6 @@ import wx
 
 import common, compat, config, misc
 from MenuTree import *
-from tree import Node
 from wcodegen.taghandler import BaseXmlBuilderTagHandler
 import new_properties as np
 from edit_windows import EditBase, PreviewMixin
@@ -824,7 +823,7 @@ class EditMenuBar(EditBase, PreviewMixin):
 def builder(parent, sizer, pos, number=[0]):
     "factory function for EditMenuBar objects"
     import window_dialog as wd
-    klass = 'wxMenuBar' if common.app_tree.app.language.lower()=='xrc' else 'MyMenuBar'
+    klass = 'wxMenuBar' if common.root.language.lower()=='xrc' else 'MyMenuBar'
 
     # if e.g. on a frame, suggest the user to add the menu bar to this
     toplevel_widget = None

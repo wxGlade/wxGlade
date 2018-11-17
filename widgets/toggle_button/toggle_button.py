@@ -12,7 +12,6 @@ import wx
 import common, config
 from edit_windows import ManagedBase, EditStylesMixin
 from gui_mixins import BitmapMixin
-from tree import Node
 import new_properties as np
 
 

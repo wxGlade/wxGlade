@@ -13,134 +13,45 @@ import misc, common, compat, config, clipboard
 import edit_sizers, application
 
 
-
-class Node(object):
-    __empty_win = None
-
-    def __init__(self, widget=None, children=None):
-        self.widget = widget      # e.g. EditPanel or EditBoxSizer
-        self.children = children  # list of Node or SlotNode instances
-        self.parent = None        # parent node; will be set in Tree.add/insert
-        self.item = None
-
-    #@classmethod
-    #def remove_rec(cls, node):
-        #"recursively remove node and it's children"
-        #for child_node in (node.children or []):
-            #cls.remove_rec(child_node)
-        #node.children = None
-        #if node.widget is not None:
-            ## call the widget's ``destructor''
-            #node.widget.delete()
-        #node.widget = None
-
-    #def remove(self):
-        #self.remove_rec(self)
-        #try:
-            #self.parent.children.remove(self)
-        #except:
-            #pass
-
-    #def refresh(self, refresh_label=True, refresh_image=True):
-        #common.app_tree.refresh(self, refresh_label, refresh_image)
-
-
-class SlotNode(Node):
-    "Placeholder for an empty sizer slot"
-    def write(self, output, tabs, class_names=None):
-        if self.widget.sizer is None or self.widget.sizer.is_virtual(): return
-        output.extend( common.format_xml_tag( u'object', '', tabs, **{'class': 'sizerslot'}) )
-
-
 class Tree(object):
     "A class to represent a hierarchy of widgets"
 
-    def __init__(self, root=None, app=None):
+    #def __init__(self, root=None, app=None):
+    def __init__(self, app=None):
         # initialise instance logger
         self._logger = logging.getLogger(self.__class__.__name__)
 
-        # initialise instance
-        self.root = root
-        if self.root is None: self.root = Node()
-        self.current = self.root
-        self.app = app   # reference to the app properties
-        #self.names = {}  # dictionary of names of the widgets: each entry is a dictionary, one for each toplevel widget
-
-    #def _find_toplevel(self, node):
-        #assert node is not None, _("None node in _find_toplevel")
-        #if node.parent is self.root:
-            #return node
-        #while node.parent is not self.root:
-            #node = node.parent
-        #return node
-
-    #def get_toplevel_class_names(self):
-        #ret = []
-        #for c in self.root.children or []:
-            #ret.append(c.widget.klass)
-        #return ret
-
-    #def get_all_class_names(self, node=None):
-        #if node is None: node = self.root
-        #ret = []
-        #for c in node.children or []:
-            #name = getattr(c.widget, "klass", None)
-            #if name: ret.append(name)
-            #ret += self.get_all_class_names(c)
-
-        #return ret
-
-    #def get_all_names(self):
-        #ret = set()
-        #for n in self.names:
-            #ret.update(self.names[n].keys())
-        #return ret
-
-    #def has_name(self, name, node=None):
-        #if node is None:
-            #for n in self.names:
-                #if name in self.names[n]:
-                    #return True
-            #return False
-        #else:
-            #node = self._find_toplevel(node) # node is a name
-            #return name in self.names[node]
+        ## initialise instance
+        self.root = app # root
+        #self.app = app   # reference to the app properties
 
     def add(self, child, parent=None):
-        if parent is None: parent = self.root
-        if parent.children is None: parent.children = []
-        parent.children.append(child)
-        child.parent = parent
-        self.current = child
-        if child.widget.IS_TOPLEVEL:
-            self.app.add_top_window(child.widget.name)
-
-        if not isinstance(child.widget, edit_sizers.SizerSlot):
-            self.app.check_codegen(child.widget)
+        if not isinstance(child, edit_sizers.SizerSlot):
+            self.root.check_codegen(child)
 
     def insert(self, child, parent, index):
-        # if at index there is a SlotNode, replace this, otherwise insert
-        if parent is None: parent = self.root
-        if parent.children is None or index>=len(parent.children):
-            self.add(child, parent)
-            return
-        if isinstance( parent.children[index], SlotNode ):
-            if not isinstance(child, SlotNode):
-                self.remove( parent.children[index] )
+        ## if at index there is a SlotNode, replace this, otherwise insert
+        #if parent is None: parent = self.root
+        #if parent.children is None or index>=len(parent.children):
+            #self.add(child, parent)
+            #return
+        #if parent.children[index].IS_SLOT:
+            #if not child.IS_SLOT:
+                #self.remove( parent.children[index] )
 
-        parent.children.insert(index, child)
-        child.parent = parent
-        self.current = child
-        if child.widget.IS_TOPLEVEL:
-            self.app.add_top_window(child.widget.name)
+        #parent.children.insert(index, child)
+        #child.parent = parent
+        #self.current = child
+        #if child.IS_TOPLEVEL:
+            #self.app.add_top_window(child.name)
             
-        if not isinstance(child.widget, edit_sizers.SizerSlot):
-            self.app.check_codegen(child.widget)
+        if not child.IS_SLOT:
+            self.root.check_codegen(child)
 
     def remove(self, node=None):
         if node is not None:
-            node.widget.tree_clear_name_rec()
-            node.widget.tree_remove()
+            node.tree_clear_name_rec()
+            node.tree_remove()
             #node.remove()
         elif self.root.children:
             # clear all
@@ -221,28 +132,19 @@ class Tree(object):
         self._prn(start_node, 0)
 
     def clear(self):
-        # delete all children; call common.app_tree.app.new() or .init() afterwards
+        # delete all children; call common.root.new() or .init() afterwards
         self.skip_select = True
         if self.root.children:
             while self.root.children:
                 c = self.root.children[-1]
-                if c.widget: c.widget.remove()
-            self.root.children = None
+                if c.widget: c.remove()
         self.skip_select = False
 
-    #def set_title(self, value):
-        #if value is None: value = ""
-        #self.title = value
-
-    #def get_title(self):
-        #if not self.title: self.title = ' '
-        #return self.title
-
     def refresh_name(self, node, previous_name=None):
-        names = self.names.setdefault(self._find_toplevel(node), {})
+        names = node.toplevel_parent.names
         if previous_name is not None and previous_name in names:
             del names[previous_name]
-        names[node.widget.name] = 1
+        names[node.name] = 1
 
     def refresh(self, node, refresh_label=True, refresh_image=True):
         # nothing to, do when there is no GUI
@@ -260,21 +162,17 @@ class WidgetTree(wx.TreeCtrl, Tree):
         if wx.Platform == '__WXGTK__':    style |= wx.TR_NO_LINES|wx.TR_FULL_ROW_HIGHLIGHT
         elif wx.Platform == '__WXMAC__':  style &= ~wx.TR_ROW_LINES
         wx.TreeCtrl.__init__(self, parent, -1, style=style)
-        root_node = Node(application)
-        application.node = root_node
         self.cur_widget = None  # reference to the selected widget
-        Tree.__init__(self, root_node, application)
+        Tree.__init__(self, application)
         image_list = wx.ImageList(21, 21)
         image_list.Add(wx.Bitmap(os.path.join(config.icons_path, 'application.xpm'), wx.BITMAP_TYPE_XPM))
         for w in WidgetTree.images:
             WidgetTree.images[w] = image_list.Add(misc.get_xpm_bitmap(WidgetTree.images[w]))
         self.AssignImageList(image_list)
-        root_node.item = self.AddRoot(_('Application'), 0)
-        self._SetItemData(root_node.item, root_node)
+        application.item = self.AddRoot(_('Application'), 0)
+        self._SetItemData(application.item, application)
         self.skip_select = 0  # necessary to avoid an infinite loop on win32, as SelectItem fires an
                               # EVT_TREE_SEL_CHANGED event
-        #self.title = ' '
-        #self.set_title(self.title)
 
         self.drop_target = clipboard.DropTarget(self, toplevel=True)
         self.SetDropTarget(self.drop_target)
@@ -300,7 +198,7 @@ class WidgetTree(wx.TreeCtrl, Tree):
         "called from main: start label editing on F2; skip events while editing"
         if event.GetKeyCode()==wx.WXK_F2 and self.cur_widget and self.cur_widget._label_editable():
             # start label editing
-            self.EditLabel( self.cur_widget.node.item )
+            self.EditLabel( self.cur_widget.item )
             return True
         if isinstance(self.FindFocus(), wx.TextCtrl):
             # currently editing
@@ -315,7 +213,7 @@ class WidgetTree(wx.TreeCtrl, Tree):
             #return
         if event.GetKeyCode()==wx.WXK_WINDOWS_MENU and self.cur_widget:
             # windows menu key pressed -> display context menu for selected item
-            item = self.RootItem  if self.cur_widget is self.app else  self.cur_widget.node.item
+            item = self.RootItem  if self.cur_widget is self.app else  self.cur_widget.item
             if item:
                 rect = self.GetBoundingRect(item, textOnly=True)
                 if rect is not None:
@@ -328,16 +226,15 @@ class WidgetTree(wx.TreeCtrl, Tree):
     def begin_drag(self, evt):
         # start drag & drop
         item = evt.GetItem()
-        node = self._GetItemData(item)
-        if node is self.root or isinstance(node, SlotNode): return  # application and slots can't be dragged
-        widget = node.widget
+        widget = self._GetItemData(item)
+        if widget is self.root or widget.IS_SLOT: return  # application and slots can't be dragged
         self._drag_ongoing = True
         clipboard.begin_drag(self, widget)
         self._drag_ongoing = False
 
     def begin_edit_label(self, evt):
         # Begin editing a label. This can be prevented by calling Veto()
-        widget = self._GetItemData( evt.Item ).widget
+        widget = self._GetItemData( evt.Item )
         if not widget._label_editable(): evt.Veto()
 
     def _split_name_label(self, new_value):
@@ -366,8 +263,7 @@ class WidgetTree(wx.TreeCtrl, Tree):
         # Finish editing a label. This can be prevented by calling Veto()
         if evt.IsEditCancelled(): return
         item = evt.Item
-        node = self._GetItemData( item )
-        widget = node.widget
+        widget = self._GetItemData( item )
         if "name" not in widget.properties: return
 
         new_value = evt.Label
@@ -375,7 +271,7 @@ class WidgetTree(wx.TreeCtrl, Tree):
 
         new_name = new_label = new_title = new_tab = new_class = None
         
-        if node.widget.klass != node.widget.base and node.widget.klass != 'wxScrolledWindow':
+        if widget.klass != widget.base and widget.klass != 'wxScrolledWindow':
             if new_value.count("(")==1 and new_value.count(")")==1:
                 pre, new_class = new_value.split("(")
                 new_class, post = new_class.split(")")
@@ -387,9 +283,9 @@ class WidgetTree(wx.TreeCtrl, Tree):
         elif "label" in widget.properties:
             # label is not editable, but name may have changed
             new_name, dummy = self._split_name_label(new_value)
-        elif getattr(node.widget, "has_title", None):
+        elif getattr(widget, "has_title", None):
             new_name, new_title = self._split_name_label(new_value)
-        elif getattr(node.widget, "parent", None) and node.widget.parent.klass=="wxNotebook" and "]" in new_value:
+        elif getattr(widget, "parent", None) and widget.parent.klass=="wxNotebook" and "]" in new_value:
             # notebook pages: include page title: "[title] name"
             new_tab, new_name = new_value.rsplit("]",1)
             if "[" in new_tab: new_tab = new_tab.split("[",1)[-1]
@@ -477,6 +373,7 @@ class WidgetTree(wx.TreeCtrl, Tree):
             return self.GetPyData(item)
     else:
         def _SetItemData(self, item, data):
+            print("_SetItemData", item, data)
             self.SetItemData(item, data)
         def _GetItemData(self, item):
             if not bool(item): return None
@@ -484,12 +381,11 @@ class WidgetTree(wx.TreeCtrl, Tree):
 
     def add(self, child, parent=None, select=True):
         "appends child to the list of parent's children"
-        assert isinstance(child, Node)
 
         Tree.add(self, child, parent)
-        image = self.images.get( child.widget._get_tree_image(), -1)
+        image = self.images.get( child._get_tree_image(), -1)
         if parent is None: parent = parent.item = self.GetRootItem()
-        child.item = self.AppendItem(parent.item, child.widget._get_tree_label(), image)
+        child.item = self.AppendItem(parent.item, child._get_tree_label(), image)
         self._SetItemData(child.item, child)
         if self.auto_expand:
             self.Expand(parent.item)
@@ -498,12 +394,10 @@ class WidgetTree(wx.TreeCtrl, Tree):
 
     def insert(self, child, parent, index, select=True):
         "inserts child to the list of parent's children at index; a SlotNode at index is overwritten"
-        assert isinstance(child, Node)
         # pos is index
         if parent is None:
             # XXX check whether this is called at all
             parent = self._GetItemData( self.GetRootItem() )
-        assert isinstance(parent, Node)
 
         # parent is a Node, i.e. Dummy or Button are not in parent.children
         if parent.children is None or index>=len(parent.children):
@@ -511,8 +405,8 @@ class WidgetTree(wx.TreeCtrl, Tree):
             return
 
         Tree.insert(self, child, parent, index)
-        label = child.widget._get_tree_label()
-        image = self.images.get( child.widget._get_tree_image(), -1)
+        label = child._get_tree_label()
+        image = self.images.get( child._get_tree_image(), -1)
         child.item = compat.wx_Tree_InsertItemBefore(self, parent.item, index, label, image)
         self._SetItemData(child.item, child)
         if self.auto_expand:
@@ -521,7 +415,7 @@ class WidgetTree(wx.TreeCtrl, Tree):
                 self.select_item(child)
 
     def remove(self, node=None, delete=True):
-        self.app.saved = False  # update the status of the app
+        self.root.saved = False  # update the status of the app
         Tree.remove(self, node)
         if node is not None:
             if delete:
@@ -538,36 +432,33 @@ class WidgetTree(wx.TreeCtrl, Tree):
         else:
             pass
 
-    def refresh_name(self, node, previous_name=None):
-        Tree.refresh_name(self, node, previous_name)
-        self.SetItemText(node.item, node.widget._get_tree_label())
+    def refresh_name(self, widget, previous_name=None):
+        Tree.refresh_name(self, widget, previous_name)
+        self.SetItemText(widget.item, widget._get_tree_label())
 
     def refresh(self, widget, refresh_label=True, refresh_image=True):
         # refresh label and/or image
-        if isinstance(widget, Node):
-            widget = widget.widget
-        node = widget.node
         if refresh_label:
-            self.SetItemText(node.item, widget._get_tree_label())
+            self.SetItemText(widget.item, widget._get_tree_label())
         if refresh_image:
             image = self.images.get( widget._get_tree_image(), -1)
-            self.SetItemImage(node.item, image)
+            self.SetItemImage(widget.item, image)
 
     def select_item(self, node):
         self.skip_select = True
         self.SelectItem(node.item)
         self.skip_select = False
-        self._set_cur_widget(node.widget)
+        self._set_cur_widget(node)
         misc.set_focused_widget(self.cur_widget)
 
     def _set_cur_widget(self, widget):
         # set self.cur_widget; adjust label colors and bold if required (on Windows)
         if self.cur_widget and wx.Platform == "__WXMSW__":
-            item = self.cur_widget.node.item
+            item = self.cur_widget.item
             self.SetItemTextColour(item, wx.NullColour)
             self.SetItemBold( item, False )
         self.cur_widget = widget
-        item = widget.node.item
+        item = widget.item
         self.EnsureVisible(item)
         # ensure that the icon is visible
         text_rect = self.GetBoundingRect(item, True)
@@ -579,19 +470,15 @@ class WidgetTree(wx.TreeCtrl, Tree):
     def set_current_widget(self, widget):
         # interface from common.set_focused_widget
         if widget is None or widget is self.cur_widget: return
-        if widget is self.root.widget:
-            node = self.root
-        else:
-            node = widget.node
         self.skip_select = True
-        self.SelectItem(node.item)
+        self.SelectItem(widget.item)
         self.skip_select = False
         self._set_cur_widget(widget)
 
     def on_change_selection(self, event):
         if self.skip_select: return  # triggered by self.SelectItem in self.set_current_widget
         item = event.GetItem()
-        widget = self._GetItemData(item).widget
+        widget = self._GetItemData(item)
         self._set_cur_widget(widget)
         misc.set_focused_widget(widget)
         if not self.IsExpanded(item):
@@ -600,35 +487,33 @@ class WidgetTree(wx.TreeCtrl, Tree):
 
     def on_left_click(self, event):
         if not common.adding_widget: return event.Skip()
-        node = self._find_node_by_pos( *event.GetPosition() )
-        if not node: return event.Skip()
+        widget = self._find_node_by_pos( *event.GetPosition() )
+        if not widget: return event.Skip()
 
-        item = node.widget
-        compatible, message = item.check_drop_compatibility()
+        compatible, message = widget.check_drop_compatibility()
         if not compatible:
             event.Skip()
             misc.error_message(message)
             return
 
         common.adding_window = event.GetEventObject().GetTopLevelParent()
-        if isinstance(item, edit_sizers.SizerSlot):
-            item.on_drop_widget(event)
+        if widget.IS_SLOT:
+            widget.on_drop_widget(event)
         elif common.adding_sizer:
-            item.drop_sizer()
+            widget.drop_sizer()
         common.adding_window = None
 
     def on_left_dclick(self, event):
         x, y = event.GetPosition()
-        node = self._find_node_by_pos(x, y)
-        if not node:
+        widget = self._find_node_by_pos(x, y)
+        if not widget:
             event.Skip()
             return
-        widget = node.widget
         if widget.klass=='wxMenuBar':
             widget.properties["menus"].edit_menus()
         elif widget.klass=='wxToolBar':
             widget.properties["tools"].edit_tools()
-        elif node.parent is self.root:
+        elif widget.parent is self.root:
             self.show_toplevel(None, widget)
         else:
             event.Skip()
@@ -640,7 +525,7 @@ class WidgetTree(wx.TreeCtrl, Tree):
     def on_menu(self, event):
         # the first entry in the popup menu, i.e. the name was selected
         if self._popup_menu_widget is None: return
-        if not getattr(self._popup_menu_widget, "_is_toplevel_window", False): return
+        if not getattr(self._popup_menu_widget, "IS_TOPLEVEL_WINDOW", False): return
         self.show_toplevel( None, self._popup_menu_widget )
 
     def on_mouse_events(self, event):
@@ -648,13 +533,13 @@ class WidgetTree(wx.TreeCtrl, Tree):
             message = None
             # set cursor to indicate a possible drop
             x,y = event.GetPosition()
-            node = self._find_node_by_pos(x, y, toplevels_only=False)
-            if node is not None:
+            widget = self._find_node_by_pos(x, y, toplevels_only=False)
+            if widget is not None:
                 if not common.adding_widget:
                     self.SetCursor(wx.STANDARD_CURSOR)
                 else:
                     # check whether the item can be dropped here
-                    compatible, message = node.widget.check_drop_compatibility()
+                    compatible, message = widget.check_drop_compatibility()
                     if compatible:
                         self.SetCursor(wx.CROSS_CURSOR) # a Cursor instance
                     else:
@@ -665,59 +550,60 @@ class WidgetTree(wx.TreeCtrl, Tree):
         event.Skip()
 
     def popup_menu(self, event, pos=None):
-        node = self._find_node_by_pos(*event.GetPosition())
-        if not node: return
-        self.select_item(node)
-        self._popup_menu_widget = node.widget
-        node.widget.popup_menu(event, pos)
+        widget = self._find_node_by_pos(*event.GetPosition())
+        if not widget: return
+        self.select_item(widget)
+        self._popup_menu_widget = widget
+        widget.popup_menu(event, pos)
         self._popup_menu_widget = None
 
     def expand(self, node=None, yes=True):
         "expands or collapses the given node"
         if node is None: node = self.root
+        if not node.item: return  # XXX remove when Dummy is removed
         if yes: self.Expand(node.item)
         else: self.Collapse(node.item)
 
-    def create_widgets(self, node):
+    def create_widgets(self, widget):
         "Shows the widget of the given node and all its children"
-        node.widget.create()
-        self.expand(node, True)
-        if node.children:
-            for c in node.children:
+        widget.create()
+        self.expand(widget, True)
+        if widget.children:
+            for c in widget.children:
                 self.create_widgets(c)
-        node.widget.post_load()  # only edit_sizers.SizerBase has this method implemented and calls it for toplevel
+        widget.post_load()  # only edit_sizers.SizerBase has this method implemented and calls it for toplevel
         # XXX also notebook.EditNotebook!
 
-    def _show_widget_toplevel(self, node):
+    def _show_widget_toplevel(self, widget):
         # creates/shows the widget of the given toplevel node and all its children
         if not wx.IsBusy(): wx.BeginBusyCursor()
-        if not node.widget.widget:
-            node.widget.create_widget()
-            node.widget.finish_widget_creation()
-            node.widget.drop_target = clipboard.DropTarget(node.widget)
-            node.widget.widget.SetDropTarget(node.widget.drop_target)
+        if not widget.widget:
+            widget.create_widget()
+            widget.finish_widget_creation()
+            widget.drop_target = clipboard.DropTarget(widget)
+            widget.widget.SetDropTarget(widget.drop_target)
         
-        with node.widget.frozen():
-            if node.children:
-                for c in node.children:
+        with widget.frozen():
+            if widget.children:
+                for c in widget.children:
                     self.create_widgets(c)
-            node.widget.post_load()  # only edit_sizers.SizerBase has this method implemented and calls it for toplevel
-            node.widget.create()
-            if node.widget.widget.TopLevel:
-                node.widget.widget.Show()
+            widget.post_load()  # only edit_sizers.SizerBase has this method implemented and calls it for toplevel
+            widget.create()
+            if widget.widget.TopLevel:
+                widget.widget.Show()
             else:
-                node.widget.widget.GetParent().Show()
+                widget.widget.GetParent().Show()
 
-            #misc.set_focused_widget(node.widget)
-            node.widget.widget.Raise()
+            #misc.set_focused_widget(widget)
+            widget.widget.Raise()
             # set the best size for the widget (if no one is given)
-            props = node.widget.properties
+            props = widget.properties
             if 'size' in props and not props['size'].is_active():
-                if node.widget.sizer:
-                    node.widget.sizer.fit_parent()
-                elif getattr(node.widget,"top_sizer",None):
+                if widget.sizer:
+                    widget.sizer.fit_parent()
+                elif getattr(widget,"top_sizer",None):
                     wx.Yield()  # by now, there are probably many EVT_SIZE in the queue
-                    node.widget.top_sizer.fit_parent()
+                    widget.top_sizer.fit_parent()
 
         if wx.IsBusy(): wx.EndBusyCursor()
 
@@ -727,35 +613,33 @@ class WidgetTree(wx.TreeCtrl, Tree):
             try: x, y = event.GetPosition()
             except AttributeError:
                 # if we are here, event is a CommandEvent and not a MouseEvent
-                node = self._GetItemData(self.GetSelection())
-                self.expand(node)  # if we are here, the widget must be shown
+                widget = self._GetItemData(self.GetSelection())
+                self.expand(widget)  # if we are here, the widget must be shown
             else:
-                node = self._find_node_by_pos(x, y, toplevels_only=True)
-        else:
-            node = widget.node
+                widget = self._find_node_by_pos(x, y, toplevels_only=True)
 
-        if node is None or node is self.root: return
+        if widget is None or widget is self.root: return
 
         # the actual toplevel widget may be one level higher, e.g. for a Panel, which is embedded in a Frame
         set_size = None
-        if node.widget.IS_TOPLEVEL:
+        if widget.IS_TOPLEVEL:
             #if getattr(node.widget, "_is_toplevel_window", False) or getattr(node.widget, "_is_toplevel", False):s
             # toplevel window or a menu/status bar
-            toplevel_widget = node.widget.widget
-            size_p    = node.widget.properties.get("size")
-            toolbar_p = node.widget.properties.get("toolbar")
+            toplevel_widget = widget.widget
+            size_p    = widget.properties.get("size")
+            toolbar_p = widget.properties.get("toolbar")
             if size_p is not None and size_p.is_active() and toolbar_p is not None and toolbar_p.value:
                 # apply workaround for size changes due to a toolbar; this would cause problems with automatic testing
                 set_size = size_p.get_size()
         else:
-            toplevel_widget = node.widget.widget.GetParent()
+            toplevel_widget = widget.widget.GetParent()
 
-        if not node.widget.is_visible():
+        if not widget.is_visible():
             # added by rlawson to expand node on showing top level widget
-            self.expand(node)
-            self._show_widget_toplevel(node)
+            self.expand(widget)
+            self._show_widget_toplevel(widget)
             if wx.Platform != '__WXMSW__' and set_size is not None:
-                toplevel_widget = node.widget.widget  # above it was not yet created
+                toplevel_widget = widget.widget  # above it was not yet created
                 wx.CallAfter(toplevel_widget.SetSize, set_size)
         else:
             toplevel_widget.GetTopLevelParent().Hide()
@@ -764,7 +648,7 @@ class WidgetTree(wx.TreeCtrl, Tree):
             #self.select_item(node)
             #misc.set_focused_widget(node.widget)
             if event: event.Skip()
-        if "design" in node.widget.properties: node.widget.design.update_label()
+        if "design" in widget.properties: widget.design.update_label()
 
     def _find_node_by_pos(self, x, y, toplevels_only=False):
         """Finds the node which is displayed at the given coordinates. Returns None if there's no match.
@@ -783,7 +667,7 @@ class WidgetTree(wx.TreeCtrl, Tree):
         last_pos = getattr(self, "_last_find_widget_pos", None)
         self._last_find_widget_pos = (x,y)
         if last_pos and last_pos==(x,y) and not self.IsExpanded(node.item): self.Expand(node.item)
-        return node.widget
+        return node
 
     def change_node(self, node, widget, new_node=None):
         if new_node is not None:

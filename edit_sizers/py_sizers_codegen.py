@@ -22,7 +22,7 @@ class BasePythonSizerBuilder(BaseSizerBuilder):
 
     def _get_wparent(self, obj):
         while obj.IS_SIZER:
-            obj = obj.node.parent.widget
+            obj = obj.parent
         if not obj.IS_TOPLEVEL:
             parent = 'self.%s' % obj.name
         else:

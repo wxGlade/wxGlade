@@ -10,7 +10,6 @@ wxButton objects
 import wx
 import config, common, compat
 from edit_windows import ManagedBase, EditStylesMixin
-from tree import Node
 import new_properties as np
 from .button_stockitems import *
 from gui_mixins import BitmapMixin

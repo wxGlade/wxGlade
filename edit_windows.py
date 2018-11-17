@@ -513,13 +513,14 @@ class ManagedBase(WindowBase):
         self._has_layout = parent.IS_SIZER
 
         # attributes to keep the values of the sizer properties
-        self.pos        = np.LayoutPosProperty(pos)            # position within the sizer, 1-based
+        if pos is None: pos = len(self.parent.children) - 1
+        self.pos        = np.LayoutPosProperty(pos)            # position within the sizer, 0-based
         self.span       = np.LayoutSpanProperty((1,1))         # cell spanning for GridBagSizer
         self.proportion = np.LayoutProportionProperty(0)       # item growth in sizer main direction
         self.border     = np.SpinProperty(0, immediate=True)   # border width
         self.flag       = np.ManagedFlags(wx.ADJUST_MINSIZE)   # alignment, border; expansion in other dir.
 
-        parent.add_item(self, pos)
+        #parent.add_item(self, pos)
 
     def check_defaults(self):
         # apply default border if set in preferences; called explicitely from the interactive builder functions
@@ -538,7 +539,7 @@ class ManagedBase(WindowBase):
         self.widget.Bind(wx.EVT_MOVE, self.on_move)
         if re_add:
             # re-add the item to update it; this is not to be done when a widget is replaced due to style change
-            self.parent.add_item( self, self.pos )
+            self.parent._add_item( self, self.pos )
 
     def update_view(self, selected):
         if self.sel_marker: self.sel_marker.Show(selected)
@@ -638,7 +639,7 @@ class PreviewMixin(object):
             return
         new_label = None
         if self.preview_widget is None:
-            self.preview_widget = common.app_tree.app.preview(self, self._preview_position)
+            self.preview_widget = common.root.preview(self, self._preview_position)
             if self.preview_widget:
                 new_label = _('Close Preview')
         else:
@@ -721,7 +722,7 @@ class TopLevelBase(WindowBase, PreviewMixin):
 
     def duplicate(self, *args):
         clipboard.copy(self)
-        clipboard.paste(common.app_tree.root.widget)
+        clipboard.paste(common.root.widget)
 
     def _create_popup_menu(self, widget):
         # remove, hide
@@ -822,7 +823,7 @@ class TopLevelBase(WindowBase, PreviewMixin):
         if event is None or not misc.event_modifier_copy(event):
             common.adding_widget = common.adding_sizer = False
             common.widget_to_add = None
-        common.app_tree.app.saved = False
+        common.root.saved = False
 
     def check_drop_compatibility(self):
         if self.children:
@@ -833,7 +834,7 @@ class TopLevelBase(WindowBase, PreviewMixin):
 
     def hide_widget(self, event=None):
         self.widget.Hide()  # just hide, don't close
-        common.app_tree.expand(self.node, False)
+        common.app_tree.expand(self, False)
         #misc.set_focused_widget(self.node.parent)
         self.design.update_label()
 
@@ -846,10 +847,10 @@ class TopLevelBase(WindowBase, PreviewMixin):
         if self.has_title and (not modified or "title" in modified):
             if self.widget:
                 self.widget.SetTitle(misc.design_title(self.title))
-            common.app_tree.refresh(self.node)
+            common.app_tree.refresh(self)
 
         if not modified or "name" in modified and (self.name!=self._oldname):
-            #common.app_tree.app.update_top_window_name(self._oldname, self.name)
+            #common.root.update_top_window_name(self._oldname, self.name)
             self.parent.update_top_window_name(self._oldname, self.name)
 
         WindowBase.properties_changed(self, modified)
@@ -1300,7 +1301,7 @@ class Slot(edit_base.Slot):
         #if event is None or not misc.event_modifier_copy(event):
             #common.adding_widget = common.adding_sizer = False
             #common.widget_to_add = None
-        #common.app_tree.app.saved = False
+        #common.root.saved = False
 
     #def check_drop_compatibility(self):
         #if common.adding_sizer and self.parent.CHILDREN is not 1:
@@ -1338,7 +1339,7 @@ class Slot(edit_base.Slot):
     #def delete(self):
         ## mainly deletes the widget
         #self.destroy_widget()
-        #common.app_tree.app.saved = False
+        #common.root.saved = False
 
     #def destroy_widget(self):
         #if self.widget is None: return

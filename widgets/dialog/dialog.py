@@ -11,7 +11,6 @@ import os
 import wx
 
 import common, compat, config, misc
-from tree import Node
 import new_properties as np
 from edit_windows import TopLevelBase, EditStylesMixin
 from gui_mixins import BitmapMixin
@@ -77,7 +76,7 @@ def builder(parent, sizer, pos, number=[0]):
     "factory function for EditDialog objects"
     import window_dialog
     base_classes = ['wxDialog', 'wxPanel']
-    klass = 'wxDialog' if common.app_tree.app.language.lower()=='xrc' else 'MyDialog'
+    klass = 'wxDialog' if common.root.language.lower()=='xrc' else 'MyDialog'
 
     dialog = window_dialog.WindowDialog(klass, base_classes, 'Select widget type', True)
     res = dialog.show()
