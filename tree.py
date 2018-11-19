@@ -16,69 +16,20 @@ import edit_sizers, application
 class Tree(object):
     "A class to represent a hierarchy of widgets"
 
-    #def __init__(self, root=None, app=None):
     def __init__(self, app=None):
         # initialise instance logger
         self._logger = logging.getLogger(self.__class__.__name__)
+        self.root = app  # root
 
-        ## initialise instance
-        self.root = app # root
-        #self.app = app   # reference to the app properties
-
-    def add(self, child, parent=None):
-        if not isinstance(child, edit_sizers.SizerSlot):
-            self.root.check_codegen(child)
-
-    def insert(self, child, parent, index):
-        ## if at index there is a SlotNode, replace this, otherwise insert
-        #if parent is None: parent = self.root
-        #if parent.children is None or index>=len(parent.children):
-            #self.add(child, parent)
-            #return
-        #if parent.children[index].IS_SLOT:
-            #if not child.IS_SLOT:
-                #self.remove( parent.children[index] )
-
-        #parent.children.insert(index, child)
-        #child.parent = parent
-        #self.current = child
-        #if child.IS_TOPLEVEL:
-            #self.app.add_top_window(child.name)
-            
-        if not child.IS_SLOT:
-            self.root.check_codegen(child)
-
-    def remove(self, node=None):
-        if node is not None:
-            node.tree_clear_name_rec()
-            node.tree_remove()
-            #node.remove()
-        elif self.root.children:
-            # clear all
-            for n in self.root.children:
-                n.remove()
-            self.root.children = None
-            self.names = {}
-
-    def change_node(self, node, widget):
-        "Changes the node 'node' so that it refers to 'widget'"
-        toplevel_parent = node.widget.toplevel_parent
-        try:
-            #del self.names[node.widget.toplevel_parent][node.widget.name]
-            del toplevel_parent.names[node.widget.name]
-        except KeyError:
-            pass
-        node.widget = widget
-        toplevel_parent.names[widget.name] = 1
-
-    def change_node_pos(self, node, new_pos, index=None):
-        if index is None: index = node.parent.children.index(node)
-        if index >= new_pos:
-            node.parent.children.insert(new_pos, node)
-            del node.parent.children[index + 1]
-        else:
-            del node.parent.children[index]
-            node.parent.children.insert(new_pos+1, node)
+    #def remove(self, node=None):
+        #if node is not None:
+            #node.tree_clear_name_rec()
+            #node.node_remove()
+        #elif self.root.children:
+            ## clear all
+            #for n in self.root.children:
+                #n.remove()
+            #self.root.children = None
 
     def _find_widget(self, widget, node):
         if node.widget is None or node.widget.widget is None:
@@ -137,14 +88,8 @@ class Tree(object):
         if self.root.children:
             while self.root.children:
                 c = self.root.children[-1]
-                if c.widget: c.remove()
+                if c: c.remove()
         self.skip_select = False
-
-    def refresh_name(self, node, previous_name=None):
-        names = node.toplevel_parent.names
-        if previous_name is not None and previous_name in names:
-            del names[previous_name]
-        names[node.name] = 1
 
     def refresh(self, node, refresh_label=True, refresh_image=True):
         # nothing to, do when there is no GUI
@@ -382,7 +327,7 @@ class WidgetTree(wx.TreeCtrl, Tree):
     def add(self, child, parent=None, select=True):
         "appends child to the list of parent's children"
 
-        Tree.add(self, child, parent)
+        #Tree.add(self, child, parent)
         image = self.images.get( child._get_tree_image(), -1)
         if parent is None: parent = parent.item = self.GetRootItem()
         child.item = self.AppendItem(parent.item, child._get_tree_label(), image)
@@ -400,11 +345,11 @@ class WidgetTree(wx.TreeCtrl, Tree):
             parent = self._GetItemData( self.GetRootItem() )
 
         # parent is a Node, i.e. Dummy or Button are not in parent.children
-        if parent.children is None or index>=len(parent.children):
+        if index is None or parent.children is None or index>=len(parent.children):
             self.add(child, parent, select=select)
             return
 
-        Tree.insert(self, child, parent, index)
+        #Tree.insert(self, child, parent, index)
         label = child._get_tree_label()
         image = self.images.get( child._get_tree_image(), -1)
         child.item = compat.wx_Tree_InsertItemBefore(self, parent.item, index, label, image)
@@ -414,14 +359,8 @@ class WidgetTree(wx.TreeCtrl, Tree):
             if select:
                 self.select_item(child)
 
-    def remove(self, node=None, delete=True):
-        self.root.saved = False  # update the status of the app
-        Tree.remove(self, node)
-        if node is not None:
-            if delete:
-                self.Delete(node.item)
-        else:
-            wx.TreeCtrl.Destroy(self)
+    def remove(self, node):
+        self.Delete(node.item)
 
     def build(self, widget):
         # (re-)build 
@@ -431,10 +370,6 @@ class WidgetTree(wx.TreeCtrl, Tree):
             node = Node(widget, None)
         else:
             pass
-
-    def refresh_name(self, widget, previous_name=None):
-        Tree.refresh_name(self, widget, previous_name)
-        self.SetItemText(widget.item, widget._get_tree_label())
 
     def refresh(self, widget, refresh_label=True, refresh_image=True):
         # refresh label and/or image
@@ -453,7 +388,7 @@ class WidgetTree(wx.TreeCtrl, Tree):
 
     def _set_cur_widget(self, widget):
         # set self.cur_widget; adjust label colors and bold if required (on Windows)
-        if self.cur_widget and wx.Platform == "__WXMSW__":
+        if self.cur_widget and wx.Platform == "__WXMSW__" and self.cur_widget.item:
             item = self.cur_widget.item
             self.SetItemTextColour(item, wx.NullColour)
             self.SetItemBold( item, False )
@@ -669,27 +604,41 @@ class WidgetTree(wx.TreeCtrl, Tree):
         if last_pos and last_pos==(x,y) and not self.IsExpanded(node.item): self.Expand(node.item)
         return node
 
-    def change_node(self, node, widget, new_node=None):
-        if new_node is not None:
-            # this is a bit of a hack to replace the old widget node with a SlotNode
-            # XXX probably it would be better to modify the Node class to take care of SizerSlot instances
-            parent = new_node.parent = node.parent
-            index = parent.children.index(node)
-            parent.children[index] = new_node
-            new_node.item = node.item
-            self._SetItemData(node.item, new_node)
-            old_children = node.children
-            self.remove(node, delete=False)  # don't delete the node, as we just want to modify it
-            for c in old_children or []:     # but the children
-                self.Delete(c.item)
-            node = new_node
-            
-            widget.toplevel_parent.names[node.widget.name] = 1
-        Tree.change_node(self, node, widget)
-        #image = self.images.get(widget._get_tree_image(), -1)
+    #def change_node(self, node, widget, new_node=None):
+        ## This is only called from 'free_slot' and similar, where new_node is a SlotNode
+        #if new_node is not None:
+            ## this is a bit of a hack to replace the old widget node with a SlotNode
+            ## XXX probably it would be better to modify the Node class to take care of SizerSlot instances
+            #parent = new_node.parent = node.parent
+            #index = parent.children.index(node)
+            #parent.children[index] = new_node
+            #new_node.item = node.item
+            #self._SetItemData(node.item, new_node)
+            #old_children = node.children
+            #self.remove(node, delete=False)  # don't delete the node, as we just want to modify it
+            #for c in old_children or []:     # but the children
+                #self.Delete(c.item)
+            #node = new_node
+        ##Tree.change_node(self, node, widget)
+        #widget.item = node.item
+        #node.item = None
+        #self.refresh(widget)
+
+    def change_node(self, node, widget):
+        # This is only called from 'free_slot' and similar, where new_node is a SlotNode
+
+        # this is a bit of a hack to replace the old widget node with a SlotNode
+        # XXX probably it would be better to modify the Node class to take care of SizerSlot instances
+        #widget.item = node.item
+        self._SetItemData(node.item, widget)
+        old_children = node.children
+        #self.remove(node, delete=False)  # don't delete the node, as we just want to modify it
+        for c in old_children or []:     # but the children
+            self.Delete(c.item)
+        #Tree.change_node(self, node, widget)
+        widget.item = node.item
+        node.item = None
         self.refresh(widget)
-        #self.SetItemImage(node.item, image )
-        #self.SetItemText(node.item, self._build_label(node))
 
     def _append_rec(self, parent, node):
         # helper for the next method
@@ -700,27 +649,6 @@ class WidgetTree(wx.TreeCtrl, Tree):
             for c in node.children:
                 self._append_rec(node, c)
         self.Expand(node.item)
-
-    def change_node_pos(self, node, new_pos):
-        if new_pos >= self.GetChildrenCount(node.parent.item, False):
-            return
-        index = node.parent.children.index(node)
-        Tree.change_node_pos(self, node, new_pos, index)
-        old_item = node.item
-        image = self.GetItemImage(node.item)
-        self.Freeze()
-        if index >= new_pos:
-            node.item = compat.wx_Tree_InsertItemBefore( self, node.parent.item, new_pos, self._build_label(node), image )
-        else:
-            node.item = compat.wx_Tree_InsertItemBefore( self, node.parent.item, new_pos+1, self._build_label(node), image )
-        self._SetItemData(node.item, node)
-
-        if node.children:
-            for c in node.children:
-                self._append_rec(node, c)
-        self.Expand(node.item)
-        self.Delete(old_item)
-        self.Thaw()
 
     def get_selected_path(self, w=None):
         """returns a list of widget names, from the toplevel to the selected one

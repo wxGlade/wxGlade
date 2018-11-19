@@ -24,7 +24,7 @@ from xml.sax.saxutils import escape, quoteattr
 import config, compat, plugins
 
 
-widgets = {}          # all widgets: EditWidget class name -> factory(parent, sizer, pos)
+widgets = {}          # all widgets: EditWidget class name -> factory(parent, pos)
 widgets_from_xml = {} # Factory functions to build objects from a XML file
 
 class_names = {} # maps the name of the classes used by wxGlade to the correspondent classes of wxWindows

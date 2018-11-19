@@ -21,8 +21,8 @@ class EditSlider(ManagedBase, EditStylesMixin):
     _PROPERTIES = ["Widget", "range", "value", "style"]
     PROPERTIES = ManagedBase.PROPERTIES + _PROPERTIES + ManagedBase.EXTRA_PROPERTIES
 
-    def __init__(self, name, parent, style, sizer, pos):
-        ManagedBase.__init__(self, name, 'wxSlider', parent, sizer, pos)
+    def __init__(self, name, parent, style, pos):
+        ManagedBase.__init__(self, name, 'wxSlider', parent, pos)
         EditStylesMixin.__init__(self)
 
         # initialise instance properties
@@ -34,7 +34,7 @@ class EditSlider(ManagedBase, EditStylesMixin):
         mi,ma = self.properties["range"].get_tuple()
         value_p = self.properties["value"]
         value = value_p.get()  if value_p.is_active()  else  mi
-        self.widget = wx.Slider(self.parent.widget, self.id, value, mi, ma, style=self.style)
+        self.widget = wx.Slider(self.parent_window.widget, self.id, value, mi, ma, style=self.style)
 
     def properties_changed(self, modified):
         if not modified or "range" in modified:
@@ -62,7 +62,6 @@ class EditSlider(ManagedBase, EditStylesMixin):
 
 
 
-
 editor_class = EditSlider
 editor_icon = 'slider.xpm'
 editor_name = 'EditSlider'
@@ -71,10 +70,9 @@ editor_style = ''
 dlg_title = _('wxSlider')
 box_title = _('Orientation')
 choices = 'wxSL_HORIZONTAL|wxSL_VERTICAL'
-tmpl_label = 'slider'
 
 
-def builder(parent, sizer, pos, number=[1]):
+def builder(parent, pos):
     "factory function for editor objects from GUI"
     dialog = wcodegen.WidgetStyleSelectionDialog( dlg_title, box_title, choices )
     res = dialog.ShowModal()
@@ -83,36 +81,25 @@ def builder(parent, sizer, pos, number=[1]):
     if res != wx.ID_OK:
         return
 
-    label = '%s_%d' % (tmpl_label, number[0])
-    while common.app_tree.has_name(label):
-        number[0] += 1
-        label = '%s_%d' % (tmpl_label, number[0])
+    name = common.root.get_next_name('slider_%d', parent)
     with parent.frozen():
-        widget = editor_class(label, parent, style, sizer, pos)
-        node = Node(widget)
-        widget.node = node
+        widget = editor_class(label, parent, style, pos)
         widget.properties["flag"].set("wxEXPAND")
         if parent.widget: widget.create()
-    common.app_tree.insert(node, sizer.node, pos-1)
+    common.app_tree.insert(widget, parent, pos)
 
 
-def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
+def xml_builder(attrs, parent, sizeritem, pos=None):
     "Factory to build editor objects from a XML file"
     from xml_parse import XmlParsingError
     try:
         name = attrs['name']
     except KeyError:
         raise XmlParsingError(_("'name' attribute missing"))
-    if sizer is None or sizeritem is None:
+    if sizeritem is None:
         raise XmlParsingError(_("sizer or sizeritem object cannot be None"))
-    widget = editor_class(name, parent, editor_style, sizer, pos)
-    #sizer.set_item(widget.pos, proportion=sizeritem.proportion, span=sizeritem.span, flag=sizeritem.flag, border=sizeritem.border)
-    node = Node(widget)
-    widget.node = node
-    if pos is None:
-        common.app_tree.add(node, sizer.node)
-    else:
-        common.app_tree.insert(node, sizer.node, pos-1)
+    widget = editor_class(name, parent, editor_style, pos)
+    common.app_tree.insert(widget, parent, pos)
     return widget
 
 

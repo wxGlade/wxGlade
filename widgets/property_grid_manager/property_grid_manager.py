@@ -20,12 +20,12 @@ class EditPropertyGridManager(ManagedBase, EditStylesMixin):
     PROPERTIES = ManagedBase.PROPERTIES + _PROPERTIES + ManagedBase.EXTRA_PROPERTIES
     recreate_on_style_change = True
 
-    def __init__(self, name, parent, sizer, pos):
-        ManagedBase.__init__(self, name, 'wxPropertyGridManager', parent, sizer, pos)
+    def __init__(self, name, parent, pos):
+        ManagedBase.__init__(self, name, 'wxPropertyGridManager', parent, pos)
         EditStylesMixin.__init__(self)
 
     def create_widget(self):
-        self.widget = PropertyGridManager(self.parent.widget, self.id, (200,200), style=self.style)
+        self.widget = PropertyGridManager(self.parent_window.widget, self.id, (200,200), style=self.style)
 
         # property grid does handle left and right mouse clicks and emits these events:
         self.widget.Bind(EVT_PG_SELECTED, self.on_set_focus)
@@ -93,42 +93,32 @@ class EditPropertyGridManager(ManagedBase, EditStylesMixin):
         ManagedBase.properties_changed(self, modified)
 
 
-def builder(parent, sizer, pos, number=[1]):
+def builder(parent, pos):
     "factory function for EditPropertyGridManager objects"
-    label = 'property_grid_%d' % number[0]
-    while common.app_tree.has_name(label):
-        number[0] += 1
-        label = 'property_grid_%d' % number[0]
+    name = common.root.get_next_name('property_grid_%d', parent)
     with parent.frozen():
-        property_grid_manager = EditPropertyGridManager(label, parent, sizer, pos)
+        property_grid_manager = EditPropertyGridManager(name, parent, pos)
         property_grid_manager.properties["style"].set_to_default()
         # A grid should be wx.EXPANDed and 'option' should be 1, or you can't see it.
         property_grid_manager.properties["proportion"].set(1)
         property_grid_manager.properties["flag"].set("wxEXPAND")
-        node = Node(property_grid_manager)
-        property_grid_manager.node = node
         if parent.widget: property_grid_manager.create()
-    common.app_tree.insert(node, sizer.node, pos-1)
+    common.app_tree.insert(property_grid_manager, parent, pos)
 
 
-def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
+def xml_builder(attrs, parent, sizeritem, pos=None):
     "factory to build EditPropertyGridManager objects from a XML file"
     from xml_parse import XmlParsingError
     try:
         label = attrs['name']
     except KeyError:
         raise XmlParsingError(_("'name' attribute missing"))
-    if sizer is None or sizeritem is None:
+    if sizeritem is None:
         raise XmlParsingError(_("sizer or sizeritem object cannot be None"))
     property_grid_manager = EditPropertyGridManager( label, parent, pos )
     #sizer.set_item( property_grid_manager.pos, proportion=sizeritem.proportion, flag=sizeritem.flag,
     #                border=sizeritem.border)
-    node = Node(property_grid_manager)
-    property_grid_manager.node = node
-    if pos is None:
-        common.app_tree.add(node, sizer.node)
-    else:
-        common.app_tree.insert(node, sizer.node, pos-1)
+    common.app_tree.insert(property_grid_manager, parent, pos)
     return property_grid_manager
 
 

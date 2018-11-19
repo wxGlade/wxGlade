@@ -21,8 +21,8 @@ class EditChoice(ManagedBase):
     _PROPERTIES = ["Widget", "selection", "choices"]
     PROPERTIES = ManagedBase.PROPERTIES + _PROPERTIES + ManagedBase.EXTRA_PROPERTIES
 
-    def __init__(self, name, parent, choices, sizer, pos):
-        ManagedBase.__init__(self, name, 'wxChoice', parent, sizer, pos)
+    def __init__(self, name, parent, choices, pos):
+        ManagedBase.__init__(self, name, 'wxChoice', parent, pos)
 
         # initialise instance properties
         self.selection = np.SpinProperty(0, val_range=(-1,len(choices)-1), immediate=True )
@@ -30,7 +30,7 @@ class EditChoice(ManagedBase):
 
     def create_widget(self):
         choices = [c[0] for c in self.choices]
-        self.widget = wx.Choice(self.parent.widget, self.id, choices=choices)
+        self.widget = wx.Choice(self.parent_window.widget, self.id, choices=choices)
         self.widget.SetSelection(self.selection)
         self.widget.Bind(wx.EVT_LEFT_DOWN, self.on_set_focus)
 
@@ -67,39 +67,27 @@ class EditChoice(ManagedBase):
 
 
 
-def builder(parent, sizer, pos, number=[1]):
+def builder(parent, pos):
     "factory function for EditChoice objects"
-    name = 'choice_%d' % number[0]
-    while common.app_tree.has_name(name):
-        number[0] += 1
-        name = 'choice_%d' % number[0]
+    name = common.root.get_next_name('choice_%d', parent)
     with parent.frozen():
-        choice = EditChoice(name, parent, [(u'choice 1',)], sizer, pos)
+        choice = EditChoice(name, parent, [(u'choice 1',)], pos)
         choice.check_defaults()
-        node = Node(choice)
-        #sizer.set_item(pos, size=choice.GetBestSize())
-        choice.node = node
         if parent.widget: choice.create()
-    common.app_tree.insert(node, sizer.node, pos-1)
+    common.app_tree.insert(choice, parent, pos)
 
 
-def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
+def xml_builder(attrs, parent, sizeritem, pos=None):
     "factory to build EditChoice objects from a XML file"
     from xml_parse import XmlParsingError
     try:
         name = attrs['name']
     except KeyError:
         raise XmlParsingError(_("'name' attribute missing"))
-    if sizer is None or sizeritem is None:
+    if sizeritem is None:
         raise XmlParsingError(_("sizer or sizeritem object cannot be None"))
-    choice = EditChoice(name, parent, [], sizer, pos)
-    #sizer.set_item(choice.pos, proportion=sizeritem.proportion, span=sizeritem.span, flag=sizeritem.flag, border=sizeritem.border)
-    node = Node(choice)
-    choice.node = node
-    if pos is None:
-        common.app_tree.add(node, sizer.node)
-    else:
-        common.app_tree.insert(node, sizer.node, pos-1)
+    choice = EditChoice(name, parent, [], pos)
+    common.app_tree.insert(choice, parent, pos)
     return choice
 
 

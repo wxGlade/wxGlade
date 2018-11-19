@@ -21,9 +21,9 @@ class EditRadioBox(ManagedBase):
     _PROPERTIES = ["Widget", "label", "style", "dimension", "selection", "choices"]
     PROPERTIES = ManagedBase.PROPERTIES + _PROPERTIES + ManagedBase.EXTRA_PROPERTIES
 
-    def __init__(self, name, parent, label, choices, major_dim, style, sizer, pos):
+    def __init__(self, name, parent, label, choices, major_dim, style, pos):
         "Class to handle wxRadioBox objects"
-        ManagedBase.__init__(self, name, 'wxRadioBox', parent, sizer, pos)
+        ManagedBase.__init__(self, name, 'wxRadioBox', parent, pos)
         self.static_box = None
         
         # initialise instance properties
@@ -40,7 +40,7 @@ class EditRadioBox(ManagedBase):
 
     # widget creation / updates ########################################################################################
     def create_widget(self):
-        self.widget = wx.Panel(self.parent.widget, self.id)
+        self.widget = wx.Panel(self.parent_window.widget, self.id)
         self.widget.GetBestSize = self.GetBestSize
         self.widget.SetForegroundColour = self.SetForegroundColour
         self.widget.SetBackgroundColour = self.SetBackgroundColour
@@ -182,37 +182,30 @@ class EditRadioBox(ManagedBase):
         ManagedBase.properties_changed(self, modified)
 
 
-def builder(parent, sizer, pos, number=[1]):
+def builder(parent, pos):
     "factory function for EditRadioBox objects"
-    label = u'radio_box_%d' % number[0]
-    while common.app_tree.has_name(label):
-        number[0] += 1
-        label = u'radio_box_%d' % number[0]
+    name = common.root.get_next_name('radio_box_%d', parent)
     with parent.frozen():
-        radio_box = EditRadioBox(label, parent, label, [[u'choice 1'],], 1, 0, sizer, pos)
-        node = Node(radio_box)
-        radio_box.node = node
+        radio_box = EditRadioBox(label, parent, label, [[u'choice 1'],], 1, 0, pos)
         if parent.widget: radio_box.create()
-    common.app_tree.insert(node, sizer.node, pos-1)
+    common.app_tree.insert(radio_box, parent, pos)
 
 
-def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
+def xml_builder(attrs, parent, sizeritem, pos=None):
     "factory to build EditRadioBox objects from a XML file"
     from xml_parse import XmlParsingError
     try:
         label = attrs['name']
     except KeyError:
         raise XmlParsingError(_("'name' attribute missing"))
-    if sizer is None or sizeritem is None:
+    if sizeritem is None:
         raise XmlParsingError(_("sizer or sizeritem object cannot be None"))
-    radio_box = EditRadioBox(label, parent, '', [], 1, 0, sizer, pos)
+    radio_box = EditRadioBox(label, parent, '', [], 1, 0, pos)
     #size.set_item(radio_box.pos, proportion=sizeritem.proportion, span=sizeritem.span, flag=sizeritem.flag, border=sizeritem.border)
-    node = Node(radio_box)
-    radio_box.node = node
     if pos is None:
-        common.app_tree.add(node, sizer.node)
+        common.app_tree.add(radio_box, parent)
     else:
-        common.app_tree.insert(node, sizer.node, pos-1)
+        common.app_tree.insert(radio_box, parent, pos)
     return radio_box
 
 

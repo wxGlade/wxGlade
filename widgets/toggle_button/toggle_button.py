@@ -24,8 +24,8 @@ class EditToggleButton(ManagedBase, EditStylesMixin, BitmapMixin):
     PROPERTIES = ManagedBase.PROPERTIES + _PROPERTIES + ManagedBase.EXTRA_PROPERTIES
     _PROPERTY_LABELS = {"value":"Clicked"}
 
-    def __init__(self, name, parent, label, sizer, pos):
-        ManagedBase.__init__(self, name, 'wxToggleButton', parent, sizer, pos)
+    def __init__(self, name, parent, label, pos):
+        ManagedBase.__init__(self, name, 'wxToggleButton', parent, pos)
         EditStylesMixin.__init__(self)
 
         # initialise instance variable
@@ -39,7 +39,7 @@ class EditToggleButton(ManagedBase, EditStylesMixin, BitmapMixin):
         self.focus_bitmap    = np.BitmapPropertyD(min_version=(3,0))
 
     def create_widget(self):
-        self.widget = wx.ToggleButton(self.parent.widget, self.id, self.label)
+        self.widget = wx.ToggleButton(self.parent_window.widget, self.id, self.label)
         self.widget.SetValue(self.value)
         self.widget.Bind(wx.EVT_TOGGLEBUTTON, self.on_set_focus, id=self.id)
         BitmapMixin._set_preview_bitmaps(self)
@@ -60,39 +60,28 @@ class EditToggleButton(ManagedBase, EditStylesMixin, BitmapMixin):
         ManagedBase.properties_changed(self, modified)
 
 
-def builder(parent, sizer, pos, number=[1]):
+def builder(parent, pos):
     "factory function for EditToggleButton objects"
-    name = u'button_%d' % number[0]
-    while common.app_tree.has_name(name):
-        number[0] += 1
-        name = u'button_%d' % number[0]
+    name = common.root.get_next_name('button_%d', parent)
     with parent.frozen():
-        button = EditToggleButton(name, parent, name, sizer, pos)
+        button = EditToggleButton(name, parent, name, pos)
         button.properties["style"].set_to_default()
         button.check_defaults()
-        node = Node(button)
-        button.node = node
         if parent.widget: button.create()
-    common.app_tree.insert(node, sizer.node, pos-1)
+    common.app_tree.insert(button, parent, pos)
 
 
-def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
+def xml_builder(attrs, parent, sizeritem, pos=None):
     "factory to build EditToggleButton objects from a XML file"
     from xml_parse import XmlParsingError
     try:
         name = attrs['name']
     except KeyError:
         raise XmlParsingError(_("'name' attribute missing"))
-    if sizer is None or sizeritem is None:
+    if sizeritem is None:
         raise XmlParsingError(_("sizer or sizeritem object cannot be None"))
-    button = EditToggleButton(name, parent, '', sizer, pos)
-    #sizer.set_item(button.pos, proportion=sizeritem.proportion, span=sizeritem.span, flag=sizeritem.flag, border=sizeritem.border)
-    node = Node(button)
-    button.node = node
-    if pos is None:
-        common.app_tree.add(node, sizer.node)
-    else:
-        common.app_tree.insert(node, sizer.node, pos-1)
+    button = EditToggleButton(name, parent, '', pos)
+    common.app_tree.insert(button, parent, pos)
     return button
 
 

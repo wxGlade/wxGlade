@@ -149,7 +149,7 @@ class EditMDIChildFrame(EditFrame):
 
 
 
-def builder(parent, sizer, pos, klass=None, base=None, name=None):
+def builder(parent, pos, klass=None, base=None, name=None):
     "factory function for EditFrame objects"
     if klass is None or base is None:
         import window_dialog
@@ -169,9 +169,7 @@ def builder(parent, sizer, pos, klass=None, base=None, name=None):
         base_class = EditMDIChildFrame
     frame = base_class(name, parent, name, "wxDEFAULT_FRAME_STYLE", klass=klass)
     frame.properties['size'].set( (400,300), activate=True )
-    node = Node(frame)
-    frame.node = node
-    common.app_tree.add(node)
+    common.app_tree.add(frame)
     frame.create()
     frame.widget.Show()
     frame.design.update_label()
@@ -180,7 +178,7 @@ def builder(parent, sizer, pos, klass=None, base=None, name=None):
     import edit_sizers
     edit_sizers._builder(frame, None, 0)
     # now select the frame's node in the tree
-    common.app_tree.select_item(node)
+    common.app_tree.select_item(frame)
 
     if wx.Platform == '__WXMSW__':
         #frame.widget.CenterOnScreen()
@@ -188,7 +186,7 @@ def builder(parent, sizer, pos, klass=None, base=None, name=None):
 
 
 def _make_builder(base_class):
-    def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
+    def xml_builder(attrs, parent, sizeritem, pos=None):
         from xml_parse import XmlParsingError
         try:
             label = attrs['name']

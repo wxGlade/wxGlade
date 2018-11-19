@@ -94,6 +94,7 @@ class EditStatusBar(EditBase, EditStylesMixin):
         self.widget.SetStatusWidths(widths)
 
     def remove(self, *args, **kwds):
+        # entry point from GUI
         if not kwds.get('do_nothing', False):
             self.parent.properties['statusbar'].set(False)
             if self.parent.widget:
@@ -160,7 +161,7 @@ class Dialog(wx.Dialog):
         szr.Fit(self)
 
 
-def builder(parent, sizer, pos):
+def builder(parent, pos):
     "factory function for EditToolBar objects"
 
     dialog = Dialog()
@@ -172,20 +173,16 @@ def builder(parent, sizer, pos):
             number[0] -= 1
         return
 
-    name = 'statusbar_%d' % (number[0] or 1)
-    while common.app_tree.has_name(name):
-        number[0] += 1
-        name = 'statusbar_%d' % number[0]
+    name = common.root.get_next_name('statusbar_%d', parent)
 
     with parent.frozen():
         widget = EditStatusBar(name, klass, parent)
-        widget.node = Node(widget)
-        common.app_tree.add(widget.node)
         if parent.widget: widget.create()
+    common.app_tree.add(widget)
 
 
 
-def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
+def xml_builder(attrs, parent, sizeritem, pos=None):
     "factory to build EditStatusBar objects from a XML file"
     name = attrs.get('name')
     if parent:

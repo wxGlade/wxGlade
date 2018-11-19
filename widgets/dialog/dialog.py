@@ -72,7 +72,7 @@ class EditDialog(TopLevelBase, EditStylesMixin, BitmapMixin):
 
 
 
-def builder(parent, sizer, pos, number=[0]):
+def builder(parent, pos):
     "factory function for EditDialog objects"
     import window_dialog
     base_classes = ['wxDialog', 'wxPanel']
@@ -93,14 +93,12 @@ def builder(parent, sizer, pos, number=[0]):
         is_panel = True
         import panel
         dialog = panel.EditTopLevelPanel(name, parent, klass=klass)
-    node = Node(dialog)
-    dialog.node = node
     dialog.create()
     if base == "wxDialog":
         dialog.widget.Show()
     else:
         dialog.widget.GetParent().Show()  # the panel is created as child of a Frame
-    common.app_tree.add(node)
+    common.app_tree.add(dialog)
     dialog.design.update_label()
     if wx.Platform == '__WXMSW__':
         if not is_panel:
@@ -111,7 +109,7 @@ def builder(parent, sizer, pos, number=[0]):
         w.Raise()
 
 
-def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
+def xml_builder(attrs, parent, sizeritem, pos=None):
     "factory to build EditDialog objects from a XML file"
     from xml_parse import XmlParsingError
     try:

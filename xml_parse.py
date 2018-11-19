@@ -364,18 +364,16 @@ class ClipboardXmlWidgetBuilder(XmlWidgetBuilder):
         they keep info about the destination of the hierarchy of widgets (i.e. the target of the 'paste' command)
       - The first widget built must be hidden and shown again at the end of the operation"""
 
-    def __init__(self, parent, sizer, pos, proportion, span, flag, border):
+    #def __init__(self, parent, sizer, pos, proportion, span, flag, border):
+    def __init__(self, parent, pos, proportion, span, flag, border):
         XmlWidgetBuilder.__init__(self)
         self._renamed = {}
-        if parent is not None:
-            self.parent_node = parent.node
+        self.parent = parent
+        if not parent:
+            # e.g. a frame is pasted: update with the top level names
+            self.have_names = set(child.name for child in common.root.children)
         else:
-            # e.g. a frame is pasted
-            self.parent_node = None
-            self.have_names = set()
-            # update with the top level names
-            for node in common.app_tree.names.keys():
-                self.have_names.add( node.widget.name )
+            self.have_names = set(parent.toplevel_parent.names)
 
         class XmlClipboardObject(object):
             def __init__(self, **kwds):
@@ -395,7 +393,8 @@ class ClipboardXmlWidgetBuilder(XmlWidgetBuilder):
         self._objects.push(fake_parent)
 
         # fake sizer object
-        if sizer:
+        if parent and parent.IS_SIZER:
+            sizer = parent
             fake_sizer = XmlClipboardObject(obj=sizer, parent=parent)
             fake_sizer.in_windows = False
             fake_sizer.in_sizers = True
@@ -418,13 +417,16 @@ class ClipboardXmlWidgetBuilder(XmlWidgetBuilder):
         self._appl_started = True  # no application tag when parsing from the clipboard
 
     def _get_new_name(self, oldname):
-        names = self.parent_node.widget.toplevel_parent.names
+        if not oldname in self.have_names:
+            self.have_names.add(oldname)
+            return oldname
+        #names = self.parent.toplevel_parent.names
         if self._renamed:
             # e.g. if notebook_1 was renamed to notebook_2, try notebook_1_panel_1 -> notebook_2_panel_1 first
             for old,new in self._renamed.items():
                 if oldname.startswith(old):
                     newname = new + oldname[len(old):]
-                    if not newname in names:
+                    if not newname in self.have_names:
                         return newname
 
         newname = oldname
@@ -435,8 +437,8 @@ class ClipboardXmlWidgetBuilder(XmlWidgetBuilder):
                 #i = int(i) + 1
                 i = int(i)
                 template = template + '_%s'
-                if self.parent_node is not None:
-                    while newname in names:
+                if self.parent is not None:
+                    while newname in self.have_names:
                         newname = template%i
                         i += 1
                     return newname
@@ -451,8 +453,8 @@ class ClipboardXmlWidgetBuilder(XmlWidgetBuilder):
 
         # add _copy to the old name
         i = 0
-        if self.parent_node is not None:
-            while newname in names:
+        if self.parent is not None:
+            while newname in self.have_names:
                 if not i:
                     newname = '%s_copy' % oldname
                 else:
@@ -475,10 +477,10 @@ class ClipboardXmlWidgetBuilder(XmlWidgetBuilder):
         if name == 'object' and 'name' in attrs:
             # generate a unique name for the copy
             oldname = str(attrs['name'])
-            if not oldname in self.parent_node.widget.toplevel_parent.names:
-                newname = oldname
-            else:
-                newname = self._get_new_name(oldname)
+            #if not oldname in self.have_names: # self.parent.toplevel_parent.names:
+                #newname = oldname
+            #else:
+            newname = self._get_new_name(oldname)
             attrs = _own_dict(attrs)
             attrs['name'] = newname
             if newname!=oldname:
@@ -507,9 +509,9 @@ class ClipboardXmlWidgetBuilder(XmlWidgetBuilder):
                     # show the first object and update its layout
                     #if self.top_obj.node.parent.widget.is_visible():
                     #    common.app_tree.show_widget(self.top_obj.node)
-                    if self.top_obj.node.parent.widget.widget:
+                    if self.top_obj.parent.widget:
                         #self.top_obj.create_widgets()
-                        common.app_tree.create_widgets(self.top_obj.node)
+                        common.app_tree.create_widgets(self.top_obj)
                 except AttributeError:
                     self._logger.exception( _('Exception caused by obj: %s'), self.top_obj )
                 misc.set_focused_widget(self.top_obj)

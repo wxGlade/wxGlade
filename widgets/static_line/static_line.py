@@ -23,8 +23,8 @@ class EditStaticLine(ManagedBase, EditStylesMixin):
     _PROPERTY_LABELS = {"attribute":'Store as attribute'}
     _PROPERTY_HELP={"attribute":'Store instance as attribute of window class; e.g. self.line_1 = wx.wxStaticLine(...)\n'
                                 'Without this, you can not access the line from your program.'}
-    def __init__(self, name, parent, style, sizer, pos):
-        ManagedBase.__init__(self, name, 'wxStaticLine', parent, sizer, pos)
+    def __init__(self, name, parent, style, pos):
+        ManagedBase.__init__(self, name, 'wxStaticLine', parent, pos)
         EditStylesMixin.__init__(self)
 
         # initialise instance properties
@@ -32,7 +32,7 @@ class EditStaticLine(ManagedBase, EditStylesMixin):
         if style: self.properties["style"].set(style)
 
     def create_widget(self):
-        self.widget = wx.StaticLine(self.parent.widget, self.id, style=self.style)
+        self.widget = wx.StaticLine(self.parent_window.widget, self.id, style=self.style)
         self.widget.Bind(wx.EVT_LEFT_DOWN, self.on_set_focus)
 
     def finish_widget_creation(self):
@@ -58,10 +58,9 @@ editor_style = ''
 dlg_title = _('wxStaticLine')
 box_title = _('Orientation')
 choices = 'wxLI_HORIZONTAL|wxLI_VERTICAL'
-tmpl_label = 'static_line'
 
 
-def builder(parent, sizer, pos, number=[1]):
+def builder(parent, pos):
     "factory function for editor objects from GUI"
     dialog = wcodegen.WidgetStyleSelectionDialog(dlg_title, box_title, choices)
     res = dialog.ShowModal()
@@ -70,40 +69,29 @@ def builder(parent, sizer, pos, number=[1]):
     if res != wx.ID_OK:
         return
 
-    label = '%s_%d' % (tmpl_label, number[0])
-    while common.app_tree.has_name(label):
-        number[0] += 1
-        label = '%s_%d' % (tmpl_label, number[0])
+    name = common.root.get_next_name('static_line_%d', parent)
     with parent.frozen():
-        widget = editor_class(label, parent, style, sizer, pos)
+        widget = editor_class(name, parent, style, pos)
         import edit_sizers
         if isinstance(sizer, edit_sizers.edit_sizers.BoxSizerBase):
             if ( (sizer.orient & wx.VERTICAL   and style=="wxLI_HORIZONTAL") or 
                  (sizer.orient & wx.HORIZONTAL and style=="wxLI_VERTICAL") ):
                 widget.properties["flag"].add("wxEXPAND")
-        node = Node(widget)
-        widget.node = node
         if parent.widget: widget.create()
-    common.app_tree.insert(node, sizer.node, pos-1)
+    common.app_tree.insert(widget, parent, pos)
 
 
-def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
+def xml_builder(attrs, parent, sizeritem, pos=None):
     "Factory to build editor objects from a XML file"
     from xml_parse import XmlParsingError
     try:
         name = attrs['name']
     except KeyError:
         raise XmlParsingError(_("'name' attribute missing"))
-    if sizer is None or sizeritem is None:
+    if sizeritem is None:
         raise XmlParsingError(_("sizer or sizeritem object cannot be None"))
-    widget = editor_class(name, parent, editor_style, sizer, pos)
-    #sizer.set_item(widget.pos, proportion=sizeritem.proportion, span=sizeritem.span, flag=sizeritem.flag, border=sizeritem.border)
-    node = Node(widget)
-    widget.node = node
-    if pos is None:
-        common.app_tree.add(node, sizer.node)
-    else:
-        common.app_tree.insert(node, sizer.node, pos-1)
+    widget = editor_class(name, parent, editor_style, pos)
+    common.app_tree.insert(widget, parent, pos)
     return widget
 
 

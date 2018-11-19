@@ -61,8 +61,8 @@ class CustomWidget(ManagedBase):
     _PROPERTY_LABELS = { 'custom_constructor':'Custom constructor' }
     _PROPERTY_HELP   = { 'custom_constructor':'Specify a custom constructor like a factory method' }
 
-    def __init__(self, name, klass, parent, sizer, pos):
-        ManagedBase.__init__(self, name, klass, parent, sizer, pos)
+    def __init__(self, name, klass, parent, pos):
+        ManagedBase.__init__(self, name, klass, parent, pos)
 
         # initialise instance properties
         cols      = [('Arguments', np.GridProperty.STRING)]
@@ -143,7 +143,7 @@ class Dialog(wx.Dialog):
         self.OK_button.Enable( bool(OK) )
 
 
-def builder(parent, sizer, pos, number=[1]):
+def builder(parent, pos):
     "factory function for CustomWidget objects"
 
     dialog = Dialog()
@@ -152,25 +152,18 @@ def builder(parent, sizer, pos, number=[1]):
     dialog.Destroy()
     if res != wx.ID_OK: return
 
-    name = 'window_%d' % number[0]
-    while common.app_tree.has_name(name):
-        number[0] += 1
-        name = 'window_%d' % number[0]
+    name = common.root.get_next_name('window_%d', parent)
     with parent.frozen():
-        win = CustomWidget(name, klass, parent, sizer, pos)
-        node = Node(win)
-        win.node = node
-
+        win = CustomWidget(name, klass, parent, pos)
         win.properties["arguments"].set( [['$parent'], ['$id']] )  # ,['$width'],['$height']]
         win.properties["proportion"].set(1)
         win.properties["flag"].set("wxEXPAND")
         if parent.widget: win.create()
-
-    common.app_tree.insert(node, sizer.node, pos-1)
+    common.app_tree.insert(win, parent, pos)
     #sizer.set_item(win.pos, 1, wx.EXPAND)
 
 
-def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
+def xml_builder(attrs, parent, sizeritem, pos=None):
     "factory to build CustomWidget objects from a XML file"
     from xml_parse import XmlParsingError
     try:
@@ -180,12 +173,9 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
     if not sizer or not sizeritem:
         raise XmlParsingError(_("sizer or sizeritem object cannot be None"))
     klass = attrs.get("class", "CustomWidget")
-    win = CustomWidget(name, klass, parent, sizer, pos)
+    win = CustomWidget(name, klass, parent, pos)
     #sizer.set_item(win.pos, proportion=sizeritem.proportion, span=sizeritem.span, flag=sizeritem.flag, border=sizeritem.border)
-    node = Node(win)
-    win.node = node
-    if pos is None: common.app_tree.add(node, sizer.node)
-    else: common.app_tree.insert(node, sizer.node, pos-1)
+    common.app_tree.insert(win, parent, pos)
     return win
 
 

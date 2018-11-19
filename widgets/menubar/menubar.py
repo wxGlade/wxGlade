@@ -750,6 +750,7 @@ class EditMenuBar(EditBase, PreviewMixin):
         self._mb.Refresh()
 
     def remove(self, *args, **kwds):
+        # entry point from GUI
         if self.parent is not None:
             self.parent.properties['menubar'].set(False)
             self.parent._menubar = None
@@ -820,7 +821,7 @@ class EditMenuBar(EditBase, PreviewMixin):
 
 
 
-def builder(parent, sizer, pos, number=[0]):
+def builder(parent, pos):
     "factory function for EditMenuBar objects"
     import window_dialog as wd
     klass = 'wxMenuBar' if common.root.language.lower()=='xrc' else 'MyMenuBar'
@@ -846,14 +847,13 @@ def builder(parent, sizer, pos, number=[0]):
     name = dialog.get_next_name("menubar")
     with parent and parent.frozen() or misc.dummy_contextmanager():
         mb = EditMenuBar(name, klass, parent)
-        mb.node = Node(mb)
-        common.app_tree.add(mb.node)
+        common.app_tree.add(mb)
         mb.create()
         mb.widget.Show()
 
 
 
-def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
+def xml_builder(attrs, parent, sizeritem, pos=None):
     "factory to build EditMenuBar objects from a XML file"
     name = attrs.get('name')
     if parent is not None:

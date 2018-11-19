@@ -213,9 +213,9 @@ class EditNotebook(ManagedBase, EditStylesMixin):
     _PROPERTIES = ["Widget", "no_custom_class", "style", "tabs"]
     PROPERTIES = ManagedBase.PROPERTIES + _PROPERTIES + ManagedBase.EXTRA_PROPERTIES
 
-    def __init__(self, name, parent, style, sizer, pos):
+    def __init__(self, name, parent, style, pos):
         name = name or self.next_notebook_name()  # create new and (still) unused notebook name
-        ManagedBase.__init__(self, name, 'wxNotebook', parent, sizer, pos)
+        ManagedBase.__init__(self, name, 'wxNotebook', parent, pos)
         EditStylesMixin.__init__(self)
         self.properties["style"].set(style)
 
@@ -316,7 +316,8 @@ class EditNotebook(ManagedBase, EditStylesMixin):
                 self._is_removing_pages = True
                 self.virtual_sizer.remove_tab(index)            # remove from sizer; does not delete window
                 self.pages[index]._remove()                     # delete the page content without setting the focus
-                common.app_tree.remove(self.pages[index].node)  # remove from tree
+                self.pages[index].tree_remove() + XXX  # this has not been tested
+                common.app_tree.remove(self.pages[index])  # remove from tree
                 del self.pages[index]                           # delete from page list
                 del new_names[index]                            # delete from list of names
                 self._is_removing_pages = False
@@ -445,7 +446,7 @@ choices = 'wxNB_TOP|wxNB_BOTTOM|wxNB_LEFT|wxNB_RIGHT'
 tmpl_label = 'notebook'
 
 
-def builder(parent, sizer, pos, number=[1]):
+def builder(parent, pos):
     "Factory function for editor objects from GUI"
     dialog = wcodegen.WidgetStyleSelectionDialog(dlg_title, box_title, choices)
     res = dialog.ShowModal()
@@ -454,36 +455,28 @@ def builder(parent, sizer, pos, number=[1]):
     if res != wx.ID_OK:
         return
     with parent.frozen():
-        widget = editor_class(None, parent, style, sizer, pos)
-        node = Node(widget)
-        widget.node = node
-        widget.virtual_sizer.node = node
+        widget = editor_class(None, parent, style, pos)
+        #widget.virtual_sizer.node = node
         widget.properties["proportion"].set(1)
         widget.properties["flag"].set("wxEXPAND")
         if parent.widget: widget.create()
-        common.app_tree.insert(node, sizer.node, pos-1)
-    
+        common.app_tree.insert(widget, parent, pos)
+
         widget.insert_tab(0, widget.next_pane_name()) # next_pane_name will be used as label and as pane name, if possible
         #sizer.set_item(widget.pos, 1, wx.EXPAND)
 
 
-def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
+def xml_builder(attrs, parent, sizeritem, pos=None):
     "Factory to build editor objects from a XML file"
     try:
         name = attrs['name']
     except KeyError:
         raise XmlParsingError(_("'name' attribute missing"))
-    if sizer is None or sizeritem is None:
+    if sizeritem is None:
         raise XmlParsingError(_("sizer or sizeritem object cannot be None"))
-    widget = editor_class(name, parent, editor_style, sizer, pos)
+    widget = editor_class(name, parent, editor_style, pos)
     #sizer.set_item(widget.pos)
-    node = Node(widget)
-    widget.node = node
-    widget.virtual_sizer.node = node
-    if pos is None:
-        common.app_tree.add(node, sizer.node)
-    else:
-        common.app_tree.insert(node, sizer.node, pos-1)
+    common.app_tree.insert(widget, parent, pos)
     return widget
 
 

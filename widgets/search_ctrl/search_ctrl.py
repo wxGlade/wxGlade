@@ -22,9 +22,9 @@ class EditSearchCtrl(ManagedBase, EditStylesMixin):
     PROPERTIES = ManagedBase.PROPERTIES + _PROPERTIES + ManagedBase.EXTRA_PROPERTIES
     #recreate_on_style_change = True
 
-    def __init__(self, name, parent, sizer, pos):
+    def __init__(self, name, parent, pos):
         # initialize base classes
-        ManagedBase.__init__(self, name, 'wxSearchCtrl', parent, sizer, pos)
+        ManagedBase.__init__(self, name, 'wxSearchCtrl', parent, pos)
         EditStylesMixin.__init__(self)
 
         # initialize instance properties
@@ -36,7 +36,7 @@ class EditSearchCtrl(ManagedBase, EditStylesMixin):
 
     def create_widget(self):
         value = self.value
-        self.widget = wx.SearchCtrl(self.parent.widget, self.id, value=value, style=self.style)
+        self.widget = wx.SearchCtrl(self.parent_window.widget, self.id, value=value, style=self.style)
         self.widget.ShowSearchButton(self.search_button)
         self.widget.ShowCancelButton(self.cancel_button)
         if self.properties["descriptive_text"].is_active():
@@ -66,39 +66,29 @@ class EditSearchCtrl(ManagedBase, EditStylesMixin):
 
 
 
-def builder(parent, sizer, pos, number=[1]):
+def builder(parent, pos):
     "factory function for EditSearchCtrl objects"
-    name = 'text_ctrl_%d' % number[0]
-    while common.app_tree.has_name(name):
-        number[0] += 1
-        name = 'text_ctrl_%d' % number[0]
+    name = common.root.get_next_name('text_ctrl_%d', parent)
     with parent.frozen():
-        text = EditSearchCtrl(name, parent, sizer, pos)
+        text = EditSearchCtrl(name, parent, pos)
         text.properties["style"].set_to_default()
         text.check_defaults()
-        node = Node(text)
-        text.node = node
         if parent.widget: text.create()
-    common.app_tree.insert(node, sizer.node, pos-1)
+    common.app_tree.insert(text, parent, pos)
 
 
-def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
+def xml_builder(attrs, parent, sizeritem, pos=None):
     "factory function to build EditSearchCtrl objects from a XML file"
     from xml_parse import XmlParsingError
     try:
         name = attrs['name']
     except KeyError:
         raise XmlParsingError(_("'name' attribute missing"))
-    if sizer is None or sizeritem is None:
+    if sizeritem is None:
         raise XmlParsingError(_("sizer or sizeritem object cannot be None"))
-    text = EditSearchCtrl(name, parent, sizer, pos)
+    text = EditSearchCtrl(name, parent, pos)
     #sizer.set_item(text.pos, proportion=sizeritem.proportion, span=sizeritem.span, flag=sizeritem.flag, border=sizeritem.border)
-    node = Node(text)
-    text.node = node
-    if pos is None:
-        common.app_tree.add(node, sizer.node)
-    else:
-        common.app_tree.insert(node, sizer.node, pos-1)
+    common.app_tree.insert(text, parent, pos)
     return text
 
 

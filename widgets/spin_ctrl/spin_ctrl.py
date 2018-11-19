@@ -19,8 +19,8 @@ class EditSpinCtrl(ManagedBase, EditStylesMixin):
     _PROPERTIES = ["Widget", "range", "value", "style"]
     PROPERTIES = ManagedBase.PROPERTIES + _PROPERTIES + ManagedBase.EXTRA_PROPERTIES
 
-    def __init__(self, name, parent, sizer, pos):
-        ManagedBase.__init__(self, name, 'wxSpinCtrl', parent, sizer, pos)
+    def __init__(self, name, parent, pos):
+        ManagedBase.__init__(self, name, 'wxSpinCtrl', parent, pos)
         EditStylesMixin.__init__(self)
 
         # initialise instance properties
@@ -30,9 +30,9 @@ class EditSpinCtrl(ManagedBase, EditStylesMixin):
     def create_widget(self):
         mi,ma = self.properties["range"].get_tuple()
         if self.properties["value"].is_active():
-            self.widget = wx.SpinCtrl(self.parent.widget, self.id, min=mi, max=ma, initial=self.value)
+            self.widget = wx.SpinCtrl(self.parent_window.widget, self.id, min=mi, max=ma, initial=self.value)
         else:
-            self.widget = wx.SpinCtrl(self.parent.widget, self.id, min=mi, max=ma)
+            self.widget = wx.SpinCtrl(self.parent_window.widget, self.id, min=mi, max=ma)
 
     def finish_widget_creation(self, sel_marker_parent=None, re_add=True):
         ManagedBase.finish_widget_creation(self, sel_marker_parent, re_add)
@@ -63,40 +63,30 @@ class EditSpinCtrl(ManagedBase, EditStylesMixin):
         ManagedBase.properties_changed(self, modified)
 
 
-def builder(parent, sizer, pos, number=[1]):
+def builder(parent, pos):
     "factory function for EditSpinCtrl objects"
-    name = 'spin_ctrl_%d' % number[0]
-    while common.app_tree.has_name(name):
-        number[0] += 1
-        name = 'spin_ctrl_%d' % number[0]
+    name = common.root.get_next_name('spin_ctrl_%d', parent)
     with parent.frozen():
-        spin = EditSpinCtrl(name, parent, sizer, pos)
+        spin = EditSpinCtrl(name, parent, pos)
         spin.properties["style"].set_to_default()
         spin.check_defaults()
-        node = Node(spin)
-        spin.node = node
         if parent.widget: spin.create()
-    common.app_tree.insert(node, sizer.node, pos-1)
+    common.app_tree.insert(spin, parent, pos)
 
 
-def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
+def xml_builder(attrs, parent, sizeritem, pos=None):
     "factory function to build EditSpinCtrl objects from a XML file"
     from xml_parse import XmlParsingError
     try:
         name = attrs['name']
     except KeyError:
         raise XmlParsingError(_("'name' attribute missing"))
-    if sizer is None or sizeritem is None:
+    if sizeritem is None:
         raise XmlParsingError(_("sizer or sizeritem object cannot be None"))
     spin = EditSpinCtrl( name, parent, pos )
     spin.properties["value"].set_active(False)
     #sizer.set_item( spin.pos, proportion=sizeritem.proportion, flag=sizeritem.flag, border=sizeritem.border )
-    node = Node(spin)
-    spin.node = node
-    if pos is None:
-        common.app_tree.add(node, sizer.node)
-    else:
-        common.app_tree.insert(node, sizer.node, pos-1)
+    common.app_tree.insert(spin, parent, pos)
     return spin
 
 

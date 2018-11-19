@@ -1432,7 +1432,7 @@ class NameProperty(TextProperty):
         # check whether the name is unique
         if config.preferences.allow_duplicate_names: return
         if name == self.value: return True
-        if common.app_tree.has_name(name,self.owner.node):
+        if name in self.owner.toplevel_parent.names:
             return False
         return True
 

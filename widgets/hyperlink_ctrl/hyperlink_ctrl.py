@@ -30,9 +30,9 @@ class EditHyperlinkCtrl(ManagedBase, EditStylesMixin):
                        "attribute":'Store instance as attribute of window class; e.g. self.bitmap_1 = wx.wxStaticBitmap'
                                    '(...)\nWithout this, you can not access the bitmap from your program.'}
 
-    def __init__(self, name, parent, label, sizer, pos):
+    def __init__(self, name, parent, label, pos):
         # Initialise parent classes
-        ManagedBase.__init__(self, name, 'wxHyperlinkCtrl', parent, sizer, pos)
+        ManagedBase.__init__(self, name, 'wxHyperlinkCtrl', parent, pos)
         EditStylesMixin.__init__(self)
 
         # initialise instance properties
@@ -41,7 +41,7 @@ class EditHyperlinkCtrl(ManagedBase, EditStylesMixin):
         self.attribute = np.CheckBoxProperty(False, default_value=False)
 
     def create_widget(self):
-        self.widget = HyperlinkCtrl(self.parent.widget, self.id, self.label, self.url)
+        self.widget = HyperlinkCtrl(self.parent_window.widget, self.id, self.label, self.url)
 
     def properties_changed(self, modified):
         if not modified or "label" in modified:
@@ -65,40 +65,30 @@ class EditHyperlinkCtrl(ManagedBase, EditStylesMixin):
         return getattr(module, cn)
 
 
-def builder(parent, sizer, pos, number=[1]):
+def builder(parent, pos):
     "factory function for EditHyperlinkCtrl objects"
-    name = u'hyperlink_%d' % number[0]
-    while common.app_tree.has_name(name):
-        number[0] += 1
-        name = u'hyperlink_%d' % number[0]
+    name = common.root.get_next_name('hyperlink_%d', parent)
     with parent.frozen():
-        hyperlink_ctrl = EditHyperlinkCtrl(name, parent, name, sizer, pos)
+        hyperlink_ctrl = EditHyperlinkCtrl(name, parent, name, pos)
         hyperlink_ctrl.properties["style"].set_to_default()
         hyperlink_ctrl.properties["attribute"].set(True)  # allow to modificate it later on...
         hyperlink_ctrl.check_defaults()
-        node = Node(hyperlink_ctrl)
-        hyperlink_ctrl.node = node
         if parent.widget: hyperlink_ctrl.create()
-    common.app_tree.insert(node, sizer.node, pos-1)
+    common.app_tree.insert(hyperlink_ctrl, parent, pos)
 
 
-def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
+def xml_builder(attrs, parent, sizeritem, pos=None):
     "factory to build EditHyperlinkCtrl objects from a XML file"
     from xml_parse import XmlParsingError
     try:
         name = attrs['name']
     except KeyError:
         raise XmlParsingError(_("'name' attribute missing"))
-    if sizer is None or sizeritem is None:
+    if sizeritem is None:
         raise XmlParsingError(_("sizer or sizeritem object cannot be None"))
-    hyperlink_ctrl = EditHyperlinkCtrl(name, parent, "", sizer, pos)
+    hyperlink_ctrl = EditHyperlinkCtrl(name, parent, "", pos)
     #sizer.set_item(hyperlink_ctrl.pos, proportion=sizeritem.proportion, span=sizeritem.span, flag=sizeritem.flag, border=sizeritem.border)
-    node = Node(hyperlink_ctrl)
-    hyperlink_ctrl.node = node
-    if pos is None:
-        common.app_tree.add(node, sizer.node)
-    else:
-        common.app_tree.insert(node, sizer.node, pos-1)
+    common.app_tree.insert(hyperlink_ctrl, parent, pos)
     return hyperlink_ctrl
 
 

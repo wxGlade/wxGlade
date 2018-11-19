@@ -23,8 +23,8 @@ class EditStaticText(ManagedBase, EditStylesMixin):
                                  'Without this, you can not access the label from your program.',
                      "wrap":     'Wrap text to at most the given width.\nThe lines will be broken at word boundaries.'}
 
-    def __init__(self, name, parent, label, sizer, pos):
-        ManagedBase.__init__(self, name, 'wxStaticText', parent, sizer, pos)
+    def __init__(self, name, parent, label, pos):
+        ManagedBase.__init__(self, name, 'wxStaticText', parent, pos)
         EditStylesMixin.__init__(self)
 
         # initialise instance properties
@@ -34,8 +34,8 @@ class EditStaticText(ManagedBase, EditStylesMixin):
 
     def create_widget(self):
         # up to 0.8 GenStaticText was used; it seems that nowadays StaticText handles mouse events on gtk as well
-        #self.widget = wx.lib.stattext.GenStaticText(self.parent.widget, self.id, self.label)
-        self.widget = wx.StaticText(self.parent.widget, self.id, self.label)
+        #self.widget = wx.lib.stattext.GenStaticText(self.parent_window.widget, self.id, self.label)
+        self.widget = wx.StaticText(self.parent_window.widget, self.id, self.label)
         if self.wrap:
             self.widget.Wrap(self.wrap)
 
@@ -60,40 +60,28 @@ class EditStaticText(ManagedBase, EditStylesMixin):
         ManagedBase.properties_changed(self, modified)
 
 
-
-def builder(parent, sizer, pos, number=[1]):
+def builder(parent, pos):
     "factory function for EditStaticText objects"
-    label = u'label_%d' % number[0]
-    while common.app_tree.has_name(label):
-        number[0] += 1
-        label = u'label_%d' % number[0]
+    name = common.root.get_next_name('spin_ctrl_double_%d', parent)
     with parent.frozen():
-        static_text = EditStaticText(label, parent, label, sizer, pos)
+        static_text = EditStaticText(label, parent, label, pos)
         static_text.properties["style"].set_to_default()
         static_text.check_defaults()
-        node = Node(static_text)
-        static_text.node = node
         if parent.widget: static_text.create()
-    common.app_tree.insert(node, sizer.node, pos-1)
+    common.app_tree.insert(static_text, parent, pos)
 
 
-def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
+def xml_builder(attrs, parent, sizeritem, pos=None):
     "factory to build EditStaticText objects from a XML file"
     from xml_parse import XmlParsingError
     try:
         label = attrs['name']
     except KeyError:
         raise XmlParsingError(_("'name' attribute missing"))
-    if sizer is None or sizeritem is None:
+    if sizeritem is None:
         raise XmlParsingError(_("sizer or sizeritem object cannot be None"))
-    static_text = EditStaticText(label, parent, "", sizer, pos)
-    #sizer.set_item(static_text.pos, proportion=sizeritem.proportion, span=sizeritem.span, flag=sizeritem.flag, border=sizeritem.border)
-    node = Node(static_text)
-    static_text.node = node
-    if pos is None:
-        common.app_tree.add(node, sizer.node)
-    else:
-        common.app_tree.insert(node, sizer.node, pos-1)
+    static_text = EditStaticText(label, parent, "", pos)
+    common.app_tree.insert(static_text, parent, pos)
     return static_text
 
 

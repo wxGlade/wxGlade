@@ -116,11 +116,8 @@ class DropTarget(wx.DropTarget):
 
         dst_widget = self.window.find_widget_by_pos(x,y)
 
-        dst_node = dst_widget.node
-
         if _current_drag_source:
             src_widget = _current_drag_source  # was set in begin_drag
-            src_node = src_widget.node
 
             copy = (default==wx.DragCopy)
             if not copy and _current_drag_source is misc.focused_widget:
@@ -155,7 +152,7 @@ class DropTarget(wx.DropTarget):
         else:
             dst_widget.clipboard_paste(data)
 
-        common.app_tree.expand(dst_node)
+        common.app_tree.expand(dst_widget)
         return default
 
     def OnLeave(self):
@@ -273,7 +270,7 @@ def paste(widget):
         misc.error_message("Paste failed")
 
 
-def _paste(parent, sizer, pos, clipboard_data):
+def _paste(parent, pos, clipboard_data):
     "parse XML and insert widget"
     option, span, flag, border, xml_unicode = clipboard2widget( clipboard_data )
     if not xml_unicode: return False
@@ -282,7 +279,7 @@ def _paste(parent, sizer, pos, clipboard_data):
         wx.BeginBusyCursor()
         # widget representation is still unicode, but parser need UTF8
         xml_utf8 = xml_unicode.encode('utf8')
-        parser = xml_parse.ClipboardXmlWidgetBuilder(parent, sizer, pos, option, span, flag, border)
+        parser = xml_parse.ClipboardXmlWidgetBuilder(parent, pos, option, span, flag, border)
         with parent and parent.frozen() or misc.dummy_contextmanager():
             parser.parse_string(xml_utf8)
         common.app_tree.saved = False

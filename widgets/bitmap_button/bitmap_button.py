@@ -21,8 +21,8 @@ class EditBitmapButton(ManagedBase, EditStylesMixin, BitmapMixin):
                    "default", "style"]
     PROPERTIES = ManagedBase.PROPERTIES + _PROPERTIES + ManagedBase.EXTRA_PROPERTIES
 
-    def __init__(self, name, parent, bmp_file, sizer, pos):
-        ManagedBase.__init__(self, name, 'wxBitmapButton', parent, sizer, pos)
+    def __init__(self, name, parent, bmp_file, pos):
+        ManagedBase.__init__(self, name, 'wxBitmapButton', parent, pos)
         EditStylesMixin.__init__(self)
         BitmapMixin.__init__(self)
 
@@ -37,12 +37,12 @@ class EditBitmapButton(ManagedBase, EditStylesMixin, BitmapMixin):
     def create_widget(self):
         bmp = self.get_preview_obj_bitmap()
         #try:
-        self.widget = wx.BitmapButton(self.parent.widget, self.id, bmp, style=self.style)
+        self.widget = wx.BitmapButton(self.parent_window.widget, self.id, bmp, style=self.style)
         self.widget._bitmap_size = tuple(bmp.Size)
         self._set_preview_bitmaps()#include_bitmap=False)
 
         #except AttributeError:
-            #self.widget = wx.BitmapButton(self.parent.widget, self.id, bmp)
+            #self.widget = wx.BitmapButton(self.parent_window.widget, self.id, bmp)
 
     def properties_changed(self, modified=None):
         "update label (and size if label/stockitem have changed)"
@@ -51,43 +51,36 @@ class EditBitmapButton(ManagedBase, EditStylesMixin, BitmapMixin):
         ManagedBase.properties_changed(self, modified)
 
 
-def builder(parent, sizer, pos, number=[1]):
+def builder(parent, pos):
     "factory function for EditBitmapButton objects"
-    name = 'bitmap_button_%s' % number[0]
-    while common.app_tree.has_name(name):
-        number[0] += 1
-        name = 'bitmap_button_%s' % number[0]
+    name = common.root.get_next_name('bitmap_button_%d', parent)
     bitmap = wx.FileSelector(_("Select the image for the button"))
     with parent.frozen():
-        button = EditBitmapButton(name, parent, bitmap, sizer, pos)
+        button = EditBitmapButton(name, parent, bitmap, pos)
         button.properties["style"].set_to_default()
         button.check_defaults()
-        node = Node(button)
-        button.node = node
         if parent.widget: button.create()
-    common.app_tree.insert(node, sizer.node, pos-1)
+    common.app_tree.insert(button, parent, pos)
 
 
-def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
+def xml_builder(attrs, parent, sizeritem, pos=None):
     "factory to build EditBitmapButton objects from a XML file"
     from xml_parse import XmlParsingError
     try:
         label = attrs['name']
     except KeyError:
         raise XmlParsingError(_("'name' attribute missing"))
-    if sizer is None or sizeritem is None:
+    if sizeritem is None:
         raise XmlParsingError(_("sizer or sizeritem object cannot be None"))
-    button = EditBitmapButton(label, parent, '', sizer, pos)
+    button = EditBitmapButton(label, parent, '', pos)
     if attrs.input_file_version and attrs.input_file_version<(0,9):
         # backwards compatibility
         button.properties["style"].set_to_default()
     #sizer.set_item(button.pos, proportion=sizeritem.proportion, span=sizeritem.span, flag=sizeritem.flag, border=sizeritem.border)
-    node = Node(button)
-    button.node = node
     if pos is None:
-        common.app_tree.add(node, sizer.node)
+        common.app_tree.add(button, parent)
     else:
-        common.app_tree.insert(node, sizer.node, pos-1)
+        common.app_tree.insert(button, parent, pos)
     return button
 
 

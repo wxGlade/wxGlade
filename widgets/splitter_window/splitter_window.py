@@ -121,8 +121,8 @@ class EditSplitterWindow(ManagedBase, EditStylesMixin):
                                      "0.5: both windows grow by equal size\n"
                                      "1.0: only left/top window grows"}
 
-    def __init__(self, name, parent, win_1, win_2, orientation, sizer, pos):
-        ManagedBase.__init__(self, name, 'wxSplitterWindow', parent, sizer, pos)
+    def __init__(self, name, parent, win_1, win_2, orientation, pos):
+        ManagedBase.__init__(self, name, 'wxSplitterWindow', parent, pos)
         EditStylesMixin.__init__(self)
 
         # initialise instance properties
@@ -142,7 +142,7 @@ class EditSplitterWindow(ManagedBase, EditStylesMixin):
         self._window_2 = win_2 or SizerSlot(self, self.virtual_sizer, 2, label=labels[1])
 
     def create_widget(self):
-        self.widget = wx.SplitterWindow(self.parent.widget, self.id, style=self.style)
+        self.widget = wx.SplitterWindow(self.parent_window.widget, self.id, style=self.style)
         self.split()
 
     def finish_widget_creation(self):
@@ -258,10 +258,9 @@ editor_style = 'wxSPLIT_VERTICAL'
 dlg_title = _('wxSplitterWindow')
 box_title = _('Orientation')
 choices = 'wxSPLIT_VERTICAL (left/right)|wxSPLIT_HORIZONTAL (top/bottom)'
-tmpl_label = 'window'
 
 
-def builder(parent, sizer, pos, number=[1]):
+def builder(parent, pos):
     "Factory function for EditSplitterWindow objects"
     dialog = wcodegen.WidgetStyleSelectionDialog( dlg_title, box_title, choices, ["Create panels"],[True])
     res = dialog.ShowModal()
@@ -271,27 +270,19 @@ def builder(parent, sizer, pos, number=[1]):
     if res != wx.ID_OK:
         return
 
-    label = '%s_%d' % (tmpl_label, number[0])
-    while common.app_tree.has_name(label):
-        number[0] += 1
-        label = '%s_%d' % (tmpl_label, number[0])
-
+    name = common.root.get_next_name('window_%d', parent)
     with parent.frozen():
-        widget = editor_class(label, parent, None, None, orientation, sizer, pos)
+        widget = editor_class(name, parent, None, None, orientation, pos)
         widget.properties["style"].set_to_default()
         if create_panels:
-            widget._window_1 = pane1 = EditPanel(label + '_pane_1', widget, widget.virtual_sizer, 1)
-            widget._window_2 = pane2 = EditPanel(label + '_pane_2', widget, widget.virtual_sizer, 2)
-    
-        node = Node(widget)
-        widget.node = node
-        widget.virtual_sizer.node = node
-    
+            widget._window_1 = pane1 = EditPanel(name + '_pane_1', widget, widget.virtual_sizer, 1)
+            widget._window_2 = pane2 = EditPanel(name + '_pane_2', widget, widget.virtual_sizer, 2)
+
         widget.properties["proportion"].set(1)
         widget.properties["flag"].set("wxEXPAND")
     
-        common.app_tree.insert(node, sizer.node, pos-1)
-
+        common.app_tree.insert(widget, parent, pos)
+        # XXX to be done...
         if create_panels:
             node2 = Node(widget._window_1)
             node3 = Node(widget._window_2)
@@ -303,30 +294,22 @@ def builder(parent, sizer, pos, number=[1]):
         widget._window_2.node = node3
         common.app_tree.add(node3, widget.node)
 
-    
         if parent.widget: widget.create()
         #sizer.set_item(widget.pos, 1, wx.EXPAND)
 
 
-def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
+def xml_builder(attrs, parent, sizeritem, pos=None):
     "Factory to build editor objects from a XML file"
     from xml_parse import XmlParsingError
     try:
         name = attrs['name']
     except KeyError:
         raise XmlParsingError(_("'name' attribute missing"))
-    if sizer is None or sizeritem is None:
+    if sizeritem is None:
         raise XmlParsingError(_("sizer or sizeritem object cannot be None"))
-    widget = editor_class(name, parent, None, None, editor_style, sizer, pos)
-    #sizer.set_item(widget.pos, proportion=sizeritem.proportion, span=sizeritem.span, flag=sizeritem.flag, border=sizeritem.border)
-    node = Node(widget)
-    widget.node = node
-    widget.virtual_sizer.node = node
 
-    if pos is None:
-        common.app_tree.add(node, sizer.node)
-    else:
-        common.app_tree.insert(node, sizer.node, pos-1)
+    widget = editor_class(name, parent, None, None, editor_style, pos)
+    common.app_tree.insert(widget, parent, pos)
 
     node2 = SlotNode(widget._window_1)
     widget._window_1.node = node2

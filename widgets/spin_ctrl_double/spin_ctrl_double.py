@@ -72,13 +72,9 @@ class EditSpinCtrlDouble(ManagedBase, EditStylesMixin):
         ManagedBase.properties_changed(self, modified)
 
 
-def builder(parent, pos, number=[1]):
+def builder(parent, pos):
     "factory function for EditSpinCtrl objects"
-    name = 'spin_ctrl_double_%d' % number[0]
-    toplevel_parent = parent.toplevel_parent
-    while name in toplevel_parent.names:
-        number[0] += 1
-        name = 'spin_ctrl_double_%d' % number[0]
+    name = common.root.get_next_name('spin_ctrl_double_%d', parent)
     with parent.frozen():
         spin = EditSpinCtrlDouble(name, parent, pos)
         spin.properties["style"].set_to_default()
@@ -99,10 +95,7 @@ def xml_builder(attrs, parent, sizeritem, pos=None):
     spin = EditSpinCtrlDouble( name, parent, pos )
     spin.properties["value"].set_active(False)
     #sizer.set_item( spin.pos, proportion=sizeritem.proportion, flag=sizeritem.flag, border=sizeritem.border )
-    if pos is None:
-        common.app_tree.add(spin, parent)
-    else:
-        common.app_tree.insert(spin, parent, pos)
+    common.app_tree.insert(spin, parent, pos)
     return spin
 
 

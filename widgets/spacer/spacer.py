@@ -18,8 +18,8 @@ class EditSpacer(ManagedBase):
     _PROPERTIES = ["Layout", "width", "height", "pos", "proportion", "border", "flag"]
     PROPERTIES = _PROPERTIES + ManagedBase.EXTRA_PROPERTIES
 
-    def __init__(self, name, parent, width, height, sizer, pos):
-        ManagedBase.__init__(self, name, 'spacer', parent, sizer, pos)
+    def __init__(self, name, parent, width, height, pos):
+        ManagedBase.__init__(self, name, 'spacer', parent, pos)
 
         # initialise instance properties
         self.width  = np.SpinProperty(width,  immediate=True)
@@ -27,7 +27,7 @@ class EditSpacer(ManagedBase):
 
     def create_widget(self):
         style = wx.SIMPLE_BORDER | wx.FULL_REPAINT_ON_RESIZE
-        self.widget = wx.Window(self.parent.widget, self.id, size=(self.width, self.height), style=style)
+        self.widget = wx.Window(self.parent_window.widget, self.id, size=(self.width, self.height), style=style)
         self.widget.GetBestSize = self.widget.GetSize
         self.widget.Bind(wx.EVT_PAINT, self.on_paint)
 
@@ -89,7 +89,7 @@ class _Dialog(wx.Dialog):
 
 
 
-def builder(parent, sizer, pos):
+def builder(parent, pos):
     "factory function for EditSpacer objects"
     dialog = _Dialog(parent)
     res = dialog.ShowModal()
@@ -101,26 +101,19 @@ def builder(parent, sizer, pos):
 
     name = 'spacer'
     with parent.frozen():
-        spacer = EditSpacer( name, parent, width, height, sizer, pos )
-        node = Node(spacer)
-        spacer.node = node
+        spacer = EditSpacer( name, parent, width, height, pos )
         if parent.widget: spacer.create()
-    common.app_tree.insert(node, sizer.node, pos-1)
+    common.app_tree.insert(spacer, parent, pos)
 
 
-def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
+def xml_builder(attrs, parent, sizeritem, pos=None):
     "factory to build EditSpacer objects from a XML file"
     from xml_parse import XmlParsingError
-    if not sizer or not sizeritem:
+    if not sizeritem:
         raise XmlParsingError(_("sizer or sizeritem object cannot be None"))
-    spacer = EditSpacer('spacer', parent, 1, 1, sizer, pos)
+    spacer = EditSpacer('spacer', parent, 1, 1, pos)
     #sizer.set_item(spacer.pos, proportion=sizeritem.proportion, span=sizeritem.span, flag=sizeritem.flag, border=sizeritem.border)
-    node = Node(spacer)
-    spacer.node = node
-    if pos is None:
-        common.app_tree.add(node, sizer.node)
-    else:
-        common.app_tree.insert(node, sizer.node, pos-1)
+    common.app_tree.insert(spacer, parent, pos)
     return spacer
 
 

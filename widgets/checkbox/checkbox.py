@@ -23,9 +23,9 @@ class EditCheckBox(ManagedBase, EditStylesMixin):
     # Convert the position of "checked" RadioProperty to wxCheckBoxState
     index2state = { 0: wx.CHK_UNCHECKED, 1: wx.CHK_CHECKED, 2: wx.CHK_UNDETERMINED }
 
-    def __init__(self, name, parent, label, sizer, pos):
+    def __init__(self, name, parent, label, pos):
         "Class to handle wxCheckBox objects"
-        ManagedBase.__init__(self, name, 'wxCheckBox', parent, sizer, pos)
+        ManagedBase.__init__(self, name, 'wxCheckBox', parent, pos)
         EditStylesMixin.__init__(self)
 
         # initialise instance properties
@@ -37,7 +37,7 @@ class EditCheckBox(ManagedBase, EditStylesMixin):
         self.value = np.IntRadioProperty(0, values, labels, columns=3, default_value=0, name="checked") # rename to value?
 
     def create_widget(self):
-        self.widget = wx.CheckBox(self.parent.widget, self.id, self.label)
+        self.widget = wx.CheckBox(self.parent_window.widget, self.id, self.label)
         self.widget.SetValue(self.value)
         def on_checkbox(event):
             value = 1 if event.IsChecked() else 0
@@ -77,39 +77,28 @@ class EditCheckBox(ManagedBase, EditStylesMixin):
 
 
 
-def builder(parent, sizer, pos, number=[1]):
+def builder(parent, pos):
     "factory function for EditCheckBox objects"
-    label = 'checkbox_%d' % number[0]
-    while common.app_tree.has_name(label):
-        number[0] += 1
-        label = 'checkbox_%d' % number[0]
+    name = common.root.get_next_name('checkbox_%d', parent)
     with parent.frozen():
-        checkbox = EditCheckBox(label, parent, label, sizer, pos)
+        checkbox = EditCheckBox(name, parent, name, pos)
         checkbox.properties["style"].set_to_default()
         checkbox.check_defaults()
-        node = Node(checkbox)
-        checkbox.node = node
         if parent.widget: checkbox.create()
-    common.app_tree.insert(node, sizer.node, pos-1)
+    common.app_tree.insert(checkbox, parent, pos)
 
 
-def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
+def xml_builder(attrs, parent, sizeritem, pos=None):
     "factory to build EditCheckBox objects from a XML file"
     from xml_parse import XmlParsingError
     try:
         label = attrs['name']
     except KeyError:
         raise XmlParsingError(_("'name' attribute missing"))
-    if sizer is None or sizeritem is None:
+    if sizeritem is None:
         raise XmlParsingError(_("sizer or sizeritem object cannot be None"))
-    checkbox = EditCheckBox( label, parent, "", sizer, pos)
-    #sizer.set_item(checkbox.pos, proportion=sizeritem.proportion, span=sizeritem.span, flag=sizeritem.flag, border=sizeritem.border)
-    node = Node(checkbox)
-    checkbox.node = node
-    if pos is None:
-        common.app_tree.add(node, sizer.node)
-    else:
-        common.app_tree.insert(node, sizer.node, pos-1)
+    checkbox = EditCheckBox( label, parent, "", pos)
+    common.app_tree.insert(checkbox, parent, pos)
     return checkbox
 
 

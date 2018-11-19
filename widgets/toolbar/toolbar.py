@@ -638,6 +638,7 @@ class EditToolBar(EditBase, PreviewMixin, EditStylesMixin, BitmapMixin):
     ####################################################################################################################
 
     def remove(self, *args, **kwds):
+        # entry point from GUI
         if self.parent is not None:
             self.parent.properties['toolbar'].set(False)
             self.parent._toolbar = None
@@ -725,7 +726,7 @@ class EditToolBar(EditBase, PreviewMixin, EditStylesMixin, BitmapMixin):
 
 
 
-def builder(parent, sizer, pos):
+def builder(parent, pos):
     "factory function for EditToolBar objects"
     import window_dialog as wd
     klass = 'wxToolBar' if common.root.language.lower()=='xrc' else 'MyToolBar'
@@ -733,7 +734,7 @@ def builder(parent, sizer, pos):
     # if e.g. on a frame, suggest the user to add the tool bar to this
     toplevel_widget = None
     if misc.focused_widget is not None and misc.focused_widget.node.parent:
-        toplevel_widget = common.app_tree._find_toplevel(misc.focused_widget.node).widget
+        toplevel_widget = common.app_tree._find_toplevel(misc.focused_widget).widget
         if not "toolbar" in toplevel_widget.properties:
             toplevel_widget = None
     if toplevel_widget is not None:
@@ -751,13 +752,12 @@ def builder(parent, sizer, pos):
     name = dialog.get_next_name("toolbar")
     with parent and parent.frozen() or misc.dummy_contextmanager():
         tb = EditToolBar(name, klass, parent)
-        tb.node = Node(tb)
-        common.app_tree.add(tb.node)
+        common.app_tree.add(tb)
         if parent and parent.widget: tb.create()
 
 
 
-def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
+def xml_builder(attrs, parent, sizeritem, pos=None):
     "factory to build EditToolBar objects from a XML file"
     name = attrs.get('name')
     if parent is not None:

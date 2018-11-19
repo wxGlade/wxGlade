@@ -24,8 +24,8 @@ class EditStaticBitmap(ManagedBase, EditStylesMixin, BitmapMixin):
     _PROPERTY_HELP = {"attribute":'Store instance as attribute of window class; e.g. self.bitmap_1 = wx.wxStaticBitmap'
                                   '(...)\nWithout this, you can not access the bitmap from your program.'}
 
-    def __init__(self, name, parent, bmp_file, sizer, pos):
-        ManagedBase.__init__(self, name, 'wxStaticBitmap', parent, sizer, pos)
+    def __init__(self, name, parent, bmp_file, pos):
+        ManagedBase.__init__(self, name, 'wxStaticBitmap', parent, pos)
         EditStylesMixin.__init__(self)
 
         # initialise instance properties
@@ -35,7 +35,7 @@ class EditStaticBitmap(ManagedBase, EditStylesMixin, BitmapMixin):
 
     def create_widget(self):
         bmp = self.get_preview_obj_bitmap()
-        self.widget = wx.StaticBitmap(self.parent.widget, self.id, bmp)
+        self.widget = wx.StaticBitmap(self.parent_window.widget, self.id, bmp)
         if wx.Platform == '__WXMSW__':
             def get_best_size():
                 bmp = self.widget.GetBitmap()
@@ -56,40 +56,29 @@ class EditStaticBitmap(ManagedBase, EditStylesMixin, BitmapMixin):
         ManagedBase.properties_changed(self, modified)
 
 
-def builder(parent, sizer, pos, number=[1]):
+def builder(parent, pos):
     "factory function for EditStaticBitmap objects"
-    name = 'bitmap_%s' % number[0]
-    while common.app_tree.has_name(name):
-        number[0] += 1
-        name = 'bitmap_%s' % number[0]
+    name = common.root.get_next_name('bitmap_%d', parent)
     bitmap = wx.FileSelector(_("Select the image"))
     with parent.frozen():
-        static_bitmap = EditStaticBitmap(name, parent, bitmap, sizer, pos)
+        static_bitmap = EditStaticBitmap(name, parent, bitmap, pos)
         static_bitmap.properties["style"].set_to_default()
         static_bitmap.check_defaults()
-        node = Node(static_bitmap)
-        static_bitmap.node = node
         if parent.widget: static_bitmap.create()
-    common.app_tree.insert(node, sizer.node, pos-1)
+    common.app_tree.insert(static_bitmap, parent, pos)
 
 
-def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
+def xml_builder(attrs, parent, sizeritem, pos=None):
     "factory to build EditStaticBitmap objects from a XML file"
     from xml_parse import XmlParsingError
     try:
         label = attrs['name']
     except KeyError:
         raise XmlParsingError(_("'name' attribute missing"))
-    if sizer is None or sizeritem is None:
+    if sizeritem is None:
         raise XmlParsingError(_("sizer or sizeritem object cannot be None"))
-    bitmap = EditStaticBitmap(label, parent, '', sizer, pos)
-    #sizer.set_item(bitmap.pos, proportion=sizeritem.proportion, span=sizeritem.span, flag=sizeritem.flag, border=sizeritem.border)
-    node = Node(bitmap)
-    bitmap.node = node
-    if pos is None:
-        common.app_tree.add(node, sizer.node)
-    else:
-        common.app_tree.insert(node, sizer.node, pos-1)
+    bitmap = EditStaticBitmap(label, parent, '', pos)
+    common.app_tree.insert(bitmap, parent, pos)
     return bitmap
 
 

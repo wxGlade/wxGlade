@@ -264,7 +264,7 @@ class WindowBase(EditBase):
     CHILDREN = 1  # sizer or something else
 
     def __init__(self, name, klass, parent, pos=None):
-        EditBase.__init__(self, name, klass, parent, pos)
+        EditBase.__init__(self, name, klass, parent, pos=pos)
 
         self.window_id = np.TextPropertyD( "wxID_ANY", name="id", default_value=None )
         self.size      = np.SizePropertyD( "-1, -1", default_value="-1, -1" )
@@ -293,6 +293,8 @@ class WindowBase(EditBase):
         self.disabled   = np.CheckBoxProperty(False, default_value=False)
         self.focused    = np.CheckBoxProperty(False, default_value=False)
         self.hidden     = np.CheckBoxProperty(False, default_value=False)
+
+        self.toplevel_parent.parent.check_codegen(self)
 
     def finish_widget_creation(self, *args, **kwds):
         # store the actual values of foreground, background and font as default, if the property is deactivated later
@@ -606,6 +608,9 @@ class ManagedBase(WindowBase):
         return self.parent.free_slot(self.pos)
 
     def remove(self):
+        # entry point from GUI?
+        common.root.saved = False  # update the status of the app
+
         with self.frozen():
             slot = self._remove()
         misc.set_focused_widget(slot)
@@ -819,7 +824,7 @@ class TopLevelBase(WindowBase, PreviewMixin):
             self.on_set_focus(event)  # default behaviour: call show_properties
             return
         if self.widget: self.widget.SetCursor(wx.STANDARD_CURSOR)
-        common.widgets[common.widget_to_add](self, None, None)
+        common.widgets[common.widget_to_add](self, None)
         if event is None or not misc.event_modifier_copy(event):
             common.adding_widget = common.adding_sizer = False
             common.widget_to_add = None

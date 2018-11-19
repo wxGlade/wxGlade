@@ -71,6 +71,18 @@ class EditRoot(np.PropertyOwner):
     IS_ROOT = True
     parent = None
 
+    def has_ancestor(self, node):
+        return False
+
+    def has_name(self, widget=None):
+        # XXX check whether this is still used
+        if widget is None:
+            for c in self.children:
+                if name in c.names:
+                    return True
+            return False
+        return name in widget.toplevel_parent.names
+
     def add_item(self, child, pos=None):
         # XXX pos is always None at the moment
         if pos is None:
@@ -118,6 +130,13 @@ class EditRoot(np.PropertyOwner):
         output.extend( common.format_xml_tag( u'application', inner_xml, is_xml=True, **attrs ) )
 
         return class_names
+
+    def tree_remove(self):
+        # clear all
+        for n in self.children:
+            n.tree_remove()
+        #self.root.children = None
+
 
 
 class Application(EditRoot):
@@ -227,6 +246,8 @@ class Application(EditRoot):
         self.widget = None  # always None, just to keep interface to Tree similar to other editors
         self.children = []  # the toplevel windows
         self.node = None
+        
+        self._NUMBERS = {}
 
     def set_for_version(self, value):
         self.for_version = self.for_version_prop.get_string_value()
@@ -395,6 +416,7 @@ class Application(EditRoot):
         p["top_window"].set_choices([])
         # do not reset language, but call set_language anyway to update the wildcard of the file dialog
         self._set_language()
+        self._NUMBERS.clear()
 
     def init(self):
         "initializes the attributes of the app before loading a file"
@@ -708,4 +730,15 @@ class Application(EditRoot):
     def clipboard_paste(self, clipboard_data):
         "Insert a widget from the clipboard to the current destination"
         import clipboard
-        return clipboard._paste(None, None, 0, clipboard_data)
+        return clipboard._paste(None, 0, clipboard_data)
+
+    ####################################################################################################################
+    def get_next_name(self, fmt, parent):
+        names = parent.toplevel_parent.names
+        number = self._NUMBERS.get(fmt, 1)
+        while True:
+            name = fmt % number
+            if not name in names:
+                self._NUMBERS[fmt] = number
+                return name
+            number += 1

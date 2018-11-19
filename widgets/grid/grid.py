@@ -175,9 +175,9 @@ class EditGrid(ManagedBase):
     #_SELECTION_MODES = { 'wxGrid.wxGridSelectCells':0, 'wxGrid.wxGridSelectRows':1, 'wxGrid.wxGridSelectColumns':2 }
     _SELECTION_MODES = ('wxGrid.wxGridSelectCells', 'wxGrid.wxGridSelectRows', 'wxGrid.wxGridSelectColumns')
 
-    def __init__(self, name, parent, sizer, pos):
+    def __init__(self, name, parent, pos):
         "Class to handle wxGrid objects"
-        ManagedBase.__init__(self, name, 'wxGrid', parent, sizer, pos)
+        ManagedBase.__init__(self, name, 'wxGrid', parent, pos)
 
         # instance properties
         self.create_grid = np.CheckBoxProperty(True)
@@ -203,7 +203,7 @@ class EditGrid(ManagedBase):
                                                columns=3)
 
     def create_widget(self):
-        self.widget = Grid(self.parent.widget, self.id, (200, 200))
+        self.widget = Grid(self.parent_window.widget, self.id, (200, 200))
         #self.widget.CreateGrid(self.rows_number, len(self.columns))
         self.widget.CreateGrid(len(self.rows), len(self.columns))
 
@@ -315,40 +315,29 @@ class EditGrid(ManagedBase):
 
 
 
-def builder(parent, sizer, pos, number=[1]):
+def builder(parent, pos):
     "factory function for EditGrid objects"
-    label = 'grid_%d' % number[0]
-    while common.app_tree.has_name(label):
-        number[0] += 1
-        label = 'grid_%d' % number[0]
+    name = common.root.get_next_name('grid_%d', parent)
     with parent.frozen():
-        grid = EditGrid(label, parent, sizer, pos)
+        grid = EditGrid(name, parent, pos)
         # A grid should be wx.EXPANDed and 'option' should be 1, or you can't see it.
         grid.properties["proportion"].set(1)
         grid.properties["flag"].set("wxEXPAND")
-        node = Node(grid)
-        grid.node = node
         if parent.widget: grid.create()
-    common.app_tree.insert(node, sizer.node, pos-1)
+    common.app_tree.insert(grid, parent, pos)
 
 
-def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
+def xml_builder(attrs, parent, sizeritem, pos=None):
     "factory to build EditGrid objects from a XML file"
     from xml_parse import XmlParsingError
     try:
         label = attrs['name']
     except KeyError:
         raise XmlParsingError(_("'name' attribute missing"))
-    if sizer is None or sizeritem is None:
+    if sizeritem is None:
         raise XmlParsingError(_("sizer or sizeritem object cannot be None"))
-    grid = EditGrid(label, parent, sizer, pos)
-    #sizer.set_item(grid.pos, proportion=sizeritem.proportion, span=sizeritem.span, flag=sizeritem.flag, border=sizeritem.border)
-    node = Node(grid)
-    grid.node = node
-    if pos is None:
-        common.app_tree.add(node, sizer.node)
-    else:
-        common.app_tree.insert(node, sizer.node, pos-1)
+    grid = EditGrid(label, parent, pos)
+    common.app_tree.insert(grid, parent, pos)
     return grid
 
 

@@ -23,8 +23,8 @@ class EditComboBox(ManagedBase, EditStylesMixin):
 
     update_widget_style = False
 
-    def __init__(self, name, parent, choices, sizer, pos):
-        ManagedBase.__init__(self, name, 'wxComboBox', parent, sizer, pos)
+    def __init__(self, name, parent, choices, pos):
+        ManagedBase.__init__(self, name, 'wxComboBox', parent, pos)
         EditStylesMixin.__init__(self)
 
         # initialise instance properties
@@ -34,7 +34,7 @@ class EditComboBox(ManagedBase, EditStylesMixin):
     def create_widget(self):
         choices = [c[0] for c in self.choices]
         selection = self.selection
-        self.widget = wx.ComboBox(self.parent.widget, self.id, choices=choices)
+        self.widget = wx.ComboBox(self.parent_window.widget, self.id, choices=choices)
         self.widget.Bind(wx.EVT_SET_FOCUS, self.on_set_focus)
         self.widget.SetSelection(selection)
 
@@ -70,40 +70,29 @@ class EditComboBox(ManagedBase, EditStylesMixin):
         ManagedBase.properties_changed(self, modified)
 
 
-def builder(parent, sizer, pos, number=[1]):
+def builder(parent, pos):
     "factory function for EditComboBox objects"
-    name = 'combo_box_%d' % number[0]
-    while common.app_tree.has_name(name):
-        number[0] += 1
-        name = 'combo_box_%d' % number[0]
+    name = common.root.get_next_name('combo_box_%d', parent)
     with parent.frozen():
-        combo = EditComboBox(name, parent, [], sizer, pos)
+        combo = EditComboBox(name, parent, [], pos)
         combo.properties["style"].set_to_default()
         combo.check_defaults()
-        node = Node(combo)
-    #    sizer.set_item(pos, size=choice.GetBestSize())
-        combo.node = node
         if parent.widget: combo.create()
-    common.app_tree.insert(node, sizer.node, pos-1)
+    common.app_tree.insert(combo, parent, pos)
 
 
-def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
+def xml_builder(attrs, parent, sizeritem, pos=None):
     "factory to build EditComboBox objects from a XML file"
     from xml_parse import XmlParsingError
     try:
         name = attrs['name']
     except KeyError:
         raise XmlParsingError(_("'name' attribute missing"))
-    if sizer is None or sizeritem is None:
+    if sizeritem is None:
         raise XmlParsingError(_("sizer or sizeritem object cannot be None"))
-    combo = EditComboBox(name, parent, [], sizer, pos)
+    combo = EditComboBox(name, parent, [], pos)
     #sizer.set_item(combo.pos, proportion=sizeritem.proportion, span=sizeritem.span, flag=sizeritem.flag, border=sizeritem.border)
-    node = Node(combo)
-    combo.node = node
-    if pos is None:
-        common.app_tree.add(node, sizer.node)
-    else:
-        common.app_tree.insert(node, sizer.node, pos-1)
+    common.app_tree.insert(combo, parent, pos)
     return combo
 
 
