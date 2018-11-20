@@ -13,90 +13,7 @@ import misc, common, compat, config, clipboard
 import edit_sizers, application
 
 
-class Tree(object):
-    "A class to represent a hierarchy of widgets"
-
-    def __init__(self, app=None):
-        # initialise instance logger
-        self._logger = logging.getLogger(self.__class__.__name__)
-        self.root = app  # root
-
-    #def remove(self, node=None):
-        #if node is not None:
-            #node.tree_clear_name_rec()
-            #node.node_remove()
-        #elif self.root.children:
-            ## clear all
-            #for n in self.root.children:
-                #n.remove()
-            #self.root.children = None
-
-    def _find_widget(self, widget, node):
-        if node.widget is None or node.widget.widget is None:
-            return
-        if widget is node.widget.widget: return node
-        button = getattr(node.widget.widget, "_btn", None)
-        if button is not None and widget is button: return node
-        if hasattr(node.widget.widget, "GetStaticBox"):
-            if widget is node.widget.widget.GetStaticBox(): return node
-        if node.children:
-            for child in node.children:
-                found = self._find_widget(widget, child)
-                if found is not None:
-                    return found
-        return None
-
-    def find_widget(self, widget, node=None):
-        # returns node
-        nodes = [node] if node is not None else self.root.children
-        for node in nodes:
-            found = self._find_widget(widget, node)
-            if found is not None:
-                return found
-
-    def _find_widgets_by_classnames(self, node, classnames):
-        ret = []
-        if node.widget.__class__.__name__ in classnames:
-            ret.append(node.widget)
-        if node.children:
-            for c in node.children:
-                ret += self._find_widgets_by_classnames(c,classnames)
-        return ret
-
-    def find_widgets_by_classnames(self, node, classnames):
-        if isinstance(classnames, str):
-            classnames = set([classnames])
-        return self._find_widgets_by_classnames(node, classnames)
-
-    def _prn(self, node, level):
-        if isinstance(node, SlotNode):
-            print("  "*level, "SLOT")
-        else:
-            print("  "*level, node.widget)
-            if node.children:
-                for c in node.children:
-                    self._prn(c, level+1)
-
-    def prn(self, start_node=None):
-        "print structure to stdout for debugging"
-        if start_node is None: start_node = self.root
-        self._prn(start_node, 0)
-
-    def clear(self):
-        # delete all children; call common.root.new() or .init() afterwards
-        self.skip_select = True
-        if self.root.children:
-            while self.root.children:
-                c = self.root.children[-1]
-                if c: c.remove()
-        self.skip_select = False
-
-    def refresh(self, node, refresh_label=True, refresh_image=True):
-        # nothing to, do when there is no GUI
-        pass
-
-
-class WidgetTree(wx.TreeCtrl, Tree):
+class WidgetTree(wx.TreeCtrl):#, Tree):
     "Tree with the ability to display the hierarchy of widgets"
     images = {} # Dictionary of icons of the widgets displayed
     _logger = None # Class specific logging instance
@@ -108,7 +25,7 @@ class WidgetTree(wx.TreeCtrl, Tree):
         elif wx.Platform == '__WXMAC__':  style &= ~wx.TR_ROW_LINES
         wx.TreeCtrl.__init__(self, parent, -1, style=style)
         self.cur_widget = None  # reference to the selected widget
-        Tree.__init__(self, application)
+        self.root = application
         image_list = wx.ImageList(21, 21)
         image_list.Add(wx.Bitmap(os.path.join(config.icons_path, 'application.xpm'), wx.BITMAP_TYPE_XPM))
         for w in WidgetTree.images:
@@ -304,7 +221,7 @@ class WidgetTree(wx.TreeCtrl, Tree):
             modified.add("title")
         if modified:
             widget.properties_changed(modified)
-            self.app.saved = False  # update the status of the app
+            self.root.saved = False  # update the status of the app
         if new_tab:
             tabs_p.previous_value = tabs_p.value
             tabs_p.set(new_tabs, notify=True)
@@ -402,6 +319,7 @@ class WidgetTree(wx.TreeCtrl, Tree):
         if wx.Platform == "__WXMSW__":
             self.SetItemBold(item, True)
             self.SetItemTextColour(item, wx.BLUE)
+
     def set_current_widget(self, widget):
         # interface from common.set_focused_widget
         if widget is None or widget is self.cur_widget: return
@@ -604,26 +522,6 @@ class WidgetTree(wx.TreeCtrl, Tree):
         if last_pos and last_pos==(x,y) and not self.IsExpanded(node.item): self.Expand(node.item)
         return node
 
-    #def change_node(self, node, widget, new_node=None):
-        ## This is only called from 'free_slot' and similar, where new_node is a SlotNode
-        #if new_node is not None:
-            ## this is a bit of a hack to replace the old widget node with a SlotNode
-            ## XXX probably it would be better to modify the Node class to take care of SizerSlot instances
-            #parent = new_node.parent = node.parent
-            #index = parent.children.index(node)
-            #parent.children[index] = new_node
-            #new_node.item = node.item
-            #self._SetItemData(node.item, new_node)
-            #old_children = node.children
-            #self.remove(node, delete=False)  # don't delete the node, as we just want to modify it
-            #for c in old_children or []:     # but the children
-                #self.Delete(c.item)
-            #node = new_node
-        ##Tree.change_node(self, node, widget)
-        #widget.item = node.item
-        #node.item = None
-        #self.refresh(widget)
-
     def change_node(self, node, widget):
         # This is only called from 'free_slot' and similar, where new_node is a SlotNode
 
@@ -640,47 +538,27 @@ class WidgetTree(wx.TreeCtrl, Tree):
         node.item = None
         self.refresh(widget)
 
-    def _append_rec(self, parent, node):
-        # helper for the next method
-        idx = WidgetTree.images.get(node.widget.__class__.__name__, -1)
-        node.item = self.AppendItem( parent.item, self._build_label(node), idx )
-        self._SetItemData(node.item, node)
-        if node.children:
-            for c in node.children:
-                self._append_rec(node, c)
-        self.Expand(node.item)
-
     def get_selected_path(self, w=None):
         """returns a list of widget names, from the toplevel to the selected one
         Example: ['frame_1', 'sizer_1', 'panel_1', 'sizer_2', 'button_1']
                  if button_1 is the currently selected widget"""
         ret = []
         if w is None: w = self.cur_widget
-        oldw = None
-        while w is not None:
-            oldw = w
-            if isinstance(w, edit_sizers.SizerSlot):
+        oldw = None  # the toplevel, to get the position
+        while w:
+            if w.IS_TOPLEVEL: oldw = w
+            if w.IS_SLOT:
                 ret.append("SLOT %d"%w.pos)
             else:
                 ret.append(w.name)
-            sizer = getattr(w, 'sizer', None)
-            if getattr(w, 'parent', "") is None:
-                w = w.parent
-            elif sizer is not None and not sizer.is_virtual():
-                w = sizer
-            else:
-                if isinstance(w, edit_sizers.SizerBase):
-                    w = w.window
-                elif isinstance(w, application.Application):
-                    w = None
-                else:
-                    w = w.parent
+            w = w.parent
         ret.reverse()
         # ALB 2007-08-28: remember also the position of the toplevel window in the selected path
         if oldw is not None and oldw.widget is not None:
             assert oldw.widget
             pos = misc.get_toplevel_parent(oldw.widget).GetPosition()
             ret[0] = (ret[0], pos)
+        print("selected path", ret)
         return ret
 
     def get_widget_path(self, w):
@@ -688,37 +566,22 @@ class WidgetTree(wx.TreeCtrl, Tree):
         if isinstance(ret[0], tuple):
             ret[0] = ret[0][0]
         return tuple(ret)
-    def find_widget_from_path(self, path):
-        pass
 
     def select_path(self, path):
         "sets the selected widget from a path_list, which should be in the form returned by get_selected_path"
-        index = 0
-        item, cookie = self._get_first_child(self.GetRootItem())
-        itemok = parent = pos = None
-        while item.IsOk() and index < len(path):
-            widget = self._GetItemData(item).widget
-            name = path[index]
-            if index == 0 and isinstance(name, tuple):
-                name, pos = name
-            if widget.name == name:
-                #self.EnsureVisible(item)
-                itemok = item
-                if parent is None:
-                    parent = self._GetItemData(itemok)
-                self._set_cur_widget(widget)
-                item, cookie = self._get_first_child(item)
-                index += 1
-            else:
-                item = self.GetNextSibling(item)
-        if itemok is not None:
-            node = self._GetItemData(itemok)
-            if parent is not None:
-                self._show_widget_toplevel(parent)
-                common.app_tree.expand(parent)
-                if pos is not None:
-                    misc.get_toplevel_parent(parent.widget).SetPosition(pos)
-            self.select_item(node)
+        widget = common.root.find_widget_from_path(path)
+        if not widget: return
+        item = widget.item
+        self._set_cur_widget(widget)
+        self.expand(widget)
+        self.select_item(widget)
+        if widget.IS_ROOT: return
+        self._show_widget_toplevel(widget.toplevel_parent)
+
+        if len(path)>=2 and isinstance(path[0], tuple) and widget.widget:
+            # a position
+            pos = path[0][1]
+            misc.get_toplevel_parent(widget.widget).SetPosition(pos)
 
     def _get_first_child(self, item):
         return self.GetFirstChild(item)

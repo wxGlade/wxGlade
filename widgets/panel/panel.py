@@ -232,8 +232,8 @@ class EditTopLevelPanel(PanelBase, TopLevelBase):
 
     PROPERTIES = TopLevelBase.PROPERTIES + PanelBase._PROPERTIES + TopLevelBase.EXTRA_PROPERTIES
 
-    def __init__(self, name, parent, id, klass='wxPanel', style='wxTAB_TRAVERSAL'):
-        TopLevelBase.__init__(self, name, klass, parent, id)
+    def __init__(self, name, parent, klass='wxPanel', style='wxTAB_TRAVERSAL'):
+        TopLevelBase.__init__(self, name, klass, parent)
         PanelBase.__init__(self, style)
         self.skip_on_size = False
 

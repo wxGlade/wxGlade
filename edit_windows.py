@@ -902,17 +902,40 @@ class TopLevelBase(WindowBase, PreviewMixin):
         return ret
 
     def find_widget_by_pos(self, x,y):
-        "find the widget at a given position"
+        "find the Edit item at a given position"
         if self.widget is None: return None
         x0,y0,width,height = self.widget.ClientRect
         found = self._find_widget_by_pos(self.widget, x-x0,y-y0)
-        if not found: return None
-        node = None
-        while found and node is None:
-            node = common.app_tree.find_widget(found.pop(-1))
-        if node is None: return None
-        return node.widget
+        #node = common.app_tree.find_widget(found.pop(-1))
+        while found:
+            w = self._find_widget( found.pop(-1), self )
+            if w: return w
+        return None
 
+    def _find_widget(self, widget, node):
+        # wx widget to Edit item
+        if node.widget is None:
+            return
+        if widget is node.widget: return node
+        button = getattr(node, "_btn", None)
+        if button is not None and widget is button: return node
+        if hasattr(node.widget, "GetStaticBox"):
+            if widget is node.widget.GetStaticBox(): return node
+        if node.children:
+            for child in node.children:
+                found = self._find_widget(widget, child)
+                if found is not None:
+                    return found
+        return None
+
+    # searches from root
+    #def find_widget(self, widget, node=None):
+        ## returns node
+        #nodes = [node] if node is not None else self.root.children
+        #for node in nodes:
+            #found = self._find_widget(widget, node)
+            #if found is not None:
+                #return found        
 
 
 class EditStylesMixin(np.PropertyOwner):

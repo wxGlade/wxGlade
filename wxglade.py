@@ -166,7 +166,7 @@ def _guiless_open_app(filename):
 
     start = time.clock()
 
-    common.app_tree.clear()
+    common.root.clear()
     common.root.init()
 
     try:
@@ -222,7 +222,7 @@ def _guiless_open_app(filename):
             infile.close()
 
         if error_msg:
-            common.app_tree.clear()
+            common.root.clear()
             common.root.new()
             common.root.saved = True
 

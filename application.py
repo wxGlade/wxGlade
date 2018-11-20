@@ -137,6 +137,26 @@ class EditRoot(np.PropertyOwner):
             n.tree_remove()
         #self.root.children = None
 
+    def find_widget_from_path(self, path):
+        index = 1  # skip 'app'
+        w = self
+        for index in range(1, len(path)):
+            if path[index].startswith("SLOT "):
+                pos = int(path[index].split(" ")[1])
+                if pos<len(w.children) and w.children[pos].IS_SLOT:
+                    w = w.children[pos]
+                    continue
+            children = [c for c in w.children if c.name==path[index]]
+            if not children: return None
+            w = children[0]
+        return w
+
+    def clear(self):
+        # delete all children; call common.root.new() or .init() afterwards
+        if self.children:
+            while self.children:
+                c = self.children[-1]
+                if c: c.remove()
 
 
 class Application(EditRoot):
@@ -381,6 +401,15 @@ class Application(EditRoot):
             p.value = newname
         p.choices[p.choices.index(oldname)] = newname
         p.set_choices()
+
+    def _get_top_window(self):
+        # helper for wxGladeFrame
+        toplevel_name = self.top_window
+        toplevel = None
+        for c in self.children:
+            if c.name==toplevel_name:
+                toplevel = c
+        return toplevel
 
     ####################################################################################################################
     def properties_changed(self, modified):
@@ -742,3 +771,7 @@ class Application(EditRoot):
                 self._NUMBERS[fmt] = number
                 return name
             number += 1
+
+    def _label_editable(self):
+        return False
+

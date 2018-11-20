@@ -723,12 +723,7 @@ class wxGladeFrame(wx.Frame):
             # a widget is selected, find the toplevel window for it
             return misc.focused_widget.toplevel_parent
         # find main toplevel window
-        toplevel_name = common.root.top_window
-        toplevel = None
-        for c in common.root.children or []:
-            if c.name==toplevel_name:
-                toplevel = c
-        return toplevel
+        return common.root._get_top_window()
 
     def preview(self):
         """Generate preview of the current loaded project.
@@ -832,7 +827,7 @@ class wxGladeFrame(wx.Frame):
     def new_app(self, event=None):
         "creates a new wxGlade project"
         if self.ask_save():
-            common.app_tree.clear()
+            common.root.clear()
             common.root.new()
             common.root.filename = None
             common.root.saved = True
@@ -887,7 +882,7 @@ class wxGladeFrame(wx.Frame):
 
         start = time.clock()
 
-        common.app_tree.clear()
+        common.root.clear()
         common.root.init()
         common.app_tree.auto_expand = False  # disable auto-expansion of nodes
 
@@ -947,7 +942,7 @@ class wxGladeFrame(wx.Frame):
                 infile.close()
 
             if error_msg:
-                common.app_tree.clear()
+                common.root.clear()
                 common.root.new()
                 common.root.saved = True
                 common.app_tree.auto_expand = True  # re-enable auto-expansion of nodes
@@ -1060,7 +1055,7 @@ class wxGladeFrame(wx.Frame):
                 self._store_layout()
                 prefs.set_dict("layout", self.layout_settings)
                 prefs.changed = True
-            common.app_tree.clear()
+            common.root.clear()
             common.root.new()
             try:
                 common.save_preferences()
