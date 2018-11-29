@@ -65,9 +65,13 @@ class EditSplitterWindow(ManagedBase, EditStylesMixin):
         self._window_old = None
 
         # add slots
-        labels = ("SLOT Left","SLOT Right") if orientation=="wxSPLIT_VERTICAL" else ("SLOT Top","SLOT Bottom")
-        self.children[0] = Slot(self, 0, label=labels[0])
-        self.children[1] = Slot(self, 1, label=labels[1])
+        self.children[0] = Slot(self, 0, label=self._get_slot_label(0))
+        self.children[1] = Slot(self, 1, label=self._get_slot_label(1))
+
+    def _get_slot_label(self, pos):
+        if self.orientation=="wxSPLIT_VERTICAL":
+            return ("SLOT Left","SLOT Right")[pos]
+        return ("SLOT Top","SLOT Bottom")[pos]
 
     def create_widget(self):
         self.widget = wx.SplitterWindow(self.parent_window.widget, self.id, style=self.style)
@@ -143,13 +147,12 @@ class EditSplitterWindow(ManagedBase, EditStylesMixin):
 
         if modified and "orientation" in modified:
             # update horizontal/vertical icons
-            labels = ("SLOT Left","SLOT Right") if self.orientation=="wxSPLIT_VERTICAL" else ("SLOT Top","SLOT Bottom")
             common.app_tree.refresh(self, refresh_label=False, refresh_image=True)
             if self.children[0].IS_SLOT:
-                self.children[0].label = labels[0]
+                self.children[0].label = self._get_slot_label(0)
                 common.app_tree.refresh(self.children[0])
             if self.children[1].IS_SLOT:
-                self.children[1].label = labels[1]
+                self.children[1].label = self._get_slot_label(0)
                 common.app_tree.refresh(self.children[1])
 
     def on_size(self, event):
@@ -182,7 +185,7 @@ class EditSplitterWindow(ManagedBase, EditStylesMixin):
     ####################################################################################################################
     # methods moved from SplitterWindowSizer:
     def add_item(self, child, pos=None):
-        if pos is not None: self._window_old = self.children[pos]
+        if pos is not None and self.widget: self._window_old = self.children[pos]
         ManagedBase.add_item(self, child, pos)
 
     def _add_item(self, item, pos=None, proportion=0, flag=0, border=0, size=None, force_layout=True):
@@ -206,6 +209,7 @@ class EditSplitterWindow(ManagedBase, EditStylesMixin):
     def item_properties_modified(self, widget, modified=None, force_layout=True):
         "Updates the layout of the item"
         if self.widget and self._window_old:
+            # a child was replace
             if self._window_old.widget:
                 self.widget.Unsplit(self._window_old.widget)
             elif self.widget.IsSplit(): # the child widget may have been delete meanwhile by tree remove_rec

@@ -365,14 +365,8 @@ class EditBase(np.PropertyOwner):
 class Slot(EditBase):
     "A window to represent an empty slot, e.g. single slot of a Frame or a page of a Notebook"
     PROPERTIES = ["Slot", "pos"]
-    #PROPERTIES = []
     IS_TOPLEVEL = IS_SIZER = IS_WINDOW = False
     IS_SLOT = True
-
-    #def __init__(self, parent, pos=0, label=None):
-        #EditBase.__init__(self, "SLOT", parent, pos)
-        #self.klass = self.classname = self.base = "slot"
-        #self.label = label
 
     def __init__(self, parent, pos=0, label=None):
         assert isinstance(pos, int)
