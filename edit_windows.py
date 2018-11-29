@@ -108,14 +108,6 @@ class EditBase(EventsMixin, edit_base.EditBase):
                         "extracode_post":"Code to be inserted after"}
     def __init__(self, name, klass, parent, custom_class=True, pos=None):
         edit_base.EditBase.__init__(self, name, parent, pos)
-        #np.PropertyOwner.__init__(self)
-        ## initialise instance logger
-        #self._logger = logging.getLogger(self.__class__.__name__)
-
-        ## initialise instance
-        #self.parent = parent
-        #self.children = []
-        #self.id = wx.NewId()  # id used for internal purpose events
 
         # initialise instance properties
         self.classname = klass
@@ -173,8 +165,8 @@ class EditBase(EventsMixin, edit_base.EditBase):
         misc.bind_menu_item_after(widget, i, clipboard.cut, self)
         menu.AppendSeparator()
 
-        sizer = self.sizer
-        if sizer: sizer._add_popup_menu_items(menu, self, widget)
+        if hasattr(self.parent, "_add_popup_menu_items"):
+            self.parent._add_popup_menu_items(menu, self, widget)
 
         # preview (create or close?)
         p = misc.get_toplevel_widget(self)
@@ -316,7 +308,7 @@ class WindowBase(EditBase):
             # XXX this should be made more straightforward
             if "pos" in self.properties:
                 #self.sizer.set_item(self.pos)
-                self.sizer.item_properties_modified(self)
+                self.parent.item_properties_modified(self)
             size_p.set('%s, %s' % tuple(self.widget.GetSize()))
  
         if background_p.is_active(): self.widget.SetBackgroundColour(self.background)
@@ -533,7 +525,7 @@ class ManagedBase(WindowBase):
             flag_p.add("wxALL", notify=False)
 
     def finish_widget_creation(self, sel_marker_parent=None, re_add=True):
-        if sel_marker_parent is None: sel_marker_parent = self.parent.widget
+        if sel_marker_parent is None: sel_marker_parent = self.parent_window.widget
         self.sel_marker = misc.SelectionMarker(self.widget, sel_marker_parent)
         WindowBase.finish_widget_creation(self)
         self.widget.Bind(wx.EVT_LEFT_DOWN, self.on_set_focus)
@@ -582,7 +574,7 @@ class ManagedBase(WindowBase):
                 max_span = ( min(span_p.value[0],max_span[0]), min(span_p.value[1],max_span[1]) )
                 if max_span!=span_p.value:
                     span_p.set(max_span, notify=False)
-            if not self.sizer.is_virtual():
+            if self.parent.IS_SIZER:
                 self.sizer.item_properties_modified(self, modified)
 
     def _set_widget_best_size(self):
@@ -802,12 +794,7 @@ class TopLevelBase(WindowBase, PreviewMixin):
 
     ####################################################################################################################
     def set_sizer(self, sizer):
-        # XXX replace with add_item
-        if self.children:
-            self.children[0] = sizer
-        else:
-            self.children.append(sizer)
-        #if sizer and sizer.widget and self.widget:
+        assert sizer in self.children
         if sizer.widget and self.widget:
             self.widget.SetAutoLayout(True)
             self.widget.SetSizer(sizer.widget)

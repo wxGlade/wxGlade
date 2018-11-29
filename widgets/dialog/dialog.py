@@ -117,9 +117,7 @@ def xml_builder(attrs, parent, sizeritem, pos=None):
     except KeyError:
         raise XmlParsingError(_("'name' attribute missing"))
     dialog = EditDialog(label, parent, "", style=0)
-    node = Node(dialog)
-    dialog.node = node
-    common.app_tree.add(node)
+    common.app_tree.add(dialog)
     return dialog
 
 

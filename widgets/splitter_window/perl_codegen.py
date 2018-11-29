@@ -23,7 +23,7 @@ class PerlSplitterWindowGenerator(wcodegen.PerlWidgetCodeWriter):
         props_buf = self.codegen.generate_common_properties(window)
 
         id_name, id = self.codegen.generate_code_id(window)
-        parent = self.format_widget_access(window.parent)
+        parent = self.format_widget_access(window.parent_window)
 
         if window.IS_TOPLEVEL:
             l = []

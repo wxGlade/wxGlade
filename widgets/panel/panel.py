@@ -140,7 +140,7 @@ class EditPanel(PanelBase, ManagedBase):
 
     PROPERTIES = ManagedBase.PROPERTIES + PanelBase._PROPERTIES + ManagedBase.EXTRA_PROPERTIES
 
-    def __init__(self, name, parent, sizer, pos, style='wxTAB_TRAVERSAL'):
+    def __init__(self, name, parent, pos, style='wxTAB_TRAVERSAL'):
         ManagedBase.__init__(self, name, 'wxPanel', parent, pos)
         PanelBase.__init__(self, style)
 
@@ -152,7 +152,8 @@ class EditPanel(PanelBase, ManagedBase):
             self.widget = wx.Panel(self.parent_window.widget, self.id, style=0)
         self.widget.Bind(wx.EVT_ENTER_WINDOW, self.on_enter)
         self.widget.GetBestSize = self.get_widget_best_size
-        if self.sizer.is_virtual():
+        #if self.sizer.is_virtual():
+        if not self.parent.IS_SIZER:
             def GetBestSize():
                 if self.widget and self.widget.GetSizer():
                     return self.widget.GetSizer().GetMinSize()
@@ -162,7 +163,8 @@ class EditPanel(PanelBase, ManagedBase):
     def set_sizer(self, sizer):
         super(EditPanel, self).set_sizer(sizer)
         if self.top_sizer and self.top_sizer.widget and self.widget:
-            self.sizer.set_item_best_size(self, size=self.widget.GetBestSize())
+            #self.sizer.set_item_best_size(self, size=self.widget.GetBestSize())
+            self.children[0].set_item_best_size(self, size=self.widget.GetBestSize())
 
     def _create_popup_menu(self, widget=None):
         if widget is None: widget = self.widget
@@ -179,7 +181,9 @@ class EditPanel(PanelBase, ManagedBase):
         if self.top_sizer is not None or not clipboard.check("sizer"): i.Enable(False)
         menu.AppendSeparator()
 
-        if self.sizer: self.sizer._add_popup_menu_items(menu, self, widget)
+        #if self.sizer: self.sizer._add_popup_menu_items(menu, self, widget)
+        if hasattr(self.parent, "_add_popup_menu_items"):
+            self.parent._add_popup_menu_items(menu, self, widget)
 
         i = misc.append_menu_item(menu, -1, _('Preview'))
         misc.bind_menu_item_after(widget, i, self.preview_parent)
@@ -348,7 +352,7 @@ def xml_builder(attrs, parent, sizeritem, pos=None):
         raise XmlParsingError(_("'name' attribute missing"))
     if not sizeritem:
         raise XmlParsingError(_("sizer or sizeritem object cannot be None"))
-    panel = EditPanel(name, parent, pos, style='')
+    panel = EditPanel(name, parent, pos=pos, style='')
     common.app_tree.insert(panel, parent, pos)
     return panel
 
@@ -360,7 +364,7 @@ def xml_toplevel_builder(attrs, parent, sizeritem, pos=None):
     except KeyError:
         raise XmlParsingError(_("'name' attribute missing"))
     panel = EditTopLevelPanel( label, parent, style='' )
-    common.app_tree.add(node)
+    common.app_tree.add(panel)
     return panel
 
 

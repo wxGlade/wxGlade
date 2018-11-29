@@ -511,10 +511,13 @@ class EditToolBar(EditBase, PreviewMixin, EditStylesMixin, BitmapMixin):
 
     _PROPERTIES = ["Widget", "bitmapsize", "margins", "packing", "separation", "style", "tools", "preview"]
     PROPERTIES = EditBase.PROPERTIES + _PROPERTIES + EditBase.EXTRA_PROPERTIES
+    CHILDREN = 0
 
     def __init__(self, name, klass, parent):
         custom_class = parent is None
-        EditBase.__init__( self, name, 'wxToolBar', parent, wx.NewId(), custom_class=custom_class )
+        if parent.IS_ROOT:
+            self.__dict__["names"] = {}  # XXX not used if EditMenuBar is splitted into EditToplevelMenuBar
+        EditBase.__init__( self, name, 'wxToolBar', parent, custom_class=custom_class )
         EditStylesMixin.__init__(self)
 
         # initialise instance properties
@@ -639,7 +642,7 @@ class EditToolBar(EditBase, PreviewMixin, EditStylesMixin, BitmapMixin):
 
     def remove(self, *args, **kwds):
         # entry point from GUI
-        if self.parent is not None:
+        if not self.parent.IS_ROOT:
             self.parent.properties['toolbar'].set(False)
             self.parent._toolbar = None
             if kwds.get('do_nothing', False):
@@ -760,15 +763,14 @@ def builder(parent, pos):
 def xml_builder(attrs, parent, sizeritem, pos=None):
     "factory to build EditToolBar objects from a XML file"
     name = attrs.get('name')
-    if parent is not None:
+    if parent is not None and not parent.IS_ROOT:
         if name:
             parent._toolbar.properties["name"].set(name)
             parent._toolbar.properties_changed(["name"])
         return parent._toolbar
     else:
-        tb = EditToolBar(name, attrs.get('class', 'wxToolBar'), None)
-        tb.node = Node(tb)
-        common.app_tree.add(tb.node)
+        tb = EditToolBar(name, attrs.get('class', 'wxToolBar'), parent)
+        common.app_tree.add(tb)
         return tb
 
 

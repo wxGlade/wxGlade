@@ -693,7 +693,7 @@ class Application(EditRoot):
             # in this case, we check all the widgets in the tree
             def check_rec(node):
                 if node.widget is not None:
-                    self.check_codegen(node.widget)
+                    self.check_codegen(node)
                 if node.children:
                     for c in node.children:
                         check_rec(c)

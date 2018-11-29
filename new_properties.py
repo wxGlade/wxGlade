@@ -90,6 +90,7 @@ class Property(object):
         """set the value of the property (note that the property need not be active)
         updates display if editor is visible; doesn't notify owner or application!
         optionally, the property will be activated or deactivated"""
+        self.previous_value = self.value
         self.value = self._set_converter(value)
         self.modified = True
         if activate is None and deactivate is None:
@@ -110,6 +111,7 @@ class Property(object):
         # a derived class like TextProperty may implement a load method, e.g. to unescape strings
         # (this should actually handled by xml_parse itself, but this might have side effects)
         self.set(value, activate, deactivate, notify)
+        self.previous_value = None
 
     def set_default(self, default_value):
         default_value = self._set_converter(default_value)
@@ -520,7 +522,7 @@ class LayoutProportionProperty(SpinProperty):
 
 class LayoutPosProperty(SpinProperty):
     readonly = True
-    TOOLTIP = "Position of item within sizer; 1-based"
+    TOOLTIP = "Position of item within sizer"
 
     def __init__(self, value):
         SpinProperty.__init__(self, value, val_range=(0,1000), immediate=False, default_value=_DefaultArgument, name="pos")
@@ -2152,6 +2154,11 @@ class GridProperty(Property):
         self.cur_row = self.cur_col = 0
         self.editing_values = None # before pressing Apply; stored here because the editor grid might be deleted
         self.grid = None
+        self._initialize_indices()
+
+    def _get_default_row(self, index):
+        # e.g. NotebookPagesProperty may override this
+        return self.default_row[:]
 
     def set(self, value, *args, **kwargs):
         Property.set(self, value, *args, **kwargs)
@@ -2672,10 +2679,14 @@ class GridProperty(Property):
     def add_row(self, event):
         self.on_focus()
         values = self._ensure_editing_copy()
+        row = len(values)
+        default_row_values = self._get_default_row( row )
+        values.append( default_row_values )
         self.grid.AppendRows()
+        for col, value in enumerate(default_row_values):
+            self.grid.SetCellValue(row, col, default_row_values[col])
         self.grid.MakeCellVisible(len(values), 0)
         self.grid.ForceRefresh()
-        values.append( self.default_row[:] )
         if self.with_index:
             self.indices.append("")
         self._update_remove_button()
@@ -2714,7 +2725,8 @@ class GridProperty(Property):
         self.grid.MakeCellVisible(self.cur_row, 0)
         self.grid.ForceRefresh()
         values = self._ensure_editing_copy()
-        values.insert(self.cur_row, self.default_row[:])
+        row = self._get_default_row(self.cur_row)
+        values.insert(self.cur_row, row)
         if self.with_index:
             self.indices.insert(self.cur_row, "")
         self._update_remove_button()

@@ -26,7 +26,7 @@ class PythonCodeGenerator(wcodegen.PythonWidgetCodeWriter):
 
     def get_code(self, obj):
         id_name, id = self.codegen.generate_code_id(obj)
-        parent = self.format_widget_access(obj.parent)
+        parent = self.format_widget_access(obj.parent_window)
         init = []
         if id_name:
             init.append(id_name)
@@ -98,7 +98,7 @@ class CppCodeGenerator(wcodegen.CppWidgetCodeWriter):
         "generates C++ code for wxGrid objects."
         id_name, id = self.codegen.generate_code_id(obj)
         ids = [id_name]  if id_name else  []
-        parent = self.format_widget_access(obj.parent)
+        parent = self.format_widget_access(obj.parent_window)
         init = ['%s = new %s(%s, %s);\n' % (obj.name, obj.klass, parent, id)]
         props_buf = self.get_properties_code(obj)
         return init, ids, props_buf, []

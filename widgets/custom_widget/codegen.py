@@ -3,7 +3,7 @@ Code generator functions for CustomWidget objects
 
 @copyright: 2002-2007 Alberto Griggio
 @copyright: 2016 Carsten Grohmann
-@copyright: 2017 Dietmar Schwertberger
+@copyright: 2017-2018 Dietmar Schwertberger
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
@@ -40,7 +40,7 @@ class PythonCustomWidgetGenerator(wcodegen.PythonWidgetCodeWriter):
             return self.get_code_preview(widget)
         prop = widget.properties
         id_name, id = self.codegen.generate_code_id(widget)
-        parent = self.format_widget_access(widget.parent)
+        parent = self.format_widget_access(widget.parent_window)
         init = []
         if id_name: init.append(id_name)
         arguments = format_ctor_arguments( widget.arguments, parent, id, widget.size)
@@ -54,7 +54,7 @@ class PythonCustomWidgetGenerator(wcodegen.PythonWidgetCodeWriter):
         return init, props_buf, []
 
     def get_code_preview(self, widget):
-        parent = self.format_widget_access(widget.parent)
+        parent = self.format_widget_access(widget.parent_window)
         init = []
         append = init.append
         append('self.%s = wx.Window(%s, -1, style=wx.FULL_REPAINT_ON_RESIZE)\n' % (widget.name, parent))
@@ -96,8 +96,8 @@ class CppCustomWidgetGenerator(wcodegen.CppWidgetCodeWriter):
             ids = [id_name]
         else:
             ids = []
-        if not widget.parent.IS_TOPLEVEL:
-            parent = '%s' % widget.parent.name
+        if not widget.parent_window.IS_TOPLEVEL:
+            parent = '%s' % widget.parent_window.name
         else:
             parent = 'this'
         arguments = format_ctor_arguments( widget.arguments, parent, id, widget.size )

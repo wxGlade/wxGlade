@@ -17,7 +17,7 @@ from gui_mixins import BitmapMixin
 
 class EditFrame(TopLevelBase, EditStylesMixin, BitmapMixin):
     _PROPERTIES =["Widget", "title", "icon", "centered", "sizehints","menubar", "toolbar", "statusbar", "style"]
-    PROPERTIES = TopLevelBase.PROPERTIES + _PROPERTIES
+    PROPERTIES = TopLevelBase.PROPERTIES + _PROPERTIES + TopLevelBase.EXTRA_PROPERTIES
     _PROPERTY_HELP   = { 'icon':'Icon for this window.' }
     _PROPERTY_LABELS = { "sizehints":'Set Size Hints', "menubar":'Has MenuBar', "toolbar":'Has ToolBar',
                          "statusbar":'Has StatusBar' }
@@ -92,8 +92,7 @@ class EditFrame(TopLevelBase, EditStylesMixin, BitmapMixin):
             # create a MenuBar
             from menubar import EditMenuBar
             self._menubar = EditMenuBar(self.name + '_menubar', 'wxMenuBar', self)
-            self._menubar.node = Node(self._menubar)
-            common.app_tree.add(self._menubar.node, self.node)
+            common.app_tree.add(self._menubar, self)
             if self.widget: self._menubar.create()
         else:
             # remove
@@ -119,8 +118,7 @@ class EditFrame(TopLevelBase, EditStylesMixin, BitmapMixin):
             # create a ToolBar
             from toolbar import EditToolBar
             self._toolbar = EditToolBar(self.name + '_toolbar', 'wxToolBar', self)
-            self._toolbar.node = Node(self._toolbar)
-            common.app_tree.add(self._toolbar.node, self.node)
+            common.app_tree.add(self._toolbar, self)
 
             if self.widget: self._toolbar.create()
         else:
@@ -176,7 +174,7 @@ def builder(parent, pos, klass=None, base=None, name=None):
 
     # add a default vertical sizer to the frame
     import edit_sizers
-    edit_sizers._builder(frame, None, 0)
+    edit_sizers._builder(frame, 0)
     # now select the frame's node in the tree
     common.app_tree.select_item(frame)
 

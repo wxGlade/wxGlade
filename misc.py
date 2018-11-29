@@ -118,6 +118,7 @@ class SelectionMarker(object):
         self.owner = owner
         self.parent = parent
         if wx.Platform == '__WXMSW__': self.parent = owner
+        assert isinstance(self.parent, wx.Window)
         self.tag_pos = None
         self.tags = None
         self.update()
@@ -324,9 +325,9 @@ def restore_focus(func):
 def _can_remove():
     global focused_widget
     if focused_widget is None or not hasattr(focused_widget, "remove"): return False
-    if focused_widget.klass=="sizerslot" and hasattr(focused_widget, "sizer"):
-        sizer = focused_widget.sizer
-        if sizer.is_virtual() or focused_widget.sizer._IS_GRIDBAG:
+    if focused_widget.IS_SLOT:
+        # XXX change this later on, to remove e.g. notebook pages, but not when parent.CHILDREN is an int
+        if not focused_widget.parent.IS_SIZER or focused_widget.sizer._IS_GRIDBAG:
             wx.Bell()
             return False
     return True
@@ -344,14 +345,14 @@ def _remove():
 @restore_focus
 def _cut():
     global focused_widget
-    if not _can_remove() or focused_widget.klass=="sizerslot":
+    if not _can_remove():
         wx.Bell()
         return
     clipboard.cut(focused_widget)
     #focused_widget = None
 
 def _copy():
-    if focused_widget is None or focused_widget.klass=="sizerslot":
+    if focused_widget is None or focused_widget.IS_SLOT:
         wx.Bell()
         return
     clipboard.copy(focused_widget)

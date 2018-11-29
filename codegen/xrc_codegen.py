@@ -327,9 +327,10 @@ class XRCCodeWriter(BaseLangCodeWriter, wcodegen.XRCMixin):
     def add_object(self, sub_obj):
         "Adds the object sub_obj to the XRC tree. The first argument is unused."
         # what we need in XRC is not top_obj, but sub_obj's true parent we don't need the sizer, but the window
-        top_obj = sub_obj.node.parent.widget
-        while top_obj.IS_SIZER:
-            top_obj = top_obj.node.parent.widget
+        #top_obj = sub_obj.parent
+        #while top_obj.IS_SIZER:
+            #top_obj = top_obj.node.parent.widget
+        top_obj = sub_obj.parent_window
         builder = self.obj_builders.get( sub_obj.base, DefaultXrcObject )
         try:
             # check whether we already created the xrc_obj
@@ -355,9 +356,10 @@ class XRCCodeWriter(BaseLangCodeWriter, wcodegen.XRCMixin):
     def add_sizeritem(self, unused, sizer, obj, option, flag, border):
         "Adds a sizeritem to the XRC tree. The first argument is unused."
         # what we need in XRC is not toplevel, but sub_obj's true parent
-        toplevel = obj.node.parent.widget
-        while toplevel.IS_SIZER:
-            toplevel = toplevel.node.parent.widget
+        #toplevel = obj.node.parent.widget
+        #while toplevel.IS_SIZER:
+            #toplevel = toplevel.node.parent.widget
+        toplevel = obj.parent_window
 
         top_xrc = toplevel.xrc
         obj_xrc = obj.xrc

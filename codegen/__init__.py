@@ -483,19 +483,19 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
         if self.is_template:
             raise errors.WxgTemplateCodegenNotPossible
 
-    def _generate_code(self, node):
+    def _generate_code(self, obj):
         # for anything except application.Application
+        print("GENERATE CODE", obj, obj.name)
         import tree
-        obj = node
         topl = self.toplevel
 
-        if node.IS_SLOT:
+        if obj.IS_SLOT:
             # empty sizer slot
             szr = self.sizers[-1]
             if not szr._IS_GRIDBAG:
                 self.add_spacer(topl, szr, None)
             return
-        elif node.classname=="spacer":
+        elif obj.classname=="spacer":
             # add a spacer
             szr = self.sizers[-1]
             self.add_spacer(topl, szr, obj, obj.proportion, obj.properties["flag"].get_string_value(), obj.border )
@@ -532,10 +532,12 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
             self.toplevels.append(obj)
 
         # children first
-        for c in node.children or []:
+        for i,c in enumerate(obj.children or []):
+            print("_generate_code", i, c)
+            assert obj.children.count(c)==1
             self._generate_code(c)
 
-        # clean up stacks
+        # clean up stacks  XXX get rid of the stacks
         if obj.IS_TOPLEVEL: del self.toplevels[-1]
         if obj.IS_SIZER:    del self.sizers[-1]
 
@@ -546,7 +548,7 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
             self.add_object(obj)
 
         # check whether the object belongs to some sizer; if applicable, add it to the sizer at the top of the stack
-        parent = node.parent
+        parent = obj.parent
         if parent.IS_SIZER:
             flag = obj.properties["flag"].get_string_value()  # as string, joined with "|"
             self.add_sizeritem(topl, parent, obj, obj.proportion, flag, obj.border)
@@ -935,8 +937,8 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
                 if "extracode_post" in sub_obj.properties and sub_obj.extracode_post:
                     init += sub_obj.properties["extracode_post"].get_lines()
 
-            # Add a dependency of the current object on its parent
-            klass.deps.append((sub_obj, sub_obj.parent))
+            # Add a dependency of the current object on its parent window (not sizer)
+            klass.deps.append((sub_obj, sub_obj.parent_window))
             klass.child_order.append(sub_obj)
             klass.init_lines[sub_obj] = init
 
@@ -1726,7 +1728,7 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
         if self.language == 'C++':
             klass.init.extend(code_lines)
         else:
-            klass.deps.append((sub_obj, sub_obj.parent))
+            klass.deps.append((sub_obj, sub_obj.parent_window))
             klass.child_order.append(sub_obj)
             klass.init_lines[sub_obj] = code_lines
 

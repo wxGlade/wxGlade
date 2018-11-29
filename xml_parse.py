@@ -575,12 +575,10 @@ class XmlWidgetObject(object):
             pos = getattr(sizeritem, 'pos', None)
             # XXX change this: don't use pos here at all; either we're just appending to the end or filling virtual sizers acc. to pagenames
             #if pos is None and parent and hasattr(parent, 'virtual_sizer') and parent.virtual_sizer:
-            if pos is None and parent and hasattr(parent, 'virtual_sizer') and parent.virtual_sizer:
+            if pos is None and not parent.IS_SIZER and hasattr(parent, "get_itempos"):
                 # virtual sizers don't use sizeritem objects around their items in XML; the index is found from the name
-                sizer = parent.virtual_sizer
-                sizer.node = parent.node
                 sizeritem = Sizeritem()
-                pos_ = sizer.get_itempos(attrs)
+                pos_ = parent.get_itempos(attrs)
                 # XXXinsert empty slots before, if required
                 if pos_: pos = pos_  # when loading from a file, the names are set already and pos_ is not None
 

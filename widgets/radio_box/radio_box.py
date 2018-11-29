@@ -174,7 +174,7 @@ class EditRadioBox(ManagedBase):
             self._set_choices()  # does also update label
         elif not modified or "label" in modified:
             self._set_label()
-            common.app_tree.refresh(self.node, refresh_label=True)
+            common.app_tree.refresh(self, refresh_label=True, refresh_image=False)
 
         if self.widget and set_selection:
             self._set_selection()

@@ -52,7 +52,7 @@ class EditToggleButton(ManagedBase, EditStylesMixin, BitmapMixin):
             if self.widget:
                 self.widget.SetLabel(self.label)
                 self._set_widget_best_size()
-            common.app_tree.refresh(self.node, refresh_label=True)
+            common.app_tree.refresh(self, refresh_label=True, refresh_image=False)
 
         BitmapMixin._properties_changed(self, modified)
         self._set_widget_best_size()

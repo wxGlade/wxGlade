@@ -972,7 +972,7 @@ class CPPCodeWriter(BaseLangCodeWriter, wcodegen.CppMixin):
             if "extracode_post" in sub_obj.properties and sub_obj.extracode_post:
                 init += sub_obj.properties["extracode_post"].get_lines()
 
-            if sub_obj.node.children and not sub_obj.IS_TOPLEVEL:
+            if sub_obj.children and not sub_obj.IS_TOPLEVEL:
                 init.reverse()
                 klass.parents_init.extend(init)
             else:
@@ -1130,7 +1130,7 @@ void %(klass)s::%(handler)s(%(evt_type)s &event)  // wxGlade: %(klass)s.<event_h
             name2 = obj.name
         size = obj.properties["size"].get_string_value()
         use_dialog_units = (size[-1] == 'd')
-        if not obj.parent:
+        if not obj.parent_window:
             method = 'SetSize'
         else:
             method = 'SetMinSize'

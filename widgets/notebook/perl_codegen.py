@@ -22,11 +22,11 @@ class PerlNotebookGenerator(wcodegen.PerlWidgetCodeWriter):
         id_name, id = self.codegen.generate_code_id(window)
 
         layout_props = []
-        for label, tab_win in zip(window.tabs, window.pages):
+        for (label,), tab_win in zip(window.tabs, window.children):
             layout_props.append('$self->{%s}->AddPage($self->{%s}, %s);\n' %
-                                (window.name, tab_win.name, self.codegen.quote_str(label[0])) )
+                                (window.name, tab_win.name, self.codegen.quote_str(label)) )
 
-        parent = self.format_widget_access(window.parent)
+        parent = self.format_widget_access(window.parent_window)
 
         if window.IS_TOPLEVEL:
             klass = window.base
@@ -52,8 +52,7 @@ class PerlNotebookGenerator(wcodegen.PerlWidgetCodeWriter):
     def get_properties_code(self, obj):
         prop = obj.properties
         props_buf = []
-        for label, tab_win in zip(obj.tabs, obj.pages):
-            label = label[0]
+        for (label,), tab_win in zip(obj.tabs, obj.children):
             props_buf.append( '$self->AddPage($self->{%s}, %s);\n' % (tab_win.name, self.codegen.quote_str(label)) )
         props_buf.extend(self.codegen.generate_common_properties(obj))
         return props_buf

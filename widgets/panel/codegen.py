@@ -15,7 +15,7 @@ class PythonPanelGenerator(wcodegen.PythonWidgetCodeWriter):
     def get_code(self, panel):
         scrollable = panel.scrollable
         id_name, id = self.codegen.generate_code_id(panel)
-        parent = self.format_widget_access(panel.parent)
+        parent = self.format_widget_access(panel.parent_window)
         if panel.IS_TOPLEVEL:
             l = []
             if id_name: l.append(id_name)

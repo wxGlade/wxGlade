@@ -82,7 +82,7 @@ class LispCodeGenerator(wcodegen.LispWidgetCodeWriter):
             style += "|wxTB_HORIZONTAL"
             style = self.cn_f(style)
 
-        parent = self.format_widget_access(obj.parent)
+        parent = self.format_widget_access(obj.parent_window)
         obj_name = self.codegen._format_name(obj.name)
         init = [ '\n\t;;; Tool Bar\n',
                  '(setf (slot-%s obj) (wxToolBar_Create %s -1 -1 -1 -1 -1 %s))\n' % (obj_name, parent, style),

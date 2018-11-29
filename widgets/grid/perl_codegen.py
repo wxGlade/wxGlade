@@ -15,7 +15,7 @@ class PerlCodeGenerator(wcodegen.PerlWidgetCodeWriter):
 
     def get_code(self, obj):
         id_name, id = self.codegen.generate_code_id(obj)
-        parent = self.format_widget_access(obj.parent)
+        parent = self.format_widget_access(obj.parent_window)
         init = []
         if id_name:
             init.append(id_name)

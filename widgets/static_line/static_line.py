@@ -37,7 +37,7 @@ class EditStaticLine(ManagedBase, EditStylesMixin):
 
     def finish_widget_creation(self):
         ManagedBase.finish_widget_creation(self)
-        self.sel_marker.Reparent(self.parent.widget)
+        self.sel_marker.Reparent(self.parent_window.widget)
         #del self.properties['font']
 
     def __getitem__(self, key):

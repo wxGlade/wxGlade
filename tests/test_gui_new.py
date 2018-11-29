@@ -54,9 +54,9 @@ class TestGui(WXGladeGUITest):
         self.load_and_generate('ComplexExample_30', excluded=["lisp"])
         #self.load_and_generate('ComplexExample_30', included=["lisp"])
         # Lisp code has to raise an exception
-        common.app_tree.app.properties["language"].set("lisp")
+        common.app_tree.root.properties["language"].set("lisp")
         self._process_wx_events()
-        common.app_tree.root.widget.generate_code()
+        common.app_tree.root.generate_code()
         self._assert_error_message("Generating Lisp code for wxWidgets version 3.0 is not supported")
 
     def test_CodeGeneration_CustomWidget(self):
@@ -145,12 +145,12 @@ class TestGui(WXGladeGUITest):
 
         # load and set up project
         common.main._open_app(infilename, use_progress_dialog=False, add_to_history=False)
-        common.app_tree.app.properties["overwrite"].set(False)  # overwrite is 0 in the file
-        common.app_tree.app.properties["output_path"].set(generate_filename)
-        common.app_tree.app.properties["language"].set("python")
+        common.app_tree.root.properties["overwrite"].set(False)  # overwrite is 0 in the file
+        common.app_tree.root.properties["output_path"].set(generate_filename)
+        common.app_tree.root.properties["language"].set("python")
         # generate, compare and check for overwriting
         self._process_wx_events()
-        common.app_tree.root.widget.generate_code()
+        common.app_tree.root.generate_code()
         self._compare_files(expected_filename, generate_filename, check_mtime=True)
 
     def test_Python_Ogg2(self):
@@ -170,12 +170,12 @@ class TestGui(WXGladeGUITest):
 
         # load and set up project
         common.main._open_app(infilename, use_progress_dialog=False, add_to_history=False)
-        common.app_tree.app.properties["overwrite"].set(False)  # overwrite is 0 in the file
-        common.app_tree.app.properties["output_path"].set(self.outDirectory)
-        common.app_tree.app.properties["language"].set("python")
+        common.app_tree.root.properties["overwrite"].set(False)  # overwrite is 0 in the file
+        common.app_tree.root.properties["output_path"].set(self.outDirectory)
+        common.app_tree.root.properties["language"].set("python")
         # generate, compare and check for overwriting
         self._process_wx_events()
-        common.app_tree.root.widget.generate_code()
+        common.app_tree.root.generate_code()
         self._compare_files(expected_app,    generate_app, check_mtime=True)
         self._compare_files(expected_dialog, generate_dialog, check_mtime=True)
         self._compare_files(expected_frame,  generate_frame, check_mtime=True)
@@ -197,12 +197,12 @@ class TestGui(WXGladeGUITest):
     
             # load and set up project
             common.main._open_app(infilename, use_progress_dialog=False, add_to_history=False)
-            common.app_tree.app.properties["overwrite"].set(False)  # overwrite is 0 in the file already
-            common.app_tree.app.properties["output_path"].set(generate_filename)
-            common.app_tree.app.properties["language"].set(language)
+            common.app_tree.root.properties["overwrite"].set(False)  # overwrite is 0 in the file already
+            common.app_tree.root.properties["output_path"].set(generate_filename)
+            common.app_tree.root.properties["language"].set(language)
             # generate, compare and check for overwriting
             self._process_wx_events()
-            common.app_tree.root.widget.generate_code()
+            common.app_tree.root.generate_code()
             self._compare_files(expected_filename, generate_filename, check_mtime=True)
 
     def test_all_Ogg2(self):
@@ -221,12 +221,12 @@ class TestGui(WXGladeGUITest):
     
             # load and set up project
             common.main._open_app(infilename, use_progress_dialog=False, add_to_history=False)
-            common.app_tree.app.properties["overwrite"].set(False)  # overwrite is 0 in the file
-            common.app_tree.app.properties["output_path"].set(generate_filename)
-            common.app_tree.app.properties["language"].set(language)
+            common.app_tree.root.properties["overwrite"].set(False)  # overwrite is 0 in the file
+            common.app_tree.root.properties["output_path"].set(generate_filename)
+            common.app_tree.root.properties["language"].set(language)
             # generate, compare and check for overwriting
             self._process_wx_events()
-            common.app_tree.root.widget.generate_code()
+            common.app_tree.root.generate_code()
             self._compare_files(expected_filename, generate_filename, check_mtime=True)
 
     def test_all_Ogg2(self):
@@ -259,14 +259,14 @@ class TestGui(WXGladeGUITest):
 
             # load and set up project
             common.main._open_app(infilename, use_progress_dialog=False, add_to_history=False)
-            common.app_tree.app.properties["overwrite"].set(False)  # overwrite is 0 in the file
-            common.app_tree.app.properties["output_path"].set(self.outDirectory)
-            common.app_tree.app.properties["language"].set(language)
+            common.app_tree.root.properties["overwrite"].set(False)  # overwrite is 0 in the file
+            common.app_tree.root.properties["output_path"].set(self.outDirectory)
+            common.app_tree.root.properties["language"].set(language)
             # generate, compare and check for overwriting
             self._process_wx_events()
             if language=="C++":
-                common.app_tree.app.app_filename = P+APP
-            common.app_tree.root.widget.generate_code()
+                common.app_tree.root.app_filename = P+APP
+            common.app_tree.root.generate_code()
             check_mtime = language!="perl"
             self._compare_files(expected_app,    generate_app,    check_mtime=check_mtime)
             self._compare_files(expected_dialog, generate_dialog, check_mtime=check_mtime)
@@ -278,34 +278,34 @@ class TestGui(WXGladeGUITest):
         common.main._open_app(infilename, use_progress_dialog=False, add_to_history=False)
 
         # Single output file out_path shouldn't be a directory, non-existing file or non-writable directory
-        common.app_tree.app.properties["output_path"].set(self.outDirectory)
-        common.app_tree.root.widget.generate_code()
+        common.app_tree.root.properties["output_path"].set(self.outDirectory)
+        common.app_tree.root.generate_code()
         self._assert_error_message( "can not be a directory when generating a single file" )
 
-        common.app_tree.app.properties["output_path"].set( os.path.join(self.outDirectory,"non-existing/result.py") )
-        common.app_tree.root.widget.generate_code()
+        common.app_tree.root.properties["output_path"].set( os.path.join(self.outDirectory,"non-existing/result.py") )
+        common.app_tree.root.generate_code()
         self._assert_error_message( "must be an existing directory" )
 
-        #common.app_tree.app.properties["output_path"].set( os.path.join(self.outDirectory,"non-writable/result.py") )
-        #common.app_tree.root.widget.generate_code()
+        #common.app_tree.root.properties["output_path"].set( os.path.join(self.outDirectory,"non-writable/result.py") )
+        #common.app_tree.root.generate_code()
         #self._assert_error_message( "" )
 
         # Multiple output file out_path should be a writable directory
-        common.app_tree.app.properties["multiple_files"].set(1)
-        common.app_tree.app.properties["output_path"].set( os.path.join(self.outDirectory,"non-existing") )
-        common.app_tree.root.widget.generate_code()
+        common.app_tree.root.properties["multiple_files"].set(1)
+        common.app_tree.root.properties["output_path"].set( os.path.join(self.outDirectory,"non-existing") )
+        common.app_tree.root.generate_code()
         self._assert_error_message( " must be an existing directory" )
 
-        #common.app_tree.app.properties["output_path"].set( os.path.join(self.outDirectory,"non-writable") )
-        #common.app_tree.root.widget.generate_code()
+        #common.app_tree.root.properties["output_path"].set( os.path.join(self.outDirectory,"non-writable") )
+        #common.app_tree.root.generate_code()
         #self._assert_error_message( "can not be a directory when generating a single file" )
 
     def test_PythonSubclass(self):
         "check for correct import: from package.name import name"
         infilename = self._get_casefile_path('PythonSubclass.wxg')
         common.main._open_app(infilename, use_progress_dialog=False, add_to_history=False)
-        common.app_tree.app.filename = self._get_outputfile_path('PythonSubclass.wxg')
-        common.app_tree.root.widget.generate_code()
+        common.app_tree.root.filename = self._get_outputfile_path('PythonSubclass.wxg')
+        common.app_tree.root.generate_code()
 
         expected_filename = self._get_casefile_path("PythonSubclass.py")
         generated_filename = self._get_outputfile_path("PythonSubclass.py")
@@ -318,17 +318,17 @@ class TestGui(WXGladeGUITest):
         "Test for multi file XRC projects."
         infilename = self._get_casefile_path('Python_Preferences.wxg')
         common.main._open_app(infilename, use_progress_dialog=False, add_to_history=False)
-        common.app_tree.app.properties["multiple_files"].set(1)
-        common.app_tree.app.properties["language"].set("XRC")
-        common.app_tree.root.widget.generate_code()
+        common.app_tree.root.properties["multiple_files"].set(1)
+        common.app_tree.root.properties["language"].set("XRC")
+        common.app_tree.root.generate_code()
         self._assert_error_message( "XRC code cannot be split into multiple files" )
 
     def test_WxgTemplateCodegenNotPossible(self):
         "Test for code generation from a template"
         infilename = self._get_casefile_path('Python_Preferences.wxg')
         common.main._open_app(infilename, use_progress_dialog=False, add_to_history=False)
-        common.app_tree.app.properties["is_template"].set(True)
-        common.app_tree.root.widget.generate_code()
+        common.app_tree.root.properties["is_template"].set(True)
+        common.app_tree.root.generate_code()
         self._assert_error_message( "Code generation from a template is not possible" )
 
     def test_SizersSize(self):
@@ -354,16 +354,16 @@ class TestGui(WXGladeGUITest):
         # XXX actually generate a file and simulate editing
 
         #common.palette._open_app(infilename, use_progress_dialog=False, add_to_history=False)
-        common.app_tree.clear()
-        common.app_tree.app.init()
+        common.app_tree.root.clear()
+        common.app_tree.root.init()
         import widgets.frame.frame
-        widgets.frame.frame.builder(None,None,0, "wxFrame", "MyFrame", "frame")
+        widgets.frame.frame.builder(common.root, 0, "wxFrame", "MyFrame", "frame")
 
         item = common.app_tree.root.children[0]
         common.adding_widget = True
         common.widget_to_add = "EditHyperlinkCtrl"
-        item.widget.sizer.children[1].on_drop_widget(None)
-        hyperlink = item.widget.sizer.children[1]
+        item.children[0].children[0].on_drop_widget(None)
+        hyperlink = item.children[0].children[0]
 
         ## expand tree and show edit window
         #tree = common.app_tree.drop_target()

@@ -2,7 +2,7 @@
 import logging
 import wx
 import new_properties as np
-import common, misc, compat, clipboard
+import common, misc, compat, clipboard, config
 
 MANAGED_PROPERTIES  = ["pos", "span", "proportion", "border", "flag"]
 
@@ -11,11 +11,15 @@ class _OwnList(list):
         if obj in self:
             raise AssertionError("Element already in list")
         list.append(self, obj)
+    def __setitem__(self, index, obj):
+        if obj in self:
+            raise AssertionError("Element already in list")
+        list.__setitem__(self, index, obj)
 
 
 class EditBase(np.PropertyOwner):
     #is_sizer = False
-    IS_TOPLEVEL = IS_SLOT = IS_SIZER = IS_WINDOW = IS_ROOT = False
+    IS_TOPLEVEL = IS_SLOT = IS_SIZER = IS_WINDOW = IS_ROOT = IS_TOPLEVEL_WINDOW = False
     # WX_CLASS: needs to be defined in every derived class XXX
     #CHILDREN = 1  # 0 or a fixed number or None for e.g. a sizer with a variable number of children
 
@@ -59,6 +63,7 @@ class EditBase(np.PropertyOwner):
         while True:
             if item.IS_WINDOW: return item
             item = item.parent
+            if item is None: return None
 
     @property
     def toplevel_parent_window(self):
@@ -131,7 +136,8 @@ class EditBase(np.PropertyOwner):
     # widget creation and destruction ##################################################################################
     def create(self):
         "create the wx widget"
-        if self.parent is not None and self.parent.widget is None: return
+        if not self.IS_TOPLEVEL and self.parent.widget is None: return
+        #if self.parent is not None and self.parent.widget is None: return
         if self.widget: return
         self.create_widget()
         self.finish_widget_creation()
@@ -159,7 +165,6 @@ class EditBase(np.PropertyOwner):
 
     def destroy_widget(self):
         if not self.widget or self._dont_destroy: return
-        #if getattr(self, "sizer", None) and not self.sizer.is_virtual():
         if self.parent.IS_SIZER:
             self.sizer.widget.Detach(self.widget)  # remove from sizer without destroying
         compat.DestroyLater(self.widget)
@@ -318,8 +323,8 @@ class EditBase(np.PropertyOwner):
         elif getattr(self, "parent", None) and self.parent.klass=="wxNotebook":
             # notebook pages: include page title: "[title] name"
             notebook = self.parent
-            if self in notebook.pages:
-                title = notebook.tabs[notebook.pages.index(self)][0]
+            if self in notebook.children:
+                title = notebook.tabs[notebook.children.index(self)][0]
                 s = '[%s] %s'%(title, s)
         return s
 
@@ -341,15 +346,39 @@ class EditBase(np.PropertyOwner):
 #class Slot(np.PropertyOwner):
 class Slot(EditBase):
     "A window to represent an empty slot, e.g. single slot of a Frame or a page of a Notebook"
-    #PROPERTIES = ["Slot", "pos"]
-    PROPERTIES = []
+    PROPERTIES = ["Slot", "pos"]
+    #PROPERTIES = []
     IS_TOPLEVEL = IS_SIZER = IS_WINDOW = False
     IS_SLOT = True
 
+    #def __init__(self, parent, pos=0, label=None):
+        #EditBase.__init__(self, "SLOT", parent, pos)
+        #self.klass = self.classname = self.base = "slot"
+        #self.label = label
+
     def __init__(self, parent, pos=0, label=None):
-        EditBase.__init__(self, "SLOT", parent, pos)
+        assert isinstance(pos, int)
+        assert not parent.IS_SLOT
+        np.PropertyOwner.__init__(self)
+        # initialise instance logger
+        self._logger = logging.getLogger(self.__class__.__name__)
         self.klass = self.classname = self.base = "slot"
         self.label = label
+
+        # initialise instance properties
+        self.parent = parent
+        self.children = None
+        self.pos = np.LayoutPosProperty(pos)  # position within the sizer
+        # the following are just set to use the same Add call as with widgets
+        self.proportion = 1
+        self.span = (1,1)
+        self.flag = wx.EXPAND
+        self.border = 0
+
+        self.widget = None       # Reference to the widget resembling the slot (a wx.Window)
+        self.name = "SLOT"
+        self.overlapped = False  # for spanning in GridBagSizer
+        self.node = None
 
     def update_view(self, selected):
         # we can ignore selected here, as the repainting only takes place later
@@ -392,7 +421,7 @@ class Slot(EditBase):
 
     def on_paint(self, event):
         "Handle paint request and draw hatched lines onto the window"
-        if not self.sizer: return  # in deletion
+        #if not self.sizer: return  # in deletion
         dc = wx.PaintDC(self.widget)
         self._draw_background(dc)
 
@@ -471,14 +500,12 @@ class Slot(EditBase):
 
         # slot actions
         if self.parent.IS_SIZER:
-            # we can add/remove items only from non-virtual sizers
-            if not isinstance(self.parent, EditGridBagSizer):
+            if not "cols" in self.parent.properties:
                 i = misc.append_menu_item(menu, -1, _('Remove Slot\tDel'), wx.ART_DELETE)
                 misc.bind_menu_item_after(widget, i, self.remove)
                 if len(self.parent.children)<=2: i.Enable(False)
-
-            # if inside a grid sizer: allow removal of empty rows/cols
-            if isinstance(self.parent, GridSizerBase):
+            else:
+                # if inside a grid sizer: allow removal of empty rows/cols
                 # check whether all slots in same row/col are empty
                 row_is_empty = col_is_empty = True
                 for i,child in enumerate(self.parent.children):
@@ -628,9 +655,8 @@ class Slot(EditBase):
         if self.label: return str(self.label)
         pos = self.pos
         if self.parent.IS_SIZER and "cols" in self.parent.properties:
-            # row/col
-            sizer = self.parent
-            rows, cols = sizer._get_actual_rows_cols()
+            # grid sizer: display row/col
+            rows, cols = self.parent._get_actual_rows_cols()
             row = pos // cols + 1  # 1 based at the moment
             col = pos %  cols + 1
             return "SLOT  %d/%d"%(row, col)
@@ -656,10 +682,3 @@ class Slot(EditBase):
                 name = 'EditSplitterSlot-Top'   if self.pos==1 else  'EditSplitterSlot-Bottom'
         return name
 
-
-
-
-########################################################################################################################
-# helpers
-
-    

@@ -19,15 +19,14 @@ class PythonNotebookGenerator(wcodegen.PythonWidgetCodeWriter):
         id_name, id = self.codegen.generate_code_id(window)
 
         layout_props = []
-        for label, tab_win in zip(window.tabs, window.pages):
-            label = label[0]
+        for (label,), tab_win in zip(window.tabs, window.children):
             if tab_win.klass == "sizerslot":
                 tab_win = "wx.Panel(self.%s)"%window.name
             else:
                 tab_win = 'self.%s'%tab_win.name
             layout_props.append('self.%s.AddPage(%s, %s)\n'%(window.name, tab_win, self.codegen.quote_str(label)))
             
-        parent = self.format_widget_access(window.parent)
+        parent = self.format_widget_access(window.parent_window)
         if window.IS_TOPLEVEL:
             l = []
             if id_name:
@@ -48,8 +47,7 @@ class PythonNotebookGenerator(wcodegen.PythonWidgetCodeWriter):
     def get_properties_code(self, obj):
         prop = obj.properties
         props_buf = []
-        for label, tab_win in zip(obj.tabs, obj.pages):
-            label = label[0]
+        for (label,), tab_win in zip(obj.tabs, obj.children):
             props_buf.append( 'self.AddPage(self.%s, %s)\n' % (tab_win.name, self.codegen.quote_str(label)) )
         props_buf.extend(self.codegen.generate_common_properties(obj))
         return props_buf
@@ -74,14 +72,14 @@ def xrc_code_generator(obj):
             xrcgen.DefaultXrcObject.write(self, output, ntabs, properties)
 
         def write_child_prologue(self, child, output, ntabs):
-            if self.widget.pages:
-                label = self.widget.tabs[child.widget.pos-1][0]  # pos is 1-based
+            if self.widget.children:
+                label = self.widget.tabs[child.widget.pos][0]
                 tab_s = '    ' * ntabs
                 output.append( tab_s + '<object class="notebookpage">\n' )
                 output.append( tab_s + '<label>%s</label>\n' % escape(label) )
 
         def write_child_epilogue(self, child, output, ntabs):
-            if self.widget.pages:
+            if self.widget.children:
                 output.append( '    '*ntabs + '</object>\n' )
 
     return NotebookXrcObject(obj)
@@ -108,12 +106,11 @@ class CppNotebookGenerator(wcodegen.CppWidgetCodeWriter):
             ids = []
 
         layout_props = []
-        for label, tab_win in zip(window.tabs, window.pages):
-            label = label[0]
+        for (label,), tab_win in zip(window.tabs, window.children):
             layout_props.append('%s->AddPage(%s, %s);\n' % (window.name, tab_win.name, self.codegen.quote_str(label)))
 
-        if not window.parent.IS_TOPLEVEL:
-            parent = '%s' % window.parent.name
+        if not window.parent_window.IS_TOPLEVEL:
+            parent = '%s' % window.parent_window.name
         else:
             parent = 'this'
         if window.IS_TOPLEVEL:
@@ -128,8 +125,7 @@ class CppNotebookGenerator(wcodegen.CppWidgetCodeWriter):
     def get_properties_code(self, obj):
         prop = obj.properties
         props_buf = []
-        for label, tab_win in zip(obj.tabs, obj.pages):
-            label = label[0]
+        for (label,), tab_win in zip(obj.tabs, obj.children):
             props_buf.append( 'AddPage(%s, %s);\n' % (tab_win.name, self.codegen.quote_str(label)) )
         props_buf.extend(self.codegen.generate_common_properties(obj))
         return props_buf

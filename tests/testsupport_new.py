@@ -274,22 +274,20 @@ class WXGladeGUITest(WXGladeBaseTest):
 
         # some shortcuts
         tree = common.app_tree
-        app = tree.app
+        app = tree.root
 
         if test_GUI or preview:
             # expand tree and show edit window
-            first_window_node = app.node.children[0]
-            first_window = first_window_node.widget
-            first_window_item = first_window_node.item
+            first_window = app.children[0]
         if test_GUI:
-            if first_window_item.IsOk():
+            if first_window.item.IsOk():
                 tree.expand()
                 self._process_wx_events()
-                tree.SelectItem(first_window_item)
+                tree.SelectItem(first_window.item)
                 self._process_wx_events()
-                tree.show_toplevel(first_window_node)
+                tree.show_toplevel(first_window)
             self._process_wx_events()
-        if preview:
+        if preview and "preview" in first_window.properties:
             first_window.properties["preview"]()
             self._process_wx_events()
 
@@ -359,8 +357,8 @@ class WXGladeGUITest(WXGladeBaseTest):
                     compare_files.append( (expected_filename, generated_filename) )
                     compare_files.append( (expected_filename_h, generated_filename_h) )
                 else:
-                    for toplevel in app.node.children:
-                        classname = toplevel.widget.klass
+                    for toplevel in app.children:
+                        classname = toplevel.klass
                         # class C++ file
                         expected_filename = self._get_casefile_path( "%s.%s"%(classname, app.source_extension) )
                         if expected_filename:

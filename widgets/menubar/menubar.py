@@ -359,6 +359,24 @@ class MenuItemDialog(wx.Dialog):
         self.selected_index -= 1
         self.menu_items.Select(self.selected_index)
 
+    def _insert_item(self, index, item):
+        compat.ListCtrl_InsertStringItem(self.items, index, item[0])
+        for col, value in enumerate(item):
+            if col==0: continue
+            compat.ListCtrl_SetStringItem(self.items, index, col, compat.unicode(value))
+        # fix bug 698074
+        self.items.SetItemState(index, wx.LIST_STATE_SELECTED, wx.LIST_STATE_SELECTED)
+
+    def _get_item(self, index):
+        ret = []
+        for c,colname in enumerate(self.columns):
+            col = self.columns.index(colname)
+            value = self.items.GetItem(index, col).GetText()
+            if colname in self.coltypes:
+                value = self.coltypes[colname](value)
+            ret.append(value)
+        return ret
+
     def add_items(self, menus):
         """adds the content of 'menus' to self.menu_items. menus is a sequence of
         trees which describes the structure of the menus"""
@@ -670,10 +688,13 @@ class EditMenuBar(EditBase, PreviewMixin):
 
     _PROPERTIES = ["menus", "preview"]
     PROPERTIES = EditBase.PROPERTIES + _PROPERTIES + EditBase.EXTRA_PROPERTIES
+    CHILDREN = 0
 
     def __init__(self, name, klass, parent):
         custom_class = parent is None
-        EditBase.__init__(self, name, klass, parent, wx.NewId(), custom_class=custom_class)
+        if parent.IS_ROOT:
+            self.__dict__["names"] = {}  # XXX not used if EditMenuBar is splitted into EditToplevelMenuBar
+        EditBase.__init__(self, name, klass, parent, custom_class=custom_class)
         self.base = 'wxMenuBar'
 
         self.menus = MenuProperty()
@@ -751,7 +772,7 @@ class EditMenuBar(EditBase, PreviewMixin):
 
     def remove(self, *args, **kwds):
         # entry point from GUI
-        if self.parent is not None:
+        if not self.parent.IS_ROOT:
             self.parent.properties['menubar'].set(False)
             self.parent._menubar = None
             if kwds.get('gtk_do_nothing', False) and wx.Platform == '__WXGTK__':
@@ -856,15 +877,14 @@ def builder(parent, pos):
 def xml_builder(attrs, parent, sizeritem, pos=None):
     "factory to build EditMenuBar objects from a XML file"
     name = attrs.get('name')
-    if parent is not None:
+    if parent is not None and not parent.IS_ROOT:
         if name:
             parent._menubar.properties["name"].set(name)
             parent._menubar.properties_changed(["name"])
         return parent._menubar
     else:
-        mb = EditMenuBar(name, attrs.get('class', 'wxMenuBar'), None)
-        mb.node = Node(mb)
-        common.app_tree.add(mb.node)
+        mb = EditMenuBar(name, attrs.get('class', 'wxMenuBar'), parent)
+        common.app_tree.add(mb)
         return mb
 
 

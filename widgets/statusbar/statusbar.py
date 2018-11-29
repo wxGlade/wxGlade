@@ -59,9 +59,10 @@ class EditStatusBar(EditBase, EditStylesMixin):
 
     _PROPERTIES = ["Widget", "style", "fields"]
     PROPERTIES = EditBase.PROPERTIES + _PROPERTIES + EditBase.EXTRA_PROPERTIES
+    CHILDREN = 0
 
     def __init__(self, name, klass, parent):
-        EditBase.__init__( self, name, klass, parent, wx.NewId(), custom_class=False )
+        EditBase.__init__( self, name, klass, parent, custom_class=False )
         EditStylesMixin.__init__(self)
 
         # for the statusbar fields
@@ -69,8 +70,7 @@ class EditStatusBar(EditBase, EditStylesMixin):
         self.fields = FieldsProperty(fields)
         self.window_id = None  # just a dummy for code generation
 
-        self.node = Node(self)
-        common.app_tree.add(self.node, parent.node)
+        common.app_tree.add(self, parent)
 
     def create_widget(self):
         self.widget = wx.StatusBar(self.parent.widget, -1)

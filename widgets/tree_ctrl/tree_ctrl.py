@@ -20,7 +20,7 @@ class EditTreeCtrl(ManagedBase, EditStylesMixin):
     _PROPERTIES = ["Widget", "style"]
     PROPERTIES = ManagedBase.PROPERTIES + _PROPERTIES + ManagedBase.EXTRA_PROPERTIES
 
-    def __init__(self, name, parent, sizer, pos, style=wx.TR_HAS_BUTTONS|wx.BORDER_SUNKEN):
+    def __init__(self, name, parent, pos, style=wx.TR_HAS_BUTTONS|wx.BORDER_SUNKEN):
         ManagedBase.__init__(self, name, 'wxTreeCtrl', parent, pos)
         EditStylesMixin.__init__(self)
 

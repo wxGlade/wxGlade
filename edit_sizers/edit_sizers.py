@@ -158,30 +158,31 @@ class BaseSizerBuilder(object):
 #class SizerSlot(np.PropertyOwner):
 class SizerSlot(edit_base.Slot):
     "A window to represent a slot in a sizer"
-    PROPERTIES = ["Slot", "pos"]
-    
+    #def __init__(self, parent, pos=0, label=None):
+        #assert isinstance(pos, int)
+        #np.PropertyOwner.__init__(self)
+        ## initialise instance logger
+        #self._logger = logging.getLogger(self.__class__.__name__)
+        #self.klass = self.classname = self.base = "sizerslot"
+        #self.label = label
+
+        ## initialise instance properties
+        #self.parent = parent
+        #self.children = None
+        #self.pos = np.LayoutPosProperty(pos)  # position within the sizer
+        ## the following are just set to use the same Add call as with widgets
+        #self.proportion = 1
+        #self.span = (1,1)
+        #self.flag = wx.EXPAND
+        #self.border = 0
+
+        #self.widget = None       # Reference to the widget resembling the slot (a wx.Window)
+        #self.name = "SLOT"
+        #self.overlapped = False  # for spanning in GridBagSizer
+        #self.node = None
     def __init__(self, parent, pos=0, label=None):
-        assert isinstance(pos, int)
-        np.PropertyOwner.__init__(self)
-        # initialise instance logger
-        self._logger = logging.getLogger(self.__class__.__name__)
+        edit_base.Slot.__init__(self, parent, pos, label)
         self.klass = self.classname = self.base = "sizerslot"
-        self.label = label
-
-        # initialise instance properties
-        self.parent = parent
-        self.children = None
-        self.pos = np.LayoutPosProperty(pos)  # position within the sizer, 1-based
-        # the following are just set to use the same Add call as with widgets
-        self.proportion = 1
-        self.span = (1,1)
-        self.flag = wx.EXPAND
-        self.border = 0
-
-        self.widget = None       # Reference to the widget resembling the slot (a wx.Window)
-        self.name = "SLOT"
-        self.overlapped = False  # for spanning in GridBagSizer
-        self.node = None
 
     @property
     def sizer(self):
@@ -381,18 +382,6 @@ class Sizer(edit_base.EditBase):
         "Internal method used to replace a notebook widget with its notebook sizer."
         pass
 
-    def is_virtual(self):
-        "Return true if sizer is virtual (e.g. SplitterWindowSizer or NotebookSizer)"
-        return False
-
-    def is_fixed(self):
-        "Return True if sizer has a fixed number of slots (e.g. SplitterWindowSizer)"
-
-    def get_itempos(self, attrs):
-        """For virtual sizers only, returns the position of the item in the parent:
-        this is used when loading a wxg file, to build the tree of widgets correctly"""
-        raise NotImplementedError
-
 
 class OrientProperty(np.Property):
     "orientation property for BoxSizers; hidden property to be set by the ClassOrientProperty"
@@ -400,6 +389,7 @@ class OrientProperty(np.Property):
     STRING_to_ORIENTATION = {'wxHORIZONTAL': wx.HORIZONTAL, 'wxVERTICAL': wx.VERTICAL}
 
     def __init__(self, value, default_value=None, name=None):
+        assert value!=0
         np.Property.__init__(self, value, default_value, name)
     def _set_converter(self, value):
         if not value: return None
@@ -472,7 +462,8 @@ class SizerBase(Sizer, np.PropertyOwner):
             self.PROPERTIES = self.PROPERTIES + self.MANAGED_PROPERTIES + self.EXTRA_PROPERTIES
             # if within another sizer: the arguments to sizer.Add(self, proportion, flag, border)
             # same as for edit_windows.ManagedBase
-            self.pos        = np.LayoutPosProperty(0)        # the position within the sizer, 0-based
+            if pos is None: pos = self.parent.children.index(self)
+            self.pos        = np.LayoutPosProperty(pos)        # the position within the sizer, 0-based
             self.span       = np.LayoutSpanProperty((1,1) )  # row,colspan for items in GridBagSizers
             self.proportion = np.LayoutProportionProperty(1)
             self.border     = np.SpinProperty(0, immediate=True)
@@ -622,7 +613,6 @@ class SizerBase(Sizer, np.PropertyOwner):
 
     def _add_popup_menu_items(self, menu, item, widget):
         # called from managed widget items' _create_popup_menu method
-        if self.is_virtual(): return
 
         # rows/cols if inside a grid sizer
         if "rows" in self.PROPERTIES:
@@ -697,7 +687,7 @@ class SizerBase(Sizer, np.PropertyOwner):
     def fit_parent(self, *args):
         "Tell the sizer to resize the window to match the sizer's minimal size"
         if self.widget and self.window.widget:
-            if self.window._is_toplevel:
+            if self.window.IS_TOPLEVEL:
                 self.widget.Fit(self.window.widget.GetTopLevelParent())
             else:
                 self.widget.Fit(self.window.widget)
@@ -746,7 +736,7 @@ class SizerBase(Sizer, np.PropertyOwner):
         print("ADDED ITEM", item, pos, self.children)
 
     def _add_item(self, item, pos, size=None, force_layout=True):
-        "called from finish_widget_creation()"
+        "called from finish_widget_creation() to add to sizer widget"
         print("_add_item", item, pos)
 
         # calculate width, height
@@ -1040,7 +1030,7 @@ class SizerBase(Sizer, np.PropertyOwner):
         # insert node into tree
         common.app_tree.insert(slot, self, pos, select=select)
         for c in self.children:
-            if c.IS_SLOT:
+            if c and c.IS_SLOT:
                 common.app_tree.refresh( c, refresh_label=True, refresh_image=False )
 
         if self.widget:
@@ -1226,10 +1216,11 @@ class EditBoxSizer(BoxSizerBase):
         for pos, size in to_lay_out:
             self.set_item_best_size(self.children[pos], size)
         self.layout(True)
-        if not self.toplevel and getattr(self, 'sizer'):
+        #if not self.toplevel and getattr(self, 'sizer'):
             # hasattr(self, 'sizer') is False only in case of a 'change_sizer' call
             #self.sizer.add_item( self, self.pos, self.widget.GetMinSize() )
-            self.sizer._add_item( self, self.pos, self.widget.GetMinSize() )
+        if self.parent.IS_SIZER:
+            self.parent._add_item( self, self.pos, self.widget.GetMinSize() )
 
 
 if HAVE_WRAP_SIZER:
@@ -1273,9 +1264,10 @@ if HAVE_WRAP_SIZER:
             for pos, size in to_lay_out:
                 self.set_item_best_size(self.children[pos], size)
             self.layout(True)
-            if not self.toplevel and getattr(self, 'sizer'):
+            #if not self.toplevel and getattr(self, 'sizer'):
                 # hasattr(self, 'sizer') is False only in case of a 'change_sizer' call
-                self.sizer.add_item( self, self.pos, self.widget.GetMinSize() )
+            if self.parent.IS_SIZER:
+                self.sizer._add_item( self, self.pos, self.widget.GetMinSize() )
     
 
 
@@ -1322,9 +1314,10 @@ class EditStaticBoxSizer(BoxSizerBase):
                     w, h = c.widget.GetBestSize()
                 self.widget.SetItemMinSize(c.widget, w, h)
         self.layout()
-        if not self.toplevel and getattr(self, 'sizer'):
+        #if not self.toplevel and getattr(self, 'sizer'):
             # getattr(self, 'sizer') is False only in case of a 'change_sizer' call
-            self.sizer.add_item(self, self.pos, self.widget.GetMinSize())
+        if self.parent.IS_SIZER:
+            self.parent._add_item(self, self.pos, self.widget.GetMinSize())
 
     def properties_changed(self, modified):
         if not modified or "label" in modified and self.widget:
@@ -1332,9 +1325,9 @@ class EditStaticBoxSizer(BoxSizerBase):
             #self.layout()
         if modified and "name" in modified:
             previous_name = self.properties["name"].previous_value
-            common.app_tree.refresh_name(self.node, previous_name)
+            common.app_tree.refresh(self, refresh_label=True, refresh_image=False)
         elif not modified or "label" in modified or "name" in modified and self.node:
-            common.app_tree.refresh_name(self.node)
+            common.app_tree.refresh(self, refresh_label=True, refresh_image=False)
 
         BoxSizerBase.properties_changed(self, modified)
 
@@ -1873,8 +1866,8 @@ class EditFlexGridSizer(GridSizerBase):
     _PROPERTY_HELP = {"growable_rows":'Select growable rows',
                       "growable_cols":'Select growable columns'}
 
-    def __init__(self, name, parent, pos, rows=3, cols=3, vgap=0, hgap=0, toplevel=True):
-        GridSizerBase.__init__(self, name, self.WX_CLASS, parent, pos, rows, cols, vgap, hgap, toplevel)
+    def __init__(self, name, parent, pos, rows=3, cols=3, vgap=0, hgap=0):
+        GridSizerBase.__init__(self, name, self.WX_CLASS, parent, pos, rows, cols, vgap, hgap)
         self.growable_rows = _GrowablePropertyD([], default_value=[])
         self.growable_cols = _GrowablePropertyD([], default_value=[])
         self.properties["growable_rows"].title = 'Select growable rows'
@@ -1884,9 +1877,10 @@ class EditFlexGridSizer(GridSizerBase):
         self.widget = CustomFlexGridSizer(self, self.rows, self.cols, self.vgap, self.hgap)
         GridSizerBase.create_widget(self)
         self._set_growable()
-        if not self.toplevel and getattr(self, 'sizer', None) is not None:
+        #if not self.toplevel and getattr(self, 'sizer', None) is not None:
             # hasattr(self, 'sizer') is False only in case of a 'change_sizer' call
-            self.sizer.add_item(self, self.pos)
+        if self.parent.IS_SIZER:
+            self.parent._add_item(self, self.pos)
 
     def _set_growable(self):
         rows = self.growable_rows
@@ -1942,9 +1936,10 @@ class EditGridBagSizer(EditFlexGridSizer):
         self.layout(True)
         ################################################################################################################
         self._set_growable()
-        if not self.toplevel and getattr(self, 'sizer', None) is not None:
-            # hasattr(self, 'sizer') is False only in case of a 'change_sizer' call
-            self.sizer.add_item(self, self.pos)
+        #if not self.toplevel and getattr(self, 'sizer', None) is not None:
+        #    # hasattr(self, 'sizer') is False only in case of a 'change_sizer' call
+        if self.parent.IS_SIZER:
+            self.parent._add_item(self, self.pos)
 
     def check_span_range(self, pos, rowspan=1, colspan=1):
         "called from LayoutSpanProperty to set the maximum row/col span range"
@@ -2417,7 +2412,7 @@ def grid_xml_builder(attrs, parent, sizeritem, pos=None):
     elif attrs['base'] == 'EditGridBagSizer':
         constructor = EditGridBagSizer
     sz = constructor(name, parent, pos, rows=0, cols=0)
-    common.app_tree.insert(sz, sizer, pos)
+    common.app_tree.insert(sz, parent, pos)
     return sz
 
 

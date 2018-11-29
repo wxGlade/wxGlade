@@ -78,7 +78,7 @@ def xml_builder(attrs, parent, sizeritem, pos=None):
         raise XmlParsingError(_("sizer or sizeritem object cannot be None"))
     calendar_ctrl = EditCalendarCtrl(label, parent, pos)
     #sizer.set_item(calendar_ctrl.pos, proportion=sizeritem.proportion, span=sizeritem.span, flag=sizeritem.flag, border=sizeritem.border)
-    common.app_tree.insert(button, parent, pos)
+    common.app_tree.insert(calendar_ctrl, parent, pos)
     return calendar_ctrl
 
 

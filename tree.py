@@ -7,10 +7,9 @@ Classes to handle and display the structure of a wxGlade app
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
-import logging, os.path, sys, time
+import logging, os.path
 import wx
 import misc, common, compat, config, clipboard
-import edit_sizers, application
 
 
 class WidgetTree(wx.TreeCtrl):#, Tree):
@@ -191,8 +190,8 @@ class WidgetTree(wx.TreeCtrl):#, Tree):
         if new_tab is not None:
             notebook = widget.parent
             tabs_p = notebook.properties["tabs"]
-            if widget in notebook.pages:
-                index = notebook.pages.index(node.widget)
+            if widget in notebook.children:
+                index = notebook.children.index(widget)
                 if notebook.tabs[index][0]==new_tab:
                     new_tab = None
                 else:
@@ -225,7 +224,7 @@ class WidgetTree(wx.TreeCtrl):#, Tree):
         if new_tab:
             tabs_p.previous_value = tabs_p.value
             tabs_p.set(new_tabs, notify=True)
-        wx.CallAfter( self.refresh, node, refresh_label=True)  # setting from within the event handler does not work
+        wx.CallAfter( self.refresh, widget, refresh_label=True)  # setting from within the event handler does not work
 
     if compat.IS_CLASSIC:
         def _SetItemData(self, item, data):
@@ -435,7 +434,7 @@ class WidgetTree(wx.TreeCtrl):#, Tree):
             widget.finish_widget_creation()
             widget.drop_target = clipboard.DropTarget(widget)
             widget.widget.SetDropTarget(widget.drop_target)
-        
+
         with widget.frozen():
             if widget.children:
                 for c in widget.children:
@@ -527,13 +526,10 @@ class WidgetTree(wx.TreeCtrl):#, Tree):
 
         # this is a bit of a hack to replace the old widget node with a SlotNode
         # XXX probably it would be better to modify the Node class to take care of SizerSlot instances
-        #widget.item = node.item
         self._SetItemData(node.item, widget)
         old_children = node.children
-        #self.remove(node, delete=False)  # don't delete the node, as we just want to modify it
         for c in old_children or []:     # but the children
             self.Delete(c.item)
-        #Tree.change_node(self, node, widget)
         widget.item = node.item
         node.item = None
         self.refresh(widget)
@@ -558,7 +554,6 @@ class WidgetTree(wx.TreeCtrl):#, Tree):
             assert oldw.widget
             pos = misc.get_toplevel_parent(oldw.widget).GetPosition()
             ret[0] = (ret[0], pos)
-        print("selected path", ret)
         return ret
 
     def get_widget_path(self, w):

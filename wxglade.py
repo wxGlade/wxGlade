@@ -265,9 +265,8 @@ def command_line_code_generation(filename, language, out_path=None):
     common.init_preferences()
     app = application.Application()
     # The following lines contain code from tree.WidgetTree.__init__()
-    root_node = tree.Node(app)
-    app.node = root_node
-    common.app_tree = tree.Tree(root_node, app)
+    if config.use_gui:
+        common.app_tree = tree.WidgetTree(root_node, app)
 
     # Now we can load the file
     if filename is not None:

@@ -22,12 +22,12 @@ class LispNotebookGenerator(wcodegen.LispWidgetCodeWriter):
         window_name = self.codegen._format_name(window.name)
 
         layout_props = []
-        for label, tab_win in zip(window.tabs, window.pages):
+        for (label,), tab_win in zip(window.tabs, window.children):
             tab_win = tab_win.name.replace('_', '-')
             fmt = '(wxNotebook_AddPage (slot-%s obj) (slot-%s obj) %s 1 -1)\n'
-            layout_props.append( fmt % (window_name, tab_win, self.codegen.quote_str(label[0]) ) )
+            layout_props.append( fmt % (window_name, tab_win, self.codegen.quote_str(label) ) )
 
-        parent = self.format_widget_access(window.parent)
+        parent = self.format_widget_access(window.parent_window)
 
         if window.IS_TOPLEVEL:
             l = []
@@ -48,9 +48,9 @@ class LispNotebookGenerator(wcodegen.LispWidgetCodeWriter):
 
     def get_properties_code(self, obj):
         props_buf = []
-        for label, tab_win in zip(obj.tabs, obj.pages):
+        for (label,), tab_win in zip(obj.tabs, obj.children):
             fmt = '(wxNotebook_AddPage (slot-%s obj) page %s 1 -1);\n'
-            props_buf.append( fmt % (tab_win.name, self.codegen.quote_str(label[0]) ) )
+            props_buf.append( fmt % (tab_win.name, self.codegen.quote_str(label) ) )
         props_buf.extend(self.codegen.generate_common_properties(obj))
         return props_buf
 

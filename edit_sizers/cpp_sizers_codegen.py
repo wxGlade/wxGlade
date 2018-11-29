@@ -27,10 +27,9 @@ class BaseCPPSizerBuilder(BaseSizerBuilder):
         #return parent
 
     def _get_wparent(self, obj):
-        while obj.IS_SIZER:
-            obj = obj.node.parent.widget
-        if not obj.IS_TOPLEVEL:
-            parent = '%s' % obj.name
+        window = obj.parent_window
+        if not window.IS_TOPLEVEL:
+            parent = '%s' % window.name
         else:
             parent = 'this'
         return parent
@@ -38,7 +37,7 @@ class BaseCPPSizerBuilder(BaseSizerBuilder):
     def _get_parent_ref(self, obj):
         #while obj.IS_SIZER:
         if obj.IS_SIZER:
-            obj = obj.node.parent.widget
+            obj = obj.parent
         #if not obj.parent.IS_TOPLEVEL:
         if not obj.IS_TOPLEVEL:
             parent_ref = '%s->' % obj.parent.name
@@ -48,9 +47,9 @@ class BaseCPPSizerBuilder(BaseSizerBuilder):
 
     def _get_parent_ref(self, obj):
         #if not obj.parent.IS_TOPLEVEL:
-        if not obj.node.parent.IS_TOPLEVEL:
+        if not obj.parent.IS_TOPLEVEL:
             #parent_ref = '%s->' % obj.parent.name
-            parent_ref = '%s->' % obj.node.parent.widget.name
+            parent_ref = '%s->' % obj.parent.name
         else:
             parent_ref = ''
         return parent_ref

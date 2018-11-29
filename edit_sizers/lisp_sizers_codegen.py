@@ -30,10 +30,9 @@ class BaseLispSizerBuilder(BaseSizerBuilder):
     """
 
     def _get_wparent(self, obj):
-        while obj.IS_SIZER:
-            obj = obj.node.parent.widget
-        if not obj.IS_TOPLEVEL:
-            parent = '(slot-%s obj)' % self.codegen._format_name(obj.name)
+        window = obj.parent_window
+        if not window.IS_TOPLEVEL:
+            parent = '(slot-%s obj)' % self.codegen._format_name(window.name)
         else:
             parent = self.tmpl_wparent
         return parent

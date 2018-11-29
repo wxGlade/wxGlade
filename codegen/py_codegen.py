@@ -469,7 +469,7 @@ from %(top_win_module)s import %(top_win_class)s\n\n"""
         if size is None:
             size = obj.properties["size"].get_string_value()
         use_dialog_units = (size[-1] == 'd')
-        if not obj.parent:
+        if not obj.parent_window:
             method = 'SetSize'
         else:
             method = 'SetMinSize'

@@ -19,7 +19,7 @@ class PerlPanelGenerator(wcodegen.PerlWidgetCodeWriter):
         scrollable = panel.scrollable
 
         id_name, id = self.codegen.generate_code_id(panel)
-        parent = self.format_widget_access(panel.parent)
+        parent = self.format_widget_access(panel.parent_window)
 
         if panel.IS_TOPLEVEL:
             l = []
