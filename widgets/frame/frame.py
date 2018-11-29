@@ -139,7 +139,7 @@ class EditFrame(TopLevelBase, EditStylesMixin, BitmapMixin):
 
 
 class EditMDIChildFrame(EditFrame):
-    _is_toplevel_window = False  # avoid to appear in the "Top Window" property of the app
+    IS_TOPLEVEL_WINDOW = False  # avoid to appear in the "Top Window" property of the app
     PROPERTIES = [p for p in EditFrame.PROPERTIES if p!="statusbar"]
     #def __init__(self, *args, **kwds):
         #EditFrame.__init__(self, *args, **kwds)

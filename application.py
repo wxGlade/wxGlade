@@ -199,9 +199,7 @@ class Application(EditRoot):
         _PROPERTY_HELP["output_path"] = "Output file or directory; double click label to show in Explorer"
     elif sys.platform=="darwin":
         _PROPERTY_HELP["output_path"] = "Output file or directory; double click label to show in Finder"
-    #is_sizer = False
-    #_is_toplevel = False
-    #base = None
+
     IS_WINDOW = IS_SIZER = IS_TOPLEVEL = IS_SLOT = False
     CHILDREN = None  # any number of toplevel windows etc.
 
@@ -751,7 +749,6 @@ class Application(EditRoot):
         return (False, "Only toplevel widgets can be added here; click Frame or Dialog icon to do so")
 
     def check_compatibility(self, widget, typename=None):
-        #if getattr(widget, "_is_toplevel", False) or typename=="window":
         if widget.IS_TOPLEVEL or typename=="window":
             return (True, None)
         return (False, "Only toplevel widgets can be pasted here (e.g. Frame or Dialog)")

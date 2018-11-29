@@ -534,12 +534,10 @@ class EditToolBar(EditBase, PreviewMixin, EditStylesMixin, BitmapMixin):
 
         self.widget = self._tb = None  # a panel and the actual ToolBar
 
-        if not self.parent:
+        if parent.IS_ROOT:
             PreviewMixin.__init__(self)  # add a preview button
-            self._is_toplevel = True
         else:
             self.preview = None
-            self._is_toplevel = False
 
     def create_widget(self):
         tb_style = wx.TB_HORIZONTAL | self.style

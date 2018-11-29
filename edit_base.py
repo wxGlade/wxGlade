@@ -38,7 +38,15 @@ class EditBase(np.PropertyOwner):
 
         # initialise structure
         self.parent = parent
-        self.children = _OwnList([])  if self.CHILDREN is not None  else None
+        if self.CHILDREN is None:
+            # variable number of children
+            self.children = _OwnList([])
+        elif self.CHILDREN:
+            # fixed number of children
+            self.children = _OwnList([None]*self.CHILDREN)
+        else:
+            # no children
+            self.children = None
         self.id = wx.NewId()  # id used for internal purpose events
         self.parent.add_item(self, pos)
 
@@ -93,14 +101,24 @@ class EditBase(np.PropertyOwner):
 
     def add_item(self, child, pos=None):
         if pos is None:
-            self.children.append(child)
-        else:
-            if len(self.children)<=pos:
-                self.children += [None]*(pos - len(self.children) + 1)
-            if self.children[pos] is not None:
-                self.children[pos].item
-                self.children[pos].delete()
-            self.children[pos] = child
+            if self.CHILDREN is None:
+                # variable number of children
+                self.children.append(child)
+                return
+            # fixed number of children; fill first free position (a None or a Slot)
+            assert self.CHILDREN
+            if None in self.children:
+                pos = self.children.index(None)
+            else:
+                old_slot = [c for c in self.children if c.IS_SLOT][0]
+                common.app_tree.remove(old_slot)
+                pos = old_slot.pos
+
+        if len(self.children)<=pos:
+            self.children += [None]*(pos - len(self.children) + 1)
+        if self.children[pos] is not None:
+            self.children[pos].delete()
+        self.children[pos] = child
 
     def has_ancestor(self, node):
         "Returns True if node is parent or parents parent ..."

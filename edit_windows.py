@@ -253,7 +253,7 @@ class WindowBase(EditBase):
     _PROPERTY_LABELS = {"attribute":'Store as attribute'}  # used in many derived widget editors
 
     IS_WINDOW = True
-    CHILDREN = 1  # sizer or something else
+    CHILDREN = None  # sizer or something else
 
     def __init__(self, name, klass, parent, pos=None):
         EditBase.__init__(self, name, klass, parent, pos=pos)
@@ -507,7 +507,11 @@ class ManagedBase(WindowBase):
         self._has_layout = parent.IS_SIZER
 
         # attributes to keep the values of the sizer properties
-        if pos is None: pos = len(self.parent.children) - 1
+        if pos is None:
+            if self in self.parent.children:
+                pos = self.parent.children.index(self)
+            else:
+                pos = len(self.parent.children) - 1
         self.pos        = np.LayoutPosProperty(pos)            # position within the sizer, 0-based
         self.span       = np.LayoutSpanProperty((1,1))         # cell spanning for GridBagSizer
         self.proportion = np.LayoutProportionProperty(0)       # item growth in sizer main direction

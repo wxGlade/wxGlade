@@ -162,9 +162,9 @@ class DropTarget(wx.DropTarget):
 def get_data_object(widget):
     data = dump_widget(widget)
     # make a data object
-    if isinstance(widget, edit_sizers.Sizer):
+    if widget.IS_SIZER:
         do = wx.CustomDataObject(sizer_data_format)
-    elif getattr(widget, "_is_toplevel", False):
+    if widget.IS_TOPLEVEL:
         do = wx.CustomDataObject(window_data_format)
     else:
         do = wx.CustomDataObject(widget_data_format)

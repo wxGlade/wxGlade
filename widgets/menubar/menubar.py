@@ -704,12 +704,10 @@ class EditMenuBar(EditBase, PreviewMixin):
         self.window_id = None  # just a dummy for code generation
 
         self._mb = None  # the real menubar
-        if not self.parent:
+        if parent.IS_ROOT:
             PreviewMixin.__init__(self)  # add a preview button
-            self._is_toplevel = True
         else:
             self.preview = None
-            self._is_toplevel = False
 
     def create_widget(self):
         if wx.Platform == '__WXGTK__' and not EditMenuBar.__hidden_frame:

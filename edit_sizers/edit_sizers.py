@@ -154,40 +154,11 @@ class BaseSizerBuilder(object):
         return result
 
 
-
-#class SizerSlot(np.PropertyOwner):
 class SizerSlot(edit_base.Slot):
     "A window to represent a slot in a sizer"
-    #def __init__(self, parent, pos=0, label=None):
-        #assert isinstance(pos, int)
-        #np.PropertyOwner.__init__(self)
-        ## initialise instance logger
-        #self._logger = logging.getLogger(self.__class__.__name__)
-        #self.klass = self.classname = self.base = "sizerslot"
-        #self.label = label
-
-        ## initialise instance properties
-        #self.parent = parent
-        #self.children = None
-        #self.pos = np.LayoutPosProperty(pos)  # position within the sizer
-        ## the following are just set to use the same Add call as with widgets
-        #self.proportion = 1
-        #self.span = (1,1)
-        #self.flag = wx.EXPAND
-        #self.border = 0
-
-        #self.widget = None       # Reference to the widget resembling the slot (a wx.Window)
-        #self.name = "SLOT"
-        #self.overlapped = False  # for spanning in GridBagSizer
-        #self.node = None
     def __init__(self, parent, pos=0, label=None):
         edit_base.Slot.__init__(self, parent, pos, label)
         self.klass = self.classname = self.base = "sizerslot"
-
-    @property
-    def sizer(self):
-        if self.parent.IS_SIZER: return self.parent
-        return None
 
     def set_overlap(self, overlapped=True, add_to_sizer=True):
         # interface from GridBagSizer; so self.parent is a sizer
@@ -220,7 +191,6 @@ class SizerSlot(edit_base.Slot):
                 return (False, "No toplevel object can be pasted here.")
             return (True,None)
 
-        #if getattr(widget, "_is_toplevel", False):
         if widget.IS_TOPLEVEL:
             return (False, "No toplevel object can be pasted here.")
         #if self.sizer.is_virtual() and isinstance(widget, Sizer):
@@ -549,7 +519,7 @@ class SizerBase(Sizer, np.PropertyOwner):
             if typename in ("widget","sizer"):
                 return ("AddSlot",None)
             return (False,"Only widgets and sizers can be pasted here")
-        if getattr(widget, "_is_toplevel", False):
+        if widget.IS_TOPEVEL:
             return (False,"No toplevel objects can be pasted here")
         return ("AddSlot",None) # a slot is to be added before inserting/pasting
 
@@ -694,14 +664,6 @@ class SizerBase(Sizer, np.PropertyOwner):
             # self.widget.SetSizeHints(self.window.widget)
             self.window.widget.Layout()
 
-    #def _replacing_item(self, item, pos):
-        ## item is the new one; the old is in self.children[pos]
-        #if not self.widget: return
-        #old_child = self.children[pos]
-        #if old_child.IS_SLOT and old_child.widget:
-            #self.widget.Detach(old_child.widget)
-            #old_child.delete()
-
     def add_item(self, item, pos=None, size=None, force_layout=True):
         "Adds an item to self."
         # called from ManagedBase.__init__ when adding an item to the end from XML parser
@@ -725,19 +687,13 @@ class SizerBase(Sizer, np.PropertyOwner):
         self.children[pos] = item
         item._size = size
 
-        ##item.sizer = self
-        ## XXX is this required? during initalization of item, it's not yet defined
-        #if item.properties: item.properties["pos"].set(pos)
-
         ################################################################################################################
         # actually add item.widget to self.widget, i.e. the wxWidget to the wxSizer
         if self.widget and item.widget:
             self._add_item(item, pos, size, force_layout=force_layout)
-        print("ADDED ITEM", item, pos, self.children)
 
     def _add_item(self, item, pos, size=None, force_layout=True):
         "called from finish_widget_creation() to add to sizer widget"
-        print("_add_item", item, pos)
 
         # calculate width, height
         size_arg = size

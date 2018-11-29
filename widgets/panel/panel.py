@@ -232,7 +232,7 @@ class EditPanel(PanelBase, ManagedBase):
 
 
 class EditTopLevelPanel(PanelBase, TopLevelBase):
-    _is_toplevel_window = False  # avoid to appear in the "Top Window" property of the app
+    IS_TOPLEVEL_WINDOW = False  # avoid to appear in the "Top Window" property of the app
 
     PROPERTIES = TopLevelBase.PROPERTIES + PanelBase._PROPERTIES + TopLevelBase.EXTRA_PROPERTIES
 

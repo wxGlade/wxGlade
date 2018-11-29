@@ -475,7 +475,6 @@ class WidgetTree(wx.TreeCtrl):#, Tree):
         # the actual toplevel widget may be one level higher, e.g. for a Panel, which is embedded in a Frame
         set_size = None
         if widget.IS_TOPLEVEL:
-            #if getattr(node.widget, "_is_toplevel_window", False) or getattr(node.widget, "_is_toplevel", False):s
             # toplevel window or a menu/status bar
             toplevel_widget = widget.widget
             size_p    = widget.properties.get("size")
