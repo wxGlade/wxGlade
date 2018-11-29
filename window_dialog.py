@@ -14,7 +14,7 @@ def _get_all_class_names(item):
     for c in item.children or []:
         name = getattr(c, "klass", None)
         if name: ret.append(name)
-        ret += self.get_all_class_names(c)
+        ret += _get_all_class_names(c)
 
     return ret
 

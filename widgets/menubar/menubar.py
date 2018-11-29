@@ -691,9 +691,12 @@ class EditMenuBar(EditBase, PreviewMixin):
     CHILDREN = 0
 
     def __init__(self, name, klass, parent):
-        custom_class = parent is None
         if parent.IS_ROOT:
+            self.__dict__["IS_TOPLEVEL"] = True
+            custom_class = True
             self.__dict__["names"] = {}  # XXX not used if EditMenuBar is splitted into EditToplevelMenuBar
+        else:
+            custom_class = False
         EditBase.__init__(self, name, klass, parent, custom_class=custom_class)
         self.base = 'wxMenuBar'
 

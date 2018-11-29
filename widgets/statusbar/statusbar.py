@@ -62,6 +62,8 @@ class EditStatusBar(EditBase, EditStylesMixin):
     CHILDREN = 0
 
     def __init__(self, name, klass, parent):
+        if parent.IS_ROOT:
+            self.__dict__["IS_TOPLEVEL"] = True
         EditBase.__init__( self, name, klass, parent, custom_class=False )
         EditStylesMixin.__init__(self)
 

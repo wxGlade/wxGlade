@@ -219,7 +219,7 @@ def add_object(event):
 
 def add_toplevel_object(event):
     "Adds a toplevel widget (Frame or Dialog) to the current app"
-    widgets[refs[event.GetId()]](None, None, 0)
+    widgets[refs[event.GetId()]](root, 0)
     root.saved = False
 
 ########################################################################################################################
