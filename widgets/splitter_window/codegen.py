@@ -22,7 +22,7 @@ class PythonSplitterWindowGenerator(wcodegen.PythonWidgetCodeWriter):
 
         id_name, id = self.codegen.generate_code_id(window)
         parent = self.format_widget_access(window.parent_window)
-        if window.IS_TOPLEVEL:
+        if window.IS_CLASS:
             l = []
             if id_name:
                 l.append(id_name)
@@ -109,11 +109,11 @@ class CppSplitterWindowGenerator(wcodegen.CppWidgetCodeWriter):
             ids = [id_name]
         else:
             ids = []
-        if not window.parent_window.IS_TOPLEVEL:
+        if not window.parent_window.IS_CLASS:
             parent = '%s' % window.parent_window.name
         else:
             parent = 'this'
-        if window.IS_TOPLEVEL:
+        if window.IS_CLASS:
             l = ['%s = new %s(%s, %s);\n' % (window.name, window.klass, parent, id)]
             return l, ids, [], []
 

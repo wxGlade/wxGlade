@@ -19,36 +19,25 @@ class BaseCPPSizerBuilder(BaseSizerBuilder):
     tmpl_Fit = '%(sizer_name)s->Fit(%(parent_widget)s);\n'
     tmpl_SetSizeHints = '%(sizer_name)s->SetSizeHints(%(parent_widget)s);\n'
 
-    #def _get_wparent(self, obj):
-        #if not obj.parent.IS_TOPLEVEL:
-            #parent = '%s' % obj.parent.name
-        #else:
-            #parent = 'this'
-        #return parent
-
     def _get_wparent(self, obj):
         window = obj.parent_window
-        if not window.IS_TOPLEVEL:
+        if not window.IS_CLASS:
             parent = '%s' % window.name
         else:
             parent = 'this'
         return parent
 
     def _get_parent_ref(self, obj):
-        #while obj.IS_SIZER:
         if obj.IS_SIZER:
             obj = obj.parent
-        #if not obj.parent.IS_TOPLEVEL:
-        if not obj.IS_TOPLEVEL:
+        if not obj.IS_CLASS:
             parent_ref = '%s->' % obj.parent.name
         else:
             parent_ref = ''
         return parent_ref
 
     def _get_parent_ref(self, obj):
-        #if not obj.parent.IS_TOPLEVEL:
-        if not obj.parent.IS_TOPLEVEL:
-            #parent_ref = '%s->' % obj.parent.name
+        if not obj.parent.IS_CLASS:
             parent_ref = '%s->' % obj.parent.name
         else:
             parent_ref = ''

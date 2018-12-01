@@ -21,7 +21,7 @@ class LispPanelGenerator(wcodegen.LispWidgetCodeWriter):
         parent = self.format_widget_access(panel.parent_window)
         panel_name = self.codegen._format_name(panel.name)
 
-        if panel.IS_TOPLEVEL:
+        if panel.IS_CLASS:
             l = []
             if id_name:
                 l.append(id_name)

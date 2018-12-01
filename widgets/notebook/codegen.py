@@ -27,7 +27,7 @@ class PythonNotebookGenerator(wcodegen.PythonWidgetCodeWriter):
             layout_props.append('self.%s.AddPage(%s, %s)\n'%(window.name, tab_win, self.codegen.quote_str(label)))
             
         parent = self.format_widget_access(window.parent_window)
-        if window.IS_TOPLEVEL:
+        if window.IS_CLASS:
             l = []
             if id_name:
                 l.append(id_name)
@@ -109,11 +109,11 @@ class CppNotebookGenerator(wcodegen.CppWidgetCodeWriter):
         for (label,), tab_win in zip(window.tabs, window.children):
             layout_props.append('%s->AddPage(%s, %s);\n' % (window.name, tab_win.name, self.codegen.quote_str(label)))
 
-        if not window.parent_window.IS_TOPLEVEL:
+        if not window.parent_window.IS_CLASS:
             parent = '%s' % window.parent_window.name
         else:
             parent = 'this'
-        if window.IS_TOPLEVEL:
+        if window.IS_CLASS:
             l = ['%s = new %s(%s, %s);\n' % (window.name, window.klass, parent, id)]
             return l, ids, [], []
         init = ['%s = new %s(%s, %s%s);\n' % (window.name, window.klass, parent, id, self.tmpl_dict['style'])]

@@ -20,6 +20,7 @@ class _OwnList(list):
 class EditBase(np.PropertyOwner):
     #is_sizer = False
     IS_TOPLEVEL = IS_SLOT = IS_SIZER = IS_WINDOW = IS_ROOT = IS_TOPLEVEL_WINDOW = False
+    IS_CLASS = False  # generate class for this item; can be dynamically set during code generation
     # WX_CLASS: needs to be defined in every derived class XXX
     #CHILDREN = 1  # 0 or a fixed number or None for e.g. a sizer with a variable number of children
 
@@ -82,22 +83,21 @@ class EditBase(np.PropertyOwner):
             item = item.parent
 
     @property
-    def sizer(self):
-        # return the containing sizer or None
-        if self.IS_TOPLEVEL: return None
-        parent_children = self.parent.children
-        if len(parent_children) !=1 : return None
-        if parent_children[0].IS_SIZER: return parent_children[0]
+    def class_object(self):
+        # used for code generation: the object for which a class code is generated
+        item = self
+        parent = item.parent
+        while parent is not None:
+            if not item.IS_SIZER and item.IS_CLASS: return item
+            item = parent
+            parent = item.parent
         return None
+
     @property
     def sizer(self):
         # return the containing sizer or None
         if self.parent.IS_SIZER: return self.parent
         return None
-        #parent_children = self.parent.children
-        #if len(parent_children) !=1 : return None
-        #if parent_children[0].IS_SIZER: return parent_children[0]
-        #return None
 
     def add_item(self, child, pos=None):
         if pos is None:

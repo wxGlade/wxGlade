@@ -80,13 +80,8 @@ class BaseSizerBuilder(object):
         init.append(self.tmpl % self.tmpl_dict)
 
         # generate layout lines
-        #if obj.IS_TOPLEVEL:
-        #if obj.window.IS_TOPLEVEL:
         if not obj.parent.IS_SIZER:
             layout.append(self.tmpl_SetSizer % self.tmpl_dict)
-            #if not 'size' in obj.parent.properties and obj.parent.IS_TOPLEVEL:
-            #if not 'size' in obj.window.properties:
-            #if not obj.window.properties["size"].is_active():
             if not obj.parent.check_prop("size") and obj.parent.IS_TOPLEVEL:
                 layout.append(self.tmpl_Fit % self.tmpl_dict)
             if "sizehints" in obj.window.properties and obj.window.sizehints:

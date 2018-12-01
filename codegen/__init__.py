@@ -462,7 +462,7 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
 
     def check_values(self):
         "Check the validity of the set application values. Raises exceptions for errors; see module errors"
-        # XXX implement without exceptions
+        # XXX implement without exceptions: set attribute and check in application.generate_code
         # Check if the values of use_multiple_files and out_path agree
         if self.multiple_files:
             if not os.path.isdir(self.out_dir):
@@ -485,26 +485,20 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
 
     def _generate_code(self, obj):
         # for anything except application.Application
-        print("GENERATE CODE", obj, obj.name)
         import tree
-        topl = self.toplevel
+        topl = obj.class_object
 
         if obj.IS_SLOT:
             # empty sizer slot
-            szr = self.sizers[-1]
-            if not szr._IS_GRIDBAG:
+            szr = obj.parent
+            if szr.IS_SIZER and not szr._IS_GRIDBAG:
                 self.add_spacer(topl, szr, None)
             return
         elif obj.classname=="spacer":
             # add a spacer
-            szr = self.sizers[-1]
+            szr = obj.parent
             self.add_spacer(topl, szr, obj, obj.proportion, obj.properties["flag"].get_string_value(), obj.border )
             return
-
-        #obj.IS_TOPLEVEL = node.IS_TOPLEVEL  # this is from the position in the data structure
-
-        if obj.IS_SIZER:
-            self.sizers.append(obj)
 
         can_be_toplevel = obj.__class__.__name__ in common.toplevels
 
@@ -517,34 +511,27 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
             old_base = obj.base
             obj.base = base
         
-        if (not self.toplevels or obj.klass != obj.base) and can_be_toplevel:
-            obj.IS_TOPLEVEL = True
+        obj.IS_CLASS = obj.IS_TOPLEVEL
+        if obj.klass != obj.base and can_be_toplevel:
+            obj.IS_CLASS = True
             # for panel objects, if the user sets a custom class but (s)he doesn't want the code to be generated...
             if obj.check_prop("no_custom_class") and obj.no_custom_class and not self.preview:
-                obj.IS_TOPLEVEL = False
+                obj.IS_CLASS = False
         elif self.preview and not can_be_toplevel and obj.base != 'CustomWidget':
             # if this is a custom class, but not a toplevel one, for the preview we have to use the "real" class
             # CustomWidgets handle this in a special way (see widgets/custom_widget/codegen.py)
             old_class = obj.properties["klass"].get()
             obj.properties["klass"].set(obj.base) # XXX handle this in a different way
 
-        if obj.IS_TOPLEVEL:  # XXX as long as generate_code is called with 
-            self.toplevels.append(obj)
-
         # children first
         for i,c in enumerate(obj.children or []):
-            print("_generate_code", i, c)
             assert obj.children.count(c)==1
             self._generate_code(c)
 
-        # clean up stacks  XXX get rid of the stacks
-        if obj.IS_TOPLEVEL: del self.toplevels[-1]
-        if obj.IS_SIZER:    del self.sizers[-1]
-
         # then the item
-        if obj.IS_TOPLEVEL and not obj.IS_SIZER:  # XXX as long as generate_code is called with 
+        if obj.IS_CLASS and not obj.IS_SIZER:  # XXX as long as generate_code is called with 
             self.add_class(obj)
-        if self.toplevels:
+        if not obj.IS_CLASS:
             self.add_object(obj)
 
         # check whether the object belongs to some sizer; if applicable, add it to the sizer at the top of the stack
@@ -562,8 +549,6 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
     def generate_code(self, root, widget=None):
         # root must be application.Application instance for now
         self.class_names = {}
-        self.toplevels = []
-        self.sizers = []
         for c in root.children or []:
             if widget is not None and c is not widget: continue # for preview
             self._generate_code(c)
@@ -909,8 +894,6 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
     def add_object(self, sub_obj):
         """Adds the code to build 'sub_obj' to the class body of 'top_obj';
         see _add_object_init(), add_object_format_name()"""
-        #sub_obj.name = self._format_name(sub_obj.name)
-        #sub_obj.parent.name = self._format_name(sub_obj.parent.name)
 
         # get top level source code object and the widget builder instance
         klass, builder = self._add_object_init(sub_obj)
@@ -922,10 +905,11 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
         except:
             self._logger.error('%s', sub_obj)
             # this is an error, let the exception be raised the details are logged by the global exception handler
+            # XXX create handler
             raise
 
         if not sub_obj.IS_SIZER:  # the object is a wxWindow instance
-            if sub_obj.children and not sub_obj.IS_TOPLEVEL:
+            if sub_obj.children and not sub_obj.IS_CLASS:
                 init.reverse()  # parents_init will be reversed in the end
                 klass.parents_init.extend(init)
             else:
@@ -956,7 +940,7 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
 
         klass.props.extend(props)
         klass.layout.extend(layout)
-        if self.multiple_files and (sub_obj.IS_TOPLEVEL and sub_obj.base != sub_obj.klass):
+        if self.multiple_files and (sub_obj.IS_CLASS and sub_obj.base != sub_obj.klass):
             key = self._format_import(sub_obj.klass)
             klass.dependencies[key] = 1
         for dep in getattr(self.obj_builders.get(sub_obj.base), 'import_modules', []):
@@ -974,7 +958,7 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
         builder = None
 
         # Check for proper source code instance
-        top_obj = self.toplevel
+        top_obj = sub_obj.class_object
         if top_obj.klass in self.classes:
             klass = self.classes[top_obj.klass]
         else:
@@ -1559,7 +1543,7 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
     def _format_style(self, style, code_obj):
         """Return the formatted styles to insert into constructor code.
         The function just returned L{tmpl_style}. Write a derived version implementation if more logic is needed."""
-        if code_obj.IS_TOPLEVEL:
+        if code_obj.IS_CLASS:
             if style:
                 return self.tmpl_toplevel_style
             return self.tmpl_toplevel_style0

@@ -577,7 +577,7 @@ class LispCodeWriter(BaseLangCodeWriter, wcodegen.LispMixin):
         return filename
 
     def format_generic_access(self, obj):
-        if obj.IS_TOPLEVEL:
+        if obj.IS_CLASS:
             return '(slot-top-window obj)'
         else:
             obj_name = self._format_name(obj.name)

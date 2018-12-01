@@ -28,7 +28,7 @@ class PerlNotebookGenerator(wcodegen.PerlWidgetCodeWriter):
 
         parent = self.format_widget_access(window.parent_window)
 
-        if window.IS_TOPLEVEL:
+        if window.IS_CLASS:
             klass = window.base
             if klass != window.klass:
                 klass = window.klass

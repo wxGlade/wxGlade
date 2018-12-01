@@ -583,7 +583,7 @@ sub %(handler)s {
         return filename
 
     def format_generic_access(self, obj):
-        if obj.IS_TOPLEVEL:
+        if obj.IS_CLASS:
             return '$self'
         return self._format_classattr(obj)
 

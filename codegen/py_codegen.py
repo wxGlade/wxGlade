@@ -550,7 +550,7 @@ from %(top_win_module)s import %(top_win_class)s\n\n"""
         return filename
 
     def format_generic_access(self, obj):
-        if obj.IS_TOPLEVEL:
+        if obj.IS_CLASS:
             return 'self'
         else:
             return self._format_classattr(obj)

@@ -806,7 +806,7 @@ class CppWidgetCodeWriter(CppMixin, BaseWidgetWriter):
         if not parent:
             # this breaks the generated code
             self.tmpl_dict['parent'] = 'Do not use the "parent" substitution in code templates for toplevel windows'
-        elif not parent.IS_TOPLEVEL:
+        elif not parent.IS_CLASS:
             self.tmpl_dict['parent'] = '%s' % parent.name
         else:
             self.tmpl_dict['parent'] = 'this'
@@ -838,7 +838,7 @@ class CppWidgetCodeWriter(CppMixin, BaseWidgetWriter):
         return init, ids, props_buf, layout
 
     def format_widget_access(self, obj):
-        if obj.IS_TOPLEVEL:
+        if obj.IS_CLASS:
             return 'this'
         else:
             return '%s' % obj.name
@@ -868,7 +868,7 @@ class LispWidgetCodeWriter(LispMixin, BaseWidgetWriter):
         if not parent:
             # this breaks the generated code
             self.tmpl_dict['parent'] = 'Do not use the "parent" substitution in code templates for toplevel windows'
-        elif not parent.IS_TOPLEVEL:
+        elif not parent.IS_CLASS:
             self.tmpl_dict['parent'] = '(slot-%s obj)' % self.codegen._format_name(parent.name)
         else:
             self.tmpl_dict['parent'] = '(slot-top-window obj)'
@@ -912,7 +912,7 @@ class PerlWidgetCodeWriter(PerlMixin, BaseWidgetWriter):
         if not parent:
             # this breaks the generated code
             self.tmpl_dict['parent'] = 'Do not use the "parent" substitution in code templates for toplevel windows'
-        elif not parent.IS_TOPLEVEL:
+        elif not parent.IS_CLASS:
             self.tmpl_dict['parent'] = '$self->{%s}' % parent.name
         else:
             self.tmpl_dict['parent'] = '$self'
@@ -953,7 +953,7 @@ class PythonWidgetCodeWriter(PythonMixin, BaseWidgetWriter):
         if not parent:
             # this breaks the generated code
             self.tmpl_dict['parent'] = 'Do not use the "parent" substitution in code templates for toplevel windows'
-        elif not parent.IS_TOPLEVEL:
+        elif not parent.IS_CLASS:
             self.tmpl_dict['parent'] = 'self.%s' % parent.name
         else:
             self.tmpl_dict['parent'] = 'self'
