@@ -578,9 +578,7 @@ class XmlWidgetObject(object):
             if pos is None and not parent.IS_SIZER and hasattr(parent, "get_itempos"):
                 # virtual sizers don't use sizeritem objects around their items in XML; the index is found from the name
                 sizeritem = Sizeritem()
-                pos_ = parent.get_itempos(attrs)
-                # XXXinsert empty slots before, if required
-                if pos_: pos = pos_  # when loading from a file, the names are set already and pos_ is not None
+                pos = parent.get_itempos(attrs)
 
             # build the widget
             if pos is not None: pos = int(pos)

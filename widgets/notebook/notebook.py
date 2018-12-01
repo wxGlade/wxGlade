@@ -12,7 +12,6 @@ import common, compat, misc
 import wcodegen
 import new_properties as np
 from edit_windows import ManagedBase, EditStylesMixin, Slot
-#from edit_sizers.edit_sizers import Sizer, SizerSlot
 from wcodegen.taghandler import BaseXmlBuilderTagHandler
 from xml_parse import XmlParsingError
 
@@ -48,24 +47,6 @@ class NotebookVirtualSizer(Sizer):
         if self.parent.IS_SIZER:
             self.parent.set_item_best_size( self.window, size=self.window.widget.GetBestSize() )
 
-    ####################################################################################################################
-    # new implementation
-    def insert_tab(self, index):
-        "inserts or adds a page"
-        #label, item = self.window.tabs[index]
-        label = self.window.tabs[index][0]
-        item = self.window.children[index]
-        if not (index < self.window.widget.GetPageCount()):
-            self.window.widget.AddPage(item.widget, label)
-        elif self.window.widget.GetPage(index) is not item.widget:
-            self.window.widget.InsertPage(index, item.widget, label)
-
-        try:
-            wx.CallAfter(item.sel_marker.update)
-        except AttributeError:
-            pass
-        if self.window.sizer is not None:
-            self.window.sizer.set_item_best_size( self.window, size=self.window.widget.GetBestSize() )
 """
 
 class NotebookPagesProperty(np.GridProperty):
@@ -163,9 +144,19 @@ class EditNotebook(ManagedBase, EditStylesMixin):
     # new implementation:
     # together with NotebookVirtualSizer insert_tab, remove_tab, free_tab
 
+    def _add_slots(self):
+        for pos, child in enumerate(self.children):
+            if child is None:
+                self.children[pos] = slot = Slot(self, pos)
+                common.app_tree.insert(slot, self, pos)
+
+    def add_item(self, child, pos=None):
+        # ensure that empty pages before pos get their slots, as otherwise common.app_tree.insert will fail
+        ManagedBase.add_item(self, child, pos)
+        self._add_slots()
+
     def vs_insert_tab(self, index):
         "inserts or adds a page"
-        #label, item = self.tabs[index]
         label = self.tabs[index][0]
         item = self.children[index]
         if not (index < self.widget.GetPageCount()):
@@ -372,11 +363,11 @@ class EditNotebook(ManagedBase, EditStylesMixin):
     def _add_popup_menu_items(self, menu, item, widget):
         # called from managed widget items' _create_popup_menu method
         i = misc.append_menu_item(menu, -1, _('Insert Notebook Tab before') ) # \tCtrl+I') )
-        misc.bind_menu_item_after(widget, i, self.insert_tab, item.pos-1, "new tab")
+        misc.bind_menu_item_after(widget, i, self.insert_tab, item.pos, "new tab")
 
-        if item.pos==len(self.tabs): # last slot -> allow to add
+        if item.pos==len(self.tabs)-1: # last slot -> allow to add
             i = misc.append_menu_item(menu, -1, _('Add Notebook Tab') ) # \tCtrl+A') )
-            misc.bind_menu_item_after(widget, i, self.insert_tab, item.pos, "new tab")
+            misc.bind_menu_item_after(widget, i, self.insert_tab, item.pos+1, "new tab")
         menu.AppendSeparator()
 
     # helpers ##########################################################################################################
@@ -392,24 +383,12 @@ class EditNotebook(ManagedBase, EditStylesMixin):
         tmpl = "%s_pane_%%d" % self.name
         return common.root.get_next_name(tmpl, self)
 
-    def find_page(self, page):
-        "returns the index of the given page in the notebook, or -1 if the page cannot be found"
-        if not self.widget: return -1
-        for i,p in enumerate(self.children):
-            if p is page:
-                if i < self.widget.GetPageCount():
-                    return i
-                else:
-                    return -1
-        return -1
-
     def on_load(self):
         # create slot nodes for empty slots
-        for p,page in enumerate(self.children):
-            if page is not None: continue
-            self.children[p] = slot = SizerSlot(self, self.virtual_sizer, p+1)
-            node = slot.node = SlotNode(slot)
-            common.app_tree.insert(node, self.node, p)
+        if len(self.children)<len(self.pages):
+            self.pages.extend( [None] * (len(self.pages) - len(self.children)) )
+        self._add_slots()
+        self.pages = None
 
 
 def builder(parent, pos):

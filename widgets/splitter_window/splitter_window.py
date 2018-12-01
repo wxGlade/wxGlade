@@ -221,8 +221,8 @@ class EditSplitterWindow(ManagedBase, EditStylesMixin):
     def get_itempos(self, attrs):
         "Get position of sizer item (used in xml_parse)"
         name = attrs.get("original_name", None) or attrs['name']
-        if name==self.window_1: return 0
-        if name==self.window_2: return 1
+        if name==self.properties["window_1"].value: return 0
+        if name==self.properties["window_2"].value: return 1
         return None
 
 

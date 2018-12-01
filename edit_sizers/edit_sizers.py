@@ -945,7 +945,6 @@ class SizerBase(Sizer, np.PropertyOwner):
         # called from XML parser for adding empty 'sizerslot': sizer.add_slot()
         slot = SizerSlot(self, len(self.children))
         self.children.append( slot )
-        print("CHILDREN", self.children)
         if "rows" in self.PROPERTIES: self._adjust_rows_cols()  # for GridSizer
 
         # insert node into tree
@@ -986,7 +985,6 @@ class SizerBase(Sizer, np.PropertyOwner):
 
         if self.widget:
             slot.create()  # create the actual SizerSlot
-            print("_insert_slot", slot.widget)
             if not no_add:
                 if not self._IS_GRIDBAG:
                     self.widget.Insert(pos+self.widget._BTN_OFFSET, slot.widget, slot.proportion, slot.flag)

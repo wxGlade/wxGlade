@@ -234,7 +234,6 @@ class WidgetTree(wx.TreeCtrl):#, Tree):
             return self.GetPyData(item)
     else:
         def _SetItemData(self, item, data):
-            print("_SetItemData", item, data)
             self.SetItemData(item, data)
         def _GetItemData(self, item):
             if not bool(item): return None

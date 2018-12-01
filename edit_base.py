@@ -128,7 +128,9 @@ class EditBase(np.PropertyOwner):
         if len(self.children)<=pos:
             self.children += [None]*(pos - len(self.children) + 1)
         if self.children[pos] is not None:
+            old_child = self.children[pos]
             self.children[pos].delete()
+            if old_child.item: common.app_tree.remove(old_child)
         self.children[pos] = child
 
     def has_ancestor(self, node):
@@ -401,7 +403,7 @@ class Slot(EditBase):
         self.widget = None       # Reference to the widget resembling the slot (a wx.Window)
         self.name = "SLOT"
         self.overlapped = False  # for spanning in GridBagSizer
-        self.node = None
+        self.item = None
 
     def update_view(self, selected):
         # we can ignore selected here, as the repainting only takes place later
