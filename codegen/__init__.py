@@ -486,18 +486,18 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
     def _generate_code(self, obj):
         # for anything except application.Application
         import tree
-        topl = obj.class_object
+        parent_class_object = obj.parent_class_object  # used for adding to this object's sizer
 
         if obj.IS_SLOT:
             # empty sizer slot
             szr = obj.parent
             if szr.IS_SIZER and not szr._IS_GRIDBAG:
-                self.add_spacer(topl, szr, None)
+                self.add_spacer(parent_class_object, szr, None)
             return
         elif obj.classname=="spacer":
             # add a spacer
             szr = obj.parent
-            self.add_spacer(topl, szr, obj, obj.proportion, obj.properties["flag"].get_string_value(), obj.border )
+            self.add_spacer(parent_class_object, szr, obj, obj.proportion, obj.properties["flag"].get_string_value(), obj.border )
             return
 
         can_be_toplevel = obj.__class__.__name__ in common.toplevels
@@ -532,14 +532,14 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
             # then the item
             if obj.IS_CLASS and not obj.IS_SIZER:  # XXX as long as generate_code is called with 
                 self.add_class(obj)
-            if not obj.IS_CLASS:
+            if not obj.IS_TOPLEVEL:
                 self.add_object(obj)
     
             # check whether the object belongs to some sizer; if applicable, add it to the sizer at the top of the stack
             parent = obj.parent
             if parent.IS_SIZER:
                 flag = obj.properties["flag"].get_string_value()  # as string, joined with "|"
-                self.add_sizeritem(topl, parent, obj, obj.proportion, flag, obj.border)
+                self.add_sizeritem(parent_class_object, parent, obj, obj.proportion, flag, obj.border)
         finally:
             # XXX handle this in a different way
             if old_class is not None: obj.properties["klass"].set(old_class)
@@ -901,7 +901,7 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
             raise
 
         if not sub_obj.IS_SIZER:  # the object is a wxWindow instance
-            if sub_obj.children and not sub_obj.IS_CLASS:
+            if sub_obj.children and not sub_obj.IS_TOPLEVEL:
                 init.reverse()  # parents_init will be reversed in the end
                 klass.parents_init.extend(init)
             else:
@@ -950,7 +950,7 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
         builder = None
 
         # Check for proper source code instance
-        top_obj = sub_obj.class_object
+        top_obj = sub_obj.parent_class_object  # starts with parent
         if top_obj.klass in self.classes:
             klass = self.classes[top_obj.klass]
         else:
@@ -1105,10 +1105,6 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
         "Generate constructor code for top-level object (CodeObject instance); is_new: create a new file?"
         return []
 
-    #def generate_code_disabled(self, obj):
-        #"Returns the code fragment that disables the given object."
-        #return self._generic_code(obj, 'disabled')
-
     def generate_code_do_layout(self, builder, code_obj, is_new, tab):
         """Generate code for the function C{__do_layout()}.
 
@@ -1193,10 +1189,6 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
             ret.append(stmt)
         return ret
 
-    #def generate_code_focused(self, obj):
-        #"Returns the code fragment that get the focus to the given object"
-        #return self._generic_code(obj, 'focused')
-
     def generate_code_font(self, obj):
         "Returns the code fragment that sets the font of the given object"
         stmt = None
@@ -1241,10 +1233,6 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
         stmt = tmpl % { 'objname':objname, 'value':color }
         return stmt
 
-    #def generate_code_hidden(self, obj):
-        #"Returns the code fragment that hides the given object"
-        #return self._generic_code(obj, 'hidden')
-
     def generate_code_id(self, obj, id=None):
         """Generate the code for the widget ID.
 
@@ -1283,10 +1271,6 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
     def generate_code_size(self, obj):
         "Returns the code fragment that sets the size of the given object."
         raise NotImplementedError
-
-    #def generate_code_tooltip(self, obj):
-        #"Returns the code fragment that sets the tooltip of the given object."
-        #return self._generic_code(obj, 'tooltip')
 
     def generate_common_properties(self, widget):
         """generates the code for various properties common to all widgets (background and foreground colours, font,...)

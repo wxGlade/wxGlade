@@ -94,6 +94,17 @@ class EditBase(np.PropertyOwner):
         return None
 
     @property
+    def parent_class_object(self):
+        # same as before, but start with parent
+        item = self.parent
+        parent = item.parent
+        while parent is not None:
+            if not item.IS_SIZER and item.IS_CLASS: return item
+            item = parent
+            parent = item.parent
+        return None
+
+    @property
     def sizer(self):
         # return the containing sizer or None
         if self.parent.IS_SIZER: return self.parent
