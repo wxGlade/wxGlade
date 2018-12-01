@@ -63,20 +63,17 @@ def builder(parent, pos):
     common.app_tree.insert(button, parent, pos)
 
 
-def xml_builder(attrs, parent, sizeritem, pos=None):
+def xml_builder(attrs, parent, pos=None):
     "factory to build EditBitmapButton objects from a XML file"
     from xml_parse import XmlParsingError
     try:
         label = attrs['name']
     except KeyError:
         raise XmlParsingError(_("'name' attribute missing"))
-    if sizeritem is None:
-        raise XmlParsingError(_("sizer or sizeritem object cannot be None"))
     button = EditBitmapButton(label, parent, '', pos)
     if attrs.input_file_version and attrs.input_file_version<(0,9):
         # backwards compatibility
         button.properties["style"].set_to_default()
-    #sizer.set_item(button.pos, proportion=sizeritem.proportion, span=sizeritem.span, flag=sizeritem.flag, border=sizeritem.border)
     if pos is None:
         common.app_tree.add(button, parent)
     else:

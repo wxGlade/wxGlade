@@ -71,15 +71,13 @@ def builder(parent, pos):
     common.app_tree.insert(static_text, parent, pos)
 
 
-def xml_builder(attrs, parent, sizeritem, pos=None):
+def xml_builder(attrs, parent, pos=None):
     "factory to build EditStaticText objects from a XML file"
     from xml_parse import XmlParsingError
     try:
         label = attrs['name']
     except KeyError:
         raise XmlParsingError(_("'name' attribute missing"))
-    if sizeritem is None:
-        raise XmlParsingError(_("sizer or sizeritem object cannot be None"))
     static_text = EditStaticText(label, parent, "", pos)
     common.app_tree.insert(static_text, parent, pos)
     return static_text

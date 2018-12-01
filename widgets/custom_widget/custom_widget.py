@@ -163,18 +163,15 @@ def builder(parent, pos):
     #sizer.set_item(win.pos, 1, wx.EXPAND)
 
 
-def xml_builder(attrs, parent, sizeritem, pos=None):
+def xml_builder(attrs, parent, pos=None):
     "factory to build CustomWidget objects from a XML file"
     from xml_parse import XmlParsingError
     try:
         name = attrs['name']
     except KeyError:
         raise XmlParsingError(_("'name' attribute missing"))
-    if not sizeritem:
-        raise XmlParsingError(_("sizer or sizeritem object cannot be None"))
     klass = attrs.get("class", "CustomWidget")
     win = CustomWidget(name, klass, parent, pos)
-    #sizer.set_item(win.pos, proportion=sizeritem.proportion, span=sizeritem.span, flag=sizeritem.flag, border=sizeritem.border)
     common.app_tree.insert(win, parent, pos)
     return win
 

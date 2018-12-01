@@ -67,17 +67,14 @@ def builder(parent, pos):
     common.app_tree.insert(calendar_ctrl, parent, pos)
 
 
-def xml_builder(attrs, parent, sizeritem, pos=None):
+def xml_builder(attrs, parent, pos=None):
     "factory to build EditGenericCalendarCtrl objects from a XML file"
     from xml_parse import XmlParsingError
     try:
         label = attrs['name']
     except KeyError:
         raise XmlParsingError(_("'name' attribute missing"))
-    if sizeritem is None:
-        raise XmlParsingError(_("sizer or sizeritem object cannot be None"))
     calendar_ctrl = EditGenericCalendarCtrl(label, parent, pos)
-    #sizer.set_item(calendar_ctrl.pos, proportion=sizeritem.proportion, span=sizeritem.span, flag=sizeritem.flag, border=sizeritem.border)
     common.app_tree.insert(calendar_ctrl, parent, pos)
     return calendar_ctrl
 

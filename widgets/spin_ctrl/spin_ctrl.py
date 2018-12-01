@@ -74,18 +74,15 @@ def builder(parent, pos):
     common.app_tree.insert(spin, parent, pos)
 
 
-def xml_builder(attrs, parent, sizeritem, pos=None):
+def xml_builder(attrs, parent, pos=None):
     "factory function to build EditSpinCtrl objects from a XML file"
     from xml_parse import XmlParsingError
     try:
         name = attrs['name']
     except KeyError:
         raise XmlParsingError(_("'name' attribute missing"))
-    if sizeritem is None:
-        raise XmlParsingError(_("sizer or sizeritem object cannot be None"))
     spin = EditSpinCtrl( name, parent, pos )
     spin.properties["value"].set_active(False)
-    #sizer.set_item( spin.pos, proportion=sizeritem.proportion, flag=sizeritem.flag, border=sizeritem.border )
     common.app_tree.insert(spin, parent, pos)
     return spin
 

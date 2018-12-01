@@ -377,6 +377,7 @@ class ClipboardXmlWidgetBuilder(XmlWidgetBuilder):
 
         class XmlClipboardObject(object):
             def __init__(self, **kwds):
+                self.IS_SIZER = self.IS_WINDOW = False
                 self.__dict__.update(kwds)
             def notify_owner(self):
                 pass
@@ -384,11 +385,9 @@ class ClipboardXmlWidgetBuilder(XmlWidgetBuilder):
         # fake parent window object
         fake_parent = XmlClipboardObject(obj=parent, parent=parent)
         if parent and parent.IS_SIZER:
-            fake_parent.in_sizers = True
-            fake_parent.in_windows = False
+            fake_parent.IS_SIZER = True
         else:
-            fake_parent.in_sizers = False
-            fake_parent.in_windows = True
+            fake_parent.IS_WINDOW = True
 
         self._objects.push(fake_parent)
 
@@ -396,8 +395,7 @@ class ClipboardXmlWidgetBuilder(XmlWidgetBuilder):
         if parent and parent.IS_SIZER:
             sizer = parent
             fake_sizer = XmlClipboardObject(obj=sizer, parent=parent)
-            fake_sizer.in_windows = False
-            fake_sizer.in_sizers = True
+            fake_sizer.IS_SIZER = True
             sizeritem = Sizeritem()
             sizeritem.properties["proportion"].set(proportion)
             sizeritem.properties["span"].set(span)
@@ -406,8 +404,6 @@ class ClipboardXmlWidgetBuilder(XmlWidgetBuilder):
             sizeritem.properties["pos"].set(pos)
             # fake sizer item
             fake_sizeritem = XmlClipboardObject(obj=sizeritem, parent=parent)
-            fake_sizeritem.in_windows = False
-            fake_sizeritem.in_sizers = False
 
             self._objects.push(fake_sizer)
             self._objects.push(fake_sizeritem)
@@ -539,8 +535,8 @@ class XmlWidgetObject(object):
 
         self.prop_handlers = Stack()  # a stack of custom handler functions to set properties of this object
         self.parser = parser
-        self.in_sizers = False   # if True, the widget is     a sizer, opposite of 'in_windows'
-        self.in_windows = False  # if True, the widget is not a sizer, opposite of 'in_sizers'
+        #self.in_sizers = False   # if True, the widget is     a sizer, opposite of 'in_windows'
+        #self.in_windows = False  # if True, the widget is not a sizer, opposite of 'in_sizers'
 
         self._properties_added = []
         try:
@@ -557,50 +553,50 @@ class XmlWidgetObject(object):
         if top and isinstance(top.obj, Sizeritem):
             sizeritem = top.obj
             top = stack.pop(-1)
-        if top and top.in_sizers:
+
+        if top and top.IS_SIZER:
             sizer = top.obj
             top = stack.pop(-1)
-        if top and top.in_windows:
+        if top and top.IS_WINDOW:
             parent = top.obj
+
         while parent is None and stack:
             top = stack.pop()
-            if top.in_windows: parent = top.obj
+            if top.IS_WINDOW: parent = top.obj
+
         if parent is None:
             parent = common.root
 
         if base is not None:
             # if base is not None, the object is a widget (or sizer), and not a sizeritem
-            self.sizeritem = sizeritem
+            self.sizeritem = sizeritem  # the properties will be copied later in endElement
 
             pos = getattr(sizeritem, 'pos', None)
             # XXX change this: don't use pos here at all; either we're just appending to the end or filling virtual sizers acc. to pagenames
-            #if pos is None and parent and hasattr(parent, 'virtual_sizer') and parent.virtual_sizer:
             if pos is None and not parent.IS_SIZER and hasattr(parent, "get_itempos"):
                 # virtual sizers don't use sizeritem objects around their items in XML; the index is found from the name
-                sizeritem = Sizeritem()
                 pos = parent.get_itempos(attrs)
 
             # build the widget
-            if pos is not None: pos = int(pos)
             builder = common.widgets_from_xml.get(base, None)
             if builder is None: raise XmlParsingError("Widget '%s' not supported."%base)
-            self.obj = builder(attrs, sizer or parent, sizeritem, pos)
+            self.obj = builder(attrs, sizer or parent, pos)
             p = self.obj.properties.get("class")
             if p:
                 p.set(self.klass)
                 #common.app_tree.refresh(self.obj.node)
 
-            if isinstance(self.obj, edit_sizers.SizerBase):
-                self.in_sizers = True
-            else:
-                self.in_windows = True
+            self.IS_SIZER = self.obj.IS_SIZER
+            self.IS_WINDOW = self.obj.IS_WINDOW
 
         elif self.klass == 'sizeritem':
             self.obj = Sizeritem()
             self.parent = parent
+            self.IS_SIZER = self.IS_WINDOW = False
 
         elif self.klass == 'sizerslot':
             assert sizer is not None, _("malformed wxg file: slots can only be inside sizers!")
+            self.IS_SIZER = self.IS_WINDOW = False
             sizer._add_slot()
             sizer.layout()
 

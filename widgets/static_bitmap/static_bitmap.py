@@ -68,15 +68,13 @@ def builder(parent, pos):
     common.app_tree.insert(static_bitmap, parent, pos)
 
 
-def xml_builder(attrs, parent, sizeritem, pos=None):
+def xml_builder(attrs, parent, pos=None):
     "factory to build EditStaticBitmap objects from a XML file"
     from xml_parse import XmlParsingError
     try:
         label = attrs['name']
     except KeyError:
         raise XmlParsingError(_("'name' attribute missing"))
-    if sizeritem is None:
-        raise XmlParsingError(_("sizer or sizeritem object cannot be None"))
     bitmap = EditStaticBitmap(label, parent, '', pos)
     common.app_tree.insert(bitmap, parent, pos)
     return bitmap

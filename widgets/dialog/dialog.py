@@ -109,7 +109,7 @@ def builder(parent, pos):
         w.Raise()
 
 
-def xml_builder(attrs, parent, sizeritem, pos=None):
+def xml_builder(attrs, parent, pos=None):
     "factory to build EditDialog objects from a XML file"
     from xml_parse import XmlParsingError
     try:

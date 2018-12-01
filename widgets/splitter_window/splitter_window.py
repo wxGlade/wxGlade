@@ -259,15 +259,13 @@ def builder(parent, pos):
         if parent.widget: widget.create()
 
 
-def xml_builder(attrs, parent, sizeritem, pos=None):
+def xml_builder(attrs, parent, pos=None):
     "Factory to build editor objects from a XML file"
     from xml_parse import XmlParsingError
     try:
         name = attrs['name']
     except KeyError:
         raise XmlParsingError(_("'name' attribute missing"))
-    if sizeritem is None:
-        raise XmlParsingError(_("sizer or sizeritem object cannot be None"))
 
     widget = EditSplitterWindow(name, parent, 'wxSPLIT_VERTICAL', pos)
 

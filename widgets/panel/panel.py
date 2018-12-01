@@ -343,21 +343,19 @@ def builder(parent, pos):
     #sizer.set_item(panel.pos, 1, wx.EXPAND)
 
 
-def xml_builder(attrs, parent, sizeritem, pos=None):
+def xml_builder(attrs, parent, pos=None):
     "factory to build EditPanel objects from a XML file"
     from xml_parse import XmlParsingError
     try:
         name = attrs['name']
     except KeyError:
         raise XmlParsingError(_("'name' attribute missing"))
-    if not sizeritem:
-        raise XmlParsingError(_("sizer or sizeritem object cannot be None"))
     panel = EditPanel(name, parent, pos=pos, style='')
     common.app_tree.insert(panel, parent, pos)
     return panel
 
 
-def xml_toplevel_builder(attrs, parent, sizeritem, pos=None):
+def xml_toplevel_builder(attrs, parent, pos=None):
     from xml_parse import XmlParsingError
     try:
         label = attrs['name']

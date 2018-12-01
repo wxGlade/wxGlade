@@ -122,15 +122,13 @@ def builder(parent, pos):
     #sizer.set_item(list_ctrl.pos, 1, wx.EXPAND)
 
 
-def xml_builder(attrs, parent, sizeritem, pos=None):
+def xml_builder(attrs, parent, pos=None):
     "factory function to build EditListCtrl objects from a XML file"
     from xml_parse import XmlParsingError
     try:
         name = attrs['name']
     except KeyError:
         raise XmlParsingError(_("'name' attribute missing"))
-    if sizeritem is None:
-        raise XmlParsingError(_("sizer or sizeritem object cannot be None"))
     list_ctrl = EditListCtrl(name, parent, pos, style=0)
     common.app_tree.insert(list_ctrl, parent, pos)
     return list_ctrl

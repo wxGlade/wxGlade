@@ -89,15 +89,13 @@ def builder(parent, pos):
     common.app_tree.insert(widget, parent, pos)
 
 
-def xml_builder(attrs, parent, sizeritem, pos=None):
+def xml_builder(attrs, parent, pos=None):
     "Factory to build editor objects from a XML file"
     from xml_parse import XmlParsingError
     try:
         name = attrs['name']
     except KeyError:
         raise XmlParsingError(_("'name' attribute missing"))
-    if sizeritem is None:
-        raise XmlParsingError(_("sizer or sizeritem object cannot be None"))
     widget = editor_class(name, parent, editor_style, pos)
     common.app_tree.insert(widget, parent, pos)
     return widget

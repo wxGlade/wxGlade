@@ -66,17 +66,14 @@ def builder(parent, pos):
     common.app_tree.insert(radio, parent, pos)
 
 
-def xml_builder(attrs, parent, sizeritem, pos=None):
+def xml_builder(attrs, parent, pos=None):
     "factory to build EditRadioButton objects from a XML file"
     from xml_parse import XmlParsingError
     try:
         label = attrs['name']
     except KeyError:
         raise XmlParsingError(_("'name' attribute missing"))
-    if sizeritem is None:
-        raise XmlParsingError(_("sizer or sizeritem object cannot be None"))
     radio = EditRadioButton(label, parent, "", pos)
-    #sizer.set_item(radio.pos, proportion=sizeritem.proportion, span=sizeritem.span, flag=sizeritem.flag, border=sizeritem.border)
     common.app_tree.insert(radio, parent, pos)
     return radio
 

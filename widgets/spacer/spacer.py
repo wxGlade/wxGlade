@@ -106,13 +106,10 @@ def builder(parent, pos):
     common.app_tree.insert(spacer, parent, pos)
 
 
-def xml_builder(attrs, parent, sizeritem, pos=None):
+def xml_builder(attrs, parent, pos=None):
     "factory to build EditSpacer objects from a XML file"
     from xml_parse import XmlParsingError
-    if not sizeritem:
-        raise XmlParsingError(_("sizer or sizeritem object cannot be None"))
     spacer = EditSpacer('spacer', parent, 1, 1, pos)
-    #sizer.set_item(spacer.pos, proportion=sizeritem.proportion, span=sizeritem.span, flag=sizeritem.flag, border=sizeritem.border)
     common.app_tree.insert(spacer, parent, pos)
     return spacer
 

@@ -59,15 +59,13 @@ def builder(parent, pos):
     common.app_tree.insert(datepicker_ctrl, parent, pos)
 
 
-def xml_builder(attrs, parent, sizeritem, pos=None):
+def xml_builder(attrs, parent, pos=None):
     "factory to build EditDatePickerCtrl objects from a XML file"
     from xml_parse import XmlParsingError
     try:
         name = attrs['name']
     except KeyError:
         raise XmlParsingError(_("'name' attribute missing"))
-    if sizeritem is None:
-        raise XmlParsingError(_("sizer or sizeritem object cannot be None"))
     datepicker_ctrl = EditDatePickerCtrl(name, parent, pos)
     common.app_tree.insert(datepicker_ctrl, parent, pos)
     return datepicker_ctrl

@@ -184,7 +184,7 @@ def builder(parent, pos):
 
 
 
-def xml_builder(attrs, parent, sizeritem, pos=None):
+def xml_builder(attrs, parent, pos=None):
     "factory to build EditStatusBar objects from a XML file"
     name = attrs.get('name')
     if parent:

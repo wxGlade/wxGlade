@@ -184,7 +184,7 @@ def builder(parent, pos, klass=None, base=None, name=None):
 
 
 def _make_builder(base_class):
-    def xml_builder(attrs, parent, sizeritem, pos=None):
+    def xml_builder(attrs, parent, pos=None):
         from xml_parse import XmlParsingError
         try:
             label = attrs['name']

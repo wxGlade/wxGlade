@@ -62,18 +62,15 @@ def builder(parent, pos):
         tree_ctrl.properties["flag"].set("wxEXPAND")
         if parent.widget: tree_ctrl.create()
     common.app_tree.insert(tree_ctrl, parent, pos)
-    #sizer.set_item(tree_ctrl.pos, 1, wx.EXPAND)
 
 
-def xml_builder(attrs, parent, sizeritem, pos=None):
+def xml_builder(attrs, parent, pos=None):
     "factory function to build EditTreeCtrl objects from a XML file"
     from xml_parse import XmlParsingError
     try:
         name = attrs['name']
     except KeyError:
         raise XmlParsingError(_("'name' attribute missing"))
-    if sizeritem is None:
-        raise XmlParsingError(_("sizer or sizeritem object cannot be None"))
     tree_ctrl = EditTreeCtrl(name, parent, pos, style=0)
     common.app_tree.insert(tree_ctrl, parent, pos)
     return tree_ctrl

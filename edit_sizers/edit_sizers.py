@@ -2240,7 +2240,7 @@ def builder(parent, pos):
         _builder( parent, pos, orientation, num, static, label, wrap )
 
 
-def xml_builder(attrs, parent, sizeritem, pos=None):
+def xml_builder(attrs, parent, pos=None):
     "factory function to build EditBoxSizer objects from a XML file"
     from xml_parse import XmlParsingError
 
