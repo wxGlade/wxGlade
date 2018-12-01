@@ -503,48 +503,47 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
         can_be_toplevel = obj.__class__.__name__ in common.toplevels
 
         old_class = old_base = None
-        # XXX check for alternatives
-        # classname is used only for 'EditTopLevelScrolledWindow' vs. 'EditTopLevelPanel'
-        classname = getattr(obj, '_classname', obj.__class__.__name__)
-        base = common.class_names[classname]
-        if base!=obj.base:
-            old_base = obj.base
-            obj.base = base
-        
-        obj.IS_CLASS = obj.IS_TOPLEVEL
-        if obj.klass != obj.base and can_be_toplevel:
-            obj.IS_CLASS = True
-            # for panel objects, if the user sets a custom class but (s)he doesn't want the code to be generated...
-            if obj.check_prop("no_custom_class") and obj.no_custom_class and not self.preview:
-                obj.IS_CLASS = False
-        elif self.preview and not can_be_toplevel and obj.base != 'CustomWidget':
-            # if this is a custom class, but not a toplevel one, for the preview we have to use the "real" class
-            # CustomWidgets handle this in a special way (see widgets/custom_widget/codegen.py)
-            old_class = obj.properties["klass"].get()
-            obj.properties["klass"].set(obj.base) # XXX handle this in a different way
-
-        # children first
-        for i,c in enumerate(obj.children or []):
-            assert obj.children.count(c)==1
-            self._generate_code(c)
-
-        # then the item
-        if obj.IS_CLASS and not obj.IS_SIZER:  # XXX as long as generate_code is called with 
-            self.add_class(obj)
-        if not obj.IS_CLASS:
-            self.add_object(obj)
-
-        # check whether the object belongs to some sizer; if applicable, add it to the sizer at the top of the stack
-        parent = obj.parent
-        if parent.IS_SIZER:
-            flag = obj.properties["flag"].get_string_value()  # as string, joined with "|"
-            self.add_sizeritem(topl, parent, obj, obj.proportion, flag, obj.border)
-
-        # XXX handle this in a different way
-        if old_class is not None:
-            obj.properties["klass"].set(old_class)
-        if old_base is not None:
-            obj.base = old_base
+        try:
+            # XXX check for alternatives
+            # classname is used only for 'EditTopLevelScrolledWindow' vs. 'EditTopLevelPanel'
+            classname = getattr(obj, '_classname', obj.__class__.__name__)
+            base = common.class_names[classname]
+            if base!=obj.base:
+                old_base = obj.base
+                obj.base = base
+            
+            obj.IS_CLASS = obj.IS_TOPLEVEL
+            if obj.klass != obj.base and can_be_toplevel:
+                obj.IS_CLASS = True
+                # for panel objects, if the user sets a custom class but (s)he doesn't want the code to be generated...
+                if obj.check_prop("no_custom_class") and obj.no_custom_class and not self.preview:
+                    obj.IS_CLASS = False
+            elif self.preview and not can_be_toplevel and obj.base != 'CustomWidget':
+                # if this is a custom class, but not a toplevel one, for the preview we have to use the "real" class
+                # CustomWidgets handle this in a special way (see widgets/custom_widget/codegen.py)
+                old_class = obj.properties["klass"].get()
+                obj.properties["klass"].set(obj.base) # XXX handle this in a different way
+    
+            # children first
+            for i,c in enumerate(obj.children or []):
+                assert obj.children.count(c)==1
+                self._generate_code(c)
+    
+            # then the item
+            if obj.IS_CLASS and not obj.IS_SIZER:  # XXX as long as generate_code is called with 
+                self.add_class(obj)
+            if not obj.IS_CLASS:
+                self.add_object(obj)
+    
+            # check whether the object belongs to some sizer; if applicable, add it to the sizer at the top of the stack
+            parent = obj.parent
+            if parent.IS_SIZER:
+                flag = obj.properties["flag"].get_string_value()  # as string, joined with "|"
+                self.add_sizeritem(topl, parent, obj, obj.proportion, flag, obj.border)
+        finally:
+            # XXX handle this in a different way
+            if old_class is not None: obj.properties["klass"].set(old_class)
+            if old_base  is not None: obj.base = old_base
 
     def generate_code(self, root, widget=None):
         # root must be application.Application instance for now
@@ -561,10 +560,6 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
         else:
             topwin = None
         self.add_app(root, topwin)
-
-    @property
-    def toplevel(self):
-        return self.toplevels and self.toplevels[-1] or None
 
     def finalize(self):
         "Code generator finalization function"
@@ -697,8 +692,7 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
                 prev_src = self.SourceFileContent(filename, self)
             self._current_extra_modules = {}
         else:
-            # in this case, previous_source is the SourceFileContent instance
-            # that keeps info about the single file to generate
+            # previous_source is the SourceFileContent instance that keeps info about the single file to generate
             prev_src = self.previous_source
 
         try:
@@ -770,13 +764,12 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
 
         # replace code inside existing constructor block
         if prev_src and not is_new:
-            # replace the lines inside the ctor wxGlade block
-            # with the new ones
+            # replace the lines inside the ctor wxGlade block with the new ones
             tag = '<%swxGlade replace %s %s>' % (self.nonce, klass, self.name_ctor)
             if not prev_src.replace(tag, obuffer):
                 # no __init__ tag found, issue a warning and do nothing
-                self.warning( "wxGlade %(ctor)s block not found for %(name)s, %(ctor)s code "
-                              "NOT generated" % { 'name': code_obj.name, 'ctor': self.name_ctor } )
+                tmpl = "wxGlade %(ctor)s block not found for %(name)s, %(ctor)s code NOT generated"
+                self.warning( tmpl % { 'name': code_obj.name, 'ctor': self.name_ctor } )
             obuffer = []
 
         # generate code for __set_properties()
@@ -785,13 +778,12 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
 
         # replace code inside existing __set_properties() function
         if prev_src and not is_new:
-            # replace the lines inside the __set_properties wxGlade block
-            # with the new ones
+            # replace the lines inside the __set_properties wxGlade block with the new ones
             tag = '<%swxGlade replace %s %s>' % (self.nonce, klass, '__set_properties')
             if not prev_src.replace(tag, obuffer):
                 # no __set_properties tag found, issue a warning and do nothing
-                self.warning( "wxGlade __set_properties block not found for %s, "
-                              "__set_properties code NOT generated" % code_obj.name )
+                tmpl = "wxGlade __set_properties block not found for %s, __set_properties code NOT generated"
+                self.warning( tmpl % code_obj.name )
             obuffer = []
 
         # generate code for __do_layout()
