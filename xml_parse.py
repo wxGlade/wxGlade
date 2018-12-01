@@ -364,7 +364,6 @@ class ClipboardXmlWidgetBuilder(XmlWidgetBuilder):
         they keep info about the destination of the hierarchy of widgets (i.e. the target of the 'paste' command)
       - The first widget built must be hidden and shown again at the end of the operation"""
 
-    #def __init__(self, parent, sizer, pos, proportion, span, flag, border):
     def __init__(self, parent, pos, proportion, span, flag, border):
         XmlWidgetBuilder.__init__(self)
         self._renamed = {}
@@ -535,8 +534,6 @@ class XmlWidgetObject(object):
 
         self.prop_handlers = Stack()  # a stack of custom handler functions to set properties of this object
         self.parser = parser
-        #self.in_sizers = False   # if True, the widget is     a sizer, opposite of 'in_windows'
-        #self.in_windows = False  # if True, the widget is not a sizer, opposite of 'in_sizers'
 
         self._properties_added = []
         try:
@@ -572,9 +569,8 @@ class XmlWidgetObject(object):
             self.sizeritem = sizeritem  # the properties will be copied later in endElement
 
             pos = getattr(sizeritem, 'pos', None)
-            # XXX change this: don't use pos here at all; either we're just appending to the end or filling virtual sizers acc. to pagenames
-            if pos is None and not parent.IS_SIZER and hasattr(parent, "get_itempos"):
-                # virtual sizers don't use sizeritem objects around their items in XML; the index is found from the name
+            if pos is None and hasattr(parent, "get_itempos"):
+                # splitters and notebooks don't use sizeritems around their items in XML; pos is found from the name
                 pos = parent.get_itempos(attrs)
 
             # build the widget
@@ -582,9 +578,7 @@ class XmlWidgetObject(object):
             if builder is None: raise XmlParsingError("Widget '%s' not supported."%base)
             self.obj = builder(attrs, sizer or parent, pos)
             p = self.obj.properties.get("class")
-            if p:
-                p.set(self.klass)
-                #common.app_tree.refresh(self.obj.node)
+            if p: p.set(self.klass)
 
             self.IS_SIZER = self.obj.IS_SIZER
             self.IS_WINDOW = self.obj.IS_WINDOW
