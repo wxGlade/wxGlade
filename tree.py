@@ -519,15 +519,12 @@ class WidgetTree(wx.TreeCtrl):#, Tree):
         if last_pos and last_pos==(x,y) and not self.IsExpanded(node.item): self.Expand(node.item)
         return node
 
-    def change_node(self, node, widget):
-        # This is only called from 'free_slot' and similar, where new_node is a SlotNode
-
-        # this is a bit of a hack to replace the old widget node with a SlotNode
-        # XXX probably it would be better to modify the Node class to take care of SizerSlot instances
+    def change_node(self, node, widget, keep_children=False):
         self._SetItemData(node.item, widget)
-        old_children = node.children
-        for c in old_children or []:     # but the children
-            self.Delete(c.item)
+        if not keep_children:
+            old_children = node.children
+            for c in old_children or []:     # but the children
+                self.Delete(c.item)
         widget.item = node.item
         node.item = None
         self.refresh(widget)

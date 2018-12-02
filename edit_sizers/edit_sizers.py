@@ -33,6 +33,7 @@ def _frozen(method):
                 toplevel.Refresh()
                 toplevel.Thaw()
     return _frozen
+# XXX for debugging of NEW_STRUCTURE only
 def _frozen(method):
     return method
 
@@ -213,18 +214,19 @@ class SizerHandleButton(GenButton):
 def change_sizer(old, new):
     """Replaces sizer instance 'old' with a new one; 'new' is the name of the new one.
     (which_page: index of the property windows notebook page; used only by set_growable_(rows|cols)"""
+    pos = None if old.toplevel else old.pos
     constructors = {
-        'wxBoxSizer (wxVERTICAL)':         lambda: EditBoxSizer(old.name, old.window, wx.VERTICAL, 0),
-        'wxBoxSizer (wxHORIZONTAL)':       lambda: EditBoxSizer(old.name, old.window, wx.HORIZONTAL, 0),
-        'wxWrapSizer (wxVERTICAL)':        lambda: EditWrapSizer(old.name, old.window, wx.VERTICAL, 0),
-        'wxWrapSizer (wxHORIZONTAL)':      lambda: EditWrapSizer(old.name, old.window, wx.HORIZONTAL, 0),
-        'wxStaticBoxSizer (wxVERTICAL)':   lambda: EditStaticBoxSizer(old.name, old.window, wx.VERTICAL,
+        'wxBoxSizer (wxVERTICAL)':         lambda: EditBoxSizer(old.name, old.window, pos, wx.VERTICAL, 0),
+        'wxBoxSizer (wxHORIZONTAL)':       lambda: EditBoxSizer(old.name, old.window, pos, wx.HORIZONTAL, 0),
+        'wxWrapSizer (wxVERTICAL)':        lambda: EditWrapSizer(old.name, old.window, pos, wx.VERTICAL, 0),
+        'wxWrapSizer (wxHORIZONTAL)':      lambda: EditWrapSizer(old.name, old.window, pos, wx.HORIZONTAL, 0),
+        'wxStaticBoxSizer (wxVERTICAL)':   lambda: EditStaticBoxSizer(old.name, old.window, pos, wx.VERTICAL,
                                                                       getattr(old, 'label', old.name), 0),
-        'wxStaticBoxSizer (wxHORIZONTAL)': lambda: EditStaticBoxSizer(old.name, old.window, wx.HORIZONTAL,
+        'wxStaticBoxSizer (wxHORIZONTAL)': lambda: EditStaticBoxSizer(old.name, old.window, pos, wx.HORIZONTAL,
                                                                       getattr(old, 'label', old.name), 0),
-        'wxGridSizer':     lambda: EditGridSizer(old.name, old.window, rows=0, cols=0),
-        'wxFlexGridSizer': lambda: EditFlexGridSizer(old.name, old.window, rows=0, cols=0),
-        'wxGridBagSizer': lambda: EditGridBagSizer(old.name, old.window, rows=0, cols=0) }
+        'wxGridSizer':     lambda: EditGridSizer(old.name, old.window, pos, rows=0, cols=0),
+        'wxFlexGridSizer': lambda: EditFlexGridSizer(old.name, old.window, pos, rows=0, cols=0),
+        'wxGridBagSizer': lambda: EditGridBagSizer(old.name, old.window, pos, rows=0, cols=0) }
 
     with old.window.frozen():
         # construct without children, take then the children from the old sizer
@@ -237,9 +239,8 @@ def change_sizer(old, new):
                     elif isinstance(c, SizerSlot) and c.overlapped:
                         # re-create hidden widget
                         c.set_overlap(False, add_to_sizer=False)
-    
+
         szr.children.extend(old.children)
-        szr.node = old.node
     
         # copy/set properties
         if isinstance(szr, GridSizerBase):
@@ -280,13 +281,13 @@ def change_sizer(old, new):
         if isinstance(szr, EditGridBagSizer):
             szr._check_slots(remove_only=True)  # mark overlapped slots
     
-        XXX #  check _BTN_OFFSET required and whether _btn has been added
+        #XXX #  check _BTN_OFFSET required and whether _btn has been added
         for widget in szr.children:
-            widget.sizer = szr
             if not isinstance(widget, SizerSlot):
                 if szr.widget is not None:
                     if not isinstance(szr, EditGridBagSizer):
-                        szr.widget.Insert(widget.pos, widget.widget, widget.proportion, widget.flag, widget.border)
+                        pos = widget.pos + szr.widget._BTN_OFFSET
+                        szr.widget.Insert(pos, widget.widget, widget.proportion, widget.flag, widget.border)
                     else:
                         szr.widget.Add(widget.widget, widget.pos, widget.span, widget.flag, widget.border)
     
@@ -300,9 +301,9 @@ def change_sizer(old, new):
             if szr.sizer.widget:
                 elem = szr.sizer.widget.GetChildren()[szr.pos]
                 compat.SizerItem_SetSizer(elem, szr.widget)
-    
-        common.app_tree.change_node(szr.node, szr)
-    
+
+        common.app_tree.change_node(old, szr, keep_children=True)
+
         old.toplevel = False
         del old.children[:]
         old.delete()
@@ -618,26 +619,15 @@ class SizerBase(Sizer, np.PropertyOwner):
             common.app_tree.remove(self)  # delete tree item
             if self in self.window.children:
                 raise ValueError("XXX implementation error")  # should not happen
-            return
-        # XXX as of now: remove old and then create a new slot; maybe there's a better way to change the node directly
-        #sizer = self.sizer
-        #common.app_tree.remove(self.node)
-        #sizer.remove_item(self)
-        #sizer.insert_slot(self.pos)
+            return self.parent
 
-        ## XXX as of now, this won't work
         return self.sizer.free_slot(self.pos)
 
     def remove(self):
         # entry point from GUI
         common.root.saved = False  # update the status of the app
-        if self.toplevel:
-            parent = self.window
-        slot = self._remove()
-        if self.toplevel:
-            misc.set_focused_widget(parent)
-        else:
-            misc.set_focused_widget(slot)
+        focus = self._remove()  # slot or window
+        misc.set_focused_widget(focus)
 
     def Destroy(self):
         GenButton.Destroy(self)
@@ -1165,9 +1155,6 @@ class EditBoxSizer(BoxSizerBase):
         for pos, size in to_lay_out:
             self.set_item_best_size(self.children[pos], size)
         self.layout(True)
-        #if not self.toplevel and getattr(self, 'sizer'):
-            # hasattr(self, 'sizer') is False only in case of a 'change_sizer' call
-            #self.sizer.add_item( self, self.pos, self.widget.GetMinSize() )
         if self.parent.IS_SIZER:
             self.parent._add_item( self, self.pos, self.widget.GetMinSize() )
 
@@ -1427,12 +1414,6 @@ class GridSizerBase(SizerBase):
         self.cols = np.SpinProperty(cols, val_range=val_range, immediate=True)
         self.vgap = np.SpinProperty(vgap, immediate=True)
         self.hgap = np.SpinProperty(hgap, immediate=True)
-
-        self.children = []  # add to self.children the SizerItem for self._btn
-        for i in range(self.rows * self.cols):
-            slot = SizerSlot(self.window, self, i)
-            XXX  # check this
-            self.children.append(slot)  # probably not required; not used anyway...
 
     def create_widget(self):
         "This must be overriden and called at the end of the overriden version"

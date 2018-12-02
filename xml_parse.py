@@ -18,9 +18,6 @@ import time
 import common, config, compat
 import edit_sizers
 
-if config.use_gui:
-    import wx
-
 
 class XmlParsingError(SAXException):
     "Custom exception to report problems during parsing"
@@ -307,6 +304,7 @@ class ProgressXmlWidgetBuilder(XmlWidgetBuilder):
             del kwds['input_file']
             self.size = len(self.input_file.readlines())
             self.input_file.seek(0)
+            import wx
             self.progress = wx.ProgressDialog( _("Loading..."), _("Please wait while loading the app"), 20 )
             self.step = 4
             self.i = 1

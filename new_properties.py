@@ -90,7 +90,6 @@ class Property(object):
         """set the value of the property (note that the property need not be active)
         updates display if editor is visible; doesn't notify owner or application!
         optionally, the property will be activated or deactivated"""
-        self.previous_value = self.value
         self.value = self._set_converter(value)
         self.modified = True
         if activate is None and deactivate is None:
