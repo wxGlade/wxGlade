@@ -48,7 +48,7 @@ class WidgetTree(wx.TreeCtrl):#, Tree):
         self.Bind(wx.EVT_TREE_BEGIN_DRAG, self.begin_drag)
         self.Bind(wx.EVT_LEAVE_WINDOW, self.on_leave_window)
         self.Bind(wx.EVT_MOUSE_EVENTS, self.on_mouse_events)
-        
+
         self.Bind(wx.EVT_TREE_BEGIN_LABEL_EDIT, self.begin_edit_label)
         self.Bind(wx.EVT_TREE_END_LABEL_EDIT, self.end_edit_label)
         #self.Bind(wx.EVT_KEY_DOWN, misc.on_key_down_event)
@@ -154,7 +154,6 @@ class WidgetTree(wx.TreeCtrl):#, Tree):
         else:
             new_name = new_value
 
-
         # check name
         if new_name:
             name_p = widget.properties["name"]
@@ -242,7 +241,6 @@ class WidgetTree(wx.TreeCtrl):#, Tree):
     def add(self, child, parent=None, select=True):
         "appends child to the list of parent's children"
 
-        #Tree.add(self, child, parent)
         image = self.images.get( child._get_tree_image(), -1)
         if parent is None: parent = parent.item = self.GetRootItem()
         child.item = self.AppendItem(parent.item, child._get_tree_label(), image)
@@ -254,7 +252,6 @@ class WidgetTree(wx.TreeCtrl):#, Tree):
 
     def insert(self, child, parent, index, select=True):
         "inserts child to the list of parent's children at index; a SlotNode at index is overwritten"
-        # pos is index
         if parent is None:
             # XXX check whether this is called at all
             parent = self._GetItemData( self.GetRootItem() )
@@ -264,7 +261,6 @@ class WidgetTree(wx.TreeCtrl):#, Tree):
             self.add(child, parent, select=select)
             return
 
-        #Tree.insert(self, child, parent, index)
         label = child._get_tree_label()
         image = self.images.get( child._get_tree_image(), -1)
         child.item = compat.wx_Tree_InsertItemBefore(self, parent.item, index, label, image)
@@ -278,7 +274,7 @@ class WidgetTree(wx.TreeCtrl):#, Tree):
         self.Delete(node.item)
 
     def build(self, widget):
-        # (re-)build 
+        # (re-)build
         # e.g. .build(control)
         if widget is self.root:
             # re-build completely
@@ -422,8 +418,7 @@ class WidgetTree(wx.TreeCtrl):#, Tree):
         if widget.children:
             for c in widget.children:
                 self.create_widgets(c)
-        widget.post_load()  # only edit_sizers.SizerBase has this method implemented and calls it for toplevel
-        # XXX also notebook.EditNotebook!
+        widget.post_load()  # SizerBase uses this for toplevel sizers; also EditNotebook
 
     def _show_widget_toplevel(self, widget):
         # creates/shows the widget of the given toplevel node and all its children
@@ -438,7 +433,7 @@ class WidgetTree(wx.TreeCtrl):#, Tree):
             if widget.children:
                 for c in widget.children:
                     self.create_widgets(c)
-            widget.post_load()  # only edit_sizers.SizerBase has this method implemented and calls it for toplevel
+            widget.post_load()  # SizerBase uses this for toplevel sizers; also EditNotebook
             widget.create()
             if widget.widget.TopLevel:
                 widget.widget.Show()
@@ -519,15 +514,15 @@ class WidgetTree(wx.TreeCtrl):#, Tree):
         if last_pos and last_pos==(x,y) and not self.IsExpanded(node.item): self.Expand(node.item)
         return node
 
-    def change_node(self, node, widget, keep_children=False):
-        self._SetItemData(node.item, widget)
+    def change_node(self, old, new, keep_children=False):
+        self._SetItemData(old.item, new)
         if not keep_children:
-            old_children = node.children
-            for c in old_children or []:     # but the children
+            old_children = old.children
+            for c in old_children or []:
                 self.Delete(c.item)
-        widget.item = node.item
-        node.item = None
-        self.refresh(widget)
+        new.item = old.item
+        old.item = None
+        self.refresh(new)
 
     def get_selected_path(self, w=None):
         """returns a list of widget names, from the toplevel to the selected one
@@ -572,6 +567,3 @@ class WidgetTree(wx.TreeCtrl):#, Tree):
             # a position
             pos = path[0][1]
             misc.get_toplevel_parent(widget.widget).SetPosition(pos)
-
-    def _get_first_child(self, item):
-        return self.GetFirstChild(item)
