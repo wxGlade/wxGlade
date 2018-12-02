@@ -617,8 +617,7 @@ class SizerBase(Sizer, np.PropertyOwner):
         if self.toplevel:
             self.tree_remove()  # remove from data structure
             common.app_tree.remove(self)  # delete tree item
-            if self in self.window.children:
-                raise ValueError("XXX implementation error")  # should not happen
+            assert self not in self.window.children
             return self.parent
 
         return self.sizer.free_slot(self.pos)
@@ -1030,7 +1029,7 @@ class SizerBase(Sizer, np.PropertyOwner):
         if self.widget:
             # required here; otherwise removal of a StaticBox of a StaticBoxSizer will cause a crash
             self.widget.Detach(old_child.widget)
-        common.app_tree.change_node( old_child, slot )  # calls the delete methods of the widgets
+        common.app_tree.change_node( old_child, slot )
         old_child.tree_remove()
 
         if self.widget:

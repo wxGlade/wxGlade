@@ -350,7 +350,7 @@ class WidgetTree(wx.TreeCtrl):#, Tree):
             widget.drop_sizer()
         common.adding_window = None
 
-    def on_left_dclick(self, event):
+    def on_left_dclick(self, event):     
         x, y = event.GetPosition()
         widget = self._find_node_by_pos(x, y)
         if not widget:

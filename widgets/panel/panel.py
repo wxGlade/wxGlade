@@ -83,7 +83,7 @@ class PanelBase(EditStylesMixin):
             self.on_set_focus(event)  # default behaviour: call show_properties
             return
         if self.widget: self.widget.SetCursor(wx.NullCursor)
-        common.widgets[common.widget_to_add](self, None, None)
+        common.widgets[common.widget_to_add](self, None)
         if event is None or not misc.event_modifier_copy(event):
             common.adding_widget = common.adding_sizer = False
             common.widget_to_add = None

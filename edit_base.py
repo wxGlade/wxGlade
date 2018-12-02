@@ -6,15 +6,18 @@ import common, misc, compat, clipboard, config
 
 MANAGED_PROPERTIES  = ["pos", "span", "proportion", "border", "flag"]
 
-class _OwnList(list):
-    def append(self, obj):
-        if obj in self:
-            raise AssertionError("Element already in list")
-        list.append(self, obj)
-    def __setitem__(self, index, obj):
-        if obj in self:
-            raise AssertionError("Element already in list")
-        list.__setitem__(self, index, obj)
+if config.debugging:
+    class _OwnList(list):
+        def append(self, obj):
+            if obj in self:
+                raise AssertionError("Element already in list")
+            list.append(self, obj)
+        def __setitem__(self, index, obj):
+            if obj in self:
+                raise AssertionError("Element already in list")
+            list.__setitem__(self, index, obj)
+else:
+    _OwnList = list
 
 
 class EditBase(np.PropertyOwner):
@@ -24,7 +27,6 @@ class EditBase(np.PropertyOwner):
     # WX_CLASS: needs to be defined in every derived class XXX
     #CHILDREN = 1  # 0 or a fixed number or None for e.g. a sizer with a variable number of children
 
-    #def __init__(self, name, klass, parent, custom_class=True):
     def __init__(self, name, parent, pos=None):
         np.PropertyOwner.__init__(self)
         # initialise instance logger
@@ -160,10 +162,6 @@ class EditBase(np.PropertyOwner):
         elif not modified or "class" in modified or "name" in modified:
             common.app_tree.refresh(self, refresh_label=True, refresh_image=False)
 
-    #def create_widgets(self):
-        ## XXX only called from xml_parse as top_obj.create_widgets()
-        #common.app_tree.create_widgets(self.node)
-
     # widget creation and destruction ##################################################################################
     def create(self):
         "create the wx widget"
@@ -201,54 +199,19 @@ class EditBase(np.PropertyOwner):
         compat.DestroyLater(self.widget)
         self.widget = None
 
-
-    # from tree.Node ###################################################################################################
-    #@classmethod
-    #def node_remove_rec(cls, node):
-        #"recursively remove node and it's children"
-        ## delete is called for all children and child-chilren and then for self
-        #for child in (node.children or []):
-            #cls.node_remove_rec(child)
-        ## call the widget's ``destructor''
-        #node.delete()
-
-    #def node_remove(self):
-        #self.node_remove_rec(self)
-        #try:
-            #print("node_remove", self, self.parent, self.parent.children)
-            #self.parent.children.remove(self)
-        #except:
-            #print(" **** node_remove failed")  # XXX
-            #pass
-
     # from tree.Tree ###################################################################################################
-    #def tree_clear_name_rec(self):
-        ## recursively delete all names from toplevel_parent.names
-        #if self.parent.IS_ROOT: return
-        #try:
-            #del self.toplevel_parent.names[self.name]
-        #except (KeyError, AttributeError):
-            #print("tree_clear_name_rec: name '%s' already removed"%self.name)
-            #pass
-
-        #for c in (self.children or []):
-            #c.tree_clear_name_rec()
-
     def _tree_remove(self):
-        for c in (self.children or []):
-            c._tree_remove()
+        if self.children:
+            for c in self.children[:]:
+                c._tree_remove()
         try:
-            print("node_remove", self, self.parent, self.parent.children)
             self.parent.children.remove(self)
         except:
             print(" **** node_remove failed")  # XXX
             pass
-
         self.delete()
 
     def tree_remove(self):
-        #self.tree_clear_name_rec()
-        #self.node_remove()
         self._tree_remove()
 
     ####################################################################################################################
@@ -259,8 +222,6 @@ class EditBase(np.PropertyOwner):
         common.root.saved = False  # update the status of the app
         # remove is called from the context menus; for other uses, delete is applicable
         self._dont_destroy = False  # always destroy when explicitly asked
-        #del self.toplevel_parent.names[self.name]
-        print("remove", self, self.parent, self.parent.children)
         self.parent.children.remove(self)
         self.tree_remove()
         common.app_tree.remove(self)
