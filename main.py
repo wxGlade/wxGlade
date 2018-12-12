@@ -1081,10 +1081,6 @@ class wxGladeFrame(wx.Frame):
         "Show the wxGlade user manual"
         self._show_html(config.manual_file)
 
-    #def show_tutorial(self):
-        #"Show the wxGlade tutorial"
-        #self._show_html(config.tutorial_file)
-
     def show_bug_tracker(self):
         self._show_html("https://github.com/wxGlade/wxGlade/issues")
     def show_mailing_list(self):
@@ -1096,7 +1092,7 @@ class wxGladeFrame(wx.Frame):
         "Open browser and show an HTML documentation"
 
         if wx.Platform == "__WXMAC__":
-            os.system(r'open -a Help\ Viewer.app %s' % html_file)
+            os.system(r'open -a Safari.app "%s"' % html_file)
         else:
             import webbrowser
             import threading
