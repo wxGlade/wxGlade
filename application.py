@@ -71,6 +71,10 @@ class EditRoot(np.PropertyOwner):
     IS_ROOT = True
     parent = None
 
+    # XXX move this to EditBase
+    def get_all_children(self):
+        return self.children
+
     def has_ancestor(self, node):
         return False
 
@@ -721,7 +725,7 @@ class Application(EditRoot):
                 #expanded = False
                 #break
         for child in self.children:
-            if not common.app_tree.IsExpanded(child.node) and child.children:
+            if not common.app_tree.IsExpanded(child.item) and child.children:
                 expanded = False
                 break
         if not expanded:

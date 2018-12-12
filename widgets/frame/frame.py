@@ -21,6 +21,7 @@ class EditFrame(TopLevelBase, EditStylesMixin, BitmapMixin):
     _PROPERTY_HELP   = { 'icon':'Icon for this window.' }
     _PROPERTY_LABELS = { "sizehints":'Set Size Hints', "menubar":'Has MenuBar', "toolbar":'Has ToolBar',
                          "statusbar":'Has StatusBar' }
+    ATT_CHILDREN = ["_menubar", "_statusbar", "_toolbar"]
 
     def __init__(self, name, parent, title, style=wx.DEFAULT_FRAME_STYLE, klass='wxFrame'): #XXX style is not used
         TopLevelBase.__init__(self, name, klass, parent, title=title)
@@ -92,7 +93,6 @@ class EditFrame(TopLevelBase, EditStylesMixin, BitmapMixin):
             # create a MenuBar
             from menubar import EditMenuBar
             self._menubar = EditMenuBar(self.name + '_menubar', 'wxMenuBar', self)
-            common.app_tree.add(self._menubar, self)
             if self.widget: self._menubar.create()
         else:
             # remove
@@ -117,9 +117,7 @@ class EditFrame(TopLevelBase, EditStylesMixin, BitmapMixin):
         if self.toolbar:
             # create a ToolBar
             from toolbar import EditToolBar
-            self._toolbar = EditToolBar(self.name + '_toolbar', 'wxToolBar', self)
-            common.app_tree.add(self._toolbar, self)
-
+            EditToolBar(self.name + '_toolbar', 'wxToolBar', self)
             if self.widget: self._toolbar.create()
         else:
             # remove
@@ -141,6 +139,7 @@ class EditFrame(TopLevelBase, EditStylesMixin, BitmapMixin):
 class EditMDIChildFrame(EditFrame):
     IS_TOPLEVEL_WINDOW = False  # avoid to appear in the "Top Window" property of the app
     PROPERTIES = [p for p in EditFrame.PROPERTIES if p!="statusbar"]
+    ATT_CHILDREN = ["_menubar", "_toolbar"]
     #def __init__(self, *args, **kwds):
         #EditFrame.__init__(self, *args, **kwds)
         #self.base = 'wxFrame' # XXX is this correct?
@@ -165,22 +164,21 @@ def builder(parent, pos, klass=None, base=None, name=None):
         base_class = EditFrame
     else:
         base_class = EditMDIChildFrame
-    frame = base_class(name, parent, name, "wxDEFAULT_FRAME_STYLE", klass=klass)
-    frame.properties['size'].set( (400,300), activate=True )
-    common.app_tree.add(frame)
-    frame.create()
-    frame.widget.Show()
-    frame.design.update_label()
+    editor = base_class(name, parent, name, "wxDEFAULT_FRAME_STYLE", klass=klass)
+    editor.properties['size'].set( (400,300), activate=True )
+    editor.create()
+    editor.widget.Show()
+    editor.design.update_label()
 
     # add a default vertical sizer to the frame
     import edit_sizers
-    edit_sizers._builder(frame, 0)
-    # now select the frame's node in the tree
-    common.app_tree.select_item(frame)
+    edit_sizers._builder(editor, 0)
 
     if wx.Platform == '__WXMSW__':
-        #frame.widget.CenterOnScreen()
-        frame.widget.Raise()
+        #editor.widget.CenterOnScreen()
+        editor.widget.Raise()
+
+    return editor
 
 
 def _make_builder(base_class):
@@ -195,9 +193,8 @@ def _make_builder(base_class):
             style = "wxDEFAULT_FRAME_STYLE"
         else:
             style = 0
-        frame = base_class(label, parent, "", style)
-        common.app_tree.add(frame)
-        return frame
+        editor = base_class(label, parent, "", style)
+        return editor
     return xml_builder
 
 

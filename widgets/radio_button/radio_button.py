@@ -59,11 +59,11 @@ def builder(parent, pos):
     "factory function for EditRadioButton objects"
     name = common.root.get_next_name('radio_btn_%d', parent)
     with parent.frozen():
-        radio = EditRadioButton(label, parent, label, pos)
-        radio.properties["style"].set_to_default()
-        radio.check_defaults()
-        if parent.widget: radio.create()
-    common.app_tree.insert(radio, parent, pos)
+        editor = EditRadioButton(label, parent, label, pos)
+        editor.properties["style"].set_to_default()
+        editor.check_defaults()
+        if parent.widget: editor.create()
+    return editor
 
 
 def xml_builder(attrs, parent, pos=None):
@@ -73,9 +73,7 @@ def xml_builder(attrs, parent, pos=None):
         label = attrs['name']
     except KeyError:
         raise XmlParsingError(_("'name' attribute missing"))
-    radio = EditRadioButton(label, parent, "", pos)
-    common.app_tree.insert(radio, parent, pos)
-    return radio
+    return EditRadioButton(label, parent, "", pos)
 
 
 def initialize():

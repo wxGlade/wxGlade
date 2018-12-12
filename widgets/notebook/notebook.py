@@ -86,6 +86,7 @@ class TabsHandler(BaseXmlBuilderTagHandler):
     def end_elem(self, name):
         if name == 'tabs':
             self.parent.pages = self.pagenames
+            self.parent.children = [None]*len(self.tab_names)
             self.parent.properties['tabs'].set(self.tab_names)
             self.parent.properties_changed(["tabs"])
             return True
@@ -128,6 +129,16 @@ class EditNotebook(ManagedBase, EditStylesMixin):
                 self.widget.AddPage(c.widget, label)
         #self.widget.Bind(wx.EVT_KEY_DOWN, misc.on_key_down_event)
 
+    def on_load(self):
+        print("on_load", self, self.name)
+        ## XXX now it should be possible to add Nones as placeholder first and then create all Slots here
+        ## create slot nodes for empty slots
+        #if len(self.children)<len(self.pages):
+            #self.children.extend( [None] * (len(self.pages) - len(self.children)) )
+        ##self._add_slots()
+        ManagedBase.on_load(self)
+        self.pages = None
+
     def post_load(self):
         # at this time, all children should be available
         # no longer required when the data structure is changed
@@ -144,16 +155,10 @@ class EditNotebook(ManagedBase, EditStylesMixin):
     # new implementation:
     # together with NotebookVirtualSizer insert_tab, remove_tab, free_tab
 
-    def _add_slots(self):
-        for pos, child in enumerate(self.children):
-            if child is None:
-                self.children[pos] = slot = Slot(self, pos)
-                common.app_tree.insert(slot, self, pos)
-
-    def add_item(self, child, pos=None):
-        # ensure that empty pages before pos get their slots, as otherwise common.app_tree.insert will fail
-        ManagedBase.add_item(self, child, pos)
-        self._add_slots()
+    #def add_item(self, child, pos=None):
+        ## ensure that empty pages before pos get their slots, as otherwise common.app_tree.insert will fail
+        #ManagedBase.add_item(self, child, pos)
+        #self._add_slots()
 
     def vs_insert_tab(self, index):
         "inserts or adds a page"
@@ -172,7 +177,12 @@ class EditNotebook(ManagedBase, EditStylesMixin):
             self.sizer.set_item_best_size( self, size=self.widget.GetBestSize() )
 
     def insert_tab(self, index, label):
-        # add tab/page this needs to be done before EditPanel calls self.virtual_sizer.add_item
+        # add tab/page; called from GUI
+        tab = self._insert_tab(self, index, label)
+        misc.rebuild_tree(self)
+
+    def _insert_tab(self, index, label):
+        # add tab/page
         tabs_p = self.properties["tabs"]
         tabs = tabs_p.get()   # the value will be modified in place
         tabs.insert(index, [label,])
@@ -185,19 +195,17 @@ class EditNotebook(ManagedBase, EditStylesMixin):
             pos_p.set(index+1+i)
 
         # create panel and node, add to tree
-        window = EditPanel( self.next_pane_name(), self, index )
-        window._dont_destroy = True
-
-        common.app_tree.insert(window, self, index)
+        editor = EditPanel( self.next_pane_name(), self, index )
+        editor._dont_destroy = True
 
         if self.widget:
             # add to widget
-            window.create()
-            compat.SetToolTip(window.widget, _("Notebook page pane:\nAdd a sizer here") )
+            editor.create()
+            compat.SetToolTip(editor.widget, _("Notebook page pane:\nAdd a sizer here") )
             self.vs_insert_tab(index)
 
             try:
-                wx.CallAfter(window.sel_marker.update)
+                wx.CallAfter(editor.sel_marker.update)
             except AttributeError:
                 #self._logger.exception(_('Internal Error'))
                 if config.debugging: raise
@@ -205,98 +213,98 @@ class EditNotebook(ManagedBase, EditStylesMixin):
             self.widget.SetSelection(index)
 
         self.properties["tabs"].update_display()
+        return editor
 
-    @misc.restore_focus
-    def set_tabs(self, old_labels, indices):  # called from tabs proberty on Apply button
-        """tabs: list of strings
-        indices: the current indices of the tabs or None for a new tab; re-ordering is currently not supported"""
-        keep_indices = [pos for pos in indices if pos is not None]
-        if keep_indices != sorted(keep_indices):
-            raise ValueError("Re-ordering is not yet implemented")
-        keep_indices = set(keep_indices)
-        new_labels = old_labels[:]
+    #@misc.restore_focus
+    #def set_tabs(self, old_labels, indices):  # called from tabs proberty on Apply button
+        #"""tabs: list of strings
+        #indices: the current indices of the tabs or None for a new tab; re-ordering is currently not supported"""
+        #keep_indices = [pos for pos in indices if pos is not None]
+        #if keep_indices != sorted(keep_indices):
+            #raise ValueError("Re-ordering is not yet implemented")
+        #keep_indices = set(keep_indices)
+        #new_labels = old_labels[:]
 
-        # set tab labels of existing pages, if modified
-        for (label,), index in zip(self.tabs, indices):
-            if index is not None and old_labels[index]!=label:
-                new_labels[index] = [label,]
-                if self.widget:
-                    self.widget.SetPageText(index, label)
+        ## set tab labels of existing pages, if modified
+        #for (label,), index in zip(self.tabs, indices):
+            #if index is not None and old_labels[index]!=label:
+                #new_labels[index] = [label,]
+                #if self.widget:
+                    #self.widget.SetPageText(index, label)
 
-        # remove tabs
-        for index in range(len(old_labels)-1, -1, -1):
-            if not index in keep_indices:
-                self._is_removing_pages = True
-                self.virtual_sizer.remove_tab(index)            # remove from sizer; does not delete window
-                self.children[index]._remove()                     # delete the page content without setting the focus
-                self.children[index].tree_remove() + XXX  # this has not been tested
-                common.app_tree.remove(self.children[index])  # remove from tree
-                del self.children[index]                           # delete from page list
-                del new_labels[index]                            # delete from list of names
-                self._is_removing_pages = False
+        ## remove tabs
+        #for index in range(len(old_labels)-1, -1, -1):
+            #if not index in keep_indices:
+                #self._is_removing_pages = True
+                #self.virtual_sizer.remove_tab(index)            # remove from sizer; does not delete window
+                #self.children[index]._remove()                     # delete the page content without setting the focus
+                #self.children[index].tree_remove() + XXX  # this has not been tested
+                #common.app_tree.remove(self.children[index])  # remove from tree
+                #del self.children[index]                           # delete from page list
+                #del new_labels[index]                            # delete from list of names
+                #self._is_removing_pages = False
 
-        # insert/add tabs
-        added = None
-        for pos, (label,) in enumerate(self.tabs):
-            index = indices[pos]
-            if index is not None:
-                # old tab to be kept, just ensure that pos is correct
-                pos_p = self.children[pos].properties["pos"]
-                if pos_p.value!=pos: pos_p.set(pos)
-                continue
+        ## insert/add tabs
+        #added = None
+        #for pos, (label,) in enumerate(self.tabs):
+            #index = indices[pos]
+            #if index is not None:
+                ## old tab to be kept, just ensure that pos is correct
+                #pos_p = self.children[pos].properties["pos"]
+                #if pos_p.value!=pos: pos_p.set(pos)
+                #continue
 
-            # actually add/insert
-            new_labels.insert(pos, [label,]) # this needs to be done before EditPanel calls self.virtual_sizer.add_item
-            self.children.insert(pos, None)
-            # create panel and node, add to tree
-            suggestion = "%s_%s" % (self.name, label)
-            window = EditPanel( self.next_pane_name(suggestion), self, pos )
-            window._dont_destroy = True
+            ## actually add/insert
+            #new_labels.insert(pos, [label,]) # this needs to be done before EditPanel calls self.virtual_sizer.add_item
+            #self.children.insert(pos, None)
+            ## create panel and node, add to tree
+            #suggestion = "%s_%s" % (self.name, label)
+            #window = EditPanel( self.next_pane_name(suggestion), self, pos )
+            #window._dont_destroy = True
 
-            # adjust pos of the following pages
-            for p, page in enumerate(self.children[pos+1:]):
-                pos_p = page.properties["pos"]
-                pos_p.set(pos+2+p)
+            ## adjust pos of the following pages
+            #for p, page in enumerate(self.children[pos+1:]):
+                #pos_p = page.properties["pos"]
+                #pos_p.set(pos+2+p)
 
-            common.app_tree.insert(window, self, pos, select=False)
+            #common.app_tree.insert(window, self, pos, select=False)  # XXX call this only when called from GUI
 
-            if self.widget:
-                # add to widget
-                window.create()
-                compat.SetToolTip(window.widget, _("Notebook page pane:\nAdd a sizer here") )
-                self.vs_insert_tab(pos)
+            #if self.widget:
+                ## add to widget
+                #window.create()
+                #compat.SetToolTip(window.widget, _("Notebook page pane:\nAdd a sizer here") )
+                #self.vs_insert_tab(pos)
     
-                try:
-                    wx.CallAfter(window.sel_marker.update)
-                except AttributeError:
-                    if config.debugging: raise
+                #try:
+                    #wx.CallAfter(window.sel_marker.update)
+                #except AttributeError:
+                    #if config.debugging: raise
 
-                added = pos  # remember last added index for selection
+                #added = pos  # remember last added index for selection
 
-        # select the last added tab
-        if added is not None and self.widget:
-            self.widget.SetSelection(added)
+        ## select the last added tab
+        #if added is not None and self.widget:
+            #self.widget.SetSelection(added)
 
-        # update tree labels
-        for child in self.children:
-            common.app_tree.refresh(child, refresh_label=True, refresh_image=False)
+        ## update tree labels
+        #for child in self.children:
+            #common.app_tree.refresh(child, refresh_label=True, refresh_image=False)
 
-    def free_slot(self, pos, force_layout=True):
+    def _free_slot(self, pos, force_layout=True):
         "Replaces the element at pos with an empty slot"
         #if self._is_removing_pages or not self.window.widget:
         if self._is_removing_pages:
             return
         old_child = self.children[pos]
-        slot = Slot(self, pos) # XXX node handling?
-        #self._logger.debug('free: %s, %s, %s', slot, slot.pos, pos)
-        # for now, SizerSlot is not derived from EditBase; so it's not automatically added to children
-        self.children[pos] = slot
+        slot = Slot(self, pos)
         slot.create()
         label = self.tabs[pos][0]
         if self.widget:
             self.widget.RemovePage(pos)
 
-        common.app_tree.change_node( old_child, slot )
+        old_child.tree_remove()
+        common.app_tree.remove(old_child)
+
         if self.widget:
             self.widget.InsertPage(pos, slot.widget, label)
             self.widget.SetSelection(pos)
@@ -383,12 +391,8 @@ class EditNotebook(ManagedBase, EditStylesMixin):
         tmpl = "%s_pane_%%d" % self.name
         return common.root.get_next_name(tmpl, self)
 
-    def on_load(self):
-        # create slot nodes for empty slots
-        if len(self.children)<len(self.pages):
-            self.pages.extend( [None] * (len(self.pages) - len(self.children)) )
-        self._add_slots()
-        self.pages = None
+    def _get_slot_label(self, pos):
+        return "Notebook Page %d"%pos
 
 
 def builder(parent, pos):
@@ -402,13 +406,12 @@ def builder(parent, pos):
         return
     name = common.root.get_next_name('notebook_%d', parent)
     with parent.frozen():
-        widget = EditNotebook(name, parent, style, pos)
-        widget.properties["proportion"].set(1)
-        widget.properties["flag"].set("wxEXPAND")
-        if parent.widget: widget.create()
-        common.app_tree.insert(widget, parent, pos)
-
-        widget.insert_tab(0, widget.next_pane_name()) # next_pane_name will be used as label and as pane name, if possible
+        editor = EditNotebook(name, parent, style, pos)
+        editor.properties["proportion"].set(1)
+        editor.properties["flag"].set("wxEXPAND")
+        if parent.widget: editor.create()
+        editor._insert_tab(0, editor.next_pane_name()) # next_pane_name will be used as label and as pane name, if possible
+    return editor
 
 
 def xml_builder(attrs, parent, pos=None):
@@ -417,9 +420,7 @@ def xml_builder(attrs, parent, pos=None):
         name = attrs['name']
     except KeyError:
         raise XmlParsingError(_("'name' attribute missing"))
-    widget = EditNotebook(name, parent, '', pos)
-    common.app_tree.insert(widget, parent, pos)
-    return widget
+    return EditNotebook(name, parent, '', pos)
 
 
 def initialize():

@@ -50,11 +50,11 @@ def builder(parent, pos):
     "factory function for EditTextCtrl objects"
     name = common.root.get_next_name('text_ctrl_%d', parent)
     with parent.frozen():
-        text = EditTextCtrl(name, parent, pos)
-        text.properties["style"].set_to_default()
-        text.check_defaults()
-        if parent.widget: text.create()
-    common.app_tree.insert(text, parent, pos)
+        editor = EditTextCtrl(name, parent, pos)
+        editor.properties["style"].set_to_default()
+        editor.check_defaults()
+        if parent.widget: editor.create()
+    return editor
 
 
 def xml_builder(attrs, parent, pos=None):
@@ -64,9 +64,7 @@ def xml_builder(attrs, parent, pos=None):
         name = attrs['name']
     except KeyError:
         raise XmlParsingError(_("'name' attribute missing"))
-    text = EditTextCtrl(name, parent, pos)
-    common.app_tree.insert(text, parent, pos)
-    return text
+    return EditTextCtrl(name, parent, pos)
 
 
 def initialize():

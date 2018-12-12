@@ -520,7 +520,11 @@ class EditToolBar(EditBase, PreviewMixin, EditStylesMixin, BitmapMixin):
             self.__dict__["names"] = {}  # XXX not used if EditMenuBar is splitted into EditToplevelMenuBar
         else:
             custom_class = False
-        EditBase.__init__( self, name, 'wxToolBar', parent, custom_class=custom_class )
+        if parent.IS_ROOT:
+            EditBase.__init__( self, name, 'wxToolBar', parent, custom_class=custom_class )
+        else:
+            EditBase.__init__( self, name, 'wxToolBar', parent, custom_class=custom_class, pos="_toolbar" )
+            self.pos = "_toolbar"
         EditStylesMixin.__init__(self)
 
         # initialise instance properties
@@ -755,9 +759,10 @@ def builder(parent, pos):
         return
     name = dialog.get_next_name("toolbar")
     with parent and parent.frozen() or misc.dummy_contextmanager():
-        tb = EditToolBar(name, klass, parent)
-        common.app_tree.add(tb)
-        if parent and parent.widget: tb.create()
+        editor = EditToolBar(name, klass, parent)
+        if parent and parent.widget: editor.create()
+
+    return editor
 
 
 
@@ -769,10 +774,7 @@ def xml_builder(attrs, parent, pos=None):
             parent._toolbar.properties["name"].set(name)
             parent._toolbar.properties_changed(["name"])
         return parent._toolbar
-    else:
-        tb = EditToolBar(name, attrs.get('class', 'wxToolBar'), parent)
-        common.app_tree.add(tb)
-        return tb
+    return EditToolBar(name, attrs.get('class', 'wxToolBar'), parent)
 
 
 def initialize():

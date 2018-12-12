@@ -697,7 +697,11 @@ class EditMenuBar(EditBase, PreviewMixin):
             self.__dict__["names"] = {}  # XXX not used if EditMenuBar is splitted into EditToplevelMenuBar
         else:
             custom_class = False
-        EditBase.__init__(self, name, klass, parent, custom_class=custom_class)
+        if parent.IS_ROOT:
+            EditBase.__init__(self, name, klass, parent, custom_class=custom_class)
+        else:
+            EditBase.__init__(self, name, klass, parent, custom_class=custom_class, pos="_menubar")
+            self.pos = "_menubar"
         self.base = 'wxMenuBar'
 
         self.menus = MenuProperty()
@@ -850,8 +854,8 @@ def builder(parent, pos):
 
     # if e.g. on a frame, suggest the user to add the menu bar to this
     toplevel_widget = None
-    if misc.focused_widget is not None and misc.focused_widget.node.parent:
-        toplevel_widget = common.app_tree._find_toplevel(misc.focused_widget.node).widget
+    if misc.focused_widget is not None and not misc.focused_widget.IS_ROOT:
+        toplevel_widget = misc.focused_widget.toplevel_parent
         if not "menubar" in toplevel_widget.properties:
             toplevel_widget = None
     if toplevel_widget is not None:
@@ -868,10 +872,10 @@ def builder(parent, pos):
         return
     name = dialog.get_next_name("menubar")
     with parent and parent.frozen() or misc.dummy_contextmanager():
-        mb = EditMenuBar(name, klass, parent)
-        common.app_tree.add(mb)
-        mb.create()
-        mb.widget.Show()
+        editor = EditMenuBar(name, klass, parent)
+        editor.create()
+        editor.widget.Show()
+    return editor
 
 
 
@@ -883,10 +887,7 @@ def xml_builder(attrs, parent, pos=None):
             parent._menubar.properties["name"].set(name)
             parent._menubar.properties_changed(["name"])
         return parent._menubar
-    else:
-        mb = EditMenuBar(name, attrs.get('class', 'wxMenuBar'), parent)
-        common.app_tree.add(mb)
-        return mb
+    return EditMenuBar(name, attrs.get('class', 'wxMenuBar'), parent)
 
 
 def initialize():

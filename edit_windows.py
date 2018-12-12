@@ -129,9 +129,7 @@ class EditBase(EventsMixin, edit_base.EditBase):
         self.extracode_post  = np.CodeProperty()
         self.extraproperties = np.ExtraPropertiesProperty()
 
-        #self.widget = None  # this is the reference to the actual wxWindow widget, created when required
         self._dont_destroy = False
-        #self.node = None  # the TreeCtrl node
 
         EventsMixin.__init__(self)
 
@@ -306,7 +304,7 @@ class WindowBase(EditBase):
             # set_size then calls self.sizer.set_item(item, pos)
             # without calling this here, e.g. an empty notebook page is not created!
             # XXX this should be made more straightforward
-            if "pos" in self.properties:
+            if "pos" in self.properties and hasattr(self.parent, "item_properties_modified"):
                 #self.sizer.set_item(self.pos)
                 self.parent.item_properties_modified(self)
             size_p.set('%s, %s' % tuple(self.widget.GetSize()))
@@ -371,9 +369,9 @@ class WindowBase(EditBase):
                 for child in self.widget.GetChildren():
                     # actually, for now a panel may only have a sizer as child, so this code is not executed
                     self._reparent_widget(child)
-            if old_widget in misc.design_windows:
-                misc.design_windows.remove(old_widget)
-                misc.design_windows.append(self.widget)
+            if old_widget in common.design_windows:
+                common.design_windows.remove(old_widget)
+                common.design_windows.append(self.widget)
             compat.DestroyLater(old_widget)
             self.finish_widget_creation()  # this will add the new widget to the sizer (default argument re_add=True)
 
@@ -518,8 +516,6 @@ class ManagedBase(WindowBase):
         self.border     = np.SpinProperty(0, immediate=True)   # border width
         self.flag       = np.ManagedFlags(wx.ADJUST_MINSIZE)   # alignment, border; expansion in other dir.
 
-        #parent.add_item(self, pos)
-
     def check_defaults(self):
         # apply default border if set in preferences; called explicitely from the interactive builder functions
         if not config.preferences.default_border or self.border==config.preferences.default_border_size: return
@@ -535,7 +531,7 @@ class ManagedBase(WindowBase):
         self.widget.Bind(wx.EVT_LEFT_DOWN, self.on_set_focus)
         self.widget.Bind(wx.EVT_MOUSE_EVENTS, self.on_mouse_events)
         self.widget.Bind(wx.EVT_MOVE, self.on_move)
-        if re_add:
+        if re_add and self.parent.IS_SIZER:
             # re-add the item to update it; this is not to be done when a widget is replaced due to style change
             self.parent._add_item( self, self.pos )
 
@@ -601,15 +597,13 @@ class ManagedBase(WindowBase):
 
     def _remove(self):
         "don't set focus"
-        return self.parent.free_slot(self.pos)
+        return self.parent._free_slot(self.pos)
 
     def remove(self):
         # entry point from GUI?
-        common.root.saved = False  # update the status of the app
-
         with self.frozen():
             slot = self._remove()
-        misc.set_focused_widget(slot)
+        misc.rebuild_tree(slot)
 
     def on_mouse_events(self, event):
         if event.Dragging():
@@ -676,6 +670,7 @@ class TopLevelBase(WindowBase, PreviewMixin):
 
     IS_TOPLEVEL = True
     IS_TOPLEVEL_WINDOW = True  # will be False for TopLevelPanel and MDIChildFrame
+    CHILDREN = 1  # a sizer or a widget
 
     def __init__(self, name, klass, parent, title=None):
         WindowBase.__init__(self, name, klass, parent, pos=None)
@@ -684,7 +679,6 @@ class TopLevelBase(WindowBase, PreviewMixin):
         if self.has_title:
             if title is None: title = self.name
             self.title = np.TextProperty(title)
-        #self.sizer = None  # sizer that controls the layout of the children of the window
         PreviewMixin.__init__(self)
         self.design = DesignButtonProperty(self.on_design_button)
 
@@ -692,6 +686,7 @@ class TopLevelBase(WindowBase, PreviewMixin):
     def window_sizer(self):
         # return the main sizer for this window
         if len(self.children)!=1: return None
+        if self.children[0] is None: return None
         if self.children[0].IS_SIZER: return self.children[0]
         return None
 
@@ -717,9 +712,9 @@ class TopLevelBase(WindowBase, PreviewMixin):
                 w, h = self.widget.GetSize()
                 self.widget.SetSize((-1, h+1))
                 self.widget.SetSize((-1, h))
-            elif len(self.children)==1 and self.children[0].IS_SIZER:
+            elif len(self.children)==1 and self.children[0] is not None and self.children[0].IS_SIZER:
                 self.children[0].fit_parent()
-        misc.design_windows.append(self.widget)
+        common.design_windows.append(self.widget)
 
     def duplicate(self, *args):
         clipboard.copy(self)
@@ -780,13 +775,13 @@ class TopLevelBase(WindowBase, PreviewMixin):
             return (True,None)
 
         if typename is not None:
-            if typename!="sizer":
-                return (False,'Only sizers can be pasted here')
+            #if typename!="sizer":
+                #return (False,'Only sizers can be pasted here')
             return (True,None)
         #import edit_sizers
         #if not isinstance(widget, edit_sizers.Sizer):
-        if not widget.IS_SIZER:
-            return (False, 'Only sizers can be pasted here')
+        #if not widget.IS_SIZER:
+            #return (False, 'Only sizers can be pasted here')
         return (True,None)
 
     def clipboard_paste(self, clipboard_data):
@@ -811,22 +806,23 @@ class TopLevelBase(WindowBase, PreviewMixin):
             self.widget.SetCursor(wx.STANDARD_CURSOR)
 
     def drop_sizer(self, event=None):
-        if self.children or not common.adding_sizer:
+        if self.children:# or not common.adding_sizer:
             self.on_set_focus(event)  # default behaviour: call show_properties
             return
         if self.widget: self.widget.SetCursor(wx.STANDARD_CURSOR)
-        common.widgets[common.widget_to_add](self, None)
+        new_widget = common.widgets[common.widget_to_add](self, None)
+        if new_widget is None: return
+        misc.rebuild_tree(new_widget)
         if event is None or not misc.event_modifier_copy(event):
             common.adding_widget = common.adding_sizer = False
             common.widget_to_add = None
-        common.root.saved = False
 
     def check_drop_compatibility(self):
         if self.children:
             return (False, 'Sizer already set for this window')
-        if common.adding_sizer:
-            return (True, None)
-        return (False, 'Only sizers can be added here')
+        #if common.adding_sizer:
+        return (True, None)
+        #return (False, 'Only sizers can be added here')
 
     def hide_widget(self, event=None):
         self.widget.Hide()  # just hide, don't close
@@ -836,8 +832,14 @@ class TopLevelBase(WindowBase, PreviewMixin):
 
     def on_size(self, event):
         WindowBase.on_size(self, event)
-        sizer = self.window_sizer
-        if sizer: sizer.refresh()
+        if len(self.children)!=1 or self.children[0] is None: return
+        child = self.children[0]
+        if child.IS_SLOT:
+            # resize slot
+            size = self.widget.GetClientSize()
+            child.widget.SetSize( size )
+        elif child.IS_SIZER:
+            child.refresh()
 
     def properties_changed(self, modified):
         if self.has_title and (not modified or "title" in modified):
@@ -846,7 +848,6 @@ class TopLevelBase(WindowBase, PreviewMixin):
             common.app_tree.refresh(self)
 
         if not modified or "name" in modified and (self.name!=self._oldname):
-            #common.root.update_top_window_name(self._oldname, self.name)
             self.parent.update_top_window_name(self._oldname, self.name)
 
         WindowBase.properties_changed(self, modified)
@@ -858,7 +859,7 @@ class TopLevelBase(WindowBase, PreviewMixin):
             self.preview_widget = None
         widget = self.widget
         WindowBase.delete(self)
-        if widget is not None and widget in misc.design_windows: misc.design_windows.remove(widget)
+        if widget is not None and widget in common.design_windows: common.design_windows.remove(widget)
 
     def remove(self):
         if self.IS_TOPLEVEL_WINDOW:
@@ -918,15 +919,6 @@ class TopLevelBase(WindowBase, PreviewMixin):
                 if found is not None:
                     return found
         return None
-
-    # searches from root
-    #def find_widget(self, widget, node=None):
-        ## returns node
-        #nodes = [node] if node is not None else self.root.children
-        #for node in nodes:
-            #found = self._find_widget(widget, node)
-            #if found is not None:
-                #return found        
 
 
 class EditStylesMixin(np.PropertyOwner):

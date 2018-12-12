@@ -64,11 +64,11 @@ def builder(parent, pos):
     "factory function for EditStaticText objects"
     name = common.root.get_next_name('spin_ctrl_double_%d', parent)
     with parent.frozen():
-        static_text = EditStaticText(label, parent, label, pos)
-        static_text.properties["style"].set_to_default()
-        static_text.check_defaults()
-        if parent.widget: static_text.create()
-    common.app_tree.insert(static_text, parent, pos)
+        editor = EditStaticText(label, parent, label, pos)
+        editor.properties["style"].set_to_default()
+        editor.check_defaults()
+        if parent.widget: editor.create()
+    return editor
 
 
 def xml_builder(attrs, parent, pos=None):
@@ -78,9 +78,7 @@ def xml_builder(attrs, parent, pos=None):
         label = attrs['name']
     except KeyError:
         raise XmlParsingError(_("'name' attribute missing"))
-    static_text = EditStaticText(label, parent, "", pos)
-    common.app_tree.insert(static_text, parent, pos)
-    return static_text
+    return EditStaticText(label, parent, "", pos)
 
 
 def initialize():

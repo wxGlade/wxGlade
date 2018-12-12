@@ -38,6 +38,14 @@
                 </menu>
             </menus>
         </object>
+        <object class="wxStatusBar" name="MyStatusBar" base="EditStatusBar">
+            <style>wxST_SIZEGRIP</style>
+            <fields>
+                <field width="-2" />
+                <field width="-1" />
+                <field width="-1" />
+            </fields>
+        </object>
         <object class="wxToolBar" name="MyToolBar" base="EditToolBar">
             <style>wxTB_TEXT</style>
             <tools>
@@ -69,14 +77,6 @@
                     <bitmap2 />
                 </tool>
             </tools>
-        </object>
-        <object class="wxStatusBar" name="MyStatusBar" base="EditStatusBar">
-            <style>wxST_SIZEGRIP</style>
-            <fields>
-                <field width="-2" />
-                <field width="-1" />
-                <field width="-1" />
-            </fields>
         </object>
         <object class="wxFlexGridSizer" name="object_1" base="EditFlexGridSizer">
             <rows>3</rows>

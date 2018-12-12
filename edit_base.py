@@ -12,6 +12,10 @@ if config.debugging:
             if obj in self:
                 raise AssertionError("Element already in list")
             list.append(self, obj)
+        def insert(self, index, obj):
+            if obj in self:
+                raise AssertionError("Element already in list")
+            list.insert(self, index, obj)
         def __setitem__(self, index, obj):
             if obj in self:
                 raise AssertionError("Element already in list")
@@ -26,6 +30,7 @@ class EditBase(np.PropertyOwner):
     IS_CLASS = False  # generate class for this item; can be dynamically set during code generation
     # WX_CLASS: needs to be defined in every derived class XXX
     #CHILDREN = 1  # 0 or a fixed number or None for e.g. a sizer with a variable number of children
+    ATT_CHILDREN = None
 
     def __init__(self, name, parent, pos=None):
         np.PropertyOwner.__init__(self)
@@ -51,7 +56,10 @@ class EditBase(np.PropertyOwner):
             # no children
             self.children = None
         self.id = wx.NewId()  # id used for internal purpose events
-        self.parent.add_item(self, pos)
+        if isinstance(pos, str):
+            setattr(self.parent, pos, self)
+        else:
+            self.parent.add_item(self, pos)
 
         # the toplevel parent keeps track of the names
         self.toplevel_parent.names[name] = 1
@@ -112,6 +120,35 @@ class EditBase(np.PropertyOwner):
         if self.parent.IS_SIZER: return self.parent
         return None
 
+    def get_all_children(self):
+        ret = []
+        if self.ATT_CHILDREN:
+            for att in self.ATT_CHILDREN or []:
+                child = getattr(self, att)
+                if child is not None: ret.append(child)
+        ret.extend(self.children or [])
+        return ret
+
+    def _get_child(self, pos):
+        if pos is None and self.children:
+            return self.children[0]
+        if isinstance(pos, str) and pos in self.ATT_CHILDREN:
+            return getattr(self, pos)
+        if self.children and pos<=len(self.children):
+            return self.children[pos]
+        return self
+
+    def _get_pos(self, child):
+        # calculate pos including named attributes; this is the position in the tree view
+        pos = 0
+        if self.ATT_CHILDREN:
+            for att in self.ATT_CHILDREN or []:
+                c = getattr(self, att)
+                if c is not None:
+                    if child is c: return c
+                    pos += 1
+        return pos + self.children.index(child)
+
     def add_item(self, child, pos=None):
         if pos is None:
             if self.CHILDREN is None:
@@ -132,7 +169,6 @@ class EditBase(np.PropertyOwner):
         if self.children[pos] is not None:
             old_child = self.children[pos]
             self.children[pos].delete()
-            if old_child.item: common.app_tree.remove(old_child)
         self.children[pos] = child
 
     def has_ancestor(self, node):
@@ -152,7 +188,7 @@ class EditBase(np.PropertyOwner):
         PROPERTIES.insert( PROPERTIES.index(after_property)+1, move_property )
 
     def properties_changed(self, modified):
-        if modified and "name" in modified:
+        if modified and "name" in modified and self.properties["name"].previous_value is not None:
             previous_name = self.properties["name"].previous_value
             try:
                 self.toplevel_parent.names[previous_name]
@@ -188,7 +224,7 @@ class EditBase(np.PropertyOwner):
             try:
                 del self.toplevel_parent.names[self.name]
             except:
-                print("delete: name '%s' already removed"%self.name)
+                print("XXX delete: name '%s' already removed"%self.name)
         if misc.focused_widget is self:
             misc.focused_widget = None
 
@@ -222,7 +258,8 @@ class EditBase(np.PropertyOwner):
         common.root.saved = False  # update the status of the app
         # remove is called from the context menus; for other uses, delete is applicable
         self._dont_destroy = False  # always destroy when explicitly asked
-        self.parent.children.remove(self)
+        if not isinstance(getattr(self,"pos",None), str):
+            self.parent.children.remove(self)
         self.tree_remove()
         common.app_tree.remove(self)
 
@@ -269,20 +306,44 @@ class EditBase(np.PropertyOwner):
                     output.extend(stmt)
                 else:
                     child.write(output, tabs+1)
-        elif self.children is not None:
-            for child in self.children:
+        elif self.children is not None or self.ATT_CHILDREN is not None:
+            for child in self.get_all_children():
                 child.write(output, tabs+1, class_names)
         output.append(u'%s</object>\n' % outer_tabs)
 
-    # XML loading ######################################################################################################
+    # XML loading and slot handling ####################################################################################
+    def _add_slots(self, pos_max=None):
+        "replace None with Slot"
+        for pos, child in enumerate(self.children):
+            if child is None:
+                if pos_max is not None and pos>pos_max: continue
+                Slot(self, pos)
+
     def on_load(self):
-        "called from XML parser, right after the widget is loaded"
-        pass
+        "called from XML parser, right after the widget is loaded; children have been loaded already"
+        if not self.CHILDREN is 0:
+            self._add_slots()
 
     def post_load(self):
         """Called after the loading of an app from a XML file, before showing the hierarchy of widget for the first time.
         The default implementation does nothing."""
         pass
+
+    def free_slot(self, pos, force_layout=True):
+        "Replaces the element at pos with an empty slot"
+        # called from ManagedBase context menu when removing an item
+        slot = self._free_slot(pos, force_layout)
+        misc.rebuild_tree(slot)
+
+    def _free_slot(self, pos, force_layout=True):
+        with self.toplevel_parent.frozen():
+            old_child = self.children[pos]
+            slot = Slot(self, pos)
+            old_child.tree_remove()
+            common.app_tree.remove(old_child)
+            if self.widget:
+                slot.create()  # create the actual SizerSlot as wx.Window with hatched background
+        return slot
 
     # for tree display #################################################################################################
     def _get_tree_label(self):
@@ -341,6 +402,7 @@ class Slot(EditBase):
     PROPERTIES = ["Slot", "pos"]
     IS_TOPLEVEL = IS_SIZER = IS_WINDOW = False
     IS_SLOT = True
+    CHILDREN = 0
 
     def __init__(self, parent, pos=0, label=None):
         assert isinstance(pos, int)
@@ -352,19 +414,22 @@ class Slot(EditBase):
         self.label = label
 
         # initialise instance properties
+        self.widget = None       # Reference to the widget resembling the slot (a wx.Window)
+        self.name = "SLOT"
+        self.overlapped = False  # for spanning in GridBagSizer
+        self.item = None
+
+        # initialise structure
         self.parent = parent
         self.children = None
-        self.pos = np.LayoutPosProperty(pos)  # position within the sizer
+        self.parent.add_item(self, pos)
+        self.pos = np.LayoutPosProperty(pos)  # position within the sizer or 0
+
         # the following are just set to use the same Add call as with widgets
         self.proportion = 1
         self.span = (1,1)
         self.flag = wx.EXPAND
         self.border = 0
-
-        self.widget = None       # Reference to the widget resembling the slot (a wx.Window)
-        self.name = "SLOT"
-        self.overlapped = False  # for spanning in GridBagSizer
-        self.item = None
 
     def update_view(self, selected):
         # we can ignore selected here, as the repainting only takes place later
@@ -373,9 +438,13 @@ class Slot(EditBase):
 
     def create_widget(self):
         style = wx.FULL_REPAINT_ON_RESIZE
-        self.widget = wx.Window(self.parent_window.widget, -1, size=(20, 20), style=style)
+        if not self.parent.IS_SIZER:
+            size = self.parent.widget.GetClientSize()
+        else:
+            size=(20, 20)
+        self.widget = wx.Window(self.parent_window.widget, -1, size=size, style=style)
         self.widget.SetBackgroundStyle(wx.BG_STYLE_CUSTOM)
-        self.widget.SetAutoLayout(True)
+        #self.widget.SetAutoLayout(True)
         self.widget.Bind(wx.EVT_PAINT, self.on_paint)
         self.widget.Bind(wx.EVT_ERASE_BACKGROUND, self.on_erase_background)
         self.widget.Bind(wx.EVT_RIGHT_DOWN, self.popup_menu)
@@ -422,6 +491,11 @@ class Slot(EditBase):
     def _draw_background(self, dc, clear=True):
         "draw the hatches on device context dc (red if selected)"
         # fill background first; propably needed only on MSW and not for on_erase_background
+        #if self.parent.IS_TOPLEVEL:
+            ## frame, panel, dialog
+            #size = self.parent.widget.GetClientSize()
+            #self.widget.SetSize( size )
+        #else:
         size = self.widget.GetSize()
         small = size[0]<10 or size[1]<10
         focused = misc.focused_widget is self
@@ -453,6 +527,12 @@ class Slot(EditBase):
         dc.SetBrush(brush)
         size = self.widget.GetClientSize()
         dc.DrawRectangle(0, 0, size.width, size.height)
+
+    def set_size(self, size):
+        if not self.widget: return
+        size = self.parent.widget.GetClientSize()
+        self.widget.SetSize( size )
+
 
     # context menu #####################################################################################################
     def popup_menu(self, event, pos=None):
@@ -546,6 +626,7 @@ class Slot(EditBase):
         self._remove()
         if i >= len(self.parent.children):
             i = len(self.parent.children)-1
+        misc.rebuild_tree(self.parent, recursive=False, focus=False)
         if i>=0:
             misc.set_focused_widget( self.parent.children[i] )
         else:
@@ -567,11 +648,12 @@ class Slot(EditBase):
             self.widget.SetCursor(wx.NullCursor)
         common.adding_window = event and event.GetEventObject().GetTopLevelParent() or None
         # call the appropriate builder
-        common.widgets[common.widget_to_add](self.parent, self.pos)
+        new_widget = common.widgets[common.widget_to_add](self.parent, self.pos)
+        if new_widget is None: return
+        misc.rebuild_tree(new_widget)
         if event is None or not misc.event_modifier_copy(event):
             common.adding_widget = common.adding_sizer = False
             common.widget_to_add = None
-        common.root.saved = False
 
     def check_drop_compatibility(self):
         if common.adding_sizer and self.parent.CHILDREN is not 1 and not self.IS_SLOT:
@@ -639,15 +721,16 @@ class Slot(EditBase):
 
     def _get_tree_label(self):
         if self.label: return str(self.label)
+        if self.parent.CHILDREN==1: return "SLOT"
         pos = self.pos
+        if hasattr(self.parent, "_get_slot_label"):
+            return self.parent._get_slot_label(pos)
         if self.parent.IS_SIZER and "cols" in self.parent.properties:
             # grid sizer: display row/col
             rows, cols = self.parent._get_actual_rows_cols()
             row = pos // cols + 1  # 1 based at the moment
             col = pos %  cols + 1
             return "SLOT  %d/%d"%(row, col)
-        elif self.parent.klass=="wxNotebook":
-            return "Notebook Page %d"%(pos)
         else:
             return "SLOT %d"%(pos)
 

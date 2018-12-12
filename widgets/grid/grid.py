@@ -319,12 +319,12 @@ def builder(parent, pos):
     "factory function for EditGrid objects"
     name = common.root.get_next_name('grid_%d', parent)
     with parent.frozen():
-        grid = EditGrid(name, parent, pos)
+        editor = EditGrid(name, parent, pos)
         # A grid should be wx.EXPANDed and 'option' should be 1, or you can't see it.
-        grid.properties["proportion"].set(1)
-        grid.properties["flag"].set("wxEXPAND")
-        if parent.widget: grid.create()
-    common.app_tree.insert(grid, parent, pos)
+        editor.properties["proportion"].set(1)
+        editor.properties["flag"].set("wxEXPAND")
+        if parent.widget: editor.create()
+    return editor
 
 
 def xml_builder(attrs, parent, pos=None):
@@ -334,9 +334,7 @@ def xml_builder(attrs, parent, pos=None):
         label = attrs['name']
     except KeyError:
         raise XmlParsingError(_("'name' attribute missing"))
-    grid = EditGrid(label, parent, pos)
-    common.app_tree.insert(grid, parent, pos)
-    return grid
+    return EditGrid(label, parent, pos)
 
 
 def initialize():

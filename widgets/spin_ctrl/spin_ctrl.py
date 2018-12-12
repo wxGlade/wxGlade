@@ -67,11 +67,11 @@ def builder(parent, pos):
     "factory function for EditSpinCtrl objects"
     name = common.root.get_next_name('spin_ctrl_%d', parent)
     with parent.frozen():
-        spin = EditSpinCtrl(name, parent, pos)
-        spin.properties["style"].set_to_default()
-        spin.check_defaults()
-        if parent.widget: spin.create()
-    common.app_tree.insert(spin, parent, pos)
+        editor = EditSpinCtrl(name, parent, pos)
+        editor.properties["style"].set_to_default()
+        editor.check_defaults()
+        if parent.widget: editor.create()
+    return editor
 
 
 def xml_builder(attrs, parent, pos=None):
@@ -81,10 +81,9 @@ def xml_builder(attrs, parent, pos=None):
         name = attrs['name']
     except KeyError:
         raise XmlParsingError(_("'name' attribute missing"))
-    spin = EditSpinCtrl( name, parent, pos )
-    spin.properties["value"].set_active(False)
-    common.app_tree.insert(spin, parent, pos)
-    return spin
+    editor = EditSpinCtrl( name, parent, pos )
+    editor.properties["value"].set_active(False)
+    return editor
 
 
 def initialize():

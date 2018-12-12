@@ -258,7 +258,8 @@ class XmlWidgetBuilder(XmlParser):
             obj.notify_owner()
             if obj.klass in ('sizeritem', 'sizerslot'):
                 return
-            if obj.sizeritem:
+            if obj.sizeritem and obj.obj.parent.IS_SIZER:
+                # XXX just check whether obj.obj has these properties
                 obj.obj.copy_properties( obj.sizeritem, ("option","flag","border","span") )
             obj.obj.on_load()
         else:
@@ -389,7 +390,7 @@ class ClipboardXmlWidgetBuilder(XmlWidgetBuilder):
         self._objects.push(fake_parent)
 
         # fake sizer object
-        if parent and parent.IS_SIZER:
+        if parent and parent.CHILDREN!=1:
             sizer = parent
             fake_sizer = XmlClipboardObject(obj=sizer, parent=parent)
             fake_sizer.IS_SIZER = True
@@ -507,7 +508,7 @@ class ClipboardXmlWidgetBuilder(XmlWidgetBuilder):
                         common.app_tree.create_widgets(self.top_obj)
                 except AttributeError:
                     self._logger.exception( _('Exception caused by obj: %s'), self.top_obj )
-                misc.set_focused_widget(self.top_obj)
+                #misc.set_focused_widget(self.top_obj)
 
         if name == 'label':
             # if e.g. a button_1 is copied to button_2, also change the label if it was "button_1"

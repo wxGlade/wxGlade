@@ -43,6 +43,8 @@ adding_sizer = False  # "Needed to add toplevel sizers"
 widget_to_add = None  # widget class name that is being added
 adding_window = None  # the tree or the design window; used for centering dialogs
 
+design_windows = []
+
 pin_design_window = False
 
 # Dictionary which maps the ids used in the event handlers to the corresponding widgets:
@@ -219,8 +221,11 @@ def add_object(event):
 
 def add_toplevel_object(event):
     "Adds a toplevel widget (Frame or Dialog) to the current app"
-    widgets[refs[event.GetId()]](root, 0)
-    root.saved = False
+    editor = widgets[refs[event.GetId()]](root, 0)
+    if editor is None: return
+    app_tree.build(editor)
+    app_tree.select_item(editor)
+
 
 ########################################################################################################################
 # application GUI initialization

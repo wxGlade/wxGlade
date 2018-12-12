@@ -74,10 +74,10 @@ def builder(parent, pos):
     "factory function for EditCheckListBox objects"
     name = common.root.get_next_name('check_list_box_%d', parent)
     with parent.frozen():
-        check_list_box = EditCheckListBox(name, parent, [u'choice 1'], pos)
-        check_list_box.properties["style"].set_to_default()
-        if parent.widget: check_list_box.create()
-    common.app_tree.insert(check_list_box, parent, pos)
+        editor = EditCheckListBox(name, parent, [u'choice 1'], pos)
+        editor.properties["style"].set_to_default()
+        if parent.widget: editor.create()
+    return editor
 
 
 def xml_builder(attrs, parent, pos=None):
@@ -87,9 +87,7 @@ def xml_builder(attrs, parent, pos=None):
         name = attrs['name']
     except KeyError:
         raise XmlParsingError(_("'name' attribute missing"))
-    check_list_box = EditCheckListBox(name, parent, [], pos)
-    common.app_tree.insert(check_list_box, parent, pos)
-    return check_list_box
+    return EditCheckListBox(name, parent, [], pos)
 
 
 def initialize():

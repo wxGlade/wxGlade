@@ -93,11 +93,11 @@ def builder(parent, pos):
     "factory function for EditButton objects"
     name = common.root.get_next_name('button_%d', parent)
     with parent.frozen():
-        button = EditButton(name, parent, name, pos)
-        button.properties["style"].set_to_default()
-        button.check_defaults()
-        if parent.widget: button.create()
-    common.app_tree.insert(button, parent, pos)
+        editor = EditButton(name, parent, name, pos)
+        editor.properties["style"].set_to_default()
+        editor.check_defaults()
+        if parent.widget: editor.create()
+    return editor
 
 
 def xml_builder(attrs, parent, pos=None):
@@ -107,9 +107,8 @@ def xml_builder(attrs, parent, pos=None):
         name = attrs['name']
     except KeyError:
         raise XmlParsingError(_("'name' attribute missing"))
-    button = EditButton(name, parent, '', pos)
-    common.app_tree.insert(button, parent, pos)
-    return button
+    editor = EditButton(name, parent, '', pos)
+    return editor
 
 
 def initialize():

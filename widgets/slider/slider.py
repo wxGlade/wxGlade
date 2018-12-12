@@ -83,10 +83,10 @@ def builder(parent, pos):
 
     name = common.root.get_next_name('slider_%d', parent)
     with parent.frozen():
-        widget = editor_class(label, parent, style, pos)
-        widget.properties["flag"].set("wxEXPAND")
-        if parent.widget: widget.create()
-    common.app_tree.insert(widget, parent, pos)
+        editor = editor_class(label, parent, style, pos)
+        editor.properties["flag"].set("wxEXPAND")
+        if parent.widget: editor.create()
+    return editor
 
 
 def xml_builder(attrs, parent, pos=None):
@@ -96,9 +96,7 @@ def xml_builder(attrs, parent, pos=None):
         name = attrs['name']
     except KeyError:
         raise XmlParsingError(_("'name' attribute missing"))
-    widget = editor_class(name, parent, editor_style, pos)
-    common.app_tree.insert(widget, parent, pos)
-    return widget
+    return editor_class(name, parent, editor_style, pos)
 
 
 def initialize():

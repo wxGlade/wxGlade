@@ -110,16 +110,16 @@ def builder(parent, pos):
     "factory function for EditListCtrl objects"
     name = common.root.get_next_name('list_ctrl_%d', parent)
     with parent.frozen():
-        list_ctrl = EditListCtrl(name, parent, pos)
+        editor = EditListCtrl(name, parent, pos)
         #list_ctrl.properties["style"].set_to_default()  # default is wxLC_ICON
-        list_ctrl.properties["columns"].set( [['A', -1], ['B', -1], ['C', -1]] )
-        list_ctrl.properties["rows_number"].set(10)
-        list_ctrl.properties["style"].set( ["wxLC_REPORT", "wxLC_HRULES", "wxLC_VRULES"] )
-        list_ctrl.properties["proportion"].set(1)
-        list_ctrl.properties["flag"].set("wxEXPAND")
-        if parent.widget: list_ctrl.create()
-    common.app_tree.insert(list_ctrl, parent, pos)
+        editor.properties["columns"].set( [['A', -1], ['B', -1], ['C', -1]] )
+        editor.properties["rows_number"].set(10)
+        editor.properties["style"].set( ["wxLC_REPORT", "wxLC_HRULES", "wxLC_VRULES"] )
+        editor.properties["proportion"].set(1)
+        editor.properties["flag"].set("wxEXPAND")
+        if parent.widget: editor.create()
     #sizer.set_item(list_ctrl.pos, 1, wx.EXPAND)
+    return editor
 
 
 def xml_builder(attrs, parent, pos=None):
@@ -129,9 +129,7 @@ def xml_builder(attrs, parent, pos=None):
         name = attrs['name']
     except KeyError:
         raise XmlParsingError(_("'name' attribute missing"))
-    list_ctrl = EditListCtrl(name, parent, pos, style=0)
-    common.app_tree.insert(list_ctrl, parent, pos)
-    return list_ctrl
+    return EditListCtrl(name, parent, pos, style=0)
 
 
 def initialize():

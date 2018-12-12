@@ -71,10 +71,10 @@ def builder(parent, pos):
     "factory function for EditListBox objects"
     name = common.root.get_next_name('list_box_%d', parent)
     with parent.frozen():
-        list_box = EditListBox(name, parent, [u'choice 1', ], pos)
-        list_box.properties["style"].set_to_default()
-        if parent.widget: list_box.create()
-    common.app_tree.insert(list_box, parent, pos)
+        editor = EditListBox(name, parent, [u'choice 1', ], pos)
+        editor.properties["style"].set_to_default()
+        if parent.widget: editor.create()
+    return editor
 
 
 def xml_builder(attrs, parent, pos=None):
@@ -84,9 +84,7 @@ def xml_builder(attrs, parent, pos=None):
         name = attrs['name']
     except KeyError:
         raise XmlParsingError(_("'name' attribute missing"))
-    list_box = EditListBox(name, parent, [], pos)
-    common.app_tree.insert(list_box, parent, pos)
-    return list_box
+    return EditListBox(name, parent, [], pos)
 
 
 def initialize():

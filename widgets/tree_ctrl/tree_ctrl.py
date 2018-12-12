@@ -56,12 +56,12 @@ def builder(parent, pos):
     "factory function for EditTreeCtrl objects"
     name = common.root.get_next_name('tree_ctrl_%d', parent)
     with parent.frozen():
-        tree_ctrl = EditTreeCtrl(name, parent, pos)
-        tree_ctrl.properties["style"].set_to_default()
-        tree_ctrl.properties["proportion"].set(1)
-        tree_ctrl.properties["flag"].set("wxEXPAND")
-        if parent.widget: tree_ctrl.create()
-    common.app_tree.insert(tree_ctrl, parent, pos)
+        editor = EditTreeCtrl(name, parent, pos)
+        editor.properties["style"].set_to_default()
+        editor.properties["proportion"].set(1)
+        editor.properties["flag"].set("wxEXPAND")
+        if parent.widget: editor.create()
+    return editor
 
 
 def xml_builder(attrs, parent, pos=None):
@@ -71,9 +71,7 @@ def xml_builder(attrs, parent, pos=None):
         name = attrs['name']
     except KeyError:
         raise XmlParsingError(_("'name' attribute missing"))
-    tree_ctrl = EditTreeCtrl(name, parent, pos, style=0)
-    common.app_tree.insert(tree_ctrl, parent, pos)
-    return tree_ctrl
+    return EditTreeCtrl(name, parent, pos, style=0)
 
 
 def initialize():

@@ -19,8 +19,6 @@ currently_under_mouse = None
 _get_xpm_bitmap_re = re.compile(r'"(?:[^"]|\\")*"')
 _item_bitmaps = {}
 
-design_windows = []
-
 focused_widget = None  # the currently selected widget in GUI mode (for tree and property_panel)
 
 def set_focused_widget(widget, force=False):
@@ -38,6 +36,14 @@ def set_focused_widget(widget, force=False):
         # ensure that it is visible and selection is displayed, if applicable
         show_widget(widget)
         widget.update_view(selected=True)
+
+
+def rebuild_tree(widget=None, recursive=True, focus=True):
+    # re-build tree control for the widget and it's children; set focus to it; called after creation or modification
+    common.app_tree.saved = False
+    common.app_tree.build(widget, recursive)
+    if focus and widget is not None:
+        set_focused_widget(widget, force=widget==common.root)
 
 
 def show_widget(widget):
@@ -398,42 +404,46 @@ def _cancel():
 
 
 def navigate(up):
-    # XXX reafactor this into Tree?
-    # must be a design window
-    if focused_widget:
-        focused_item = focused_widget.item
-    else:
-        focused_item = common.app_tree.GetFocusedItem()
-    if focused_item is None:
-        return
+    # move up or down in tree
+    focus = focused_widget
+    if not focus:
+        # get from Tree widget
+        item = common.app_tree.GetFocusedItem()
+        focus = common.app_tree._GetItemData(item)
+    if focus is None: return
+    siblings = [focus]  if focus.IS_ROOT else  focus.parent.get_all_children()
+    idx = siblings.index(focus)
     if up:
-        item = common.app_tree.GetPrevSibling(focused_item)
-        if not item:
+        if idx>0:
+            focus = siblings[idx-1]
+            children = focus.get_all_children()
+            if children: focus = children[-1]
+        else:
             # no upper sibling -> go up
-            item = common.app_tree.GetItemParent(focused_item)
-            #item = common.app_tree.GetFirstChild(focused_item)
-        else:
-            # go down again
-            while common.app_tree.ItemHasChildren(item):
-                item = common.app_tree.GetLastChild(item)
+            focus = focus.parent
     else:
-        if common.app_tree.ItemHasChildren(focused_item):
-            item, token = common.app_tree.GetFirstChild(focused_item)
+        # down: look for children
+        children = focus.get_all_children()
+        if children:
+            # go to first child
+            focus = children[0]
         else:
-            item = common.app_tree.GetNextSibling(focused_item)
-            if not item:
-                item = focused_item
+            if idx+1<len(siblings):
+                # go to next sibling
+                focus = siblings[idx+1]
+            else:
+                # go up one or more levels
                 while True:
-                    parent = common.app_tree.GetItemParent(item)
-                    if not parent: return
-                    if common.app_tree.ItemHasChildren(parent):
-                        item = common.app_tree.GetNextSibling(parent)
-                        if common.app_tree._GetItemData( common.app_tree.GetNextSibling(parent) ):
+                    if not focus.parent: return
+                    siblings = focus.parent.get_all_children()
+                    if siblings:
+                        idx = siblings.index(focus)
+                        if idx+1<len(siblings):
+                            focus = siblings[idx+1]
                             break
-                    item = parent
+                    focus = focus.parent
 
-    widget = common.app_tree._GetItemData(item)
-    if widget: set_focused_widget(widget)
+    if focus: set_focused_widget(focus)
 
 
 # accelerator tables to enable keyboard shortcuts for the popup menus of the various widgets (remove, cut, copy, paste)

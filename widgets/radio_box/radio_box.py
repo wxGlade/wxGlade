@@ -186,9 +186,9 @@ def builder(parent, pos):
     "factory function for EditRadioBox objects"
     name = common.root.get_next_name('radio_box_%d', parent)
     with parent.frozen():
-        radio_box = EditRadioBox(label, parent, label, [[u'choice 1'],], 1, 0, pos)
-        if parent.widget: radio_box.create()
-    common.app_tree.insert(radio_box, parent, pos)
+        editor = EditRadioBox(label, parent, label, [[u'choice 1'],], 1, 0, pos)
+        if parent.widget: editor.create()
+    return editor
 
 
 def xml_builder(attrs, parent, pos=None):
@@ -198,12 +198,7 @@ def xml_builder(attrs, parent, pos=None):
         label = attrs['name']
     except KeyError:
         raise XmlParsingError(_("'name' attribute missing"))
-    radio_box = EditRadioBox(label, parent, '', [], 1, 0, pos)
-    if pos is None:
-        common.app_tree.add(radio_box, parent)
-    else:
-        common.app_tree.insert(radio_box, parent, pos)
-    return radio_box
+    return EditRadioBox(label, parent, '', [], 1, 0, pos)
 
 
 def initialize():

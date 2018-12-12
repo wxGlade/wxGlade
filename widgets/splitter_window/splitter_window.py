@@ -64,10 +64,6 @@ class EditSplitterWindow(ManagedBase, EditStylesMixin):
         self.window_2 = ChildWidgetNameProperty(1)
         self._window_old = None
 
-        # add slots
-        self.children[0] = Slot(self, 0, label=self._get_slot_label(0))
-        self.children[1] = Slot(self, 1, label=self._get_slot_label(1))
-
     def _get_slot_label(self, pos):
         if self.orientation=="wxSPLIT_VERTICAL":
             return ("SLOT Left","SLOT Right")[pos]
@@ -148,11 +144,11 @@ class EditSplitterWindow(ManagedBase, EditStylesMixin):
         if modified and "orientation" in modified:
             # update horizontal/vertical icons
             common.app_tree.refresh(self, refresh_label=False, refresh_image=True)
-            if self.children[0].IS_SLOT:
+            if self.children[0] and self.children[0].IS_SLOT:
                 self.children[0].label = self._get_slot_label(0)
                 common.app_tree.refresh(self.children[0])
-            if self.children[1].IS_SLOT:
-                self.children[1].label = self._get_slot_label(0)
+            if self.children[1] and self.children[1].IS_SLOT:
+                self.children[1].label = self._get_slot_label(1)
                 common.app_tree.refresh(self.children[1])
 
     def on_size(self, event):
@@ -187,12 +183,13 @@ class EditSplitterWindow(ManagedBase, EditStylesMixin):
     def add_item(self, child, pos=None):
         if pos is not None and self.widget: self._window_old = self.children[pos]
         ManagedBase.add_item(self, child, pos)
+        self._add_slots(pos_max=pos)
 
     def _add_item(self, item, pos=None, proportion=0, flag=0, border=0, size=None, force_layout=True):
         "Adds an item to self.window"
         self.properties["window_%d"%(pos+1)].set(item.name)
 
-    def free_slot(self, pos, force_layout=True):
+    def _free_slot(self, pos, force_layout=True):
         "Replaces the element at pos with an empty slot"
         if self.orientation=="wxSPLIT_VERTICAL":
             labels = ("SLOT Left","SLOT Right")
@@ -200,10 +197,11 @@ class EditSplitterWindow(ManagedBase, EditStylesMixin):
             labels = ("SLOT Top","SLOT Bottom")
         if self.widget and self.children[pos] and self.children[pos].widget:
             self.widget.Unsplit(self.children[pos].widget)
-        old_node = self.children[pos]
-        self.children[pos] = slot = Slot(self, pos, labels[0])
-        common.app_tree.change_node( old_node, slot )
+        old_child = self.children[pos]
+        slot = Slot(self, pos, labels[0])
         self.split()
+        old_child.tree_remove()
+        common.app_tree.remove(old_child)
         return slot
 
     def item_properties_modified(self, widget, modified=None, force_layout=True):
@@ -243,20 +241,18 @@ def builder(parent, pos):
 
     name = common.root.get_next_name('window_%d', parent)
     with parent.frozen():
-        widget = EditSplitterWindow(name, parent, orientation, pos)
-        widget.properties["style"].set_to_default()
+        editor = EditSplitterWindow(name, parent, orientation, pos)
+        editor.properties["style"].set_to_default()
         if create_panels:
-            pane1 = EditPanel(name + '_pane_1', widget, 0)
-            pane2 = EditPanel(name + '_pane_2', widget, 1)
+            pane1 = EditPanel(name + '_pane_1', editor, 0)
+            pane2 = EditPanel(name + '_pane_2', editor, 1)
 
-        widget.properties["proportion"].set(1)
-        widget.properties["flag"].set("wxEXPAND")
-    
-        common.app_tree.insert(widget, parent, pos)
-        common.app_tree.add(widget.children[0], widget)
-        common.app_tree.add(widget.children[1], widget)
+        editor.properties["proportion"].set(1)
+        editor.properties["flag"].set("wxEXPAND")
 
-        if parent.widget: widget.create()
+        if parent.widget: editor.create()
+
+        return editor
 
 
 def xml_builder(attrs, parent, pos=None):
@@ -266,14 +262,7 @@ def xml_builder(attrs, parent, pos=None):
         name = attrs['name']
     except KeyError:
         raise XmlParsingError(_("'name' attribute missing"))
-
-    widget = EditSplitterWindow(name, parent, 'wxSPLIT_VERTICAL', pos)
-
-    common.app_tree.insert(widget, parent, pos)
-    common.app_tree.add(widget.children[0], widget)
-    common.app_tree.add(widget.children[1], widget)
-
-    return widget
+    return EditSplitterWindow(name, parent, 'wxSPLIT_VERTICAL', pos)
 
 
 def initialize():

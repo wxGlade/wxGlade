@@ -88,25 +88,25 @@ def builder(parent, pos):
 
     if base == "wxDialog":
         is_panel = False
-        dialog = EditDialog(name, parent, name, "wxDEFAULT_DIALOG_STYLE", klass=klass)
+        editor = EditDialog(name, parent, name, "wxDEFAULT_DIALOG_STYLE", klass=klass)
     else:
         is_panel = True
         import panel
-        dialog = panel.EditTopLevelPanel(name, parent, klass=klass)
-    dialog.create()
+        editor = panel.EditTopLevelPanel(name, parent, klass=klass)
+    editor.create()
     if base == "wxDialog":
-        dialog.widget.Show()
+        editor.widget.Show()
     else:
-        dialog.widget.GetParent().Show()  # the panel is created as child of a Frame
-    common.app_tree.add(dialog)
-    dialog.design.update_label()
+        editor.widget.GetParent().Show()  # the panel is created as child of a Frame
+    editor.design.update_label()
     if wx.Platform == '__WXMSW__':
         if not is_panel:
-            w = dialog.widget
+            w = editor.widget
         else:
-            w = dialog.widget.GetParent()
+            w = editor.widget.GetParent()
         w.CenterOnScreen()
         w.Raise()
+    return editor
 
 
 def xml_builder(attrs, parent, pos=None):
@@ -116,9 +116,7 @@ def xml_builder(attrs, parent, pos=None):
         label = attrs['name']
     except KeyError:
         raise XmlParsingError(_("'name' attribute missing"))
-    dialog = EditDialog(label, parent, "", style=0)
-    common.app_tree.add(dialog)
-    return dialog
+    return EditDialog(label, parent, "", style=0)
 
 
 def initialize():

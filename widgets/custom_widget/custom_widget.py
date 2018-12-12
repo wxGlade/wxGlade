@@ -154,13 +154,12 @@ def builder(parent, pos):
 
     name = common.root.get_next_name('window_%d', parent)
     with parent.frozen():
-        win = CustomWidget(name, klass, parent, pos)
-        win.properties["arguments"].set( [['$parent'], ['$id']] )  # ,['$width'],['$height']]
-        win.properties["proportion"].set(1)
-        win.properties["flag"].set("wxEXPAND")
-        if parent.widget: win.create()
-    common.app_tree.insert(win, parent, pos)
-    #sizer.set_item(win.pos, 1, wx.EXPAND)
+        editor = CustomWidget(name, klass, parent, pos)
+        editor.properties["arguments"].set( [['$parent'], ['$id']] )  # ,['$width'],['$height']]
+        editor.properties["proportion"].set(1)
+        editor.properties["flag"].set("wxEXPAND")
+        if parent.widget: editor.create()
+    return editor
 
 
 def xml_builder(attrs, parent, pos=None):
@@ -171,9 +170,7 @@ def xml_builder(attrs, parent, pos=None):
     except KeyError:
         raise XmlParsingError(_("'name' attribute missing"))
     klass = attrs.get("class", "CustomWidget")
-    win = CustomWidget(name, klass, parent, pos)
-    common.app_tree.insert(win, parent, pos)
-    return win
+    return CustomWidget(name, klass, parent, pos)
 
 
 def initialize():

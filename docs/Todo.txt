@@ -49,20 +49,17 @@ done:
 
 
 Internal:
- * separate items and tree
- * use a structure of EditBase instances as main data structure; use tree only for the representation
-   then remove workaround changeset 2840 (9c2a9ce615f7) again
- * move Tree.names[tplevel_node] to the toplevel items
- * attributes for all elements (upper or lower case?): IS_ROOT, IS_SIZER, IS_VIRTUAL, IS_GRIDBAG, IS_SLOT,
-   IS_TOPLEVEL, IS_TOPLEVEL_WINDOW, CAN_PREVIEW?, WX_CLASS?
- * use consistent names? e.g.:
-    node: tree nodes
-    item: EditBase instances; with parent and children[...] attributes
+ * use consistent names
+    editor, child: EditBase instances; with parent and children[...] attributes
     widget: actual wx Widgets
-  * use .children for all, including a sizer
-    use .virtual_sizer for e.g. Splitter and Notebook, but keep the actual children in .children
+    item: TreeCtrl items
  * use the History instead of the logging facilities
 done:
+ * separate items and tree
+ * use a structure of EditBase instances as main data structure; use tree only for the representation
+ * use .children for all, including a sizer; drop virtual_sizer, just keep children in .children
+ * attributes for all elements (upper or lower case?): IS_ROOT, IS_SIZER, IS_VIRTUAL, IS_GRIDBAG, IS_SLOT,
+   IS_TOPLEVEL, IS_TOPLEVEL_WINDOW, CAN_PREVIEW?, WX_CLASS?
  * refactor edit_sizers and ManagedBase
  * refactor Property handling
 

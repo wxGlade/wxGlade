@@ -525,10 +525,10 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
                 obj.properties["klass"].set(obj.base) # XXX handle this in a different way
     
             # children first
-            for i,c in enumerate(obj.children or []):
-                assert obj.children.count(c)==1
-                self._generate_code(c)
-    
+            for child in obj.get_all_children():
+                assert obj.children.count(child)<=1
+                self._generate_code(child)
+
             # then the item
             if obj.IS_CLASS and not obj.IS_SIZER:  # XXX as long as generate_code is called with 
                 self.add_class(obj)

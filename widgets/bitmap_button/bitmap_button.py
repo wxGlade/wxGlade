@@ -56,11 +56,11 @@ def builder(parent, pos):
     name = common.root.get_next_name('bitmap_button_%d', parent)
     bitmap = wx.FileSelector(_("Select the image for the button"))
     with parent.frozen():
-        button = EditBitmapButton(name, parent, bitmap, pos)
-        button.properties["style"].set_to_default()
-        button.check_defaults()
-        if parent.widget: button.create()
-    common.app_tree.insert(button, parent, pos)
+        editor = EditBitmapButton(name, parent, bitmap, pos)
+        editor.properties["style"].set_to_default()
+        editor.check_defaults()
+        if parent.widget: editor.create()
+    return editor
 
 
 def xml_builder(attrs, parent, pos=None):
@@ -70,15 +70,11 @@ def xml_builder(attrs, parent, pos=None):
         label = attrs['name']
     except KeyError:
         raise XmlParsingError(_("'name' attribute missing"))
-    button = EditBitmapButton(label, parent, '', pos)
+    editor = EditBitmapButton(label, parent, '', pos)
     if attrs.input_file_version and attrs.input_file_version<(0,9):
         # backwards compatibility
-        button.properties["style"].set_to_default()
-    if pos is None:
-        common.app_tree.add(button, parent)
-    else:
-        common.app_tree.insert(button, parent, pos)
-    return button
+        editor.properties["style"].set_to_default()
+    return editor
 
 
 def initialize():

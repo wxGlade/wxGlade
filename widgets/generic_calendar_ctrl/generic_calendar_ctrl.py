@@ -60,11 +60,11 @@ def builder(parent, pos):
     "factory function for EditGenericCalendarCtrl objects"
     name = common.root.get_next_name('generic_calendar_ctrl_%d', parent)
     with parent.frozen():
-        calendar_ctrl = EditGenericCalendarCtrl(label, parent, pos)
-        calendar_ctrl.properties["style"].set_to_default()
-        calendar_ctrl.check_defaults()
-        if parent.widget: calendar_ctrl.create()
-    common.app_tree.insert(calendar_ctrl, parent, pos)
+        editor = EditGenericCalendarCtrl(label, parent, pos)
+        editor.properties["style"].set_to_default()
+        editor.check_defaults()
+        if parent.widget: editor.create()
+    return editor
 
 
 def xml_builder(attrs, parent, pos=None):
@@ -74,9 +74,7 @@ def xml_builder(attrs, parent, pos=None):
         label = attrs['name']
     except KeyError:
         raise XmlParsingError(_("'name' attribute missing"))
-    calendar_ctrl = EditGenericCalendarCtrl(label, parent, pos)
-    common.app_tree.insert(calendar_ctrl, parent, pos)
-    return calendar_ctrl
+    return EditGenericCalendarCtrl(label, parent, pos)
 
 
 def initialize():

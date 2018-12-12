@@ -152,7 +152,7 @@ class DropTarget(wx.DropTarget):
         else:
             dst_widget.clipboard_paste(data)
 
-        common.app_tree.expand(dst_widget)
+        #common.app_tree.expand(dst_widget)
         return default
 
     def OnLeave(self):
@@ -282,7 +282,7 @@ def _paste(parent, pos, clipboard_data):
         parser = xml_parse.ClipboardXmlWidgetBuilder(parent, pos, option, span, flag, border)
         with parent and parent.frozen() or misc.dummy_contextmanager():
             parser.parse_string(xml_utf8)
-        common.app_tree.saved = False
+        misc.rebuild_tree( parent._get_child(pos) )
         return True  # Widget hierarchy pasted.
     except xml_parse.XmlParsingError:
         if config.debugging: raise

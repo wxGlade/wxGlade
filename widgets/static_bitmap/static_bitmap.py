@@ -61,11 +61,11 @@ def builder(parent, pos):
     name = common.root.get_next_name('bitmap_%d', parent)
     bitmap = wx.FileSelector(_("Select the image"))
     with parent.frozen():
-        static_bitmap = EditStaticBitmap(name, parent, bitmap, pos)
-        static_bitmap.properties["style"].set_to_default()
-        static_bitmap.check_defaults()
-        if parent.widget: static_bitmap.create()
-    common.app_tree.insert(static_bitmap, parent, pos)
+        editor = EditStaticBitmap(name, parent, bitmap, pos)
+        editor.properties["style"].set_to_default()
+        editor.check_defaults()
+        if parent.widget: editor.create()
+    return editor
 
 
 def xml_builder(attrs, parent, pos=None):
@@ -75,9 +75,7 @@ def xml_builder(attrs, parent, pos=None):
         label = attrs['name']
     except KeyError:
         raise XmlParsingError(_("'name' attribute missing"))
-    bitmap = EditStaticBitmap(label, parent, '', pos)
-    common.app_tree.insert(bitmap, parent, pos)
-    return bitmap
+    return EditStaticBitmap(label, parent, '', pos)
 
 
 def initialize():

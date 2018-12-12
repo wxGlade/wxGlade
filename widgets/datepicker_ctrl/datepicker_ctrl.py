@@ -52,11 +52,11 @@ def builder(parent, pos):
     "factory function for EditDatePickerCtrl objects"
     name = common.root.get_next_name('datepicker_ctrl_%d', parent)
     with parent.frozen():
-        datepicker_ctrl = EditDatePickerCtrl(name, parent, pos)
-        datepicker_ctrl.properties["style"].set_to_default()
-        datepicker_ctrl.check_defaults()
-        if parent.widget: datepicker_ctrl.create()
-    common.app_tree.insert(datepicker_ctrl, parent, pos)
+        editor = EditDatePickerCtrl(name, parent, pos)
+        editor.properties["style"].set_to_default()
+        editor.check_defaults()
+        if parent.widget: editor.create()
+    return editor
 
 
 def xml_builder(attrs, parent, pos=None):
@@ -66,9 +66,7 @@ def xml_builder(attrs, parent, pos=None):
         name = attrs['name']
     except KeyError:
         raise XmlParsingError(_("'name' attribute missing"))
-    datepicker_ctrl = EditDatePickerCtrl(name, parent, pos)
-    common.app_tree.insert(datepicker_ctrl, parent, pos)
-    return datepicker_ctrl
+    return EditDatePickerCtrl(name, parent, pos)
 
 
 def initialize():

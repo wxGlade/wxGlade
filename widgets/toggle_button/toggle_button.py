@@ -64,11 +64,11 @@ def builder(parent, pos):
     "factory function for EditToggleButton objects"
     name = common.root.get_next_name('button_%d', parent)
     with parent.frozen():
-        button = EditToggleButton(name, parent, name, pos)
-        button.properties["style"].set_to_default()
-        button.check_defaults()
-        if parent.widget: button.create()
-    common.app_tree.insert(button, parent, pos)
+        editor = EditToggleButton(name, parent, name, pos)
+        editor.properties["style"].set_to_default()
+        editor.check_defaults()
+        if parent.widget: editor.create()
+    return editor
 
 
 def xml_builder(attrs, parent, pos=None):
@@ -78,9 +78,7 @@ def xml_builder(attrs, parent, pos=None):
         name = attrs['name']
     except KeyError:
         raise XmlParsingError(_("'name' attribute missing"))
-    button = EditToggleButton(name, parent, '', pos)
-    common.app_tree.insert(button, parent, pos)
-    return button
+    return EditToggleButton(name, parent, '', pos)
 
 
 def initialize():

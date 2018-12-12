@@ -11,6 +11,7 @@ import logging, os.path
 import wx
 import misc, common, compat, config, clipboard
 
+DEBUG = True
 
 class WidgetTree(wx.TreeCtrl):#, Tree):
     "Tree with the ability to display the hierarchy of widgets"
@@ -54,6 +55,7 @@ class WidgetTree(wx.TreeCtrl):#, Tree):
         #self.Bind(wx.EVT_KEY_DOWN, misc.on_key_down_event)
         self.Bind(wx.EVT_KEY_DOWN, self.on_key_down_event)
         #self.Bind(wx.EVT_CHAR_HOOK, self.on_char)  # on wx 2.8 the event will not be delivered to the child
+        self.Bind(wx.EVT_TREE_DELETE_ITEM, self.on_delete_item)
 
     def on_char(self, event):
         "called from main: start label editing on F2; skip events while editing"
@@ -238,52 +240,163 @@ class WidgetTree(wx.TreeCtrl):#, Tree):
             if not bool(item): return None
             return self.GetItemData(item)
 
-    def add(self, child, parent=None, select=True):
+    def add2(self, child, parent=None, index=None, item=None):
         "appends child to the list of parent's children"
-
         image = self.images.get( child._get_tree_image(), -1)
-        if parent is None: parent = parent.item = self.GetRootItem()
-        child.item = self.AppendItem(parent.item, child._get_tree_label(), image)
-        self._SetItemData(child.item, child)
-        if self.auto_expand:
-            self.Expand(parent.item)
-            if select:
-                self.select_item(child)
-
-    def insert(self, child, parent, index, select=True):
-        "inserts child to the list of parent's children at index; a SlotNode at index is overwritten"
-        if parent is None:
-            # XXX check whether this is called at all
-            parent = self._GetItemData( self.GetRootItem() )
-
-        # parent is a Node, i.e. Dummy or Button are not in parent.children
-        if index is None or parent.children is None or index>=len(parent.children):
-            self.add(child, parent, select=select)
-            return
-
         label = child._get_tree_label()
-        image = self.images.get( child._get_tree_image(), -1)
-        child.item = compat.wx_Tree_InsertItemBefore(self, parent.item, index, label, image)
-        self._SetItemData(child.item, child)
+        if item is None:
+            if index is None:
+                item = child.item = self.AppendItem(parent.item, label, image)
+            else:
+                item = child.item = self.InsertItem(parent.item, index, label, image)
+        else:
+            # re-use
+            child.item = item
+            self.refresh(child)
+        self._SetItemData(item, child)
         if self.auto_expand:
             self.Expand(parent.item)
-            if select:
-                self.select_item(child)
+        return item
 
     def remove(self, node):
-        self.Delete(node.item)
+        # just remove the mutual references between editor and tree item
+        if node.item is None: return  # could be during common.root.clear() when there is an error on loading
+        self._SetItemData(node.item, None)
+        node.item = None
 
-    def build(self, widget):
-        # (re-)build
+    ####################################################################################################################
+    # new implementation:
+    def on_delete_item(self, event):
+        item = event.GetItem()
+        editor = self.GetItemData( item )
+        if DEBUG: print("on_delete_item", editor, editor and editor.item or None)
+        if editor is not None and editor.item is item:
+            editor.item = None
+
+    def _get_children_items(self, widget):
+        item = widget.item
+        items = []
+        child_item, cookie = self.GetFirstChild(item)
+        while child_item.IsOk():
+            items.append(child_item)
+            child_item, cookie = self.GetNextChild(item, cookie)
+        return items
+
+    def _build_children(self, widget, item, recursive=True):
+        print("_build_children", widget)
+        children = widget.get_all_children()
+        items = self._get_children_items(widget)
+        if DEBUG: print("children", children)
+        if DEBUG: print("items", items)
+        item_editors = []
+        for child_item in items:
+            editor = self._GetItemData(child_item)
+            if editor is not None and (not children or not editor in children):
+                self._SetItemData(child_item, None)
+                editor.item = None  # is probably None already
+                item_editors.append(None)
+            else:
+                item_editors.append(editor)
+        #item_editors = [self._GetItemData(i) for i in items]
+        if DEBUG: print("item_editors", item_editors)
+        if DEBUG: print()
+        #if abs( len(items) - len(children) ) == 1:
+        #    # check for insertion or deletion of a single item
+        #    pass
+        #el
+        match_beginning = 0
+        for c,child in enumerate(children):
+            if c<len(item_editors) and item_editors[c] is child:
+                match_beginning = c+1
+            else:
+                break
+        match_end = 0
+        c = -1
+        while match_beginning+match_end<len(children):
+            if match_end<len(item_editors) and item_editors[c] is children[c]:
+                match_end += 1
+            else:
+                break
+            c -= 1
+
+
+        # insert or remove items
+        # reset existing items using _SetItemData(item, None)
+        # link editors and items
+
+        if len(children) > len(item_editors):
+            # insert or add items, right after match_beginning
+            for n in range( len(children) - len(item_editors) ):
+                index = match_beginning + n
+                child = children[index]
+                item = self.add2(child, parent=widget, index=index)
+                items.insert(index, item)
+        elif len(children) < len(item_editors):
+            # remove items, right after match_beginning
+            for n in range( len(item_editors) - len(children) ):
+                index = match_beginning 
+                child_item = items[index]
+                self.Delete(child_item)
+                del items[match_beginning]
+        if match_beginning+match_end<len(children):
+            # length matches, re-use item in the middle
+            for index in range(match_beginning, len(children)-match_end):
+                child = children[index]
+                #index = match_beginning + n
+                # XXX skip if item and child match already
+                # XXX delete children, if child has no children? Should not be necessary
+                item = self.add2(child, parent=widget, index=index, item=items[index])
+        
+        if not recursive: return
+        for child, item in zip(children, items):
+            self._build_children(child, item)
+        return
+
+        if not children or (len(items)!=len(children)):
+            for child_item in items:  # XXX workaround before full implementation
+                if DEBUG: print("DELETE", child_item)
+                self.Delete(child_item)
+                #print("not deleting", self._GetItemData(child_item))
+                items = []
+        if not children:
+            # XXX delete child items
+            return
+        for c,child in enumerate(children):
+            old_item = items and items[c] or None
+            item = self.add2(child, parent=widget, index=None, item=old_item)
+            #if child.item is not None and child.item in items:
+            #    i = items.index(value)
+            if recursive:
+                self._build_children(child, item)
+
+    def build(self, widget=None, recursive=True):
+        print("build", widget, recursive)
+        # (re-)build tree from data structure
         # e.g. .build(control)
-        if widget is self.root:
-            # re-build completely
-            node = Node(widget, None)
+        # XXX if recursive is not True, ensure that all children are refreshed, as e.g. slot numbers may have changed
+        if widget is None:
+            widget = self.root
+            item = self.GetRootItem()
         else:
-            pass
+            item = widget.item
+            if item is None and widget.parent.item:
+                # check whether at the same position there is an item already without an editor
+                pos = widget.parent._get_pos(widget)
+                items = self._get_children_items(widget.parent)
+                if len(items)>pos and self._GetItemData(items[pos]) is None:
+                    item = items[pos]
+                    widget.item = item
+                    self._SetItemData(item, widget)
+                    self.refresh(widget)
+            while item is None:
+                widget = widget.parent
+                item = widget.item
+        self._build_children(widget, item, recursive)
+        common.root.saved = False
 
     def refresh(self, widget, refresh_label=True, refresh_image=True):
         # refresh label and/or image
+        if widget.item is None: return
         if refresh_label:
             self.SetItemText(widget.item, widget._get_tree_label())
         if refresh_image:
@@ -346,11 +459,11 @@ class WidgetTree(wx.TreeCtrl):#, Tree):
         common.adding_window = event.GetEventObject().GetTopLevelParent()
         if widget.IS_SLOT:
             widget.on_drop_widget(event)
-        elif common.adding_sizer:
+        elif common.adding_sizer or True:
             widget.drop_sizer()
         common.adding_window = None
 
-    def on_left_dclick(self, event):     
+    def on_left_dclick(self, event):
         x, y = event.GetPosition()
         widget = self._find_node_by_pos(x, y)
         if not widget:

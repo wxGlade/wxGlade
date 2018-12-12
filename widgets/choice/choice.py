@@ -71,10 +71,10 @@ def builder(parent, pos):
     "factory function for EditChoice objects"
     name = common.root.get_next_name('choice_%d', parent)
     with parent.frozen():
-        choice = EditChoice(name, parent, [(u'choice 1',)], pos)
-        choice.check_defaults()
-        if parent.widget: choice.create()
-    common.app_tree.insert(choice, parent, pos)
+        editor = EditChoice(name, parent, [(u'choice 1',)], pos)
+        editor.check_defaults()
+        if parent.widget: editor.create()
+    return editor
 
 
 def xml_builder(attrs, parent, pos=None):
@@ -84,9 +84,7 @@ def xml_builder(attrs, parent, pos=None):
         name = attrs['name']
     except KeyError:
         raise XmlParsingError(_("'name' attribute missing"))
-    choice = EditChoice(name, parent, [], pos)
-    common.app_tree.insert(choice, parent, pos)
-    return choice
+    return EditChoice(name, parent, [], pos)
 
 
 def initialize():

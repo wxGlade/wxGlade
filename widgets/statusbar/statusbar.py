@@ -64,15 +64,16 @@ class EditStatusBar(EditBase, EditStylesMixin):
     def __init__(self, name, klass, parent):
         if parent.IS_ROOT:
             self.__dict__["IS_TOPLEVEL"] = True
-        EditBase.__init__( self, name, klass, parent, custom_class=False )
+            EditBase.__init__( self, name, klass, parent, custom_class=False )
+        else:
+            EditBase.__init__( self, name, klass, parent, custom_class=False, pos="_statusbar" )
+            self.pos = "_statusbar"
         EditStylesMixin.__init__(self)
 
         # for the statusbar fields
         fields = [[self.name, "-1"]]  # list of 2-lists label, size
         self.fields = FieldsProperty(fields)
         self.window_id = None  # just a dummy for code generation
-
-        common.app_tree.add(self, parent)
 
     def create_widget(self):
         self.widget = wx.StatusBar(self.parent.widget, -1)
@@ -178,10 +179,9 @@ def builder(parent, pos):
     name = common.root.get_next_name('statusbar_%d', parent)
 
     with parent.frozen():
-        widget = EditStatusBar(name, klass, parent)
-        if parent.widget: widget.create()
-    common.app_tree.add(widget)
-
+        editor = EditStatusBar(name, klass, parent)
+        if parent.widget: editor.create()
+    return editor
 
 
 def xml_builder(attrs, parent, pos=None):
@@ -192,18 +192,13 @@ def xml_builder(attrs, parent, pos=None):
             parent._statusbar.properties["name"].set(name)
             parent._statusbar.properties_changed(["name"])
         return parent._statusbar
-    else:
-        widget = EditStatusBar(name, attrs.get('class', 'wxStatusBar'), None)
-        widget.node = Node(widget)
-        common.app_tree.add(widget.node)
-        return widget
+    return EditStatusBar(name, attrs.get('class', 'wxStatusBar'), parent)
 
 
 def initialize():
     "initialization function for the module: returns a wxBitmapButton to be added to the main palette."
     common.widgets_from_xml['EditStatusBar'] = xml_builder
     common.widgets['EditStatusBar'] = builder
-    #return common.make_object_button('EditStatusBar', 'statusbar.xpm')
     # no standalone status bar any more
     import config, os
     from tree import WidgetTree

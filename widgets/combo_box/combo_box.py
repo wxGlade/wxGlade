@@ -74,11 +74,11 @@ def builder(parent, pos):
     "factory function for EditComboBox objects"
     name = common.root.get_next_name('combo_box_%d', parent)
     with parent.frozen():
-        combo = EditComboBox(name, parent, [], pos)
-        combo.properties["style"].set_to_default()
-        combo.check_defaults()
-        if parent.widget: combo.create()
-    common.app_tree.insert(combo, parent, pos)
+        editor = EditComboBox(name, parent, [], pos)
+        editor.properties["style"].set_to_default()
+        editor.check_defaults()
+        if parent.widget: editor.create()
+    return editor
 
 
 def xml_builder(attrs, parent, pos=None):
@@ -88,9 +88,7 @@ def xml_builder(attrs, parent, pos=None):
         name = attrs['name']
     except KeyError:
         raise XmlParsingError(_("'name' attribute missing"))
-    combo = EditComboBox(name, parent, [], pos)
-    common.app_tree.insert(combo, parent, pos)
-    return combo
+    return EditComboBox(name, parent, [], pos)
 
 
 def initialize():

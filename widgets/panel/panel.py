@@ -83,18 +83,19 @@ class PanelBase(EditStylesMixin):
             self.on_set_focus(event)  # default behaviour: call show_properties
             return
         if self.widget: self.widget.SetCursor(wx.NullCursor)
-        common.widgets[common.widget_to_add](self, None)
+        new_widget = common.widgets[common.widget_to_add](self, None)
+        if new_widget is None: return
+        misc.rebuild_tree(new_widget)
         if event is None or not misc.event_modifier_copy(event):
             common.adding_widget = common.adding_sizer = False
             common.widget_to_add = None
-        common.root.saved = False
 
     def check_drop_compatibility(self):
         if self.top_sizer:
             return (False, 'Sizer already set for this panel')
-        if common.adding_sizer:
-            return (True, None)
-        return (False, 'Only sizers can be added here')
+        #if common.adding_sizer:
+        return (True, None)
+        #return (False, 'Only sizers can be added here')
 
     def get_widget_best_size(self):
         if self.top_sizer and self.widget.GetSizer():
@@ -193,15 +194,15 @@ class EditPanel(PanelBase, ManagedBase):
     def check_compatibility(self, widget, typename=None, report=True):
         "check whether widget can be pasted"
         if typename is not None:
-            if typename!="sizer":
-                return (False, 'Only sizers can be pasted here')
+            #if typename!="sizer":
+                #return (False, 'Only sizers can be pasted here')
             if self.top_sizer:
                 return (False, 'Sizer set already')
             return (True, None)
 
         import edit_sizers
-        if not isinstance(widget, edit_sizers.Sizer):
-            return (False, 'Only sizers can be pasted here')
+        #if not isinstance(widget, edit_sizers.Sizer):
+            #return (False, 'Only sizers can be pasted here')
         #if self.sizer is not None:
         if self.top_sizer:
             return (False, 'Sizer set already')
@@ -335,12 +336,11 @@ def builder(parent, pos):
     "factory function for EditPanel objects"
     name = common.root.get_next_name('panel_%d', parent)
     with parent.frozen():
-        panel = EditPanel(name, parent, pos, style='')
-        panel.properties["proportion"].set(1)
-        panel.properties["flag"].set("wxEXPAND")
-        if parent.widget: panel.create()
-    common.app_tree.insert(panel, parent, pos)
-    #sizer.set_item(panel.pos, 1, wx.EXPAND)
+        editor = EditPanel(name, parent, pos, style='')
+        editor.properties["proportion"].set(1)
+        editor.properties["flag"].set("wxEXPAND")
+        if parent.widget: editor.create()
+    return editor
 
 
 def xml_builder(attrs, parent, pos=None):
@@ -350,9 +350,7 @@ def xml_builder(attrs, parent, pos=None):
         name = attrs['name']
     except KeyError:
         raise XmlParsingError(_("'name' attribute missing"))
-    panel = EditPanel(name, parent, pos=pos, style='')
-    common.app_tree.insert(panel, parent, pos)
-    return panel
+    return EditPanel(name, parent, pos=pos, style='')
 
 
 def xml_toplevel_builder(attrs, parent, pos=None):
@@ -361,9 +359,7 @@ def xml_toplevel_builder(attrs, parent, pos=None):
         label = attrs['name']
     except KeyError:
         raise XmlParsingError(_("'name' attribute missing"))
-    panel = EditTopLevelPanel( label, parent, style='' )
-    common.app_tree.add(panel)
-    return panel
+    return EditTopLevelPanel( label, parent, style='' )
 
 
 def initialize():

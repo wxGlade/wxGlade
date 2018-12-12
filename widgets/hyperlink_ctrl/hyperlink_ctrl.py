@@ -69,12 +69,12 @@ def builder(parent, pos):
     "factory function for EditHyperlinkCtrl objects"
     name = common.root.get_next_name('hyperlink_%d', parent)
     with parent.frozen():
-        hyperlink_ctrl = EditHyperlinkCtrl(name, parent, name, pos)
-        hyperlink_ctrl.properties["style"].set_to_default()
-        hyperlink_ctrl.properties["attribute"].set(True)  # allow to modificate it later on...
-        hyperlink_ctrl.check_defaults()
-        if parent.widget: hyperlink_ctrl.create()
-    common.app_tree.insert(hyperlink_ctrl, parent, pos)
+        editor = EditHyperlinkCtrl(name, parent, name, pos)
+        editor.properties["style"].set_to_default()
+        editor.properties["attribute"].set(True)  # allow to modificate it later on...
+        editor.check_defaults()
+        if parent.widget: editor.create()
+    return editor
 
 
 def xml_builder(attrs, parent, pos=None):
@@ -84,9 +84,7 @@ def xml_builder(attrs, parent, pos=None):
         name = attrs['name']
     except KeyError:
         raise XmlParsingError(_("'name' attribute missing"))
-    hyperlink_ctrl = EditHyperlinkCtrl(name, parent, "", pos)
-    common.app_tree.insert(hyperlink_ctrl, parent, pos)
-    return hyperlink_ctrl
+    return EditHyperlinkCtrl(name, parent, "", pos)
 
 
 def initialize():

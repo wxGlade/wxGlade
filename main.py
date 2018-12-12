@@ -951,7 +951,7 @@ class wxGladeFrame(wx.Frame):
 
                 return False
 
-        misc.set_focused_widget(common.root, force=True)
+        misc.rebuild_tree(common.root)
 
         common.app_tree.auto_expand = True  # re-enable auto-expansion of nodes
 

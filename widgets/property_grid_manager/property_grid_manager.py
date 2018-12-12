@@ -97,13 +97,13 @@ def builder(parent, pos):
     "factory function for EditPropertyGridManager objects"
     name = common.root.get_next_name('property_grid_%d', parent)
     with parent.frozen():
-        property_grid_manager = EditPropertyGridManager(name, parent, pos)
-        property_grid_manager.properties["style"].set_to_default()
+        editor = EditPropertyGridManager(name, parent, pos)
+        editor.properties["style"].set_to_default()
         # A grid should be wx.EXPANDed and 'option' should be 1, or you can't see it.
-        property_grid_manager.properties["proportion"].set(1)
-        property_grid_manager.properties["flag"].set("wxEXPAND")
-        if parent.widget: property_grid_manager.create()
-    common.app_tree.insert(property_grid_manager, parent, pos)
+        editor.properties["proportion"].set(1)
+        editor.properties["flag"].set("wxEXPAND")
+        if parent.widget: editor.create()
+    return editor
 
 
 def xml_builder(attrs, parent, pos=None):
@@ -113,9 +113,7 @@ def xml_builder(attrs, parent, pos=None):
         label = attrs['name']
     except KeyError:
         raise XmlParsingError(_("'name' attribute missing"))
-    property_grid_manager = EditPropertyGridManager( label, parent, pos )
-    common.app_tree.insert(property_grid_manager, parent, pos)
-    return property_grid_manager
+    return EditPropertyGridManager( label, parent, pos )
 
 
 def initialize():

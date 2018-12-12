@@ -101,17 +101,15 @@ def builder(parent, pos):
 
     name = 'spacer'
     with parent.frozen():
-        spacer = EditSpacer( name, parent, width, height, pos )
-        if parent.widget: spacer.create()
-    common.app_tree.insert(spacer, parent, pos)
+        editor = EditSpacer( name, parent, width, height, pos )
+        if parent.widget: editor.create()
+    return editor
 
 
 def xml_builder(attrs, parent, pos=None):
     "factory to build EditSpacer objects from a XML file"
     from xml_parse import XmlParsingError
-    spacer = EditSpacer('spacer', parent, 1, 1, pos)
-    common.app_tree.insert(spacer, parent, pos)
-    return spacer
+    return EditSpacer('spacer', parent, 1, 1, pos)
 
 
 def initialize():

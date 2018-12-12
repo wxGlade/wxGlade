@@ -1498,7 +1498,7 @@ class ClassProperty(TextProperty):
         # check recursively, starting from root
         def check(children):
             for c in children:
-                if c.IS_SLOT: continue
+                if c is None or c.IS_SLOT: continue
                 if c.children:
                     result = check(c.children)
                     if result: return result
