@@ -248,7 +248,8 @@ class WidgetTree(wx.TreeCtrl):#, Tree):
             if index is None:
                 item = child.item = self.AppendItem(parent.item, label, image)
             else:
-                item = child.item = self.InsertItem(parent.item, index, label, image)
+                
+                item = child.item = compat.wx_Tree_InsertItemBefore(self, parent.item, index, label, image)
         else:
             # re-use
             child.item = item
