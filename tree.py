@@ -11,7 +11,7 @@ import logging, os.path
 import wx
 import misc, common, compat, config, clipboard
 
-DEBUG = True
+DEBUG = False
 
 class WidgetTree(wx.TreeCtrl):#, Tree):
     "Tree with the ability to display the hierarchy of widgets"
@@ -298,13 +298,8 @@ class WidgetTree(wx.TreeCtrl):#, Tree):
                 item_editors.append(None)
             else:
                 item_editors.append(editor)
-        #item_editors = [self._GetItemData(i) for i in items]
         if DEBUG: print("item_editors", item_editors)
         if DEBUG: print()
-        #if abs( len(items) - len(children) ) == 1:
-        #    # check for insertion or deletion of a single item
-        #    pass
-        #el
         match_beginning = 0
         for c,child in enumerate(children):
             if c<len(item_editors) and item_editors[c] is child:
@@ -319,11 +314,6 @@ class WidgetTree(wx.TreeCtrl):#, Tree):
             else:
                 break
             c -= 1
-
-
-        # insert or remove items
-        # reset existing items using _SetItemData(item, None)
-        # link editors and items
 
         if len(children) > len(item_editors):
             # insert or add items, right after match_beginning
@@ -343,32 +333,11 @@ class WidgetTree(wx.TreeCtrl):#, Tree):
             # length matches, re-use item in the middle
             for index in range(match_beginning, len(children)-match_end):
                 child = children[index]
-                #index = match_beginning + n
-                # XXX skip if item and child match already
-                # XXX delete children, if child has no children? Should not be necessary
                 item = self.add2(child, parent=widget, index=index, item=items[index])
         
         if not recursive: return
         for child, item in zip(children, items):
             self._build_children(child, item)
-        return
-
-        if not children or (len(items)!=len(children)):
-            for child_item in items:  # XXX workaround before full implementation
-                if DEBUG: print("DELETE", child_item)
-                self.Delete(child_item)
-                #print("not deleting", self._GetItemData(child_item))
-                items = []
-        if not children:
-            # XXX delete child items
-            return
-        for c,child in enumerate(children):
-            old_item = items and items[c] or None
-            item = self.add2(child, parent=widget, index=None, item=old_item)
-            #if child.item is not None and child.item in items:
-            #    i = items.index(value)
-            if recursive:
-                self._build_children(child, item)
 
     def build(self, widget=None, recursive=True):
         print("build", widget, recursive)
@@ -554,7 +523,6 @@ class WidgetTree(wx.TreeCtrl):#, Tree):
             else:
                 widget.widget.GetParent().Show()
 
-            #misc.set_focused_widget(widget)
             widget.widget.Raise()
             # set the best size for the widget (if no one is given)
             props = widget.properties
