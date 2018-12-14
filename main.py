@@ -1094,10 +1094,8 @@ class wxGladeFrame(wx.Frame):
         if wx.Platform == "__WXMAC__":
             os.system(r'open -a Safari.app "%s"' % html_file)
         else:
-            import webbrowser
-            import threading
+            import webbrowser, threading
             # ALB 2004-08-15: why did this block the program????? (at least on linux - GTK)
-
             def go():
                 webbrowser.open_new(html_file)
             t = threading.Thread(target=go)

@@ -615,7 +615,7 @@ class XmlWidgetObject(object):
             prop = self.obj.properties[name]
         except KeyError:
             # unknown property for this object; issue a warning and ignore the property
-            #if config.debugging: raise
+            if config.debugging: raise
             self._logger.error( _("WARNING: Property '%s' not supported by this object ('%s') "), name, self.obj )
             return
         prop.load(val, activate=True)
