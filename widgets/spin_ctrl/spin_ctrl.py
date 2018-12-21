@@ -44,7 +44,7 @@ class EditSpinCtrl(ManagedBase, EditStylesMixin):
     def _on_set_focus(self, event):
         # don't set focused_widget during event, as this may cause crashes
         if not misc.focused_widget is self:
-            wx.CallAfter(misc.set_focused_widget, self)
+            misc.set_focused_widget(self, delayed=True)
         event.Skip()
 
     def properties_changed(self, modified):  # from EditSlider

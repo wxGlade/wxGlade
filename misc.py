@@ -22,11 +22,20 @@ _item_bitmaps = {}
 design_windows = []
 
 focused_widget = None  # the currently selected widget in GUI mode (for tree and property_panel)
+_next_focused_widget = None  # for delayed setting, to ensure that only the last call has an effect
 
-def set_focused_widget(widget, force=False):
+def set_focused_widget(widget, force=False, delayed=False):
     if not config.use_gui: return
+    global focused_widget, _next_focused_widget
+
+    if delayed:
+        _next_focused_widget = widget
+        wx.CallAfter(_set_focused_widget, widget, force)
+        return
+
+    _next_focused_widget = None  # cancel pending delayed call
+
     # set focused widget; tell tree and property panel
-    global focused_widget
     if focused_widget:
         focused_widget.update_view(selected=False)
     focused_widget = widget
@@ -38,6 +47,13 @@ def set_focused_widget(widget, force=False):
         # ensure that it is visible and selection is displayed, if applicable
         show_widget(widget)
         widget.update_view(selected=True)
+
+
+def _set_focused_widget(widget, force=False):
+    if not widget is _next_focused_widget:
+        # another call was made inbetween
+        return
+    set_focused_widget(widget, force)
 
 
 def show_widget(widget):
