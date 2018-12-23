@@ -16,6 +16,7 @@ import new_properties as np
 class EditCheckBox(ManagedBase, EditStylesMixin):
     "Class to handle wxCheckBox objects"
 
+    WX_CLASS = "wxCheckBox"
     _PROPERTIES = ["Widget", "label", "checked", "style"]
     PROPERTIES = ManagedBase.PROPERTIES + _PROPERTIES + ManagedBase.EXTRA_PROPERTIES
     _PROPERTY_LABELS = {"checked":"wxCheckBox state"}

@@ -17,6 +17,7 @@ import new_properties as np
 class EditBitmapButton(ManagedBase, EditStylesMixin, BitmapMixin):
     "Class to handle wxBitmapButton objects"
 
+    WX_CLASS = "wxBitmapButton"
     _PROPERTIES = ["Widget", "bitmap", "disabled_bitmap", "pressed_bitmap", "current_bitmap", "focus_bitmap",
                    "default", "style"]
     PROPERTIES = ManagedBase.PROPERTIES + _PROPERTIES + ManagedBase.EXTRA_PROPERTIES

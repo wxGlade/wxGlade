@@ -17,6 +17,7 @@ class EditTreeCtrl(ManagedBase, EditStylesMixin):
 
     update_widget_style = False
 
+    WX_CLASS = 'wxTreeCtrl'
     _PROPERTIES = ["Widget", "style"]
     PROPERTIES = ManagedBase.PROPERTIES + _PROPERTIES + ManagedBase.EXTRA_PROPERTIES
 

@@ -39,6 +39,7 @@ class EditSplitterWindow(ManagedBase, EditStylesMixin):
 
     _custom_base_classes = True
 
+    WX_CLASS = 'wxSplitterWindow'
     _PROPERTIES = ["Widget", "no_custom_class", "style", "sash_pos", "sash_gravity", "min_pane_size"]
     PROPERTIES = ManagedBase.PROPERTIES + _PROPERTIES + ManagedBase._EXTRA_PROPERTIES
     _PROPERTY_LABELS = {'no_custom_class':"Don't generate code for this class",

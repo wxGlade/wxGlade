@@ -24,6 +24,7 @@ class EditDatePickerCtrl(ManagedBase, EditStylesMixin):
     "Class to handle wxDatePickerCtrl objects"
     # XXX unify with EditCalendarCtrl?
 
+    WX_CLASS = "wxDatePickerCtrl"
     _PROPERTIES = ["Widget", "style"]
     PROPERTIES = ManagedBase.PROPERTIES + _PROPERTIES + ManagedBase.EXTRA_PROPERTIES
 

@@ -16,6 +16,7 @@ import new_properties as np
 class EditGauge(ManagedBase, EditStylesMixin):
     "Class to handle wxGauge objects"
 
+    WX_CLASS = "wxGauge"
     _PROPERTIES = ["Widget", "range", "style"]
     PROPERTIES = ManagedBase.PROPERTIES + _PROPERTIES + ManagedBase.EXTRA_PROPERTIES
     recreate_on_style_change = True

@@ -22,6 +22,7 @@ else:
 
 class EditHyperlinkCtrl(ManagedBase, EditStylesMixin):
     "Class to handle wxHyperlinkCtrl objects"
+    WX_CLASS = "wxHyperlinkCtrl"
     _PROPERTIES = ["Widget", "label", "style", "url", "attribute"]
     PROPERTIES = ManagedBase.PROPERTIES + _PROPERTIES + ManagedBase.EXTRA_PROPERTIES
     ManagedBase.MOVE_PROPERTY(PROPERTIES, "attribute", "name")

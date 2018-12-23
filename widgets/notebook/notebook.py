@@ -104,6 +104,7 @@ class EditNotebook(ManagedBase, EditStylesMixin):
     _next_notebook_number = 1 # next free number for notebook names
     update_widget_style = False
 
+    WX_CLASS = "wxNotebook"
     _PROPERTIES = ["Widget", "no_custom_class", "style", "tabs"]
     PROPERTIES = ManagedBase.PROPERTIES + _PROPERTIES + ManagedBase.EXTRA_PROPERTIES
 

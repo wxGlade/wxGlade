@@ -17,6 +17,7 @@ import new_properties as np
 class EditStaticBitmap(ManagedBase, EditStylesMixin, BitmapMixin):
     "Class to handle wxStaticBitmap objects"
     update_widget_style = False
+    WX_CLASS = 'wxStaticBitmap'
     _PROPERTIES = ["Widget", "bitmap", "attribute", "style"]
     PROPERTIES = ManagedBase.PROPERTIES + _PROPERTIES + ManagedBase.EXTRA_PROPERTIES
     ManagedBase.MOVE_PROPERTY(PROPERTIES, "attribute", "name")

@@ -15,6 +15,7 @@ from edit_windows import ManagedBase
 
 class EditSpacer(ManagedBase):
     "Class to handle spacers for sizers"
+    WX_CLASS = 'Spacer'
     _PROPERTIES = ["Layout", "width", "height", "pos", "proportion", "border", "flag"]
     PROPERTIES = _PROPERTIES + ManagedBase.EXTRA_PROPERTIES
 

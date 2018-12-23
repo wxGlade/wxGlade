@@ -16,6 +16,7 @@ import new_properties as np
 
 class EditStaticLine(ManagedBase, EditStylesMixin):
     "Class to handle wxStaticLine objects"
+    WX_CLASS = 'wxStaticLine'
     _PROPERTIES = ["attribute"]
     PROPERTIES = ManagedBase.PROPERTIES + _PROPERTIES + ManagedBase.EXTRA_PROPERTIES
     PROPERTIES.remove("font")

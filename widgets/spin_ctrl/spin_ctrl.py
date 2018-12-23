@@ -16,6 +16,7 @@ import new_properties as np
 class EditSpinCtrl(ManagedBase, EditStylesMixin):
     "Class to handle wxSpinCtrl objects"
     # XXX unify with EditSpinButton?
+    WX_CLASS = 'wxSpinCtrl'
     _PROPERTIES = ["Widget", "range", "value", "style"]
     PROPERTIES = ManagedBase.PROPERTIES + _PROPERTIES + ManagedBase.EXTRA_PROPERTIES
 

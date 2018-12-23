@@ -18,6 +18,7 @@ import new_properties as np
 class EditToggleButton(ManagedBase, EditStylesMixin, BitmapMixin):
     "Class to handle wxToggleButton objects"
 
+    WX_CLASS = 'wxToggleButton'
     _PROPERTIES = ["Widget", "label", "value",
                    "bitmap", "disabled_bitmap", "pressed_bitmap", "current_bitmap", "focus_bitmap",
                    "style"]

@@ -686,6 +686,7 @@ class MenuHandler(BaseXmlBuilderTagHandler):
 class EditMenuBar(EditBase, PreviewMixin):
     __hidden_frame = None  # used on GTK to reparent a menubar before deletion
 
+    WX_CLASS = "wxMenuBar"
     _PROPERTIES = ["menus", "preview"]
     PROPERTIES = EditBase.PROPERTIES + _PROPERTIES + EditBase.EXTRA_PROPERTIES
     CHILDREN = 0

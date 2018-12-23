@@ -17,12 +17,12 @@ import common, misc, compat
 class EditListCtrl(ManagedBase, EditStylesMixin):
     "Class to handle wxListCtrl objects"
 
-    update_widget_style = True
-
+    WX_CLASS = "wxListCtrl"
     _PROPERTIES = ["Widget", "style", "columns", "rows_number"]
     PROPERTIES = ManagedBase.PROPERTIES + _PROPERTIES + ManagedBase.EXTRA_PROPERTIES
     _PROPERTY_HELP = {"rows_number":"This is just used for the design and preview windows.",
                       "columns":"Only for style LC_REPORT."}
+    update_widget_style = True
 
     def __init__(self, name, parent, pos, style=wx.LC_REPORT | wx.BORDER_SUNKEN):
         ManagedBase.__init__(self, name, 'wxListCtrl', parent, pos)

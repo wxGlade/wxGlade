@@ -16,6 +16,7 @@ import new_properties as np
 
 class EditStaticText(ManagedBase, EditStylesMixin):
     "Class to handle wxStaticText objects"
+    WX_CLASS = 'wxStaticText'
     _PROPERTIES = ["Widget", "label", "style", "attribute", "wrap"]
     PROPERTIES = ManagedBase.PROPERTIES + _PROPERTIES + ManagedBase.EXTRA_PROPERTIES
     ManagedBase.MOVE_PROPERTY(PROPERTIES, "attribute", "name")

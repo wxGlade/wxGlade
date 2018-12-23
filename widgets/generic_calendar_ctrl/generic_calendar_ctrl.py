@@ -24,6 +24,7 @@ class EditGenericCalendarCtrl(ManagedBase, EditStylesMixin):
     "Class to handle wxGenericCalendarCtrl objects"
     # XXX unify with EditCalendarCtrl?
 
+    WX_CLASS = "wxGenericCalendarCtrl"
     _PROPERTIES = ["Widget", "default", "style"]
     PROPERTIES = ManagedBase.PROPERTIES + _PROPERTIES + ManagedBase.EXTRA_PROPERTIES
 

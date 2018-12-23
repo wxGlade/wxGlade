@@ -16,6 +16,7 @@ from edit_windows import ManagedBase, EditStylesMixin
 
 class EditPropertyGridManager(ManagedBase, EditStylesMixin):
     "Class to handle wxPropertyGridManager objects"
+    WX_CLASS = 'wxPropertyGridManager'
     _PROPERTIES = ["Widget", "style"]
     PROPERTIES = ManagedBase.PROPERTIES + _PROPERTIES + ManagedBase.EXTRA_PROPERTIES
     recreate_on_style_change = True

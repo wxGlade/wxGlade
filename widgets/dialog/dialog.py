@@ -17,6 +17,7 @@ from gui_mixins import BitmapMixin
 
 
 class EditDialog(TopLevelBase, EditStylesMixin, BitmapMixin):
+    WX_CLASS = "wxDialog"
     _PROPERTIES =["Widget", "title", "icon", "centered", "sizehints","menubar", "toolbar", "statusbar", "style"]
     PROPERTIES = TopLevelBase.PROPERTIES + _PROPERTIES + TopLevelBase.EXTRA_PROPERTIES
     _PROPERTY_LABELS = { "sizehints":'Set Size Hints'}

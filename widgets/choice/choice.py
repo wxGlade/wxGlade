@@ -18,6 +18,7 @@ from ChoicesProperty import *
 
 class EditChoice(ManagedBase):
     "Class to handle wxChoice objects"
+    WX_CLASS = "wxChoice"
     _PROPERTIES = ["Widget", "selection", "choices"]
     PROPERTIES = ManagedBase.PROPERTIES + _PROPERTIES + ManagedBase.EXTRA_PROPERTIES
 

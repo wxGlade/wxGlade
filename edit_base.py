@@ -28,11 +28,12 @@ class EditBase(np.PropertyOwner):
     #is_sizer = False
     IS_TOPLEVEL = IS_SLOT = IS_SIZER = IS_WINDOW = IS_ROOT = IS_TOPLEVEL_WINDOW = False
     IS_CLASS = False  # generate class for this item; can be dynamically set during code generation
-    # WX_CLASS: needs to be defined in every derived class XXX
+    WX_CLASS = None # needs to be defined in every derived class; e.g. "wxFrame", "wxBoxSizer", "wxPandel", "TopLevelPanel"
     #CHILDREN = 1  # 0 or a fixed number or None for e.g. a sizer with a variable number of children
     ATT_CHILDREN = None
 
     def __init__(self, name, parent, pos=None):
+        assert self.WX_CLASS
         np.PropertyOwner.__init__(self)
         # initialise instance logger
         self._logger = logging.getLogger(self.__class__.__name__)

@@ -55,6 +55,7 @@ class CustomWidget(ManagedBase):
     arguments: Constructor arguments
     custom_ctor: if not empty, an arbitrary piece of code that will be used instead of the constructor name"""
 
+    WX_CLASS = "CustomWidget"
     _PROPERTIES = ["Widget", "custom_ctor", "arguments"]
     PROPERTIES = ManagedBase.PROPERTIES + _PROPERTIES + ManagedBase.EXTRA_PROPERTIES
 

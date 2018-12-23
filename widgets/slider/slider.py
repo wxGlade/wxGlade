@@ -18,6 +18,7 @@ import new_properties as np
 class EditSlider(ManagedBase, EditStylesMixin):
     "Class to handle wxSlider objects"
 
+    WX_CLASS = 'wxSlider'
     _PROPERTIES = ["Widget", "range", "value", "style"]
     PROPERTIES = ManagedBase.PROPERTIES + _PROPERTIES + ManagedBase.EXTRA_PROPERTIES
 

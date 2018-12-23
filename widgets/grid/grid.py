@@ -161,7 +161,7 @@ class RowsHandler(BaseXmlBuilderTagHandler):
 
 
 class EditGrid(ManagedBase):
-
+    WX_CLASS = "wxGrid"
     _PROPERTIES =["Widget", 'create_grid', 'row_label_size', 'col_label_size',
                   'enable_editing', 'enable_grid_lines', 'enable_col_resize', 'enable_row_resize', 'enable_grid_resize',
                   'lines_color', 'label_bg_color', 'selection_mode', 'columns', 'rows']

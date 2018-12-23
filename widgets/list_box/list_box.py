@@ -15,6 +15,7 @@ from ChoicesProperty import *
 
 class EditListBox(ManagedBase, EditStylesMixin):
     "Class to handle wxListBox objects"
+    WX_CLASS = "wxListBox"
     _PROPERTIES = ["Widget", "style", "selection", "choices"]
     PROPERTIES = ManagedBase.PROPERTIES + _PROPERTIES + ManagedBase.EXTRA_PROPERTIES
 

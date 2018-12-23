@@ -509,6 +509,7 @@ class ToolsHandler(BaseXmlBuilderTagHandler):
 class EditToolBar(EditBase, PreviewMixin, EditStylesMixin, BitmapMixin):
     "Class to handle wxToolBar objects"
 
+    WX_CLASS = 'wxToolBar'
     _PROPERTIES = ["Widget", "bitmapsize", "margins", "packing", "separation", "style", "tools", "preview"]
     PROPERTIES = EditBase.PROPERTIES + _PROPERTIES + EditBase.EXTRA_PROPERTIES
     CHILDREN = 0

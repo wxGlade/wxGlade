@@ -18,6 +18,7 @@ from gui_mixins import BitmapMixin
 class EditButton(ManagedBase, EditStylesMixin, BitmapMixin):
     "Class to handle wxButton objects"
 
+    WX_CLASS = "wxButton"
     STOCKITEMS = sorted( ButtonStockItems.stock_ids.keys())
     _PROPERTIES = ["Widget", "label", "stockitem",
                    "bitmap", "disabled_bitmap", "pressed_bitmap", "current_bitmap", "focus_bitmap",

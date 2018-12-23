@@ -17,6 +17,7 @@ import new_properties as np
 class EditSearchCtrl(ManagedBase, EditStylesMixin):
     "Class to handle wxSearchCtrl objects"
 
+    WX_CLASS = 'wxSearchCtrl'
     # we want these pages: Common, Layout, Widget, Events, Code
     _PROPERTIES = ["Widget", "value", "descriptive_text", "search_button", "cancel_button", "max_length", "style"]
     PROPERTIES = ManagedBase.PROPERTIES + _PROPERTIES + ManagedBase.EXTRA_PROPERTIES

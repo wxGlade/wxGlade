@@ -17,6 +17,7 @@ import new_properties as np
 class EditTextCtrl(ManagedBase, EditStylesMixin):
     "Class to handle wxTextCtrl objects"
 
+    WX_CLASS = 'wxTextCtrl'
     # we want these pages: Common, Layout, Widget, Events, Code
     _PROPERTIES = ["Widget", "value", "style"]
     PROPERTIES = ManagedBase.PROPERTIES + _PROPERTIES + ManagedBase.EXTRA_PROPERTIES

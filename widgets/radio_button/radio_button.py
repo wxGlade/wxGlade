@@ -18,6 +18,7 @@ class EditRadioButton(ManagedBase, EditStylesMixin):
     "Class to handle wxRadioButton objects"
     update_widget_style = False
 
+    WX_CLASS = 'wxRadioButton'
     _PROPERTIES = ["Widget", "label", "clicked", "style"]
     PROPERTIES = ManagedBase.PROPERTIES + _PROPERTIES + ManagedBase.EXTRA_PROPERTIES
 

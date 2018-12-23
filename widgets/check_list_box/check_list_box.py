@@ -18,6 +18,7 @@ from ChoicesProperty import *
 class EditCheckListBox(ManagedBase, EditStylesMixin):
     "Class to handle wxCheckListBox objects"
     # XXX maybe inherit from EditChoice
+    WX_CLASS = "wxCheckListBox"
     _PROPERTIES = ["Widget", "style", "selection", "choices"]
     PROPERTIES = ManagedBase.PROPERTIES + _PROPERTIES + ManagedBase.EXTRA_PROPERTIES
 

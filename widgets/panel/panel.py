@@ -138,7 +138,7 @@ class PanelBase(EditStylesMixin):
 
 class EditPanel(PanelBase, ManagedBase):
     "Class to handle wxPanel objects"
-
+    WX_CLASS = "wxPanel"
     PROPERTIES = ManagedBase.PROPERTIES + PanelBase._PROPERTIES + ManagedBase.EXTRA_PROPERTIES
 
     def __init__(self, name, parent, pos, style='wxTAB_TRAVERSAL'):
@@ -234,7 +234,7 @@ class EditPanel(PanelBase, ManagedBase):
 
 class EditTopLevelPanel(PanelBase, TopLevelBase):
     IS_TOPLEVEL_WINDOW = False  # avoid to appear in the "Top Window" property of the app
-
+    WX_CLASS = "TopLevelPanel"
     PROPERTIES = TopLevelBase.PROPERTIES + PanelBase._PROPERTIES + TopLevelBase.EXTRA_PROPERTIES
 
     def __init__(self, name, parent, klass='wxPanel', style='wxTAB_TRAVERSAL'):
