@@ -231,7 +231,9 @@ def format_supported_by(version):
 
 
 def get_toplevel_parent(obj):
-    if not isinstance(obj, wx.Window):
+    if isinstance(obj, wx.Sizer):
+        obj =obj.ContainingWindow
+    elif not isinstance(obj, wx.Window):
         obj = obj.widget
     while obj and not obj.IsTopLevel():
         obj = obj.GetParent()
