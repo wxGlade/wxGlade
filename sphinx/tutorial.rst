@@ -632,6 +632,9 @@ The result will look like this:
 +----------------------------------------------------------------+
 
 
+.. |VerticalSizer_InsertSlot| image:: images/Calculator_GridSizer_InsertSlot.png
+    :height: 80
+    :alt: InsertSlot into vertical sizer
 
 .. |FlexGridSizerDlg| image:: images/FlexGridSizerDlg.png
     :height: 80
@@ -645,7 +648,12 @@ The result will look like this:
 
 **To get there:**
 
-* Add a slot to the vertical sizer
+(You may want to start from
+`Calculator-05-Spacers.wxg <../../examples/Calculator/Calculator-05-Spacers.wxg>`_
+if your current file is too different, e.g. because you did not complete Part 4 above.)
+
+* Insert/add a slot to the vertical sizer inside the notebook and panel: |br|
+  |VerticalSizer_InsertSlot|
 * Add a GridSizer |grid_sizer| to this slot
 * In the grid sizer dialog, select :guilabel:`FlexGrid`, :guilabel:`4` rows and :guilabel:`2` cols: |br|
   |FlexGridSizerDlg|
