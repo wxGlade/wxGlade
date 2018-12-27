@@ -169,8 +169,11 @@ class EditBase(np.PropertyOwner):
             self.children += [None]*(pos - len(self.children) + 1)
         if self.children[pos] is not None:
             old_child = self.children[pos]
-            self.children[pos].delete()
+        else:
+            old_child = None
         self.children[pos] = child
+        if old_child:
+            old_child.tree_remove()
 
     def has_ancestor(self, node):
         "Returns True if node is parent or parents parent ..."
@@ -340,8 +343,8 @@ class EditBase(np.PropertyOwner):
         with self.toplevel_parent.frozen():
             old_child = self.children[pos]
             slot = Slot(self, pos)
-            old_child.tree_remove()
-            common.app_tree.remove(old_child)
+            #old_child.tree_remove()
+            #common.app_tree.remove(old_child)
             if self.widget:
                 slot.create()  # create the actual SizerSlot as wx.Window with hatched background
         return slot

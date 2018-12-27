@@ -826,16 +826,16 @@ class wxGladeFrame(wx.Frame):
 
     def new_app(self, event=None):
         "creates a new wxGlade project"
-        if self.ask_save():
-            common.root.clear()
-            common.root.new()
-            common.root.filename = None
-            common.root.saved = True
-            self.user_message("")
-            common.remove_autosaved()
-            if config.preferences.autosave and self.autosave_timer is not None:
-                self.autosave_timer.Start()
-            misc.set_focused_widget(common.root.widget)
+        if not self.ask_save(): return
+        common.root.clear()
+        common.root.new()
+        common.root.filename = None
+        self.user_message("")
+        misc.rebuild_tree(common.root)
+        common.root.saved = True
+        common.remove_autosaved()
+        if config.preferences.autosave and self.autosave_timer is not None:
+            self.autosave_timer.Start()
 
     def new_app_from_template(self):
         "creates a new wxGlade project from an existing template file"
