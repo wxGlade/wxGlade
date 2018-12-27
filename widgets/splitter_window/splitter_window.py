@@ -201,8 +201,6 @@ class EditSplitterWindow(ManagedBase, EditStylesMixin):
         old_child = self.children[pos]
         slot = Slot(self, pos, labels[0])
         self.split()
-        old_child.tree_remove()
-        common.app_tree.remove(old_child)
         return slot
 
     def item_properties_modified(self, widget, modified=None, force_layout=True):

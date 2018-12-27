@@ -443,7 +443,7 @@ class Slot(EditBase):
 
     def create_widget(self):
         style = wx.FULL_REPAINT_ON_RESIZE
-        if not self.parent.IS_SIZER:
+        if self.parent.CHILDREN==1:  # e.g. Panel in a Frame
             size = self.parent.widget.GetClientSize()
         else:
             size=(20, 20)

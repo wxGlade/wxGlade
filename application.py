@@ -75,6 +75,9 @@ class EditRoot(np.PropertyOwner):
     def get_all_children(self):
         return self.children
 
+    def _get_child_pos(self, child):
+        return self.children.index(child)
+
     def has_ancestor(self, node):
         return False
 
