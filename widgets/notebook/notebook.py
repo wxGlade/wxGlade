@@ -102,7 +102,6 @@ class EditNotebook(ManagedBase, EditStylesMixin):
             c.create()
             if c.IS_SLOT:
                 self.widget.AddPage(c.widget, label)
-        #self.widget.Bind(wx.EVT_KEY_DOWN, misc.on_key_down_event)
 
     def on_load(self):
         ManagedBase.on_load(self)
@@ -120,7 +119,6 @@ class EditNotebook(ManagedBase, EditStylesMixin):
         # allow switching of pages
         misc.set_focused_widget(self)
         event.Skip()
-        #misc.exec_after(self.widget.Refresh())
 
     ####################################################################################################################
     # new implementation:
@@ -255,9 +253,7 @@ class EditNotebook(ManagedBase, EditStylesMixin):
 
     def _free_slot(self, pos, force_layout=True):
         "Replaces the element at pos with an empty slot"
-        #if self._is_removing_pages or not self.window.widget:
-        if self._is_removing_pages:
-            return
+        if self._is_removing_pages: return
         old_child = self.children[pos]
         slot = Slot(self, pos)
         slot.create()
