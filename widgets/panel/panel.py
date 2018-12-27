@@ -158,7 +158,7 @@ class EditPanel(PanelBase, ManagedBase):
             def GetBestSize():
                 if self.widget and self.widget.GetSizer():
                     return self.widget.GetSizer().GetMinSize()
-                return self.widget.__class__.GetBestSize(self)
+                return self.widget.__class__.GetBestSize(self.widget)
             self.widget.GetBestSize = GetBestSize
 
     def set_sizer(self, sizer):
@@ -211,7 +211,7 @@ class EditPanel(PanelBase, ManagedBase):
     def clipboard_paste(self, clipboard_data):
         "Insert a widget from the clipboard to the current destination"
         if self.widget: size = self.widget.GetSize()
-        ret = clipboard._paste(self, None, 0, clipboard_data)
+        ret = clipboard._paste(self, 0, clipboard_data)
         if self.widget: self.widget.SetSize(size)
         return ret
 

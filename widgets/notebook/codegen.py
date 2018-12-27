@@ -20,7 +20,7 @@ class PythonNotebookGenerator(wcodegen.PythonWidgetCodeWriter):
 
         layout_props = []
         for (label,), tab_win in zip(window.tabs, window.children):
-            if tab_win.klass == "sizerslot":
+            if tab_win.IS_SLOT:
                 tab_win = "wx.Panel(self.%s)"%window.name
             else:
                 tab_win = 'self.%s'%tab_win.name
