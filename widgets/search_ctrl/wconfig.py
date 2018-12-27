@@ -1,7 +1,7 @@
 """\
 wxSearchCtrl widget configuration
 
-@copyright: 2018 Dietmar Schwertberger
+@copyright: 2018-2019 Dietmar Schwertberger
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 

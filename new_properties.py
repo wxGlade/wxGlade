@@ -5,7 +5,7 @@ File has been created in 2016; parts are from the old version of widget_properti
 
 Interface to owner modified; see below for class PropertyOwner
 
-@copyright: 2016-2018 Dietmar Schwertberger
+@copyright: 2016-2019 Dietmar Schwertberger
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
