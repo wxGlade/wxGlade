@@ -221,11 +221,6 @@ class EditBase(np.PropertyOwner):
         Why we need explicit deallocation? Well, basically because otherwise we get a lot of memory leaks... :)"""
         # XXX tell property editor
         self.destroy_widget()
-        if not self.IS_SLOT and self.name:
-            try:
-                del self.toplevel_parent.names[self.name]
-            except:
-                print("XXX delete: name '%s' already removed"%self.name)
         if misc.focused_widget is self:
             misc.focused_widget = None
 
@@ -244,9 +239,14 @@ class EditBase(np.PropertyOwner):
         try:
             self.parent.children.remove(self)
         except:
-            print(" **** node_remove failed")  # XXX
+            print(" **** node_remove failed")  # XXX  might have been overwritten in Slot -> add_item
             pass
         self.delete()
+        if not self.IS_SLOT and self.name:
+            try:
+                del self.toplevel_parent.names[self.name]
+            except:
+                print("XXX delete: name '%s' already removed"%self.name)
 
     def tree_remove(self):
         self._tree_remove()
@@ -259,10 +259,10 @@ class EditBase(np.PropertyOwner):
         common.root.saved = False  # update the status of the app
         # remove is called from the context menus; for other uses, delete is applicable
         self._dont_destroy = False  # always destroy when explicitly asked
-        if not isinstance(getattr(self,"pos",None), str):
-            self.parent.children.remove(self)
+        #if not isinstance(getattr(self,"pos",None), str):
+            #self.parent.children.remove(self)
         self.tree_remove()
-        common.app_tree.remove(self)
+        common.app_tree.remove(self)  # this probably requires common.app_tree.rebuild()
 
     # XML generation ###################################################################################################
     def write(self, output, tabs, class_names=None):
@@ -699,6 +699,7 @@ class Slot(EditBase):
         if misc.currently_under_mouse is self.widget:
             misc.currently_under_mouse = None
 
+        if self._dont_destroy: return  # on a notebook page
         self.widget.Hide()
 
         # unbind events to prevent new created (and queued) events

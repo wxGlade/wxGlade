@@ -123,7 +123,12 @@ class EditNotebook(ManagedBase, EditStylesMixin):
         self.no_custom_class = np.CheckBoxProperty(False, default_value=False)
 
     def create_widget(self):
-        self.widget = wx.Notebook( self.parent_window.widget, self.id, style=self.style )
+        if self.parent.WX_CLASS in ("wxFrame",):
+            # without this, the panel will not fill the available space on pasting etc.
+            size = self.parent.widget.GetClientSize()
+        else:
+            size = wx.DefaultSize
+        self.widget = wx.Notebook( self.parent_window.widget, self.id, size=size, style=self.style )
         for c,(label,) in zip(self.children, self.tabs):
             c.create()
             if c.IS_SLOT:
@@ -138,6 +143,9 @@ class EditNotebook(ManagedBase, EditStylesMixin):
             #self.children.extend( [None] * (len(self.pages) - len(self.children)) )
         ##self._add_slots()
         ManagedBase.on_load(self)
+        for c in self.children:
+            # avoid widgets being destroyed; this is done by DeletePage/InsertPage
+            if c.IS_SLOT: c._dont_destroy = True
         self.pages = None
 
     def post_load(self):
@@ -216,77 +224,78 @@ class EditNotebook(ManagedBase, EditStylesMixin):
         self.properties["tabs"].update_display()
         return editor
 
-    #@misc.restore_focus
-    #def set_tabs(self, old_labels, indices):  # called from tabs proberty on Apply button
-        #"""tabs: list of strings
-        #indices: the current indices of the tabs or None for a new tab; re-ordering is currently not supported"""
-        #keep_indices = [pos for pos in indices if pos is not None]
-        #if keep_indices != sorted(keep_indices):
-            #raise ValueError("Re-ordering is not yet implemented")
-        #keep_indices = set(keep_indices)
-        #new_labels = old_labels[:]
+    @misc.restore_focus
+    def set_tabs(self, old_labels, indices):  # called from tabs proberty on Apply button
+        """tabs: list of strings
+        indices: the current indices of the tabs or None for a new tab; re-ordering is currently not supported"""
+        keep_indices = [pos for pos in indices if pos is not None]
+        if keep_indices != sorted(keep_indices):
+            raise ValueError("Re-ordering is not yet implemented")
+        keep_indices = set(keep_indices)
+        new_labels = old_labels[:]
 
-        ## set tab labels of existing pages, if modified
-        #for (label,), index in zip(self.tabs, indices):
-            #if index is not None and old_labels[index]!=label:
-                #new_labels[index] = [label,]
-                #if self.widget:
-                    #self.widget.SetPageText(index, label)
+        # set tab labels of existing pages, if modified
+        for (label,), index in zip(self.tabs, indices):
+            if index is not None and old_labels[index]!=label:
+                new_labels[index] = [label,]
+                if self.widget:
+                    self.widget.SetPageText(index, label)
 
-        ## remove tabs
-        #for index in range(len(old_labels)-1, -1, -1):
-            #if not index in keep_indices:
-                #self._is_removing_pages = True
-                #self.virtual_sizer.remove_tab(index)            # remove from sizer; does not delete window
-                #self.children[index]._remove()                     # delete the page content without setting the focus
-                #self.children[index].tree_remove() + XXX  # this has not been tested
-                #common.app_tree.remove(self.children[index])  # remove from tree
-                #del self.children[index]                           # delete from page list
-                #del new_labels[index]                            # delete from list of names
-                #self._is_removing_pages = False
+        # remove tabs
+        for index in range(len(old_labels)-1, -1, -1):
+            if not index in keep_indices:
+                self._is_removing_pages = True
+                self.virtual_sizer.remove_tab(index)            # remove from sizer; does not delete window
+                self.children[index]._remove()                     # delete the page content without setting the focus
+                self.children[index].tree_remove() + XXX  # this has not been tested
+                common.app_tree.remove(self.children[index])  # remove from tree
+                del self.children[index]                           # delete from page list
+                del new_labels[index]                            # delete from list of names
+                self._is_removing_pages = False
 
-        ## insert/add tabs
-        #added = None
-        #for pos, (label,) in enumerate(self.tabs):
-            #index = indices[pos]
-            #if index is not None:
-                ## old tab to be kept, just ensure that pos is correct
-                #pos_p = self.children[pos].properties["pos"]
-                #if pos_p.value!=pos: pos_p.set(pos)
-                #continue
+        # insert/add tabs
+        added = None
+        for pos, (label,) in enumerate(self.tabs):
+            index = indices[pos]
+            if index is not None:
+                # old tab to be kept, just ensure that pos is correct
+                pos_p = self.children[pos].properties["pos"]
+                if pos_p.value!=pos: pos_p.set(pos)
+                continue
 
-            ## actually add/insert
-            #new_labels.insert(pos, [label,]) # this needs to be done before EditPanel calls self.virtual_sizer.add_item
-            #self.children.insert(pos, None)
-            ## create panel and node, add to tree
-            #suggestion = "%s_%s" % (self.name, label)
-            #window = EditPanel( self.next_pane_name(suggestion), self, pos )
-            #window._dont_destroy = True
+            # actually add/insert
+            new_labels.insert(pos, [label,]) # this needs to be done before EditPanel calls self.virtual_sizer.add_item
+            self.children.insert(pos, None)
+            # create panel and node, add to tree
+            suggestion = "%s_%s" % (self.name, label)
+            window = EditPanel( self.next_pane_name(suggestion), self, pos )
+            window._dont_destroy = True
 
-            ## adjust pos of the following pages
-            #for p, page in enumerate(self.children[pos+1:]):
-                #pos_p = page.properties["pos"]
-                #pos_p.set(pos+2+p)
+            # adjust pos of the following pages
+            for p, page in enumerate(self.children[pos+1:]):
+                pos_p = page.properties["pos"]
+                pos_p.set(pos+2+p)
 
             #common.app_tree.insert(window, self, pos, select=False)  # XXX call this only when called from GUI
 
-            #if self.widget:
-                ## add to widget
-                #window.create()
-                #compat.SetToolTip(window.widget, _("Notebook page pane:\nAdd a sizer here") )
-                #self.vs_insert_tab(pos)
+            if self.widget:
+                # add to widget
+                window.create()
+                compat.SetToolTip(window.widget, _("Notebook page pane:\nAdd a sizer here") )
+                self.vs_insert_tab(pos)
     
-                #try:
-                    #wx.CallAfter(window.sel_marker.update)
-                #except AttributeError:
-                    #if config.debugging: raise
+                try:
+                    wx.CallAfter(window.sel_marker.update)
+                except AttributeError:
+                    if config.debugging: raise
 
-                #added = pos  # remember last added index for selection
+                added = pos  # remember last added index for selection
 
-        ## select the last added tab
-        #if added is not None and self.widget:
-            #self.widget.SetSelection(added)
+        # select the last added tab
+        if added is not None and self.widget:
+            self.widget.SetSelection(added)
 
+        common.app_tree.build(self, recursive=False)
         ## update tree labels
         #for child in self.children:
             #common.app_tree.refresh(child, refresh_label=True, refresh_image=False)

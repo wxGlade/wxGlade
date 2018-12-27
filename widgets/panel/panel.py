@@ -153,7 +153,6 @@ class EditPanel(PanelBase, ManagedBase):
             self.widget = wx.Panel(self.parent_window.widget, self.id, style=0)
         self.widget.Bind(wx.EVT_ENTER_WINDOW, self.on_enter)
         self.widget.GetBestSize = self.get_widget_best_size
-        #if self.sizer.is_virtual():
         if not self.parent.IS_SIZER:
             def GetBestSize():
                 if self.widget and self.widget.GetSizer():

@@ -495,6 +495,7 @@ class ClipboardXmlWidgetBuilder(XmlWidgetBuilder):
     def endElement(self, name):
         if name == 'object':
             obj = self.top()
+            obj.obj.on_load()
             self.depth_level -= 1
             if not self.depth_level:
                 common.app_tree.auto_expand = True

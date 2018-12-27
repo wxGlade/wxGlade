@@ -531,7 +531,7 @@ class ManagedBase(WindowBase):
         self.widget.Bind(wx.EVT_LEFT_DOWN, self.on_set_focus)
         self.widget.Bind(wx.EVT_MOUSE_EVENTS, self.on_mouse_events)
         self.widget.Bind(wx.EVT_MOVE, self.on_move)
-        if re_add and self.parent.IS_SIZER:
+        if re_add and hasattr(self.parent, "_add_item"): # self.parent.IS_SIZER:
             # re-add the item to update it; this is not to be done when a widget is replaced due to style change
             self.parent._add_item( self, self.pos )
 
