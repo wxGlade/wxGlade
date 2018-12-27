@@ -159,11 +159,13 @@ class EditPanel(PanelBase, ManagedBase):
                     return self.widget.GetSizer().GetMinSize()
                 return self.widget.__class__.GetBestSize(self.widget)
             self.widget.GetBestSize = GetBestSize
+        if self.parent.WX_CLASS in ("wxFrame",):
+            # without this, the panel will not fill the available space on pasting etc.
+            self.widget.SetSize(self.parent.widget.GetClientSize())
 
     def set_sizer(self, sizer):
         super(EditPanel, self).set_sizer(sizer)
         if self.top_sizer and self.top_sizer.widget and self.widget:
-            #self.sizer.set_item_best_size(self, size=self.widget.GetBestSize())
             self.children[0].set_item_best_size(self, size=self.widget.GetBestSize())
 
     def _create_popup_menu(self, widget=None):
@@ -181,7 +183,6 @@ class EditPanel(PanelBase, ManagedBase):
         if self.top_sizer is not None or not clipboard.check("sizer"): i.Enable(False)
         menu.AppendSeparator()
 
-        #if self.sizer: self.sizer._add_popup_menu_items(menu, self, widget)
         if hasattr(self.parent, "_add_popup_menu_items"):
             self.parent._add_popup_menu_items(menu, self, widget)
 

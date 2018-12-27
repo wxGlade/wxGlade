@@ -419,6 +419,7 @@ class Slot(EditBase):
         self.name = "SLOT"
         self.overlapped = False  # for spanning in GridBagSizer
         self.item = None
+        self._dont_destroy = False
 
         # initialise structure
         self.parent = parent
