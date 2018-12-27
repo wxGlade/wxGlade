@@ -993,8 +993,6 @@ class SizerBase(Sizer, np.PropertyOwner):
         # called from ManagedBase context menu when removing an item
         old_child = self.children[pos]
         slot = SizerSlot(self, pos)
-        # for now, SizerSlot is not derived from EditBase; so it's not automatically added to children
-        self.children[pos] = slot
 
         # replace the node with a SlotNode
         if self.widget:

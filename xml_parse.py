@@ -645,3 +645,6 @@ class Sizeritem(np.PropertyOwner):
         self.border = np.SpinProperty(0)
         self.flag = np.ManagedFlags(None)
         self.pos = np.SpinProperty(None)
+
+    def on_load(self):
+        pass

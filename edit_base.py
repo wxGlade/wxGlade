@@ -139,7 +139,7 @@ class EditBase(np.PropertyOwner):
             return self.children[pos]
         return self
 
-    def _get_pos(self, child):
+    def _get_child_pos(self, child):
         # calculate pos including named attributes; this is the position in the tree view
         pos = 0
         if self.ATT_CHILDREN:

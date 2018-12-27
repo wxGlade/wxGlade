@@ -351,7 +351,7 @@ class WidgetTree(wx.TreeCtrl):#, Tree):
             item = widget.item
             if item is None and widget.parent.item:
                 # check whether at the same position there is an item already without an editor
-                pos = widget.parent._get_pos(widget)
+                pos = widget.parent._get_child_pos(widget)
                 items = self._get_children_items(widget.parent)
                 if len(items)>pos and self._GetItemData(items[pos]) is None:
                     item = items[pos]
