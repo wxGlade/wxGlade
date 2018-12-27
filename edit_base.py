@@ -533,11 +533,10 @@ class Slot(EditBase):
         size = self.widget.GetClientSize()
         dc.DrawRectangle(0, 0, size.width, size.height)
 
-    def set_size(self, size):
-        if not self.widget: return
-        size = self.parent.widget.GetClientSize()
-        self.widget.SetSize( size )
-
+    #def set_size(self, size):
+        #if not self.widget: return
+        #size = self.parent.widget.GetClientSize()
+        #self.widget.SetSize( size )
 
     # context menu #####################################################################################################
     def popup_menu(self, event, pos=None):
@@ -579,13 +578,11 @@ class Slot(EditBase):
                 # if inside a grid sizer: allow removal of empty rows/cols
                 # check whether all slots in same row/col are empty
                 row_is_empty = col_is_empty = True
-                for i,child in enumerate(self.parent.children):
-                    pos = i+1
-                    if pos==0: continue
+                for pos,child in enumerate(self.parent.children):
                     child_row, child_col = self.parent._get_row_col(pos)
-                    if child_row==row and not isinstance(child, SizerSlot):
+                    if child_row==row and not child.IS_SLOT:
                         row_is_empty = False
-                    if child_col==col and not isinstance(child, SizerSlot):
+                    if child_col==col and not child.IS_SLOT:
                         col_is_empty = False
 
                 # allow removal of empty row

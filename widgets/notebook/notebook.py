@@ -136,12 +136,6 @@ class EditNotebook(ManagedBase, EditStylesMixin):
         #self.widget.Bind(wx.EVT_KEY_DOWN, misc.on_key_down_event)
 
     def on_load(self):
-        print("on_load", self, self.name)
-        ## XXX now it should be possible to add Nones as placeholder first and then create all Slots here
-        ## create slot nodes for empty slots
-        #if len(self.children)<len(self.pages):
-            #self.children.extend( [None] * (len(self.pages) - len(self.children)) )
-        ##self._add_slots()
         ManagedBase.on_load(self)
         for c in self.children:
             # avoid widgets being destroyed; this is done by DeletePage/InsertPage
@@ -162,12 +156,6 @@ class EditNotebook(ManagedBase, EditStylesMixin):
 
     ####################################################################################################################
     # new implementation:
-    # together with NotebookVirtualSizer insert_tab, remove_tab, free_tab
-
-    #def add_item(self, child, pos=None):
-        ## ensure that empty pages before pos get their slots, as otherwise common.app_tree.insert will fail
-        #ManagedBase.add_item(self, child, pos)
-        #self._add_slots()
 
     def vs_insert_tab(self, index):
         "inserts or adds a page"
@@ -296,9 +284,6 @@ class EditNotebook(ManagedBase, EditStylesMixin):
             self.widget.SetSelection(added)
 
         common.app_tree.build(self, recursive=False)
-        ## update tree labels
-        #for child in self.children:
-            #common.app_tree.refresh(child, refresh_label=True, refresh_image=False)
 
     def _free_slot(self, pos, force_layout=True):
         "Replaces the element at pos with an empty slot"
@@ -322,8 +307,6 @@ class EditNotebook(ManagedBase, EditStylesMixin):
 
     ####################################################################################################################
     # methods moved from NotebookVirtualSizer:
-    def _add_item(self, item, pos=None, size=None, force_layout=True):
-        pass
 
     def item_properties_modified(self, widget, modified=None, force_layout=True):
         if not self.widget: return
@@ -357,7 +340,6 @@ class EditNotebook(ManagedBase, EditStylesMixin):
             return self.pages.index(name)
         except ValueError:
             raise XmlParsingError( _('Notebook widget "%s" does not have tab "%s"!')%(self.name, name) )
-
 
     ####################################################################################################################
     def destroy_widget(self):

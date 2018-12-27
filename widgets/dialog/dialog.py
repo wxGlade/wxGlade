@@ -94,6 +94,7 @@ def builder(parent, pos):
         is_panel = True
         import panel
         editor = panel.EditTopLevelPanel(name, parent, klass=klass)
+
     editor.create()
     if base == "wxDialog":
         editor.widget.Show()
@@ -107,6 +108,11 @@ def builder(parent, pos):
             w = editor.widget.GetParent()
         w.CenterOnScreen()
         w.Raise()
+
+    # add a default vertical sizer
+    import edit_sizers
+    edit_sizers._builder(editor, 0)
+
     return editor
 
 
