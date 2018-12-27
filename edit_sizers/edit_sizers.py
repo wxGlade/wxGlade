@@ -788,30 +788,6 @@ class SizerBase(Sizer, np.PropertyOwner):
         if force_layout:
             self.layout(True)
 
-    def item_properties_modified2(self, widget, force_layout=True):
-        # workaround: called from EditNotebook.post_load()
-        if not self.widget or not widget.widget:
-            return
-
-        item = self.widget.GetItem(widget.widget)  # a SizerItem or GBSizerItem instance
-        if not item: return
-
-        # set either specified size or GetBestSize
-        if not item.IsWindow(): return
-
-        best_size = widget.widget.GetBestSize()
-        size_p = widget.properties["size"]
-        if size_p.is_active():
-            size = size_p.get_size(widget.widget) # XXX check dialog units -> call with window
-            w, h = size
-            if w == -1: w = best_size[0]
-            if h == -1: h = best_size[1]
-        else:
-            w,h = best_size
-        self.widget.SetItemMinSize(widget.widget, w, h)
-
-        self.layout(True)
-
     def remove_item(self, elem, force_layout=True):
         "Removes elem from self"
         # called e.g. from context menu of SizerSlot; detaches element and does re-layout

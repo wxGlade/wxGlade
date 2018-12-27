@@ -38,8 +38,9 @@ class EditBase(np.PropertyOwner):
         # initialise instance logger
         self._logger = logging.getLogger(self.__class__.__name__)
 
-        self.widget = None  # this is the reference to the actual wxWindow widget, created when required
-        self.item = None    # the TreeCtrl item
+        self.widget = None          # this is the reference to the actual wxWindow widget, created when required
+        self._dont_destroy = False  # for notebook pages, this will be set to True
+        self.item = None            # the TreeCtrl item
 
         # initialise instance properties
         self.name  = np.NameProperty(name)
@@ -400,7 +401,6 @@ class EditBase(np.PropertyOwner):
         return True
 
 
-#class Slot(np.PropertyOwner):
 class Slot(EditBase):
     "A window to represent an empty slot, e.g. single slot of a Frame or a page of a Notebook"
     PROPERTIES = ["Slot", "pos"]
@@ -409,6 +409,7 @@ class Slot(EditBase):
     CHILDREN = 0
 
     def __init__(self, parent, pos=0, label=None):
+        # XXX unify with EditBase.__init__ ?
         assert isinstance(pos, int)
         assert not parent.IS_SLOT
         np.PropertyOwner.__init__(self)
@@ -418,11 +419,11 @@ class Slot(EditBase):
         self.label = label
 
         # initialise instance properties
-        self.widget = None       # Reference to the widget resembling the slot (a wx.Window)
+        self.widget = None          # Reference to the widget resembling the slot (a wx.Window)
+        self._dont_destroy = False  # for notebook pages, this will be set to True
         self.name = "SLOT"
         self.overlapped = False  # for spanning in GridBagSizer
         self.item = None
-        self._dont_destroy = False
 
         # initialise structure
         self.parent = parent

@@ -129,8 +129,6 @@ class EditBase(EventsMixin, edit_base.EditBase):
         self.extracode_post  = np.CodeProperty()
         self.extraproperties = np.ExtraPropertiesProperty()
 
-        self._dont_destroy = False
-
         EventsMixin.__init__(self)
 
     def get_property_handler(self, prop_name):
@@ -834,8 +832,8 @@ class TopLevelBase(WindowBase, PreviewMixin):
         WindowBase.on_size(self, event)
         if len(self.children)!=1 or self.children[0] is None: return
         child = self.children[0]
-        if child.IS_SLOT:
-            # resize slot
+        if child.IS_SLOT or child.WX_CLASS in ("wxSplitterWindow", "wxPanel", "wxNotebook"):
+            # resize element to fill full space
             size = self.widget.GetClientSize()
             child.widget.SetSize( size )
         elif child.IS_SIZER:

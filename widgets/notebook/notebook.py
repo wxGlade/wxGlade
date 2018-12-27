@@ -18,37 +18,6 @@ from xml_parse import XmlParsingError
 from panel import EditPanel
 
 
-"""
-class NotebookVirtualSizer(Sizer):
-
-    def set_item(self, index):
-        "Updates the layout of the item at the given pos; (re-)creates the notebook page if required"
-        if not self.window.widget:
-            return
-        index = pos
-        item = self.window.pages[index]
-        if not item or not item.widget:
-            return
-        label = self.window.tabs[index][0]
-        if not (index < self.window.widget.GetPageCount()):
-            self.window.widget.AddPage(item.widget, label) # this is e.g. for the first creation after loading a file
-        elif self.window.widget.GetPage(index) is not item.widget:
-            # XXX delete this part if it's not called; insert_tab and remove_tab should handle this now
-            if self.window.widget.GetPageCount()==len(self.window.children):
-                #self.window.widget.RemovePage(index) # deletes the specified page, without deleting the associated window
-                self.window.widget.DeletePage(index)  # deletes the specified page, and the associated window
-            self.window.widget.InsertPage(index, item.widget, label)
-            self.window.widget.SetSelection(index)
-            try:
-                wx.CallAfter(item.sel_marker.update)
-            except AttributeError:
-                #self._logger.exception(_('Internal Error'))
-                pass
-        if self.parent.IS_SIZER:
-            self.parent.set_item_best_size( self.window, size=self.window.widget.GetBestSize() )
-
-"""
-
 class NotebookPagesProperty(np.GridProperty):
     def __init__(self, value, cols):
         col_widths = [300,]
@@ -137,16 +106,15 @@ class EditNotebook(ManagedBase, EditStylesMixin):
 
     def on_load(self):
         ManagedBase.on_load(self)
-        for c in self.children:
-            # avoid widgets being destroyed; this is done by DeletePage/InsertPage
-            if c.IS_SLOT: c._dont_destroy = True
         self.pages = None
 
     def post_load(self):
         # at this time, all children should be available
-        # no longer required when the data structure is changed
-        if self.parent.IS_SIZER:
-            self.parent.item_properties_modified2(self)
+        if not self.parent.IS_SIZER or not self.widget: return
+        w,h = self.properties["size"].get_size(self.widget)
+        sz = self.parent
+        sz.widget.SetItemMinSize(self.widget, w, h)
+        sz.layout(True)
 
     def on_set_focus(self, event):
         # allow switching of pages
@@ -156,6 +124,10 @@ class EditNotebook(ManagedBase, EditStylesMixin):
 
     ####################################################################################################################
     # new implementation:
+    def add_item(self, child, pos=None):
+        ManagedBase.add_item(self, child, pos)
+        # avoid widgets being destroyed; this is done by DeletePage/InsertPage
+        child._dont_destroy = True
 
     def vs_insert_tab(self, index):
         "inserts or adds a page"
@@ -193,7 +165,6 @@ class EditNotebook(ManagedBase, EditStylesMixin):
 
         # create panel and node, add to tree
         editor = EditPanel( self.next_pane_name(), self, index )
-        editor._dont_destroy = True
 
         if self.widget:
             # add to widget
@@ -256,24 +227,21 @@ class EditNotebook(ManagedBase, EditStylesMixin):
             self.children.insert(pos, None)
             # create panel and node, add to tree
             suggestion = "%s_%s" % (self.name, label)
-            window = EditPanel( self.next_pane_name(suggestion), self, pos )
-            window._dont_destroy = True
+            editor = EditPanel( self.next_pane_name(suggestion), self, pos )
 
             # adjust pos of the following pages
             for p, page in enumerate(self.children[pos+1:]):
                 pos_p = page.properties["pos"]
                 pos_p.set(pos+2+p)
 
-            #common.app_tree.insert(window, self, pos, select=False)  # XXX call this only when called from GUI
-
             if self.widget:
                 # add to widget
-                window.create()
-                compat.SetToolTip(window.widget, _("Notebook page pane:\nAdd a sizer here") )
+                editor.create()
+                compat.SetToolTip(editor.widget, _("Notebook page pane:\nAdd a sizer here") )
                 self.vs_insert_tab(pos)
     
                 try:
-                    wx.CallAfter(window.sel_marker.update)
+                    wx.CallAfter(editor.sel_marker.update)
                 except AttributeError:
                     if config.debugging: raise
 

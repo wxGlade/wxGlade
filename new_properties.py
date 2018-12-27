@@ -1569,6 +1569,11 @@ class SizePropertyD(IntPairPropertyD):
         IntPairPropertyD.set(self, value, activate, deactivate, notify)
     def get_size(self, widget=None):
         "widget argument is used to calculate size in Dialog units, using wx.DLG_SZE"
+        if not self.is_active():
+            if widget:
+                return widget.GetBestSize()
+            raise ValueError("internal error")
+
         w, h = self.value.split(",")
 
         if h[-1] in 'dD':

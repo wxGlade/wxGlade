@@ -72,6 +72,9 @@ class EditSplitterWindow(ManagedBase, EditStylesMixin):
 
     def create_widget(self):
         self.widget = wx.SplitterWindow(self.parent_window.widget, self.id, style=self.style)
+        if self.parent.WX_CLASS in ("wxFrame","wxNotebook"):
+            # without this, the splitter will not fill the available space on pasting etc.
+            self.widget.SetSize(self.parent.widget.GetClientSize())
         self.split()
 
     def finish_widget_creation(self):
