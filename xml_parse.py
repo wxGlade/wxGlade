@@ -414,7 +414,6 @@ class ClipboardXmlWidgetBuilder(XmlWidgetBuilder):
         if not oldname in self.have_names:
             self.have_names.add(oldname)
             return oldname
-        #names = self.parent.toplevel_parent.names
         if self._renamed:
             # e.g. if notebook_1 was renamed to notebook_2, try notebook_1_panel_1 -> notebook_2_panel_1 first
             for old,new in self._renamed.items():
@@ -428,7 +427,6 @@ class ClipboardXmlWidgetBuilder(XmlWidgetBuilder):
             # if the old name ends with an underscore and a number, just increase the number
             try:
                 template, i = oldname.rsplit("_", 1)
-                #i = int(i) + 1
                 i = int(i)
                 template = template + '_%s'
                 if self.parent is not None:
@@ -471,9 +469,6 @@ class ClipboardXmlWidgetBuilder(XmlWidgetBuilder):
         if name == 'object' and 'name' in attrs:
             # generate a unique name for the copy
             oldname = str(attrs['name'])
-            #if not oldname in self.have_names: # self.parent.toplevel_parent.names:
-                #newname = oldname
-            #else:
             newname = self._get_new_name(oldname)
             attrs = _own_dict(attrs)
             attrs['name'] = newname
@@ -495,7 +490,7 @@ class ClipboardXmlWidgetBuilder(XmlWidgetBuilder):
     def endElement(self, name):
         if name == 'object':
             obj = self.top()
-            obj.obj.on_load()
+            if obj.obj: obj.obj.on_load()
             self.depth_level -= 1
             if not self.depth_level:
                 common.app_tree.auto_expand = True
@@ -505,11 +500,9 @@ class ClipboardXmlWidgetBuilder(XmlWidgetBuilder):
                     #if self.top_obj.node.parent.widget.is_visible():
                     #    common.app_tree.show_widget(self.top_obj.node)
                     if self.top_obj.parent.widget:
-                        #self.top_obj.create_widgets()
                         common.app_tree.create_widgets(self.top_obj)
                 except AttributeError:
                     self._logger.exception( _('Exception caused by obj: %s'), self.top_obj )
-                #misc.set_focused_widget(self.top_obj)
 
         if name == 'label':
             # if e.g. a button_1 is copied to button_2, also change the label if it was "button_1"
@@ -591,6 +584,7 @@ class XmlWidgetObject(object):
         elif self.klass == 'sizerslot':
             assert sizer is not None, _("malformed wxg file: slots can only be inside sizers!")
             self.IS_SIZER = self.IS_WINDOW = False
+            self.obj = None
             sizer._add_slot()
             sizer.layout()
 
@@ -607,11 +601,10 @@ class XmlWidgetObject(object):
             prop = self.obj.properties[name]
         except KeyError:
             # unknown property for this object; issue a warning and ignore the property
-            #if config.debugging: raise
+            if config.debugging: raise
             self._logger.error( _("WARNING: Property '%s' not supported by this object ('%s') "), name, self.obj )
             return
         prop.load(val, activate=True)
-        #self.obj.properties_changed([name])
         self._properties_added.append(name)
 
     def notify_owner(self):
