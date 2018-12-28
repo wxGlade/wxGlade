@@ -95,7 +95,7 @@ class EditRoot(np.PropertyOwner):
         if pos is None:
             self.children.append(child)
         else:
-            i = pos - 1
+            i = pos - 1  # XXX not correct, pos is 0-based now
             if len(self.children)<=i:
                 self.children += [None]*(i - len(self.children) + 1)
             self.children[i] = child

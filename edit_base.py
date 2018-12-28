@@ -60,6 +60,7 @@ class EditBase(np.PropertyOwner):
         self.id = wx.NewId()  # id used for internal purpose events
         if isinstance(pos, str):
             setattr(self.parent, pos, self)
+            self.pos = pos
         else:
             self.parent.add_item(self, pos)
 
@@ -147,7 +148,7 @@ class EditBase(np.PropertyOwner):
             for att in self.ATT_CHILDREN or []:
                 c = getattr(self, att)
                 if c is not None:
-                    if child is c: return c
+                    if child is c: return pos
                     pos += 1
         return pos + self.children.index(child)
 

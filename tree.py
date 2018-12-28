@@ -606,7 +606,7 @@ class WidgetTree(wx.TreeCtrl):#, Tree):
         old.item = None
         self.refresh(new)
 
-    def get_selected_path(self, w=None):
+    def get_selected_path(self, w=None, include_position=True):
         """returns a list of widget names, from the toplevel to the selected one
         Example: ['frame_1', 'sizer_1', 'panel_1', 'sizer_2', 'button_1']
                  if button_1 is the currently selected widget"""
@@ -622,17 +622,15 @@ class WidgetTree(wx.TreeCtrl):#, Tree):
             w = w.parent
         ret.reverse()
         # ALB 2007-08-28: remember also the position of the toplevel window in the selected path
-        if oldw is not None and oldw.widget is not None:
+        if include_position and oldw is not None and oldw.widget is not None:
             assert oldw.widget
-            pos = misc.get_toplevel_parent(oldw.widget).GetPosition()
-            ret[0] = (ret[0], pos)
+            toplevel = misc.get_toplevel_parent(oldw.widget)
+            if toplevel:
+                ret[0] = (ret[0], toplevel.GetPosition())
         return ret
 
     def get_widget_path(self, w):
-        ret = self.get_selected_path(w)
-        if isinstance(ret[0], tuple):
-            ret[0] = ret[0][0]
-        return tuple(ret)
+        return self.get_selected_path(w, include_position=False)
 
     def select_path(self, path):
         "sets the selected widget from a path_list, which should be in the form returned by get_selected_path"

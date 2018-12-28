@@ -132,6 +132,10 @@ class EditFrame(TopLevelBase, EditStylesMixin, BitmapMixin):
         if not modified or "statusbar" in modified: self._set_status_bar()
         if not modified or "toolbar" in modified:   self._set_tool_bar()
 
+        if modified and "menubar" in modified or "statusbar" in modified or "toolbar" in modified:
+            # is triggered by user
+            misc.rebuild_tree(widget=self, recursive=False, focus=False)
+
         TopLevelBase.properties_changed(self, modified)
         EditStylesMixin.properties_changed(self, modified)
 

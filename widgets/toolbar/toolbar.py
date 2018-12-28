@@ -516,16 +516,15 @@ class EditToolBar(EditBase, PreviewMixin, EditStylesMixin, BitmapMixin):
 
     def __init__(self, name, klass, parent):
         if parent.IS_ROOT:
-            custom_class = True
             self.__dict__["IS_TOPLEVEL"] = True
             self.__dict__["names"] = {}  # XXX not used if EditMenuBar is splitted into EditToplevelMenuBar
+        if self.IS_TOPLEVEL:
+            custom_class = True
+            pos = None
         else:
             custom_class = False
-        if parent.IS_ROOT:
-            EditBase.__init__( self, name, 'wxToolBar', parent, custom_class=custom_class )
-        else:
-            EditBase.__init__( self, name, 'wxToolBar', parent, custom_class=custom_class, pos="_toolbar" )
-            self.pos = "_toolbar"
+            pos = "_toolbar"
+        EditBase.__init__( self, name, 'wxToolBar', parent, custom_class, pos )
         EditStylesMixin.__init__(self)
 
         # initialise instance properties
@@ -539,7 +538,7 @@ class EditToolBar(EditBase, PreviewMixin, EditStylesMixin, BitmapMixin):
 
         self.widget = self._tb = None  # a panel and the actual ToolBar
 
-        if parent.IS_ROOT:
+        if self.IS_TOPLEVEL:
             PreviewMixin.__init__(self)  # add a preview button
         else:
             self.preview = None
@@ -548,7 +547,7 @@ class EditToolBar(EditBase, PreviewMixin, EditStylesMixin, BitmapMixin):
         tb_style = wx.TB_HORIZONTAL | self.style
         if wx.Platform == '__WXGTK__':
             tb_style |= wx.TB_DOCKABLE | wx.TB_FLAT
-        if self.parent:
+        if not self.IS_TOPLEVEL:
             self.widget = self._tb = wx.ToolBar(self.parent.widget, -1, style=tb_style)
             self.parent.widget.SetToolBar(self.widget)
         else:
@@ -742,8 +741,8 @@ def builder(parent, pos):
 
     # if e.g. on a frame, suggest the user to add the tool bar to this
     toplevel_widget = None
-    if misc.focused_widget is not None and misc.focused_widget.node.parent:
-        toplevel_widget = common.app_tree._find_toplevel(misc.focused_widget).widget
+    if misc.focused_widget is not None and not misc.focused_widget.IS_ROOT:
+        toplevel_widget = misc.focused_widget.toplevel_parent
         if not "toolbar" in toplevel_widget.properties:
             toplevel_widget = None
     if toplevel_widget is not None:
@@ -753,15 +752,17 @@ def builder(parent, pos):
 
     klass = dialog.show()
     dialog.Destroy()
-    if klass is None: return
+    if klass is None: return None
     if klass is True:
         # add to toplevel widget
         toplevel_widget.properties["toolbar"].set(True, notify=True)
-        return
+        return toplevel_widget._toolbar
     name = dialog.get_next_name("toolbar")
-    with parent and parent.frozen() or misc.dummy_contextmanager():
+    with (not parent.IS_ROOT and parent.frozen()) or misc.dummy_contextmanager():
         editor = EditToolBar(name, klass, parent)
-        if parent and parent.widget: editor.create()
+        #if parent and parent.widget: editor.create()
+        editor.create()
+        editor.widget.Show()
 
     return editor
 

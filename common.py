@@ -21,7 +21,7 @@ from collections import OrderedDict
 import logging, os, os.path, sys, tempfile
 from xml.sax.saxutils import escape, quoteattr
 
-import config, compat, plugins
+import config, compat, plugins, misc
 
 
 widgets = {}          # all widgets: EditWidget class name -> factory(parent, pos)
@@ -223,8 +223,7 @@ def add_toplevel_object(event):
     "Adds a toplevel widget (Frame or Dialog) to the current app"
     editor = widgets[refs[event.GetId()]](root, 0)
     if editor is None: return
-    app_tree.build(editor)
-    app_tree.select_item(editor)
+    misc.rebuild_tree(widget=editor, recursive=False, focus=True)
 
 
 ########################################################################################################################

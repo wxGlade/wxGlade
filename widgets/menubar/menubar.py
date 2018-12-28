@@ -694,22 +694,21 @@ class EditMenuBar(EditBase, PreviewMixin):
     def __init__(self, name, klass, parent):
         if parent.IS_ROOT:
             self.__dict__["IS_TOPLEVEL"] = True
+        if self.IS_TOPLEVEL:
             custom_class = True
             self.__dict__["names"] = {}  # XXX not used if EditMenuBar is splitted into EditToplevelMenuBar
+            pos = None
         else:
             custom_class = False
-        if parent.IS_ROOT:
-            EditBase.__init__(self, name, klass, parent, custom_class=custom_class)
-        else:
-            EditBase.__init__(self, name, klass, parent, custom_class=custom_class, pos="_menubar")
-            self.pos = "_menubar"
+            pos = "_menubar"
+        EditBase.__init__(self, name, klass, parent, custom_class, pos)
         self.base = 'wxMenuBar'
 
         self.menus = MenuProperty()
         self.window_id = None  # just a dummy for code generation
 
         self._mb = None  # the real menubar
-        if parent.IS_ROOT:
+        if self.IS_TOPLEVEL:
             PreviewMixin.__init__(self)  # add a preview button
         else:
             self.preview = None
@@ -718,7 +717,7 @@ class EditMenuBar(EditBase, PreviewMixin):
         if wx.Platform == '__WXGTK__' and not EditMenuBar.__hidden_frame:
             EditMenuBar.__hidden_frame = wx.Frame(common.main, -1, "")
             EditMenuBar.__hidden_frame.Hide()
-        if self.parent:
+        if not self.IS_TOPLEVEL:
             self.widget = self._mb = wx.MenuBar()
             if self.parent.widget: self.parent.widget.SetMenuBar(self.widget)
             if wx.Platform == '__WXMSW__' or wx.Platform == '__WXMAC__':
@@ -866,13 +865,13 @@ def builder(parent, pos):
 
     klass = dialog.show()
     dialog.Destroy()
-    if klass is None: return
+    if klass is None: return None
     if klass is True:
         # add to toplevel widget
         toplevel_widget.properties["menubar"].set(True, notify=True)
-        return
+        return toplevel_widget._menubar
     name = dialog.get_next_name("menubar")
-    with parent and parent.frozen() or misc.dummy_contextmanager():
+    with (not parent.IS_ROOT and parent.frozen()) or misc.dummy_contextmanager():
         editor = EditMenuBar(name, klass, parent)
         editor.create()
         editor.widget.Show()
