@@ -696,7 +696,6 @@ class EditMenuBar(EditBase, PreviewMixin):
             self.__dict__["IS_TOPLEVEL"] = True
         if self.IS_TOPLEVEL:
             custom_class = True
-            self.__dict__["names"] = {}  # XXX not used if EditMenuBar is splitted into EditToplevelMenuBar
             pos = None
         else:
             custom_class = False

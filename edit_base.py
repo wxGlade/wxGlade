@@ -7,7 +7,7 @@ import common, misc, compat, clipboard, config
 MANAGED_PROPERTIES  = ["pos", "span", "proportion", "border", "flag"]
 
 if config.debugging:
-    class _OwnList(list):
+    class _UniqueList(list):
         def append(self, obj):
             if obj in self:
                 raise AssertionError("Element already in list")
@@ -21,7 +21,7 @@ if config.debugging:
                 raise AssertionError("Element already in list")
             list.__setitem__(self, index, obj)
 else:
-    _OwnList = list
+    _UniqueList = list
 
 
 class EditBase(np.PropertyOwner):
@@ -50,10 +50,10 @@ class EditBase(np.PropertyOwner):
         self.parent = parent
         if self.CHILDREN is None:
             # variable number of children
-            self.children = _OwnList([])
+            self.children = _UniqueList([])
         elif self.CHILDREN:
             # fixed number of children
-            self.children = _OwnList([None]*self.CHILDREN)
+            self.children = _UniqueList([None]*self.CHILDREN)
         else:
             # no children
             self.children = None

@@ -517,7 +517,6 @@ class EditToolBar(EditBase, PreviewMixin, EditStylesMixin, BitmapMixin):
     def __init__(self, name, klass, parent):
         if parent.IS_ROOT:
             self.__dict__["IS_TOPLEVEL"] = True
-            self.__dict__["names"] = {}  # XXX not used if EditMenuBar is splitted into EditToplevelMenuBar
         if self.IS_TOPLEVEL:
             custom_class = True
             pos = None
