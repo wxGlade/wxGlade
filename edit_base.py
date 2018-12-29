@@ -205,6 +205,15 @@ class EditBase(np.PropertyOwner):
             common.app_tree.refresh(self, refresh_label=True, refresh_image=False)
 
     # widget creation and destruction ##################################################################################
+
+    def create_widgets(self):
+        "Shows the widget of the given node and all its children"
+        self.create()
+        if self.children:
+            for c in self.children:
+                c.create_widgets()
+        self.post_load()  # SizerBase uses this for toplevel sizers; also EditNotebook
+
     def create(self):
         "create the wx widget"
         if not self.IS_TOPLEVEL and self.parent.widget is None: return

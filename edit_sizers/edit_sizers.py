@@ -440,9 +440,6 @@ class SizerBase(Sizer, np.PropertyOwner):
     def frozen(self):
         return self.window.frozen()
 
-    def create_widgets(self):
-        common.app_tree.create_widgets(self.node)
-
     def create_widget(self):
         "Creates the wxSizer self.widget"
         raise NotImplementedError

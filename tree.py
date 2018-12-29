@@ -439,11 +439,11 @@ class WidgetTree(wx.TreeCtrl):#, Tree):
         if not widget:
             event.Skip()
             return
-        if widget.klass=='wxMenuBar':
+        if widget.WX_CLASS=='wxMenuBar':
             widget.properties["menus"].edit_menus()
-        elif widget.klass=='wxToolBar':
+        elif widget.WX_CLASS=='wxToolBar':
             widget.properties["tools"].edit_tools()
-        elif widget.parent is self.root:
+        elif widget.IS_TOPLEVEL:
             self.show_toplevel(None, widget)
         else:
             event.Skip()
@@ -487,53 +487,13 @@ class WidgetTree(wx.TreeCtrl):#, Tree):
         widget.popup_menu(event, pos)
         self._popup_menu_widget = None
 
-    def expand(self, node=None, yes=True):
-        "expands or collapses the given node"
-        if node is None: node = self.root
-        if not node.item: return  # XXX remove when Dummy is removed
-        if yes: self.Expand(node.item)
-        else: self.Collapse(node.item)
-
-    def create_widgets(self, widget):
-        "Shows the widget of the given node and all its children"
-        widget.create()
-        self.expand(widget, True)
-        if widget.children:
-            for c in widget.children:
-                self.create_widgets(c)
-        widget.post_load()  # SizerBase uses this for toplevel sizers; also EditNotebook
-
     def _show_widget_toplevel(self, widget):
         # creates/shows the widget of the given toplevel node and all its children
-        if not wx.IsBusy(): wx.BeginBusyCursor()
-        if not widget.widget:
-            widget.create_widget()
-            widget.finish_widget_creation()
-            widget.drop_target = clipboard.DropTarget(widget)
-            widget.widget.SetDropTarget(widget.drop_target)
-
-        with widget.frozen():
-            if widget.children:
-                for c in widget.children:
-                    self.create_widgets(c)
-            widget.post_load()  # SizerBase uses this for toplevel sizers; also EditNotebook
-            widget.create()
-            if widget.widget.TopLevel:
-                widget.widget.Show()
-            else:
-                widget.widget.GetParent().Show()
-
-            widget.widget.Raise()
-            # set the best size for the widget (if no one is given)
-            props = widget.properties
-            if 'size' in props and not props['size'].is_active():
-                if widget.sizer:
-                    widget.sizer.fit_parent()
-                elif getattr(widget,"top_sizer",None):
-                    wx.Yield()  # by now, there are probably many EVT_SIZE in the queue
-                    widget.top_sizer.fit_parent()
-
-        if wx.IsBusy(): wx.EndBusyCursor()
+        assert not config.debugging or not wx.IsBusy()
+        wx.BeginBusyCursor()
+        widget.create_widgets()
+        self.ExpandAllChildren(widget.item)
+        wx.EndBusyCursor()
 
     def show_toplevel(self, event, widget=None):
         "Event handler for left double-clicks: if the click is above a toplevel widget and this is hidden, shows it"
@@ -542,11 +502,11 @@ class WidgetTree(wx.TreeCtrl):#, Tree):
             except AttributeError:
                 # if we are here, event is a CommandEvent and not a MouseEvent
                 widget = self._GetItemData(self.GetSelection())
-                self.expand(widget)  # if we are here, the widget must be shown
+                self.ExpandAllChildren(widget.item)  # if we are here, the widget must be shown
             else:
                 widget = self._find_node_by_pos(x, y, toplevels_only=True)
 
-        if widget is None or widget is self.root: return
+        if widget is None or widget.IS_ROOT: return
 
         # the actual toplevel widget may be one level higher, e.g. for a Panel, which is embedded in a Frame
         set_size = None
@@ -561,17 +521,14 @@ class WidgetTree(wx.TreeCtrl):#, Tree):
 
         if not widget.is_visible():
             # added by rlawson to expand node on showing top level widget
-            self.expand(widget)
+            self.ExpandAllChildren(widget.item)
             self._show_widget_toplevel(widget)
             if wx.Platform != '__WXMSW__' and set_size is not None:
                 toplevel_widget = widget.widget  # above it was not yet created
                 wx.CallAfter(toplevel_widget.SetSize, set_size)
         else:
-            toplevel_widget.GetTopLevelParent().Hide()
-
-            # added by rlawson to collapse only the toplevel node, not collapse back to root node
-            #self.select_item(node)
-            #misc.set_focused_widget(node.widget)
+            widget.hide_widget()
+            #toplevel_widget.GetTopLevelParent().Hide()
             if event: event.Skip()
         if "design" in widget.properties: widget.design.update_label()
 
@@ -636,7 +593,7 @@ class WidgetTree(wx.TreeCtrl):#, Tree):
         if not widget: return
         item = widget.item
         self._set_cur_widget(widget)
-        self.expand(widget)
+        self.Expand(widget.item)
         self.select_item(widget)
         if widget.IS_ROOT: return
         self._show_widget_toplevel(widget.toplevel_parent)

@@ -955,7 +955,7 @@ class wxGladeFrame(wx.Frame):
 
         common.app_tree.auto_expand = True  # re-enable auto-expansion of nodes
 
-        common.app_tree.expand()
+        common.app_tree.Expand(common.root.item)
         if common.root.is_template:
             self._logger.info(_("Template loaded"))
             common.root.template_data = template.Template(filename)

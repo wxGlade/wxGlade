@@ -282,7 +282,7 @@ class EditTopLevelPanel(PanelBase, TopLevelBase):
     def hide_widget(self, event=None):
         # this is called from the context menu and from the EVT_CLOSE of the Frame
         self.widget.GetParent().Hide()
-        common.app_tree.expand(self.node, False)
+        common.app_tree.Collapse(self.item)
         self.design.update_label()
 
     def set_name(self, name):

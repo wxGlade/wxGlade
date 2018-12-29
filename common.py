@@ -223,7 +223,7 @@ def add_toplevel_object(event):
     "Adds a toplevel widget (Frame or Dialog) to the current app"
     editor = widgets[refs[event.GetId()]](root, 0)
     if editor is None: return
-    misc.rebuild_tree(widget=editor, recursive=False, focus=True)
+    misc.rebuild_tree(widget=editor, recursive=editor.children, focus=True)
 
 
 ########################################################################################################################

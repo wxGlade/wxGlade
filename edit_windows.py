@@ -688,6 +688,33 @@ class TopLevelBase(WindowBase, PreviewMixin):
         if self.children[0].IS_SIZER: return self.children[0]
         return None
 
+    def create_widgets(self):
+        # creates/shows the widget of the given toplevel node and all its children
+        if not self.widget:
+            self.create_widget()
+            self.finish_widget_creation()
+            self.drop_target = clipboard.DropTarget(self)
+            self.widget.SetDropTarget(self.drop_target)
+
+        with self.frozen():
+            for c in self.get_all_children():
+                c.create_widgets()
+            self.post_load()  # SizerBase uses this for toplevel sizers; also EditNotebook
+            self.create()
+            if self.widget.TopLevel:
+                self.widget.Show()
+            else:
+                self.widget.GetParent().Show()
+
+            self.widget.Raise()
+            # set the best size for the widget (if no one is given)
+            if self.check_prop('size'):
+                if self.sizer:
+                    self.sizer.fit_parent()
+                elif getattr(self,"top_sizer",None):
+                    wx.Yield()  # by now, there are probably many EVT_SIZE in the queue
+                    self.top_sizer.fit_parent()
+
     def finish_widget_creation(self, *args, **kwds):
         WindowBase.finish_widget_creation(self)
         self.widget.SetMinSize = self.widget.SetSize
@@ -824,13 +851,12 @@ class TopLevelBase(WindowBase, PreviewMixin):
 
     def hide_widget(self, event=None):
         self.widget.Hide()  # just hide, don't close
-        common.app_tree.expand(self, False)
-        #misc.set_focused_widget(self.node.parent)
+        common.app_tree.Collapse(self.item)
         self.design.update_label()
 
     def on_size(self, event):
         WindowBase.on_size(self, event)
-        if len(self.children)!=1 or self.children[0] is None: return
+        if len(self.children)!=1 or self.children[0] is None or not self.children[0].widget: return
         child = self.children[0]
         if child.IS_SLOT or child.WX_CLASS in ("wxSplitterWindow", "wxPanel", "wxNotebook"):
             # resize element to fill full space

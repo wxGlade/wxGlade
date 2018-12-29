@@ -691,9 +691,8 @@ class EditToolBar(EditBase, PreviewMixin, EditStylesMixin, BitmapMixin):
     def hide_widget(self, *args):
         if self.widget and self.widget is not self._tb:
             self.widget.Hide()
-            common.app_tree.expand(self.node, False)
-            common.app_tree.select_item(self.node.parent)
-            #common.root.show_properties()
+            common.app_tree.Collapse(self.item)
+            common.app_tree.select_item(self.parent)
 
     def get_property_handler(self, name):
         if name == 'tools':
