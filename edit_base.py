@@ -750,6 +750,14 @@ class Slot(EditBase):
 
     def _get_tree_image(self):
         "Get an image name for tree display"
+        if self.parent.WX_CLASS=="wxSplitterWindow":
+            if self.parent.orientation=="wxSPLIT_VERTICAL":
+                name = 'EditSplitterSlot-Left'  if self.pos==1 else  'EditSplitterSlot-Right'
+            else:
+                name = 'EditSplitterSlot-Top'   if self.pos==1 else  'EditSplitterSlot-Bottom'
+            return name
+
+        if not self.parent.IS_SIZER: return "EditSlot"
         name = "EditSizerSlot"
         if "orient" in self.parent.properties:
             sizer_orient = self.parent.orient
@@ -758,10 +766,5 @@ class Slot(EditBase):
                     name = "EditVerticalSizerSlot"
                 elif sizer_orient==wx.HORIZONTAL:
                     name = "EditHorizontalSizerSlot"
-        elif "orientation" in self.parent.properties:
-            if self.parent.orientation=="wxSPLIT_VERTICAL":
-                name = 'EditSplitterSlot-Left'  if self.pos==1 else  'EditSplitterSlot-Right'
-            else:
-                name = 'EditSplitterSlot-Top'   if self.pos==1 else  'EditSplitterSlot-Bottom'
         return name
 

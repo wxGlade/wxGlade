@@ -2307,6 +2307,7 @@ def init_all():
     WidgetTree.images['EditVerticalSizerSlot']   = os.path.join( config.icons_path, 'sizer_slot_v.xpm' )
     WidgetTree.images['EditHorizontalSizerSlot'] = os.path.join( config.icons_path, 'sizer_slot_h.xpm' )
     WidgetTree.images['EditSizerSlot'] = os.path.join( config.icons_path, 'sizer_slot.xpm' )
+    WidgetTree.images['EditSlot'] = os.path.join( config.icons_path, 'slot.xpm' )
 
     ret = {'Sizers': [
         common.make_object_button('EditBoxSizer', 'sizer.xpm'),
