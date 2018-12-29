@@ -601,7 +601,7 @@ class ManagedBase(WindowBase):
         # entry point from GUI?
         with self.frozen():
             slot = self._remove()
-        misc.rebuild_tree(slot)
+        misc.rebuild_tree(slot, recursive=False)
 
     def on_mouse_events(self, event):
         if event.Dragging():

@@ -500,7 +500,7 @@ class ClipboardXmlWidgetBuilder(XmlWidgetBuilder):
                     #if self.top_obj.node.parent.widget.is_visible():
                     #    common.app_tree.show_widget(self.top_obj.node)
                     if self.top_obj.parent.widget:
-                        common.app_tree.create_widgets(self.top_obj)
+                        self.top_obj.create_widgets()
                 except AttributeError:
                     self._logger.exception( _('Exception caused by obj: %s'), self.top_obj )
 

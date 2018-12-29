@@ -281,7 +281,7 @@ class WXGladeGUITest(WXGladeBaseTest):
             first_window = app.children[0]
         if test_GUI:
             if first_window.item.IsOk():
-                tree.expand()
+                tree.Expand(tree.root.item)
                 self._process_wx_events()
                 tree.SelectItem(first_window.item)
                 self._process_wx_events()

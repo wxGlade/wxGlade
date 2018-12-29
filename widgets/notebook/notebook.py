@@ -204,8 +204,7 @@ class EditNotebook(ManagedBase, EditStylesMixin):
                 self._is_removing_pages = True
                 self.virtual_sizer.remove_tab(index)            # remove from sizer; does not delete window
                 self.children[index]._remove()                     # delete the page content without setting the focus
-                self.children[index].tree_remove() + XXX  # this has not been tested
-                common.app_tree.remove(self.children[index])  # remove from tree
+                self.children[index].recursive_remove() + XXX  # this has not been tested
                 del self.children[index]                           # delete from page list
                 del new_labels[index]                            # delete from list of names
                 self._is_removing_pages = False
@@ -261,8 +260,7 @@ class EditNotebook(ManagedBase, EditStylesMixin):
         if self.widget:
             self.widget.RemovePage(pos)
 
-        old_child.tree_remove()
-        common.app_tree.remove(old_child)
+        old_child.recursive_remove()
 
         if self.widget:
             self.widget.InsertPage(pos, slot.widget, label)

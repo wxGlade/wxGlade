@@ -9,15 +9,15 @@ MANAGED_PROPERTIES  = ["pos", "span", "proportion", "border", "flag"]
 if config.debugging:
     class _UniqueList(list):
         def append(self, obj):
-            if obj in self:
+            if obj in self and obj is not None:
                 raise AssertionError("Element already in list")
             list.append(self, obj)
         def insert(self, index, obj):
-            if obj in self:
+            if obj in self and obj is not None:
                 raise AssertionError("Element already in list")
             list.insert(self, index, obj)
         def __setitem__(self, index, obj):
-            if obj in self:
+            if obj in self and obj is not None:
                 raise AssertionError("Element already in list")
             list.__setitem__(self, index, obj)
 else:
@@ -175,7 +175,7 @@ class EditBase(np.PropertyOwner):
             old_child = None
         self.children[pos] = child
         if old_child:
-            old_child.tree_remove()
+            old_child.recursive_remove()
 
     def has_ancestor(self, node):
         "Returns True if node is parent or parents parent ..."
@@ -240,30 +240,29 @@ class EditBase(np.PropertyOwner):
 
     def destroy_widget(self):
         if not self.widget or self._dont_destroy: return
-        if self.parent.IS_SIZER:
-            self.sizer.widget.Detach(self.widget)  # remove from sizer without destroying
+        if self.parent.IS_SIZER and self.parent.widget:
+            self.parent.widget.Detach(self.widget)  # remove from sizer without destroying
         compat.DestroyLater(self.widget)
         self.widget = None
 
     # from tree.Tree ###################################################################################################
-    def _tree_remove(self):
+    def recursive_remove(self):
+        # recursively remove from parent, delete widget, remove from Tree (build to be called separately)
         if self.children:
-            for c in self.children[:]:
-                c._tree_remove()
+            for c in self.get_all_children():
+                c.recursive_remove()
         try:
             self.parent.children.remove(self)
         except:
             print(" **** node_remove failed")  # XXX  might have been overwritten in Slot -> add_item
             pass
         self.delete()
+        common.app_tree.remove(self)  # remove mutual reference from widget to/from Tree item
         if not self.IS_SLOT and self.name:
             try:
                 del self.toplevel_parent.names[self.name]
             except:
                 print("XXX delete: name '%s' already removed"%self.name)
-
-    def tree_remove(self):
-        self._tree_remove()
 
     ####################################################################################################################
 
@@ -273,10 +272,8 @@ class EditBase(np.PropertyOwner):
         common.root.saved = False  # update the status of the app
         # remove is called from the context menus; for other uses, delete is applicable
         self._dont_destroy = False  # always destroy when explicitly asked
-        #if not isinstance(getattr(self,"pos",None), str):
-            #self.parent.children.remove(self)
-        self.tree_remove()
-        common.app_tree.remove(self)  # this probably requires common.app_tree.rebuild()
+        self.recursive_remove()
+        misc.rebuild_tree(self.parent, recursive=False, focus=True)
 
     # XML generation ###################################################################################################
     def write(self, output, tabs, class_names=None):

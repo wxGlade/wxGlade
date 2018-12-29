@@ -214,7 +214,7 @@ class SizerHandleButton(GenButton):
 def change_sizer(old, new):
     """Replaces sizer instance 'old' with a new one; 'new' is the name of the new one.
     (which_page: index of the property windows notebook page; used only by set_growable_(rows|cols)"""
-    pos = None if old.toplevel else old.pos
+    pos = 0 if old.toplevel else old.pos
     constructors = {
         'wxBoxSizer (wxVERTICAL)':         lambda: EditBoxSizer(old.name, old.window, pos, wx.VERTICAL, 0),
         'wxBoxSizer (wxHORIZONTAL)':       lambda: EditBoxSizer(old.name, old.window, pos, wx.HORIZONTAL, 0),
@@ -230,6 +230,7 @@ def change_sizer(old, new):
 
     with old.window.frozen():
         # construct without children, take then the children from the old sizer
+        old.parent.children[pos] = None  # avoid recursive_remove being called
         szr = constructors[new]()
         if old._IS_GRIDBAG and old.widget:
             for c in old.children:
@@ -241,7 +242,7 @@ def change_sizer(old, new):
                         c.set_overlap(False, add_to_sizer=False)
 
         szr.children.extend(old.children)
-    
+
         # copy/set properties
         if isinstance(szr, GridSizerBase):
             # take rows, cols, hgap, vgap from old sizer, if applicable
@@ -251,7 +252,7 @@ def change_sizer(old, new):
                 # for GridSizer and FlexGridSizer cols may be 0, i.e. auto calculated
                 if rows==0: rows = (len(szr.children)-1)//cols +1
                 if cols==0: cols = (len(szr.children)-1)//rows +1
-    
+
             szr.properties["rows"].set( rows )
             szr.properties["cols"].set( cols )
             szr.properties["hgap"].set( getattr(old, "hgap", 0) )
@@ -269,7 +270,7 @@ def change_sizer(old, new):
                 szr.properties['growable_cols'].deactivated = False
         # XXX keep rows, cols, growable_rows, growable_cols in attributes of new sizer if it's not a (Flex)GridSizer
         #     and re-use them if user switches back
-    
+
         if old.widget is not None:
             for c in old.widget.GetChildren():
                 if c and c.IsSizer():
@@ -277,11 +278,10 @@ def change_sizer(old, new):
             old.widget.Clear()  # without deleting window items; but sets the sizer of the windows to NULL
     
             szr.create(dont_set=True)
-    
+
         if isinstance(szr, EditGridBagSizer):
             szr._check_slots(remove_only=True)  # mark overlapped slots
-    
-        #XXX #  check _BTN_OFFSET required and whether _btn has been added
+
         for widget in szr.children:
             if not isinstance(widget, SizerSlot):
                 if szr.widget is not None:
@@ -307,7 +307,7 @@ def change_sizer(old, new):
         old.toplevel = False
         del old.children[:]
         old.delete()
-    
+
         if szr.toplevel:
             szr.window.set_sizer(szr)
         szr.layout(True)
@@ -905,8 +905,8 @@ class SizerBase(Sizer, np.PropertyOwner):
         "Inserts an empty slot into the sizer at pos (1 based); optionally force layout update"
         # called from context menu handler; multiple times if applicable; layout will be called there
         # also called from SizerBase._remove after a sizer has removed itself and inserts an empty slot instead
-        # pos is 1 based here
-        self.children.insert( pos, None)  # placeholder to be overwritten
+        if pos>=len(self.children) or not self.children[pos] is None:
+            self.children.insert( pos, None)  # placeholder to be overwritten
         slot = SizerSlot(self, pos)
         for p,c in enumerate(self.children):
             if c is None: continue
@@ -971,8 +971,7 @@ class SizerBase(Sizer, np.PropertyOwner):
         if self.widget:
             # required here; otherwise removal of a StaticBox of a StaticBoxSizer will cause a crash
             self.widget.Detach(old_child.widget)
-        old_child.tree_remove()
-        common.app_tree.remove(old_child)
+        old_child.recursive_remove()
 
         if self.widget:
             slot.create()  # create the actual SizerSlot as wx.Window with hatched background
@@ -1433,7 +1432,7 @@ class GridSizerBase(SizerBase):
             if self.widget: self.widget.SetRows(rows+1)
 
         for n in range(cols):
-            self._insert_slot( n+1 + add_row*cols )
+            self._insert_slot( n + add_row*cols )
 
         if "growable_rows" in self.PROPERTIES:
             self.properties["growable_rows"].shift_items(add_row)
@@ -1442,7 +1441,7 @@ class GridSizerBase(SizerBase):
             if "growable_rows" in self.PROPERTIES:
                 self._set_growable()
             self.layout(True)
-        common.root.saved = False
+        misc.rebuild_tree(self)
 
     @_frozen
     def insert_col(self, pos=-1):
@@ -1462,7 +1461,7 @@ class GridSizerBase(SizerBase):
         # fill up the last row up to the insertion position if required
         if last_pos_col < min(add_col,cols-1):
             for i in range(min(add_col,cols-1)-last_pos_col):
-                self._insert_slot( last_pos+1+i )
+                self._insert_slot( last_pos+i )
 
         # insert the new colum
         if self.cols:
@@ -1470,8 +1469,9 @@ class GridSizerBase(SizerBase):
             if self.widget: self.widget.SetCols(cols+1)
         # insert placeholders to avoid problems with GridBagSizers and overlap tests
         for r in range(rows-1,-1,-1):
-            self.children.insert( add_col+1 + r*cols, None )
-        # actually create the slot
+            #self.children.insert( add_col+1 + r*cols, None )
+            self.children.insert( add_col + r*cols, None )
+        # actually create the slots
         for r in range(0,rows):
             self._insert_slot( self._get_pos(r,add_col) )
 
@@ -1483,7 +1483,7 @@ class GridSizerBase(SizerBase):
             if "growable_rows" in self.PROPERTIES:
                 self._set_growable()
             self.layout(True)
-        common.root.saved = False
+        misc.rebuild_tree(self)
 
     @_frozen
     def remove_row(self, pos):
@@ -1507,6 +1507,7 @@ class GridSizerBase(SizerBase):
             if "growable_rows" in self.PROPERTIES:
                 self._set_growable()
             self.layout(True)
+        misc.rebuild_tree(self)
 
     @_frozen
     def remove_col(self, pos):
@@ -1531,6 +1532,7 @@ class GridSizerBase(SizerBase):
             if "growable_cols" in self.PROPERTIES:
                 self._set_growable()
             self.layout(True)
+        misc.rebuild_tree(self)
 
     ####################################################################################################################
     @_frozen

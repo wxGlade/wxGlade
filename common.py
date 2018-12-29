@@ -34,7 +34,7 @@ toplevels = {}   # names of the Edit classes that can be toplevels, i.e. class d
 main = None            # main window
 palette = None         # the panel which contains the various buttons to add the different widgets
 property_panel = None  # panel for editing the current widgets properties
-#app_tree = None        # widget hierarchy of the application; root is application itself; a tree.WidgetTree instance
+app_tree = None        # widget hierarchy of the application; root is application itself; a tree.WidgetTree instance
 root = None
 
 # these will be set when clicking an item on the palette window:
