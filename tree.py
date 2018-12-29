@@ -553,11 +553,9 @@ class WidgetTree(wx.TreeCtrl):#, Tree):
         if widget.IS_TOPLEVEL:
             # toplevel window or a menu/status bar
             toplevel_widget = widget.widget
-            size_p    = widget.properties.get("size")
-            toolbar_p = widget.properties.get("toolbar")
-            if size_p is not None and size_p.is_active() and toolbar_p is not None and toolbar_p.value:
+            if widget.check_prop("size") and widget.check_prop("toolbar") and widget.toolbar:
                 # apply workaround for size changes due to a toolbar; this would cause problems with automatic testing
-                set_size = size_p.get_size()
+                set_size = widget.properties.get("size").get_size()
         else:
             toplevel_widget = widget.widget.GetParent()
 
