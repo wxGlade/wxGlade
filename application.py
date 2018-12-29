@@ -138,10 +138,10 @@ class EditRoot(np.PropertyOwner):
 
         return class_names
 
-    def tree_remove(self):
+    def recursive_remove(self):
         # clear all
         for n in self.children:
-            n.tree_remove()
+            n.recursive_remove()
         #self.root.children = None
 
     def find_widget_from_path(self, path):
@@ -207,6 +207,7 @@ class Application(EditRoot):
     elif sys.platform=="darwin":
         _PROPERTY_HELP["output_path"] = "Output file or directory; double click label to show in Finder"
 
+    WX_CLASS = "wxApp"
     IS_WINDOW = IS_SIZER = IS_TOPLEVEL = IS_SLOT = False
     CHILDREN = None  # any number of toplevel windows etc.
 
