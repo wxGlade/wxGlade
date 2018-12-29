@@ -33,9 +33,7 @@ class WindowDialog(wx.Dialog):
             self.base.SetSelection(0)
 
         self.number = 1
-        #self.class_names = set( common.app_tree.get_all_class_names() )
         self.class_names = set( _get_all_class_names(common.root) )
-        #self.toplevel_names = set( common.app_tree.get_toplevel_class_names() )
         self.toplevel_names = set( c.name for c in common.root.children )
         self.toplevel = toplevel  # if this is True, the name must be unique, as the generated class will have it
         # class
