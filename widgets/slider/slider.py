@@ -84,7 +84,7 @@ def builder(parent, pos):
 
     name = common.root.get_next_name('slider_%d', parent)
     with parent.frozen():
-        editor = editor_class(label, parent, style, pos)
+        editor = editor_class(name, parent, style, pos)
         editor.properties["flag"].set("wxEXPAND")
         if parent.widget: editor.create()
     return editor
