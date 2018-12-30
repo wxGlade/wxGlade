@@ -33,9 +33,67 @@ def _frozen(method):
                 toplevel.Refresh()
                 toplevel.Thaw()
     return _frozen
-# XXX for debugging of NEW_STRUCTURE only
-def _frozen(method):
-    return method
+
+
+class SizerSlot(edit_base.Slot):
+    "A window to represent a slot in a sizer"
+    def __init__(self, parent, pos=0, label=None):
+        edit_base.Slot.__init__(self, parent, pos, label)
+        self.klass = self.classname = self.base = "sizerslot"
+
+    def set_overlap(self, overlapped=True, add_to_sizer=True):
+        # interface from GridBagSizer; so self.parent is a sizer
+        if overlapped==self.overlapped: return
+        self.overlapped = overlapped
+        sizer = self.parent
+        if overlapped:
+            if self.widget:
+                if add_to_sizer:
+                    sizer.widget.Detach(self.widget)
+                compat.DestroyLater(self.widget)
+                self.widget = None
+        else:
+            if sizer.widget and not self.widget:
+                self.create_widget()
+                if add_to_sizer:
+                    sizer.widget.Add(self.widget, self.pos, self.span, wx.EXPAND, self.border)
+        # XXX update icon in Tree
+
+    def check_drop_compatibility(self):
+        return (True,None)
+
+    # clipboard handling ###############################################################################################
+    def check_compatibility(self, widget, typename=None):
+        "check whether widget can be pasted here"
+        if typename is not None:
+            #if typename=="sizer" and self.sizer.is_virtual():
+                #return (False, "No sizer can be pasted here")
+            if typename=="window":
+                return (False, "No toplevel object can be pasted here.")
+            return (True,None)
+
+        if widget.IS_TOPLEVEL:
+            return (False, "No toplevel object can be pasted here.")
+        #if self.sizer.is_virtual() and isinstance(widget, Sizer):
+            ## e.g. a sizer dropped on a splitter window slot; instead, a panel would be required
+            #return (False, "No sizer can be pasted here")
+        return (True,None)
+
+    def write(self, output, tabs, class_names=None):
+        output.extend( common.format_xml_tag( u'object', '', tabs, **{'class': 'sizerslot'}) )
+
+
+
+class SizerHandleButton(GenButton):
+    'Provides a "handle" to activate a Sizer and to access its popup menu'
+    def __init__(self, parent, id, sizer):
+        GenButton.__init__(self, parent.widget, id, '', size=(5, 5))
+        self.sizer = sizer
+        self.SetUseFocusIndicator(False)
+        self.Bind(wx.EVT_RIGHT_DOWN, self.sizer.popup_menu )
+        #self.Bind(wx.EVT_KEY_DOWN, misc.on_key_down_event)
+        color = compat.wx_SystemSettings_GetColour(wx.SYS_COLOUR_BTNFACE)
+        self.SetBackgroundColour(color)
 
 class BaseSizerBuilder(object):
     "Language independent base class for all sizer builders / code generators"
@@ -148,172 +206,6 @@ class BaseSizerBuilder(object):
         result = list(result)
         result[-1] += layout
         return result
-
-
-class SizerSlot(edit_base.Slot):
-    "A window to represent a slot in a sizer"
-    def __init__(self, parent, pos=0, label=None):
-        edit_base.Slot.__init__(self, parent, pos, label)
-        self.klass = self.classname = self.base = "sizerslot"
-
-    def set_overlap(self, overlapped=True, add_to_sizer=True):
-        # interface from GridBagSizer; so self.parent is a sizer
-        if overlapped==self.overlapped: return
-        self.overlapped = overlapped
-        sizer = self.parent
-        if overlapped:
-            if self.widget:
-                if add_to_sizer:
-                    sizer.widget.Detach(self.widget)
-                compat.DestroyLater(self.widget)
-                self.widget = None
-        else:
-            if sizer.widget and not self.widget:
-                self.create_widget()
-                if add_to_sizer:
-                    sizer.widget.Add(self.widget, self.pos, self.span, wx.EXPAND, self.border)
-        # XXX update icon in Tree
-
-    def check_drop_compatibility(self):
-        return (True,None)
-
-    # clipboard handling ###############################################################################################
-    def check_compatibility(self, widget, typename=None):
-        "check whether widget can be pasted here"
-        if typename is not None:
-            #if typename=="sizer" and self.sizer.is_virtual():
-                #return (False, "No sizer can be pasted here")
-            if typename=="window":
-                return (False, "No toplevel object can be pasted here.")
-            return (True,None)
-
-        if widget.IS_TOPLEVEL:
-            return (False, "No toplevel object can be pasted here.")
-        #if self.sizer.is_virtual() and isinstance(widget, Sizer):
-            ## e.g. a sizer dropped on a splitter window slot; instead, a panel would be required
-            #return (False, "No sizer can be pasted here")
-        return (True,None)
-
-    def write(self, output, tabs, class_names=None):
-        output.extend( common.format_xml_tag( u'object', '', tabs, **{'class': 'sizerslot'}) )
-
-
-
-class SizerHandleButton(GenButton):
-    'Provides a "handle" to activate a Sizer and to access its popup menu'
-    def __init__(self, parent, id, sizer):
-        GenButton.__init__(self, parent.widget, id, '', size=(5, 5))
-        self.sizer = sizer
-        self.SetUseFocusIndicator(False)
-        self.Bind(wx.EVT_RIGHT_DOWN, self.sizer.popup_menu )
-        #self.Bind(wx.EVT_KEY_DOWN, misc.on_key_down_event)
-        color = compat.wx_SystemSettings_GetColour(wx.SYS_COLOUR_BTNFACE)
-        self.SetBackgroundColour(color)
-
-
-def change_sizer(old, new):
-    """Replaces sizer instance 'old' with a new one; 'new' is the name of the new one.
-    (which_page: index of the property windows notebook page; used only by set_growable_(rows|cols)"""
-    pos = 0 if old.toplevel else old.pos
-    constructors = {
-        'wxBoxSizer (wxVERTICAL)':         lambda: EditBoxSizer(old.name, old.window, pos, wx.VERTICAL, 0),
-        'wxBoxSizer (wxHORIZONTAL)':       lambda: EditBoxSizer(old.name, old.window, pos, wx.HORIZONTAL, 0),
-        'wxWrapSizer (wxVERTICAL)':        lambda: EditWrapSizer(old.name, old.window, pos, wx.VERTICAL, 0),
-        'wxWrapSizer (wxHORIZONTAL)':      lambda: EditWrapSizer(old.name, old.window, pos, wx.HORIZONTAL, 0),
-        'wxStaticBoxSizer (wxVERTICAL)':   lambda: EditStaticBoxSizer(old.name, old.window, pos, wx.VERTICAL,
-                                                                      getattr(old, 'label', old.name), 0),
-        'wxStaticBoxSizer (wxHORIZONTAL)': lambda: EditStaticBoxSizer(old.name, old.window, pos, wx.HORIZONTAL,
-                                                                      getattr(old, 'label', old.name), 0),
-        'wxGridSizer':     lambda: EditGridSizer(old.name, old.window, pos, rows=0, cols=0),
-        'wxFlexGridSizer': lambda: EditFlexGridSizer(old.name, old.window, pos, rows=0, cols=0),
-        'wxGridBagSizer': lambda: EditGridBagSizer(old.name, old.window, pos, rows=0, cols=0) }
-
-    with old.window.frozen():
-        # construct without children, take then the children from the old sizer
-        old.parent.children[pos] = None  # avoid recursive_remove being called
-        szr = constructors[new]()
-        if old._IS_GRIDBAG and old.widget:
-            for c in old.children:
-                if c:
-                    if c.widget:
-                        old.widget.Detach(c.widget)
-                    elif isinstance(c, SizerSlot) and c.overlapped:
-                        # re-create hidden widget
-                        c.set_overlap(False, add_to_sizer=False)
-
-        szr.children.extend(old.children)
-
-        # copy/set properties
-        if isinstance(szr, GridSizerBase):
-            # take rows, cols, hgap, vgap from old sizer, if applicable
-            rows = getattr(old, "rows", 1)
-            cols = getattr(old, "cols", len(szr.children))
-            if isinstance(szr, EditGridBagSizer):
-                # for GridSizer and FlexGridSizer cols may be 0, i.e. auto calculated
-                if rows==0: rows = (len(szr.children)-1)//cols +1
-                if cols==0: cols = (len(szr.children)-1)//rows +1
-
-            szr.properties["rows"].set( rows )
-            szr.properties["cols"].set( cols )
-            szr.properties["hgap"].set( getattr(old, "hgap", 0) )
-            szr.properties["vgap"].set( getattr(old, "vgap", 0) )
-            szr.properties_changed( ["rows","cols","hgap","vgap"] )
-        if isinstance(szr, EditFlexGridSizer) and isinstance(old, EditFlexGridSizer):
-            # take growable rows and cols from old sizer
-            grow_r_p = old.properties["growable_rows"]
-            grow_c_p = old.properties["growable_cols"]
-            if grow_r_p.is_active():
-                szr.properties['growable_rows'].value = grow_r_p.value
-                szr.properties['growable_rows'].deactivated = False
-            if grow_c_p.is_active():
-                szr.properties['growable_cols'].value = grow_c_p.value
-                szr.properties['growable_cols'].deactivated = False
-        # XXX keep rows, cols, growable_rows, growable_cols in attributes of new sizer if it's not a (Flex)GridSizer
-        #     and re-use them if user switches back
-
-        if old.widget is not None:
-            for c in old.widget.GetChildren():
-                if c and c.IsSizer():
-                    compat.SizerItem_SetSizer(c, None)
-            old.widget.Clear()  # without deleting window items; but sets the sizer of the windows to NULL
-    
-            szr.create(dont_set=True)
-
-        if isinstance(szr, EditGridBagSizer):
-            szr._check_slots(remove_only=True)  # mark overlapped slots
-
-        for widget in szr.children:
-            if not isinstance(widget, SizerSlot):
-                if szr.widget is not None:
-                    if not isinstance(szr, EditGridBagSizer):
-                        pos = widget.pos + szr.widget._BTN_OFFSET
-                        szr.widget.Insert(pos, widget.widget, widget.proportion, widget.flag, widget.border)
-                    else:
-                        szr.widget.Add(widget.widget, widget.pos, widget.span, widget.flag, widget.border)
-    
-        if not szr.toplevel:
-            szr.sizer = old.sizer
-            szr.properties["proportion"].set(old.proportion)
-            szr.properties["flag"].set(old.flag)
-            szr.properties["border"].set(old.border)
-            szr.properties["pos"].set(old.pos)
-            szr.sizer.children[szr.pos] = szr
-            if szr.sizer.widget:
-                elem = szr.sizer.widget.GetChildren()[szr.pos]
-                compat.SizerItem_SetSizer(elem, szr.widget)
-
-        common.app_tree.change_node(old, szr, keep_children=True)
-
-        old.toplevel = False
-        del old.children[:]
-        old.delete()
-
-        if szr.toplevel:
-            szr.window.set_sizer(szr)
-        szr.layout(True)
-        if szr.widget: szr.window.widget.Refresh()
-        misc.set_focused_widget(szr)
-
 
 
 class Sizer(edit_base.EditBase):
@@ -2036,6 +1928,110 @@ class EditGridBagSizer(EditFlexGridSizer):
         # called from XML parser right after loading the widget
         self._check_slots(remove_only=True)
         EditFlexGridSizer.on_load(self)
+
+
+def change_sizer(old, new):
+    """Replaces sizer instance 'old' with a new one; 'new' is the name of the new one.
+    (which_page: index of the property windows notebook page; used only by set_growable_(rows|cols)"""
+    pos = 0 if old.toplevel else old.pos
+    constructors = {
+        'wxBoxSizer (wxVERTICAL)':         lambda: EditBoxSizer(old.name, old.window, pos, wx.VERTICAL, 0),
+        'wxBoxSizer (wxHORIZONTAL)':       lambda: EditBoxSizer(old.name, old.window, pos, wx.HORIZONTAL, 0),
+        'wxWrapSizer (wxVERTICAL)':        lambda: EditWrapSizer(old.name, old.window, pos, wx.VERTICAL, 0),
+        'wxWrapSizer (wxHORIZONTAL)':      lambda: EditWrapSizer(old.name, old.window, pos, wx.HORIZONTAL, 0),
+        'wxStaticBoxSizer (wxVERTICAL)':   lambda: EditStaticBoxSizer(old.name, old.window, pos, wx.VERTICAL,
+                                                                      getattr(old, 'label', old.name), 0),
+        'wxStaticBoxSizer (wxHORIZONTAL)': lambda: EditStaticBoxSizer(old.name, old.window, pos, wx.HORIZONTAL,
+                                                                      getattr(old, 'label', old.name), 0),
+        'wxGridSizer':     lambda: EditGridSizer(old.name, old.window, pos, rows=0, cols=0),
+        'wxFlexGridSizer': lambda: EditFlexGridSizer(old.name, old.window, pos, rows=0, cols=0),
+        'wxGridBagSizer': lambda: EditGridBagSizer(old.name, old.window, pos, rows=0, cols=0) }
+
+    with old.window.frozen():
+        # construct without children, take then the children from the old sizer
+        old.parent.children[pos] = None  # avoid recursive_remove being called
+        szr = constructors[new]()
+        if old._IS_GRIDBAG and old.widget:
+            for c in old.children:
+                if c:
+                    if c.widget:
+                        old.widget.Detach(c.widget)
+                    elif isinstance(c, SizerSlot) and c.overlapped:
+                        # re-create hidden widget
+                        c.set_overlap(False, add_to_sizer=False)
+
+        szr.children.extend(old.children)
+
+        # copy/set properties
+        if isinstance(szr, GridSizerBase):
+            # take rows, cols, hgap, vgap from old sizer, if applicable
+            rows = getattr(old, "rows", 1)
+            cols = getattr(old, "cols", len(szr.children))
+            if isinstance(szr, EditGridBagSizer):
+                # for GridSizer and FlexGridSizer cols may be 0, i.e. auto calculated
+                if rows==0: rows = (len(szr.children)-1)//cols +1
+                if cols==0: cols = (len(szr.children)-1)//rows +1
+
+            szr.properties["rows"].set( rows )
+            szr.properties["cols"].set( cols )
+            szr.properties["hgap"].set( getattr(old, "hgap", 0) )
+            szr.properties["vgap"].set( getattr(old, "vgap", 0) )
+            szr.properties_changed( ["rows","cols","hgap","vgap"] )
+        if isinstance(szr, EditFlexGridSizer) and isinstance(old, EditFlexGridSizer):
+            # take growable rows and cols from old sizer
+            grow_r_p = old.properties["growable_rows"]
+            grow_c_p = old.properties["growable_cols"]
+            if grow_r_p.is_active():
+                szr.properties['growable_rows'].value = grow_r_p.value
+                szr.properties['growable_rows'].deactivated = False
+            if grow_c_p.is_active():
+                szr.properties['growable_cols'].value = grow_c_p.value
+                szr.properties['growable_cols'].deactivated = False
+        # XXX keep rows, cols, growable_rows, growable_cols in attributes of new sizer if it's not a (Flex)GridSizer
+        #     and re-use them if user switches back
+
+        if old.widget is not None:
+            for c in old.widget.GetChildren():
+                if c and c.IsSizer():
+                    compat.SizerItem_SetSizer(c, None)
+            old.widget.Clear()  # without deleting window items; but sets the sizer of the windows to NULL
+    
+            szr.create(dont_set=True)
+
+        if isinstance(szr, EditGridBagSizer):
+            szr._check_slots(remove_only=True)  # mark overlapped slots
+
+        for widget in szr.children:
+            if not isinstance(widget, SizerSlot):
+                if szr.widget is not None:
+                    if not isinstance(szr, EditGridBagSizer):
+                        pos = widget.pos + szr.widget._BTN_OFFSET
+                        szr.widget.Insert(pos, widget.widget, widget.proportion, widget.flag, widget.border)
+                    else:
+                        szr.widget.Add(widget.widget, widget.pos, widget.span, widget.flag, widget.border)
+    
+        if not szr.toplevel:
+            szr.sizer = old.sizer
+            szr.properties["proportion"].set(old.proportion)
+            szr.properties["flag"].set(old.flag)
+            szr.properties["border"].set(old.border)
+            szr.properties["pos"].set(old.pos)
+            szr.sizer.children[szr.pos] = szr
+            if szr.sizer.widget:
+                elem = szr.sizer.widget.GetChildren()[szr.pos]
+                compat.SizerItem_SetSizer(elem, szr.widget)
+
+        common.app_tree.change_node(old, szr, keep_children=True)
+
+        old.toplevel = False
+        del old.children[:]
+        old.delete()
+
+        if szr.toplevel:
+            szr.window.set_sizer(szr)
+        szr.layout(True)
+        if szr.widget: szr.window.widget.Refresh()
+        misc.set_focused_widget(szr)
 
 
 def _builder(parent, pos, orientation=wx.VERTICAL, slots=1, is_static=False, label="",
