@@ -11,7 +11,9 @@ import logging, os.path
 import wx
 import misc, common, compat, config, clipboard
 
-DEBUG = False
+DEBUG = config.debugging
+if DEBUG:
+    import utilities
 
 class WidgetTree(wx.TreeCtrl):#, Tree):
     "Tree with the ability to display the hierarchy of widgets"
@@ -257,6 +259,8 @@ class WidgetTree(wx.TreeCtrl):#, Tree):
         self._SetItemData(item, child)
         if self.auto_expand:
             self.Expand(parent.item)
+        if DEBUG:
+            print("added item", utilities.hx(item), child, child.item)
         return item
 
     def remove(self, node):
@@ -270,12 +274,12 @@ class WidgetTree(wx.TreeCtrl):#, Tree):
     def on_delete_item(self, event):
         item = event.GetItem()
         editor = self.GetItemData( item )
-        if DEBUG: print("on_delete_item", editor, editor and editor.item or None)
+        if DEBUG:
+            print("on_delete_item", utilities.hx(item), editor, editor and editor.item or None)
         if editor is not None and editor.item is item:
             editor.item = None
 
-    def _get_children_items(self, widget):
-        item = widget.item
+    def _get_children_items(self, item):
         items = []
         child_item, cookie = self.GetFirstChild(item)
         while child_item.IsOk():
@@ -286,7 +290,7 @@ class WidgetTree(wx.TreeCtrl):#, Tree):
     def _build_children(self, widget, item, recursive=True):
         print("_build_children", widget)
         children = widget.get_all_children()
-        items = self._get_children_items(widget)
+        items = self._get_children_items(widget.item)
         if DEBUG: print("children", children)
         if DEBUG: print("items", items)
         item_editors = []
@@ -294,7 +298,9 @@ class WidgetTree(wx.TreeCtrl):#, Tree):
             editor = self._GetItemData(child_item)
             if editor is not None and (not children or not editor in children):
                 self._SetItemData(child_item, None)
-                editor.item = None  # is probably None already
+                if editor.item is child_item:
+                    if DEBUG: print("removed editor.item", utilities.hx(editor), utilities.hx(editor.item))
+                    editor.item = None  # is probably None already
                 item_editors.append(None)
             else:
                 item_editors.append(editor)
@@ -340,29 +346,38 @@ class WidgetTree(wx.TreeCtrl):#, Tree):
             self._build_children(child, item)
 
     def build(self, widget=None, recursive=True):
-        print("build", widget, recursive)
+        if DEBUG:
+            print("="*80)
+            print("build", widget, recursive)
         # (re-)build tree from data structure
         # e.g. .build(control)
         # XXX if recursive is not True, ensure that all children are refreshed, as e.g. slot numbers may have changed
-        if widget is None:
-            widget = self.root
-            item = self.GetRootItem()
-        else:
-            item = widget.item
-            if item is None and widget.parent.item:
-                # check whether at the same position there is an item already without an editor
-                pos = widget.parent._get_child_pos(widget)
-                items = self._get_children_items(widget.parent)
-                if len(items)>pos and self._GetItemData(items[pos]) is None:
-                    item = items[pos]
-                    widget.item = item
-                    self._SetItemData(item, widget)
-                    self.refresh(widget)
-            while item is None:
-                widget = widget.parent
+        self.Freeze()
+        try:
+    
+            if widget is None:
+                widget = self.root
+                item = self.GetRootItem()
+            else:
                 item = widget.item
-        self._build_children(widget, item, recursive)
-        common.root.saved = False
+                if item is None and widget.parent.item:
+                    # check whether at the same position there is an item already without an editor
+                    pos = widget.parent._get_child_pos(widget)
+                    items = self._get_children_items(widget.parent.item)
+                    if len(items)>pos and self._GetItemData(items[pos]) is None:
+                        item = items[pos]
+                        widget.item = item
+                        self._SetItemData(item, widget)
+                        self.refresh(widget)
+                while item is None:
+                    widget = widget.parent
+                    item = widget.item
+            self._build_children(widget, item, recursive)
+        finally:
+            self.Thaw()
+        if config.debugging or DEBUG:
+            import utilities
+            utilities.TreePrinter(self)
 
     def refresh(self, widget, refresh_label=True, refresh_image=True):
         # refresh label and/or image
