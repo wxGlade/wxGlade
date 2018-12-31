@@ -295,7 +295,6 @@ class EditBase(np.PropertyOwner):
         # write properties, but without name and class
         # XXX be 100% compatible to 0.7.2, where option is written into the object; remove later
         properties = self.get_properties(without=set(MANAGED_PROPERTIES))
-        #properties = self.widget.get_properties(without=set(["pos","flag","border"]))
         for prop in properties:
             prop.write(output, tabs+1)
 
@@ -320,6 +319,7 @@ class EditBase(np.PropertyOwner):
                     child.write(output, tabs+1)
         elif self.children is not None or self.ATT_CHILDREN is not None:
             for child in self.get_all_children():
+                assert not config.debugging or child is not None
                 child.write(output, tabs+1, class_names)
         output.append(u'%s</object>\n' % outer_tabs)
 

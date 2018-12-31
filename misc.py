@@ -430,6 +430,7 @@ def navigate(up):
         focus = common.app_tree._GetItemData(item)
     if focus is None: return
     siblings = [focus]  if focus.IS_ROOT else  focus.parent.get_all_children()
+    if not siblings: return
     idx = siblings.index(focus)
     if up:
         if idx>0:
