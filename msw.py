@@ -1,7 +1,7 @@
 """\
 Microsoft Windows specific helpers
 
-@copyright: 2016 Dietmar Schwertberger
+@copyright: 2016-2019 Dietmar Schwertberger
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
