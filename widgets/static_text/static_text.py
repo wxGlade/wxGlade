@@ -63,9 +63,9 @@ class EditStaticText(ManagedBase, EditStylesMixin):
 
 def builder(parent, pos):
     "factory function for EditStaticText objects"
-    name = common.root.get_next_name('spin_ctrl_double_%d', parent)
+    name = common.root.get_next_name('static_text_%d', parent)
     with parent.frozen():
-        editor = EditStaticText(label, parent, label, pos)
+        editor = EditStaticText(name, parent, name, pos)
         editor.properties["style"].set_to_default()
         editor.check_defaults()
         if parent.widget: editor.create()

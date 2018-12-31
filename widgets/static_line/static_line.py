@@ -51,19 +51,9 @@ class EditStaticLine(ManagedBase, EditStylesMixin):
         ManagedBase.properties_changed(self, modified)
 
 
-editor_class = EditStaticLine
-editor_icon = 'static_line.xpm'
-editor_name = 'EditStaticLine'
-editor_style = ''
-
-dlg_title = _('wxStaticLine')
-box_title = _('Orientation')
-choices = 'wxLI_HORIZONTAL|wxLI_VERTICAL'
-
-
 def builder(parent, pos):
     "factory function for editor objects from GUI"
-    dialog = wcodegen.WidgetStyleSelectionDialog(dlg_title, box_title, choices)
+    dialog = wcodegen.WidgetStyleSelectionDialog(_('wxStaticLine'), _('Orientation'), 'wxLI_HORIZONTAL|wxLI_VERTICAL')
     res = dialog.ShowModal()
     style = dialog.get_selection()
     dialog.Destroy()
@@ -72,11 +62,10 @@ def builder(parent, pos):
 
     name = common.root.get_next_name('static_line_%d', parent)
     with parent.frozen():
-        editor = editor_class(name, parent, style, pos)
-        import edit_sizers
-        if isinstance(sizer, edit_sizers.edit_sizers.BoxSizerBase):
-            if ( (sizer.orient & wx.VERTICAL   and style=="wxLI_HORIZONTAL") or 
-                 (sizer.orient & wx.HORIZONTAL and style=="wxLI_VERTICAL") ):
+        editor = EditStaticLine(name, parent, style, pos)
+        if parent.IS_SIZER and "orient" in parent.properties and parent.orient:
+            if ( (parent.orient & wx.VERTICAL   and style=="wxLI_HORIZONTAL") or 
+                 (parent.orient & wx.HORIZONTAL and style=="wxLI_VERTICAL") ):
                 editor.properties["flag"].add("wxEXPAND")
         if parent.widget: editor.create()
     return editor
@@ -89,11 +78,11 @@ def xml_builder(attrs, parent, pos=None):
         name = attrs['name']
     except KeyError:
         raise XmlParsingError(_("'name' attribute missing"))
-    return editor_class(name, parent, editor_style, pos)
+    return EditStaticLine(name, parent, '', pos)
 
 
 def initialize():
     "initialization function for the module: returns a wxBitmapButton to be added to the main palette"
-    common.widgets[editor_name] = builder
-    common.widgets_from_xml[editor_name] = xml_builder
-    return common.make_object_button(editor_name, editor_icon)
+    common.widgets['EditStaticLine'] = builder
+    common.widgets_from_xml['EditStaticLine'] = xml_builder
+    return common.make_object_button('EditStaticLine', 'static_line.xpm')

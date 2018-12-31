@@ -61,7 +61,7 @@ def builder(parent, pos):
     "factory function for EditGenericCalendarCtrl objects"
     name = common.root.get_next_name('generic_calendar_ctrl_%d', parent)
     with parent.frozen():
-        editor = EditGenericCalendarCtrl(label, parent, pos)
+        editor = EditGenericCalendarCtrl(name, parent, pos)
         editor.properties["style"].set_to_default()
         editor.check_defaults()
         if parent.widget: editor.create()
