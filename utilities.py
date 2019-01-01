@@ -48,7 +48,11 @@ class StructurePrinter:
     def window(self, widget, si, indent=0):
         cname = widget.GetClassName() # u'wxPanel'
         name  = widget.GetName() # u'panel'
-        print( "  "*indent, "%s: %s"%(cname, name), widget.GetSize(), widget.GetBestSize(), widget.GetEffectiveMinSize() )
+        try:
+            best_size = widget.GetBestSize()
+        except AttributeError:
+            best_size ="???"
+        print( "  "*indent, "%s: %s"%(cname, name), widget.GetSize(), best_size, widget.GetEffectiveMinSize() )
 
         if si: self._sizer_item(si, indent)
 
