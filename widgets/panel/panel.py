@@ -157,7 +157,7 @@ class EditPanel(PanelBase, ManagedBase):
             def GetBestSize():
                 if self.widget and self.widget.GetSizer():
                     return self.widget.GetSizer().GetMinSize()
-                return self.widget.__class__.GetBestSize(self)
+                return self.widget.__class__.GetBestSize(self.widget)
             self.widget.GetBestSize = GetBestSize
 
     def set_sizer(self, sizer):
