@@ -295,11 +295,21 @@ class wxGladePalettePanel(wx.Panel):
                     self.all_togglebuttons.append(button)
             sizer.Add(bsizer)
         self.SetSizer(sizer)
+        # on platforms other than Windows, we'll set the ToggleButton background colour to indicate the selection
+        if wx.Platform == "__WXMSW__":
+            self._highlight_colour = None
+        else:
+            self._highlight_colour = wx.SystemSettings.GetColour(wx.SYS_COLOUR_HIGHLIGHT)
 
     def reset_togglebuttons(self, keep=None):
         # un-toggle all buttons except keep
         for button in self.all_togglebuttons:
-            if keep is not None and button is keep: continue
+            if keep is not None and button is keep:
+                if self._highlight_colour:
+                    button.SetBackgroundColour(self._highlight_colour)
+                continue
+            if self._highlight_colour and button.GetBackgroundColour()==self._highlight_colour:
+                button.SetBackgroundColour(wx.NullColour)
             if button.GetValue(): button.SetValue(False)
 
 
