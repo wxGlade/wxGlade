@@ -215,12 +215,16 @@ def add_object(event):
     adding_widget = True
     adding_sizer = "Sizer" in widget_to_add
 
+    palette.reset_togglebuttons(keep=event.GetEventObject())
+
     msg = "Adding %s; click on free (hatched) sizer slot to place it"
     main.user_message( msg%widget_to_add.lstrip("Edit") )
+    button = event.GetEventObject()
 
 
 def add_toplevel_object(event):
     "Adds a toplevel widget (Frame or Dialog) to the current app"
+    palette.reset_togglebuttons()
     editor = widgets[refs[event.GetId()]](root, 0)
     if editor is None: return
     misc.rebuild_tree(widget=editor, recursive=editor.children, focus=True)
@@ -251,12 +255,21 @@ def make_object_button(widget, icon_path, toplevel=False, tip=None):
     if not os.path.isabs(icon_path):
         icon_path = os.path.join(config.icons_path, icon_path)
     bmp = misc.get_xpm_bitmap(icon_path)
-    tmp = wx.BitmapButton(palette, -1, bmp, size=(31, 31))
-    #tmp = wx.Button(palette, -1, widget.replace('Edit', ''))
-    if not toplevel:
-        tmp.Bind(wx.EVT_BUTTON, add_object)
+    if compat.version < (3,0):
+        # old wx version: use BitmapButton
+        tmp = wx.BitmapButton(palette, -1, bmp, size=(31,31))
+        if not toplevel:
+            tmp.Bind(wx.EVT_BUTTON, add_object)
+        else:
+            tmp.Bind(wx.EVT_BUTTON, add_toplevel_object)
     else:
-        tmp.Bind(wx.EVT_BUTTON, add_toplevel_object)
+        if not toplevel:
+            tmp = wx.ToggleButton(palette, -1, size=(31,31))
+            tmp.Bind(wx.EVT_TOGGLEBUTTON, add_object)
+        else:
+            tmp = wx.Button(palette, -1, size=(31,31))
+            tmp.Bind(wx.EVT_BUTTON, add_toplevel_object)
+        tmp.SetBitmap( bmp )
     refs[tmp.GetId()] = widget
     if not tip:
         tip = _('Add a %s') % widget.replace(_('Edit'), '')
