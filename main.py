@@ -279,6 +279,7 @@ class wxGladePalettePanel(wx.Panel):
         # load the available code generators
         all_widgets = common.init_codegen()
         if not config.use_gui: return
+        self.all_togglebuttons = []
         # build the palette for all_widgets
         sizer = wx.FlexGridSizer(0, 2, 0, 0)
         maxlen = max([len(all_widgets[sect]) for sect in all_widgets])  # the maximum number of buttons in a section
@@ -290,8 +291,16 @@ class wxGladePalettePanel(wx.Panel):
             bsizer = wx.BoxSizer()
             for button in all_widgets[section]:
                 bsizer.Add(button, flag=wx.ALL, border=1)
+                if isinstance(button, wx.ToggleButton):
+                    self.all_togglebuttons.append(button)
             sizer.Add(bsizer)
         self.SetSizer(sizer)
+
+    def reset_togglebuttons(self, keep=None):
+        # un-toggle all buttons except keep
+        for button in self.all_togglebuttons:
+            if keep is not None and button is keep: continue
+            if button.GetValue(): button.SetValue(False)
 
 
 class wxGladeFrame(wx.Frame):
