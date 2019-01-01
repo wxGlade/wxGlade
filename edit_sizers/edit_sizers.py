@@ -1398,7 +1398,7 @@ class GridSizerBase(SizerBase):
         if self.widget:
             if "growable_rows" in self.PROPERTIES:
                 self._set_growable()
-            self.widget.SetRows(self.rows)
+            if self.rows: self.widget.SetRows(self.rows)
             self.layout(True)
         misc.rebuild_tree(self)
 
@@ -1424,7 +1424,7 @@ class GridSizerBase(SizerBase):
                 self.widget.SetCols(cols-1)
             if "growable_cols" in self.PROPERTIES:
                 self._set_growable()
-            self.widget.SetCols(self.cols)
+            if self.cols: self.widget.SetCols(self.cols)
             self.layout(True)
         misc.rebuild_tree(self)
 
