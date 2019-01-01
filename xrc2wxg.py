@@ -1,4 +1,4 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python
 """
 Converts an XRC resource file (in a format wxGlade likes, i.e. all windows
 inside sizers, no widget unknown to wxGlade, ...) into a WXG file.
