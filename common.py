@@ -215,6 +215,9 @@ def add_object(event):
     btn = event.GetEventObject()
     btn.SetValue(True)
     palette.reset_togglebuttons(keep=btn)
+    btn.SetBackgroundColour(wx.BLUE)
+    btn.SetValue(True)
+    
 
     msg = "Adding %s; click on free (hatched) sizer slot to place it"
     main.user_message( msg%widget_to_add.lstrip("Edit") )
