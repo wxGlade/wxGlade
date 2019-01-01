@@ -300,6 +300,7 @@ class wxGladePalettePanel(wx.Panel):
         # un-toggle all buttons except keep
         for button in self.all_togglebuttons:
             if keep is not None and button is keep: continue
+            if button.GetBackgroundColour()==wx.BLUE: button.SetBackgroundColour(wx.NullColour)
             if button.GetValue(): button.SetValue(False)
 
 
