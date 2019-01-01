@@ -212,7 +212,9 @@ def add_object(event):
     adding_widget = True
     adding_sizer = "Sizer" in widget_to_add
 
-    palette.reset_togglebuttons(keep=event.GetEventObject())
+    btn = event.GetEventObject()
+    btn.SetValue(True)
+    palette.reset_togglebuttons(keep=btn)
 
     msg = "Adding %s; click on free (hatched) sizer slot to place it"
     main.user_message( msg%widget_to_add.lstrip("Edit") )
