@@ -219,7 +219,6 @@ def add_object(event):
 
     msg = "Adding %s; click on free (hatched) sizer slot to place it"
     main.user_message( msg%widget_to_add.lstrip("Edit") )
-    button = event.GetEventObject()
 
 
 def add_toplevel_object(event):
