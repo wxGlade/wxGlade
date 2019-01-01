@@ -18,6 +18,7 @@ if config.debugging:
             list.insert(self, index, obj)
         def __setitem__(self, index, obj):
             if obj in self and obj is not None:
+                if obj is self[index]: return
                 raise AssertionError("Element already in list")
             list.__setitem__(self, index, obj)
 else:
@@ -298,7 +299,7 @@ class EditBase(np.PropertyOwner):
         for prop in properties:
             prop.write(output, tabs+1)
 
-        if class_names is not None and self.__class__.__name__ != 'CustomWidget':
+        if class_names is not None and self.WX_CLASS != 'CustomWidget':
             class_names.add(self.klass)
 
         if self.IS_SIZER:
@@ -349,19 +350,15 @@ class EditBase(np.PropertyOwner):
 
     def _free_slot(self, pos, force_layout=True):
         with self.toplevel_parent.frozen():
-            old_child = self.children[pos]
             slot = Slot(self, pos)
-            #old_child.tree_remove()
-            #common.app_tree.remove(old_child)
-            if self.widget:
-                slot.create()  # create the actual SizerSlot as wx.Window with hatched background
+            if self.widget: slot.create()  # create the actual SizerSlot as wx.Window with hatched background
         return slot
 
     # for tree display #################################################################################################
     def _get_tree_label(self):
         # get a label for node
         s = self.name
-        if (self.__class__.__name__=="CustomWidget" or
+        if (self.WX_CLASS=="CustomWidget" or
             (self.klass != self.base and self.klass != 'wxScrolledWindow') ):
             # special case...
             s += ' (%s)' % self.klass
@@ -385,7 +382,7 @@ class EditBase(np.PropertyOwner):
         elif getattr(self, "has_title", None):
             # include title
             s += ': "%s"'%self.title
-        elif getattr(self, "parent", None) and self.parent.klass=="wxNotebook":
+        elif self.parent.WX_CLASS=="wxNotebook":
             # notebook pages: include page title: "[title] name"
             notebook = self.parent
             if self in notebook.children:
