@@ -272,14 +272,17 @@ class wxGladeArtProvider(wx.ArtProvider):
 
 
 class wxGladePalettePanel(wx.Panel):
+
     def __init__(self, parent):
         wx.Panel.__init__(self, parent)
         common.palette = self # for building the buttons
         self.SetBackgroundColour( compat.wx_SystemSettings_GetColour(wx.SYS_COLOUR_BTNFACE) )
+
         # load the available code generators
         all_widgets = common.init_codegen()
         if not config.use_gui: return
-        self.all_togglebuttons = []
+        self.all_togglebuttons = []  # used by reset_togglebuttons
+
         # build the palette for all_widgets
         sizer = wx.FlexGridSizer(0, 2, 0, 0)
         maxlen = max([len(all_widgets[sect]) for sect in all_widgets])  # the maximum number of buttons in a section
@@ -287,7 +290,6 @@ class wxGladePalettePanel(wx.Panel):
             if section:
                 label = wx.StaticText(self, -1, "%s:" % section.replace('&', '&&'))
                 sizer.Add( label, 1, wx.ALIGN_CENTER_VERTICAL | wx.LEFT, 2 )
-            #bsizer = wx.GridSizer(cols=maxlen, hgap=2, vgap=2)
             bsizer = wx.BoxSizer()
             for button in all_widgets[section]:
                 bsizer.Add(button, flag=wx.ALL, border=1)
@@ -295,6 +297,7 @@ class wxGladePalettePanel(wx.Panel):
                     self.all_togglebuttons.append(button)
             sizer.Add(bsizer)
         self.SetSizer(sizer)
+
         # on platforms other than Windows, we'll set the ToggleButton background colour to indicate the selection
         if wx.Platform == "__WXMSW__":
             self._highlight_colour = None
