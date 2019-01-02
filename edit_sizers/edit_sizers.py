@@ -1740,7 +1740,6 @@ class EditGridBagSizer(EditFlexGridSizer):
         occupied = []
         for row in range(self.rows):
             for col in range(self.cols):
-                pos += 1
                 if pos==len(self.children): break
                 child = self.children[pos]
                 if not isinstance(child, SizerSlot) and not child is None:
@@ -1752,6 +1751,7 @@ class EditGridBagSizer(EditFlexGridSizer):
                                 if r==row and c ==col: continue  # the original cell
                                 if c>=self.cols: continue
                                 occupied.append( self._get_pos(r,c) )
+                pos += 1
             if pos==len(self.children): break
         return occupied
 

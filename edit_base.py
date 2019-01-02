@@ -229,7 +229,8 @@ class EditBase(np.PropertyOwner):
 
     def finish_widget_creation(self, *args, **kwds):
         "Creates the popup menu and connects some event handlers to self.widgets"
-        self.widget.Bind(wx.EVT_RIGHT_DOWN, self.popup_menu)
+        if self.widget:
+            self.widget.Bind(wx.EVT_RIGHT_DOWN, self.popup_menu)
 
     def delete(self):
         """Destructor. deallocates the popup menu, the notebook and all the properties.
@@ -447,6 +448,7 @@ class Slot(EditBase):
             self.widget.Refresh()
 
     def create_widget(self):
+        if self.overlapped and self.parent._IS_GRIDBAG: return
         style = wx.FULL_REPAINT_ON_RESIZE
         if self.parent.CHILDREN==1:  # e.g. Panel in a Frame
             size = self.parent.widget.GetClientSize()
