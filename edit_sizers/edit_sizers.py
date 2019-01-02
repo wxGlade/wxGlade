@@ -2030,10 +2030,14 @@ def change_sizer(old, new):
         del old.children[:]
         old.delete()
 
+        for c in szr.children:
+            if c: c.parent = szr
         if szr.toplevel:
             szr.window.set_sizer(szr)
+
         szr.layout(True)
         if szr.widget: szr.window.widget.Refresh()
+
         misc.set_focused_widget(szr)
 
 

@@ -521,13 +521,10 @@ class LayoutProportionProperty(SpinProperty):
 
 class LayoutPosProperty(SpinProperty):
     readonly = True
-    TOOLTIP = "Position of item within sizer"
+    TOOLTIP = "Position of item within sizer\nCan't be edited; use Cut & Paste or Drag & Drop to reposition an item."
 
     def __init__(self, value):
         SpinProperty.__init__(self, value, val_range=(0,1000), immediate=False, default_value=_DefaultArgument, name="pos")
-
-    #def create_editor(self, panel, sizer):
-        #SpinProperty.create_editor(self, panel, sizer)
 
     def write(self, *args, **kwds):
         # maybe, for GridBagSizers row/col should be written
@@ -535,7 +532,7 @@ class LayoutPosProperty(SpinProperty):
 
 
 class LayoutSpanProperty(Property):
-    TOOLTIP = "cell spanning for GridBagSizer items: rows, columns"
+    TOOLTIP = "cell spanning for GridBagSizer items: rows, columns\nOnly editable if the adjacent cells are empty."
     # (int,int)
     CONTROLNAMES = ["rowspin","colspin"]
     def __init__(self, value):
@@ -560,8 +557,8 @@ class LayoutSpanProperty(Property):
         return "%d, %d"%self.value
 
     def create_editor(self, panel, sizer):
-        if not _is_gridbag(self.owner.sizer): return
-        max_rows, max_cols = self.owner.sizer.check_span_range(self.owner.pos, *self.value)
+        if not _is_gridbag(self.owner.parent): return
+        max_rows, max_cols = self.owner.parent.check_span_range(self.owner.pos, *self.value)
 
         hsizer = wx.BoxSizer(wx.HORIZONTAL)
         # label
@@ -621,14 +618,14 @@ class LayoutSpanProperty(Property):
         if self.rowspin and self.colspin:
             self._check_for_user_modification( (self.rowspin.GetValue(),self.colspin.GetValue() ) )
             # update ranges
-            max_rows, max_cols = self.owner.sizer.check_span_range(self.owner.pos, *self.value)
+            max_rows, max_cols = self.owner.parent.check_span_range(self.owner.pos, *self.value)
             self.rowspin.SetRange(1,max_rows)
             self.colspin.SetRange(1,max_cols)
             self.rowspin.Enable(max_rows!=1)
             self.colspin.Enable(max_cols!=1)
 
     def write(self, outfile, tabs=0):
-        if _is_gridbag(self.owner.sizer):
+        if _is_gridbag(self.owner.parent):
             Property.write(self, outfile, tabs)
 
 

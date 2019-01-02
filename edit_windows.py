@@ -565,7 +565,7 @@ class ManagedBase(WindowBase):
 
         if not modified or ("option" in modified or "flag" in modified or "border" in modified or
             "size" in modified or "span" in modified):
-            if self.sizer._IS_GRIDBAG and (not modified or "span" in modified) and self.span!=(1,1):
+            if self.parent.WX_CLASS=="wxGridBagSizer" and (not modified or "span" in modified) and self.span!=(1,1):
                 # check span range, if pasted item would span more rows/cols than available
                 span_p = self.properties["span"]
                 max_span = self.sizer.check_span_range(self.pos, *span_p.value)
