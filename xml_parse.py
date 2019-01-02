@@ -599,7 +599,7 @@ class XmlWidgetObject(object):
 
         elif self.klass == 'sizerslot':
             assert sizer is not None, _("malformed wxg file: slots can only be inside sizers!")
-            sizer._add_slot()
+            sizer._add_slot(loading=True)
             sizer.layout()
 
         # push the object on the _objects stack
