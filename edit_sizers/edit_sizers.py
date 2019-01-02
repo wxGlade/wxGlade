@@ -776,12 +776,12 @@ class SizerBase(Sizer, np.PropertyOwner):
         self._btn.Refresh(True)
 
     # add/insert/free slots; interface mainly from context menus #######################################################
-    def _add_slot(self):
+    def _add_slot(self, loading=False):
         "adds an empty slot to the sizer, i.e. a fake window that will accept the dropping of widgets"
         # called from "add slot" context menu handler of sizer
-        # called from XML parser for adding empty 'sizerslot': sizer.add_slot()
+        # called from XML parser for adding empty 'sizerslot': sizer._add_slot(loading=True)
         slot = SizerSlot(self, len(self.children))
-        if "rows" in self.PROPERTIES: self._adjust_rows_cols()  # for GridSizer
+        if "rows" in self.PROPERTIES: self._adjust_rows_cols(loading)  # for GridSizer
 
         if self.widget:
             slot.create()  # create the actual SizerSlot widget
@@ -1296,13 +1296,14 @@ class GridSizerBase(SizerBase):
         rows, cols = self._get_actual_rows_cols()
         return row*cols + col
 
-    def _adjust_rows_cols(self):
+    def _adjust_rows_cols(self, loading=False):
         # called when items are added or removed: adjust number of rows
         cols_p = self.properties["cols"]
         rows_p = self.properties["rows"]
         if rows_p.value==0 or cols_p.value==0: return
         rows_new = (len(self.children)-1) // cols_p.get() + 1
-        if rows_new!=rows_p.value: rows_p.set(rows_new)
+        if rows_new==rows_p.value or (loading and rows_new<rows_p.value): return
+        rows_p.set(rows_new)
 
     # context menu actions #############################################################################################
     @_frozen

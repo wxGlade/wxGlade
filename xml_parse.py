@@ -585,7 +585,7 @@ class XmlWidgetObject(object):
             assert sizer is not None, _("malformed wxg file: slots can only be inside sizers!")
             self.IS_SIZER = self.IS_WINDOW = False
             self.obj = None
-            sizer._add_slot()
+            sizer._add_slot(loading=True)
             sizer.layout()
 
         # push the object on the _objects stack
