@@ -576,8 +576,8 @@ class LayoutSpanProperty(Property):
         self.enabler = None
 
         style = wx.TE_PROCESS_ENTER | wx.SP_ARROW_KEYS
-        self.rowspin = wx.SpinCtrl( panel, -1, style=style, min=1, max=max_rows )
-        self.colspin = wx.SpinCtrl( panel, -1, style=style, min=1, max=max_cols )
+        self.rowspin = wx.SpinCtrl( panel, -1, style=style, min=1, max=max_rows, size=(30,-1) )
+        self.colspin = wx.SpinCtrl( panel, -1, style=style, min=1, max=max_cols, size=(30,-1) )
         val = self.value
         self.rowspin.SetValue(val and val[0] or 1)
         self.colspin.SetValue(val and val[1] or 1)
@@ -585,7 +585,9 @@ class LayoutSpanProperty(Property):
         self.colspin.Enable(max_cols!=1)
 
         # layout of the controls / sizers
+        hsizer.Add(wx.StaticText(panel, -1, _("Rows:")), 1, wx.LEFT | wx.ALIGN_RIGHT | wx.ALIGN_CENTER_VERTICAL, 3)
         hsizer.Add(self.rowspin, 5, wx.ALL | wx.ALIGN_CENTER, 3)
+        hsizer.Add(wx.StaticText(panel, -1, _("Cols:")), 1, wx.LEFT | wx.ALIGN_RIGHT | wx.ALIGN_CENTER_VERTICAL, 3)
         hsizer.Add(self.colspin, 5, wx.ALL | wx.ALIGN_CENTER, 3)
         sizer.Add(hsizer, 0, wx.EXPAND)
 
