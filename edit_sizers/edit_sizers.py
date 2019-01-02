@@ -228,14 +228,6 @@ class Sizer(edit_base.EditBase):
         "Adds an item to self"
         raise NotImplementedError
 
-    def remove_item(self, elem, force_layout=True):
-        "Removes elem from self"
-        pass
-
-    def _fix_notebook(self, pos, notebook_sizer, force_layout=True):
-        "Internal method used to replace a notebook widget with its notebook sizer."
-        pass
-
 
 class OrientProperty(np.Property):
     "orientation property for BoxSizers; hidden property to be set by the ClassOrientProperty"
@@ -426,7 +418,7 @@ class SizerBase(Sizer, np.PropertyOwner):
 
         widgetclass = self.__class__.__name__.lstrip("Edit")
         i = misc.append_menu_item(menu, -1, _('Remove %s\tDel')%widgetclass, wx.ART_DELETE)
-        misc.bind_menu_item_after(widget, i, self._remove)
+        misc.bind_menu_item_after(widget, i, self.remove)
 
         if not self.toplevel and self.sizer and self.sizer._can_add_insert_slots():
             i = misc.append_menu_item( menu, -1, _('Insert slot before\tCtrl+I') )

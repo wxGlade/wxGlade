@@ -140,6 +140,7 @@ class EditPanel(PanelBase, ManagedBase):
     "Class to handle wxPanel objects"
     WX_CLASS = "wxPanel"
     PROPERTIES = ManagedBase.PROPERTIES + PanelBase._PROPERTIES + ManagedBase.EXTRA_PROPERTIES
+    CHILDREN = -1  # 0 or 1
 
     def __init__(self, name, parent, pos, style='wxTAB_TRAVERSAL'):
         ManagedBase.__init__(self, name, 'wxPanel', parent, pos)

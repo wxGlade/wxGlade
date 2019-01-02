@@ -30,7 +30,7 @@ class EditBase(np.PropertyOwner):
     IS_TOPLEVEL = IS_SLOT = IS_SIZER = IS_WINDOW = IS_ROOT = IS_TOPLEVEL_WINDOW = False
     IS_CLASS = False  # generate class for this item; can be dynamically set during code generation
     WX_CLASS = None # needs to be defined in every derived class; e.g. "wxFrame", "wxBoxSizer", "wxPandel", "TopLevelPanel"
-    #CHILDREN = 1  # 0 or a fixed number or None for e.g. a sizer with a variable number of children
+    #CHILDREN = 1  # 0 or a fixed number or None for e.g. a sizer with a variable number of children; -1 for 0 or 1
     ATT_CHILDREN = None
 
     def __init__(self, name, parent, pos=None):
@@ -163,6 +163,9 @@ class EditBase(np.PropertyOwner):
             assert self.CHILDREN
             if None in self.children:
                 pos = self.children.index(None)
+            elif not self.children:
+                assert self.CHILDREN == -1
+                pos = 0
             else:
                 old_slot = [c for c in self.children if c.IS_SLOT][0]
                 common.app_tree.remove(old_slot)
@@ -178,12 +181,19 @@ class EditBase(np.PropertyOwner):
         if old_child:
             old_child.recursive_remove()
 
-    def has_ancestor(self, node):
-        "Returns True if node is parent or parents parent ..."
+    def remove_item(self, child, force_layout=True):
+        "Removes child from self and adjust pos of following items"
+        if not child: return
+        for c in self.children[child.pos+1:]:
+            c.properties["pos"].value -= 1
+        self.children.remove(child)
+
+    def has_ancestor(self, editor):
+        "Returns True if editor is parent or parents parent ..."
         parent = self.parent
         if parent is None: return False
         while True:
-            if node is parent: return True
+            if editor is parent: return True
             if parent.parent is None: return False
             parent = parent.parent
 
@@ -576,11 +586,11 @@ class Slot(EditBase):
         menu.AppendSeparator()
 
         # slot actions
-        if self.parent.IS_SIZER:
+        if self.parent.IS_SIZER or self.parent.CHILDREN==-1:
             if not "cols" in self.parent.properties:
                 i = misc.append_menu_item(menu, -1, _('Remove Slot\tDel'), wx.ART_DELETE)
                 misc.bind_menu_item_after(widget, i, self.remove)
-                if len(self.parent.children)<=2: i.Enable(False)
+                if self.parent.IS_SIZER and len(self.parent.children)<=1: i.Enable(False)
             else:
                 # if inside a grid sizer: allow removal of empty rows/cols
                 # check whether all slots in same row/col are empty
@@ -603,6 +613,7 @@ class Slot(EditBase):
                 if not col_is_empty or cols<=1: i.Enable(False)
                 menu.AppendSeparator()
 
+        if hasattr(self.parent, "_add_popup_menu_items"):
             self.parent._add_popup_menu_items(menu, self, widget)
 
         p = self.toplevel_parent_window # misc.get_toplevel_widget(self.sizer)
@@ -621,7 +632,7 @@ class Slot(EditBase):
     ####################################################################################################################
     def _remove(self):
         # does not set focus
-        if not self.parent.IS_SIZER: return
+        if not self.parent.IS_SIZER and self.parent.CHILDREN != -1: return
         with self.toplevel_parent_window.frozen():
             self.parent.remove_item(self)  # replaces self.parent.children[pos] and detaches also widget from sizer
             self.destroy_widget(detach=False)  # self.delete() would be OK, but would detach again...
@@ -731,7 +742,7 @@ class Slot(EditBase):
 
     def _get_tree_label(self):
         if self.label: return str(self.label)
-        if self.parent.CHILDREN==1: return "SLOT"
+        if self.parent.CHILDREN in (1,-1): return "SLOT"
         pos = self.pos
         if hasattr(self.parent, "_get_slot_label"):
             return self.parent._get_slot_label(pos)
