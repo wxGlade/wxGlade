@@ -908,9 +908,10 @@ class WidgetTree(wx.TreeCtrl, Tree):
         if not node.widget.widget:
             node.widget.create_widget()
             node.widget.finish_widget_creation()
-            node.widget.drop_target = clipboard.DropTarget(node.widget)
-            node.widget.widget.SetDropTarget(node.widget.drop_target)
-        
+            if not node.widget.__class__.__name__ in ('EditMenuBar', 'EditToolBar'):
+                node.widget.drop_target = clipboard.DropTarget(node.widget)
+                node.widget.widget.SetDropTarget(node.widget.drop_target)
+
         with node.widget.frozen():
             if node.children:
                 for c in node.children:

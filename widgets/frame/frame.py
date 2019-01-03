@@ -183,6 +183,10 @@ def builder(parent, sizer, pos, klass=None, base=None, name=None):
     # now select the frame's node in the tree
     common.app_tree.select_item(node)
 
+    import clipboard
+    frame.drop_target = clipboard.DropTarget(frame)
+    frame.widget.SetDropTarget(frame.drop_target)
+
     if wx.Platform == '__WXMSW__':
         #frame.widget.CenterOnScreen()
         frame.widget.Raise()

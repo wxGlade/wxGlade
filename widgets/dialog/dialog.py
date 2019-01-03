@@ -111,6 +111,11 @@ def builder(parent, sizer, pos, number=[0]):
         w.CenterOnScreen()
         w.Raise()
 
+    import clipboard
+    dialog.drop_target = clipboard.DropTarget(dialog)
+    dialog.widget.SetDropTarget(dialog.drop_target)
+
+
 
 def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
     "factory to build EditDialog objects from a XML file"
