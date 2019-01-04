@@ -144,16 +144,21 @@ class DropTarget(wx.DropTarget):
         fmt = self._get_received_format()
         data = self.data_objects[fmt].GetData()  # the data as string
         self.fmt = None
+        if wx.Platform=="__WXMAC__" and compat.IS_CLASSIC:
+            # delay action, as otherwise there will be a segmentation fault; 50ms seems to be enough
+            wx.CallLater(50, self._OnData, _current_drag_source, src_widget, dst_widget, data, copy)
+        else:
+            self._OnData(_current_drag_source, src_widget, dst_widget, data, copy)
 
-        if _current_drag_source and not copy:
+        return default
+
+    def _OnData(self, drag_source, src_widget, dst_widget, data, copy):
+        if drag_source and not copy:
             with src_widget.frozen():
                 src_widget.remove()
                 dst_widget.clipboard_paste(data)
         else:
             dst_widget.clipboard_paste(data)
-
-        #common.app_tree.expand(dst_widget)
-        return default
 
     def OnLeave(self):
         self.fmt = None
