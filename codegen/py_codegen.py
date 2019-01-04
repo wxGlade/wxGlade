@@ -51,7 +51,7 @@ class SourceFileContent(BaseSourceFileContent):
         r'^\s+'                                            # leading spaces (mandatory)
         r'def\s+(?P<handler>[A-Za-z_]+\w*)'                # event handler name
         r'\s*'                                             # optional spaces
-        r'\(.*\):'                                         # function parameters
+        r'\(.*\)(?:->None)*:'                              # function parameters and optional PEP 3107 -- Function Annotations
         r'\s*'                                             # optional spaces
         r'#\s*wxGlade:\s*(?P<class>\w+)\.<event_handler>'  # wxGlade event handler statement with class name
         r'\s*$' )                                          # tailing spaces
@@ -250,10 +250,10 @@ from %(top_win_module)s import %(top_win_class)s\n\n"""
         if self.app_name:
             # instantiate application class or PySimpleApp
             ret.append( 'if __name__ == "__main__":' )
-    
+
             if self._use_gettext:
                 ret.append( '%(tab)sgettext.install("%(textdomain)s") # replace with the appropriate catalog name\n' )
-    
+
             if klass:
                 ret.append( '%(tab)s%(name)s = %(klass)s(0)' )
                 ret.append( '%(tab)s%(name)s.MainLoop()' )
@@ -264,7 +264,7 @@ from %(top_win_module)s import %(top_win_class)s\n\n"""
                                  '%(tab)s%(top_win)s.Destroy()']
                 else:
                     show_code = ['%(tab)s%(top_win)s.Show()']
-    
+
                 ret += ['%(tab)s%(name)s = wx.PySimpleApp()',
                         '%(tab)s%(top_win)s = %(top_win_class)s(None, %(cn_wxIDANY)s, "")',
                         '%(tab)s%(name)s.SetTopWindow(%(top_win)s)'
@@ -401,7 +401,7 @@ from %(top_win_module)s import %(top_win_class)s\n\n"""
                 win_id = win_id[1:]
             else:
                 win_id = 'id=%s' % win_id
-            
+
             if not handler.startswith("lambda "):
                 handler = 'self.%s'%handler
 
