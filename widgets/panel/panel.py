@@ -286,12 +286,6 @@ class EditTopLevelPanel(PanelBase, TopLevelBase):
         common.app_tree.Collapse(self.item)
         self.design.update_label()
 
-    def set_name(self, name):
-        # handle containing frame
-        super(EditTopLevelPanel, self).set_name(name)
-        if self.widget:
-            self.widget.GetParent().SetTitle(misc.design_title(self.name))
-
     def destroy_widget(self):
         # handle containing frame
         win = None
