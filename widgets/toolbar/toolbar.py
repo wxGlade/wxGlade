@@ -546,10 +546,7 @@ class EditToolBar(EditBase, PreviewMixin, EditStylesMixin, BitmapMixin):
         tb_style = wx.TB_HORIZONTAL | self.style
         if wx.Platform == '__WXGTK__':
             tb_style |= wx.TB_DOCKABLE | wx.TB_FLAT
-        if not self.IS_TOPLEVEL:
-            self.widget = self._tb = wx.ToolBar(self.parent.widget, -1, style=tb_style)
-            self.parent.widget.SetToolBar(self.widget)
-        else:
+        if self.IS_TOPLEVEL:
             # "top-level" toolbar
             self.widget = wx.Frame(None, -1, misc.design_title(self.name))
             self.widget.SetClientSize((400, 30))
@@ -566,6 +563,11 @@ class EditToolBar(EditBase, PreviewMixin, EditStylesMixin, BitmapMixin):
                 # MSW isn't smart enough to avoid overlapping windows, so
                 # at least move it away from the 3 wxGlade frames
                 self.widget.CenterOnScreen()
+        else:
+            # toolbar for a Frame
+            self.widget = self._tb = wx.ToolBar(self.parent.widget, -1, style=tb_style)
+            self.parent.widget.SetToolBar(self.widget)
+
         self.widget.Bind(wx.EVT_LEFT_DOWN, self.on_set_focus)
 
         # set the various property values
@@ -632,21 +634,26 @@ class EditToolBar(EditBase, PreviewMixin, EditStylesMixin, BitmapMixin):
     def _refresh_widget(self):
         self._tb.Realize()
         self._tb.SetSize((-1, self._tb.GetBestSize()[1]))
-        if self.parent:
-            widget = self.parent.widget
-            w, h = widget.GetClientSize()
-            widget.SetClientSize((w, h+1))
-            widget.SetClientSize((w, h))
-        else:
+        if self.IS_TOPLEVEL:
             widget = self.widget
             w = widget.GetClientSize()[0]
             h = self.widget.GetSize()[1] // 2
             widget.SetClientSize((w, h))
+        else:
+            widget = self.parent.widget
+            w, h = widget.GetClientSize()
+            widget.SetClientSize((w, h+1))
+            widget.SetClientSize((w, h))
+
     ####################################################################################################################
 
     def remove(self, *args, **kwds):
         # entry point from GUI
-        if not self.parent.IS_ROOT:
+        if self.IS_TOPLEVEL:
+            if self.widget:
+                compat.DestroyLater(self.widget)
+                self.widget = None
+        else:
             self.parent.properties['toolbar'].set(False)
             self.parent._toolbar = None
             if kwds.get('do_nothing', False):
@@ -655,10 +662,6 @@ class EditToolBar(EditBase, PreviewMixin, EditStylesMixin, BitmapMixin):
             else:
                 if self.parent.widget:
                     self.parent.widget.SetToolBar(None)
-        else:
-            if self.widget:
-                compat.DestroyLater(self.widget)
-                self.widget = None
         EditBase.remove(self)
 
     def popup_menu(self, event, pos=None):
