@@ -165,6 +165,12 @@ class EditRoot(np.PropertyOwner):
                 c = self.children[-1]
                 if c: c.remove()
 
+    def _get_parent_tooltip(self, pos):
+        return None
+
+    def _get_tooltip_string(self):
+        return None
+
 
 class Application(EditRoot):
     "Properties of the application being created"

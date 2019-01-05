@@ -65,10 +65,13 @@ class EditSplitterWindow(ManagedBase, EditStylesMixin):
         self.window_2 = ChildWidgetNameProperty(1)
         self._window_old = None
 
-    def _get_slot_label(self, pos):
+    def _get_label(self, pos):
         if self.orientation=="wxSPLIT_VERTICAL":
-            return ("SLOT Left","SLOT Right")[pos]
-        return ("SLOT Top","SLOT Bottom")[pos]
+            return ("Left","Right")[pos]
+        return ("Top","Bottom")[pos]
+    
+    def _get_slot_label(self, pos):
+        return "SLOT %s"%self._get_label(pos)
 
     def create_widget(self):
         self.widget = wx.SplitterWindow(self.parent_window.widget, self.id, style=self.style)
@@ -97,17 +100,6 @@ class EditSplitterWindow(ManagedBase, EditStylesMixin):
             min_pane_size_p.set( self.widget.GetMinimumPaneSize() )
 
         self.widget.Bind(wx.EVT_SPLITTER_SASH_POS_CHANGED, self.on_sash_pos_changed )
-
-        if self.children[0] and self.children[0].widget:
-            if self.orientation=="wxSPLIT_VERTICAL":
-                compat.SetToolTip(self.children[0].widget, _("Left splitter pane:\nAdd a sizer here") )
-            else:
-                compat.SetToolTip(self.children[0].widget, _("Top splitter pane:\nAdd a sizer here") )
-        if self.children[1] and self.children[1].widget:
-            if self.orientation=="wxSPLIT_VERTICAL":
-                compat.SetToolTip(self.children[1].widget, _("Right splitter pane:\nAdd a sizer here") )
-            else:
-                compat.SetToolTip(self.children[1].widget, _("Bottom splitter pane:\nAdd a sizer here") )
 
     def on_set_focus(self, event):
         misc.set_focused_widget(self)
@@ -181,6 +173,9 @@ class EditSplitterWindow(ManagedBase, EditStylesMixin):
 
     def check_compatibility(self, widget, typename=None, report=False):
         return (False,"No objects can be pasted here; paste to empty slots instead.")
+
+    def _get_parent_tooltip(self, pos):
+        return "%s splitter pane:"%self._get_label(pos)
 
     ####################################################################################################################
     # methods moved from SplitterWindowSizer:

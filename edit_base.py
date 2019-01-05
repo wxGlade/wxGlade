@@ -228,7 +228,6 @@ class EditBase(np.PropertyOwner):
     def create(self):
         "create the wx widget"
         if not self.IS_TOPLEVEL and self.parent.widget is None: return
-        #if self.parent is not None and self.parent.widget is None: return
         if self.widget: return
         self.create_widget()
         self.finish_widget_creation()
@@ -238,9 +237,11 @@ class EditBase(np.PropertyOwner):
         raise NotImplementedError
 
     def finish_widget_creation(self, *args, **kwds):
-        "Creates the popup menu and connects some event handlers to self.widgets"
-        if self.widget:
-            self.widget.Bind(wx.EVT_RIGHT_DOWN, self.popup_menu)
+        "Binds the popup menu handler and connects some event handlers to self.widgets; set tooltip string"
+        if not self.widget: return
+        self.widget.Bind(wx.EVT_RIGHT_DOWN, self.popup_menu)
+        if self.WX_CLASS in ("wxStatusBar",): return
+        compat.SetToolTip(self.widget, self._get_tooltip_string())
 
     def delete(self):
         """Destructor. deallocates the popup menu, the notebook and all the properties.
@@ -292,6 +293,7 @@ class EditBase(np.PropertyOwner):
         "Writes the xml code for the widget to the given output file"
         # write object tag, including class, name, base
         classname = getattr(self, '_classname', self.__class__.__name__)
+        if classname=="EditToplevelMenuBar": classname = "EditMenuBar"
         # to disable custom class code generation (for panels...)
         if getattr(self, 'no_custom_class', False):
             no_custom = u' no_custom_class="1"'
@@ -365,7 +367,7 @@ class EditBase(np.PropertyOwner):
             if self.widget: slot.create()  # create the actual SizerSlot as wx.Window with hatched background
         return slot
 
-    # for tree display #################################################################################################
+    # for tree and help display ########################################################################################
     def _get_tree_label(self):
         # get a label for node
         s = self.name
@@ -407,6 +409,7 @@ class EditBase(np.PropertyOwner):
         return name
 
     def _label_editable(self):
+        # returns True if the label can be edited in the Tree ctrl
         if not "name" in self.properties: return False
         if not "label" in self.properties: return True
         label = self.label
@@ -414,6 +417,22 @@ class EditBase(np.PropertyOwner):
         if "\n" in label or "\t" in label or "'" in label or '"' in label: return False
         if len(label)>24: return False
         return True
+
+    def _get_tooltip_string(self):
+        # get tooltip string: first (optional) part from parent, second from ourself
+        # used as tooltip for the widget in the Design window and also for the status bar of the Palette
+        tooltip = []
+        if self.check_prop("pos"):
+            tooltip.append( self.parent._get_parent_tooltip(self.pos) )
+        tooltip.append( self._get_tooltip() )
+        return "\n".join(s for s in tooltip if s)
+
+    def _get_parent_tooltip(self, pos):
+        # called for a child; e.g. Splitter pane may return "Left spliter pane:" for pos=0
+        return None
+
+    def _get_tooltip(self):
+        return None
 
 
 class Slot(EditBase):
@@ -512,12 +531,6 @@ class Slot(EditBase):
 
     def _draw_background(self, dc, clear=True):
         "draw the hatches on device context dc (red if selected)"
-        # fill background first; propably needed only on MSW and not for on_erase_background
-        #if self.parent.IS_TOPLEVEL:
-            ## frame, panel, dialog
-            #size = self.parent.widget.GetClientSize()
-            #self.widget.SetSize( size )
-        #else:
         size = self.widget.GetSize()
         small = size[0]<10 or size[1]<10
         focused = misc.focused_widget is self
@@ -549,11 +562,6 @@ class Slot(EditBase):
         dc.SetBrush(brush)
         size = self.widget.GetClientSize()
         dc.DrawRectangle(0, 0, size.width, size.height)
-
-    #def set_size(self, size):
-        #if not self.widget: return
-        #size = self.parent.widget.GetClientSize()
-        #self.widget.SetSize( size )
 
     # context menu #####################################################################################################
     def popup_menu(self, event, pos=None):
@@ -708,11 +716,6 @@ class Slot(EditBase):
         clipboard.paste(self)
     ####################################################################################################################
 
-    #def delete(self):
-        ## mainly deletes the widget
-        #self.destroy_widget()
-        #common.root.saved = False
-
     def destroy_widget(self, detach=True):
         if self.widget is None: return
         if misc.currently_under_mouse is self.widget:
@@ -740,6 +743,7 @@ class Slot(EditBase):
     def write(self, output, tabs, class_names=None):
         return
 
+    # for tree and help display ########################################################################################
     def _get_tree_label(self):
         if self.label: return str(self.label)
         if self.parent.CHILDREN in (1,-1): return "SLOT"
@@ -758,11 +762,7 @@ class Slot(EditBase):
     def _get_tree_image(self):
         "Get an image name for tree display"
         if self.parent.WX_CLASS=="wxSplitterWindow":
-            if self.parent.orientation=="wxSPLIT_VERTICAL":
-                name = 'EditSplitterSlot-Left'  if self.pos==1 else  'EditSplitterSlot-Right'
-            else:
-                name = 'EditSplitterSlot-Top'   if self.pos==1 else  'EditSplitterSlot-Bottom'
-            return name
+            return 'EditSplitterSlot-%s'%self.parent._get_label(self.pos)  # 'Left', 'Right', 'Top', 'Bottom'
 
         if not self.parent.IS_SIZER: return "EditSlot"
         name = "EditSizerSlot"
@@ -775,3 +775,7 @@ class Slot(EditBase):
                     name = "EditHorizontalSizerSlot"
         return name
 
+    def _get_tooltip(self):
+        if self.parent.WX_CLASS in ("wxPanel", "wxFrame"):
+            return "Add a control or container or sizer here, e.g. a panel, a panel plus sizer, a notebook or a sizer."
+        return "Add a control or container here, e.g. a panel, a panel plus sizer or a notebook."

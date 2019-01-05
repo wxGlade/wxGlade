@@ -82,6 +82,8 @@ class SizerSlot(edit_base.Slot):
     def write(self, output, tabs, class_names=None):
         output.extend( common.format_xml_tag( u'object', '', tabs, **{'class': 'sizerslot'}) )
 
+    def _get_tooltip(self):
+        return "Add a widget or another sizer here."
 
 
 class SizerHandleButton(GenButton):

@@ -413,6 +413,8 @@ class WidgetTree(wx.TreeCtrl):#, Tree):
         if wx.Platform == "__WXMSW__":
             self.SetItemBold(item, True)
             self.SetItemTextColour(item, wx.BLUE)
+        s = widget._get_tooltip_string()
+        if s:  common.main.user_message( s.replace("\n", " ") )
 
     def set_current_widget(self, widget):
         # interface from common.set_focused_widget
