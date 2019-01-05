@@ -475,8 +475,9 @@ class WindowBase(EditBase):
         EditBase.properties_changed(self, modified)
 
     def get_properties(self, without=set()):
-        if not self.properties["foreground"].is_active(): without.add("foreground")
-        if not self.properties["background"].is_active(): without.add("background")
+        if "foreground" in self.properties:
+            if not self.properties["foreground"].is_active(): without.add("foreground")
+            if not self.properties["background"].is_active(): without.add("background")
         return EditBase.get_properties(self, without)
 
 
@@ -693,8 +694,9 @@ class TopLevelBase(WindowBase, PreviewMixin):
         if not self.widget:
             self.create_widget()
             self.finish_widget_creation()
-            self.drop_target = clipboard.DropTarget(self)
-            self.widget.SetDropTarget(self.drop_target)
+            if self.CHILDREN:  # not for MenuBar, ToolBar
+                self.drop_target = clipboard.DropTarget(self)
+                self.widget.SetDropTarget(self.drop_target)
 
         with self.frozen():
             for c in self.get_all_children():
@@ -731,7 +733,7 @@ class TopLevelBase(WindowBase, PreviewMixin):
 
     def create(self):
         WindowBase.create(self)
-        if wx.Platform == '__WXMSW__':
+        if wx.Platform == '__WXMSW__' and "size" in self.properties:
             # more than ugly, but effective hack to properly layout the window on Win32
             if self.properties['size'].is_active():
                 w, h = self.widget.GetSize()
