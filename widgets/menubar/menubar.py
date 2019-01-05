@@ -670,8 +670,6 @@ class MenuHandler(BaseXmlBuilderTagHandler):
             self.menu_depth -= 1
             self.curr_menu.pop()
         elif name == 'menus':
-            #self.owner.set_menus(self.owner.menus)
-            #self.owner.properties["menus"].set(self.owner.menus)
             self.owner.properties["menus"].set(self.menus)
             self.owner.properties_changed(["menus"])
             return True
@@ -684,7 +682,6 @@ class MenuHandler(BaseXmlBuilderTagHandler):
 
 
 class EditMenuBar(EditBase, PreviewMixin):
-    __hidden_frame = None  # used on GTK to reparent a menubar before deletion
 
     WX_CLASS = "wxMenuBar"
     _PROPERTIES = ["menus", "preview"]
@@ -712,16 +709,14 @@ class EditMenuBar(EditBase, PreviewMixin):
         else:
             self.preview = None
 
+    def create_widgets(self):
+        EditBase.create_widgets(self)
+        if self.IS_TOPLEVEL:
+            self.widget.Show()
+            self.widget.Raise()
+
     def create_widget(self):
-        if wx.Platform == '__WXGTK__' and not EditMenuBar.__hidden_frame:
-            EditMenuBar.__hidden_frame = wx.Frame(common.main, -1, "")
-            EditMenuBar.__hidden_frame.Hide()
-        if not self.IS_TOPLEVEL:
-            self.widget = self._mb = wx.MenuBar()
-            if self.parent.widget: self.parent.widget.SetMenuBar(self.widget)
-            if wx.Platform == '__WXMSW__' or wx.Platform == '__WXMAC__':
-                self.widget.SetFocus = lambda : None
-        else:
+        if self.IS_TOPLEVEL:
             # "top-level" menubar
             self.widget = wx.Frame(None, -1, misc.design_title(self.name))
             self.widget.SetClientSize((400, 30))
@@ -734,6 +729,12 @@ class EditMenuBar(EditBase, PreviewMixin):
             icon.CopyFromBitmap(misc.get_xpm_bitmap(xpm))
             self.widget.SetIcon(icon)
             self.widget.Bind(wx.EVT_CLOSE, lambda e: self.hide_widget())
+        else:
+            self.widget = self._mb = wx.MenuBar()
+            if self.parent.widget: self.parent.widget.SetMenuBar(self.widget)
+            if wx.Platform == '__WXMSW__' or wx.Platform == '__WXMAC__':
+                self.widget.SetFocus = lambda : None
+
         self.widget.Bind(wx.EVT_LEFT_DOWN, self.on_set_focus)
         self.set_menus()  # show the menus
 
@@ -776,7 +777,11 @@ class EditMenuBar(EditBase, PreviewMixin):
 
     def remove(self, *args, **kwds):
         # entry point from GUI
-        if not self.parent.IS_ROOT:
+        if self.IS_TOPLEVEL:
+            if self.widget:
+                compat.DestroyLater(self.widget)
+                self.widget = None
+        else:
             self.parent.properties['menubar'].set(False)
             self.parent._menubar = None
             if kwds.get('gtk_do_nothing', False) and wx.Platform == '__WXGTK__':
@@ -787,10 +792,6 @@ class EditMenuBar(EditBase, PreviewMixin):
             else:
                 if self.parent.widget:
                     self.parent.widget.SetMenuBar(None)
-        else:
-            if self.widget:
-                compat.DestroyLater(self.widget)
-                self.widget = None
         EditBase.remove(self)
 
     def popup_menu(self, event, pos=None):
@@ -819,7 +820,7 @@ class EditMenuBar(EditBase, PreviewMixin):
         return menu
 
     def hide_widget(self, *args):
-        if self.widget and self.widget is not self._mb:
+        if self.widget and self.IS_TOPLEVEL:
             self.widget.Hide()
             common.app_tree.Collapse(self.item)
             common.app_tree.select_item(self.parent)
