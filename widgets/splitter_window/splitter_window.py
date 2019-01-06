@@ -174,6 +174,10 @@ class EditSplitterWindow(ManagedBase, EditStylesMixin):
     def check_compatibility(self, widget, typename=None, report=False):
         return (False,"No objects can be pasted here; paste to empty slots instead.")
 
+    def check_drop_compatibility(self):
+        # checks whether a widget can be dropped here
+        return (False, "Items can only be added to empty slots, not to the splitter window itself.")
+
     def _get_parent_tooltip(self, pos):
         return "%s splitter pane:"%self._get_label(pos)
 

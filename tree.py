@@ -466,6 +466,13 @@ class WidgetTree(wx.TreeCtrl):#, Tree):
             self.show_toplevel(None, widget)
         else:
             event.Skip()
+    def on_left_dclick(self, event):
+        x, y = event.GetPosition()
+        widget = self._find_node_by_pos(x, y)
+        if not widget or not widget.IS_TOPLEVEL:
+            event.Skip()
+            return
+        self.show_toplevel(None, widget)
 
     def on_leave_window(self, event):
         self.SetCursor(wx.STANDARD_CURSOR)

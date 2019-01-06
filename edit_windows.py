@@ -711,11 +711,11 @@ class TopLevelBase(WindowBase, PreviewMixin):
             self.widget.Raise()
             # set the best size for the widget (if no one is given)
             if self.check_prop('size'):
-                if self.sizer:
+                if self.sizer:  # self.sizer is the containing sizer, i.e. the parent
                     self.sizer.fit_parent()
-                elif getattr(self,"top_sizer",None):
+                elif self.WX_CLASS=="wxPanel" and self.children:
                     wx.Yield()  # by now, there are probably many EVT_SIZE in the queue
-                    self.top_sizer.fit_parent()
+                    self.children[0].fit_parent()
 
     def finish_widget_creation(self, *args, **kwds):
         WindowBase.finish_widget_creation(self)

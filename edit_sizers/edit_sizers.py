@@ -387,7 +387,7 @@ class SizerBase(Sizer, np.PropertyOwner):
         np.PropertyOwner.properties_changed(self, modified)
 
     def check_drop_compatibility(self):
-        return (False, "Items can only be added to empty slots")
+        return (False, "Items can only be added to empty slots; add/insert a slot first, if required.")
 
     def check_compatibility(self, widget, typename=None):
         if typename is not None:

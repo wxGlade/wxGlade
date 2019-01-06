@@ -691,6 +691,9 @@ class Slot(EditBase):
     # clipboard handling ###############################################################################################
     def check_compatibility(self, widget, typename=None):
         "check whether widget can be pasted here"
+        if self.parent.CHILDREN == -1:
+            # single or no child: no sizer but a panel or frame
+            return self.parent.check_compatibility(widget, typename)
         if typename is not None:
             if typename=="sizer" and self.parent.CHILDREN is not 1:
                 return (False, "No sizer can be pasted here")

@@ -169,7 +169,7 @@ def get_data_object(widget):
     # make a data object
     if widget.IS_SIZER:
         do = wx.CustomDataObject(sizer_data_format)
-    if widget.IS_TOPLEVEL:
+    elif widget.IS_TOPLEVEL:
         do = wx.CustomDataObject(window_data_format)
     else:
         do = wx.CustomDataObject(widget_data_format)
