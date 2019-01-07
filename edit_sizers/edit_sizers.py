@@ -394,7 +394,7 @@ class SizerBase(Sizer, np.PropertyOwner):
             if typename in ("widget","sizer"):
                 return ("AddSlot",None)
             return (False,"Only widgets and sizers can be pasted here")
-        if widget.IS_TOPEVEL:
+        if widget.IS_TOPLEVEL:
             return (False,"No toplevel objects can be pasted here")
         return ("AddSlot",None) # a slot is to be added before inserting/pasting
 
@@ -1932,17 +1932,17 @@ def change_sizer(old, new):
     (which_page: index of the property windows notebook page; used only by set_growable_(rows|cols)"""
     pos = 0 if old.toplevel else old.pos
     constructors = {
-        'wxBoxSizer (wxVERTICAL)':         lambda: EditBoxSizer(old.name, old.window, pos, wx.VERTICAL, 0),
-        'wxBoxSizer (wxHORIZONTAL)':       lambda: EditBoxSizer(old.name, old.window, pos, wx.HORIZONTAL, 0),
-        'wxWrapSizer (wxVERTICAL)':        lambda: EditWrapSizer(old.name, old.window, pos, wx.VERTICAL, 0),
-        'wxWrapSizer (wxHORIZONTAL)':      lambda: EditWrapSizer(old.name, old.window, pos, wx.HORIZONTAL, 0),
-        'wxStaticBoxSizer (wxVERTICAL)':   lambda: EditStaticBoxSizer(old.name, old.window, pos, wx.VERTICAL,
+        'wxBoxSizer (wxVERTICAL)':         lambda: EditBoxSizer(old.name, old.parent, pos, wx.VERTICAL, 0),
+        'wxBoxSizer (wxHORIZONTAL)':       lambda: EditBoxSizer(old.name, old.parent, pos, wx.HORIZONTAL, 0),
+        'wxWrapSizer (wxVERTICAL)':        lambda: EditWrapSizer(old.name, old.parent, pos, wx.VERTICAL, 0),
+        'wxWrapSizer (wxHORIZONTAL)':      lambda: EditWrapSizer(old.name, old.parent, pos, wx.HORIZONTAL, 0),
+        'wxStaticBoxSizer (wxVERTICAL)':   lambda: EditStaticBoxSizer(old.name, old.parent, pos, wx.VERTICAL,
                                                                       getattr(old, 'label', old.name), 0),
-        'wxStaticBoxSizer (wxHORIZONTAL)': lambda: EditStaticBoxSizer(old.name, old.window, pos, wx.HORIZONTAL,
+        'wxStaticBoxSizer (wxHORIZONTAL)': lambda: EditStaticBoxSizer(old.name, old.parent, pos, wx.HORIZONTAL,
                                                                       getattr(old, 'label', old.name), 0),
-        'wxGridSizer':     lambda: EditGridSizer(old.name, old.window, pos, rows=0, cols=0),
-        'wxFlexGridSizer': lambda: EditFlexGridSizer(old.name, old.window, pos, rows=0, cols=0),
-        'wxGridBagSizer': lambda: EditGridBagSizer(old.name, old.window, pos, rows=0, cols=0) }
+        'wxGridSizer':     lambda: EditGridSizer(old.name, old.parent, pos, rows=0, cols=0),
+        'wxFlexGridSizer': lambda: EditFlexGridSizer(old.name, old.parent, pos, rows=0, cols=0),
+        'wxGridBagSizer': lambda: EditGridBagSizer(old.name, old.parent, pos, rows=0, cols=0) }
 
     with old.window.frozen():
         # construct without children, take then the children from the old sizer
