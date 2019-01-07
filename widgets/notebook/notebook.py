@@ -346,7 +346,8 @@ class EditNotebook(ManagedBase, EditStylesMixin):
         return common.root.get_next_name(tmpl, self)
 
     def _get_slot_label(self, pos):
-        return "Notebook Page %d"%pos
+        title = self.tabs[pos][0]
+        return '[%s] Page %s'%(title, pos)
 
 
 def builder(parent, pos):

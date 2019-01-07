@@ -343,7 +343,11 @@ class WidgetTree(wx.TreeCtrl):#, Tree):
                 child = children[index]
                 item = self.add2(child, parent=widget, index=index, item=items[index])
         
-        if not recursive: return
+        if not recursive:
+            # update labels and images, called e.g. when notebook pages change
+            for child in children:
+                self.refresh(child)
+            return
         for child, item in zip(children, items):
             self._build_children(child, item)
 

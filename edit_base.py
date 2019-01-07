@@ -759,8 +759,7 @@ class Slot(EditBase):
             row = pos // cols + 1  # 1 based at the moment
             col = pos %  cols + 1
             return "SLOT  %d/%d"%(row, col)
-        else:
-            return "SLOT %d"%(pos)
+        return "SLOT %d"%(pos)
 
     def _get_tree_image(self):
         "Get an image name for tree display"
