@@ -11,7 +11,7 @@ import logging, os.path
 import wx
 import misc, common, compat, config, clipboard
 
-DEBUG = config.debugging
+DEBUG = config.debugging and False
 if DEBUG:
     import utilities
 
@@ -143,7 +143,7 @@ class WidgetTree(wx.TreeCtrl):#, Tree):
                 if pre.endswith(" "): pre = pre[:-1]
                 new_value = pre+post
 
-        if "label" in widget.properties and self._label_editable(widget):
+        if "label" in widget.properties and widget._label_editable():
             new_name, new_label = self._split_name_label(new_value)
         elif "label" in widget.properties:
             # label is not editable, but name may have changed
