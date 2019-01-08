@@ -589,7 +589,8 @@ def change_sizer(old, new):
             szr.properties["pos"].set(old.pos)
             szr.sizer.children[szr.pos] = szr
             if szr.sizer.widget:
-                elem = szr.sizer.widget.GetChildren()[szr.pos]
+                pos = szr.sizer.get_child_index(szr.pos)
+                elem = szr.sizer.widget.GetChildren()[pos]  # a sizer item
                 compat.SizerItem_SetSizer(elem, szr.widget)
     
         common.app_tree.change_node(szr.node, szr)
@@ -1046,12 +1047,17 @@ class SizerBase(Sizer, np.PropertyOwner):
         if force_layout:
             self.layout()  # update the layout of self
 
+    def get_child_index(self, pos):
+        # return the index of the widget; in GridBagSizers, overlapped slots are skipped
+        return pos
+
     def _fix_notebook(self, pos, notebook_sizer, force_layout=True):   # XXX check this with new implementation
         """Replaces the widget at 'pos' with 'notebook_sizer':
         this is intended to be used by wxNotebook widgets, to add the notebook sizer to this sizer.
         This is a hack, but it's the best I could find without having to rewrite too much code :-("""
         # no error checking at all, this is a "protected" method, so it should
         # be safe to assume the caller knows how to use it
+        pos = self.get_child_index(pos)
         item = self.widget.GetChildren()[pos]
         if item.IsWindow():
             w = item.GetWindow()
@@ -2261,10 +2267,19 @@ class EditGridBagSizer(EditFlexGridSizer):
                     if not add_only: child.set_overlap(True, add_to_sizer=add_to_sizer)
                 else:
                     if not remove_only: child.set_overlap(False, add_to_sizer=add_to_sizer)
+
     def _can_add_insert_slots(self, report=False):
         if report:
             misc.error_message("Can't insert or add slots as sizer's Rows and Cols are fixed (see Properties -> Grid).")
         return False
+
+    def get_child_index(self, pos):
+        # return the index of the widget; overlapped slots are skipped
+        ret = 0
+        for p, child in enumerate(self.children):
+            if child is None or (isinstance(child, SizerSlot) and child.overlapped): continue
+            if p==pos: return ret
+            ret += 1
 
     # context menu actions #############################################################################################
     @_frozen  # if _frozen is used, this should be called via wx.CallAfter
