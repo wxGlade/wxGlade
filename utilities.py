@@ -10,6 +10,10 @@ from __future__ import print_function
 
 import wx
 
+
+def hx(obj):
+    return hex(id(obj)).upper()
+
 class StructurePrinter:
     # print the structure and sizes of a window with all it's children
     def __init__(self, window):
@@ -52,7 +56,7 @@ class StructurePrinter:
             best_size = widget.GetBestSize()
         except AttributeError:
             best_size ="???"
-        print( "  "*indent, "%s: %s"%(cname, name), widget.GetSize(), best_size, widget.GetEffectiveMinSize() )
+        print( "  "*indent, "%s: %s %s"%(cname, name, hx(widget)), widget.GetSize(), best_size, widget.GetEffectiveMinSize() )
 
         if si: self._sizer_item(si, indent)
 
