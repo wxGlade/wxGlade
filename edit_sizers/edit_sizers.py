@@ -1224,10 +1224,11 @@ class SizerBase(Sizer, np.PropertyOwner):
 
     def destroy_widget(self):
         # actually, the sizer widget is not destroyed
-        if not self.widget: return
         if self._btn:
+            # delete SizerHandleButton first, as the sizer widget may be destroyed already when called from change_sizer
             self._btn.Destroy()
             self._btn = None
+        if not self.widget: return
         self.widget.Clear()  # without deleting window items; but sets the sizer of the windows to NULL
 
     if wx.Platform == '__WXMSW__':
