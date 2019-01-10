@@ -2903,7 +2903,7 @@ class PropertyOwner(object):
         if name!="properties" and name in self.properties and config.debugging:
             raise ValueError("implementation error: property about to be overwritten")
         object.__setattr__(self, name, value)
-    def copy_properties(self, other, properties):
+    def copy_properties(self, other, properties, notify=True):
         "copy named properties from other"
         # with short cut for properties with 'values_set'
         for p in properties:
@@ -2919,7 +2919,8 @@ class PropertyOwner(object):
                 old = prop.get()
             if new!=old:
                 prop.set(new)
-        self.properties_changed(properties)
+        if notify:
+            self.properties_changed(properties)
     def check_property_modification(self, name, value, new_value):
         # return False in derived class to veto a user modification
         return True
