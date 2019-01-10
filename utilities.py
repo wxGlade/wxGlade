@@ -10,6 +10,11 @@ from __future__ import print_function
 
 import wx
 
+
+def hx(obj):
+    return hex(id(obj)).upper()
+
+
 class StructurePrinter:
     # print the structure and sizes of a window with all it's children
     def __init__(self, window):
@@ -48,11 +53,12 @@ class StructurePrinter:
     def window(self, widget, si, indent=0):
         cname = widget.GetClassName() # u'wxPanel'
         name  = widget.GetName() # u'panel'
+        HEX = hx(widget)
         try:
             best_size = widget.GetBestSize()
         except AttributeError:
             best_size ="???"
-        print( "  "*indent, "%s: %s"%(cname, name), widget.GetSize(), best_size, widget.GetEffectiveMinSize() )
+        print( "  "*indent, "%s: %s %s"%(cname, name, HEX), widget.GetSize(), best_size, widget.GetEffectiveMinSize() )
 
         if si: self._sizer_item(si, indent)
 
@@ -73,9 +79,6 @@ class StructurePrinter:
         self._sizer_item(si, indent)
         print()
 
-
-def hx(obj):
-    return hex(id(obj)).upper()
 
 class TreePrinter:
     # print the structure of the TreeCtrl
