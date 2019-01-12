@@ -2001,6 +2001,12 @@ def change_sizer(old, new):
         # XXX keep rows, cols, growable_rows, growable_cols in attributes of new sizer if it's not a (Flex)GridSizer
         #     and re-use them if user switches back
 
+        if szr._IS_GRIDBAG:
+            szr._check_slots(remove_only=True)  # for the children, .parent is still the old sizer here
+
+        for widget in szr.children:
+            widget.parent = szr
+
         if old.widget is not None:
             for c in old.widget.GetChildren():
                 if c and c.IsSizer():
@@ -2008,9 +2014,6 @@ def change_sizer(old, new):
             old.widget.Clear()  # without deleting window items; but sets the sizer of the windows to NULL
 
             szr.create(dont_set=True)
-
-        if isinstance(szr, EditGridBagSizer):
-            szr._check_slots(remove_only=True)  # mark overlapped slots
 
         for widget in szr.children:
             if not isinstance(widget, SizerSlot):
