@@ -236,15 +236,22 @@ class WindowBase(EditBase):
     _PROPERTIES = ["id", "size", "background", "foreground", "font", "tooltip", "disabled", "focused", "hidden"]
     PROPERTIES = EditBase.PROPERTIES + _PROPERTIES
 
-    _PROPERTY_HELP = { "id":"""The "Id" property could be
-    1) a constant numeric value
-    2) a predefined identifier e.g. wxID_ANY
-    3) a predefined variable like a class member e.g. self.myButtonID
-    4) a variable assignment e.g. self.myButtonID=?
+    _PROPERTY_HELP = {
+        "id":   "The 'Id' property could be\n"
+                "    1) a constant numeric value\n"
+                "    2) a predefined identifier e.g. wxID_ANY\n"
+                "    3) a predefined variable like a class member e.g. self.myButtonID\n"
+                "    4) a variable assignment e.g. self.myButtonID=?\n\n"
+                "The pattern of a variable assignment is always 'variable=value'.\n\n"
+                "The value could be again a numeric value, a predefined identifier,\n"
+                "another predefined variable or '?' a shortcut for 'wxNewId()'.",
 
-    The pattern of a variable assignment is always "variable=value". The \
-    value could be again a numeric value, a predefined identifier, \
-    another predefined variable or "?" a shortcut for "wxNewId()"."""}
+        "size": "Specify the size of the widget.\n\n"
+                "E.g. '200,100' for a width of 200 pixels and a height of 100.\n\n"
+                "If you want to specify either width or height, you can use -1\n"
+                "for the other direction to keep the default for that.\n"
+                "E.g. '200,-1' or '-1,200'.\n"
+                "(The default value is '-1,-1' .)"}
 
     _PROPERTY_LABELS = {"attribute":'Store as attribute'}  # used in many derived widget editors
 
