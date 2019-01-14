@@ -711,7 +711,7 @@ class EditMenuBar(EditBase, PreviewMixin):
 
     def create_widgets(self):
         EditBase.create_widgets(self)
-        if self.IS_TOPLEVEL:
+        if self.IS_TOPLEVEL and self.widget:
             self.widget.Show()
             self.widget.Raise()
 
@@ -730,6 +730,7 @@ class EditMenuBar(EditBase, PreviewMixin):
             self.widget.SetIcon(icon)
             self.widget.Bind(wx.EVT_CLOSE, lambda e: self.hide_widget())
         else:
+            if wx.Platform=="_WXMAC__": return   # XXX check how a toplevel menu bar behaves on Mac OS
             self.widget = self._mb = wx.MenuBar()
             if self.parent.widget: self.parent.widget.SetMenuBar(self.widget)
             if wx.Platform == '__WXMSW__' or wx.Platform == '__WXMAC__':
@@ -840,7 +841,7 @@ class EditMenuBar(EditBase, PreviewMixin):
             self.set_menus()
         EditBase.properties_changed(self, modified)
 
-    def check_compatibility(self, widget, typename=None, report=False):
+    def check_compatibility(self, widget, typename=None):
         return (False,"No pasting possible here.")
     def check_drop_compatibility(self):
         return (False,"Use menu editor: Properties -> Edit menus...")

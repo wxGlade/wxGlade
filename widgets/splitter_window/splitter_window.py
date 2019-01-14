@@ -171,7 +171,7 @@ class EditSplitterWindow(ManagedBase, EditStylesMixin):
         # resize instead of drag & drop
         event.Skip()
 
-    def check_compatibility(self, widget, typename=None, report=False):
+    def check_compatibility(self, widget, typename=None):
         return (False,"No objects can be pasted here; paste to empty slots instead.")
 
     def check_drop_compatibility(self):
@@ -190,14 +190,10 @@ class EditSplitterWindow(ManagedBase, EditStylesMixin):
 
     def _free_slot(self, pos, force_layout=True):
         "Replaces the element at pos with an empty slot"
-        if self.orientation=="wxSPLIT_VERTICAL":
-            labels = ("SLOT Left","SLOT Right")
-        else:
-            labels = ("SLOT Top","SLOT Bottom")
         if self.widget and self.children[pos] and self.children[pos].widget:
             self.widget.Unsplit(self.children[pos].widget)
         old_child = self.children[pos]
-        slot = Slot(self, pos, labels[0])
+        slot = Slot(self, pos)
         self.split()
         return slot
 

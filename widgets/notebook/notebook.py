@@ -140,8 +140,8 @@ class EditNotebook(ManagedBase, EditStylesMixin):
             wx.CallAfter(item.sel_marker.update)
         except AttributeError:
             pass
-        if self.sizer is not None:
-            self.sizer.set_item_best_size( self, size=self.widget.GetBestSize() )
+        if hasattr(self.parent, "set_item_best_size"):
+            self.parent.set_item_best_size( self, size=self.widget.GetBestSize() )
 
     def insert_tab(self, index, label):
         # add tab/page; called from GUI
@@ -290,9 +290,9 @@ class EditNotebook(ManagedBase, EditStylesMixin):
             except AttributeError:
                 #self._logger.exception(_('Internal Error'))
                 pass
-        if self.sizer is not None:
+        if hasattr(self.parent, "set_item_best_size"):
             #self.sizer.set_item( self.pos, size=self.widget.GetBestSize() )
-            self.sizer.set_item_best_size( self, size=self.widget.GetBestSize() )
+            self.parent.set_item_best_size( self, size=self.widget.GetBestSize() )
 
     def get_itempos(self, attrs):
         "Get position of sizer item (used in xml_parse)"

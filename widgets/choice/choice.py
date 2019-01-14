@@ -53,8 +53,8 @@ class EditChoice(ManagedBase):
                 # update widget
                 self.widget.Clear()
                 for c in choices: self.widget.Append(c[0])
-                if not self.properties['size'].is_active():
-                    self.sizer.set_item_best_size(self, size=self.widget.GetBestSize())
+                if hasattr(self.parent, "set_item_best_size") and not self.properties['size'].is_active():
+                    self.parent.set_item_best_size(self, size=self.widget.GetBestSize())
 
         if not modified or "selection" in modified or set_selection:
             set_selection = True

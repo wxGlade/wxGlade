@@ -193,7 +193,7 @@ class EditPanel(PanelBase, ManagedBase):
 
         return menu
 
-    def check_compatibility(self, widget, typename=None, report=True):
+    def check_compatibility(self, widget, typename=None):
         "check whether widget can be pasted"
         if typename is not None:
             if typename!="sizer":

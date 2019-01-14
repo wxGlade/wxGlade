@@ -351,6 +351,7 @@ def _can_remove():
     if focused_widget is None or not hasattr(focused_widget, "remove"): return False
     if focused_widget.IS_SLOT:
         # XXX change this later on, to remove e.g. notebook pages, but not when parent.CHILDREN is an int
+        if focused_widget.parent.CHILDREN == -1: return True
         if not focused_widget.parent.IS_SIZER or focused_widget.sizer._IS_GRIDBAG:
             wx.Bell()
             return False

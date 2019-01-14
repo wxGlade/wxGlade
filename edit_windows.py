@@ -190,7 +190,7 @@ class EditBase(EventsMixin, edit_base.EditBase):
         #if wxPlatform != '__WXMSW__': event.Skip()
 
     # clipboard ########################################################################################################
-    def check_compatibility(self, widget, typename=None, report=False):
+    def check_compatibility(self, widget, typename=None):
         # only with slots before/after
         if typename is not None and typename=="window" or widget.IS_TOPLEVEL:
             return (False,"No toplevel objects can be pasted here")
@@ -443,8 +443,8 @@ class WindowBase(EditBase):
             font = wx.Font( font[0], families[font[1]], styles[font[2]], weights[font[3]], font[4], font[5])
 
         self.widget.SetFont(font)
-        if not self.properties["size"].is_active():
-            self.sizer.set_item_best_size(self)
+        if hasattr(self.parent, "set_item_best_size") and not self.properties["size"].is_active():
+            self.parent.set_item_best_size(self)
 
     def set_size(self):
         if not self.widget: return
@@ -452,10 +452,8 @@ class WindowBase(EditBase):
         if not size_p.is_active(): return
         size = size_p.get_size(self.widget)
         self.widget.SetSize(size)
-        try:
-            self.sizer.set_item_best_size(self, size=size)
-        except AttributeError:
-            pass
+        if hasattr(self.parent, "set_item_best_size"):
+            self.parent.set_item_best_size(self, size=size)
 
     def get_property_handler(self, name):
         if name == 'font':
@@ -590,10 +588,11 @@ class ManagedBase(WindowBase):
         if size_p.is_active() and size_p.get() != "-1, -1": return # fixed size
         # find best size, apply; display if size property is not active
         self.widget.SetMinSize( (-1,-1) )  # otherwise the size would often not be reduced, e.g. for buttons
-        best_size = self.widget.GetBestSize()
-        self.sizer.set_item_best_size(self, best_size)
-        if not size_p.is_active():
-            size_p.set( best_size )
+        if hasattr(self.parent, "set_item_best_size"):
+            best_size = self.widget.GetBestSize()
+            self.parent.set_item_best_size(self, best_size)
+            if not size_p.is_active():
+                size_p.set( best_size )
 
     def destroy_widget(self):
         if self.sel_marker:
@@ -800,13 +799,11 @@ class TopLevelBase(WindowBase, PreviewMixin):
         self.design.update_label()
 
     ####################################################################################################################
-    def check_compatibility(self, widget, typename=None, report=True):
+    def check_compatibility(self, widget, typename=None):
         "check in advance whether widget can be pasted"
 
-        if self.children:
-            if report:
-                return (False, 'Sizer already set for this window')
-            return (True,None)
+        if self.children and not self.children[0].IS_SLOT:
+            return (False, 'Sizer already set for this window')
 
         if typename is not None:
             #if typename!="sizer":

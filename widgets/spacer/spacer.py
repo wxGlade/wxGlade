@@ -54,7 +54,7 @@ class EditSpacer(ManagedBase):
         if not modified or "width" in modified or "height" in modified:
             size = (self.width, self.height)
             if self.widget: self.widget.SetSize(size)
-            self.sizer.set_item_best_size(self, size=size)
+            self.parent.set_item_best_size(self, size=size)
         ManagedBase.properties_changed(self, modified)
 
 

@@ -763,7 +763,7 @@ class Application(EditRoot):
         return (False, "Only toplevel widgets can be added here; click Frame or Dialog icon to do so")
 
     def check_compatibility(self, widget, typename=None):
-        if widget.IS_TOPLEVEL or typename=="window":
+        if (widget and widget.IS_TOPLEVEL) or typename=="window":
             return (True, None)
         return (False, "Only toplevel widgets can be pasted here (e.g. Frame or Dialog)")
 
