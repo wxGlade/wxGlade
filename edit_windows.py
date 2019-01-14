@@ -803,7 +803,7 @@ class TopLevelBase(WindowBase, PreviewMixin):
         "check in advance whether widget can be pasted"
 
         if self.children and not self.children[0].IS_SLOT:
-            return (False, 'Sizer already set for this window')
+            return (False, 'Sizer or child widget already set for this window')
 
         if typename is not None:
             #if typename!="sizer":
@@ -850,7 +850,7 @@ class TopLevelBase(WindowBase, PreviewMixin):
 
     def check_drop_compatibility(self):
         if self.children:
-            return (False, 'Sizer already set for this window')
+            return (False, 'Sizer or child widget already set for this window')
         #if common.adding_sizer:
         return (True, None)
         #return (False, 'Only sizers can be added here')
