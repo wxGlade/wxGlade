@@ -123,9 +123,9 @@ Sizer Examples
      - |horizontal3|
    * - **StaticBoxSizer**
 
+       * This sizer puts a border around its edges and provides a label to describe its contents.
        * In this example, a horizontal StaticBoxSizer has been used to contain the three buttons
          (which have the same properties set as those in the previous example). |br|
-       * This sizer puts a border around its edges and provides a label with which to describe its contents.
        * StaticBoxSizers can be either horizontal or vertical, just like their "non-static" equivalents.
 
      - |static_horizontal|

@@ -666,7 +666,7 @@ if your current file is too different, e.g. because you did not complete Part 4 
 
 The logic with :guilabel:`wxEXPAND` is a bit different than with non-grid sizers.
 If it is active, the control will grow horizontally and vertically.
-If you want to avoid this, you need to add a horizontal or vertical sizer 'between' grid sizer and control.
+If you want to avoid this, you need to add a horizontal or vertical box sizer 'between' grid sizer and control.
 
 This file can be found in the folder ``wxglade/examples/Calculator``:
 `Calculator-06-GridSizer.wxg <../../examples/Calculator/Calculator-06-GridSizer.wxg>`_
