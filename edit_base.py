@@ -479,10 +479,10 @@ class Slot(EditBase):
     def create_widget(self):
         if self.overlapped and self.parent._IS_GRIDBAG: return
         style = wx.FULL_REPAINT_ON_RESIZE
-        if self.parent.CHILDREN==1:  # e.g. Panel in a Frame
+        if self.parent.CHILDREN in (-1, 1):  # e.g. Panel in a Frame
             size = self.parent.widget.GetClientSize()
         else:
-            size=(20, 20)
+            size = (20, 20)
         self.widget = wx.Window(self.parent_window.widget, -1, size=size, style=style)
         self.widget.SetBackgroundStyle(wx.BG_STYLE_CUSTOM)
         #self.widget.SetAutoLayout(True)
