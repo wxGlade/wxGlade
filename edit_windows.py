@@ -417,9 +417,9 @@ class WindowBase(EditBase):
             # The issue probably occur only within EditGrid.
             # This is workaround prevents the propagation if the size hasn't changed.
             # Related SF bug report: #170
-            if size_prop == size_widget: return
-
-            prop_size.set(size_widget)  # set to the actual value, either because wx forced it or just for displaying
+            if size_prop != size_widget:
+                # set to the actual value, either because wx forced it or just for displaying
+                prop_size.set(size_widget)
         except KeyError:
             logging.exception(_('Internal Error'))
 

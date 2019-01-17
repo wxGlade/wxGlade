@@ -163,6 +163,10 @@ class EditSplitterWindow(ManagedBase, EditStylesMixin):
             pass
         ManagedBase.on_size(self, event)
 
+    def on_child_pasted(self):
+        if not self.widget: return
+        self.widget.UpdateSize()
+
     def on_sash_pos_changed(self, event):
         self.properties['sash_pos'].set( self.widget.GetSashPosition() )
         event.Skip()
