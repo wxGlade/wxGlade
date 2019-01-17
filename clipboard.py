@@ -287,6 +287,7 @@ def _paste(parent, pos, clipboard_data):
         parser = xml_parse.ClipboardXmlWidgetBuilder(parent, pos, option, span, flag, border)
         with parent and parent.frozen() or misc.dummy_contextmanager():
             parser.parse_string(xml_utf8)
+            if parent: parent.on_child_pasted()  # trigger e.g. re-sizing of the children
         misc.rebuild_tree( parser.top_obj )
         return True  # Widget hierarchy pasted.
     except xml_parse.XmlParsingError:

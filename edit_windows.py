@@ -423,6 +423,11 @@ class WindowBase(EditBase):
         except KeyError:
             logging.exception(_('Internal Error'))
 
+    def on_child_pasted(self):
+        if not self.widget: return
+        if self.parent.WX_CLASS=="wxSplitterWindow":
+            self.parent.widget.UpdateSize()
+
     def _build_from_font(self, font):
         families = np.FontProperty.font_families_from
         styles   = np.FontProperty.font_styles_from
