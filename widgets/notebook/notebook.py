@@ -350,6 +350,17 @@ class EditNotebook(ManagedBase, EditStylesMixin):
         return '[%s] Page %s'%(title, pos)
 
 
+    def check_compatibility(self, widget, typename=None):
+        return (False,"No objects can be pasted here; paste to empty pages instead.")
+
+    def check_drop_compatibility(self):
+        # checks whether a widget can be dropped here
+        return (False, "Items can only be added to empty pages/slots, not to the notebook itself.")
+
+    def _get_parent_tooltip(self, pos):
+        return "Notebook page %s:"%pos
+
+
 def builder(parent, pos):
     "Factory function for editor objects from GUI"
     choices = 'wxNB_TOP|wxNB_BOTTOM|wxNB_LEFT|wxNB_RIGHT'
