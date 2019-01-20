@@ -256,7 +256,7 @@ class XmlWidgetBuilder(XmlParser):
             # remove last object from Stack
             obj = self._objects.pop()
             obj.notify_owner()
-            if obj.klass in ('sizeritem', 'sizerslot'):
+            if obj.IS_SIZERITEM or obj.IS_SLOT:
                 return
             if obj.sizeritem and obj.obj.parent.IS_SIZER:
                 # XXX just check whether obj.obj has these properties
@@ -411,6 +411,7 @@ class ClipboardXmlWidgetBuilder(XmlWidgetBuilder):
         self._appl_started = True  # no application tag when parsing from the clipboard
 
     def _get_new_name(self, oldname):
+        # when pasting, check whether the name is free and if not get a new unique one
         if not oldname in self.have_names:
             self.have_names.add(oldname)
             return oldname
@@ -557,6 +558,7 @@ class XmlWidgetObject(object):
         if parent is None:
             parent = common.root
 
+        self.IS_SIZER = self.IS_WINDOW = self.IS_SLOT = self.IS_SIZERITEM = False
         if base is not None:
             # if base is not None, the object is a widget (or sizer), and not a sizeritem
             self.sizeritem = sizeritem  # the properties will be copied later in endElement
@@ -579,12 +581,12 @@ class XmlWidgetObject(object):
         elif self.klass == 'sizeritem':
             self.obj = Sizeritem()
             self.parent = parent
-            self.IS_SIZER = self.IS_WINDOW = False
+            self.IS_SIZERITEM = True
 
         elif self.klass == 'sizerslot':
             assert sizer is not None, _("malformed wxg file: slots can only be inside sizers!")
-            self.IS_SIZER = self.IS_WINDOW = False
             self.obj = None
+            self.IS_SLOT = True
             sizer._add_slot(loading=True)
             sizer.layout()
 
