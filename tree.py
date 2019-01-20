@@ -418,7 +418,7 @@ class WidgetTree(wx.TreeCtrl):#, Tree):
             self.SetItemBold(item, True)
             self.SetItemTextColour(item, wx.BLUE)
         s = widget._get_tooltip_string()
-        if s:  common.main.user_message( s.replace("\n", " ") )
+        common.main.user_message( s and s.replace("\n", " ") or "" )
 
     def set_current_widget(self, widget):
         # interface from common.set_focused_widget
@@ -470,13 +470,6 @@ class WidgetTree(wx.TreeCtrl):#, Tree):
             self.show_toplevel(None, widget)
         else:
             event.Skip()
-    def on_left_dclick(self, event):
-        x, y = event.GetPosition()
-        widget = self._find_node_by_pos(x, y)
-        if not widget or not widget.IS_TOPLEVEL:
-            event.Skip()
-            return
-        self.show_toplevel(None, widget)
 
     def on_leave_window(self, event):
         self.SetCursor(wx.STANDARD_CURSOR)
@@ -485,8 +478,8 @@ class WidgetTree(wx.TreeCtrl):#, Tree):
     def on_menu(self, event):
         # the first entry in the popup menu, i.e. the name was selected
         if self._popup_menu_widget is None: return
-        if not getattr(self._popup_menu_widget, "IS_TOPLEVEL_WINDOW", False): return
-        self.show_toplevel( None, self._popup_menu_widget )
+        if self._popup_menu_widget.IS_TOPLEVEL_WINDOW:
+            self.show_toplevel( None, self._popup_menu_widget )
 
     def on_mouse_events(self, event):
         if not self._drag_ongoing and not event.IsButton():
