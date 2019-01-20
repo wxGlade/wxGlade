@@ -193,14 +193,18 @@ class EditPanel(PanelBase, ManagedBase):
 
         return menu
 
-    # XXX from TopLevelBase
-    def check_compatibility(self, widget, typename=None):
-        "check in advance whether widget can be pasted"
+    def check_compatibility(self, widget, typename=None, report=True):
+        "check whether widget can be pasted"
         if self.children and not self.children[0].IS_SLOT:
-            return (False, 'Sizer already set for this window')
+            return (False, 'Sizer already set for this panel')
         if typename is not None:
-            return (True,None)
-        return (True,None)
+            if typename!="sizer":
+                return (False, 'Only sizers can be pasted here')
+            return (True, None)
+
+        if not widget.IS_SIZER:
+            return (False, 'Only sizers can be pasted here')
+        return (True, None)
 
     def clipboard_paste(self, clipboard_data):
         "Insert a widget from the clipboard to the current destination"
