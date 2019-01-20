@@ -19,7 +19,7 @@ wxGlade is
 
  * Copyright (c) 2002-2007 Alberto Griggio
  * Copyright (c) 2011-2016 Carsten Grohmann
- * Copyright (c) 2016-2018 Dietmar Schwertberger
+ * Copyright (c) 2016-2019 Dietmar Schwertberger
 
 
 **Use and distribution of wxGlade is governed by the MIT license:**
