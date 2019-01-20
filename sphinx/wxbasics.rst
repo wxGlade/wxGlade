@@ -204,6 +204,18 @@ This window is managed by |green| **one vertical box sizer with six slots** |end
 
 Later we'll have a look at alternative structures which allow better alignment of the fields.
 
+.. note::
+
+    * For your own projects, always use the simplest available sizers.
+      Usually you will need mainly box sizers and maybe one or two FlexGridSizers.
+    * Use nested sizers to match the hierarchical / logical structure of your project. This will make it easy
+      to re-arrange things to find the best user interface.
+    * Never ever try to use a GridBagSizer as main sizer of a window trying to resemble pixel placement or
+      Tkinter's grid geometry manager. This is a mess to create and maintain.
+      Actually, a GridBagSizer is almost never needed.
+
+
+
 .. |wPalette| image:: images/wPalette.png
    :width: 200
    :align: middle

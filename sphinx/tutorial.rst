@@ -61,22 +61,22 @@ Create the basic structure:
 1. Select "File->New" to **create a new file** and "File->Save" to save a .wxg file to a directory.
 2. **Add the frame**:
 
-   * click on the Frame icon |frame| on the "Windows" line of the *Palette*
+   * click on the Frame icon |frame| on the "Windows" line of the *Palette* panels
    * as class name, enter :guilabel:`CalculatorFrame`: |NewFrame_CalculatorFrame|
 
-3. A frame with a sizer |sizer| and one slot is now visible in the *Tree* and the *Design* window
+3. A frame with a sizer |sizer| and one slot is now visible in the *Tree* view and the *Design* window
    (there the slot is visualized by a hatched area)
 4. It would be possible to place controls directly on the frame, but usually a **panel** is added first, as a frame is really just a frame around the other things. |br|
    To add the panel:
 
    * in the *Palette* of the main window (again on the "Windows" line) click on the Panel icon |panel|
      to start the placement
-   * in the *Tree* control or the *Design* window, click in the slot to place the panel there
+   * in the *Tree* view or the *Design* window, click in the slot to place the panel there
 
 5. On the panel we need a **vertical box sizer** with six slots:
 
    * in the *Palette* on the "Sizer" line click on the BoxSizer icon |sizer| to start the placement
-   * in the *Tree* or the *Design* window, click on the panel to place the sizer there
+   * in the *Tree* view or the *Design* window, click on the panel to place the sizer there
    * a dialog will open
    * set "Orientation"  to :guilabel:`Vertical` and the number of slots to :guilabel:`6`  |NewSizer_CalculatorVertical|
 
@@ -102,7 +102,7 @@ Also, layout and alignment need to be changed, but we'll change this later on.
 **So, some properties of the label and the text need to be modified:**
 
 
-1. Select the label in the *Tree* or the *Design* window.
+1. Select the label in the *Tree* view or the *Design* window.
 2. If not yet visible, make the *Properties* notebook of the main window visible by dragging the sashes
    (the separators between the three parts of the main window).
 3. In the *Properties* notebook of the main window:
@@ -147,7 +147,7 @@ There are several methods to copy:
  * select the fith, empty slot
  * then hit :kbd:`Ctrl-V` (or use the context menu)
 
-* **Copy & Paste in the Tree control of the main Window:**
+* **Copy & Paste in the Tree view of the main Window:**
 
  * select the sizer node
  * then hit :kbd:`Ctrl-C` to copy the selected sizer (or use the context menu)
@@ -162,15 +162,15 @@ You may of course copy in the *Design* window and paste in the *Tree* or vice ve
 
  * hold the :kbd:`Ctrl` key and drag the sizer handle to the empty slot
 
-* **Drag & Drop in the Tree control of the main Window:**
+* **Drag & Drop in the Tree view of the main Window:**
 
- * hold the :kbd:`Ctrl` key and drag the sizer node / icon in the *Tree* window to the empty slot
+ * hold the :kbd:`Ctrl` key and drag the sizer node / icon in the *Tree* view to the empty slot
 
 
 If you don't hold the :kbd:`Ctrl` key, the item will not be copied, but moved.
 
-You may drag items between different windows, e.g. from *Design* window to *Tree* or to another running wxGlade
-instance.
+You may drag items between different windows, e.g. from *Design* window to the *Tree* view or to another
+running wxGlade instance.
 
 
 
@@ -203,7 +203,7 @@ For single line read-only text controls, this is done automatically by wx, but n
 
 .. note::
 
-    * when you want to place multiple elements of the same type,
+    * When you want to place multiple elements of the same type,
       just hold the :kbd:`Ctrl` key when placing an element to stay in placement mode (on Mac OS use the :kbd:`Shift` key).
     * When you have placed an element in the wrong slot,
       just drag it to the right slot or delete it with the :kbd:`Del` key or the context menu.
@@ -230,8 +230,8 @@ Change labels and names:
 ========================
 
 After copying, the controls will have default values and names. Usually you have to change them.
-You can do this in the *Properties* notebook or directly in the *Tree* control of the main window.
-To edit in the *Tree* control, you can select and then click on the label or press :kbd:`F2`.
+You can do this in the *Properties* notebook or directly in the *Tree* view of the main window.
+To edit in the *Tree* view, you can select and then click on the label or press :kbd:`F2`.
 
 This needs to be done now:
 
@@ -245,7 +245,7 @@ This needs to be done now:
 For our example project where multiple labels and names have to be modified, it's much faster to do so in the *Tree*
 window.
 
-Example for editing in the *Tree* control of the main window:
+Example for editing in the *Tree* view of the main window:
 
   .. |Tree_Rename0| image:: images/Tree_Rename0.png
 
@@ -672,8 +672,31 @@ This file can be found in the folder ``wxglade/examples/Calculator``:
 `Calculator-06-GridSizer.wxg <../../examples/Calculator/Calculator-06-GridSizer.wxg>`_
 
 *********************************************************************
+Summary
+*********************************************************************
+
+You should know by now how to
+
+ * create a window structure without menu, tool or status bar
+ * lay out and align controls using sizers
+ * edit the structure in the *Design* window and the *Tree* view, including Cut/Copy/Paste and Drag and Drop
+ * modify layout and other properties in the *Properties* notebook
+
+
+Some things to remember, to save you a lot of work:
+
+ * Names and labels can be edited directly in the in the *Tree* view.
+ * When you want to apply changes to multiple widgets, edit the first, then go to the next and use 
+   Re-do or Repeat to apply one or more changes:
+
+   * Re-do: :kbd:`Ctrl-Y` or "Edit->Re-do" or toolbar right-arrow
+   * Repeat: :kbd:`Ctrl-R` or "Edit->Re-do" or toolbar second right-arrow
+
+
+*********************************************************************
 Next steps
 *********************************************************************
+
 
  - create source code and add event handlers - see :doc:`source_code`
  - add a menu - see :doc:`menu_status_tool`

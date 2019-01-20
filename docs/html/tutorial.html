@@ -59,22 +59,22 @@
 <ol class="arabic simple">
 <li>Select “File-&gt;New” to <strong>create a new file</strong> and “File-&gt;Save” to save a .wxg file to a directory.</li>
 <li><strong>Add the frame</strong>:<ul>
-<li>click on the Frame icon <img alt="frame" src="_images/frame.png" /> on the “Windows” line of the <em>Palette</em></li>
+<li>click on the Frame icon <img alt="frame" src="_images/frame.png" /> on the “Windows” line of the <em>Palette</em> panels</li>
 <li>as class name, enter <span class="guilabel">CalculatorFrame</span>: <a class="reference internal" href="_images/NewFrame_CalculatorFrame.png"><img alt="New Frame dialog" src="_images/NewFrame_CalculatorFrame.png" style="width: 30px;" /></a></li>
 </ul>
 </li>
-<li>A frame with a sizer <img alt="sizer" src="_images/sizer.png" /> and one slot is now visible in the <em>Tree</em> and the <em>Design</em> window
+<li>A frame with a sizer <img alt="sizer" src="_images/sizer.png" /> and one slot is now visible in the <em>Tree</em> view and the <em>Design</em> window
 (there the slot is visualized by a hatched area)</li>
 <li>It would be possible to place controls directly on the frame, but usually a <strong>panel</strong> is added first, as a frame is really just a frame around the other things. <br/>
 To add the panel:<ul>
 <li>in the <em>Palette</em> of the main window (again on the “Windows” line) click on the Panel icon <img alt="panel" src="_images/panel.png" />
 to start the placement</li>
-<li>in the <em>Tree</em> control or the <em>Design</em> window, click in the slot to place the panel there</li>
+<li>in the <em>Tree</em> view or the <em>Design</em> window, click in the slot to place the panel there</li>
 </ul>
 </li>
 <li>On the panel we need a <strong>vertical box sizer</strong> with six slots:<ul>
 <li>in the <em>Palette</em> on the “Sizer” line click on the BoxSizer icon <img alt="sizer" src="_images/sizer.png" /> to start the placement</li>
-<li>in the <em>Tree</em> or the <em>Design</em> window, click on the panel to place the sizer there</li>
+<li>in the <em>Tree</em> view or the <em>Design</em> window, click on the panel to place the sizer there</li>
 <li>a dialog will open</li>
 <li>set “Orientation”  to <span class="guilabel">Vertical</span> and the number of slots to <span class="guilabel">6</span>  <a class="reference internal" href="_images/NewSizer_CalculatorVertical.png"><img alt="New Sizer dialog" src="_images/NewSizer_CalculatorVertical.png" style="width: 30px;" /></a></li>
 </ul>
@@ -101,7 +101,7 @@ and set the number of slots to <span class="guilabel">2</span></li>
 Also, layout and alignment need to be changed, but we’ll change this later on.</p>
 <p><strong>So, some properties of the label and the text need to be modified:</strong></p>
 <ol class="arabic simple">
-<li>Select the label in the <em>Tree</em> or the <em>Design</em> window.</li>
+<li>Select the label in the <em>Tree</em> view or the <em>Design</em> window.</li>
 <li>If not yet visible, make the <em>Properties</em> notebook of the main window visible by dragging the sashes
 (the separators between the three parts of the main window).</li>
 <li>In the <em>Properties</em> notebook of the main window:<ul>
@@ -140,7 +140,7 @@ After that, we’ll add the “Operator” radio box and the buttons.</p>
 </ul>
 </div></blockquote>
 <ul class="simple">
-<li><strong>Copy &amp; Paste in the Tree control of the main Window:</strong></li>
+<li><strong>Copy &amp; Paste in the Tree view of the main Window:</strong></li>
 </ul>
 <blockquote>
 <div><ul class="simple">
@@ -162,16 +162,16 @@ After that, we’ll add the “Operator” radio box and the buttons.</p>
 </ul>
 </div></blockquote>
 <ul class="simple">
-<li><strong>Drag &amp; Drop in the Tree control of the main Window:</strong></li>
+<li><strong>Drag &amp; Drop in the Tree view of the main Window:</strong></li>
 </ul>
 <blockquote>
 <div><ul class="simple">
-<li>hold the <code class="kbd docutils literal"><span class="pre">Ctrl</span></code> key and drag the sizer node / icon in the <em>Tree</em> window to the empty slot</li>
+<li>hold the <code class="kbd docutils literal"><span class="pre">Ctrl</span></code> key and drag the sizer node / icon in the <em>Tree</em> view to the empty slot</li>
 </ul>
 </div></blockquote>
 <p>If you don’t hold the <code class="kbd docutils literal"><span class="pre">Ctrl</span></code> key, the item will not be copied, but moved.</p>
-<p>You may drag items between different windows, e.g. from <em>Design</em> window to <em>Tree</em> or to another running wxGlade
-instance.</p>
+<p>You may drag items between different windows, e.g. from <em>Design</em> window to the <em>Tree</em> view or to another
+running wxGlade instance.</p>
 </div>
 <div class="section" id="further-editing">
 <h3>Further Editing<a class="headerlink" href="#further-editing" title="Permalink to this headline">¶</a></h3>
@@ -201,7 +201,7 @@ pressing this default button.</li>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
 <ul class="last simple">
-<li>when you want to place multiple elements of the same type,
+<li>When you want to place multiple elements of the same type,
 just hold the <code class="kbd docutils literal"><span class="pre">Ctrl</span></code> key when placing an element to stay in placement mode (on Mac OS use the <code class="kbd docutils literal"><span class="pre">Shift</span></code> key).</li>
 <li>When you have placed an element in the wrong slot,
 just drag it to the right slot or delete it with the <code class="kbd docutils literal"><span class="pre">Del</span></code> key or the context menu.</li>
@@ -228,8 +228,8 @@ just drag it to the right slot or delete it with the <code class="kbd docutils l
 <div class="section" id="change-labels-and-names">
 <h3>Change labels and names:<a class="headerlink" href="#change-labels-and-names" title="Permalink to this headline">¶</a></h3>
 <p>After copying, the controls will have default values and names. Usually you have to change them.
-You can do this in the <em>Properties</em> notebook or directly in the <em>Tree</em> control of the main window.
-To edit in the <em>Tree</em> control, you can select and then click on the label or press <code class="kbd docutils literal"><span class="pre">F2</span></code>.</p>
+You can do this in the <em>Properties</em> notebook or directly in the <em>Tree</em> view of the main window.
+To edit in the <em>Tree</em> view, you can select and then click on the label or press <code class="kbd docutils literal"><span class="pre">F2</span></code>.</p>
 <p>This needs to be done now:</p>
 <ul class="simple">
 <li>Set the names of the text controls to <span class="guilabel">text_value1</span>, <span class="guilabel">text_value2</span> and <span class="guilabel">text_result</span>.</li>
@@ -240,7 +240,7 @@ To edit in the <em>Tree</em> control, you can select and then click on the label
 </ul>
 <p>For our example project where multiple labels and names have to be modified, it’s much faster to do so in the <em>Tree</em>
 window.</p>
-<p>Example for editing in the <em>Tree</em> control of the main window:</p>
+<p>Example for editing in the <em>Tree</em> view of the main window:</p>
 <blockquote>
 <div></div></blockquote>
 <ul class="simple">
@@ -582,6 +582,30 @@ If you want to avoid this, you need to add a horizontal or vertical box sizer �
 <p>This file can be found in the folder <code class="docutils literal"><span class="pre">wxglade/examples/Calculator</span></code>:
 <a class="reference external" href="../../examples/Calculator/Calculator-06-GridSizer.wxg">Calculator-06-GridSizer.wxg</a></p>
 </div>
+<div class="section" id="summary">
+<h2>Summary<a class="headerlink" href="#summary" title="Permalink to this headline">¶</a></h2>
+<p>You should know by now how to</p>
+<blockquote>
+<div><ul class="simple">
+<li>create a window structure without menu, tool or status bar</li>
+<li>lay out and align controls using sizers</li>
+<li>edit the structure in the <em>Design</em> window and the <em>Tree</em> view, including Cut/Copy/Paste and Drag and Drop</li>
+<li>modify layout and other properties in the <em>Properties</em> notebook</li>
+</ul>
+</div></blockquote>
+<p>Some things to remember, to save you a lot of work:</p>
+<blockquote>
+<div><ul class="simple">
+<li>Names and labels can be edited directly in the in the <em>Tree</em> view.</li>
+<li>When you want to apply changes to multiple widgets, edit the first, then go to the next and use
+Re-do or Repeat to apply one or more changes:<ul>
+<li>Re-do: <code class="kbd docutils literal"><span class="pre">Ctrl-Y</span></code> or “Edit-&gt;Re-do” or toolbar right-arrow</li>
+<li>Repeat: <code class="kbd docutils literal"><span class="pre">Ctrl-R</span></code> or “Edit-&gt;Re-do” or toolbar second right-arrow</li>
+</ul>
+</li>
+</ul>
+</div></blockquote>
+</div>
 <div class="section" id="next-steps">
 <h2>Next steps<a class="headerlink" href="#next-steps" title="Permalink to this headline">¶</a></h2>
 <blockquote>
@@ -621,6 +645,7 @@ If you want to avoid this, you need to add a horizontal or vertical box sizer �
 <li><a class="reference internal" href="#part-3-add-a-notebook">Part 3: Add a Notebook</a></li>
 <li><a class="reference internal" href="#part-4-use-of-spacers">Part 4: Use of Spacers</a></li>
 <li><a class="reference internal" href="#part-5-use-of-grid-sizers">Part 5: Use of Grid Sizers</a></li>
+<li><a class="reference internal" href="#summary">Summary</a></li>
 <li><a class="reference internal" href="#next-steps">Next steps</a></li>
 </ul>
 </li>

@@ -220,6 +220,18 @@ Note that horizontal and vertical sizers are <br/> visualized with different ico
 </tbody>
 </table>
 <p>Later we’ll have a look at alternative structures which allow better alignment of the fields.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<ul class="last simple">
+<li>For your own projects, always use the simplest available sizers.
+Usually you will need mainly box sizers and maybe one or two FlexGridSizers.</li>
+<li>Use nested sizers to match the hierarchical / logical structure of your project. This will make it easy
+to re-arrange things to find the best user interface.</li>
+<li>Never ever try to use a GridBagSizer as main sizer of a window trying to resemble pixel placement or
+Tkinter’s grid geometry manager. This is a mess to create and maintain.
+Actually, a GridBagSizer is almost never needed.</li>
+</ul>
+</div>
 </div>
 <div class="section" id="wxglade-requirements-and-restrictions">
 <h3>wxGlade Requirements and Restrictions<a class="headerlink" href="#wxglade-requirements-and-restrictions" title="Permalink to this headline">¶</a></h3>
