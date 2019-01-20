@@ -28,7 +28,7 @@ For our example project from the previous page 'Tutorial' we want to generate:
  * output file name "Calculator.py"
  * an application should be created, not just the window
 
-So we select the root element "Application" in the *Tree* control and set the properties accordingly:
+So we select the root element "Application" in the *Tree* view and set the properties accordingly:
 
 +-----------------------------------------------------------------------+
 |.. image:: images/Calculator_06_ApplicationProperties.png              |
