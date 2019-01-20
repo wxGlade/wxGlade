@@ -1,1 +1,1 @@
-__version__ = "0.9.0b5"  # don't forget to update also the wxglade shell script
+__version__ = "0.9.0"  # don't forget to update also the wxglade shell script
