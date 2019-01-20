@@ -827,7 +827,8 @@ class wxGladeFrame(wx.Frame):
         sb = self.GetStatusBar()
         if sb:
             sb.SetStatusText(msg)
-            self.clear_sb_timer.Start(5000, True)
+            if msg:
+                self.clear_sb_timer.Start(5000, True)
 
     def on_clear_sb_timer(self, event):
         sb = self.GetStatusBar()
