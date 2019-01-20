@@ -4,7 +4,7 @@ User Interface:
  * multiple selections in Tree window -> allow editing properties for multiple widgets at the same time
  * support events from the base classes and the addition of any event as text (-> rev. 1.0)
  * implement undo/re-do; use this for GUI scripting (testing)
- * better avoid overlapping / invisible design window; maybe do the same for the main windows
+ * better avoid overlapping / invisible design window; same for dialogs with "Pin"
  * code properties: use stc and resize dynamically (-> rev. 1.0)
  * toolbar and maybe menu editor: add Drop target for images (-> rev. 1.0)
  * grid properties: implement validation in 'on_cell_changing'
@@ -68,7 +68,11 @@ Use either gettext or wx.GetTranslation for _
 
 
 Widgets:
+ * StaticBoxSizer: add font property; use StaticBox for Design window and set font if the user changes it
+   when font is active, generate code using StaticBox
+ * Dialog: support SetAffirmativeId, SetEscapeId
 done:
+ * MenuBar: don't create widget on Mac OS
  * Panel: use ScrolledWindow only when "Scrolled" is checked
 
 Additional Widgets:
@@ -112,6 +116,10 @@ done:
  * Grid rows property
  * Grid col resizing in design window
  * better dialog code
+
+Documentation:
+done:
+ * Note "Repeat and Re-do"
 
 
 Development process:
