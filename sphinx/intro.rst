@@ -19,7 +19,7 @@ On Windows, the win32 extensions should be installed: https://sourceforge.net/pr
 If they are available, wxGlade will register for .wxg files such that you can open them via double-click.
 
 **Supported Python and wxPython Versions:**
- * The *Classic* wxPython versions 2.8 and 3.0 are supported as well as wxPython *Phoenix* running under Python 3
+ * The *Classic* wxPython versions 2.8 and 3.0 are supported as well as wxPython 4 *Phoenix* running under Python 3
  * Phoenix plus Python 2 will probably also work, but this is not tested at all. wxPython 2.8 is generally less tested than the more recent versions.
  * When running Python 3 + Phoenix or Python 2 + Classic, the generated Python code will not be compatible to the other version.
 
@@ -34,7 +34,8 @@ Program Windows
 ***************
 
 wxGlade consists of three windows. The main window is split into three panels. The panels are separated by 
-draggable sashes. Also, the "Windows" menu allows to re-arrange the sections.
+draggable sashes. Also, the "Windows" menu allows to re-arrange the sections by switching between three 
+different layouts.
 
 (click on one of the images to see it full size; the screenshots are a bit out of date as previously
  Palette, Tree and Properties were three separate windows)
@@ -66,7 +67,7 @@ draggable sashes. Also, the "Windows" menu allows to re-arrange the sections.
      - Main window **Palette** panel: |br| |br|
        There is an icon for each window and control type that can be added to a project.
    * - |wTree|
-     - Main window **Tree** control: |br| |br|
+     - Main window **Tree** view control: |br| |br|
        This tree visualizes and allows editing the structure of the project with it's
        application, windows, sizers and controls. |br|
        On selection of an item, it's properties will be shown in the *Properties* notebook.
@@ -92,14 +93,14 @@ Examples
 
 Before doing anything else, you may want to open an example file showing most of the supported controls:
 
-* for wxPython 3.0 and Phoenix: :file:`examples/AllControls_30.wxg`
-* for wxPython 2.8: :file:`examples/AllControls_28.wxg`
+* for wxPython 3.0 and Phoenix: :file:`examples/AllWidgets/AllWidgets_30.wxg`
+* for wxPython 2.8: :file:`examples/AllWidgets/AllWidgets_28.wxg`
 
 Each example file includes a frame with most of the supported widgets and also a menu bar, a tool bar and a status bar.
 
 **Required steps:**
     * open the file by dragging it to the main window or by selecting the menu item File->Open
-    * double-click "All_Widgets" in the *Tree* window to open the *Design* window and have a look around
+    * double-click "All_Widgets" in the *Tree* view to open the *Design* window and have a look around
     * create Python source code:
     
       * press :kbd:`Ctrl-G` or 

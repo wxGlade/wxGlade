@@ -19,7 +19,7 @@ Prerequisites and Code Generation
 *********************************
 
 The options for code generation can be defined in the *Properties* notebook when the application object is selected in
-the *Tree* control:
+the *Tree* view:
 
 For our example project from the previous page 'Tutorial' we want to generate:
 

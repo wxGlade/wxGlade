@@ -61,7 +61,7 @@ If they are available, wxGlade will register for .wxg files such that you can op
 <dl class="docutils">
 <dt><strong>Supported Python and wxPython Versions:</strong></dt>
 <dd><ul class="first last simple">
-<li>The <em>Classic</em> wxPython versions 2.8 and 3.0 are supported as well as wxPython <em>Phoenix</em> running under Python 3</li>
+<li>The <em>Classic</em> wxPython versions 2.8 and 3.0 are supported as well as wxPython 4 <em>Phoenix</em> running under Python 3</li>
 <li>Phoenix plus Python 2 will probably also work, but this is not tested at all. wxPython 2.8 is generally less tested than the more recent versions.</li>
 <li>When running Python 3 + Phoenix or Python 2 + Classic, the generated Python code will not be compatible to the other version.</li>
 </ul>
@@ -77,7 +77,8 @@ program, as some styles are not supported under all revisions.</p>
 <div class="section" id="program-windows">
 <h2>Program Windows<a class="headerlink" href="#program-windows" title="Permalink to this headline">¶</a></h2>
 <p>wxGlade consists of three windows. The main window is split into three panels. The panels are separated by
-draggable sashes. Also, the “Windows” menu allows to re-arrange the sections.</p>
+draggable sashes. Also, the “Windows” menu allows to re-arrange the sections by switching between three
+different layouts.</p>
 <dl class="docutils">
 <dt>(click on one of the images to see it full size; the screenshots are a bit out of date as previously</dt>
 <dd>Palette, Tree and Properties were three separate windows)</dd>
@@ -93,7 +94,7 @@ draggable sashes. Also, the “Windows” menu allows to re-arrange the sections
 There is an icon for each window and control type that can be added to a project.</td>
 </tr>
 <tr class="row-even"><td><a class="reference internal" href="_images/wTree.png"><img alt="wTree" class="align-middle" src="_images/wTree.png" style="width: 200px;" /></a></td>
-<td>Main window <strong>Tree</strong> control: <br/> <br/>
+<td>Main window <strong>Tree</strong> view control: <br/> <br/>
 This tree visualizes and allows editing the structure of the project with it’s
 application, windows, sizers and controls. <br/>
 On selection of an item, it’s properties will be shown in the <em>Properties</em> notebook.</td>
@@ -124,15 +125,15 @@ It should look 100% identical to the window when it is used in the application.<
 <h2>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h2>
 <p>Before doing anything else, you may want to open an example file showing most of the supported controls:</p>
 <ul class="simple">
-<li>for wxPython 3.0 and Phoenix: <code class="file docutils literal"><span class="pre">examples/AllControls_30.wxg</span></code></li>
-<li>for wxPython 2.8: <code class="file docutils literal"><span class="pre">examples/AllControls_28.wxg</span></code></li>
+<li>for wxPython 3.0 and Phoenix: <code class="file docutils literal"><span class="pre">examples/AllWidgets/AllWidgets_30.wxg</span></code></li>
+<li>for wxPython 2.8: <code class="file docutils literal"><span class="pre">examples/AllWidgets/AllWidgets_28.wxg</span></code></li>
 </ul>
 <p>Each example file includes a frame with most of the supported widgets and also a menu bar, a tool bar and a status bar.</p>
 <dl class="docutils">
 <dt><strong>Required steps:</strong></dt>
 <dd><ul class="first last simple">
 <li>open the file by dragging it to the main window or by selecting the menu item File-&gt;Open</li>
-<li>double-click “All_Widgets” in the <em>Tree</em> window to open the <em>Design</em> window and have a look around</li>
+<li>double-click “All_Widgets” in the <em>Tree</em> view to open the <em>Design</em> window and have a look around</li>
 <li>create Python source code:<ul>
 <li>press <code class="kbd docutils literal"><span class="pre">Ctrl-G</span></code> or</li>
 <li>select the toplevel object “Application” and hit the button “Generate Source” in the <em>Properties</em> window</li>
