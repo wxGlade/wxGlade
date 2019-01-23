@@ -17,6 +17,14 @@ from edit_windows import EditBase, PreviewMixin
 
 
 class MenuItemDialog(wx.Dialog):
+    columns = ["label", "event_handler", "name", "type", "help_str", "id"]
+    column_widths = [180, 180, 120, 35, 250, 50]
+    headers = ["Label", "Event Handler", "Name", "Type", "Help String", "Id"]
+    coltypes = {"type":int}
+    default_item = ("item","","",0,"","")
+    separator_item = ("---","---","---","---","---","---")
+    control_names = columns
+
     def __init__(self, parent, owner, items=None):
         style = wx.DEFAULT_DIALOG_STYLE|wx.RESIZE_BORDER|wx.WANTS_CHARS
         wx.Dialog.__init__(self, parent, -1, _("Menu editor"), style=style)
@@ -27,10 +35,9 @@ class MenuItemDialog(wx.Dialog):
         self.name          = wx.TextCtrl(self, wx.ID_ANY, "")
         self.help_str      = wx.TextCtrl(self, wx.ID_ANY, "")
         self.id            = wx.TextCtrl(self, wx.ID_ANY, "")
-        # radio box for type
-        self.check_radio = wx.RadioBox(self, wx.ID_ANY, "Type", choices=["Normal", "Checkable", "Radio"],
-                                       majorDimension=1, style=wx.RA_SPECIFY_COLS)
-        self.check_radio.SetSelection(0)
+        self.type          = wx.RadioBox(self, wx.ID_ANY, "Type", choices=["Normal", "Checkable", "Radio"],
+                                         majorDimension=1, style=wx.RA_SPECIFY_COLS)
+        self.type.SetSelection(0)
         # dialog action buttons; these will be handled, instead of using stock OK/Cancel buttons
         self.ok     = wx.Button(self, wx.ID_ANY, "OK")
         self.cancel = wx.Button(self, wx.ID_ANY, "Cancel")
@@ -39,20 +46,21 @@ class MenuItemDialog(wx.Dialog):
         self.move_right = wx.Button(self, wx.ID_ANY, "&>")
         self.move_up    = wx.Button(self, wx.ID_ANY, "&Up")
         self.move_down  = wx.Button(self, wx.ID_ANY, "&Down")
-        self.add     = wx.Button(self, wx.ID_ANY, "&Add")
-        self.remove  = wx.Button(self, wx.ID_ANY, "&Remove")
-        self.add_sep = wx.Button(self, wx.ID_ANY, "Add &Separator")
-        self.menu_items = wx.ListCtrl(self, wx.ID_ANY, style=wx.BORDER_DEFAULT | wx.BORDER_SUNKEN | wx.LC_EDIT_LABELS |
+        self.add        = wx.Button(self, wx.ID_ANY, "&Add")
+        self.remove     = wx.Button(self, wx.ID_ANY, "&Remove")
+        self.add_sep    = wx.Button(self, wx.ID_ANY, "Add &Separator")
+        self.items = wx.ListCtrl(self, wx.ID_ANY, style=wx.BORDER_DEFAULT | wx.BORDER_SUNKEN | wx.LC_EDIT_LABELS |
                                                          wx.LC_REPORT | wx.LC_SINGLE_SEL | wx.NO_FULL_REPAINT_ON_RESIZE)
         self.SetTitle("Menu Editor")
         self.__do_layout()
+        self._set_tooltips()
 
         self.Bind(wx.EVT_TEXT, self.on_label_edited, self.label)
         self.Bind(wx.EVT_TEXT, self.on_event_handler_edited, self.event_handler)
         self.Bind(wx.EVT_TEXT, self.on_name_edited, self.name)
         self.Bind(wx.EVT_TEXT, self.on_help_str_edited, self.help_str)
         self.Bind(wx.EVT_TEXT, self.on_id_edited, self.id)
-        self.Bind(wx.EVT_RADIOBOX, self.on_type_edited, self.check_radio)
+        self.Bind(wx.EVT_RADIOBOX, self.on_type_edited, self.type)
 
         self.Bind(wx.EVT_BUTTON, self.move_item_left, self.move_left)
         self.Bind(wx.EVT_BUTTON, self.move_item_right, self.move_right)
@@ -63,29 +71,19 @@ class MenuItemDialog(wx.Dialog):
         self.Bind(wx.EVT_BUTTON, self.add_separator, self.add_sep)
         self.Bind(wx.EVT_BUTTON, self.on_cancel, self.cancel)
         self.Bind(wx.EVT_BUTTON, self.on_OK, self.ok)
-        self.Bind(wx.EVT_LIST_ITEM_SELECTED, self.show_item, self.menu_items)
+        self.Bind(wx.EVT_LIST_ITEM_SELECTED, self.show_item, self.items)
 
         self.Bind(wx.EVT_CHAR_HOOK, self.on_char)
         self.remove.Bind(wx.EVT_CHAR_HOOK, self.on_button_char)  # to ignore the Enter key while the focus is on Remove
 
         self.owner = owner
 
-        # ALB 2004-09-26: workaround to make the scroll wheel work...
-        self.menu_items.Bind(wx.EVT_MOUSEWHEEL, lambda e: e.Skip())
+        self.items.Bind(wx.EVT_MOUSEWHEEL, lambda e: e.Skip())  # workaround to make the scroll wheel work...
 
-        self.menu_items.InsertColumn(0, _("Label"))
-        self.menu_items.InsertColumn(1, _("Event Handler"))
-        self.menu_items.InsertColumn(2, _("Name"))
-        self.menu_items.InsertColumn(3, _("Type"))
-        self.menu_items.InsertColumn(4, _("Help String"))
-        self.menu_items.InsertColumn(5, _("Id"))
+        for c,header in enumerate(self.headers):
+            self.items.InsertColumn(c, _(header))
+            self.items.SetColumnWidth(c, self.column_widths[c])
 
-        self.menu_items.SetColumnWidth(0, 180)
-        self.menu_items.SetColumnWidth(1, 180)
-        self.menu_items.SetColumnWidth(2, 120)
-        self.menu_items.SetColumnWidth(3, 35)
-        self.menu_items.SetColumnWidth(4, 250)
-        self.menu_items.SetColumnWidth(5, 50)
         self.SetSize( (900, 600) )
 
         import re
@@ -101,7 +99,7 @@ class MenuItemDialog(wx.Dialog):
     def on_char(self, event):
         # keyboard navigation: up/down arrows
         focus = self.FindFocus()
-        if focus is self.check_radio:
+        if focus is self.type:
             event.Skip()
             return
         if isinstance(focus, wx.Button):
@@ -142,24 +140,24 @@ class MenuItemDialog(wx.Dialog):
         sizer_5 = wx.BoxSizer(wx.HORIZONTAL)
         sizer_6 = wx.BoxSizer(wx.VERTICAL)
         grid_sizer_2 = wx.FlexGridSizer(5, 2, 0, 0)
-        label_6 = wx.StaticText(self, wx.ID_ANY, "Label:")
-        grid_sizer_2.Add(label_6, 0, wx.ALIGN_CENTER_VERTICAL | wx.LEFT | wx.RIGHT, 4)
+        self.label_6 = wx.StaticText(self, wx.ID_ANY, "Label:")
+        grid_sizer_2.Add(self.label_6, 0, wx.ALIGN_CENTER_VERTICAL | wx.LEFT | wx.RIGHT, 4)
         grid_sizer_2.Add(self.label, 1, wx.EXPAND, 0)
-        label_7 = wx.StaticText(self, wx.ID_ANY, "Event Handler:")
-        grid_sizer_2.Add(label_7, 0, wx.ALIGN_CENTER_VERTICAL | wx.LEFT | wx.RIGHT, 4)
+        self.label_7 = wx.StaticText(self, wx.ID_ANY, "Event Handler:")
+        grid_sizer_2.Add(self.label_7, 0, wx.ALIGN_CENTER_VERTICAL | wx.LEFT | wx.RIGHT, 4)
         grid_sizer_2.Add(self.event_handler, 1, wx.EXPAND, 0)
-        label_8 = wx.StaticText(self, wx.ID_ANY, "(Attribute) Name:")
-        grid_sizer_2.Add(label_8, 0, wx.ALIGN_CENTER_VERTICAL | wx.LEFT | wx.RIGHT, 4)
+        self.label_8 = wx.StaticText(self, wx.ID_ANY, "(Attribute) Name:")
+        grid_sizer_2.Add(self.label_8, 0, wx.ALIGN_CENTER_VERTICAL | wx.LEFT | wx.RIGHT, 4)
         grid_sizer_2.Add(self.name, 1, wx.EXPAND, 0)
-        label_9 = wx.StaticText(self, wx.ID_ANY, "Help String:")
-        grid_sizer_2.Add(label_9, 0, wx.ALIGN_CENTER_VERTICAL | wx.LEFT | wx.RIGHT, 4)
+        self.label_9 = wx.StaticText(self, wx.ID_ANY, "Help String:")
+        grid_sizer_2.Add(self.label_9, 0, wx.ALIGN_CENTER_VERTICAL | wx.LEFT | wx.RIGHT, 4)
         grid_sizer_2.Add(self.help_str, 1, wx.EXPAND, 0)
-        label_10 = wx.StaticText(self, wx.ID_ANY, "ID:")
-        grid_sizer_2.Add(label_10, 0, wx.ALIGN_CENTER_VERTICAL | wx.LEFT | wx.RIGHT, 4)
+        self.label_10 = wx.StaticText(self, wx.ID_ANY, "ID:")
+        grid_sizer_2.Add(self.label_10, 0, wx.ALIGN_CENTER_VERTICAL | wx.LEFT | wx.RIGHT, 4)
         grid_sizer_2.Add(self.id, 0, 0, 0)
         grid_sizer_2.AddGrowableCol(1)
         sizer_5.Add(grid_sizer_2, 2, wx.EXPAND, 0)
-        sizer_5.Add(self.check_radio, 0, wx.ALL | wx.EXPAND, 4)
+        sizer_5.Add(self.type, 0, wx.ALL | wx.EXPAND, 4)
         sizer_5.Add((20, 20), 1, wx.ALIGN_CENTER_VERTICAL | wx.EXPAND, 0)
         sizer_6.Add(self.ok, 0, wx.ALL, 5)
         sizer_6.Add(self.cancel, 0, wx.ALL, 5)
@@ -175,65 +173,72 @@ class MenuItemDialog(wx.Dialog):
         sizer_2.Add(self.add_sep, 0, wx.ALL, 8)
         sizer_2.Add((20, 20), 2, wx.ALIGN_CENTER_VERTICAL, 0)
         sizer_1.Add(sizer_2, 0, wx.EXPAND, 0)
-        sizer_1.Add(self.menu_items, 1, wx.EXPAND, 0)
+        sizer_1.Add(self.items, 1, wx.EXPAND, 0)
         self.SetSizer(sizer_1)
         sizer_1.Fit(self)
         sizer_1.SetSizeHints(self)
         self.Layout()
 
+    def _set_tooltips(self):
         # set tooltips
-        for c in (label_6, self.label):
+        for c in (self.label_6, self.label):
             compat.SetToolTip(c, "The menu entry text;\nenter & for access keys (using ALT key)\nappend e.g. \\tCtrl-X for keyboard shortcut")
-        for c in (label_7, self.event_handler):
+        for c in (self.label_7, self.event_handler):
             compat.SetToolTip(c, "Enter the name of an event handler method; this will be created as stub")
-        for c in (label_8, self.name):
+        for c in (self.label_8, self.name):
             compat.SetToolTip(c, "optional: enter a name to store the menu item as attribute of the menu bar")
-        for c in (label_10, self.id):
+        for c in (self.label_10, self.id):
             compat.SetToolTip(c, "optional: enter wx ID")
         compat.SetToolTip( self.move_up, "Move selected item up" )
         compat.SetToolTip( self.move_down, "Move selected item down" )
-        compat.SetToolTip( self.menu_items, "For navigation use the mouse or the up/down arrows" )
+        compat.SetToolTip( self.items, "For navigation use the mouse or the up/down arrows" )
         compat.SetToolTip( self.move_left,  "Move the selected item up by one menu level" )
         compat.SetToolTip( self.move_right, "Move the selected item down by one menu level" )
 
-    def _enable_fields(self, enable=True):
-        for s in (self.event_handler, self.id, self.name, self.help_str, self.check_radio, self.label):
-            s.Enable(enable)
+    def _enable_fields(self, enable=True, clear=False):
+        if clear:
+            restore = self._ignore_events
+            self._ignore_events = True
+        for name in self.control_names:
+            control = getattr(self, name)
+            control.Enable(enable)
+            if clear and isinstance(control, wx.TextCtrl): control.SetValue("")
+        if clear: self._ignore_events = restore
+
+    def _get_item_text(self, index, col):
+        return self.items.GetItem(index, col).GetText()
+
+    def _get_all_texts(self, index):
+        return [self._get_item_text(index, j) for j in range(len(self.columns))]
+
+    def _set_item_string(self, index, col, s):
+        compat.ListCtrl_SetStringItem(self.items, index, col, s)
+    
+    def _insert_item_string(self, index, s):
+        return compat.ListCtrl_InsertStringItem(self.items, index, s)
+
+    def _add_new_item(self, unindented_item):
+        # helper for the next two methods
+        index = self.selected_index + 1
+        indent = ""
+        if not self.items.GetItemCount():
+            self._enable_fields()
+        if index < 0:
+            index = self.items.GetItemCount()
+        elif index > 0:
+            indent = "    " * self.item_level(index-1)
+        item = list(unindented_item)
+        item[0] = indent+item[0]
+        self._insert_item(index, item)
+        self._select_item(index, force=True)
 
     def add_item(self, event):
         "Event handler called when the Add button is clicked"
-        index = self.selected_index = self.selected_index + 1
-        indent = ""
-        if not self.menu_items.GetItemCount():
-            self._enable_fields()
-        if index < 0:
-            index = self.menu_items.GetItemCount()
-        elif index > 0:
-            indent = "    " * self.item_level(index-1)
-        name, label, id, check_radio = "", "item", "", "0"
-        self.menu_items.InsertStringItem(index, indent + label)
-        self.menu_items.SetStringItem(index, 2, name)
-        self.menu_items.SetStringItem(index, 3, check_radio)
-        self.menu_items.SetStringItem(index, 5, id)
-        # fix bug 698074
-        self.menu_items.SetItemState(index, wx.LIST_STATE_SELECTED, wx.LIST_STATE_SELECTED)
-        self._select_item(index, force=True)
+        self._add_new_item(self.default_item)
 
     def add_separator(self, event):
         "Event handler called when the Add Separator button is clicked"
-        index = self.selected_index + 1
-        label = '---'
-        if not self.menu_items.GetItemCount():
-            self._enable_fields()
-        if index < 0:
-            index = self.menu_items.GetItemCount()
-        elif index > 0:
-            label = "    " * self.item_level(index-1) + '---'
-        self.menu_items.InsertStringItem(index, label)
-        self.menu_items.SetStringItem(index, 2, '---')  # name
-        self.menu_items.SetStringItem(index, 5, '---')  # id
-        # fix bug 698074
-        self.menu_items.SetItemState(index, wx.LIST_STATE_SELECTED, wx.LIST_STATE_SELECTED)
+        self._add_new_item(self.separator_item)
 
     def show_item(self, event):
         "Event handler called when a menu item in the list is selected"
@@ -242,31 +247,41 @@ class MenuItemDialog(wx.Dialog):
         event.Skip()
 
     def _select_item(self, index, force=False):
-        if index >= self.menu_items.GetItemCount() or index<0 or (index==self.selected_index and not force): return
-        self._ignore_events = True
-        self.menu_items.Select(index)
+        if index >= self.items.GetItemCount(): return
+        if index==self.selected_index and not force: return
+        if index == -1 and self.items.GetItemCount(): index = 0
         self.selected_index = index
-        if self.menu_items.GetItem(index, 2).GetText() != '---':
+        if index == -1:
+            self._enable_fields(False, clear=True)
+            return
+
+        self._ignore_events = True
+        self.items.Select(index)
+
+        if self._get_item_text(index, 2) != '---':
             # skip if the selected item is a separator
-            for (s, i) in ((self.label, 0), (self.event_handler, 1), (self.name, 2), (self.help_str, 4), (self.id, 5)):
-                # at this point, the value should be validated already
-                s.SetBackgroundColour( compat.wx_SystemSettings_GetColour(wx.SYS_COLOUR_WINDOW) )
-                s.SetValue(self.menu_items.GetItem(index, i).GetText())
+            for i,colname in enumerate(self.columns):
+                s = getattr(self, colname)
+                coltype = self.coltypes.get(colname,None)
+                value = self._get_item_text(index, i)
+                if coltype is None:
+                    # at this point, the value should be validated already
+                    s.SetBackgroundColour( compat.wx_SystemSettings_GetColour(wx.SYS_COLOUR_WINDOW) )
+                    s.SetValue(value)
+                elif coltype is int:
+                    s.SetSelection( int(value) )
             self.label.SetValue(self.label.GetValue().lstrip())
-            try:
-                self.check_radio.SetSelection( int(self.menu_items.GetItem(index, 3).GetText()) )
-            except:
-                self.check_radio.SetSelection(0)
             self._enable_fields(True)
             # set focus to text field again
             focus = self.FindFocus()
             if not isinstance(focus, wx.TextCtrl) and isinstance(self._last_focus, wx.TextCtrl):
                 self._last_focus.SetFocus()
         else:
-            for c in (self.label, self.event_handler, self.name, self.help_str, self.id):
-                c.SetValue("")
-            self._enable_fields(False)
+            self._enable_fields(False, clear=True)
         self._enable_buttons()
+        state = wx.LIST_STATE_SELECTED | wx.LIST_STATE_FOCUSED
+        self.items.SetItemState(index, state, state)  # fix bug 698071
+
         if force:
             self.label.SetFocus()
             self.label.SelectAll()
@@ -275,7 +290,7 @@ class MenuItemDialog(wx.Dialog):
         # activate the left/right/up/down buttons
         index = self.selected_index
         item_level = self.item_level(index)
-        item_count = self.menu_items.GetItemCount()
+        item_count = self.items.GetItemCount()
         self.move_left.Enable( not (index+1<item_count and (item_level < self.item_level(index+1)) ))
         self.move_right.Enable( index>=1 and item_level <= self.item_level(index-1) )
         self.move_up.Enable( index>0 )
@@ -285,7 +300,7 @@ class MenuItemDialog(wx.Dialog):
     def on_label_edited(self, event):
         if not self._ignore_events:
             value = "    " * self.item_level(self.selected_index) + self.label.GetValue().lstrip()
-            self.menu_items.SetStringItem(self.selected_index, 0, value)
+            self.items.SetStringItem(self.selected_index, 0, value)
         event.Skip()
 
     def on_event_handler_edited(self, event):
@@ -297,9 +312,7 @@ class MenuItemDialog(wx.Dialog):
             self.event_handler.SetBackgroundColour(wx.RED)
             valid = False
         self.event_handler.Refresh()
-        if valid and not self._ignore_events:
-            self.menu_items.SetStringItem(self.selected_index, 1, value)
-        event.Skip()
+        self._on_edited(event, "event_handler", value, valid)
 
     def on_name_edited(self, event):
         value = self.name.GetValue()
@@ -311,93 +324,79 @@ class MenuItemDialog(wx.Dialog):
             valid = False
         if value and valid and not self._ignore_events:
             # check for double names
-            for i in range(self.menu_items.GetItemCount()):
+            for i in range(self.items.GetItemCount()):
                 if i==self.selected_index: continue
-                if value == self.menu_items.GetItem(i, 2).GetText():
+                if value == self._get_item_text(i, 2):
                     valid = False
                     self.name.SetBackgroundColour( wx.Colour(255, 255, 0, 255) )  # YELLOW
                     break
         self.name.Refresh()
+        self._on_edited(event, "name", value, valid)
+
+    def _on_edited(self, event, colname, value, valid=True):
         if valid and not self._ignore_events:
-            self.menu_items.SetStringItem(self.selected_index, 2, value)
+            idx = self.columns.index(colname)
+            compat.ListCtrl_SetStringItem(self.items, self.selected_index, idx, value)
         event.Skip()
 
     def on_type_edited(self, event):
-        if not self._ignore_events:
-            self.menu_items.SetStringItem(self.selected_index, 3, str(self.check_radio.GetSelection()))
-        event.Skip()
+        self._on_edited(event, "type", str(self.type.GetSelection()))
 
     def on_help_str_edited(self, event):
-        if not self._ignore_events:
-            self.menu_items.SetStringItem(self.selected_index, 4, self.help_str.GetValue())
-        event.Skip()
+        self._on_edited(event, "help_str", self.help_str.GetValue())
 
     def on_id_edited(self, event):
-        if not self._ignore_events:
-            self.menu_items.SetStringItem(self.selected_index, 5, self.id.GetValue())
-        event.Skip()
+        self._on_edited(event, "id", self.id.GetValue())
 
     def item_level(self, index, label=None):
         "returns the indentation level of the menu item at the given index"
-        label = self.menu_items.GetItem(index, 0).GetText()
+        label = self._get_item_text(index, 0)
         return (len(label) - len(label.lstrip())) // 4
 
     def remove_item(self, event):
         "Event handler called when the Remove button is clicked"
         if self.selected_index < 0: return
         index = self.selected_index+1
-        if index<self.menu_items.GetItemCount() and (self.item_level(self.selected_index) < self.item_level(index)):
+        if index<self.items.GetItemCount() and (self.item_level(self.selected_index) < self.item_level(index)):
             # the item to be deleted is parent to the following item -> move up the following item
             self._move_item_left(index)
-            #self.selected_index = index-1
-        for s in (self.name, self.id, self.label, self.help_str, self.event_handler):
-            s.SetValue("")
-        self.check_radio.SetSelection(0)
-        self.menu_items.DeleteItem(self.selected_index)
-        if not self.menu_items.GetItemCount():
-            self._enable_fields(False)
-        self.selected_index -= 1
-        self.menu_items.Select(self.selected_index)
+        self.items.DeleteItem(self.selected_index)
+        self._select_item(self.selected_index-1, force=True)
 
     def _insert_item(self, index, item):
         compat.ListCtrl_InsertStringItem(self.items, index, item[0])
         for col, value in enumerate(item):
             if col==0: continue
-            compat.ListCtrl_SetStringItem(self.items, index, col, compat.unicode(value))
-        # fix bug 698074
-        self.items.SetItemState(index, wx.LIST_STATE_SELECTED, wx.LIST_STATE_SELECTED)
+            value = compat.unicode(value) if value is not None else ""
+            compat.ListCtrl_SetStringItem(self.items, index, col, value)
+        self.items.SetItemState(index, wx.LIST_STATE_SELECTED, wx.LIST_STATE_SELECTED)  # fix bug 698074
 
     def _get_item(self, index):
         ret = []
         for c,colname in enumerate(self.columns):
             col = self.columns.index(colname)
-            value = self.items.GetItem(index, col).GetText()
+            value = self._get_item_text(index, col)
             if colname in self.coltypes:
                 value = self.coltypes[colname](value)
             ret.append(value)
         return ret
 
     def add_items(self, menus):
-        """adds the content of 'menus' to self.menu_items. menus is a sequence of
+        """adds the content of 'menus' to self.items. menus is a sequence of
         trees which describes the structure of the menus"""
         indent = " " * 4
-        if compat.IS_CLASSIC:
-            set_item = self.menu_items.SetStringItem
-            add_item = self.menu_items.InsertStringItem
-        else:
-            set_item = self.menu_items.SetItem
-            add_item = self.menu_items.InsertItem
         index = [0]
 
         def add(node, level):
             i = index[0]
-            add_item(i, misc.wxstr(indent * level + node.label.lstrip().replace("\t","\\t")))
-            set_item(i, 1, misc.wxstr(node.handler))
-            set_item(i, 2, misc.wxstr(node.name))
-            set_item(i, 4, misc.wxstr(node.help_str))
-            set_item(i, 5, misc.wxstr(node.id))
+            label = misc.wxstr(indent * level + node.label.lstrip().replace("\t","\\t"))
+            self._insert_item_string(i, label)
+            self._set_item_string(i, 1, misc.wxstr(node.handler))
+            self._set_item_string(i, 2, misc.wxstr(node.name))
+            self._set_item_string(i, 4, misc.wxstr(node.help_str))
+            self._set_item_string(i, 5, misc.wxstr(node.id))
             if node.label==node.name==node.id=='---':
-                set_item(i, 3, '')
+                self._set_item_string(i, 3, '')
             else:
                 item_type = 0
                 try:
@@ -407,30 +406,29 @@ class MenuItemDialog(wx.Dialog):
                         item_type = 2
                 except ValueError:
                     pass
-                set_item(i, 3, misc.wxstr(item_type))
+                self._set_item_string(i, 3, misc.wxstr(item_type))
             index[0] += 1
             for item in node.children:
                 add(item, level+1)
+
         for tree in menus:
             add(tree.root, 0)
-        if self.menu_items.GetItemCount():
+        if self.items.GetItemCount():
             self._enable_fields()
 
     def get_menus(self):
         """returns the contents of self.menu_items as a list of trees which
         describe the structure of the menus in the format used by EditMenuBar"""
-        #def get(i, j): return self.menu_items.GetItem(i, j).GetText()
-        def get(i, j): return self.menu_items.GetItem(i, j).GetText()
         trees = []
 
         def add(node, index):
-            label = get(index, 0).lstrip().replace("\\t", "\t")
-            id = get(index, 5)
-            name = get(index, 2)
-            help_str = get(index, 4)
-            event_handler = get(index, 1)
+            label         = self._get_item_text(index, 0).lstrip().replace("\\t", "\t")
+            id            = self._get_item_text(index, 5)
+            name          = self._get_item_text(index, 2)
+            help_str      = self._get_item_text(index, 4)
+            event_handler = self._get_item_text(index, 1)
             try:
-                item_type = int(get(index, 3))
+                item_type = int(self._get_item_text(index, 3))
             except ValueError:
                 item_type = 0
             checkable = item_type == 1 and misc.wxstr("1") or misc.wxstr("")
@@ -441,11 +439,12 @@ class MenuItemDialog(wx.Dialog):
             return n
         level = 0
         curr_item = None
-        for index in range(self.menu_items.GetItemCount()):
-            label = get(index, 0).replace("\\t", "\t")
+        for index in range(self.items.GetItemCount()):
+            label = self._get_item_text(index, 0).replace("\\t", "\t")
             lvl = self.item_level(index)  # get the indentation level
             if not lvl:
-                t = MenuTree( get(index, 2), label, id=get(index, 5), handler=get(index, 1) )
+                t = MenuTree( self._get_item_text(index, 2), label,
+                              id=self._get_item_text(index, 5), handler=self._get_item_text(index, 1) )
                 curr_item = t.root
                 level = 1
                 trees.append(t)
@@ -463,40 +462,37 @@ class MenuItemDialog(wx.Dialog):
 
     def _move_item_left(self, index):
         if index > 0:
-            if ( index+1 < self.menu_items.GetItemCount() and (self.item_level(index) < self.item_level(index+1)) ):
+            if ( index+1 < self.items.GetItemCount() and (self.item_level(index) < self.item_level(index+1)) ):
                 return
-            label = self.menu_items.GetItem(index, 0).GetText()
+            label = self._get_item_text(index, 0)
             if label[:4] == "    ":
-                self.menu_items.SetStringItem(index, 0, label[4:])
-                self.menu_items.SetItemState(index, wx.LIST_STATE_SELECTED, wx.LIST_STATE_SELECTED)
+                self.items.SetStringItem(index, 0, label[4:])
+                self.items.SetItemState(index, wx.LIST_STATE_SELECTED, wx.LIST_STATE_SELECTED)
             self._enable_buttons()
 
     def move_item_left(self, event):
         """moves the selected menu item one level up in the hierarchy, i.e.
         shifts its label 4 spaces left in self.menu_items"""
-        self.menu_items.SetFocus()
+        self.items.SetFocus()
         self._move_item_left(self.selected_index)
 
     def _move_item_right(self, index):
         if index > 0 and (self.item_level(index) <= self.item_level(index-1)):
-            label = self.menu_items.GetItem(index, 0).GetText()
-            self.menu_items.SetStringItem(index, 0, misc.wxstr(" "*4) + label)
-            self.menu_items.SetItemState(index, wx.LIST_STATE_SELECTED, wx.LIST_STATE_SELECTED)
+            label = self._get_item_text(index, 0)
+            self.items.SetStringItem(index, 0, misc.wxstr(" "*4) + label)
+            self.items.SetItemState(index, wx.LIST_STATE_SELECTED, wx.LIST_STATE_SELECTED)
             self._enable_buttons()
 
     def move_item_right(self, event):
         """moves the selected menu item one level down in the hierarchy, i.e.
         shifts its label 4 spaces right in self.menu_items"""
-        self.menu_items.SetFocus()
+        self.items.SetFocus()
         self._move_item_right(self.selected_index)
 
     def move_item_up(self, event):
         "moves the selected menu item before the previous one at the same level in self.menu_items"
-        self.menu_items.SetFocus()
-        index = self._do_move_item(event, self.selected_index, False)
-        if index is not None:
-            state = wx.LIST_STATE_SELECTED | wx.LIST_STATE_FOCUSED
-            self.menu_items.SetItemState(index, state, state)
+        self.items.SetFocus()
+        self._do_move_item(event, self.selected_index, False)
 
     def _do_move_item(self, event, index, is_down):
         """internal function used by move_item_up and move_item_down.
@@ -504,16 +500,13 @@ class MenuItemDialog(wx.Dialog):
         #index = self.selected_index
         if index <= 0: return None
 
-        def get(i, j): return self.menu_items.GetItem(i, j).GetText()
-
-        def getall(i): return [get(i, j) for j in range(6)]
         level = self.item_level(index)
-        items_to_move = [ getall(index) ]
+        items_to_move = [ self._get_all_texts(index) ]
         i = index+1
-        while i < self.menu_items.GetItemCount():
+        while i < self.items.GetItemCount():
             # collect the items to move up
             if level < self.item_level(i):
-                items_to_move.append(getall(i))
+                items_to_move.append(self._get_all_texts(i))
                 i += 1
             else: break
         i = index-1
@@ -522,48 +515,36 @@ class MenuItemDialog(wx.Dialog):
             if level == lvl: break
             elif level > lvl: return None
             i -= 1
-        delete = self.menu_items.DeleteItem
-        insert = self.menu_items.InsertStringItem
-        set = self.menu_items.SetStringItem
         for j in range(len(items_to_move)-1, -1, -1):
-            delete(index+j)
+            self.items.DeleteItem(index+j)
         items_to_move.reverse()
         for label, id, name, help_str, check_radio, event_handler in items_to_move:
-            i = insert(i, label)
-            set(i, 1, id)
-            set(i, 2, name)
-            set(i, 3, help_str)
-            set(i, 4, check_radio)
-            set(i, 5, event_handler)
+            i = self._insert_item_string(i, label)
+            self._set_item_string(i, 1, id)
+            self._set_item_string(i, 2, name)
+            self._set_item_string(i, 3, help_str)
+            self._set_item_string(i, 4, check_radio)
+            self._set_item_string(i, 5, event_handler)
         ret_idx = i
         if is_down: ret_idx += len(items_to_move)
-        return ret_idx
+        self._select_item(ret_idx, True)
 
     def move_item_down(self, event):
         "moves the selected menu item after the next one at the same level in self.menu_items"
-        self.menu_items.SetFocus()
+        self.items.SetFocus()
         index = self.selected_index
         self.selected_index = -1
         if index < 0: return
 
-        def get(i, j): return self.menu_items.GetItem(i, j).GetText()
-
-        def getall(i): return [get(i, j) for j in range(6)]
         level = self.item_level(index)
         i = index+1
-        while i < self.menu_items.GetItemCount():
+        while i < self.items.GetItemCount():
             # collect the items to move down
             if level < self.item_level(i):
                 i += 1
             else: break
-        if i < self.menu_items.GetItemCount():
-            # _do_move_item works with selected_index, so we must assing to
-            # it the right value before the call
-            #self.selected_index = i
-            self.selected_index = self._do_move_item(event, i, True)
-            # fix bug 698071
-            state = wx.LIST_STATE_SELECTED | wx.LIST_STATE_FOCUSED
-            self.menu_items.SetItemState(self.selected_index, state, state)
+        if i < self.items.GetItemCount():
+            self._do_move_item(event, i, True)
         else:
             # restore the selected index
             self.selected_index = index
@@ -571,6 +552,7 @@ class MenuItemDialog(wx.Dialog):
     # the action buttons are not linked to ESC and Enter to avoid accidental modifications
     def on_cancel(self, event):
         self.EndModal(wx.ID_CANCEL)
+
     def on_OK(self, event):
         self.EndModal(wx.ID_OK)
 
@@ -581,7 +563,6 @@ class MenuProperty(np.Property):
 
     def __init__(self):
         np.Property.__init__(self, [])
-        #self.menu_items = {}
 
     def create_editor(self, panel, sizer):
         self.edit_btn = wx.Button(panel, -1, _("Edit menus..."))
@@ -631,8 +612,6 @@ class MenuHandler(BaseXmlBuilderTagHandler):
                              attrs.get('help_str', ''),
                              handler=attrs.get('handler', ''))
                 self.curr_menu.append( (t.root,) )
-                #self.owner.menus.append(t)
-                #self.owner.properties["menus"].value.append(t)
                 self.menus.append(t)
                 return
             node = MenuTree.Node(label=attrs['label'],
