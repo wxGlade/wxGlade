@@ -300,7 +300,7 @@ class MenuItemDialog(wx.Dialog):
     def on_label_edited(self, event):
         if not self._ignore_events:
             value = "    " * self.item_level(self.selected_index) + self.label.GetValue().lstrip()
-            self.items.SetStringItem(self.selected_index, 0, value)
+            self._set_item_string(self.selected_index, 0, value)
         event.Skip()
 
     def on_event_handler_edited(self, event):
@@ -364,11 +364,11 @@ class MenuItemDialog(wx.Dialog):
         self._select_item(self.selected_index-1, force=True)
 
     def _insert_item(self, index, item):
-        compat.ListCtrl_InsertStringItem(self.items, index, item[0])
+        self._insert_item_string(index, item[0])
         for col, value in enumerate(item):
             if col==0: continue
             value = compat.unicode(value) if value is not None else ""
-            compat.ListCtrl_SetStringItem(self.items, index, col, value)
+            self._set_item_string(index, col, value)
         self.items.SetItemState(index, wx.LIST_STATE_SELECTED, wx.LIST_STATE_SELECTED)  # fix bug 698074
 
     def _get_item(self, index):

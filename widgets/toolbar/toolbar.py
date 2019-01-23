@@ -22,8 +22,8 @@ from wcodegen.taghandler import BaseXmlBuilderTagHandler
 
 class ToolsDialog(wx.Dialog):
     # initially based on MenuItemDialog; with more abstraction, e.g. columns
-    columns  = ["label","bitmap1","bitmap2","short_help","long_help","type","event_handler","id"]
-    column_widths = [180,180,     120,       120,        180,        50,     120,           50]
+    columns  = ["label","bitmap1","bitmap2","short_help","long_help","type","handler","id"]
+    column_widths = [180,180,     120,       120,        180,        50,     120,      50]
     headers = ["Label","Primary Bitmap","Disabled Bitmap","Short Help","Long Help","Type","Event Handler","Id"]
     coltypes = {"type":int}
     default_item = ("item","","","","",0,"","")
@@ -34,14 +34,14 @@ class ToolsDialog(wx.Dialog):
         wx.Dialog.__init__(self, parent, -1, _("Toolbar editor"), style=style)
 
         # menu item fields
-        self.label         = wx.TextCtrl(self, wx.ID_ANY, "")
-        self.bitmap1       = wx.TextCtrl(self, wx.ID_ANY, "")
-        self.bitmap2       = wx.TextCtrl(self, wx.ID_ANY, "")
-        self.event_handler = wx.TextCtrl(self, wx.ID_ANY, "")
-        self.short_help    = wx.TextCtrl(self, wx.ID_ANY, "")
-        self.long_help     = wx.TextCtrl(self, wx.ID_ANY, "")
-        self.id            = wx.TextCtrl(self, wx.ID_ANY, "")
-        self.type          = wx.RadioBox(self, wx.ID_ANY, "Type", choices=["Normal", "Checkable", "Radio"],
+        self.label      = wx.TextCtrl(self, wx.ID_ANY, "")
+        self.bitmap1    = wx.TextCtrl(self, wx.ID_ANY, "")
+        self.bitmap2    = wx.TextCtrl(self, wx.ID_ANY, "")
+        self.handler    = wx.TextCtrl(self, wx.ID_ANY, "")
+        self.short_help = wx.TextCtrl(self, wx.ID_ANY, "")
+        self.long_help  = wx.TextCtrl(self, wx.ID_ANY, "")
+        self.id         = wx.TextCtrl(self, wx.ID_ANY, "")
+        self.type       = wx.RadioBox(self, wx.ID_ANY, "Type", choices=["Normal", "Checkable", "Radio"],
                                       majorDimension=1, style=wx.RA_SPECIFY_COLS)
         # dialog action buttons; these will be handled, instead of using stock OK/Cancel buttons
         self.ok     = wx.Button(self, wx.ID_ANY, "OK")
@@ -62,7 +62,7 @@ class ToolsDialog(wx.Dialog):
         self._set_tooltips()
 
         self.Bind(wx.EVT_TEXT, self.on_label_edited, self.label)
-        self.Bind(wx.EVT_TEXT, self.on_event_handler_edited, self.event_handler)
+        self.Bind(wx.EVT_TEXT, self.on_event_handler_edited, self.handler)
         self.Bind(wx.EVT_TEXT, self.on_help_str_edited, self.short_help)
         self.Bind(wx.EVT_TEXT, self.on_long_help_str_edited, self.long_help)
         self.Bind(wx.EVT_TEXT, self.on_id_edited, self.id)
@@ -159,7 +159,7 @@ class ToolsDialog(wx.Dialog):
         grid_sizer.Add(sizer_bitmap2, 1, wx.EXPAND, 0)
         self.label_7 = wx.StaticText(self, wx.ID_ANY, "Event Handler:")
         grid_sizer.Add(self.label_7, 0, wx.ALIGN_CENTER_VERTICAL | wx.LEFT | wx.RIGHT, 4)
-        grid_sizer.Add(self.event_handler, 1, wx.EXPAND, 0)
+        grid_sizer.Add(self.handler, 1, wx.EXPAND, 0)
         self.label_9 = wx.StaticText(self, wx.ID_ANY, "Short Help:")
         grid_sizer.Add(self.label_9, 0, wx.ALIGN_CENTER_VERTICAL | wx.LEFT | wx.RIGHT, 4)
         grid_sizer.Add(self.short_help, 1, wx.EXPAND, 0)
@@ -195,7 +195,7 @@ class ToolsDialog(wx.Dialog):
         # set tooltips
         for c in (self.label_6, self.label):
             compat.SetToolTip(c, "The menu entry text;\nenter & for access keys (using ALT key)\nappend e.g. \\tCtrl-X for keyboard shortcut")
-        for c in (self.label_7, self.event_handler):
+        for c in (self.label_7, self.handler):
             compat.SetToolTip(c, "Enter the name of an event handler method; this will be created as stub")
         for c in (self.label_10, self.id):
             compat.SetToolTip(c, "optional: enter wx ID")
@@ -222,6 +222,12 @@ class ToolsDialog(wx.Dialog):
 
     def _get_all_texts(self, index):
         return [self._get_item_text(index, j) for j in range(len(self.columns))]
+
+    def _set_item_string(self, index, col, s):
+        compat.ListCtrl_SetStringItem(self.items, index, col, s)
+    
+    def _insert_item_string(self, index, s):
+        return compat.ListCtrl_InsertStringItem(self.items, index, s)
 
     def _add_new_item(self, item):
         # helper for the next two methods
@@ -298,24 +304,24 @@ class ToolsDialog(wx.Dialog):
     def on_label_edited(self, event):
         if not self._ignore_events:
             value = self.label.GetValue().lstrip()
-            compat.ListCtrl_SetStringItem(self.items, self.selected_index, self.columns.index("label"), value)
+            self._set_item_string(self.selected_index, self.columns.index("label"), value)
         event.Skip()
 
     def on_event_handler_edited(self, event):
-        value = self.event_handler.GetValue()
+        value = self.handler.GetValue()
         if not value or self.handler_re.match(value):
-            self.event_handler.SetBackgroundColour( compat.wx_SystemSettings_GetColour(wx.SYS_COLOUR_WINDOW) )
+            self.handler.SetBackgroundColour( compat.wx_SystemSettings_GetColour(wx.SYS_COLOUR_WINDOW) )
             valid = True
         else:
-            self.event_handler.SetBackgroundColour(wx.RED)
+            self.handler.SetBackgroundColour(wx.RED)
             valid = False
-        self.event_handler.Refresh()
-        self._on_edited(event, "event_handler", value, valid)
+        self.handler.Refresh()
+        self._on_edited(event, "handler", value, valid)
 
     def _on_edited(self, event, colname, value, valid=True):
         if valid and not self._ignore_events:
             idx = self.columns.index(colname)
-            compat.ListCtrl_SetStringItem(self.items, self.selected_index, idx, value)
+            self._set_item_string(self.selected_index, idx, value)
         event.Skip()
 
     def on_type_edited(self, event):
@@ -344,10 +350,10 @@ class ToolsDialog(wx.Dialog):
         self._select_item(self.selected_index-1, force=True)
 
     def _insert_item(self, index, item):
-        compat.ListCtrl_InsertStringItem(self.items, index, item[0])
+        self._insert_item_string(index, item[0])
         for col, value in enumerate(item):
             if col==0: continue
-            compat.ListCtrl_SetStringItem(self.items, index, col, compat.unicode(value))
+            self._set_item_string(index, col, compat.unicode(value))
         # fix bug 698074
         self.items.SetItemState(index, wx.LIST_STATE_SELECTED, wx.LIST_STATE_SELECTED)
 
