@@ -189,11 +189,11 @@ class MenuItemDialog(wx.Dialog):
             compat.SetToolTip(c, "optional: enter a name to store the menu item as attribute of the menu bar")
         for c in (self.label_10, self.id):
             compat.SetToolTip(c, "optional: enter wx ID")
-        compat.SetToolTip( self.move_up, "Move selected item up" )
-        compat.SetToolTip( self.move_down, "Move selected item down" )
+        compat.SetToolTip( self.move_up, "Move selected item up (Alt-Up)" )
+        compat.SetToolTip( self.move_down, "Move selected item down (Alt-Down)" )
         compat.SetToolTip( self.items, "For navigation use the mouse or the up/down arrows" )
-        compat.SetToolTip( self.move_left,  "Move the selected item up by one menu level" )
-        compat.SetToolTip( self.move_right, "Move the selected item down by one menu level" )
+        compat.SetToolTip( self.move_left,  "Move the selected item up by one menu level (Alt-Left)" )
+        compat.SetToolTip( self.move_right, "Move the selected item down by one menu level (Alt-Right)" )
 
     def _enable_fields(self, enable=True, clear=False):
         if clear:

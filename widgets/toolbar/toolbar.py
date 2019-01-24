@@ -203,8 +203,8 @@ class ToolsDialog(wx.Dialog):
             compat.SetToolTip(c , "This will be displayed as tooltip" )
         for c in (self.label_9b, self.long_help):
             compat.SetToolTip( c, "This will be displayed in the status bar" )
-        compat.SetToolTip( self.move_up, "Move selected item up" )
-        compat.SetToolTip( self.move_down, "Move selected item down" )
+        compat.SetToolTip( self.move_up, "Move selected item up (Alt-Up)" )
+        compat.SetToolTip( self.move_down, "Move selected item down (Alt-Down)" )
         compat.SetToolTip( self.items, "For navigation use the mouse or the up/down arrows" )
 
     def _enable_fields(self, enable=True, clear=False):
