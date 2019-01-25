@@ -78,7 +78,7 @@ def builder(parent, sizer, pos, number=[1]):
         number[0] += 1
         name = 'check_list_box_%d' % number[0]
     with parent.frozen():
-        check_list_box = EditCheckListBox(name, parent, wx.NewId(), [u'choice 1'], sizer, pos)
+        check_list_box = EditCheckListBox(name, parent, wx.NewId(), [[u'choice 1'],], sizer, pos)
         check_list_box.properties["style"].set_to_default()
         node = Node(check_list_box)
     ##     sizer.set_item(pos, size=check_list_box.GetBestSize())
