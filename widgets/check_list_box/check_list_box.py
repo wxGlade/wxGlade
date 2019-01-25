@@ -75,7 +75,7 @@ def builder(parent, pos):
     "factory function for EditCheckListBox objects"
     name = common.root.get_next_name('check_list_box_%d', parent)
     with parent.frozen():
-        editor = EditCheckListBox(name, parent, [u'choice 1'], pos)
+        editor = EditCheckListBox(name, parent, [[u'choice 1']], pos)
         editor.properties["style"].set_to_default()
         if parent.widget: editor.create()
     return editor
