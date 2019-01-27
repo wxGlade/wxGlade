@@ -385,7 +385,7 @@ class SizerBase(Sizer, np.PropertyOwner):
                         p.add("wxALL")
                 if self.widget:
                     self.sizer.item_properties_modified(self, modified)
-        np.PropertyOwner.properties_changed(self, modified)
+        edit_base.EditBase.properties_changed(self, modified)
 
     def check_drop_compatibility(self):
         return (False, "Items can only be added to empty slots; add/insert a slot first, if required.")

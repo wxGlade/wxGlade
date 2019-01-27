@@ -206,11 +206,13 @@ class EditBase(np.PropertyOwner):
 
     def properties_changed(self, modified):
         if modified and "name" in modified and self.properties["name"].previous_value is not None:
-            previous_name = self.properties["name"].previous_value
+            if config.debugging or config.testing:
+                assert self.name not in self.toplevel_parent.names
             try:
-                self.toplevel_parent.names[previous_name]
+                del self.toplevel_parent.names[self.properties["name"].previous_value]
             except KeyError:
                 if config.debugging: raise
+            self.toplevel_parent.names[self.name] = 1
             common.app_tree.refresh(self, refresh_label=True, refresh_image=False)
         elif not modified or "class" in modified or "name" in modified:
             common.app_tree.refresh(self, refresh_label=True, refresh_image=False)
