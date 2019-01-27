@@ -112,7 +112,7 @@ class WidgetTree(wx.TreeCtrl):#, Tree):
         elif new_value.endswith('"') and ': "' in new_value:
             new_name, new_label = new_value.split(': "', 1)
             new_label = new_label[:-1]
-        elif new_value and new_value[0] in ["'",'"'] or new_value[-1] in ["'",'"']:
+        elif new_value and (new_value[0] in ["'",'"'] or new_value[-1] in ["'",'"']):
             # just a label; for this we accept errors, we just want at least one quotation mark
             if new_value[0]==new_value[-1] and len(new_value)>2:
                 new_label = new_value[1:-1]
