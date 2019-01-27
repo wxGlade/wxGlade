@@ -13,6 +13,8 @@ User Interface:
  * add a template manager for (custom) widgets or complete parts of a design?
  * remove config.preferences.show_progress and always show ProgressDialog
 done:
+ * when Layout-Expand inside a grid sizer is checked -> add dialog to report and make growable
+ * flex grid sizers: add menu items for growable row/col
  * Notebook: add context menu entries 'add page' / 'remove page'
  * Splitter: ask user whether to add panels
  * flush properties before saving

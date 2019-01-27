@@ -586,6 +586,13 @@ class ManagedBase(WindowBase):
             if self.parent.IS_SIZER:
                 self.sizer.item_properties_modified(self, modified)
 
+        # if an item inside a flex grid sizer is set to EXPAND, inform the user if row and col are not growable
+        if modified and "flag" in modified and self.parent.IS_SIZER and "growable_rows" in self.parent.properties:
+            if p.previous_value is not None and "wxEXPAND" in p.value_set and not "wxEXPAND" in p.previous_value:
+                row, col = self.parent._get_row_col(self.pos)
+                if not row in self.parent.growable_rows and not col in self.parent.growable_cols:
+                    wx.CallAfter(self.parent.ask_growable, row,col)
+
     def _set_widget_best_size(self):
         # called when the widget has been modified and this might affect the automatic size
         if not self.widget: return

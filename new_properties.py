@@ -863,6 +863,7 @@ class _CheckListProperty(Property):
 
     def _change_value(self, value, checked):
         "user has clicked checkbox or History is setting"
+        self.previous_value = set(self.value_set)
         if checked:
             if value in self.value_set: return
             self.value_set.add(value)
@@ -894,6 +895,7 @@ class _CheckListProperty(Property):
         self._notify()
         common.history.set_property_changed(self, value, checked)
         self.update_display()
+        self.previous_value = None
 
     def update_display(self, start_editing=False):
         # when the value has changed

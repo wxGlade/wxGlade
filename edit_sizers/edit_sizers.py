@@ -367,6 +367,7 @@ class SizerBase(Sizer, np.PropertyOwner):
         if modified and "name" in modified:
             previous_name = self.properties["name"].previous_value
             common.app_tree.refresh(self, refresh_label=True, refresh_image=False)
+            
         if not modified or "class" in modified:
             self.properties["class_orient"].set(self.get_class_orient())
         if not modified or "orient" in modified:
@@ -475,6 +476,17 @@ class SizerBase(Sizer, np.PropertyOwner):
                 # last col
                 i = misc.append_menu_item(menu, -1, _('Add Column') )
                 misc.bind_menu_item_after(widget, i, self.insert_col, -1)
+
+        if "growable_rows" in self.PROPERTIES:
+            i = misc.append_menu_item(menu, -1, _('Make Row growable'), kind=wx.ITEM_CHECK )
+            i.Check(row in self.growable_rows)
+            misc.bind_menu_item_after(widget, i, self.make_growable, "row", row)
+            i = misc.append_menu_item(menu, -1, _('Make Column growable'), kind=wx.ITEM_CHECK )
+            i.Check(col in self.growable_cols)
+            misc.bind_menu_item_after(widget, i, self.make_growable, "col", col)
+            
+
+        if "rows" in self.PROPERTIES:
             menu.AppendSeparator()
 
         if self._can_add_insert_slots():
@@ -1658,6 +1670,39 @@ class EditFlexGridSizer(GridSizerBase):
             elif not growable and c in cols:
                 self.widget.AddGrowableCol(c)
 
+    @_frozen
+    def make_growable(self, direction, row_or_col):
+        "set growable_rows or growable_cols"
+        p_name = "growable_%ss"%direction
+        p = self.properties[p_name]
+        if row_or_col in p.value:
+            p.value.remove(row_or_col)
+        else:
+            p.value.append(row_or_col)
+            p.value.sort()
+        p.set_active(bool(p.value))
+        self.properties_changed([p_name])
+        p.update_display()
+    
+    def ask_growable(self, row, col):
+        "ask user whether to make a row or col growable when the user has selected EXPAND without a growable row or col"
+        import dialogs
+        dlg = dialogs.MakeRowColGrowableDlg(common.main)
+        usr = dlg.ShowModal()
+        if usr != wx.ID_OK: return
+        changed = []
+        # we can be sure that row and col are not in the property values
+        if dlg.cb_row_growable.GetValue():
+            p = self.properties["growable_rows"]
+            p.set(sorted(p.value+[row]), activate=True)
+            changed.append("growable_rows")
+        if dlg.cb_col_growable.GetValue():
+            p = self.properties["growable_cols"]
+            p.set(sorted(p.value+[col]), activate=True)
+            changed.append("growable_cols")
+
+        dont_show_again = dlg.cb_dont_show_again.GetValue()
+        if changed: self.properties_changed(changed)
 
 
 class EditGridBagSizer(EditFlexGridSizer):
