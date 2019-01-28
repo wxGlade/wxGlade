@@ -121,7 +121,7 @@ class EditNotebook(ManagedBase, EditStylesMixin):
         event.Skip()
 
     ####################################################################################################################
-    # new implementation:
+    # new implementation, parts from previous 'virtual sizer':
     def add_item(self, child, pos=None):
         ManagedBase.add_item(self, child, pos)
         # avoid widgets being destroyed; this is done by DeletePage/InsertPage
@@ -145,7 +145,7 @@ class EditNotebook(ManagedBase, EditStylesMixin):
 
     def insert_tab(self, index, label):
         # add tab/page; called from GUI
-        tab = self._insert_tab(self, index, label)
+        tab = self._insert_tab(index, label)
         misc.rebuild_tree(self)
 
     def _insert_tab(self, index, label):
