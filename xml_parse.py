@@ -434,6 +434,7 @@ class ClipboardXmlWidgetBuilder(XmlWidgetBuilder):
                     while newname in self.have_names:
                         newname = template%i
                         i += 1
+                    self.have_names.add(newname)
                     return newname
                 # top level, e.g. a new frame is pasted
                 while newname in self.have_names:
@@ -453,6 +454,7 @@ class ClipboardXmlWidgetBuilder(XmlWidgetBuilder):
                 else:
                     newname = '%s_copy_%s' % (oldname, i)
                 i += 1
+            self.have_names.add(newname)
             return newname
 
         # top level, e.g. a new frame is pasted
