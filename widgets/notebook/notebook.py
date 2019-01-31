@@ -430,7 +430,7 @@ class EditNotebook(ManagedBase, EditStylesMixin):
     def on_load(self):
         # create slot nodes for empty slots
         for p,page in enumerate(self.pages):
-            if page is not None: continue
+            if page is not None and not isinstance(page, compat.basestring): continue
             self.pages[p] = slot = SizerSlot(self, self.virtual_sizer, p+1)
             node = slot.node = SlotNode(slot)
             common.app_tree.insert(node, self.node, p)
