@@ -350,6 +350,8 @@ class SizerBase(Sizer, np.PropertyOwner):
         if event.Dragging():
             # start drag & drop
             window = misc.get_toplevel_parent(self._btn)
+            if self._btn:
+                self._btn.OnLeftUp(event)
             clipboard.begin_drag(window, self)
             return
         event.Skip()
