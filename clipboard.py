@@ -149,7 +149,7 @@ class DropTarget(wx.DropTarget):
             # delay action, as otherwise there will be a segmentation fault; 50ms seems to be enough
             wx.CallLater(50, self._OnData, _current_drag_source, src_widget, dst_widget, data, copy)
         else:
-            self._OnData(_current_drag_source, src_widget, dst_widget, data, copy)
+            wx.CallAfter(self._OnData, _current_drag_source, src_widget, dst_widget, data, copy)
 
         return default
 
