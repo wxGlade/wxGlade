@@ -47,8 +47,8 @@ PY_VERSION=$(${PYTHON_BIN} -c 'import sys; print(sys.version[:3])')
 # determined prefix of the Python module directory structure
 if [ -d "/usr/lib/pymodules/python${PY_VERSION}/wxglade" ]; then
   WXG_MODULE_PATH="/usr/lib/pymodules/python${PY_VERSION}/wxglade"
-elif [ -d "/usr/lib/pymodules/python${PY_VERSION}/site-packages/wxGlade-0.9.0-py${PY_VERSION}.egg/wxglade" ]; then
-  WXG_MODULE_PATH="/usr/lib/pymodules/python${PY_VERSION}/site-packages/wxGlade-0.9.0-py${PY_VERSION}.egg/wxglade"
+elif [ -d "/usr/lib/pymodules/python${PY_VERSION}/site-packages/wxGlade-0.9.1-py${PY_VERSION}.egg/wxglade" ]; then
+  WXG_MODULE_PATH="/usr/lib/pymodules/python${PY_VERSION}/site-packages/wxGlade-0.9.1-py${PY_VERSION}.egg/wxglade"
 else
   WXG_MODULE_PATH="/usr/lib/python${PY_VERSION}/wxglade"
 fi
