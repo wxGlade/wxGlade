@@ -358,7 +358,7 @@ class wxGladeFrame(wx.Frame):
 
         self.Show()
         #misc.set_focused_widget(common.root)
-        self.Bind(wx.EVT_CLOSE, self.cleanup)
+        self.Bind(wx.EVT_CLOSE, self.on_close)
 
         # disable autosave checks during unittests
         if config.testing: return
@@ -1070,8 +1070,9 @@ class wxGladeFrame(wx.Frame):
             common.root.template_data = data
             self._save_app(outfile)
 
-    def cleanup(self, event):
+    def on_close(self, event):
         if self.ask_save():
+            # close application
             # first, let's see if we have to save the geometry...
             prefs = config.preferences
             if prefs.remember_geometry:
@@ -1086,8 +1087,10 @@ class wxGladeFrame(wx.Frame):
                 wx.MessageBox( _('Error saving preferences:\n%s') % e,
                                _('Error'), wx.OK|wx.CENTRE|wx.ICON_ERROR )
             self.Destroy()
-            common.remove_autosaved()  # ALB 2004-10-15
+            common.remove_autosaved()
             wx.CallAfter(wx.GetApp().ExitMainLoop)
+        elif event.CanVeto():
+            event.Veto()
 
     def show_about_box(self):
         "show the about dialog;  @see: L{about.wxGladeAboutBox}"
