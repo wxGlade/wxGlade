@@ -145,7 +145,7 @@ class DropTarget(wx.DropTarget):
         fmt = self._get_received_format()
         data = self.data_objects[fmt].GetData()  # the data as string
         self.fmt = None
-        if wx.Platform=="__WXMAC__" and compat.IS_CLASSIC:
+        if wx.Platform=="__WXMAC__":
             # delay action, as otherwise there will be a segmentation fault; 50ms seems to be enough
             wx.CallLater(50, self._OnData, _current_drag_source, src_widget, dst_widget, data, copy)
         else:
