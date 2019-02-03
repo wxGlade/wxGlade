@@ -1071,6 +1071,9 @@ class wxGladeFrame(wx.Frame):
             self._save_app(outfile)
 
     def on_close(self, event):
+        if not event.CanVeto():
+            event.Skip
+            return
         if self.ask_save():
             # close application
             # first, let's see if we have to save the geometry...
