@@ -457,9 +457,17 @@ def check_autosaved(filename):
         if filename:
             orig = os.stat(filename)
             auto = os.stat(autosave_name)
-            return orig.st_mtime < auto.st_mtime
+            if orig.st_mtime > auto.st_mtime: return False
         else:
-            return os.path.exists(autosave_name)
+            if not os.path.exists(autosave_name): return False
+            auto = os.stat(autosave_name)
+        # check contents for empty or incomplete file
+        if auto.st_size < 50: return False
+        f = open(filename, "rb")
+        f.seek(-16,2)  # from the end
+        file_end = f.read(16)
+        f.close()
+        return b"</application>" in file_end
     except EnvironmentError as inst:
         # File doesn't exists
         if inst.errno == errno.ENOENT:
