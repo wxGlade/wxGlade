@@ -92,12 +92,7 @@ class EditNotebook(ManagedBase, EditStylesMixin):
         self.no_custom_class = np.CheckBoxProperty(False, default_value=False)
 
     def create_widget(self):
-        if self.parent.WX_CLASS in ("wxFrame",):
-            # without this, the panel will not fill the available space on pasting etc.
-            size = self.parent.widget.GetClientSize()
-        else:
-            size = wx.DefaultSize
-        self.widget = wx.Notebook( self.parent_window.widget, self.id, size=size, style=self.style )
+        self.widget = wx.Notebook( self.parent_window.widget, self.id, style=self.style )
         for c,(label,) in zip(self.children, self.tabs):
             c.create()
             if c.IS_SLOT:

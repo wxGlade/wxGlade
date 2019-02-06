@@ -227,6 +227,10 @@ class EditBase(EventsMixin, edit_base.EditBase):
             yield
         finally:
             if toplevel:
+                if self.widget:
+                    self.widget.Refresh()
+                    self.widget.SendSizeEvent()
+                    #toplevel.SendSizeEvent()  # would work as well
                 toplevel.Thaw()
 
 
