@@ -123,8 +123,8 @@ class EditSplitterWindow(ManagedBase, EditStylesMixin):
         else:
             self.widget.SplitHorizontally(self.children[0].widget, self.children[1].widget, sash_pos)
 
-        if hasattr(self.children[0], 'sel_marker'): self.children[0].sel_marker.update()
-        if hasattr(self.children[1], 'sel_marker'): self.children[1].sel_marker.update()
+        if getattr(self.children[0], 'sel_marker', None): self.children[0].sel_marker.update()
+        if getattr(self.children[1], 'sel_marker', None): self.children[1].sel_marker.update()
 
     def properties_changed(self, modified):
         if not modified or "sash_pos" in modified and self.widget:
