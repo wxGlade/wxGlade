@@ -216,6 +216,11 @@ class EditBase(EventsMixin, edit_base.EditBase):
         widget is currently selected; the default implementation does nothing."""
         pass
 
+    def _get_default_or_client_size(self):
+        # used by SplitterWindow, Panel to create with parent's client size if parent is not a sizer
+        if self.parent.IS_SIZER: return wx.DefaultSize
+        return self.parent.widget.GetClientSize()
+
     @contextlib.contextmanager
     def frozen(self):
         if self.widget:
@@ -880,8 +885,9 @@ class TopLevelBase(WindowBase, PreviewMixin):
         WindowBase.on_size(self, event)
         if len(self.children)!=1 or self.children[0] is None or not self.children[0].widget: return
         child = self.children[0]
-        if child.IS_SLOT or child.WX_CLASS in ("wxSplitterWindow", "wxPanel", "wxNotebook"):
-            # resize element to fill full space
+        #if child.IS_SLOT or child.WX_CLASS in ("wxSplitterWindow", "wxPanel", "wxNotebook"):
+        if child.WX_CLASS in ("wxSplitterWindow", "wxPanel", "wxNotebook"):
+            # resize element to fill full space; SendSizeEvent in frozen is not enough
             size = self.widget.GetClientSize()
             child.widget.SetSize( size )
         elif child.IS_SIZER:

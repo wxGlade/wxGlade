@@ -159,9 +159,25 @@ class EditPanel(PanelBase, ManagedBase):
                     return self.widget.GetSizer().GetMinSize()
                 return self.widget.__class__.GetBestSize(self.widget)
             self.widget.GetBestSize = GetBestSize
-        if self.parent.WX_CLASS in ("wxFrame",):
-            # without this, the panel will not fill the available space on pasting etc.
-            self.widget.SetSize(self.parent.widget.GetClientSize())
+        #if self.parent.WX_CLASS in ("wxFrame",):
+            ## without this, the panel will not fill the available space on pasting etc.
+            #self.widget.SetSize(self.parent.widget.GetClientSize())
+    #def create_widget(self):
+        ## to be done: use ScrolledWindow only if scrolling is required
+        #size = self._get_default_or_client_size()
+        #print("EditPanel.create_widget",self.name, size)
+        #if self.scrollable:
+            #self.widget = wx.ScrolledWindow(self.parent_window.widget, self.id, style=0)
+        #else:
+            #self.widget = wx.Panel(self.parent_window.widget, self.id, style=0)
+        #self.widget.Bind(wx.EVT_ENTER_WINDOW, self.on_enter)
+        #self.widget.GetBestSize = self.get_widget_best_size
+        #if not self.parent.IS_SIZER:
+            #def GetBestSize():
+                #if self.widget and self.widget.GetSizer():
+                    #return self.widget.GetSizer().GetMinSize()
+                #return self.widget.__class__.GetBestSize(self.widget)
+            #self.widget.GetBestSize = GetBestSize
 
     def set_sizer(self, sizer):
         # called from sizer.create: self.window.set_sizer(self)

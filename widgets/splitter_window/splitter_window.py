@@ -73,11 +73,17 @@ class EditSplitterWindow(ManagedBase, EditStylesMixin):
     def _get_slot_label(self, pos):
         return "SLOT %s"%self._get_label(pos)
 
+    #def create_widget(self):
+        #if not self.parent.IS_SIZER:
+            #size = self.parent.widget.GetClientSize()
+            #self.widget = wx.SplitterWindow(self.parent_window.widget, self.id, size=size, style=self.style)
+        #else:
+            #self.widget = wx.SplitterWindow(self.parent_window.widget, self.id, style=self.style)
+        #self.split()
+
     def create_widget(self):
-        self.widget = wx.SplitterWindow(self.parent_window.widget, self.id, style=self.style)
-        if self.parent.WX_CLASS in ("wxFrame","wxNotebook"):
-            # without this, the splitter will not fill the available space on pasting etc.
-            self.widget.SetSize(self.parent.widget.GetClientSize())
+        size = self._get_default_or_client_size()
+        self.widget = wx.SplitterWindow(self.parent_window.widget, self.id, size=size, style=self.style)
         self.split()
 
     def finish_widget_creation(self):
@@ -100,6 +106,31 @@ class EditSplitterWindow(ManagedBase, EditStylesMixin):
             min_pane_size_p.set( self.widget.GetMinimumPaneSize() )
 
         self.widget.Bind(wx.EVT_SPLITTER_SASH_POS_CHANGED, self.on_sash_pos_changed )
+
+        if self.widget.GetTopLevelParent().IsShown():
+            # e.g. when pasting into an existing window
+            wx.CallAfter(self.widget.UpdateSize)
+
+    #def _get_client_size(self, pos):
+        ## returns the available size for a child
+
+        #width, height = self.widget.GetClientSize()
+        #sash_position = self.widget.GetSashPosition()
+        #sash_size = self.widget.GetSashSize()
+        #if self.widget.GetSplitMode()==wx.SPLIT_VERTICAL:
+            ## side by side
+            #if pos==0:
+                #width = sash_position
+            #else:
+                #width = width - sash_position - sash_size
+        #else:
+            ## top to bottom
+            #if pos==0:
+                #height = sash_position
+            #else:
+                #width = height - sash_position - sash_size
+        #print("_get_client_size", (width, height))
+        #return (width, height)
 
     def on_set_focus(self, event):
         misc.set_focused_widget(self)
