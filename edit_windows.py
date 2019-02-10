@@ -206,7 +206,7 @@ class EditBase(EventsMixin, np.PropertyOwner):
         misc.bind_menu_item_after(widget, i, clipboard.cut, self)
         menu.AppendSeparator()
 
-        if self.sizer:
+        if self.sizer and hasattr(self.sizer, "_add_popup_menu_items"):
             self.sizer._add_popup_menu_items(menu, self, widget)
 
         # preview (create or close?)

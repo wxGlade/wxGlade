@@ -180,7 +180,8 @@ class EditPanel(PanelBase, ManagedBase):
         if self.top_sizer is not None or not clipboard.check("sizer"): i.Enable(False)
         menu.AppendSeparator()
 
-        if self.sizer: self.sizer._add_popup_menu_items(menu, self, widget)
+        if self.sizer and hasattr(self.sizer, "_add_popup_menu_items"):
+            self.sizer._add_popup_menu_items(menu, self, widget)
 
         i = misc.append_menu_item(menu, -1, _('Preview'))
         misc.bind_menu_item_after(widget, i, self.preview_parent)
