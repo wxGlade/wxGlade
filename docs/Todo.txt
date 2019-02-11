@@ -51,14 +51,15 @@ done:
 
 
 Internal:
- * use consistent names
-    editor, child: EditBase instances; with parent and children[...] attributes
-    widget: actual wx Widgets
-    item: TreeCtrl items
  * use the History instead of the logging facilities
 done:
  * separate items and tree
  * use a structure of EditBase instances as main data structure; use tree only for the representation
+ * use consistent names
+    editor, parent, child: EditBase instances; with parent and children[...] attributes
+                           (some methods still have 'widget' in their name)
+    widget: actual wx Widgets
+    item: TreeCtrl items
  * use .children for all, including a sizer; drop virtual_sizer, just keep children in .children
  * attributes for all elements (upper or lower case?): IS_ROOT, IS_SIZER, IS_VIRTUAL, IS_GRIDBAG, IS_SLOT,
    IS_TOPLEVEL, IS_TOPLEVEL_WINDOW, CAN_PREVIEW?, WX_CLASS?

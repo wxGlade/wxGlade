@@ -242,15 +242,14 @@ class WidgetTree(wx.TreeCtrl):#, Tree):
             if not bool(item): return None
             return self.GetItemData(item)
 
-    def add2(self, child, parent=None, index=None, item=None):
-        "appends child to the list of parent's children"
+    def add2(self, child, parent, index, item=None):
+        "insert an item for child into the list of parent's items; optionally re-use old item"
         image = self.images.get( child._get_tree_image(), -1)
         label = child._get_tree_label()
         if item is None:
             if index is None:
                 item = child.item = self.AppendItem(parent.item, label, image)
             else:
-                
                 item = child.item = compat.wx_Tree_InsertItemBefore(self, parent.item, index, label, image)
         else:
             # re-use
@@ -263,11 +262,11 @@ class WidgetTree(wx.TreeCtrl):#, Tree):
             print("added item", utilities.hx(item), child, child.item)
         return item
 
-    def remove(self, node):
+    def remove(self, editor):
         # just remove the mutual references between editor and tree item
-        if node.item is None: return  # could be during common.root.clear() when there is an error on loading
-        self._SetItemData(node.item, None)
-        node.item = None
+        if editor.item is None: return  # could be during common.root.clear() when there is an error on loading
+        self._SetItemData(editor.item, None)
+        editor.item = None
 
     ####################################################################################################################
     # new implementation:
@@ -287,25 +286,25 @@ class WidgetTree(wx.TreeCtrl):#, Tree):
             child_item, cookie = self.GetNextChild(item, cookie)
         return items
 
-    def _build_children(self, widget, item, recursive=True):
+    def _build_children(self, editor, item, recursive=True):
         # XXX a better algorithm would be nice
         # currently it's checked from the start and from the end how many are matching; all inbetween are replaced
-        if DEBUG: print("_build_children", widget)
-        children = widget.get_all_children()
-        items = self._get_children_items(widget.item)
+        if DEBUG: print("_build_children", editor)
+        children = editor.get_all_children()
+        items = self._get_children_items(editor.item)
         if DEBUG: print("children", children)
         if DEBUG: print("items", items)
         item_editors = []
         for child_item in items:
-            editor = self._GetItemData(child_item)
-            if editor is not None and (not children or not editor in children):
+            child = self._GetItemData(child_item)
+            if child is not None and (not children or not child in children):
                 self._SetItemData(child_item, None)
-                if editor.item is child_item:
-                    if DEBUG: print("removed editor.item", utilities.hx(editor), utilities.hx(editor.item))
-                    editor.item = None  # is probably None already
+                if child.item is child_item:
+                    if DEBUG: print("removed child.item", utilities.hx(child), utilities.hx(child.item))
+                    child.item = None  # is probably None already
                 item_editors.append(None)
             else:
-                item_editors.append(editor)
+                item_editors.append(child)
         if DEBUG: print("item_editors", item_editors)
         if DEBUG: print()
         match_beginning = 0
@@ -328,7 +327,7 @@ class WidgetTree(wx.TreeCtrl):#, Tree):
             for n in range( len(children) - len(item_editors) ):
                 index = match_beginning + n
                 child = children[index]
-                item = self.add2(child, parent=widget, index=index)
+                item = self.add2(child, parent=editor, index=index)
                 items.insert(index, item)
         elif len(children) < len(item_editors):
             # remove items, right after match_beginning
@@ -341,7 +340,7 @@ class WidgetTree(wx.TreeCtrl):#, Tree):
             # length matches, re-use item in the middle
             for index in range(match_beginning, len(children)-match_end):
                 child = children[index]
-                item = self.add2(child, parent=widget, index=index, item=items[index])
+                item = self.add2(child, parent=editor, index=index, item=items[index])
         
         if not recursive:
             # update labels and images, called e.g. when notebook pages change
@@ -351,34 +350,34 @@ class WidgetTree(wx.TreeCtrl):#, Tree):
         for child, item in zip(children, items):
             self._build_children(child, item)
 
-    def build(self, widget=None, recursive=True):
+    def build(self, editor=None, recursive=True):
         if DEBUG:
             print("="*80)
-            print("build", widget, recursive)
+            print("build", editor, recursive)
         # (re-)build tree from data structure
         # e.g. .build(control)
         # XXX if recursive is not True, ensure that all children are refreshed, as e.g. slot numbers may have changed
         self.Freeze()
         try:
     
-            if widget is None:
-                widget = self.root
+            if editor is None:
+                editor = self.root
                 item = self.GetRootItem()
             else:
-                item = widget.item
-                if item is None and widget.parent.item:
+                item = editor.item
+                if item is None and editor.parent.item:
                     # check whether at the same position there is an item already without an editor
-                    pos = widget.parent._get_child_pos(widget)
-                    items = self._get_children_items(widget.parent.item)
+                    pos = editor.parent._get_child_pos(editor)
+                    items = self._get_children_items(editor.parent.item)
                     if len(items)>pos and self._GetItemData(items[pos]) is None:
                         item = items[pos]
-                        widget.item = item
-                        self._SetItemData(item, widget)
-                        self.refresh(widget)
+                        editor.item = item
+                        self._SetItemData(item, editor)
+                        self.refresh(editor)
                 while item is None:
-                    widget = widget.parent
-                    item = widget.item
-            self._build_children(widget, item, recursive)
+                    editor = editor.parent
+                    item = editor.item
+            self._build_children(editor, item, recursive)
         finally:
             self.Thaw()
         #if config.debugging or DEBUG:
@@ -386,30 +385,30 @@ class WidgetTree(wx.TreeCtrl):#, Tree):
             import utilities
             utilities.TreePrinter(self)
 
-    def refresh(self, widget, refresh_label=True, refresh_image=True):
+    def refresh(self, editor, refresh_label=True, refresh_image=True):
         # refresh label and/or image
-        if widget.item is None: return
+        if editor.item is None: return
         if refresh_label:
-            self.SetItemText(widget.item, widget._get_tree_label())
+            self.SetItemText(editor.item, editor._get_tree_label())
         if refresh_image:
-            image = self.images.get( widget._get_tree_image(), -1)
-            self.SetItemImage(widget.item, image)
+            image = self.images.get( editor._get_tree_image(), -1)
+            self.SetItemImage(editor.item, image)
 
-    def select_item(self, node):
+    def select_item(self, editor):
         self.skip_select = True
-        self.SelectItem(node.item)
+        self.SelectItem(editor.item)
         self.skip_select = False
-        self._set_cur_widget(node)
+        self._set_cur_widget(editor)
         misc.set_focused_widget(self.cur_widget)
 
-    def _set_cur_widget(self, widget):
+    def _set_cur_widget(self, editor):
         # set self.cur_widget; adjust label colors and bold if required (on Windows)
         if self.cur_widget and wx.Platform == "__WXMSW__" and self.cur_widget.item:
             item = self.cur_widget.item
             self.SetItemTextColour(item, wx.NullColour)
             self.SetItemBold( item, False )
-        self.cur_widget = widget
-        item = widget.item
+        self.cur_widget = editor
+        item = editor.item
         self.EnsureVisible(item)
         # ensure that the icon is visible
         text_rect = self.GetBoundingRect(item, True)
@@ -418,57 +417,57 @@ class WidgetTree(wx.TreeCtrl):#, Tree):
         if wx.Platform == "__WXMSW__":
             self.SetItemBold(item, True)
             self.SetItemTextColour(item, wx.BLUE)
-        s = widget._get_tooltip_string()
+        s = editor._get_tooltip_string()
         common.main.user_message( s and s.replace("\n", " ") or "" )
 
-    def set_current_widget(self, widget):
+    def set_current_widget(self, editor):
         # interface from common.set_focused_widget
-        if widget is None or widget is self.cur_widget: return
+        if editor is None or editor is self.cur_widget: return
         self.skip_select = True
-        self.SelectItem(widget.item)
+        self.SelectItem(editor.item)
         self.skip_select = False
-        self._set_cur_widget(widget)
+        self._set_cur_widget(editor)
 
     def on_change_selection(self, event):
         if self.skip_select: return  # triggered by self.SelectItem in self.set_current_widget
         item = event.GetItem()
-        widget = self._GetItemData(item)
-        self._set_cur_widget(widget)
-        misc.set_focused_widget(widget)
+        editor = self._GetItemData(item)
+        self._set_cur_widget(editor)
+        misc.set_focused_widget(editor)
         if not self.IsExpanded(item):
             self.Expand(item)
         self.SetFocus()
 
     def on_left_click(self, event):
         if not common.adding_widget: return event.Skip()
-        widget = self._find_node_by_pos( *event.GetPosition() )
-        if not widget: return event.Skip()
+        editor = self._find_editor_by_pos( *event.GetPosition() )
+        if not editor: return event.Skip()
 
-        compatible, message = widget.check_drop_compatibility()
+        compatible, message = editor.check_drop_compatibility()
         if not compatible:
             event.Skip()
             misc.error_message(message)
             return
 
         common.adding_window = event.GetEventObject().GetTopLevelParent()
-        if widget.IS_SLOT:
-            widget.on_drop_widget(event)
+        if editor.IS_SLOT:
+            editor.on_drop_widget(event)
         elif common.adding_sizer or True:
-            widget.drop_sizer()
+            editor.drop_sizer()
         common.adding_window = None
 
     def on_left_dclick(self, event):
         x, y = event.GetPosition()
-        widget = self._find_node_by_pos(x, y)
-        if not widget:
+        editor = self._find_editor_by_pos(x, y)
+        if not editor:
             event.Skip()
             return
-        if widget.WX_CLASS=='wxMenuBar':
-            widget.properties["menus"].edit_menus()
-        elif widget.WX_CLASS=='wxToolBar':
-            widget.properties["tools"].edit_tools()
-        elif widget.IS_TOPLEVEL:
-            self.show_toplevel(None, widget)
+        if editor.WX_CLASS=='wxMenuBar':
+            editor.properties["menus"].edit_menus()
+        elif editor.WX_CLASS=='wxToolBar':
+            editor.properties["tools"].edit_tools()
+        elif editor.IS_TOPLEVEL:
+            self.show_toplevel(None, editor)
         else:
             event.Skip()
 
@@ -487,13 +486,13 @@ class WidgetTree(wx.TreeCtrl):#, Tree):
             message = None
             # set cursor to indicate a possible drop
             x,y = event.GetPosition()
-            widget = self._find_node_by_pos(x, y, toplevels_only=False)
-            if widget is not None:
+            editor = self._find_editor_by_pos(x, y, toplevels_only=False)
+            if editor is not None:
                 if not common.adding_widget:
                     self.SetCursor(wx.STANDARD_CURSOR)
                 else:
                     # check whether the item can be dropped here
-                    compatible, message = widget.check_drop_compatibility()
+                    compatible, message = editor.check_drop_compatibility()
                     if compatible:
                         self.SetCursor(wx.CROSS_CURSOR) # a Cursor instance
                     else:
@@ -504,78 +503,78 @@ class WidgetTree(wx.TreeCtrl):#, Tree):
         event.Skip()
 
     def popup_menu(self, event, pos=None):
-        widget = self._find_node_by_pos(*event.GetPosition())
-        if not widget: return
-        self.select_item(widget)
-        self._popup_menu_widget = widget
-        widget.popup_menu(event, pos)
+        editor = self._find_editor_by_pos(*event.GetPosition())
+        if not editor: return
+        self.select_item(editor)
+        self._popup_menu_widget = editor
+        editor.popup_menu(event, pos)
         self._popup_menu_widget = None
 
-    def _show_widget_toplevel(self, widget):
+    def _show_widget_toplevel(self, editor):
         # creates/shows the widget of the given toplevel node and all its children
         assert not config.debugging or not wx.IsBusy()
         wx.BeginBusyCursor()
-        widget.create_widgets()
-        self.ExpandAllChildren(widget.item)
+        editor.create_widgets()
+        self.ExpandAllChildren(editor.item)
         wx.EndBusyCursor()
 
-    def show_toplevel(self, event, widget=None):
+    def show_toplevel(self, event, editor=None):
         "Event handler for left double-clicks: if the click is above a toplevel widget and this is hidden, shows it"
-        if widget is None:
+        if editor is None:
             try: x, y = event.GetPosition()
             except AttributeError:
                 # if we are here, event is a CommandEvent and not a MouseEvent
-                widget = self._GetItemData(self.GetSelection())
-                self.ExpandAllChildren(widget.item)  # if we are here, the widget must be shown
+                editor = self._GetItemData(self.GetSelection())
+                self.ExpandAllChildren(editor.item)  # if we are here, the widget must be shown
             else:
-                widget = self._find_node_by_pos(x, y, toplevels_only=True)
+                editor = self._find_editor_by_pos(x, y, toplevels_only=True)
 
-        if widget is None or widget.IS_ROOT: return
+        if editor is None or editor.IS_ROOT: return
 
         # the actual toplevel widget may be one level higher, e.g. for a Panel, which is embedded in a Frame
         set_size = None
-        if widget.IS_TOPLEVEL:
+        if editor.IS_TOPLEVEL:
             # toplevel window or a menu/status bar
-            toplevel_widget = widget.widget
-            if widget.check_prop("size") and widget.check_prop("toolbar") and widget.toolbar:
+            toplevel_widget = editor.widget
+            if editor.check_prop("size") and editor.check_prop("toolbar") and editor.toolbar:
                 # apply workaround for size changes due to a toolbar; this would cause problems with automatic testing
-                set_size = widget.properties.get("size").get_size()
+                set_size = editor.properties.get("size").get_size()
         else:
-            toplevel_widget = widget.widget.GetParent()
+            toplevel_widget = editor.widget.GetParent()
 
-        if not widget.is_visible():
+        if not editor.is_visible():
             # added by rlawson to expand node on showing top level widget
-            self.ExpandAllChildren(widget.item)
-            self._show_widget_toplevel(widget)
+            self.ExpandAllChildren(editor.item)
+            self._show_widget_toplevel(editor)
             if wx.Platform != '__WXMSW__' and set_size is not None:
-                toplevel_widget = widget.widget  # above it was not yet created
+                toplevel_widget = editor.widget  # above it was not yet created
                 wx.CallAfter(toplevel_widget.SetSize, set_size)
         else:
-            widget.hide_widget()
+            editor.hide_widget()
             #toplevel_widget.GetTopLevelParent().Hide()
             if event: event.Skip()
-        if "design" in widget.properties: widget.design.update_label()
+        if "design" in editor.properties: editor.design.update_label()
 
-    def _find_node_by_pos(self, x, y, toplevels_only=False):
+    def _find_editor_by_pos(self, x, y, toplevels_only=False):
         """Finds the node which is displayed at the given coordinates. Returns None if there's no match.
         If toplevels_only is True, scans only root's children"""
         item, flags = self.HitTest((x, y))
         if item and flags & (wx.TREE_HITTEST_ONITEMLABEL | wx.TREE_HITTEST_ONITEMICON):
-            node = self._GetItemData(item)
-            if not toplevels_only or node.parent is self.root:
-                return node
+            editor = self._GetItemData(item)
+            if not toplevels_only or editor.parent is self.root:
+                return editor
         return None
 
-    def find_widget_by_pos(self, x, y, toplevels_only=False):
-        node = self._find_node_by_pos(x, y, toplevels_only)
-        if node is None: return None
-        # expand node if user remains at position
-        last_pos = getattr(self, "_last_find_widget_pos", None)
-        self._last_find_widget_pos = (x,y)
-        if last_pos and last_pos==(x,y) and not self.IsExpanded(node.item): self.Expand(node.item)
-        return node
+    #def find_widget_by_pos(self, x, y, toplevels_only=False):
+        #editor = self._find_editor_by_pos(x, y, toplevels_only)
+        #if editor is None: return None
+        ## expand node if user remains at position
+        #last_pos = getattr(self, "_last_find_widget_pos", None)
+        #self._last_find_widget_pos = (x,y)
+        #if last_pos and last_pos==(x,y) and not self.IsExpanded(editor.item): self.Expand(editor.item)
+        #return editor
 
-    def change_node(self, old, new, keep_children=False):
+    def change_item_editor(self, old, new, keep_children=False):
         self._SetItemData(old.item, new)
         if not keep_children:
             old_children = old.children
