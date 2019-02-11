@@ -290,7 +290,7 @@ class WidgetTree(wx.TreeCtrl):#, Tree):
     def _build_children(self, widget, item, recursive=True):
         # XXX a better algorithm would be nice
         # currently it's checked from the start and from the end how many are matching; all inbetween are replaced
-        print("_build_children", widget)
+        if DEBUG: print("_build_children", widget)
         children = widget.get_all_children()
         items = self._get_children_items(widget.item)
         if DEBUG: print("children", children)
@@ -381,7 +381,8 @@ class WidgetTree(wx.TreeCtrl):#, Tree):
             self._build_children(widget, item, recursive)
         finally:
             self.Thaw()
-        if config.debugging or DEBUG:
+        #if config.debugging or DEBUG:
+        if DEBUG:
             import utilities
             utilities.TreePrinter(self)
 
