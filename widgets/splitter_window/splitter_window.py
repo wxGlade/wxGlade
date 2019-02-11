@@ -129,7 +129,10 @@ class EditSplitterWindow(ManagedBase, EditStylesMixin):
         # initialise instance properties
         self.no_custom_class = np.CheckBoxProperty(False, default_value=False)
         self.sash_pos = np.SpinPropertyD(0, default_value="")
-        self.sash_gravity = np.SpinDoublePropertyD(0.5, (0.0,1.0), default_value="", immediate=True)
+        if hasattr(wx, "SpinCtrlDouble"):
+            self.sash_gravity = np.SpinDoublePropertyD(0.5, (0.0,1.0), default_value=0.0, immediate=True)
+        else:
+            self.sash_gravity = np.FloatPropertyD(0.5, (0.0,1.0), default_value=0.0)
         self.min_pane_size = np.SpinProperty(20)
 
         # hidden properties: orientation string, window_1, window_2

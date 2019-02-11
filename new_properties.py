@@ -504,8 +504,6 @@ class SpinDoublePropertyD(SpinDoubleProperty):
     deactivated = True
 
 
-
-
 def _is_gridbag(sizer):
     return sizer and sizer._IS_GRIDBAG
 
@@ -1349,8 +1347,7 @@ class TextProperty(Property):
 
     def _on_text(self, event):
         if self.deactivated or self.blocked: return
-        match = self.validation_re.match(event.GetString())
-        if match:
+        if self.check(event.GetString()):
             self.text.SetBackgroundColour( compat.wx_SystemSettings_GetColour(wx.SYS_COLOUR_WINDOW) )
             self.text.Refresh()
         else:
@@ -1431,6 +1428,50 @@ class TextPropertyRO(TextProperty):
 
 ########################################################################################################################
 # some text properties with validation:
+
+class FloatPropertyA(TextPropertyA):
+    # used as replacement for SpinDoubleProperty if SpinCtrlDouble is not available
+    validation_re = re.compile( _leading + _float + _trailing )  # match a float
+    def __init__(self, value, val_range=None, immediate=False, default_value=_DefaultArgument, name=None):
+        TextPropertyA.__init__(self, value, multiline=False, strip=True, default_value=default_value, name=None,
+                               fixed_height=True)
+        self.val_range = val_range
+
+    def _convert_to_text(self, value):
+        return str(value)
+
+    def _convert_from_text(self, value):
+        # check that min is smaller than max
+        match = self.validation_re.match(value)
+        if not match: return None
+        if self.val_range is not None:
+            v = float(value)
+            if v<self.val_range[0] or v>self.val_range[1]:
+                return None
+        return str(float(value))
+
+    def check(self, value):
+        if not self.validation_re.match(value): return False
+        if self.val_range is None: return True
+        v = float(value)
+        if v<self.val_range[0] or v>self.val_range[1]:
+            return False
+        return True
+
+    def _set_converter(self, value):
+        if isinstance(value, compat.unicode):
+            return float(value.replace(u",", u"."))
+        elif isinstance(value, bytes):
+            return float(value.replace(b",", b"."))
+        return value
+
+    def get_string_value(self):
+        return str(self.value)
+
+
+class FloatPropertyD(FloatPropertyA):
+    deactivated = True
+
 
 class NameProperty(TextProperty):
     #validation_re  = re.compile(r'^[a-zA-Z_]+[\w-]*(\[\w*\])*$')  # Python 3 only, including non-ASCII characters
