@@ -373,7 +373,10 @@ class Application(np.PropertyOwner):
         class_p = self.properties["class"]
         if self.language != "XRC":
             if not preview and ( name_p.is_active() or class_p.is_active() ) and not self.top_window:
-                return misc.error_message( "Please select a top window for the application" )
+                return misc.error_message( "Please select a top window for the application or deactivate "
+                                           "the Name and Class properties for Application.\n"
+                                           "In that case, only code for the windows will be generated, not for the "
+                                           "application." )
 
         if preview:
             writer = common.code_writers["python"].copy()
