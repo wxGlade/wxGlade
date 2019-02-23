@@ -370,6 +370,7 @@ class SpinProperty(Property):
         val = self.value
         if not val: spin.SetValue(1)  # needed for GTK to display a '0'
         spin.SetValue(val)
+        spin.SetSelection(-1,-1)
         return spin
 
     def create_editor(self, panel, sizer):
@@ -379,7 +380,6 @@ class SpinProperty(Property):
         hsizer = wx.BoxSizer(wx.HORIZONTAL)
         # label
         label = self.label_ctrl = self._get_label(self._find_label(), panel)
-        #hsizer.Add(label, 2, wx.ALL | wx.ALIGN_CENTER, 3)
         hsizer.Add(label, 0, wx.ALL | wx.ALIGN_CENTER, 3)
         # checkbox, if applicable
         self.enabler = None
@@ -388,12 +388,6 @@ class SpinProperty(Property):
             self.enabler.SetValue(not self.deactivated)
             self.enabler.Bind( wx.EVT_CHECKBOX, lambda event: self.toggle_active(event.IsChecked()) )
             hsizer.Add(self.enabler, 0, wx.ALIGN_CENTER_VERTICAL|wx.LEFT, 3)
-        #else:
-            #hsizer.AddSpacer(20)
-        # the spin control
-        #if self.val_range[1] is None:
-            #self.spin = wx.SpinCtrl( panel, -1, min=self.val_range[0] )
-        #else:
         self.spin = self.create_spin_ctrl(panel)
 
         if self.deactivated is not None:
@@ -563,7 +557,6 @@ class LayoutSpanProperty(Property):
         hsizer = wx.BoxSizer(wx.HORIZONTAL)
         # label
         self.label_ctrl = label = self._get_label(self._find_label(), panel)
-        #hsizer.Add(label, 2, wx.ALL | wx.ALIGN_CENTER, 3)
         hsizer.Add(label, 0, wx.ALL | wx.ALIGN_CENTER, 3)
         # checkbox, if applicable
         self.enabler = None
@@ -576,6 +569,8 @@ class LayoutSpanProperty(Property):
         self.colspin.SetValue(val and val[1] or 1)
         self.rowspin.Enable(max_rows!=1)
         self.colspin.Enable(max_cols!=1)
+        self.rowspin.SetSelection(-1, -1)
+        self.colspin.SetSelection(-1, -1)
 
         # layout of the controls / sizers
         hsizer.Add(wx.StaticText(panel, -1, _("Rows:")), 1, wx.LEFT | wx.ALIGN_RIGHT | wx.ALIGN_CENTER_VERTICAL, 3)
