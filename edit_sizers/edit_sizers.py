@@ -2486,6 +2486,9 @@ def _builder(parent, sizer, pos, orientation=wx.VERTICAL, slots=1, is_static=Fal
         sz.properties['flag'].set('wxEXPAND')
         sz.properties['pos'].set(pos)
 
+    # set focus on the sizer again
+    common.app_tree.select_item(sz.node)
+
 
 class _SizerDialog(wx.Dialog):
     def __init__(self, parent):
@@ -2717,6 +2720,10 @@ def grid_builder(parent, sizer, pos, number=[1]):
         if sizer is not None:
             sz.properties['flag'].set('wxEXPAND')
             sz.properties['pos'].set(pos)
+        
+        # set focus on the sizer again
+        common.app_tree.select_item(sz.node)
+
 
 
 def grid_xml_builder(attrs, parent, sizer, sizeritem, pos=None):
