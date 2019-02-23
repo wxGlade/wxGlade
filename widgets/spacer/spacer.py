@@ -66,6 +66,7 @@ class _Dialog(wx.Dialog):
         self.height = wx.SpinCtrl(self, -1, "20")
         self.width.SetFocus()
         self.width.SetSelection(-1, -1)
+        self.height.SetSelection(-1, -1)
         # the main sizer
         sizer = wx.BoxSizer(wx.VERTICAL)
         # grid sizer with the controls
