@@ -2636,7 +2636,8 @@ class _GridBuilderDialog(wx.Dialog):
             gsizer.Add(control, 0, wx.ALL | wx.EXPAND | wx.ALIGN_CENTER_VERTICAL, 3)
             compat.SetToolTip( control, tooltip )
         self.rows.SetFocus()
-        self.rows.SetSelection(-1, -1)
+        for ctrl in (self.rows, self.cols, self.hgap, self.vgap):
+            ctrl.SetSelection(-1, -1)
         # static box sizer around the grid sizer
         boxsizer = wx.StaticBoxSizer(wx.StaticBox(self, -1, _("Layout")), wx.VERTICAL)
         boxsizer.Add(gsizer)
