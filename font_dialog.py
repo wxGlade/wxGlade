@@ -91,6 +91,7 @@ class wxGladeFontDialog(wx.Dialog):
                 else: underline = 0
             self.underline.SetValue(underline)
             self.point_size.SetValue(int(props[0]))
+            self.point_size.SetSelection(-1,-1)
         except ValueError:
             self._logger.exception(_('Internal Error'))
 

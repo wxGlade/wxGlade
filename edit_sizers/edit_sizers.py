@@ -2079,7 +2079,7 @@ def change_sizer(old, new):
                 elem = szr.sizer.widget.GetChildren()[pos]
                 compat.SizerItem_SetSizer(elem, szr.widget)
 
-        common.app_tree.change_node(old, szr, keep_children=True)
+        common.app_tree.change_item_editor(old, szr, keep_children=True)
 
         old.toplevel = False  # could probably be omitted
         del old.children[:]
@@ -2255,7 +2255,8 @@ class _GridBuilderDialog(wx.Dialog):
             gsizer.Add(control, 0, wx.ALL | wx.EXPAND | wx.ALIGN_CENTER_VERTICAL, 3)
             compat.SetToolTip( control, tooltip )
         self.rows.SetFocus()
-        self.rows.SetSelection(-1, -1)
+        for ctrl in (self.rows, self.cols, self.hgap, self.vgap):
+            ctrl.SetSelection(-1, -1)
         # static box sizer around the grid sizer
         boxsizer = wx.StaticBoxSizer(wx.StaticBox(self, -1, _("Layout")), wx.VERTICAL)
         boxsizer.Add(gsizer)
