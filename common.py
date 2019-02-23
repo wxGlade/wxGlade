@@ -468,7 +468,7 @@ def check_autosaved(filename):
             auto = os.stat(autosave_name)
         # check contents for empty or incomplete file
         if auto.st_size < 50: return False
-        f = open(filename, "rb")
+        f = open(autosave_name, "rb")
         f.seek(-16,2)  # from the end
         file_end = f.read(16)
         f.close()
