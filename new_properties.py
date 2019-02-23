@@ -1001,8 +1001,8 @@ class ManagedFlags(_CheckListProperty):
     FLAG_DESCRIPTION = OrderedDict()
     FLAG_DESCRIPTION['Border'   ] = ['wxALL', 'wxLEFT', 'wxRIGHT', 'wxTOP', 'wxBOTTOM']
     FLAG_DESCRIPTION['Alignment'] = ['wxEXPAND', 'wxALIGN_RIGHT', 'wxALIGN_BOTTOM', 'wxALIGN_CENTER',
-                                     'wxALIGN_CENTER_HORIZONTAL', 'wxALIGN_CENTER_VERTICAL',
-                                     'wxSHAPED', 'wxFIXED_MINSIZE']
+                                     'wxALIGN_CENTER_HORIZONTAL', 'wxALIGN_CENTER_VERTICAL']
+    FLAG_DESCRIPTION['Size'     ] = ['wxSHAPED', 'wxFIXED_MINSIZE', 'wxRESERVE_SPACE_EVEN_IF_HIDDEN']
     REMOVE = set( ['wxADJUST_MINSIZE',] )
     RENAMES =  {'wxALIGN_CENTRE':'wxALIGN_CENTER',
                 'wxALIGN_CENTRE_VERTICAL':'wxALIGN_CENTER_VERTICAL'}
