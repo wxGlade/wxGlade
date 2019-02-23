@@ -440,7 +440,7 @@ class WidgetTree(wx.TreeCtrl):#, Tree):
 
     def on_left_click(self, event):
         if not common.adding_widget: return event.Skip()
-        editor = self._find_editor_by_pos( *event.GetPosition() )
+        editor = self.find_editor_by_pos( *event.GetPosition() )
         if not editor: return event.Skip()
 
         compatible, message = editor.check_drop_compatibility()
@@ -458,7 +458,7 @@ class WidgetTree(wx.TreeCtrl):#, Tree):
 
     def on_left_dclick(self, event):
         x, y = event.GetPosition()
-        editor = self._find_editor_by_pos(x, y)
+        editor = self.find_editor_by_pos(x, y)
         if not editor:
             event.Skip()
             return
@@ -486,7 +486,7 @@ class WidgetTree(wx.TreeCtrl):#, Tree):
             message = None
             # set cursor to indicate a possible drop
             x,y = event.GetPosition()
-            editor = self._find_editor_by_pos(x, y, toplevels_only=False)
+            editor = self.find_editor_by_pos(x, y, toplevels_only=False)
             if editor is not None:
                 if not common.adding_widget:
                     self.SetCursor(wx.STANDARD_CURSOR)
@@ -503,7 +503,7 @@ class WidgetTree(wx.TreeCtrl):#, Tree):
         event.Skip()
 
     def popup_menu(self, event, pos=None):
-        editor = self._find_editor_by_pos(*event.GetPosition())
+        editor = self.find_editor_by_pos(*event.GetPosition())
         if not editor: return
         self.select_item(editor)
         self._popup_menu_widget = editor
@@ -527,7 +527,7 @@ class WidgetTree(wx.TreeCtrl):#, Tree):
                 editor = self._GetItemData(self.GetSelection())
                 self.ExpandAllChildren(editor.item)  # if we are here, the widget must be shown
             else:
-                editor = self._find_editor_by_pos(x, y, toplevels_only=True)
+                editor = self.find_editor_by_pos(x, y, toplevels_only=True)
 
         if editor is None or editor.IS_ROOT: return
 
@@ -555,7 +555,7 @@ class WidgetTree(wx.TreeCtrl):#, Tree):
             if event: event.Skip()
         if "design" in editor.properties: editor.design.update_label()
 
-    def _find_editor_by_pos(self, x, y, toplevels_only=False):
+    def find_editor_by_pos(self, x, y, toplevels_only=False):
         """Finds the node which is displayed at the given coordinates. Returns None if there's no match.
         If toplevels_only is True, scans only root's children"""
         item, flags = self.HitTest((x, y))

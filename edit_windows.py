@@ -945,19 +945,18 @@ class TopLevelBase(WindowBase, PreviewMixin):
                 ret += self._find_widget_by_pos(c, x,y, level+1)
         return ret
 
-    def find_widget_by_pos(self, x,y):
+    def find_editor_by_pos(self, x,y):
         "find the Edit item at a given position"
         if self.widget is None: return None
         x0,y0,width,height = self.widget.ClientRect
         found = self._find_widget_by_pos(self.widget, x-x0,y-y0)
-        #node = common.app_tree.find_widget(found.pop(-1))
         while found:
-            w = self._find_widget( found.pop(-1), self )
+            w = self._find_editor( found.pop(-1), self )
             if w: return w
         return None
 
-    def _find_widget(self, widget, node):
-        # wx widget to Edit item
+    def _find_editor(self, widget, node):
+        # wx widget to editor
         if node.widget is None:
             return
         if widget is node.widget: return node
@@ -967,7 +966,7 @@ class TopLevelBase(WindowBase, PreviewMixin):
             if widget is node.widget.GetStaticBox(): return node
         if node.children:
             for child in node.children:
-                found = self._find_widget(widget, child)
+                found = self._find_editor(widget, child)
                 if found is not None:
                     return found
         return None

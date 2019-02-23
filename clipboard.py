@@ -84,7 +84,7 @@ class DropTarget(wx.DropTarget):
 
     def _check_compatibility(self, x,y):
         # check whether the dragged item is compatible to the widget at position (x,y)
-        widget = self.window.find_widget_by_pos(x,y)
+        widget = self.window.find_editor_by_pos(x,y)
         if widget is None:
             return (False, "No widget found")
 
@@ -114,7 +114,7 @@ class DropTarget(wx.DropTarget):
         compatible, message = self._check_compatibility(x,y)
         if not compatible: return wx.DragCancel
 
-        dst_widget = self.window.find_widget_by_pos(x,y)
+        dst_widget = self.window.find_editor_by_pos(x,y)
 
         if _current_drag_source:
             src_widget = _current_drag_source  # was set in begin_drag
