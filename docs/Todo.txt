@@ -1,6 +1,31 @@
 
+Panel: size 20x20 when adding at toplevel to Dialog
+
+Paste:
+ implement pasting of menu bar to/from application and frame
+
+MAc OS:
+ wxPython. A simple fix for this issue is to just add a newline character to the button's label. 
+ Example: b1 = Button(frame, ID_ANY, "Button\n")
+
+SpinCtrl: when focus moves from Design to Tree and then back, the old focus is gained again
+
+compatibility checks  /  tooltip help
+After calling a builder, call something like ManagedBase.on_load(self) to replace Nones in .children with Slots
+
+##########################################################################################
+
+Panel:
+ t.b.d.: auto-create SLOT or not? maybe for notebook, splitter and toplevel
+ 
+ 
+I could change the autosave to save to a file and then only after saving give the file the final name such that a partial save is not considered for a restore.
+
+##########################################################################################
+
+
 User Interface:
- * better icons for GridSizers and grid sizer slots (3x3)
+ * better icons for GridSizers and grid sizer slots (3x3); merged cells for GridBagSizer
  * multiple selections in Tree window -> allow editing properties for multiple widgets at the same time
  * support events from the base classes and the addition of any event as text (-> rev. 1.0)
  * implement undo/re-do; use this for GUI scripting (testing)
@@ -75,6 +100,7 @@ Widgets:
    when font is active, generate code using StaticBox
  * Dialog: support SetAffirmativeId, SetEscapeId
 done:
+ * add wxRESERVE_SPACE_EVEN_IF_HIDDEN for managed widgets
  * MenuBar: don't create widget on Mac OS
  * Panel: use ScrolledWindow only when "Scrolled" is checked
 

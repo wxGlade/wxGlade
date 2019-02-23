@@ -379,7 +379,6 @@ class wxGladeFrame(wx.Frame):
             size = (self.splitter2.GetSashPosition(), self.splitter1.GetSashPosition())
         elif layout==2:
             size = (self.GetClientSize()[0], self.splitter2.GetSashPosition())
-        print("Palette size", size)
 
     def on_char_hook(self, event):
         # bound to EVT_CHAR_HOOK
