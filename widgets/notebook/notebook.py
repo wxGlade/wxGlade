@@ -227,7 +227,6 @@ class EditNotebook(ManagedBase, EditStylesMixin):
             if self.widget:
                 # add to widget
                 editor.create()
-                compat.SetToolTip(editor.widget, _("Notebook page pane:\nAdd a sizer here") )
                 self.vs_insert_tab(pos)
     
                 try:

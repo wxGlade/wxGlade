@@ -247,7 +247,7 @@ class EditPanel(PanelBase, ManagedBase):
 
     def _get_tooltip(self):
         if self.parent.WX_CLASS in ("wxSplitterWindow", "wxNotebook"):
-            return "Add a sizer here; optionally, delete the panel and add e.g. a notebook. "
+            return "Add a sizer here; optionally, delete the panel and add e.g. a notebook, splitter or grid. "
         return "Add a sizer here"
 
 
