@@ -421,7 +421,7 @@ def _cancel():
     compat.SetToolTip(common.app_tree, "")
     common.main.user_message("Canceled")
 
-
+@restore_focus
 def navigate(up):
     # move up or down in tree
     focus = focused_widget
