@@ -197,10 +197,8 @@ class EditNotebook(ManagedBase, EditStylesMixin):
         for index in range(len(old_labels)-1, -1, -1):
             if not index in keep_indices:
                 self._is_removing_pages = True
-                self.virtual_sizer.remove_tab(index)            # remove from sizer; does not delete window
-                self.children[index]._remove()                     # delete the page content without setting the focus
-                self.children[index].recursive_remove() + XXX  # this has not been tested
-                del self.children[index]                           # delete from page list
+                self.children[index].recursive_remove()
+                if self.widget: self.widget.RemovePage(index)    # deletes the specified page
                 del new_labels[index]                            # delete from list of names
                 self._is_removing_pages = False
 
