@@ -155,14 +155,18 @@ class EditBase(EventsMixin, edit_base.EditBase):
         widgetclass = self.__class__.__name__.lstrip("Edit")
         i = misc.append_menu_item(menu, -1, _('Remove %s\tDel')%widgetclass, wx.ART_DELETE)
         misc.bind_menu_item_after(widget, i, self.remove)
+
+        if hasattr(self, "_add_popup_menu_items"):
+            self._add_popup_menu_items(menu, widget)
+
         i = misc.append_menu_item( menu, -1, _('Copy\tCtrl+C'), wx.ART_COPY )
         misc.bind_menu_item_after(widget, i, clipboard.copy, self)
         i = misc.append_menu_item( menu, -1, _('Cut\tCtrl+X'), wx.ART_CUT )
         misc.bind_menu_item_after(widget, i, clipboard.cut, self)
         menu.AppendSeparator()
 
-        if hasattr(self.parent, "_add_popup_menu_items"):
-            self.parent._add_popup_menu_items(menu, self, widget)
+        if hasattr(self.parent, "_add_parent_popup_menu_items"):
+            self.parent._add_parent_popup_menu_items(menu, self, widget)
 
         # preview (create or close?)
         p = misc.get_toplevel_widget(self)

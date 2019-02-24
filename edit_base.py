@@ -623,8 +623,8 @@ class Slot(EditBase):
                 if not col_is_empty or cols<=1: i.Enable(False)
                 menu.AppendSeparator()
 
-        if hasattr(self.parent, "_add_popup_menu_items"):
-            self.parent._add_popup_menu_items(menu, self, widget)
+        if hasattr(self.parent, "_add_parent_popup_menu_items"):
+            self.parent._add_parent_popup_menu_items(menu, self, widget)
 
         p = self.toplevel_parent_window # misc.get_toplevel_widget(self.sizer)
         #if p is not None and p.preview_is_visible():
@@ -651,6 +651,10 @@ class Slot(EditBase):
     def remove(self):
         # entry point from GUI
         common.root.saved = False  # update the status of the app
+        if self.parent.WX_CLASS in ("wxNotebook",):
+            self.parent.remove_tab(self.pos)
+            return
+
         # set focused widget
         i = self.pos - 1
         self._remove()

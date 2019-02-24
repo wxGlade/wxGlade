@@ -21,7 +21,7 @@ from panel import EditPanel
 class NotebookPagesProperty(np.GridProperty):
     def __init__(self, value, cols):
         col_widths = [300,]
-        np.GridProperty.__init__(self, value, cols, col_sizes=col_widths, can_remove_last=False, with_index=True)
+        np.GridProperty.__init__(self, value, cols, col_sizes=col_widths, can_remove_last=True, with_index=True)
 
     def _get_default_row(self, index):
         return ["Page %d"%(index+1)]
@@ -64,7 +64,6 @@ class TabsHandler(BaseXmlBuilderTagHandler):
             char_data = self.get_char_data()
             self.tab_names.append([misc.wxstr(char_data),])
         return False
-
 
 
 class EditNotebook(ManagedBase, EditStylesMixin):
@@ -143,6 +142,10 @@ class EditNotebook(ManagedBase, EditStylesMixin):
         tab = self._insert_tab(index, label)
         misc.rebuild_tree(self)
 
+    def add_slot(self):
+        # actually adds a page, but it needs to be compatible to sizers
+        self.insert_tab(len(self.children), "new tab")
+
     def _insert_tab(self, index, label):
         # add tab/page
         tabs_p = self.properties["tabs"]
@@ -175,6 +178,13 @@ class EditNotebook(ManagedBase, EditStylesMixin):
 
         self.properties["tabs"].update_display()
         return editor
+
+    def remove_tab(self, index):
+        # for context menu of an empty page / Slot instance
+        indices = [i for i in range(0,len(self.tabs)) if i!=index]
+        old_labels = [tab[0] for tab in self.tabs]
+        del self.properties["tabs"].value[index]
+        self.set_tabs(old_labels, indices)
 
     @misc.restore_focus
     def set_tabs(self, old_labels, indices):  # called from tabs proberty on Apply button
@@ -249,8 +259,7 @@ class EditNotebook(ManagedBase, EditStylesMixin):
         slot = Slot(self, pos)
         slot.create()
         label = self.tabs[pos][0]
-        if self.widget:
-            self.widget.RemovePage(pos)
+        if self.widget: self.widget.RemovePage(pos)
 
         old_child.recursive_remove()
 
@@ -314,14 +323,23 @@ class EditNotebook(ManagedBase, EditStylesMixin):
         ManagedBase.properties_changed(self, modified)
 
     ####################################################################################################################
-    def _add_popup_menu_items(self, menu, item, widget):
+    def _add_popup_menu_items(self, menu, widget):
         # called from managed widget items' _create_popup_menu method
+            i = misc.append_menu_item(menu, -1, _('Add Notebook Tab') )
+            misc.bind_menu_item_after(widget, i, self.add_slot)
+
+    def _add_parent_popup_menu_items(self, menu, item, widget):
+        # called from managed widget items' _create_popup_menu method
+        if item.IS_SLOT:
+            i = misc.append_menu_item(menu, -1, _('Remove Notebook Tab\tDel') )
+            misc.bind_menu_item_after(widget, i, self.remove_tab, item.pos)
+            
         i = misc.append_menu_item(menu, -1, _('Insert Notebook Tab before') ) # \tCtrl+I') )
         misc.bind_menu_item_after(widget, i, self.insert_tab, item.pos, "new tab")
 
         if item.pos==len(self.tabs)-1: # last slot -> allow to add
             i = misc.append_menu_item(menu, -1, _('Add Notebook Tab') ) # \tCtrl+A') )
-            misc.bind_menu_item_after(widget, i, self.insert_tab, item.pos+1, "new tab")
+            misc.bind_menu_item_after(widget, i, self.add_slot)
         menu.AppendSeparator()
 
     # helpers ##########################################################################################################

@@ -460,7 +460,7 @@ class SizerBase(Sizer, np.PropertyOwner):
 
         return menu
 
-    def _add_popup_menu_items(self, menu, item, widget):
+    def _add_parent_popup_menu_items(self, menu, item, widget):
         # called from managed widget items' _create_popup_menu method
 
         # rows/cols if inside a grid sizer

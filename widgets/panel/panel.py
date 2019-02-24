@@ -201,8 +201,8 @@ class EditPanel(PanelBase, ManagedBase):
         if self.children or not clipboard.check("sizer"): i.Enable(False)
         menu.AppendSeparator()
 
-        if hasattr(self.parent, "_add_popup_menu_items"):
-            self.parent._add_popup_menu_items(menu, self, widget)
+        if hasattr(self.parent, "_add_parent_popup_menu_items"):
+            self.parent._add_parent_popup_menu_items(menu, self, widget)
 
         i = misc.append_menu_item(menu, -1, _('Preview'))
         misc.bind_menu_item_after(widget, i, self.preview_parent)
