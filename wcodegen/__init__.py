@@ -475,7 +475,7 @@ class BaseWidgetWriter(StylesMixin, BaseCodeWriter):
                 self.tmpl_dict['selection'] = selection_p.get()
                 self.has_selection = True
 
-    def generate_code_bitmap(self, bitmap):
+    def generate_code_bitmap(self, bitmap, required=False):
         """Returns a code fragment that generates an wxBitmap object
 
         bitmap: Bitmap definition string
@@ -483,11 +483,12 @@ class BaseWidgetWriter(StylesMixin, BaseCodeWriter):
         see: tmpl_inline_bitmap, get_inline_stmt_emptybitmap(), get_inline_stmt_artprovider()"""
         assert self.tmpl_inline_bitmap
 
-        if not bitmap:
+        if not bitmap and not required:
             return self.codegen.cn('wxNullBitmap')
+
         preview = self.codegen.preview
 
-        if preview and ( bitmap.startswith('var:') or bitmap.startswith('code:') ):
+        if ( preview and ( bitmap.startswith('var:') or bitmap.startswith('code:') ) ) or (not bitmap and required):
             preview_icon = os.path.join(config.icons_path, "icon.xpm")
             return self.tmpl_inline_bitmap % { 'name': self.codegen.cn('wxBitmap'),
                                                'bitmap': self.codegen.quote_path(preview_icon),

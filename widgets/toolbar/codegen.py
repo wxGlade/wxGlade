@@ -39,6 +39,8 @@ class PythonCodeGenerator(wcodegen.PythonWidgetCodeWriter):
 
         obj_name = self.format_widget_access(obj)
 
+        bmp1 = self.generate_code_bitmap("empty:16,16")
+
         for tool in obj.tools:
             if tool.id == '---':  # item is a separator
                 append( '%s.AddSeparator()\n' % obj_name )
@@ -55,7 +57,10 @@ class PythonCodeGenerator(wcodegen.PythonWidgetCodeWriter):
                     kind = kinds[int(tool.type)]
                 except (IndexError, ValueError):
                     kind = 'wxITEM_NORMAL'
-                bmp1 = self.generate_code_bitmap(tool.bitmap1)
+                if tool.bitmap1:
+                    bmp1 = self.generate_code_bitmap(tool.bitmap1, required=self.codegen.preview)
+                else:
+                    bmp1 = self.generate_code_bitmap("empty:16,16")
                 bmp2 = self.generate_code_bitmap(tool.bitmap2)
                 method = "AddLabelTool" if compat.IS_CLASSIC else "AddTool"
                 append( '%s.%s(%s, %s, %s, %s, %s, %s, %s)\n' %
