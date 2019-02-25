@@ -211,7 +211,8 @@ class EditBase(np.PropertyOwner):
             try:
                 del self.toplevel_parent.names[self.properties["name"].previous_value]
             except KeyError:
-                if config.debugging: raise
+                if config.debugging and self.klass != "spacer" and self.properties["name"].previous_value != "spacer":
+                    raise
             self.toplevel_parent.names[self.name] = 1
             common.app_tree.refresh(self, refresh_label=True, refresh_image=False)
         elif not modified or "class" in modified or "name" in modified:

@@ -90,7 +90,6 @@ class _Dialog(wx.Dialog):
 
 
 
-
 def builder(parent, pos):
     "factory function for EditSpacer objects"
     dialog = _Dialog()
@@ -111,7 +110,8 @@ def builder(parent, pos):
 def xml_builder(attrs, parent, pos=None):
     "factory to build EditSpacer objects from a XML file"
     from xml_parse import XmlParsingError
-    return EditSpacer('spacer', parent, 1, 1, pos)
+    name = attrs.get('name', 'spacer')
+    return EditSpacer(name, parent, 1, 1, pos)
 
 
 def initialize():

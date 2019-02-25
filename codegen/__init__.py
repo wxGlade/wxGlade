@@ -492,12 +492,12 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
             # empty sizer slot
             szr = obj.parent
             if szr.IS_SIZER and not szr._IS_GRIDBAG:
-                self.add_spacer(parent_class_object, szr, None)
+                self.add_empty_slot(parent_class_object, szr)
             return
         elif obj.classname=="spacer":
             # add a spacer
             szr = obj.parent
-            self.add_spacer(parent_class_object, szr, obj, obj.proportion, obj.properties["flag"].get_string_value(), obj.border )
+            self.add_spacer(parent_class_object, szr, obj)
             return
 
         can_be_toplevel = obj.__class__.__name__ in common.toplevels
@@ -1033,26 +1033,33 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
 
         klass.layout.append(stmt)
 
-    def add_spacer(self, toplevel, sizer, obj=None, proportion=0, flag='0', border=0):
+    def add_spacer(self, toplevel, sizer, obj=None):
         # add spacer
         if toplevel.klass in self.classes:
             klass = self.classes[toplevel.klass]
         else:
             klass = self.classes[toplevel.klass] = self.ClassLines()
         sizer_name = self._format_classattr(sizer)
-        if obj is not None:
-            size = (obj.width, obj.height)
-        else:
-            size = (0, 0)
-        flag = self.cn_f(flag) or '0'
+        size = (obj.width, obj.height)
+        flag = self.cn_f(obj.properties["flag"].get_string_value()) or '0'
         if sizer.klass!="wxGridBagSizer":
             size = self.tmpl_spacersize%size
-            stmt = self.tmpl_sizeritem % ( sizer_name, size, proportion,flag, border )
+            stmt = self.tmpl_sizeritem % ( sizer_name, size, obj.proportion, flag, obj.border )
         else:
             # GridBagSizer
             pos = sizer._get_row_col(obj.pos)
-            stmt = self.tmpl_gridbagsizerspacer % ( sizer_name, size[0], size[1], pos, obj.span, flag, border )
+            stmt = self.tmpl_gridbagsizerspacer % ( sizer_name, size[0], size[1], pos, obj.span, flag, obj.border )
         klass.layout.append( stmt )
+
+    def add_empty_slot(self, toplevel, sizer):
+        # add spacer for empty sizer slot
+        if toplevel.klass in self.classes:
+            klass = self.classes[toplevel.klass]
+        else:
+            klass = self.classes[toplevel.klass] = self.ClassLines()
+        sizer_name = self._format_classattr(sizer)
+        size = self.tmpl_spacersize%(0, 0)
+        klass.layout.append( self.tmpl_sizeritem % ( sizer_name, size, 0, '0', 0 ) )
 
     def add_widget_handler(self, widget_name, handler, *args, **kwds):
         self.obj_builders[widget_name] = handler

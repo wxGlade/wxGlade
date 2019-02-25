@@ -73,24 +73,33 @@ class SizerItemXrcObject(XrcObject):
 class SpacerXrcObject(XrcObject):
     "XrcObject to handle widgets"
 
-    def __init__(self, size_str, option, flag, border):
+    def __init__(self, obj):
         XrcObject.__init__(self)
-        self.size_str = size_str
-        self.proportion = option
-        self.flag = flag
-        self.border = border
+        self.obj = obj
 
     def write(self, output, ntabs):
+        obj = self.obj
+
         tabs = self.tabs(ntabs)
         tabs1 = self.tabs(ntabs + 1)
-        output.append(tabs + '<object class="spacer">\n')
-        output.append(tabs1 + '<size>%s</size>\n' % self.size_str.strip())
-        if self.proportion != '0':
-            output.append(tabs1 + '<option>%s</option>\n' % self.proportion)
-        if self.flag and self.flag != '0':
-            output.append(tabs1 + '<flag>%s</flag>\n' % self.cn_f(self.flag))
-        if self.border != '0':
-            output.append(tabs1 + '<border>%s</border>\n' % self.border)
+
+        if obj is None or obj.name == "spacer":
+            output.append( tabs + '<object class="spacer">\n' )
+        else:
+            output.append( tabs + '<object class="spacer" name=%s>\n'%quoteattr(obj.name) )
+        if obj is not None:
+            # a real spacer
+            output.append( tabs1 + '<size>%s, %s</size>\n' % (obj.width, obj.height) )
+            if obj.proportion:
+                output.append(tabs1 + '<option>%s</option>\n' % obj.proportion)
+            if obj.flag:
+                flag = obj.properties["flag"].get_string_value()
+                output.append(tabs1 + '<flag>%s</flag>\n' % self.cn_f(flag))
+            if obj.border:
+                output.append(tabs1 + '<border>%s</border>\n' % obj.border)
+        else:
+            # just an empty sizer slot
+            output.append( tabs1 + '<size>0, 0</size>\n' )
         output.append(tabs + '</object>\n')
 
 
@@ -311,8 +320,8 @@ class XRCCodeWriter(BaseLangCodeWriter, wcodegen.XRCMixin):
         self.out_file = None
 
     def _clean_up_node(self, node):
-        if hasattr(node.widget, "xrc"):
-            del node.widget.xrc
+        if hasattr(node, "xrc"):
+            del node.xrc
         for c in node.children or []:
             self._clean_up_node(c)
 
@@ -327,9 +336,6 @@ class XRCCodeWriter(BaseLangCodeWriter, wcodegen.XRCMixin):
     def add_object(self, sub_obj):
         "Adds the object sub_obj to the XRC tree. The first argument is unused."
         # what we need in XRC is not top_obj, but sub_obj's true parent we don't need the sizer, but the window
-        #top_obj = sub_obj.parent
-        #while top_obj.IS_SIZER:
-            #top_obj = top_obj.node.parent.widget
         top_obj = sub_obj.parent_window
         builder = self.obj_builders.get( sub_obj.base, DefaultXrcObject )
         try:
@@ -356,9 +362,6 @@ class XRCCodeWriter(BaseLangCodeWriter, wcodegen.XRCMixin):
     def add_sizeritem(self, unused, sizer, obj, option, flag, border):
         "Adds a sizeritem to the XRC tree. The first argument is unused."
         # what we need in XRC is not toplevel, but sub_obj's true parent
-        #toplevel = obj.node.parent.widget
-        #while toplevel.IS_SIZER:
-            #toplevel = toplevel.node.parent.widget
         toplevel = obj.parent_window
 
         top_xrc = toplevel.xrc
@@ -372,28 +375,19 @@ class XRCCodeWriter(BaseLangCodeWriter, wcodegen.XRCMixin):
         # we now have to move the children from 'toplevel' to 'sizer'
         index = top_xrc.children.index(obj_xrc)
         if obj.klass == 'spacer':
-            w = obj.properties.get('width', '0')
-            h = obj.properties.get('height', '0')
-            obj_xrc = SpacerXrcObject( '%s, %s' % (w, h), str(option), str(flag), str(border) )
-            sizer.xrc.children.append(obj_xrc)
+            sizer.xrc.children.append( SpacerXrcObject(obj) )
         elif obj.klass == 'sizerslot':
-            obj_xrc = SpacerXrcObject( '0, 0', '0', '0', '0' )
-            sizer.xrc.children.append(obj_xrc)
+            sizer.xrc.children.append( SpacerXrcObject(None) )
         else:
             sizeritem_xrc = SizerItemXrcObject( obj_xrc, str(option), str(flag), str(border) )
             sizer.xrc.children.append(sizeritem_xrc)
         del top_xrc.children[index]
 
-    def add_spacer(self, topl, sizer, obj=None, option=0, flag='0', border=0):
-        if obj is not None:
-            w = obj.width
-            h = obj.height
-        else:
-            h = w = 0
-        obj_xrc = SpacerXrcObject( '%s, %s' % (w,h), str(option), str(flag), str(border) )
+    def add_spacer(self, topl, sizer, obj=None):
         if not hasattr(sizer, "xrc"):  # if the sizer has not an XrcObject yet, create it now
             sizer.xrc = self.obj_builders.get( sizer.base, DefaultXrcObject )(sizer)
-        sizer.xrc.children.append(obj_xrc)
+        sizer.xrc.children.append( SpacerXrcObject(obj) )
+    add_empty_slot = add_spacer
 
     def add_class(self, code_obj):
         """Add class behaves very differently for XRC output than for other languages (i.e. python):

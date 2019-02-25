@@ -364,10 +364,15 @@ class LispCodeWriter(BaseLangCodeWriter, wcodegen.LispMixin):
 
         BaseLangCodeWriter.add_sizeritem( self, toplevel, sizer, obj, option, flag, border )
 
-    def add_spacer(self, toplevel, sizer, obj=None, proportion=0, flag='0', border=0):
+    def add_spacer(self, toplevel, sizer, obj=None):
         # XXX remove this hack
         self.tmpl_sizeritem = '(wxSizer_AddWindow (%s obj) (%s obj) %s %s %s nil)\n'
-        BaseLangCodeWriter.add_spacer(self, toplevel, sizer, obj, proportion, flag, border)
+        BaseLangCodeWriter.add_spacer(self, toplevel, sizer, obj)
+
+    def add_empty_slot(self, toplevel, sizer):
+        # XXX remove this hack
+        self.tmpl_sizeritem = '(wxSizer_AddWindow (%s obj) (%s obj) %s %s %s nil)\n'
+        BaseLangCodeWriter.add_empty_slot(self, toplevel, sizer)
 
     def generate_code_background(self, obj):
         self.dependencies['(use-package :wxColour)'] = 1
