@@ -768,6 +768,10 @@ class Application(EditRoot):
     def check_compatibility(self, widget, typename=None):
         if (widget and widget.IS_TOPLEVEL) or typename=="window":
             return (True, None)
+        if (widget and widget.WX_CLASS=="wxMenuBar") or typename=="menubar":
+            return (True, None)
+        if (widget and widget.WX_CLASS=="wxToolBar") or typename=="toolbar":
+            return (True, None)
         return (False, "Only toplevel widgets can be pasted here (e.g. Frame or Dialog)")
 
     def clipboard_paste(self, clipboard_data):
