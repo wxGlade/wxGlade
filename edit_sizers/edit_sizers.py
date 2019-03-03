@@ -757,7 +757,10 @@ class SizerBase(Sizer, np.PropertyOwner):
             self._btn.Destroy()
             self._btn = None
         if not self.widget: return
-        self.widget.Clear()  # without deleting window items; but sets the sizer of the windows to NULL
+        if self.toplevel:
+            self.window.widget.SetSizer(None)
+        else:
+            self.widget.Clear()  # without deleting window items; but sets the sizer of the windows to NULL
 
     if wx.Platform == '__WXMSW__':
         def finish_set(self):  # previously called after self.set_option(...)
