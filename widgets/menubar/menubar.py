@@ -863,6 +863,7 @@ def xml_builder(attrs, parent, pos=None):
     "factory to build EditMenuBar objects from a XML file"
     name = attrs.get('name')
     if parent is not None and not parent.IS_ROOT:
+        parent.properties["menubar"].set(True, notify=True)
         if name:
             parent._menubar.properties["name"].set(name)
             parent._menubar.properties_changed(["name"])

@@ -174,12 +174,12 @@ def get_data_object(widget):
     # make a data object
     if widget.IS_SIZER:
         do = wx.CustomDataObject(sizer_data_format)
-    elif widget.IS_TOPLEVEL:
-        do = wx.CustomDataObject(window_data_format)
     elif widget.WX_CLASS=="wxMenuBar":
         do = wx.CustomDataObject(menubar_data_format)
     elif widget.WX_CLASS=="wxToolBar":
         do = wx.CustomDataObject(toolbar_data_format)
+    elif widget.IS_TOPLEVEL:
+        do = wx.CustomDataObject(window_data_format)
     else:
         do = wx.CustomDataObject(widget_data_format)
     do.SetData(data)

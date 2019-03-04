@@ -775,6 +775,7 @@ def xml_builder(attrs, parent, pos=None):
     "factory to build EditToolBar objects from a XML file"
     name = attrs.get('name')
     if parent is not None and not parent.IS_ROOT:
+        parent.properties["toolbar"].set(True, notify=True)
         if name:
             parent._toolbar.properties["name"].set(name)
             parent._toolbar.properties_changed(["name"])

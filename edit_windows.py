@@ -827,6 +827,13 @@ class TopLevelBase(WindowBase, PreviewMixin):
     def check_compatibility(self, widget, typename=None):
         "check in advance whether widget can be pasted"
 
+        if typename in ("menubar", "toolbar"):
+            if not typename in self.properties:
+                return (False, "Can't set a menu or tool bar")
+            if self.check_prop(typename) and getattr(self, typename):
+                return (False, 'Menu or tool bar already set for this window')
+            return (True, None)
+
         if self.children and not self.children[0].IS_SLOT:
             return (False, 'Sizer or child widget already set for this window')
 
