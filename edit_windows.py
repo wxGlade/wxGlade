@@ -827,6 +827,10 @@ class TopLevelBase(WindowBase, PreviewMixin):
     def check_compatibility(self, widget, typename=None):
         "check in advance whether widget can be pasted"
 
+        if widget is not None:
+            if widget.WX_CLASS=="wxMenuBar":   typename = "menubar"
+            elif widget.WX_CLASS=="wxToolBar": typename = "toolbar"
+
         if typename in ("menubar", "toolbar"):
             if not typename in self.properties:
                 return (False, "Can't set a menu or tool bar")
