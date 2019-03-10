@@ -272,7 +272,7 @@ class WidgetTree(wx.TreeCtrl):#, Tree):
     # new implementation:
     def on_delete_item(self, event):
         item = event.GetItem()
-        editor = self.GetItemData( item )
+        editor = self._GetItemData( item )
         if DEBUG:
             print("on_delete_item", utilities.hx(item), editor, editor and editor.item or None)
         if editor is not None and editor.item is item:
