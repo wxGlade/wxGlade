@@ -196,6 +196,23 @@ class EditBase(np.PropertyOwner):
             if editor is parent: return True
             if parent.parent is None: return False
             parent = parent.parent
+    
+    def get_path(self):
+        """returns a list of widget names, from the toplevel to the selected one
+        Example: ['frame_1', 'sizer_1', 'panel_1', 'sizer_2', 'button_1']
+                 if button_1 is the currently selected widget"""
+        ret = []
+        oldw = None  # the toplevel, to get the position
+        w = self
+        while w:
+            if w.IS_TOPLEVEL: oldw = w
+            if w.IS_SLOT:
+                ret.append("SLOT %d"%w.pos)
+            else:
+                ret.append(w.name)
+            w = w.parent
+        ret.reverse()
+        return ret
 
     # property handling ################################################################################################
     @staticmethod

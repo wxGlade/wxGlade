@@ -565,63 +565,9 @@ class WidgetTree(wx.TreeCtrl):#, Tree):
                 return editor
         return None
 
-    #def find_widget_by_pos(self, x, y, toplevels_only=False):
-        #editor = self._find_editor_by_pos(x, y, toplevels_only)
-        #if editor is None: return None
-        ## expand node if user remains at position
-        #last_pos = getattr(self, "_last_find_widget_pos", None)
-        #self._last_find_widget_pos = (x,y)
-        #if last_pos and last_pos==(x,y) and not self.IsExpanded(editor.item): self.Expand(editor.item)
-        #return editor
-
     def change_item_editor(self, old, new, keep_children=False):
+        # called from edit_sizers.change_sizer
         self._SetItemData(old.item, new)
-        if not keep_children:
-            old_children = old.children
-            for c in old_children or []:
-                self.Delete(c.item)
         new.item = old.item
         old.item = None
         self.refresh(new)
-
-    def get_selected_path(self, w=None, include_position=True):
-        """returns a list of widget names, from the toplevel to the selected one
-        Example: ['frame_1', 'sizer_1', 'panel_1', 'sizer_2', 'button_1']
-                 if button_1 is the currently selected widget"""
-        ret = []
-        if w is None: w = self.cur_widget
-        oldw = None  # the toplevel, to get the position
-        while w:
-            if w.IS_TOPLEVEL: oldw = w
-            if w.IS_SLOT:
-                ret.append("SLOT %d"%w.pos)
-            else:
-                ret.append(w.name)
-            w = w.parent
-        ret.reverse()
-        # ALB 2007-08-28: remember also the position of the toplevel window in the selected path
-        if include_position and oldw is not None and oldw.widget is not None:
-            assert oldw.widget
-            toplevel = misc.get_toplevel_parent(oldw.widget)
-            if toplevel:
-                ret[0] = (ret[0], toplevel.GetPosition())
-        return ret
-
-    def get_widget_path(self, w):
-        return self.get_selected_path(w, include_position=False)
-
-    def select_path(self, path):
-        "sets the selected widget from a path_list, which should be in the form returned by get_selected_path"
-        widget = common.root.find_widget_from_path(path)
-        if not widget: return
-        item = widget.item
-        self._set_cur_widget(widget)
-        self.Expand(widget.item)
-        self.select_item(widget)
-        if widget.IS_ROOT: return
-        self._show_widget_toplevel(widget.toplevel_parent)
-
-        if len(path)>=2 and isinstance(path[0], tuple) and widget.widget:
-            # a position
-            pos = path[0][1]
-            misc.get_toplevel_parent(widget.widget).SetPosition(pos)

@@ -722,31 +722,35 @@ class TopLevelBase(WindowBase, PreviewMixin):
 
     def create_widgets(self):
         # creates/shows the widget of the given toplevel node and all its children
-        if not self.widget:
-            self.create_widget()
-            self.finish_widget_creation()
-            if self.CHILDREN:  # not for MenuBar, ToolBar
-                self.drop_target = clipboard.DropTarget(self)
-                self.widget.SetDropTarget(self.drop_target)
+        wx.BeginBusyCursor()
+        try:
+            if not self.widget:
+                self.create_widget()
+                self.finish_widget_creation()
+                if self.CHILDREN:  # not for MenuBar, ToolBar
+                    self.drop_target = clipboard.DropTarget(self)
+                    self.widget.SetDropTarget(self.drop_target)
 
-        with self.frozen():
-            for c in self.get_all_children():
-                c.create_widgets()
-            self.post_load()  # SizerBase uses this for toplevel sizers; also EditNotebook
-            self.create()
-            if self.widget.TopLevel:
-                self.widget.Show()
-            else:
-                self.widget.GetParent().Show()
+            with self.frozen():
+                for c in self.get_all_children():
+                    c.create_widgets()
+                self.post_load()  # SizerBase uses this for toplevel sizers; also EditNotebook
+                self.create()
+                if self.widget.TopLevel:
+                    self.widget.Show()
+                else:
+                    self.widget.GetParent().Show()
 
-            self.widget.Raise()
-            # set the best size for the widget (if no one is given)
-            if self.check_prop('size'):
-                if self.sizer:  # self.sizer is the containing sizer, i.e. the parent
-                    self.sizer.fit_parent()
-                elif self.WX_CLASS=="wxPanel" and self.children:
-                    wx.Yield()  # by now, there are probably many EVT_SIZE in the queue
-                    self.children[0].fit_parent()
+                self.widget.Raise()
+                # set the best size for the widget (if no one is given)
+                if self.check_prop('size'):
+                    if self.sizer:  # self.sizer is the containing sizer, i.e. the parent
+                        self.sizer.fit_parent()
+                    elif self.WX_CLASS=="wxPanel" and self.children:
+                        wx.Yield()  # by now, there are probably many EVT_SIZE in the queue
+                        self.children[0].fit_parent()
+        finally:
+            wx.EndBusyCursor()
 
     def finish_widget_creation(self, *args, **kwds):
         WindowBase.finish_widget_creation(self)

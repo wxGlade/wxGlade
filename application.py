@@ -81,6 +81,9 @@ class EditRoot(np.PropertyOwner):
     def has_ancestor(self, node):
         return False
 
+    def get_path(self):
+        return [self.name]
+
     def has_name(self, widget=None):
         # XXX check whether this is still used
         if widget is None:

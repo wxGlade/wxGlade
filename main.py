@@ -659,38 +659,6 @@ class wxGladeFrame(wx.Frame):
 
         self.toolbar.Realize()
 
-    def open_from_history(self, event):
-        if not self.ask_save():
-            return
-        pos = event.GetId() - wx.ID_FILE1
-        filename = self.file_history.GetHistoryFile(pos)
-        if not os.path.exists(filename):
-            wx.MessageBox( _("The file %s doesn't exist.") % filename,
-                           _('Information'), style=wx.CENTER | wx.ICON_INFORMATION | wx.OK )
-            self.file_history.RemoveFileFromHistory(pos)
-            common.remove_autosaved(filename)
-            return
-        if common.check_autosaved(filename):
-            res = wx.MessageBox( _('There seems to be auto saved data for this file: do you want to restore it?'),
-                                 _('Auto save detected'), style=wx.ICON_QUESTION | wx.YES_NO )
-            if res == wx.YES:
-                common.restore_from_autosaved(filename)
-            else:
-                common.remove_autosaved(filename)
-        else:
-            common.remove_autosaved(filename)
-
-        if filename == common.root.filename:
-            # if we are re-loading the file, go the the previous position
-            path = common.app_tree.get_selected_path()
-        else:
-            path = None
-
-        self._open_app(filename)
-        self.cur_dir = os.path.dirname(filename)
-        if path is not None:
-            common.app_tree.select_path(path)  # re-loaded file -> go to previous position
-
     def init_autosave(self):
         # ALB 2004-10-15, autosave support...
         self.autosave_timer = None
@@ -879,22 +847,53 @@ class wxGladeFrame(wx.Frame):
                                             "XML files (*.xml)|*.xml|All files|*",
                                    flags=wx.FD_OPEN | wx.FD_FILE_MUST_EXIST, default_path=default_path)
         if not infile: return
-        if common.check_autosaved(infile):
-            if wx.MessageBox( _("There seems to be auto saved data for this file: do you want to restore it?"),
-                              _("Auto save detected"), style=wx.ICON_QUESTION|wx.YES_NO ) == wx.YES:
-                common.restore_from_autosaved(infile)
-            else:
-                common.remove_autosaved(infile)
-        if infile == common.root.filename:
-            # if we are re-loading the file, go the the previous position
-            path = common.app_tree.get_selected_path()
-        else:
-            path = None
-        self._open_app(infile)
-        self.cur_dir = os.path.dirname(infile)
+        self._open(infile)
 
-        if path is not None:
-            common.app_tree.select_path(path)  # re-loaded file -> go to previous position
+    def open_from_history(self, event):
+        if not self.ask_save():
+            return
+        pos = event.GetId() - wx.ID_FILE1
+        filename = self.file_history.GetHistoryFile(pos)
+        if not os.path.exists(filename):
+            wx.MessageBox( _("The file %s doesn't exist.") % filename,
+                           _('Information'), style=wx.CENTER | wx.ICON_INFORMATION | wx.OK )
+            self.file_history.RemoveFileFromHistory(pos)
+            common.remove_autosaved(filename)
+            return
+        self._open(filename)
+
+    def _open(self, filename):
+        # called by open_app and open_from_history
+        if common.check_autosaved(filename):
+            res = wx.MessageBox( _('There seems to be auto saved data for this file: do you want to restore it?'),
+                                 _('Auto save detected'), style=wx.ICON_QUESTION | wx.YES_NO )
+            if res == wx.YES:
+                common.restore_from_autosaved(filename)
+            else:
+                common.remove_autosaved(filename)
+        else:
+            common.remove_autosaved(filename)
+
+        path = position = None
+        if filename == common.root.filename:
+            # if we are re-loading the file, store path and position
+            if misc.focused_widget:
+                path = misc.focused_widget.get_path()
+                if misc.focused_widget.widget is not None and not misc.focused_widget.IS_ROOT:
+                    toplevel = misc.get_toplevel_parent(misc.focused_widget.widget)
+                    if toplevel: position = toplevel.GetPosition()
+
+        self._open_app(filename)
+        self.cur_dir = os.path.dirname(filename)
+        if not path: return
+        editor = common.root.find_widget_from_path(path)
+        if not editor: return
+        misc.set_focused_widget(editor)
+        editor.toplevel_parent.create_widgets()
+        common.app_tree.ExpandAllChildren(editor.item)
+
+        if not position or not editor.widget: return
+        misc.get_toplevel_parent(editor.widget).SetPosition(position)
 
     def _open_app(self, filename, use_progress_dialog=True, add_to_history=True):
         "Load a new wxGlade project"
