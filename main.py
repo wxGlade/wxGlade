@@ -758,7 +758,7 @@ class wxGladeFrame(wx.Frame):
             toplevel.widget.Raise()
             return
         # open or close
-        common.app_tree.show_toplevel(None, widget=toplevel)
+        common.app_tree.show_toplevel(None, editor=toplevel)
 
     def pin_design_window(self):
         common.pin_design_window = not common.pin_design_window

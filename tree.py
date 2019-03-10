@@ -510,14 +510,6 @@ class WidgetTree(wx.TreeCtrl):#, Tree):
         editor.popup_menu(event, pos)
         self._popup_menu_widget = None
 
-    def _show_widget_toplevel(self, editor):
-        # creates/shows the widget of the given toplevel node and all its children
-        assert not config.debugging or not wx.IsBusy()
-        wx.BeginBusyCursor()
-        editor.create_widgets()
-        self.ExpandAllChildren(editor.item)
-        wx.EndBusyCursor()
-
     def show_toplevel(self, event, editor=None):
         "Event handler for left double-clicks: if the click is above a toplevel widget and this is hidden, shows it"
         if editor is None:
@@ -545,7 +537,8 @@ class WidgetTree(wx.TreeCtrl):#, Tree):
         if not editor.is_visible():
             # added by rlawson to expand node on showing top level widget
             self.ExpandAllChildren(editor.item)
-            self._show_widget_toplevel(editor)
+            editor.create_widgets()
+
             if wx.Platform != '__WXMSW__' and set_size is not None:
                 toplevel_widget = editor.widget  # above it was not yet created
                 wx.CallAfter(toplevel_widget.SetSize, set_size)
