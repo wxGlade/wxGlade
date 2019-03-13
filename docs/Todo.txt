@@ -85,6 +85,7 @@ done:
 
 Additional Widgets:
  * lib.buttons (feature request #45 Add support for generic buttons) (-> rev. 1.0)
+ * StdDialogButtonSizer?  with SetAffirmativeButton etc.
  * stc.StyledTextCtrl
  * MediaCtrl?
  * ColourPickerCtrl, FontPickerCtrl?
@@ -99,7 +100,6 @@ done:
  * SpinCtrlDouble
  * SearchCtrl
 probably not:
- * StdDialogButtonSizer
  * Ribbons
  * matplotlib (example is supplied already)
  * Py (shell) (example is supplied already)
