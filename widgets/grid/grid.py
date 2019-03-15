@@ -273,8 +273,8 @@ class EditGrid(ManagedBase):
         if m("enable_col_resize"):  self.widget.EnableDragColSize(self.enable_col_resize)
         if m("enable_row_resize"):  self.widget.EnableDragRowSize(self.enable_row_resize)
         if m("enable_grid_resize"): self.widget.EnableDragGridSize(self.enable_grid_resize)
-        if m("lines_color"):        self.widget.SetGridLineColour(misc.string_to_color(self.lines_color))
-        if m("label_bg_color"):     self.widget.SetLabelBackgroundColour( misc.string_to_color(self.label_bg_color) )
+        if m("lines_color"):        self.widget.SetGridLineColour( self.properties["lines_color"].get_color() )
+        if m("label_bg_color"):     self.widget.SetLabelBackgroundColour( self.properties["label_bg_color"].get_color() )
         if m("selection_mode"):     self.widget.SetSelectionMode(self.selection_mode)
 
         # columns and rows #############################################################################################
