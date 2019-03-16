@@ -575,7 +575,8 @@ class XmlWidgetObject(object):
             if builder is None: raise XmlParsingError("Widget '%s' not supported."%base)
             self.obj = builder(attrs, sizer or parent, pos)
             p = self.obj.properties.get("class")
-            if p: p.set(self.klass)
+            if p and not p.readonly:  # can happen when pasting a standalone ToolBar or MenuBar to a Frame
+                p.set(self.klass)
 
             self.IS_SIZER = self.obj.IS_SIZER
             self.IS_WINDOW = self.obj.IS_WINDOW
