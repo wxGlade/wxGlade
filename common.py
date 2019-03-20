@@ -242,7 +242,7 @@ def make_object_button(widget, icon_path, toplevel=False, tip=None):
 
     Icons with a relative path will be loaded from config.icon_path.
 
-    widget: (name of) the widget the button will add to the app
+    widget: (name of) the widget the button will add to the app 
     icon_path: Path to the icon_path used for the button
     toplevel: True if the widget is a toplevel object (frame, dialog)
     tip: Tool tip to display
@@ -264,13 +264,22 @@ def make_object_button(widget, icon_path, toplevel=False, tip=None):
         else:
             tmp.Bind(wx.EVT_BUTTON, add_toplevel_object)
     else:
+        # for more recent versions, we support config options to display icons and/or labels
         if not toplevel:
-            tmp = wx.ToggleButton(palette, -1, size=(31,31))
+            if not config.preferences.show_palette_labels:
+                # icons only -> set size
+                tmp = wx.ToggleButton(palette, -1, size=(31,31))
+            else:
+                tmp = wx.ToggleButton(palette, -1, widget.replace('Edit', '') )
             tmp.Bind(wx.EVT_TOGGLEBUTTON, add_object)
         else:
-            tmp = wx.Button(palette, -1, size=(31,31))
+            if not config.preferences.show_palette_labels:
+                tmp = wx.Button(palette, -1, size=(31,31))
+            else:
+                tmp = wx.Button(palette, -1, widget.replace('Edit', '') ) #, size=(31,31))
             tmp.Bind(wx.EVT_BUTTON, add_toplevel_object)
-        tmp.SetBitmap( bmp )
+        if config.preferences.show_palette_icons:
+            tmp.SetBitmap( bmp )
     refs[tmp.GetId()] = widget
     if not tip:
         tip = _('Add a %s') % widget.replace(_('Edit'), '')
@@ -783,6 +792,8 @@ class Preferences(ConfigParser.ConfigParser):
         'default_border': False,
         'default_border_size': 3,
         'show_sizer_handle': True,
+        'show_palette_icons': True,
+        'show_palette_labels': False,
         'allow_duplicate_names': False,
         'autosave': True,
         'autosave_delay': 120,  # in seconds
