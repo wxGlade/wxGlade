@@ -232,9 +232,11 @@ def format_supported_by(version):
 
 def get_toplevel_parent(obj):
     if isinstance(obj, wx.Sizer):
-        obj =obj.ContainingWindow
+        obj = obj.ContainingWindow
     elif not isinstance(obj, wx.Window):
         obj = obj.widget
+    if hasattr(obj, "ContainingWindow"):
+        obj = obj.ContainingWindow
     while obj and not obj.IsTopLevel():
         obj = obj.GetParent()
     return obj
@@ -423,6 +425,23 @@ def _cancel():
     common.main.user_message("Canceled")
 
 @restore_focus
+def drop():
+    global focused_widget
+    if not focused_widget: return
+    if not focused_widget.check_drop_compatibility():
+        wx.Bell()
+        return
+    if focused_widget.IS_SLOT:
+        method = getattr(focused_widget, "on_drop_widget", None)
+    elif common.adding_sizer:
+        method = getattr(focused_widget, "drop_sizer", None)
+    #if not method:
+        #if not hasattr(focused_widget, "sizer"): return
+        #method = getattr(focused_widget.sizer, "add_slot", None)
+    if method: method(None, False)  # don't reset, but continue adding
+
+
+@restore_focus
 def navigate(up):
     # move up or down in tree
     focus = focused_widget
@@ -480,7 +499,10 @@ accel_table_editors = {
     ("", wx.WXK_UP):     (navigate,  (True, )),
     ("", wx.WXK_DOWN):   (navigate,  (False,)),
 
-    ("",  wx.WXK_ESCAPE):(_cancel, ())
+    ("",  wx.WXK_ESCAPE):(_cancel, ()),
+
+    ("", wx.WXK_RETURN): (drop,    ()),
+
 }
 
 # for the palette window

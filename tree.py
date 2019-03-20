@@ -78,7 +78,7 @@ class WidgetTree(wx.TreeCtrl):#, Tree):
             #return
         if event.GetKeyCode()==wx.WXK_WINDOWS_MENU and self.cur_widget:
             # windows menu key pressed -> display context menu for selected item
-            item = self.RootItem  if self.cur_widget is self.app else  self.cur_widget.item
+            item = self.RootItem  if self.cur_widget is common.root else  self.cur_widget.item
             if item:
                 rect = self.GetBoundingRect(item, textOnly=True)
                 if rect is not None:

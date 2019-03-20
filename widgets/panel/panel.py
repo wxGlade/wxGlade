@@ -77,7 +77,7 @@ class PanelBase(EditStylesMixin):
         elif sizer is None and self.widget:
             self.widget.SetSizer(None)
 
-    def drop_sizer(self, event=None):
+    def drop_sizer(self, event=None, reset=None):
         if self.children or not common.adding_sizer:
             self.on_set_focus(event)  # default behaviour: call show_properties
             return
@@ -85,6 +85,7 @@ class PanelBase(EditStylesMixin):
         new_widget = common.widgets[common.widget_to_add](self, None)
         if new_widget is None: return
         misc.rebuild_tree(new_widget)
+        if reset is False: return
         if event is None or not misc.event_modifier_copy(event):
             common.adding_widget = common.adding_sizer = False
             common.widget_to_add = None

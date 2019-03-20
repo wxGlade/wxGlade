@@ -684,7 +684,7 @@ class Slot(EditBase):
         else:
             misc.set_focused_widget( self.parent )
 
-    def on_drop_widget(self, event):
+    def on_drop_widget(self, event, reset=None):
         """replaces self with a widget in self.sizer. This method is called
         to add every non-toplevel widget or sizer, and in turn calls the
         appropriate builder function (found in the ``common.widgets'' dict)"""
@@ -703,6 +703,7 @@ class Slot(EditBase):
         new_widget = common.widgets[common.widget_to_add](self.parent, self.pos)
         if new_widget is None: return
         misc.rebuild_tree(new_widget)
+        if reset is False: return
         if event is None or not misc.event_modifier_copy(event):
             common.adding_widget = common.adding_sizer = False
             common.widget_to_add = None
