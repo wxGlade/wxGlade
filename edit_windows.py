@@ -112,14 +112,16 @@ class EditBase(EventsMixin, edit_base.EditBase):
         # initialise instance properties
         self.classname = klass
         self.klass = klass_p = np.ClassProperty(klass, name="class") # Name of the object's class: read/write or read only
-        if not custom_class: klass_p.readonly = True  # only used for StatusBar, ToolBar and also non-standalone MenuBar
+        # If True, the user can change the value of the 'class' property:
+        self.custom_class = custom_class
+        # only for StatusBar, ToolBar and also non-standalone MenuBar it's False
+        if not custom_class: klass_p.readonly = True
 
         # Name of object's wxWidget class; base and klass are mostly the same, except e.g. wxDialog:
         self.base = klass  # not editable; e.g. wxFrame or wxComboBox; used to find the code generator
-        # If true, the user can change the value of the 'class' property:
-        self.custom_class = custom_class
 
         if getattr(self, '_custom_base_classes', False):
+            # for notebook, panel and splitter window
             self.custom_base = np.TextPropertyD("", multiline=False, default_value=None)
         else:
             self.custom_base = None
