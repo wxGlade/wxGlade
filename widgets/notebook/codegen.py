@@ -44,7 +44,6 @@ class PythonNotebookGenerator(wcodegen.PythonWidgetCodeWriter):
         init += self.codegen.generate_common_properties(window)
         return init, post
 
-    #def get_properties_code(self, obj):
     def get_layout_code(self, obj):
         prop = obj.properties
         props_buf = []

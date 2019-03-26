@@ -19,7 +19,7 @@ methods of the parent object.
 """
 
 import os, os.path, random, re
-from codegen import BaseLangCodeWriter, BaseSourceFileContent, BaseWidgetHandler
+from codegen import BaseLangCodeWriter, BaseSourceFileContent
 import wcodegen
 import compat
 
@@ -91,8 +91,7 @@ class SourceFileContent(BaseSourceFileContent):
             result = self.rec_class_decl.match(line)
             if not inside_triple_quote and not inside_block and result:
                 if not self.class_name:
-                    # this is the first class declared in the file: insert the
-                    # new ones before this
+                    # this is the first class declared in the file: insert the new ones before this
                     out_lines.append('<%swxGlade insert new_classes>' % self.nonce)
                     self.new_classes_inserted = True
                 self.class_name = result.group(1)
@@ -161,8 +160,8 @@ class SourceFileContent(BaseSourceFileContent):
 
 
 
-class WidgetHandler(BaseWidgetHandler):
-    pass
+#class WidgetHandler(BaseWidgetHandler):
+    #pass
 
 
 
@@ -327,7 +326,7 @@ from %(top_win_module)s import %(top_win_class)s\n\n"""
                                            'function':self.name_ctor, 'klass':fmt_klass, 'tab':tab} )
 
         style_p = code_obj.properties.get("style")
-        if style_p:# and style_p.value_set != style_p.default_value:
+        if style_p:
             style = style_p.get_string_value()
             m_style = mycn_f( style )
             stmt_style = self._format_style(style, code_obj)
@@ -361,39 +360,6 @@ from %(top_win_module)s import %(top_win_class)s\n\n"""
             write(tab + l)
 
         return code_lines
-
-        ## classes[code_obj.klass].deps now contains a mapping of child to parent for all children we processed...
-        #object_order = []
-        #for obj in self.classes[code_obj.klass].child_order:
-            ## Don't add it again if already present
-            #if obj in object_order:
-                #continue
-
-            #object_order.append(obj)
-
-            ## Insert parent and ancestor objects before the current object
-            #current_object = obj
-            #for child, parent in self.classes[code_obj.klass].deps[:]:
-                #if child is current_object:
-                    #if parent not in object_order:
-                        #idx = object_order.index(current_object)
-                        #object_order.insert(idx, parent)
-                    #current_object = parent
-
-                    ## We processed the dependency: remove it
-                    #self.classes[code_obj.klass].deps.remove((child, parent))
-
-        ## Write out the initialisation in the order we just generated
-        #for obj in object_order:
-            #if obj in self.classes[code_obj.klass].init_lines:
-                #for l in self.classes[code_obj.klass].init_lines[obj]:
-                    #write(tab + l)
-        #for obj in object_order:
-            #if obj in self.classes[code_obj.klass].final_lines:
-                #for l in self.classes[code_obj.klass].final_lines[obj]:
-                    #write(tab + l)
-
-        #return code_lines
 
     def generate_code_event_bind(self, code_obj, tab, event_handlers):
         code_lines = []

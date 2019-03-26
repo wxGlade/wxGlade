@@ -120,37 +120,31 @@ class BaseSourceFileContent(object):
 
 
 
-class BaseWidgetHandler(object):
-    "Interface the various code generators for the widgets must implement"
+#class BaseWidgetHandler(object):
+    #"Interface the various code generators for the widgets must implement"
 
-    import_modules = []  # List of modules to import (eg. ['use Wx::Grid;\n'])
+    #import_modules = []  # List of modules to import (eg. ['use Wx::Grid;\n'])
 
-    def __init__(self):
-        "Initialise instance variables"
-        self.import_modules = []
+    #def __init__(self):
+        #"Initialise instance variables"
+        #self.import_modules = []
 
-    def get_code(self, obj):
-        #"""Handler for normal widgets (non-toplevel): returns 2 lists of strings: init and final
-        """returns list of strings with the generated code"""
-        return [], []
+    #def get_code(self, obj):
+        #"""Returns initial and final code for non-toplevel objects/classes."""
+        #return [], []
 
     #def get_properties_code(self, obj):
-        #"""Handler for the code of the set_properties method of toplevel objects.
-        #Returns a list of strings containing the code to generate"""
+        #"""Returns a list of strings with the code to set properties etc.
+        #Called on its own only for toplevel classes."""
         #return []
 
     #def get_init_code(self, obj):
-        #"""Handler for the code of the constructor of toplevel objects.
-        #Returns a list of strings containing the code to generate.
-        #Usually the default implementation is ok (i.e. there are no extra lines to add).
-        #The generated lines are appended at the end of the constructor."""
+        #"""Called on its own only for toplevel objects/classes."""
         #return []
 
-    def get_layout_code(self, obj):
-        """Handler for the code of the do_layout method of toplevel objects (classes).
-        Returns a list of strings containing the code to generate.
-        Usually the default implementation is ok (i.e. there are no extra lines to add)."""
-        return []
+    #def get_layout_code(self, obj):
+        #"""Returns code for the final code of toplevel objects (classes)."""
+        #return []
 
 
 class ClassLines(object):
@@ -751,9 +745,8 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
         obuffer.extend(code_lines)
 
         # now check if there are extra lines to add to the constructor
-        if hasattr(builder, 'get_init_code'):
-            for l in builder.get_init_code(code_obj):
-                obuffer.append(tab+l)
+        for l in builder.get_init_code(code_obj):
+            obuffer.append(tab+l)
 
         obuffer.append( self.tmpl_ctor_call_layout % {'tab':tab} )
 

@@ -22,6 +22,25 @@ class BaseCodeWriter(object):
         # initialise instance logger
         self._logger = logging.getLogger(self.__class__.__name__)
 
+    # the following methods will be implemented in derived classes to return the actual code
+    def get_code(self, obj):
+        """Returns initial and final code for non-toplevel objects/classes."""
+        return [], []
+
+    def get_properties_code(self, obj):
+        """Returns a list of strings with the code to set properties etc.
+        Called on its own only for toplevel classes."""
+        return []
+
+    def get_init_code(self, obj):
+        """Called on its own only for toplevel objects/classes."""
+        return []
+
+    def get_layout_code(self, obj):
+        """Returns code for the final code of toplevel objects (classes)."""
+        return []
+
+
     def __getstate__(self):
         state = self.__dict__.copy()
         del state['_logger']

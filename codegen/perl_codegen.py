@@ -20,7 +20,7 @@ Like all other perl parts, based on the pre-existing python generators
 """
 
 import os, os.path, re
-from codegen import BaseLangCodeWriter, BaseSourceFileContent, BaseWidgetHandler
+from codegen import BaseLangCodeWriter, BaseSourceFileContent
 import wcodegen
 import compat
 
@@ -155,13 +155,6 @@ class SourceFileContent(BaseSourceFileContent):
 
     def is_import_line(self, line):
         return line.lstrip().startswith('use Wx')
-
-
-
-class WidgetHandler(BaseWidgetHandler):
-    "Interface the various code generators for the widgets must implement"
-    new_signature = []  # Constructor signature ($self->SUPER::new(@stuff)); see PerlCodeWriter.new_defaults
-
 
 
 class PerlCodeWriter(BaseLangCodeWriter, wcodegen.PerlMixin):

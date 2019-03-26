@@ -20,7 +20,7 @@ methods of the parent object.
 
 import os.path, re
 
-from codegen import BaseLangCodeWriter, BaseSourceFileContent, BaseWidgetHandler, _replace_tag
+from codegen import BaseLangCodeWriter, BaseSourceFileContent, _replace_tag
 from codegen import ClassLines as BaseClassLines
 import config, compat, misc
 import wcodegen
@@ -226,22 +226,6 @@ class SourceFileContent(BaseSourceFileContent):
         return self.rec_class_end.match(line)
 
 
-
-class WidgetHandler(BaseWidgetHandler):
-    "Interface the various code generators for the widgets must implement"
-
-    constructor    = []  # 'signature' of the widget's constructor
-    import_modules = []  # If not None, list of extra header file, in the form <header.h> or "header.h"
-
-    def __init__(self):
-        BaseWidgetHandler.__init__(self)
-        self.constructor = []
-
-    def get_ids_code(self, obj):
-        """Handler for the code of the ids enum of toplevel objects.
-        Returns a list of strings containing the code to generate.
-        Usually the default implementation is ok (i.e. there are no extra lines to add)"""
-        return []
 
 class ClassLines(BaseClassLines):
     """Stores the lines of C++ code for a custom class"""
@@ -752,9 +736,8 @@ class CPPCodeWriter(BaseLangCodeWriter, wcodegen.CppMixin):
 
 
         # now check if there are extra lines to add to the constructor
-        if hasattr(builder, 'get_init_code'):
-            for l in builder.get_init_code(code_obj):
-                swrite(tab + l)
+        for l in builder.get_init_code(code_obj):
+            swrite(tab + l)
 
         swrite( self.tmpl_ctor_call_layout % {'tab':tab} )
 

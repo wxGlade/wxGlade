@@ -20,7 +20,7 @@ import os
 import os.path
 import re
 
-from codegen import BaseLangCodeWriter, BaseSourceFileContent, BaseWidgetHandler
+from codegen import BaseLangCodeWriter, BaseSourceFileContent
 import errors
 import wcodegen
 
@@ -143,12 +143,6 @@ class SourceFileContent(BaseSourceFileContent):
 
     def is_import_line(self, line):
         return line.startswith('(use-package :wx')
-
-
-
-class WidgetHandler(BaseWidgetHandler):
-    pass
-
 
 
 class LispCodeWriter(BaseLangCodeWriter, wcodegen.LispMixin):
@@ -317,10 +311,6 @@ class LispCodeWriter(BaseLangCodeWriter, wcodegen.LispMixin):
     def add_object(self, sub_obj):
         # the lisp code gen add some hard coded depedencies
         # TODO: Move the hard coded dependencies to the widgets resp. sizers
-
-        # XXX temporarily disabled...
-        #sub_obj.name = self._format_name(sub_obj.name)
-        #sub_obj.parent.name = self._format_name(sub_obj.parent.name)
 
         # get top level source code object and the widget builder instance
         klass, builder = self._add_object_init(sub_obj)
