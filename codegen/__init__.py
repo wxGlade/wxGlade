@@ -493,7 +493,7 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
 
         can_be_toplevel = obj.__class__.__name__ in common.toplevels
 
-        old_class = old_base = None
+        old_class = old_base = None  # restore values for preview
         try:
             # XXX check for alternatives
             # classname is used only for 'EditTopLevelScrolledWindow' vs. 'EditTopLevelPanel'
@@ -543,11 +543,9 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
 
     def generate_code(self, root, widget=None):
         # root must be application.Application instance for now
-        self.class_names = {}
         for c in root.children or []:
             if widget is not None and c is not widget: continue # for preview
             self._generate_code(c)
-        #if isinstance(root, application.Application):
         topwin = [c for c in root.children if c.name==root.top_window]
         if topwin:
             topwin = topwin[0]
@@ -895,23 +893,11 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
             raise
 
         if not sub_obj.IS_SIZER:  # the object is a wxWindow instance
-            #if sub_obj.children and not sub_obj.IS_TOPLEVEL:
-                ##init.reverse()  # parents_init will be reversed in the end
-                #klass.parents_init.extend(init)
-            #else:
-            #klass.init.extend(init)
-
             if not self.preview:
                 if "extracode_pre" in sub_obj.properties and sub_obj.extracode_pre:
                     init = sub_obj.properties["extracode_pre"].get_lines() + init
                 if "extracode_post" in sub_obj.properties and sub_obj.extracode_post:
                     init += sub_obj.properties["extracode_post"].get_lines()
-
-            # Add a dependency of the current object on its parent window (not sizer)
-            #klass.deps.append((sub_obj, sub_obj.parent_window))
-            #klass.child_order.append(sub_obj)
-            #klass.init_lines[sub_obj] = init
-            #klass.final_lines[sub_obj] = final
 
             mycn = getattr(builder, 'cn', self.cn)
             for win_id, evt, handler, evt_type in builder.get_event_handlers(sub_obj):
@@ -922,14 +908,9 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
                 extra_code = getattr(builder, 'extracode', getattr(sub_obj, 'extracode', "") or "" )
                 if extra_code and not extra_code in klass.extra_code:
                     klass.extra_code.append(extra_code)
-        #else:  # the object is a sizer
-            #klass.init.extend(init)
 
         klass.init.extend(init)
 
-        #klass.props.extend(props)
-        #klass.layout.extend(layout)
-        #klass.final.extend(final)
         klass.final[:0] = final
         if self.multiple_files and (sub_obj.IS_CLASS and sub_obj.base != sub_obj.klass):
             key = self._format_import(sub_obj.klass)
@@ -950,10 +931,7 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
 
         # Check for proper source code instance
         top_obj = sub_obj.parent_class_object  # starts with parent
-        #if top_obj.klass in self.classes:
         klass = self.classes[top_obj]
-        #else:
-            #klass = self.classes[top_obj] = self.ClassLines()
 
         # Check for widget builder object
         try:

@@ -34,7 +34,7 @@ def format_ctor_arguments(arguments, parent, id, size):
 class PythonCustomWidgetGenerator(wcodegen.PythonWidgetCodeWriter):
     def get_code(self, widget):
         #if self.codegen.preview and widget.klass not in widget.parser.class_names:
-        if self.codegen.preview and widget.klass not in self.codegen.class_names:
+        if self.codegen.preview:
             # if this CustomWidget refers to another class in the same wxg
             # file, use that for the preview
             return self.get_code_preview(widget)
