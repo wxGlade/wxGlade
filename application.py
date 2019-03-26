@@ -133,13 +133,10 @@ class EditRoot(np.PropertyOwner):
         if self.is_template and getattr(self, 'template_data', None):
             self.template_data.write(inner_xml, tabs+1)
 
-        class_names = set()
         for c in self.children:
-            c.write(inner_xml, tabs+1, class_names)
+            c.write(inner_xml, tabs+1)
 
         output.extend( common.format_xml_tag( u'application', inner_xml, is_xml=True, **attrs ) )
-
-        return class_names
 
     def recursive_remove(self):
         # clear all

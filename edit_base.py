@@ -309,7 +309,7 @@ class EditBase(np.PropertyOwner):
         misc.rebuild_tree(self.parent, recursive=False, focus=True)
 
     # XML generation ###################################################################################################
-    def write(self, output, tabs, class_names=None):
+    def write(self, output, tabs):
         "Writes the xml code for the widget to the given output file"
         # write object tag, including class, name, base
         classname = getattr(self, '_classname', self.__class__.__name__)
@@ -332,9 +332,6 @@ class EditBase(np.PropertyOwner):
         for prop in properties:
             prop.write(output, tabs+1)
 
-        if class_names is not None and self.WX_CLASS != 'CustomWidget':
-            class_names.add(self.klass)
-
         if self.IS_SIZER:
             for child in self.children or []:
                 if not child.IS_SLOT:
@@ -345,7 +342,7 @@ class EditBase(np.PropertyOwner):
                         if name is not None:
                             name.write(inner_xml, tabs+2)
 
-                    child.write(inner_xml, tabs+2, class_names)
+                    child.write(inner_xml, tabs+2)
                     stmt = common.format_xml_tag( u'object', inner_xml, tabs+1,
                                                   is_xml=True, **{'class': 'sizeritem'} )
                     output.extend(stmt)
@@ -354,7 +351,7 @@ class EditBase(np.PropertyOwner):
         elif self.children is not None or self.ATT_CHILDREN is not None:
             for child in self.get_all_children():
                 assert not config.debugging or child is not None
-                child.write(output, tabs+1, class_names)
+                child.write(output, tabs+1)
         output.append(u'%s</object>\n' % outer_tabs)
 
     # XML loading and slot handling ####################################################################################
@@ -768,7 +765,7 @@ class Slot(EditBase):
         if misc.focused_widget is self:
             misc.set_focused_widget(None)
 
-    def write(self, output, tabs, class_names=None):
+    def write(self, output, tabs):
         return
 
     # for tree and help display ########################################################################################

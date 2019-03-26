@@ -79,7 +79,7 @@ class SizerSlot(edit_base.Slot):
             #return (False, "No sizer can be pasted here")
         return (True,None)
 
-    def write(self, output, tabs, class_names=None):
+    def write(self, output, tabs):
         output.extend( common.format_xml_tag( u'object', '', tabs, **{'class': 'sizerslot'}) )
 
     def _get_tooltip(self):
