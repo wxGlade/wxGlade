@@ -18,13 +18,13 @@ class PythonNotebookGenerator(wcodegen.PythonWidgetCodeWriter):
         prop = window.properties
         id_name, id = self.codegen.generate_code_id(window)
 
-        layout_props = []
+        post = []
         for (label,), tab_win in zip(window.tabs, window.children):
             if tab_win.IS_SLOT:
                 tab_win = "wx.Panel(self.%s)"%window.name
             else:
                 tab_win = 'self.%s'%tab_win.name
-            layout_props.append('self.%s.AddPage(%s, %s)\n'%(window.name, tab_win, self.codegen.quote_str(label)))
+            post.append('self.%s.AddPage(%s, %s)\n'%(window.name, tab_win, self.codegen.quote_str(label)))
             
         parent = self.format_widget_access(window.parent_window)
         if window.IS_CLASS:
@@ -32,7 +32,7 @@ class PythonNotebookGenerator(wcodegen.PythonWidgetCodeWriter):
             if id_name:
                 l.append(id_name)
             l.append('self.%s = %s(%s, %s)\n' % (window.name, self.codegen.get_class(window.klass), parent, id))
-            return l, [], []
+            return l, []
         klass = window.klass
         if self.codegen.preview:
             klass = 'wxNotebook'
@@ -41,16 +41,16 @@ class PythonNotebookGenerator(wcodegen.PythonWidgetCodeWriter):
             init.append(id_name)
         init.append(('self.%s = ' + self.cn(klass) + '(%s, %s%s)\n')%(window.name, parent, id, self.tmpl_dict['style']))
 
-        props_buf = self.codegen.generate_common_properties(window)
-        return init, props_buf, layout_props
+        init += self.codegen.generate_common_properties(window)
+        return init, post
 
-    def get_properties_code(self, obj):
-        prop = obj.properties
-        props_buf = []
-        for (label,), tab_win in zip(obj.tabs, obj.children):
-            props_buf.append( 'self.AddPage(self.%s, %s)\n' % (tab_win.name, self.codegen.quote_str(label)) )
-        props_buf.extend(self.codegen.generate_common_properties(obj))
-        return props_buf
+    #def get_properties_code(self, obj):
+        #prop = obj.properties
+        #props_buf = []
+        #for (label,), tab_win in zip(obj.tabs, obj.children):
+            #props_buf.append( 'self.AddPage(self.%s, %s)\n' % (tab_win.name, self.codegen.quote_str(label)) )
+        #props_buf.extend(self.codegen.generate_common_properties(obj))
+        #return props_buf
 
 
 
@@ -118,9 +118,9 @@ class CppNotebookGenerator(wcodegen.CppWidgetCodeWriter):
             return l, ids, [], []
         init = ['%s = new %s(%s, %s%s);\n' % (window.name, window.klass, parent, id, self.tmpl_dict['style'])]
 
-        props_buf = self.codegen.generate_common_properties(window)
+        init += self.codegen.generate_common_properties(window)
 
-        return init, ids, props_buf, layout_props
+        return init, ids, layout_props
 
     def get_properties_code(self, obj):
         prop = obj.properties

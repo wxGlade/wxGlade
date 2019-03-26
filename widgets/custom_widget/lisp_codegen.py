@@ -29,9 +29,9 @@ class LispCustomWidgetGenerator(wcodegen.LispWidgetCodeWriter):
         arguments = format_ctor_arguments( widget.arguments, parent, id, widget.size )
         widget_name = self.codegen._format_name(widget.name)
         init.append( '(setf %s (%s_Create %s))\n' % (widget_name, widget.klass, " ".join(arguments)) )
-        props_buf = self.codegen.generate_common_properties(widget)
+        init += self.codegen.generate_common_properties(widget)
 
-        return init, props_buf, []
+        return init, []
 
 
 def initialize():

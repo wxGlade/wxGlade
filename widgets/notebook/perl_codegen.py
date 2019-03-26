@@ -46,16 +46,16 @@ class PerlNotebookGenerator(wcodegen.PerlWidgetCodeWriter):
         init.append( '$self->{%s} = %s->new(%s, %s%s);\n' % (
                      window.name, self.cn(window.klass), parent, id, self.tmpl_dict['style']) )
 
-        props_buf = self.codegen.generate_common_properties(window)
-        return init, props_buf, layout_props
+        init += self.codegen.generate_common_properties(window)
+        return init, layout_props
 
-    def get_properties_code(self, obj):
-        prop = obj.properties
-        props_buf = []
-        for (label,), tab_win in zip(obj.tabs, obj.children):
-            props_buf.append( '$self->AddPage($self->{%s}, %s);\n' % (tab_win.name, self.codegen.quote_str(label)) )
-        props_buf.extend(self.codegen.generate_common_properties(obj))
-        return props_buf
+    #def get_properties_code(self, obj):
+        #prop = obj.properties
+        #props_buf = []
+        #for (label,), tab_win in zip(obj.tabs, obj.children):
+            #props_buf.append( '$self->AddPage($self->{%s}, %s);\n' % (tab_win.name, self.codegen.quote_str(label)) )
+        #props_buf.extend(self.codegen.generate_common_properties(obj))
+        #return props_buf
 
 
 def initialize():

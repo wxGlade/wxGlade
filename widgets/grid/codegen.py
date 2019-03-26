@@ -34,8 +34,8 @@ class PythonCodeGenerator(wcodegen.PythonWidgetCodeWriter):
         if klass == obj.base:
             klass = self.cn(klass)
         init.append('self.%s = %s(%s, %s, size=(1, 1))\n' % (obj.name, klass, parent, id))
-        props_buf = self.get_properties_code(obj)
-        return init, props_buf, []
+        init += self.get_properties_code(obj)
+        return init, []
 
     def get_properties_code(self, obj):
         if not obj.create_grid: return []
@@ -100,8 +100,8 @@ class CppCodeGenerator(wcodegen.CppWidgetCodeWriter):
         ids = [id_name]  if id_name else  []
         parent = self.format_widget_access(obj.parent_window)
         init = ['%s = new %s(%s, %s);\n' % (obj.name, obj.klass, parent, id)]
-        props_buf = self.get_properties_code(obj)
-        return init, ids, props_buf, []
+        init += self.get_properties_code(obj)
+        return init, ids, []
 
     def get_properties_code(self, obj):
         out = []

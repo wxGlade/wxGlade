@@ -45,12 +45,9 @@ class BaseCPPSizerBuilder(BaseSizerBuilder):
 
     def _get_code(self, obj):
         self.tmpl_dict['parent_ref'] = self._get_parent_ref(obj)
-        result = BaseSizerBuilder._get_code(self, obj)
-
         # get_code() for C++ has different return values
-        result = list(result)
-        result.insert(2, [])
-        return result
+        init, final = BaseSizerBuilder._get_code(self, obj)
+        return init, [], final
 
     def _prepare_tmpl_content(self, obj):
         super(BaseCPPSizerBuilder, self)._prepare_tmpl_content(obj)

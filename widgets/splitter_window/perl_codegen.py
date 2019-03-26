@@ -20,7 +20,7 @@ class PerlSplitterWindowGenerator(wcodegen.PerlWidgetCodeWriter):
 
         init = []
         layout_buf = []
-        props_buf = self.codegen.generate_common_properties(window)
+        init += self.codegen.generate_common_properties(window)
 
         id_name, id = self.codegen.generate_code_id(window)
         parent = self.format_widget_access(window.parent_window)
@@ -69,36 +69,36 @@ class PerlSplitterWindowGenerator(wcodegen.PerlWidgetCodeWriter):
                 add_sub(win_2)
 
         if window.min_pane_size:
-            props_buf.append( '$self->{%s}->SetMinimumPaneSize(%s);\n' % (window.name, window.min_pane_size) )
+            init.append( '$self->{%s}->SetMinimumPaneSize(%s);\n' % (window.name, window.min_pane_size) )
         if window.properties["sash_gravity"].is_active():
-            props_buf.append( '$self->{%s}->SetSashGravity(%s);\n' % (window.name, window.sash_gravity) )
+            init.append( '$self->{%s}->SetSashGravity(%s);\n' % (window.name, window.sash_gravity) )
 
-        return init, props_buf, layout_buf
+        return init, layout_buf
 
-    def get_layout_code(self, obj):
-        props_buf = []
-        win_1 = window.window_1
-        win_2 = window.window_2
-        orientation = window.properties['orientation'].get_string_value()
+    #def get_layout_code(self, obj):
+        #props_buf = []
+        #win_1 = window.window_1
+        #win_2 = window.window_2
+        #orientation = window.properties['orientation'].get_string_value()
 
-        if win_1 and win_2:
-            sash_pos = window.sash_pos
-            if sash_pos!="": sash_pos = ', %s' % sash_pos
-            if orientation == 'wxSPLIT_VERTICAL':
-                f_name = 'SplitVertically'
-            else:
-                f_name = 'SplitHorizontally'
-            props_buf.append( '$self->%s($self->{%s}, $self->{%s}, %s);\n' % (f_name, win_1, win_2, sash_pos) )
-        else:
-            def add_sub(win):
-                props_buf.append( '$self->SetSplitMode(%s);\n' % orientation )
-                props_buf.append( '$self->Initialize($self->{%s});\n' % win )
+        #if win_1 and win_2:
+            #sash_pos = window.sash_pos
+            #if sash_pos!="": sash_pos = ', %s' % sash_pos
+            #if orientation == 'wxSPLIT_VERTICAL':
+                #f_name = 'SplitVertically'
+            #else:
+                #f_name = 'SplitHorizontally'
+            #props_buf.append( '$self->%s($self->{%s}, $self->{%s}, %s);\n' % (f_name, win_1, win_2, sash_pos) )
+        #else:
+            #def add_sub(win):
+                #props_buf.append( '$self->SetSplitMode(%s);\n' % orientation )
+                #props_buf.append( '$self->Initialize($self->{%s});\n' % win )
 
-            if win_1:
-                add_sub(win_1)
-            elif win_2:
-                add_sub(win_2)
-        return props_buf
+            #if win_1:
+                #add_sub(win_1)
+            #elif win_2:
+                #add_sub(win_2)
+        #return props_buf
 
 
 def initialize():

@@ -88,13 +88,12 @@ class PerlCodeGenerator(wcodegen.PerlWidgetCodeWriter):
         else:
             klass = self.cn(klass)
 
-        init.append( '\n')
-        init.append( '# Tool Bar\n')
-        init.append( '$self->{%s} = %s->new($self, -1%s);\n' % (obj.name, klass, extra) )
-        init.append( '$self->SetToolBar($self->{%s});\n' % obj.name )
-        init.extend( self.get_init_code(obj) )
-        init.append( '# Tool Bar end\n' )
-        return init, self.get_properties_code(obj), []
+        init = ['\n', '# Tool Bar\n',
+                '$self->{%s} = %s->new($self, -1%s);\n' % (obj.name, klass, extra)
+                ] + self.get_init_code(obj) + self.get_properties_code(obj) + [
+                '$self->SetToolBar($self->{%s});\n' % obj.name,
+                '# Tool Bar end\n' ]
+        return init, []
 
 
 def initialize():

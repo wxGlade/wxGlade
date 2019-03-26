@@ -26,13 +26,8 @@ class CheckBoxMixin(object):
         else:
             self.has_setvalue1 = checked
 
-    def _get_checkbox_code(self, prop_lines):
-        """\
-        Add code to set the state of a 3-state checkbox to prop_lines.
-
-        @param prop_lines:
-        @type prop_lines: list
-        """
+    def _get_checkbox_code(self):
+        "Returns code to set the state of a 3-state checkbox to prop_lines."
         if self.cn_f('wxCHK_3STATE') in self.tmpl_dict['style']:
-            prop_lines.append(self.tmpl_set3statevalue % self.tmpl_dict)
-        return
+            return [self.tmpl_set3statevalue % self.tmpl_dict]
+        return []

@@ -21,9 +21,9 @@ class PythonCheckBoxGenerator(wcodegen.PythonWidgetCodeWriter, checkbox_base.Che
         self._prepare_checkbox_content(obj)
 
     def get_code(self, obj):
-        init_lines, prop_lines, layout_lines = super(PythonCheckBoxGenerator, self).get_code(obj)
-        self._get_checkbox_code(prop_lines)
-        return init_lines, prop_lines, layout_lines
+        init_lines, final_lines = super(PythonCheckBoxGenerator, self).get_code(obj)
+        init_lines.extend( self._get_checkbox_code() )
+        return init_lines, final_lines
 
 
 
@@ -36,9 +36,9 @@ class CppCheckBoxGenerator(wcodegen.CppWidgetCodeWriter, checkbox_base.CheckBoxM
         self._prepare_checkbox_content(obj)
 
     def get_code(self, obj):
-        init_lines, id_lines, prop_lines, layout_lines = super(CppCheckBoxGenerator, self).get_code(obj)
-        self._get_checkbox_code(prop_lines)
-        return init_lines, id_lines, prop_lines, layout_lines
+        init_lines, id_lines, final_lines = super(CppCheckBoxGenerator, self).get_code(obj)
+        init_lines.extend( self._get_checkbox_code() )
+        return init_lines, id_lines, final_lines
 
 
 def initialize():

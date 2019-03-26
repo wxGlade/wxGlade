@@ -86,10 +86,10 @@ class LispCodeGenerator(wcodegen.LispWidgetCodeWriter):
         obj_name = self.codegen._format_name(obj.name)
         init = [ '\n\t;;; Tool Bar\n',
                  '(setf (slot-%s obj) (wxToolBar_Create %s -1 -1 -1 -1 -1 %s))\n' % (obj_name, parent, style),
-                      '(wxFrame_SetToolBar (slot-top-window obj) (slot-%s obj))\n' % obj_name ]
-        init.extend(self.get_init_code(obj))
-        init.append(';;; Tool Bar end\n')
-        return init, self.get_properties_code(obj), []
+                ] + self.get_init_code(obj) + self.get_properties_code(obj) + [
+                 '(wxFrame_SetToolBar (slot-top-window obj) (slot-%s obj))\n' % obj_name,
+                 ';;; Tool Bar end\n']
+        return init, []
 
 
 

@@ -14,7 +14,7 @@ class PerlFrameCodeGenerator(wcodegen.PerlWidgetCodeWriter):
     new_signature = ['$parent', '$id', '$title', '$pos', '$size', '$style', '$name']
 
     def get_code(self, obj):
-        return [], [], [], []  # the frame can't be a children
+        return [], []  # the frame can't be a children
 
     def get_properties_code(self, obj):
         out = []

@@ -203,7 +203,8 @@ class PythonCodeWriter(BaseLangCodeWriter, wcodegen.PythonMixin):
     tmpl_encoding = "# -*- coding: %s -*-\n#\n"
     tmpl_class_end = '\n%(comment)s end of class %(klass)s\n'
     tmpl_class_end_nomarker = '\n'
-    tmpl_ctor_call_layout = '\n%(tab)sself.__set_properties()\n%(tab)sself.__do_layout()\n'
+    #tmpl_ctor_call_layout = '\n%(tab)sself.__set_properties()\n%(tab)sself.__do_layout()\n'
+    tmpl_ctor_call_layout = ''
     tmpl_func_empty = '%(tab)spass\n'
     tmpl_sizeritem = '%s.Add(%s, %s, %s, %s)\n'
     tmpl_gridbagsizeritem = '%s.Add(%s, %s, %s, %s, %s)\n'
@@ -294,6 +295,97 @@ from %(top_win_module)s import %(top_win_class)s\n\n"""
 
         BaseLangCodeWriter.add_app(self, app, top_win)
 
+    #def generate_code_ctor(self, code_obj, is_new, tab):
+        #code_lines = []
+        #write = code_lines.append
+
+        #builder = self.obj_builders[code_obj.base]
+        #mycn = getattr(builder, 'cn', self.cn)
+        #mycn_f = getattr(builder, 'cn_f', self.cn_f)
+        #fmt_klass = self.cn_class(code_obj.klass)
+
+        ## custom base classes support
+        #custom_base = getattr(code_obj, 'custom_base', getattr(code_obj, 'custom_base', None) )
+        #if self.preview or (custom_base and not custom_base.strip()):
+            #custom_base = None
+
+        ## generate constructor code
+        #if is_new:
+            #base = mycn(code_obj.base)
+            #if custom_base:
+                #base = ", ".join([b.strip() for b in custom_base.split(',')])
+            #if self.preview and code_obj.klass == base:
+                #klass = code_obj.klass + ('_%d' % random.randrange(10 ** 8, 10 ** 9))
+            #else:
+                #klass = code_obj.klass
+            #write('\nclass %s(%s):\n' % (self.get_class(fmt_klass), base))
+            #write(self.tabs(1) + 'def __init__(self, *args, **kwds):\n')
+        #elif custom_base:
+            ## custom base classes set, but "overwrite existing sources" not set. Issue a warning about this
+            #self.warning( '%s has custom base classes, but you are not overwriting '
+                          #'existing sources: please check that the resulting code is correct!' % code_obj.name )
+
+        #if self._mark_blocks:
+            ## __init__ begin tag
+            #write(self.tmpl_block_begin % {'class_separator': self.class_separator, 'comment_sign': self.comment_sign,
+                                           #'function':self.name_ctor, 'klass':fmt_klass, 'tab':tab} )
+
+        #style_p = code_obj.properties.get("style")
+        #if style_p:# and style_p.value_set != style_p.default_value:
+            #style = style_p.get_string_value()
+            #m_style = mycn_f( style )
+            #stmt_style = self._format_style(style, code_obj)
+            #if stmt_style:
+                #write(stmt_style % {'style': m_style, 'tab': tab} )
+
+        ## initialise custom base class
+        #if custom_base:
+            #bases = [b.strip() for b in custom_base.split(',')]
+            #for i, b in enumerate(bases):
+                #if not i:
+                    #write(tab + '%s.__init__(self, *args, **kwds)\n' % b)
+                #else:
+                    #write(tab + '%s.__init__(self)\n' % b)
+        #else:
+            #write(tab + '%s.__init__(self, *args, **kwds)\n' % mycn(code_obj.base))
+
+        ## set size here to avoid problems with splitter windows
+        #if 'size' in code_obj.properties and code_obj.properties["size"].is_active():
+            #write( tab + self.generate_code_size(code_obj) )
+
+        ## classes[code_obj.klass].deps now contains a mapping of child to parent for all children we processed...
+        #object_order = []
+        #for obj in self.classes[code_obj.klass].child_order:
+            ## Don't add it again if already present
+            #if obj in object_order:
+                #continue
+
+            #object_order.append(obj)
+
+            ## Insert parent and ancestor objects before the current object
+            #current_object = obj
+            #for child, parent in self.classes[code_obj.klass].deps[:]:
+                #if child is current_object:
+                    #if parent not in object_order:
+                        #idx = object_order.index(current_object)
+                        #object_order.insert(idx, parent)
+                    #current_object = parent
+
+                    ## We processed the dependency: remove it
+                    #self.classes[code_obj.klass].deps.remove((child, parent))
+
+        ## Write out the initialisation in the order we just generated
+        #for obj in object_order:
+            #if obj in self.classes[code_obj.klass].init_lines:
+                #for l in self.classes[code_obj.klass].init_lines[obj]:
+                    #write(tab + l)
+        #for obj in object_order:
+            #if obj in self.classes[code_obj.klass].final_lines:
+                #for l in self.classes[code_obj.klass].final_lines[obj]:
+                    #write(tab + l)
+
+        #return code_lines
+
     def generate_code_ctor(self, code_obj, is_new, tab):
         code_lines = []
         write = code_lines.append
@@ -352,41 +444,59 @@ from %(top_win_module)s import %(top_win_class)s\n\n"""
         if 'size' in code_obj.properties and code_obj.properties["size"].is_active():
             write( tab + self.generate_code_size(code_obj) )
 
-        # classes[code_obj.klass].deps now contains a mapping of child to parent for all children we processed...
-        object_order = []
-        for obj in self.classes[code_obj.klass].child_order:
-            # Don't add it again if already present
-            if obj in object_order:
-                continue
+        for l in builder.get_properties_code(code_obj):
+            write(tab + l)
 
-            object_order.append(obj)
+        for l in self.classes[code_obj.klass].init:
+            write(tab + l)
+        for l in self.classes[code_obj.klass].final:
+            write(tab + l)
 
-            # Insert parent and ancestor objects before the current object
-            current_object = obj
-            for child, parent in self.classes[code_obj.klass].deps[:]:
-                if child is current_object:
-                    if parent not in object_order:
-                        idx = object_order.index(current_object)
-                        object_order.insert(idx, parent)
-                    current_object = parent
-
-                    # We processed the dependency: remove it
-                    self.classes[code_obj.klass].deps.remove((child, parent))
-
-        # Write out the initialisation in the order we just generated
-        for obj in object_order:
-            if obj in self.classes[code_obj.klass].init_lines:
-                for l in self.classes[code_obj.klass].init_lines[obj]:
-                    write(tab + l)
+        for l in builder.get_layout_code(code_obj):
+            write(tab + l)
 
         return code_lines
 
-    def generate_code_do_layout(self, builder, code_obj, is_new, tab):
-        # Python has two indentation levels
-        #  1st) for function declaration
-        #  2nd) for function body
-        self.tmpl_func_do_layout = '\n' + self.tabs(1) + 'def __do_layout(self):\n%(content)s'
-        return BaseLangCodeWriter.generate_code_do_layout( self, builder, code_obj, is_new, tab )
+        ## classes[code_obj.klass].deps now contains a mapping of child to parent for all children we processed...
+        #object_order = []
+        #for obj in self.classes[code_obj.klass].child_order:
+            ## Don't add it again if already present
+            #if obj in object_order:
+                #continue
+
+            #object_order.append(obj)
+
+            ## Insert parent and ancestor objects before the current object
+            #current_object = obj
+            #for child, parent in self.classes[code_obj.klass].deps[:]:
+                #if child is current_object:
+                    #if parent not in object_order:
+                        #idx = object_order.index(current_object)
+                        #object_order.insert(idx, parent)
+                    #current_object = parent
+
+                    ## We processed the dependency: remove it
+                    #self.classes[code_obj.klass].deps.remove((child, parent))
+
+        ## Write out the initialisation in the order we just generated
+        #for obj in object_order:
+            #if obj in self.classes[code_obj.klass].init_lines:
+                #for l in self.classes[code_obj.klass].init_lines[obj]:
+                    #write(tab + l)
+        #for obj in object_order:
+            #if obj in self.classes[code_obj.klass].final_lines:
+                #for l in self.classes[code_obj.klass].final_lines[obj]:
+                    #write(tab + l)
+
+        #return code_lines
+
+
+    #def generate_code_do_layout(self, builder, code_obj, is_new, tab):
+        ## Python has two indentation levels
+        ##  1st) for function declaration
+        ##  2nd) for function body
+        #self.tmpl_func_do_layout = '\n' + self.tabs(1) + 'def __do_layout(self):\n%(content)s'
+        #return BaseLangCodeWriter.generate_code_do_layout( self, builder, code_obj, is_new, tab )
 
     def generate_code_event_bind(self, code_obj, tab, event_handlers):
         code_lines = []

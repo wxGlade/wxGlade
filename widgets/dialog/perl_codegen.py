@@ -15,7 +15,7 @@ class PerlDialogGenerator(wcodegen.PerlWidgetCodeWriter):
     new_signature = ['$parent', '$id', '$title', '$pos', '$size', '$style', '$name']
 
     def get_code(self, obj):
-        return [], [], []
+        return [], []
 
     def get_properties_code(self, obj):
         out = []

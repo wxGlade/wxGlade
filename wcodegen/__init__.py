@@ -567,11 +567,11 @@ class BaseWidgetWriter(StylesMixin, BaseCodeWriter):
         if hasattr(self, "get_more_properties_code"):
             prop_lines += self.get_more_properties_code(obj)
 
-        if not self.tmpl_dict['store_as_attr']:
-            # the object doesn't have to be stored as an attribute of the
-            # custom class, but it is just considered part of the layout
-            return [], [], init_lines + prop_lines
-        return init_lines, prop_lines, []
+        #if not self.tmpl_dict['store_as_attr']:
+            ## the object doesn't have to be stored as an attribute of the
+            ## custom class, but it is just considered part of the layout
+            #return [], init_lines + prop_lines
+        return init_lines + prop_lines, []
 
     def get_event_handlers(self, obj):
         """Returns a list of event handlers defined for the given object (CodeObject instance).
@@ -824,7 +824,7 @@ class CppWidgetCodeWriter(CppMixin, BaseWidgetWriter):
         return
 
     def get_code(self, obj):
-        init, props_buf, layout = BaseWidgetWriter.get_code(self, obj)
+        init, post = BaseWidgetWriter.get_code(self, obj)
 
         # default get_code() returns a tuple of three lists (init, properties
         # and layout).
@@ -836,7 +836,7 @@ class CppWidgetCodeWriter(CppMixin, BaseWidgetWriter):
         else:
             ids = []
 
-        return init, ids, props_buf, layout
+        return init, ids, post
 
     def format_widget_access(self, obj):
         if obj.IS_CLASS:

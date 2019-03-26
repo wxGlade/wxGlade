@@ -20,9 +20,9 @@ class PerlCheckBoxGenerator(wcodegen.PerlWidgetCodeWriter, checkbox_base.CheckBo
         self._prepare_checkbox_content(obj)
 
     def get_code(self, obj):
-        init_lines, prop_lines, layout_lines = super(PerlCheckBoxGenerator, self).get_code(obj)
-        self._get_checkbox_code(prop_lines)
-        return init_lines, prop_lines, layout_lines
+        init_lines, final_lines = super(PerlCheckBoxGenerator, self).get_code(obj)
+        init_lines.extend( self._get_checkbox_code() )
+        return init_lines, final_lines
 
 
 def initialize():

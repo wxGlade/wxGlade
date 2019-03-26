@@ -132,7 +132,7 @@ class BaseSizerBuilder(object):
     def _get_code(self, obj):
         "Generates the language specific code for sizer specified in L{klass}"
         if not self.tmpl:
-            return [], [], []  # init, props, layout
+            return [], []  # init, final
 
         init = []
         layout = []
@@ -148,7 +148,7 @@ class BaseSizerBuilder(object):
             if "sizehints" in obj.window.properties and obj.window.sizehints:
                 layout.append(self.tmpl_SetSizeHints % self.tmpl_dict)
 
-        return init, [], layout  # init, props, layout
+        return init, layout  # init, post
 
     def get_code(self, obj):
         "Generates the language specific code for sizer specified in L{klass}"
@@ -185,29 +185,26 @@ class BaseSizerBuilder(object):
 
     def get_code_wxFlexGridSizer(self, obj):
         "Set sizer specific properties and generate the code"
-        result = self.get_code_wxGridSizer(obj)
+        ret = list( self.get_code_wxGridSizer(obj) )
 
         if self.codegen.preview and obj.klass=="wxGridBagSizer":
             max_row, max_col = obj._get_max_row_col()
         else:
             max_row = max_col = None
 
-        layout = []
+        growable = []
         if 'growable_rows' in obj.properties:
             for row in obj.growable_rows:
                 if max_row is None or row<=max_row:
                     self.tmpl_dict['row'] = row
-                    layout.append(self.tmpl_AddGrowableRow % self.tmpl_dict)
+                    growable.append(self.tmpl_AddGrowableRow % self.tmpl_dict)
         if 'growable_cols' in obj.properties:
             for col in obj.growable_cols:
                 if max_col is None or col<=max_col:
                     self.tmpl_dict['col'] = col
-                    layout.append(self.tmpl_AddGrowableCol % self.tmpl_dict)
-
-        # convert tuple to list and append the layout lines
-        result = list(result)
-        result[-1] += layout
-        return result
+                    growable.append(self.tmpl_AddGrowableCol % self.tmpl_dict)
+        ret[-1] = growable + ret[-1]
+        return ret
 
 
 class Sizer(edit_base.EditBase):

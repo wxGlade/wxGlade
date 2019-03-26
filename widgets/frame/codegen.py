@@ -118,7 +118,7 @@ def initialize():
         awh('wxFrame', PythonFrameCodeGenerator(klass))
         awh('wxMDIChildFrame', PythonFrameCodeGenerator(klass))
 
-        aph = pygen.add_property_handler
+        #aph = pygen.add_property_handler
         #aph('menubar', pygen.DummyPropertyHandler)
 
     xrcgen = common.code_writers.get('XRC')

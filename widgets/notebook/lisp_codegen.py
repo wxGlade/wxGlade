@@ -35,7 +35,7 @@ class LispNotebookGenerator(wcodegen.LispWidgetCodeWriter):
                 l.append(id_name)
             fmt = '(setf (slot-%s obj) (wxNotebook_Create %s %s -1 -1 -1 -1 wxNB_TOP))\n'
             l.append( fmt % (window_name, parent, id) )
-            return l, [], []
+            return l, []
 
         init = []
         if id_name:
@@ -43,16 +43,16 @@ class LispNotebookGenerator(wcodegen.LispWidgetCodeWriter):
         fmt = '(setf (slot-%s obj) (wxNotebook_Create %s %s -1 -1 -1 -1 %s))\n'
         init.append( fmt % (window_name, parent, id, self.tmpl_dict['style']) )
 
-        props_buf = self.codegen.generate_common_properties(window)
-        return init, props_buf, layout_props
+        init += self.codegen.generate_common_properties(window)
+        return init, layout_props
 
-    def get_properties_code(self, obj):
-        props_buf = []
-        for (label,), tab_win in zip(obj.tabs, obj.children):
-            fmt = '(wxNotebook_AddPage (slot-%s obj) page %s 1 -1);\n'
-            props_buf.append( fmt % (tab_win.name, self.codegen.quote_str(label) ) )
-        props_buf.extend(self.codegen.generate_common_properties(obj))
-        return props_buf
+    #def get_properties_code(self, obj):
+        #props_buf = []
+        #for (label,), tab_win in zip(obj.tabs, obj.children):
+            #fmt = '(wxNotebook_AddPage (slot-%s obj) page %s 1 -1);\n'
+            #props_buf.append( fmt % (tab_win.name, self.codegen.quote_str(label) ) )
+        #props_buf.extend(self.codegen.generate_common_properties(obj))
+        #return props_buf
 
 
 def initialize():

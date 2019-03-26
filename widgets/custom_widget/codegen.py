@@ -50,8 +50,8 @@ class PythonCustomWidgetGenerator(wcodegen.PythonWidgetCodeWriter):
         else:
             ctor = widget.klass
         init.append( 'self.%s = %s(%s)\n' % (widget.name, ctor, ", ".join(arguments)) )
-        props_buf = self.codegen.generate_common_properties(widget)
-        return init, props_buf, []
+        init += self.codegen.generate_common_properties(widget)
+        return init, []
 
     def get_code_preview(self, widget):
         parent = self.format_widget_access(widget.parent_window)
@@ -86,7 +86,7 @@ def self_%s_on_paint(event):
             append(line + '\n')
         append( 'self.%s.Bind(wx.EVT_PAINT, self_%s_on_paint)\n' % (widget.name, widget.name) )
         append( 'self.%s.Bind(wx.EVT_ERASE_BACKGROUND, lambda event: None)\n' % widget.name )
-        return init, [], []
+        return init, []
 
 
 class CppCustomWidgetGenerator(wcodegen.CppWidgetCodeWriter):
@@ -107,8 +107,8 @@ class CppCustomWidgetGenerator(wcodegen.CppWidgetCodeWriter):
         else:
             ctor = 'new ' + widget.klass
         init = [ '%s = %s(%s);\n' % (widget.name, ctor, ", ".join(arguments)) ]
-        props_buf = self.codegen.generate_common_properties(widget)
-        return init, ids, props_buf, []
+        init += self.codegen.generate_common_properties(widget)
+        return init, ids, []
 
 
 

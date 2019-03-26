@@ -20,7 +20,7 @@ class PythonPanelGenerator(wcodegen.PythonWidgetCodeWriter):
             l = []
             if id_name: l.append(id_name)
             l.append('self.%s = %s(%s, %s)\n' % (panel.name, self.codegen.get_class(panel.klass), parent, id))
-            return l, [], []
+            return l, []
         init = []
         if id_name:
             init.append(id_name)
@@ -40,10 +40,10 @@ class PythonPanelGenerator(wcodegen.PythonWidgetCodeWriter):
             if klass in ('wxPanel', 'wxScrolledWindow'):
                 klass = self.cn(klass)
         init.append( 'self.%s = %s(%s, %s%s)\n' % (panel.name, klass, parent, id, style) )
-        props_buf = self.codegen.generate_common_properties(panel)
-        if scrollable and panel.check_prop("scroll_rate"):
-            props_buf.append('self.%s.SetScrollRate(%s)\n' % (panel.name, panel.scroll_rate))
-        return init, props_buf, []
+        init.extend( self.codegen.generate_common_properties(panel) )
+        if panel.scrollable and panel.check_prop("scroll_rate"):
+            init.append( 'self.%s.SetScrollRate(%s)\n' % (panel.name, panel.scroll_rate) )
+        return init, []
 
     def get_properties_code(self, obj):
         props_buf = self.codegen.generate_common_properties(obj)
@@ -52,6 +52,7 @@ class PythonPanelGenerator(wcodegen.PythonWidgetCodeWriter):
         return props_buf
 
     def get_layout_code(self, obj):
+        # called for toplevel panel
         ret = ['self.Layout()\n']
         if "centered" in obj.properties and obj.centered:
             ret.append('self.Centre()\n')
@@ -92,10 +93,10 @@ class CppPanelGenerator(wcodegen.CppWidgetCodeWriter):
         else:
             klass = panel.klass
         init = [ '%s = new %s(%s, %s%s);\n' % (panel.name, klass, parent, id, extra) ]
-        props_buf = self.codegen.generate_common_properties(panel)
+        init += self.codegen.generate_common_properties(panel)
         if scrollable and panel.check_prop("scroll_rate"):
-            props_buf.append('%s->SetScrollRate(%s);\n' % (panel.name, panel.scroll_rate))
-        return init, ids, props_buf, []
+            init.append('%s->SetScrollRate(%s);\n' % (panel.name, panel.scroll_rate))
+        return init, ids, []
 
     def get_properties_code(self, obj):
         props_buf = self.codegen.generate_common_properties(obj)

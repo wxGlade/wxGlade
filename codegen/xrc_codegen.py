@@ -7,6 +7,7 @@ return an instance of XrcObject
 
 @copyright: 2002-2007 Alberto Griggio
 @copyright: 2012-2016 Carsten Grohmann
+@copyright: 2019 Dietmar Schwertberger
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
@@ -350,9 +351,10 @@ class XRCCodeWriter(BaseLangCodeWriter, wcodegen.XRCMixin):
             if sub_obj in self.xrc_objects:
                 del self.xrc_objects[sub_obj]
         # let's see if sub_obj's parent already has an XrcObject: if so, it's temporarily stored in self.xrc_objects
-        if top_obj in self.xrc_objects:
-            top_xrc = self.xrc_objects[top_obj]
-        else:
+        #if top_obj in self.xrc_objects:
+            #top_xrc = self.xrc_objects[top_obj]
+        #else:
+        if not getattr(top_obj, "xrc"):
             # ...otherwise, create it and store it in the self.xrc_objects dict
             top_xrc = self.obj_builders.get( top_obj.base, DefaultXrcObject )(top_obj)
             top_obj.xrc = top_xrc
@@ -399,6 +401,9 @@ class XRCCodeWriter(BaseLangCodeWriter, wcodegen.XRCMixin):
             code_obj.xrc = xrc_obj
             # add the xrc_obj to the dict of the toplevel ones
             self.xrc_objects[code_obj] = xrc_obj
+
+    def finalize_class(self, code_obj):
+        pass
 
     def generate_code_id(self, obj, id=None):
         return '', ''
