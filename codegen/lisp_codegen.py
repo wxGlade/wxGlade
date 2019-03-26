@@ -13,6 +13,7 @@ methods of the parent object.
 
 @copyright: 2005 Surendra K Singhi <efuzzyone@users.sourceforge.net>
 @copyright: 2012-2016 Carsten Grohmann
+@copyright: 2019 Dietmar Schwertberger
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 

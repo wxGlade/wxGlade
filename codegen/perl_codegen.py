@@ -15,7 +15,7 @@ Like all other perl parts, based on the pre-existing python generators
 
 @copyright: 2002-2004 D.H. aka crazyinsomniac on sourceforge.net
 @copyright: 2012-2016 Carsten Grohmann
-@copyright: 2017 Dietmar Schwertberger
+@copyright: 2017-2019 Dietmar Schwertberger
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
