@@ -165,11 +165,6 @@ class ClassLines(object):
         # XXX refactor init and final into init_code, final_code?
         self.init = []            # Lines of code to insert in the __init__ method (for children widgets)
         self.final = []  # to be inserted after children, e.g. Add or AddPage for sizers / notebooks
-        #self.final_lines = {}
-        # XXX not used at the moment; refactor anyway
-        #self.parents_init = []    # Lines to insert in the __init__ for container widgets (panels, splitters, ...)
-        #self.props = []           # Lines to insert in the __set_properties method
-        #self.sizers_init = []     # Lines related to sizer objects declarations
 
 
 class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
@@ -508,22 +503,22 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
                 old_base = obj.base
                 obj.base = base
             
-            obj.IS_CLASS = obj.IS_TOPLEVEL
+            IS_CLASS = obj.IS_TOPLEVEL
             if obj.klass != obj.base and can_be_toplevel:
-                obj.IS_CLASS = True
+                IS_CLASS = True
                 # for panel objects, if the user sets a custom class but (s)he doesn't want the code to be generated...
                 if obj.check_prop("no_custom_class") and obj.no_custom_class and not self.preview:
-                    obj.IS_CLASS = False
+                    IS_CLASS = False
             elif self.preview and not can_be_toplevel and obj.base != 'CustomWidget':
                 # if this is a custom class, but not a toplevel one, for the preview we have to use the "real" class
                 # CustomWidgets handle this in a special way (see widgets/custom_widget/codegen.py)
                 old_class = obj.properties["klass"].get()
                 obj.properties["klass"].set(obj.base) # XXX handle this in a different way
 
+            obj.IS_CLASS = IS_CLASS
+
             # first the item
-            #if obj.IS_CLASS and not obj.IS_SIZER:
-            if obj.IS_CLASS and not obj.IS_SIZER:
-                assert not obj.IS_SIZER
+            if IS_CLASS:
                 self.add_class(obj)
             if not obj.IS_TOPLEVEL:
                 self.add_object(obj)
@@ -533,7 +528,7 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
                 assert obj.children.count(child)<=1
                 self._generate_code(child)
 
-            if obj.IS_CLASS and not obj.IS_SIZER:  # XXX as long as generate_code is called with 
+            if IS_CLASS:
                 self.finalize_class(obj)
 
             # check whether the object belongs to some sizer; if applicable, add it to the sizer at the top of the stack
@@ -995,18 +990,6 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
 
         return klass, builder
 
-    #def add_property_handler(self, property_name, handler, widget_name=None):
-        #"""Sets a function to parse a portion of XML to get the value of the property property_name.
-        #If widget_name is not None, the function is called only if the property in inside a widget whose class is
-        #widget_name."""
-        #if not widget_name:
-            #self.global_property_writers[property_name] = handler
-        #else:
-            #try:
-                #self._property_writers[widget_name][property_name] = handler
-            #except KeyError:
-                #self._property_writers[widget_name] = {property_name: handler}
-
     def add_sizeritem(self, toplevel, sizer, obj, option, flag, border):
         """Writes the code to add the object 'obj' to the sizer 'sizer' in the 'toplevel' object.
         All widgets in L{blacklisted_widgets} are ignored; template is self.tmpl_sizeritem"""
@@ -1032,8 +1015,6 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
             pos = sizer._get_row_col(obj.pos)
             stmt = self.tmpl_gridbagsizeritem % ( sizer_name, obj_name, pos, obj.span, flag, border )
 
-        #klass.init.append(stmt)
-        #klass.final.append(stmt)
         klass.final.insert(0, stmt)
 
     def add_spacer(self, toplevel, sizer, obj=None):
@@ -1080,17 +1061,6 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
         nonce = '%s%s' % ( str(time.time()).replace('.', ''), random.randrange(10 ** 6, 10 ** 7) )
         return nonce
 
-    #def get_property_handler(self, property_name, widget_name):
-        #"""Return the widget specific property handler;
-        #@see: L{add_property_handler}, L{global_property_writers}, L{_property_writers}"""
-        #try:
-            #cls = self._property_writers[widget_name][property_name]
-        #except KeyError:
-            #cls = self.global_property_writers.get(property_name, None)
-        #if cls:
-            #return cls()
-        #return None
-
     def generate_code_background(self, obj):
         "Returns the code fragment that sets the background colour of the given object; @see: L{_get_colour()}"
         # check if there is an code template for this property
@@ -1108,44 +1078,6 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
     def generate_code_ctor(self, code_obj, is_new, tab):
         "Generate constructor code for top-level object (CodeObject instance); is_new: create a new file?"
         return []
-
-    #def generate_code_do_layout(self, builder, code_obj, is_new, tab):
-        #"""Generate code for the function C{__do_layout()}.
-
-        #If C{is_new} is set, this function returns list of source code for the whole function.
-        #Otherwise it returns just the function body framed by "begin wxGlade" and "end wxGlade".
-
-        #@param builder: Widget specific builder
-        #@param code_obj: Object to generate code for (CodeObject)
-        #@param is_new: Indicates if previous source code exists
-
-        #see tmpl_name_do_layout, tmpl_func_do_layout, tmpl_func_empty; _generate_function()"""
-        #code_lines = []
-        #write = code_lines.append
-
-        ## generate content of function body first
-        #layout_lines = self.classes[code_obj.klass].layout
-        #sizers_init_lines = self.classes[code_obj.klass].sizers_init
-
-        ## check if there are extra layout lines to add
-        #if hasattr(builder, 'get_layout_code'):
-            #extra_layout_lines = builder.get_layout_code(code_obj)
-        #else:
-            #extra_layout_lines = []
-
-        #if layout_lines or sizers_init_lines or extra_layout_lines:
-            #sizers_init_lines.reverse()
-            #for l in sizers_init_lines:
-                #write(l)
-            #for l in layout_lines:
-                #write(l)
-            #for l in extra_layout_lines:
-                #write(l)
-
-        #code_lines = self._generate_function( code_obj, is_new, tab, self.tmpl_name_do_layout,
-                                              #self.tmpl_func_do_layout, code_lines )
-
-        #return code_lines
 
     def generate_code_event_bind(self, code_obj, tab, event_handlers):
         "Generate code to bind events for 'code_obj'; event_handlers is a list of event handlers (str,str,str)"
