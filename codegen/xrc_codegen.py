@@ -48,25 +48,24 @@ class XrcObject(wcodegen.XrcWidgetCodeWriter):
 class SizerItemXrcObject(XrcObject):
     "XrcObject to handle sizer items"
 
-    def __init__(self, obj, proportion, flag, border):
+    def __init__(self, xrc_obj, obj):
         XrcObject.__init__(self)
-        self.obj = obj  # the XrcObject representing the widget
-        self.proportion = proportion
-        self.flag = flag
-        self.border = border
+        self.xrc_obj = xrc_obj
+        self.obj = obj
 
     def write(self, output, ntabs, properties=None):
         tabs = self.tabs(ntabs)
         tabs1 = self.tabs(ntabs + 1)
         output.append(tabs + '<object class="sizeritem">\n')
-        if self.proportion != '0':
-            output.append(tabs1 + '<option>%s</option>\n' % self.proportion)
-        if self.flag and self.flag != '0':
-            output.append(tabs1 + '<flag>%s</flag>\n' % self.cn_f(self.flag))
-        if self.border != '0':
-            output.append(tabs1 + '<border>%s</border>\n' % self.border)
+        if self.obj.proportion:
+            output.append(tabs1 + '<option>%s</option>\n' % self.obj.proportion)
+        flag = self.obj.properties["flag"].get_string_value()
+        if flag and flag!='0':
+            output.append(tabs1 + '<flag>%s</flag>\n' % self.cn_f(flag))
+        if self.obj.border:
+            output.append(tabs1 + '<border>%s</border>\n' % self.obj.border)
         # write the widget
-        self.obj.write(output, ntabs + 1)
+        self.xrc_obj.write(output, ntabs + 1)
         output.append(tabs + '</object>\n')
 
 
@@ -361,7 +360,7 @@ class XRCCodeWriter(BaseLangCodeWriter, wcodegen.XRCMixin):
             self.xrc_objects[top_obj] = top_xrc
         top_obj.xrc.children.append(xrc_obj)
 
-    def add_sizeritem(self, unused, sizer, obj, option, flag, border):
+    def add_sizeritem(self, unused, sizer, obj):
         "Adds a sizeritem to the XRC tree. The first argument is unused."
         # what we need in XRC is not toplevel, but sub_obj's true parent
         toplevel = obj.parent_window
@@ -381,7 +380,7 @@ class XRCCodeWriter(BaseLangCodeWriter, wcodegen.XRCMixin):
         elif obj.klass == 'sizerslot':
             sizer.xrc.children.append( SpacerXrcObject(None) )
         else:
-            sizeritem_xrc = SizerItemXrcObject( obj_xrc, str(option), str(flag), str(border) )
+            sizeritem_xrc = SizerItemXrcObject( obj_xrc, obj )
             sizer.xrc.children.append(sizeritem_xrc)
         del top_xrc.children[index]
 

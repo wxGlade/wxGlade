@@ -342,14 +342,14 @@ class LispCodeWriter(BaseLangCodeWriter, wcodegen.LispMixin):
 
         BaseLangCodeWriter.add_object(self, sub_obj)
 
-    def add_sizeritem(self, toplevel, sizer, obj, option, flag, border):
+    def add_sizeritem(self, toplevel, sizer, obj):
         # XXX remove this hack
         if obj.IS_SIZER:
             self.tmpl_sizeritem = '(wxSizer_AddSizer (%s obj) (%s obj) %s %s %s nil)\n'
         else:
             self.tmpl_sizeritem = '(wxSizer_AddWindow (%s obj) (%s obj) %s %s %s nil)\n'
 
-        BaseLangCodeWriter.add_sizeritem( self, toplevel, sizer, obj, option, flag, border )
+        BaseLangCodeWriter.add_sizeritem( self, toplevel, sizer, obj )
 
     def add_spacer(self, toplevel, sizer, obj=None):
         # XXX remove this hack

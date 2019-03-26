@@ -476,19 +476,17 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
 
     def _generate_code(self, obj):
         # for anything except application.Application
-        import tree
+        parent = obj.parent
         parent_class_object = obj.parent_class_object  # used for adding to this object's sizer
 
         if obj.IS_SLOT:
-            # empty sizer slot
-            szr = obj.parent
-            if szr.IS_SIZER and not szr._IS_GRIDBAG:
-                self.add_empty_slot(parent_class_object, szr)
+            # empty (sizer) slot
+            if parent.IS_SIZER and not parent._IS_GRIDBAG:
+                self.add_empty_slot(parent_class_object, parent)
             return
         elif obj.classname=="spacer":
-            # add a spacer
-            szr = obj.parent
-            self.add_spacer(parent_class_object, szr, obj)
+            # add a spacer to the parent, which is a sizer
+            self.add_spacer(parent_class_object, parent, obj)
             return
 
         can_be_toplevel = obj.__class__.__name__ in common.toplevels
@@ -532,10 +530,8 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
                 self.finalize_class(obj)
 
             # check whether the object belongs to some sizer; if applicable, add it to the sizer at the top of the stack
-            parent = obj.parent
             if parent.IS_SIZER:
-                flag = obj.properties["flag"].get_string_value()  # as string, joined with "|"
-                self.add_sizeritem(parent_class_object, parent, obj, obj.proportion, flag, obj.border)
+                self.add_sizeritem(parent_class_object, parent, obj)
         finally:
             # XXX handle this in a different way
             if old_class is not None: obj.properties["klass"].set(old_class)
@@ -968,7 +964,7 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
 
         return klass, builder
 
-    def add_sizeritem(self, toplevel, sizer, obj, option, flag, border):
+    def add_sizeritem(self, toplevel, sizer, obj):
         """Writes the code to add the object 'obj' to the sizer 'sizer' in the 'toplevel' object.
         All widgets in L{blacklisted_widgets} are ignored; template is self.tmpl_sizeritem"""
 
@@ -980,20 +976,19 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
         # This string can simply inserted in Add() call.
         obj_name = self._format_classattr(obj)
 
-        klass = self.classes[toplevel]
-
         # check if sizer has to store as a class attribute
         sizer_name = self._format_classattr(sizer)
 
+        flag = obj.properties["flag"].get_string_value()  # as string, joined with "|"
         flag = self.cn_f(flag) or '0'
 
         if sizer.klass!="wxGridBagSizer":
-            stmt = self.tmpl_sizeritem % ( sizer_name, obj_name, option, flag, border )
+            stmt = self.tmpl_sizeritem % ( sizer_name, obj_name, obj.proportion, flag, obj.border )
         else:
             pos = sizer._get_row_col(obj.pos)
-            stmt = self.tmpl_gridbagsizeritem % ( sizer_name, obj_name, pos, obj.span, flag, border )
+            stmt = self.tmpl_gridbagsizeritem % ( sizer_name, obj_name, pos, obj.span, flag, obj.border )
 
-        klass.final.insert(0, stmt)
+        self.classes[toplevel].final.insert(0, stmt)
 
     def add_spacer(self, toplevel, sizer, obj=None):
         # add spacer
