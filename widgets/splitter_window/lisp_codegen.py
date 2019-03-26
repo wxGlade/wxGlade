@@ -69,35 +69,35 @@ class LispSplitterWindowGenerator(wcodegen.LispWidgetCodeWriter):
 
         return init, layout_buf
 
-    #def get_layout_code(self, obj):
-        #props_buf = []
+    def get_layout_code(self, obj):
+        props_buf = []
 
-        #win_1 = window.window_1
-        #win_2 = window.window_2
-        #orientation = window.properties['orientation'].get_string_value()
+        win_1 = window.window_1
+        win_2 = window.window_2
+        orientation = window.properties['orientation'].get_string_value()
 
-        #if win_1 and win_2:
-            #sash_pos = window.sash_pos
-            #if sash_pos!="": sash_pos = ', %s' % sash_pos
+        if win_1 and win_2:
+            sash_pos = window.sash_pos
+            if sash_pos!="": sash_pos = ', %s' % sash_pos
 
-            #if orientation == 'wxSPLIT_VERTICAL':
-                #f_name = 'SplitVertically'
-            #else:
-                #f_name = 'SplitHorizontally'
+            if orientation == 'wxSPLIT_VERTICAL':
+                f_name = 'SplitVertically'
+            else:
+                f_name = 'SplitHorizontally'
 
-            #props_buf.append('$self->%s($self->{%s}, $self->{%s}, %s);\n' %
-                             #(f_name, win_1, win_2, sash_pos))
-        #else:
-            #obj_name = self.codegen._format_name(obj.name)
-            #def add_sub(win):
-                #props_buf.append( '(wxSplitterWindow_SetSplitMode (slot-%s obj) %s)\n' % (obj_name,orientation) )
-                #props_buf.append( '(wxSplitterWindow_Initialize (slot-%s obj) %s)\n' % (obj_name,win) )
-            #if win_1:
-                #add_sub(win_1)
-            #elif win_2:
-                #add_sub(win_2)
+            props_buf.append('$self->%s($self->{%s}, $self->{%s}, %s);\n' %
+                             (f_name, win_1, win_2, sash_pos))
+        else:
+            obj_name = self.codegen._format_name(obj.name)
+            def add_sub(win):
+                props_buf.append( '(wxSplitterWindow_SetSplitMode (slot-%s obj) %s)\n' % (obj_name,orientation) )
+                props_buf.append( '(wxSplitterWindow_Initialize (slot-%s obj) %s)\n' % (obj_name,win) )
+            if win_1:
+                add_sub(win_1)
+            elif win_2:
+                add_sub(win_2)
 
-        #return props_buf
+        return props_buf
 
 
 def initialize():

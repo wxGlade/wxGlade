@@ -188,7 +188,7 @@ class CppCodeGenerator(wcodegen.CppWidgetCodeWriter):
             style = ', wxDefaultPosition, wxDefaultSize, wxTB_HORIZONTAL|' + style
         else:
             style = ''
-        init = ['%s = new %s(this, -1%s);\n' % (obj.name, obj.klass, style)]#, 'SetToolBar(%s);\n' % obj.name]
+        init = ['%s = new %s(this, -1%s);\n' % (obj.name, obj.klass, style), 'SetToolBar(%s);\n' % obj.name]
         init.extend(self.get_properties_code(obj))
         ids = self.get_ids_code(obj)
         return init, ids, []

@@ -73,7 +73,7 @@ class CppFrameCodeGenerator(wcodegen.CppWidgetCodeWriter):
                    ('long', 'style', 'wxDEFAULT_FRAME_STYLE')]
 
     def get_code(self, obj):
-        return [], [], [], []  # the frame can't be a children
+        return [], [], [] # the frame can't be a children
 
     def get_properties_code(self, obj):
         out = []

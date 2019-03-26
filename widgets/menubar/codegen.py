@@ -217,7 +217,7 @@ class CppMenubarGenerator(wcodegen.CppWidgetCodeWriter):
 
                     if item.name:
                         # assign to attribute
-                        self.codegen.classes[obj.parent.klass].sub_objs.append( ('wxMenuItem',item.name) )
+                        self.codegen.classes[obj.parent].sub_objs.append( ('wxMenuItem',item.name) )
                         assignment = '%s = '%item.name
                         if not id_access:
                             id_access = "%s->GetId()"%item.name
@@ -253,7 +253,7 @@ class CppMenubarGenerator(wcodegen.CppWidgetCodeWriter):
             if menu.name:
                 # assign to attribute
                 name = menu.name
-                self.codegen.classes[obj.parent.klass].sub_objs.append( ('wxMenu',menu.name) )
+                self.codegen.classes[obj.parent].sub_objs.append( ('wxMenu',menu.name) )
             else:
                 name = 'wxglade_tmp_menu'
             out.append('%s = new wxMenu();\n' % name)

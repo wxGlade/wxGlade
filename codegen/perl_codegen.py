@@ -202,9 +202,6 @@ class PerlCodeWriter(BaseLangCodeWriter, wcodegen.PerlMixin):
 
     SourceFileContent = SourceFileContent
 
-    tmpl_name_do_layout = '__do_layout'
-    tmpl_name_set_properties = '__set_properties'
-
     tmpl_cfunc_end = '%(tab)sreturn $self;\n' \
                      '\n' \
                      '}\n' \
@@ -212,16 +209,6 @@ class PerlCodeWriter(BaseLangCodeWriter, wcodegen.PerlMixin):
 
     tmpl_class_end = '\n%(comment)s end of class %(klass)s\n\n1;\n\n'
     tmpl_class_end_nomarker = '\n\n1;\n\n'
-
-    tmpl_ctor_call_layout = '\n' \
-                            '%(tab)s$self->__set_properties();\n' \
-                            '%(tab)s$self->__do_layout();\n\n'
-
-    tmpl_func_do_layout = '\n' \
-                          'sub __do_layout {\n' \
-                          '%(tab)smy $self = shift;\n' \
-                          '%(content)s' \
-                          '}\n'
 
     tmpl_func_event_stub = """\
 
@@ -234,12 +221,6 @@ sub %(handler)s {
 }
 
 """
-
-    tmpl_func_set_properties = '\n' \
-                          'sub __set_properties {\n' \
-                          '%(tab)smy $self = shift;\n' \
-                          '%(content)s' \
-                          '}\n'
 
     tmpl_func_empty = '%(tab)sreturn;\n'
 
@@ -362,7 +343,7 @@ sub %(handler)s {
 
             if self._use_gettext:
                 if self.multiple_files:
-                    self.classes[code_obj.klass].dependencies["use Wx::Locale gettext => '_T';\n"] = 1
+                    self.classes[code_obj].dependencies["use Wx::Locale gettext => '_T';\n"] = 1
                 else:
                     write("use Wx::Locale gettext => '_T';\n")
 
@@ -371,7 +352,7 @@ sub %(handler)s {
             # TODO: Don't add dependencies twice with Perl
 
             # write the module dependencies for this class (package)
-            dep_list = sorted( self.classes[code_obj.klass].dependencies.keys() )
+            dep_list = sorted( self.classes[code_obj].dependencies.keys() )
             if dep_list:
                 code = self._tagcontent('dependencies', dep_list, True)
                 write(code)
@@ -415,35 +396,48 @@ sub %(handler)s {
         if 'size' in code_obj.properties and code_obj.properties["size"].is_active():
             write( tab+ self.generate_code_size(code_obj) )
 
-        # classes[code_obj.klass].deps now contains a mapping of child to
-        # parent for all children we processed...
-        object_order = []
-        for obj in self.classes[code_obj.klass].child_order:
-            # Don't add it again if already present
-            if obj in object_order:
-                continue
+        for l in builder.get_properties_code(code_obj):
+            write(tab + l)
 
-            object_order.append(obj)
+        for l in self.classes[code_obj].init:
+            write(tab + l)
+        for l in self.classes[code_obj].final:
+            write(tab + l)
 
-            # Insert parent and ancestor objects before the current object
-            current_object = obj
-            for child, parent in self.classes[code_obj.klass].deps[:]:
-                if child is current_object:
-                    if parent not in object_order:
-                        idx = object_order.index(current_object)
-                        object_order.insert(idx, parent)
-                    current_object = parent
-
-                    # We processed the dependency: remove it
-                    self.classes[code_obj.klass].deps.remove((child, parent))
-
-        # Write out the initialisation in the order we just generated
-        for obj in object_order:
-            if obj in self.classes[code_obj.klass].init_lines:
-                for l in self.classes[code_obj.klass].init_lines[obj]:
-                    write(tab + l)
+        for l in builder.get_layout_code(code_obj):
+            write(tab + l)
 
         return code_lines
+
+        ## classes[code_obj.klass].deps now contains a mapping of child to
+        ## parent for all children we processed...
+        #object_order = []
+        #for obj in self.classes[code_obj.klass].child_order:
+            ## Don't add it again if already present
+            #if obj in object_order:
+                #continue
+
+            #object_order.append(obj)
+
+            ## Insert parent and ancestor objects before the current object
+            #current_object = obj
+            #for child, parent in self.classes[code_obj.klass].deps[:]:
+                #if child is current_object:
+                    #if parent not in object_order:
+                        #idx = object_order.index(current_object)
+                        #object_order.insert(idx, parent)
+                    #current_object = parent
+
+                    ## We processed the dependency: remove it
+                    #self.classes[code_obj.klass].deps.remove((child, parent))
+
+        ## Write out the initialisation in the order we just generated
+        #for obj in object_order:
+            #if obj in self.classes[code_obj.klass].init_lines:
+                #for l in self.classes[code_obj.klass].init_lines[obj]:
+                    #write(tab + l)
+
+        #return code_lines
 
     def generate_code_event_bind(self, code_obj, tab, event_handlers):
         code_lines = []

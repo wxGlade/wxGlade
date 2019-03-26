@@ -186,18 +186,10 @@ class LispCodeWriter(BaseLangCodeWriter, wcodegen.LispMixin):
 
     SourceFileContent = SourceFileContent
 
-    tmpl_name_do_layout = '__do_layout'
-    tmpl_name_set_properties = '__set_properties'
-
     tmpl_cfunc_end = '%(tab)s)\n'
 
     tmpl_class_end = '\n%(comment)s end of class %(klass)s\n\n\n'
     tmpl_class_end_nomarker = '\n\n\n'
-
-    tmpl_func_do_layout = '\n' \
-                          '(defmethod do-layout ((obj %(klass)s))\n' \
-                          '%(content)s' \
-                          '%(tab)s)\n'
 
     tmpl_func_event_stub = """\
 (defun %(handler)s (function data event) ;;; wxGlade: %(klass)s.<event_handler>
@@ -205,11 +197,6 @@ class LispCodeWriter(BaseLangCodeWriter, wcodegen.LispMixin):
 %(tab)s(when event
 %(tab)s%(tab)s(wxEvent:wxEvent_Skip event)))
 """
-
-    tmpl_func_set_properties = '\n' \
-                          '(defmethod set-properties ((obj %(klass)s))\n' \
-                          '%(content)s' \
-                          '%(tab)s)\n'
 
     tmpl_func_empty = '%(tab)spass\n'
 
@@ -394,22 +381,21 @@ class LispCodeWriter(BaseLangCodeWriter, wcodegen.LispMixin):
         # generate constructor code
         if is_new:
             base = mycn(code_obj.base)
-            klass = code_obj.klass
-            write('\n(defclass %s()\n' % klass)
+            write('\n(defclass %s()\n' % code_obj.klass)
             write(tab + "((top-window :initform nil :accessor slot-top-window)")
             for l in self.class_lines:
                 write("\n")
                 write(tab + "(" + l + " :initform nil :accessor slot-" + l + ")")
             write("))\n")
 
-            write("\n(defun make-%s ()\n" % klass)
-            write(tab + "(let ((obj (make-instance '%s)))\n" % klass)
+            write("\n(defun make-%s ()\n" % code_obj.klass)
+            write(tab + "(let ((obj (make-instance '%s)))\n" % code_obj.klass)
             write(tab + "  (init obj)\n")
             write(tab + "  (set-properties obj)\n")
             write(tab + "  (do-layout obj)\n")
             write(tab + "  obj))\n")
 
-            write('\n(defmethod init ((obj %s))\n' % klass)
+            write('\n(defmethod init ((obj %s))\n' % code_obj.klass)
             write("\"Method creates the objects contained in the class.\"\n")
 
         elif custom_base:
@@ -435,35 +421,48 @@ class LispCodeWriter(BaseLangCodeWriter, wcodegen.LispMixin):
         if 'size' in code_obj.properties and code_obj.properties["size"].is_active():
             write( tab + self.generate_code_size(code_obj) )
 
-        # classes[code_obj.klass].deps now contains a mapping of child to
-        # parent for all children we processed...
-        object_order = []
-        for obj in self.classes[code_obj.klass].child_order:
-            # Don't add it again if already present
-            if obj in object_order:
-                continue
+        for l in builder.get_properties_code(code_obj):
+            write(tab + l)
 
-            object_order.append(obj)
+        for l in self.classes[code_obj].init:
+            write(tab + l)
+        for l in self.classes[code_obj].final:
+            write(tab + l)
 
-            # Insert parent and ancestor objects before the current object
-            current_object = obj
-            for child, parent in self.classes[code_obj.klass].deps[:]:
-                if child is current_object:
-                    if parent not in object_order:
-                        idx = object_order.index(current_object)
-                        object_order.insert(idx, parent)
-                    current_object = parent
-
-                    # We processed the dependency: remove it
-                    self.classes[code_obj.klass].deps.remove((child, parent))
-
-        # Write out the initialisation in the order we just generated
-        for obj in object_order:
-            if obj in self.classes[code_obj.klass].init_lines:
-                for l in self.classes[code_obj.klass].init_lines[obj]:
-                    write(tab + l)
+        for l in builder.get_layout_code(code_obj):
+            write(tab + l)
 
         return code_lines
+
+        ## classes[code_obj.klass].deps now contains a mapping of child to
+        ## parent for all children we processed...
+        #object_order = []
+        #for obj in self.classes[code_obj].child_order:
+            ## Don't add it again if already present
+            #if obj in object_order:
+                #continue
+
+            #object_order.append(obj)
+
+            ## Insert parent and ancestor objects before the current object
+            #current_object = obj
+            #for child, parent in self.classes[code_obj.klass].deps[:]:
+                #if child is current_object:
+                    #if parent not in object_order:
+                        #idx = object_order.index(current_object)
+                        #object_order.insert(idx, parent)
+                    #current_object = parent
+
+                    ## We processed the dependency: remove it
+                    #self.classes[code_obj.klass].deps.remove((child, parent))
+
+        ## Write out the initialisation in the order we just generated
+        #for obj in object_order:
+            #if obj in self.classes[code_obj.klass].init_lines:
+                #for l in self.classes[code_obj.klass].init_lines[obj]:
+                    #write(tab + l)
+
+        #return code_lines
 
     def generate_code_event_bind(self, code_obj, tab, event_handlers):
         code_lines = []
