@@ -95,6 +95,8 @@ class WXGladeBaseTest(unittest.TestCase):
         return ret
     
     def _compare_files(self, expected_filename, generated_filename, check_mtime=False):
+        file_ext = os.path.splitext(generated_filename)[1].lower()
+        #if not expected_filename.upper().endswith("XRC") and not expected_filename.upper().endswith("WXG"): return True
         self.assertTrue( os.path.isfile(generated_filename), "File %s was not generated"%generated_filename )
         if check_mtime:
             self.assertGreater( os.stat(generated_filename).st_mtime, os.stat(expected_filename).st_mtime,
@@ -112,7 +114,38 @@ class WXGladeBaseTest(unittest.TestCase):
                 expected_  = [l for l in expected  if not l.strip().startswith("<size>") and not "SetSize" in l]
                 generated_ = [l for l in generated if not l.strip().startswith("<size>") and not "SetSize" in l]
                 if expected_ == generated_: return False
-        
+
+        # when switching to new code generation, the lines are re-ordered and do_layout/set_properties are missing
+        # so we check such cases first, as these are probably real bugs
+        if file_ext==".lisp":
+            # normalize braces at line ends
+            s = set([l.replace(')))', ')') for l in generated])
+            expected_ = [l.replace(')))', ')') for l in expected]
+        else:
+            s = set(generated)
+            expected_ = expected
+        missing = [l for l in expected_ if not l in s]
+        missing = [l for l in missing if (not "do_layout" in l and not "set_properties" in l)]
+        missing = [l for l in missing if (not "do-layout" in l and not "set-properties" in l)]
+        if file_ext in (".py", ".lisp"):
+            missing = [l for l in missing if not "    pass" in l]
+        if file_ext==".pl":
+            missing = [l for l in missing if not "    my $self = shift;" in l and not "    return;" in l]
+        if file_ext in (".cpp", ".h", ".hpp"):
+            missing = [l for l in missing if not "// begin wxGlade: " in l or not "::methods" in l]
+        self.assertFalse( missing, "Missing lines from generated file:\n%s" % "\n".join(missing) )
+
+        if file_ext==".lisp":
+            s = set([l.replace(')))', ')') for l in expected])
+            generated_ = [l.replace(')))', ')') for l in generated]
+        else:
+            s = set(expected)
+            generated_ = generated
+        additional = [l for l in generated_ if not l in s]
+        additional = [l for l in additional if l.strip()]
+        self.assertFalse( additional, "Additional lines in generated file:\n%s" % "\n".join(missing) )
+        if not expected_filename.lower().endswith("xrc") and not expected_filename.lower().endswith("wxg"): return True
+
         diff = difflib.unified_diff(expected, generated, fromfile=expected_filename, tofile=generated_filename, lineterm='')
         diff = list(diff)
         print( '\n'.join(diff[:40]) )
