@@ -441,7 +441,7 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
             raise errors.WxgTemplateCodegenNotPossible
 
     def _generate_code(self, obj):
-        # for anything except application.Application
+        # recursively generate code, for anything except application.Application
         parent = obj.parent
         parent_class_object = obj.parent_class_object  # used for adding to this object's sizer
 
@@ -870,6 +870,7 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
                 if extra_code and not extra_code in klass.extra_code:
                     klass.extra_code.append(extra_code)
 
+        klass.init.append("\n")
         klass.init.extend(init)
 
         klass.final[:0] = final
@@ -953,7 +954,7 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
             pos = sizer._get_row_col(obj.pos)
             stmt = self.tmpl_gridbagsizeritem % ( sizer_name, obj_name, pos, obj.span, flag, obj.border )
 
-        self.classes[toplevel].final.insert(0, stmt)
+        self.classes[toplevel].init.append(stmt)
 
     def add_spacer(self, toplevel, sizer, obj=None):
         # add spacer

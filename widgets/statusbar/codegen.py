@@ -27,7 +27,6 @@ class PythonStatusBarGenerator(wcodegen.PythonWidgetCodeWriter):
 
         append = self.tmpl_props.append
         append( '%(name)s.SetStatusWidths(%(widths)s)\n' )
-        append( '\n' )
 
         # don't add statusbar fields without labels
         if [lb for lb in labels if lb]:

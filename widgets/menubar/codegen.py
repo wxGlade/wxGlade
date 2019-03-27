@@ -95,7 +95,7 @@ class PythonMenubarGenerator(wcodegen.PythonWidgetCodeWriter):
             klass = self.cn(obj.klass)
         else:
             klass = obj.klass
-        code = [ '\n', '# Menu Bar\n', 'self.%s = %s()\n' % (obj.name, klass) ]
+        code = [ '# Menu Bar\n', 'self.%s = %s()\n' % (obj.name, klass) ]
         if not obj.IS_CLASS:  # if it's a class, then the menus will be generated in the class code
             code.extend(self.get_init_code(obj))
         code.append('self.SetMenuBar(self.%s)\n' % obj.name)
