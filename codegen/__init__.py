@@ -439,18 +439,17 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
 
     def _generate_code(self, obj):
         # recursively generate code, for anything except application.Application
+        # for toplevel widgets or with class different from wx... a class will be added
+
+        if obj.IS_SLOT or obj.classname=="spacer":
+            if obj.classname!="slot":  # "slot" has no code generator
+                self.add_object(obj)
+                if self.language=="XRC" and obj.classname in ("spacer", "sizerslot"):
+                    self.add_sizeritem(obj.parent_class_object, obj.parent, obj)
+            return
+
         parent = obj.parent
         parent_class_object = obj.parent_class_object  # used for adding to this object's sizer
-
-        if obj.IS_SLOT:
-            # empty (sizer) slot
-            if parent.IS_SIZER and not parent._IS_GRIDBAG:
-                self.add_empty_slot(parent_class_object, parent)
-            return
-        elif obj.classname=="spacer":
-            # add a spacer to the parent, which is a sizer
-            self.add_spacer(parent_class_object, parent, obj)
-            return
 
         can_be_toplevel = obj.__class__.__name__ in common.toplevels
 
@@ -463,7 +462,7 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
             if base!=obj.base:
                 old_base = obj.base
                 obj.base = base
-            
+
             IS_CLASS = obj.IS_TOPLEVEL
             if obj.klass != obj.base and can_be_toplevel:
                 IS_CLASS = True
@@ -482,7 +481,7 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
             if IS_CLASS:
                 self.add_class(obj)
             if not obj.IS_TOPLEVEL:
-                added = self.add_object(obj)
+                added = self.add_object(obj)  # added can be False if the widget is not supported
             else:
                 added = False
 
@@ -496,7 +495,8 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
 
             # check whether the object belongs to some sizer; if applicable, add it to the sizer at the top of the stack
             if added and parent.IS_SIZER:
-                self.add_sizeritem(parent_class_object, parent, obj)
+                if obj.classname not in ("spacer",):  # spacer and slot are adding itself to the sizer
+                    self.add_sizeritem(parent_class_object, parent, obj)
         finally:
             # XXX handle this in a different way
             if old_class is not None: obj.properties["klass"].set(old_class)
@@ -943,28 +943,6 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
 
         self.classes[toplevel].init.append(stmt)
 
-    def add_spacer(self, toplevel, sizer, obj=None):
-        # add spacer
-        klass = self.classes[toplevel]
-        sizer_name = self._format_classattr(sizer)
-        size = (obj.width, obj.height)
-        flag = self.cn_f(obj.properties["flag"].get_string_value()) or '0'
-        if sizer.klass!="wxGridBagSizer":
-            size = self.tmpl_spacersize%size
-            stmt = self.tmpl_sizeritem % ( sizer_name, size, obj.proportion, flag, obj.border )
-        else:
-            # GridBagSizer
-            pos = sizer._get_row_col(obj.pos)
-            stmt = self.tmpl_gridbagsizerspacer % ( sizer_name, size[0], size[1], pos, obj.span, flag, obj.border )
-        klass.init.append( stmt )
-
-    def add_empty_slot(self, toplevel, sizer):
-        # add spacer for empty sizer slot
-        klass = self.classes[toplevel]
-        sizer_name = self._format_classattr(sizer)
-        size = self.tmpl_spacersize%(0, 0)
-        klass.init.append( self.tmpl_sizeritem % ( sizer_name, size, 0, '0', 0 ) )
-
     def add_widget_handler(self, widget_name, handler, *args, **kwds):
         self.obj_builders[widget_name] = handler
 
@@ -1264,7 +1242,8 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
 
         if obj.IS_SIZER:
             return False
-        if obj.classname in ("wxStaticText","wxHyperlinkCtrl","wxStaticBitmap","wxStaticLine"):
+        if obj.classname in ("wxStaticText","wxHyperlinkCtrl","wxStaticBitmap","wxStaticLine",
+                             'spacer', 'sizerslot', 'slot'):
             return False
         return True  # this is the default
 

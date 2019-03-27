@@ -117,6 +117,8 @@ class WXGladeBaseTest(unittest.TestCase):
 
         # when switching to new code generation, the lines are re-ordered and do_layout/set_properties are missing
         # so we check such cases first, as these are probably real bugs
+
+        # identify missing lines
         if file_ext==".lisp":
             # normalize braces at line ends
             s = set([l.replace(')))', ')') for l in generated])
@@ -133,8 +135,8 @@ class WXGladeBaseTest(unittest.TestCase):
             missing = [l for l in missing if not "    my $self = shift;" in l and not "    return;" in l]
         if file_ext in (".cpp", ".h", ".hpp"):
             missing = [l for l in missing if not "// begin wxGlade: " in l or not "::methods" in l]
-        self.assertFalse( missing, "Missing lines from generated file:\n%s" % "\n".join(missing) )
 
+        # identify additional lines
         if file_ext==".lisp":
             s = set([l.replace(')))', ')') for l in expected])
             generated_ = [l.replace(')))', ')') for l in generated]
@@ -143,7 +145,11 @@ class WXGladeBaseTest(unittest.TestCase):
             generated_ = generated
         additional = [l for l in generated_ if not l in s]
         additional = [l for l in additional if l.strip()]
-        self.assertFalse( additional, "Additional lines in generated file:\n%s" % "\n".join(missing) )
+
+        # report missing/additional
+        self.assertFalse( missing, "Missing lines from generated file:\n%s" % "\n".join(missing) )
+        self.assertFalse( additional, "Additional lines in generated file:\n%s" % "\n".join(additional) )
+
         if not expected_filename.lower().endswith("xrc") and not expected_filename.lower().endswith("wxg"): return True
 
         diff = difflib.unified_diff(expected, generated, fromfile=expected_filename, tofile=generated_filename, lineterm='')

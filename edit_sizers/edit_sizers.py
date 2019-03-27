@@ -207,6 +207,25 @@ class BaseSizerBuilder(object):
         return ret
 
 
+class SlotGenerator(object):
+    # generic code generator; as a slot does not have flags etc. we don't need BaseWidgetBuilder etc.
+    def __init__(self, language):
+        self.language = language
+        self.codegen = common.code_writers[self.language] #language specific code generator (codegen.BaseLangCodeWriter)
+
+    def get_code(self, obj):
+        # add spacer for empty sizer slot
+        parent = obj.parent
+        if not parent.IS_SIZER or parent._IS_GRIDBAG: return [], []
+        sizer_name = self.codegen._format_classattr(parent)
+        size = self.codegen.tmpl_spacersize%(0, 0)
+        stmt = self.codegen.tmpl_sizeritem % ( sizer_name, size, 0, '0', 0 )
+        return [stmt], []
+
+    def get_event_handlers(self, obj):
+        return []
+
+
 class Sizer(edit_base.EditBase):
     "Base class for every Sizer handled by wxGlade"
     # XXX move this into BaseSizer, as virtual sizers are no longer used

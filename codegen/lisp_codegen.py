@@ -181,6 +181,8 @@ class LispCodeWriter(BaseLangCodeWriter, wcodegen.LispMixin):
 
     SourceFileContent = SourceFileContent
 
+    tmpl_sizeritem = '(wxSizer_AddWindow (%s obj) (%s obj) %s %s %s nil)\n'  # will be overwritten and restored
+
     tmpl_cfunc_end = '%(tab)s)\n'
 
     tmpl_class_end = '\n%(comment)s end of class %(klass)s\n\n\n'
@@ -318,7 +320,7 @@ class LispCodeWriter(BaseLangCodeWriter, wcodegen.LispMixin):
         if not klass or not builder:
             return False
 
-        if sub_obj.name not in ("spacer","sizerslot"):
+        if sub_obj.name not in ("spacer","sizerslot", "SLOT"):
             self.class_lines.append( self._format_name(sub_obj.name) )
         if (sub_obj.klass == "wxBoxSizer"  or sub_obj.klass == "wxStaticBoxSizer" or
             sub_obj.klass == "wxGridSizer" or sub_obj.klass == "wxFlexGridSizer"):
@@ -340,18 +342,10 @@ class LispCodeWriter(BaseLangCodeWriter, wcodegen.LispMixin):
             self.tmpl_sizeritem = '(wxSizer_AddSizer (%s obj) (%s obj) %s %s %s nil)\n'
         else:
             self.tmpl_sizeritem = '(wxSizer_AddWindow (%s obj) (%s obj) %s %s %s nil)\n'
-
-        BaseLangCodeWriter.add_sizeritem( self, toplevel, sizer, obj )
-
-    def add_spacer(self, toplevel, sizer, obj=None):
-        # XXX remove this hack
-        self.tmpl_sizeritem = '(wxSizer_AddWindow (%s obj) (%s obj) %s %s %s nil)\n'
-        BaseLangCodeWriter.add_spacer(self, toplevel, sizer, obj)
-
-    def add_empty_slot(self, toplevel, sizer):
-        # XXX remove this hack
-        self.tmpl_sizeritem = '(wxSizer_AddWindow (%s obj) (%s obj) %s %s %s nil)\n'
-        BaseLangCodeWriter.add_empty_slot(self, toplevel, sizer)
+        try:
+            BaseLangCodeWriter.add_sizeritem( self, toplevel, sizer, obj )
+        finally:
+            self.tmpl_sizeritem = '(wxSizer_AddWindow (%s obj) (%s obj) %s %s %s nil)\n'
 
     def generate_code_background(self, obj):
         self.dependencies['(use-package :wxColour)'] = 1

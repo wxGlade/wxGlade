@@ -2,12 +2,12 @@
 C++ generator functions for the various wxSizerS
 
 @copyright: 2014-2016 Carsten Grohmann
-@copyright: 2017 Dietmar Schwertberger
+@copyright: 2017-2019 Dietmar Schwertberger
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
 import common
-from .edit_sizers import BaseSizerBuilder
+from .edit_sizers import BaseSizerBuilder, SlotGenerator
 
 
 class BaseCPPSizerBuilder(BaseSizerBuilder):
@@ -91,13 +91,10 @@ class CppGridBagSizerBuilder(CppFlexGridSizerBuilder):
     tmpl = '%(assignment)s = new %(klass)s(%(vgap)s, %(hgap)s);\n'
 
 
-import wcodegen
-
-class CppSizerSlotGenerator(wcodegen.CppWidgetCodeWriter):
-    # spacers and empty sizer slots are generally handled by a hack:
-    # The the implementations of add_sizeritem() contains more details.
-    # The code generation code is already implemented in base class.
-    pass
+class CppSizerSlotGenerator(SlotGenerator):
+    def get_code(self, obj):
+        init, final = SlotGenerator.get_code(self, obj)
+        return init, [], final
 
 
 def initialize():
@@ -118,4 +115,5 @@ def initialize():
         awh('wxFlexGridSizer', CppFlexGridSizerBuilder())
         awh('wxGridBagSizer', CppGridBagSizerBuilder())
 
-    common.register('C++', "sizerslot", CppSizerSlotGenerator("sizerslot"))
+    #common.register('C++', "sizerslot", CppSizerSlotGenerator("sizerslot"))
+    common.register('C++', "sizerslot", CppSizerSlotGenerator("C++"))

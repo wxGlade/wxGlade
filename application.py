@@ -692,7 +692,7 @@ class Application(EditRoot):
         if language is None:
             language = self.language
         if widget is not None:
-            if widget.__class__.__name__=="SizerSlot":
+            if widget.__class__.__name__ in ("SizerSlot", "Slot"):
                 return
             cname = common.class_names[widget.__class__.__name__]
             if language != 'XRC':

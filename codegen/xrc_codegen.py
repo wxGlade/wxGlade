@@ -336,6 +336,7 @@ class XRCCodeWriter(BaseLangCodeWriter, wcodegen.XRCMixin):
     def add_object(self, sub_obj):
         "Adds the object sub_obj to the XRC tree. The first argument is unused."
         # what we need in XRC is not top_obj, but sub_obj's true parent we don't need the sizer, but the window
+
         top_obj = sub_obj.parent_window
         builder = self.obj_builders.get( sub_obj.base, DefaultXrcObject )
         try:
@@ -379,17 +380,12 @@ class XRCCodeWriter(BaseLangCodeWriter, wcodegen.XRCMixin):
         if obj.klass == 'spacer':
             sizer.xrc.children.append( SpacerXrcObject(obj) )
         elif obj.klass == 'sizerslot':
-            sizer.xrc.children.append( SpacerXrcObject(None) )
+            if not sizer._IS_GRIDBAG:
+                sizer.xrc.children.append( SpacerXrcObject(None) )
         else:
             sizeritem_xrc = SizerItemXrcObject( obj_xrc, obj )
             sizer.xrc.children.append(sizeritem_xrc)
         del top_xrc.children[index]
-
-    def add_spacer(self, topl, sizer, obj=None):
-        if not hasattr(sizer, "xrc"):  # if the sizer has not an XrcObject yet, create it now
-            sizer.xrc = self.obj_builders.get( sizer.base, DefaultXrcObject )(sizer)
-        sizer.xrc.children.append( SpacerXrcObject(obj) )
-    add_empty_slot = add_spacer
 
     def add_class(self, code_obj):
         """Add class behaves very differently for XRC output than for other languages (i.e. python):

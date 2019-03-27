@@ -9,7 +9,7 @@ Python generator functions for the various wxSizers
 
 
 import common
-from .edit_sizers import BaseSizerBuilder
+from .edit_sizers import BaseSizerBuilder, SlotGenerator
 
 
 class BasePythonSizerBuilder(BaseSizerBuilder):
@@ -63,15 +63,6 @@ class PythonGridBagSizerBuilder(PythonFlexGridSizerBuilder):
     tmpl = '%(sizer_name)s = %(klass)s(%(vgap)s, %(hgap)s)\n'
 
 
-import wcodegen
-
-class PythonSizerSlotGenerator(wcodegen.PythonWidgetCodeWriter):
-    # spacers and empty sizer slots are generally handled by a hack:
-    # The the implementations of add_sizeritem() contains more details.
-    # The code generation code is already implemented in base class.
-    pass
-
-
 def initialize():
     cn = common.class_names
     cn['EditBoxSizer'] = 'wxBoxSizer'
@@ -93,4 +84,5 @@ def initialize():
 
     # handle SizerSlot
     #common.class_names['EditSpacer'] = klass
-    common.register('python', "sizerslot", PythonSizerSlotGenerator("sizerslot"))
+    common.register('python', "sizerslot", SlotGenerator("python"))
+

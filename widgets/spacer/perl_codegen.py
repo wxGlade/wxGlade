@@ -3,17 +3,16 @@ Perl generator functions for spacers
 
 @copyright: 2002-2004 D. H. aka crazyinsomniac on sourceforge
 @copyright: 2014-2016 Carsten Grohmann
+@copyright: 2019 Dietmar Schwertberger
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
 import common
 import wcodegen
+from . import spacer_base
 
 
-class PerlSpacerGenerator(wcodegen.PerlWidgetCodeWriter):
-    # spacers are generally handled by a hack:
-    # The the implementations of add_sizeritem() contains more details.
-    # The code generation code is already implemented in base class.
+class PerlSpacerGenerator(spacer_base.SpacerMixin, wcodegen.PerlWidgetCodeWriter):
     pass
 
 

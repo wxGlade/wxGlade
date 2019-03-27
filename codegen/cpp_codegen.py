@@ -926,11 +926,10 @@ class CPPCodeWriter(BaseLangCodeWriter, wcodegen.CppMixin):
                                   'that the resulting code is correct!' % sub_obj.name )
 
             klass.ids.extend(ids)
-            if sub_obj.klass != 'spacer':
-                # attribute is a special property which control whether sub_obj must be accessible as an attribute of
-                # top_obj, or as a local variable in the do_layout method
-                if self.store_as_attr(sub_obj):
-                    klass.sub_objs.append((sub_obj.klass, sub_obj.name))
+            # attribute is a special property which control whether sub_obj must be accessible as an attribute of
+            # top_obj, or as a local variable in the do_layout method
+            if self.store_as_attr(sub_obj):
+                klass.sub_objs.append((sub_obj.klass, sub_obj.name))
         elif sub_obj.klass != "sizerslot":
             # the object is a sizer
             if self.store_as_attr(sub_obj):
