@@ -166,8 +166,6 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
                                (see app_mapping, add_app())
 
      for_version:             wx version we are generating code for (e.g. (2, 8) )
-     blacklisted_widgets:     Don't add those widgets to sizers because they are not supported for the requested
-                               wx version or there is no code generator available.
 
      classes:                 Dictionary that maps the lines of code of a class to the name of such class:
                                the lines are divided in 3 categories: '__init__', '__set_properties' and '__do_layout'
@@ -307,7 +305,6 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
         self.indent_symbol = config.default_indent_symbol
         self.indent_amount = config.default_indent_amount
         self.is_template = 0
-        self.blacklisted_widgets = {}
         self.lang_mapping = {}
         self.multiple_files = False
 
@@ -485,7 +482,9 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
             if IS_CLASS:
                 self.add_class(obj)
             if not obj.IS_TOPLEVEL:
-                self.add_object(obj)
+                added = self.add_object(obj)
+            else:
+                added = False
 
             # then the children
             for child in obj.get_all_children():
@@ -496,7 +495,7 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
                 self.finalize_class(obj)
 
             # check whether the object belongs to some sizer; if applicable, add it to the sizer at the top of the stack
-            if parent.IS_SIZER:
+            if added and parent.IS_SIZER:
                 self.add_sizeritem(parent_class_object, parent, obj)
         finally:
             # XXX handle this in a different way
@@ -843,7 +842,7 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
         # get top level source code object and the widget builder instance
         klass, builder = self._add_object_init(sub_obj)
         if not klass or not builder:
-            return
+            return False
 
         try:
             init, final = builder.get_code(sub_obj)
@@ -879,14 +878,10 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
             klass.dependencies[key] = 1
         for dep in getattr(self.obj_builders.get(sub_obj.base), 'import_modules', []):
             klass.dependencies[dep] = 1
+        return True
 
     def _add_object_init(self, sub_obj):
-        """Perform some initial actions for L{add_object()}
-        
-        Widgets without code generator or widget that are not supporting the
-        requested wx version are blacklisted at L{blacklisted_widgets}.
-
-        @return: Top level source code object and the widget builder instance or C{None, None} in case of errors."""
+        "Perform some checks and return the containg class and the code builder"
         # initialise internal variables first
         klass = None
         builder = None
@@ -905,8 +900,6 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
             msg = _('Code for instance "%s" of "%s" not generated: no suitable writer found') % (name, sub_obj.klass )
             self._source_warning(klass, msg, sub_obj)
             self.warning(msg)
-            # ignore widget later too
-            self.blacklisted_widgets[sub_obj] = 1
             return None, None
 
         # check for supported versions
@@ -924,19 +917,13 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
                         'supported_versions': ', '.join(supported_versions) }
             self._source_warning(klass, msg, sub_obj)
             self.warning(msg)
-            # ignore widget later too
-            self.blacklisted_widgets[sub_obj] = 1
             return None, None
 
         return klass, builder
 
     def add_sizeritem(self, toplevel, sizer, obj):
         """Writes the code to add the object 'obj' to the sizer 'sizer' in the 'toplevel' object.
-        All widgets in L{blacklisted_widgets} are ignored; template is self.tmpl_sizeritem"""
-
-        # don't process widgets listed in blacklisted_widgets
-        if obj in self.blacklisted_widgets:
-            return
+        template is self.tmpl_sizeritem"""
 
         # the name attribute of a spacer is already formatted "<width>, <height>".
         # This string can simply inserted in Add() call.

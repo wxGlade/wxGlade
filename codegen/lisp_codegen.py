@@ -316,7 +316,7 @@ class LispCodeWriter(BaseLangCodeWriter, wcodegen.LispMixin):
         # get top level source code object and the widget builder instance
         klass, builder = self._add_object_init(sub_obj)
         if not klass or not builder:
-            return
+            return False
 
         if sub_obj.name not in ("spacer","sizerslot"):
             self.class_lines.append( self._format_name(sub_obj.name) )
@@ -332,6 +332,7 @@ class LispCodeWriter(BaseLangCodeWriter, wcodegen.LispMixin):
             self.dependencies['(use-package :wxMenu)'] = 1
 
         BaseLangCodeWriter.add_object(self, sub_obj)
+        return True
 
     def add_sizeritem(self, toplevel, sizer, obj):
         # XXX remove this hack

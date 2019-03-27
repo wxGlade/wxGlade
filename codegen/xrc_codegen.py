@@ -359,6 +359,7 @@ class XRCCodeWriter(BaseLangCodeWriter, wcodegen.XRCMixin):
             top_obj.xrc = top_xrc
             self.xrc_objects[top_obj] = top_xrc
         top_obj.xrc.children.append(xrc_obj)
+        return True
 
     def add_sizeritem(self, unused, sizer, obj):
         "Adds a sizeritem to the XRC tree. The first argument is unused."

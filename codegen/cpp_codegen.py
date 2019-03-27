@@ -894,7 +894,7 @@ class CPPCodeWriter(BaseLangCodeWriter, wcodegen.CppMixin):
         # get top level source code object and the widget builder instance
         klass, builder = self._add_object_init(sub_obj)
         if not klass or not builder:
-            return
+            return False
 
         try:
             init, ids, post = builder.get_code(sub_obj)
@@ -945,6 +945,7 @@ class CPPCodeWriter(BaseLangCodeWriter, wcodegen.CppMixin):
             if sub_obj.base in self.obj_builders:
                 headers = getattr(self.obj_builders[sub_obj.base], 'import_modules', [])
                 klass.dependencies.extend(headers)
+        return True
 
     def generate_code_event_handler(self, code_obj, is_new, tab, prev_src, event_handlers):
         """Generate the event handler stubs

@@ -1,16 +1,6 @@
 """\
 Python code generator
 
-How the code is generated: every time the end of an object is reached during
-the parsing of the xml tree, either the function 'add_object' or the function
-'add_class' is called: the latter when the object is a toplevel one, the former
-when it is not. In the last case, 'add_object' calls the appropriate ``writer''
-function for the specific object, found in the 'obj_builders' dict. Such
-function accepts one argument, the CodeObject representing the object for
-which the code has to be written, and returns 3 lists of strings, representing
-the lines to add to the '__init__', '__set_properties' and '__do_layout'
-methods of the parent object.
-
 @copyright: John Dubery
 @copyright: 2002-2007 Alberto Griggio
 @copyright: 2012-2016 Carsten Grohmann
@@ -159,12 +149,6 @@ class SourceFileContent(BaseSourceFileContent):
             return class_name
 
 
-
-#class WidgetHandler(BaseWidgetHandler):
-    #pass
-
-
-
 class PythonCodeWriter(BaseLangCodeWriter, wcodegen.PythonMixin):
     "Code writer class for writing Python code out of the designed GUI elements"
 
@@ -291,6 +275,7 @@ from %(top_win_module)s import %(top_win_class)s\n\n"""
         BaseLangCodeWriter.add_app(self, app, top_win)
 
     def generate_code_ctor(self, code_obj, is_new, tab):
+        # generate code for the class constructor, including all children
         code_lines = []
         write = code_lines.append
 
