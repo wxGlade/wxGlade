@@ -23,11 +23,10 @@ class BasePythonSizerBuilder(BaseSizerBuilder):
 
     def _get_wparent(self, obj):
         window = obj.parent_window
-        if not window.IS_CLASS:
-            parent = 'self.%s' % window.name
+        if not window.IS_TOPLEVEL:
+            return 'self.%s' % window.name
         else:
-            parent = 'self'
-        return parent
+            return 'self'
 
 
 
