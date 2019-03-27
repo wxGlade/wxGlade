@@ -119,34 +119,6 @@ class BaseSourceFileContent(object):
         self._logger = logging.getLogger(self.__class__.__name__)
 
 
-
-#class BaseWidgetHandler(object):
-    #"Interface the various code generators for the widgets must implement"
-
-    #import_modules = []  # List of modules to import (eg. ['use Wx::Grid;\n'])
-
-    #def __init__(self):
-        #"Initialise instance variables"
-        #self.import_modules = []
-
-    #def get_code(self, obj):
-        #"""Returns initial and final code for non-toplevel objects/classes."""
-        #return [], []
-
-    #def get_properties_code(self, obj):
-        #"""Returns a list of strings with the code to set properties etc.
-        #Called on its own only for toplevel classes."""
-        #return []
-
-    #def get_init_code(self, obj):
-        #"""Called on its own only for toplevel objects/classes."""
-        #return []
-
-    #def get_layout_code(self, obj):
-        #"""Returns code for the final code of toplevel objects (classes)."""
-        #return []
-
-
 class ClassLines(object):
     "Stores the lines of source code for a custom class"
     def __init__(self):
