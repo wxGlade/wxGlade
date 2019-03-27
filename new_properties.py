@@ -14,6 +14,10 @@ from collections import OrderedDict
 import re, sys, os
 import wx
 
+if wx.Platform != '__WXMSW__':
+    import wx.lib.stattext
+
+
 class _DefaultArgument(object):
     pass
 _DefaultArgument = _DefaultArgument()
@@ -272,9 +276,10 @@ class Property(object):
 
     # editor helpers
     def _get_label(self, label, panel):
-        import wx.lib.stattext
         width, height = panel.GetTextExtent(label)
         width = max(width, config.label_width)
+        if wx.Platform == '__WXMSW__':
+            return wx.StaticText( panel, -1, label, size=(width,height) )
         return wx.lib.stattext.GenStaticText( panel, -1, label, size=(width,height) )
 
     def on_focus(self, event=None):
