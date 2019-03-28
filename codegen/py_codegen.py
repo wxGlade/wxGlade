@@ -253,9 +253,6 @@ from %(top_win_module)s import %(top_win_class)s\n\n"""
             ret.append('')
         return '\n'.join(ret)
 
-    def __init__(self):
-        BaseLangCodeWriter.__init__(self)
-
     def init_lang(self, app):
         if self.preview and compat.PYTHON2:
             self.header_lines.append('from __future__ import print_function\n')
@@ -397,10 +394,9 @@ from %(top_win_module)s import %(top_win_class)s\n\n"""
             return '', self.cn('wxID_ANY')
         id = str(id)
         tokens = id.split('=', 1)
-        if len(tokens) == 2:
-            name, val = tokens
-        else:
+        if len(tokens) != 2:
             return '', self.cn(tokens[0])   # we assume name is declared elsewhere
+        name, val = tokens
         if not name:
             return '', self.cn(val)
         name = name.strip()
@@ -492,18 +488,15 @@ from %(top_win_module)s import %(top_win_class)s\n\n"""
         return obj.name
 
     def _format_import(self, klass):
-        stmt = 'from %s import %s\n' % (klass, self.get_class(klass))
-        return stmt
+        return 'from %s import %s\n' % (klass, self.get_class(klass))
 
     def _get_class_filename(self, klass):
-        filename = os.path.join( self.out_dir, klass.replace('.', os.sep) + '.py' )
-        return filename
+        return os.path.join( self.out_dir, klass.replace('.', os.sep) + '.py' )
 
     def format_generic_access(self, obj):
         if obj.IS_CLASS:
             return 'self'
-        else:
-            return self._format_classattr(obj)
+        return self._format_classattr(obj)
 
 
 writer = PythonCodeWriter()  # The code writer is an instance of L{PythonCodeWriter}.

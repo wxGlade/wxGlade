@@ -2,8 +2,8 @@
 XRC code generator
 
 Generates the xml code for the app in XRC format.
-Calls the appropriate ``writers'' of the various objects. These functions
-return an instance of XrcObject
+Calls the appropriate ``writers'' of the various objects. These functions return an instance of XrcObject.
+To be done: write XRC directly instead of using BaseLangCodeWriter as base.
 
 @copyright: 2002-2007 Alberto Griggio
 @copyright: 2012-2016 Carsten Grohmann

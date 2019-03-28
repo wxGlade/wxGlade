@@ -1,16 +1,6 @@
 """\
 Lisp code generator
 
-How the code is generated: every time the end of an object is reached during
-the parsing of the xml tree, either the function 'add_object' or the function
-'add_class' is called: the latter when the object is a toplevel one, the former
-when it is not. In the last case, 'add_object' calls the appropriate ``writer''
-function for the specific object, found in the 'obj_builders' dict. Such
-function accepts one argument, the CodeObject representing the object for
-which the code has to be written, and returns 3 lists of strings, representing
-the lines to add to the '__init__', '__set_properties' and '__do_layout'
-methods of the parent object.
-
 @copyright: 2005 Surendra K Singhi <efuzzyone@users.sourceforge.net>
 @copyright: 2012-2016 Carsten Grohmann
 @copyright: 2019 Dietmar Schwertberger
@@ -277,6 +267,7 @@ class LispCodeWriter(BaseLangCodeWriter, wcodegen.LispMixin):
             return self.tmpl_gettext_simple
         elif not klass and not self._use_gettext:
             return self.tmpl_simple
+
     def init_lang(self, app_attrs):
         self.class_lines = []
 
@@ -345,6 +336,7 @@ class LispCodeWriter(BaseLangCodeWriter, wcodegen.LispMixin):
         try:
             BaseLangCodeWriter.add_sizeritem( self, toplevel, sizer, obj )
         finally:
+            # restore template
             self.tmpl_sizeritem = '(wxSizer_AddWindow (%s obj) (%s obj) %s %s %s nil)\n'
 
     def generate_code_background(self, obj):
@@ -410,45 +402,13 @@ class LispCodeWriter(BaseLangCodeWriter, wcodegen.LispMixin):
         for l in builder.get_properties_code(code_obj):
             write(tab + l)
 
-        for l in self.classes[code_obj].init:
-            write(tab + l)
-        for l in self.classes[code_obj].final:
+        for l in self.classes[code_obj].init + self.classes[code_obj].final:
             write(tab + l)
 
         for l in builder.get_layout_code(code_obj):
             write(tab + l)
 
         return code_lines
-
-        ## classes[code_obj.klass].deps now contains a mapping of child to
-        ## parent for all children we processed...
-        #object_order = []
-        #for obj in self.classes[code_obj].child_order:
-            ## Don't add it again if already present
-            #if obj in object_order:
-                #continue
-
-            #object_order.append(obj)
-
-            ## Insert parent and ancestor objects before the current object
-            #current_object = obj
-            #for child, parent in self.classes[code_obj.klass].deps[:]:
-                #if child is current_object:
-                    #if parent not in object_order:
-                        #idx = object_order.index(current_object)
-                        #object_order.insert(idx, parent)
-                    #current_object = parent
-
-                    ## We processed the dependency: remove it
-                    #self.classes[code_obj.klass].deps.remove((child, parent))
-
-        ## Write out the initialisation in the order we just generated
-        #for obj in object_order:
-            #if obj in self.classes[code_obj.klass].init_lines:
-                #for l in self.classes[code_obj.klass].init_lines[obj]:
-                    #write(tab + l)
-
-        #return code_lines
 
     def generate_code_event_bind(self, code_obj, tab, event_handlers):
         code_lines = []
@@ -484,10 +444,9 @@ class LispCodeWriter(BaseLangCodeWriter, wcodegen.LispMixin):
                 return '', self.cn("wxID_" + obj.stockitem)
             return '', self.cn('wxID_ANY')
         tokens = id.split('=', 1)
-        if len(tokens) == 2:
-            name, val = tokens
-        else:
+        if len(tokens) != 2:
             return '', self.cn(tokens[0])   # we assume name is declared elsewhere
+        name, val = tokens
         if not name:
             return '', self.cn(val)
         name = name.strip()
@@ -505,14 +464,11 @@ class LispCodeWriter(BaseLangCodeWriter, wcodegen.LispMixin):
         objname = self.format_generic_access(obj)
         size = obj.properties["size"].get_string_value()
         use_dialog_units = (size[-1] == 'd')
-        if not obj.parent_window:
-            method = 'wxWindow_SetSize'
-        else:
-            method = 'SetMinSize'
+        method = 'SetMinSize'  if obj.parent_window else  'wxWindow_SetSize'
+
         if use_dialog_units:
             return '(%s %s(%s(%s (%s))))\n' % ( method, objname, self.cn('wxDLG_SZE'), objname, size[:-1] )
-        else:
-            return '%s.%s((%s))\n' % (objname, method, size)
+        return '%s.%s((%s))\n' % (objname, method, size)
 
     def _quote_str(self, s):
         if self._use_gettext:
@@ -540,8 +496,7 @@ class LispCodeWriter(BaseLangCodeWriter, wcodegen.LispMixin):
         return 'slot-%s' % self._format_name(obj.name)
 
     def _format_import(self, klass):
-        stmt = '(require "%s")\n' % klass
-        return stmt
+        return '(require "%s")\n' % klass
 
     def _format_style(self, style, code_obj):
         builder = self.obj_builders[code_obj.base]
@@ -563,18 +518,15 @@ class LispCodeWriter(BaseLangCodeWriter, wcodegen.LispMixin):
         return stmt
 
     def _get_class_filename(self, klass):
-        filename = os.path.join( self.out_dir, klass.replace('.', '_') + '.lisp' )
-        return filename
+        return os.path.join( self.out_dir, klass.replace('.', '_') + '.lisp' )
 
     def format_generic_access(self, obj):
         if obj.IS_CLASS:
             return '(slot-top-window obj)'
-        else:
-            obj_name = self._format_name(obj.name)
-            if self.store_as_attr(obj):
-                return '(slot-%s obj)' % obj_name
-            else:
-                return obj_name
+        obj_name = self._format_name(obj.name)
+        if self.store_as_attr(obj):
+            return '(slot-%s obj)' % obj_name
+        return obj_name
 
     def _format_name(self, name):
         return name.replace('_', '-')

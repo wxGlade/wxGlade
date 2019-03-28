@@ -1546,8 +1546,7 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
     def copy(self):
         """Return a deep copy of the current instance.
         The instance will be reinitialised with defaults automatically in L{__setstate__()}."""
-        new_codegen = copy.deepcopy(self)
-        return new_codegen
+        return copy.deepcopy(self)
 
     def __getstate__(self):
         """Return the state dict of this instance except the L{_logger} and the L{classes} attributes.
@@ -1560,10 +1559,6 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
     def __setstate__(self, state):
         """Update the instance using values from dict 'state'.
         The code generator will be reinitialised after the state has been updated; see L{new_project()}"""
-
         self.__dict__.update(state)
-
-        # re-initialise logger instance deleted from __getstate__ and instance variables
         self._logger = logging.getLogger(self.__class__.__name__)
-        #self.new_project()
 

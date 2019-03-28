@@ -1,16 +1,6 @@
 """\
 C++ code generator
 
-How the code is generated: every time the end of an object is reached during
-the parsing of the xml tree, either the function 'add_object' or the function
-'add_class' is called: the latter when the object is a toplevel one, the former
-when it is not. In the last case, 'add_object' calls the appropriate ``writer''
-function for the specific object, found in the 'obj_builders' dict. Such
-function accepts one argument, the CodeObject representing the object for
-which the code has to be written, and returns 3 lists of strings, representing
-the lines to add to the '__init__', '__set_properties' and '__do_layout'
-methods of the parent object.
-
 @copyright: 2002-2007 Alberto Griggio
 @copyright: 2012-2016 Carsten Grohmann
 @copyright: 2017-2019 Dietmar Schwertberger
@@ -1034,10 +1024,9 @@ void %(klass)s::%(handler)s(%(evt_type)s &event)  // wxGlade: %(klass)s.<event_h
             return '', 'wxID_ANY'
         id = str(id)
         tokens = id.split('=', 1)
-        if len(tokens) == 2:
-            name, val = tokens
-        else:
+        if len(tokens) != 2:
             return '', tokens[0]   # we assume name is declared elsewhere
+        name, val = tokens
         if not name:
             return '', val
         name = name.strip()
@@ -1060,31 +1049,24 @@ void %(klass)s::%(handler)s(%(evt_type)s &event)  // wxGlade: %(klass)s.<event_h
             name2 = obj.name
         size = obj.properties["size"].get_string_value()
         use_dialog_units = (size[-1] == 'd')
-        if not obj.parent_window:
-            method = 'SetSize'
-        else:
-            method = 'SetMinSize'
+        method = 'SetMinSize'  if obj.parent_window else  'SetSize'
+
         if use_dialog_units:
             return '%s%s(wxDLG_UNIT(%s, wxSize(%s)));\n' % (objname, method, name2, size[:-1])
-        else:
-            return '%s%s(wxSize(%s));\n' % (objname, method, size)
+        return '%s%s(wxSize(%s));\n' % (objname, method, size)
 
     def quote_path(self, s):
-        path = super(CPPCodeWriter, self).quote_path(s)
-        # path starts and ends with double quotes already
-        return 'wxT(%s)' % path
+        return 'wxT(%s)' % super(CPPCodeWriter, self).quote_path(s)
 
     def _quote_str(self, s):
         if self._use_gettext:
             return '_("%s")' % s
-        else:
-            return 'wxT("%s")' % s
+        return 'wxT("%s")' % s
 
     def format_generic_access(self, obj):
         if obj.IS_CLASS:
             return ''
-        else:
-            return '%s->' % obj.name
+        return '%s->' % obj.name
 
     def _format_dependencies(self, dependencies):
         "Format a list of header files for the dependencies output"
@@ -1094,8 +1076,7 @@ void %(klass)s::%(handler)s(%(evt_type)s &event)  // wxGlade: %(klass)s.<event_h
                 dep_list.append('#include "%s.h"\n' % dependency)
             else:
                 dep_list.append('#include %s\n' % dependency)
-        code = self._tagcontent( '::dependencies', dep_list )
-        return code
+        return self._tagcontent( '::dependencies', dep_list )
 
 writer = CPPCodeWriter()  # The code writer is an instance of CPPCodeWriter
 
