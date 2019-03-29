@@ -199,7 +199,8 @@ def add_object(event):
     adding_sizer = "Sizer" in widget_to_add
 
     btn = event.GetEventObject()
-    btn.SetValue(True)
+    if compat.version >= (3,0):
+        btn.SetValue(True)
     palette.reset_togglebuttons(keep=btn)
 
     msg = "Adding %s; click on free (hatched) sizer slot to place it"
