@@ -56,34 +56,17 @@ history = None
 ########################################################################################################################
 # application initialization
 
+# Dictionary of language name -> BaseLangCodeWriter objects used to generate the code in a given language.
 code_writers = {}
-"""Dictionary of language name -> BaseLangCodeWriter objects used to generate the code in a given language.
-
-@note: A code writer object must implement this interface:
- - new_project(out_path, multi_files)
- - language
- - setup
- - add_widget_handler(widget_name, handler[, properties_handler])
- - add_property_handler(property_name, handler[, widget_name])
- - add_object(top_obj, sub_obj)
- - add_class(obj)
- - add_sizeritem(toplevel, sizer, obj_name, option, flag, border)
- - add_app(app_attrs, top_win_class)
- - ...
-"""
 
 
 def init_codegen():
     """Load available code generators, built-in and user widgets as well as sizers
 
-    @return: In GUI-Mode: a dict with module sections as key and assigned list of wxBitmapButtons, the dict is empty
-             in batch mode.
-    @rtype:  OrderedDict
+    Returns OrderedDict with module sections as key and assigned list of wxBitmapButtons in GUI mode.
+    The dict is empty in batch mode.
 
-    @see: L{load_config()}
-    @see: L{load_code_writers()}
-    @see: L{load_widgets()}
-    @see: L{load_sizers()}"""
+    see: load_config() load_code_writers(), load_widgets(), load_sizers()"""
     # process generic related style attributes
     style_attrs_to_sets(config.widget_config['generic_styles'])
     load_config()

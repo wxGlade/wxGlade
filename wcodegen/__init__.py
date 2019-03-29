@@ -41,6 +41,12 @@ class BaseCodeWriter(object):
         """Returns code for the final code of toplevel objects (classes)."""
         return []
 
+    def get_code_per_child(self, obj, child):
+        """Returns code that will be inserted after the child code; e.g. for adding element to a sizer.
+        It's placed before the final code returned from get_code()."""
+        return []
+        # XXX notebook, splitter
+
 
     def __getstate__(self):
         state = self.__dict__.copy()

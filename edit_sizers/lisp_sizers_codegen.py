@@ -38,6 +38,27 @@ class BaseLispSizerBuilder(BaseSizerBuilder):
         return parent
 
 
+    def get_code_per_child(self, obj, child):
+        """Returns code that will be inserted after the child code; e.g. for adding element to a sizer.
+        It's placed before the final code returned from get_code()."""
+
+        if child.classname in ("spacer","sizerslot"):  # spacer and slot are adding itself to the sizer
+            return []
+        obj_name = self.codegen._format_classattr(child)
+        sizer_name = self.codegen._format_classattr(obj)
+
+        flag = child.properties["flag"].get_string_value()  # as string, joined with "|"
+        flag = self.codegen.cn_f(flag) or '0'
+
+        if child.IS_SIZER:
+            tmpl_sizeritem = '(wxSizer_AddSizer (%s obj) (%s obj) %s %s %s nil)\n'
+        else:
+            tmpl_sizeritem = '(wxSizer_AddWindow (%s obj) (%s obj) %s %s %s nil)\n'
+        stmt = tmpl_sizeritem % ( sizer_name, obj_name, child.proportion, flag, child.border )
+
+        return [stmt]
+
+
 class LispBoxSizerBuilder(BaseLispSizerBuilder):
     klass = 'wxBoxSizer'
 

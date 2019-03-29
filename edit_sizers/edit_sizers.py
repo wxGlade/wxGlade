@@ -206,6 +206,40 @@ class BaseSizerBuilder(object):
         ret[-1] = growable + ret[-1]
         return ret
 
+    def get_code_per_child(self, obj, child):
+        """Returns code that will be inserted after the child code; e.g. for adding element to a sizer.
+        It's placed before the final code returned from get_code()."""
+
+        if child.classname in ("spacer","sizerslot"):  # spacer and slot are adding itself to the sizer
+            return []
+        
+        #if child.IS_SLOT or obj.classname=="spacer":
+            #if obj.classname=="slot":
+                #return []
+                    #if obj.IS_SLOT or :
+            #if obj.classname!="slot":  # "slot" has no code generator
+                #self.add_object(obj)
+
+            #raise   ValueError("XXX continue here")
+
+        # the name attribute of a spacer is already formatted "<width>, <height>".
+        # This string can simply inserted in Add() call.
+        obj_name = self.codegen._format_classattr(child)
+
+        # check if sizer has to store as a class attribute
+        sizer_name = self.codegen._format_classattr(obj)
+
+        flag = child.properties["flag"].get_string_value()  # as string, joined with "|"
+        flag = self.codegen.cn_f(flag) or '0'
+
+        if self.klass!="wxGridBagSizer":
+            stmt = self.codegen.tmpl_sizeritem % ( sizer_name, obj_name, child.proportion, flag, child.border )
+        else:
+            pos = obj._get_row_col(child.pos)
+            stmt = self.codegen.tmpl_gridbagsizeritem % ( sizer_name, obj_name, pos, child.span, flag, child.border )
+
+        return [stmt]
+
 
 class SlotGenerator(object):
     # generic code generator; as a slot does not have flags etc. we don't need BaseWidgetBuilder etc.

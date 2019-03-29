@@ -484,19 +484,17 @@ class CPPCodeWriter(BaseLangCodeWriter, wcodegen.CppMixin):
         BaseLangCodeWriter.add_app(self, app_attrs, top_win)
 
     def add_class(self, code_obj):
-
         assert code_obj not in self.classes
-
         try:
             builder = self.obj_builders[code_obj.base]
         except KeyError:
             self._logger.error('%s', code_obj)
             # this is an error, let the exception be raised; the details are logged by the global exception handler
             raise
-
-        self.classes[code_obj] = self.ClassLines()
+        self.classes[code_obj] = self.ClassLines()  # ClassLines will collect the code lines incl. children
 
     def finalize_class(self, code_obj):
+        # write the collected code for the class and its children
         # shortcuts
         base = code_obj.base
         klass = self.classes[code_obj]
@@ -884,7 +882,7 @@ class CPPCodeWriter(BaseLangCodeWriter, wcodegen.CppMixin):
         # get top level source code object and the widget builder instance
         klass, builder = self._add_object_init(sub_obj)
         if not klass or not builder:
-            return False
+            return None, None
 
         try:
             init, ids, post = builder.get_code(sub_obj)
@@ -934,7 +932,7 @@ class CPPCodeWriter(BaseLangCodeWriter, wcodegen.CppMixin):
             if sub_obj.base in self.obj_builders:
                 headers = getattr(self.obj_builders[sub_obj.base], 'import_modules', [])
                 klass.dependencies.extend(headers)
-        return True
+        return klass, builder
 
     def generate_code_event_handler(self, code_obj, is_new, tab, prev_src, event_handlers):
         """Generate the event handler stubs

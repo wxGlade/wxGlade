@@ -136,12 +136,12 @@ class ClassLines(object):
 class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
     """Dictionary of objects used to generate the code in a given language.
 
+    XXX the following is outdated:
     A code writer object *must* implement those interface and set those variables:
       - init_lang(), init_files(), finalize()
       - wcodegen.BaseLanguageMixin.language
       - add_app(), add_class(), add_object()
       - add_property_handler()
-      - add_sizeritem(}
       - add_widget_handler()
       - generate_code_background(), generate_code_font(), generate_code_foreground()
       - generate_code_id()
@@ -266,7 +266,7 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
     tmpl_overwrite = "%(comment_sign)s This is an automatically generated file.\n" \
                      "%(comment_sign)s Manual changes will be overwritten without warning!\n\n"
 
-    tmpl_sizeritem = ''           # Template for adding a widget to a sizer; see add_sizeritem()
+    tmpl_sizeritem = ''           # Template for adding a widget to a sizer
     tmpl_spacersize = '(%s, %s)'  # Python and Lisp need the braces
     tmpl_style = ''               # Template for setting style in constructor; see _format_style()
     tmpl_toplevel_style = ''      # same for a toplevel object
@@ -444,12 +444,7 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
         if obj.IS_SLOT or obj.classname=="spacer":
             if obj.classname!="slot":  # "slot" has no code generator
                 self.add_object(obj)
-                if self.language=="XRC" and obj.classname in ("spacer", "sizerslot"):
-                    self.add_sizeritem(obj.parent_class_object, obj.parent, obj)
             return
-
-        parent = obj.parent
-        parent_class_object = obj.parent_class_object  # used for adding to this object's sizer
 
         can_be_toplevel = obj.__class__.__name__ in common.toplevels
 
@@ -481,26 +476,25 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
             if IS_CLASS:
                 self.add_class(obj)
             if not obj.IS_TOPLEVEL:
-                added = self.add_object(obj)  # added can be False if the widget is not supported
+                klass, builder = self.add_object(obj)
             else:
-                added = False
+                klass = builder = None
 
             # then the children
             for child in obj.get_all_children():
                 assert obj.children.count(child)<=1
-                self._generate_code(child)
+                added = self._generate_code(child)
+                if builder and added:
+                    klass.init += builder.get_code_per_child(obj, child)
 
             if IS_CLASS:
                 self.finalize_class(obj)
 
-            # check whether the object belongs to some sizer; if applicable, add it to the sizer at the top of the stack
-            if added and parent.IS_SIZER:
-                if obj.classname not in ("spacer",):  # spacer and slot are adding itself to the sizer
-                    self.add_sizeritem(parent_class_object, parent, obj)
         finally:
             # XXX handle this in a different way
             if old_class is not None: obj.properties["klass"].set(old_class)
             if old_base  is not None: obj.base = old_base
+        return builder and klass  # False if object has not been added
 
     def generate_code(self, root, widget=None):
         # root must be application.Application instance for now
@@ -508,12 +502,7 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
             if widget is not None and c is not widget: continue # for preview
             self._generate_code(c)
         topwin = [c for c in root.children if c.name==root.top_window]
-        if topwin:
-            topwin = topwin[0]
-        elif root.children:
-            topwin = root.children[0]
-        else:
-            topwin = None
+        topwin = topwin and topwin[0] or root.children and root.children[0] or None
         self.add_app(root, topwin)
 
     def finalize(self):
@@ -842,7 +831,7 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
         # get top level source code object and the widget builder instance
         klass, builder = self._add_object_init(sub_obj)
         if not klass or not builder:
-            return False
+            return None, None
 
         try:
             init, final = builder.get_code(sub_obj)
@@ -878,7 +867,7 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
             klass.dependencies[key] = 1
         for dep in getattr(self.obj_builders.get(sub_obj.base), 'import_modules', []):
             klass.dependencies[dep] = 1
-        return True
+        return klass, builder
 
     def _add_object_init(self, sub_obj):
         "Perform some checks and return the containg class and the code builder"
@@ -920,28 +909,6 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
             return None, None
 
         return klass, builder
-
-    def add_sizeritem(self, toplevel, sizer, obj):
-        """Writes the code to add the object 'obj' to the sizer 'sizer' in the 'toplevel' object.
-        template is self.tmpl_sizeritem"""
-
-        # the name attribute of a spacer is already formatted "<width>, <height>".
-        # This string can simply inserted in Add() call.
-        obj_name = self._format_classattr(obj)
-
-        # check if sizer has to store as a class attribute
-        sizer_name = self._format_classattr(sizer)
-
-        flag = obj.properties["flag"].get_string_value()  # as string, joined with "|"
-        flag = self.cn_f(flag) or '0'
-
-        if sizer.klass!="wxGridBagSizer":
-            stmt = self.tmpl_sizeritem % ( sizer_name, obj_name, obj.proportion, flag, obj.border )
-        else:
-            pos = sizer._get_row_col(obj.pos)
-            stmt = self.tmpl_gridbagsizeritem % ( sizer_name, obj_name, pos, obj.span, flag, obj.border )
-
-        self.classes[toplevel].init.append(stmt)
 
     def add_widget_handler(self, widget_name, handler, *args, **kwds):
         self.obj_builders[widget_name] = handler
@@ -1303,8 +1270,7 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
         # \" -> \\"
         if match.group(0).startswith('\\'):
             return '\\\"'
-        else:
-            return '\\"'
+        return '\\"'
 
     def _file_exists(self, filename):
         "Check if the file exists; separated for debugging purposes"

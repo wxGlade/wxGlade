@@ -157,12 +157,6 @@ class LispCodeWriter(BaseLangCodeWriter, wcodegen.LispMixin):
     class_separator = '.'
     classattr_always = ['wxBoxSizer', 'wxStaticBoxSizer', 'wxGridSizer', 'wxFlexGridSizer']
 
-    #global_property_writers = {
-        #'font':            BaseLangCodeWriter.FontPropertyHandler,
-        #'events':          BaseLangCodeWriter.EventsPropertyHandler,
-        #'extraproperties': BaseLangCodeWriter.ExtraPropertiesPropertyHandler,
-        #}
-
     indent_level_func_body = 2
 
     name_ctor = '__init__'
@@ -309,7 +303,7 @@ class LispCodeWriter(BaseLangCodeWriter, wcodegen.LispMixin):
         # get top level source code object and the widget builder instance
         klass, builder = self._add_object_init(sub_obj)
         if not klass or not builder:
-            return False
+            return None, None
 
         if sub_obj.name not in ("spacer","sizerslot", "SLOT"):
             self.class_lines.append( self._format_name(sub_obj.name) )
@@ -324,20 +318,7 @@ class LispCodeWriter(BaseLangCodeWriter, wcodegen.LispMixin):
         if sub_obj.klass == "wxMenuBar":
             self.dependencies['(use-package :wxMenu)'] = 1
 
-        BaseLangCodeWriter.add_object(self, sub_obj)
-        return True
-
-    def add_sizeritem(self, toplevel, sizer, obj):
-        # XXX remove this hack
-        if obj.IS_SIZER:
-            self.tmpl_sizeritem = '(wxSizer_AddSizer (%s obj) (%s obj) %s %s %s nil)\n'
-        else:
-            self.tmpl_sizeritem = '(wxSizer_AddWindow (%s obj) (%s obj) %s %s %s nil)\n'
-        try:
-            BaseLangCodeWriter.add_sizeritem( self, toplevel, sizer, obj )
-        finally:
-            # restore template
-            self.tmpl_sizeritem = '(wxSizer_AddWindow (%s obj) (%s obj) %s %s %s nil)\n'
+        return BaseLangCodeWriter.add_object(self, sub_obj)
 
     def generate_code_background(self, obj):
         self.dependencies['(use-package :wxColour)'] = 1
