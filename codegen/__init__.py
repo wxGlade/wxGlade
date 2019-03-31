@@ -166,8 +166,8 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
 
      for_version:             wx version we are generating code for (e.g. (2, 8) )
 
-     classes:                 Dictionary that maps the lines of code of a class to the name of such class:
-                               the lines are divided in 3 categories: '__init__', '__set_properties' and '__do_layout'
+     classes:                 Dictionary that maps the lines of code of a class to the name of such class
+
      dependencies:            Module dependencies of all classes
 
      header_lines:            Lines common to all the generated files (import of wxCL, ...)
@@ -508,6 +508,7 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
         for c in root.children or []:
             if widget is not None and c is not widget: continue # for preview
             self._generate_code(None, None, None, c)
+        if not root.IS_ROOT: return
         topwin = [c for c in root.children if c.name==root.top_window]
         topwin = topwin and topwin[0] or root.children and root.children[0] or None
         self.add_app(root, topwin)
@@ -832,35 +833,35 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
                 for line in obuffer:
                     self.output_file.append(line)
 
-    def add_object(self, parent_klass, parent, parent_builder, sub_obj):
-        """Adds the code to build 'sub_obj' to the class body of 'top_obj';
+    def add_object(self, parent_klass, parent, parent_builder, obj):
+        """Adds the code to build 'obj' to the class body in parent_class;
         see _add_object_init(), add_object_format_name()"""
 
-        builder = self._add_object_init(parent_klass, sub_obj)
+        builder = self._add_object_init(parent_klass, obj)
         if not builder: return None
 
         try:
-            init, final = builder.get_code(sub_obj)
+            init, final = builder.get_code(obj)
         except:
-            self._logger.error('%s', sub_obj)
+            self._logger.error('%s', obj)
             # this is an error, let the exception be raised the details are logged by the global exception handler
             # XXX create handler
             raise
 
-        if not sub_obj.IS_SIZER:  # the object is a wxWindow instance
+        if not obj.IS_SIZER:  # the object is a wxWindow instance
             if not self.preview:
-                if "extracode_pre" in sub_obj.properties and sub_obj.extracode_pre:
-                    init = sub_obj.properties["extracode_pre"].get_lines() + init
-                if "extracode_post" in sub_obj.properties and sub_obj.extracode_post:
-                    init += sub_obj.properties["extracode_post"].get_lines()
+                if "extracode_pre" in obj.properties and obj.extracode_pre:
+                    init = obj.properties["extracode_pre"].get_lines() + init
+                if "extracode_post" in obj.properties and obj.extracode_post:
+                    init += obj.properties["extracode_post"].get_lines()
 
             mycn = getattr(builder, 'cn', self.cn)
-            for win_id, evt, handler, evt_type in builder.get_event_handlers(sub_obj):
+            for win_id, evt, handler, evt_type in builder.get_event_handlers(obj):
                 parent_klass.event_handlers.append( (win_id, mycn(evt), handler, evt_type) )
 
             # try to see if there's some extra code to add to this class
             if not self.preview:
-                extra_code = getattr(builder, 'extracode', getattr(sub_obj, 'extracode', "") or "" )
+                extra_code = getattr(builder, 'extracode', getattr(obj, 'extracode', "") or "" )
                 if extra_code and not extra_code in parent_klass.extra_code:
                     parent_klass.extra_code.append(extra_code)
 
@@ -868,32 +869,29 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
         parent_klass.init.extend(init)
 
         if parent_builder:  # add to sizer or notebook
-            parent_klass.init.extend( parent_builder.get_code_per_child(parent, sub_obj) )
+            parent_klass.init.extend( parent_builder.get_code_per_child(parent, obj) )
 
         parent_klass.final[:0] = final
-        if self.multiple_files and (sub_obj.IS_CLASS and sub_obj.base != sub_obj.klass):
-            key = self._format_import(sub_obj.klass)
+        if self.multiple_files and (obj.IS_CLASS and obj.base != obj.klass):
+            key = self._format_import(obj.klass)
             parent_klass.dependencies[key] = 1
-        for dep in getattr(self.obj_builders.get(sub_obj.base), 'import_modules', []):
+        for dep in getattr(self.obj_builders.get(obj.base), 'import_modules', []):
             parent_klass.dependencies[dep] = 1
         return builder
 
-    def _add_object_init(self, parent_klass, sub_obj):
+    def _add_object_init(self, parent_klass, obj):
         "Perform some checks and return the containg class and the code builder"
         # initialise internal variables first
 
-        # Check for proper source code instance
-        top_obj = sub_obj.parent_class_object  # starts with parent
-
         # Check for widget builder object
         try:
-            builder = self.obj_builders[sub_obj.base]
+            builder = self.obj_builders[obj.base]
         except KeyError:
             # no code generator found: write a comment about it
-            name = getattr(sub_obj, "name", "None")
+            name = getattr(obj, "name", "None")
             name = self._format_name(name)
-            msg = _('Code for instance "%s" of "%s" not generated: no suitable writer found') % (name, sub_obj.klass )
-            self._source_warning(parent_klass, msg, sub_obj)
+            msg = _('Code for instance "%s" of "%s" not generated: no suitable writer found') % (name, obj.klass )
+            self._source_warning(parent_klass, msg, obj)
             self.warning(msg)
             return None
 
@@ -907,10 +905,10 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
             msg = _('Code for instance "%(name)s" of "%(klass)s" was\n'
                     'not created, because the widget is not available for wx version %(requested_version)s.\n'
                     'It is available for wx versions %(supported_versions)s only.') % {
-                        'name':  self._format_name(sub_obj.name), 'klass': sub_obj.klass,
+                        'name':  self._format_name(obj.name), 'klass': obj.klass,
                         'requested_version':  str(misc.format_for_version(self.for_version)),
                         'supported_versions': ', '.join(supported_versions) }
-            self._source_warning(parent_klass, msg, sub_obj)
+            self._source_warning(parent_klass, msg, obj)
             self.warning(msg)
             return None
 
