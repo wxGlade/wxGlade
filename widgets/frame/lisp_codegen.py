@@ -49,6 +49,3 @@ def initialize():
         awh = lispgen.register_widget_code_generator
         awh('wxFrame', LispFrameCodeGenerator(klass))
         awh('wxMDIChildFrame', LispMDIChildFrameCodeGenerator(klass))
-
-        #aph = lispgen.add_property_handler
-        #aph('menubar', lispgen.DummyPropertyHandler)

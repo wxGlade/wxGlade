@@ -100,4 +100,4 @@ def initialize():
     klass = 'wxToolBar'
     common.class_names['EditToolBar'] = klass
     common.toplevels['EditToolBar'] = 1
-    common.register('perl', klass, PerlCodeGenerator(klass), 'tools')#, ToolsHandler)
+    common.register('perl', klass, PerlCodeGenerator(klass))

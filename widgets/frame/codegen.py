@@ -118,9 +118,6 @@ def initialize():
         awh('wxFrame', PythonFrameCodeGenerator(klass))
         awh('wxMDIChildFrame', PythonFrameCodeGenerator(klass))
 
-        #aph = pygen.add_property_handler
-        #aph('menubar', pygen.DummyPropertyHandler)
-
     xrcgen = common.code_writers.get('XRC')
     if xrcgen:
         awh = xrcgen.register_widget_code_generator
@@ -132,6 +129,3 @@ def initialize():
         awh = cppgen.register_widget_code_generator
         awh('wxFrame', CppFrameCodeGenerator(klass))
         awh('wxMDIChildFrame', CppMDIChildFrameCodeGenerator(klass))
-
-        #aph = cppgen.add_property_handler
-        #aph('menubar', cppgen.DummyPropertyHandler)

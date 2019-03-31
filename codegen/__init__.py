@@ -141,7 +141,6 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
       - init_lang(), init_files(), finalize()
       - wcodegen.BaseLanguageMixin.language
       - add_app(), add_class(), add_object()
-      - add_property_handler()
       - register_widget_code_generator()
       - generate_code_background(), generate_code_font(), generate_code_foreground()
       - generate_code_id()

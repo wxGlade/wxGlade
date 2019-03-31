@@ -287,22 +287,17 @@ def encode_to_unicode(item, encoding=None):
     return item
 
 
-def register(lang, klass_name, code_writer, property_name=None, property_handler=None, widget_name=None):
-    """Initialise and register widget code generator instance. The property handler will registered additionally.
+def register(lang, klass_name, code_writer):
+    """Initialise and register widget code generator instance.
 
     lang:             Code code_writer language
     klass_name:       wxWidget class name
     code_writer:      Code generator class
-    property_name:    Property name
-    property_handler: Property handler
-    widget_name:      Widget name
 
-    see: L{codegen.BaseLangCodeWriter.register_widget_code_generator(), codegen.BaseLangCodeWriter.add_property_handler()"""
+    see: codegen.BaseLangCodeWriter.register_widget_code_generator()"""
     codegen = code_writers[lang]
     if codegen:
         codegen.register_widget_code_generator(klass_name, code_writer)
-        if property_name and property_handler:
-            codegen.add_property_handler(property_name, property_handler, widget_name)
 
 
 ########################################################################################################################

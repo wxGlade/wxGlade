@@ -53,9 +53,4 @@ def initialize():
 
     plgen = common.code_writers.get('perl')
     if plgen:
-        plgen.register_widget_code_generator('wxStatusBar',
-                                 PerlStatusBarCodeGenerator(klass))
-
-        #aph = plgen.add_property_handler
-        #aph('fields', StatusFieldsHandler)
-        #aph('statusbar', plgen.DummyPropertyHandler)
+        plgen.register_widget_code_generator('wxStatusBar', PerlStatusBarCodeGenerator(klass))

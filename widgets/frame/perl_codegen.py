@@ -53,6 +53,3 @@ def initialize():
         awh = plgen.register_widget_code_generator
         awh('wxFrame', PerlFrameCodeGenerator(klass))
         awh('wxMDIChildFrame', PerlMDIChildFrameCodeGenerator(klass))
-
-        #aph = plgen.add_property_handler
-        #aph('menubar', plgen.DummyPropertyHandler)

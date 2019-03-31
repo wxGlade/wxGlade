@@ -99,19 +99,10 @@ def initialize():
     if pygen:
         pygen.register_widget_code_generator('wxStatusBar', PythonStatusBarGenerator(klass))
 
-        #aph = pygen.add_property_handler
-        #aph('statusbar', pygen.DummyPropertyHandler)
-        #aph('fields', StatusFieldsHandler)
-
     xrcgen = common.code_writers.get('XRC')
     if xrcgen:
         xrcgen.register_widget_code_generator('wxStatusBar', xrc_statusbar_code_generator)
-        #xrcgen.add_property_handler('fields', StatusFieldsHandler)
 
     cppgen = common.code_writers.get('C++')
     if cppgen:
         cppgen.register_widget_code_generator('wxStatusBar', CppStatusBarGenerator(klass))
-
-        #aph = cppgen.add_property_handler
-        #aph('fields', StatusFieldsHandler)
-        #aph('statusbar', cppgen.DummyPropertyHandler)
