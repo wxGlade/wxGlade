@@ -474,45 +474,41 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
             obj.base = obj._restore_data["base"]
         del obj._restore_data
 
-    def _generate_code(self, obj):
+    def _generate_code(self, parent_klass, parent, parent_builder, obj):
         # recursively generate code, for anything except application.Application
         # for toplevel widgets or with class different from wx... a class will be added
 
         if obj.IS_SLOT or obj.classname=="spacer":
             if obj.classname!="slot":  # "slot" has no code generator
-                self.add_object(obj)
+                self.add_object(parent_klass, parent, parent_builder, obj)
             return
 
         obj._restore_data = {}  # XXX remove this hack: _is_class currently will modify some attributes to be restored later
         try:
             IS_CLASS = self._is_class(obj)
             # first the item
-            if IS_CLASS:
-                self.add_class(obj)
+            klass = IS_CLASS and self.add_class(obj) or None
             if not obj.IS_TOPLEVEL:
-                klass, builder = self.add_object(obj)
+                builder = self.add_object(parent_klass, parent, parent_builder, obj)
             else:
-                klass = builder = None
+                builder = None
 
             # then the children
             for child in obj.get_all_children():
                 assert obj.children.count(child)<=1
-                added = self._generate_code(child)
-                if builder and added:
-                    klass.init += builder.get_code_per_child(obj, child)
+                self._generate_code(klass or parent_klass, obj, builder, child)
 
             if IS_CLASS:
                 self.finalize_class(obj)
 
         finally:
             self._restore_obj(obj)
-        return builder and klass  # False if object has not been added
 
     def generate_code(self, root, widget=None):
         # root must be application.Application instance for now
         for c in root.children or []:
             if widget is not None and c is not widget: continue # for preview
-            self._generate_code(c)
+            self._generate_code(None, None, None, c)
         topwin = [c for c in root.children if c.name==root.top_window]
         topwin = topwin and topwin[0] or root.children and root.children[0] or None
         self.add_app(root, topwin)
@@ -665,7 +661,8 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
                 for m in mods:
                     self._current_extra_modules[m] = 1
 
-        self.classes[code_obj] = self.ClassLines()
+        ret = self.classes[code_obj] = self.ClassLines()
+        return ret
 
     def finalize_class(self, code_obj):
         # shortcuts
@@ -836,14 +833,12 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
                 for line in obuffer:
                     self.output_file.append(line)
 
-    def add_object(self, sub_obj):
+    def add_object(self, parent_klass, parent, parent_builder, sub_obj):
         """Adds the code to build 'sub_obj' to the class body of 'top_obj';
         see _add_object_init(), add_object_format_name()"""
 
-        # get top level source code object and the widget builder instance
-        klass, builder = self._add_object_init(sub_obj)
-        if not klass or not builder:
-            return None, None
+        builder = self._add_object_init(parent_klass, sub_obj)
+        if not builder: return None
 
         try:
             init, final = builder.get_code(sub_obj)
@@ -862,34 +857,34 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
 
             mycn = getattr(builder, 'cn', self.cn)
             for win_id, evt, handler, evt_type in builder.get_event_handlers(sub_obj):
-                klass.event_handlers.append( (win_id, mycn(evt), handler, evt_type) )
+                parent_klass.event_handlers.append( (win_id, mycn(evt), handler, evt_type) )
 
             # try to see if there's some extra code to add to this class
             if not self.preview:
                 extra_code = getattr(builder, 'extracode', getattr(sub_obj, 'extracode', "") or "" )
-                if extra_code and not extra_code in klass.extra_code:
-                    klass.extra_code.append(extra_code)
+                if extra_code and not extra_code in parent_klass.extra_code:
+                    parent_klass.extra_code.append(extra_code)
 
-        klass.init.append("\n")
-        klass.init.extend(init)
+        parent_klass.init.append("\n")
+        parent_klass.init.extend(init)
 
-        klass.final[:0] = final
+        if parent_builder:  # add to sizer or notebook
+            parent_klass.init.extend( parent_builder.get_code_per_child(parent, sub_obj) )
+
+        parent_klass.final[:0] = final
         if self.multiple_files and (sub_obj.IS_CLASS and sub_obj.base != sub_obj.klass):
             key = self._format_import(sub_obj.klass)
-            klass.dependencies[key] = 1
+            parent_klass.dependencies[key] = 1
         for dep in getattr(self.obj_builders.get(sub_obj.base), 'import_modules', []):
-            klass.dependencies[dep] = 1
-        return klass, builder
+            parent_klass.dependencies[dep] = 1
+        return builder
 
-    def _add_object_init(self, sub_obj):
+    def _add_object_init(self, parent_klass, sub_obj):
         "Perform some checks and return the containg class and the code builder"
         # initialise internal variables first
-        klass = None
-        builder = None
 
         # Check for proper source code instance
         top_obj = sub_obj.parent_class_object  # starts with parent
-        klass = self.classes[top_obj]
 
         # Check for widget builder object
         try:
@@ -899,9 +894,9 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
             name = getattr(sub_obj, "name", "None")
             name = self._format_name(name)
             msg = _('Code for instance "%s" of "%s" not generated: no suitable writer found') % (name, sub_obj.klass )
-            self._source_warning(klass, msg, sub_obj)
+            self._source_warning(parent_klass, msg, sub_obj)
             self.warning(msg)
-            return None, None
+            return None
 
         # check for supported versions
         if hasattr(builder, 'is_widget_supported'):
@@ -916,11 +911,11 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
                         'name':  self._format_name(sub_obj.name), 'klass': sub_obj.klass,
                         'requested_version':  str(misc.format_for_version(self.for_version)),
                         'supported_versions': ', '.join(supported_versions) }
-            self._source_warning(klass, msg, sub_obj)
+            self._source_warning(parent_klass, msg, sub_obj)
             self.warning(msg)
-            return None, None
+            return None
 
-        return klass, builder
+        return builder
 
     def add_widget_handler(self, widget_name, handler, *args, **kwds):
         self.obj_builders[widget_name] = handler

@@ -491,7 +491,8 @@ class CPPCodeWriter(BaseLangCodeWriter, wcodegen.CppMixin):
             self._logger.error('%s', code_obj)
             # this is an error, let the exception be raised; the details are logged by the global exception handler
             raise
-        self.classes[code_obj] = self.ClassLines()  # ClassLines will collect the code lines incl. children
+        ret = self.classes[code_obj] = self.ClassLines()  # ClassLines will collect the code lines incl. children
+        return ret
 
     def finalize_class(self, code_obj):
         # write the collected code for the class and its children
@@ -878,14 +879,13 @@ class CPPCodeWriter(BaseLangCodeWriter, wcodegen.CppMixin):
             self.output_header.extend(header_buffer)
             self.output_file.extend(source_buffer)
 
-    def add_object(self, sub_obj):
-        # get top level source code object and the widget builder instance
-        klass, builder = self._add_object_init(sub_obj)
-        if not klass or not builder:
-            return None, None
+    def add_object(self, klass, parent, parent_builder, sub_obj):
+        # get the widget builder instance
+        builder = self._add_object_init(klass, sub_obj)
+        if not builder: return None
 
         try:
-            init, ids, post = builder.get_code(sub_obj)
+            init, ids, final = builder.get_code(sub_obj)
         except:
             print(sub_obj)
             raise  # this shouldn't happen
@@ -925,14 +925,18 @@ class CPPCodeWriter(BaseLangCodeWriter, wcodegen.CppMixin):
 
         klass.init.extend(init)
 
-        klass.final.extend(post)
+        if parent_builder:  # add to sizer or notebook
+            klass.init.extend( parent_builder.get_code_per_child(parent, sub_obj) )
+
+
+        klass.final[:0] = final
         if self.multiple_files and (sub_obj.IS_CLASS and sub_obj.base != sub_obj.klass):
             klass.dependencies.append(sub_obj.klass)
         else:
             if sub_obj.base in self.obj_builders:
                 headers = getattr(self.obj_builders[sub_obj.base], 'import_modules', [])
                 klass.dependencies.extend(headers)
-        return klass, builder
+        return builder
 
     def generate_code_event_handler(self, code_obj, is_new, tab, prev_src, event_handlers):
         """Generate the event handler stubs

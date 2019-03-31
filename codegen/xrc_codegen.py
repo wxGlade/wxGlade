@@ -329,7 +329,7 @@ class XRCCodeWriter(BaseLangCodeWriter, wcodegen.XRCMixin):
         # root is a Tree node
         self._clean_up_node(root)
 
-    def _generate_code(self, obj):
+    def _generate_code(self, klass, parent, parent_builder, obj):
         # XXX old implementation from __init__.py before re-factoring 'real' code generation
         # recursively generate code, for anything except application.Application
         # for toplevel widgets or with class different from wx... a class will be added
@@ -381,7 +381,7 @@ class XRCCodeWriter(BaseLangCodeWriter, wcodegen.XRCMixin):
             # then the children
             for child in obj.get_all_children():
                 assert obj.children.count(child)<=1
-                self._generate_code(child)
+                self._generate_code(None, None, None, child)  # XRCCodeWriter does not use the other args
 
             if IS_CLASS:
                 self.finalize_class(obj)

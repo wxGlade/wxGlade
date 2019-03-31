@@ -296,14 +296,14 @@ class LispCodeWriter(BaseLangCodeWriter, wcodegen.LispMixin):
         self.lang_mapping = { 'top_win': self._format_name(top_win), }
         BaseLangCodeWriter.add_app(self, app, top_win_class)
 
-    def add_object(self, sub_obj):
+    def add_object(self, parent_klass, parent, parent_builder, sub_obj):
+        # get the widget builder instance
+
         # the lisp code gen add some hard coded depedencies
         # TODO: Move the hard coded dependencies to the widgets resp. sizers
 
-        # get top level source code object and the widget builder instance
-        klass, builder = self._add_object_init(sub_obj)
-        if not klass or not builder:
-            return None, None
+        builder = self._add_object_init(parent_klass, sub_obj)
+        if not builder: return None
 
         if sub_obj.name not in ("spacer","sizerslot", "SLOT"):
             self.class_lines.append( self._format_name(sub_obj.name) )
@@ -318,7 +318,7 @@ class LispCodeWriter(BaseLangCodeWriter, wcodegen.LispMixin):
         if sub_obj.klass == "wxMenuBar":
             self.dependencies['(use-package :wxMenu)'] = 1
 
-        return BaseLangCodeWriter.add_object(self, sub_obj)
+        return BaseLangCodeWriter.add_object(self, parent_klass, parent, parent_builder, sub_obj)
 
     def generate_code_background(self, obj):
         self.dependencies['(use-package :wxColour)'] = 1
