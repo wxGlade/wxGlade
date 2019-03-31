@@ -437,6 +437,43 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
         if self.is_template:
             raise errors.WxgTemplateCodegenNotPossible
 
+
+    def _is_class(self, obj):
+        # check whether to add a new class to the generated code and modify some attributes in place
+        # XXX check for alternatives
+        # classname is used only for 'EditTopLevelScrolledWindow' vs. 'EditTopLevelPanel'
+        classname = getattr(obj, '_classname', obj.__class__.__name__)
+        base = common.class_names[classname]
+        if base!=obj.base:
+            obj._restore_data["base"] = obj.base
+            obj.base = base
+
+        IS_CLASS = obj.IS_TOPLEVEL
+        can_be_toplevel = obj.__class__.__name__ in common.toplevels
+        if obj.klass != obj.base and can_be_toplevel:
+            IS_CLASS = True
+            # for panel objects, if the user sets a custom class but (s)he doesn't want the code to be generated...
+            if obj.check_prop("no_custom_class") and obj.no_custom_class and not self.preview:
+                IS_CLASS = False
+        elif self.preview and not can_be_toplevel and obj.base != 'CustomWidget':
+            # if this is a custom class, but not a toplevel one, for the preview we have to use the "real" class
+            # CustomWidgets handle this in a special way (see widgets/custom_widget/codegen.py)
+            obj._restore_data["class"] = obj.properties["klass"].get()
+            obj.properties["klass"].set(obj.base) # XXX handle this in a different way
+
+        obj.IS_CLASS = IS_CLASS
+
+        return IS_CLASS
+
+    def _restore_obj(self, obj):
+        # restore attributes that were modified by _is_class()
+        # XXX handle this in a different way
+        if "class" in obj._restore_data:
+            obj.properties["klass"].set(obj._restore_data["class"])
+        if "base" in obj._restore_data:
+            obj.base = obj._restore_data["base"]
+        del obj._restore_data
+
     def _generate_code(self, obj):
         # recursively generate code, for anything except application.Application
         # for toplevel widgets or with class different from wx... a class will be added
@@ -446,32 +483,9 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
                 self.add_object(obj)
             return
 
-        can_be_toplevel = obj.__class__.__name__ in common.toplevels
-
-        old_class = old_base = None  # restore values for preview
+        obj._restore_data = {}  # XXX remove this hack: _is_class currently will modify some attributes to be restored later
         try:
-            # XXX check for alternatives
-            # classname is used only for 'EditTopLevelScrolledWindow' vs. 'EditTopLevelPanel'
-            classname = getattr(obj, '_classname', obj.__class__.__name__)
-            base = common.class_names[classname]
-            if base!=obj.base:
-                old_base = obj.base
-                obj.base = base
-
-            IS_CLASS = obj.IS_TOPLEVEL
-            if obj.klass != obj.base and can_be_toplevel:
-                IS_CLASS = True
-                # for panel objects, if the user sets a custom class but (s)he doesn't want the code to be generated...
-                if obj.check_prop("no_custom_class") and obj.no_custom_class and not self.preview:
-                    IS_CLASS = False
-            elif self.preview and not can_be_toplevel and obj.base != 'CustomWidget':
-                # if this is a custom class, but not a toplevel one, for the preview we have to use the "real" class
-                # CustomWidgets handle this in a special way (see widgets/custom_widget/codegen.py)
-                old_class = obj.properties["klass"].get()
-                obj.properties["klass"].set(obj.base) # XXX handle this in a different way
-
-            obj.IS_CLASS = IS_CLASS
-
+            IS_CLASS = self._is_class(obj)
             # first the item
             if IS_CLASS:
                 self.add_class(obj)
@@ -491,9 +505,7 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
                 self.finalize_class(obj)
 
         finally:
-            # XXX handle this in a different way
-            if old_class is not None: obj.properties["klass"].set(old_class)
-            if old_base  is not None: obj.base = old_base
+            self._restore_obj(obj)
         return builder and klass  # False if object has not been added
 
     def generate_code(self, root, widget=None):
