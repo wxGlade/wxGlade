@@ -302,7 +302,7 @@ class LispCodeWriter(BaseLangCodeWriter, wcodegen.LispMixin):
         # the lisp code gen add some hard coded depedencies
         # TODO: Move the hard coded dependencies to the widgets resp. sizers
 
-        builder = self._add_object_init(parent_klass, sub_obj)
+        builder = self._get_object_builder(parent_klass, sub_obj)
         if not builder: return None
 
         if sub_obj.name not in ("spacer","sizerslot", "SLOT"):
@@ -383,8 +383,13 @@ class LispCodeWriter(BaseLangCodeWriter, wcodegen.LispMixin):
         for l in builder.get_properties_code(code_obj):
             write(tab + l)
 
-        for l in self.classes[code_obj].init + self.classes[code_obj].final:
+        for l in self.classes[code_obj].init:
             write(tab + l)
+
+        if self.classes[code_obj].final:
+            write(tab + "\n")
+            for l in self.classes[code_obj].final:
+                write(tab + l)
 
         for l in builder.get_layout_code(code_obj):
             write(tab + l)

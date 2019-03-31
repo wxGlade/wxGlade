@@ -870,7 +870,9 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
         if parent_builder:  # add to sizer or notebook
             parent_klass.init.extend( parent_builder.get_code_per_child(parent, obj) )
 
-        parent_klass.final[:0] = final
+        if final:
+            parent_klass.final.insert(0, "\n")
+            parent_klass.final[:0] = final
         if self.multiple_files and (obj.IS_CLASS and obj.base != obj.klass):
             key = self._format_import(obj.klass)
             parent_klass.dependencies[key] = 1

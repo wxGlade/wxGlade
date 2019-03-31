@@ -377,8 +377,13 @@ sub %(handler)s {
         for l in builder.get_properties_code(code_obj):
             write(tab + l)
 
-        for l in self.classes[code_obj].init + self.classes[code_obj].final:
+        for l in self.classes[code_obj].init:
             write(tab + l)
+
+        if self.classes[code_obj].final:
+            write(tab + "\n")
+            for l in self.classes[code_obj].final:
+                write(tab + l)
 
         for l in builder.get_layout_code(code_obj):
             write(tab + l)

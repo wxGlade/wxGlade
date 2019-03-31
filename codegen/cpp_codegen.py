@@ -717,8 +717,13 @@ class CPPCodeWriter(BaseLangCodeWriter, wcodegen.CppMixin):
         for l in builder.get_properties_code(code_obj):
             swrite(tab + l)
 
-        for l in klass.init + klass.final:
+        for l in klass.init:
             swrite(tab + l)
+
+        if klass.final:
+            swrite(tab + "\n")
+            for l in klass.final:
+                swrite(tab + l)
 
         for l in builder.get_layout_code(code_obj):
             swrite(tab + l)
@@ -881,7 +886,7 @@ class CPPCodeWriter(BaseLangCodeWriter, wcodegen.CppMixin):
 
     def add_object(self, klass, parent, parent_builder, sub_obj):
         # get the widget builder instance
-        builder = self._add_object_init(klass, sub_obj)
+        builder = self._get_object_builder(klass, sub_obj)
         if not builder: return None
 
         try:

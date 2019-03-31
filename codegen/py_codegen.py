@@ -335,8 +335,11 @@ from %(top_win_module)s import %(top_win_class)s\n\n"""
 
         for l in self.classes[code_obj].init:
             write(tab + l)
-        for l in self.classes[code_obj].final:
-            write(tab + l)
+
+        if self.classes[code_obj].final:
+            write(tab + "\n")
+            for l in self.classes[code_obj].final:
+                write(tab + l)
 
         for l in builder.get_layout_code(code_obj):
             write(tab + l)
