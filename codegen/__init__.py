@@ -494,7 +494,6 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
 
             # then the children
             for child in obj.get_all_children():
-                assert obj.children.count(child)<=1
                 self._generate_code(klass or parent_klass, obj, builder, child)
 
             if IS_CLASS:
@@ -837,7 +836,7 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
         """Adds the code to build 'obj' to the class body in parent_class;
         see _add_object_init(), add_object_format_name()"""
 
-        builder = self._add_object_init(parent_klass, obj)
+        builder = self._get_object_builder(parent_klass, obj)
         if not builder: return None
 
         try:
@@ -879,9 +878,8 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
             parent_klass.dependencies[dep] = 1
         return builder
 
-    def _add_object_init(self, parent_klass, obj):
-        "Perform some checks and return the containg class and the code builder"
-        # initialise internal variables first
+    def _get_object_builder(self, parent_klass, obj):
+        "Perform some checks and return the code builder"
 
         # Check for widget builder object
         try:
