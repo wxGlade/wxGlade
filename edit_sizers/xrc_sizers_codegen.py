@@ -75,10 +75,10 @@ def initialize():
 
     xrcgen = common.code_writers.get("XRC")
     if xrcgen:
-        xrcgen.add_widget_handler( 'wxBoxSizer', xrc_wxSizer_builder )
-        xrcgen.add_widget_handler( 'wxWrapSizer', xrc_wxSizer_builder )
-        xrcgen.add_widget_handler( 'wxStaticBoxSizer', xrc_wxSizer_builder )
-        xrcgen.add_widget_handler( 'wxGridSizer', xrc_wxSizer_builder )
-        xrcgen.add_widget_handler( 'wxFlexGridSizer', xrc_wxFlexGridSizer_builder )
-        xrcgen.add_widget_handler( 'sizerslot', xrc_code_generator )
+        xrcgen.register_widget_code_generator( 'wxBoxSizer', xrc_wxSizer_builder )
+        xrcgen.register_widget_code_generator( 'wxWrapSizer', xrc_wxSizer_builder )
+        xrcgen.register_widget_code_generator( 'wxStaticBoxSizer', xrc_wxSizer_builder )
+        xrcgen.register_widget_code_generator( 'wxGridSizer', xrc_wxSizer_builder )
+        xrcgen.register_widget_code_generator( 'wxFlexGridSizer', xrc_wxFlexGridSizer_builder )
+        xrcgen.register_widget_code_generator( 'sizerslot', xrc_code_generator )
 

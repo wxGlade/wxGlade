@@ -70,7 +70,7 @@ def initialize():
 
     plgen = common.code_writers.get("perl")
     if plgen:
-        awh = plgen.add_widget_handler
+        awh = plgen.register_widget_code_generator
         awh('wxBoxSizer', PerlBoxSizerBuilder())
         awh('wxWrapSizer', PerlWrapSizerBuilder())
         awh('wxStaticBoxSizer', PerlStaticBoxSizerBuilder())

@@ -67,5 +67,5 @@ def initialize():
 
     xrcgen = common.code_writers.get("XRC")
     if xrcgen:
-        xrcgen.add_widget_handler( 'spacer', xrc_code_generator )
+        xrcgen.register_widget_code_generator( 'spacer', xrc_code_generator )
 

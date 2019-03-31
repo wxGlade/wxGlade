@@ -142,7 +142,7 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
       - wcodegen.BaseLanguageMixin.language
       - add_app(), add_class(), add_object()
       - add_property_handler()
-      - add_widget_handler()
+      - register_widget_code_generator()
       - generate_code_background(), generate_code_font(), generate_code_foreground()
       - generate_code_id()
       - generate_code_size()
@@ -917,7 +917,7 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
 
         return builder
 
-    def add_widget_handler(self, widget_name, handler, *args, **kwds):
+    def register_widget_code_generator(self, widget_name, handler, *args, **kwds):
         self.obj_builders[widget_name] = handler
 
     def create_generated_by(self):

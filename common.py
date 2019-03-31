@@ -297,10 +297,10 @@ def register(lang, klass_name, code_writer, property_name=None, property_handler
     property_handler: Property handler
     widget_name:      Widget name
 
-    see: L{codegen.BaseLangCodeWriter.add_widget_handler(), codegen.BaseLangCodeWriter.add_property_handler()"""
+    see: L{codegen.BaseLangCodeWriter.register_widget_code_generator(), codegen.BaseLangCodeWriter.add_property_handler()"""
     codegen = code_writers[lang]
     if codegen:
-        codegen.add_widget_handler(klass_name, code_writer)
+        codegen.register_widget_code_generator(klass_name, code_writer)
         if property_name and property_handler:
             codegen.add_property_handler(property_name, property_handler, widget_name)
 

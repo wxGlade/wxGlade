@@ -74,7 +74,7 @@ def initialize():
 
     pygen = common.code_writers.get("python")
     if pygen:
-        awh = pygen.add_widget_handler
+        awh = pygen.register_widget_code_generator
         awh('wxBoxSizer', PythonBoxSizerBuilder())
         awh('wxWrapSizer', PythonWrapSizerBuilder())
         awh('wxStaticBoxSizer', PythonStaticBoxSizerBuilder())

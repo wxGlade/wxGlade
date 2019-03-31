@@ -105,7 +105,7 @@ def initialize():
 
     lispgen = common.code_writers.get("lisp")
     if lispgen:
-        awh = lispgen.add_widget_handler
+        awh = lispgen.register_widget_code_generator
         awh('wxBoxSizer', LispBoxSizerBuilder())
         awh('wxWrapSizer', LispWrapSizerBuilder())
         awh('wxStaticBoxSizer', LispStaticBoxSizerBuilder())

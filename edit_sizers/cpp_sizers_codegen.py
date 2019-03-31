@@ -107,7 +107,7 @@ def initialize():
 
     cppgen = common.code_writers.get("C++")
     if cppgen:
-        awh = cppgen.add_widget_handler
+        awh = cppgen.register_widget_code_generator
         awh('wxBoxSizer', CppBoxSizerBuilder())
         awh('wxWrapSizer', CppWrapSizerBuilder())
         awh('wxStaticBoxSizer', CppStaticBoxSizerBuilder())
