@@ -18,13 +18,7 @@ class PerlNotebookGenerator(wcodegen.PerlWidgetCodeWriter):
         self._reset_vars()
         wcodegen.PerlWidgetCodeWriter._prepare_tmpl_content(self, window)
 
-        prop = window.properties
         id_name, id = self.codegen.generate_code_id(window)
-
-        layout_props = []
-        for (label,), tab_win in zip(window.tabs, window.children):
-            layout_props.append('$self->{%s}->AddPage($self->{%s}, %s);\n' %
-                                (window.name, tab_win.name, self.codegen.quote_str(label)) )
 
         parent = self.format_widget_access(window.parent_window)
 
@@ -47,15 +41,16 @@ class PerlNotebookGenerator(wcodegen.PerlWidgetCodeWriter):
                      window.name, self.cn(window.klass), parent, id, self.tmpl_dict['style']) )
 
         init += self.codegen.generate_common_properties(window)
-        return init, layout_props
+        return init, []
 
     def get_layout_code(self, obj):
-        prop = obj.properties
-        props_buf = []
-        for (label,), tab_win in zip(obj.tabs, obj.children):
-            props_buf.append( '$self->AddPage($self->{%s}, %s);\n' % (tab_win.name, self.codegen.quote_str(label)) )
-        props_buf.extend(self.codegen.generate_common_properties(obj))
-        return props_buf
+        return self.codegen.generate_common_properties(obj)
+
+    def get_code_per_child(self, obj, child):
+        i = obj.children.index(child)
+        label = self.codegen.quote_str( obj.tabs[i][0] )
+        notebook = self.format_widget_access(obj)  # '$self' or '$self->{%s}'%obj.name
+        return ['%s->AddPage($self->{%s}, %s);\n' % (notebook, child.name, label)]
 
 
 def initialize():

@@ -383,13 +383,17 @@ class LispCodeWriter(BaseLangCodeWriter, wcodegen.LispMixin):
         for l in builder.get_properties_code(code_obj):
             write(tab + l)
 
+        # the initial and final code for the contained elements
         for l in self.classes[code_obj].init:
             write(tab + l)
-
         if self.classes[code_obj].final:
             write(tab + "\n")
             for l in self.classes[code_obj].final:
                 write(tab + l)
+
+        # now check if there is initial and final code for the element itself
+        for l in builder.get_init_code(code_obj):
+            write(tab+l)
 
         for l in builder.get_layout_code(code_obj):
             write(tab + l)

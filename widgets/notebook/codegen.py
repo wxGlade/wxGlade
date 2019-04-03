@@ -19,14 +19,6 @@ class PythonNotebookGenerator(wcodegen.PythonWidgetCodeWriter):
         prop = window.properties
         id_name, id = self.codegen.generate_code_id(window)
 
-        post = []
-        for (label,), tab_win in zip(window.tabs, window.children):
-            if tab_win.IS_SLOT:
-                tab_win = "wx.Panel(self.%s)"%window.name
-            else:
-                tab_win = 'self.%s'%tab_win.name
-            post.append('self.%s.AddPage(%s, %s)\n'%(window.name, tab_win, self.codegen.quote_str(label)))
-            
         parent = self.format_widget_access(window.parent_window)
         if window.IS_CLASS:
             l = []
@@ -43,16 +35,22 @@ class PythonNotebookGenerator(wcodegen.PythonWidgetCodeWriter):
         init.append(('self.%s = ' + self.cn(klass) + '(%s, %s%s)\n')%(window.name, parent, id, self.tmpl_dict['style']))
 
         init += self.codegen.generate_common_properties(window)
-        return init, post
+        return init, []
 
     def get_layout_code(self, obj):
-        prop = obj.properties
-        props_buf = []
-        for (label,), tab_win in zip(obj.tabs, obj.children):
-            props_buf.append( 'self.AddPage(self.%s, %s)\n' % (tab_win.name, self.codegen.quote_str(label)) )
-        props_buf.extend(self.codegen.generate_common_properties(obj))
-        return props_buf
+        # called for a toplevel class
+        return self.codegen.generate_common_properties(obj)
 
+    def get_code_per_child(self, obj, child):
+        i = obj.children.index(child)
+        label = obj.tabs[i][0]
+
+        if child.IS_SLOT:
+            tab_win = "wx.Panel(self.%s)"%obj.name
+        else:
+            tab_win = 'self.%s'%child.name
+        notebook = self.format_widget_access(obj)  # 'self' or 'self.%s'%obj.name
+        return ['%s.AddPage(%s, %s)\n'%(notebook, tab_win, self.codegen.quote_str(label))]
 
 
 def xrc_code_generator(obj):
@@ -99,16 +97,11 @@ class CppNotebookGenerator(wcodegen.CppWidgetCodeWriter):
         self._reset_vars()
         wcodegen.CppWidgetCodeWriter._prepare_tmpl_content(self, window)
 
-        prop = window.properties
         id_name, id = self.codegen.generate_code_id(window)
         if id_name:
             ids = [id_name]
         else:
             ids = []
-
-        layout_props = []
-        for (label,), tab_win in zip(window.tabs, window.children):
-            layout_props.append('%s->AddPage(%s, %s);\n' % (window.name, tab_win.name, self.codegen.quote_str(label)))
 
         if not window.parent_window.IS_CLASS:
             parent = '%s' % window.parent_window.name
@@ -121,16 +114,18 @@ class CppNotebookGenerator(wcodegen.CppWidgetCodeWriter):
 
         init += self.codegen.generate_common_properties(window)
 
-        return init, ids, layout_props
+        return init, ids, []
 
     def get_layout_code(self, obj):
-        prop = obj.properties
-        props_buf = []
-        for (label,), tab_win in zip(obj.tabs, obj.children):
-            props_buf.append( 'AddPage(%s, %s);\n' % (tab_win.name, self.codegen.quote_str(label)) )
-        props_buf.extend(self.codegen.generate_common_properties(obj))
-        return props_buf
+        # called for a toplevel class
+        return self.codegen.generate_common_properties(obj)
 
+    def get_code_per_child(self, obj, child):
+        i = obj.children.index(child)
+        label = self.codegen.quote_str( obj.tabs[i][0] )
+        if obj.IS_CLASS:
+            return ['AddPage(%s, %s);\n' % (child.name, label)]
+        return ['%s->AddPage(%s, %s);\n' % (obj.name, child.name, label)]
 
 
 def initialize():

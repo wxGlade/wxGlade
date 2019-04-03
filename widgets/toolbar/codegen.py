@@ -28,7 +28,6 @@ class PythonCodeGenerator(wcodegen.PythonWidgetCodeWriter):
             append( '%s.SetToolPacking(%s)\n' % (obj_name, obj.packing) )
         if obj.properties["separation"].is_active():
             append( '%s.SetToolSeparation(%s)\n' % (obj_name, obj.separation) )
-        append( '%s.Realize()\n' % obj_name )
 
         return out
 
@@ -80,10 +79,13 @@ class PythonCodeGenerator(wcodegen.PythonWidgetCodeWriter):
             klass = self.cn(klass)
         code = ['# Tool Bar\n',
                 'self.%s = %s(self, -1%s)\n' % (obj.name, klass, style)
-                ] + self.get_init_code(obj) + self.get_properties_code(obj) + [
+                ] + self.get_init_code(obj) + self.get_properties_code(obj) + self.get_layout_code(obj) + [
                 'self.SetToolBar(self.%s)\n' % obj.name,
                 '# Tool Bar end\n']
         return code, []
+
+    def get_layout_code(self, obj):
+        return ['%s.Realize()\n' % self.format_widget_access(obj)]
 
     def get_event_handlers(self, obj):
         out = []
@@ -188,10 +190,13 @@ class CppCodeGenerator(wcodegen.CppWidgetCodeWriter):
             style = ', wxDefaultPosition, wxDefaultSize, wxTB_HORIZONTAL|' + style
         else:
             style = ''
-        init = ['%s = new %s(this, -1%s);\n' % (obj.name, obj.klass, style), 'SetToolBar(%s);\n' % obj.name]
-        init.extend(self.get_properties_code(obj))
+        init = ['%s = new %s(this, -1%s);\n' % (obj.name, obj.klass, style), 'SetToolBar(%s);\n' % obj.name
+                ] + self.get_properties_code(obj) + self.get_layout_code(obj)
         ids = self.get_ids_code(obj)
         return init, ids, []
+
+    def get_layout_code(self, obj):
+        return ['%sRealize();\n' % self.codegen.format_generic_access(obj)]
 
     def get_properties_code(self, obj):
         out = []
@@ -235,8 +240,6 @@ class CppCodeGenerator(wcodegen.CppWidgetCodeWriter):
                         self.codegen.quote_str(tool.short_help),
                         self.codegen.quote_str(tool.long_help)))
 
-        append('%sRealize();\n' % obj_name)
-
         return out
 
     def get_ids_code(self, obj):
@@ -265,7 +268,6 @@ class CppCodeGenerator(wcodegen.CppWidgetCodeWriter):
         for tool in obj.tools:
             out.extend(do_get(tool))
         return out
-
 
 
 def initialize():

@@ -35,7 +35,6 @@ class LispCodeGenerator(wcodegen.LispWidgetCodeWriter):
 
         if obj.properties["separation"].is_active():
             append( '(wxToolBar_SetToolSeparation %s %s)\n' % (obj_name, obj.separation) )
-        append( '(wxToolBar_Realize %s)\n' % obj_name )
 
         return out
 
@@ -86,10 +85,15 @@ class LispCodeGenerator(wcodegen.LispWidgetCodeWriter):
         obj_name = self.codegen._format_name(obj.name)
         init = [ '\n\t;;; Tool Bar\n',
                  '(setf (slot-%s obj) (wxToolBar_Create %s -1 -1 -1 -1 -1 %s))\n' % (obj_name, parent, style),
-                ] + self.get_init_code(obj) + self.get_properties_code(obj) + [
+                ] + self.get_init_code(obj) + self.get_properties_code(obj) + self.get_layout_code(obj) + [
+                 '(wxToolBar_Realize %s)\n' % self.format_widget_access(obj),
                  '(wxFrame_SetToolBar (slot-top-window obj) (slot-%s obj))\n' % obj_name,
                  ';;; Tool Bar end\n']
         return init, []
+
+    def get_layout_code(self, obj):
+        obj_name = '(slot-%s obj)' % self.codegen._format_name(obj.name)
+        return ['(wxToolBar_Realize %s)\n' % obj_name]
 
 
 

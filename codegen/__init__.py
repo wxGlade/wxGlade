@@ -712,10 +712,6 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
         code_lines = self.generate_code_ctor(code_obj, is_new, tab)
         obuffer.extend(code_lines)
 
-        # now check if there are extra lines to add to the constructor
-        for l in builder.get_init_code(code_obj):
-            obuffer.append(tab+l)
-
         obuffer.append( self.tmpl_ctor_call_layout % {'tab':tab} )
 
         # generate code for binding events
@@ -816,19 +812,19 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
             # store the contents to filename
             self.save_file(filename, out)
         else:  # not self.multiple_files
+            extra_code = [l for l in self.classes[code_obj].extra_code[::-1] if not l in self._current_extra_code]
             if prev_src:
                 # if this is a new class, add its code to the new_classes list of the SourceFileContent instance
                 if is_new:
                     prev_src.new_classes.append("".join(obuffer))
                 elif self.classes[code_obj].extra_code:
-                    self._current_extra_code.extend(self.classes[code_obj].extra_code[::-1])
+                    self._current_extra_code.extend(extra_code)
                 return
             else:
                 # write the class body onto the single source file
                 for dep in self.classes[code_obj].dependencies:
                     self._current_extra_modules[dep] = 1
-                if self.classes[code_obj].extra_code:
-                    self._current_extra_code.extend(self.classes[code_obj].extra_code[::-1])
+                self._current_extra_code.extend(extra_code)
                 for line in obuffer:
                     self.output_file.append(line)
 
