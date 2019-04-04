@@ -140,7 +140,7 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
     A code writer object *must* implement those interface and set those variables:
       - init_lang(), init_files(), finalize()
       - wcodegen.BaseLanguageMixin.language
-      - add_app(), add_class(), add_object()
+      - add_app(), add_class(), add_object(), finalize_class()
       - register_widget_code_generator()
       - generate_code_background(), generate_code_font(), generate_code_foreground()
       - generate_code_id()
@@ -436,7 +436,6 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
         if self.is_template:
             raise errors.WxgTemplateCodegenNotPossible
 
-
     def _is_class(self, obj):
         # check whether to add a new class to the generated code and modify some attributes in place
         # XXX check for alternatives
@@ -503,6 +502,7 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
             self._restore_obj(obj)
 
     def generate_code(self, root, widget=None):
+        "entry point for recursive code generation via _generate_code()"
         # root must be application.Application instance for now
         for c in root.children or []:
             if widget is not None and c is not widget: continue # for preview
@@ -583,14 +583,12 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
             prev_src = None
 
         # do nothing if the file exists
-        if prev_src:
-            return
+        if prev_src: return
 
         klass = app.klass
 
         # top window and application name are mandatory
-        if not app.top_window:
-            return
+        if not app.top_window: return
         
         # get and fill language dependent template
         tmpl = self._get_app_template(app, top_win)
@@ -624,9 +622,9 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
             self.output_file.append(code)
 
     def add_class(self, code_obj):
-        """Add class behaves very differently for XRC output than for other languages (i.e. python):
-        since custom classes are not supported in XRC, this has effect only for true toplevel widgets,
-        i.e. frames and dialogs. For other kinds of widgets, this is equivalent to add_object"""
+        """Add an object for that a Python/C++/... class will be generated.
+        This is done for each toplevel element as well as for elements with a custom class property.
+        See the _is_class(code_obj) method above."""
         # shortcuts
         base = code_obj.base
         klass = code_obj.klass
@@ -664,6 +662,7 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
         return ret
 
     def finalize_class(self, code_obj):
+        "Finalize and write the code for the class that was started with add_class(code_obj)."
         # shortcuts
         base = code_obj.base
         klass = code_obj.klass
@@ -829,8 +828,7 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
                     self.output_file.append(line)
 
     def add_object(self, parent_klass, parent, parent_builder, obj):
-        """Adds the code to build 'obj' to the class body in parent_class;
-        see _add_object_init(), add_object_format_name()"""
+        """Adds the code to build 'obj' to the class body in parent_klass. (Not called for toplevel elements.)"""
 
         builder = self._get_object_builder(parent_klass, obj)
         if not builder: return None
