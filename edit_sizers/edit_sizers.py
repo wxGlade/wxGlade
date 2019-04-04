@@ -2326,7 +2326,8 @@ def grid_builder(parent, pos):
     "factory function for grid sizers"
     #dialog = _GridBuilderDialog(parent)
     dialog = _GridBuilderDialog(common.adding_window or parent)
-    res = dialog.ShowModal()
+    with misc.disable_stay_on_top(common.adding_window or parent):
+        res = dialog.ShowModal()
     rows = dialog.rows.GetValue()
     cols = dialog.cols.GetValue()
     vgap = dialog.vgap.GetValue()
