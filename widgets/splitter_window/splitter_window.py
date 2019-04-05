@@ -3,7 +3,7 @@ wxSplitterWindow objects
 
 @copyright: 2002-2007 Alberto Griggio
 @copyright: 2014-2016 Carsten Grohmann
-@copyright: 2016-2018 Dietmar Schwertberger
+@copyright: 2016-2019 Dietmar Schwertberger
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
@@ -268,7 +268,8 @@ tmpl_label = 'window'
 def builder(parent, sizer, pos, number=[1]):
     "Factory function for EditSplitterWindow objects"
     dialog = wcodegen.WidgetStyleSelectionDialog( dlg_title, box_title, choices, ["Create panels"],[True])
-    res = dialog.ShowModal()
+    with misc.disable_stay_on_top(common.adding_window or parent):
+        res = dialog.ShowModal()
     orientation = dialog.get_selection().split(" ")[0]
     create_panels = dialog.get_options()[0]
     dialog.Destroy()

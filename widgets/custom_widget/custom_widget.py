@@ -3,12 +3,12 @@ Custom wxWindow objects
 
 @copyright: 2002-2007 Alberto Griggio
 @copyright: 2014-2016 Carsten Grohmann
-@copyright: 2017-2018 Dietmar Schwertberger
+@copyright: 2017-2019 Dietmar Schwertberger
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
 import wx
-import common
+import common, misc
 from tree import Node
 from wcodegen.taghandler import BaseXmlBuilderTagHandler
 import new_properties as np
@@ -112,7 +112,8 @@ class Dialog(wx.Dialog):
     validation_re  = re.compile(r'^[a-zA-Z_]+[\w-]*(\[\w*\])*$')
     def __init__(self):
         title = _('Select widget class')
-        wx.Dialog.__init__(self, None, -1, title)
+        pos = wx.GetMousePosition()
+        wx.Dialog.__init__(self, None, -1, title, pos)
         klass = 'CustomWidget'
 
         self.classname = wx.TextCtrl(self, -1, klass)
@@ -148,7 +149,8 @@ def builder(parent, sizer, pos, number=[1]):
     "factory function for CustomWidget objects"
 
     dialog = Dialog()
-    res = dialog.ShowModal()
+    with misc.disable_stay_on_top(common.adding_window or parent):
+        res = dialog.ShowModal()
     klass = dialog.classname.GetValue().strip()
     dialog.Destroy()
     if res != wx.ID_OK: return

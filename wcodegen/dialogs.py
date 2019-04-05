@@ -3,6 +3,7 @@ Dialogs to ask users during widget initialisation triggered by an graphical
 user interaction.
 
 @copyright: 2014-2016 Carsten Grohmann
+@copyright: 2019 Dietmar Schwertberger
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
@@ -17,7 +18,8 @@ class WidgetStyleSelectionDialog(wx.Dialog):
         dlg_title: Dialog title
         box_label: Label of the draw around the listed choices
         choices: Choices to select one (string list)"""
-        wx.Dialog.__init__(self, None, -1, dlg_title)
+        pos = wx.GetMousePosition()
+        wx.Dialog.__init__(self, None, -1, dlg_title, pos)
 
         szr = wx.BoxSizer(wx.VERTICAL)
 
@@ -41,7 +43,6 @@ class WidgetStyleSelectionDialog(wx.Dialog):
         self.SetAutoLayout(True)
         self.SetSizer(szr)
         szr.Fit(self)
-        self.CenterOnScreen()
 
     def get_selection(self):
         "Return the selected choice."

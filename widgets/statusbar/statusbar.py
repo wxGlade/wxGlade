@@ -3,12 +3,12 @@ wxFrame and wxStatusBar objects
 
 @copyright: 2002-2007 Alberto Griggio
 @copyright: 2014-2016 Carsten Grohmann
-@copyright: 2016 Dietmar Schwertberger
+@copyright: 2016-2019 Dietmar Schwertberger
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
 import wx
-import common
+import common, misc
 from tree import Node, WidgetTree
 from wcodegen.taghandler import BaseXmlBuilderTagHandler
 import new_properties as np
@@ -165,7 +165,8 @@ def builder(parent, sizer, pos):
     "factory function for EditToolBar objects"
 
     dialog = Dialog()
-    res = dialog.ShowModal()
+    with misc.disable_stay_on_top(common.adding_window or parent):
+        res = dialog.ShowModal()
     klass = dialog.klass
     dialog.Destroy()
     if res != wx.ID_OK:

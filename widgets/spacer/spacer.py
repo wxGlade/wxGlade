@@ -3,7 +3,7 @@ Spacers to use in sizers
 
 @copyright: 2002-2007 Alberto Griggio
 @copyright: 2014-2016 Carsten Grohmann
-@copyright: 2016-2018 Dietmar Schwertberger
+@copyright: 2016-2019 Dietmar Schwertberger
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
@@ -60,7 +60,8 @@ class EditSpacer(ManagedBase):
 
 class _Dialog(wx.Dialog):
     def __init__(self, parent):
-        wx.Dialog.__init__(self, misc.get_toplevel_parent(parent), -1, _("Enter size"))
+        pos = wx.GetMousePosition()
+        wx.Dialog.__init__(self, misc.get_toplevel_parent(parent), -1, _("Enter size"), pos)
         # the controls
         self.width  = wx.SpinCtrl(self, -1, "20")
         self.height = wx.SpinCtrl(self, -1, "20")
@@ -94,7 +95,8 @@ class _Dialog(wx.Dialog):
 def builder(parent, sizer, pos):
     "factory function for EditSpacer objects"
     dialog = _Dialog(parent)
-    res = dialog.ShowModal()
+    with misc.disable_stay_on_top(common.adding_window or parent):
+        res = dialog.ShowModal()
     width  = dialog.width.GetValue()
     height = dialog.height.GetValue()
     dialog.Destroy()

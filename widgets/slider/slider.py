@@ -3,12 +3,12 @@ wxSlider objects
 
 @copyright: 2002-2007 Alberto Griggio
 @copyright: 2014-2016 Carsten Grohmann
-@copyright: 2016 Dietmar Schwertberger
+@copyright: 2016-2019 Dietmar Schwertberger
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
 import wx
-import common
+import common, misc
 import wcodegen
 from edit_windows import ManagedBase, EditStylesMixin
 from tree import Node
@@ -78,7 +78,8 @@ tmpl_label = 'slider'
 def builder(parent, sizer, pos, number=[1]):
     "factory function for editor objects from GUI"
     dialog = wcodegen.WidgetStyleSelectionDialog( dlg_title, box_title, choices )
-    res = dialog.ShowModal()
+    with misc.disable_stay_on_top(common.adding_window or parent):
+        res = dialog.ShowModal()
     style = dialog.get_selection()
     dialog.Destroy()
     if res != wx.ID_OK:
