@@ -212,15 +212,6 @@ class BaseSizerBuilder(object):
 
         if child.classname in ("spacer","sizerslot"):  # spacer and slot are adding itself to the sizer
             return []
-        
-        #if child.IS_SLOT or obj.classname=="spacer":
-            #if obj.classname=="slot":
-                #return []
-                    #if obj.IS_SLOT or :
-            #if obj.classname!="slot":  # "slot" has no code generator
-                #self.add_object(obj)
-
-            #raise   ValueError("XXX continue here")
 
         # the name attribute of a spacer is already formatted "<width>, <height>".
         # This string can simply inserted in Add() call.

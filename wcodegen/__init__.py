@@ -25,7 +25,8 @@ class BaseCodeWriter(object):
 
     # the following methods will be implemented in derived classes to return the actual code
     def get_code(self, obj):
-        """Returns initial and final code for non-toplevel objects/classes."""
+        """Returns initial and final code for non-toplevel objects/classes.
+        final is mainly used for sizers to call SetSizer(sizer_1) at the end"""
         return [], []
 
     def get_properties_code(self, obj):
@@ -45,8 +46,6 @@ class BaseCodeWriter(object):
         """Returns code that will be inserted after the child code; e.g. for adding element to a sizer.
         It's placed before the final code returned from get_code()."""
         return []
-        # XXX notebook, splitter
-
 
     def __getstate__(self):
         state = self.__dict__.copy()
