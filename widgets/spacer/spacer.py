@@ -87,9 +87,6 @@ class _Dialog(wx.Dialog):
         self.SetAutoLayout(True)
         self.SetSizer(sizer)
         sizer.Fit(self)
-        self.CenterOnScreen()
-
-
 
 
 def builder(parent, sizer, pos):
