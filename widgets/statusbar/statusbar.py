@@ -8,7 +8,7 @@ wxFrame and wxStatusBar objects
 """
 
 import wx
-import common
+import common, misc
 from wcodegen.taghandler import BaseXmlBuilderTagHandler
 import new_properties as np
 from edit_windows import EditBase, EditStylesMixin
@@ -164,7 +164,8 @@ def builder(parent, pos):
     "factory function for EditToolBar objects"
 
     dialog = Dialog()
-    res = dialog.ShowModal()
+    with misc.disable_stay_on_top(common.adding_window or parent):
+        res = dialog.ShowModal()
     klass = dialog.klass
     dialog.Destroy()
     if res != wx.ID_OK:

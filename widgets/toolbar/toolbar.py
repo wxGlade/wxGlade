@@ -458,7 +458,9 @@ class ToolsProperty(np.Property):
         else:
             parent = None
         dialog = ToolsDialog( parent, self.owner, items=self.value )
-        if dialog.ShowModal() == wx.ID_OK:
+        with misc.disable_stay_on_top(common.adding_window or parent):
+            res = dialog.ShowModal()
+        if res == wx.ID_OK:
             self.on_value_edited(dialog.get_items())
         dialog.Destroy()
 

@@ -7,7 +7,7 @@ wxGauge objects
 """
 
 import wx
-import common
+import common, misc
 import wcodegen
 from edit_windows import ManagedBase, EditStylesMixin
 import new_properties as np
@@ -52,7 +52,8 @@ choices = 'wxGA_HORIZONTAL|wxGA_VERTICAL'
 def builder(parent, pos):
     "Factory function for editor objects from GUI"
     dialog = wcodegen.WidgetStyleSelectionDialog( dlg_title, box_title, choices)
-    res = dialog.ShowModal()
+    with misc.disable_stay_on_top(common.adding_window or parent):
+        res = dialog.ShowModal()
     style = dialog.get_selection()
     dialog.Destroy()
     if res != wx.ID_OK:

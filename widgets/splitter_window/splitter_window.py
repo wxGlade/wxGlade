@@ -260,7 +260,8 @@ choices = 'wxSPLIT_VERTICAL (left/right)|wxSPLIT_HORIZONTAL (top/bottom)'
 def builder(parent, pos):
     "Factory function for EditSplitterWindow objects"
     dialog = wcodegen.WidgetStyleSelectionDialog( dlg_title, box_title, choices, ["Create panels"],[True])
-    res = dialog.ShowModal()
+    with misc.disable_stay_on_top(common.adding_window or parent):
+        res = dialog.ShowModal()
     orientation = dialog.get_selection().split(" ")[0]
     create_panels = dialog.get_options()[0]
     dialog.Destroy()

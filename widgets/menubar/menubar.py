@@ -578,7 +578,9 @@ class MenuProperty(np.Property):
             parent = None
         dialog = MenuItemDialog( parent, self.owner, items=self.value )
         if not self.value: dialog.add_item(None)
-        if dialog.ShowModal() == wx.ID_OK:
+        with misc.disable_stay_on_top(common.adding_window or parent):
+            res = dialog.ShowModal()
+        if res == wx.ID_OK:
             self.on_value_edited(dialog.get_menus())
         dialog.Destroy()
 

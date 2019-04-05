@@ -8,7 +8,7 @@ Custom wxWindow objects
 """
 
 import wx
-import common
+import common, misc
 from wcodegen.taghandler import BaseXmlBuilderTagHandler
 import new_properties as np
 from edit_windows import ManagedBase
@@ -112,7 +112,7 @@ class Dialog(wx.Dialog):
     validation_re  = re.compile(r'^[a-zA-Z_]+[\w-]*(\[\w*\])*$')
     def __init__(self):
         title = _('Select widget class')
-        wx.Dialog.__init__(self, None, -1, title)
+        wx.Dialog.__init__(self, None, -1, title, wx.GetMousePosition())
         klass = 'CustomWidget'
 
         self.classname = wx.TextCtrl(self, -1, klass)
@@ -147,7 +147,8 @@ def builder(parent, pos):
     "factory function for CustomWidget objects"
 
     dialog = Dialog()
-    res = dialog.ShowModal()
+    with misc.disable_stay_on_top(common.adding_window or parent):
+        res = dialog.ShowModal()
     klass = dialog.classname.GetValue().strip()
     dialog.Destroy()
     if res != wx.ID_OK: return

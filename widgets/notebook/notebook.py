@@ -375,7 +375,8 @@ def builder(parent, pos):
     "Factory function for editor objects from GUI"
     choices = 'wxNB_TOP|wxNB_BOTTOM|wxNB_LEFT|wxNB_RIGHT'
     dialog = wcodegen.WidgetStyleSelectionDialog(_('wxNotebook'), _('Orientation'), choices)
-    res = dialog.ShowModal()
+    with misc.disable_stay_on_top(common.adding_window or parent):
+        res = dialog.ShowModal()
     style = dialog.get_selection()
     dialog.Destroy()
     if res != wx.ID_OK:

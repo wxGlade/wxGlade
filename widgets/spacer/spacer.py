@@ -60,7 +60,7 @@ class EditSpacer(ManagedBase):
 
 class _Dialog(wx.Dialog):
     def __init__(self):
-        wx.Dialog.__init__(self, common.main, -1, _("Enter size"))
+        wx.Dialog.__init__(self, common.main, -1, _("Enter size"), wx.GetMousePosition())
         # the controls
         self.width  = wx.SpinCtrl(self, -1, "20")
         self.height = wx.SpinCtrl(self, -1, "20")
@@ -90,7 +90,8 @@ class _Dialog(wx.Dialog):
 def builder(parent, pos):
     "factory function for EditSpacer objects"
     dialog = _Dialog()
-    res = dialog.ShowModal()
+    with misc.disable_stay_on_top(common.adding_window or parent):
+        res = dialog.ShowModal()
     width  = dialog.width.GetValue()
     height = dialog.height.GetValue()
     dialog.Destroy()
