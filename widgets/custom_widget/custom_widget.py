@@ -136,7 +136,6 @@ class Dialog(wx.Dialog):
         w = self.GetTextExtent(title)[0] + 50
         if self.GetSize()[0] < w:
             self.SetSize((w, -1))
-        self.CenterOnScreen()
         self.classname.Bind(wx.EVT_TEXT, self.validate)
 
     def validate(self, event):
