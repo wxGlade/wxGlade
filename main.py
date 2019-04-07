@@ -1279,6 +1279,7 @@ class wxGladeFrame(wx.Frame):
         positions = self.layout_settings["sash_positions"][new_layout]
         self.splitter1.SetSashPosition( positions[0] )
         self.splitter2.SetSashPosition( positions[1] )
+        self.Refresh()
 
     def _store_layout(self):
         # store position, size and splitter sash positions
