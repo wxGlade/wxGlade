@@ -1227,7 +1227,6 @@ class wxGladeFrame(wx.Frame):
         if new_layout != self.layout_settings["layout"]:
             # set the splitters
             if not initial: self._store_layout()
-            self.Freeze()
             self.splitter2.Unsplit()
             self.splitter1.Unsplit()
             if new_layout==0:
@@ -1252,7 +1251,6 @@ class wxGladeFrame(wx.Frame):
                 self.SetSize( (self.layout_settings["widths"][1], self.GetSize()[1]) )
             elif self.layout_settings["layout"]==2 and new_layout in (0,1):
                 self.SetSize( (self.layout_settings["widths"][0], self.GetSize()[1]) )
-            self.Thaw()
             self.layout_settings["layout"] = new_layout
 
         # display in toolbar
@@ -1279,7 +1277,6 @@ class wxGladeFrame(wx.Frame):
         positions = self.layout_settings["sash_positions"][new_layout]
         self.splitter1.SetSashPosition( positions[0] )
         self.splitter2.SetSashPosition( positions[1] )
-        self.Refresh()
 
     def _store_layout(self):
         # store position, size and splitter sash positions
