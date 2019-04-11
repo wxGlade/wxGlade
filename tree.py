@@ -240,7 +240,11 @@ class WidgetTree(wx.TreeCtrl):#, Tree):
             self.SetItemData(item, data)
         def _GetItemData(self, item):
             if not bool(item): return None
-            return self.GetItemData(item)
+            try:
+                return self.GetItemData(item)
+            except RuntimeError:
+                # on GTK the above bool may return True even if the item is being deleted
+                return None
 
     def add2(self, child, parent, index, item=None):
         "insert an item for child into the list of parent's items; optionally re-use old item"
