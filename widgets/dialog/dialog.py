@@ -109,6 +109,10 @@ def builder(parent, pos):
         w.CenterOnScreen()
         w.Raise()
 
+    import clipboard
+    editor.drop_target = clipboard.DropTarget(editor)
+    editor.widget.SetDropTarget(editor.drop_target)
+
     # add a default vertical sizer
     import edit_sizers
     edit_sizers._builder(editor, 0)

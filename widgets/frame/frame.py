@@ -181,6 +181,10 @@ def builder(parent, pos, klass=None, base=None, name=None):
     import edit_sizers
     edit_sizers._builder(editor, 0)
 
+    import clipboard
+    editor.drop_target = clipboard.DropTarget(editor)
+    editor.widget.SetDropTarget(editor.drop_target)
+
     if wx.Platform == '__WXMSW__':
         #editor.widget.CenterOnScreen()
         editor.widget.Raise()
