@@ -188,7 +188,7 @@ def builder(parent, pos):
     "factory function for EditRadioBox objects"
     name = common.root.get_next_name('radio_box_%d', parent)
     with parent.frozen():
-        editor = EditRadioBox(label, parent, label, [[u'choice 1'],], 1, 0, pos)
+        editor = EditRadioBox(name, parent, name, [[u'choice 1'],], 1, 0, pos)
         if parent.widget: editor.create()
     return editor
 
