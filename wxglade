@@ -13,6 +13,9 @@
 #  2. in the module directory of the current Python
 #  3. in a parallel Python module directory
 
+# Keep this up to date with version.py and sphinx/conf.py
+WXG_VERSION="0.9.3"
+
 # search order for Python interpreter
 INTERPRETER_LIST="python3 python2 \
                   python2.7 python27 \
@@ -32,7 +35,39 @@ for INTERPRETER in $INTERPRETER_LIST; do
   # Python interpreter found
   PYTHON_BIN=$INTERPRETER
 
-  break
+  # determined current python version
+  PY_VERSION=$(${PYTHON_BIN} -c 'import sys; print(sys.version[:3])')
+
+  EGG_DIR="wxGlade-${WXG_VERSION}-py${PY_VERSION}.egg"
+
+  # determined prefix of the Python module directory structure
+  if [ -d "/usr/lib/pymodules/python${PY_VERSION}/wxglade" ]; then
+    WXG_MODULE_PATH="/usr/lib/pymodules/python${PY_VERSION}/wxglade"
+  elif [ -d "/usr/lib/pymodules/python${PY_VERSION}/site-packages/${EGG_DIR}/wxglade" ]; then
+    WXG_MODULE_PATH="/usr/lib/pymodules/python${PY_VERSION}/site-packages/${EGG_DIR}/wxglade"
+  else
+    WXG_MODULE_PATH="/usr/lib/python${PY_VERSION}/wxglade"
+  fi
+
+  # search wxglade.py
+  # dist-packages is only used in Debian and Debian derivates
+  CURR_DIR=$(dirname "$0")
+  for DIR in \
+     "${CURR_DIR}" \
+     "${WXG_MODULE_PATH}" \
+     "${CURR_DIR}/../lib/python${PY_VERSION}/site-packages/wxglade" \
+     "${CURR_DIR}/../lib/python${PY_VERSION}/site-packages/${EGG_DIR}/wxglade" \
+     "${CURR_DIR}/../lib/python${PY_VERSION}/dist-packages/wxglade" \
+     ; do
+    BINARY="${DIR}/wxglade.py"
+    if [ -e "${BINARY}" ]; then
+      WXG_BINARY="$BINARY"
+      break
+    fi
+  done
+  if [ -n "${WXG_BINARY}" ]; then
+    break
+  fi
 done
 
 if [ ! "$PYTHON_BIN" ]; then
@@ -40,34 +75,6 @@ if [ ! "$PYTHON_BIN" ]; then
   echo "       Please install Python to run wxGlade!"
   exit 1
 fi
-
-# determined current python version
-PY_VERSION=$(${PYTHON_BIN} -c 'import sys; print(sys.version[:3])')
-
-# determined prefix of the Python module directory structure
-if [ -d "/usr/lib/pymodules/python${PY_VERSION}/wxglade" ]; then
-  WXG_MODULE_PATH="/usr/lib/pymodules/python${PY_VERSION}/wxglade"
-elif [ -d "/usr/lib/pymodules/python${PY_VERSION}/site-packages/wxGlade-0.9.1-py${PY_VERSION}.egg/wxglade" ]; then
-  WXG_MODULE_PATH="/usr/lib/pymodules/python${PY_VERSION}/site-packages/wxGlade-0.9.1-py${PY_VERSION}.egg/wxglade"
-else
-  WXG_MODULE_PATH="/usr/lib/python${PY_VERSION}/wxglade"
-fi
-
-# search wxglade.py
-# dist-packages is only used in Debian and Debian derivates
-CURR_DIR=$(dirname "$0")
-for DIR in \
-   "${CURR_DIR}" \
-   "${WXG_MODULE_PATH}" \
-   "${CURR_DIR}/../lib/python${PY_VERSION}/site-packages/wxglade" \
-   "${CURR_DIR}/../lib/python${PY_VERSION}/dist-packages/wxglade" \
-   ; do
-  BINARY="${DIR}/wxglade.py"
-  if [ -e "${BINARY}" ]; then
-    WXG_BINARY="$BINARY"
-    break
-  fi
-done
 
 if [ ! "${WXG_BINARY}" ]; then
   echo "ERROR: wxglade.py not found!"
