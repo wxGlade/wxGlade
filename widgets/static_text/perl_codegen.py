@@ -15,7 +15,7 @@ class PerlStaticTextGenerator(wcodegen.PerlWidgetCodeWriter):
     def get_more_properties_code(self, obj):
         ret = []
         if obj.wrap>0:
-            ret.append( '%s->Wrap(%d);\n'%(self.tmpl_dict['name'], obj.wrap) )
+            ret.append( '%s->Wrap(%d);\n'%(self.codegen.format_generic_access(obj), obj.wrap) )
         return ret
 
 
