@@ -773,6 +773,7 @@ class Preferences(ConfigParser.ConfigParser):
         'show_sizer_handle': True,
         'show_palette_icons': True,
         'show_palette_labels': False,
+        'show_gridproperty_editors': False,
         'allow_duplicate_names': False,
         'autosave': True,
         'autosave_delay': 120,  # in seconds

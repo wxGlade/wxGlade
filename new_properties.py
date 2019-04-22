@@ -2231,6 +2231,21 @@ class GridProperty(Property):
                 self.buttons.append(reset_btn)
         else:
             self.buttons = []
+        
+        if config.preferences.show_gridproperty_editors:
+            # accessibility: navigation and editors to edit a row
+            edit_sizer = wx.FlexGridSizer(2, 3, 3)  # 2 columns
+            edit_sizer.AddGrowableCol(1)
+            self.editors = editors = []
+            for i, (label,datatype) in enumerate(self.col_defs):
+                edit_sizer.Add(wx.StaticText(panel, -1, _(label)), 0, wx.ALIGN_CENTER_VERTICAL)
+                editor = wx.TextCtrl(panel)
+                edit_sizer.Add(editor, 1, wx.EXPAND)
+                #GridProperty.col_format[datatype](self.grid, i)
+                editors.append(editor)
+                editor.Bind(wx.EVT_KEY_DOWN, self.on_key_editor)
+        else:
+            self.editors = []
 
         # the grid #####################################################################################################
         self.grid = wx.grid.Grid(panel, -1)
@@ -2253,6 +2268,9 @@ class GridProperty(Property):
         # add the button sizer and the grid to the sizer ###############################################################
         if self.buttons:
             box_sizer.Add(btn_sizer, 0, wx.BOTTOM | wx.EXPAND, 2)
+        if self.editors:
+            box_sizer.Add(edit_sizer, 0, wx.BOTTOM | wx.EXPAND, 2)
+            
         box_sizer.Add(self.grid, 1, wx.EXPAND)
         # add our sizer to the main sizer   XXX change if required
         sizer.Add(box_sizer, self._PROPORTION, wx.EXPAND)
@@ -2275,6 +2293,54 @@ class GridProperty(Property):
         # On wx 2.8 the EVT_CHAR_HOOK handler for the control does not get called, so on_char will be called from main
         #self.grid.Bind(wx.EVT_CHAR_HOOK, self.on_char)
         self._width_delta = None
+
+    def on_key_editor(self, event):
+        # handle up/down arrow; only for accessibilty option 'show_gridproperty_editors'
+        keycode = event.KeyCode
+        if keycode==wx.WXK_UP:
+            self.cur_row -= 1
+        elif keycode==wx.WXK_DOWN:
+            self.cur_row += 1
+        else:
+            event.Skip()
+            return
+
+        value = self.editing_values if self.editing_values is not None else self.value
+        row_count = len(value)
+        if self.can_add and self.immediate: row_count += 1
+        
+        if self.cur_row<0:
+            self.cur_row = 0
+        elif self.cur_row >= row_count:
+            self.cur_row = row_count - 1
+
+        self.cur_col = self.editors.index( event.GetEventObject() )
+        self.grid.SelectRow(self.cur_row)
+        self.on_focus()
+        self._update_editors()
+
+    def _update_editors(self):
+        if not self.editors: return
+        value = self.editing_values if self.editing_values is not None else self.value
+        row_count = len(value)
+        if self.can_add and self.immediate: row_count += 1
+
+        try:
+            row = value[self.cur_row]
+        except IndexError:
+            row = None
+            
+        for i, (label,datatype) in enumerate(self.col_defs):
+            editor = self.editors[i]
+            if row is None and not self.can_add:
+                editor.Clear()
+                editor.Disable()
+            elif row is None:
+                editor.Clear()
+                editor.Enable()
+            else:
+                editor.SetValue(row[i])
+                editor.Enable()
 
     def on_char(self, event):
         if isinstance(self.grid.FindFocus(), wx.TextCtrl):
@@ -2509,6 +2575,7 @@ class GridProperty(Property):
         self.cur_col = event.GetCol()
         event.Skip()
         self.on_focus()
+        self._update_editors()
 
     def update_display(self, start_editing=False):
         if start_editing: self.editing = True
@@ -2541,6 +2608,7 @@ class GridProperty(Property):
         self._update_apply_button()
         self._update_remove_button()
         self._update_indices()
+        self._update_editors()
 
     def apply(self, event=None):
         """Apply the edited value; called by Apply button.
@@ -2572,7 +2640,7 @@ class GridProperty(Property):
         self.editing_values = None
         self._initialize_indices()
         self._update_indices()
-
+        self._update_editors()
         self._update_apply_button()
         if event is not None: event.Skip()
     
@@ -2679,6 +2747,7 @@ class GridProperty(Property):
             #value = bool(value)
         data[row][col] = value
         if activate_apply: self._update_apply_button()
+        self._update_editors()
         event.Skip()
 
     def add_row(self, event):
@@ -2689,7 +2758,7 @@ class GridProperty(Property):
         values.append( default_row_values )
         self.grid.AppendRows()
         for col, value in enumerate(default_row_values):
-            self.grid.SetCellValue(row, col, default_row_values[col])
+            self.grid.SetCellValue(row, col, str(default_row_values[col]))
         self.grid.MakeCellVisible(len(values), 0)
         self.grid.ForceRefresh()
         if self.with_index:
@@ -2697,6 +2766,7 @@ class GridProperty(Property):
         self._update_remove_button()
         self._update_apply_button()
         self._update_indices()
+        self._update_editors()
         if compat.version >= (3,0):
             self.grid.GoToCell( len(values)-1, self.cur_col )
             self.grid.SetFocus()
@@ -2720,6 +2790,7 @@ class GridProperty(Property):
         self._update_remove_button()
         self._update_apply_button()
         self._update_indices()
+        self._update_editors()
         if compat.version >= (3,0):
             self.grid.GoToCell( self.cur_row, self.cur_col )
             self.grid.SetFocus()
@@ -2737,6 +2808,7 @@ class GridProperty(Property):
         self._update_remove_button()
         self._update_apply_button()
         self._update_indices()
+        self._update_editors()
         if compat.version >= (3,0):
             self.grid.GoToCell( self.cur_row, self.cur_col )
             self.grid.SetFocus()
