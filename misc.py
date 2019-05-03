@@ -427,6 +427,7 @@ def _cancel():
 @restore_focus
 def drop():
     global focused_widget
+    method = None
     if not focused_widget: return
     if not focused_widget.check_drop_compatibility():
         wx.Bell()
