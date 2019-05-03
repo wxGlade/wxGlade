@@ -232,7 +232,9 @@ class wxGladePropertyPanel(wx.Panel):
         w_scrollbar = wx.SystemSettings.GetMetric(wx.SYS_VSCROLL_X)  # width a of a scrollbar
 
         panel = [w for w in scrolled.GetChildren() if isinstance(w, wx.Panel)][0]
-        wm, hm = panel.GetSizer().GetMinSize()
+        szr = panel.GetSizer()
+        if not szr: return
+        wm, hm = szr.GetMinSize()
         if hs<hm:
             # best size is smaller than the available height -> enable scrolling
             scrolled.SetScrollbars(1, 5, 1, int(math.ceil(hm/5.0)))
