@@ -474,6 +474,7 @@ class TestGui(WXGladeGUITest):
 
     def test_toplevels_no_size(self):
         "Test frame, panel, dialog without size"
+        # previous versions wrote only the last of the three panels
         self.load_and_generate('toplevels_no_size', test_GUI=True)
 
     def test_unsupported_flags(self):
