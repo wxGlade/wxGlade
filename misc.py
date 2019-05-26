@@ -168,6 +168,7 @@ class SelectionMarker(object):
         if self.visible != visible:
             self.visible = visible
             if self.visible:
+                if not self.parent: return
                 if not self.tags:
                     self.tags = [SelectionTag(self.parent) for i in range(4)]
                 for i,pos in enumerate(self.tag_pos):

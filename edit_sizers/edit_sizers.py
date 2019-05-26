@@ -1729,7 +1729,7 @@ class EditFlexGridSizer(GridSizerBase):
         p.set_active(bool(p.value))
         self.properties_changed([p_name])
         p.update_display()
-    
+
     def ask_growable(self, row, col):
         "ask user whether to make a row or col growable when the user has selected EXPAND without a growable row or col"
         import dialogs
