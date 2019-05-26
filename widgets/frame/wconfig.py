@@ -54,5 +54,11 @@ config = {
                    'wxFRAME_FLOAT_ON_PARENT', 'wxNO_BORDER',
                    'wxFULL_REPAINT_ON_RESIZE',
                    'wxTAB_TRAVERSAL', 'wxCLIP_CHILDREN'],
+    'events': {
+        'EVT_CLOSE': {'type':'wxCloseEvent'},
+        'EVT_MENU_OPEN': {'type':'MenuEvent'},
+        'EVT_MENU_CLOSE': {'type':'MenuEvent'},
+        'EVT_MENU_HIGHLIGHT': {'type':'MenuEvent'},
+        'EVT_MENU_HIGHLIGHT_ALL': {'type':'MenuEvent'},
+    },
 }
-
