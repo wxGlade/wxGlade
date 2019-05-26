@@ -2241,9 +2241,12 @@ class GridProperty(Property):
                 edit_sizer.Add(wx.StaticText(panel, -1, _(label)), 0, wx.ALIGN_CENTER_VERTICAL)
                 editor = wx.TextCtrl(panel)
                 edit_sizer.Add(editor, 1, wx.EXPAND)
-                #GridProperty.col_format[datatype](self.grid, i)
                 editors.append(editor)
-                editor.Bind(wx.EVT_KEY_DOWN, self.on_key_editor)
+                editor.Bind(wx.EVT_KILL_FOCUS, self.on_kill_focus_editor)
+                editor.Bind(wx.EVT_SET_FOCUS, self.on_focus_editor)
+                # use EVT_CHAR_HOOK as EVT_CHAR and EVT_KEY_DOWN don't work for Enter key, even with TE_PROCESS_ENTER
+                editor.Bind(wx.EVT_CHAR_HOOK, self.on_char_editor)
+                editor.Bind(wx.EVT_TEXT, self.on_text_editor)
         else:
             self.editors = []
 
@@ -2294,55 +2297,8 @@ class GridProperty(Property):
         #self.grid.Bind(wx.EVT_CHAR_HOOK, self.on_char)
         self._width_delta = None
 
-    def on_key_editor(self, event):
-        # handle up/down arrow; only for accessibilty option 'show_gridproperty_editors'
-        keycode = event.KeyCode
-        if keycode==wx.WXK_UP:
-            self.cur_row -= 1
-        elif keycode==wx.WXK_DOWN:
-            self.cur_row += 1
-        else:
-            event.Skip()
-            return
-
-        value = self.editing_values if self.editing_values is not None else self.value
-        row_count = len(value)
-        if self.can_add and self.immediate: row_count += 1
-        
-        if self.cur_row<0:
-            self.cur_row = 0
-        elif self.cur_row >= row_count:
-            self.cur_row = row_count - 1
-
-        self.cur_col = self.editors.index( event.GetEventObject() )
-        self.grid.SelectRow(self.cur_row)
-        self.on_focus()
-        self._update_editors()
-
-    def _update_editors(self):
-        if not self.editors: return
-        value = self.editing_values if self.editing_values is not None else self.value
-        row_count = len(value)
-        if self.can_add and self.immediate: row_count += 1
-
-        try:
-            row = value[self.cur_row]
-        except IndexError:
-            row = None
-            
-        for i, (label,datatype) in enumerate(self.col_defs):
-            editor = self.editors[i]
-            if row is None and not self.can_add:
-                editor.Clear()
-                editor.Disable()
-            elif row is None:
-                editor.Clear()
-                editor.Enable()
-            else:
-                editor.SetValue(row[i])
-                editor.Enable()
-
     def on_char(self, event):
+        # key handler for grid
         if isinstance(self.grid.FindFocus(), wx.TextCtrl):
             # a cell is being edited
             event.Skip()
@@ -2654,6 +2610,15 @@ class GridProperty(Property):
         self.update_display()
         event.Skip()
 
+    def _validate(self, row, col, value, bell=True):
+        if not self.validation_res or not self.validation_res[col]:
+            return True
+        validation_re = self.validation_res[col]
+        match = validation_re.match(value)
+        if match: return True
+        if bell: wx.Bell()
+        return False
+
     def _get_new_value(self):
         # returns None if not edited
         if self.editing_values is None: return None
@@ -2703,7 +2668,7 @@ class GridProperty(Property):
         for i, index in enumerate(self.indices):
             self.grid.SetRowLabelValue(i, index)
 
-    # edit handlers; add/remove/insert button handlers #################################################################
+    # grid event handlers ##############################################################################################
     def on_cell_changing(self, event):
         # XXX validate; event.Veto if not valid
         self.on_focus()
@@ -2711,28 +2676,32 @@ class GridProperty(Property):
         row,col = event.Row, event.Col
 
     def on_cell_changed(self, event):
-        # user has entered a value
+        # user has entered a value into the grid
         self.on_focus()
         row,col = event.Row, event.Col
         value = event.GetEventObject().GetCellValue(row,col)  # the new value
-        if self.validation_res and self.validation_res[col]:
-            validation_re = self.validation_res[col]
-            match = validation_re.match(value)
-            if not match:
-                wx.Bell()
-                event.Veto()
-                return
+        OK = self._on_value_edited(row, col, value)
+        if not OK: event.Veto()
+        event.Skip()
+        self._update_editors()
+
+    def _on_value_edited(self, row, col, value):
+        # returns False if the new value is not OK
+        # grid and editors need to be updated outside
+
+        if not self._validate(row, col, value):
+            wx.Bell()
+            return False
 
         if self.immediate or (not self.can_add and not self.can_insert and not self.can_insert):
             if row>=len(self.value):
                 self.add_row(None)
-            # immediate
+            # immediate, i.e. no editing_values
             if self.value[row] is None:
                 self.value[row] = self.default_row[:]
             self.value[row][col] = value
             self._notify()
-            event.Skip()
-            return
+            return True
 
         activate_apply = not self.editing_values
         data = self._ensure_editing_copy()
@@ -2747,9 +2716,106 @@ class GridProperty(Property):
             #value = bool(value)
         data[row][col] = value
         if activate_apply: self._update_apply_button()
-        self._update_editors()
+        return True
+
+    # event handlers for the optional property editors (text controls) #################################################
+    def on_focus_editor(self, event):
+        if self.cur_row is not None and self.cur_row<self.grid.NumberRows:
+            self.grid.SelectRow(self.cur_row)
         event.Skip()
 
+    def on_text_editor(self, event):
+        # editor text control content changed; validate and display result / update values
+        ctrl = event.GetEventObject()
+        col = self.editors.index( ctrl )
+        if not self._validate(self.cur_row, col, event.GetString(), bell=False ):
+            ctrl.SetBackgroundColour(wx.RED)
+            return
+        ctrl.SetBackgroundColour(wx.NullColour)
+        event.Skip()
+
+    def _on_editor_edited(self, event):
+        # called from key or focus event handler; set value if valid
+        ctrl = event.GetEventObject()
+        if not ctrl: return False
+        col = self.editors.index( ctrl )
+
+        ret = False
+
+        value = ctrl.GetValue()
+        if value == self.grid.GetCellValue(self.cur_row, col):
+            return False
+
+        if self._on_value_edited(self.cur_row, col, value):
+            value = self._ensure_editing_copy()[self.cur_row][col]
+            self.grid.SetCellValue(self.cur_row, col, value)
+            ret = True
+
+        self.cur_col = col
+        self.grid.SelectRow(self.cur_row)
+        self.on_focus()
+
+        return ret
+
+    def on_kill_focus_editor(self, event):
+        self._on_editor_edited(event)
+        self._update_editors(event.GetEventObject())
+        event.Skip()
+
+    def on_char_editor(self, event):
+        # EVT_CHAR_HOOK handler
+        keycode = event.KeyCode
+        if keycode not in (wx.WXK_RETURN, wx.WXK_ESCAPE, wx.WXK_UP, wx.WXK_DOWN):
+            event.Skip()
+            return
+
+        if keycode == wx.WXK_ESCAPE:
+            self._update_editors()
+            return
+
+        self._on_editor_edited(event)
+        if keycode==wx.WXK_UP:
+            self._set_row_index( self.cur_row - 1 )
+        elif keycode==wx.WXK_DOWN:
+            self._set_row_index( self.cur_row + 1 )
+
+        self._update_editors()
+
+    def _set_row_index(self, row):
+        value = self.editing_values if self.editing_values is not None else self.value
+        row_count = len(value)
+        if self.can_add and self.immediate: row_count += 1
+
+        self.cur_row = row
+        if self.cur_row<0:
+            self.cur_row = 0
+        elif self.cur_row >= row_count:
+            self.cur_row = row_count - 1
+        self.grid.SelectRow(self.cur_row)
+
+    def _update_editors(self, ctrl=None):
+        if not self.editors: return
+        value = self.editing_values if self.editing_values is not None else self.value
+
+        try:
+            row = value[self.cur_row]
+        except IndexError:
+            row = None
+            
+        for i, (label,datatype) in enumerate(self.col_defs):
+            editor = self.editors[i]
+            if ctrl is not None and editor is not ctrl: continue
+            if row is None and not self.can_add:
+                editor.Clear()
+                editor.Disable()
+            elif row is None:
+                editor.Clear()
+                editor.Enable()
+            else:
+                editor.SetValue(row[i])
+                editor.Enable()
+
+    # add/insert/remove rows; update action buttons#####################################################################
     def add_row(self, event):
         self.on_focus()
         values = self._ensure_editing_copy()
@@ -2766,10 +2832,8 @@ class GridProperty(Property):
         self._update_remove_button()
         self._update_apply_button()
         self._update_indices()
-        self._update_editors()
         if compat.version >= (3,0):
             self.grid.GoToCell( len(values)-1, self.cur_col )
-            self.grid.SetFocus()
 
     def remove_row(self, event):
         self.on_focus()
@@ -2834,7 +2898,7 @@ class GridProperty(Property):
 
     # helpers ##########################################################################################################
     def _set_col_sizes(self, sizes):
-        """sets the width of the columns.
+        """called from create_editor; sets the width of the columns.
         sizes is a list of integers with the size of each column: a value of 0 stands for a default size,
         while -1 means to expand the column to fitthe available space (at most one column can have size -1)"""
         col_to_expand = -1
