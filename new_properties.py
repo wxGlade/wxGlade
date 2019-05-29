@@ -2031,7 +2031,17 @@ class ColorProperty(DialogProperty):
         'wxSYS_COLOUR_3DSHADOW': wx.SYS_COLOUR_3DSHADOW,
         'wxSYS_COLOUR_3DHIGHLIGHT': wx.SYS_COLOUR_3DHIGHLIGHT,
         'wxSYS_COLOUR_3DHILIGHT': wx.SYS_COLOUR_3DHILIGHT,
-        'wxSYS_COLOUR_BTNHILIGHT': wx.SYS_COLOUR_BTNHILIGHT
+        'wxSYS_COLOUR_BTNHILIGHT': wx.SYS_COLOUR_BTNHILIGHT,
+        'wxSYS_COLOUR_LISTBOX': wx.SYS_COLOUR_LISTBOX,
+        'wxSYS_COLOUR_HOTLIGHT': wx.SYS_COLOUR_HOTLIGHT,
+        'wxSYS_COLOUR_GRADIENTACTIVECAPTION': wx.SYS_COLOUR_GRADIENTACTIVECAPTION,
+        'wxSYS_COLOUR_GRADIENTINACTIVECAPTION': wx.SYS_COLOUR_GRADIENTINACTIVECAPTION,
+        'wxSYS_COLOUR_MENUHILIGHT': wx.SYS_COLOUR_MENUHILIGHT,
+        'wxSYS_COLOUR_MENUBAR': wx.SYS_COLOUR_MENUBAR,
+        'wxSYS_COLOUR_LISTBOXTEXT': wx.SYS_COLOUR_LISTBOXTEXT,
+        # these are not supported by wxWidgets 2.8:
+        # wx.SYS_COLOUR_LISTBOXHIGHLIGHTTEXT
+        # wx.SYS_COLOUR_FRAMEBK
         }
     colors_to_str = misc._reverse_dict(str_to_colors)
     def __init__(self, value="", multiline=False, strip=True, default_value=wx.NullColour, name=None):
