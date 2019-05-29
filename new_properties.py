@@ -1093,7 +1093,12 @@ class WidgetStyleProperty(_CheckListProperty):
             splitted = [v.strip() for v in value.split("|")]
             value = set(splitted)
             for v in splitted:
-                style_def = self.style_defs[v]
+                try:
+                    style_def = self.style_defs[v]
+                except:
+                    self._logger.warning( _('Style "%s" not supported for widget "%s"')%(v, self.owner.WX_CLASS) )
+                    value.remove(v)
+                    continue
                 if "exclude" in style_def:
                     value.difference_update(style_def["exclude"])
                 value.add(v)
