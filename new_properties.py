@@ -2827,7 +2827,7 @@ class GridProperty(Property):
                 editor.Clear()
                 editor.Enable()
             else:
-                editor.SetValue(row[i])
+                editor.SetValue(str(row[i]))
                 editor.Enable()
 
     # add/insert/remove rows; update action buttons#####################################################################
