@@ -3,7 +3,7 @@ Code generator functions for wxToolBar objects
 
 @copyright: 2002-2007 Alberto Griggio
 @copyright: 2014-2016 Carsten Grohmann
-@copyright: 2016-2017 Dietmar Schwertberger
+@copyright: 2016-2019 Dietmar Schwertberger
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
@@ -28,7 +28,6 @@ class PythonCodeGenerator(wcodegen.PythonWidgetCodeWriter):
             append( '%s.SetToolPacking(%s)\n' % (obj_name, obj.packing) )
         if obj.properties["separation"].is_active():
             append( '%s.SetToolSeparation(%s)\n' % (obj_name, obj.separation) )
-        append( '%s.Realize()\n' % obj_name )
 
         return out
 
@@ -38,6 +37,8 @@ class PythonCodeGenerator(wcodegen.PythonWidgetCodeWriter):
         ids = []
 
         obj_name = self.format_widget_access(obj)
+
+        bmp1 = self.generate_code_bitmap("empty:16,16")
 
         for tool in obj.tools:
             if tool.id == '---':  # item is a separator
@@ -55,7 +56,10 @@ class PythonCodeGenerator(wcodegen.PythonWidgetCodeWriter):
                     kind = kinds[int(tool.type)]
                 except (IndexError, ValueError):
                     kind = 'wxITEM_NORMAL'
-                bmp1 = self.generate_code_bitmap(tool.bitmap1)
+                if tool.bitmap1:
+                    bmp1 = self.generate_code_bitmap(tool.bitmap1, required=self.codegen.preview)
+                else:
+                    bmp1 = self.generate_code_bitmap("empty:16,16")
                 bmp2 = self.generate_code_bitmap(tool.bitmap2)
                 method = "AddLabelTool" if compat.IS_CLASSIC else "AddTool"
                 append( '%s.%s(%s, %s, %s, %s, %s, %s, %s)\n' %
@@ -67,20 +71,21 @@ class PythonCodeGenerator(wcodegen.PythonWidgetCodeWriter):
 
     def get_code(self, obj):
         "function that generates Python code for the menubar of a wxFrame"
-        #style = obj.properties.get('style')
         style = obj.properties['style'].get_string_value()
         if style:
             style = ', style=' + self.cn_f( 'wxTB_HORIZONTAL|' + style )
-        #else:
-            #style = ''
         klass = obj.klass
         if klass == obj.base:
             klass = self.cn(klass)
-        init = ['\n', '# Tool Bar\n', 'self.%s = %s(self, -1%s)\n' %
-                                                      (obj.name, klass, style), 'self.SetToolBar(self.%s)\n' % obj.name]
-        init.extend( self.get_init_code(obj) )
-        init.append( '# Tool Bar end\n' )
-        return init, self.get_properties_code(obj), []
+        code = ['# Tool Bar\n',
+                'self.%s = %s(self, -1%s)\n' % (obj.name, klass, style)
+                ] + self.get_init_code(obj) + self.get_properties_code(obj) + self.get_layout_code(obj) + [
+                'self.SetToolBar(self.%s)\n' % obj.name,
+                '# Tool Bar end\n']
+        return code, []
+
+    def get_layout_code(self, obj):
+        return ['%s.Realize()\n' % self.format_widget_access(obj)]
 
     def get_event_handlers(self, obj):
         out = []
@@ -185,10 +190,13 @@ class CppCodeGenerator(wcodegen.CppWidgetCodeWriter):
             style = ', wxDefaultPosition, wxDefaultSize, wxTB_HORIZONTAL|' + style
         else:
             style = ''
-        init = ['%s = new %s(this, -1%s);\n' % (obj.name, obj.klass, style), 'SetToolBar(%s);\n' % obj.name]
-        init.extend(self.get_properties_code(obj))
+        init = ['%s = new %s(this, -1%s);\n' % (obj.name, obj.klass, style), 'SetToolBar(%s);\n' % obj.name
+                ] + self.get_properties_code(obj) + self.get_layout_code(obj)
         ids = self.get_ids_code(obj)
-        return init, ids, [], []
+        return init, ids, []
+
+    def get_layout_code(self, obj):
+        return ['%sRealize();\n' % self.codegen.format_generic_access(obj)]
 
     def get_properties_code(self, obj):
         out = []
@@ -232,8 +240,6 @@ class CppCodeGenerator(wcodegen.CppWidgetCodeWriter):
                         self.codegen.quote_str(tool.short_help),
                         self.codegen.quote_str(tool.long_help)))
 
-        append('%sRealize();\n' % obj_name)
-
         return out
 
     def get_ids_code(self, obj):
@@ -264,11 +270,10 @@ class CppCodeGenerator(wcodegen.CppWidgetCodeWriter):
         return out
 
 
-
 def initialize():
     klass = 'wxToolBar'
     common.class_names['EditToolBar'] = klass
     common.toplevels['EditToolBar'] = 1
-    common.register('python', klass, PythonCodeGenerator(klass), 'tools')
-    common.register('C++',    klass, CppCodeGenerator(klass),    'tools')
-    common.register('XRC',    klass, xrc_code_generator,         'tools')
+    common.register('python', klass, PythonCodeGenerator(klass))
+    common.register('C++',    klass, CppCodeGenerator(klass))
+    common.register('XRC',    klass, xrc_code_generator)

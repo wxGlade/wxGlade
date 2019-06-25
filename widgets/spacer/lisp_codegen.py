@@ -8,12 +8,10 @@ Lisp generator functions for spacers
 
 import common
 import wcodegen
+from . import spacer_base
 
 
-class LispSpacerGenerator(wcodegen.LispWidgetCodeWriter):
-    # spacers are generally handled by a hack:
-    # The the implementations of add_sizeritem() contains more details.
-    # The code generation code is already implemented in base class.
+class LispSpacerGenerator(spacer_base.SpacerMixin, wcodegen.LispWidgetCodeWriter):
     pass
 
 

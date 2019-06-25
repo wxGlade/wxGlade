@@ -27,7 +27,6 @@ class PythonStatusBarGenerator(wcodegen.PythonWidgetCodeWriter):
 
         append = self.tmpl_props.append
         append( '%(name)s.SetStatusWidths(%(widths)s)\n' )
-        append( '\n' )
 
         # don't add statusbar fields without labels
         if [lb for lb in labels if lb]:
@@ -98,21 +97,12 @@ def initialize():
 
     pygen = common.code_writers.get('python')
     if pygen:
-        pygen.add_widget_handler('wxStatusBar', PythonStatusBarGenerator(klass))
-
-        #aph = pygen.add_property_handler
-        #aph('statusbar', pygen.DummyPropertyHandler)
-        #aph('fields', StatusFieldsHandler)
+        pygen.register_widget_code_generator('wxStatusBar', PythonStatusBarGenerator(klass))
 
     xrcgen = common.code_writers.get('XRC')
     if xrcgen:
-        xrcgen.add_widget_handler('wxStatusBar', xrc_statusbar_code_generator)
-        #xrcgen.add_property_handler('fields', StatusFieldsHandler)
+        xrcgen.register_widget_code_generator('wxStatusBar', xrc_statusbar_code_generator)
 
     cppgen = common.code_writers.get('C++')
     if cppgen:
-        cppgen.add_widget_handler('wxStatusBar', CppStatusBarGenerator(klass))
-
-        #aph = cppgen.add_property_handler
-        #aph('fields', StatusFieldsHandler)
-        #aph('statusbar', cppgen.DummyPropertyHandler)
+        cppgen.register_widget_code_generator('wxStatusBar', CppStatusBarGenerator(klass))

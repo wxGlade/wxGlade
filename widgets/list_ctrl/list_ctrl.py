@@ -3,7 +3,7 @@ wxListCtrl objects
 
 @copyright: 2002-2007 Alberto Griggio
 @copyright: 2014-2016 Carsten Grohmann
-@copyright: 2016-2018 Dietmar Schwertberger
+@copyright: 2016-2019 Dietmar Schwertberger
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
@@ -11,29 +11,28 @@ import wx
 from edit_windows import ManagedBase, EditStylesMixin
 from widgets.grid.grid import GridColsProperty, ColsHandler
 import new_properties as np
-from tree import Node
 import common, misc, compat
 
 
 class EditListCtrl(ManagedBase, EditStylesMixin):
     "Class to handle wxListCtrl objects"
 
-    update_widget_style = True
-
+    WX_CLASS = "wxListCtrl"
     _PROPERTIES = ["Widget", "style", "columns", "rows_number"]
     PROPERTIES = ManagedBase.PROPERTIES + _PROPERTIES + ManagedBase.EXTRA_PROPERTIES
     _PROPERTY_HELP = {"rows_number":"This is just used for the design and preview windows.",
                       "columns":"Only for style LC_REPORT."}
+    update_widget_style = True
 
-    def __init__(self, name, parent, id, sizer, pos, style=wx.LC_REPORT | wx.BORDER_SUNKEN):
-        ManagedBase.__init__(self, name, 'wxListCtrl', parent, id, sizer, pos)
+    def __init__(self, name, parent, pos, style=wx.LC_REPORT | wx.BORDER_SUNKEN):
+        ManagedBase.__init__(self, name, 'wxListCtrl', parent, pos)
         EditStylesMixin.__init__(self)
         if style: self.properties["style"].set(style)
         self.columns = GridColsProperty([])
         self.rows_number = np.SpinProperty(0, immediate=True, default_value=0)
 
     def create_widget(self):
-        self.widget = wx.ListCtrl(self.parent.widget, self.id, style=self.style)
+        self.widget = wx.ListCtrl(self.parent_window.widget, self.id, style=self.style)
         self._update_widget_properties(modified=None)
         self.widget.Bind(wx.EVT_LIST_COL_CLICK, self.on_set_focus)
         self.widget.Bind(wx.EVT_LIST_COL_END_DRAG, self._on_grid_col_resize)
@@ -107,45 +106,30 @@ class EditListCtrl(ManagedBase, EditStylesMixin):
         return ManagedBase.get_property_handler(self, name)
 
 
-def builder(parent, sizer, pos, number=[1]):
+def builder(parent, pos):
     "factory function for EditListCtrl objects"
-    name = 'list_ctrl_%d' % number[0]
-    while common.app_tree.has_name(name):
-        number[0] += 1
-        name = 'list_ctrl_%d' % number[0]
+    name = common.root.get_next_name('list_ctrl_%d', parent)
     with parent.frozen():
-        list_ctrl = EditListCtrl(name, parent, wx.NewId(), sizer, pos)
+        editor = EditListCtrl(name, parent, pos)
         #list_ctrl.properties["style"].set_to_default()  # default is wxLC_ICON
-        list_ctrl.properties["columns"].set( [['A', -1], ['B', -1], ['C', -1]] )
-        list_ctrl.properties["rows_number"].set(10)
-        list_ctrl.properties["style"].set( ["wxLC_REPORT", "wxLC_HRULES", "wxLC_VRULES"] )
-        node = Node(list_ctrl)
-        list_ctrl.node = node
-        list_ctrl.properties["proportion"].set(1)
-        list_ctrl.properties["flag"].set("wxEXPAND")
-        if parent.widget: list_ctrl.create()
-    common.app_tree.insert(node, sizer.node, pos-1)
+        editor.properties["columns"].set( [['A', -1], ['B', -1], ['C', -1]] )
+        editor.properties["rows_number"].set(10)
+        editor.properties["style"].set( ["wxLC_REPORT", "wxLC_HRULES", "wxLC_VRULES"] )
+        editor.properties["proportion"].set(1)
+        editor.properties["flag"].set("wxEXPAND")
+        if parent.widget: editor.create()
     #sizer.set_item(list_ctrl.pos, 1, wx.EXPAND)
+    return editor
 
 
-def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
+def xml_builder(attrs, parent, pos=None):
     "factory function to build EditListCtrl objects from a XML file"
     from xml_parse import XmlParsingError
     try:
         name = attrs['name']
     except KeyError:
         raise XmlParsingError(_("'name' attribute missing"))
-    if sizer is None or sizeritem is None:
-        raise XmlParsingError(_("sizer or sizeritem object cannot be None"))
-    list_ctrl = EditListCtrl(name, parent, wx.NewId(), sizer, pos, style=0)
-    #sizer.set_item(list_ctrl.pos, proportion=sizeritem.proportion, span=sizeritem.span, flag=sizeritem.flag, border=sizeritem.border)
-    node = Node(list_ctrl)
-    list_ctrl.node = node
-    if pos is None:
-        common.app_tree.add(node, sizer.node)
-    else:
-        common.app_tree.insert(node, sizer.node, pos-1)
-    return list_ctrl
+    return EditListCtrl(name, parent, pos, style=0)
 
 
 def initialize():

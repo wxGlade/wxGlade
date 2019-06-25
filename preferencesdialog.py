@@ -40,6 +40,10 @@ class wxGladePreferences(wxGladePreferencesUI):
             self.remember_geometry.SetValue( self.preferences.remember_geometry )
             self.local_widget_path.SetValue( self.preferences.local_widget_path )
             self.show_sizer_handle.SetValue( self.preferences.show_sizer_handle )
+            self.show_palette_icons.SetValue( self.preferences.show_palette_icons )
+            self.show_palette_labels.SetValue( self.preferences.show_palette_labels )
+            self.show_gridproperty_editors.SetValue( self.preferences.show_gridproperty_editors )
+            
             self.allow_duplicate_names.SetValue( self.preferences.allow_duplicate_names )
             self.autosave.SetValue(self.preferences.autosave)
             self.autosave_delay.SetValue(self.preferences.autosave_delay)
@@ -92,8 +96,13 @@ class wxGladePreferences(wxGladePreferencesUI):
         prefs['remember_geometry'] = self.remember_geometry.GetValue()
         prefs['local_widget_path'] = self.local_widget_path.GetValue()
         prefs['show_sizer_handle'] = self.show_sizer_handle.GetValue()
-        prefs['allow_duplicate_names'] = \
-            self.allow_duplicate_names.GetValue()
+        show_icons = self.show_palette_icons.GetValue()
+        show_text = self.show_palette_labels.GetValue()
+        if not show_icons and not show_text: show_icons = True
+        prefs['show_palette_icons'] = show_icons
+        prefs['show_palette_labels'] = show_text
+        prefs['show_gridproperty_editors'] = self.show_gridproperty_editors.GetValue()
+        prefs['allow_duplicate_names'] = self.allow_duplicate_names.GetValue()
         prefs['autosave'] = self.autosave.GetValue()
         prefs['autosave_delay'] = self.autosave_delay.GetValue()
         prefs['show_completion'] = self.show_completion.GetValue()

@@ -35,7 +35,6 @@ class PerlCodeGenerator(wcodegen.PerlWidgetCodeWriter):
 
         if obj.properties["separation"].is_active():
             append( '%s->SetToolSeparation(%s);\n' % (obj_name, obj.separation) )
-        append( '%s->Realize();\n' % obj_name )
 
         return out
 
@@ -88,17 +87,19 @@ class PerlCodeGenerator(wcodegen.PerlWidgetCodeWriter):
         else:
             klass = self.cn(klass)
 
-        init.append( '\n')
-        init.append( '# Tool Bar\n')
-        init.append( '$self->{%s} = %s->new($self, -1%s);\n' % (obj.name, klass, extra) )
-        init.append( '$self->SetToolBar($self->{%s});\n' % obj.name )
-        init.extend( self.get_init_code(obj) )
-        init.append( '# Tool Bar end\n' )
-        return init, self.get_properties_code(obj), []
+        init = ['\n', '# Tool Bar\n',
+                '$self->{%s} = %s->new($self, -1%s);\n' % (obj.name, klass, extra)
+                ] + self.get_init_code(obj) + self.get_properties_code(obj) + self.get_layout_code(obj) + [
+                '$self->SetToolBar($self->{%s});\n' % obj.name,
+                '# Tool Bar end\n' ]
+        return init, []
+
+    def get_layout_code(self, obj):
+        return ['%s->Realize();\n' % self.format_widget_access(obj)]
 
 
 def initialize():
     klass = 'wxToolBar'
     common.class_names['EditToolBar'] = klass
     common.toplevels['EditToolBar'] = 1
-    common.register('perl', klass, PerlCodeGenerator(klass), 'tools')#, ToolsHandler)
+    common.register('perl', klass, PerlCodeGenerator(klass))

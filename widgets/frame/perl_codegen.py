@@ -14,7 +14,7 @@ class PerlFrameCodeGenerator(wcodegen.PerlWidgetCodeWriter):
     new_signature = ['$parent', '$id', '$title', '$pos', '$size', '$style', '$name']
 
     def get_code(self, obj):
-        return [], [], [], []  # the frame can't be a children
+        return [], []  # the frame can't be a children
 
     def get_properties_code(self, obj):
         out = []
@@ -50,9 +50,6 @@ def initialize():
 
     plgen = common.code_writers.get('perl')
     if plgen:
-        awh = plgen.add_widget_handler
+        awh = plgen.register_widget_code_generator
         awh('wxFrame', PerlFrameCodeGenerator(klass))
         awh('wxMDIChildFrame', PerlMDIChildFrameCodeGenerator(klass))
-
-        #aph = plgen.add_property_handler
-        #aph('menubar', plgen.DummyPropertyHandler)

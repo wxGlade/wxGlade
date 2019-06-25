@@ -3,14 +3,13 @@ wxRadioBox objects
 
 @copyright: 2002-2007 Alberto Griggio
 @copyright: 2016 Carsten Grohmann
-@copyright: 2016 Dietmar Schwertberger
+@copyright: 2016-2019 Dietmar Schwertberger
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
 import wx
 import common, compat
 from edit_windows import ManagedBase
-from tree import Node
 import new_properties as np
 from misc import wxGladeRadioButton
 
@@ -19,12 +18,13 @@ from ChoicesProperty import *
 
 
 class EditRadioBox(ManagedBase):
+    WX_CLASS = 'wxRadioBox'
     _PROPERTIES = ["Widget", "label", "style", "dimension", "selection", "choices"]
     PROPERTIES = ManagedBase.PROPERTIES + _PROPERTIES + ManagedBase.EXTRA_PROPERTIES
 
-    def __init__(self, name, parent, id, label, choices, major_dim, style, sizer, pos):
+    def __init__(self, name, parent, label, choices, major_dim, style, pos):
         "Class to handle wxRadioBox objects"
-        ManagedBase.__init__(self, name, 'wxRadioBox', parent, id, sizer, pos)
+        ManagedBase.__init__(self, name, 'wxRadioBox', parent, pos)
         self.static_box = None
         
         # initialise instance properties
@@ -41,7 +41,7 @@ class EditRadioBox(ManagedBase):
 
     # widget creation / updates ########################################################################################
     def create_widget(self):
-        self.widget = wx.Panel(self.parent.widget, self.id)
+        self.widget = wx.Panel(self.parent_window.widget, self.id)
         self.widget.GetBestSize = self.GetBestSize
         self.widget.SetForegroundColour = self.SetForegroundColour
         self.widget.SetBackgroundColour = self.SetBackgroundColour
@@ -100,14 +100,15 @@ class EditRadioBox(ManagedBase):
         sb_sizer.Add(sizer, 1, wx.EXPAND)
         sb_sizer.SetMinSize(sizer.GetMinSize())
         sb_sizer.Fit(self.widget)
-        self.sizer.set_item_best_size(self, size=self.widget.GetBestSize())
+        if hasattr(self.parent, "set_item_best_size"):
+            self.parent.set_item_best_size(self, size=self.widget.GetBestSize())
 
     def _set_label(self):
         if not self.widget or not self.static_box: return
         label = self.label
         self.static_box.SetLabel(label)
-        if not self.properties['size'].is_active():
-            self.sizer.set_item_best_size(self, size=self.widget.GetBestSize())
+        if hasattr(self.parent, "set_item_best_size") and not self.properties['size'].is_active():
+            self.parent.set_item_best_size(self, size=self.widget.GetBestSize())
 
     def _set_choices(self):
         if not self.widget: return
@@ -175,7 +176,7 @@ class EditRadioBox(ManagedBase):
             self._set_choices()  # does also update label
         elif not modified or "label" in modified:
             self._set_label()
-            common.app_tree.refresh(self.node, refresh_label=True)
+            common.app_tree.refresh(self, refresh_label=True, refresh_image=False)
 
         if self.widget and set_selection:
             self._set_selection()
@@ -183,38 +184,23 @@ class EditRadioBox(ManagedBase):
         ManagedBase.properties_changed(self, modified)
 
 
-def builder(parent, sizer, pos, number=[1]):
+def builder(parent, pos):
     "factory function for EditRadioBox objects"
-    label = u'radio_box_%d' % number[0]
-    while common.app_tree.has_name(label):
-        number[0] += 1
-        label = u'radio_box_%d' % number[0]
+    name = common.root.get_next_name('radio_box_%d', parent)
     with parent.frozen():
-        radio_box = EditRadioBox(label, parent, wx.NewId(), label, [[u'choice 1'],], 1, 0, sizer, pos)
-        node = Node(radio_box)
-        radio_box.node = node
-        if parent.widget: radio_box.create()
-    common.app_tree.insert(node, sizer.node, pos-1)
+        editor = EditRadioBox(label, parent, label, [[u'choice 1'],], 1, 0, pos)
+        if parent.widget: editor.create()
+    return editor
 
 
-def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
+def xml_builder(attrs, parent, pos=None):
     "factory to build EditRadioBox objects from a XML file"
     from xml_parse import XmlParsingError
     try:
         label = attrs['name']
     except KeyError:
         raise XmlParsingError(_("'name' attribute missing"))
-    if sizer is None or sizeritem is None:
-        raise XmlParsingError(_("sizer or sizeritem object cannot be None"))
-    radio_box = EditRadioBox(label, parent, wx.NewId(), '', [], 1, 0, sizer, pos)
-    #size.set_item(radio_box.pos, proportion=sizeritem.proportion, span=sizeritem.span, flag=sizeritem.flag, border=sizeritem.border)
-    node = Node(radio_box)
-    radio_box.node = node
-    if pos is None:
-        common.app_tree.add(node, sizer.node)
-    else:
-        common.app_tree.insert(node, sizer.node, pos-1)
-    return radio_box
+    return EditRadioBox(label, parent, '', [], 1, 0, pos)
 
 
 def initialize():

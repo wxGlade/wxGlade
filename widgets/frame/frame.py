@@ -3,28 +3,29 @@ wxFrame objects (incl. wxMenuBar, wxToolBar and wxStatusBar)
 
 @copyright: 2002-2007 Alberto Griggio
 @copyright: 2014-2016 Carsten Grohmann
-@copyright: 2016-2018 Dietmar Schwertberger
+@copyright: 2016-2019 Dietmar Schwertberger
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
 import wx
 import os
 import common, config, misc, compat
-from tree import Node
 import new_properties as np
 from edit_windows import TopLevelBase, EditStylesMixin
 from gui_mixins import BitmapMixin
 
 
 class EditFrame(TopLevelBase, EditStylesMixin, BitmapMixin):
+    WX_CLASS = "wxFrame"
     _PROPERTIES =["Widget", "title", "icon", "centered", "sizehints","menubar", "toolbar", "statusbar", "style"]
-    PROPERTIES = TopLevelBase.PROPERTIES + _PROPERTIES
+    PROPERTIES = TopLevelBase.PROPERTIES + _PROPERTIES + TopLevelBase.EXTRA_PROPERTIES
     _PROPERTY_HELP   = { 'icon':'Icon for this window.' }
     _PROPERTY_LABELS = { "sizehints":'Set Size Hints', "menubar":'Has MenuBar', "toolbar":'Has ToolBar',
                          "statusbar":'Has StatusBar' }
+    ATT_CHILDREN = ["_menubar", "_statusbar", "_toolbar"]
 
-    def __init__(self, name, parent, id, title, style=wx.DEFAULT_FRAME_STYLE, klass='wxFrame'): #XXX style is not used
-        TopLevelBase.__init__(self, name, klass, parent, id, title=title)
+    def __init__(self, name, parent, title, style=wx.DEFAULT_FRAME_STYLE, klass='wxFrame'): #XXX style is not used
+        TopLevelBase.__init__(self, name, klass, parent, title=title)
         self.base = 'wxFrame'
         EditStylesMixin.__init__(self)
         self.properties["style"].set(style)
@@ -93,8 +94,6 @@ class EditFrame(TopLevelBase, EditStylesMixin, BitmapMixin):
             # create a MenuBar
             from menubar import EditMenuBar
             self._menubar = EditMenuBar(self.name + '_menubar', 'wxMenuBar', self)
-            self._menubar.node = Node(self._menubar)
-            common.app_tree.add(self._menubar.node, self.node)
             if self.widget: self._menubar.create()
         else:
             # remove
@@ -119,10 +118,7 @@ class EditFrame(TopLevelBase, EditStylesMixin, BitmapMixin):
         if self.toolbar:
             # create a ToolBar
             from toolbar import EditToolBar
-            self._toolbar = EditToolBar(self.name + '_toolbar', 'wxToolBar', self)
-            self._toolbar.node = Node(self._toolbar)
-            common.app_tree.add(self._toolbar.node, self.node)
-
+            EditToolBar(self.name + '_toolbar', 'wxToolBar', self)
             if self.widget: self._toolbar.create()
         else:
             # remove
@@ -136,26 +132,33 @@ class EditFrame(TopLevelBase, EditStylesMixin, BitmapMixin):
         if not modified or "statusbar" in modified: self._set_status_bar()
         if not modified or "toolbar" in modified:   self._set_tool_bar()
 
+        if modified:
+            intersection = {"menubar","statusbar","toolbar"}.intersection(modified)
+            if intersection and self.properties[intersection.pop()].previous_value is not None:
+                # previous value is not None -> triggered by user
+                misc.rebuild_tree(widget=self, recursive=False, focus=False)
+
         TopLevelBase.properties_changed(self, modified)
         EditStylesMixin.properties_changed(self, modified)
 
 
 
 class EditMDIChildFrame(EditFrame):
-    _is_toplevel_window = False  # avoid to appear in the "Top Window" property of the app
+    IS_TOPLEVEL_WINDOW = False  # avoid to appear in the "Top Window" property of the app
     PROPERTIES = [p for p in EditFrame.PROPERTIES if p!="statusbar"]
+    ATT_CHILDREN = ["_menubar", "_toolbar"]
     #def __init__(self, *args, **kwds):
         #EditFrame.__init__(self, *args, **kwds)
         #self.base = 'wxFrame' # XXX is this correct?
 
 
 
-def builder(parent, sizer, pos, klass=None, base=None, name=None):
+def builder(parent, pos, klass=None, base=None, name=None):
     "factory function for EditFrame objects"
     if klass is None or base is None:
         import window_dialog
         base_classes = ['wxFrame', 'wxMDIChildFrame']
-        klass = 'wxFrame' if common.app_tree.app.language.lower()=='xrc' else 'MyFrame'
+        klass = 'wxFrame' if common.root.language.lower()=='xrc' else 'MyFrame'
         
         dialog = window_dialog.WindowDialog(klass, base_classes, 'Select frame class', True)
         res = dialog.show()
@@ -168,32 +171,29 @@ def builder(parent, sizer, pos, klass=None, base=None, name=None):
         base_class = EditFrame
     else:
         base_class = EditMDIChildFrame
-    frame = base_class(name, parent, wx.NewId(), name, "wxDEFAULT_FRAME_STYLE", klass=klass)
-    frame.properties['size'].set( (400,300), activate=True )
-    node = Node(frame)
-    frame.node = node
-    common.app_tree.add(node)
-    frame.create()
-    frame.widget.Show()
-    frame.design.update_label()
+    editor = base_class(name, parent, name, "wxDEFAULT_FRAME_STYLE", klass=klass)
+    editor.properties['size'].set( (400,300), activate=True )
+    editor.create()
+    editor.widget.Show()
+    editor.design.update_label()
 
     # add a default vertical sizer to the frame
     import edit_sizers
-    edit_sizers._builder(frame, None, 0)
-    # now select the frame's node in the tree
-    common.app_tree.select_item(node)
+    edit_sizers._builder(editor, 0)
 
     import clipboard
-    frame.drop_target = clipboard.DropTarget(frame)
-    frame.widget.SetDropTarget(frame.drop_target)
+    editor.drop_target = clipboard.DropTarget(editor)
+    editor.widget.SetDropTarget(editor.drop_target)
 
     if wx.Platform == '__WXMSW__':
-        #frame.widget.CenterOnScreen()
-        frame.widget.Raise()
+        #editor.widget.CenterOnScreen()
+        editor.widget.Raise()
+
+    return editor
 
 
 def _make_builder(base_class):
-    def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
+    def xml_builder(attrs, parent, pos=None):
         from xml_parse import XmlParsingError
         try:
             label = attrs['name']
@@ -204,11 +204,8 @@ def _make_builder(base_class):
             style = "wxDEFAULT_FRAME_STYLE"
         else:
             style = 0
-        frame = base_class(label, parent, wx.NewId(), "", style)
-        node = Node(frame)
-        frame.node = node
-        common.app_tree.add(node)
-        return frame
+        editor = base_class(label, parent, "", style)
+        return editor
     return xml_builder
 
 

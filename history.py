@@ -1,7 +1,7 @@
 """\
 history for undo/redo/repeat
 
-copyright: 2017-2018 Dietmar Schwertberger
+copyright: 2017-2019 Dietmar Schwertberger
 license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
@@ -18,8 +18,7 @@ class PropertyValue(object):
 
 class HistoryItem(object):
     def __init__(self, prop):
-        path = common.app_tree.get_widget_path(prop.owner)
-        self.path = path
+        self.path = prop.owner.get_path()
         self.name = prop.name
     def get_key(self):
         return self.name
@@ -59,7 +58,7 @@ class History(object):
 
     def set_widget(self, widget):
         # for enabling/disabling tools and menus
-        path = common.app_tree.get_widget_path(widget)
+        path = widget and widget.get_path() or []
         if path==self._redo_widget or self._redo_widget is None:
             self.can_repeat = self.can_redo = False
         else:
@@ -79,7 +78,7 @@ class History(object):
         if focused_widget is None: return
         if not self.actions or not isinstance(self.actions[0], HistoryPropertyItem): return
         if not self._redo_widget: return
-        path = common.app_tree.get_widget_path(focused_widget)
+        path = focused_widget.get_path()
         if path==self._redo_widget: return
 
         # find all actions that could be repeated; they need to be HistoryPropertyItems from the _redo_widget

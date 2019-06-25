@@ -3,24 +3,24 @@ Spacers to use in sizers
 
 @copyright: 2002-2007 Alberto Griggio
 @copyright: 2014-2016 Carsten Grohmann
-@copyright: 2016-2018 Dietmar Schwertberger
+@copyright: 2016-2019 Dietmar Schwertberger
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
 import wx
 import common, misc
-from tree import Node
 import new_properties as np
 from edit_windows import ManagedBase
 
 
 class EditSpacer(ManagedBase):
     "Class to handle spacers for sizers"
+    WX_CLASS = 'Spacer'
     _PROPERTIES = ["Layout", "width", "height", "pos", "proportion", "border", "flag"]
     PROPERTIES = _PROPERTIES + ManagedBase.EXTRA_PROPERTIES
 
-    def __init__(self, name, parent, id, width, height, sizer, pos):
-        ManagedBase.__init__(self, name, 'spacer', parent, id, sizer, pos)
+    def __init__(self, name, parent, width, height, pos):
+        ManagedBase.__init__(self, name, 'spacer', parent, pos)
 
         # initialise instance properties
         self.width  = np.SpinProperty(width,  immediate=True)
@@ -28,7 +28,7 @@ class EditSpacer(ManagedBase):
 
     def create_widget(self):
         style = wx.SIMPLE_BORDER | wx.FULL_REPAINT_ON_RESIZE
-        self.widget = wx.Window(self.parent.widget, self.id, size=(self.width, self.height), style=style)
+        self.widget = wx.Window(self.parent_window.widget, self.id, size=(self.width, self.height), style=style)
         self.widget.GetBestSize = self.widget.GetSize
         self.widget.Bind(wx.EVT_PAINT, self.on_paint)
 
@@ -54,13 +54,13 @@ class EditSpacer(ManagedBase):
         if not modified or "width" in modified or "height" in modified:
             size = (self.width, self.height)
             if self.widget: self.widget.SetSize(size)
-            self.sizer.set_item_best_size(self, size=size)
+            self.parent.set_item_best_size(self, size=size)
         ManagedBase.properties_changed(self, modified)
 
 
 class _Dialog(wx.Dialog):
-    def __init__(self, parent):
-        wx.Dialog.__init__(self, misc.get_toplevel_parent(parent), -1, _("Enter size"))
+    def __init__(self):
+        wx.Dialog.__init__(self, common.main, -1, _("Enter size"), wx.GetMousePosition())
         # the controls
         self.width  = wx.SpinCtrl(self, -1, "20")
         self.height = wx.SpinCtrl(self, -1, "20")
@@ -86,15 +86,12 @@ class _Dialog(wx.Dialog):
         self.SetAutoLayout(True)
         self.SetSizer(sizer)
         sizer.Fit(self)
-        self.CenterOnScreen()
 
-
-
-
-def builder(parent, sizer, pos):
+def builder(parent, pos):
     "factory function for EditSpacer objects"
-    dialog = _Dialog(parent)
-    res = dialog.ShowModal()
+    dialog = _Dialog()
+    with misc.disable_stay_on_top(common.adding_window or parent):
+        res = dialog.ShowModal()
     width  = dialog.width.GetValue()
     height = dialog.height.GetValue()
     dialog.Destroy()
@@ -103,27 +100,16 @@ def builder(parent, sizer, pos):
 
     name = 'spacer'
     with parent.frozen():
-        spacer = EditSpacer( name, parent, wx.NewId(), width, height, sizer, pos )
-        node = Node(spacer)
-        spacer.node = node
-        if parent.widget: spacer.create()
-    common.app_tree.insert(node, sizer.node, pos-1)
+        editor = EditSpacer( name, parent, width, height, pos )
+        if parent.widget: editor.create()
+    return editor
 
 
-def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
+def xml_builder(attrs, parent, pos=None):
     "factory to build EditSpacer objects from a XML file"
     from xml_parse import XmlParsingError
-    if not sizer or not sizeritem:
-        raise XmlParsingError(_("sizer or sizeritem object cannot be None"))
-    spacer = EditSpacer('spacer', parent, wx.NewId(), 1, 1, sizer, pos)
-    #sizer.set_item(spacer.pos, proportion=sizeritem.proportion, span=sizeritem.span, flag=sizeritem.flag, border=sizeritem.border)
-    node = Node(spacer)
-    spacer.node = node
-    if pos is None:
-        common.app_tree.add(node, sizer.node)
-    else:
-        common.app_tree.insert(node, sizer.node, pos-1)
-    return spacer
+    name = attrs.get('name', 'spacer')
+    return EditSpacer(name, parent, 1, 1, pos)
 
 
 def initialize():

@@ -3,7 +3,7 @@ Lisp generator functions for wxPanel objects
 
 @copyright: 2002-2004 D.H. aka crazyinsomniac on sourceforge.net
 @copyright: 2014-2016 Carsten Grohmann
-@copyright: 2018 Dietmar Schwertberger
+@copyright: 2018-2019 Dietmar Schwertberger
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
@@ -18,17 +18,17 @@ class LispPanelGenerator(wcodegen.LispWidgetCodeWriter):
         scrollable = panel.scrollable
 
         id_name, id = self.codegen.generate_code_id(panel)
-        parent = self.format_widget_access(panel.parent)
+        parent = self.format_widget_access(panel.parent_window)
         panel_name = self.codegen._format_name(panel.name)
 
-        if panel.is_toplevel:
+        if panel.IS_CLASS:
             l = []
             if id_name:
                 l.append(id_name)
 
             panel_name = panel.name
             l.append( '(setf (slot-%s obj) (wxPanel_Create %s %s -1 -1 -1 -1))\n' % (panel_name, parent, id) )
-            return l, [], []
+            return l, []
 
         init = []
         if id_name: init.append(id_name)
@@ -41,11 +41,11 @@ class LispPanelGenerator(wcodegen.LispWidgetCodeWriter):
 
         init.append( '(setf (slot-%s obj) (wxPanel_Create %s %s -1 -1 -1 -1 %s))\n' % (panel_name, parent, id, style) )
 
-        props_buf = self.codegen.generate_common_properties(panel)
+        init += self.codegen.generate_common_properties(panel)
         if scrollable and panel.check_prop("scroll_rate"):
             sr = panel.scroll_rate.replace(',', ' ')
-            props_buf.append( '(wxScrolledWindow:wxScrolledWindow_SetScrollRate (slot-%s obj) %s)\n'% (panel_name, sr) )
-        return init, props_buf, []
+            init.append( '(wxScrolledWindow:wxScrolledWindow_SetScrollRate (slot-%s obj) %s)\n'% (panel_name, sr) )
+        return init, []
 
     def get_properties_code(self, obj):
         props_buf = self.codegen.generate_common_properties(obj)

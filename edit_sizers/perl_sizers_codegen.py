@@ -3,12 +3,12 @@ Perl generator functions for the various wxSizerS
 
 @copyright: 2002-2004 D.H. aka crazyinsomniac on sourceforge.net
 @copyright: 2013-2016 Carsten Grohmann
-@copyright: 2017 Dietmar Schwertberger
+@copyright: 2017-2019 Dietmar Schwertberger
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
 import common
-from .edit_sizers import BaseSizerBuilder
+from .edit_sizers import BaseSizerBuilder, SlotGenerator
 
 
 class BasePerlSizerBuilder(BaseSizerBuilder):
@@ -20,10 +20,9 @@ class BasePerlSizerBuilder(BaseSizerBuilder):
     tmpl_SetSizeHints = '%(sizer_name)s->SetSizeHints(%(parent_widget)s);\n'
 
     def _get_wparent(self, obj):
-        while obj.is_sizer:
-            obj = obj.node.parent.widget
-        if not obj.is_toplevel:
-            parent = '$self->{%s}' % obj.name
+        window = obj.parent_window
+        if not window.IS_CLASS:
+            parent = '$self->{%s}' % window.name
         else:
             parent = '$self'
         return parent
@@ -60,15 +59,6 @@ class PerlGridBagSizerBuilder(PerlFlexGridSizerBuilder):
     tmpl = '%(sizer_name)s = %(klass)s->new(%(vgap)s, %(hgap)s);\n'
 
 
-import wcodegen
-
-class PerlSizerSlotGenerator(wcodegen.PerlWidgetCodeWriter):
-    # spacers and empty sizer slots are generally handled by a hack:
-    # The the implementations of add_sizeritem() contains more details.
-    # The code generation code is already implemented in base class.
-    pass
-
-
 def initialize():
     cn = common.class_names
     cn['EditBoxSizer'] = 'wxBoxSizer'
@@ -80,7 +70,7 @@ def initialize():
 
     plgen = common.code_writers.get("perl")
     if plgen:
-        awh = plgen.add_widget_handler
+        awh = plgen.register_widget_code_generator
         awh('wxBoxSizer', PerlBoxSizerBuilder())
         awh('wxWrapSizer', PerlWrapSizerBuilder())
         awh('wxStaticBoxSizer', PerlStaticBoxSizerBuilder())
@@ -88,4 +78,5 @@ def initialize():
         awh('wxFlexGridSizer', PerlFlexGridSizerBuilder())
         awh('wxGridBagSizer', PerlGridBagSizerBuilder())
 
-    common.register('perl', "sizerslot", PerlSizerSlotGenerator("sizerslot"))
+    #common.register('perl', "sizerslot", PerlSizerSlotGenerator("sizerslot"))
+    common.register('perl', "sizerslot", SlotGenerator("perl"))

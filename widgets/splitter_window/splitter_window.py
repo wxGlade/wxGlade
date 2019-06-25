@@ -3,7 +3,7 @@ wxSplitterWindow objects
 
 @copyright: 2002-2007 Alberto Griggio
 @copyright: 2014-2016 Carsten Grohmann
-@copyright: 2016-2018 Dietmar Schwertberger
+@copyright: 2016-2019 Dietmar Schwertberger
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
@@ -11,22 +11,21 @@ import wx
 
 import common, compat, config, misc
 import wcodegen
-from tree import Node, SlotNode, WidgetTree
 import new_properties as np
 from edit_windows import ManagedBase, EditStylesMixin
-from edit_sizers.edit_sizers import Sizer, SizerSlot
+from edit_base import Slot
 from panel import EditPanel
 
 
 class ChildWidgetNameProperty(np.Property):
-    def __init__(self, child_att_name):
-        self.child_att_name = child_att_name
+    def __init__(self, child_index):
+        self.child_index = child_index
         np.Property.__init__(self, None, default_value=None, name=None)
 
     def get(self):
-        child = getattr(self.owner, self.child_att_name)
+        child = self.owner.children[self.child_index]
         if child is None: return self.value
-        if isinstance(child, SizerSlot): return None
+        if child.IS_SLOT: return None
         return child.name
 
     def write(self, output, tabs=0):
@@ -35,84 +34,12 @@ class ChildWidgetNameProperty(np.Property):
             output.extend( common.format_xml_tag(self.name, value, tabs) )
 
 
-
-class SplitterWindowSizer(Sizer):
-    "'Virtual sizer' responsible for the management of a SplitterWindow"
-    PROPERTIES = []
-    def item_properties_modified(self, widget, modified=None, force_layout=True):
-        "Updates the layout of the item"
-        if self.window.widget and self.window.window_old:
-            if self.window.window_old.widget:
-                self.window.widget.Unsplit(self.window.window_old.widget)
-            elif self.window.widget.IsSplit(): # the child widget may have been delete meanwhile by tree remove_rec
-                self.window.widget.Unsplit()
-        self.window.window_old = None
-        if self.window._window_1 and self.window._window_2:
-            self.window.split()
-
-    def set_item_best_size(self, widget, size=None, force_layout=True):
-        pass
-
-    def add_item(self, item, pos=None, proportion=0, flag=0, border=0, size=None, force_layout=True):
-        "Adds an item to self.window"
-        if pos == 1:
-            self.window.window_old = self.window._window_1
-            self.window._window_1 = item
-            self.window.properties["window_1"].set(item.name)
-        else:
-            self.window.window_old = self.window._window_2
-            self.window._window_2 = item
-            self.window.properties["window_2"].set(item.name)
-
-    def free_slot(self, pos, force_layout=True):
-        "Replaces the element at pos with an empty slot"
-        if self.window.orientation=="wxSPLIT_VERTICAL":
-            labels = ("SLOT Left","SLOT Right")
-        else:
-            labels = ("SLOT Top","SLOT Bottom")
-        if pos == 1:
-            if self.window.widget and self.window._window_1 and self.window._window_1.widget:
-                self.window.widget.Unsplit(self.window._window_1.widget)
-            old_node = self.window._window_1.node
-            slot = SizerSlot(self.window, self, pos, labels[0]) # XXX no node, no tree visualization?
-            self.window._window_1 = slot
-            w = self.window._window_1
-        else:
-            if self.window.widget and self.window._window_2 and self.window._window_2.widget:
-                self.window.widget.Unsplit(self.window._window_1.widget)
-            old_node = self.window._window_2.node
-            slot = SizerSlot(self.window, self, pos, labels[1]) # XXX no node, no tree visualization?
-            self.window._window_2 = slot
-            w = self.window._window_2
-        w.node = node = SlotNode(w)
-        common.app_tree.change_node( old_node, w, node )
-        self.window.split()
-        return slot
-
-    def get_itempos(self, attrs):
-        "Get position of sizer item (used in xml_parse)"
-        name= attrs.get("original_name", None)
-        if name is None: name = attrs['name']
-        if name==self.window.properties["window_1"].value:
-            return 1
-        if name==self.window.properties["window_2"].value:
-            return 2
-        return None
-
-    def is_virtual(self):
-        return True
-
-    def is_fixed(self):
-        "exactly two slots"
-        return True
-
-
-
 class EditSplitterWindow(ManagedBase, EditStylesMixin):
     "Class to handle wxSplitterWindow objects; orientation: Orientation of the widget as string e.g. 'wxSPLIT_VERTICAL'"
 
     _custom_base_classes = True
 
+    WX_CLASS = 'wxSplitterWindow'
     _PROPERTIES = ["Widget", "no_custom_class", "style", "sash_pos", "sash_gravity", "min_pane_size"]
     PROPERTIES = ManagedBase.PROPERTIES + _PROPERTIES + ManagedBase._EXTRA_PROPERTIES
     _PROPERTY_LABELS = {'no_custom_class':"Don't generate code for this class",
@@ -121,9 +48,9 @@ class EditSplitterWindow(ManagedBase, EditStylesMixin):
                       'sash_gravity':"0.0: only the bottom/right window is automatically resized\n"
                                      "0.5: both windows grow by equal size\n"
                                      "1.0: only left/top window grows"}
-
-    def __init__(self, name, parent, id, win_1, win_2, orientation, sizer, pos):
-        ManagedBase.__init__(self, name, 'wxSplitterWindow', parent, id, sizer, pos)
+    CHILDREN = 2
+    def __init__(self, name, parent, orientation, pos, create_slots=True):
+        ManagedBase.__init__(self, name, 'wxSplitterWindow', parent, pos)
         EditStylesMixin.__init__(self)
 
         # initialise instance properties
@@ -133,20 +60,33 @@ class EditSplitterWindow(ManagedBase, EditStylesMixin):
             self.sash_gravity = np.SpinDoublePropertyD(0.5, (0.0,1.0), default_value=0.0, immediate=True)
         else:
             self.sash_gravity = np.FloatPropertyD(0.5, (0.0,1.0), default_value=0.0)
-        self.min_pane_size = np.SpinProperty(20)
+        self.min_pane_size = np.SpinPropertyA(20)
 
-        # hidden properties: orientation string, window_1, window_2
+        # hidden properties: orientation string, window names window_1, window_2
         self.orientation = np.Property(orientation)
-        self.window_1 = ChildWidgetNameProperty("_window_1")
-        self.window_2 = ChildWidgetNameProperty("_window_2")
+        self.window_1 = ChildWidgetNameProperty(0)
+        self.window_2 = ChildWidgetNameProperty(1)
+        self._window_old = None
 
-        self.virtual_sizer = SplitterWindowSizer(self)
-        labels = ("SLOT Left","SLOT Right") if orientation=="wxSPLIT_VERTICAL" else ("SLOT Top","SLOT Bottom")
-        self._window_1 = win_1 or SizerSlot(self, self.virtual_sizer, 1, label=labels[0])
-        self._window_2 = win_2 or SizerSlot(self, self.virtual_sizer, 2, label=labels[1])
+    def _get_label(self, pos):
+        if self.orientation=="wxSPLIT_VERTICAL":
+            return ("Left","Right")[pos]
+        return ("Top","Bottom")[pos]
+    
+    def _get_slot_label(self, pos):
+        return "SLOT %s"%self._get_label(pos)
+
+    #def create_widget(self):
+        #if not self.parent.IS_SIZER:
+            #size = self.parent.widget.GetClientSize()
+            #self.widget = wx.SplitterWindow(self.parent_window.widget, self.id, size=size, style=self.style)
+        #else:
+            #self.widget = wx.SplitterWindow(self.parent_window.widget, self.id, style=self.style)
+        #self.split()
 
     def create_widget(self):
-        self.widget = wx.SplitterWindow(self.parent.widget, self.id, style=self.style)
+        size = self._get_default_or_client_size()
+        self.widget = wx.SplitterWindow(self.parent_window.widget, self.id, size=size, style=self.style)
         self.split()
 
     def finish_widget_creation(self):
@@ -166,19 +106,34 @@ class EditSplitterWindow(ManagedBase, EditStylesMixin):
         if min_pane_size_p.is_active():
             self.widget.SetMinimumPaneSize( min_pane_size_p.get() )
         else:
-            min_pane_size.set_value( self.widget.GetMinimumPaneSize() )
+            min_pane_size_p.set( self.widget.GetMinimumPaneSize() )
 
         self.widget.Bind(wx.EVT_SPLITTER_SASH_POS_CHANGED, self.on_sash_pos_changed )
-        if self._window_1 and self._window_1.widget:
-            if self.orientation=="wxSPLIT_VERTICAL":
-                compat.SetToolTip(self._window_1.widget, _("Left splitter pane:\nAdd a sizer here") )
-            else:
-                compat.SetToolTip(self._window_1.widget, _("Top splitter pane:\nAdd a sizer here") )
-        if self._window_2 and self._window_2.widget:
-            if self.orientation=="wxSPLIT_VERTICAL":
-                compat.SetToolTip(self._window_2.widget, _("Right splitter pane:\nAdd a sizer here") )
-            else:
-                compat.SetToolTip(self._window_2.widget, _("Bottom splitter pane:\nAdd a sizer here") )
+
+        if self.widget.GetTopLevelParent().IsShown():
+            # e.g. when pasting into an existing window
+            wx.CallAfter(self.widget.UpdateSize)
+
+    #def _get_client_size(self, pos):
+        ## returns the available size for a child
+
+        #width, height = self.widget.GetClientSize()
+        #sash_position = self.widget.GetSashPosition()
+        #sash_size = self.widget.GetSashSize()
+        #if self.widget.GetSplitMode()==wx.SPLIT_VERTICAL:
+            ## side by side
+            #if pos==0:
+                #width = sash_position
+            #else:
+                #width = width - sash_position - sash_size
+        #else:
+            ## top to bottom
+            #if pos==0:
+                #height = sash_position
+            #else:
+                #width = height - sash_position - sash_size
+        #print("_get_client_size", (width, height))
+        #return (width, height)
 
     def on_set_focus(self, event):
         misc.set_focused_widget(self)
@@ -186,9 +141,9 @@ class EditSplitterWindow(ManagedBase, EditStylesMixin):
         event.Skip()
 
     def split(self):
-        if not self.widget or not self._window_1 or not self._window_2: return
-        self._window_1.create()
-        self._window_2.create()
+        if not self.widget or not self.children[0] or not self.children[1]: return
+        self.children[0].create()
+        self.children[1].create()
         
         orientation = self.orientation
         sash_pos_p = self.properties['sash_pos']
@@ -198,12 +153,12 @@ class EditSplitterWindow(ManagedBase, EditStylesMixin):
             max_pos = self.widget.GetClientSize() [0 if orientation=='wxSPLIT_VERTICAL' else 1]
             sash_pos = max_pos // 2
         if orientation == 'wxSPLIT_VERTICAL':
-            self.widget.SplitVertically  (self._window_1.widget, self._window_2.widget, sash_pos)
+            self.widget.SplitVertically  (self.children[0].widget, self.children[1].widget, sash_pos)
         else:
-            self.widget.SplitHorizontally(self._window_1.widget, self._window_2.widget, sash_pos)
+            self.widget.SplitHorizontally(self.children[0].widget, self.children[1].widget, sash_pos)
 
-        if hasattr(self._window_1, 'sel_marker'): self._window_1.sel_marker.update()
-        if hasattr(self._window_2, 'sel_marker'): self._window_2.sel_marker.update()
+        if getattr(self.children[0], 'sel_marker', None): self.children[0].sel_marker.update()
+        if getattr(self.children[1], 'sel_marker', None): self.children[1].sel_marker.update()
 
     def properties_changed(self, modified):
         if not modified or "sash_pos" in modified and self.widget:
@@ -218,14 +173,13 @@ class EditSplitterWindow(ManagedBase, EditStylesMixin):
 
         if modified and "orientation" in modified:
             # update horizontal/vertical icons
-            labels = ("SLOT Left","SLOT Right") if self.orientation=="wxSPLIT_VERTICAL" else ("SLOT Top","SLOT Bottom")
-            common.app_tree.refresh(self.node, refresh_label=False, refresh_image=True)
-            if isinstance(self._window_1, SizerSlot):
-                self._window_1.label = labels[0]
-                common.app_tree.refresh(self._window_1.node)
-            if isinstance(self._window_2, SizerSlot):
-                self._window_2.label = labels[1]
-                common.app_tree.refresh(self._window_2.node)
+            common.app_tree.refresh(self, refresh_label=False, refresh_image=True)
+            if self.children[0] and self.children[0].IS_SLOT:
+                self.children[0].label = self._get_slot_label(0)
+                common.app_tree.refresh(self.children[0])
+            if self.children[1] and self.children[1].IS_SLOT:
+                self.children[1].label = self._get_slot_label(1)
+                common.app_tree.refresh(self.children[1])
 
     def on_size(self, event):
         if not self.widget:
@@ -243,6 +197,10 @@ class EditSplitterWindow(ManagedBase, EditStylesMixin):
             pass
         ManagedBase.on_size(self, event)
 
+    def on_child_pasted(self):
+        if not self.widget: return
+        self.widget.UpdateSize()
+
     def on_sash_pos_changed(self, event):
         self.properties['sash_pos'].set( self.widget.GetSashPosition() )
         event.Skip()
@@ -251,109 +209,106 @@ class EditSplitterWindow(ManagedBase, EditStylesMixin):
         # resize instead of drag & drop
         event.Skip()
 
-    def check_compatibility(self, widget, typename=None, report=False):
+    def check_compatibility(self, widget, typename=None):
         return (False,"No objects can be pasted here; paste to empty slots instead.")
 
+    def check_drop_compatibility(self):
+        # checks whether a widget can be dropped here
+        return (False, "Items can only be added to empty slots, not to the splitter window itself.")
 
-editor_class = EditSplitterWindow
-editor_name = 'EditSplitterWindow'
-editor_style = 'wxSPLIT_VERTICAL'
+    def _get_parent_tooltip(self, pos):
+        return "%s splitter pane:"%self._get_label(pos)
+
+    ####################################################################################################################
+    # methods moved from SplitterWindowSizer:
+    def add_item(self, child, pos=None):
+        if pos is not None and self.widget: self._window_old = self.children[pos]
+        ManagedBase.add_item(self, child, pos)
+        self._add_slots(pos_max=pos)
+
+    def _free_slot(self, pos, force_layout=True):
+        "Replaces the element at pos with an empty slot"
+        if self.widget and self.children[pos] and self.children[pos].widget:
+            self.widget.Unsplit(self.children[pos].widget)
+        old_child = self.children[pos]
+        slot = Slot(self, pos)
+        self.split()
+        return slot
+
+    def item_properties_modified(self, widget, modified=None, force_layout=True):
+        "Updates the layout of the item"
+        if self.widget and self._window_old:
+            # a child was replaced
+            if self._window_old.widget:
+                self.widget.Unsplit(self._window_old.widget)
+            elif self.widget.IsSplit(): # the child widget may have been delete meanwhile by tree remove_rec
+                self.widget.Unsplit()
+        self._window_old = None
+        if self.children[0] and self.children[1]:
+            self.split()
+
+    def get_itempos(self, attrs):
+        "Get position of sizer item (used in xml_parse)"
+        name = attrs.get("original_name", None) or attrs['name']
+        if name==self.properties["window_1"].value: return 0
+        if name==self.properties["window_2"].value: return 1
+        return None
+
 
 dlg_title = _('wxSplitterWindow')
 box_title = _('Orientation')
 choices = 'wxSPLIT_VERTICAL (left/right)|wxSPLIT_HORIZONTAL (top/bottom)'
-tmpl_label = 'window'
 
 
-def builder(parent, sizer, pos, number=[1]):
+def builder(parent, pos):
     "Factory function for EditSplitterWindow objects"
     dialog = wcodegen.WidgetStyleSelectionDialog( dlg_title, box_title, choices, ["Create panels"],[True])
-    res = dialog.ShowModal()
+    with misc.disable_stay_on_top(common.adding_window or parent):
+        res = dialog.ShowModal()
     orientation = dialog.get_selection().split(" ")[0]
     create_panels = dialog.get_options()[0]
     dialog.Destroy()
     if res != wx.ID_OK:
         return
 
-    label = '%s_%d' % (tmpl_label, number[0])
-    while common.app_tree.has_name(label):
-        number[0] += 1
-        label = '%s_%d' % (tmpl_label, number[0])
-
+    name = common.root.get_next_name('window_%d', parent)
     with parent.frozen():
-        widget = editor_class(label, parent, -1, None, None, orientation, sizer, pos)
-        widget.properties["style"].set_to_default()
+        editor = EditSplitterWindow(name, parent, orientation, pos)
+        editor.properties["style"].set_to_default()
         if create_panels:
-            widget._window_1 = pane1 = EditPanel(label + '_pane_1', widget, wx.NewId(), widget.virtual_sizer, 1)
-            widget._window_2 = pane2 = EditPanel(label + '_pane_2', widget, wx.NewId(), widget.virtual_sizer, 2)
-    
-        node = Node(widget)
-        widget.node = node
-        widget.virtual_sizer.node = node
-    
-        widget.properties["proportion"].set(1)
-        widget.properties["flag"].set("wxEXPAND")
-    
-        common.app_tree.insert(node, sizer.node, pos-1)
+            pane1 = EditPanel(name + '_pane_1', editor, 0)
+            pane2 = EditPanel(name + '_pane_2', editor, 1)
 
-        if create_panels:
-            node2 = Node(widget._window_1)
-            node3 = Node(widget._window_2)
-        else:
-            node2 = SlotNode(widget._window_1)
-            node3 = SlotNode(widget._window_2)
-        widget._window_1.node = node2
-        common.app_tree.add(node2, widget.node)
-        widget._window_2.node = node3
-        common.app_tree.add(node3, widget.node)
+        editor.properties["proportion"].set(1)
+        editor.properties["flag"].set("wxEXPAND")
 
-    
-        if parent.widget: widget.create()
-        #sizer.set_item(widget.pos, 1, wx.EXPAND)
+        if parent.widget: editor.create()
+
+        return editor
 
 
-def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
+def xml_builder(attrs, parent, pos=None):
     "Factory to build editor objects from a XML file"
     from xml_parse import XmlParsingError
     try:
         name = attrs['name']
     except KeyError:
         raise XmlParsingError(_("'name' attribute missing"))
-    if sizer is None or sizeritem is None:
-        raise XmlParsingError(_("sizer or sizeritem object cannot be None"))
-    widget = editor_class(name, parent, wx.NewId(), None, None, editor_style, sizer, pos)
-    #sizer.set_item(widget.pos, proportion=sizeritem.proportion, span=sizeritem.span, flag=sizeritem.flag, border=sizeritem.border)
-    node = Node(widget)
-    widget.node = node
-    widget.virtual_sizer.node = node
-
-    if pos is None:
-        common.app_tree.add(node, sizer.node)
-    else:
-        common.app_tree.insert(node, sizer.node, pos-1)
-
-    node2 = SlotNode(widget._window_1)
-    widget._window_1.node = node2
-    common.app_tree.add(node2, widget.node)
-
-    node3 = SlotNode(widget._window_2)
-    widget._window_2.node = node3
-    common.app_tree.add(node3, widget.node)
-
-    return widget
+    return EditSplitterWindow(name, parent, 'wxSPLIT_VERTICAL', pos)
 
 
 def initialize():
     "initialization function for the module: returns a wxBitmapButton to be added to the main palette"
-    common.widgets[editor_name] = builder
-    common.widgets_from_xml[editor_name] = xml_builder
+    common.widgets['EditSplitterWindow'] = builder
+    common.widgets_from_xml['EditSplitterWindow'] = xml_builder
 
     import os.path
+    from tree import WidgetTree
     WidgetTree.images['EditSplitterSlot-Left']   = os.path.join( config.icons_path, 'splitter_slot-left.xpm' )
     WidgetTree.images['EditSplitterSlot-Right']  = os.path.join( config.icons_path, 'splitter_slot-right.xpm' )
     WidgetTree.images['EditSplitterSlot-Top']    = os.path.join( config.icons_path, 'splitter_slot-top.xpm' )
     WidgetTree.images['EditSplitterSlot-Bottom'] = os.path.join( config.icons_path, 'splitter_slot-bottom.xpm' )
-    WidgetTree.images['EditSplitterWindow']    = os.path.join( config.icons_path, 'splitter_window.xpm' )
+    WidgetTree.images['EditSplitterWindow']      = os.path.join( config.icons_path, 'splitter_window.xpm' )
     WidgetTree.images['EditSplitterWindow-h']    = os.path.join( config.icons_path, 'splitter_window-h.xpm' )
 
-    return common.make_object_button(editor_name, 'splitter_window.xpm')
+    return common.make_object_button('EditSplitterWindow', 'splitter_window.xpm')

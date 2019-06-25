@@ -3,7 +3,7 @@ wxSearchCtrl objects
 
 @copyright: 2002-2007 Alberto Griggio
 @copyright: 2014-2016 Carsten Grohmann
-@copyright: 2016-2018 Dietmar Schwertberger
+@copyright: 2016-2019 Dietmar Schwertberger
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
@@ -12,20 +12,20 @@ import wx
 import common, config, misc
 from edit_windows import ManagedBase, EditStylesMixin
 import new_properties as np
-from tree import Node
 
 
 class EditSearchCtrl(ManagedBase, EditStylesMixin):
     "Class to handle wxSearchCtrl objects"
 
+    WX_CLASS = 'wxSearchCtrl'
     # we want these pages: Common, Layout, Widget, Events, Code
     _PROPERTIES = ["Widget", "value", "descriptive_text", "search_button", "cancel_button", "max_length", "style"]
     PROPERTIES = ManagedBase.PROPERTIES + _PROPERTIES + ManagedBase.EXTRA_PROPERTIES
     #recreate_on_style_change = True
 
-    def __init__(self, name, parent, id, sizer, pos):
+    def __init__(self, name, parent, pos):
         # initialize base classes
-        ManagedBase.__init__(self, name, 'wxSearchCtrl', parent, id, sizer, pos)
+        ManagedBase.__init__(self, name, 'wxSearchCtrl', parent, pos)
         EditStylesMixin.__init__(self)
 
         # initialize instance properties
@@ -37,7 +37,7 @@ class EditSearchCtrl(ManagedBase, EditStylesMixin):
 
     def create_widget(self):
         value = self.value
-        self.widget = wx.SearchCtrl(self.parent.widget, self.id, value=value, style=self.style)
+        self.widget = wx.SearchCtrl(self.parent_window.widget, self.id, value=value, style=self.style)
         self.widget.ShowSearchButton(self.search_button)
         self.widget.ShowCancelButton(self.cancel_button)
         if self.properties["descriptive_text"].is_active():
@@ -67,40 +67,25 @@ class EditSearchCtrl(ManagedBase, EditStylesMixin):
 
 
 
-def builder(parent, sizer, pos, number=[1]):
+def builder(parent, pos):
     "factory function for EditSearchCtrl objects"
-    name = 'text_ctrl_%d' % number[0]
-    while common.app_tree.has_name(name):
-        number[0] += 1
-        name = 'text_ctrl_%d' % number[0]
+    name = common.root.get_next_name('text_ctrl_%d', parent)
     with parent.frozen():
-        text = EditSearchCtrl(name, parent, wx.NewId(), sizer, pos)
-        text.properties["style"].set_to_default()
-        text.check_defaults()
-        node = Node(text)
-        text.node = node
-        if parent.widget: text.create()
-    common.app_tree.insert(node, sizer.node, pos-1)
+        editor = EditSearchCtrl(name, parent, pos)
+        editor.properties["style"].set_to_default()
+        editor.check_defaults()
+        if parent.widget: editor.create()
+    return editor
 
 
-def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
+def xml_builder(attrs, parent, pos=None):
     "factory function to build EditSearchCtrl objects from a XML file"
     from xml_parse import XmlParsingError
     try:
         name = attrs['name']
     except KeyError:
         raise XmlParsingError(_("'name' attribute missing"))
-    if sizer is None or sizeritem is None:
-        raise XmlParsingError(_("sizer or sizeritem object cannot be None"))
-    text = EditSearchCtrl(name, parent, wx.NewId(), sizer, pos)
-    #sizer.set_item(text.pos, proportion=sizeritem.proportion, span=sizeritem.span, flag=sizeritem.flag, border=sizeritem.border)
-    node = Node(text)
-    text.node = node
-    if pos is None:
-        common.app_tree.add(node, sizer.node)
-    else:
-        common.app_tree.insert(node, sizer.node, pos-1)
-    return text
+    return EditSearchCtrl(name, parent, pos)
 
 
 def initialize():

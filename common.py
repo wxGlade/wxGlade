@@ -3,7 +3,7 @@ Global functions and variables
 
 @copyright: 2002-2007 Alberto Griggio
 @copyright: 2013-2016 Carsten Grohmann
-@copyright: 2016 Dietmar Schwertberger
+@copyright: 2016-2019 Dietmar Schwertberger
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
@@ -21,10 +21,10 @@ from collections import OrderedDict
 import logging, os, os.path, sys, tempfile
 from xml.sax.saxutils import escape, quoteattr
 
-import config, compat, plugins
+import config, compat, plugins, misc
 
 
-widgets = {}          # all widgets: EditWidget class name -> factory(parent, sizer, pos)
+widgets = {}          # all widgets: EditWidget class name -> factory(parent, pos)
 widgets_from_xml = {} # Factory functions to build objects from a XML file
 
 class_names = {} # maps the name of the classes used by wxGlade to the correspondent classes of wxWindows
@@ -35,12 +35,15 @@ main = None            # main window
 palette = None         # the panel which contains the various buttons to add the different widgets
 property_panel = None  # panel for editing the current widgets properties
 app_tree = None        # widget hierarchy of the application; root is application itself; a tree.WidgetTree instance
+root = None
 
 # these will be set when clicking an item on the palette window:
 adding_widget = False # If True, the user is adding a widget to some sizer
 adding_sizer = False  # "Needed to add toplevel sizers"
 widget_to_add = None  # widget class name that is being added
 adding_window = None  # the tree or the design window; used for centering dialogs
+
+design_windows = []
 
 pin_design_window = False
 
@@ -53,34 +56,17 @@ history = None
 ########################################################################################################################
 # application initialization
 
+# Dictionary of language name -> BaseLangCodeWriter objects used to generate the code in a given language.
 code_writers = {}
-"""Dictionary of language name -> BaseLangCodeWriter objects used to generate the code in a given language.
-
-@note: A code writer object must implement this interface:
- - new_project(out_path, multi_files)
- - language
- - setup
- - add_widget_handler(widget_name, handler[, properties_handler])
- - add_property_handler(property_name, handler[, widget_name])
- - add_object(top_obj, sub_obj)
- - add_class(obj)
- - add_sizeritem(toplevel, sizer, obj_name, option, flag, border)
- - add_app(app_attrs, top_win_class)
- - ...
-"""
 
 
 def init_codegen():
     """Load available code generators, built-in and user widgets as well as sizers
 
-    @return: In GUI-Mode: a dict with module sections as key and assigned list of wxBitmapButtons, the dict is empty
-             in batch mode.
-    @rtype:  OrderedDict
+    Returns OrderedDict with module sections as key and assigned list of wxBitmapButtons in GUI mode.
+    The dict is empty in batch mode.
 
-    @see: L{load_config()}
-    @see: L{load_code_writers()}
-    @see: L{load_widgets()}
-    @see: L{load_sizers()}"""
+    see: load_config() load_code_writers(), load_widgets(), load_sizers()"""
     # process generic related style attributes
     style_attrs_to_sets(config.widget_config['generic_styles'])
     load_config()
@@ -224,8 +210,9 @@ def add_object(event):
 def add_toplevel_object(event):
     "Adds a toplevel widget (Frame or Dialog) to the current app"
     palette.reset_togglebuttons()
-    widgets[refs[event.GetId()]](None, None, 0)
-    app_tree.app.saved = False
+    editor = widgets[refs[event.GetId()]](root, 0)
+    if editor is None: return
+    misc.rebuild_tree(widget=editor, recursive=editor.children, focus=True)
 
 
 ########################################################################################################################
@@ -238,7 +225,7 @@ def make_object_button(widget, icon_path, toplevel=False, tip=None):
 
     Icons with a relative path will be loaded from config.icon_path.
 
-    widget: (name of) the widget the button will add to the app
+    widget: (name of) the widget the button will add to the app 
     icon_path: Path to the icon_path used for the button
     toplevel: True if the widget is a toplevel object (frame, dialog)
     tip: Tool tip to display
@@ -260,13 +247,22 @@ def make_object_button(widget, icon_path, toplevel=False, tip=None):
         else:
             tmp.Bind(wx.EVT_BUTTON, add_toplevel_object)
     else:
+        # for more recent versions, we support config options to display icons and/or labels
         if not toplevel:
-            tmp = wx.ToggleButton(palette, -1, size=(31,31))
+            if not config.preferences.show_palette_labels:
+                # icons only -> set size
+                tmp = wx.ToggleButton(palette, -1, size=(31,31))
+            else:
+                tmp = wx.ToggleButton(palette, -1, widget.replace('Edit', '') )
             tmp.Bind(wx.EVT_TOGGLEBUTTON, add_object)
         else:
-            tmp = wx.Button(palette, -1, size=(31,31))
+            if not config.preferences.show_palette_labels:
+                tmp = wx.Button(palette, -1, size=(31,31))
+            else:
+                tmp = wx.Button(palette, -1, widget.replace('Edit', '') ) #, size=(31,31))
             tmp.Bind(wx.EVT_BUTTON, add_toplevel_object)
-        tmp.SetBitmap( bmp )
+        if config.preferences.show_palette_icons:
+            tmp.SetBitmap( bmp )
     refs[tmp.GetId()] = widget
     if not tip:
         tip = _('Add a %s') % widget.replace(_('Edit'), '')
@@ -281,32 +277,27 @@ def encode_to_unicode(item, encoding=None):
     """Decode the item to a Unicode string. The encoding to UTF-8 will be done later.
 
     Non-string items will be converted to string automatically.
-    If no encoding given, app_tree.app.encoding or 'UFT-8' will be used."""
+    If no encoding given, root.encoding or 'UFT-8' will be used."""
     if not isinstance(item, compat.basestring):
         item = str(item)
     if isinstance(item, compat.unicode):
         return item
-    encoding = encoding or (app_tree and app_tree.app.encoding) or "UTF-8"
+    encoding = encoding or (app_tree and root.encoding) or "UTF-8"
     item = item.decode(encoding)
     return item
 
 
-def register(lang, klass_name, code_writer, property_name=None, property_handler=None, widget_name=None):
-    """Initialise and register widget code generator instance. The property handler will registered additionally.
+def register(lang, klass_name, code_writer):
+    """Initialise and register widget code generator instance.
 
     lang:             Code code_writer language
     klass_name:       wxWidget class name
     code_writer:      Code generator class
-    property_name:    Property name
-    property_handler: Property handler
-    widget_name:      Widget name
 
-    see: L{codegen.BaseLangCodeWriter.add_widget_handler(), codegen.BaseLangCodeWriter.add_property_handler()"""
+    see: codegen.BaseLangCodeWriter.register_widget_code_generator()"""
     codegen = code_writers[lang]
     if codegen:
-        codegen.add_widget_handler(klass_name, code_writer)
-        if property_name and property_handler:
-            codegen.add_property_handler(property_name, property_handler, widget_name)
+        codegen.register_widget_code_generator(klass_name, code_writer)
 
 
 ########################################################################################################################
@@ -399,9 +390,9 @@ def save_file(filename, content, which='wxg'):
 # files and paths
 
 def get_name_for_autosave(filename=None):
-    "Return filename for the automatic backup of named file or current file (app_tree.app.filename)"
+    "Return filename for the automatic backup of named file or current file (root.filename)"
     if not filename:
-        filename = app_tree.app.filename
+        filename = root.filename
     if not filename:
         path, name = config.home_path, ""
     else:
@@ -424,13 +415,13 @@ class _Writer(object):
 
 def autosave_current():
     "Save automatic backup copy for the current and un-saved design;  returns 0: error; 1: no changes to save; 2: saved"
-    if app_tree.app.saved:
+    if root.saved:
         return 1            # do nothing in this case...
 
     autosave_name = get_name_for_autosave()
     try:
         outfile = _Writer(autosave_name)
-        app_tree.write(outfile)
+        root.write(outfile)
         outfile.close()
     except EnvironmentError as details:
         logging.warning( _('Saving the autosave file "%s" failed: %s'), autosave_name, details )
@@ -450,7 +441,7 @@ def remove_autosaved(filename=None):
 
 def check_autosaved(filename):
     "Returns True if there are an automatic backup for filename"
-    if filename is not None and filename == app_tree.app.filename:
+    if filename is not None and filename == root.filename:
         # this happens when reloading, no auto-save-restoring in this case...
         return False
     autosave_name = get_name_for_autosave(filename)
@@ -779,6 +770,9 @@ class Preferences(ConfigParser.ConfigParser):
         'default_border': False,
         'default_border_size': 3,
         'show_sizer_handle': True,
+        'show_palette_icons': True,
+        'show_palette_labels': False,
+        'show_gridproperty_editors': False,
         'allow_duplicate_names': False,
         'autosave': True,
         'autosave_delay': 120,  # in seconds

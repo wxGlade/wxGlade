@@ -2,7 +2,7 @@
 wxFrame widget configuration
 
 @copyright: 2014-2016 Carsten Grohmann
-@copyright: 2016 Dietmar Schwertberger
+@copyright: 2016-2019 Dietmar Schwertberger
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
@@ -54,5 +54,11 @@ config = {
                    'wxFRAME_FLOAT_ON_PARENT', 'wxNO_BORDER',
                    'wxFULL_REPAINT_ON_RESIZE',
                    'wxTAB_TRAVERSAL', 'wxCLIP_CHILDREN'],
+    'events': {
+        'EVT_CLOSE': {'type':'wxCloseEvent'},
+        'EVT_MENU_OPEN': {'type':'MenuEvent'},
+        'EVT_MENU_CLOSE': {'type':'MenuEvent'},
+        'EVT_MENU_HIGHLIGHT': {'type':'MenuEvent'},
+        'EVT_MENU_HIGHLIGHT_ALL': {'type':'MenuEvent'},
+    },
 }
-

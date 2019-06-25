@@ -3,7 +3,7 @@ Miscellaneous stuff, used in many parts of wxGlade
 
 @copyright: 2002-2007 Alberto Griggio
 @copyright: 2014-2016 Carsten Grohmann
-@copyright: 2016-2018 Dietmar Schwertberger
+@copyright: 2016-2019 Dietmar Schwertberger
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
@@ -18,8 +18,6 @@ currently_under_mouse = None
 
 _get_xpm_bitmap_re = re.compile(r'"(?:[^"]|\\")*"')
 _item_bitmaps = {}
-
-design_windows = []
 
 focused_widget = None  # the currently selected widget in GUI mode (for tree and property_panel)
 _next_focused_widget = None  # for delayed setting, to ensure that only the last call has an effect
@@ -56,16 +54,24 @@ def _set_focused_widget(widget, force=False):
     set_focused_widget(widget, force)
 
 
+def rebuild_tree(widget=None, recursive=True, focus=True):
+    # re-build tree control for the widget and it's children; set focus to it; called after creation or modification
+    common.app_tree.saved = False
+    common.app_tree.build(widget, recursive)
+    if focus and widget is not None:
+        set_focused_widget(widget, force=widget==common.root)
+
+
 def show_widget(widget):
     # ensure that notebook pages are selected such that widget is visible
     if not widget.widget: return
     while True:
-        if not widget.node or not widget.node.parent: break  # Application.node is None
-        parent = widget.node.parent.widget
+        if not widget.parent: break  # Application.node is None
+        parent = widget.parent
         if parent.__class__.__name__=="EditNotebook":
             # a widget under a wxNotebook without a panel: select page
-            if parent.widget and widget in parent.pages:
-                parent.widget.SetSelection( parent.pages.index(widget) )
+            if parent.widget and widget in parent.children:
+                parent.widget.SetSelection( parent.children.index(widget) )
 
         widget = parent  # go up one level
 
@@ -134,6 +140,7 @@ class SelectionMarker(object):
         self.owner = owner
         self.parent = parent
         if wx.Platform == '__WXMSW__': self.parent = owner
+        assert isinstance(self.parent, wx.Window)
         self.tag_pos = None
         self.tags = None
         self.update()
@@ -161,6 +168,7 @@ class SelectionMarker(object):
         if self.visible != visible:
             self.visible = visible
             if self.visible:
+                if not self.parent: return
                 if not self.tags:
                     self.tags = [SelectionTag(self.parent) for i in range(4)]
                 for i,pos in enumerate(self.tag_pos):
@@ -224,8 +232,12 @@ def format_supported_by(version):
 
 
 def get_toplevel_parent(obj):
-    if not isinstance(obj, wx.Window):
+    if isinstance(obj, wx.Sizer):
+        obj = obj.ContainingWindow
+    elif not isinstance(obj, wx.Window):
         obj = obj.widget
+    if hasattr(obj, "ContainingWindow"):
+        obj = obj.ContainingWindow
     while obj and not obj.IsTopLevel():
         obj = obj.GetParent()
     return obj
@@ -340,9 +352,11 @@ def restore_focus(func):
 def _can_remove():
     global focused_widget
     if focused_widget is None or not hasattr(focused_widget, "remove"): return False
-    if focused_widget.klass=="sizerslot" and hasattr(focused_widget, "sizer"):
-        sizer = focused_widget.sizer
-        if sizer.is_virtual() or focused_widget.sizer._IS_GRIDBAG:
+    if focused_widget.IS_SLOT:
+        # XXX change this later on, to remove e.g. notebook pages, but not when parent.CHILDREN is an int
+        if focused_widget.parent.CHILDREN == -1: return True
+        if focused_widget.parent.WX_CLASS in ("wxNotebook",): return True
+        if not focused_widget.parent.IS_SIZER or focused_widget.sizer._IS_GRIDBAG:
             wx.Bell()
             return False
     return True
@@ -360,14 +374,14 @@ def _remove():
 @restore_focus
 def _cut():
     global focused_widget
-    if not _can_remove() or focused_widget.klass=="sizerslot":
+    if not _can_remove():
         wx.Bell()
         return
     clipboard.cut(focused_widget)
     #focused_widget = None
 
 def _copy():
-    if focused_widget is None or focused_widget.klass=="sizerslot":
+    if focused_widget is None or focused_widget.IS_SLOT:
         wx.Bell()
         return
     clipboard.copy(focused_widget)
@@ -385,8 +399,10 @@ def _insert():
     global focused_widget
     if not focused_widget: return
     if not hasattr(focused_widget, "sizer") or not hasattr(focused_widget, "pos"): return
-    if focused_widget.sizer._IS_GRIDBAG: return
-    method = getattr(focused_widget.sizer, "insert_slot", None)
+    parent = focused_widget.parent
+    if parent and parent.IS_SIZER and parent._IS_GRIDBAG: return
+    #method = getattr(focused_widget.sizer, "insert_slot", None)
+    method = getattr(parent, "insert_slot", None)
     if method: method(focused_widget.pos)
 
 @restore_focus
@@ -409,45 +425,67 @@ def _cancel():
     compat.SetToolTip(common.app_tree, "")
     common.main.user_message("Canceled")
 
-
-def navigate(up):
-    # XXX reafactor this into Tree?
-    # must be a design window
-    if focused_widget:
-        focused_item = focused_widget.node.item
-    else:
-        focused_item = common.app_tree.GetFocusedItem()
-    if focused_item is None:
+@restore_focus
+def drop():
+    global focused_widget
+    method = None
+    if not focused_widget: return
+    if not focused_widget.check_drop_compatibility():
+        wx.Bell()
         return
-    if up:
-        item = common.app_tree.GetPrevSibling(focused_item)
-        if not item:
-            # no upper sibling -> go up
-            item = common.app_tree.GetItemParent(focused_item)
-            #item = common.app_tree.GetFirstChild(focused_item)
-        else:
-            # go down again
-            while common.app_tree.ItemHasChildren(item):
-                item = common.app_tree.GetLastChild(item)
-    else:
-        if common.app_tree.ItemHasChildren(focused_item):
-            item, token = common.app_tree.GetFirstChild(focused_item)
-        else:
-            item = common.app_tree.GetNextSibling(focused_item)
-            if not item:
-                item = focused_item
-                while True:
-                    parent = common.app_tree.GetItemParent(item)
-                    if not parent: return
-                    if common.app_tree.ItemHasChildren(parent):
-                        item = common.app_tree.GetNextSibling(parent)
-                        if common.app_tree._GetItemData( common.app_tree.GetNextSibling(parent) ):
-                            break
-                    item = parent
+    if focused_widget.IS_SLOT:
+        method = getattr(focused_widget, "on_drop_widget", None)
+    elif common.adding_sizer:
+        method = getattr(focused_widget, "drop_sizer", None)
+    #if not method:
+        #if not hasattr(focused_widget, "sizer"): return
+        #method = getattr(focused_widget.sizer, "add_slot", None)
+    if method: method(None, False)  # don't reset, but continue adding
 
-    widget = getattr(common.app_tree._GetItemData(item), "widget", None)
-    if not widget: return
-    set_focused_widget(widget)
+
+@restore_focus
+def navigate(up):
+    # move up or down in tree
+    focus = focused_widget
+    if not focus:
+        # get from Tree widget
+        item = common.app_tree.GetFocusedItem()
+        focus = common.app_tree._GetItemData(item)
+    if focus is None: return
+    siblings = [focus]  if focus.IS_ROOT else  focus.parent.get_all_children()
+    if not siblings: return
+    idx = siblings.index(focus)
+    if up:
+        if idx>0:
+            focus = siblings[idx-1]
+            children = focus.get_all_children()
+            if children: focus = children[-1]
+        else:
+            # no upper sibling -> go up
+            focus = focus.parent
+    else:
+        # down: look for children
+        children = focus.get_all_children()
+        if children:
+            # go to first child
+            focus = children[0]
+        else:
+            if idx+1<len(siblings):
+                # go to next sibling
+                focus = siblings[idx+1]
+            else:
+                # go up one or more levels
+                while True:
+                    if not focus.parent: return
+                    siblings = focus.parent.get_all_children()
+                    if siblings:
+                        idx = siblings.index(focus)
+                        if idx+1<len(siblings):
+                            focus = siblings[idx+1]
+                            break
+                    focus = focus.parent
+
+    if focus: set_focused_widget(focus)
 
 
 # accelerator tables to enable keyboard shortcuts for the popup menus of the various widgets (remove, cut, copy, paste)
@@ -463,7 +501,10 @@ accel_table_editors = {
     ("", wx.WXK_UP):     (navigate,  (True, )),
     ("", wx.WXK_DOWN):   (navigate,  (False,)),
 
-    ("",  wx.WXK_ESCAPE):(_cancel, ())
+    ("",  wx.WXK_ESCAPE):(_cancel, ()),
+
+    ("", wx.WXK_RETURN): (drop,    ()),
+
 }
 
 # for the palette window
@@ -504,7 +545,7 @@ accel_table = {
     ("A", ord('3')):     ((common,"main","switch_layout"),        (2,)),
 
     ("C", ord('S')):     ((common,"main","save_app"),             ()),
-    ("C", ord('G')):     ((common,"app_tree","app","generate_code"), ()),
+    ("C", ord('G')):     ((common,"root","generate_code"), ()),
 
     ("C", ord('N')):     ((common,"main","new_app"),              ()), 
     ("C", ord('O')):     ((common,"main","open_app"),             ()),
@@ -606,7 +647,7 @@ def wxstr(s, encoding=None):
     if encoding is None:
         if common.app_tree is None:
             return str(s)
-        encoding = common.app_tree.app.encoding
+        encoding = common.root.encoding
     if isinstance(s, compat.unicode): return s
     s = str(s)
     if isinstance(s, compat.unicode): return s
@@ -644,12 +685,12 @@ def get_absolute_path(path, for_preview=False):
     "Get an absolute path relative to the current output directory (where the code is generated)."
     if os.path.isabs(path):
         return path
-    p = common.app_tree.app.output_path
+    p = common.root.output_path
     if for_preview:
-        p = getattr(common.app_tree.app, 'real_output_path', u'')
+        p = getattr(common.root, 'real_output_path', u'')
     if not os.path.isabs(p):
         # a path relative to the application filename
-        appdir = os.path.dirname(common.app_tree.app.filename)
+        appdir = os.path.dirname(common.root.filename)
         p = os.path.abspath( os.path.join(appdir, p) )
 
     if not os.path.isdir(p): p = os.path.dirname(p)

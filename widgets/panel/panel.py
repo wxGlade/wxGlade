@@ -3,7 +3,7 @@ wxPanel objects
 
 @copyright: 2002-2007 Alberto Griggio
 @copyright: 2014-2016 Carsten Grohmann
-@copyright: 2016-2018 Dietmar Schwertberger
+@copyright: 2016-2019 Dietmar Schwertberger
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
@@ -11,7 +11,6 @@ import logging
 import wx
 import clipboard
 import common, compat, config, misc
-from tree import Node
 import new_properties as np
 from edit_windows import ManagedBase, TopLevelBase, EditStylesMixin
 
@@ -25,6 +24,7 @@ class PanelBase(EditStylesMixin):
     _PROPERTY_LABELS = {'no_custom_class':"Don't generate code for this class"}
     _PROPERTY_HELP = {'no_custom_class':'If this is a custom class, setting this property prevents wxGlade\n'
                                         'from generating the class definition code'}
+    CHILDREN = -1  # 0 or 1; either a sizer or nothing
 
     def __init__(self, style='wxTAB_TRAVERSAL'):
         "Class to handle wxPanel objects"
@@ -33,7 +33,6 @@ class PanelBase(EditStylesMixin):
 
         # initialise instance
         EditStylesMixin.__init__(self, 'wxPanel')
-        self.top_sizer = None  # sizer to handle the layout of children
 
         # initialise properties
         self.no_custom_class = np.CheckBoxProperty(False, default_value=False)
@@ -65,41 +64,43 @@ class PanelBase(EditStylesMixin):
         event.Skip()
 
     def on_enter(self, event):
-        if not self.top_sizer and common.adding_sizer:
+        if self.children and common.adding_sizer:
             self.widget.SetCursor(wx.CROSS_CURSOR)
         else:
             self.widget.SetCursor(wx.STANDARD_CURSOR)
 
     def set_sizer(self, sizer):
-        self.top_sizer = sizer
-        if self.top_sizer and self.top_sizer.widget and self.widget:
+        if sizer and sizer.widget and self.widget:
             self.widget.SetAutoLayout(True)
-            self.widget.SetSizer(self.top_sizer.widget)
+            self.widget.SetSizer(sizer.widget)
             self.widget.Layout()
-        elif self.top_sizer is None and self.widget:
+        elif sizer is None and self.widget:
             self.widget.SetSizer(None)
 
-    def drop_sizer(self, event=None):
-        if self.top_sizer or not common.adding_sizer:
+    def drop_sizer(self, event=None, reset=None):
+        if self.children or not common.adding_sizer:
             self.on_set_focus(event)  # default behaviour: call show_properties
             return
         if self.widget: self.widget.SetCursor(wx.NullCursor)
-        common.widgets[common.widget_to_add](self, None, None)
+        new_widget = common.widgets[common.widget_to_add](self, None)
+        if new_widget is None: return
+        misc.rebuild_tree(new_widget)
+        if reset is False: return
         if event is None or not misc.event_modifier_copy(event):
             common.adding_widget = common.adding_sizer = False
             common.widget_to_add = None
-        common.app_tree.app.saved = False
 
     def check_drop_compatibility(self):
-        if self.top_sizer:
-            return (False, 'Sizer already set for this panel')
+        if self.children:
+            return (False, 'Sizer already set for this panel; optionally, delete the panel and add e.g. a notebook. ')
+        
         if common.adding_sizer:
             return (True, None)
-        return (False, 'Only sizers can be added here')
+        return (False, 'Only sizers can be added here; optionally, delete the panel and add e.g. a notebook. ')
 
     def get_widget_best_size(self):
-        if self.top_sizer and self.widget.GetSizer():
-            self.top_sizer.fit_parent()
+        if self.children and self.widget.GetSizer():
+            self.children[0].fit_parent()
             return self.widget.GetSize()
         return self.widget.__class__.GetBestSize(self.widget)
 
@@ -138,32 +139,53 @@ class PanelBase(EditStylesMixin):
 
 class EditPanel(PanelBase, ManagedBase):
     "Class to handle wxPanel objects"
-
+    WX_CLASS = "wxPanel"
     PROPERTIES = ManagedBase.PROPERTIES + PanelBase._PROPERTIES + ManagedBase.EXTRA_PROPERTIES
 
-    def __init__(self, name, parent, id, sizer, pos, style='wxTAB_TRAVERSAL'):
-        ManagedBase.__init__(self, name, 'wxPanel', parent, id, sizer, pos)
+    def __init__(self, name, parent, pos, style='wxTAB_TRAVERSAL'):
+        ManagedBase.__init__(self, name, 'wxPanel', parent, pos)
         PanelBase.__init__(self, style)
 
     def create_widget(self):
         # to be done: use ScrolledWindow only if scrolling is required
         if self.scrollable:
-            self.widget = wx.ScrolledWindow(self.parent.widget, self.id, style=0)
+            self.widget = wx.ScrolledWindow(self.parent_window.widget, self.id, style=0)
         else:
-            self.widget = wx.Panel(self.parent.widget, self.id, style=0)
+            self.widget = wx.Panel(self.parent_window.widget, self.id, style=0)
         self.widget.Bind(wx.EVT_ENTER_WINDOW, self.on_enter)
         self.widget.GetBestSize = self.get_widget_best_size
-        if self.sizer.is_virtual():
+        if not self.parent.IS_SIZER:
             def GetBestSize():
                 if self.widget and self.widget.GetSizer():
                     return self.widget.GetSizer().GetMinSize()
                 return self.widget.__class__.GetBestSize(self.widget)
             self.widget.GetBestSize = GetBestSize
+        #if self.parent.WX_CLASS in ("wxFrame",):
+            ## without this, the panel will not fill the available space on pasting etc.
+            #self.widget.SetSize(self.parent.widget.GetClientSize())
+    #def create_widget(self):
+        ## to be done: use ScrolledWindow only if scrolling is required
+        #size = self._get_default_or_client_size()
+        #print("EditPanel.create_widget",self.name, size)
+        #if self.scrollable:
+            #self.widget = wx.ScrolledWindow(self.parent_window.widget, self.id, style=0)
+        #else:
+            #self.widget = wx.Panel(self.parent_window.widget, self.id, style=0)
+        #self.widget.Bind(wx.EVT_ENTER_WINDOW, self.on_enter)
+        #self.widget.GetBestSize = self.get_widget_best_size
+        #if not self.parent.IS_SIZER:
+            #def GetBestSize():
+                #if self.widget and self.widget.GetSizer():
+                    #return self.widget.GetSizer().GetMinSize()
+                #return self.widget.__class__.GetBestSize(self.widget)
+            #self.widget.GetBestSize = GetBestSize
 
     def set_sizer(self, sizer):
+        # called from sizer.create: self.window.set_sizer(self)
+        assert self.children and sizer is self.children[0]
         super(EditPanel, self).set_sizer(sizer)
-        if self.top_sizer and self.top_sizer.widget and self.widget:
-            self.sizer.set_item_best_size(self, size=self.widget.GetBestSize())
+        if sizer and sizer.widget and self.widget:
+            sizer.set_item_best_size(self, size=self.widget.GetBestSize())
 
     def _create_popup_menu(self, widget=None):
         if widget is None: widget = self.widget
@@ -177,11 +199,11 @@ class EditPanel(PanelBase, ManagedBase):
 
         i = misc.append_menu_item(menu, -1, _('Paste Sizer\tCtrl+V'), wx.ART_PASTE)
         misc.bind_menu_item_after(widget, i, clipboard.paste, self)
-        if self.top_sizer is not None or not clipboard.check("sizer"): i.Enable(False)
+        if self.children or not clipboard.check("sizer"): i.Enable(False)
         menu.AppendSeparator()
 
-        if self.sizer and hasattr(self.sizer, "_add_popup_menu_items"):
-            self.sizer._add_popup_menu_items(menu, self, widget)
+        if hasattr(self.parent, "_add_parent_popup_menu_items"):
+            self.parent._add_parent_popup_menu_items(menu, self, widget)
 
         i = misc.append_menu_item(menu, -1, _('Preview'))
         misc.bind_menu_item_after(widget, i, self.preview_parent)
@@ -190,25 +212,21 @@ class EditPanel(PanelBase, ManagedBase):
 
     def check_compatibility(self, widget, typename=None, report=True):
         "check whether widget can be pasted"
+        if self.children and not self.children[0].IS_SLOT:
+            return (False, 'Sizer already set for this panel')
         if typename is not None:
             if typename!="sizer":
                 return (False, 'Only sizers can be pasted here')
-            if self.top_sizer:
-                return (False, 'Sizer set already')
             return (True, None)
 
-        import edit_sizers
-        if not isinstance(widget, edit_sizers.Sizer):
+        if not widget.IS_SIZER:
             return (False, 'Only sizers can be pasted here')
-        #if self.sizer is not None:
-        if self.top_sizer:
-            return (False, 'Sizer set already')
         return (True, None)
 
     def clipboard_paste(self, clipboard_data):
         "Insert a widget from the clipboard to the current destination"
         if self.widget: size = self.widget.GetSize()
-        ret = clipboard._paste(self, None, 0, clipboard_data)
+        ret = clipboard._paste(self, 0, clipboard_data)
         if self.widget: self.widget.SetSize(size)
         return ret
 
@@ -228,14 +246,19 @@ class EditPanel(PanelBase, ManagedBase):
         if not self.scrollable: without.add("scroll_rate")
         return ManagedBase.get_properties(self, without)
 
+    def _get_tooltip(self):
+        if self.parent.WX_CLASS in ("wxSplitterWindow", "wxNotebook"):
+            return "Add a sizer here; optionally, delete the panel and add e.g. a notebook, splitter or grid. "
+        return "Add a sizer here"
+
 
 class EditTopLevelPanel(PanelBase, TopLevelBase):
-    _is_toplevel_window = False  # avoid to appear in the "Top Window" property of the app
-
+    IS_TOPLEVEL_WINDOW = False  # avoid to appear in the "Top Window" property of the app
+    WX_CLASS = "TopLevelPanel"
     PROPERTIES = TopLevelBase.PROPERTIES + PanelBase._PROPERTIES + TopLevelBase.EXTRA_PROPERTIES
 
-    def __init__(self, name, parent, id, klass='wxPanel', style='wxTAB_TRAVERSAL'):
-        TopLevelBase.__init__(self, name, klass, parent, id)
+    def __init__(self, name, parent, klass='wxPanel', style='wxTAB_TRAVERSAL'):
+        TopLevelBase.__init__(self, name, klass, parent)
         PanelBase.__init__(self, style)
         self.skip_on_size = False
 
@@ -270,8 +293,8 @@ class EditTopLevelPanel(PanelBase, TopLevelBase):
         oldval = size_p.get()
         super(EditTopLevelPanel, self).create()
         if self.widget:
-            if not size_p.is_active() and self.top_sizer:
-                self.top_sizer.fit_parent()
+            if not size_p.is_active() and self.children:
+                self.children[0].fit_parent()
         if size_p.is_active() and oldval!=size_p.get():
             size_p.set(oldval)
             self.set_size()
@@ -279,23 +302,20 @@ class EditTopLevelPanel(PanelBase, TopLevelBase):
     def hide_widget(self, event=None):
         # this is called from the context menu and from the EVT_CLOSE of the Frame
         self.widget.GetParent().Hide()
-        common.app_tree.expand(self.node, False)
+        common.app_tree.Collapse(self.item)
         self.design.update_label()
 
-    def set_name(self, name):
-        super(EditTopLevelPanel, self).set_name(name)
-        if self.widget:
-            self.widget.GetParent().SetTitle(misc.design_title(self.name))
-
-    def delete(self):
+    def destroy_widget(self):
+        # handle containing frame
         win = None
         if self.widget:
             win = self.widget.GetParent()
-        super(EditTopLevelPanel, self).delete()
+        super(EditTopLevelPanel, self).destroy_widget()
         if win is not None:
             win.Destroy()
 
     def on_size(self, event):
+        # handle containing frame
         w, h = event.GetSize()
         if self.skip_on_size:
             self.skip_on_size = False
@@ -326,54 +346,34 @@ class EditTopLevelPanel(PanelBase, TopLevelBase):
         return TopLevelBase.get_properties(self, without)
 
 
-def builder(parent, sizer, pos, number=[1]):
+def builder(parent, pos):
     "factory function for EditPanel objects"
-    name = 'panel_%d' % number[0]
-    while common.app_tree.has_name(name):
-        number[0] += 1
-        name = 'panel_%d' % number[0]
+    name = common.root.get_next_name('panel_%d', parent)
     with parent.frozen():
-        panel = EditPanel(name, parent, wx.NewId(), sizer, pos, style='')
-        node = Node(panel)
-        panel.node = node
-        panel.properties["proportion"].set(1)
-        panel.properties["flag"].set("wxEXPAND")
-        if parent.widget: panel.create()
-    common.app_tree.insert(node, sizer.node, pos-1)
-    #sizer.set_item(panel.pos, 1, wx.EXPAND)
+        editor = EditPanel(name, parent, pos, style='')
+        editor.properties["proportion"].set(1)
+        editor.properties["flag"].set("wxEXPAND")
+        if parent.widget: editor.create()
+    return editor
 
 
-def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
+def xml_builder(attrs, parent, pos=None):
     "factory to build EditPanel objects from a XML file"
     from xml_parse import XmlParsingError
     try:
         name = attrs['name']
     except KeyError:
         raise XmlParsingError(_("'name' attribute missing"))
-    if not sizer or not sizeritem:
-        raise XmlParsingError(_("sizer or sizeritem object cannot be None"))
-    panel = EditPanel(name, parent, wx.NewId(), sizer, pos, style='')
-    #sizer.set_item(panel.pos, proportion=sizeritem.proportion, span=sizeritem.span, flag=sizeritem.flag, border=sizeritem.border)
-    node = Node(panel)
-    panel.node = node
-    if pos is None:
-        common.app_tree.add(node, sizer.node)
-    else:
-        common.app_tree.insert(node, sizer.node, pos-1)
-    return panel
+    return EditPanel(name, parent, pos=pos, style='')
 
 
-def xml_toplevel_builder(attrs, parent, sizer, sizeritem, pos=None):
+def xml_toplevel_builder(attrs, parent, pos=None):
     from xml_parse import XmlParsingError
     try:
         label = attrs['name']
     except KeyError:
         raise XmlParsingError(_("'name' attribute missing"))
-    panel = EditTopLevelPanel( label, parent, wx.NewId(), style='' )
-    node = Node(panel)
-    panel.node = node
-    common.app_tree.add(node)
-    return panel
+    return EditTopLevelPanel( label, parent, style='' )
 
 
 def initialize():

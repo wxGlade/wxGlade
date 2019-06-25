@@ -3,7 +3,7 @@ wxDialog objects (incl. wxMenuBar, wxToolBar and wxStatusBar)
 
 @copyright: 2002-2007 Alberto Griggio
 @copyright: 2014-2016 Carsten Grohmann
-@copyright: 2016 Dietmar Schwertberger
+@copyright: 2016-2019 Dietmar Schwertberger
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
@@ -11,19 +11,19 @@ import os
 import wx
 
 import common, compat, config, misc
-from tree import Node
 import new_properties as np
 from edit_windows import TopLevelBase, EditStylesMixin
 from gui_mixins import BitmapMixin
 
 
 class EditDialog(TopLevelBase, EditStylesMixin, BitmapMixin):
+    WX_CLASS = "wxDialog"
     _PROPERTIES =["Widget", "title", "icon", "centered", "sizehints","menubar", "toolbar", "statusbar", "style"]
     PROPERTIES = TopLevelBase.PROPERTIES + _PROPERTIES + TopLevelBase.EXTRA_PROPERTIES
     _PROPERTY_LABELS = { "sizehints":'Set Size Hints'}
     
-    def __init__(self, name, parent, id, title, style=wx.DEFAULT_DIALOG_STYLE, klass='wxDialog'):
-        TopLevelBase.__init__(self, name, klass, parent, id, title=title)
+    def __init__(self, name, parent, title, style=wx.DEFAULT_DIALOG_STYLE, klass='wxDialog'):
+        TopLevelBase.__init__(self, name, klass, parent, title=title)
         self.base = 'wxDialog'
         EditStylesMixin.__init__(self)
         self.properties["style"].set(style)
@@ -73,11 +73,11 @@ class EditDialog(TopLevelBase, EditStylesMixin, BitmapMixin):
 
 
 
-def builder(parent, sizer, pos, number=[0]):
+def builder(parent, pos):
     "factory function for EditDialog objects"
     import window_dialog
     base_classes = ['wxDialog', 'wxPanel']
-    klass = 'wxDialog' if common.app_tree.app.language.lower()=='xrc' else 'MyDialog'
+    klass = 'wxDialog' if common.root.language.lower()=='xrc' else 'MyDialog'
 
     dialog = window_dialog.WindowDialog(klass, base_classes, 'Select widget type', True)
     res = dialog.show()
@@ -89,25 +89,23 @@ def builder(parent, sizer, pos, number=[0]):
 
     if base == "wxDialog":
         is_panel = False
-        dialog = EditDialog(name, parent, wx.NewId(), name, "wxDEFAULT_DIALOG_STYLE", klass=klass)
+        editor = EditDialog(name, parent, name, "wxDEFAULT_DIALOG_STYLE", klass=klass)
     else:
         is_panel = True
         import panel
-        dialog = panel.EditTopLevelPanel(name, parent, wx.NewId(), klass=klass)
-    node = Node(dialog)
-    dialog.node = node
-    dialog.create()
+        editor = panel.EditTopLevelPanel(name, parent, klass=klass)
+
+    editor.create()
     if base == "wxDialog":
-        dialog.widget.Show()
+        editor.widget.Show()
     else:
-        dialog.widget.GetParent().Show()  # the panel is created as child of a Frame
-    common.app_tree.add(node)
-    dialog.design.update_label()
+        editor.widget.GetParent().Show()  # the panel is created as child of a Frame
+    editor.design.update_label()
     if wx.Platform == '__WXMSW__':
         if not is_panel:
-            w = dialog.widget
+            w = editor.widget
         else:
-            w = dialog.widget.GetParent()
+            w = editor.widget.GetParent()
         w.CenterOnScreen()
         w.Raise()
 
@@ -115,20 +113,21 @@ def builder(parent, sizer, pos, number=[0]):
     dialog.drop_target = clipboard.DropTarget(dialog)
     dialog.widget.SetDropTarget(dialog.drop_target)
 
+    # add a default vertical sizer
+    import edit_sizers
+    edit_sizers._builder(editor, 0)
+
+    return editor
 
 
-def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
+def xml_builder(attrs, parent, pos=None):
     "factory to build EditDialog objects from a XML file"
     from xml_parse import XmlParsingError
     try:
         label = attrs['name']
     except KeyError:
         raise XmlParsingError(_("'name' attribute missing"))
-    dialog = EditDialog(label, parent, wx.NewId(), "", style=0)
-    node = Node(dialog)
-    dialog.node = node
-    common.app_tree.add(node)
-    return dialog
+    return EditDialog(label, parent, "", style=0)
 
 
 def initialize():

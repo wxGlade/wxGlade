@@ -40,7 +40,4 @@ def initialize():
 
     lispgen = common.code_writers.get('lisp')
     if lispgen:
-        lispgen.add_widget_handler('wxStatusBar', LispStatusBarCodeGenerator(klass))
-        #aph = lispgen.add_property_handler
-        #aph('fields', StatusFieldsHandler)
-        #aph('statusbar', lispgen.DummyPropertyHandler)
+        lispgen.register_widget_code_generator('wxStatusBar', LispStatusBarCodeGenerator(klass))

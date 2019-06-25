@@ -3,14 +3,13 @@ wxChoice objects
 
 @copyright: 2002-2007 Alberto Griggio
 @copyright: 2016 Carsten Grohmann
-@copyright: 2016-2018 Dietmar Schwertberger
+@copyright: 2016-2019 Dietmar Schwertberger
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
 import wx
 import common, config
 from edit_windows import ManagedBase
-from tree import Node
 import new_properties as np
 
 from ChoicesProperty import *
@@ -19,11 +18,12 @@ from ChoicesProperty import *
 
 class EditChoice(ManagedBase):
     "Class to handle wxChoice objects"
+    WX_CLASS = "wxChoice"
     _PROPERTIES = ["Widget", "selection", "choices"]
     PROPERTIES = ManagedBase.PROPERTIES + _PROPERTIES + ManagedBase.EXTRA_PROPERTIES
 
-    def __init__(self, name, parent, id, choices, sizer, pos):
-        ManagedBase.__init__(self, name, 'wxChoice', parent, id, sizer, pos)
+    def __init__(self, name, parent, choices, pos):
+        ManagedBase.__init__(self, name, 'wxChoice', parent, pos)
 
         # initialise instance properties
         self.selection = np.SpinProperty(0, val_range=(-1,len(choices)-1), immediate=True )
@@ -31,7 +31,7 @@ class EditChoice(ManagedBase):
 
     def create_widget(self):
         choices = [c[0] for c in self.choices]
-        self.widget = wx.Choice(self.parent.widget, self.id, choices=choices)
+        self.widget = wx.Choice(self.parent_window.widget, self.id, choices=choices)
         self.widget.SetSelection(self.selection)
         self.widget.Bind(wx.EVT_LEFT_DOWN, self.on_set_focus)
 
@@ -53,8 +53,8 @@ class EditChoice(ManagedBase):
                 # update widget
                 self.widget.Clear()
                 for c in choices: self.widget.Append(c[0])
-                if not self.properties['size'].is_active():
-                    self.sizer.set_item_best_size(self, size=self.widget.GetBestSize())
+                if hasattr(self.parent, "set_item_best_size") and not self.properties['size'].is_active():
+                    self.parent.set_item_best_size(self, size=self.widget.GetBestSize())
 
         if not modified or "selection" in modified or set_selection:
             set_selection = True
@@ -68,40 +68,24 @@ class EditChoice(ManagedBase):
 
 
 
-def builder(parent, sizer, pos, number=[1]):
+def builder(parent, pos):
     "factory function for EditChoice objects"
-    name = 'choice_%d' % number[0]
-    while common.app_tree.has_name(name):
-        number[0] += 1
-        name = 'choice_%d' % number[0]
+    name = common.root.get_next_name('choice_%d', parent)
     with parent.frozen():
-        choice = EditChoice(name, parent, wx.NewId(), [(u'choice 1',)], sizer, pos)
-        choice.check_defaults()
-        node = Node(choice)
-        #sizer.set_item(pos, size=choice.GetBestSize())
-        choice.node = node
-        if parent.widget: choice.create()
-    common.app_tree.insert(node, sizer.node, pos-1)
+        editor = EditChoice(name, parent, [(u'choice 1',)], pos)
+        editor.check_defaults()
+        if parent.widget: editor.create()
+    return editor
 
 
-def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
+def xml_builder(attrs, parent, pos=None):
     "factory to build EditChoice objects from a XML file"
     from xml_parse import XmlParsingError
     try:
         name = attrs['name']
     except KeyError:
         raise XmlParsingError(_("'name' attribute missing"))
-    if sizer is None or sizeritem is None:
-        raise XmlParsingError(_("sizer or sizeritem object cannot be None"))
-    choice = EditChoice(name, parent, wx.NewId(), [], sizer, pos)
-    #sizer.set_item(choice.pos, proportion=sizeritem.proportion, span=sizeritem.span, flag=sizeritem.flag, border=sizeritem.border)
-    node = Node(choice)
-    choice.node = node
-    if pos is None:
-        common.app_tree.add(node, sizer.node)
-    else:
-        common.app_tree.insert(node, sizer.node, pos-1)
-    return choice
+    return EditChoice(name, parent, [], pos)
 
 
 def initialize():

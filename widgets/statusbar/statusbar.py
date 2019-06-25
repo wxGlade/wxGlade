@@ -3,13 +3,12 @@ wxFrame and wxStatusBar objects
 
 @copyright: 2002-2007 Alberto Griggio
 @copyright: 2014-2016 Carsten Grohmann
-@copyright: 2016 Dietmar Schwertberger
+@copyright: 2016-2019 Dietmar Schwertberger
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
 import wx
-import common
-from tree import Node, WidgetTree
+import common, misc
 from wcodegen.taghandler import BaseXmlBuilderTagHandler
 import new_properties as np
 from edit_windows import EditBase, EditStylesMixin
@@ -58,20 +57,19 @@ class EditStatusBar(EditBase, EditStylesMixin):
     _hidden_frame = None
     update_widget_style = False  # updating does not seem to have an effect
 
+    WX_CLASS = 'wxStatusBar'
     _PROPERTIES = ["Widget", "style", "fields"]
     PROPERTIES = EditBase.PROPERTIES + _PROPERTIES + EditBase.EXTRA_PROPERTIES
+    CHILDREN = 0
 
     def __init__(self, name, klass, parent):
-        EditBase.__init__( self, name, klass, parent, wx.NewId(), custom_class=False )
+        EditBase.__init__( self, name, klass, parent, custom_class=False, pos="_statusbar" )
         EditStylesMixin.__init__(self)
 
         # for the statusbar fields
         fields = [[self.name, "-1"]]  # list of 2-lists label, size
         self.fields = FieldsProperty(fields)
         self.window_id = None  # just a dummy for code generation
-
-        self.node = Node(self)
-        common.app_tree.add(self.node, parent.node)
 
     def create_widget(self):
         self.widget = wx.StatusBar(self.parent.widget, -1)
@@ -95,6 +93,7 @@ class EditStatusBar(EditBase, EditStylesMixin):
         self.widget.SetStatusWidths(widths)
 
     def remove(self, *args, **kwds):
+        # entry point from GUI
         if not kwds.get('do_nothing', False):
             self.parent.properties['statusbar'].set(False)
             if self.parent.widget:
@@ -127,7 +126,7 @@ class EditStatusBar(EditBase, EditStylesMixin):
         EditStylesMixin.properties_changed(self, modified)
         EditBase.properties_changed(self, modified)
 
-    def check_compatibility(self, widget, typename=None, report=False):
+    def check_compatibility(self, widget, typename=None):
         return (False,"No pasting possible here.")
     def check_drop_compatibility(self):
         return (False,"Edit fields in Properties -> Widget")
@@ -140,7 +139,7 @@ class Dialog(wx.Dialog):
         global _NUMBER
         wx.Dialog.__init__(self, None, -1, _('Select toolbar class'))
         
-        if common.app_tree.app.language.lower() == 'xrc':
+        if common.root.language.lower() == 'xrc':
             klass = 'wxToolBar'
         else:
             klass = 'MyToolBar%s' % (_NUMBER or "")
@@ -161,11 +160,12 @@ class Dialog(wx.Dialog):
         szr.Fit(self)
 
 
-def builder(parent, sizer, pos):
+def builder(parent, pos):
     "factory function for EditToolBar objects"
 
     dialog = Dialog()
-    res = dialog.ShowModal()
+    with misc.disable_stay_on_top(common.adding_window or parent):
+        res = dialog.ShowModal()
     klass = dialog.klass
     dialog.Destroy()
     if res != wx.ID_OK:
@@ -173,20 +173,15 @@ def builder(parent, sizer, pos):
             number[0] -= 1
         return
 
-    name = 'statusbar_%d' % (number[0] or 1)
-    while common.app_tree.has_name(name):
-        number[0] += 1
-        name = 'statusbar_%d' % number[0]
+    name = common.root.get_next_name('statusbar_%d', parent)
 
     with parent.frozen():
-        widget = EditStatusBar(name, klass, parent)
-        widget.node = Node(widget)
-        common.app_tree.add(widget.node)
-        if parent.widget: widget.create()
+        editor = EditStatusBar(name, klass, parent)
+        if parent.widget: editor.create()
+    return editor
 
 
-
-def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
+def xml_builder(attrs, parent, pos=None):
     "factory to build EditStatusBar objects from a XML file"
     name = attrs.get('name')
     if parent:
@@ -194,19 +189,15 @@ def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
             parent._statusbar.properties["name"].set(name)
             parent._statusbar.properties_changed(["name"])
         return parent._statusbar
-    else:
-        widget = EditStatusBar(name, attrs.get('class', 'wxStatusBar'), None)
-        widget.node = Node(widget)
-        common.app_tree.add(widget.node)
-        return widget
+    return EditStatusBar(name, attrs.get('class', 'wxStatusBar'), parent)
 
 
 def initialize():
     "initialization function for the module: returns a wxBitmapButton to be added to the main palette."
     common.widgets_from_xml['EditStatusBar'] = xml_builder
     common.widgets['EditStatusBar'] = builder
-    #return common.make_object_button('EditStatusBar', 'statusbar.xpm')
     # no standalone status bar any more
     import config, os
+    from tree import WidgetTree
     WidgetTree.images['EditStatusBar'] = os.path.join(config.icons_path, 'statusbar.xpm')
     return []

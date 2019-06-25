@@ -3,7 +3,7 @@ Code generator functions for CustomWidget objects
 
 @copyright: 2002-2007 Alberto Griggio
 @copyright: 2016 Carsten Grohmann
-@copyright: 2017 Dietmar Schwertberger
+@copyright: 2017-2019 Dietmar Schwertberger
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
@@ -34,13 +34,13 @@ def format_ctor_arguments(arguments, parent, id, size):
 class PythonCustomWidgetGenerator(wcodegen.PythonWidgetCodeWriter):
     def get_code(self, widget):
         #if self.codegen.preview and widget.klass not in widget.parser.class_names:
-        if self.codegen.preview and widget.klass not in self.codegen.class_names:
+        if self.codegen.preview:
             # if this CustomWidget refers to another class in the same wxg
             # file, use that for the preview
             return self.get_code_preview(widget)
         prop = widget.properties
         id_name, id = self.codegen.generate_code_id(widget)
-        parent = self.format_widget_access(widget.parent)
+        parent = self.format_widget_access(widget.parent_window)
         init = []
         if id_name: init.append(id_name)
         arguments = format_ctor_arguments( widget.arguments, parent, id, widget.size)
@@ -50,11 +50,11 @@ class PythonCustomWidgetGenerator(wcodegen.PythonWidgetCodeWriter):
         else:
             ctor = widget.klass
         init.append( 'self.%s = %s(%s)\n' % (widget.name, ctor, ", ".join(arguments)) )
-        props_buf = self.codegen.generate_common_properties(widget)
-        return init, props_buf, []
+        init += self.codegen.generate_common_properties(widget)
+        return init, []
 
     def get_code_preview(self, widget):
-        parent = self.format_widget_access(widget.parent)
+        parent = self.format_widget_access(widget.parent_window)
         init = []
         append = init.append
         append('self.%s = wx.Window(%s, -1, style=wx.FULL_REPAINT_ON_RESIZE)\n' % (widget.name, parent))
@@ -86,7 +86,7 @@ def self_%s_on_paint(event):
             append(line + '\n')
         append( 'self.%s.Bind(wx.EVT_PAINT, self_%s_on_paint)\n' % (widget.name, widget.name) )
         append( 'self.%s.Bind(wx.EVT_ERASE_BACKGROUND, lambda event: None)\n' % widget.name )
-        return init, [], []
+        return init, []
 
 
 class CppCustomWidgetGenerator(wcodegen.CppWidgetCodeWriter):
@@ -96,8 +96,8 @@ class CppCustomWidgetGenerator(wcodegen.CppWidgetCodeWriter):
             ids = [id_name]
         else:
             ids = []
-        if not widget.parent.is_toplevel:
-            parent = '%s' % widget.parent.name
+        if not widget.parent_window.IS_CLASS:
+            parent = '%s' % widget.parent_window.name
         else:
             parent = 'this'
         arguments = format_ctor_arguments( widget.arguments, parent, id, widget.size )
@@ -107,8 +107,8 @@ class CppCustomWidgetGenerator(wcodegen.CppWidgetCodeWriter):
         else:
             ctor = 'new ' + widget.klass
         init = [ '%s = %s(%s);\n' % (widget.name, ctor, ", ".join(arguments)) ]
-        props_buf = self.codegen.generate_common_properties(widget)
-        return init, ids, props_buf, []
+        init += self.codegen.generate_common_properties(widget)
+        return init, ids, []
 
 
 

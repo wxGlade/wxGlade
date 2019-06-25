@@ -156,7 +156,7 @@ There are several methods to copy:
  * select the fith, empty slot
  * then hit :kbd:`Ctrl-V` (or use the context menu)
 
-You may of course copy in the *Design* window and paste in the *Tree* or vice versa.
+You may of course copy in the *Design* window and paste into the *Tree* or vice versa.
  
 * **Drag & Drop in Design Window:**
 
@@ -614,7 +614,7 @@ There are three grid sizers which are supported by wxGlade:
   The editing logic is a bit different from the other sizers.
 
 
-For our calculator we need the FlexGridSizer as the first column is fixed and the second column should grow.
+For our calculator we need the *FlexGridSizer* as the first column is fixed and the second column should grow.
 The result will look like this:
 
 

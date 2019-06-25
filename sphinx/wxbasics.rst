@@ -48,7 +48,7 @@ Sizers (Layout Managers)
 ************************
 
 
-With wxWidgets/wxPython and similar toolkits, usually controls are not placed at pixel positions on their windows, but the layout of a window is managed by *sizers*.
+With wxWidgets / wxPython and similar toolkits, usually controls are not placed at pixel positions on their windows, but the layout of a window is managed by *sizers*.
  - There are *horizontal box sizers*, *vertical box sizers* and *grid sizers*.
  - The *box sizers* may have a label and a box around them. In that case they're called *static box sizers*.
  - Each sizer and contained sizer items can be fixed size or grow to fill the available space, e.g. when the window is resized.

@@ -15,15 +15,15 @@ class LispCodeGenerator(wcodegen.LispWidgetCodeWriter):
 
     def get_code(self, obj):
         id_name, id = self.codegen.generate_code_id(obj)
-        parent = self.format_widget_access(obj.parent)
+        parent = self.format_widget_access(obj.parent_window)
         init = []
         if id_name:
             init.append(id_name)
 
         obj_name = self.codegen._format_name(obj.name)
         init.append('(setf (slot-%s obj) (wxGrid_Create %s %s -1 -1 -1 -1 wxWANTS_CHARS))\n' % (obj_name, parent, id))
-        props_buf = self.get_properties_code(obj)
-        return init, props_buf, []
+        init += self.get_properties_code(obj)
+        return init, []
 
     def get_properties_code(self, obj):
         if not obj.create_grid: return []

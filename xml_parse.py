@@ -5,7 +5,7 @@ See L{wcodegen.taghandler} for custom tag handler base classes.
 
 @copyright: 2002-2007 Alberto Griggio
 @copyright: 2016 Carsten Grohmann
-@copyright: 2016-2018 Dietmar Schwertberger
+@copyright: 2016-2019 Dietmar Schwertberger
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
@@ -17,9 +17,6 @@ import time
 
 import common, config, compat
 import edit_sizers
-
-if config.use_gui:
-    import wx
 
 
 class XmlParsingError(SAXException):
@@ -186,7 +183,7 @@ class XmlWidgetBuilder(XmlParser):
             # get properties of the app
             self._appl_started = True
             attrs = self._process_app_attrs(attrs)
-            app = common.app_tree.app
+            app = common.root
             p = app.properties
 
             p["encoding"].set( attrs['encoding'] )
@@ -250,7 +247,7 @@ class XmlWidgetBuilder(XmlParser):
     def endElement(self, name):
         if name == 'application':
             self._appl_started = False
-            app = common.app_tree.app
+            app = common.root
             for key, value in self._delayed_app_properties.items():
                 app.properties[key].set( value )
             app.properties_changed( sorted(self._delayed_app_properties.keys()) )
@@ -259,9 +256,10 @@ class XmlWidgetBuilder(XmlParser):
             # remove last object from Stack
             obj = self._objects.pop()
             obj.notify_owner()
-            if obj.klass in ('sizeritem', 'sizerslot'):
+            if obj.IS_SIZERITEM or obj.IS_SLOT:
                 return
-            if obj.sizeritem:
+            if obj.sizeritem and obj.obj.parent.IS_SIZER:
+                # XXX just check whether obj.obj has these properties
                 obj.obj.copy_properties( obj.sizeritem, ("option","flag","border","span") )
             obj.obj.on_load()
         else:
@@ -307,6 +305,7 @@ class ProgressXmlWidgetBuilder(XmlWidgetBuilder):
             del kwds['input_file']
             self.size = len(self.input_file.readlines())
             self.input_file.seek(0)
+            import wx
             self.progress = wx.ProgressDialog( _("Loading..."), _("Please wait while loading the app"), 20 )
             self.step = 4
             self.i = 1
@@ -364,41 +363,37 @@ class ClipboardXmlWidgetBuilder(XmlWidgetBuilder):
         they keep info about the destination of the hierarchy of widgets (i.e. the target of the 'paste' command)
       - The first widget built must be hidden and shown again at the end of the operation"""
 
-    def __init__(self, parent, sizer, pos, proportion, span, flag, border):
+    def __init__(self, parent, pos, proportion, span, flag, border):
         XmlWidgetBuilder.__init__(self)
         self._renamed = {}
-        if parent is not None:
-            self.parent_node = parent.node
+        self.parent = parent
+        if not parent:
+            # e.g. a frame is pasted: update with the top level names
+            self.have_names = set(child.name for child in common.root.children)
         else:
-            # e.g. a frame is pasted
-            self.parent_node = None
-            self.have_names = set()
-            # update with the top level names
-            for node in common.app_tree.names.keys():
-                self.have_names.add( node.widget.name )
+            self.have_names = set(parent.toplevel_parent.names)
 
         class XmlClipboardObject(object):
             def __init__(self, **kwds):
+                self.IS_SIZER = self.IS_WINDOW = False
                 self.__dict__.update(kwds)
             def notify_owner(self):
                 pass
 
         # fake parent window object
         fake_parent = XmlClipboardObject(obj=parent, parent=parent)
-        if parent and parent.is_sizer:
-            fake_parent.in_sizers = True
-            fake_parent.in_windows = False
+        if parent and parent.IS_SIZER:
+            fake_parent.IS_SIZER = True
         else:
-            fake_parent.in_sizers = False
-            fake_parent.in_windows = True
+            fake_parent.IS_WINDOW = True
 
         self._objects.push(fake_parent)
 
         # fake sizer object
-        if sizer:
+        if parent and parent.CHILDREN!=1:
+            sizer = parent
             fake_sizer = XmlClipboardObject(obj=sizer, parent=parent)
-            fake_sizer.in_windows = False
-            fake_sizer.in_sizers = True
+            fake_sizer.IS_SIZER = True
             sizeritem = Sizeritem()
             sizeritem.properties["proportion"].set(proportion)
             sizeritem.properties["span"].set(span)
@@ -407,8 +402,6 @@ class ClipboardXmlWidgetBuilder(XmlWidgetBuilder):
             sizeritem.properties["pos"].set(pos)
             # fake sizer item
             fake_sizeritem = XmlClipboardObject(obj=sizeritem, parent=parent)
-            fake_sizeritem.in_windows = False
-            fake_sizeritem.in_sizers = False
 
             self._objects.push(fake_sizer)
             self._objects.push(fake_sizeritem)
@@ -418,12 +411,16 @@ class ClipboardXmlWidgetBuilder(XmlWidgetBuilder):
         self._appl_started = True  # no application tag when parsing from the clipboard
 
     def _get_new_name(self, oldname):
+        # when pasting, check whether the name is free and if not get a new unique one
+        if not oldname in self.have_names:
+            self.have_names.add(oldname)
+            return oldname
         if self._renamed:
             # e.g. if notebook_1 was renamed to notebook_2, try notebook_1_panel_1 -> notebook_2_panel_1 first
             for old,new in self._renamed.items():
                 if oldname.startswith(old):
                     newname = new + oldname[len(old):]
-                    if not common.app_tree.has_name(newname, node=self.parent_node):
+                    if not newname in self.have_names:
                         return newname
 
         newname = oldname
@@ -431,13 +428,13 @@ class ClipboardXmlWidgetBuilder(XmlWidgetBuilder):
             # if the old name ends with an underscore and a number, just increase the number
             try:
                 template, i = oldname.rsplit("_", 1)
-                #i = int(i) + 1
                 i = int(i)
                 template = template + '_%s'
-                if self.parent_node is not None:
-                    while common.app_tree.has_name(newname, node=self.parent_node):
+                if self.parent is not None:
+                    while newname in self.have_names:
                         newname = template%i
                         i += 1
+                    self.have_names.add(newname)
                     return newname
                 # top level, e.g. a new frame is pasted
                 while newname in self.have_names:
@@ -450,13 +447,14 @@ class ClipboardXmlWidgetBuilder(XmlWidgetBuilder):
 
         # add _copy to the old name
         i = 0
-        if self.parent_node is not None:
-            while common.app_tree.has_name(newname, node=self.parent_node):
+        if self.parent is not None:
+            while newname in self.have_names:
                 if not i:
                     newname = '%s_copy' % oldname
                 else:
                     newname = '%s_copy_%s' % (oldname, i)
                 i += 1
+            self.have_names.add(newname)
             return newname
 
         # top level, e.g. a new frame is pasted
@@ -474,10 +472,7 @@ class ClipboardXmlWidgetBuilder(XmlWidgetBuilder):
         if name == 'object' and 'name' in attrs:
             # generate a unique name for the copy
             oldname = str(attrs['name'])
-            if not common.app_tree.has_name(oldname, node=self.parent_node):
-                newname = oldname
-            else:
-                newname = self._get_new_name(oldname)
+            newname = self._get_new_name(oldname)
             attrs = _own_dict(attrs)
             attrs['name'] = newname
             if newname!=oldname:
@@ -498,6 +493,7 @@ class ClipboardXmlWidgetBuilder(XmlWidgetBuilder):
     def endElement(self, name):
         if name == 'object':
             obj = self.top()
+            if obj.obj: obj.obj.on_load()
             self.depth_level -= 1
             if not self.depth_level:
                 common.app_tree.auto_expand = True
@@ -506,11 +502,10 @@ class ClipboardXmlWidgetBuilder(XmlWidgetBuilder):
                     # show the first object and update its layout
                     #if self.top_obj.node.parent.widget.is_visible():
                     #    common.app_tree.show_widget(self.top_obj.node)
-                    if self.top_obj.node.parent.widget.widget:
+                    if self.top_obj.parent.widget:
                         self.top_obj.create_widgets()
                 except AttributeError:
                     self._logger.exception( _('Exception caused by obj: %s'), self.top_obj )
-                misc.set_focused_widget(self.top_obj)
 
         if name == 'label':
             # if e.g. a button_1 is copied to button_2, also change the label if it was "button_1"
@@ -535,8 +530,6 @@ class XmlWidgetObject(object):
 
         self.prop_handlers = Stack()  # a stack of custom handler functions to set properties of this object
         self.parser = parser
-        self.in_sizers = False   # if True, the widget is     a sizer, opposite of 'in_windows'
-        self.in_windows = False  # if True, the widget is not a sizer, opposite of 'in_sizers'
 
         self._properties_added = []
         try:
@@ -553,52 +546,50 @@ class XmlWidgetObject(object):
         if top and isinstance(top.obj, Sizeritem):
             sizeritem = top.obj
             top = stack.pop(-1)
-        if top and top.in_sizers:
+
+        if top and top.IS_SIZER:
             sizer = top.obj
             top = stack.pop(-1)
-        if top and top.in_windows:
+        if top and top.IS_WINDOW:
             parent = top.obj
+
         while parent is None and stack:
             top = stack.pop()
-            if top.in_windows: parent = top.obj
+            if top.IS_WINDOW: parent = top.obj
 
+        if parent is None:
+            parent = common.root
+
+        self.IS_SIZER = self.IS_WINDOW = self.IS_SLOT = self.IS_SIZERITEM = False
         if base is not None:
             # if base is not None, the object is a widget (or sizer), and not a sizeritem
-            self.sizeritem = sizeritem
+            self.sizeritem = sizeritem  # the properties will be copied later in endElement
 
             pos = getattr(sizeritem, 'pos', None)
-            # XXX change this: don't use pos here at all; either we're just appending to the end or filling virtual sizers acc. to pagenames
-            #if pos is None and parent and hasattr(parent, 'virtual_sizer') and parent.virtual_sizer:
-            if pos is None and parent and hasattr(parent, 'virtual_sizer') and parent.virtual_sizer:
-                # virtual sizers don't use sizeritem objects around their items in XML; the index is found from the name
-                sizer = parent.virtual_sizer
-                sizer.node = parent.node
-                sizeritem = Sizeritem()
-                pos_ = sizer.get_itempos(attrs)
-                # XXXinsert empty slots before, if required
-                if pos_: pos = pos_  # when loading from a file, the names are set already and pos_ is not None
+            if pos is None and hasattr(parent, "get_itempos"):
+                # splitters and notebooks don't use sizeritems around their items in XML; pos is found from the name
+                pos = parent.get_itempos(attrs)
 
             # build the widget
-            if pos is not None: pos = int(pos)
             builder = common.widgets_from_xml.get(base, None)
             if builder is None: raise XmlParsingError("Widget '%s' not supported."%base)
-            self.obj = builder(attrs, parent, sizer, sizeritem, pos)
+            self.obj = builder(attrs, sizer or parent, pos)
             p = self.obj.properties.get("class")
-            if p:
+            if p and not p.readonly:  # can happen when pasting a standalone ToolBar or MenuBar to a Frame
                 p.set(self.klass)
-                common.app_tree.refresh(self.obj.node)
 
-            if isinstance(self.obj, edit_sizers.SizerBase):
-                self.in_sizers = True
-            else:
-                self.in_windows = True
+            self.IS_SIZER = self.obj.IS_SIZER
+            self.IS_WINDOW = self.obj.IS_WINDOW
 
         elif self.klass == 'sizeritem':
             self.obj = Sizeritem()
             self.parent = parent
+            self.IS_SIZERITEM = True
 
         elif self.klass == 'sizerslot':
             assert sizer is not None, _("malformed wxg file: slots can only be inside sizers!")
+            self.obj = None
+            self.IS_SLOT = True
             sizer._add_slot(loading=True)
             sizer.layout()
 
@@ -619,7 +610,6 @@ class XmlWidgetObject(object):
             self._logger.error( _("WARNING: Property '%s' not supported by this object ('%s') "), name, self.obj )
             return
         prop.load(val, activate=True)
-        #self.obj.properties_changed([name])
         self._properties_added.append(name)
 
     def notify_owner(self):
@@ -653,3 +643,6 @@ class Sizeritem(np.PropertyOwner):
         self.border = np.SpinProperty(0)
         self.flag = np.ManagedFlags(None)
         self.pos = np.SpinProperty(None)
+
+    def on_load(self):
+        pass

@@ -1,7 +1,7 @@
 """
 Utilities, e.g. for debugging
 
-@copyright: 2018 Dietmar Schwertberger
+@copyright: 2018-2019 Dietmar Schwertberger
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
@@ -13,6 +13,7 @@ import wx
 
 def hx(obj):
     return hex(id(obj)).upper()
+
 
 class StructurePrinter:
     # print the structure and sizes of a window with all it's children
@@ -52,11 +53,12 @@ class StructurePrinter:
     def window(self, widget, si, indent=0):
         cname = widget.GetClassName() # u'wxPanel'
         name  = widget.GetName() # u'panel'
+        HEX = hx(widget)
         try:
             best_size = widget.GetBestSize()
         except AttributeError:
             best_size ="???"
-        print( "  "*indent, "%s: %s %s"%(cname, name, hx(widget)), widget.GetSize(), best_size, widget.GetEffectiveMinSize() )
+        print( "  "*indent, "%s: %s %s"%(cname, name, HEX), widget.GetSize(), best_size, widget.GetEffectiveMinSize() )
 
         if si: self._sizer_item(si, indent)
 
@@ -77,3 +79,46 @@ class StructurePrinter:
         self._sizer_item(si, indent)
         print()
 
+
+class TreePrinter:
+    # print the structure of the TreeCtrl
+    def __init__(self, tree):
+        self.tree = tree
+        root = tree.GetRootItem()
+        self.prn(root, 0)
+
+    def _get_children_items(self, widget):
+        item = widget.item
+        items = []
+        child_item, cookie = self.GetFirstChild(item)
+        while child_item.IsOk():
+            items.append(child_item)
+            child_item, cookie = self.GetNextChild(item, cookie)
+        return items
+
+    def XXX(self, items):
+        for child_item in items:
+            editor = self.tree._GetItemData(child_item)
+            if editor is not None and (not children or not editor in children):
+                self._SetItemData(child_item, None)
+                editor.item = None  # is probably None already
+                item_editors.append(None)
+            else:
+                item_editors.append(editor)
+
+
+    def prn(self, item, indent=0):
+        items = self.tree._get_children_items(item)
+        if not items: return
+        for child_item in items:
+            editor = self.tree._GetItemData(child_item)
+            if editor.item is None:
+                status = "XXX Missing"
+            elif editor.item != child_item:
+                status = "XXX Mismatch"
+            else:
+                status = ""
+            print( "  "*indent, hx(child_item), editor.WX_CLASS or editor.name, hx(editor), status )
+            self.prn(child_item, indent+1)
+
+        print()

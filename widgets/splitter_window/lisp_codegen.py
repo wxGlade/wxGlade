@@ -3,7 +3,7 @@ Lisp generator functions for wxSplitterWindow objects
 
 @copyright: 2002-2004 D. H. aka crazyinsomniac on sourceforge
 @copyright: 2014-2016 Carsten Grohmann
-@copyright: 2018 Dietmar Schwertberger
+@copyright: 2018-2019 Dietmar Schwertberger
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
@@ -19,13 +19,13 @@ class LispSplitterWindowGenerator(wcodegen.LispWidgetCodeWriter):
 
         init = []
         layout_buf = []
-        props_buf = self.codegen.generate_common_properties(window)
+        init += self.codegen.generate_common_properties(window)
 
         id_name, id = self.codegen.generate_code_id(window)
         window_name = self.codegen._format_name(window.name)
-        parent = self.format_widget_access(window.parent)
+        parent = self.format_widget_access(window.parent_window)
 
-        if window.is_toplevel:
+        if window.IS_CLASS:
             l = []
             if id_name:
                 l.append(id_name)
@@ -63,11 +63,11 @@ class LispSplitterWindowGenerator(wcodegen.LispWidgetCodeWriter):
                 add_sub(win_2)
 
         if window.min_pane_size:
-            props_buf.append( 'wxSplitterWindow_SetMinimumPaneSize (slot-%s obj) %s)\n' % (window_name, window.min_pane_size) )
+            init.append( 'wxSplitterWindow_SetMinimumPaneSize (slot-%s obj) %s)\n' % (window_name, window.min_pane_size) )
         if window.properties["sash_gravity"].is_active():
-            props_buf.append( 'wxSplitterWindow_SetSashGravity (slot-%s obj) %s)\n' % (window_name, window.sash_gravity) )
+            init.append( 'wxSplitterWindow_SetSashGravity (slot-%s obj) %s)\n' % (window_name, window.sash_gravity) )
 
-        return init, props_buf, layout_buf
+        return init, layout_buf
 
     def get_layout_code(self, obj):
         props_buf = []

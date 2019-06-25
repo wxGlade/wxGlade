@@ -3,13 +3,12 @@ Custom wxWindow objects
 
 @copyright: 2002-2007 Alberto Griggio
 @copyright: 2014-2016 Carsten Grohmann
-@copyright: 2017-2018 Dietmar Schwertberger
+@copyright: 2017-2019 Dietmar Schwertberger
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
 import wx
-import common
-from tree import Node
+import common, misc
 from wcodegen.taghandler import BaseXmlBuilderTagHandler
 import new_properties as np
 from edit_windows import ManagedBase
@@ -56,14 +55,15 @@ class CustomWidget(ManagedBase):
     arguments: Constructor arguments
     custom_ctor: if not empty, an arbitrary piece of code that will be used instead of the constructor name"""
 
+    WX_CLASS = "CustomWidget"
     _PROPERTIES = ["Widget", "custom_ctor", "arguments"]
     PROPERTIES = ManagedBase.PROPERTIES + _PROPERTIES + ManagedBase.EXTRA_PROPERTIES
 
     _PROPERTY_LABELS = { 'custom_constructor':'Custom constructor' }
     _PROPERTY_HELP   = { 'custom_constructor':'Specify a custom constructor like a factory method' }
 
-    def __init__(self, name, klass, parent, id, sizer, pos):
-        ManagedBase.__init__(self, name, klass, parent, id, sizer, pos)
+    def __init__(self, name, klass, parent, pos):
+        ManagedBase.__init__(self, name, klass, parent, pos)
 
         # initialise instance properties
         cols      = [('Arguments', np.GridProperty.STRING)]
@@ -71,7 +71,7 @@ class CustomWidget(ManagedBase):
         self.custom_ctor = np.TextPropertyD("", name="custom_constructor", strip=True, default_value="")
 
     def create_widget(self):
-        self.widget = wx.Window( self.parent.widget, self.id, style=wx.BORDER_SUNKEN | wx.FULL_REPAINT_ON_RESIZE)
+        self.widget = wx.Window(self.parent_window.widget , self.id, style=wx.BORDER_SUNKEN | wx.FULL_REPAINT_ON_RESIZE)
         self.widget.Bind(wx.EVT_PAINT, self.on_paint)
         self.widget.Bind(wx.EVT_ERASE_BACKGROUND, lambda event:None)
 
@@ -112,7 +112,7 @@ class Dialog(wx.Dialog):
     validation_re  = re.compile(r'^[a-zA-Z_]+[\w-]*(\[\w*\])*$')
     def __init__(self):
         title = _('Select widget class')
-        wx.Dialog.__init__(self, None, -1, title)
+        wx.Dialog.__init__(self, None, -1, title, wx.GetMousePosition())
         klass = 'CustomWidget'
 
         self.classname = wx.TextCtrl(self, -1, klass)
@@ -136,7 +136,6 @@ class Dialog(wx.Dialog):
         w = self.GetTextExtent(title)[0] + 50
         if self.GetSize()[0] < w:
             self.SetSize((w, -1))
-        self.CenterOnScreen()
         self.classname.Bind(wx.EVT_TEXT, self.validate)
 
     def validate(self, event):
@@ -144,50 +143,35 @@ class Dialog(wx.Dialog):
         self.OK_button.Enable( bool(OK) )
 
 
-def builder(parent, sizer, pos, number=[1]):
+def builder(parent, pos):
     "factory function for CustomWidget objects"
 
     dialog = Dialog()
-    res = dialog.ShowModal()
+    with misc.disable_stay_on_top(common.adding_window or parent):
+        res = dialog.ShowModal()
     klass = dialog.classname.GetValue().strip()
     dialog.Destroy()
     if res != wx.ID_OK: return
 
-    name = 'window_%d' % number[0]
-    while common.app_tree.has_name(name):
-        number[0] += 1
-        name = 'window_%d' % number[0]
+    name = common.root.get_next_name('window_%d', parent)
     with parent.frozen():
-        win = CustomWidget(name, klass, parent, wx.NewId(), sizer, pos)
-        node = Node(win)
-        win.node = node
-
-        win.properties["arguments"].set( [['$parent'], ['$id']] )  # ,['$width'],['$height']]
-        win.properties["proportion"].set(1)
-        win.properties["flag"].set("wxEXPAND")
-        if parent.widget: win.create()
-
-    common.app_tree.insert(node, sizer.node, pos-1)
-    #sizer.set_item(win.pos, 1, wx.EXPAND)
+        editor = CustomWidget(name, klass, parent, pos)
+        editor.properties["arguments"].set( [['$parent'], ['$id']] )  # ,['$width'],['$height']]
+        editor.properties["proportion"].set(1)
+        editor.properties["flag"].set("wxEXPAND")
+        if parent.widget: editor.create()
+    return editor
 
 
-def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
+def xml_builder(attrs, parent, pos=None):
     "factory to build CustomWidget objects from a XML file"
     from xml_parse import XmlParsingError
     try:
         name = attrs['name']
     except KeyError:
         raise XmlParsingError(_("'name' attribute missing"))
-    if not sizer or not sizeritem:
-        raise XmlParsingError(_("sizer or sizeritem object cannot be None"))
     klass = attrs.get("class", "CustomWidget")
-    win = CustomWidget(name, klass, parent, wx.NewId(), sizer, pos)
-    #sizer.set_item(win.pos, proportion=sizeritem.proportion, span=sizeritem.span, flag=sizeritem.flag, border=sizeritem.border)
-    node = Node(win)
-    win.node = node
-    if pos is None: common.app_tree.add(node, sizer.node)
-    else: common.app_tree.insert(node, sizer.node, pos-1)
-    return win
+    return CustomWidget(name, klass, parent, pos)
 
 
 def initialize():

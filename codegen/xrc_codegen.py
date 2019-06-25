@@ -2,11 +2,12 @@
 XRC code generator
 
 Generates the xml code for the app in XRC format.
-Calls the appropriate ``writers'' of the various objects. These functions
-return an instance of XrcObject
+Calls the appropriate ``writers'' of the various objects. These functions return an instance of XrcObject.
+To be done: write XRC directly instead of using BaseLangCodeWriter as base.
 
 @copyright: 2002-2007 Alberto Griggio
 @copyright: 2012-2016 Carsten Grohmann
+@copyright: 2019 Dietmar Schwertberger
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
@@ -47,25 +48,24 @@ class XrcObject(wcodegen.XrcWidgetCodeWriter):
 class SizerItemXrcObject(XrcObject):
     "XrcObject to handle sizer items"
 
-    def __init__(self, obj, proportion, flag, border):
+    def __init__(self, xrc_obj, obj):
         XrcObject.__init__(self)
-        self.obj = obj  # the XrcObject representing the widget
-        self.proportion = proportion
-        self.flag = flag
-        self.border = border
+        self.xrc_obj = xrc_obj
+        self.obj = obj
 
     def write(self, output, ntabs, properties=None):
         tabs = self.tabs(ntabs)
         tabs1 = self.tabs(ntabs + 1)
         output.append(tabs + '<object class="sizeritem">\n')
-        if self.proportion != '0':
-            output.append(tabs1 + '<option>%s</option>\n' % self.proportion)
-        if self.flag and self.flag != '0':
-            output.append(tabs1 + '<flag>%s</flag>\n' % self.cn_f(self.flag))
-        if self.border != '0':
-            output.append(tabs1 + '<border>%s</border>\n' % self.border)
+        if self.obj.proportion:
+            output.append(tabs1 + '<option>%s</option>\n' % self.obj.proportion)
+        flag = self.obj.properties["flag"].get_string_value()
+        if flag and flag!='0':
+            output.append(tabs1 + '<flag>%s</flag>\n' % self.cn_f(flag))
+        if self.obj.border:
+            output.append(tabs1 + '<border>%s</border>\n' % self.obj.border)
         # write the widget
-        self.obj.write(output, ntabs + 1)
+        self.xrc_obj.write(output, ntabs + 1)
         output.append(tabs + '</object>\n')
 
 
@@ -73,24 +73,33 @@ class SizerItemXrcObject(XrcObject):
 class SpacerXrcObject(XrcObject):
     "XrcObject to handle widgets"
 
-    def __init__(self, size_str, option, flag, border):
+    def __init__(self, obj):
         XrcObject.__init__(self)
-        self.size_str = size_str
-        self.proportion = option
-        self.flag = flag
-        self.border = border
+        self.obj = obj
 
     def write(self, output, ntabs):
+        obj = self.obj
+
         tabs = self.tabs(ntabs)
         tabs1 = self.tabs(ntabs + 1)
-        output.append(tabs + '<object class="spacer">\n')
-        output.append(tabs1 + '<size>%s</size>\n' % self.size_str.strip())
-        if self.proportion != '0':
-            output.append(tabs1 + '<option>%s</option>\n' % self.proportion)
-        if self.flag and self.flag != '0':
-            output.append(tabs1 + '<flag>%s</flag>\n' % self.cn_f(self.flag))
-        if self.border != '0':
-            output.append(tabs1 + '<border>%s</border>\n' % self.border)
+
+        if obj is None or obj.name == "spacer":
+            output.append( tabs + '<object class="spacer">\n' )
+        else:
+            output.append( tabs + '<object class="spacer" name=%s>\n'%quoteattr(obj.name) )
+        if obj is not None:
+            # a real spacer
+            output.append( tabs1 + '<size>%s, %s</size>\n' % (obj.width, obj.height) )
+            if obj.proportion:
+                output.append(tabs1 + '<option>%s</option>\n' % obj.proportion)
+            if obj.flag:
+                flag = obj.properties["flag"].get_string_value()
+                output.append(tabs1 + '<flag>%s</flag>\n' % self.cn_f(flag))
+            if obj.border:
+                output.append(tabs1 + '<border>%s</border>\n' % obj.border)
+        else:
+            # just an empty sizer slot
+            output.append( tabs1 + '<size>0, 0</size>\n' )
         output.append(tabs + '</object>\n')
 
 
@@ -149,7 +158,7 @@ class DefaultXrcObject(XrcObject):
             del properties["name"]
         else:
             name = self.name
-        if self.widget.is_sizer:
+        if self.widget.IS_SIZER:
             output.append(self.tabs(ntabs) + '<object class=%s>\n' % quoteattr(self.klass))
         else:
             if self.subclass and self.subclass != self.klass:
@@ -311,14 +320,81 @@ class XRCCodeWriter(BaseLangCodeWriter, wcodegen.XRCMixin):
         self.out_file = None
 
     def _clean_up_node(self, node):
-        if hasattr(node.widget, "xrc"):
-            del node.widget.xrc
+        if hasattr(node, "xrc"):
+            del node.xrc
         for c in node.children or []:
             self._clean_up_node(c)
 
     def clean_up(self, root):
         # root is a Tree node
         self._clean_up_node(root)
+
+    def _generate_code(self, klass, parent, parent_builder, obj):
+        # XXX old implementation from __init__.py before re-factoring 'real' code generation
+        # recursively generate code, for anything except application.Application
+        # for toplevel widgets or with class different from wx... a class will be added
+
+        if obj.IS_SLOT or obj.classname=="spacer":
+            if obj.classname!="slot":  # "slot" has no code generator
+                self.add_object(obj)
+                if self.language=="XRC" and obj.classname in ("spacer", "sizerslot"):
+                    self.add_sizeritem(obj.parent_class_object, obj.parent, obj)
+            return
+
+        parent = obj.parent
+        parent_class_object = obj.parent_class_object  # used for adding to this object's sizer
+
+        can_be_toplevel = obj.__class__.__name__ in common.toplevels
+
+        old_class = old_base = None  # restore values for preview
+        try:
+            # XXX check for alternatives
+            # classname is used only for 'EditTopLevelScrolledWindow' vs. 'EditTopLevelPanel'
+            classname = getattr(obj, '_classname', obj.__class__.__name__)
+            base = common.class_names[classname]
+            if base!=obj.base:
+                old_base = obj.base
+                obj.base = base
+
+            IS_CLASS = obj.IS_TOPLEVEL
+            if obj.klass != obj.base and can_be_toplevel:
+                IS_CLASS = True
+                # for panel objects, if the user sets a custom class but (s)he doesn't want the code to be generated...
+                if obj.check_prop("no_custom_class") and obj.no_custom_class and not self.preview:
+                    IS_CLASS = False
+            elif self.preview and not can_be_toplevel and obj.base != 'CustomWidget':
+                # if this is a custom class, but not a toplevel one, for the preview we have to use the "real" class
+                # CustomWidgets handle this in a special way (see widgets/custom_widget/codegen.py)
+                old_class = obj.properties["klass"].get()
+                obj.properties["klass"].set(obj.base) # XXX handle this in a different way
+
+            obj.IS_CLASS = IS_CLASS
+
+            # first the item
+            if IS_CLASS:
+                self.add_class(obj)
+            if not obj.IS_TOPLEVEL:
+                added = self.add_object(obj)  # added can be False if the widget is not supported
+            else:
+                added = False
+
+            # then the children
+            for child in obj.get_all_children():
+                assert obj.children.count(child)<=1
+                self._generate_code(None, None, None, child)  # XRCCodeWriter does not use the other args
+
+            if IS_CLASS:
+                self.finalize_class(obj)
+
+            # check whether the object belongs to some sizer; if applicable, add it to the sizer at the top of the stack
+            if added and parent.IS_SIZER:
+                if obj.classname not in ("spacer",):  # spacer and slot are adding itself to the sizer
+                    self.add_sizeritem(parent_class_object, parent, obj)
+        finally:
+            # XXX handle this in a different way
+            if old_class is not None: obj.properties["klass"].set(old_class)
+            if old_base  is not None: obj.base = old_base
+
 
     def add_app(self, app, top_win_class):
         "In the case of XRC output, there's no wxApp code to generate"
@@ -327,9 +403,8 @@ class XRCCodeWriter(BaseLangCodeWriter, wcodegen.XRCMixin):
     def add_object(self, sub_obj):
         "Adds the object sub_obj to the XRC tree. The first argument is unused."
         # what we need in XRC is not top_obj, but sub_obj's true parent we don't need the sizer, but the window
-        top_obj = sub_obj.node.parent.widget
-        while top_obj.is_sizer:
-            top_obj = top_obj.node.parent.widget
+
+        top_obj = sub_obj.parent_window
         builder = self.obj_builders.get( sub_obj.base, DefaultXrcObject )
         try:
             # check whether we already created the xrc_obj
@@ -343,21 +418,21 @@ class XRCCodeWriter(BaseLangCodeWriter, wcodegen.XRCMixin):
             if sub_obj in self.xrc_objects:
                 del self.xrc_objects[sub_obj]
         # let's see if sub_obj's parent already has an XrcObject: if so, it's temporarily stored in self.xrc_objects
-        if top_obj in self.xrc_objects:
-            top_xrc = self.xrc_objects[top_obj]
-        else:
+        #if top_obj in self.xrc_objects:
+            #top_xrc = self.xrc_objects[top_obj]
+        #else:
+        if not getattr(top_obj, "xrc"):
             # ...otherwise, create it and store it in the self.xrc_objects dict
             top_xrc = self.obj_builders.get( top_obj.base, DefaultXrcObject )(top_obj)
             top_obj.xrc = top_xrc
             self.xrc_objects[top_obj] = top_xrc
         top_obj.xrc.children.append(xrc_obj)
+        return True
 
-    def add_sizeritem(self, unused, sizer, obj, option, flag, border):
+    def add_sizeritem(self, unused, sizer, obj):
         "Adds a sizeritem to the XRC tree. The first argument is unused."
         # what we need in XRC is not toplevel, but sub_obj's true parent
-        toplevel = obj.node.parent.widget
-        while toplevel.is_sizer:
-            toplevel = toplevel.node.parent.widget
+        toplevel = obj.parent_window
 
         top_xrc = toplevel.xrc
         obj_xrc = obj.xrc
@@ -370,28 +445,14 @@ class XRCCodeWriter(BaseLangCodeWriter, wcodegen.XRCMixin):
         # we now have to move the children from 'toplevel' to 'sizer'
         index = top_xrc.children.index(obj_xrc)
         if obj.klass == 'spacer':
-            w = obj.properties.get('width', '0')
-            h = obj.properties.get('height', '0')
-            obj_xrc = SpacerXrcObject( '%s, %s' % (w, h), str(option), str(flag), str(border) )
-            sizer.xrc.children.append(obj_xrc)
+            sizer.xrc.children.append( SpacerXrcObject(obj) )
         elif obj.klass == 'sizerslot':
-            obj_xrc = SpacerXrcObject( '0, 0', '0', '0', '0' )
-            sizer.xrc.children.append(obj_xrc)
+            if not sizer._IS_GRIDBAG:
+                sizer.xrc.children.append( SpacerXrcObject(None) )
         else:
-            sizeritem_xrc = SizerItemXrcObject( obj_xrc, str(option), str(flag), str(border) )
+            sizeritem_xrc = SizerItemXrcObject( obj_xrc, obj )
             sizer.xrc.children.append(sizeritem_xrc)
         del top_xrc.children[index]
-
-    def add_spacer(self, topl, sizer, obj=None, option=0, flag='0', border=0):
-        if obj is not None:
-            w = obj.width
-            h = obj.height
-        else:
-            h = w = 0
-        obj_xrc = SpacerXrcObject( '%s, %s' % (w,h), str(option), str(flag), str(border) )
-        if not hasattr(sizer, "xrc"):  # if the sizer has not an XrcObject yet, create it now
-            sizer.xrc = self.obj_builders.get( sizer.base, DefaultXrcObject )(sizer)
-        sizer.xrc.children.append(obj_xrc)
 
     def add_class(self, code_obj):
         """Add class behaves very differently for XRC output than for other languages (i.e. python):
@@ -403,6 +464,9 @@ class XRCCodeWriter(BaseLangCodeWriter, wcodegen.XRCMixin):
             code_obj.xrc = xrc_obj
             # add the xrc_obj to the dict of the toplevel ones
             self.xrc_objects[code_obj] = xrc_obj
+
+    def finalize_class(self, code_obj):
+        pass
 
     def generate_code_id(self, obj, id=None):
         return '', ''

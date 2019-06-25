@@ -3,7 +3,7 @@ Support for cut & paste of wxGlade widgets
 
 @copyright: 2002-2007 Alberto Griggio
 @copyright: 2016 Carsten Grohmann
-@copyright: 2016-2018 Dietmar Schwertberger
+@copyright: 2016-2019 Dietmar Schwertberger
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
@@ -25,6 +25,9 @@ widget_data_format = DataFormat("wxglade.widget")  # a serialized widget
 sizer_data_format  = DataFormat("wxglade.sizer")   # a serialized sizer
 window_data_format = DataFormat("wxglade.window")  # a toplevel window
 
+menubar_data_format = DataFormat("wxglade.menubar")  # a serialized menubar
+toolbar_data_format = DataFormat("wxglade.toolbar")  # a serialized toolbar
+
 
 _current_drag_source = None  # reference to drag start; used when dragging within application
 
@@ -40,8 +43,10 @@ def begin_drag(window, widget):
 
     if isinstance(widget, edit_sizers.Sizer):
         msg = "Move sizer to empty or populated slot to insert, to a sizer to append; hold Ctrl to copy"
-    elif widget._is_toplevel:
+    elif widget.IS_TOPLEVEL:
         msg = "Move window to application object; hold Ctrl to copy"
+    elif widget.WX_CLASS in ("wxToolBar", "wxMenuBar"):
+        msg = "Move tool or menu bar to application object or frame; hold Ctrl to copy"
     else:
         msg = "Move control to empty or populated slot to insert, to a sizer to append; hold Ctrl to copy"
     common.main.user_message( msg )
@@ -65,7 +70,7 @@ class DropTarget(wx.DropTarget):
     def _create_data_objects(self, toplevel=False):
         data_objects = {}
         data_object = wx.DataObjectComposite()
-        formats = [widget_data_format, sizer_data_format]
+        formats = [widget_data_format, sizer_data_format, menubar_data_format, toolbar_data_format]
         if toplevel: formats.append(window_data_format)
         for fmt in formats:
             do = wx.CustomDataObject(fmt)
@@ -84,19 +89,19 @@ class DropTarget(wx.DropTarget):
 
     def _check_compatibility(self, x,y):
         # check whether the dragged item is compatible to the widget at position (x,y)
-        widget = self.window.find_widget_by_pos(x,y)
+        widget = self.window.find_editor_by_pos(x,y)
         if widget is None:
             return (False, "No widget found")
 
-        if not widget.is_sizer and not widget._is_toplevel and getattr(widget,"sizer",None):  # for a toplevel window, sizer is the child
+        if not widget.IS_SIZER and not widget.IS_TOPLEVEL and getattr(widget,"sizer",None):  # for a toplevel window, sizer is the child
             if widget.sizer._IS_GRIDBAG and not isinstance(widget, edit_sizers.SizerSlot):
                 # for GridBagSizer we have cells, so we don't shift items
                 return (False, "Can only paste into empty slots")
 
         if _current_drag_source is not None:
             # drag within application: avoid dragging of an item on itself or it's child
-            if widget.node is _current_drag_source.node:            return (False, "Can't paste item on itself")
-            if widget.node.has_ancestor(_current_drag_source.node): return (False, "Can't paste item into itself")
+            if widget is _current_drag_source:            return (False, "Can't paste item on itself")
+            if widget.has_ancestor(_current_drag_source): return (False, "Can't paste item into itself")
             return widget.check_compatibility(_current_drag_source)
 
         # drag from outside
@@ -114,11 +119,10 @@ class DropTarget(wx.DropTarget):
         compatible, message = self._check_compatibility(x,y)
         if not compatible: return wx.DragCancel
 
-        dst_widget = self.window.find_widget_by_pos(x,y)
+        dst_widget = self.window.find_editor_by_pos(x,y)
 
         if _current_drag_source:
             src_widget = _current_drag_source  # was set in begin_drag
-            src_node = src_widget.node
 
             copy = (default==wx.DragCopy)
             if not copy and _current_drag_source is misc.focused_widget:
@@ -161,8 +165,6 @@ class DropTarget(wx.DropTarget):
         else:
             dst_widget.clipboard_paste(data)
 
-        common.app_tree.expand(dst_widget.node)
-
     def OnLeave(self):
         self.fmt = None
 
@@ -170,9 +172,13 @@ class DropTarget(wx.DropTarget):
 def get_data_object(widget):
     data = dump_widget(widget)
     # make a data object
-    if isinstance(widget, edit_sizers.Sizer):
+    if widget.IS_SIZER:
         do = wx.CustomDataObject(sizer_data_format)
-    elif getattr(widget, "_is_toplevel", False):
+    elif widget.WX_CLASS=="wxMenuBar":
+        do = wx.CustomDataObject(menubar_data_format)
+    elif widget.WX_CLASS=="wxToolBar":
+        do = wx.CustomDataObject(toolbar_data_format)
+    elif widget.IS_TOPLEVEL:
         do = wx.CustomDataObject(window_data_format)
     else:
         do = wx.CustomDataObject(widget_data_format)
@@ -186,7 +192,7 @@ def get_data_object(widget):
 def dump_widget(widget):
     "build the XML string and pickle it together with the layout properties"
     xml_unicode = []
-    widget.node.write(xml_unicode, 0)
+    widget.write(xml_unicode, 0)
     flag = option = span = border = None
     flag = widget.properties.get("flag")
     if flag is not None: flag = flag.get_string_value()
@@ -255,7 +261,8 @@ def paste(widget):
 
     try:
         data_object = None
-        for fmt in [widget_data_format,sizer_data_format,window_data_format]:
+        for fmt in [widget_data_format, sizer_data_format, window_data_format,
+                    menubar_data_format, toolbar_data_format]:
             if wx.TheClipboard.IsSupported(fmt):
                 data_object = wx.CustomDataObject(fmt)
                 break
@@ -278,7 +285,7 @@ def paste(widget):
         misc.error_message("Paste failed")
 
 
-def _paste(parent, sizer, pos, clipboard_data):
+def _paste(parent, pos, clipboard_data):
     "parse XML and insert widget"
     option, span, flag, border, xml_unicode = clipboard2widget( clipboard_data )
     if not xml_unicode: return False
@@ -287,10 +294,12 @@ def _paste(parent, sizer, pos, clipboard_data):
         wx.BeginBusyCursor()
         # widget representation is still unicode, but parser need UTF8
         xml_utf8 = xml_unicode.encode('utf8')
-        parser = xml_parse.ClipboardXmlWidgetBuilder(parent, sizer, pos, option, span, flag, border)
+        parser = xml_parse.ClipboardXmlWidgetBuilder(parent, pos, option, span, flag, border)
         with parent and parent.frozen() or misc.dummy_contextmanager():
             parser.parse_string(xml_utf8)
-        common.app_tree.saved = False
+            if parent and hasattr(parent, "on_child_pasted"):
+                parent.on_child_pasted()  # trigger e.g. re-sizing of the children
+        misc.rebuild_tree( parser.top_obj )
         return True  # Widget hierarchy pasted.
     except xml_parse.XmlParsingError:
         if config.debugging: raise

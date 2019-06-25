@@ -7,7 +7,7 @@ Configuration related stuff
 @see: L{preferencesdialog}
 @copyright: 2007 Alberto Griggio
 @copyright: 2013-2016 Carsten Grohmann
-@copyright: 2017-2018 Dietmar Schwertberger
+@copyright: 2017-2019 Dietmar Schwertberger
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
@@ -128,7 +128,7 @@ widget_config = {
                                                       "the window even if it isn't visible. This makes it "
                                                       "possible to dynamically show and hide controls "
                                                       "without resizing parent dialog, for example. "
-                                                      "This function is new since wxWidgets version 2.8."),
+                                                      "This function is new since wxWidgets version 2.8.8."),
                                             'supported_by': ('wx3',) },
 
         # generic styles from wxWindow

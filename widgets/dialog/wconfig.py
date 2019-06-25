@@ -46,14 +46,7 @@ config = {
                    'wxDIALOG_NO_PARENT',
                    'wxFULL_REPAINT_ON_RESIZE', 'wxCLIP_CHILDREN'],
     'events': {
-        'default': {
-            'type': 'wxCloseEvent',
-            'supported_by': ('wx3',),
-        },
-        'EVT_CLOSE': {},
-        'EVT_INIT_DIALOG': {},
+        'EVT_CLOSE': {'type':'wxCloseEvent'},
+        'EVT_INIT_DIALOG': {'type':'wxInitDialogEvent'},
     },
 }
-
-
-

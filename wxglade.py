@@ -4,7 +4,7 @@ Entry point of wxGlade
 
 @copyright: 2002-2007 Alberto Griggio
 @copyright: 2013-2016 Carsten Grohmann
-@copyright: 2016-2018 Dietmar Schwertberger
+@copyright: 2016-2019 Dietmar Schwertberger
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
@@ -166,8 +166,8 @@ def _guiless_open_app(filename):
 
     start = time.clock()
 
-    common.app_tree.clear()
-    common.app_tree.app.init()
+    common.root.clear()
+    common.root.init()
 
     try:
         try:
@@ -175,7 +175,7 @@ def _guiless_open_app(filename):
             input_file_version = None
 
             if not isinstance(filename, list):
-                common.app_tree.app.filename = filename
+                common.root.filename = filename
                 # decoding will done automatically by SAX XML library
                 if compat.PYTHON2:
                     infile = open(filename)
@@ -194,7 +194,7 @@ def _guiless_open_app(filename):
                     infile.seek(0)
 
             else:
-                common.app_tree.app.filename = None
+                common.root.filename = None
 
             p = XmlWidgetBuilder(filename, input_file_version)
 
@@ -222,23 +222,23 @@ def _guiless_open_app(filename):
             infile.close()
 
         if error_msg:
-            common.app_tree.clear()
-            common.app_tree.app.new()
-            common.app_tree.app.saved = True
+            common.root.clear()
+            common.root.new()
+            common.root.saved = True
 
             logging.error(error_msg)
 
             return False
 
-    if common.app_tree.app.is_template:
+    if common.root.is_template:
         logging.info(_("Template loaded"))
-        common.app_tree.app.template_data = template.Template(filename)
-        common.app_tree.app.filename = None
+        common.root.template_data = template.Template(filename)
+        common.root.filename = None
 
     end = time.clock()
     logging.info(_('Loading time: %.5f'), end - start)
 
-    common.app_tree.app.saved = True
+    common.root.saved = True
     #common.property_panel.Raise()
 
     duration = end - start
@@ -265,9 +265,8 @@ def command_line_code_generation(filename, language, out_path=None):
     common.init_preferences()
     app = application.Application()
     # The following lines contain code from tree.WidgetTree.__init__()
-    root_node = tree.Node(app)
-    app.node = root_node
-    common.app_tree = tree.Tree(root_node, app)
+    if config.use_gui:
+        common.app_tree = tree.WidgetTree(root_node, app)
 
     # Now we can load the file
     if filename is not None:
@@ -277,8 +276,8 @@ def command_line_code_generation(filename, language, out_path=None):
     try:
         if language not in common.code_writers:
             raise errors.WxgMissingCodeWriter(language)
-        common.app_tree.app.properties["language"].set(language)
-        common.app_tree.app.generate_code(out_path=out_path)
+        common.root.properties["language"].set(language)
+        common.root.generate_code(out_path=out_path)
     except errors.WxgBaseException as inst:
         logging.error(inst)
         sys.exit(inst)

@@ -3,13 +3,12 @@ wxCalendarCtrl objects
 
 @copyright: 2002-2007 Alberto Griggio
 @copyright: 2014-2016 Carsten Grohmann
-@copyright: 2016 Dietmar Schwertberger
+@copyright: 2016-2019 Dietmar Schwertberger
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
 import wx
 from edit_windows import ManagedBase, EditStylesMixin
-from tree import Node
 import common, compat, config
 import new_properties as np
 import decorators
@@ -25,12 +24,13 @@ else:
 class EditCalendarCtrl(ManagedBase, EditStylesMixin):
     "Class to handle wxCalendarCtrl objects"
 
+    WX_CLASS = "wxCalendarCtrl"
     _PROPERTIES = ["Widget", "default", "style"]
     PROPERTIES = ManagedBase.PROPERTIES + _PROPERTIES + ManagedBase.EXTRA_PROPERTIES
 
-    def __init__(self, name, parent, id, sizer, pos):
+    def __init__(self, name, parent, pos):
         # Initialise parent classes
-        ManagedBase.__init__(self, name, 'wxCalendarCtrl', parent, id, sizer, pos)
+        ManagedBase.__init__(self, name, 'wxCalendarCtrl', parent, pos)
         EditStylesMixin.__init__(self)
 
         # initialise instance properties
@@ -38,7 +38,7 @@ class EditCalendarCtrl(ManagedBase, EditStylesMixin):
 
     def create_widget(self):
         # TODO add all the other parameters for the CalendarCtrl especially style=self.style and the initial date
-        self.widget = CalendarCtrl(self.parent.widget, self.id, style=self.style)
+        self.widget = CalendarCtrl(self.parent_window.widget, self.id, style=self.style)
 
     # handle compatibility:
     @decorators.memoize
@@ -57,40 +57,25 @@ class EditCalendarCtrl(ManagedBase, EditStylesMixin):
         ManagedBase.properties_changed(self, modified)
 
 
-def builder(parent, sizer, pos, number=[1]):
+def builder(parent, pos):
     "factory function for EditCalendarCtrl objects"
-    label = 'calendar_ctrl_%d' % number[0]
-    while common.app_tree.has_name(label):
-        number[0] += 1
-        label = 'calendar_ctrl_%d' % number[0]
+    name = common.root.get_next_name('calendar_ctrl_%d', parent)
     with parent.frozen():
-        calendar_ctrl = EditCalendarCtrl(label, parent, wx.NewId(), sizer, pos)
-        calendar_ctrl.properties["style"].set_to_default()
-        calendar_ctrl.check_defaults()
-        node = Node(calendar_ctrl)
-        calendar_ctrl.node = node
-        if parent.widget: calendar_ctrl.create()
-    common.app_tree.insert(node, sizer.node, pos-1)
+        editor = EditCalendarCtrl(name, parent, pos)
+        editor.properties["style"].set_to_default()
+        editor.check_defaults()
+        if parent.widget: editor.create()
+    return editor
 
 
-def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
+def xml_builder(attrs, parent, pos=None):
     "factory to build EditCalendarCtrl objects from a XML file"
     from xml_parse import XmlParsingError
     try:
         label = attrs['name']
     except KeyError:
         raise XmlParsingError(_("'name' attribute missing"))
-    if sizer is None or sizeritem is None:
-        raise XmlParsingError(_("sizer or sizeritem object cannot be None"))
-    calendar_ctrl = EditCalendarCtrl(label, parent, wx.NewId(), sizer, pos)
-    #sizer.set_item(calendar_ctrl.pos, proportion=sizeritem.proportion, span=sizeritem.span, flag=sizeritem.flag, border=sizeritem.border)
-    node = Node(calendar_ctrl)
-    calendar_ctrl.node = node
-    if pos is None:
-        common.app_tree.add(node, sizer.node)
-    else:
-        common.app_tree.insert(node, sizer.node, pos-1)
-    return calendar_ctrl
+    return EditCalendarCtrl(label, parent, pos)
 
 
 def initialize():

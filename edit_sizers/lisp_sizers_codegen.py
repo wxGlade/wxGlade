@@ -3,12 +3,12 @@ Lisp generator functions for the various wxSizerS
 
 @copyright: 2002-2004 D.H. aka crazyinsomniac on sourceforge.net
 @copyright: 2013-2016 Carsten Grohmann
-@copyright: 2017 Dietmar Schwertberger
+@copyright: 2017-2019 Dietmar Schwertberger
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
 import common
-from .edit_sizers import BaseSizerBuilder
+from .edit_sizers import BaseSizerBuilder, SlotGenerator
 
 
 class BaseLispSizerBuilder(BaseSizerBuilder):
@@ -30,13 +30,33 @@ class BaseLispSizerBuilder(BaseSizerBuilder):
     """
 
     def _get_wparent(self, obj):
-        while obj.is_sizer:
-            obj = obj.node.parent.widget
-        if not obj.is_toplevel:
-            parent = '(slot-%s obj)' % self.codegen._format_name(obj.name)
+        window = obj.parent_window
+        if not window.IS_CLASS:
+            parent = '(slot-%s obj)' % self.codegen._format_name(window.name)
         else:
             parent = self.tmpl_wparent
         return parent
+
+
+    def get_code_per_child(self, obj, child):
+        """Returns code that will be inserted after the child code; e.g. for adding element to a sizer.
+        It's placed before the final code returned from get_code()."""
+
+        if child.classname in ("spacer","sizerslot"):  # spacer and slot are adding itself to the sizer
+            return []
+        obj_name = self.codegen._format_classattr(child)
+        sizer_name = self.codegen._format_classattr(obj)
+
+        flag = child.properties["flag"].get_string_value()  # as string, joined with "|"
+        flag = self.codegen.cn_f(flag) or '0'
+
+        if child.IS_SIZER:
+            tmpl_sizeritem = '(wxSizer_AddSizer (%s obj) (%s obj) %s %s %s nil)\n'
+        else:
+            tmpl_sizeritem = '(wxSizer_AddWindow (%s obj) (%s obj) %s %s %s nil)\n'
+        stmt = tmpl_sizeritem % ( sizer_name, obj_name, child.proportion, flag, child.border )
+
+        return [stmt]
 
 
 class LispBoxSizerBuilder(BaseLispSizerBuilder):
@@ -45,6 +65,7 @@ class LispBoxSizerBuilder(BaseLispSizerBuilder):
     tmpl = '(setf (%(sizer_name)s obj) (wxBoxSizer_Create %(orient)s))\n'
 
     tmpl_wparent = '(slot-top-window obj)'
+
 
 class LispWrapSizerBuilder(LispBoxSizerBuilder):
     klass = 'wxWrapSizer'
@@ -73,15 +94,6 @@ class LispGridBagSizerBuilder(LispGridSizerBuilder):
     tmpl = '(setf (%(sizer_name)s obj) (wxGridSizer_Create %(vgap)s %(hgap)s))\n'
 
 
-import wcodegen
-
-class LispSizerSlotGenerator(wcodegen.LispWidgetCodeWriter):
-    # spacers and empty sizer slots are generally handled by a hack:
-    # The the implementations of add_sizeritem() contains more details.
-    # The code generation code is already implemented in base class.
-    pass
-
-
 def initialize():
     cn = common.class_names
     cn['EditBoxSizer'] = 'wxBoxSizer'
@@ -93,12 +105,12 @@ def initialize():
 
     lispgen = common.code_writers.get("lisp")
     if lispgen:
-        awh = lispgen.add_widget_handler
+        awh = lispgen.register_widget_code_generator
         awh('wxBoxSizer', LispBoxSizerBuilder())
         awh('wxWrapSizer', LispWrapSizerBuilder())
         awh('wxStaticBoxSizer', LispStaticBoxSizerBuilder())
         awh('wxGridSizer', LispGridSizerBuilder())
         awh('wxFlexGridSizer', LispFlexGridSizerBuilder())
         awh('wxGridBagSizer', LispGridBagSizerBuilder())
-        
-    common.register('lisp', "sizerslot", LispSizerSlotGenerator("sizerslot"))
+
+    common.register('lisp', "sizerslot", SlotGenerator("lisp"))

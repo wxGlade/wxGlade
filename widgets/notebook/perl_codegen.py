@@ -18,17 +18,11 @@ class PerlNotebookGenerator(wcodegen.PerlWidgetCodeWriter):
         self._reset_vars()
         wcodegen.PerlWidgetCodeWriter._prepare_tmpl_content(self, window)
 
-        prop = window.properties
         id_name, id = self.codegen.generate_code_id(window)
 
-        layout_props = []
-        for label, tab_win in zip(window.tabs, window.pages):
-            layout_props.append('$self->{%s}->AddPage($self->{%s}, %s);\n' %
-                                (window.name, tab_win.name, self.codegen.quote_str(label[0])) )
+        parent = self.format_widget_access(window.parent_window)
 
-        parent = self.format_widget_access(window.parent)
-
-        if window.is_toplevel:
+        if window.IS_CLASS:
             klass = window.base
             if klass != window.klass:
                 klass = window.klass
@@ -39,24 +33,24 @@ class PerlNotebookGenerator(wcodegen.PerlWidgetCodeWriter):
             if id_name:
                 l.append(id_name)
             l.append( '$self->{%s} = %s->new(%s, %s);\n' % ( window.name, klass, parent, id) )
-            return l, [], []
+            return l, []
         init = []
         if id_name:
             init.append(id_name)
         init.append( '$self->{%s} = %s->new(%s, %s%s);\n' % (
                      window.name, self.cn(window.klass), parent, id, self.tmpl_dict['style']) )
 
-        props_buf = self.codegen.generate_common_properties(window)
-        return init, props_buf, layout_props
+        init += self.codegen.generate_common_properties(window)
+        return init, []
 
-    def get_properties_code(self, obj):
-        prop = obj.properties
-        props_buf = []
-        for label, tab_win in zip(obj.tabs, obj.pages):
-            label = label[0]
-            props_buf.append( '$self->AddPage($self->{%s}, %s);\n' % (tab_win.name, self.codegen.quote_str(label)) )
-        props_buf.extend(self.codegen.generate_common_properties(obj))
-        return props_buf
+    def get_layout_code(self, obj):
+        return self.codegen.generate_common_properties(obj)
+
+    def get_code_per_child(self, obj, child):
+        i = obj.children.index(child)
+        label = self.codegen.quote_str( obj.tabs[i][0] )
+        notebook = self.format_widget_access(obj)  # '$self' or '$self->{%s}'%obj.name
+        return ['%s->AddPage($self->{%s}, %s);\n' % (notebook, child.name, label)]
 
 
 def initialize():

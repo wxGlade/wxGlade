@@ -1,26 +1,16 @@
 """\
 C++ code generator
 
-How the code is generated: every time the end of an object is reached during
-the parsing of the xml tree, either the function 'add_object' or the function
-'add_class' is called: the latter when the object is a toplevel one, the former
-when it is not. In the last case, 'add_object' calls the appropriate ``writer''
-function for the specific object, found in the 'obj_builders' dict. Such
-function accepts one argument, the CodeObject representing the object for
-which the code has to be written, and returns 3 lists of strings, representing
-the lines to add to the '__init__', '__set_properties' and '__do_layout'
-methods of the parent object.
-
 @copyright: 2002-2007 Alberto Griggio
 @copyright: 2012-2016 Carsten Grohmann
-@copyright: 2017-2018 Dietmar Schwertberger
+@copyright: 2017-2019 Dietmar Schwertberger
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
 
 import os.path, re
 
-from codegen import BaseLangCodeWriter, BaseSourceFileContent, BaseWidgetHandler, _replace_tag
+from codegen import BaseLangCodeWriter, BaseSourceFileContent, _replace_tag
 from codegen import ClassLines as BaseClassLines
 import config, compat, misc
 import wcodegen
@@ -227,22 +217,6 @@ class SourceFileContent(BaseSourceFileContent):
 
 
 
-class WidgetHandler(BaseWidgetHandler):
-    "Interface the various code generators for the widgets must implement"
-
-    constructor    = []  # 'signature' of the widget's constructor
-    import_modules = []  # If not None, list of extra header file, in the form <header.h> or "header.h"
-
-    def __init__(self):
-        BaseWidgetHandler.__init__(self)
-        self.constructor = []
-
-    def get_ids_code(self, obj):
-        """Handler for the code of the ids enum of toplevel objects.
-        Returns a list of strings containing the code to generate.
-        Usually the default implementation is ok (i.e. there are no extra lines to add)"""
-        return []
-
 class ClassLines(BaseClassLines):
     """Stores the lines of C++ code for a custom class"""
     def __init__(self):
@@ -295,26 +269,11 @@ class CPPCodeWriter(BaseLangCodeWriter, wcodegen.CppMixin):
 
     shebang = '// -*- C++ -*-\n//\n'
     tmpl_cfunc_end = '}\n\n'
-    tmpl_name_do_layout = 'do_layout'
-    tmpl_name_set_properties = 'set_properties'
+
     tmpl_sizeritem = '%s->Add(%s, %s, %s, %s);\n'
     tmpl_gridbagsizeritem = '%s->Add(%s, wxGBPosition%s, wxGBSpan%s, %s, %s);\n'
     tmpl_gridbagsizerspacer = '%s->Add(%s, %s, wxGBPosition%s, wxGBSpan%s, %s, %s);\n'
     tmpl_spacersize = '%s, %s'
-
-    tmpl_ctor_call_layout = '\n' \
-                            '%(tab)sset_properties();\n' \
-                            '%(tab)sdo_layout();\n'
-
-    tmpl_func_do_layout = '\n' \
-                          'void %(klass)s::do_layout()\n{\n' \
-                          '%(content)s' \
-                          '}\n\n'
-
-    tmpl_func_set_properties = '\n' \
-                          'void %(klass)s::set_properties()\n{\n' \
-                          '%(content)s' \
-                          '}\n\n'
 
     tmpl_appfile = """\
 %(overwrite)s\
@@ -525,52 +484,48 @@ class CPPCodeWriter(BaseLangCodeWriter, wcodegen.CppMixin):
         BaseLangCodeWriter.add_app(self, app_attrs, top_win)
 
     def add_class(self, code_obj):
+        assert code_obj not in self.classes
+        try:
+            builder = self.obj_builders[code_obj.base]
+        except KeyError:
+            self._logger.error('%s', code_obj)
+            # this is an error, let the exception be raised; the details are logged by the global exception handler
+            raise
+        ret = self.classes[code_obj] = self.ClassLines()  # ClassLines will collect the code lines incl. children
+        return ret
+
+    def finalize_class(self, code_obj):
+        # write the collected code for the class and its children
         # shortcuts
         base = code_obj.base
-        klass = code_obj.klass
-        fmt_klass = self.cn_class(klass)
-
-        if klass in self.classes and self.classes[klass].done:
-            return  # the code has already been generated
+        klass = self.classes[code_obj]
+        classname = code_obj.klass
+        fmt_klass = self.cn_class(classname)
 
         if self.multiple_files:
             # let's see if the file to generate exists, and in this case create a SourceFileContent instance
-            filename = os.path.join(self.out_dir, klass.replace('::', '_') + "." + self.header_extension)
+            filename = os.path.join(self.out_dir, classname.replace('::', '_') + "." + self.header_extension)
             if self._overwrite or not self._file_exists(filename):
                 prev_src = None
             else:
-                prev_src = SourceFileContent( os.path.join(self.out_dir, klass), self )
+                prev_src = SourceFileContent( os.path.join(self.out_dir, classname), self )
         else:
             # in this case, previous_source is the SourceFileContent instance
             # that keeps info about the single file to generate
             prev_src = self.previous_source
 
-        try:
-            builder = self.obj_builders[base]
-            mycn = getattr(builder, 'cn', self.cn)
-            mycn_f = getattr(builder, 'cn_f', self.cn_f)
-        except KeyError:
-            self._logger.error('%s', code_obj)
-            # this is an error, let the exception be raised; the details are logged by the global exception handler
-            raise
-
-        if prev_src and klass in prev_src.classes:
+        if prev_src and classname in prev_src.classes:
             is_new = False
         else:
             # this class wasn't in the previous version of the source (if any)
             is_new = True
 
-        header_buffer = []
-        source_buffer = []
-        hwrite = header_buffer.append
-        swrite = source_buffer.append
-
-        if not klass in self.classes:
-            # if the class body was empty, create an empty ClassLines
-            self.classes[klass] = self.ClassLines()
+        builder = self.obj_builders[base]
+        mycn = getattr(builder, 'cn', self.cn)
+        mycn_f = getattr(builder, 'cn_f', self.cn_f)
 
         # collect all event handlers
-        event_handlers = self.classes[klass].event_handlers
+        event_handlers = klass.event_handlers
         for win_id, evt, handler, evt_type in builder.get_event_handlers(code_obj):
             event_handlers.append((win_id, mycn(evt), handler, evt_type))
 
@@ -579,18 +534,18 @@ class CPPCodeWriter(BaseLangCodeWriter, wcodegen.CppMixin):
         if extra_code:
             extra_code = re.sub(r'\\n', '\n', extra_code)
             extra_code = re.split(re.compile(r'^###\s*$', re.M), extra_code, 1)
-            self.classes[klass].extra_code_h.append(extra_code[0])
+            klass.extra_code_h.append(extra_code[0])
             if len(extra_code) > 1:
-                self.classes[klass].extra_code_cpp.append(extra_code[1])
+                klass.extra_code_cpp.append(extra_code[1])
             if not is_new:
                 self.warning( '%s has extra code, but you are not overwriting existing sources:'
                               ' please check that the resulting code is correct!' % code_obj.name )
 
         if not self.multiple_files:
-            if self.classes[klass].extra_code_h:
-                self._current_extra_code_h.append( "".join( self.classes[klass].extra_code_h[::-1] ) )
-            if self.classes[klass].extra_code_cpp:
-                self._current_extra_code_cpp.append( "".join( self.classes[klass].extra_code_cpp[::-1] ) )
+            if klass.extra_code_h:
+                self._current_extra_code_h.append( "".join( klass.extra_code_h[::-1] ) )
+            if klass.extra_code_cpp:
+                self._current_extra_code_cpp.append( "".join( klass.extra_code_cpp[::-1] ) )
 
         default_sign = [('wxWindow*', 'parent'), ('wxWindowID', 'id')]
         sign = getattr(builder, 'constructor', default_sign)
@@ -614,6 +569,12 @@ class CPPCodeWriter(BaseLangCodeWriter, wcodegen.CppMixin):
         if custom_base and not custom_base.strip():
             custom_base = None
 
+        # the header and code lines
+        header_buffer = []
+        source_buffer = []
+        hwrite = header_buffer.append
+        swrite = source_buffer.append
+
         # generate constructor code
         if is_new:
             pass
@@ -632,7 +593,7 @@ class CPPCodeWriter(BaseLangCodeWriter, wcodegen.CppMixin):
             # the first thing to add it the enum of the various ids
             if self._mark_blocks:
                 hwrite(self.tabs(1) + '// begin wxGlade: %s::ids\n' % fmt_klass)
-            ids = self.classes[klass].ids
+            ids = klass.ids
 
             # let's try to see if there are extra ids to add to the enum
             if hasattr(builder, 'get_ids_code'):
@@ -648,18 +609,11 @@ class CPPCodeWriter(BaseLangCodeWriter, wcodegen.CppMixin):
             # constructor prototype
             hwrite(self.tabs(1) + '%s(%s);\n' % (fmt_klass, sign_decl1))
             hwrite('\nprivate:\n')
-            # set_properties and do_layout prototypes
-            if self._mark_blocks:
-                hwrite(self.tabs(1) + '// begin wxGlade: %s::methods\n' % fmt_klass)
-            hwrite(self.tabs(1) + 'void set_properties();\n')
-            hwrite(self.tabs(1) + 'void do_layout();\n')
-            if self._mark_blocks:
-                hwrite(self.tabs(1) + '// end wxGlade\n')
             # declarations of the attributes
             hwrite('\n')
             hwrite('protected:\n')
             hwrite(self.tabs(1) + '// begin wxGlade: %s::attributes\n' % fmt_klass)
-            for o_type, o_name in self.classes[klass].sub_objs:
+            for o_type, o_name in klass.sub_objs:
                 hwrite(self.tabs(1) + '%s* %s;\n' % (o_type, o_name))
             hwrite(self.tabs(1) + '// end wxGlade\n')
 
@@ -678,7 +632,7 @@ class CPPCodeWriter(BaseLangCodeWriter, wcodegen.CppMixin):
         elif prev_src:
             if self._mark_blocks:
                 hwrite(self.tabs(1) + '// begin wxGlade: %s::ids\n' % fmt_klass)
-            ids = self.classes[klass].ids
+            ids = klass.ids
 
             # let's try to see if there are extra ids to add to the enum
             if hasattr(builder, 'get_ids_code'):
@@ -691,31 +645,24 @@ class CPPCodeWriter(BaseLangCodeWriter, wcodegen.CppMixin):
                 hwrite(self.tabs(1) + '};\n')
             if self._mark_blocks:
                 hwrite(self.tabs(1) + '// end wxGlade\n')
-            tag = '<%swxGlade replace %s ids>' % (self.nonce, klass)
+            tag = '<%swxGlade replace %s ids>' % (self.nonce, classname)
             if not prev_src.replace_header( tag, "".join(header_buffer) ):
                 # no ids tag found, issue a warning and do nothing
                 self.warning("wxGlade ids block not found for %s, ids declarations code NOT generated" % code_obj.name)
-            header_buffer = []
-            if self._mark_blocks:
-                header_buffer.append( self.tabs(1) + '// begin wxGlade: %s::methods\n' % fmt_klass )
-            header_buffer.append( self.tabs(1) + 'void set_properties();\n' )
-            header_buffer.append( self.tabs(1) + 'void do_layout();\n' )
-            if self._mark_blocks:
-                header_buffer.append( self.tabs(1) + '// end wxGlade\n' )
-            tag = '<%swxGlade replace %s methods>' % (self.nonce, klass)
-            if not prev_src.replace_header(tag, "".join(header_buffer)):
-                # no methods tag found, issue a warning and do nothing
-                self.warning(
-                    "wxGlade methods block not found for %s, methods declarations code NOT generated" % code_obj.name )
+
+            # remove methods block if in old file
+            tag = '<%swxGlade replace %s methods>' % (self.nonce, classname)
+            prev_src.replace(tag, [])
+
             header_buffer = []
             hwrite = header_buffer.append
             if self._mark_blocks:
                 hwrite(self.tabs(1) + '// begin wxGlade: %s::attributes\n' % fmt_klass)
-            for o_type, o_name in self.classes[klass].sub_objs:
+            for o_type, o_name in klass.sub_objs:
                 hwrite(self.tabs(1) + '%s* %s;\n' % (o_type, o_name))
             if self._mark_blocks:
                 hwrite(self.tabs(1) + '// end wxGlade\n')
-            tag = '<%swxGlade replace %s attributes>' % (self.nonce, klass)
+            tag = '<%swxGlade replace %s attributes>' % (self.nonce, classname)
             if not prev_src.replace_header(tag, "".join(header_buffer)):
                 # no attributes tag found, issue a warning and do nothing
                 self.warning( "wxGlade attributes block not found for %s, attributes declarations code NOT generated" %
@@ -724,16 +671,16 @@ class CPPCodeWriter(BaseLangCodeWriter, wcodegen.CppMixin):
             header_buffer = []
             hwrite = header_buffer.append
             if event_handlers:
-                already_there = prev_src.event_handlers.get(klass, {})
+                already_there = prev_src.event_handlers.get(classname, {})
                 t = self.tabs(1)
                 for win_id, evt, handler, evt_type in event_handlers:
                     if handler not in already_there:
                         hwrite('%svoid %s(%s &event); // wxGlade: <event_handler>\n' % (t, handler, evt_type))
                         already_there[handler] = 1
-                if klass not in prev_src.event_table_def:
+                if classname not in prev_src.event_table_def:
                     hwrite('\nprotected:\n')
                     hwrite(self.tabs(1) + 'DECLARE_EVENT_TABLE()\n')
-            tag = '<%swxGlade event_handlers %s>' % (self.nonce, klass)
+            tag = '<%swxGlade event_handlers %s>' % (self.nonce, classname)
             if not prev_src.replace_header( tag, "".join(header_buffer) ):
                 # no attributes tag found, issue a warning and do nothing
                 self.warning( "wxGlade events block not found for %s, event table code NOT generated" % code_obj.name )
@@ -766,18 +713,25 @@ class CPPCodeWriter(BaseLangCodeWriter, wcodegen.CppMixin):
             swrite( self.tabs(1) + self.generate_code_size(code_obj) )
 
         tab = self.tabs(1)
-        init_lines = self.classes[klass].init
-        parents_init = self.classes[klass].parents_init
-        parents_init.reverse()
-        for l in parents_init:
-            swrite(tab + l)
-        for l in init_lines:
+
+        for l in builder.get_properties_code(code_obj):
             swrite(tab + l)
 
-        # now check if there are extra lines to add to the constructor
-        if hasattr(builder, 'get_init_code'):
-            for l in builder.get_init_code(code_obj):
+        for l in klass.init:
+            swrite(tab + l)
+
+        if klass.final:
+            swrite(tab + "\n")
+            for l in klass.final:
                 swrite(tab + l)
+
+        for l in builder.get_layout_code(code_obj):
+            swrite(tab + l)
+
+
+        # now check if there are extra lines to add to the constructor
+        for l in builder.get_init_code(code_obj):
+            swrite(tab + l)
 
         swrite( self.tmpl_ctor_call_layout % {'tab':tab} )
 
@@ -793,46 +747,25 @@ class CPPCodeWriter(BaseLangCodeWriter, wcodegen.CppMixin):
         if prev_src and not is_new:
             # replace the lines inside the ctor wxGlade block
             # with the new ones
-            tag = '<%swxGlade replace %s %s>' % (self.nonce, klass, klass)
+            tag = '<%swxGlade replace %s %s>' % (self.nonce, classname, classname)
             if not prev_src.replace( tag, "".join(source_buffer) ):
                 # no constructor tag found, issue a warning and do nothing
                 self.warning( "wxGlade %s::%s block not found, relative code NOT generated" % (fmt_klass, fmt_klass) )
             source_buffer = []
             swrite = source_buffer.append
 
-        # generate code for __set_properties()
-        code_lines = self.generate_code_set_properties( builder, code_obj, is_new, tab )
-        source_buffer.extend(code_lines)
-
-        # replace code inside existing __set_properties() function
         if prev_src and not is_new:
-            # replace the lines inside the set_properties wxGlade block with the new ones
-            tag = '<%swxGlade replace %s set_properties>' % (self.nonce, klass)
-            if not prev_src.replace( tag, "".join(source_buffer) ):
-                # no set_properties tag found, issue a warning and do nothing
-                self.warning( "wxGlade %s::set_properties block not found, relative code NOT generated" % fmt_klass )
-            source_buffer = []
-            swrite = source_buffer.append
-
-        # generate code for __do_layout()
-        code_lines = self.generate_code_do_layout( builder, code_obj, is_new, tab )
-        source_buffer.extend(code_lines)
-
-        # replace code inside existing do_layout() function
-        if prev_src and not is_new:
-            # replace the lines inside the do_layout wxGlade block with the new ones
-            tag = '<%swxGlade replace %s %s>' % (self.nonce, klass, 'do_layout')
-            if not prev_src.replace(tag, "".join(source_buffer)):
-                # no do_layout tag found, issue a warning and do nothing
-                self.warning( "wxGlade do_layout block not found for %s, do_layout code NOT generated" % code_obj.name )
-            source_buffer = []
-            swrite = source_buffer.append
+            # remove __set_properties and __do_layout, if in old file
+            tag = '<%swxGlade replace %s set_properties>' % (self.nonce, classname)
+            prev_src.replace(tag, [])
+            tag = '<%swxGlade replace %s %s>' % (self.nonce, classname, 'do_layout')
+            prev_src.replace(tag, [])
 
         # generate code for event table
         code_lines = self.generate_code_event_table( code_obj, is_new, tab, prev_src, event_handlers )
 
         if prev_src and not is_new:
-            tag = '<%swxGlade replace %s event_table>' % (self.nonce, klass)
+            tag = '<%swxGlade replace %s event_table>' % (self.nonce, classname)
             if not prev_src.replace( tag, "".join(code_lines) ):
                 # no constructor tag found, issue a warning and do nothing
                 self.warning( "wxGlade %s::event_table block not found, relative code NOT generated" % fmt_klass )
@@ -844,15 +777,12 @@ class CPPCodeWriter(BaseLangCodeWriter, wcodegen.CppMixin):
 
         # replace code inside existing event handlers
         if prev_src and not is_new:
-            tag = '<%swxGlade add %s event handlers>' % (self.nonce, klass)
+            tag = '<%swxGlade add %s event handlers>' % (self.nonce, classname)
             if not prev_src.replace( tag, "".join(code_lines) ):
                 # no constructor tag found, issue a warning and do nothing
                 self.warning( "wxGlade %s event handlers marker not found, relative code NOT generated" % fmt_klass )
         else:
             source_buffer.extend(code_lines)
-
-        # the code has been generated
-        self.classes[klass].done = True
 
         if not self.multiple_files and prev_src:
             # if this is a new class, add its code to the new_classes list of the SourceFileContent instance
@@ -862,14 +792,14 @@ class CPPCodeWriter(BaseLangCodeWriter, wcodegen.CppMixin):
 
         if self.multiple_files:
             if base in self.obj_builders:
-                self.classes[klass].dependencies.extend( getattr(self.obj_builders[base], 'import_modules', []) )
+                klass.dependencies.extend( getattr(self.obj_builders[base], 'import_modules', []) )
 
             if prev_src:
                 tag = '<%swxGlade insert new_classes>' % self.nonce
                 prev_src.replace_header(tag, "")
 
                 # insert the module dependencies of this class
-                extra_modules = self.classes[klass].dependencies
+                extra_modules = klass.dependencies
                 # WARNING: there's a double space '  ' between 'replace' and 'dependencies' in the tag below,
                 # because there is no class name (see SourceFileContent, line ~147)
                 tag = '<%swxGlade replace  dependencies>' % self.nonce
@@ -877,8 +807,8 @@ class CPPCodeWriter(BaseLangCodeWriter, wcodegen.CppMixin):
                 prev_src.replace_header(tag, code)
 
                 # insert the extra code of this class
-                extra_code_h = "".join(self.classes[klass].extra_code_h[::-1])
-                extra_code_cpp = "".join(self.classes[klass].extra_code_cpp[::-1])
+                extra_code_h = "".join(klass.extra_code_h[::-1])
+                extra_code_cpp = "".join(klass.extra_code_cpp[::-1])
                 # if there's extra code but we are not overwriting existing sources, warn the user
                 if extra_code_h or extra_code_cpp:
                     self.warning( '%s (or one of its children) has extra code classes, but you are not overwriting '
@@ -891,15 +821,15 @@ class CPPCodeWriter(BaseLangCodeWriter, wcodegen.CppMixin):
                 prev_src.replace(tag, extra_code_cpp)
 
                 # store the new file contents to disk
-                name = os.path.join(self.out_dir, klass)
+                name = os.path.join(self.out_dir, classname)
                 self.save_file( name +"."+ self.header_extension, "".join(prev_src.header_content), content_only=True )
                 self.save_file( name +"."+ self.source_extension, "".join(prev_src.content), content_only=True )
 
                 return
 
             # create the new source file
-            header_file = os.path.join(self.out_dir, klass + "." + self.header_extension)
-            source_file = os.path.join(self.out_dir, klass + "." + self.source_extension)
+            header_file = os.path.join(self.out_dir, classname + "." + self.header_extension)
+            source_file = os.path.join(self.out_dir, classname + "." + self.source_extension)
             hout = []
             sout = []
 
@@ -915,13 +845,13 @@ class CPPCodeWriter(BaseLangCodeWriter, wcodegen.CppMixin):
             hout.append('\n')
 
             # write the module dependencies for this class
-            extra_modules = self.classes[klass].dependencies
+            extra_modules = klass.dependencies
             code = self._format_dependencies(extra_modules)
             hout.append(code)
             hout.append('\n')
 
             # insert the extra code of this class
-            extra_code_h = "".join(self.classes[klass].extra_code_h[::-1])
+            extra_code_h = "".join(klass.extra_code_h[::-1])
             extra_code_h = self._tagcontent('::extracode', extra_code_h)
             hout.append(extra_code_h)
             hout.append('\n')
@@ -937,7 +867,7 @@ class CPPCodeWriter(BaseLangCodeWriter, wcodegen.CppMixin):
             sout.append('#include "%s"\n\n' % os.path.basename(header_file))
 
             # insert the extra code of this class
-            extra_code_cpp = "".join(self.classes[klass].extra_code_cpp[::-1])
+            extra_code_cpp = "".join(klass.extra_code_cpp[::-1])
             extra_code_cpp = self._tagcontent('::extracode', extra_code_cpp)
             sout.append(extra_code_cpp)
             sout.append('\n')
@@ -954,29 +884,22 @@ class CPPCodeWriter(BaseLangCodeWriter, wcodegen.CppMixin):
             self.output_header.extend(header_buffer)
             self.output_file.extend(source_buffer)
 
-    def add_object(self, sub_obj):
-        # get top level source code object and the widget builder instance
-        klass, builder = self._add_object_init(sub_obj)
-        if not klass or not builder:
-            return
+    def add_object(self, klass, parent, parent_builder, sub_obj):
+        # get the widget builder instance
+        builder = self._get_object_builder(klass, sub_obj)
+        if not builder: return None
 
         try:
-            init, ids, props, layout = builder.get_code(sub_obj)
+            init, ids, final = builder.get_code(sub_obj)
         except:
             print(sub_obj)
             raise  # this shouldn't happen
 
-        if not sub_obj.is_sizer:  # the object is a wxWindow instance
+        if not sub_obj.IS_SIZER:  # the object is a wxWindow instance
             if "extracode_pre" in sub_obj.properties and sub_obj.extracode_pre:
                 init = sub_obj.properties["extracode_pre"].get_lines() + init
             if "extracode_post" in sub_obj.properties and sub_obj.extracode_post:
                 init += sub_obj.properties["extracode_post"].get_lines()
-
-            if sub_obj.node.children and not sub_obj.is_toplevel:
-                init.reverse()
-                klass.parents_init.extend(init)
-            else:
-                klass.init.extend(init)
 
             mycn = getattr(builder, 'cn', self.cn)
             for win_id, evt, handler, evt_type in builder.get_event_handlers(sub_obj):
@@ -996,25 +919,29 @@ class CPPCodeWriter(BaseLangCodeWriter, wcodegen.CppMixin):
                                   'that the resulting code is correct!' % sub_obj.name )
 
             klass.ids.extend(ids)
-            if sub_obj.klass != 'spacer':
-                # attribute is a special property which control whether sub_obj must be accessible as an attribute of
-                # top_obj, or as a local variable in the do_layout method
-                if self.store_as_attr(sub_obj):
-                    klass.sub_objs.append((sub_obj.klass, sub_obj.name))
+            # attribute is a special property which control whether sub_obj must be accessible as an attribute of
+            # top_obj, or as a local variable in the do_layout method
+            if self.store_as_attr(sub_obj):
+                klass.sub_objs.append((sub_obj.klass, sub_obj.name))
         elif sub_obj.klass != "sizerslot":
             # the object is a sizer
             if self.store_as_attr(sub_obj):
                 klass.sub_objs.append((sub_obj.klass, sub_obj.name))
-            klass.sizers_init.extend(init)
 
-        klass.props.extend(props)
-        klass.layout.extend(layout)
-        if self.multiple_files and (sub_obj.is_toplevel and sub_obj.base != sub_obj.klass):
+        klass.init.extend(init)
+
+        if parent_builder:  # add to sizer or notebook
+            klass.init.extend( parent_builder.get_code_per_child(parent, sub_obj) )
+
+
+        klass.final[:0] = final
+        if self.multiple_files and (sub_obj.IS_CLASS and sub_obj.base != sub_obj.klass):
             klass.dependencies.append(sub_obj.klass)
         else:
             if sub_obj.base in self.obj_builders:
                 headers = getattr(self.obj_builders[sub_obj.base], 'import_modules', [])
                 klass.dependencies.extend(headers)
+        return builder
 
     def generate_code_event_handler(self, code_obj, is_new, tab, prev_src, event_handlers):
         """Generate the event handler stubs
@@ -1104,10 +1031,9 @@ void %(klass)s::%(handler)s(%(evt_type)s &event)  // wxGlade: %(klass)s.<event_h
             return '', 'wxID_ANY'
         id = str(id)
         tokens = id.split('=', 1)
-        if len(tokens) == 2:
-            name, val = tokens
-        else:
+        if len(tokens) != 2:
             return '', tokens[0]   # we assume name is declared elsewhere
+        name, val = tokens
         if not name:
             return '', val
         name = name.strip()
@@ -1124,37 +1050,30 @@ void %(klass)s::%(handler)s(%(evt_type)s &event)  // wxGlade: %(klass)s.<event_h
 
     def generate_code_size(self, obj):
         objname = self.format_generic_access(obj)
-        if obj.is_toplevel:
+        if obj.IS_CLASS:
             name2 = 'this'
         else:
             name2 = obj.name
         size = obj.properties["size"].get_string_value()
         use_dialog_units = (size[-1] == 'd')
-        if not obj.parent:
-            method = 'SetSize'
-        else:
-            method = 'SetMinSize'
+        method = 'SetMinSize'  if obj.parent_window else  'SetSize'
+
         if use_dialog_units:
             return '%s%s(wxDLG_UNIT(%s, wxSize(%s)));\n' % (objname, method, name2, size[:-1])
-        else:
-            return '%s%s(wxSize(%s));\n' % (objname, method, size)
+        return '%s%s(wxSize(%s));\n' % (objname, method, size)
 
     def quote_path(self, s):
-        path = super(CPPCodeWriter, self).quote_path(s)
-        # path starts and ends with double quotes already
-        return 'wxT(%s)' % path
+        return 'wxT(%s)' % super(CPPCodeWriter, self).quote_path(s)
 
     def _quote_str(self, s):
         if self._use_gettext:
             return '_("%s")' % s
-        else:
-            return 'wxT("%s")' % s
+        return 'wxT("%s")' % s
 
     def format_generic_access(self, obj):
-        if obj.is_toplevel:
+        if obj.IS_CLASS:
             return ''
-        else:
-            return '%s->' % obj.name
+        return '%s->' % obj.name
 
     def _format_dependencies(self, dependencies):
         "Format a list of header files for the dependencies output"
@@ -1164,8 +1083,7 @@ void %(klass)s::%(handler)s(%(evt_type)s &event)  // wxGlade: %(klass)s.<event_h
                 dep_list.append('#include "%s.h"\n' % dependency)
             else:
                 dep_list.append('#include %s\n' % dependency)
-        code = self._tagcontent( '::dependencies', dep_list )
-        return code
+        return self._tagcontent( '::dependencies', dep_list )
 
 writer = CPPCodeWriter()  # The code writer is an instance of CPPCodeWriter
 

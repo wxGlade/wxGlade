@@ -3,20 +3,20 @@ wxCheckBox objects
 
 @copyright: 2002-2007 Alberto Griggio
 @copyright: 2014-2016 Carsten Grohmann
-@copyright: 2016 Dietmar Schwertberger
+@copyright: 2016-2019 Dietmar Schwertberger
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
 import wx
 import common, config
 from edit_windows import ManagedBase, EditStylesMixin
-from tree import Node
 import new_properties as np
 
 
 class EditCheckBox(ManagedBase, EditStylesMixin):
     "Class to handle wxCheckBox objects"
 
+    WX_CLASS = "wxCheckBox"
     _PROPERTIES = ["Widget", "label", "checked", "style"]
     PROPERTIES = ManagedBase.PROPERTIES + _PROPERTIES + ManagedBase.EXTRA_PROPERTIES
     _PROPERTY_LABELS = {"checked":"wxCheckBox state"}
@@ -24,9 +24,9 @@ class EditCheckBox(ManagedBase, EditStylesMixin):
     # Convert the position of "checked" RadioProperty to wxCheckBoxState
     index2state = { 0: wx.CHK_UNCHECKED, 1: wx.CHK_CHECKED, 2: wx.CHK_UNDETERMINED }
 
-    def __init__(self, name, parent, id, label, sizer, pos):
+    def __init__(self, name, parent, label, pos):
         "Class to handle wxCheckBox objects"
-        ManagedBase.__init__(self, name, 'wxCheckBox', parent, id, sizer, pos)
+        ManagedBase.__init__(self, name, 'wxCheckBox', parent, pos)
         EditStylesMixin.__init__(self)
 
         # initialise instance properties
@@ -38,7 +38,7 @@ class EditCheckBox(ManagedBase, EditStylesMixin):
         self.value = np.IntRadioProperty(0, values, labels, columns=3, default_value=0, name="checked") # rename to value?
 
     def create_widget(self):
-        self.widget = wx.CheckBox(self.parent.widget, self.id, self.label)
+        self.widget = wx.CheckBox(self.parent_window.widget, self.id, self.label)
         self.widget.SetValue(self.value)
         def on_checkbox(event):
             value = 1 if event.IsChecked() else 0
@@ -61,7 +61,7 @@ class EditCheckBox(ManagedBase, EditStylesMixin):
             if self.widget:
                 self.widget.SetLabel(self.label)
                 resize = True
-            common.app_tree.refresh(self.node, refresh_label=True)
+            common.app_tree.refresh(self, refresh_label=True, refresh_image=False)
 
         if not modified or "checked" in modified:
             if self.widget:
@@ -78,40 +78,25 @@ class EditCheckBox(ManagedBase, EditStylesMixin):
 
 
 
-def builder(parent, sizer, pos, number=[1]):
+def builder(parent, pos):
     "factory function for EditCheckBox objects"
-    label = 'checkbox_%d' % number[0]
-    while common.app_tree.has_name(label):
-        number[0] += 1
-        label = 'checkbox_%d' % number[0]
+    name = common.root.get_next_name('checkbox_%d', parent)
     with parent.frozen():
-        checkbox = EditCheckBox(label, parent, wx.NewId(), label, sizer, pos)
-        checkbox.properties["style"].set_to_default()
-        checkbox.check_defaults()
-        node = Node(checkbox)
-        checkbox.node = node
-        if parent.widget: checkbox.create()
-    common.app_tree.insert(node, sizer.node, pos-1)
+        editor = EditCheckBox(name, parent, name, pos)
+        editor.properties["style"].set_to_default()
+        editor.check_defaults()
+        if parent.widget: editor.create()
+    return editor
 
 
-def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
+def xml_builder(attrs, parent, pos=None):
     "factory to build EditCheckBox objects from a XML file"
     from xml_parse import XmlParsingError
     try:
         label = attrs['name']
     except KeyError:
         raise XmlParsingError(_("'name' attribute missing"))
-    if sizer is None or sizeritem is None:
-        raise XmlParsingError(_("sizer or sizeritem object cannot be None"))
-    checkbox = EditCheckBox( label, parent, wx.NewId(), "", sizer, pos)
-    #sizer.set_item(checkbox.pos, proportion=sizeritem.proportion, span=sizeritem.span, flag=sizeritem.flag, border=sizeritem.border)
-    node = Node(checkbox)
-    checkbox.node = node
-    if pos is None:
-        common.app_tree.add(node, sizer.node)
-    else:
-        common.app_tree.insert(node, sizer.node, pos-1)
-    return checkbox
+    return EditCheckBox( label, parent, "", pos)
 
 
 def initialize():

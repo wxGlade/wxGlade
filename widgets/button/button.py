@@ -3,14 +3,13 @@ wxButton objects
 
 @copyright: 2002-2007 Alberto Griggio
 @copyright: 2014-2016 Carsten Grohmann
-@copyright: 2016 Dietmar Schwertberger
+@copyright: 2016-2019 Dietmar Schwertberger
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
 import wx
 import config, common, compat
 from edit_windows import ManagedBase, EditStylesMixin
-from tree import Node
 import new_properties as np
 from .button_stockitems import *
 from gui_mixins import BitmapMixin
@@ -19,6 +18,7 @@ from gui_mixins import BitmapMixin
 class EditButton(ManagedBase, EditStylesMixin, BitmapMixin):
     "Class to handle wxButton objects"
 
+    WX_CLASS = "wxButton"
     STOCKITEMS = sorted( ButtonStockItems.stock_ids.keys())
     _PROPERTIES = ["Widget", "label", "stockitem",
                    "bitmap", "disabled_bitmap", "pressed_bitmap", "current_bitmap", "focus_bitmap",
@@ -28,9 +28,9 @@ class EditButton(ManagedBase, EditStylesMixin, BitmapMixin):
     _PROPERTY_HELP = {"default":"This sets the button to be the default item for the panel or dialog box.",
                       "stockitem":"Standard IDs for button identifiers"}
 
-    def __init__(self, name, parent, id, label, sizer, pos):
+    def __init__(self, name, parent, label, pos):
         # Initialise parent classes
-        ManagedBase.__init__(self, name, 'wxButton', parent, id, sizer, pos)
+        ManagedBase.__init__(self, name, 'wxButton', parent, pos)
         EditStylesMixin.__init__(self)
         BitmapMixin.__init__(self)
 
@@ -51,7 +51,7 @@ class EditButton(ManagedBase, EditStylesMixin, BitmapMixin):
             label = ButtonStockItems.stock_ids[stockitem_p.get()]
         else:
             label = self.label
-        self.widget = wx.Button(self.parent.widget, self.id, label, style=self.style)
+        self.widget = wx.Button(self.parent_window.widget, self.id, label, style=self.style)
         if compat.IS_PHOENIX:
             self._set_preview_bitmaps()
 
@@ -81,7 +81,7 @@ class EditButton(ManagedBase, EditStylesMixin, BitmapMixin):
                 self.widget.SetLabel(self.label)
 
         if label_modified or "name" in modified:
-            common.app_tree.refresh(self.node, refresh_label=True)
+            common.app_tree.refresh(self, refresh_label=True, refresh_image=False)
 
         BitmapMixin._properties_changed(self, modified)
         self._set_widget_best_size()
@@ -90,40 +90,26 @@ class EditButton(ManagedBase, EditStylesMixin, BitmapMixin):
 
 
 
-def builder(parent, sizer, pos, number=[1]):
+def builder(parent, pos):
     "factory function for EditButton objects"
-    name = u'button_%d' % number[0]
-    while common.app_tree.has_name(name):
-        number[0] += 1
-        name = u'button_%d' % number[0]
+    name = common.root.get_next_name('button_%d', parent)
     with parent.frozen():
-        button = EditButton(name, parent, wx.NewId(), name, sizer, pos)
-        button.properties["style"].set_to_default()
-        button.check_defaults()
-        node = Node(button)
-        button.node = node
-        if parent.widget: button.create()
-    common.app_tree.insert(node, sizer.node, pos-1)
+        editor = EditButton(name, parent, name, pos)
+        editor.properties["style"].set_to_default()
+        editor.check_defaults()
+        if parent.widget: editor.create()
+    return editor
 
 
-def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
+def xml_builder(attrs, parent, pos=None):
     "factory to build EditButton objects from a XML file"
     from xml_parse import XmlParsingError
     try:
         name = attrs['name']
     except KeyError:
         raise XmlParsingError(_("'name' attribute missing"))
-    if sizer is None or sizeritem is None:
-        raise XmlParsingError(_("sizer or sizeritem object cannot be None"))
-    button = EditButton(name, parent, wx.NewId(), '', sizer, pos)
-    #sizer.set_item(button.pos, proportion=sizeritem.proportion, span=sizeritem.span, flag=sizeritem.flag, border=sizeritem.border)
-    node = Node(button)
-    button.node = node
-    if pos is None:
-        common.app_tree.add(node, sizer.node)
-    else:
-        common.app_tree.insert(node, sizer.node, pos-1)
-    return button
+    editor = EditButton(name, parent, '', pos)
+    return editor
 
 
 def initialize():

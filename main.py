@@ -4,7 +4,7 @@ widgets and initializes all the stuff (tree, frame_property, etc.)
 
 @copyright: 2002-2007 Alberto Griggio
 @copyright: 2011-2016 Carsten Grohmann
-@copyright: 2016-2018 Dietmar Schwertberger
+@copyright: 2016-2019 Dietmar Schwertberger
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
@@ -232,7 +232,9 @@ class wxGladePropertyPanel(wx.Panel):
         w_scrollbar = wx.SystemSettings.GetMetric(wx.SYS_VSCROLL_X)  # width a of a scrollbar
 
         panel = [w for w in scrolled.GetChildren() if isinstance(w, wx.Panel)][0]
-        wm, hm = panel.GetSizer().GetMinSize()
+        szr = panel.GetSizer()
+        if not szr: return
+        wm, hm = szr.GetMinSize()
         if hs<hm:
             # best size is smaller than the available height -> enable scrolling
             scrolled.SetScrollbars(1, 5, 1, int(math.ceil(hm/5.0)))
@@ -272,14 +274,17 @@ class wxGladeArtProvider(wx.ArtProvider):
 
 
 class wxGladePalettePanel(wx.Panel):
+
     def __init__(self, parent):
         wx.Panel.__init__(self, parent)
         common.palette = self # for building the buttons
         self.SetBackgroundColour( compat.wx_SystemSettings_GetColour(wx.SYS_COLOUR_BTNFACE) )
+
         # load the available code generators
         all_widgets = common.init_codegen()
         if not config.use_gui: return
-        self.all_togglebuttons = []
+        self.all_togglebuttons = []  # used by reset_togglebuttons
+
         # build the palette for all_widgets
         sizer = wx.FlexGridSizer(0, 2, 0, 0)
         maxlen = max([len(all_widgets[sect]) for sect in all_widgets])  # the maximum number of buttons in a section
@@ -287,7 +292,6 @@ class wxGladePalettePanel(wx.Panel):
             if section:
                 label = wx.StaticText(self, -1, "%s:" % section.replace('&', '&&'))
                 sizer.Add( label, 1, wx.ALIGN_CENTER_VERTICAL | wx.LEFT, 2 )
-            #bsizer = wx.GridSizer(cols=maxlen, hgap=2, vgap=2)
             bsizer = wx.BoxSizer()
             for button in all_widgets[section]:
                 bsizer.Add(button, flag=wx.ALL, border=1)
@@ -295,6 +299,23 @@ class wxGladePalettePanel(wx.Panel):
                     self.all_togglebuttons.append(button)
             sizer.Add(bsizer)
         self.SetSizer(sizer)
+        # on platforms other than Windows, we'll set the ToggleButton background colour to indicate the selection
+        if wx.Platform == "__WXMSW__":
+            self._highlight_colour = None
+        else:
+            self._highlight_colour = wx.SystemSettings.GetColour(wx.SYS_COLOUR_HIGHLIGHT)
+
+    def reset_togglebuttons(self, keep=None):
+        # un-toggle all buttons except keep
+        for button in self.all_togglebuttons:
+            if keep is not None and button is keep:
+                if self._highlight_colour:
+                    button.SetBackgroundColour(self._highlight_colour)
+                continue
+            if self._highlight_colour and button.GetBackgroundColour()==self._highlight_colour:
+                button.SetBackgroundColour(wx.NullColour)
+            if button.GetValue(): button.SetValue(False)
+
         # on platforms other than Windows, we'll set the ToggleButton background colour to indicate the selection
         if wx.Platform == "__WXMSW__":
             self._highlight_colour = None
@@ -336,7 +357,7 @@ class wxGladeFrame(wx.Frame):
 
         # create the property and the tree frame
         common.property_panel = self.property_panel = wxGladePropertyPanel(self.splitter2)
-        app = application.Application()
+        common.root = app = application.Application()
         common.app_tree = self.tree = WidgetTree(self.splitter1, app)
 
         self.splitter1.SplitVertically(self.splitter2, self.tree)
@@ -354,7 +375,7 @@ class wxGladeFrame(wx.Frame):
         self.create_statusbar()  # create statusbar for display of messages
 
         self.Show()
-        misc.set_focused_widget(common.app_tree.app)
+        #misc.set_focused_widget(common.root)
         self.Bind(wx.EVT_CLOSE, self.on_close)
 
         # disable autosave checks during unittests
@@ -376,7 +397,6 @@ class wxGladeFrame(wx.Frame):
             size = (self.splitter2.GetSashPosition(), self.splitter1.GetSashPosition())
         elif layout==2:
             size = (self.GetClientSize()[0], self.splitter2.GetSashPosition())
-        print("Palette size", size)
 
     def on_char_hook(self, event):
         # bound to EVT_CHAR_HOOK
@@ -453,7 +473,7 @@ class wxGladeFrame(wx.Frame):
         file_menu.AppendSeparator() # ----------------------------------------------------------------------------------
 
         GENERATE_CODE = append_menu_item(file_menu, -1, _("&Generate Code\tCtrl+G"), wx.ART_EXECUTABLE_FILE)
-        misc.bind_menu_item(self, GENERATE_CODE, lambda: common.app_tree.app.generate_code())
+        misc.bind_menu_item(self, GENERATE_CODE, lambda: common.root.generate_code())
 
         file_menu.AppendSeparator() # ----------------------------------------------------------------------------------
 
@@ -630,7 +650,7 @@ class wxGladeFrame(wx.Frame):
 
         tb.AddSeparator()
         t = add(-1, "Generate Code", wx.ART_EXECUTABLE_FILE, wx.ITEM_NORMAL, "Generate Code (Ctrl+G)" )
-        self.Bind(wx.EVT_TOOL, lambda event: common.app_tree.app.generate_code(), t)
+        self.Bind(wx.EVT_TOOL, lambda event: common.root.generate_code(), t)
         tb.AddSeparator()
         
         t1 = add(-1, "Layout 1", "layout1.xpm", wx.ITEM_RADIO, "Switch layout: Tree", 
@@ -656,38 +676,6 @@ class wxGladeFrame(wx.Frame):
         self.Bind(wx.EVT_TOOL, self.show_manual, t)
 
         self.toolbar.Realize()
-
-    def open_from_history(self, event):
-        if not self.ask_save():
-            return
-        pos = event.GetId() - wx.ID_FILE1
-        filename = self.file_history.GetHistoryFile(pos)
-        if not os.path.exists(filename):
-            wx.MessageBox( _("The file %s doesn't exist.") % filename,
-                           _('Information'), style=wx.CENTER | wx.ICON_INFORMATION | wx.OK )
-            self.file_history.RemoveFileFromHistory(pos)
-            common.remove_autosaved(filename)
-            return
-        if common.check_autosaved(filename):
-            res = wx.MessageBox( _('There seems to be auto saved data for this file: do you want to restore it?'),
-                                 _('Auto save detected'), style=wx.ICON_QUESTION | wx.YES_NO )
-            if res == wx.YES:
-                common.restore_from_autosaved(filename)
-            else:
-                common.remove_autosaved(filename)
-        else:
-            common.remove_autosaved(filename)
-
-        if filename == common.app_tree.app.filename:
-            # if we are re-loading the file, go the the previous position
-            path = common.app_tree.get_selected_path()
-        else:
-            path = None
-
-        self._open_app(filename)
-        self.cur_dir = os.path.dirname(filename)
-        if path is not None:
-            common.app_tree.select_path(path)  # re-loaded file -> go to previous position
 
     def init_autosave(self):
         # ALB 2004-10-15, autosave support...
@@ -722,8 +710,8 @@ class wxGladeFrame(wx.Frame):
             filename = common.get_name_for_autosave()
             if self._open_app(filename, add_to_history=False):
                 self.cur_dir = os.path.dirname(filename)
-                common.app_tree.app.saved = False
-                common.app_tree.app.filename = None
+                common.root.saved = False
+                common.root.filename = None
                 self.user_message(_('Auto save loaded'))
         common.remove_autosaved()
 
@@ -740,14 +728,9 @@ class wxGladeFrame(wx.Frame):
         # return the toplevel for a preview or design window
         if misc.focused_widget and not isinstance(misc.focused_widget, application.Application):
             # a widget is selected, find the toplevel window for it
-            return misc.get_toplevel_widget(misc.focused_widget)
+            return misc.focused_widget.toplevel_parent
         # find main toplevel window
-        toplevel_name = common.app_tree.app.top_window
-        toplevel = None
-        for c in common.app_tree.app.node.children or []:
-            if c.widget.name==toplevel_name:
-                toplevel = c.widget
-        return toplevel
+        return common.root._get_top_window()
 
     def preview(self):
         """Generate preview of the current loaded project.
@@ -793,7 +776,7 @@ class wxGladeFrame(wx.Frame):
             toplevel.widget.Raise()
             return
         # open or close
-        common.app_tree.show_toplevel(None, widget=toplevel)
+        common.app_tree.show_toplevel(None, editor=toplevel)
 
     def pin_design_window(self):
         common.pin_design_window = not common.pin_design_window
@@ -829,7 +812,8 @@ class wxGladeFrame(wx.Frame):
         sb = self.GetStatusBar()
         if sb:
             sb.SetStatusText(msg)
-            self.clear_sb_timer.Start(5000, True)
+            if msg:
+                self.clear_sb_timer.Start(5000, True)
 
     def on_clear_sb_timer(self, event):
         sb = self.GetStatusBar()
@@ -840,7 +824,7 @@ class wxGladeFrame(wx.Frame):
         """checks whether the current app has changed and needs to be saved:
         if so, prompts the user;
         returns False if the operation has been cancelled"""
-        if not common.app_tree.app.saved:
+        if not common.root.saved:
             ok = wx.MessageBox(_("Save changes to the current app?"),
                                _("Confirm"), wx.YES_NO|wx.CANCEL|wx.CENTRE|wx.ICON_QUESTION)
             if ok == wx.YES:
@@ -850,16 +834,16 @@ class wxGladeFrame(wx.Frame):
 
     def new_app(self, event=None):
         "creates a new wxGlade project"
-        if self.ask_save():
-            common.app_tree.clear()
-            common.app_tree.app.new()
-            common.app_tree.app.filename = None
-            common.app_tree.app.saved = True
-            self.user_message("")
-            common.remove_autosaved()
-            if config.preferences.autosave and self.autosave_timer is not None:
-                self.autosave_timer.Start()
-            misc.set_focused_widget(common.app_tree.root.widget)
+        if not self.ask_save(): return
+        common.root.clear()
+        common.root.new()
+        common.root.filename = None
+        self.user_message("")
+        misc.rebuild_tree(common.root)
+        common.root.saved = True
+        common.remove_autosaved()
+        if config.preferences.autosave and self.autosave_timer is not None:
+            self.autosave_timer.Start()
 
     def new_app_from_template(self):
         "creates a new wxGlade project from an existing template file"
@@ -867,7 +851,7 @@ class wxGladeFrame(wx.Frame):
         infile = template.select_template()
         if infile:
             self._open_app(infile, add_to_history=False)
-            common.app_tree.app.template_data = None
+            common.root.template_data = None
 
     def open_app(self, event=None):
         """loads a wxGlade project from an xml file
@@ -875,28 +859,59 @@ class wxGladeFrame(wx.Frame):
         NOTE2: the note above should not be True anymore :) """
         if not self.ask_save():
             return
-        default_path = os.path.dirname(common.app_tree.app.filename or "") or self.cur_dir
+        default_path = os.path.dirname(common.root.filename or "") or self.cur_dir
         infile = wx.FileSelector(_("Open file"),
                                    wildcard="wxGlade files (*.wxg)|*.wxg|wxGlade Template files (*.wgt)|*.wgt|"
                                             "XML files (*.xml)|*.xml|All files|*",
                                    flags=wx.FD_OPEN | wx.FD_FILE_MUST_EXIST, default_path=default_path)
         if not infile: return
-        if common.check_autosaved(infile):
-            if wx.MessageBox( _("There seems to be auto saved data for this file: do you want to restore it?"),
-                              _("Auto save detected"), style=wx.ICON_QUESTION|wx.YES_NO ) == wx.YES:
-                common.restore_from_autosaved(infile)
-            else:
-                common.remove_autosaved(infile)
-        if infile == common.app_tree.app.filename:
-            # if we are re-loading the file, go the the previous position
-            path = common.app_tree.get_selected_path()
-        else:
-            path = None
-        self._open_app(infile)
-        self.cur_dir = os.path.dirname(infile)
+        self._open(infile)
 
-        if path is not None:
-            common.app_tree.select_path(path)  # re-loaded file -> go to previous position
+    def open_from_history(self, event):
+        if not self.ask_save():
+            return
+        pos = event.GetId() - wx.ID_FILE1
+        filename = self.file_history.GetHistoryFile(pos)
+        if not os.path.exists(filename):
+            wx.MessageBox( _("The file %s doesn't exist.") % filename,
+                           _('Information'), style=wx.CENTER | wx.ICON_INFORMATION | wx.OK )
+            self.file_history.RemoveFileFromHistory(pos)
+            common.remove_autosaved(filename)
+            return
+        self._open(filename)
+
+    def _open(self, filename):
+        # called by open_app and open_from_history
+        if common.check_autosaved(filename):
+            res = wx.MessageBox( _('There seems to be auto saved data for this file: do you want to restore it?'),
+                                 _('Auto save detected'), style=wx.ICON_QUESTION | wx.YES_NO )
+            if res == wx.YES:
+                common.restore_from_autosaved(filename)
+            else:
+                common.remove_autosaved(filename)
+        else:
+            common.remove_autosaved(filename)
+
+        path = position = None
+        if filename == common.root.filename:
+            # if we are re-loading the file, store path and position
+            if misc.focused_widget:
+                path = misc.focused_widget.get_path()
+                if misc.focused_widget.widget is not None and not misc.focused_widget.IS_ROOT:
+                    toplevel = misc.get_toplevel_parent(misc.focused_widget.widget)
+                    if toplevel: position = toplevel.GetPosition()
+
+        self._open_app(filename)
+        self.cur_dir = os.path.dirname(filename)
+        if not path: return
+        editor = common.root.find_widget_from_path(path)
+        if not editor: return
+        misc.set_focused_widget(editor)
+        editor.toplevel_parent.create_widgets()
+        common.app_tree.ExpandAllChildren(editor.item)
+
+        if not position or not editor.widget: return
+        misc.get_toplevel_parent(editor.widget).SetPosition(position)
 
     def _open_app(self, filename, use_progress_dialog=True, add_to_history=True):
         "Load a new wxGlade project"
@@ -906,8 +921,8 @@ class wxGladeFrame(wx.Frame):
 
         start = time.clock()
 
-        common.app_tree.clear()
-        common.app_tree.app.init()
+        common.root.clear()
+        common.root.init()
         common.app_tree.auto_expand = False  # disable auto-expansion of nodes
 
         try:
@@ -916,7 +931,7 @@ class wxGladeFrame(wx.Frame):
                 input_file_version = None
 
                 if not isinstance(filename, list):
-                    common.app_tree.app.filename = filename
+                    common.root.filename = filename
                     # decoding will done automatically by SAX XML library
                     if compat.PYTHON2:
                         infile = open(filename)
@@ -935,7 +950,7 @@ class wxGladeFrame(wx.Frame):
                         infile.seek(0)
 
                 else:
-                    common.app_tree.app.filename = None
+                    common.root.filename = None
 
                 if use_progress_dialog and config.preferences.show_progress:
                     p = ProgressXmlWidgetBuilder(filename, input_file_version, input_file=infile)
@@ -966,33 +981,33 @@ class wxGladeFrame(wx.Frame):
                 infile.close()
 
             if error_msg:
-                common.app_tree.clear()
-                common.app_tree.app.new()
-                common.app_tree.app.saved = True
+                common.root.clear()
+                common.root.new()
+                common.root.saved = True
                 common.app_tree.auto_expand = True  # re-enable auto-expansion of nodes
 
                 wx.MessageBox(error_msg, _('Error'), wx.OK | wx.CENTRE | wx.ICON_ERROR)
 
                 return False
 
-        misc.set_focused_widget(common.app_tree.root.widget, force=True)
+        misc.rebuild_tree(common.root)
 
         common.app_tree.auto_expand = True  # re-enable auto-expansion of nodes
 
-        common.app_tree.expand()
-        if common.app_tree.app.is_template:
+        common.app_tree.Expand(common.root.item)
+        if common.root.is_template:
             self._logger.info(_("Template loaded"))
-            common.app_tree.app.template_data = template.Template(filename)
-            common.app_tree.app.filename = None
+            common.root.template_data = template.Template(filename)
+            common.root.filename = None
 
         end = time.clock()
         self._logger.info(_('Loading time: %.5f'), end - start)
 
-        common.app_tree.app.saved = True
+        common.root.saved = True
         #common.property_panel.Raise()
 
         if hasattr(self, 'file_history') and filename is not None and add_to_history and \
-           (not common.app_tree.app.is_template):
+           (not common.root.is_template):
             self.file_history.AddFileToHistory(misc.wxstr(filename))
 
         if config.preferences.autosave and self.autosave_timer is not None:
@@ -1009,31 +1024,31 @@ class wxGladeFrame(wx.Frame):
     def save_app(self, event=None):
         "saves a wxGlade project onto an xml file"
         self.property_panel.flush()
-        if not common.app_tree.app.filename or common.app_tree.app.is_template:
+        if not common.root.filename or common.root.is_template:
             self.save_app_as()
         else:
             # check whether we are saving a template
-            ext = os.path.splitext(common.app_tree.app.filename)[1].lower()
+            ext = os.path.splitext(common.root.filename)[1].lower()
             if ext == ".wgt":
-                common.app_tree.app.is_template = True
-            self._save_app(common.app_tree.app.filename)
+                common.root.is_template = True
+            self._save_app(common.root.filename)
 
     def _save_app(self, filename):
         try:
             obuffer = []
-            common.app_tree.write(obuffer)
+            common.root.write(obuffer)
             common.save_file(filename, obuffer, 'wxg')
         except EnvironmentError as inst:
             if config.debugging: raise
-            common.app_tree.app.saved = False
+            common.root.saved = False
             bugdialog.ShowEnvironmentError(_('Saving this project failed'), inst)
         except Exception as inst:
             if config.debugging: raise
-            common.app_tree.app.saved = False
+            common.root.saved = False
             fn = os.path.basename(filename).encode('ascii', 'replace')
             bugdialog.Show(_('Save File "%s"') % fn, inst)
         else:
-            common.app_tree.app.saved = True
+            common.root.saved = True
             common.remove_autosaved()
             if config.preferences.autosave and self.autosave_timer is not None:
                 self.autosave_timer.Start()
@@ -1046,7 +1061,7 @@ class wxGladeFrame(wx.Frame):
                               wildcard="wxGlade files (*.wxg)|*.wxg|wxGlade Template files (*.wgt) |*.wgt|"
                               "XML files (*.xml)|*.xml|All files|*",
                               flags=wx.FD_SAVE | wx.FD_OVERWRITE_PROMPT,
-                              default_filename=common.app_tree.app.filename or self.cur_dir)
+                              default_filename=common.root.filename or self.cur_dir)
         if not fn: return
 
         # check for file extension and add default extension if missing
@@ -1054,9 +1069,9 @@ class wxGladeFrame(wx.Frame):
         if not ext:
             fn = "%s.wxg" % fn
 
-        common.app_tree.app.filename = fn
+        common.root.filename = fn
         #remove the template flag so we can save the file.
-        common.app_tree.app.properties["is_template"].set(False)
+        common.root.properties["is_template"].set(False)
 
         self.save_app()
         self.cur_dir = os.path.dirname(fn)
@@ -1064,11 +1079,11 @@ class wxGladeFrame(wx.Frame):
 
     def save_app_as_template(self):
         "save a wxGlade project as a template"
-        data = getattr(common.app_tree.app, 'template_data', None)
+        data = getattr(common.root, 'template_data', None)
         outfile, data = template.save_template(data)
         if outfile:
-            common.app_tree.app.properties["is_template"].set(True)
-            common.app_tree.app.template_data = data
+            common.root.properties["is_template"].set(True)
+            common.root.template_data = data
             self._save_app(outfile)
 
     def on_close(self, event):
@@ -1083,8 +1098,8 @@ class wxGladeFrame(wx.Frame):
                 self._store_layout()
                 prefs.set_dict("layout", self.layout_settings)
                 prefs.changed = True
-            common.app_tree.clear()
-            common.app_tree.app.new()
+            common.root.clear()
+            common.root.new()
             try:
                 common.save_preferences()
             except Exception as e:
@@ -1157,7 +1172,7 @@ class wxGladeFrame(wx.Frame):
                 ibuffer = ['%s\n'%line for line in tmp.split('\n')]
 
                 self._open_app(ibuffer)
-                common.app_tree.app.saved = False
+                common.root.saved = False
             except Exception as inst:
                 fn = os.path.basename(infilename).encode('ascii', 'replace')
                 bugdialog.Show(_('Import File "%s"') % fn, inst)
@@ -1227,7 +1242,6 @@ class wxGladeFrame(wx.Frame):
         if new_layout != self.layout_settings["layout"]:
             # set the splitters
             if not initial: self._store_layout()
-            self.Freeze()
             self.splitter2.Unsplit()
             self.splitter1.Unsplit()
             if new_layout==0:
@@ -1252,7 +1266,6 @@ class wxGladeFrame(wx.Frame):
                 self.SetSize( (self.layout_settings["widths"][1], self.GetSize()[1]) )
             elif self.layout_settings["layout"]==2 and new_layout in (0,1):
                 self.SetSize( (self.layout_settings["widths"][0], self.GetSize()[1]) )
-            self.Thaw()
             self.layout_settings["layout"] = new_layout
 
         # display in toolbar

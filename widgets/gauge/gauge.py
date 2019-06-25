@@ -2,27 +2,27 @@
 wxGauge objects
 
 @copyright: 2002-2007 Alberto Griggio
-@copyright: 2016 Dietmar Schwertberger
+@copyright: 2016-2019 Dietmar Schwertberger
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
 import wx
-import common
+import common, misc
 import wcodegen
 from edit_windows import ManagedBase, EditStylesMixin
-from tree import Node
 import new_properties as np
 
 
 class EditGauge(ManagedBase, EditStylesMixin):
     "Class to handle wxGauge objects"
 
+    WX_CLASS = "wxGauge"
     _PROPERTIES = ["Widget", "range", "style"]
     PROPERTIES = ManagedBase.PROPERTIES + _PROPERTIES + ManagedBase.EXTRA_PROPERTIES
     recreate_on_style_change = True
 
-    def __init__(self, name, parent, id, style, sizer, pos):
-        ManagedBase.__init__(self, name, 'wxGauge', parent, id, sizer, pos)
+    def __init__(self, name, parent, style, pos):
+        ManagedBase.__init__(self, name, 'wxGauge', parent, pos)
         EditStylesMixin.__init__(self)
         if style: self.properties["style"].set(style)
 
@@ -30,7 +30,7 @@ class EditGauge(ManagedBase, EditStylesMixin):
         self.range = np.SpinProperty(10, val_range=(0,10000000), immediate=True)
 
     def create_widget(self):
-        self.widget = wx.Gauge(self.parent.widget, self.id, self.range, style=self.style)
+        self.widget = wx.Gauge(self.parent_window.widget, self.id, self.range, style=self.style)
         if self.range>=3: self.widget.SetValue(self.range//3)
 
     def properties_changed(self, modified):
@@ -47,49 +47,34 @@ editor_style = ''
 dlg_title = _('wxGauge')
 box_title = _('Orientation')
 choices = 'wxGA_HORIZONTAL|wxGA_VERTICAL'
-tmpl_label = 'gauge'
 
 
-def builder(parent, sizer, pos, number=[1]):
+def builder(parent, pos):
     "Factory function for editor objects from GUI"
     dialog = wcodegen.WidgetStyleSelectionDialog( dlg_title, box_title, choices)
-    res = dialog.ShowModal()
+    with misc.disable_stay_on_top(common.adding_window or parent):
+        res = dialog.ShowModal()
     style = dialog.get_selection()
     dialog.Destroy()
     if res != wx.ID_OK:
         return
 
-    label = '%s_%d' % (tmpl_label, number[0])
-    while common.app_tree.has_name(label):
-        number[0] += 1
-        label = '%s_%d' % (tmpl_label, number[0])
+    name = common.root.get_next_name('gauge_%d', parent)
     with parent.frozen():
-        widget = editor_class(label, parent, wx.ID_ANY, style, sizer, pos)
-        node = Node(widget)
-        widget.node = node
-        widget.properties["flag"].set("wxEXPAND")
-        if parent.widget: widget.create()
-    common.app_tree.insert(node, sizer.node, pos-1)
+        editor = editor_class(name, parent, style, pos)
+        editor.properties["flag"].set("wxEXPAND")
+        if parent.widget: editor.create()
+    return editor
 
 
-def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
+def xml_builder(attrs, parent, pos=None):
     "Factory to build editor objects from a XML file"
     from xml_parse import XmlParsingError
     try:
         name = attrs['name']
     except KeyError:
         raise XmlParsingError(_("'name' attribute missing"))
-    if sizer is None or sizeritem is None:
-        raise XmlParsingError(_("sizer or sizeritem object cannot be None"))
-    widget = editor_class(name, parent, wx.ID_ANY, editor_style, sizer, pos)
-    #sizer.set_item(widget.pos, proportion=sizeritem.proportion, span=sizeritem.span, flag=sizeritem.flag, border=sizeritem.border)
-    node = Node(widget)
-    widget.node = node
-    if pos is None:
-        common.app_tree.add(node, sizer.node)
-    else:
-        common.app_tree.insert(node, sizer.node, pos-1)
-    return widget
+    return editor_class(name, parent, editor_style, pos)
 
 
 def initialize():

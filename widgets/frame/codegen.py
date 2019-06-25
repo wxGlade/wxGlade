@@ -73,7 +73,7 @@ class CppFrameCodeGenerator(wcodegen.CppWidgetCodeWriter):
                    ('long', 'style', 'wxDEFAULT_FRAME_STYLE')]
 
     def get_code(self, obj):
-        return [], [], [], []  # the frame can't be a children
+        return [], [], [] # the frame can't be a children
 
     def get_properties_code(self, obj):
         out = []
@@ -114,24 +114,18 @@ def initialize():
 
     pygen = common.code_writers.get('python')
     if pygen:
-        awh = pygen.add_widget_handler
+        awh = pygen.register_widget_code_generator
         awh('wxFrame', PythonFrameCodeGenerator(klass))
         awh('wxMDIChildFrame', PythonFrameCodeGenerator(klass))
 
-        aph = pygen.add_property_handler
-        #aph('menubar', pygen.DummyPropertyHandler)
-
     xrcgen = common.code_writers.get('XRC')
     if xrcgen:
-        awh = xrcgen.add_widget_handler
+        awh = xrcgen.register_widget_code_generator
         awh('wxFrame', xrc_frame_code_generator)
         awh('wxMDIChildFrame', xrcgen.NotImplementedXrcObject)
 
     cppgen = common.code_writers.get('C++')
     if cppgen:
-        awh = cppgen.add_widget_handler
+        awh = cppgen.register_widget_code_generator
         awh('wxFrame', CppFrameCodeGenerator(klass))
         awh('wxMDIChildFrame', CppMDIChildFrameCodeGenerator(klass))
-
-        #aph = cppgen.add_property_handler
-        #aph('menubar', cppgen.DummyPropertyHandler)

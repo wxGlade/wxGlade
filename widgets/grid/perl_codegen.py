@@ -15,7 +15,7 @@ class PerlCodeGenerator(wcodegen.PerlWidgetCodeWriter):
 
     def get_code(self, obj):
         id_name, id = self.codegen.generate_code_id(obj)
-        parent = self.format_widget_access(obj.parent)
+        parent = self.format_widget_access(obj.parent_window)
         init = []
         if id_name:
             init.append(id_name)
@@ -27,8 +27,8 @@ class PerlCodeGenerator(wcodegen.PerlWidgetCodeWriter):
             klass = klass.replace('wx', 'Wx::', 1)
 
         init.append('$self->{%s} = %s->new(%s, %s);\n' % (obj.name, klass, parent, id))
-        props_buf = self.get_properties_code(obj)
-        return init, props_buf, []
+        init += self.get_properties_code(obj)
+        return init, []
 
     def get_properties_code(self, obj):
         if not obj.create_grid: return []

@@ -3,7 +3,7 @@ wxTextCtrl objects
 
 @copyright: 2002-2007 Alberto Griggio
 @copyright: 2014-2016 Carsten Grohmann
-@copyright: 2016-2018 Dietmar Schwertberger
+@copyright: 2016-2019 Dietmar Schwertberger
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
@@ -12,20 +12,20 @@ import wx
 import common, config, misc
 from edit_windows import ManagedBase, EditStylesMixin
 import new_properties as np
-from tree import Node
 
 
 class EditTextCtrl(ManagedBase, EditStylesMixin):
     "Class to handle wxTextCtrl objects"
 
+    WX_CLASS = 'wxTextCtrl'
     # we want these pages: Common, Layout, Widget, Events, Code
     _PROPERTIES = ["Widget", "value", "style"]
     PROPERTIES = ManagedBase.PROPERTIES + _PROPERTIES + ManagedBase.EXTRA_PROPERTIES
     recreate_on_style_change = True
 
-    def __init__(self, name, parent, id, sizer, pos):
+    def __init__(self, name, parent, pos):
         # initialize base classes
-        ManagedBase.__init__(self, name, 'wxTextCtrl', parent, id, sizer, pos)
+        ManagedBase.__init__(self, name, 'wxTextCtrl', parent, pos)
         EditStylesMixin.__init__(self)
 
         # initialize instance properties
@@ -37,7 +37,7 @@ class EditTextCtrl(ManagedBase, EditStylesMixin):
         value = self.value
         #if self.style & wx.TE_MULTILINE:
         #    value = value.replace('\\n', '\n') # XXX is this correct? is self.value already with newlines?
-        self.widget = wx.TextCtrl(self.parent.widget, self.id, value=value, style=self.style)
+        self.widget = wx.TextCtrl(self.parent_window.widget, self.id, value=value, style=self.style)
 
     def properties_changed(self, modified):
         if "value" in modified and self.widget:
@@ -47,40 +47,25 @@ class EditTextCtrl(ManagedBase, EditStylesMixin):
 
 
 
-def builder(parent, sizer, pos, number=[1]):
+def builder(parent, pos):
     "factory function for EditTextCtrl objects"
-    name = 'text_ctrl_%d' % number[0]
-    while common.app_tree.has_name(name):
-        number[0] += 1
-        name = 'text_ctrl_%d' % number[0]
+    name = common.root.get_next_name('text_ctrl_%d', parent)
     with parent.frozen():
-        text = EditTextCtrl(name, parent, wx.NewId(), sizer, pos)
-        text.properties["style"].set_to_default()
-        text.check_defaults()
-        node = Node(text)
-        text.node = node
-        if parent.widget: text.create()
-    common.app_tree.insert(node, sizer.node, pos-1)
+        editor = EditTextCtrl(name, parent, pos)
+        editor.properties["style"].set_to_default()
+        editor.check_defaults()
+        if parent.widget: editor.create()
+    return editor
 
 
-def xml_builder(attrs, parent, sizer, sizeritem, pos=None):
+def xml_builder(attrs, parent, pos=None):
     "factory function to build EditTextCtrl objects from a XML file"
     from xml_parse import XmlParsingError
     try:
         name = attrs['name']
     except KeyError:
         raise XmlParsingError(_("'name' attribute missing"))
-    if sizer is None or sizeritem is None:
-        raise XmlParsingError(_("sizer or sizeritem object cannot be None"))
-    text = EditTextCtrl(name, parent, wx.NewId(), sizer, pos)
-    #sizer.set_item(text.pos, proportion=sizeritem.proportion, span=sizeritem.span, flag=sizeritem.flag, border=sizeritem.border)
-    node = Node(text)
-    text.node = node
-    if pos is None:
-        common.app_tree.add(node, sizer.node)
-    else:
-        common.app_tree.insert(node, sizer.node, pos-1)
-    return text
+    return EditTextCtrl(name, parent, pos)
 
 
 def initialize():

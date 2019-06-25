@@ -44,6 +44,27 @@ def xrc_wxFlexGridSizer_builder(obj):
     return FlexGridSizerXrcObject(obj)
 
 
+def xrc_code_generator(obj):
+    xrcgen = common.code_writers['XRC']
+
+    class SizerSlotXrcObject(xrcgen.XrcObject):
+        "XrcObject to handle widgets"
+
+        def __init__(self, obj):
+            xrcgen.XrcObject.__init__(self)
+            self.obj = obj
+
+        def write(self, output, ntabs):
+            if self.obj: return
+            tabs = self.tabs(ntabs)
+            tabs1 = self.tabs(ntabs + 1)
+            output.append( tabs + '<object class="spacer">\n' )
+            output.append( tabs1 + '<size>0, 0</size>\n' )
+            output.append( tabs + '</object>\n')
+
+    return SizerSlotXrcObject(obj)
+
+
 def initialize():
     cn = common.class_names
     cn['EditBoxSizer'] = 'wxBoxSizer'
@@ -54,8 +75,10 @@ def initialize():
 
     xrcgen = common.code_writers.get("XRC")
     if xrcgen:
-        xrcgen.add_widget_handler( 'wxBoxSizer', xrc_wxSizer_builder )
-        xrcgen.add_widget_handler( 'wxWrapSizer', xrc_wxSizer_builder )
-        xrcgen.add_widget_handler( 'wxStaticBoxSizer', xrc_wxSizer_builder )
-        xrcgen.add_widget_handler( 'wxGridSizer', xrc_wxSizer_builder )
-        xrcgen.add_widget_handler( 'wxFlexGridSizer', xrc_wxFlexGridSizer_builder )
+        xrcgen.register_widget_code_generator( 'wxBoxSizer', xrc_wxSizer_builder )
+        xrcgen.register_widget_code_generator( 'wxWrapSizer', xrc_wxSizer_builder )
+        xrcgen.register_widget_code_generator( 'wxStaticBoxSizer', xrc_wxSizer_builder )
+        xrcgen.register_widget_code_generator( 'wxGridSizer', xrc_wxSizer_builder )
+        xrcgen.register_widget_code_generator( 'wxFlexGridSizer', xrc_wxFlexGridSizer_builder )
+        xrcgen.register_widget_code_generator( 'sizerslot', xrc_code_generator )
+

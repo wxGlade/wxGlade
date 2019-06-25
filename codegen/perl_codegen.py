@@ -1,26 +1,14 @@
 """\
 Perl code generator
 
-How the code is generated: every time the end of an object is reached during
-the parsing of the xml tree, either the function 'add_object' or the function
-'add_class' is called: the latter when the object is a toplevel one, the former
-when it is not. In the last case, 'add_object' calls the appropriate ``writer''
-function for the specific object, found in the 'obj_builders' dict. Such
-function accepts one argument, the CodeObject representing the object for
-which the code has to be written, and returns 3 lists of strings, representing
-the lines to add to the '__init__', '__set_properties' and '__do_layout'
-methods of the parent object.
-
-Like all other perl parts, based on the pre-existing python generators
-
 @copyright: 2002-2004 D.H. aka crazyinsomniac on sourceforge.net
 @copyright: 2012-2016 Carsten Grohmann
-@copyright: 2017 Dietmar Schwertberger
+@copyright: 2017-2019 Dietmar Schwertberger
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
 import os, os.path, re
-from codegen import BaseLangCodeWriter, BaseSourceFileContent, BaseWidgetHandler
+from codegen import BaseLangCodeWriter, BaseSourceFileContent
 import wcodegen
 import compat
 
@@ -60,16 +48,13 @@ class SourceFileContent(BaseSourceFileContent):
         r'\s*$'                                 # tailing spaces
         )
 
+    # Regexp to match Perl's Plain Old Documentation format; see: manpage perlpod
     rec_pod = re.compile(
         r'^\s*'                                 # leading spaces
         r'=[A-Za-z_]+\w*'                       # match POD statement
         r'.*$'                                  # any character till eol
         )
-    """\
-    Regexp to match Perl's Plain Old Documentation format
 
-    @see: manpage perlpod
-    """
 
     def build_untouched_content(self):
         """\
@@ -157,13 +142,6 @@ class SourceFileContent(BaseSourceFileContent):
         return line.lstrip().startswith('use Wx')
 
 
-
-class WidgetHandler(BaseWidgetHandler):
-    "Interface the various code generators for the widgets must implement"
-    new_signature = []  # Constructor signature ($self->SUPER::new(@stuff)); see PerlCodeWriter.new_defaults
-
-
-
 class PerlCodeWriter(BaseLangCodeWriter, wcodegen.PerlMixin):
     "Code writer class for writing Perl code out of the designed GUI elements; see: BaseLangCodeWriter"
 
@@ -202,9 +180,6 @@ class PerlCodeWriter(BaseLangCodeWriter, wcodegen.PerlMixin):
 
     SourceFileContent = SourceFileContent
 
-    tmpl_name_do_layout = '__do_layout'
-    tmpl_name_set_properties = '__set_properties'
-
     tmpl_cfunc_end = '%(tab)sreturn $self;\n' \
                      '\n' \
                      '}\n' \
@@ -212,16 +187,6 @@ class PerlCodeWriter(BaseLangCodeWriter, wcodegen.PerlMixin):
 
     tmpl_class_end = '\n%(comment)s end of class %(klass)s\n\n1;\n\n'
     tmpl_class_end_nomarker = '\n\n1;\n\n'
-
-    tmpl_ctor_call_layout = '\n' \
-                            '%(tab)s$self->__set_properties();\n' \
-                            '%(tab)s$self->__do_layout();\n\n'
-
-    tmpl_func_do_layout = '\n' \
-                          'sub __do_layout {\n' \
-                          '%(tab)smy $self = shift;\n' \
-                          '%(content)s' \
-                          '}\n'
 
     tmpl_func_event_stub = """\
 
@@ -234,12 +199,6 @@ sub %(handler)s {
 }
 
 """
-
-    tmpl_func_set_properties = '\n' \
-                          'sub __set_properties {\n' \
-                          '%(tab)smy $self = shift;\n' \
-                          '%(content)s' \
-                          '}\n'
 
     tmpl_func_empty = '%(tab)sreturn;\n'
 
@@ -362,7 +321,7 @@ sub %(handler)s {
 
             if self._use_gettext:
                 if self.multiple_files:
-                    self.classes[code_obj.klass].dependencies["use Wx::Locale gettext => '_T';\n"] = 1
+                    self.classes[code_obj].dependencies["use Wx::Locale gettext => '_T';\n"] = 1
                 else:
                     write("use Wx::Locale gettext => '_T';\n")
 
@@ -371,7 +330,7 @@ sub %(handler)s {
             # TODO: Don't add dependencies twice with Perl
 
             # write the module dependencies for this class (package)
-            dep_list = sorted( self.classes[code_obj.klass].dependencies.keys() )
+            dep_list = sorted( self.classes[code_obj].dependencies.keys() )
             if dep_list:
                 code = self._tagcontent('dependencies', dep_list, True)
                 write(code)
@@ -415,33 +374,23 @@ sub %(handler)s {
         if 'size' in code_obj.properties and code_obj.properties["size"].is_active():
             write( tab+ self.generate_code_size(code_obj) )
 
-        # classes[code_obj.klass].deps now contains a mapping of child to
-        # parent for all children we processed...
-        object_order = []
-        for obj in self.classes[code_obj.klass].child_order:
-            # Don't add it again if already present
-            if obj in object_order:
-                continue
+        for l in builder.get_properties_code(code_obj):
+            write(tab + l)
 
-            object_order.append(obj)
+        # the initial and final code for the contained elements
+        for l in self.classes[code_obj].init:
+            write(tab + l)
+        if self.classes[code_obj].final:
+            write(tab + "\n")
+            for l in self.classes[code_obj].final:
+                write(tab + l)
 
-            # Insert parent and ancestor objects before the current object
-            current_object = obj
-            for child, parent in self.classes[code_obj.klass].deps[:]:
-                if child is current_object:
-                    if parent not in object_order:
-                        idx = object_order.index(current_object)
-                        object_order.insert(idx, parent)
-                    current_object = parent
+        # now check if there is initial and final code for the element itself
+        for l in builder.get_init_code(code_obj):
+            write(tab+l)
 
-                    # We processed the dependency: remove it
-                    self.classes[code_obj.klass].deps.remove((child, parent))
-
-        # Write out the initialisation in the order we just generated
-        for obj in object_order:
-            if obj in self.classes[code_obj.klass].init_lines:
-                for l in self.classes[code_obj.klass].init_lines[obj]:
-                    write(tab + l)
+        for l in builder.get_layout_code(code_obj):
+            write(tab + l)
 
         return code_lines
 
@@ -474,10 +423,9 @@ sub %(handler)s {
             return '', self.cn('wxID_ANY')
         id = str(id)
         tokens = id.split('=', 1)
-        if len(tokens) == 2:
-            name, val = tokens
-        else:
+        if len(tokens) != 2:
             return '', self.cn(tokens[0])   # we assume name is declared elsewhere
+        name, val = tokens
         if not name:
             return '', self.cn(val)
         name = name.strip()
@@ -493,19 +441,11 @@ sub %(handler)s {
         objname = self.format_generic_access(obj)
         size = obj.properties["size"].get_string_value()
         use_dialog_units = (size[-1] == 'd')
-        if not obj.parent:
-            method = 'SetSize'
-        else:
-            method = 'SetMinSize'
+        method = 'SetMinSize'  if obj.parent_window  else  'SetSize'
+
         if use_dialog_units:
-            return '%s->%s(%s->ConvertDialogSizeToPixels(Wx::Size->new(%s)));\n' % (
-                   objname,
-                   method,
-                   objname,
-                   size[:-1],
-                   )
-        else:
-            return '%s->%s(Wx::Size->new(%s));\n' % (objname, method, size)
+            return '%s->%s(%s->ConvertDialogSizeToPixels(Wx::Size->new(%s)));\n' % (objname, method, objname, size[:-1])
+        return '%s->%s(Wx::Size->new(%s));\n' % (objname, method, size)
 
     def _quote_str(self, s):
         """\
@@ -569,21 +509,19 @@ sub %(handler)s {
         elif obj.klass == 'spacer':
             return obj.name
         # Perl stores sizers always in class attributes
-        elif self.store_as_attr(obj) or obj.is_sizer:
+        elif self.store_as_attr(obj) or obj.IS_SIZER:
             return '$self->{%s}' % obj.name
         return '$%s' % obj.name
 
     def _format_import(self, klass):
-        stmt = 'use %s;\n' % klass
-        return stmt
+        return 'use %s;\n' % klass
 
     def _get_class_filename(self, klass):
         "Returns the name for a Perl module (.pm) to store a single class in multi file projects"
-        filename = os.path.join( self.out_dir, klass.replace('::', os.sep) + '.pm' )
-        return filename
+        return os.path.join( self.out_dir, klass.replace('::', os.sep) + '.pm' )
 
     def format_generic_access(self, obj):
-        if obj.is_toplevel:
+        if obj.IS_CLASS:
             return '$self'
         return self._format_classattr(obj)
 

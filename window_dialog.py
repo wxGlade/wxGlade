@@ -1,6 +1,6 @@
 """Dialog to ask user for base class and class name
 
-@copyright: 2016-2018 Dietmar Schwertberger
+@copyright: 2016-2019 Dietmar Schwertberger
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
@@ -8,6 +8,15 @@
 import wx
 import common, compat
 
+
+def _get_all_class_names(item):
+    ret = []
+    for c in item.children or []:
+        name = getattr(c, "klass", None)
+        if name: ret.append(name)
+        ret += _get_all_class_names(c)
+
+    return ret
 
 class WindowDialog(wx.Dialog):
     # dialog for builder function
@@ -24,12 +33,12 @@ class WindowDialog(wx.Dialog):
             self.base.SetSelection(0)
 
         self.number = 1
-        self.class_names = set( common.app_tree.get_all_class_names() )
-        self.toplevel_names = set( common.app_tree.get_toplevel_class_names() )
+        self.class_names = set( _get_all_class_names(common.root) )
+        self.toplevel_names = set( c.name for c in common.root.children )
         self.toplevel = toplevel  # if this is True, the name must be unique, as the generated class will have it
         # class
         self._klass = klass
-        if common.app_tree.app.language.lower() != 'xrc':
+        if common.root.language.lower() != 'xrc':
             klass = self.get_next_class_name(klass)
         self.klass = wx.TextCtrl(self, -1, klass)
         self.klass.Bind(wx.EVT_TEXT, self.on_text)  # for validation
@@ -69,8 +78,7 @@ class WindowDialog(wx.Dialog):
         szr.Fit(self)
 
     def get_next_class_name(self, name):
-        #names = [c.widget.klass for c in common.app_tree.root.children or []]
-        
+        #names = [c.widget.klass for c in common.root.children or []]
         if not name in self.class_names: return name
         while True:
             ret = '%s%d'%(name,self.number)
@@ -78,7 +86,8 @@ class WindowDialog(wx.Dialog):
             self.number += 1
 
     def get_next_name(self, name):
-        names = common.app_tree.get_all_names()
+        #names = common.app_tree.get_all_names()
+        names = [c.name for c in common.root.children]
         names = [n for n in names if n.startswith(name)]
         if not name in names: return name
         while True:
@@ -95,7 +104,7 @@ class WindowDialog(wx.Dialog):
             self.klass.SetBackgroundColour(wx.RED)
             compat.SetToolTip(self.klass, "Class name not valid")
         else:
-            #if name in [c.widget.klass for c in common.app_tree.root.children or []]:
+            #if name in [c.widget.klass for c in common.root.children or []]:
             if self.toplevel and name in self.toplevel_names:
                 self.klass.SetBackgroundColour( wx.RED )
                 compat.SetToolTip(self.klass, "Class name already in use for toplevel window")

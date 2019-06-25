@@ -2,12 +2,12 @@
 C++ generator functions for the various wxSizerS
 
 @copyright: 2014-2016 Carsten Grohmann
-@copyright: 2017 Dietmar Schwertberger
+@copyright: 2017-2019 Dietmar Schwertberger
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
 import common
-from .edit_sizers import BaseSizerBuilder
+from .edit_sizers import BaseSizerBuilder, SlotGenerator
 
 
 class BaseCPPSizerBuilder(BaseSizerBuilder):
@@ -19,50 +19,35 @@ class BaseCPPSizerBuilder(BaseSizerBuilder):
     tmpl_Fit = '%(sizer_name)s->Fit(%(parent_widget)s);\n'
     tmpl_SetSizeHints = '%(sizer_name)s->SetSizeHints(%(parent_widget)s);\n'
 
-    #def _get_wparent(self, obj):
-        #if not obj.parent.is_toplevel:
-            #parent = '%s' % obj.parent.name
-        #else:
-            #parent = 'this'
-        #return parent
-
     def _get_wparent(self, obj):
-        while obj.is_sizer:
-            obj = obj.node.parent.widget
-        if not obj.is_toplevel:
-            parent = '%s' % obj.name
+        window = obj.parent_window
+        if not window.IS_CLASS:
+            parent = '%s' % window.name
         else:
             parent = 'this'
         return parent
 
     def _get_parent_ref(self, obj):
-        #while obj.is_sizer:
-        if obj.is_sizer:
-            obj = obj.node.parent.widget
-        #if not obj.parent.is_toplevel:
-        if not obj.is_toplevel:
+        if obj.IS_SIZER:
+            obj = obj.parent
+        if not obj.IS_CLASS:
             parent_ref = '%s->' % obj.parent.name
         else:
             parent_ref = ''
         return parent_ref
 
     def _get_parent_ref(self, obj):
-        #if not obj.parent.is_toplevel:
-        if not obj.node.parent.is_toplevel:
-            #parent_ref = '%s->' % obj.parent.name
-            parent_ref = '%s->' % obj.node.parent.widget.name
+        if not obj.parent.IS_CLASS:
+            parent_ref = '%s->' % obj.parent.name
         else:
             parent_ref = ''
         return parent_ref
 
     def _get_code(self, obj):
         self.tmpl_dict['parent_ref'] = self._get_parent_ref(obj)
-        result = BaseSizerBuilder._get_code(self, obj)
-
         # get_code() for C++ has different return values
-        result = list(result)
-        result.insert(2, [])
-        return result
+        init, final = BaseSizerBuilder._get_code(self, obj)
+        return init, [], final
 
     def _prepare_tmpl_content(self, obj):
         super(BaseCPPSizerBuilder, self)._prepare_tmpl_content(obj)
@@ -106,13 +91,10 @@ class CppGridBagSizerBuilder(CppFlexGridSizerBuilder):
     tmpl = '%(assignment)s = new %(klass)s(%(vgap)s, %(hgap)s);\n'
 
 
-import wcodegen
-
-class CppSizerSlotGenerator(wcodegen.CppWidgetCodeWriter):
-    # spacers and empty sizer slots are generally handled by a hack:
-    # The the implementations of add_sizeritem() contains more details.
-    # The code generation code is already implemented in base class.
-    pass
+class CppSizerSlotGenerator(SlotGenerator):
+    def get_code(self, obj):
+        init, final = SlotGenerator.get_code(self, obj)
+        return init, [], final
 
 
 def initialize():
@@ -125,7 +107,7 @@ def initialize():
 
     cppgen = common.code_writers.get("C++")
     if cppgen:
-        awh = cppgen.add_widget_handler
+        awh = cppgen.register_widget_code_generator
         awh('wxBoxSizer', CppBoxSizerBuilder())
         awh('wxWrapSizer', CppWrapSizerBuilder())
         awh('wxStaticBoxSizer', CppStaticBoxSizerBuilder())
@@ -133,4 +115,5 @@ def initialize():
         awh('wxFlexGridSizer', CppFlexGridSizerBuilder())
         awh('wxGridBagSizer', CppGridBagSizerBuilder())
 
-    common.register('C++', "sizerslot", CppSizerSlotGenerator("sizerslot"))
+    #common.register('C++', "sizerslot", CppSizerSlotGenerator("sizerslot"))
+    common.register('C++', "sizerslot", CppSizerSlotGenerator("C++"))

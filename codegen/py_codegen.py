@@ -1,25 +1,15 @@
 """\
 Python code generator
 
-How the code is generated: every time the end of an object is reached during
-the parsing of the xml tree, either the function 'add_object' or the function
-'add_class' is called: the latter when the object is a toplevel one, the former
-when it is not. In the last case, 'add_object' calls the appropriate ``writer''
-function for the specific object, found in the 'obj_builders' dict. Such
-function accepts one argument, the CodeObject representing the object for
-which the code has to be written, and returns 3 lists of strings, representing
-the lines to add to the '__init__', '__set_properties' and '__do_layout'
-methods of the parent object.
-
 @copyright: John Dubery
 @copyright: 2002-2007 Alberto Griggio
 @copyright: 2012-2016 Carsten Grohmann
-@copyright: 2016-2018 Dietmar Schwertberger
+@copyright: 2016-2019 Dietmar Schwertberger
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
 import os, os.path, random, re
-from codegen import BaseLangCodeWriter, BaseSourceFileContent, BaseWidgetHandler
+from codegen import BaseLangCodeWriter, BaseSourceFileContent
 import wcodegen
 import compat
 
@@ -91,8 +81,7 @@ class SourceFileContent(BaseSourceFileContent):
             result = self.rec_class_decl.match(line)
             if not inside_triple_quote and not inside_block and result:
                 if not self.class_name:
-                    # this is the first class declared in the file: insert the
-                    # new ones before this
+                    # this is the first class declared in the file: insert the new ones before this
                     out_lines.append('<%swxGlade insert new_classes>' % self.nonce)
                     self.new_classes_inserted = True
                 self.class_name = result.group(1)
@@ -160,12 +149,6 @@ class SourceFileContent(BaseSourceFileContent):
             return class_name
 
 
-
-class WidgetHandler(BaseWidgetHandler):
-    pass
-
-
-
 class PythonCodeWriter(BaseLangCodeWriter, wcodegen.PythonMixin):
     "Code writer class for writing Python code out of the designed GUI elements"
 
@@ -198,12 +181,9 @@ class PythonCodeWriter(BaseLangCodeWriter, wcodegen.PythonMixin):
 
     SourceFileContent = SourceFileContent
 
-    tmpl_name_do_layout = '__do_layout'
-    tmpl_name_set_properties = '__set_properties'
     tmpl_encoding = "# -*- coding: %s -*-\n#\n"
     tmpl_class_end = '\n%(comment)s end of class %(klass)s\n'
     tmpl_class_end_nomarker = '\n'
-    tmpl_ctor_call_layout = '\n%(tab)sself.__set_properties()\n%(tab)sself.__do_layout()\n'
     tmpl_func_empty = '%(tab)spass\n'
     tmpl_sizeritem = '%s.Add(%s, %s, %s, %s)\n'
     tmpl_gridbagsizeritem = '%s.Add(%s, %s, %s, %s, %s)\n'
@@ -273,9 +253,6 @@ from %(top_win_module)s import %(top_win_class)s\n\n"""
             ret.append('')
         return '\n'.join(ret)
 
-    def __init__(self):
-        BaseLangCodeWriter.__init__(self)
-
     def init_lang(self, app):
         if self.preview and compat.PYTHON2:
             self.header_lines.append('from __future__ import print_function\n')
@@ -295,6 +272,7 @@ from %(top_win_module)s import %(top_win_class)s\n\n"""
         BaseLangCodeWriter.add_app(self, app, top_win)
 
     def generate_code_ctor(self, code_obj, is_new, tab):
+        # generate code for the class constructor, including all children
         code_lines = []
         write = code_lines.append
 
@@ -330,7 +308,7 @@ from %(top_win_module)s import %(top_win_class)s\n\n"""
                                            'function':self.name_ctor, 'klass':fmt_klass, 'tab':tab} )
 
         style_p = code_obj.properties.get("style")
-        if style_p:# and style_p.value_set != style_p.default_value:
+        if style_p:
             style = style_p.get_string_value()
             m_style = mycn_f( style )
             stmt_style = self._format_style(style, code_obj)
@@ -352,41 +330,25 @@ from %(top_win_module)s import %(top_win_class)s\n\n"""
         if 'size' in code_obj.properties and code_obj.properties["size"].is_active():
             write( tab + self.generate_code_size(code_obj) )
 
-        # classes[code_obj.klass].deps now contains a mapping of child to parent for all children we processed...
-        object_order = []
-        for obj in self.classes[code_obj.klass].child_order:
-            # Don't add it again if already present
-            if obj in object_order:
-                continue
+        for l in builder.get_properties_code(code_obj):
+            write(tab + l)
 
-            object_order.append(obj)
+        # the initial and final code for the contained elements
+        for l in self.classes[code_obj].init:
+            write(tab + l)
+        if self.classes[code_obj].final:
+            write(tab + "\n")
+            for l in self.classes[code_obj].final:
+                write(tab + l)
 
-            # Insert parent and ancestor objects before the current object
-            current_object = obj
-            for child, parent in self.classes[code_obj.klass].deps[:]:
-                if child is current_object:
-                    if parent not in object_order:
-                        idx = object_order.index(current_object)
-                        object_order.insert(idx, parent)
-                    current_object = parent
+        # now check if there is initial and final code for the element itself
+        for l in builder.get_init_code(code_obj):
+            write(tab+l)
 
-                    # We processed the dependency: remove it
-                    self.classes[code_obj.klass].deps.remove((child, parent))
-
-        # Write out the initialisation in the order we just generated
-        for obj in object_order:
-            if obj in self.classes[code_obj.klass].init_lines:
-                for l in self.classes[code_obj.klass].init_lines[obj]:
-                    write(tab + l)
+        for l in builder.get_layout_code(code_obj):
+            write(tab + l)
 
         return code_lines
-
-    def generate_code_do_layout(self, builder, code_obj, is_new, tab):
-        # Python has two indentation levels
-        #  1st) for function declaration
-        #  2nd) for function body
-        self.tmpl_func_do_layout = '\n' + self.tabs(1) + 'def __do_layout(self):\n%(content)s'
-        return BaseLangCodeWriter.generate_code_do_layout( self, builder, code_obj, is_new, tab )
 
     def generate_code_event_bind(self, code_obj, tab, event_handlers):
         code_lines = []
@@ -439,10 +401,9 @@ from %(top_win_module)s import %(top_win_class)s\n\n"""
             return '', self.cn('wxID_ANY')
         id = str(id)
         tokens = id.split('=', 1)
-        if len(tokens) == 2:
-            name, val = tokens
-        else:
+        if len(tokens) != 2:
             return '', self.cn(tokens[0])   # we assume name is declared elsewhere
+        name, val = tokens
         if not name:
             return '', self.cn(val)
         name = name.strip()
@@ -456,20 +417,12 @@ from %(top_win_module)s import %(top_win_class)s\n\n"""
             return '%s = %s\n' % (name, val), name
         return 'global %s; %s = %s\n' % (name, name, val), name
 
-    def generate_code_set_properties(self, builder, code_obj, is_new, tab):
-        # Python has two indentation levels
-        #  1st) for function declaration
-        #  2nd) for function body
-        self.tmpl_func_set_properties = '\n' + self.tabs(1) + 'def __set_properties(self):\n%(content)s'
-
-        return BaseLangCodeWriter.generate_code_set_properties( self, builder, code_obj, is_new, tab )
-
     def generate_code_size(self, obj, size=None):
         objname = self.format_generic_access(obj)
         if size is None:
             size = obj.properties["size"].get_string_value()
         use_dialog_units = (size[-1] == 'd')
-        if not obj.parent:
+        if not obj.parent_window:
             method = 'SetSize'
         else:
             method = 'SetMinSize'
@@ -542,18 +495,15 @@ from %(top_win_module)s import %(top_win_class)s\n\n"""
         return obj.name
 
     def _format_import(self, klass):
-        stmt = 'from %s import %s\n' % (klass, self.get_class(klass))
-        return stmt
+        return 'from %s import %s\n' % (klass, self.get_class(klass))
 
     def _get_class_filename(self, klass):
-        filename = os.path.join( self.out_dir, klass.replace('.', os.sep) + '.py' )
-        return filename
+        return os.path.join( self.out_dir, klass.replace('.', os.sep) + '.py' )
 
     def format_generic_access(self, obj):
-        if obj.is_toplevel:
+        if obj.IS_CLASS:
             return 'self'
-        else:
-            return self._format_classattr(obj)
+        return self._format_classattr(obj)
 
 
 writer = PythonCodeWriter()  # The code writer is an instance of L{PythonCodeWriter}.
