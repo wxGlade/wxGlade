@@ -35,65 +35,68 @@ sub new {
         unless defined $style;
 
     $self = $self->SUPER::new( $parent, $id, $title, $pos, $size, $style, $name );
+    $self->SetTitle(_T("dialog_1"));
+    
+    $self->{grid_sizer_1} = Wx::FlexGridSizer->new(3, 1, 0, 0);
+    
+    $self->{grid_sizer_2} = Wx::FlexGridSizer->new(1, 3, 0, 0);
+    $self->{grid_sizer_1}->Add($self->{grid_sizer_2}, 1, wxEXPAND, 0);
+    
+    $self->{sizer_2} = Wx::StaticBoxSizer->new(Wx::StaticBox->new($self, wxID_ANY, _T("Unassigned Permissions:")), wxHORIZONTAL);
+    $self->{grid_sizer_2}->Add($self->{sizer_2}, 1, wxEXPAND, 0);
+    
     $self->{list_box_1} = Wx::ListBox->new($self, wxID_ANY, wxDefaultPosition, wxDefaultSize, [], 0);
+    $self->{sizer_2}->Add($self->{list_box_1}, 1, wxALL|wxEXPAND, 5);
+    
+    $self->{sizer_4} = Wx::FlexGridSizer->new(4, 1, 0, 0);
+    $self->{grid_sizer_2}->Add($self->{sizer_4}, 1, wxALIGN_CENTER|wxEXPAND, 0);
+    
+    $self->{sizer_4}->Add(20, 20, 0, wxEXPAND, 0);
+    
     $self->{button_4} = Wx::Button->new($self, wxID_ADD, "");
+    $self->{sizer_4}->Add($self->{button_4}, 0, wxALL, 5);
+    
     $self->{button_5} = Wx::Button->new($self, wxID_REMOVE, "");
+    $self->{sizer_4}->Add($self->{button_5}, 0, wxALL, 5);
+    
+    $self->{sizer_4}->Add(20, 20, 0, wxEXPAND, 0);
+    
+    $self->{sizer_3} = Wx::StaticBoxSizer->new(Wx::StaticBox->new($self, wxID_ANY, _T("Assigned Permissions:")), wxHORIZONTAL);
+    $self->{grid_sizer_2}->Add($self->{sizer_3}, 1, wxEXPAND, 0);
+    
     $self->{list_box_2} = Wx::ListBox->new($self, wxID_ANY, wxDefaultPosition, wxDefaultSize, [], 0);
+    $self->{sizer_3}->Add($self->{list_box_2}, 1, wxALL|wxEXPAND, 5);
+    
     $self->{static_line_1} = Wx::StaticLine->new($self, wxID_ANY);
+    $self->{grid_sizer_1}->Add($self->{static_line_1}, 0, wxALL|wxEXPAND, 5);
+    
+    $self->{sizer_1} = Wx::BoxSizer->new(wxHORIZONTAL);
+    $self->{grid_sizer_1}->Add($self->{sizer_1}, 1, wxALIGN_RIGHT|wxEXPAND, 0);
+    
     $self->{button_2} = Wx::Button->new($self, wxID_OK, "");
+    $self->{sizer_1}->Add($self->{button_2}, 0, wxALL, 5);
+    
     $self->{button_1} = Wx::Button->new($self, wxID_CANCEL, "");
-
-    $self->__set_properties();
-    $self->__do_layout();
-
+    $self->{sizer_1}->Add($self->{button_1}, 0, wxALL, 5);
+    
+    $self->{sizer_4}->AddGrowableRow(0);
+    $self->{sizer_4}->AddGrowableRow(3);
+    
+    $self->{grid_sizer_2}->AddGrowableRow(0);
+    $self->{grid_sizer_2}->AddGrowableCol(0);
+    $self->{grid_sizer_2}->AddGrowableCol(2);
+    
+    $self->{grid_sizer_1}->AddGrowableRow(0);
+    $self->{grid_sizer_1}->AddGrowableCol(0);
+    $self->SetSizer($self->{grid_sizer_1});
+    $self->{grid_sizer_1}->Fit($self);
+    
+    $self->Layout();
     # end wxGlade
     return $self;
 
 }
 
-
-sub __set_properties {
-    my $self = shift;
-    # begin wxGlade: MyDialog::__set_properties
-    $self->SetTitle(_T("dialog_1"));
-    # end wxGlade
-}
-
-sub __do_layout {
-    my $self = shift;
-    # begin wxGlade: MyDialog::__do_layout
-    $self->{grid_sizer_1} = Wx::FlexGridSizer->new(3, 1, 0, 0);
-    $self->{sizer_1} = Wx::BoxSizer->new(wxHORIZONTAL);
-    $self->{grid_sizer_2} = Wx::FlexGridSizer->new(1, 3, 0, 0);
-    $self->{sizer_3} = Wx::StaticBoxSizer->new(Wx::StaticBox->new($self, wxID_ANY, _T("Assigned Permissions:")), wxHORIZONTAL);
-    $self->{sizer_4} = Wx::FlexGridSizer->new(4, 1, 0, 0);
-    $self->{sizer_2} = Wx::StaticBoxSizer->new(Wx::StaticBox->new($self, wxID_ANY, _T("Unassigned Permissions:")), wxHORIZONTAL);
-    $self->{sizer_2}->Add($self->{list_box_1}, 1, wxALL|wxEXPAND, 5);
-    $self->{grid_sizer_2}->Add($self->{sizer_2}, 1, wxEXPAND, 0);
-    $self->{sizer_4}->Add(20, 20, 0, wxEXPAND, 0);
-    $self->{sizer_4}->Add($self->{button_4}, 0, wxALL, 5);
-    $self->{sizer_4}->Add($self->{button_5}, 0, wxALL, 5);
-    $self->{sizer_4}->Add(20, 20, 0, wxEXPAND, 0);
-    $self->{sizer_4}->AddGrowableRow(0);
-    $self->{sizer_4}->AddGrowableRow(3);
-    $self->{grid_sizer_2}->Add($self->{sizer_4}, 1, wxALIGN_CENTER|wxEXPAND, 0);
-    $self->{sizer_3}->Add($self->{list_box_2}, 1, wxALL|wxEXPAND, 5);
-    $self->{grid_sizer_2}->Add($self->{sizer_3}, 1, wxEXPAND, 0);
-    $self->{grid_sizer_2}->AddGrowableRow(0);
-    $self->{grid_sizer_2}->AddGrowableCol(0);
-    $self->{grid_sizer_2}->AddGrowableCol(2);
-    $self->{grid_sizer_1}->Add($self->{grid_sizer_2}, 1, wxEXPAND, 0);
-    $self->{grid_sizer_1}->Add($self->{static_line_1}, 0, wxALL|wxEXPAND, 5);
-    $self->{sizer_1}->Add($self->{button_2}, 0, wxALL, 5);
-    $self->{sizer_1}->Add($self->{button_1}, 0, wxALL, 5);
-    $self->{grid_sizer_1}->Add($self->{sizer_1}, 1, wxALIGN_RIGHT|wxEXPAND, 0);
-    $self->SetSizer($self->{grid_sizer_1});
-    $self->{grid_sizer_1}->Fit($self);
-    $self->{grid_sizer_1}->AddGrowableRow(0);
-    $self->{grid_sizer_1}->AddGrowableCol(0);
-    $self->Layout();
-    # end wxGlade
-}
 
 # end of class MyDialog
 

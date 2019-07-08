@@ -40,24 +40,24 @@
 (defmethod init ((obj MyFrame))
 "Method creates the objects contained in the class."
         ;;; begin wxGlade: MyFrame.__init__
+        (wxFrame_SetTitle (slot-top-window obj) (_"frame_1"))
+        
+        (setf (slot-sizer-1 obj) (wxBoxSizer_Create wxVERTICAL))
+        
+        (setf (slot-label-1 obj) (wxStaticText_Create (slot-top-window obj) wxID_ANY (_"Just a text") -1 -1 -1 -1 0))
+        (wxSizer_AddWindow (slot-sizer-1 obj) (slot-label-1 obj) 0 0 0 nil)
+        
+        (wxWindow_SetSizer (slot-top-window obj) (slot-sizer-1 obj))
+        (wxSizer_Fit (slot-sizer-1 obj) (slot-top-window obj))
+        
+        (wxFrame_layout (slot-frame-1 self))
         ;;; end wxGlade
         )
 
 (defmethod set-properties ((obj MyFrame))
-        ;;; begin wxGlade: MyFrame.__set_properties
-        (wxFrame_SetTitle (slot-top-window obj) (_"frame_1"))
-        ;;; end wxGlade
         )
 
 (defmethod do-layout ((obj MyFrame))
-        ;;; begin wxGlade: MyFrame.__do_layout
-        (setf (slot-sizer-1 obj) (wxBoxSizer_Create wxVERTICAL))
-        (setf (slot-label-1 obj) (wxStaticText_Create (slot-top-window obj) wxID_ANY (_"Just a text") -1 -1 -1 -1 0))
-        (wxSizer_AddWindow (slot-sizer-1 obj) (slot-label-1 obj) 0 0 0 nil)
-        (wxWindow_SetSizer (slot-top-window obj) (slot-sizer-1 obj))
-        (wxSizer_Fit (slot-sizer-1 obj) (slot-top-window obj))
-        (wxFrame_layout (slot-frame-1 self))
-        ;;; end wxGlade
         )
 
 ;;; end of class MyFrame

@@ -39,13 +39,11 @@ public:
     wxGladePreferencesUI(wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint& pos=wxDefaultPosition, const wxSize& size=wxDefaultSize, long style=wxDEFAULT_DIALOG_STYLE);
 
 private:
-    // begin wxGlade: wxGladePreferencesUI::methods
-    void set_properties();
-    void do_layout();
-    // end wxGlade
 
 protected:
     // begin wxGlade: wxGladePreferencesUI::attributes
+    wxNotebook* notebook_1;
+    wxPanel* notebook_1_pane_1;
     wxCheckBox* use_menu_icons;
     wxCheckBox* frame_tool_win;
     wxCheckBox* show_progress;
@@ -56,7 +54,7 @@ protected:
     wxTextCtrl* codegen_path;
     wxSpinCtrl* number_history;
     wxSpinCtrl* buttons_per_row;
-    wxPanel* notebook_1_pane_1;
+    wxPanel* notebook_1_pane_2;
     wxCheckBox* use_dialog_units;
     wxCheckBox* wxg_backup;
     wxCheckBox* codegen_backup;
@@ -70,8 +68,6 @@ protected:
     wxRadioBox* backup_suffix;
     wxTextCtrl* local_widget_path;
     wxButton* choose_widget_path;
-    wxPanel* notebook_1_pane_2;
-    wxNotebook* notebook_1;
     wxButton* ok;
     wxButton* cancel;
     // end wxGlade

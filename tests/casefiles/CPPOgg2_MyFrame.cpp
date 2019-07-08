@@ -21,40 +21,34 @@ CPPOgg2_MyFrame::CPPOgg2_MyFrame(wxWindow* parent, wxWindowID id, const wxString
 {
     // begin wxGlade: CPPOgg2_MyFrame::CPPOgg2_MyFrame
     SetSize(wxSize(400, 300));
+    SetTitle(_("FrameOggCompressionDetails"));
+    wxBoxSizer* sizer_5 = new wxBoxSizer(wxVERTICAL);
+    wxFlexGridSizer* grid_sizer_3 = new wxFlexGridSizer(3, 1, 0, 0);
+    sizer_5->Add(grid_sizer_3, 1, wxEXPAND, 0);
     grid_1 = new wxGrid(this, wxID_ANY);
+    grid_1->CreateGrid(8, 3);
+    grid_sizer_3->Add(grid_1, 1, wxEXPAND, 0);
     static_line_2 = new wxStaticLine(this, wxID_ANY);
+    grid_sizer_3->Add(static_line_2, 0, wxALL|wxEXPAND, 5);
     button_6 = new wxButton(this, wxID_CLOSE, wxEmptyString);
-
-    set_properties();
-    do_layout();
+    button_6->SetFocus();
+    button_6->SetDefault();
+    grid_sizer_3->Add(button_6, 0, wxALIGN_RIGHT|wxALL, 5);
+    
+    grid_sizer_3->AddGrowableRow(0);
+    grid_sizer_3->AddGrowableCol(0);
+    SetSizer(sizer_5);
+    Layout();
     // end wxGlade
 }
 
 
 void CPPOgg2_MyFrame::set_properties()
 {
-    // begin wxGlade: CPPOgg2_MyFrame::set_properties
-    SetTitle(_("FrameOggCompressionDetails"));
-    grid_1->CreateGrid(8, 3);
-    button_6->SetFocus();
-    button_6->SetDefault();
-    // end wxGlade
 }
 
 
 void CPPOgg2_MyFrame::do_layout()
 {
-    // begin wxGlade: CPPOgg2_MyFrame::do_layout
-    wxBoxSizer* sizer_5 = new wxBoxSizer(wxVERTICAL);
-    wxFlexGridSizer* grid_sizer_3 = new wxFlexGridSizer(3, 1, 0, 0);
-    grid_sizer_3->Add(grid_1, 1, wxEXPAND, 0);
-    grid_sizer_3->Add(static_line_2, 0, wxALL|wxEXPAND, 5);
-    grid_sizer_3->Add(button_6, 0, wxALIGN_RIGHT|wxALL, 5);
-    grid_sizer_3->AddGrowableRow(0);
-    grid_sizer_3->AddGrowableCol(0);
-    sizer_5->Add(grid_sizer_3, 1, wxEXPAND, 0);
-    SetSizer(sizer_5);
-    Layout();
-    // end wxGlade
 }
 

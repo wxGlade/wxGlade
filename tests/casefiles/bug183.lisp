@@ -27,8 +27,8 @@
 
 (defclass Bug183::UI::Frame()
         ((top-window :initform nil :accessor slot-top-window)
-        (label-1 :initform nil :accessor slot-label-1)
-        (sizer-1 :initform nil :accessor slot-sizer-1)))
+        (sizer-1 :initform nil :accessor slot-sizer-1)
+        (label-1 :initform nil :accessor slot-label-1)))
 
 (defun make-Bug183::UI::Frame ()
         (let ((obj (make-instance 'Bug183::UI::Frame)))
@@ -40,22 +40,16 @@
 (defmethod init ((obj Bug183::UI::Frame))
 "Method creates the objects contained in the class."
         ;;; begin wxGlade: Bug183::UI::Frame.__init__
-        (setf (slot-label-1 obj) (wxStaticText_Create (slot-top-window obj) wxID_ANY (_"Just a label") -1 -1 -1 -1 0))
-        ;;; end wxGlade
-        )
-
-(defmethod set-properties ((obj Bug183::UI::Frame))
-        ;;; begin wxGlade: Bug183::UI::Frame.__set_properties
         (wxFrame_SetTitle (slot-top-window obj) (_"frame_1"))
-        ;;; end wxGlade
-        )
-
-(defmethod do-layout ((obj Bug183::UI::Frame))
-        ;;; begin wxGlade: Bug183::UI::Frame.__do_layout
+        
         (setf (slot-sizer-1 obj) (wxBoxSizer_Create wxVERTICAL))
+        
+        (setf (slot-label-1 obj) (wxStaticText_Create (slot-top-window obj) wxID_ANY (_"Just a label") -1 -1 -1 -1 0))
         (wxSizer_AddWindow (slot-sizer-1 obj) (slot-label-1 obj) 1 (logior wxALIGN_CENTER wxALL wxEXPAND) 5 nil)
+        
         (wxWindow_SetSizer (slot-top-window obj) (slot-sizer-1 obj))
         (wxSizer_Fit (slot-sizer-1 obj) (slot-top-window obj))
+        
         (wxFrame_layout (slot-Frame183 self))
         ;;; end wxGlade
         )
@@ -66,10 +60,10 @@
 
 (defclass Bug173::UI::SomeDialog()
         ((top-window :initform nil :accessor slot-top-window)
-        (label-1 :initform nil :accessor slot-label-1)
         (sizer-1 :initform nil :accessor slot-sizer-1)
-        (label-2 :initform nil :accessor slot-label-2)
-        (sizer-2 :initform nil :accessor slot-sizer-2)))
+        (label-1 :initform nil :accessor slot-label-1)
+        (sizer-2 :initform nil :accessor slot-sizer-2)
+        (label-2 :initform nil :accessor slot-label-2)))
 
 (defun make-Bug173::UI::SomeDialog ()
         (let ((obj (make-instance 'Bug173::UI::SomeDialog)))
@@ -81,22 +75,16 @@
 (defmethod init ((obj Bug173::UI::SomeDialog))
 "Method creates the objects contained in the class."
         ;;; begin wxGlade: Bug173::UI::SomeDialog.__init__
-        (setf (slot-label-2 obj) (wxStaticText_Create (slot-top-window obj) wxID_ANY (_"Just another label") -1 -1 -1 -1 0))
-        ;;; end wxGlade
-        )
-
-(defmethod set-properties ((obj Bug173::UI::SomeDialog))
-        ;;; begin wxGlade: Bug173::UI::SomeDialog.__set_properties
         (wxWindow_SetTitle (slot-dialog-1 self) (_"dialog_1"))
-        ;;; end wxGlade
-        )
-
-(defmethod do-layout ((obj Bug173::UI::SomeDialog))
-        ;;; begin wxGlade: Bug173::UI::SomeDialog.__do_layout
+        
         (setf (slot-sizer-2 obj) (wxBoxSizer_Create wxHORIZONTAL))
+        
+        (setf (slot-label-2 obj) (wxStaticText_Create (slot-top-window obj) wxID_ANY (_"Just another label") -1 -1 -1 -1 0))
         (wxSizer_AddWindow (slot-sizer-2 obj) (slot-label-2 obj) 1 (logior wxALL wxEXPAND) 5 nil)
+        
         (wxWindow_SetSizer (slot-top-window obj) (slot-sizer-2 obj))
         (wxSizer_Fit (slot-sizer-2 obj) (slot-top-window obj))
+        
         (wxWindow_layout (slot-dialog-1 self))
         ;;; end wxGlade
         )

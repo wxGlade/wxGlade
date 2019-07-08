@@ -20,27 +20,11 @@ MyFrame::MyFrame(wxWindow* parent, wxWindowID id, const wxString& title, const w
     wxFrame(parent, id, title, pos, size, wxDEFAULT_FRAME_STYLE)
 {
     // begin wxGlade: MyFrame::MyFrame
-    gauge_1 = new wxGauge(this, wxID_ANY, 10);
-
-    set_properties();
-    do_layout();
-    // end wxGlade
-}
-
-
-void MyFrame::set_properties()
-{
-    // begin wxGlade: MyFrame::set_properties
     SetTitle(wxT("frame_1"));
-    // end wxGlade
-}
-
-
-void MyFrame::do_layout()
-{
-    // begin wxGlade: MyFrame::do_layout
     wxBoxSizer* sizer_1 = new wxBoxSizer(wxVERTICAL);
+    gauge_1 = new wxGauge(this, wxID_ANY, 10);
     sizer_1->Add(gauge_1, 0, 0, 0);
+    
     SetSizer(sizer_1);
     sizer_1->Fit(this);
     Layout();

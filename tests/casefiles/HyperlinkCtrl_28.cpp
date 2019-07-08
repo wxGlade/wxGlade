@@ -20,27 +20,11 @@ MyFrame::MyFrame(wxWindow* parent, wxWindowID id, const wxString& title, const w
     wxFrame(parent, id, title, pos, size, wxDEFAULT_FRAME_STYLE)
 {
     // begin wxGlade: MyFrame::MyFrame
-    hyperlink_1 = new wxHyperlinkCtrl(this, wxID_ANY, _("Homepage wxGlade"), _("http://wxglade.sf.net"), wxDefaultPosition, wxDefaultSize, wxHL_ALIGN_RIGHT);
-
-    set_properties();
-    do_layout();
-    // end wxGlade
-}
-
-
-void MyFrame::set_properties()
-{
-    // begin wxGlade: MyFrame::set_properties
     SetTitle(_("frame_1"));
-    // end wxGlade
-}
-
-
-void MyFrame::do_layout()
-{
-    // begin wxGlade: MyFrame::do_layout
     wxBoxSizer* sizer_1 = new wxBoxSizer(wxVERTICAL);
+    hyperlink_1 = new wxHyperlinkCtrl(this, wxID_ANY, _("Homepage wxGlade"), _("http://wxglade.sf.net"), wxDefaultPosition, wxDefaultSize, wxHL_ALIGN_RIGHT);
     sizer_1->Add(hyperlink_1, 0, wxALL, 5);
+    
     SetSizer(sizer_1);
     sizer_1->Fit(this);
     Layout();

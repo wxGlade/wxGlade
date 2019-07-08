@@ -19,24 +19,17 @@ class Bug184_Frame(wx.Frame):
         # begin wxGlade: Bug184_Frame.__init__
         kwds["style"] = kwds.get("style", 0)
         wx.Frame.__init__(self, *args, **kwds)
-        self.label_1 = wx.StaticText(self, wx.ID_ANY, _("Just a label"))
-
-        self.__set_properties()
-        self.__do_layout()
-        # end wxGlade
-
-    def __set_properties(self):
-        # begin wxGlade: Bug184_Frame.__set_properties
         self.SetTitle(_("frame_1"))
         self.SetBackgroundColour(wx.SystemSettings_GetColour(wx.SYS_COLOUR_BACKGROUND))
-        # end wxGlade
-
-    def __do_layout(self):
-        # begin wxGlade: Bug184_Frame.__do_layout
+        
         sizer_1 = wx.BoxSizer(wx.VERTICAL)
+        
+        self.label_1 = wx.StaticText(self, wx.ID_ANY, _("Just a label"))
         sizer_1.Add(self.label_1, 1, wx.ALIGN_CENTER | wx.ALL | wx.EXPAND, 5)
+        
         self.SetSizer(sizer_1)
         sizer_1.Fit(self)
+        
         self.Layout()
         # end wxGlade
 

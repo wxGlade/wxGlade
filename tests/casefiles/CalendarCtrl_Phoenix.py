@@ -18,23 +18,16 @@ class MyDialog(wx.Dialog):
         # begin wxGlade: MyDialog.__init__
         kwds["style"] = kwds.get("style", 0) | wx.DEFAULT_DIALOG_STYLE
         wx.Dialog.__init__(self, *args, **kwds)
-        self.calendar_ctrl_1 = wx.adv.CalendarCtrl(self, wx.ID_ANY, style=0)
-
-        self.__set_properties()
-        self.__do_layout()
-        # end wxGlade
-
-    def __set_properties(self):
-        # begin wxGlade: MyDialog.__set_properties
         self.SetTitle("dialog_1")
-        # end wxGlade
-
-    def __do_layout(self):
-        # begin wxGlade: MyDialog.__do_layout
+        
         sizer_1 = wx.BoxSizer(wx.HORIZONTAL)
+        
+        self.calendar_ctrl_1 = wx.adv.CalendarCtrl(self, wx.ID_ANY, style=0)
         sizer_1.Add(self.calendar_ctrl_1, 0, 0, 0)
+        
         self.SetSizer(sizer_1)
         sizer_1.Fit(self)
+        
         self.Layout()
         # end wxGlade
 

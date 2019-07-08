@@ -20,27 +20,11 @@ Bug179_Frame::Bug179_Frame(wxWindow* parent, wxWindowID id, const wxString& titl
     wxFrame(parent, id, title, pos, size, style)
 {
     // begin wxGlade: Bug179_Frame::Bug179_Frame
-    label_1 = new wxStaticText(this, wxID_ANY, _("Just a label"));
-
-    set_properties();
-    do_layout();
-    // end wxGlade
-}
-
-
-void Bug179_Frame::set_properties()
-{
-    // begin wxGlade: Bug179_Frame::set_properties
     SetTitle(_("frame_1"));
-    // end wxGlade
-}
-
-
-void Bug179_Frame::do_layout()
-{
-    // begin wxGlade: Bug179_Frame::do_layout
     wxBoxSizer* sizer_1 = new wxBoxSizer(wxVERTICAL);
+    label_1 = new wxStaticText(this, wxID_ANY, _("Just a label"));
     sizer_1->Add(label_1, 1, wxALL|wxEXPAND, 5);
+    
     SetSizer(sizer_1);
     sizer_1->Fit(this);
     Layout();

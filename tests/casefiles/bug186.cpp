@@ -21,6 +21,7 @@ Frame186::Frame186(wxWindow* parent, wxWindowID id, const wxString& title, const
 {
     // begin wxGlade: Frame186::Frame186
     SetSize(wxSize(300, 300));
+    SetTitle(_("frame_1"));
     Bug186_Frame_menubar = new wxMenuBar();
     File = new wxMenu();
     File->Append(myMagicMenu, _("Magic"), wxEmptyString);
@@ -30,35 +31,18 @@ Frame186::Frame186(wxWindow* parent, wxWindowID id, const wxString& title, const
     SetToolBar(Bug186_Frame_toolbar);
     Bug186_Frame_toolbar->AddTool(myMagicTool, _("Magic"), wxBitmap(32, 32), wxNullBitmap, wxITEM_NORMAL, _("Do a MAGIC action"), _("It's really MAGIC"));
     Bug186_Frame_toolbar->Realize();
-    text_ctrl_1 = new wxTextCtrl(this, wxID_ANY, _("Id: automatic (default behaviour)"));
-    text_ctrl_2 = new wxTextCtrl(this, 12123, _("Id: numeric value \"12123\""));
-    text_ctrl_3 = new wxTextCtrl(this, wxID_ANY, _("Id: predefined identify: \"wxID_ANY\""));
-    text_ctrl_4 = new wxTextCtrl(this, myButtonId, _("Id: variable assignment \"myButtonId=?\""));
-
-    set_properties();
-    do_layout();
-    // end wxGlade
-}
-
-
-void Frame186::set_properties()
-{
-    // begin wxGlade: Frame186::set_properties
-    SetTitle(_("frame_1"));
-    // end wxGlade
-}
-
-
-void Frame186::do_layout()
-{
-    // begin wxGlade: Frame186::do_layout
     wxBoxSizer* sizer_1 = new wxBoxSizer(wxVERTICAL);
     wxBoxSizer* sizer_2 = new wxBoxSizer(wxVERTICAL);
-    sizer_2->Add(text_ctrl_1, 1, wxALL|wxEXPAND, 5);
-    sizer_2->Add(text_ctrl_2, 1, wxALL|wxEXPAND, 5);
-    sizer_2->Add(text_ctrl_3, 1, wxALL|wxEXPAND, 5);
-    sizer_2->Add(text_ctrl_4, 1, wxALL|wxEXPAND, 5);
     sizer_1->Add(sizer_2, 1, wxEXPAND, 0);
+    text_ctrl_1 = new wxTextCtrl(this, wxID_ANY, _("Id: automatic (default behaviour)"));
+    sizer_2->Add(text_ctrl_1, 1, wxALL|wxEXPAND, 5);
+    text_ctrl_2 = new wxTextCtrl(this, 12123, _("Id: numeric value \"12123\""));
+    sizer_2->Add(text_ctrl_2, 1, wxALL|wxEXPAND, 5);
+    text_ctrl_3 = new wxTextCtrl(this, wxID_ANY, _("Id: predefined identify: \"wxID_ANY\""));
+    sizer_2->Add(text_ctrl_3, 1, wxALL|wxEXPAND, 5);
+    text_ctrl_4 = new wxTextCtrl(this, myButtonId, _("Id: variable assignment \"myButtonId=?\""));
+    sizer_2->Add(text_ctrl_4, 1, wxALL|wxEXPAND, 5);
+    
     SetSizer(sizer_1);
     Layout();
     // end wxGlade

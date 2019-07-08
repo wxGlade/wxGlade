@@ -55,10 +55,6 @@ public:
     All_Widgets_Frame(wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint& pos=wxDefaultPosition, const wxSize& size=wxDefaultSize, long style=wxDEFAULT_FRAME_STYLE);
 
 private:
-    // begin wxGlade: All_Widgets_Frame::methods
-    void set_properties();
-    void do_layout();
-    // end wxGlade
 
 protected:
     // begin wxGlade: All_Widgets_Frame::attributes
@@ -68,105 +64,105 @@ protected:
     wxMenuBar* All_Widgets_menubar;
     wxStatusBar* All_Widgets_statusbar;
     wxToolBar* All_Widgets_toolbar;
+    wxNotebook* notebook_1;
+    wxPanel* notebook_1_wxBitmapButton;
     wxBitmapButton* bitmap_button_icon1;
     wxBitmapButton* bitmap_button_empty1;
     wxBitmapButton* bitmap_button_icon2;
     wxBitmapButton* bitmap_button_art;
-    wxPanel* notebook_1_wxBitmapButton;
-    wxButton* button_3;
     wxPanel* notebook_1_wxButton;
-    wxCalendarCtrl* calendar_ctrl_1;
+    wxButton* button_3;
     wxPanel* notebook_1_wxCalendarCtrl;
-    wxGenericCalendarCtrl* generic_calendar_ctrl_1;
+    wxCalendarCtrl* calendar_ctrl_1;
     wxPanel* notebook_1_wxGenericCalendarCtrl;
+    wxGenericCalendarCtrl* generic_calendar_ctrl_1;
+    wxPanel* notebook_1_wxCheckBox;
     wxCheckBox* checkbox_1;
     wxCheckBox* checkbox_2;
     wxCheckBox* checkbox_3;
     wxCheckBox* checkbox_4;
     wxCheckBox* checkbox_5;
     wxCheckBox* checkbox_6;
-    wxPanel* notebook_1_wxCheckBox;
-    wxCheckListBox* check_list_box_1;
     wxPanel* notebook_1_wxCheckListBox;
+    wxCheckListBox* check_list_box_1;
+    wxPanel* notebook_1_wxChoice;
     wxChoice* choice_empty;
     wxChoice* choice_filled;
-    wxPanel* notebook_1_wxChoice;
+    wxPanel* notebook_1_wxComboBox;
     wxComboBox* combo_box_empty;
     wxComboBox* combo_box_filled;
-    wxPanel* notebook_1_wxComboBox;
-    wxDatePickerCtrl* datepicker_ctrl_1;
     wxPanel* notebook_1_wxDatePickerCtrl;
-    wxGauge* gauge_1;
+    wxDatePickerCtrl* datepicker_ctrl_1;
     wxPanel* notebook_1_wxGauge;
-    wxGrid* grid_1;
+    wxGauge* gauge_1;
     wxPanel* notebook_1_wxGrid;
-    wxHyperlinkCtrl* hyperlink_1;
+    wxGrid* grid_1;
     wxPanel* notebook_1_wxHyperlinkCtrl;
+    wxHyperlinkCtrl* hyperlink_1;
+    wxPanel* notebook_1_wxListBox;
     wxListBox* list_box_empty;
     wxListBox* list_box_filled;
-    wxPanel* notebook_1_wxListBox;
-    wxListCtrl* list_ctrl_1;
     wxPanel* notebook_1_wxListCtrl;
-    wxPropertyGridManager* property_grid_2;
+    wxListCtrl* list_ctrl_1;
     wxPanel* notebook_1_wxPropertyGridManager;
+    wxPropertyGridManager* property_grid_2;
+    wxPanel* notebook_1_wxRadioBox;
     wxRadioBox* radio_box_empty1;
     wxRadioBox* radio_box_filled1;
     wxRadioBox* radio_box_empty2;
     wxRadioBox* radio_box_filled2;
-    wxPanel* notebook_1_wxRadioBox;
+    wxPanel* notebook_1_wxRadioButton;
     wxRadioButton* radio_btn_1;
     wxTextCtrl* text_ctrl_1;
     wxRadioButton* radio_btn_2;
     wxTextCtrl* text_ctrl_2;
     wxRadioButton* radio_btn_3;
     wxTextCtrl* text_ctrl_3;
-    wxPanel* notebook_1_wxRadioButton;
-    wxSlider* slider_1;
     wxPanel* notebook_1_wxSlider;
+    wxSlider* slider_1;
+    wxPanel* notebook_1_wxSpinButton;
     wxTextCtrl* tc_spin_button;
     wxSpinButton* spin_button;
-    wxPanel* notebook_1_wxSpinButton;
-    wxSpinCtrl* spin_ctrl_1;
     wxPanel* notebook_1_wxSpinCtrl;
-    wxStaticText* label_top_pane;
-    wxPanel* splitter_1_pane_1;
-    wxStaticText* label_buttom_pane;
-    wxPanel* splitter_1_pane_2;
-    wxSplitterWindow* splitter_1;
+    wxSpinCtrl* spin_ctrl_1;
     wxScrolledWindow* notebook_1_wxSplitterWindow_horizontal;
-    wxStaticText* label_left_pane;
-    wxPanel* splitter_2_pane_1;
-    wxStaticText* label_right_pane;
-    wxPanel* splitter_2_pane_2;
-    wxSplitterWindow* splitter_2;
+    wxSplitterWindow* splitter_1;
+    wxPanel* splitter_1_pane_1;
+    wxStaticText* label_top_pane;
+    wxPanel* splitter_1_pane_2;
+    wxStaticText* label_buttom_pane;
     wxScrolledWindow* notebook_1_wxSplitterWindow_vertical;
+    wxSplitterWindow* splitter_2;
+    wxPanel* splitter_2_pane_1;
+    wxStaticText* label_left_pane;
+    wxPanel* splitter_2_pane_2;
+    wxStaticText* label_right_pane;
+    wxPanel* notebook_1_wxStaticBitmap;
     wxStaticBitmap* bitmap_empty;
     wxStaticBitmap* bitmap_file;
     wxStaticBitmap* bitmap_nofile;
     wxStaticBitmap* bitmap_art;
     wxStaticBitmap* bitmap_null;
     wxStaticBitmap* bitmap_null_sized;
-    wxPanel* notebook_1_wxStaticBitmap;
+    wxPanel* notebook_1_wxStaticLine;
     wxStaticLine* static_line_2;
     wxStaticLine* static_line_3;
     wxStaticLine* static_line_4;
     wxStaticLine* static_line_5;
-    wxPanel* notebook_1_wxStaticLine;
+    wxPanel* notebook_1_wxStaticText;
     wxStaticText* label_1;
     wxStaticText* label_4;
     wxStaticText* label_5;
-    wxPanel* notebook_1_wxStaticText;
+    wxPanel* notebook_1_Spacer;
     wxStaticText* label_3;
     wxStaticText* label_2;
-    wxPanel* notebook_1_Spacer;
-    wxTextCtrl* text_ctrl;
     wxPanel* notebook_1_wxTextCtrl;
+    wxTextCtrl* text_ctrl;
+    wxPanel* notebook_1_wxToggleButton;
     wxToggleButton* button_2;
     wxToggleButton* button_4;
-    wxPanel* notebook_1_wxToggleButton;
-    wxTreeCtrl* tree_ctrl_1;
     wxPanel* notebook_1_wxTreeCtrl;
-    wxNotebook* notebook_1;
+    wxTreeCtrl* tree_ctrl_1;
     wxStaticLine* static_line_1;
     wxButton* button_5;
     wxButton* button_1;
@@ -179,9 +175,9 @@ public:
     void onSelectWindows(wxCommandEvent &event); // wxGlade: <event_handler>
     void onRemoveTabs(wxCommandEvent &event); // wxGlade: <event_handler>
     void onShowManual(wxCommandEvent &event); // wxGlade: <event_handler>
-    void OnBitmapButtonPanelNavigationKey(wxNavigationKeyEvent &event); // wxGlade: <event_handler>
     void OnNotebookPageChanged(wxBookCtrlEvent &event); // wxGlade: <event_handler>
     void OnNotebookPageChanging(wxBookCtrlEvent &event); // wxGlade: <event_handler>
+    void OnBitmapButtonPanelNavigationKey(wxNavigationKeyEvent &event); // wxGlade: <event_handler>
     void onStartConverting(wxCommandEvent &event); // wxGlade: <event_handler>
 }; // wxGlade: end class
 

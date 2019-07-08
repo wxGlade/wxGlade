@@ -20,27 +20,11 @@ MyDialog::MyDialog(wxWindow* parent, wxWindowID id, const wxString& title, const
     wxDialog(parent, id, title, pos, size, wxDEFAULT_DIALOG_STYLE)
 {
     // begin wxGlade: MyDialog::MyDialog
-    calendar_ctrl_1 = new wxCalendarCtrl(this, wxID_ANY, wxDefaultDateTime, wxDefaultPosition, wxDefaultSize, 0);
-
-    set_properties();
-    do_layout();
-    // end wxGlade
-}
-
-
-void MyDialog::set_properties()
-{
-    // begin wxGlade: MyDialog::set_properties
     SetTitle(wxT("dialog_1"));
-    // end wxGlade
-}
-
-
-void MyDialog::do_layout()
-{
-    // begin wxGlade: MyDialog::do_layout
     wxBoxSizer* sizer_1 = new wxBoxSizer(wxHORIZONTAL);
+    calendar_ctrl_1 = new wxCalendarCtrl(this, wxID_ANY, wxDefaultDateTime, wxDefaultPosition, wxDefaultSize, 0);
     sizer_1->Add(calendar_ctrl_1, 0, 0, 0);
+    
     SetSizer(sizer_1);
     sizer_1->Fit(this);
     Layout();

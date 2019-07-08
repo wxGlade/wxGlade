@@ -18,28 +18,23 @@ class MyFrame(wx.Frame):
         # begin wxGlade: MyFrame.__init__
         kwds["style"] = kwds.get("style", 0)
         wx.Frame.__init__(self, *args, **kwds)
-        self.choice_1 = wx.Choice(self, wx.ID_ANY, choices=["Pure ASCII", u"German Umlauts äöüÄÖÜß"])
-        self.label_1 = wx.StaticText(self, wx.ID_ANY, u"German Umlauts äöüÄÖÜß", style=wx.ALIGN_CENTER)
-
-        self.__set_properties()
-        self.__do_layout()
-        # end wxGlade
-
-    def __set_properties(self):
-        # begin wxGlade: MyFrame.__set_properties
         self.SetTitle("frame_1")
-        self.choice_1.SetSelection(1)
-        # end wxGlade
-
-    def __do_layout(self):
-        # begin wxGlade: MyFrame.__do_layout
+        
         sizer_1 = wx.BoxSizer(wx.VERTICAL)
+        
         sizer_2 = wx.BoxSizer(wx.VERTICAL)
-        sizer_2.Add(self.choice_1, 1, wx.ALL | wx.EXPAND, 5)
-        sizer_2.Add(self.label_1, 1, wx.ALL | wx.EXPAND, 5)
         sizer_1.Add(sizer_2, 1, 0, 0)
+        
+        self.choice_1 = wx.Choice(self, wx.ID_ANY, choices=["Pure ASCII", u"German Umlauts äöüÄÖÜß"])
+        self.choice_1.SetSelection(1)
+        sizer_2.Add(self.choice_1, 1, wx.ALL | wx.EXPAND, 5)
+        
+        self.label_1 = wx.StaticText(self, wx.ID_ANY, u"German Umlauts äöüÄÖÜß", style=wx.ALIGN_CENTER)
+        sizer_2.Add(self.label_1, 1, wx.ALL | wx.EXPAND, 5)
+        
         self.SetSizer(sizer_1)
         sizer_1.Fit(self)
+        
         self.Layout()
         # end wxGlade
 

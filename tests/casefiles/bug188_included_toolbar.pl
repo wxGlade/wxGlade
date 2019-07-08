@@ -32,40 +32,29 @@ sub new {
     # begin wxGlade: MyFrame::new
     $self = $self->SUPER::new( $parent, $id, $title, $pos, $size, $style, $name );
     $self->SetSize(Wx::Size->new(200, 200));
+    $self->SetTitle("frame_1");
+    
     
     # Tool Bar
     $self->{frame_1_toolbar} = Wx::ToolBar->new($self, -1);
-    $self->SetToolBar($self->{frame_1_toolbar});
     $self->{frame_1_toolbar}->AddTool(wxID_UP, "UpDown", Wx::ArtProvider::GetBitmap(wxART_GO_UP, wxART_OTHER, Wx::Size->new(32, 32)), Wx::ArtProvider::GetBitmap(wxART_GO_DOWN, wxART_OTHER, Wx::Size->new(32, 32)), wxITEM_CHECK, "Up or Down", "Up or Down");
+    $self->{frame_1_toolbar}->Realize();
+    $self->SetToolBar($self->{frame_1_toolbar});
     # Tool Bar end
+    
+    $self->{sizer_1} = Wx::BoxSizer->new(wxVERTICAL);
+    
     $self->{label_1} = Wx::StaticText->new($self, wxID_ANY, "placeholder - every design\nneeds a toplevel window", wxDefaultPosition, wxDefaultSize, wxALIGN_CENTER);
-
-    $self->__set_properties();
-    $self->__do_layout();
-
+    $self->{sizer_1}->Add($self->{label_1}, 1, wxALIGN_CENTER|wxALL|wxEXPAND, 0);
+    
+    $self->SetSizer($self->{sizer_1});
+    
+    $self->Layout();
     # end wxGlade
     return $self;
 
 }
 
-
-sub __set_properties {
-    my $self = shift;
-    # begin wxGlade: MyFrame::__set_properties
-    $self->SetTitle("frame_1");
-    $self->{frame_1_toolbar}->Realize();
-    # end wxGlade
-}
-
-sub __do_layout {
-    my $self = shift;
-    # begin wxGlade: MyFrame::__do_layout
-    $self->{sizer_1} = Wx::BoxSizer->new(wxVERTICAL);
-    $self->{sizer_1}->Add($self->{label_1}, 1, wxALIGN_CENTER|wxALL|wxEXPAND, 0);
-    $self->SetSizer($self->{sizer_1});
-    $self->Layout();
-    # end wxGlade
-}
 
 # end of class MyFrame
 

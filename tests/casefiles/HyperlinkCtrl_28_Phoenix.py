@@ -20,23 +20,16 @@ class MyFrame(wx.Frame):
         # begin wxGlade: MyFrame.__init__
         kwds["style"] = kwds.get("style", 0) | wx.DEFAULT_FRAME_STYLE
         wx.Frame.__init__(self, *args, **kwds)
-        self.hyperlink_1 = wx.adv.HyperlinkCtrl(self, wx.ID_ANY, _("Homepage wxGlade"), _("http://wxglade.sf.net"), style=wx.adv.HL_ALIGN_RIGHT)
-
-        self.__set_properties()
-        self.__do_layout()
-        # end wxGlade
-
-    def __set_properties(self):
-        # begin wxGlade: MyFrame.__set_properties
         self.SetTitle(_("frame_1"))
-        # end wxGlade
-
-    def __do_layout(self):
-        # begin wxGlade: MyFrame.__do_layout
+        
         sizer_1 = wx.BoxSizer(wx.VERTICAL)
+        
+        self.hyperlink_1 = wx.adv.HyperlinkCtrl(self, wx.ID_ANY, _("Homepage wxGlade"), _("http://wxglade.sf.net"), style=wx.adv.HL_ALIGN_RIGHT)
         sizer_1.Add(self.hyperlink_1, 0, wx.ALL, 5)
+        
         self.SetSizer(sizer_1)
         sizer_1.Fit(self)
+        
         self.Layout()
         # end wxGlade
 

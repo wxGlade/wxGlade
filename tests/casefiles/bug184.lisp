@@ -27,8 +27,8 @@
 
 (defclass Bug184_Frame()
         ((top-window :initform nil :accessor slot-top-window)
-        (label-1 :initform nil :accessor slot-label-1)
-        (sizer-1 :initform nil :accessor slot-sizer-1)))
+        (sizer-1 :initform nil :accessor slot-sizer-1)
+        (label-1 :initform nil :accessor slot-label-1)))
 
 (defun make-Bug184_Frame ()
         (let ((obj (make-instance 'Bug184_Frame)))
@@ -40,23 +40,17 @@
 (defmethod init ((obj Bug184_Frame))
 "Method creates the objects contained in the class."
         ;;; begin wxGlade: Bug184_Frame.__init__
-        (setf (slot-label-1 obj) (wxStaticText_Create (slot-top-window obj) wxID_ANY (_"Just a label") -1 -1 -1 -1 0))
-        ;;; end wxGlade
-        )
-
-(defmethod set-properties ((obj Bug184_Frame))
-        ;;; begin wxGlade: Bug184_Frame.__set_properties
         (wxFrame_SetTitle (slot-top-window obj) (_"frame_1"))
         (wxWindow_SetBackgroundColour (slot-top-window obj) (wxSystemSettings_GetColour wxSYS_COLOUR_BACKGROUND))
-        ;;; end wxGlade
-        )
-
-(defmethod do-layout ((obj Bug184_Frame))
-        ;;; begin wxGlade: Bug184_Frame.__do_layout
+        
         (setf (slot-sizer-1 obj) (wxBoxSizer_Create wxVERTICAL))
+        
+        (setf (slot-label-1 obj) (wxStaticText_Create (slot-top-window obj) wxID_ANY (_"Just a label") -1 -1 -1 -1 0))
         (wxSizer_AddWindow (slot-sizer-1 obj) (slot-label-1 obj) 1 (logior wxALIGN_CENTER wxALL wxEXPAND) 5 nil)
+        
         (wxWindow_SetSizer (slot-top-window obj) (slot-sizer-1 obj))
         (wxSizer_Fit (slot-sizer-1 obj) (slot-top-window obj))
+        
         (wxFrame_layout (slot-Frame184 self))
         ;;; end wxGlade
         )

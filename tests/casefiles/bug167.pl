@@ -32,10 +32,17 @@ sub new {
 
     # begin wxGlade: MyFrame::new
     $self = $self->SUPER::new( $parent, $id, $title, $pos, $size, $style, $name );
-
-    $self->__set_properties();
-    $self->__do_layout();
-
+    $self->SetTitle(_T("frame_1"));
+    
+    $self->{sizer_1} = Wx::BoxSizer->new(wxVERTICAL);
+    
+    my $label_1 = Wx::StaticText->new($self, wxID_ANY, _T("Just a text"));
+    $self->{sizer_1}->Add($label_1, 0, 0, 0);
+    
+    $self->SetSizer($self->{sizer_1});
+    $self->{sizer_1}->Fit($self);
+    
+    $self->Layout();
     # end wxGlade
     return $self;
 
@@ -44,21 +51,10 @@ sub new {
 
 sub __set_properties {
     my $self = shift;
-    # begin wxGlade: MyFrame::__set_properties
-    $self->SetTitle(_T("frame_1"));
-    # end wxGlade
 }
 
 sub __do_layout {
     my $self = shift;
-    # begin wxGlade: MyFrame::__do_layout
-    $self->{sizer_1} = Wx::BoxSizer->new(wxVERTICAL);
-    my $label_1 = Wx::StaticText->new($self, wxID_ANY, _T("Just a text"));
-    $self->{sizer_1}->Add($label_1, 0, 0, 0);
-    $self->SetSizer($self->{sizer_1});
-    $self->{sizer_1}->Fit($self);
-    $self->Layout();
-    # end wxGlade
 }
 
 # end of class MyFrame

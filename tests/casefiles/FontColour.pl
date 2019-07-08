@@ -35,38 +35,26 @@ sub new {
         unless defined $style;
 
     $self = $self->SUPER::new( $parent, $id, $title, $pos, $size, $style, $name );
+    $self->SetTitle(_T("frame_1"));
+    
+    $self->{sizer_1} = Wx::BoxSizer->new(wxVERTICAL);
+    
     $self->{text_ctrl_1} = Wx::TextCtrl->new($self, wxID_ANY, _T("Some Input"), wxDefaultPosition, wxDefaultSize, wxTE_READONLY);
-
-    $self->__set_properties();
-    $self->__do_layout();
-
+    $self->{text_ctrl_1}->SetBackgroundColour(Wx::Colour->new(0, 255, 127));
+    $self->{text_ctrl_1}->SetForegroundColour(Wx::Colour->new(255, 0, 0));
+    $self->{text_ctrl_1}->SetFont(Wx::Font->new(16, wxDEFAULT, wxNORMAL, wxBOLD, 0, ""));
+    $self->{text_ctrl_1}->SetFocus();
+    $self->{sizer_1}->Add($self->{text_ctrl_1}, 1, wxALL|wxEXPAND, 5);
+    
+    $self->SetSizer($self->{sizer_1});
+    $self->{sizer_1}->Fit($self);
+    
+    $self->Layout();
     # end wxGlade
     return $self;
 
 }
 
-
-sub __set_properties {
-    my $self = shift;
-    # begin wxGlade: MyFrame::__set_properties
-    $self->SetTitle(_T("frame_1"));
-    $self->{text_ctrl_1}->SetBackgroundColour(Wx::Colour->new(0, 255, 127));
-    $self->{text_ctrl_1}->SetForegroundColour(Wx::Colour->new(255, 0, 0));
-    $self->{text_ctrl_1}->SetFont(Wx::Font->new(16, wxDEFAULT, wxNORMAL, wxBOLD, 0, ""));
-    $self->{text_ctrl_1}->SetFocus();
-    # end wxGlade
-}
-
-sub __do_layout {
-    my $self = shift;
-    # begin wxGlade: MyFrame::__do_layout
-    $self->{sizer_1} = Wx::BoxSizer->new(wxVERTICAL);
-    $self->{sizer_1}->Add($self->{text_ctrl_1}, 1, wxALL|wxEXPAND, 5);
-    $self->SetSizer($self->{sizer_1});
-    $self->{sizer_1}->Fit($self);
-    $self->Layout();
-    # end wxGlade
-}
 
 # end of class MyFrame
 

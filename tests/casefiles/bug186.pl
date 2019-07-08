@@ -33,6 +33,8 @@ sub new {
     # begin wxGlade: Frame186::new
     $self = $self->SUPER::new( $parent, $id, $title, $pos, $size, $style, $name );
     $self->SetSize(Wx::Size->new(300, 300));
+    $self->SetTitle(_T("frame_1"));
+    
     
 
     # Menu Bar
@@ -48,49 +50,41 @@ sub new {
     # Menu Bar end
 
     
+    
     # Tool Bar
     $self->{Bug186_Frame_toolbar} = Wx::ToolBar->new($self, -1);
-    $self->SetToolBar($self->{Bug186_Frame_toolbar});
     use constant myMagicTool => Wx::NewId();
     $self->{Bug186_Frame_toolbar}->AddTool(myMagicTool, _T("Magic"), Wx::Bitmap->new(32, 32), wxNullBitmap, wxITEM_NORMAL, _T("Do a MAGIC action"), _T("It's really MAGIC"));
+    $self->{Bug186_Frame_toolbar}->Realize();
+    $self->SetToolBar($self->{Bug186_Frame_toolbar});
     # Tool Bar end
+    
+    $self->{sizer_1} = Wx::BoxSizer->new(wxVERTICAL);
+    
+    $self->{sizer_2} = Wx::BoxSizer->new(wxVERTICAL);
+    $self->{sizer_1}->Add($self->{sizer_2}, 1, wxEXPAND, 0);
+    
     $self->{text_ctrl_1} = Wx::TextCtrl->new($self, wxID_ANY, _T("Id: automatic (default behaviour)"));
+    $self->{sizer_2}->Add($self->{text_ctrl_1}, 1, wxALL|wxEXPAND, 5);
+    
     $self->{text_ctrl_2} = Wx::TextCtrl->new($self, 12123, _T("Id: numeric value \"12123\""));
+    $self->{sizer_2}->Add($self->{text_ctrl_2}, 1, wxALL|wxEXPAND, 5);
+    
     $self->{text_ctrl_3} = Wx::TextCtrl->new($self, wxID_ANY, _T("Id: predefined identify: \"wxID_ANY\""));
+    $self->{sizer_2}->Add($self->{text_ctrl_3}, 1, wxALL|wxEXPAND, 5);
+    
     use constant myButtonId => Wx::NewId();
     $self->{text_ctrl_4} = Wx::TextCtrl->new($self, myButtonId, _T("Id: variable assignment \"myButtonId=?\""));
-
-    $self->__set_properties();
-    $self->__do_layout();
-
+    $self->{sizer_2}->Add($self->{text_ctrl_4}, 1, wxALL|wxEXPAND, 5);
+    
+    $self->SetSizer($self->{sizer_1});
+    
+    $self->Layout();
     # end wxGlade
     return $self;
 
 }
 
-
-sub __set_properties {
-    my $self = shift;
-    # begin wxGlade: Frame186::__set_properties
-    $self->SetTitle(_T("frame_1"));
-    $self->{Bug186_Frame_toolbar}->Realize();
-    # end wxGlade
-}
-
-sub __do_layout {
-    my $self = shift;
-    # begin wxGlade: Frame186::__do_layout
-    $self->{sizer_1} = Wx::BoxSizer->new(wxVERTICAL);
-    $self->{sizer_2} = Wx::BoxSizer->new(wxVERTICAL);
-    $self->{sizer_2}->Add($self->{text_ctrl_1}, 1, wxALL|wxEXPAND, 5);
-    $self->{sizer_2}->Add($self->{text_ctrl_2}, 1, wxALL|wxEXPAND, 5);
-    $self->{sizer_2}->Add($self->{text_ctrl_3}, 1, wxALL|wxEXPAND, 5);
-    $self->{sizer_2}->Add($self->{text_ctrl_4}, 1, wxALL|wxEXPAND, 5);
-    $self->{sizer_1}->Add($self->{sizer_2}, 1, wxEXPAND, 0);
-    $self->SetSizer($self->{sizer_1});
-    $self->Layout();
-    # end wxGlade
-}
 
 # end of class Frame186
 

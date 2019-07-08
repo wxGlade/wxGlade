@@ -21,61 +21,45 @@ Frame194::Frame194(wxWindow* parent, wxWindowID id, const wxString& title, const
 {
     // begin wxGlade: Frame194::Frame194
     SetSize(wxSize(800, 600));
+    SetTitle(_("frame_1"));
+    wxGridSizer* sizer_1 = new wxGridSizer(2, 3, 0, 0);
     const wxString list_box_single_choices[] = {
         _("Listbox wxLB_SINGLE"),
     };
     list_box_single = new wxListBox(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, 1, list_box_single_choices, wxLB_SINGLE);
+    list_box_single->SetSelection(0);
+    sizer_1->Add(list_box_single, 1, wxALL|wxEXPAND, 5);
     const wxString list_box_multiple_choices[] = {
         _("Listbox wxLB_MULTIPLE"),
     };
     list_box_multiple = new wxListBox(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, 1, list_box_multiple_choices, wxLB_MULTIPLE);
+    list_box_multiple->SetSelection(0);
+    sizer_1->Add(list_box_multiple, 1, wxALL|wxEXPAND, 5);
     const wxString list_box_extended_choices[] = {
         _("Listbox wxLB_EXTENDED"),
     };
     list_box_extended = new wxListBox(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, 1, list_box_extended_choices, wxLB_EXTENDED);
+    list_box_extended->SetSelection(0);
+    sizer_1->Add(list_box_extended, 1, wxALL|wxEXPAND, 5);
     const wxString check_list_box_single_choices[] = {
         _("CheckListBox wxLB_SINGLE"),
     };
     check_list_box_single = new wxCheckListBox(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, 1, check_list_box_single_choices, wxLB_SINGLE);
+    check_list_box_single->SetSelection(0);
+    sizer_1->Add(check_list_box_single, 1, wxALL|wxEXPAND, 5);
     const wxString check_list_box_multiple_choices[] = {
         _("CheckListBox wxLB_MULTIPLE"),
     };
     check_list_box_multiple = new wxCheckListBox(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, 1, check_list_box_multiple_choices, wxLB_MULTIPLE);
+    check_list_box_multiple->SetSelection(0);
+    sizer_1->Add(check_list_box_multiple, 1, wxALL|wxEXPAND, 5);
     const wxString check_list_box_extended_choices[] = {
         _("CheckListBox wxLB_EXTENDED"),
     };
     check_list_box_extended = new wxCheckListBox(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, 1, check_list_box_extended_choices, wxLB_EXTENDED);
-
-    set_properties();
-    do_layout();
-    // end wxGlade
-}
-
-
-void Frame194::set_properties()
-{
-    // begin wxGlade: Frame194::set_properties
-    SetTitle(_("frame_1"));
-    list_box_single->SetSelection(0);
-    list_box_multiple->SetSelection(0);
-    list_box_extended->SetSelection(0);
-    check_list_box_single->SetSelection(0);
-    check_list_box_multiple->SetSelection(0);
     check_list_box_extended->SetSelection(0);
-    // end wxGlade
-}
-
-
-void Frame194::do_layout()
-{
-    // begin wxGlade: Frame194::do_layout
-    wxGridSizer* sizer_1 = new wxGridSizer(2, 3, 0, 0);
-    sizer_1->Add(list_box_single, 1, wxALL|wxEXPAND, 5);
-    sizer_1->Add(list_box_multiple, 1, wxALL|wxEXPAND, 5);
-    sizer_1->Add(list_box_extended, 1, wxALL|wxEXPAND, 5);
-    sizer_1->Add(check_list_box_single, 1, wxALL|wxEXPAND, 5);
-    sizer_1->Add(check_list_box_multiple, 1, wxALL|wxEXPAND, 5);
     sizer_1->Add(check_list_box_extended, 1, wxALL|wxEXPAND, 5);
+    
     SetSizer(sizer_1);
     Layout();
     // end wxGlade

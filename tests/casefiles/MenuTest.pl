@@ -35,6 +35,11 @@ sub new {
 
     $self = $self->SUPER::new( $parent, $id, $title, $pos, $size, $style, $name );
     $self->SetSize(Wx::Size->new(800, 417));
+    $self->SetTitle("All Widgets");
+    my $icon = &Wx::wxNullIcon;
+    $icon->CopyFromBitmap(Wx::ArtProvider::GetBitmap(wxART_TIP, wxART_OTHER, Wx::Size->new(32, 32)));
+    $self->SetIcon($icon);
+    
     
 
     # Menu Bar
@@ -126,10 +131,8 @@ sub new {
     
     # Menu Bar end
 
-
-    $self->__set_properties();
-    $self->__do_layout();
-
+    $self->Layout();
+    $self->Centre();
     Wx::Event::EVT_MENU($self, wxID_HELP, $self->can('onShowManual'));
     Wx::Event::EVT_MENU($self, $self->{m_Close}->GetId, $self->can('onCloseFile'));
     Wx::Event::EVT_MENU($self, wxID_HELP, $self->can('onShowManual'));
@@ -160,24 +163,6 @@ sub new {
 
 }
 
-
-sub __set_properties {
-    my $self = shift;
-    # begin wxGlade: MenuTestFrame::__set_properties
-    $self->SetTitle("All Widgets");
-    my $icon = &Wx::wxNullIcon;
-    $icon->CopyFromBitmap(Wx::ArtProvider::GetBitmap(wxART_TIP, wxART_OTHER, Wx::Size->new(32, 32)));
-    $self->SetIcon($icon);
-    # end wxGlade
-}
-
-sub __do_layout {
-    my $self = shift;
-    # begin wxGlade: MenuTestFrame::__do_layout
-    $self->Layout();
-    $self->Centre();
-    # end wxGlade
-}
 
 sub onShowManual {
     my ($self, $event) = @_;

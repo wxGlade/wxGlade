@@ -37,10 +37,6 @@ public:
     awxNotebook(wxWindow* parent, wxWindowID id, const wxPoint& pos=wxDefaultPosition, const wxSize& size=wxDefaultSize, long style=0);
 
 private:
-    // begin wxGlade: awxNotebook::methods
-    void set_properties();
-    void do_layout();
-    // end wxGlade
 
 protected:
     // begin wxGlade: awxNotebook::attributes
@@ -57,10 +53,6 @@ public:
     MyFrame(wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint& pos=wxDefaultPosition, const wxSize& size=wxDefaultSize, long style=wxDEFAULT_FRAME_STYLE);
 
 private:
-    // begin wxGlade: MyFrame::methods
-    void set_properties();
-    void do_layout();
-    // end wxGlade
 
 protected:
     // begin wxGlade: MyFrame::attributes

@@ -20,6 +20,7 @@ class Frame186(wx.Frame):
         kwds["style"] = kwds.get("style", 0)
         wx.Frame.__init__(self, *args, **kwds)
         self.SetSize((300, 300))
+        self.SetTitle(_("frame_1"))
         
         # Menu Bar
         self.Bug186_Frame_menubar = wx.MenuBar()
@@ -32,36 +33,32 @@ class Frame186(wx.Frame):
         
         # Tool Bar
         self.Bug186_Frame_toolbar = wx.ToolBar(self, -1)
-        self.SetToolBar(self.Bug186_Frame_toolbar)
         global myMagicTool; myMagicTool = wx.NewId()
         self.Bug186_Frame_toolbar.AddTool(myMagicTool, _("Magic"), wx.Bitmap(32, 32), wx.NullBitmap, wx.ITEM_NORMAL, _("Do a MAGIC action"), _("It's really MAGIC"))
+        self.Bug186_Frame_toolbar.Realize()
+        self.SetToolBar(self.Bug186_Frame_toolbar)
         # Tool Bar end
+        
+        sizer_1 = wx.BoxSizer(wx.VERTICAL)
+        
+        sizer_2 = wx.BoxSizer(wx.VERTICAL)
+        sizer_1.Add(sizer_2, 1, wx.EXPAND, 0)
+        
         self.text_ctrl_1 = wx.TextCtrl(self, wx.ID_ANY, _("Id: automatic (default behaviour)"))
+        sizer_2.Add(self.text_ctrl_1, 1, wx.ALL | wx.EXPAND, 5)
+        
         self.text_ctrl_2 = wx.TextCtrl(self, 12123, _("Id: numeric value \"12123\""))
+        sizer_2.Add(self.text_ctrl_2, 1, wx.ALL | wx.EXPAND, 5)
+        
         self.text_ctrl_3 = wx.TextCtrl(self, wx.ID_ANY, _("Id: predefined identify: \"wxID_ANY\""))
+        sizer_2.Add(self.text_ctrl_3, 1, wx.ALL | wx.EXPAND, 5)
+        
         global myButtonId; myButtonId = wx.NewId()
         self.text_ctrl_4 = wx.TextCtrl(self, myButtonId, _("Id: variable assignment \"myButtonId=?\""))
-
-        self.__set_properties()
-        self.__do_layout()
-        # end wxGlade
-
-    def __set_properties(self):
-        # begin wxGlade: Frame186.__set_properties
-        self.SetTitle(_("frame_1"))
-        self.Bug186_Frame_toolbar.Realize()
-        # end wxGlade
-
-    def __do_layout(self):
-        # begin wxGlade: Frame186.__do_layout
-        sizer_1 = wx.BoxSizer(wx.VERTICAL)
-        sizer_2 = wx.BoxSizer(wx.VERTICAL)
-        sizer_2.Add(self.text_ctrl_1, 1, wx.ALL | wx.EXPAND, 5)
-        sizer_2.Add(self.text_ctrl_2, 1, wx.ALL | wx.EXPAND, 5)
-        sizer_2.Add(self.text_ctrl_3, 1, wx.ALL | wx.EXPAND, 5)
         sizer_2.Add(self.text_ctrl_4, 1, wx.ALL | wx.EXPAND, 5)
-        sizer_1.Add(sizer_2, 1, wx.EXPAND, 0)
+        
         self.SetSizer(sizer_1)
+        
         self.Layout()
         # end wxGlade
 

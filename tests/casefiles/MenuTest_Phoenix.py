@@ -19,6 +19,10 @@ class MenuTestFrame(wx.Frame):
         kwds["style"] = kwds.get("style", 0) | wx.DEFAULT_FRAME_STYLE
         wx.Frame.__init__(self, *args, **kwds)
         self.SetSize((800, 417))
+        self.SetTitle("All Widgets")
+        _icon = wx.NullIcon
+        _icon.CopyFromBitmap(wx.ArtProvider.GetBitmap(wx.ART_TIP, wx.ART_OTHER, (32, 32)))
+        self.SetIcon(_icon)
         
         # Menu Bar
         self.test_menubar = wx.MenuBar()
@@ -128,24 +132,9 @@ class MenuTestFrame(wx.Frame):
         self.test_menubar.Append(wxglade_tmp_menu, "&Minus1 ID")
         self.SetMenuBar(self.test_menubar)
         # Menu Bar end
-
-        self.__set_properties()
-        self.__do_layout()
-
-        # end wxGlade
-
-    def __set_properties(self):
-        # begin wxGlade: MenuTestFrame.__set_properties
-        self.SetTitle("All Widgets")
-        _icon = wx.NullIcon
-        _icon.CopyFromBitmap(wx.ArtProvider.GetBitmap(wx.ART_TIP, wx.ART_OTHER, (32, 32)))
-        self.SetIcon(_icon)
-        # end wxGlade
-
-    def __do_layout(self):
-        # begin wxGlade: MenuTestFrame.__do_layout
         self.Layout()
         self.Centre()
+
         # end wxGlade
 
     def onShowManual(self, event):  # wxGlade: MenuTestFrame.<event_handler>

@@ -21,24 +21,7 @@ awxNotebook::awxNotebook(wxWindow* parent, wxWindowID id, const wxPoint& pos, co
 {
     // begin wxGlade: awxNotebook::awxNotebook
     notebook_1_pane_1 = new wxPanel(this, wxID_ANY);
-
-    set_properties();
-    do_layout();
-    // end wxGlade
-}
-
-
-void awxNotebook::set_properties()
-{
-    // begin wxGlade: awxNotebook::set_properties
     AddPage(notebook_1_pane_1, _("tab1"));
-    // end wxGlade
-}
-
-
-void awxNotebook::do_layout()
-{
-    // begin wxGlade: awxNotebook::do_layout
     // end wxGlade
 }
 
@@ -47,27 +30,11 @@ MyFrame::MyFrame(wxWindow* parent, wxWindowID id, const wxString& title, const w
     wxFrame(parent, id, title, pos, size, style)
 {
     // begin wxGlade: MyFrame::MyFrame
-    notebook_1 = new awxNotebook(this, wxID_ANY);
-
-    set_properties();
-    do_layout();
-    // end wxGlade
-}
-
-
-void MyFrame::set_properties()
-{
-    // begin wxGlade: MyFrame::set_properties
     SetTitle(_("frame_1"));
-    // end wxGlade
-}
-
-
-void MyFrame::do_layout()
-{
-    // begin wxGlade: MyFrame::do_layout
     wxBoxSizer* sizer_1 = new wxBoxSizer(wxVERTICAL);
+    notebook_1 = new awxNotebook(this, wxID_ANY);
     sizer_1->Add(notebook_1, 1, 0, 0);
+    
     SetSizer(sizer_1);
     sizer_1->Fit(this);
     Layout();

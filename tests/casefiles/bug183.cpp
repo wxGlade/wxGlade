@@ -20,27 +20,11 @@ Bug183_UI_Frame::Bug183_UI_Frame(wxWindow* parent, wxWindowID id, const wxString
     wxFrame(parent, id, title, pos, size, style)
 {
     // begin wxGlade: Bug183_UI_Frame::Bug183_UI_Frame
-    label_1 = new wxStaticText(this, wxID_ANY, _("Just a label"));
-
-    set_properties();
-    do_layout();
-    // end wxGlade
-}
-
-
-void Bug183_UI_Frame::set_properties()
-{
-    // begin wxGlade: Bug183_UI_Frame::set_properties
     SetTitle(_("frame_1"));
-    // end wxGlade
-}
-
-
-void Bug183_UI_Frame::do_layout()
-{
-    // begin wxGlade: Bug183_UI_Frame::do_layout
     wxBoxSizer* sizer_1 = new wxBoxSizer(wxVERTICAL);
+    label_1 = new wxStaticText(this, wxID_ANY, _("Just a label"));
     sizer_1->Add(label_1, 1, wxALIGN_CENTER|wxALL|wxEXPAND, 5);
+    
     SetSizer(sizer_1);
     sizer_1->Fit(this);
     Layout();
@@ -52,27 +36,11 @@ Bug173_UI_SomeDialog::Bug173_UI_SomeDialog(wxWindow* parent, wxWindowID id, cons
     wxDialog(parent, id, title, pos, size, style)
 {
     // begin wxGlade: Bug173_UI_SomeDialog::Bug173_UI_SomeDialog
-    label_2 = new wxStaticText(this, wxID_ANY, _("Just another label"));
-
-    set_properties();
-    do_layout();
-    // end wxGlade
-}
-
-
-void Bug173_UI_SomeDialog::set_properties()
-{
-    // begin wxGlade: Bug173_UI_SomeDialog::set_properties
     SetTitle(_("dialog_1"));
-    // end wxGlade
-}
-
-
-void Bug173_UI_SomeDialog::do_layout()
-{
-    // begin wxGlade: Bug173_UI_SomeDialog::do_layout
     wxBoxSizer* sizer_2 = new wxBoxSizer(wxHORIZONTAL);
+    label_2 = new wxStaticText(this, wxID_ANY, _("Just another label"));
     sizer_2->Add(label_2, 1, wxALL|wxEXPAND, 5);
+    
     SetSizer(sizer_2);
     sizer_2->Fit(this);
     Layout();

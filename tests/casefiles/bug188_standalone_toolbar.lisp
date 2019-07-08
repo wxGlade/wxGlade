@@ -39,18 +39,7 @@
 "Method creates the objects contained in the class."
         ;;; begin wxGlade: MyToolBar.__init__
         (wxToolBar_AddTool (slot-top-window obj) wxID_UP "UpDown" wxArtProvider_GetBitmap(wxART_GO_UP wxART_OTHER wxSize_Create(32 32)) wxArtProvider_GetBitmap(wxART_GO_DOWN wxART_OTHER wxSize_Create(32 32)) wxITEM_CHECK "Up or Down" "Up or Down")
-        ;;; end wxGlade
-        )
-
-(defmethod set-properties ((obj MyToolBar))
-        ;;; begin wxGlade: MyToolBar.__set_properties
         (wxToolBar_Realize (slot-toolbar-1 obj))
-        ;;; end wxGlade
-        )
-
-(defmethod do-layout ((obj MyToolBar))
-        ;;; begin wxGlade: MyToolBar.__do_layout
-        pass
         ;;; end wxGlade
         )
 
@@ -60,8 +49,8 @@
 
 (defclass MyFrame()
         ((top-window :initform nil :accessor slot-top-window)
-        (label-1 :initform nil :accessor slot-label-1)
-        (sizer-1 :initform nil :accessor slot-sizer-1)))
+        (sizer-1 :initform nil :accessor slot-sizer-1)
+        (label-1 :initform nil :accessor slot-label-1)))
 
 (defun make-MyFrame ()
         (let ((obj (make-instance 'MyFrame)))
@@ -74,21 +63,15 @@
 "Method creates the objects contained in the class."
         ;;; begin wxGlade: MyFrame.__init__
         (slot-top-window obj).wxWindow_SetSize((200, 200))
-        (setf (slot-label-1 obj) (wxStaticText_Create (slot-top-window obj) wxID_ANY "placeholder - every design\nneeds a toplevel window" -1 -1 -1 -1 wxALIGN_CENTER))
-        ;;; end wxGlade
-        )
-
-(defmethod set-properties ((obj MyFrame))
-        ;;; begin wxGlade: MyFrame.__set_properties
         (wxFrame_SetTitle (slot-top-window obj) "frame_1")
-        ;;; end wxGlade
-        )
-
-(defmethod do-layout ((obj MyFrame))
-        ;;; begin wxGlade: MyFrame.__do_layout
+        
         (setf (slot-sizer-1 obj) (wxBoxSizer_Create wxVERTICAL))
+        
+        (setf (slot-label-1 obj) (wxStaticText_Create (slot-top-window obj) wxID_ANY "placeholder - every design\nneeds a toplevel window" -1 -1 -1 -1 wxALIGN_CENTER))
         (wxSizer_AddWindow (slot-sizer-1 obj) (slot-label-1 obj) 1 (logior wxALIGN_CENTER wxALL wxEXPAND) 0 nil)
+        
         (wxWindow_SetSizer (slot-top-window obj) (slot-sizer-1 obj))
+        
         (wxFrame_layout (slot-frame-1 self))
         ;;; end wxGlade
         )

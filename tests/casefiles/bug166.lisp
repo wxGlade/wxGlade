@@ -28,10 +28,10 @@
 
 (defclass MyFrame()
         ((top-window :initform nil :accessor slot-top-window)
-        (choice-1 :initform nil :accessor slot-choice-1)
-        (label-1 :initform nil :accessor slot-label-1)
+        (sizer-1 :initform nil :accessor slot-sizer-1)
         (sizer-2 :initform nil :accessor slot-sizer-2)
-        (sizer-1 :initform nil :accessor slot-sizer-1)))
+        (choice-1 :initform nil :accessor slot-choice-1)
+        (label-1 :initform nil :accessor slot-label-1)))
 
 (defun make-MyFrame ()
         (let ((obj (make-instance 'MyFrame)))
@@ -43,27 +43,23 @@
 (defmethod init ((obj MyFrame))
 "Method creates the objects contained in the class."
         ;;; begin wxGlade: MyFrame.__init__
-        (setf (slot-choice-1 obj) (wxChoice_Create (slot-top-window obj) wxID_ANY -1 -1 -1 -1 2 (vector "Pure ASCII" "German Umlauts äöüÄÖÜß")  0))
-        (setf (slot-label-1 obj) (wxStaticText_Create (slot-top-window obj) wxID_ANY "German Umlauts äöüÄÖÜß" -1 -1 -1 -1 wxALIGN_CENTER))
-        ;;; end wxGlade
-        )
-
-(defmethod set-properties ((obj MyFrame))
-        ;;; begin wxGlade: MyFrame.__set_properties
         (wxFrame_SetTitle (slot-top-window obj) "frame_1")
-        (wxChoice_SetSelection (slot-choice-1 obj) 1)
-        ;;; end wxGlade
-        )
-
-(defmethod do-layout ((obj MyFrame))
-        ;;; begin wxGlade: MyFrame.__do_layout
+        
         (setf (slot-sizer-1 obj) (wxBoxSizer_Create wxVERTICAL))
+        
         (setf (slot-sizer-2 obj) (wxBoxSizer_Create wxVERTICAL))
-        (wxSizer_AddWindow (slot-sizer-2 obj) (slot-choice-1 obj) 1 (logior wxALL wxEXPAND) 5 nil)
-        (wxSizer_AddWindow (slot-sizer-2 obj) (slot-label-1 obj) 1 (logior wxALL wxEXPAND) 5 nil)
         (wxSizer_AddSizer (slot-sizer-1 obj) (slot-sizer-2 obj) 1 0 0 nil)
+        
+        (setf (slot-choice-1 obj) (wxChoice_Create (slot-top-window obj) wxID_ANY -1 -1 -1 -1 2 (vector "Pure ASCII" "German Umlauts äöüÄÖÜß")  0))
+        (wxChoice_SetSelection (slot-choice-1 obj) 1)
+        (wxSizer_AddWindow (slot-sizer-2 obj) (slot-choice-1 obj) 1 (logior wxALL wxEXPAND) 5 nil)
+        
+        (setf (slot-label-1 obj) (wxStaticText_Create (slot-top-window obj) wxID_ANY "German Umlauts äöüÄÖÜß" -1 -1 -1 -1 wxALIGN_CENTER))
+        (wxSizer_AddWindow (slot-sizer-2 obj) (slot-label-1 obj) 1 (logior wxALL wxEXPAND) 5 nil)
+        
         (wxWindow_SetSizer (slot-top-window obj) (slot-sizer-1 obj))
         (wxSizer_Fit (slot-sizer-1 obj) (slot-top-window obj))
+        
         (wxFrame_layout (slot-frame-1 self))
         ;;; end wxGlade
         )

@@ -20,25 +20,8 @@ MyToolBar::MyToolBar(wxWindow* parent, wxWindowID id, const wxPoint& pos, const 
     wxToolBar(parent, id, pos, size, style)
 {
     // begin wxGlade: MyToolBar::MyToolBar
-
-    set_properties();
-    do_layout();
-    // end wxGlade
-}
-
-
-void MyToolBar::set_properties()
-{
-    // begin wxGlade: MyToolBar::set_properties
     AddTool(wxID_UP, wxT("UpDown"), wxArtProvider::GetBitmap(wxART_GO_UP, wxART_OTHER, wxSize(32, 32)), wxArtProvider::GetBitmap(wxART_GO_DOWN, wxART_OTHER, wxSize(32, 32)), wxITEM_CHECK, wxT("Up or Down"), wxT("Up or Down"));
     Realize();
-    // end wxGlade
-}
-
-
-void MyToolBar::do_layout()
-{
-    // begin wxGlade: MyToolBar::do_layout
     // end wxGlade
 }
 
@@ -48,27 +31,11 @@ MyFrame::MyFrame(wxWindow* parent, wxWindowID id, const wxString& title, const w
 {
     // begin wxGlade: MyFrame::MyFrame
     SetSize(wxSize(200, 200));
-    label_1 = new wxStaticText(this, wxID_ANY, wxT("placeholder - every design\nneeds a toplevel window"), wxDefaultPosition, wxDefaultSize, wxALIGN_CENTER);
-
-    set_properties();
-    do_layout();
-    // end wxGlade
-}
-
-
-void MyFrame::set_properties()
-{
-    // begin wxGlade: MyFrame::set_properties
     SetTitle(wxT("frame_1"));
-    // end wxGlade
-}
-
-
-void MyFrame::do_layout()
-{
-    // begin wxGlade: MyFrame::do_layout
     wxBoxSizer* sizer_1 = new wxBoxSizer(wxVERTICAL);
+    label_1 = new wxStaticText(this, wxID_ANY, wxT("placeholder - every design\nneeds a toplevel window"), wxDefaultPosition, wxDefaultSize, wxALIGN_CENTER);
     sizer_1->Add(label_1, 1, wxALIGN_CENTER|wxALL|wxEXPAND, 0);
+    
     SetSizer(sizer_1);
     Layout();
     // end wxGlade

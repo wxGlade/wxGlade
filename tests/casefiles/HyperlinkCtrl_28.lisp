@@ -27,8 +27,8 @@
 
 (defclass MyFrame()
         ((top-window :initform nil :accessor slot-top-window)
-        (hyperlink-1 :initform nil :accessor slot-hyperlink-1)
-        (sizer-1 :initform nil :accessor slot-sizer-1)))
+        (sizer-1 :initform nil :accessor slot-sizer-1)
+        (hyperlink-1 :initform nil :accessor slot-hyperlink-1)))
 
 (defun make-MyFrame ()
         (let ((obj (make-instance 'MyFrame)))
@@ -41,22 +41,16 @@
 "Method creates the objects contained in the class."
         ;;; begin wxGlade: MyFrame.__init__
         (setf (slot-top-window obj) (wxFrame_create nil wxID_ANY "" -1 -1 -1 -1 wxDEFAULT_FRAME_STYLE))
-        (setf (slot-hyperlink-1 obj) (wxHyperlinkCtrl_Create (slot-top-window obj) wxID_ANY (_"Homepage wxGlade") (_"http://wxglade.sf.net") -1 -1 -1 -1 wxHL_ALIGN_RIGHT))
-        ;;; end wxGlade
-        )
-
-(defmethod set-properties ((obj MyFrame))
-        ;;; begin wxGlade: MyFrame.__set_properties
         (wxFrame_SetTitle (slot-top-window obj) (_"frame_1"))
-        ;;; end wxGlade
-        )
-
-(defmethod do-layout ((obj MyFrame))
-        ;;; begin wxGlade: MyFrame.__do_layout
+        
         (setf (slot-sizer-1 obj) (wxBoxSizer_Create wxVERTICAL))
+        
+        (setf (slot-hyperlink-1 obj) (wxHyperlinkCtrl_Create (slot-top-window obj) wxID_ANY (_"Homepage wxGlade") (_"http://wxglade.sf.net") -1 -1 -1 -1 wxHL_ALIGN_RIGHT))
         (wxSizer_AddWindow (slot-sizer-1 obj) (slot-hyperlink-1 obj) 0 wxALL 5 nil)
+        
         (wxWindow_SetSizer (slot-top-window obj) (slot-sizer-1 obj))
         (wxSizer_Fit (slot-sizer-1 obj) (slot-top-window obj))
+        
         (wxFrame_layout (slot-frame-1 self))
         ;;; end wxGlade
         )

@@ -20,131 +20,115 @@ wxGladePreferencesUI::wxGladePreferencesUI(wxWindow* parent, wxWindowID id, cons
     wxDialog(parent, id, title, pos, size, wxDEFAULT_DIALOG_STYLE)
 {
     // begin wxGlade: wxGladePreferencesUI::wxGladePreferencesUI
+    SetTitle(_("wxGlade: preferences"));
+    wxIcon _icon;
+    _icon.CopyFromBitmap(wxBitmap(_icon_path, wxBITMAP_TYPE_ANY));
+    SetIcon(_icon);
+    wxBoxSizer* sizer_1 = new wxBoxSizer(wxVERTICAL);
     notebook_1 = new wxNotebook(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, 0);
-    notebook_1_pane_2 = new wxPanel(notebook_1, wxID_ANY);
+    sizer_1->Add(notebook_1, 1, wxALL|wxEXPAND, 5);
     notebook_1_pane_1 = new wxPanel(notebook_1, wxID_ANY);
+    notebook_1->AddPage(notebook_1_pane_1, _("Interface"));
+    wxBoxSizer* sizer_3 = new wxBoxSizer(wxVERTICAL);
     use_menu_icons = new wxCheckBox(notebook_1_pane_1, wxID_ANY, _("Use icons in menu items"));
+    use_menu_icons->SetValue(1);
+    sizer_3->Add(use_menu_icons, 0, wxALL|wxEXPAND, 5);
     frame_tool_win = new wxCheckBox(notebook_1_pane_1, wxID_ANY, _("Show properties and tree windows as small frames"));
+    frame_tool_win->SetValue(1);
+    sizer_3->Add(frame_tool_win, 0, wxALL|wxEXPAND, 5);
     show_progress = new wxCheckBox(notebook_1_pane_1, wxID_ANY, _("Show progress dialog when loading wxg files"));
+    show_progress->SetValue(1);
+    sizer_3->Add(show_progress, 0, wxALL|wxEXPAND, 5);
     remember_geometry = new wxCheckBox(notebook_1_pane_1, wxID_ANY, _("Remember position and size of wxGlade windows"));
+    remember_geometry->SetValue(1);
+    sizer_3->Add(remember_geometry, 0, wxALL|wxEXPAND, 5);
     show_sizer_handle = new wxCheckBox(notebook_1_pane_1, wxID_ANY, _("Show \"handles\" of sizers"));
+    show_sizer_handle->SetValue(1);
+    sizer_3->Add(show_sizer_handle, 0, wxALL|wxEXPAND, 5);
     use_kde_dialogs = new wxCheckBox(notebook_1_pane_1, wxID_ANY, _("Use native file dialogs on KDE"));
+    use_kde_dialogs->SetValue(1);
+    sizer_3->Add(use_kde_dialogs, 0, wxALL|wxEXPAND, 5);
+    wxFlexGridSizer* sizer_4 = new wxFlexGridSizer(4, 2, 0, 0);
+    sizer_3->Add(sizer_4, 0, wxEXPAND, 3);
+    wxStaticText* label_1 = new wxStaticText(notebook_1_pane_1, wxID_ANY, _("Initial path for \nfile opening/saving dialogs:"));
+    sizer_4->Add(label_1, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5);
     open_save_path = new wxTextCtrl(notebook_1_pane_1, wxID_ANY, wxEmptyString);
+    open_save_path->SetMinSize(wxSize(196, -1));
+    sizer_4->Add(open_save_path, 1, wxALIGN_CENTER_VERTICAL|wxALL, 5);
+    wxStaticText* label_2_copy = new wxStaticText(notebook_1_pane_1, wxID_ANY, _("Initial path for \ncode generation file dialogs:"));
+    sizer_4->Add(label_2_copy, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5);
     codegen_path = new wxTextCtrl(notebook_1_pane_1, wxID_ANY, wxEmptyString);
+    codegen_path->SetMinSize(wxSize(196, -1));
+    sizer_4->Add(codegen_path, 1, wxALIGN_CENTER_VERTICAL|wxALL, 5);
+    wxStaticText* label_2 = new wxStaticText(notebook_1_pane_1, wxID_ANY, _("Number of items in file history"));
+    sizer_4->Add(label_2, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5);
     number_history = new wxSpinCtrl(notebook_1_pane_1, wxID_ANY, wxT("4"), wxDefaultPosition, wxDefaultSize, 0, 0, 100);
+    number_history->SetMinSize(wxSize(196, -1));
+    sizer_4->Add(number_history, 1, wxALIGN_CENTER_VERTICAL|wxALL, 5);
+    wxStaticText* label_2_copy_1 = new wxStaticText(notebook_1_pane_1, wxID_ANY, _("Number of buttons per row\nin the main palette"));
+    sizer_4->Add(label_2_copy_1, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5);
     buttons_per_row = new wxSpinCtrl(notebook_1_pane_1, wxID_ANY, wxT("5"), wxDefaultPosition, wxDefaultSize, 0, 1, 100);
+    buttons_per_row->SetMinSize(wxSize(196, -1));
+    sizer_4->Add(buttons_per_row, 1, wxALIGN_CENTER_VERTICAL|wxALL, 5);
+    notebook_1_pane_2 = new wxPanel(notebook_1, wxID_ANY);
+    notebook_1->AddPage(notebook_1_pane_2, _("Other"));
+    wxBoxSizer* sizer_5 = new wxBoxSizer(wxVERTICAL);
     use_dialog_units = new wxCheckBox(notebook_1_pane_2, wxID_ANY, _("Use dialog units by default for size properties"));
+    sizer_5->Add(use_dialog_units, 0, wxALL|wxEXPAND, 5);
     wxg_backup = new wxCheckBox(notebook_1_pane_2, wxID_ANY, _("Create backup wxg files"));
+    wxg_backup->SetValue(1);
+    sizer_5->Add(wxg_backup, 0, wxALL|wxEXPAND, 5);
     codegen_backup = new wxCheckBox(notebook_1_pane_2, wxID_ANY, _("Create backup files for generated source"));
+    codegen_backup->SetValue(1);
+    sizer_5->Add(codegen_backup, 0, wxALL|wxEXPAND, 5);
     allow_duplicate_names = new wxCheckBox(notebook_1_pane_2, wxID_ANY, _("Allow duplicate widget names"));
+    allow_duplicate_names->Hide();
+    sizer_5->Add(allow_duplicate_names, 0, wxALL|wxEXPAND, 5);
+    wxBoxSizer* sizer_7 = new wxBoxSizer(wxHORIZONTAL);
+    sizer_5->Add(sizer_7, 0, wxEXPAND, 0);
     default_border = new wxCheckBox(notebook_1_pane_2, wxID_ANY, _("Default border width for widgets"));
+    sizer_7->Add(default_border, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5);
     default_border_size = new wxSpinCtrl(notebook_1_pane_2, wxID_ANY, wxT(""), wxDefaultPosition, wxDefaultSize, 0, 0, 20);
+    default_border_size->SetMinSize(wxSize(45, 22));
+    sizer_7->Add(default_border_size, 0, wxALL, 5);
+    wxBoxSizer* sizer_7_copy = new wxBoxSizer(wxHORIZONTAL);
+    sizer_5->Add(sizer_7_copy, 0, wxEXPAND, 0);
     autosave = new wxCheckBox(notebook_1_pane_2, wxID_ANY, _("Auto save wxg files every "));
+    sizer_7_copy->Add(autosave, 0, wxALIGN_CENTER_VERTICAL|wxBOTTOM|wxLEFT|wxTOP, 5);
     autosave_delay = new wxSpinCtrl(notebook_1_pane_2, wxID_ANY, wxT("120"), wxDefaultPosition, wxDefaultSize, 0, 30, 300);
+    autosave_delay->SetMinSize(wxSize(45, 22));
+    sizer_7_copy->Add(autosave_delay, 0, wxBOTTOM|wxTOP, 5);
+    wxStaticText* label_3 = new wxStaticText(notebook_1_pane_2, wxID_ANY, _(" seconds"));
+    sizer_7_copy->Add(label_3, 0, wxALIGN_CENTER_VERTICAL|wxBOTTOM|wxFIXED_MINSIZE|wxTOP, 5);
     write_timestamp = new wxCheckBox(notebook_1_pane_2, wxID_ANY, _("Insert timestamp on generated source files"));
+    write_timestamp->SetValue(1);
+    sizer_5->Add(write_timestamp, 0, wxALL|wxEXPAND, 5);
     write_generated_from = new wxCheckBox(notebook_1_pane_2, wxID_ANY, _("Insert .wxg file name on generated source files"));
+    sizer_5->Add(write_generated_from, 0, wxALL|wxEXPAND, 5);
     const wxString backup_suffix_choices[] = {
         _("append ~ to filename"),
         _("append .bak to filename"),
     };
     backup_suffix = new wxRadioBox(notebook_1_pane_2, wxID_ANY, _("Backup options"), wxDefaultPosition, wxDefaultSize, 2, backup_suffix_choices, 2, wxRA_SPECIFY_COLS);
-    local_widget_path = new wxTextCtrl(notebook_1_pane_2, wxID_ANY, wxEmptyString);
-    choose_widget_path = new wxButton(notebook_1_pane_2, wxID_ANY, _("..."), wxDefaultPosition, wxDefaultSize, wxBU_EXACTFIT);
-    ok = new wxButton(this, wxID_OK, wxEmptyString);
-    cancel = new wxButton(this, wxID_CANCEL, wxEmptyString);
-
-    set_properties();
-    do_layout();
-    // end wxGlade
-}
-
-
-void wxGladePreferencesUI::set_properties()
-{
-    // begin wxGlade: wxGladePreferencesUI::set_properties
-    SetTitle(_("wxGlade: preferences"));
-    wxIcon _icon;
-    _icon.CopyFromBitmap(wxBitmap(_icon_path, wxBITMAP_TYPE_ANY));
-    SetIcon(_icon);
-    use_menu_icons->SetValue(1);
-    frame_tool_win->SetValue(1);
-    show_progress->SetValue(1);
-    remember_geometry->SetValue(1);
-    show_sizer_handle->SetValue(1);
-    use_kde_dialogs->SetValue(1);
-    open_save_path->SetMinSize(wxSize(196, -1));
-    codegen_path->SetMinSize(wxSize(196, -1));
-    number_history->SetMinSize(wxSize(196, -1));
-    buttons_per_row->SetMinSize(wxSize(196, -1));
-    wxg_backup->SetValue(1);
-    codegen_backup->SetValue(1);
-    allow_duplicate_names->Hide();
-    default_border_size->SetMinSize(wxSize(45, 22));
-    autosave_delay->SetMinSize(wxSize(45, 22));
-    write_timestamp->SetValue(1);
     backup_suffix->SetSelection(0);
-    ok->SetDefault();
-    // end wxGlade
-}
-
-
-void wxGladePreferencesUI::do_layout()
-{
-    // begin wxGlade: wxGladePreferencesUI::do_layout
-    wxBoxSizer* sizer_1 = new wxBoxSizer(wxVERTICAL);
-    wxBoxSizer* sizer_2 = new wxBoxSizer(wxHORIZONTAL);
-    wxBoxSizer* sizer_5 = new wxBoxSizer(wxVERTICAL);
-    wxStaticBoxSizer* sizer_6 = new wxStaticBoxSizer(new wxStaticBox(notebook_1_pane_2, wxID_ANY, _("Local widget path")), wxHORIZONTAL);
-    wxBoxSizer* sizer_7_copy = new wxBoxSizer(wxHORIZONTAL);
-    wxBoxSizer* sizer_7 = new wxBoxSizer(wxHORIZONTAL);
-    wxBoxSizer* sizer_3 = new wxBoxSizer(wxVERTICAL);
-    wxFlexGridSizer* sizer_4 = new wxFlexGridSizer(4, 2, 0, 0);
-    sizer_3->Add(use_menu_icons, 0, wxALL|wxEXPAND, 5);
-    sizer_3->Add(frame_tool_win, 0, wxALL|wxEXPAND, 5);
-    sizer_3->Add(show_progress, 0, wxALL|wxEXPAND, 5);
-    sizer_3->Add(remember_geometry, 0, wxALL|wxEXPAND, 5);
-    sizer_3->Add(show_sizer_handle, 0, wxALL|wxEXPAND, 5);
-    sizer_3->Add(use_kde_dialogs, 0, wxALL|wxEXPAND, 5);
-    wxStaticText* label_1 = new wxStaticText(notebook_1_pane_1, wxID_ANY, _("Initial path for \nfile opening/saving dialogs:"));
-    sizer_4->Add(label_1, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5);
-    sizer_4->Add(open_save_path, 1, wxALIGN_CENTER_VERTICAL|wxALL, 5);
-    wxStaticText* label_2_copy = new wxStaticText(notebook_1_pane_1, wxID_ANY, _("Initial path for \ncode generation file dialogs:"));
-    sizer_4->Add(label_2_copy, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5);
-    sizer_4->Add(codegen_path, 1, wxALIGN_CENTER_VERTICAL|wxALL, 5);
-    wxStaticText* label_2 = new wxStaticText(notebook_1_pane_1, wxID_ANY, _("Number of items in file history"));
-    sizer_4->Add(label_2, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5);
-    sizer_4->Add(number_history, 1, wxALIGN_CENTER_VERTICAL|wxALL, 5);
-    wxStaticText* label_2_copy_1 = new wxStaticText(notebook_1_pane_1, wxID_ANY, _("Number of buttons per row\nin the main palette"));
-    sizer_4->Add(label_2_copy_1, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5);
-    sizer_4->Add(buttons_per_row, 1, wxALIGN_CENTER_VERTICAL|wxALL, 5);
-    sizer_4->AddGrowableCol(1);
-    sizer_3->Add(sizer_4, 0, wxEXPAND, 3);
-    notebook_1_pane_1->SetSizer(sizer_3);
-    sizer_5->Add(use_dialog_units, 0, wxALL|wxEXPAND, 5);
-    sizer_5->Add(wxg_backup, 0, wxALL|wxEXPAND, 5);
-    sizer_5->Add(codegen_backup, 0, wxALL|wxEXPAND, 5);
-    sizer_5->Add(allow_duplicate_names, 0, wxALL|wxEXPAND, 5);
-    sizer_7->Add(default_border, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5);
-    sizer_7->Add(default_border_size, 0, wxALL, 5);
-    sizer_5->Add(sizer_7, 0, wxEXPAND, 0);
-    sizer_7_copy->Add(autosave, 0, wxALIGN_CENTER_VERTICAL|wxBOTTOM|wxLEFT|wxTOP, 5);
-    sizer_7_copy->Add(autosave_delay, 0, wxBOTTOM|wxTOP, 5);
-    wxStaticText* label_3 = new wxStaticText(notebook_1_pane_2, wxID_ANY, _(" seconds"));
-    sizer_7_copy->Add(label_3, 0, wxALIGN_CENTER_VERTICAL|wxBOTTOM|wxFIXED_MINSIZE|wxTOP, 5);
-    sizer_5->Add(sizer_7_copy, 0, wxEXPAND, 0);
-    sizer_5->Add(write_timestamp, 0, wxALL|wxEXPAND, 5);
-    sizer_5->Add(write_generated_from, 0, wxALL|wxEXPAND, 5);
     sizer_5->Add(backup_suffix, 0, wxALL|wxEXPAND, 5);
-    sizer_6->Add(local_widget_path, 1, wxALL, 3);
-    sizer_6->Add(choose_widget_path, 0, wxALIGN_CENTER_VERTICAL|wxALL, 3);
+    wxStaticBoxSizer* sizer_6 = new wxStaticBoxSizer(new wxStaticBox(notebook_1_pane_2, wxID_ANY, _("Local widget path")), wxHORIZONTAL);
     sizer_5->Add(sizer_6, 0, wxALL|wxEXPAND, 5);
-    notebook_1_pane_2->SetSizer(sizer_5);
-    notebook_1->AddPage(notebook_1_pane_1, _("Interface"));
-    notebook_1->AddPage(notebook_1_pane_2, _("Other"));
-    sizer_1->Add(notebook_1, 1, wxALL|wxEXPAND, 5);
-    sizer_2->Add(ok, 0, 0, 0);
-    sizer_2->Add(cancel, 0, wxLEFT, 10);
+    local_widget_path = new wxTextCtrl(notebook_1_pane_2, wxID_ANY, wxEmptyString);
+    sizer_6->Add(local_widget_path, 1, wxALL, 3);
+    choose_widget_path = new wxButton(notebook_1_pane_2, wxID_ANY, _("..."), wxDefaultPosition, wxDefaultSize, wxBU_EXACTFIT);
+    sizer_6->Add(choose_widget_path, 0, wxALIGN_CENTER_VERTICAL|wxALL, 3);
+    wxBoxSizer* sizer_2 = new wxBoxSizer(wxHORIZONTAL);
     sizer_1->Add(sizer_2, 0, wxALIGN_RIGHT|wxALL, 10);
+    ok = new wxButton(this, wxID_OK, wxEmptyString);
+    ok->SetDefault();
+    sizer_2->Add(ok, 0, 0, 0);
+    cancel = new wxButton(this, wxID_CANCEL, wxEmptyString);
+    sizer_2->Add(cancel, 0, wxLEFT, 10);
+    
+    notebook_1_pane_2->SetSizer(sizer_5);
+    sizer_4->AddGrowableCol(1);
+    notebook_1_pane_1->SetSizer(sizer_3);
     SetSizer(sizer_1);
     sizer_1->Fit(this);
     Layout();

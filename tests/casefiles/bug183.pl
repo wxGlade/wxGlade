@@ -32,34 +32,22 @@ sub new {
 
     # begin wxGlade: Bug183::UI::Frame::new
     $self = $self->SUPER::new( $parent, $id, $title, $pos, $size, $style, $name );
+    $self->SetTitle(_T("frame_1"));
+    
+    $self->{sizer_1} = Wx::BoxSizer->new(wxVERTICAL);
+    
     $self->{label_1} = Wx::StaticText->new($self, wxID_ANY, _T("Just a label"));
-
-    $self->__set_properties();
-    $self->__do_layout();
-
+    $self->{sizer_1}->Add($self->{label_1}, 1, wxALIGN_CENTER|wxALL|wxEXPAND, 5);
+    
+    $self->SetSizer($self->{sizer_1});
+    $self->{sizer_1}->Fit($self);
+    
+    $self->Layout();
     # end wxGlade
     return $self;
 
 }
 
-
-sub __set_properties {
-    my $self = shift;
-    # begin wxGlade: Bug183::UI::Frame::__set_properties
-    $self->SetTitle(_T("frame_1"));
-    # end wxGlade
-}
-
-sub __do_layout {
-    my $self = shift;
-    # begin wxGlade: Bug183::UI::Frame::__do_layout
-    $self->{sizer_1} = Wx::BoxSizer->new(wxVERTICAL);
-    $self->{sizer_1}->Add($self->{label_1}, 1, wxALIGN_CENTER|wxALL|wxEXPAND, 5);
-    $self->SetSizer($self->{sizer_1});
-    $self->{sizer_1}->Fit($self);
-    $self->Layout();
-    # end wxGlade
-}
 
 # end of class Bug183::UI::Frame
 
@@ -83,34 +71,22 @@ sub new {
 
     # begin wxGlade: Bug173::UI::SomeDialog::new
     $self = $self->SUPER::new( $parent, $id, $title, $pos, $size, $style, $name );
+    $self->SetTitle(_T("dialog_1"));
+    
+    $self->{sizer_2} = Wx::BoxSizer->new(wxHORIZONTAL);
+    
     $self->{label_2} = Wx::StaticText->new($self, wxID_ANY, _T("Just another label"));
-
-    $self->__set_properties();
-    $self->__do_layout();
-
+    $self->{sizer_2}->Add($self->{label_2}, 1, wxALL|wxEXPAND, 5);
+    
+    $self->SetSizer($self->{sizer_2});
+    $self->{sizer_2}->Fit($self);
+    
+    $self->Layout();
     # end wxGlade
     return $self;
 
 }
 
-
-sub __set_properties {
-    my $self = shift;
-    # begin wxGlade: Bug173::UI::SomeDialog::__set_properties
-    $self->SetTitle(_T("dialog_1"));
-    # end wxGlade
-}
-
-sub __do_layout {
-    my $self = shift;
-    # begin wxGlade: Bug173::UI::SomeDialog::__do_layout
-    $self->{sizer_2} = Wx::BoxSizer->new(wxHORIZONTAL);
-    $self->{sizer_2}->Add($self->{label_2}, 1, wxALL|wxEXPAND, 5);
-    $self->SetSizer($self->{sizer_2});
-    $self->{sizer_2}->Fit($self);
-    $self->Layout();
-    # end wxGlade
-}
 
 # end of class Bug173::UI::SomeDialog
 

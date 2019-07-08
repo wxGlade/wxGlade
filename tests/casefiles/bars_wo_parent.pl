@@ -27,29 +27,11 @@ sub new {
     my $wxglade_tmp_menu;
     $wxglade_tmp_menu = Wx::Menu->new();
     $self->Append($wxglade_tmp_menu, "File");
-
-    $self->__set_properties();
-    $self->__do_layout();
-
     # end wxGlade
     return $self;
 
 }
 
-
-sub __set_properties {
-    my $self = shift;
-    # begin wxGlade: MyMenuBar::__set_properties
-    return;
-    # end wxGlade
-}
-
-sub __do_layout {
-    my $self = shift;
-    # begin wxGlade: MyMenuBar::__do_layout
-    return;
-    # end wxGlade
-}
 
 # end of class MyMenuBar
 
@@ -65,29 +47,12 @@ sub new {
     my( $self,  ) = @_;
     # begin wxGlade: MyToolBar::new
     $self = $self->SUPER::new( @_[1 .. $#_] );
-
-    $self->__set_properties();
-    $self->__do_layout();
-
+    $self->Realize();
     # end wxGlade
     return $self;
 
 }
 
-
-sub __set_properties {
-    my $self = shift;
-    # begin wxGlade: MyToolBar::__set_properties
-    $self->Realize();
-    # end wxGlade
-}
-
-sub __do_layout {
-    my $self = shift;
-    # begin wxGlade: MyToolBar::__do_layout
-    return;
-    # end wxGlade
-}
 
 # end of class MyToolBar
 
@@ -111,33 +76,21 @@ sub new {
     # begin wxGlade: MyFrame::new
     $self = $self->SUPER::new( $parent, $id, $title, $pos, $size, $style, $name );
     $self->SetSize(Wx::Size->new(200, 200));
+    $self->SetTitle("frame_1");
+    
+    $self->{sizer_1} = Wx::BoxSizer->new(wxVERTICAL);
+    
     $self->{label_1} = Wx::StaticText->new($self, wxID_ANY, "placeholder - every design\nneeds a toplevel window", wxDefaultPosition, wxDefaultSize, wxALIGN_CENTER);
-
-    $self->__set_properties();
-    $self->__do_layout();
-
+    $self->{sizer_1}->Add($self->{label_1}, 1, wxALIGN_CENTER|wxALL|wxEXPAND, 0);
+    
+    $self->SetSizer($self->{sizer_1});
+    
+    $self->Layout();
     # end wxGlade
     return $self;
 
 }
 
-
-sub __set_properties {
-    my $self = shift;
-    # begin wxGlade: MyFrame::__set_properties
-    $self->SetTitle("frame_1");
-    # end wxGlade
-}
-
-sub __do_layout {
-    my $self = shift;
-    # begin wxGlade: MyFrame::__do_layout
-    $self->{sizer_1} = Wx::BoxSizer->new(wxVERTICAL);
-    $self->{sizer_1}->Add($self->{label_1}, 1, wxALIGN_CENTER|wxALL|wxEXPAND, 0);
-    $self->SetSizer($self->{sizer_1});
-    $self->Layout();
-    # end wxGlade
-}
 
 # end of class MyFrame
 
