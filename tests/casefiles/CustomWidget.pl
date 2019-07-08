@@ -30,34 +30,22 @@ sub new {
 
     # begin wxGlade: MyFrame::new
     $self = $self->SUPER::new( $parent, $id, $title, $pos, $size, $style, $name );
+    $self->SetTitle(_T("frame_1"));
+    
+    $self->{sizer_1} = Wx::BoxSizer->new(wxVERTICAL);
+    
     $self->{window_1} = CustomWidget->new($self, wxID_ANY);
-
-    $self->__set_properties();
-    $self->__do_layout();
-
+    $self->{sizer_1}->Add($self->{window_1}, 1, wxALL|wxEXPAND, 5);
+    
+    $self->SetSizer($self->{sizer_1});
+    $self->{sizer_1}->Fit($self);
+    
+    $self->Layout();
     # end wxGlade
     return $self;
 
 }
 
-
-sub __set_properties {
-    my $self = shift;
-    # begin wxGlade: MyFrame::__set_properties
-    $self->SetTitle(_T("frame_1"));
-    # end wxGlade
-}
-
-sub __do_layout {
-    my $self = shift;
-    # begin wxGlade: MyFrame::__do_layout
-    $self->{sizer_1} = Wx::BoxSizer->new(wxVERTICAL);
-    $self->{sizer_1}->Add($self->{window_1}, 1, wxALL|wxEXPAND, 5);
-    $self->SetSizer($self->{sizer_1});
-    $self->{sizer_1}->Fit($self);
-    $self->Layout();
-    # end wxGlade
-}
 
 # end of class MyFrame
 

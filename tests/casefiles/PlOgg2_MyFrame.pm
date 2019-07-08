@@ -35,13 +35,31 @@ sub new {
 
     $self = $self->SUPER::new( $parent, $id, $title, $pos, $size, $style, $name );
     $self->SetSize(Wx::Size->new(400, 300));
+    $self->SetTitle(_T("FrameOggCompressionDetails"));
+    
+    $self->{sizer_5} = Wx::BoxSizer->new(wxVERTICAL);
+    
+    $self->{grid_sizer_3} = Wx::FlexGridSizer->new(3, 1, 0, 0);
+    $self->{sizer_5}->Add($self->{grid_sizer_3}, 1, wxEXPAND, 0);
+    
     $self->{grid_1} = Wx::Grid->new($self, wxID_ANY);
+    $self->{grid_1}->CreateGrid(8, 3);
+    $self->{grid_sizer_3}->Add($self->{grid_1}, 1, wxEXPAND, 0);
+    
     $self->{static_line_2} = Wx::StaticLine->new($self, wxID_ANY);
+    $self->{grid_sizer_3}->Add($self->{static_line_2}, 0, wxALL|wxEXPAND, 5);
+    
     $self->{button_6} = Wx::Button->new($self, wxID_CLOSE, "");
-
-    $self->__set_properties();
-    $self->__do_layout();
-
+    $self->{button_6}->SetFocus();
+    $self->{button_6}->SetDefault();
+    $self->{grid_sizer_3}->Add($self->{button_6}, 0, wxALIGN_RIGHT|wxALL, 5);
+    
+    $self->{grid_sizer_3}->AddGrowableRow(0);
+    $self->{grid_sizer_3}->AddGrowableCol(0);
+    
+    $self->SetSizer($self->{sizer_5});
+    
+    $self->Layout();
     # end wxGlade
     return $self;
 
@@ -50,28 +68,10 @@ sub new {
 
 sub __set_properties {
     my $self = shift;
-    # begin wxGlade: PlOgg2_MyFrame::__set_properties
-    $self->SetTitle(_T("FrameOggCompressionDetails"));
-    $self->{grid_1}->CreateGrid(8, 3);
-    $self->{button_6}->SetFocus();
-    $self->{button_6}->SetDefault();
-    # end wxGlade
 }
 
 sub __do_layout {
     my $self = shift;
-    # begin wxGlade: PlOgg2_MyFrame::__do_layout
-    $self->{sizer_5} = Wx::BoxSizer->new(wxVERTICAL);
-    $self->{grid_sizer_3} = Wx::FlexGridSizer->new(3, 1, 0, 0);
-    $self->{grid_sizer_3}->Add($self->{grid_1}, 1, wxEXPAND, 0);
-    $self->{grid_sizer_3}->Add($self->{static_line_2}, 0, wxALL|wxEXPAND, 5);
-    $self->{grid_sizer_3}->Add($self->{button_6}, 0, wxALIGN_RIGHT|wxALL, 5);
-    $self->{grid_sizer_3}->AddGrowableRow(0);
-    $self->{grid_sizer_3}->AddGrowableCol(0);
-    $self->{sizer_5}->Add($self->{grid_sizer_3}, 1, wxEXPAND, 0);
-    $self->SetSizer($self->{sizer_5});
-    $self->Layout();
-    # end wxGlade
 }
 
 # end of class PlOgg2_MyFrame

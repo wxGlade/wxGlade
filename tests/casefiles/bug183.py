@@ -19,23 +19,16 @@ class Bug183_UI_Frame(wx.Frame):
         # begin wxGlade: Bug183_UI_Frame.__init__
         kwds["style"] = kwds.get("style", 0)
         wx.Frame.__init__(self, *args, **kwds)
-        self.label_1 = wx.StaticText(self, wx.ID_ANY, _("Just a label"))
-
-        self.__set_properties()
-        self.__do_layout()
-        # end wxGlade
-
-    def __set_properties(self):
-        # begin wxGlade: Bug183_UI_Frame.__set_properties
         self.SetTitle(_("frame_1"))
-        # end wxGlade
-
-    def __do_layout(self):
-        # begin wxGlade: Bug183_UI_Frame.__do_layout
+        
         sizer_1 = wx.BoxSizer(wx.VERTICAL)
+        
+        self.label_1 = wx.StaticText(self, wx.ID_ANY, _("Just a label"))
         sizer_1.Add(self.label_1, 1, wx.ALIGN_CENTER | wx.ALL | wx.EXPAND, 5)
+        
         self.SetSizer(sizer_1)
         sizer_1.Fit(self)
+        
         self.Layout()
         # end wxGlade
 
@@ -46,23 +39,16 @@ class Bug173_UI_SomeDialog(wx.Dialog):
         # begin wxGlade: Bug173_UI_SomeDialog.__init__
         kwds["style"] = kwds.get("style", 0)
         wx.Dialog.__init__(self, *args, **kwds)
-        self.label_2 = wx.StaticText(self, wx.ID_ANY, _("Just another label"))
-
-        self.__set_properties()
-        self.__do_layout()
-        # end wxGlade
-
-    def __set_properties(self):
-        # begin wxGlade: Bug173_UI_SomeDialog.__set_properties
         self.SetTitle(_("dialog_1"))
-        # end wxGlade
-
-    def __do_layout(self):
-        # begin wxGlade: Bug173_UI_SomeDialog.__do_layout
+        
         sizer_2 = wx.BoxSizer(wx.HORIZONTAL)
+        
+        self.label_2 = wx.StaticText(self, wx.ID_ANY, _("Just another label"))
         sizer_2.Add(self.label_2, 1, wx.ALL | wx.EXPAND, 5)
+        
         self.SetSizer(sizer_2)
         sizer_2.Fit(self)
+        
         self.Layout()
         # end wxGlade
 

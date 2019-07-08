@@ -20,28 +20,12 @@ Bug184_Frame::Bug184_Frame(wxWindow* parent, wxWindowID id, const wxString& titl
     wxFrame(parent, id, title, pos, size, style)
 {
     // begin wxGlade: Bug184_Frame::Bug184_Frame
-    label_1 = new wxStaticText(this, wxID_ANY, _("Just a label"));
-
-    set_properties();
-    do_layout();
-    // end wxGlade
-}
-
-
-void Bug184_Frame::set_properties()
-{
-    // begin wxGlade: Bug184_Frame::set_properties
     SetTitle(_("frame_1"));
     SetBackgroundColour(wxSystemSettings::GetColour(wxSYS_COLOUR_BACKGROUND));
-    // end wxGlade
-}
-
-
-void Bug184_Frame::do_layout()
-{
-    // begin wxGlade: Bug184_Frame::do_layout
     wxBoxSizer* sizer_1 = new wxBoxSizer(wxVERTICAL);
+    label_1 = new wxStaticText(this, wxID_ANY, _("Just a label"));
     sizer_1->Add(label_1, 1, wxALIGN_CENTER|wxALL|wxEXPAND, 5);
+    
     SetSizer(sizer_1);
     sizer_1->Fit(this);
     Layout();

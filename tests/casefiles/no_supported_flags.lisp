@@ -25,8 +25,8 @@
 
 (defclass MyFrame()
         ((top-window :initform nil :accessor slot-top-window)
-        (label-1 :initform nil :accessor slot-label-1)
-        (sizer-1 :initform nil :accessor slot-sizer-1)))
+        (sizer-1 :initform nil :accessor slot-sizer-1)
+        (label-1 :initform nil :accessor slot-label-1)))
 
 (defun make-MyFrame ()
         (let ((obj (make-instance 'MyFrame)))
@@ -39,22 +39,16 @@
 "Method creates the objects contained in the class."
         ;;; begin wxGlade: MyFrame.__init__
         (setf (slot-top-window obj) (wxFrame_create nil wxID_ANY "" -1 -1 -1 -1 wxDEFAULT_FRAME_STYLE))
-        (setf (slot-label-1 obj) (wxStaticText_Create (slot-top-window obj) wxID_ANY (_"Flag wxST_ELLIPSIZE_END is set but not\nsupported with wx 2.8. Thereby the generated\ncode should not contain this flag.") -1 -1 -1 -1 0))
-        ;;; end wxGlade
-        )
-
-(defmethod set-properties ((obj MyFrame))
-        ;;; begin wxGlade: MyFrame.__set_properties
         (wxFrame_SetTitle (slot-top-window obj) (_"frame_1"))
-        ;;; end wxGlade
-        )
-
-(defmethod do-layout ((obj MyFrame))
-        ;;; begin wxGlade: MyFrame.__do_layout
+        
         (setf (slot-sizer-1 obj) (wxBoxSizer_Create wxHORIZONTAL))
+        
+        (setf (slot-label-1 obj) (wxStaticText_Create (slot-top-window obj) wxID_ANY (_"Flag wxST_ELLIPSIZE_END is set but not\nsupported with wx 2.8. Thereby the generated\ncode should not contain this flag.") -1 -1 -1 -1 0))
         (wxSizer_AddWindow (slot-sizer-1 obj) (slot-label-1 obj) 1 (logior wxALL wxEXPAND) 5 nil)
+        
         (wxWindow_SetSizer (slot-top-window obj) (slot-sizer-1 obj))
         (wxSizer_Fit (slot-sizer-1 obj) (slot-top-window obj))
+        
         (wxFrame_layout (slot-frame-1 self))
         ;;; end wxGlade
         )

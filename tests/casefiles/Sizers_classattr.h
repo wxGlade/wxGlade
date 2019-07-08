@@ -37,26 +37,22 @@ public:
     MyDialog(wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint& pos=wxDefaultPosition, const wxSize& size=wxDefaultSize, long style=wxDEFAULT_DIALOG_STYLE);
 
 private:
-    // begin wxGlade: MyDialog::methods
-    void set_properties();
-    void do_layout();
-    // end wxGlade
 
 protected:
     // begin wxGlade: MyDialog::attributes
-    wxListBox* list_box_1;
+    wxFlexGridSizer* grid_sizer_1;
+    wxFlexGridSizer* grid_sizer_2;
     wxStaticBoxSizer* sizer_2;
+    wxListBox* list_box_1;
+    wxFlexGridSizer* sizer_4;
     wxButton* button_4;
     wxButton* button_5;
-    wxFlexGridSizer* sizer_4;
-    wxListBox* list_box_2;
     wxStaticBoxSizer* sizer_3;
-    wxFlexGridSizer* grid_sizer_2;
+    wxListBox* list_box_2;
     wxStaticLine* static_line_1;
+    wxBoxSizer* sizer_1;
     wxButton* button_2;
     wxButton* button_1;
-    wxBoxSizer* sizer_1;
-    wxFlexGridSizer* grid_sizer_1;
     // end wxGlade
 }; // wxGlade: end class
 

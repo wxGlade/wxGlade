@@ -20,24 +20,7 @@ StylelessDialog::StylelessDialog(wxWindow* parent, wxWindowID id, const wxString
     wxDialog(parent, id, title, pos, size, style)
 {
     // begin wxGlade: StylelessDialog::StylelessDialog
-
-    set_properties();
-    do_layout();
-    // end wxGlade
-}
-
-
-void StylelessDialog::set_properties()
-{
-    // begin wxGlade: StylelessDialog::set_properties
     SetTitle(_("Style-less Dialog"));
-    // end wxGlade
-}
-
-
-void StylelessDialog::do_layout()
-{
-    // begin wxGlade: StylelessDialog::do_layout
     Layout();
     // end wxGlade
 }
@@ -47,26 +30,10 @@ StylelessFrame::StylelessFrame(wxWindow* parent, wxWindowID id, const wxString& 
     wxFrame(parent, id, title, pos, size, style)
 {
     // begin wxGlade: StylelessFrame::StylelessFrame
-
-    set_properties();
-    do_layout();
-    // end wxGlade
-}
-
-
-void StylelessFrame::set_properties()
-{
-    // begin wxGlade: StylelessFrame::set_properties
     SetTitle(_("Style-less Frame"));
-    // end wxGlade
-}
-
-
-void StylelessFrame::do_layout()
-{
-    // begin wxGlade: StylelessFrame::do_layout
     wxBoxSizer* sizer_1 = new wxBoxSizer(wxVERTICAL);
     sizer_1->Add(0, 0, 0, 0, 0);
+    
     SetSizer(sizer_1);
     sizer_1->Fit(this);
     Layout();

@@ -30,10 +30,6 @@ public:
     MyMenuBar();
 
 private:
-    // begin wxGlade: MyMenuBar::methods
-    void set_properties();
-    void do_layout();
-    // end wxGlade
 
 protected:
     // begin wxGlade: MyMenuBar::attributes
@@ -49,10 +45,6 @@ public:
     MyToolBar(wxWindow* parent, wxWindowID id, const wxPoint& pos=wxDefaultPosition, const wxSize& size=wxDefaultSize, long style=wxTB_HORIZONTAL|wxNO_BORDER);
 
 private:
-    // begin wxGlade: MyToolBar::methods
-    void set_properties();
-    void do_layout();
-    // end wxGlade
 
 protected:
     // begin wxGlade: MyToolBar::attributes
@@ -68,10 +60,6 @@ public:
     MyFrame(wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint& pos=wxDefaultPosition, const wxSize& size=wxDefaultSize, long style=wxDEFAULT_FRAME_STYLE);
 
 private:
-    // begin wxGlade: MyFrame::methods
-    void set_properties();
-    void do_layout();
-    // end wxGlade
 
 protected:
     // begin wxGlade: MyFrame::attributes

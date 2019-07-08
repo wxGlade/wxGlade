@@ -20,62 +20,46 @@ MyDialog::MyDialog(wxWindow* parent, wxWindowID id, const wxString& title, const
     wxDialog(parent, id, title, pos, size, wxDEFAULT_DIALOG_STYLE)
 {
     // begin wxGlade: MyDialog::MyDialog
+    SetTitle(_("dialog_1"));
+    grid_sizer_1 = new wxFlexGridSizer(3, 1, 0, 0);
+    grid_sizer_2 = new wxFlexGridSizer(1, 3, 0, 0);
+    grid_sizer_1->Add(grid_sizer_2, 1, wxEXPAND, 0);
+    sizer_2 = new wxStaticBoxSizer(new wxStaticBox(this, wxID_ANY, _("Unassigned Permissions:")), wxHORIZONTAL);
+    grid_sizer_2->Add(sizer_2, 1, wxEXPAND, 0);
     const wxString list_box_1_choices[] = {};
     list_box_1 = new wxListBox(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, 0, list_box_1_choices, 0);
-    button_4 = new wxButton(this, wxID_ADD, wxEmptyString);
-    button_5 = new wxButton(this, wxID_REMOVE, wxEmptyString);
-    const wxString list_box_2_choices[] = {};
-    list_box_2 = new wxListBox(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, 0, list_box_2_choices, 0);
-    static_line_1 = new wxStaticLine(this, wxID_ANY);
-    button_2 = new wxButton(this, wxID_OK, wxEmptyString);
-    button_1 = new wxButton(this, wxID_CANCEL, wxEmptyString);
-
-    set_properties();
-    do_layout();
-    // end wxGlade
-}
-
-
-void MyDialog::set_properties()
-{
-    // begin wxGlade: MyDialog::set_properties
-    SetTitle(_("dialog_1"));
-    // end wxGlade
-}
-
-
-void MyDialog::do_layout()
-{
-    // begin wxGlade: MyDialog::do_layout
-    grid_sizer_1 = new wxFlexGridSizer(3, 1, 0, 0);
-    sizer_1 = new wxBoxSizer(wxHORIZONTAL);
-    grid_sizer_2 = new wxFlexGridSizer(1, 3, 0, 0);
-    sizer_3 = new wxStaticBoxSizer(new wxStaticBox(this, wxID_ANY, _("Assigned Permissions:")), wxHORIZONTAL);
-    sizer_4 = new wxFlexGridSizer(4, 1, 0, 0);
-    sizer_2 = new wxStaticBoxSizer(new wxStaticBox(this, wxID_ANY, _("Unassigned Permissions:")), wxHORIZONTAL);
     sizer_2->Add(list_box_1, 1, wxALL|wxEXPAND, 5);
-    grid_sizer_2->Add(sizer_2, 1, wxEXPAND, 0);
+    sizer_4 = new wxFlexGridSizer(4, 1, 0, 0);
+    grid_sizer_2->Add(sizer_4, 1, wxALIGN_CENTER|wxEXPAND, 0);
     sizer_4->Add(20, 20, 0, wxEXPAND, 0);
+    button_4 = new wxButton(this, wxID_ADD, wxEmptyString);
     sizer_4->Add(button_4, 0, wxALL, 5);
+    button_5 = new wxButton(this, wxID_REMOVE, wxEmptyString);
     sizer_4->Add(button_5, 0, wxALL, 5);
     sizer_4->Add(20, 20, 0, wxEXPAND, 0);
+    sizer_3 = new wxStaticBoxSizer(new wxStaticBox(this, wxID_ANY, _("Assigned Permissions:")), wxHORIZONTAL);
+    grid_sizer_2->Add(sizer_3, 1, wxEXPAND, 0);
+    const wxString list_box_2_choices[] = {};
+    list_box_2 = new wxListBox(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, 0, list_box_2_choices, 0);
+    sizer_3->Add(list_box_2, 1, wxALL|wxEXPAND, 5);
+    static_line_1 = new wxStaticLine(this, wxID_ANY);
+    grid_sizer_1->Add(static_line_1, 0, wxALL|wxEXPAND, 5);
+    sizer_1 = new wxBoxSizer(wxHORIZONTAL);
+    grid_sizer_1->Add(sizer_1, 1, wxALIGN_RIGHT|wxEXPAND, 0);
+    button_2 = new wxButton(this, wxID_OK, wxEmptyString);
+    sizer_1->Add(button_2, 0, wxALL, 5);
+    button_1 = new wxButton(this, wxID_CANCEL, wxEmptyString);
+    sizer_1->Add(button_1, 0, wxALL, 5);
+    
     sizer_4->AddGrowableRow(0);
     sizer_4->AddGrowableRow(3);
-    grid_sizer_2->Add(sizer_4, 1, wxALIGN_CENTER|wxEXPAND, 0);
-    sizer_3->Add(list_box_2, 1, wxALL|wxEXPAND, 5);
-    grid_sizer_2->Add(sizer_3, 1, wxEXPAND, 0);
     grid_sizer_2->AddGrowableRow(0);
     grid_sizer_2->AddGrowableCol(0);
     grid_sizer_2->AddGrowableCol(2);
-    grid_sizer_1->Add(grid_sizer_2, 1, wxEXPAND, 0);
-    grid_sizer_1->Add(static_line_1, 0, wxALL|wxEXPAND, 5);
-    sizer_1->Add(button_2, 0, wxALL, 5);
-    sizer_1->Add(button_1, 0, wxALL, 5);
-    grid_sizer_1->Add(sizer_1, 1, wxALIGN_RIGHT|wxEXPAND, 0);
-    SetSizer(grid_sizer_1);
-    grid_sizer_1->Fit(this);
     grid_sizer_1->AddGrowableRow(0);
     grid_sizer_1->AddGrowableCol(0);
+    SetSizer(grid_sizer_1);
+    grid_sizer_1->Fit(this);
     Layout();
     // end wxGlade
 }

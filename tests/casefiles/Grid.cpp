@@ -20,18 +20,9 @@ MyFrame::MyFrame(wxWindow* parent, wxWindowID id, const wxString& title, const w
     wxFrame(parent, id, title, pos, size, wxDEFAULT_FRAME_STYLE)
 {
     // begin wxGlade: MyFrame::MyFrame
-    grid_1 = new wxGrid(this, wxID_ANY);
-
-    set_properties();
-    do_layout();
-    // end wxGlade
-}
-
-
-void MyFrame::set_properties()
-{
-    // begin wxGlade: MyFrame::set_properties
     SetTitle(wxT("frame_1"));
+    wxBoxSizer* sizer_1 = new wxBoxSizer(wxVERTICAL);
+    grid_1 = new wxGrid(this, wxID_ANY);
     grid_1->CreateGrid(2, 2);
     grid_1->SetGridLineColour(wxColour(255, 0, 0));
     grid_1->SetLabelBackgroundColour(wxColour(216, 191, 216));
@@ -40,15 +31,8 @@ void MyFrame::set_properties()
     grid_1->SetBackgroundColour(wxColour(0, 255, 255));
     grid_1->SetCellValue(0, 0, "1");
     grid_1->SetRowLabelValue(0, "Row 1");
-    // end wxGlade
-}
-
-
-void MyFrame::do_layout()
-{
-    // begin wxGlade: MyFrame::do_layout
-    wxBoxSizer* sizer_1 = new wxBoxSizer(wxVERTICAL);
     sizer_1->Add(grid_1, 1, wxEXPAND, 0);
+    
     SetSizer(sizer_1);
     sizer_1->Fit(this);
     Layout();

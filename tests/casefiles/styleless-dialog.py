@@ -18,18 +18,7 @@ class StylelessDialog(wx.Dialog):
         # begin wxGlade: StylelessDialog.__init__
         kwds["style"] = kwds.get("style", 0)
         wx.Dialog.__init__(self, *args, **kwds)
-
-        self.__set_properties()
-        self.__do_layout()
-        # end wxGlade
-
-    def __set_properties(self):
-        # begin wxGlade: StylelessDialog.__set_properties
         self.SetTitle(_("Style-less Dialog"))
-        # end wxGlade
-
-    def __do_layout(self):
-        # begin wxGlade: StylelessDialog.__do_layout
         self.Layout()
         # end wxGlade
 
@@ -40,22 +29,15 @@ class StylelessFrame(wx.Frame):
         # begin wxGlade: StylelessFrame.__init__
         kwds["style"] = kwds.get("style", 0)
         wx.Frame.__init__(self, *args, **kwds)
-
-        self.__set_properties()
-        self.__do_layout()
-        # end wxGlade
-
-    def __set_properties(self):
-        # begin wxGlade: StylelessFrame.__set_properties
         self.SetTitle(_("Style-less Frame"))
-        # end wxGlade
-
-    def __do_layout(self):
-        # begin wxGlade: StylelessFrame.__do_layout
+        
         sizer_1 = wx.BoxSizer(wx.VERTICAL)
+        
         sizer_1.Add((0, 0), 0, 0, 0)
+        
         self.SetSizer(sizer_1)
         sizer_1.Fit(self)
+        
         self.Layout()
         # end wxGlade
 

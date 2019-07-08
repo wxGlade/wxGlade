@@ -17,18 +17,6 @@ class YPanel(wx.Panel):
         # begin wxGlade: YPanel.__init__
         kwds["style"] = kwds.get("style", 0) | wx.TAB_TRAVERSAL
         wx.Panel.__init__(self, *args, **kwds)
-
-        self.__set_properties()
-        self.__do_layout()
-        # end wxGlade
-
-    def __set_properties(self):
-        # begin wxGlade: YPanel.__set_properties
-        pass
-        # end wxGlade
-
-    def __do_layout(self):
-        # begin wxGlade: YPanel.__do_layout
         self.Layout()
         # end wxGlade
 
@@ -39,18 +27,6 @@ class XPanel(wx.Panel):
         # begin wxGlade: XPanel.__init__
         kwds["style"] = kwds.get("style", 0) | wx.TAB_TRAVERSAL
         wx.Panel.__init__(self, *args, **kwds)
-
-        self.__set_properties()
-        self.__do_layout()
-        # end wxGlade
-
-    def __set_properties(self):
-        # begin wxGlade: XPanel.__set_properties
-        pass
-        # end wxGlade
-
-    def __do_layout(self):
-        # begin wxGlade: XPanel.__do_layout
         self.Layout()
         # end wxGlade
 
@@ -62,26 +38,33 @@ class MyFrame(wx.Frame):
         kwds["style"] = kwds.get("style", 0) | wx.DEFAULT_FRAME_STYLE
         wx.Frame.__init__(self, *args, **kwds)
         self.SetSize((400, 300))
-        self.notebook_1 = wx.Notebook(self, wx.ID_ANY)
-        self.panel_1 = YPanel(self.notebook_1, wx.ID_ANY)
-        self.panel_2 = XPanel(self.notebook_1, wx.ID_ANY)
-
-        self.__set_properties()
-        self.__do_layout()
-        # end wxGlade
-
-    def __set_properties(self):
-        # begin wxGlade: MyFrame.__set_properties
         self.SetTitle("frame")
+        
+        sizer_1 = wx.BoxSizer(wx.VERTICAL)
+        
+        self.notebook_1 = wx.Notebook(self, wx.ID_ANY)
+        sizer_1.Add(self.notebook_1, 1, wx.EXPAND, 0)
+        
+        self.panel_1 = YPanel(self.notebook_1, wx.ID_ANY)
+        self.notebook_1.AddPage(self.panel_1, "Panel 1")
+        
+        self.panel_2 = XPanel(self.notebook_1, wx.ID_ANY)
+        self.notebook_1.AddPage(self.panel_2, "Panel 2")
+        
+        self.SetSizer(sizer_1)
+        
+        self.Layout()
         # end wxGlade
 
-    def __do_layout(self):
-        # begin wxGlade: MyFrame.__do_layout
-        sizer_1 = wx.BoxSizer(wx.VERTICAL)
-        self.notebook_1.AddPage(self.panel_1, "Panel 1")
-        self.notebook_1.AddPage(self.panel_2, "Panel 2")
-        sizer_1.Add(self.notebook_1, 1, wx.EXPAND, 0)
-        self.SetSizer(sizer_1)
+# end of class MyFrame
+
+class MyFrame(wx.Frame):
+    def __init__(self, *args, **kwds):
+        # begin wxGlade: MyFrame.__init__
+        kwds["style"] = kwds.get("style", 0) | wx.DEFAULT_FRAME_STYLE
+        wx.Frame.__init__(self, *args, **kwds)
+        self.SetSize((400, 300))
+        self.SetTitle("frame")
         self.Layout()
         # end wxGlade
 

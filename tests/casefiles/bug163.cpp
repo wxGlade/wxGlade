@@ -20,29 +20,13 @@ MyFrame::MyFrame(wxWindow* parent, wxWindowID id, const wxString& title, const w
     wxFrame(parent, id, title, pos, size, wxDEFAULT_FRAME_STYLE)
 {
     // begin wxGlade: MyFrame::MyFrame
-    label_1 = new wxStaticText(this, wxID_ANY, _("Extraproperty example"));
-
-    set_properties();
-    do_layout();
-    // end wxGlade
-}
-
-
-void MyFrame::set_properties()
-{
-    // begin wxGlade: MyFrame::set_properties
     SetTitle(_("MyFrame"));
+    wxBoxSizer* sizer_1 = new wxBoxSizer(wxVERTICAL);
+    label_1 = new wxStaticText(this, wxID_ANY, _("Extraproperty example"));
     label_1->SetFont(wxFont(40, wxDEFAULT, wxNORMAL, wxNORMAL, 0, wxT("")));
     label_1->SetFoobar(1);
-    // end wxGlade
-}
-
-
-void MyFrame::do_layout()
-{
-    // begin wxGlade: MyFrame::do_layout
-    wxBoxSizer* sizer_1 = new wxBoxSizer(wxVERTICAL);
     sizer_1->Add(label_1, 1, wxALL, 5);
+    
     SetSizer(sizer_1);
     sizer_1->Fit(this);
     Layout();

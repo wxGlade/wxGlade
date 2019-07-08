@@ -20,31 +20,15 @@ MyFrame::MyFrame(wxWindow* parent, wxWindowID id, const wxString& title, const w
     wxFrame(parent, id, title, pos, size, wxDEFAULT_FRAME_STYLE)
 {
     // begin wxGlade: MyFrame::MyFrame
-    list_ctrl_1 = new wxListCtrl(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxLC_HRULES|wxLC_REPORT|wxLC_VRULES);
-
-    set_properties();
-    do_layout();
-    // end wxGlade
-}
-
-
-void MyFrame::set_properties()
-{
-    // begin wxGlade: MyFrame::set_properties
     SetTitle(wxT("frame"));
+    wxBoxSizer* sizer_1 = new wxBoxSizer(wxVERTICAL);
+    list_ctrl_1 = new wxListCtrl(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxLC_HRULES|wxLC_REPORT|wxLC_VRULES);
     list_ctrl_1->AppendColumn(wxT("A"), wxLIST_FORMAT_LEFT, -1);
     list_ctrl_1->AppendColumn(wxT("B"), wxLIST_FORMAT_LEFT, -1);
     list_ctrl_1->AppendColumn(wxT("C"), wxLIST_FORMAT_LEFT, -1);
     list_ctrl_1->AppendColumn(wxT("D"), wxLIST_FORMAT_LEFT, -1);
-    // end wxGlade
-}
-
-
-void MyFrame::do_layout()
-{
-    // begin wxGlade: MyFrame::do_layout
-    wxBoxSizer* sizer_1 = new wxBoxSizer(wxVERTICAL);
     sizer_1->Add(list_ctrl_1, 1, wxEXPAND, 0);
+    
     SetSizer(sizer_1);
     sizer_1->Fit(this);
     Layout();

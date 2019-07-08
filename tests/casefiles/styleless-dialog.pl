@@ -30,29 +30,13 @@ sub new {
 
     # begin wxGlade: StylelessDialog::new
     $self = $self->SUPER::new( $parent, $id, $title, $pos, $size, $style, $name );
-
-    $self->__set_properties();
-    $self->__do_layout();
-
+    $self->SetTitle(_T("Style-less Dialog"));
+    $self->Layout();
     # end wxGlade
     return $self;
 
 }
 
-
-sub __set_properties {
-    my $self = shift;
-    # begin wxGlade: StylelessDialog::__set_properties
-    $self->SetTitle(_T("Style-less Dialog"));
-    # end wxGlade
-}
-
-sub __do_layout {
-    my $self = shift;
-    # begin wxGlade: StylelessDialog::__do_layout
-    $self->Layout();
-    # end wxGlade
-}
 
 # end of class StylelessDialog
 
@@ -76,33 +60,21 @@ sub new {
 
     # begin wxGlade: StylelessFrame::new
     $self = $self->SUPER::new( $parent, $id, $title, $pos, $size, $style, $name );
-
-    $self->__set_properties();
-    $self->__do_layout();
-
+    $self->SetTitle(_T("Style-less Frame"));
+    
+    $self->{sizer_1} = Wx::BoxSizer->new(wxVERTICAL);
+    
+    $self->{sizer_1}->Add(0, 0, 0, 0, 0);
+    
+    $self->SetSizer($self->{sizer_1});
+    $self->{sizer_1}->Fit($self);
+    
+    $self->Layout();
     # end wxGlade
     return $self;
 
 }
 
-
-sub __set_properties {
-    my $self = shift;
-    # begin wxGlade: StylelessFrame::__set_properties
-    $self->SetTitle(_T("Style-less Frame"));
-    # end wxGlade
-}
-
-sub __do_layout {
-    my $self = shift;
-    # begin wxGlade: StylelessFrame::__do_layout
-    $self->{sizer_1} = Wx::BoxSizer->new(wxVERTICAL);
-    $self->{sizer_1}->Add(0, 0, 0, 0, 0);
-    $self->SetSizer($self->{sizer_1});
-    $self->{sizer_1}->Fit($self);
-    $self->Layout();
-    # end wxGlade
-}
 
 # end of class StylelessFrame
 

@@ -39,13 +39,11 @@ public:
     MyFrame(wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint& pos=wxDefaultPosition, const wxSize& size=wxDefaultSize, long style=wxDEFAULT_FRAME_STYLE);
 
 private:
-    // begin wxGlade: MyFrame::methods
-    void set_properties();
-    void do_layout();
-    // end wxGlade
 
 protected:
     // begin wxGlade: MyFrame::attributes
+    wxNotebook* notebook_1;
+    wxPanel* notebook_1_pane_1;
     wxTextCtrl* _0_N_N;
     wxTextCtrl* _1_N_N;
     wxTextCtrl* _0_X_N;
@@ -102,7 +100,7 @@ protected:
     wxTextCtrl* _1_N_F_copy_5;
     wxTextCtrl* _0_X_F_copy_5;
     wxTextCtrl* _1_X_F_copy_5;
-    wxPanel* notebook_1_pane_1;
+    wxPanel* notebook_1_WrapSizer;
     wxTextCtrl* _0_N_N_copy_30;
     wxTextCtrl* _1_N_N_copy_30;
     wxTextCtrl* _0_X_N_copy_30;
@@ -159,7 +157,7 @@ protected:
     wxTextCtrl* _1_N_F_copy_30_copy_5;
     wxTextCtrl* _0_X_F_copy_30_copy_5;
     wxTextCtrl* _1_X_F_copy_30_copy_5;
-    wxPanel* notebook_1_WrapSizer;
+    wxPanel* notebook_1_StaticBoxSizer;
     wxTextCtrl* _0_N_N_copy_6;
     wxTextCtrl* _1_N_N_copy_6;
     wxTextCtrl* _0_X_N_copy_6;
@@ -216,7 +214,7 @@ protected:
     wxTextCtrl* _1_N_F_copy_11;
     wxTextCtrl* _0_X_F_copy_11;
     wxTextCtrl* _1_X_F_copy_11;
-    wxPanel* notebook_1_StaticBoxSizer;
+    wxPanel* notebook_1_GridSizer;
     wxTextCtrl* _0_N_N_copy_12;
     wxTextCtrl* _1_N_N_copy_12;
     wxTextCtrl* _0_X_N_copy_12;
@@ -273,7 +271,7 @@ protected:
     wxTextCtrl* _1_N_F_copy_17;
     wxTextCtrl* _0_X_F_copy_17;
     wxTextCtrl* _1_X_F_copy_17;
-    wxPanel* notebook_1_GridSizer;
+    wxPanel* notebook_1_FlexGridSizer;
     wxTextCtrl* _0_N_N_copy_18;
     wxTextCtrl* _1_N_N_copy_18;
     wxTextCtrl* _0_X_N_copy_18;
@@ -330,7 +328,7 @@ protected:
     wxTextCtrl* _1_N_F_copy_23;
     wxTextCtrl* _0_X_F_copy_23;
     wxTextCtrl* _1_X_F_copy_23;
-    wxPanel* notebook_1_FlexGridSizer;
+    wxPanel* notebook_1_GridBagSizer;
     wxTextCtrl* _0_N_N_copy_24;
     wxTextCtrl* _1_N_N_copy_24;
     wxTextCtrl* _0_X_N_copy_24;
@@ -387,7 +385,7 @@ protected:
     wxTextCtrl* _1_N_F_copy_29;
     wxTextCtrl* _0_X_F_copy_29;
     wxTextCtrl* _1_X_F_copy_29;
-    wxPanel* notebook_1_GridBagSizer;
+    wxPanel* notebook_1_BorderTest;
     wxTextCtrl* _0_N_N_border_10_none;
     wxTextCtrl* _1_N_N_border_0_all;
     wxTextCtrl* _0_X_N_border_5_LEFTRIGHT;
@@ -395,10 +393,8 @@ protected:
     wxTextCtrl* _0_N_N_copy_copy_1;
     wxTextCtrl* _0_N_N_copy_31;
     wxTextCtrl* _0_N_N_copy_32;
-    wxPanel* notebook_1_BorderTest;
-    wxButton* button_1;
     wxPanel* notebook_1_GridBagSizer_Spacers;
-    wxNotebook* notebook_1;
+    wxButton* button_1;
     // end wxGlade
 }; // wxGlade: end class
 

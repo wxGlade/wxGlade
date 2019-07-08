@@ -32,35 +32,23 @@ sub new {
 
     # begin wxGlade: Bug184_Frame::new
     $self = $self->SUPER::new( $parent, $id, $title, $pos, $size, $style, $name );
+    $self->SetTitle(_T("frame_1"));
+    $self->SetBackgroundColour(Wx::SystemSettings::GetColour(wxSYS_COLOUR_BACKGROUND));
+    
+    $self->{sizer_1} = Wx::BoxSizer->new(wxVERTICAL);
+    
     $self->{label_1} = Wx::StaticText->new($self, wxID_ANY, _T("Just a label"));
-
-    $self->__set_properties();
-    $self->__do_layout();
-
+    $self->{sizer_1}->Add($self->{label_1}, 1, wxALIGN_CENTER|wxALL|wxEXPAND, 5);
+    
+    $self->SetSizer($self->{sizer_1});
+    $self->{sizer_1}->Fit($self);
+    
+    $self->Layout();
     # end wxGlade
     return $self;
 
 }
 
-
-sub __set_properties {
-    my $self = shift;
-    # begin wxGlade: Bug184_Frame::__set_properties
-    $self->SetTitle(_T("frame_1"));
-    $self->SetBackgroundColour(Wx::SystemSettings::GetColour(wxSYS_COLOUR_BACKGROUND));
-    # end wxGlade
-}
-
-sub __do_layout {
-    my $self = shift;
-    # begin wxGlade: Bug184_Frame::__do_layout
-    $self->{sizer_1} = Wx::BoxSizer->new(wxVERTICAL);
-    $self->{sizer_1}->Add($self->{label_1}, 1, wxALIGN_CENTER|wxALL|wxEXPAND, 5);
-    $self->SetSizer($self->{sizer_1});
-    $self->{sizer_1}->Fit($self);
-    $self->Layout();
-    # end wxGlade
-}
 
 # end of class Bug184_Frame
 

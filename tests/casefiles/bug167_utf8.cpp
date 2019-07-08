@@ -20,31 +20,25 @@ MyFrame::MyFrame(wxWindow* parent, wxWindowID id, const wxString& title, const w
     wxFrame(parent, id, title, pos, size, style)
 {
     // begin wxGlade: MyFrame::MyFrame
-
-    set_properties();
-    do_layout();
+    SetTitle(_("frame_1"));
+    wxBoxSizer* sizer_1 = new wxBoxSizer(wxVERTICAL);
+    wxStaticText* label_1 = new wxStaticText(this, wxID_ANY, _("Just a text"));
+    sizer_1->Add(label_1, 0, 0, 0);
+    
+    SetSizer(sizer_1);
+    sizer_1->Fit(this);
+    Layout();
     // end wxGlade
 }
 
 
 void MyFrame::set_properties()
 {
-    // begin wxGlade: MyFrame::set_properties
-    SetTitle(_("frame_1"));
-    // end wxGlade
 }
 
 
 void MyFrame::do_layout()
 {
-    // begin wxGlade: MyFrame::do_layout
-    wxBoxSizer* sizer_1 = new wxBoxSizer(wxVERTICAL);
-    wxStaticText* label_1 = new wxStaticText(this, wxID_ANY, _("Just a text"));
-    sizer_1->Add(label_1, 0, 0, 0);
-    SetSizer(sizer_1);
-    sizer_1->Fit(this);
-    Layout();
-    // end wxGlade
 }
 
 // just an Unicode comment to raise an UnicodeDecodeError

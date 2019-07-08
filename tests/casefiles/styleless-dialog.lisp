@@ -35,17 +35,7 @@
 (defmethod init ((obj StylelessDialog))
 "Method creates the objects contained in the class."
         ;;; begin wxGlade: StylelessDialog.__init__
-        ;;; end wxGlade
-        )
-
-(defmethod set-properties ((obj StylelessDialog))
-        ;;; begin wxGlade: StylelessDialog.__set_properties
         (wxWindow_SetTitle (slot-dialog self) (_"Style-less Dialog"))
-        ;;; end wxGlade
-        )
-
-(defmethod do-layout ((obj StylelessDialog))
-        ;;; begin wxGlade: StylelessDialog.__do_layout
         (wxWindow_layout (slot-dialog self))
         ;;; end wxGlade
         )
@@ -68,21 +58,15 @@
 (defmethod init ((obj StylelessFrame))
 "Method creates the objects contained in the class."
         ;;; begin wxGlade: StylelessFrame.__init__
-        ;;; end wxGlade
-        )
-
-(defmethod set-properties ((obj StylelessFrame))
-        ;;; begin wxGlade: StylelessFrame.__set_properties
         (wxFrame_SetTitle (slot-top-window obj) (_"Style-less Frame"))
-        ;;; end wxGlade
-        )
-
-(defmethod do-layout ((obj StylelessFrame))
-        ;;; begin wxGlade: StylelessFrame.__do_layout
+        
         (setf (slot-sizer-1 obj) (wxBoxSizer_Create wxVERTICAL))
+        
         (wxSizer_AddWindow (slot-sizer-1 obj) ((0, 0) obj) 0 0 0 nil)
+        
         (wxWindow_SetSizer (slot-top-window obj) (slot-sizer-1 obj))
         (wxSizer_Fit (slot-sizer-1 obj) (slot-top-window obj))
+        
         (wxFrame_layout (slot-frame self))
         ;;; end wxGlade
         )

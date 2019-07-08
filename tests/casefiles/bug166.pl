@@ -31,39 +31,29 @@ sub new {
 
     # begin wxGlade: MyFrame::new
     $self = $self->SUPER::new( $parent, $id, $title, $pos, $size, $style, $name );
+    $self->SetTitle("frame_1");
+    
+    $self->{sizer_1} = Wx::BoxSizer->new(wxVERTICAL);
+    
+    $self->{sizer_2} = Wx::BoxSizer->new(wxVERTICAL);
+    $self->{sizer_1}->Add($self->{sizer_2}, 1, 0, 0);
+    
     $self->{choice_1} = Wx::Choice->new($self, wxID_ANY, wxDefaultPosition, wxDefaultSize, ["Pure ASCII", "German Umlauts \N{U+00e4}\N{U+00f6}\N{U+00fc}\N{U+00c4}\N{U+00d6}\N{U+00dc}\N{U+00df}"], );
+    $self->{choice_1}->SetSelection(1);
+    $self->{sizer_2}->Add($self->{choice_1}, 1, wxALL|wxEXPAND, 5);
+    
     $self->{label_1} = Wx::StaticText->new($self, wxID_ANY, "German Umlauts \N{U+00e4}\N{U+00f6}\N{U+00fc}\N{U+00c4}\N{U+00d6}\N{U+00dc}\N{U+00df}", wxDefaultPosition, wxDefaultSize, wxALIGN_CENTER);
-
-    $self->__set_properties();
-    $self->__do_layout();
-
+    $self->{sizer_2}->Add($self->{label_1}, 1, wxALL|wxEXPAND, 5);
+    
+    $self->SetSizer($self->{sizer_1});
+    $self->{sizer_1}->Fit($self);
+    
+    $self->Layout();
     # end wxGlade
     return $self;
 
 }
 
-
-sub __set_properties {
-    my $self = shift;
-    # begin wxGlade: MyFrame::__set_properties
-    $self->SetTitle("frame_1");
-    $self->{choice_1}->SetSelection(1);
-    # end wxGlade
-}
-
-sub __do_layout {
-    my $self = shift;
-    # begin wxGlade: MyFrame::__do_layout
-    $self->{sizer_1} = Wx::BoxSizer->new(wxVERTICAL);
-    $self->{sizer_2} = Wx::BoxSizer->new(wxVERTICAL);
-    $self->{sizer_2}->Add($self->{choice_1}, 1, wxALL|wxEXPAND, 5);
-    $self->{sizer_2}->Add($self->{label_1}, 1, wxALL|wxEXPAND, 5);
-    $self->{sizer_1}->Add($self->{sizer_2}, 1, 0, 0);
-    $self->SetSizer($self->{sizer_1});
-    $self->{sizer_1}->Fit($self);
-    $self->Layout();
-    # end wxGlade
-}
 
 # end of class MyFrame
 

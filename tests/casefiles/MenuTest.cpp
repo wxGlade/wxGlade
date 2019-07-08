@@ -21,6 +21,10 @@ MenuTestFrame::MenuTestFrame(wxWindow* parent, wxWindowID id, const wxString& ti
 {
     // begin wxGlade: MenuTestFrame::MenuTestFrame
     SetSize(wxSize(800, 417));
+    SetTitle(wxT("All Widgets"));
+    wxIcon _icon;
+    _icon.CopyFromBitmap(wxArtProvider::GetBitmap(wxART_TIP, wxART_OTHER, wxSize(32, 32)));
+    SetIcon(_icon);
     test_menubar = new wxMenuBar();
     wxMenu *wxglade_tmp_menu;
     wxMenuItem *wxglade_tmp_item;
@@ -117,27 +121,6 @@ MenuTestFrame::MenuTestFrame(wxWindow* parent, wxWindowID id, const wxString& ti
     wxglade_tmp_menu->Append(wxID_ANY, wxT("Radio"), wxglade_tmp_menu_sub, wxEmptyString);
     test_menubar->Append(wxglade_tmp_menu, wxT("&Minus1 ID"));
     SetMenuBar(test_menubar);
-
-    set_properties();
-    do_layout();
-    // end wxGlade
-}
-
-
-void MenuTestFrame::set_properties()
-{
-    // begin wxGlade: MenuTestFrame::set_properties
-    SetTitle(wxT("All Widgets"));
-    wxIcon _icon;
-    _icon.CopyFromBitmap(wxArtProvider::GetBitmap(wxART_TIP, wxART_OTHER, wxSize(32, 32)));
-    SetIcon(_icon);
-    // end wxGlade
-}
-
-
-void MenuTestFrame::do_layout()
-{
-    // begin wxGlade: MenuTestFrame::do_layout
     Layout();
     Centre();
     // end wxGlade

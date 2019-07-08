@@ -39,32 +39,28 @@ public:
     PyOgg2_MyFrame(wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint& pos=wxDefaultPosition, const wxSize& size=wxDefaultSize, long style=wxDEFAULT_FRAME_STYLE);
 
 private:
-    // begin wxGlade: PyOgg2_MyFrame::methods
-    void set_properties();
-    void do_layout();
-    // end wxGlade
 
 protected:
     // begin wxGlade: PyOgg2_MyFrame::attributes
     wxMenuBar* Mp3_To_Ogg_menubar;
     wxStatusBar* Mp3_To_Ogg_statusbar;
     wxToolBar* Mp3_To_Ogg_toolbar;
+    wxNotebook* notebook_1;
+    wxPanel* notebook_1_pane_1;
     wxTextCtrl* text_ctrl_1;
     wxButton* button_3;
-    wxPanel* notebook_1_pane_1;
+    wxPanel* notebook_1_pane_2;
     wxRadioBox* rbx_sampling_rate;
     wxCheckBox* cbx_love;
-    wxPanel* notebook_1_pane_2;
-    wxTextCtrl* text_ctrl_2;
     wxPanel* notebook_1_pane_3;
+    wxTextCtrl* text_ctrl_2;
+    wxPanel* notebook_1_pane_4;
     wxStaticText* _lbl_output_filename;
     wxTextCtrl* text_ctrl_3;
     wxButton* button_4;
     wxCheckBox* checkbox_1;
-    wxPanel* notebook_1_pane_4;
-    wxStaticText* label_1;
     wxPanel* notebook_1_pane_5;
-    wxNotebook* notebook_1;
+    wxStaticText* label_1;
     wxStaticLine* static_line_1;
     wxButton* button_5;
     wxButton* button_2;
@@ -89,18 +85,14 @@ public:
     MyFrameGrid(wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint& pos=wxDefaultPosition, const wxSize& size=wxDefaultSize, long style=wxDEFAULT_FRAME_STYLE);
 
 private:
-    // begin wxGlade: MyFrameGrid::methods
-    void set_properties();
-    void do_layout();
-    // end wxGlade
 
 protected:
     // begin wxGlade: MyFrameGrid::attributes
+    wxBoxSizer* _szr_frame;
+    wxFlexGridSizer* grid_sizer;
     wxGrid* grid;
     wxStaticLine* static_line;
     wxButton* button;
-    wxFlexGridSizer* grid_sizer;
-    wxBoxSizer* _szr_frame;
     // end wxGlade
 }; // wxGlade: end class
 

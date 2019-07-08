@@ -33,49 +33,42 @@ sub new {
     # begin wxGlade: Frame194::new
     $self = $self->SUPER::new( $parent, $id, $title, $pos, $size, $style, $name );
     $self->SetSize(Wx::Size->new(800, 600));
+    $self->SetTitle(_T("frame_1"));
+    
+    $self->{sizer_1} = Wx::GridSizer->new(2, 3, 0, 0);
+    
     $self->{list_box_single} = Wx::ListBox->new($self, wxID_ANY, wxDefaultPosition, wxDefaultSize, [_T("Listbox wxLB_SINGLE")], wxLB_SINGLE);
+    $self->{list_box_single}->SetSelection(0);
+    $self->{sizer_1}->Add($self->{list_box_single}, 1, wxALL|wxEXPAND, 5);
+    
     $self->{list_box_multiple} = Wx::ListBox->new($self, wxID_ANY, wxDefaultPosition, wxDefaultSize, [_T("Listbox wxLB_MULTIPLE")], wxLB_MULTIPLE);
+    $self->{list_box_multiple}->SetSelection(0);
+    $self->{sizer_1}->Add($self->{list_box_multiple}, 1, wxALL|wxEXPAND, 5);
+    
     $self->{list_box_extended} = Wx::ListBox->new($self, wxID_ANY, wxDefaultPosition, wxDefaultSize, [_T("Listbox wxLB_EXTENDED")], wxLB_EXTENDED);
+    $self->{list_box_extended}->SetSelection(0);
+    $self->{sizer_1}->Add($self->{list_box_extended}, 1, wxALL|wxEXPAND, 5);
+    
     $self->{check_list_box_single} = Wx::CheckListBox->new($self, wxID_ANY, wxDefaultPosition, wxDefaultSize, [_T("CheckListBox wxLB_SINGLE")], wxLB_SINGLE);
+    $self->{check_list_box_single}->SetSelection(0);
+    $self->{sizer_1}->Add($self->{check_list_box_single}, 1, wxALL|wxEXPAND, 5);
+    
     $self->{check_list_box_multiple} = Wx::CheckListBox->new($self, wxID_ANY, wxDefaultPosition, wxDefaultSize, [_T("CheckListBox wxLB_MULTIPLE")], wxLB_MULTIPLE);
+    $self->{check_list_box_multiple}->SetSelection(0);
+    $self->{sizer_1}->Add($self->{check_list_box_multiple}, 1, wxALL|wxEXPAND, 5);
+    
     $self->{check_list_box_extended} = Wx::CheckListBox->new($self, wxID_ANY, wxDefaultPosition, wxDefaultSize, [_T("CheckListBox wxLB_EXTENDED")], wxLB_EXTENDED);
-
-    $self->__set_properties();
-    $self->__do_layout();
-
+    $self->{check_list_box_extended}->SetSelection(0);
+    $self->{sizer_1}->Add($self->{check_list_box_extended}, 1, wxALL|wxEXPAND, 5);
+    
+    $self->SetSizer($self->{sizer_1});
+    
+    $self->Layout();
     # end wxGlade
     return $self;
 
 }
 
-
-sub __set_properties {
-    my $self = shift;
-    # begin wxGlade: Frame194::__set_properties
-    $self->SetTitle(_T("frame_1"));
-    $self->{list_box_single}->SetSelection(0);
-    $self->{list_box_multiple}->SetSelection(0);
-    $self->{list_box_extended}->SetSelection(0);
-    $self->{check_list_box_single}->SetSelection(0);
-    $self->{check_list_box_multiple}->SetSelection(0);
-    $self->{check_list_box_extended}->SetSelection(0);
-    # end wxGlade
-}
-
-sub __do_layout {
-    my $self = shift;
-    # begin wxGlade: Frame194::__do_layout
-    $self->{sizer_1} = Wx::GridSizer->new(2, 3, 0, 0);
-    $self->{sizer_1}->Add($self->{list_box_single}, 1, wxALL|wxEXPAND, 5);
-    $self->{sizer_1}->Add($self->{list_box_multiple}, 1, wxALL|wxEXPAND, 5);
-    $self->{sizer_1}->Add($self->{list_box_extended}, 1, wxALL|wxEXPAND, 5);
-    $self->{sizer_1}->Add($self->{check_list_box_single}, 1, wxALL|wxEXPAND, 5);
-    $self->{sizer_1}->Add($self->{check_list_box_multiple}, 1, wxALL|wxEXPAND, 5);
-    $self->{sizer_1}->Add($self->{check_list_box_extended}, 1, wxALL|wxEXPAND, 5);
-    $self->SetSizer($self->{sizer_1});
-    $self->Layout();
-    # end wxGlade
-}
 
 # end of class Frame194
 
