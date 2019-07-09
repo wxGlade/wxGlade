@@ -24,8 +24,10 @@ class MyFrame(wx.Frame):
         
         self.button_2 = wx.Button(self, wx.ID_ANY, "button_2")
         sizer_1.Add(self.button_2, 0, 0, 0)
+        
         self.SetSizer(sizer_1)
         sizer_1.Fit(self)
+        
         self.Layout()
         # end wxGlade
 
@@ -42,8 +44,10 @@ class MyDialog(wx.Dialog):
         
         self.button_1 = wx.Button(self, wx.ID_ANY, "button_1")
         sizer_2.Add(self.button_1, 0, 0, 0)
+        
         self.SetSizer(sizer_2)
         sizer_2.Fit(self)
+        
         self.Layout()
         # end wxGlade
 
