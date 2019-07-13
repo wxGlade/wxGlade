@@ -686,6 +686,7 @@ class CPPCodeWriter(BaseLangCodeWriter, wcodegen.CppMixin):
                 self.warning( "wxGlade events block not found for %s, event table code NOT generated" % code_obj.name )
 
         # source file
+        tab = self.tabs(1)
         # set the window's style
         style_p = code_obj.properties.get("style")
         if style_p and style_p.value_set != style_p.default_value:
@@ -704,15 +705,19 @@ class CPPCodeWriter(BaseLangCodeWriter, wcodegen.CppMixin):
                     if rest:
                         base += ", " + rest
 
-            swrite('\n%s::%s(%s):\n%s%s\n{\n' % (fmt_klass, fmt_klass, sign_decl2, self.tabs(1), base) )
+            swrite('\n%s::%s(%s):\n%s%s\n{\n' % (fmt_klass, fmt_klass, sign_decl2, tab, base) )
+
         if self._mark_blocks:
-            swrite(self.tabs(1) + '// begin wxGlade: %s::%s\n' % (fmt_klass, fmt_klass))
+            swrite(tab + '// begin wxGlade: %s::%s\n' % (fmt_klass, fmt_klass))
+
+        # the optional initial code from the code properties
+        if not self.preview and code_obj.check_prop("extracode_pre"):
+            for l in code_obj.properties["extracode_pre"].get_lines():
+                swrite(tab + l)
 
         # set size here to avoid problems with splitter windows
         if 'size' in code_obj.properties and code_obj.properties["size"].is_active():
-            swrite( self.tabs(1) + self.generate_code_size(code_obj) )
-
-        tab = self.tabs(1)
+            swrite( tab + self.generate_code_size(code_obj) )
 
         for l in builder.get_properties_code(code_obj):
             swrite(tab + l)
@@ -728,6 +733,10 @@ class CPPCodeWriter(BaseLangCodeWriter, wcodegen.CppMixin):
         for l in builder.get_layout_code(code_obj):
             swrite(tab + l)
 
+        # the optional final code from the code properties
+        if not self.preview and code_obj.check_prop("extracode_post"):
+            for l in code_obj.properties["extracode_post"].get_lines():
+                swrite(tab + l)
 
         # now check if there are extra lines to add to the constructor
         for l in builder.get_init_code(code_obj):

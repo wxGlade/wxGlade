@@ -359,6 +359,11 @@ sub %(handler)s {
                                            'function':self.name_ctor, 'klass':self.cn_class(code_obj.klass),
                                            'tab':tab} )
 
+        # the optional initial code from the code properties
+        if not self.preview and code_obj.check_prop("extracode_pre"):
+            for l in code_obj.properties["extracode_pre"].get_lines():
+                write(tab + l)
+
         style_p = code_obj.properties.get("style")
         if style_p and style_p.value_set != style_p.default_value:
             style = style_p.get_string_value()
@@ -391,6 +396,11 @@ sub %(handler)s {
 
         for l in builder.get_layout_code(code_obj):
             write(tab + l)
+
+        # the optional final code from the code properties
+        if not self.preview and code_obj.check_prop("extracode_post"):
+            for l in code_obj.properties["extracode_post"].get_lines():
+                write(tab + l)
 
         return code_lines
 

@@ -307,6 +307,11 @@ from %(top_win_module)s import %(top_win_class)s\n\n"""
             write(self.tmpl_block_begin % {'class_separator': self.class_separator, 'comment_sign': self.comment_sign,
                                            'function':self.name_ctor, 'klass':fmt_klass, 'tab':tab} )
 
+        # the optional initial code from the code properties
+        if not self.preview and code_obj.check_prop("extracode_pre"):
+            for l in code_obj.properties["extracode_pre"].get_lines():
+                write(tab + l)
+
         style_p = code_obj.properties.get("style")
         if style_p:
             style = style_p.get_string_value()
@@ -347,6 +352,11 @@ from %(top_win_module)s import %(top_win_class)s\n\n"""
 
         for l in builder.get_layout_code(code_obj):
             write(tab + l)
+
+        # the optional final code from the code properties
+        if not self.preview and code_obj.check_prop("extracode_post"):
+            for l in code_obj.properties["extracode_post"].get_lines():
+                write(tab + l)
 
         return code_lines
 
