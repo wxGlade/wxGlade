@@ -110,8 +110,8 @@ def builder(parent, pos):
         w.Raise()
 
     import clipboard
-    dialog.drop_target = clipboard.DropTarget(dialog)
-    dialog.widget.SetDropTarget(dialog.drop_target)
+    editor.drop_target = clipboard.DropTarget(editor)
+    editor.widget.SetDropTarget(editor.drop_target)
 
     # add a default vertical sizer
     import edit_sizers
