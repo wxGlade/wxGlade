@@ -477,6 +477,10 @@ class TestGui(WXGladeGUITest):
         # previous versions wrote only the last of the three panels
         self.load_and_generate('toplevels_no_size', test_GUI=True)
 
+    def test_toplevels_code_pre_post(self):
+        "Test frame, dialog without extracode_pre, extracode_post"
+        self.load_and_generate('toplevel_extracode', test_GUI=False)
+
     def test_unsupported_flags(self):
         "Test code generation with unsupported flags"
         self.load_and_generate('no_supported_flags', test_GUI=False)
