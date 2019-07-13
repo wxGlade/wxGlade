@@ -704,6 +704,9 @@ class TopLevelBase(WindowBase, PreviewMixin):
     IS_TOPLEVEL_WINDOW = True  # will be False for TopLevelPanel and MDIChildFrame
     CHILDREN = 1  # a sizer or a widget
 
+    _PROPERTY_HELP={ "extracode_pre":"This code will be inserted at the beginning of the constructor.\n",
+                     "extracode_post":"This code will be inserted at the end of the constructor.\n" }
+
     def __init__(self, name, klass, parent, title=None):
         WindowBase.__init__(self, name, klass, parent, pos=None)
         self._oldname = name
