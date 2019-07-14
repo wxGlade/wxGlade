@@ -13,6 +13,7 @@ _reverse_dict = misc._reverse_dict
 
 
 class wxGladeFontDialog(wx.Dialog):
+    # keep this in sync with new_properties.FontProperty
     font_families_to = { 'default': wx.DEFAULT, 'decorative': wx.DECORATIVE,
                          'roman': wx.ROMAN, 'swiss': wx.SWISS,
                          'script':wx.SCRIPT, 'modern': wx.MODERN }
@@ -51,7 +52,17 @@ class wxGladeFontDialog(wx.Dialog):
         self.ok_btn.Bind(wx.EVT_BUTTON, self.on_ok)
 
     def choose_specific_font(self, event):
-        dialog = wx.FontDialog(self, wx.FontData())
+        data = wx.FontData()
+        try:
+            family = self.font_families_to[self.value[1]]
+            style = self.font_styles_to[self.value[2]]
+            weight = self.font_weights_to[self.value[3]]
+            font = wx.Font( self.value[0], family, style, weight, self.value[4], self.value[5] )
+            data.SetInitialFont(font)
+        except AttributeError:
+            pass
+
+        dialog = wx.FontDialog(self, data)
         res = dialog.ShowModal()
         font = dialog.GetFontData().GetChosenFont()
         dialog.Destroy()
@@ -80,6 +91,7 @@ class wxGladeFontDialog(wx.Dialog):
         return self.value
 
     def set_value(self, props):
+        self.value = props[:]
         self.family.SetStringSelection(props[1].capitalize())
         self.style.SetStringSelection(props[2].capitalize())
         self.weight.SetStringSelection(props[3].capitalize())

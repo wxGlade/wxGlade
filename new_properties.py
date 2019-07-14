@@ -2098,6 +2098,7 @@ class ColorPropertyD(ColorProperty):
     deactivated = True
 
 class FontProperty(DialogProperty):
+    # keep this in sync with wxGladeFontDialog
     font_families_to = {'default': wx.DEFAULT,
                         'decorative': wx.DECORATIVE, 'roman': wx.ROMAN,
                         'swiss': wx.SWISS, 'script': wx.SCRIPT, 'modern': wx.MODERN }
@@ -2110,7 +2111,7 @@ class FontProperty(DialogProperty):
     font_families_to['teletype'] = wx.TELETYPE
     font_families_from[wx.TELETYPE] = 'teletype'
 
-    validation_re = re.compile(" *\[(\d+), *'(default|decorative|roman|swiss|script|modern)', *"
+    validation_re = re.compile(" *\[(\d+), *'(default|teletype|decorative|roman|swiss|script|modern)', *"
                                "'(normal|slant|italic)', *'(normal|light|bold)', *(0|1), *'([a-zA-Z _]*)'] *")
     normalization = "[%s, '%s', '%s', '%s', %s, '%s']"
 
