@@ -841,7 +841,7 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
             # XXX create handler
             raise
 
-        if not obj.IS_SIZER:  # the object is a wxWindow instance
+        if not obj.IS_SIZER and not obj.IS_CLASS:  # the object is a wxWindow instance
             if not self.preview:
                 if "extracode_pre" in obj.properties and obj.extracode_pre:
                     init = obj.properties["extracode_pre"].get_lines() + init
