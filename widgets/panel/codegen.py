@@ -80,7 +80,7 @@ class CppPanelGenerator(wcodegen.CppWidgetCodeWriter):
             parent = 'this'
         if panel.IS_CLASS:
             l = [ '%s = new %s(%s, %s);\n' % (panel.name, panel.klass, parent, id) ]
-            return l, ids, [], []
+            return l, ids, []
         extra = ''
         style = panel.properties["style"].get_string_value() or 'wxTAB_TRAVERSAL'
         if scrollable or style != 'wxTAB_TRAVERSAL':
