@@ -675,7 +675,7 @@ class CPPCodeWriter(BaseLangCodeWriter, wcodegen.CppMixin):
                 t = self.tabs(1)
                 for win_id, evt, handler, evt_type in event_handlers:
                     if handler not in already_there:
-                        hwrite('%svoid %s(%s &event); // wxGlade: <event_handler>\n' % (t, handler, evt_type))
+                        hwrite('%svirtual void %s(%s &event); // wxGlade: <event_handler>\n' % (t, handler, evt_type))
                         already_there[handler] = 1
                 if classname not in prev_src.event_table_def:
                     hwrite('\nprotected:\n')
