@@ -74,10 +74,7 @@ class CppPanelGenerator(wcodegen.CppWidgetCodeWriter):
             ids = [id_name]
         else:
             ids = []
-        if not panel.parent.IS_CLASS:
-            parent = '%s' % panel.parent.name
-        else:
-            parent = 'this'
+        parent = self.format_widget_access(panel.parent_window)
         if panel.IS_CLASS:
             l = [ '%s = new %s(%s, %s);\n' % (panel.name, panel.klass, parent, id) ]
             return l, ids, []
