@@ -70,10 +70,10 @@ protected:
     DECLARE_EVENT_TABLE();
 
 public:
-    void OnOpen(wxCommandEvent &event); // wxGlade: <event_handler>
-    void OnClose(wxCommandEvent &event); // wxGlade: <event_handler>
-    void OnAboutDialog(wxCommandEvent &event); // wxGlade: <event_handler>
-    void startConverting(wxCommandEvent &event); // wxGlade: <event_handler>
+    virtual void OnOpen(wxCommandEvent &event); // wxGlade: <event_handler>
+    virtual void OnClose(wxCommandEvent &event); // wxGlade: <event_handler>
+    virtual void OnAboutDialog(wxCommandEvent &event); // wxGlade: <event_handler>
+    virtual void startConverting(wxCommandEvent &event); // wxGlade: <event_handler>
 }; // wxGlade: end class
 
 

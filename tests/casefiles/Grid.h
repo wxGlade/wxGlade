@@ -40,7 +40,7 @@ protected:
     DECLARE_EVENT_TABLE();
 
 public:
-    void myEVT_GRID_CELL_LEFT_CLICK(wxGridEvent &event); // wxGlade: <event_handler>
+    virtual void myEVT_GRID_CELL_LEFT_CLICK(wxGridEvent &event); // wxGlade: <event_handler>
 }; // wxGlade: end class
 
 

@@ -77,14 +77,14 @@ protected:
     DECLARE_EVENT_TABLE();
 
 public:
-    void onShowManual(wxCommandEvent &event); // wxGlade: <event_handler>
-    void onCloseFile(wxCommandEvent &event); // wxGlade: <event_handler>
-    void on_named2(wxCommandEvent &event); // wxGlade: <event_handler>
-    void on_named3(wxCommandEvent &event); // wxGlade: <event_handler>
-    void on_auto2(wxCommandEvent &event); // wxGlade: <event_handler>
-    void on_auto3(wxCommandEvent &event); // wxGlade: <event_handler>
-    void on_Minus12(wxCommandEvent &event); // wxGlade: <event_handler>
-    void on_Minus13(wxCommandEvent &event); // wxGlade: <event_handler>
+    virtual void onShowManual(wxCommandEvent &event); // wxGlade: <event_handler>
+    virtual void onCloseFile(wxCommandEvent &event); // wxGlade: <event_handler>
+    virtual void on_named2(wxCommandEvent &event); // wxGlade: <event_handler>
+    virtual void on_named3(wxCommandEvent &event); // wxGlade: <event_handler>
+    virtual void on_auto2(wxCommandEvent &event); // wxGlade: <event_handler>
+    virtual void on_auto3(wxCommandEvent &event); // wxGlade: <event_handler>
+    virtual void on_Minus12(wxCommandEvent &event); // wxGlade: <event_handler>
+    virtual void on_Minus13(wxCommandEvent &event); // wxGlade: <event_handler>
 }; // wxGlade: end class
 
 

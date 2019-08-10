@@ -171,14 +171,14 @@ protected:
     DECLARE_EVENT_TABLE();
 
 public:
-    void onSelectUnix(wxCommandEvent &event); // wxGlade: <event_handler>
-    void onSelectWindows(wxCommandEvent &event); // wxGlade: <event_handler>
-    void onRemoveTabs(wxCommandEvent &event); // wxGlade: <event_handler>
-    void onShowManual(wxCommandEvent &event); // wxGlade: <event_handler>
-    void OnNotebookPageChanged(wxBookCtrlEvent &event); // wxGlade: <event_handler>
-    void OnNotebookPageChanging(wxBookCtrlEvent &event); // wxGlade: <event_handler>
-    void OnBitmapButtonPanelNavigationKey(wxNavigationKeyEvent &event); // wxGlade: <event_handler>
-    void onStartConverting(wxCommandEvent &event); // wxGlade: <event_handler>
+    virtual void onSelectUnix(wxCommandEvent &event); // wxGlade: <event_handler>
+    virtual void onSelectWindows(wxCommandEvent &event); // wxGlade: <event_handler>
+    virtual void onRemoveTabs(wxCommandEvent &event); // wxGlade: <event_handler>
+    virtual void onShowManual(wxCommandEvent &event); // wxGlade: <event_handler>
+    virtual void OnNotebookPageChanged(wxBookCtrlEvent &event); // wxGlade: <event_handler>
+    virtual void OnNotebookPageChanging(wxBookCtrlEvent &event); // wxGlade: <event_handler>
+    virtual void OnBitmapButtonPanelNavigationKey(wxNavigationKeyEvent &event); // wxGlade: <event_handler>
+    virtual void onStartConverting(wxCommandEvent &event); // wxGlade: <event_handler>
 }; // wxGlade: end class
 
 
