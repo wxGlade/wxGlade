@@ -624,7 +624,7 @@ class CPPCodeWriter(BaseLangCodeWriter, wcodegen.CppMixin):
                 already_there = {}
                 for win_id, evt, handler, evt_type in event_handlers:
                     if handler not in already_there:
-                        hwrite('%svoid %s(%s &event); // wxGlade: <event_handler>\n' % (t, handler, evt_type))
+                        hwrite('%svirtual void %s(%s &event); // wxGlade: <event_handler>\n' % (t, handler, evt_type))
                         already_there[handler] = 1
 
             hwrite('}; // wxGlade: end class\n\n')
