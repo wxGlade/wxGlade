@@ -64,6 +64,10 @@ class SizerItemXrcObject(XrcObject):
             output.append(tabs1 + '<flag>%s</flag>\n' % self.cn_f(flag))
         if self.obj.border:
             output.append(tabs1 + '<border>%s</border>\n' % self.obj.border)
+        if self.obj.parent._IS_GRIDBAG:
+            cellpos = self.obj.parent._get_row_col(self.obj.pos)
+            output.append( tabs1 + '<cellpos>%d,%d</cellpos>\n' % cellpos )
+            output.append( tabs1 + '<cellspan>%d,%d</cellspan>\n' % self.obj.span )
         # write the widget
         self.xrc_obj.write(output, ntabs + 1)
         output.append(tabs + '</object>\n')
