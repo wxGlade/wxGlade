@@ -96,6 +96,10 @@ class TestBugs(WXGladeGUITest):
         """Test top_window property and addition of notebook pages with base classes"""
         self.load_and_generate('Bugs_2018-01-16', test_GUI=False)
 
+    def test_issue371(self):
+        """Test issue #371 - C++ code generation"""
+        self.load_and_generate('Issue_371', excluded=("lisp",), test_GUI=False)
+
 
 if __name__ == '__main__':
     unittest.main(exit=False)

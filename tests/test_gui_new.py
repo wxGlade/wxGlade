@@ -485,6 +485,10 @@ class TestGui(WXGladeGUITest):
         "Test code generation with unsupported flags"
         self.load_and_generate('no_supported_flags', test_GUI=False)
 
+    def test_panel_class(self):
+        "Test code generation for a standalone panel class"
+        self.load_and_generate('PanelClass', excluded=("lisp",), test_GUI=False)
+
     @unittest.skipIf(wx.VERSION[:2]<(3,0), "not all supported (import_test.xrc fails")
     def test_load_xrc(self):
         "Test loading XRC files"
