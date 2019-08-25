@@ -279,7 +279,7 @@ class EditBase(np.PropertyOwner):
         self.widget = None
 
     # from tree.Tree ###################################################################################################
-    def recursive_remove(self):
+    def recursive_remove(self, overwritten=False):
         # recursively remove from parent, delete widget, remove from Tree (build to be called separately)
         if self.children:
             for c in self.get_all_children():
@@ -287,8 +287,8 @@ class EditBase(np.PropertyOwner):
         try:
             self.parent.children.remove(self)
         except:
-            print(" **** node_remove failed")  # XXX  might have been overwritten in Slot -> add_item
-            pass
+            if not overwritten:  # overwritten: overwritten in _free_slot when Slot() was created
+                print(" **** node_remove failed")
         self.delete()
         common.app_tree.remove(self)  # remove mutual reference from widget to/from Tree item
         if not self.IS_SLOT and self.name:

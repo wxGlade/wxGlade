@@ -922,7 +922,7 @@ class SizerBase(Sizer, np.PropertyOwner):
         if self.widget:
             # required here; otherwise removal of a StaticBox of a StaticBoxSizer will cause a crash
             self.widget.Detach(old_child.widget)
-        old_child.recursive_remove()
+        old_child.recursive_remove(overwritten=True)
 
         if self.widget:
             slot.create()  # create the actual SizerSlot as wx.Window with hatched background
