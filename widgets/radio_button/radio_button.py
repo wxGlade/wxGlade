@@ -60,7 +60,7 @@ def builder(parent, pos):
     "factory function for EditRadioButton objects"
     name = common.root.get_next_name('radio_btn_%d', parent)
     with parent.frozen():
-        editor = EditRadioButton(label, parent, label, pos)
+        editor = EditRadioButton(name, parent, name, pos)
         editor.properties["style"].set_to_default()
         editor.check_defaults()
         if parent.widget: editor.create()
