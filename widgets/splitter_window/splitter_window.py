@@ -161,11 +161,11 @@ class EditSplitterWindow(ManagedBase, EditStylesMixin):
         if getattr(self.children[1], 'sel_marker', None): self.children[1].sel_marker.update()
 
     def properties_changed(self, modified):
-        if not modified or "sash_pos" in modified and self.widget:
+        if (not modified or "sash_pos" in modified) and self.widget and self.check_prop("sash_pos"):
             self.widget.SetSashPosition(self.sash_pos)
-        if not modified or "sash_gravity" in modified and self.widget:
+        if (not modified or "sash_gravity" in modified) and self.widget and self.check_prop("sash_gravity"):
             self.widget.SetSashGravity(self.sash_gravity)
-        if not modified or "min_pane_size" in modified and self.widget:
+        if (not modified or "min_pane_size" in modified) and self.widget and self.check_prop("min_pane_size"):
             self.widget.SetMinimumPaneSize(self.min_pane_size)
 
         EditStylesMixin.properties_changed(self, modified)
