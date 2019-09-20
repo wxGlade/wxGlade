@@ -2111,8 +2111,8 @@ class FontProperty(DialogProperty):
     font_families_to['teletype'] = wx.TELETYPE
     font_families_from[wx.TELETYPE] = 'teletype'
 
-    validation_re = re.compile(" *\[(\d+), *'(default|teletype|decorative|roman|swiss|script|modern)', *"
-                               "'(normal|slant|italic)', *'(normal|light|bold)', *(0|1), *'([a-zA-Z _]*)'] *")
+    validation_re = re.compile(r" *\[(\d+), *'(default|teletype|decorative|roman|swiss|script|modern)', *"
+                               r"'(normal|slant|italic)', *'(normal|light|bold)', *(0|1), *'([a-zA-Z _]*)'] *")
     normalization = "[%s, '%s', '%s', '%s', %s, '%s']"
 
     # for writing code
