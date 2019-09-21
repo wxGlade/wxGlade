@@ -43,6 +43,7 @@ class wxGladePreferences(wxGladePreferencesUI):
             self.show_palette_icons.SetValue( self.preferences.show_palette_icons )
             self.show_palette_labels.SetValue( self.preferences.show_palette_labels )
             self.show_gridproperty_editors.SetValue( self.preferences.show_gridproperty_editors )
+            self.use_checkboxes_workaround.SetValue( self.preferences.use_checkboxes_workaround )
             
             self.allow_duplicate_names.SetValue( self.preferences.allow_duplicate_names )
             self.autosave.SetValue(self.preferences.autosave)
@@ -102,6 +103,7 @@ class wxGladePreferences(wxGladePreferencesUI):
         prefs['show_palette_icons'] = show_icons
         prefs['show_palette_labels'] = show_text
         prefs['show_gridproperty_editors'] = self.show_gridproperty_editors.GetValue()
+        prefs['use_checkboxes_workaround'] = self.use_checkboxes_workaround.GetValue()
         prefs['allow_duplicate_names'] = self.allow_duplicate_names.GetValue()
         prefs['autosave'] = self.autosave.GetValue()
         prefs['autosave_delay'] = self.autosave_delay.GetValue()

@@ -384,12 +384,17 @@ class SpinProperty(Property):
 
         hsizer = wx.BoxSizer(wx.HORIZONTAL)
         # label
-        label = self.label_ctrl = self._get_label(self._find_label(), panel)
+        label_text = self._find_label()
+        label = self.label_ctrl = self._get_label(label_text, panel)
         hsizer.Add(label, 0, wx.ALL | wx.ALIGN_CENTER, 3)
         # checkbox, if applicable
         self.enabler = None
         if self.deactivated is not None:
-            self.enabler = wx.CheckBox(panel, -1, '')#, size=(1,-1))
+            self.enabler = wx.CheckBox(panel, -1, '')
+            if config.preferences.use_checkboxes_workaround:
+                size = self.enabler.GetSize()
+                self.enabler.SetLabel("Enable %s"%label_text)
+                self.enabler.SetMaxSize(size)
             self.enabler.SetValue(not self.deactivated)
             self.enabler.Bind( wx.EVT_CHECKBOX, lambda event: self.toggle_active(event.IsChecked()) )
             hsizer.Add(self.enabler, 0, wx.ALIGN_CENTER_VERTICAL|wx.LEFT, 3)
@@ -1254,13 +1259,18 @@ class TextProperty(Property):
 
         hsizer = wx.BoxSizer(wx.HORIZONTAL)
         # label
-        self.label_ctrl = label = self._get_label(self._find_label(), panel)
+        label_text = self._find_label()
+        self.label_ctrl = label = self._get_label(label_text, panel)
         #hsizer.Add(label, 2, wx.ALL | wx.ALIGN_CENTER, 3)
         hsizer.Add(label, 0, wx.ALL | wx.ALIGN_CENTER, 3)
         # checkbox, if applicable
         self.enabler = None
         if self.deactivated is not None and not self.auto_activated:
-            self.enabler = wx.CheckBox(panel, -1, '')#, size=(1,-1))
+            self.enabler = wx.CheckBox(panel, -1, '')
+            if config.preferences.use_checkboxes_workaround:
+                size = self.enabler.GetSize()
+                self.enabler.SetLabel("Enable %s"%label_text)
+                self.enabler.SetMaxSize(size)
             self.enabler.SetValue(not self.deactivated)
             self.enabler.Bind( wx.EVT_CHECKBOX, lambda event: self.toggle_active(event.IsChecked()) )
             #hsizer.Add(self.enabler, 0, wx.ALIGN_CENTER_VERTICAL)

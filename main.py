@@ -207,7 +207,7 @@ class wxGladePropertyPanel(wx.Panel):
     def start_page(self, name):
         # create a ScrolledWindow and a Panel; with only ScrolledWindow, scrolling on gtk 3 does not work
         scrolled = wx.ScrolledWindow( self.notebook, name=name)
-        panel = wx.Panel(scrolled)
+        panel = wx.Panel(scrolled, name="%s properties"%name)
         if wx.VERSION[0]<3:
             panel.SetBackgroundColour(scrolled.GetBackgroundColour())
         return panel
