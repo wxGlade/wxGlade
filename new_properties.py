@@ -652,7 +652,14 @@ class CheckBoxProperty(Property):
     def create_editor(self, panel, sizer):
         self.checkbox = wx.CheckBox(panel, -1, '')
         self._display_value()
-        self.label_ctrl = label = self._get_label(self._find_label(), panel)
+        label_text = self._find_label()
+        self.label_ctrl = label = self._get_label(label_text, panel)
+
+        if config.preferences.use_checkboxes_workaround:
+            size = self.checkbox.GetSize()
+            self.checkbox.SetLabel(label_text)
+            self.checkbox.SetMaxSize(size)
+
         hsizer = wx.BoxSizer(wx.HORIZONTAL)
         #hsizer.Add(label, 2, wx.ALIGN_CENTER_VERTICAL | wx.ALL, 3)
         hsizer.Add(label, 0, wx.ALIGN_CENTER_VERTICAL | wx.ALL, 3)
