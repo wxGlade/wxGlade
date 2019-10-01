@@ -426,7 +426,7 @@ class WidgetTree(wx.TreeCtrl):#, Tree):
 
     def set_current_widget(self, editor):
         # interface from common.set_focused_widget
-        if editor is None or editor is self.cur_widget: return
+        if editor is None or editor is self.cur_widget or editor.item is None: return
         self.skip_select = True
         self.SelectItem(editor.item)
         self.skip_select = False
