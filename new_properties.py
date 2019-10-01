@@ -1204,6 +1204,7 @@ class TextProperty(Property):
     _HORIZONTAL_LAYOUT = True # label, checkbox, text in the same line; otherwise text will be in the second line
     CONTROLNAMES = ["enabler", "text"]
     validation_re = None # for derived classes
+    control_re = re.compile( r"[\x00-\x08\x0b\x0c\x0e-\x1f\x7f]" )  # match ASCII control characters for stripping them
     STRIP = False
     _PROPORTION = 1
     def __init__(self, value="", multiline=False, strip=False, default_value=_DefaultArgument, name=None, fixed_height=False):
@@ -1363,13 +1364,19 @@ class TextProperty(Property):
         text.Bind(wx.EVT_SET_FOCUS, self.on_focus)
         # XXX
         text.Bind(wx.EVT_CHAR, self.on_char)
-        if self.validation_re:
-            text.Bind(wx.EVT_TEXT, self._on_text)
+        text.Bind(wx.EVT_TEXT, self._on_text)
         return text
 
     def _on_text(self, event):
         if self.deactivated or self.blocked: return
-        if self.check(event.GetString()):
+        s = event.GetString()
+        if not self.validation_re:
+            if self.control_re.search(s):
+                # strip most ASCII control characters
+                self.text.SetValue(self.control_re.sub("", s))
+                wx.Bell()
+                return
+        elif self.check(text):
             self.text.SetBackgroundColour( compat.wx_SystemSettings_GetColour(wx.SYS_COLOUR_WINDOW) )
             self.text.Refresh()
         else:
@@ -1775,6 +1782,15 @@ class ComboBoxPropertyD(ComboBoxProperty):
 
 class ListBoxProperty(ComboBoxProperty):
     _CB_STYLE = wx.CB_DROPDOWN | wx.CB_READONLY
+
+    def _on_text_click(self, event):
+        if self.deactivated and not self.auto_activated and self.text:
+            text_rect = self.text.GetClientRect()
+            text_rect.Offset(self.text.Position)
+            if text_rect.Contains(event.Position):
+                self.toggle_active(active=True)
+                return
+        event.Skip()
 
 #class ListBoxProperty(ComboBoxProperty):
     #def __init__(self, value="", choices=[], default_value=_DefaultArgument, name=None):
