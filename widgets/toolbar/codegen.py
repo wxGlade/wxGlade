@@ -88,20 +88,14 @@ class PythonCodeGenerator(wcodegen.PythonWidgetCodeWriter):
         return ['%s.Realize()\n' % self.format_widget_access(obj)]
 
     def get_event_handlers(self, obj):
-        out = []
-
-        def do_get(tool):
-            ret = []
-            name, val = self.codegen.generate_code_id(None, tool.id)
-            if not val:
-                val = '-1'  # but this is wrong anyway...
-            if tool.handler:
-                ret.append((val, 'EVT_TOOL', tool.handler, 'wxCommandEvent'))
-            return ret
+        ret = []
 
         for tool in obj.tools:
-            out.extend(do_get(tool))
-        return out
+            if not tool.handler: continue
+            tool_id = self.codegen.generate_code_id(None, tool.id)[1] or '-1'  # but this is wrong anyway...
+            ret.append( (tool_id, 'EVT_TOOL', tool.handler, 'wxCommandEvent') )
+
+        return ret
 
 
 def xrc_code_generator(obj):
@@ -255,19 +249,14 @@ class CppCodeGenerator(wcodegen.CppWidgetCodeWriter):
         return ids
 
     def get_event_handlers(self, obj):
-        out = []
-
-        def do_get(tool):
-            ret = []
-            name, val = self.codegen.generate_code_id(None, tool.id)
-            if not val: val = '-1'  # but this is wrong anyway...
-            if tool.handler:
-                ret.append((val, 'EVT_TOOL', tool.handler, 'wxCommandEvent'))
-            return ret
+        ret = []
 
         for tool in obj.tools:
-            out.extend(do_get(tool))
-        return out
+            if not tool.handler: continue
+            tool_id = self.codegen.generate_code_id(None, tool.id)[1] or '-1'  # but this is wrong anyway...
+            ret.append( (tool_id, 'EVT_TOOL', tool.handler, 'wxCommandEvent') )
+
+        return ret
 
 
 def initialize():

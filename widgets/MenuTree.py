@@ -15,6 +15,10 @@ __all__ = ['MenuTree']
 class MenuTree(object):
     "A class to represent a menu on a wxMenuBar"
     class Node:
+        # the following are for compatibility with the tree structure, used by format_generic_access
+        IS_CLASS = IS_SIZER = False
+        klass = classname = None
+        properties = []
         def __init__(self, label="", id="", name="", help_str="", checkable="", radio="", handler=""):
             self.label = label
             self.id = id

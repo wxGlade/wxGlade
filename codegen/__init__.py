@@ -684,8 +684,8 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
 
         # collect all event handlers
         event_handlers = self.classes[code_obj].event_handlers
-        for win_id, evt, handler, evt_type in builder.get_event_handlers(code_obj):
-            event_handlers.append((win_id, mycn(evt), handler, evt_type))
+        for obj, evt, handler, evt_type in builder.get_event_handlers(code_obj):
+            event_handlers.append((obj, mycn(evt), handler, evt_type))
 
         # try to see if there's some extra code to add to this class
         if not self.preview:
@@ -849,8 +849,8 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
                     init += obj.properties["extracode_post"].get_lines()
 
             mycn = getattr(builder, 'cn', self.cn)
-            for win_id, evt, handler, evt_type in builder.get_event_handlers(obj):
-                parent_klass.event_handlers.append( (win_id, mycn(evt), handler, evt_type) )
+            for obj_, evt, handler, evt_type in builder.get_event_handlers(obj):
+                parent_klass.event_handlers.append( (obj_, mycn(evt), handler, evt_type) )
 
             # try to see if there's some extra code to add to this class
             if not self.preview:
@@ -966,7 +966,7 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
         else:
             already_there = {}
 
-        for win_id, event, handler, unused in event_handlers:
+        for obj, event, handler, unused in event_handlers:
             # don't create handler twice
             if handler in already_there:
                 continue

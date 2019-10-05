@@ -108,26 +108,18 @@ class PerlMenubarGenerator(wcodegen.PerlWidgetCodeWriter):
         return init, []
 
     def get_event_handlers(self, obj):
-        out = []
+        ret = []
 
         def do_get(item):
-            ret = []
-            if item.name:
-                val = self.codegen.add_object_format_name(item.name)
-            else:
-                name, val = self.codegen.generate_code_id(None, item.id)
-                if not val:
-                    val = '-1'  # but this is wrong anyway...
             if item.handler:
-                ret.append((val, 'EVT_MENU', item.handler, 'wxCommandEvent'))
-            if item.children:
-                for c in item.children:
-                    ret.extend(do_get(c))
-            return ret
+                ret.append((item, 'EVT_MENU', item.handler, 'wxCommandEvent'))
+            for c in item.children:
+                do_get(c)
 
         for menu in obj.menus:
-            out.extend(do_get(menu.root))
-        return out
+            do_get(menu.root)
+
+        return ret
 
 
 

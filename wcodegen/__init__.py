@@ -618,14 +618,6 @@ class BaseWidgetWriter(StylesMixin, BaseCodeWriter):
                                {'name':obj.name,'klass': obj.klass, 'events':events})
             return ret
 
-        #win_id = self.codegen.generate_code_id(obj)[1]
-        #if self.use_names_for_binding_events and (win_id == '-1' or win_id == self.codegen.cn('wxID_ANY')):
-            #win_id = self.codegen.add_object_format_name(obj.name)
-        if self.use_names_for_binding_events:
-            win_id = self.codegen.add_object_format_name(obj.name)
-        else:
-            win_id = self.codegen.generate_code_id(obj)[1]
-
         try:
             default_event = self.config['events']['default']['type']
         except KeyError:
@@ -654,7 +646,7 @@ class BaseWidgetWriter(StylesMixin, BaseCodeWriter):
             type_generic = 'type_%s' % major
             try:
                 evt_type = self.config['events'][event][type_generic]
-                ret.append((win_id, event, handler, evt_type))
+                ret.append((obj, event, handler, evt_type))
                 continue
             except KeyError:
                 pass
@@ -664,7 +656,7 @@ class BaseWidgetWriter(StylesMixin, BaseCodeWriter):
                 evt_type = self.config['events'][event]['type']
             except KeyError:
                 evt_type = default_event
-            ret.append((win_id, event, handler, evt_type))
+            ret.append((obj, event, handler, evt_type))
         return ret
 
     def get_properties_code(self, obj):

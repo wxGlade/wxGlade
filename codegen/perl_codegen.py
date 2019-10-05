@@ -406,21 +406,21 @@ sub %(handler)s {
 
     def generate_code_event_bind(self, code_obj, tab, event_handlers):
         code_lines = []
-        write = code_lines.append
 
-        for win_id, event, handler, unused in event_handlers:
-            if win_id.startswith('#'):
-                win_id = '$self->{%s}->GetId' % win_id[8:]
+        for obj, event, handler, unused in event_handlers:
+            if obj.name:
+                obj_id = '%s->GetId'%self.format_generic_access(obj) # e.g. '$self->{button_1}->GetId' or '$self->GetId'
+            else:
+                obj_id = self.generate_code_id(None, obj.id)[1] or '-1' # but this is wrong anyway...
 
             if 'EVT_NAVIGATION_KEY' in event:
                 tmpl = '''%(tab)s%(event)s($self, $self->can('%(handler)s'));\n'''
             else:
-                tmpl = '''%(tab)s%(event)s($self, %(win_id)s, $self->can('%(handler)s'));\n'''
-            details = { 'tab': tab, 'event': self.cn(event), 'handler': handler, 'win_id': win_id }
-            write(tmpl % details)
+                tmpl = '''%(tab)s%(event)s($self, %(obj_id)s, $self->can('%(handler)s'));\n'''
+            code_lines.append( tmpl % {'tab': tab, 'event': self.cn(event), 'handler': handler, 'obj_id': obj_id} )
 
         if event_handlers:
-            write('\n')
+            code_lines.append('\n')
 
         return code_lines
 

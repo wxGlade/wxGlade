@@ -362,27 +362,24 @@ from %(top_win_module)s import %(top_win_class)s\n\n"""
 
     def generate_code_event_bind(self, code_obj, tab, event_handlers):
         code_lines = []
-        write = code_lines.append
 
-        if event_handlers:
-            write('\n')
+        if event_handlers: code_lines.append('\n')
 
-        for win_id, event, handler, unused in event_handlers:
-            if win_id is None: continue  # bound already, the entry is just for creation of the method stub
-            if win_id.startswith('#'):
-                win_id = win_id[1:]
+        for obj, event, handler, unused in event_handlers:
+            if obj is None: continue  # bound already, the entry is just for creation of the method stub
+            if isinstance(obj, str):
+                obj_name_id = "id=%s"%obj  # mainly for toolbar
             else:
-                win_id = 'id=%s' % win_id
-            
+                obj_name_id = self.format_generic_access(obj)  # e.g. 'self.button_1' or 'self' for toplevels
+
             if not handler.startswith("lambda "):
                 handler = 'self.%s'%handler
 
             if 'EVT_NAVIGATION_KEY' in event:
                 tmpl = '%(tab)sself.Bind(%(event)s, %(handler)s)\n'
             else:
-                tmpl = '%(tab)sself.Bind(%(event)s, %(handler)s, %(win_id)s)\n'
-            details = {'tab':tab, 'event':self.cn(event), 'handler':handler, 'win_id':win_id}
-            write(tmpl % details)
+                tmpl = '%(tab)sself.Bind(%(event)s, %(handler)s, %(obj_name_id)s)\n'
+            code_lines.append( tmpl % {'tab':tab, 'event':self.cn(event), 'handler':handler, 'obj_name_id':obj_name_id} )
 
         return code_lines
 

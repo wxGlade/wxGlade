@@ -417,10 +417,8 @@ class LispCodeWriter(BaseLangCodeWriter, wcodegen.LispMixin):
         if event_handlers:
             write('\n')
 
-        for win_id, event, handler, unused in event_handlers:
-            if win_id.startswith('#'):
-                win_id = win_id[1:]
-            win_id = self._format_name(win_id)
+        for obj, event, handler, unused in event_handlers:
+            win_id = self._format_name('obj.%s' % obj.name if not obj.IS_CLASS else 'obj')
 
             write( "%(tab)s(wxEvtHandler_Connect (slot-top-window obj) %(win_id)s (exp%(event)s)\n%(tab2)s" \
                    "(wxClosure_Create #'%(handler)s obj))\n" % 
@@ -475,9 +473,6 @@ class LispCodeWriter(BaseLangCodeWriter, wcodegen.LispMixin):
             return '(_"%s")' % s
         else:
             return '"%s"' % s
-
-    def add_object_format_name(self, name):
-        return '#obj.%s' % name
 
     def _format_classattr(self, obj):
         res = BaseLangCodeWriter._format_classattr(self, obj)
