@@ -40,6 +40,7 @@ class PythonMenubarGenerator(wcodegen.PythonWidgetCodeWriter):
 
                 label = quote_str(item.label)
                 help_str = quote_str(item.help_str)
+
                 if item.children:
                     # a submenu
                     name = item.name or '%s_sub' % menu

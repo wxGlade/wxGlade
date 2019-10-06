@@ -36,6 +36,9 @@ class PerlMenubarGenerator(wcodegen.PerlWidgetCodeWriter):
                     if name: ids.append(name)
                     id = val
 
+                label = self.codegen.quote_str(item.label)
+                help_str = self.codegen.quote_str(item.help_str)
+
                 if item.children:
                     if item.name:
                         name = item.name
@@ -47,8 +50,7 @@ class PerlMenubarGenerator(wcodegen.PerlWidgetCodeWriter):
 
                     append('%s = Wx::Menu->new();\n' % name)
                     append_items(name, item.children)
-                    append( '%s->Append(%s, %s, %s, %s);\n' % (menu, id, self.codegen.quote_str(item.label),
-                                                               name, self.codegen.quote_str(item.help_str)) )
+                    append( '%s->Append(%s, %s, %s, %s);\n' % (menu, id, label, name, help_str) )
                 else:
                     item_type = 0
                     if item.checkable == '1':
@@ -62,17 +64,9 @@ class PerlMenubarGenerator(wcodegen.PerlWidgetCodeWriter):
                         itemname = ''
 
                     if item_type:
-                        append('%s%s->Append(%s, %s, %s, %s);\n' %
-                               (itemname, menu, id,
-                                self.codegen.quote_str(item.label),
-                                self.codegen.quote_str(item.help_str),
-                                item_type))
+                        append( '%s%s->Append(%s, %s, %s, %s);\n' % (itemname, menu, id, label, help_str, item_type) )
                     else:
-
-                        append('%s%s->Append(%s, %s, %s);\n' %
-                               (itemname, menu, id,
-                                self.codegen.quote_str(item.label),
-                                self.codegen.quote_str(item.help_str)))
+                        append( '%s%s->Append(%s, %s, %s);\n' % (itemname, menu, id, label, help_str) )
         #self._logger.debug('menus = %s', menus)
 
         obj_name = self.format_widget_access(obj)
