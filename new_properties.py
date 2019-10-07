@@ -1369,11 +1369,11 @@ class TextProperty(Property):
 
     def _on_text(self, event):
         if self.deactivated or self.blocked: return
-        s = event.GetString()
+        text = event.GetString()
         if not self.validation_re:
-            if self.control_re.search(s):
+            if self.control_re.search(text):
                 # strip most ASCII control characters
-                self.text.SetValue(self.control_re.sub("", s))
+                self.text.SetValue(self.control_re.sub("", text))
                 wx.Bell()
                 return
         elif self.check(text):
