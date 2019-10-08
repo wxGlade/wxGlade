@@ -50,6 +50,7 @@ PyOgg2_MyFrame::PyOgg2_MyFrame(wxWindow* parent, wxWindowID id, const wxString& 
     Mp3_To_Ogg_toolbar = new wxToolBar(this, -1, wxDefaultPosition, wxDefaultSize, wxTB_HORIZONTAL|wxTB_TEXT);
     SetToolBar(Mp3_To_Ogg_toolbar);
     Mp3_To_Ogg_toolbar->AddTool(wxID_OPEN, _("&Open"), wxNullBitmap, wxNullBitmap, wxITEM_NORMAL, _("Open a file"), _("Open a MP3 file to convert into OGG format"));
+    Bind(wxEVT_MENU, &PyOgg2_MyFrame::OnOpen, this, wxID_OPEN);
     Mp3_To_Ogg_toolbar->Realize();
     wxFlexGridSizer* sizer_1 = new wxFlexGridSizer(3, 1, 0, 0);
     notebook_1 = new wxNotebook(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxNB_BOTTOM);
@@ -135,7 +136,6 @@ PyOgg2_MyFrame::PyOgg2_MyFrame(wxWindow* parent, wxWindowID id, const wxString& 
 
 BEGIN_EVENT_TABLE(PyOgg2_MyFrame, wxFrame)
     // begin wxGlade: PyOgg2_MyFrame::event_table
-    EVT_TOOL(wxID_OPEN, PyOgg2_MyFrame::OnOpen)
     EVT_BUTTON(wxID_OK, PyOgg2_MyFrame::startConverting)
     // end wxGlade
 END_EVENT_TABLE();
