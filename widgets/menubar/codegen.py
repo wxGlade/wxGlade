@@ -236,7 +236,6 @@ class CppMenubarGenerator(wcodegen.CppWidgetCodeWriter):
                         out.append( '%s%s->Append(%s, %s, %s);\n' % (assignment, menu, id, label, help_str) )
 
                     if item.handler:
-                        # Python
                         handler = item.handler if "::" in item.handler else '%s::%s'%(obj.parent.klass, item.handler)
 
                         if self.codegen.for_version==(2,8):

@@ -15,25 +15,23 @@ from .tool import *
 class PythonCodeGenerator(wcodegen.PythonWidgetCodeWriter):
     def get_properties_code(self, obj):
         out = []
-        append = out.append
 
         obj_name = self.format_widget_access(obj)
         if obj.properties["bitmapsize"].is_active():
             w, h = obj.properties["bitmapsize"].get_tuple()
-            append( '%s.SetToolBitmapSize((%s, %s))\n' % (obj_name, w, h) )
+            out.append( '%s.SetToolBitmapSize((%s, %s))\n' % (obj_name, w, h) )
         if obj.properties["margins"].is_active():
             w, h = obj.properties["margins"].get_tuple()
-            append( '%s.SetMargins((%s, %s))\n' % (obj_name, w, h) )
+            out.append( '%s.SetMargins((%s, %s))\n' % (obj_name, w, h) )
         if obj.properties["packing"].is_active():
-            append( '%s.SetToolPacking(%s)\n' % (obj_name, obj.packing) )
+            out.append( '%s.SetToolPacking(%s)\n' % (obj_name, obj.packing) )
         if obj.properties["separation"].is_active():
-            append( '%s.SetToolSeparation(%s)\n' % (obj_name, obj.separation) )
+            out.append( '%s.SetToolSeparation(%s)\n' % (obj_name, obj.separation) )
 
         return out
 
     def get_init_code(self, obj):
         out = []
-        append = out.append
         ids = []
 
         obj_name = self.format_widget_access(obj)
@@ -42,15 +40,17 @@ class PythonCodeGenerator(wcodegen.PythonWidgetCodeWriter):
 
         for tool in obj.tools:
             if tool.id == '---':  # item is a separator
-                append( '%s.AddSeparator()\n' % obj_name )
+                out.append( '%s.AddSeparator()\n' % obj_name )
             else:
-                name, val = self.codegen.generate_code_id(None, tool.id)
-                if self.codegen.preview or (not name and (not val or val == '-1')):
+                id_access = None  # default: access via item.GetId()
+                id_declaration, val = self.codegen.generate_code_id(None, tool.id)
+                if self.codegen.preview or (not id_declaration and (not val or val == '-1')):
                     wid = self.cn('wxNewId()')
                 else:
-                    if name:
-                        ids.append( name )
+                    if id_declaration: ids.append( id_declaration )
                     wid = val
+                    if val!='wx.ID_ANY': id_access = val
+
                 kinds = ['wxITEM_NORMAL', 'wxITEM_CHECK', 'wxITEM_RADIO']
                 try:
                     kind = kinds[int(tool.type)]
@@ -61,11 +61,30 @@ class PythonCodeGenerator(wcodegen.PythonWidgetCodeWriter):
                 else:
                     bmp1 = self.generate_code_bitmap("empty:16,16")
                 bmp2 = self.generate_code_bitmap(tool.bitmap2)
+                
+                # append and optionally assign the returned item to a temporary variable
+                if False: # tool.name:
+                    # assign to attribute
+                    name = '%s.%s' % (obj_name, item.name)
+                    assignment = '%s = '%name
+                    if not id_access:
+                        id_access = "%s.GetId()"%name
+                elif tool.handler and not id_access:
+                    # assignment to local variable to bind handler
+                    assignment = 'tool = '
+                    id_access = 'tool.GetId()'
+                else:
+                    # no assignment necessary, as no handler defined
+                    assignment = ''
+
                 method = "AddLabelTool" if compat.IS_CLASSIC else "AddTool"
-                append( '%s.%s(%s, %s, %s, %s, %s, %s, %s)\n' %
-                        (obj_name, method, wid, self.codegen.quote_str(tool.label),
-                         bmp1, bmp2, self.cn(kind),
-                         self.codegen.quote_str(tool.short_help), self.codegen.quote_str(tool.long_help)) )
+                out.append( '%s%s.%s(%s, %s, %s, %s, %s, %s, %s)\n' %
+                            (assignment, obj_name, method, wid, self.codegen.quote_str(tool.label),
+                             bmp1, bmp2, self.cn(kind),
+                             self.codegen.quote_str(tool.short_help), self.codegen.quote_str(tool.long_help)) )
+                if tool.handler:
+                    handler = tool.handler if "." in tool.handler else "self.%s"%tool.handler
+                    out.append( "self.Bind(wx.EVT_TOOL, %s, id=%s)\n"%(handler, id_access) )
 
         return ids + out
 
@@ -91,9 +110,9 @@ class PythonCodeGenerator(wcodegen.PythonWidgetCodeWriter):
         ret = []
 
         for tool in obj.tools:
-            if not tool.handler: continue
-            tool_id = self.codegen.generate_code_id(None, tool.id)[1] or '-1'  # but this is wrong anyway...
-            ret.append( (tool_id, 'EVT_TOOL', tool.handler, 'wxCommandEvent') )
+            if not tool.handler or tool.handler=="---": continue
+            # first item is None -> just generate stub for item.handler, do not bind again
+            ret.append( (None, 'EVT_TOOL', tool.handler, 'wxCommandEvent') )
 
         return ret
 
@@ -194,33 +213,35 @@ class CppCodeGenerator(wcodegen.CppWidgetCodeWriter):
 
     def get_properties_code(self, obj):
         out = []
-        append = out.append
-        prop = obj.properties
 
         obj_name = self.codegen.format_generic_access(obj)
 
         if obj.properties["bitmapsize"].is_active():
             w, h = obj.properties["bitmapsize"].get_tuple()
-            append('%sSetToolBitmapSize(wxSize(%s, %s));\n' % (obj_name, w, h))
+            out.append('%sSetToolBitmapSize(wxSize(%s, %s));\n' % (obj_name, w, h))
 
         if obj.properties["margins"].is_active():
             w, h = obj.properties["margins"].get_tuple()
-            append('%sSetMargins(wxSize(%s, %s));\n' % (obj_name, w, h))
+            out.append('%sSetMargins(wxSize(%s, %s));\n' % (obj_name, w, h))
 
         if obj.properties["packing"].is_active():
-            append('%sSetToolPacking(%s);\n' % (obj_name, obj.packing))
+            out.append('%sSetToolPacking(%s);\n' % (obj_name, obj.packing))
         if obj.properties["separation"].is_active():
-            append('%sSetToolSeparation(%s);\n' % (obj_name, obj.separation))
+            out.append('%sSetToolSeparation(%s);\n' % (obj_name, obj.separation))
+
+        need_tmp = False
 
         for tool in obj.tools:
             if tool.id == '---':  # item is a separator
-                append('%sAddSeparator();\n' % obj_name)
+                out.append('%sAddSeparator();\n' % obj_name)
             else:
+                id_access = None
                 name, val = self.codegen.generate_code_id(None, tool.id)
                 if not name and (not val or val == '-1'):
                     wid = 'wxNewId()'
                 else:
                     wid = val
+                    if val!='wxID_ANY': id_access = val
                 kinds = ['wxITEM_NORMAL', 'wxITEM_CHECK', 'wxITEM_RADIO']
                 try:
                     kind = kinds[int(tool.type)]
@@ -228,11 +249,39 @@ class CppCodeGenerator(wcodegen.CppWidgetCodeWriter):
                     kind = 'wxITEM_NORMAL'
                 bmp1 = self.generate_code_bitmap(tool.bitmap1)
                 bmp2 = self.generate_code_bitmap(tool.bitmap2)
-                append('%sAddTool(%s, %s, %s, %s, %s, %s, %s);\n' %
-                       (obj_name, wid, self.codegen.quote_str(tool.label),
-                        bmp1, bmp2, kind,
-                        self.codegen.quote_str(tool.short_help),
-                        self.codegen.quote_str(tool.long_help)))
+
+                if False: # tool.name:
+                    # assign to attribute
+                    self.codegen.classes[obj.parent].sub_objs.append( ('wxMenuItem',item.name) )
+                    assignment = '%s = '%tool.name
+                    if not id_access:
+                        id_access = "%s->GetId()"%tool.name
+                elif tool.handler and not id_access:
+                    # assignment to local variable to bind handler
+                    assignment = 'wxglade_tmp_tool = '
+                    id_access = 'wxglade_tmp_tool->GetId()'
+                    need_tmp = True
+                else:
+                    # no assignment necessary, as no handler defined
+                    assignment = ''
+
+                out.append('%s%sAddTool(%s, %s, %s, %s, %s, %s, %s);\n' %
+                            (assignment, obj_name, wid, self.codegen.quote_str(tool.label),
+                             bmp1, bmp2, kind,
+                             self.codegen.quote_str(tool.short_help),
+                             self.codegen.quote_str(tool.long_help)))
+
+                if tool.handler:
+                    handler = tool.handler if "::" in tool.handler else '%s::%s'%(obj.parent.klass, tool.handler)
+
+                    if self.codegen.for_version==(2,8):
+                        tmpl = 'Connect(%(id)s, wxEVT_TOOL, %(handler)s);\n'
+                    else:
+                        tmpl = 'Bind(wxEVT_MENU, &%(handler)s, this, %(id)s);\n'
+                    out.append( tmpl % {"id":id_access, "handler":handler} )
+        
+        if need_tmp:
+            out.insert(0, "wxToolBarToolBase *wxglade_tmp_tool;\n" )
 
         return out
 
@@ -253,8 +302,8 @@ class CppCodeGenerator(wcodegen.CppWidgetCodeWriter):
 
         for tool in obj.tools:
             if not tool.handler: continue
-            tool_id = self.codegen.generate_code_id(None, tool.id)[1] or '-1'  # but this is wrong anyway...
-            ret.append( (tool_id, 'EVT_TOOL', tool.handler, 'wxCommandEvent') )
+            # first item is None -> just generate stub for item.handler, do not bind again
+            ret.append( (None, 'EVT_TOOL', tool.handler, 'wxCommandEvent') )
 
         return ret
 

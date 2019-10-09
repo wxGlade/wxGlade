@@ -48,6 +48,7 @@ class PyOgg2_MyFrame(wx.Frame):
         # Tool Bar
         self.Mp3_To_Ogg_toolbar = wx.ToolBar(self, -1, style=wx.TB_HORIZONTAL | wx.TB_TEXT)
         self.Mp3_To_Ogg_toolbar.AddTool(wx.ID_OPEN, _("&Open"), wx.NullBitmap, wx.NullBitmap, wx.ITEM_NORMAL, _("Open a file"), _("Open a MP3 file to convert into OGG format"))
+        self.Bind(wx.EVT_TOOL, self.OnOpen, id=wx.ID_OPEN)
         self.Mp3_To_Ogg_toolbar.Realize()
         self.SetToolBar(self.Mp3_To_Ogg_toolbar)
         # Tool Bar end
@@ -164,7 +165,6 @@ class PyOgg2_MyFrame(wx.Frame):
         self.Layout()
         self.Centre()
 
-        self.Bind(wx.EVT_TOOL, self.OnOpen, id=wx.ID_OPEN)
         self.Bind(wx.EVT_BUTTON, self.startConverting, self.button_1)
         # end wxGlade
 

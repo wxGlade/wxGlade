@@ -272,6 +272,9 @@ class TestGui(WXGladeGUITest):
             self._compare_files(expected_dialog, generate_dialog, check_mtime=check_mtime)
             self._compare_files(expected_frame,  generate_frame,  check_mtime=check_mtime)
 
+    def test_all_Tool_Menu_EventBinding(self):
+        self.load_and_generate('Tool_Menu_EventBinding', excluded=["lisp"], test_GUI=False)
+
     def test_OutputFileAndDirectory(self):
         "Test check for output file and directory"
         infilename = self._get_casefile_path('Python_Preferences.wxg')

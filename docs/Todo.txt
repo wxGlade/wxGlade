@@ -132,6 +132,7 @@ Widgets:
  * StaticBoxSizer: add font property; use StaticBox for Design window and set font if the user changes it
    when font is active, generate code using StaticBox
  * Dialog: support SetAffirmativeId, SetEscapeId
+ * ToolBar: optional (attribute) names
 done:
  * add wxRESERVE_SPACE_EVEN_IF_HIDDEN for managed widgets
  * MenuBar: don't create widget on Mac OS
