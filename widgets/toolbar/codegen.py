@@ -281,7 +281,7 @@ class CppCodeGenerator(wcodegen.CppWidgetCodeWriter):
                     out.append( tmpl % {"id":id_access, "handler":handler} )
         
         if need_tmp:
-            out.insert(1, "wxToolBarToolBase *wxglade_tmp_tool;\n" )
+            out.insert(0, "wxToolBarToolBase *wxglade_tmp_tool;\n" )
 
         return out
 
