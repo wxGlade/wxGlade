@@ -109,9 +109,9 @@ class CustomWidget(ManagedBase):
 
 class Dialog(wx.Dialog):
     import re
-    validation_re  = re.compile(r'^[a-zA-Z_]+[\w-]*(\[\w*\])*$')
+    validation_re  = re.compile(r'^[a-zA-Z_\.]+[\w-]*(\[\w*\])*$')  # does not avoid ".."
     def __init__(self):
-        title = _('Select widget class')
+        title = _('Enter widget class')
         pos = wx.GetMousePosition()
         wx.Dialog.__init__(self, None, -1, title, pos)
         klass = 'CustomWidget'
@@ -140,8 +140,10 @@ class Dialog(wx.Dialog):
         self.classname.Bind(wx.EVT_TEXT, self.validate)
 
     def validate(self, event):
-        OK = self.validation_re.match(self.classname.GetValue())
-        self.OK_button.Enable( bool(OK) )
+        class_name = self.classname.GetValue()
+        OK = bool( self.validation_re.match(class_name) )
+        if ".." in class_name or class_name.endswith("."): OK = False
+        self.OK_button.Enable( OK )
 
 
 def builder(parent, sizer, pos, number=[1]):
