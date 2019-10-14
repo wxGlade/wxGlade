@@ -771,9 +771,9 @@ class wxGladeFrame(wx.Frame):
 
         if toplevel.widget and toplevel.widget.IsShownOnScreen() and not focused:
             # just raise it
-            if toplevel.widget.IsIconized():
-                toplevel.widget.Iconize(False)
-            toplevel.widget.Raise()
+            if toplevel.widget.GetTopLevelParent().IsIconized():
+                toplevel.widget.GetTopLevelParent().Iconize(False)
+            toplevel.widget.GetTopLevelParent().Raise()
             return
         # open or close
         common.app_tree.show_toplevel(None, editor=toplevel)

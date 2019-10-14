@@ -211,8 +211,8 @@ class EditBase(EventsMixin, edit_base.EditBase):
     def is_visible(self):
         if not self.widget: return False
         if not self.widget.IsShown() and not isinstance(self.widget, wx.ScrolledWindow): return False
-        if self.widget.IsTopLevel():
-            return self.widget.IsShown()
+        if self.IS_TOPLEVEL:
+            return self.widget.GetTopLevelParent().IsShown()
         parent = self.parent
         if parent: return parent.is_visible()
         return self.widget.GetParent().IsShown()
