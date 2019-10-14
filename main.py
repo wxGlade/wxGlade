@@ -767,7 +767,7 @@ class wxGladeFrame(wx.Frame):
 
         if toplevel.widget:
             focus = toplevel.widget.FindFocus()
-            focused = focus and focus.GetTopLevelParent() is toplevel.widget
+            focused = focus and focus.GetTopLevelParent() is toplevel.widget.GetTopLevelParent()
 
         if toplevel.widget and toplevel.widget.IsShownOnScreen() and not focused:
             # just raise it
