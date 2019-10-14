@@ -11,7 +11,7 @@ Interface to owner modified; see below for class PropertyOwner
 
 import common, config, compat, logging, misc
 from collections import OrderedDict
-import re, sys, os
+import re, os
 import wx
 
 if wx.Platform != '__WXMSW__':
