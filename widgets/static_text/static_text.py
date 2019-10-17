@@ -42,7 +42,7 @@ class EditStaticText(ManagedBase, EditStylesMixin):
 
     def properties_changed(self, modified):
         if not modified or "label" in modified:
-            common.app_tree.refresh(self, refresh_label=True)
+            if common.app_tree: common.app_tree.refresh(self, refresh_label=True)
             if self.widget:
                 p = self.properties["label"]
                 if self.wrap!=-1 or (p.previous_value and len(p.previous_value)>len(self.label)):

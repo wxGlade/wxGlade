@@ -921,8 +921,9 @@ class TopLevelBase(WindowBase, PreviewMixin):
     def properties_changed(self, modified):
         if self.has_title and (not modified or "title" in modified):
             if self.widget:
-                self.widget.SetTitle(misc.design_title(self.title))
-            common.app_tree.refresh(self)
+                self.widget.SetTitle( misc.design_title(self.title) )
+            if common.app_tree:
+                common.app_tree.refresh(self)
 
         if not modified or "name" in modified and (self.name!=self._oldname):
             self.parent.update_top_window_name(self._oldname, self.name)

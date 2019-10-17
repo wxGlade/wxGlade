@@ -80,7 +80,7 @@ class EditButton(ManagedBase, EditStylesMixin, BitmapMixin):
             if self.widget:
                 self.widget.SetLabel(self.label)
 
-        if label_modified or "name" in modified:
+        if (label_modified or "name" in modified) and common.app_tree:
             common.app_tree.refresh(self, refresh_label=True, refresh_image=False)
 
         BitmapMixin._properties_changed(self, modified)

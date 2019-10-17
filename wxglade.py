@@ -263,7 +263,7 @@ def command_line_code_generation(filename, language, out_path=None):
     # following lines are taken from main.wxGlade().OnInit() and
     # main.wxGladeFrame.__init__()
     common.init_preferences()
-    app = application.Application()
+    common.root = app = application.Application()
     # The following lines contain code from tree.WidgetTree.__init__()
     if config.use_gui:
         common.app_tree = tree.WidgetTree(root_node, app)
@@ -279,9 +279,11 @@ def command_line_code_generation(filename, language, out_path=None):
         common.root.properties["language"].set(language)
         common.root.generate_code(out_path=out_path)
     except errors.WxgBaseException as inst:
+        if config.debugging: raise
         logging.error(inst)
         sys.exit(inst)
     except Exception:
+        if config.debugging: raise
         logging.error( _("An exception occurred while generating the code for the application.\n"
                          "If you think this is a wxGlade bug, please report it.") )
         logging.exception(_('Internal Error'))

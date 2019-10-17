@@ -232,7 +232,7 @@ class EditBase(np.PropertyOwner):
                     raise
             self.toplevel_parent.names[self.name] = 1
             common.app_tree.refresh(self, refresh_label=True, refresh_image=False)
-        elif not modified or "class" in modified or "name" in modified:
+        elif (not modified or "class" in modified or "name" in modified) and common.app_tree:
             common.app_tree.refresh(self, refresh_label=True, refresh_image=False)
 
     # widget creation and destruction ##################################################################################
