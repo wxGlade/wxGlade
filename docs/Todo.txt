@@ -1,16 +1,6 @@
 
 Property: "no_code"
 
-##########################################################################################
-These are the widgets that cannot be dragged to different spots on a gridsizer:
-- Notebook- SplitterWindow- ComboBox- SpinCtrl- SpinCtrlDouble- ListCtrl- Grid- StaticLine- PropertyGridManager
-
-##########################################################################################
-macOS:
-When I click on a widget and push the forward delete key, the widget is not removed and this is printed:  **** node_remove failed.
-> What should happen is the StaticText is deleted immediately.
-Thanks. I will look into this. On Windows it seems to work. 
-##########################################################################################
 
 new    Dialog: is called with klass="MyDialog" -> no events are defined
 loaded Dialog: is called with klass="wxDialog"  -> events are defined
