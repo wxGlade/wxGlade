@@ -87,7 +87,7 @@ class EventsPropertyHandler(BaseXmlBuilderTagHandler):
         if name == 'handler':
             if self.current_event and self._content:
                 char_data = self.get_char_data()
-                self.handlers[self.current_event] = char_data
+                self.handlers[self.current_event.upper()] = char_data
         elif name == 'events':
             if self.handlers:
                 self.owner.properties["events"].set_value_dict(self.handlers)
