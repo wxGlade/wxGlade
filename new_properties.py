@@ -2228,6 +2228,7 @@ class GridProperty(Property):
     GROW = True
     _PROPORTION = 5
     validation_res = None # one per column
+    UPPERCASE_COLS = None # True,False,None per column for upper,lower,any
     EDITABLE_COLS = None
     IS_KEY_VALUE = False # set to True if the values in the first column are unique
     SKIP_EMPTY = False
@@ -2541,7 +2542,7 @@ class GridProperty(Property):
         else:
             wx.Bell()
             return
-        # check and convert values; XXX use validation_res
+        # check and convert values; XXX use validation_res and UPPERCASE_COLS
         for row_value in value:
             for i,v in enumerate(row_value):
                 col = paste_columns[i]
@@ -2787,6 +2788,15 @@ class GridProperty(Property):
         if not self._validate(row, col, value):
             wx.Bell()
             return False
+
+        if self.UPPERCASE_COLS:
+            value_ = value
+            if self.UPPERCASE_COLS[col] is True:
+                value = value.upper()
+            elif self.UPPERCASE_COLS[col] is False:
+                value = value.lower()
+            if value != value_:
+                self.grid.SetCellValue(row, col, value)
 
         if self.immediate or (not self.can_add and not self.can_insert and not self.can_insert):
             if row>=len(self.value):

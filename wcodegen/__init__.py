@@ -628,6 +628,9 @@ class BaseWidgetWriter(StylesMixin, BaseCodeWriter):
             if event not in self.config['events']:
                 self._logger.warn( _('Ignore unknown event %s for %s'), event, obj.klass )
                 continue
+            #if event not in self.config['events']:
+                #self._logger.warn( _('Ignore unknown event %s for %s'), event, obj.klass )
+                #continue
 
             if self.codegen.preview and handler.startswith("lambda "):
                 if self.codegen.language!='python': continue

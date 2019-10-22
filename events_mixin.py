@@ -27,9 +27,10 @@ class EventsProperty(np.GridProperty):
                "then you need to create and register the handler yourself.\n"
                "You can do so in your own source that you derive from the\n"
                "wxGlade generated code or within wxGlade on the 'Code' tab.")
-    validation_res = [re.compile(r'^EVT_[a-zA-Z0-9_]+$'),
+    validation_res = [re.compile(r'^EVT_[a-zA-Z0-9_]+$', re.IGNORECASE),
                       re.compile(r'^(([a-zA-Z_]+[a-zA-Z0-9_-]*)|()|(lambda .*))$')]
     EDITABLE_COLS = [0,1]
+    UPPERCASE_COLS = [True,None]
     SKIP_EMPTY = True
     IS_KEY_VALUE = True
     CAN_ADD_GROUPS = True
@@ -47,8 +48,14 @@ class EventsProperty(np.GridProperty):
         self.grid.AutoSizeColumn(1, False)
 
     def set_value_dict(self, values_dict):
+        default_events = set()
         for row in self.value:
             row[1] = values_dict.get(row[0], "")
+            default_events.add(row[0])
+        # handle non-default events
+        for key, value in values_dict.items():
+            if key in default_events: continue
+            self.value.append([key,value])
         self.update_display()
 
     def write(self, output, tabs):
