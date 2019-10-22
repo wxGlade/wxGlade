@@ -379,7 +379,18 @@ from %(top_win_module)s import %(top_win_class)s\n\n"""
                 tmpl = '%(tab)sself.Bind(%(event)s, %(handler)s)\n'
             else:
                 tmpl = '%(tab)sself.Bind(%(event)s, %(handler)s, %(obj_name_id)s)\n'
-            code_lines.append( tmpl % {'tab':tab, 'event':self.cn(event), 'handler':handler, 'obj_name_id':obj_name_id} )
+
+            lines = [tmpl % {'tab':tab, 'event':self.cn(event), 'handler':handler, 'obj_name_id':obj_name_id}]
+
+            if self.preview:
+                # for preview we add an exception handler as the event may be unknown for this wx version or at all
+                indent = self.tabs(1)  # one additional level
+                lines.insert(0, '%stry:\n'%tab)
+                lines[1] = indent + lines[1]  # indent by one level
+                lines.append( '%sexcept AttributeError:\n'%tab )
+                lines.append( '%s%sprint("unknown event %s")\n'%(indent, tab, event) )
+
+            code_lines += lines
 
         return code_lines
 
