@@ -9,7 +9,8 @@ wxSpinCtrl objects
 
 import wx
 from edit_windows import ManagedBase, EditStylesMixin
-import common, config, misc
+import time
+import common, misc
 import new_properties as np
 
 
@@ -42,8 +43,9 @@ class EditSpinCtrl(ManagedBase, EditStylesMixin):
         self.widget.Bind(wx.EVT_SPIN, self.on_set_focus)
 
     def _on_set_focus(self, event):
-        # don't set focused_widget during event, as this may cause crashes
-        if not misc.focused_widget is self:
+        # within a short time window, we ignore focus events as these seem due losing focus
+        if not misc.focused_widget is self and time.time()-misc.focused_time > 0.05:
+            # don't set focused_widget during event, as this may cause crashes; use delay instead
             misc.set_focused_widget(self, delayed=True)
         event.Skip()
 

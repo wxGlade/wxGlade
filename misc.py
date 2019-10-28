@@ -8,7 +8,7 @@ Miscellaneous stuff, used in many parts of wxGlade
 """
 
 import common, config, compat
-import logging, os, re
+import logging, os, re, time
 import wx
 
 
@@ -21,10 +21,11 @@ _item_bitmaps = {}
 
 focused_widget = None  # the currently selected widget in GUI mode (for tree and property_panel)
 _next_focused_widget = None  # for delayed setting, to ensure that only the last call has an effect
+focused_time = 0.0  # sometimes, widgets ignore focus related events during a dead time of e.g. 50ms after setting focus
 
 def set_focused_widget(widget, force=False, delayed=False):
     if not config.use_gui: return
-    global focused_widget, _next_focused_widget
+    global focused_widget, _next_focused_widget, focused_time
 
     if delayed:
         _next_focused_widget = widget
@@ -36,15 +37,23 @@ def set_focused_widget(widget, force=False, delayed=False):
     # set focused widget; tell tree and property panel
     if focused_widget:
         focused_widget.update_view(selected=False)
+        set_focus = focused_widget.WX_CLASS in ("wxSpinCtrl", "wxSpinCtrlDouble")
+    else:
+        set_focus = False
     focused_widget = widget
     common.app_tree.set_current_widget(widget)
     common.property_panel.set_widget(widget, force)
     if common.history: common.history.set_widget(widget)
     common.main.set_widget(widget)  # to update menu and toolbar
+
+    focused_time = time.time()
     if widget and widget.widget:
         # ensure that it is visible and selection is displayed, if applicable
         show_widget(widget)
         widget.update_view(selected=True)
+        # set focus in Design window to move away from certain widgets
+        if set_focus and (widget.widget, "HasFocus") and not widget.widget.HasFocus():
+            widget.widget.SetFocus()
 
 
 def _set_focused_widget(widget, force=False):
