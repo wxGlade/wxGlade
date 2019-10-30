@@ -904,7 +904,7 @@ class wxGladeFrame(wx.Frame):
         error_msg = None
         infile = None
 
-        start = time.clock()
+        start = time.time()
 
         common.app_tree.clear()
         common.app_tree.app.init()
@@ -985,7 +985,7 @@ class wxGladeFrame(wx.Frame):
             common.app_tree.app.template_data = template.Template(filename)
             common.app_tree.app.filename = None
 
-        end = time.clock()
+        end = time.time()
         self._logger.info(_('Loading time: %.5f'), end - start)
 
         common.app_tree.app.saved = True
