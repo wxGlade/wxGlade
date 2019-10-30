@@ -164,7 +164,7 @@ def _guiless_open_app(filename):
     error_msg = None
     infile = None
 
-    start = time.clock()
+    start = time.time()
 
     common.root.clear()
     common.root.init()
@@ -235,7 +235,7 @@ def _guiless_open_app(filename):
         common.root.template_data = template.Template(filename)
         common.root.filename = None
 
-    end = time.clock()
+    end = time.time()
     logging.info(_('Loading time: %.5f'), end - start)
 
     common.root.saved = True
