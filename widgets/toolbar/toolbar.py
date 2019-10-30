@@ -27,7 +27,7 @@ class ToolsDialog(wx.Dialog):
     headers = ["Label","Primary Bitmap","Disabled Bitmap","Short Help","Long Help","Type","Event Handler","Id"]
     coltypes = {"type":int}
     default_item = ("item","","","","",0,"","")
-    separator_item = ("---","---","---","---","",None,"","---")
+    separator_item = ("---","---","---","---","",0,"","---")
     control_names = columns
     def __init__(self, parent, owner, items=None):
         style = wx.DEFAULT_DIALOG_STYLE|wx.RESIZE_BORDER|wx.WANTS_CHARS
@@ -451,7 +451,7 @@ class ToolsProperty(np.Property):
         self.edit_btn.Bind(wx.EVT_BUTTON, self.edit_tools)
 
     def edit_tools(self, event=None):
-        if hasattr(self, "edit_btn"):
+        if hasattr(self, "edit_btn") and self.edit_btn:
             parent = self.edit_btn.GetTopLevelParent()
         elif self.owner.widget:
             parent = self.owner.widget.GetTopLevelParent()
