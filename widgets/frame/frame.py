@@ -211,11 +211,12 @@ def _make_builder(base_class):
 
 def initialize():
     "initialization function for the module: returns a wx.BitmapButton to be added to the main palette"
-    cwx = common.widgets_from_xml
-    cwx['EditFrame']         = _make_builder(EditFrame)
-    cwx['EditMDIChildFrame'] = _make_builder(EditMDIChildFrame)
-
+    common.widget_classes['EditFrame'] = EditFrame
     common.widgets['EditFrame'] = builder
+    common.widgets_from_xml['EditFrame'] = _make_builder(EditFrame)
+
+    common.widget_classes['EditMDIChildFrame'] = EditMDIChildFrame
+    common.widgets_from_xml['EditMDIChildFrame'] = _make_builder(EditMDIChildFrame)
 
     from tree import WidgetTree
     import os.path

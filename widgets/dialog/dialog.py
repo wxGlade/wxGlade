@@ -132,9 +132,8 @@ def xml_builder(attrs, parent, pos=None):
 
 def initialize():
     "initialization function for the module: returns a wxBitmapButton to be added to the main palette"
-    cwx = common.widgets_from_xml
-    cwx['EditDialog'] = xml_builder
-
+    common.widget_classes['EditDialog'] = EditDialog
     common.widgets['EditDialog'] = builder
+    common.widgets_from_xml['EditDialog'] = xml_builder
 
     return common.make_object_button('EditDialog', 'dialog.xpm', 1, tip='Add a Dialog/Panel')

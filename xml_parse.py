@@ -469,7 +469,7 @@ class ClipboardXmlWidgetBuilder(XmlWidgetBuilder):
 
     def startElement(self, name, attrs):
         renamed = None
-        if name == 'object' and 'name' in attrs:
+        if name == 'object' and 'name' in attrs and common.widget_classes[attrs['base']].IS_NAMED:
             # generate a unique name for the copy
             oldname = str(attrs['name'])
             newname = self._get_new_name(oldname)

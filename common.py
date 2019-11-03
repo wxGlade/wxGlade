@@ -24,6 +24,7 @@ from xml.sax.saxutils import escape, quoteattr
 import config, compat, plugins, misc
 
 
+widget_classes = {}   # EditWidget class name -> EditWidget class
 widgets = {}          # all widgets: EditWidget class name -> factory(parent, pos)
 widgets_from_xml = {} # Factory functions to build objects from a XML file
 

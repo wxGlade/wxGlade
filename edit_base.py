@@ -29,7 +29,8 @@ class EditBase(np.PropertyOwner):
     #is_sizer = False
     IS_TOPLEVEL = IS_SLOT = IS_SIZER = IS_WINDOW = IS_ROOT = IS_TOPLEVEL_WINDOW = False
     IS_CLASS = False  # generate class for this item; can be dynamically set during code generation
-    WX_CLASS = None # needs to be defined in every derived class; e.g. "wxFrame", "wxBoxSizer", "wxPandel", "TopLevelPanel"
+    WX_CLASS = None # needs to be defined in every derived class; e.g. "wxFrame", "wxBoxSizer", "TopLevelPanel"
+    IS_NAMED = True  # default, only False for Spacer
     #CHILDREN = 1  # 0 or a fixed number or None for e.g. a sizer with a variable number of children; -1 for 0 or 1
     ATT_CHILDREN = None
 
@@ -66,7 +67,8 @@ class EditBase(np.PropertyOwner):
             self.parent.add_item(self, pos)
 
         # the toplevel parent keeps track of the names
-        self.toplevel_parent.names[name] = 1
+        if self.IS_NAMED:
+            self.toplevel_parent.names[name] = 1
 
     # tree navigation (parent and children) ############################################################################
     @property
@@ -224,6 +226,7 @@ class EditBase(np.PropertyOwner):
     def properties_changed(self, modified):
         if modified and "name" in modified and self.properties["name"].previous_value is not None:
             if config.debugging or config.testing:
+                assert self.IS_NAMED
                 assert self.name not in self.toplevel_parent.names
             try:
                 del self.toplevel_parent.names[self.properties["name"].previous_value]
@@ -291,7 +294,7 @@ class EditBase(np.PropertyOwner):
                 print(" **** node_remove failed")
         self.delete()
         common.app_tree.remove(self)  # remove mutual reference from widget to/from Tree item
-        if not self.IS_SLOT and self.name:
+        if self.IS_NAMED and self.name:
             try:
                 del self.toplevel_parent.names[self.name]
             except:
@@ -457,6 +460,7 @@ class Slot(EditBase):
     PROPERTIES = ["Slot", "pos"]
     IS_TOPLEVEL = IS_SIZER = IS_WINDOW = False
     IS_SLOT = True
+    IS_NAMED = False
     CHILDREN = 0
 
     def __init__(self, parent, pos=0, label=None):

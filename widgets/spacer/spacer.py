@@ -16,11 +16,12 @@ from edit_windows import ManagedBase
 class EditSpacer(ManagedBase):
     "Class to handle spacers for sizers"
     WX_CLASS = 'Spacer'
+    IS_NAMED = False
     _PROPERTIES = ["Layout", "width", "height", "pos", "proportion", "border", "flag"]
     PROPERTIES = _PROPERTIES + ManagedBase.EXTRA_PROPERTIES
 
     def __init__(self, name, parent, width, height, pos):
-        ManagedBase.__init__(self, name, 'spacer', parent, pos)
+        ManagedBase.__init__(self, 'spacer', 'spacer', parent, pos)
 
         # initialise instance properties
         self.width  = np.SpinProperty(width,  immediate=True)
@@ -98,22 +99,20 @@ def builder(parent, pos):
     if res != wx.ID_OK:
         return
 
-    name = 'spacer'
     with parent.frozen():
-        editor = EditSpacer( name, parent, width, height, pos )
+        editor = EditSpacer( 'spacer', parent, width, height, pos )
         if parent.widget: editor.create()
     return editor
 
 
 def xml_builder(attrs, parent, pos=None):
     "factory to build EditSpacer objects from a XML file"
-    from xml_parse import XmlParsingError
-    name = attrs.get('name', 'spacer')
-    return EditSpacer(name, parent, 1, 1, pos)
+    return EditSpacer('spacer', parent, 1, 1, pos)
 
 
 def initialize():
     "initialization function for the module: returns a wx.BitmapButton to be added to the main palette"
+    common.widget_classes['EditSpacer'] = EditSpacer
     common.widgets['EditSpacer'] = builder
     common.widgets_from_xml['EditSpacer'] = xml_builder
 

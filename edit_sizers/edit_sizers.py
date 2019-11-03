@@ -2395,18 +2395,24 @@ def grid_xml_builder(attrs, parent, sizeritem, pos=None):
 def init_all():
     "Module initialization function: returns dict w. key 'Sizers' and an assigned list of buttons for the main palette"
 
-    cw = common.widgets
-    cw['EditBoxSizer'] = builder
-    cw['EditGridSizer'] = grid_builder
+    common.widgets['EditBoxSizer'] = builder
+    common.widgets['EditGridSizer'] = grid_builder
 
-    cwx = common.widgets_from_xml
-    cwx['EditBoxSizer'] = xml_builder
+    common.widget_classes['EditBoxSizer'] = EditBoxSizer
     if HAVE_WRAP_SIZER:
-        cwx['EditWrapSizer'] = xml_builder
-    cwx['EditStaticBoxSizer'] = xml_builder
-    cwx['EditGridSizer'] = grid_xml_builder
-    cwx['EditFlexGridSizer'] = grid_xml_builder
-    cwx['EditGridBagSizer'] = grid_xml_builder
+        common.widget_classes['EditWrapSizer'] = EditWrapSizer
+    common.widget_classes['EditStaticBoxSizer'] = EditStaticBoxSizer
+    common.widget_classes['EditGridSizer'] = EditGridSizer
+    common.widget_classes['EditFlexGridSizer'] = EditFlexGridSizer
+    common.widget_classes['EditGridBagSizer'] = EditGridBagSizer
+
+    common.widgets_from_xml['EditBoxSizer'] = xml_builder
+    if HAVE_WRAP_SIZER:
+        common.widgets_from_xml['EditWrapSizer'] = xml_builder
+    common.widgets_from_xml['EditStaticBoxSizer'] = xml_builder
+    common.widgets_from_xml['EditGridSizer'] = grid_xml_builder
+    common.widgets_from_xml['EditFlexGridSizer'] = grid_xml_builder
+    common.widgets_from_xml['EditGridBagSizer'] = grid_xml_builder
 
     import os.path
     from tree import WidgetTree

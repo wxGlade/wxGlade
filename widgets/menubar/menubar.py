@@ -875,8 +875,8 @@ def xml_builder(attrs, parent, pos=None):
 
 def initialize():
     "initialization function for the module: returns a wx.BitmapButton to be added to the main palette"
-    cwx = common.widgets_from_xml
-    cwx['EditMenuBar'] = xml_builder
+    common.widget_classes['EditMenuBar'] = EditMenuBar
     common.widgets['EditMenuBar'] = builder
+    common.widgets_from_xml['EditMenuBar'] = xml_builder
 
     return common.make_object_button('EditMenuBar', 'menubar.xpm', 1)

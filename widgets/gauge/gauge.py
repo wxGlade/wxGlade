@@ -39,19 +39,10 @@ class EditGauge(ManagedBase, EditStylesMixin):
         EditStylesMixin.properties_changed(self, modified)
         ManagedBase.properties_changed(self, modified)
 
-editor_class = EditGauge
-editor_icon = 'gauge.xpm'
-editor_name = 'EditGauge'
-editor_style = ''
-
-dlg_title = _('wxGauge')
-box_title = _('Orientation')
-choices = 'wxGA_HORIZONTAL|wxGA_VERTICAL'
-
 
 def builder(parent, pos):
     "Factory function for editor objects from GUI"
-    dialog = wcodegen.WidgetStyleSelectionDialog( dlg_title, box_title, choices)
+    dialog = wcodegen.WidgetStyleSelectionDialog( _('wxGauge'), _('Orientation'), 'wxGA_HORIZONTAL|wxGA_VERTICAL')
     with misc.disable_stay_on_top(common.adding_window or parent):
         res = dialog.ShowModal()
     style = dialog.get_selection()
@@ -61,7 +52,7 @@ def builder(parent, pos):
 
     name = common.root.get_next_name('gauge_%d', parent)
     with parent.frozen():
-        editor = editor_class(name, parent, style, pos)
+        editor = EditGauge(name, parent, style, pos)
         editor.properties["flag"].set("wxEXPAND")
         if parent.widget: editor.create()
     return editor
@@ -74,11 +65,12 @@ def xml_builder(attrs, parent, pos=None):
         name = attrs['name']
     except KeyError:
         raise XmlParsingError(_("'name' attribute missing"))
-    return editor_class(name, parent, editor_style, pos)
+    return EditGauge(name, parent, '', pos)
 
 
 def initialize():
     "initialization function for the module: returns a wxBitmapButton to be added to the main palette"
-    common.widgets[editor_name] = builder
-    common.widgets_from_xml[editor_name] = xml_builder
-    return common.make_object_button(editor_name, editor_icon)
+    common.widget_classes['EditGauge'] = EditGauge
+    common.widgets['EditGauge'] = builder
+    common.widgets_from_xml['EditGauge'] = xml_builder
+    return common.make_object_button('EditGauge', 'gauge.xpm')

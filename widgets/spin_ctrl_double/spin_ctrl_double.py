@@ -107,6 +107,7 @@ def xml_builder(attrs, parent, pos=None):
 def initialize():
     "initialization function for the module: returns a wxBitmapButton to be added to the main palette"
     if not hasattr(wx, "SpinCtrlDouble"): return None
+    common.widget_classes['EditSpinCtrlDouble'] = EditSpinCtrlDouble
     common.widgets['EditSpinCtrlDouble'] = builder
     common.widgets_from_xml['EditSpinCtrlDouble'] = xml_builder
 

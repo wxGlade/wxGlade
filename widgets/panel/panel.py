@@ -378,13 +378,17 @@ def xml_toplevel_builder(attrs, parent, pos=None):
 
 def initialize():
     "initialization function for the module: returns a wxBitmapButton to be added to the main palette"
+    common.widget_classes['EditPanel'] = EditPanel
     common.widgets['EditPanel'] = builder
     common.widgets_from_xml['EditPanel'] = xml_builder
 
+    common.widget_classes['EditScrolledWindow'] = EditPanel
     #common.widgets['EditScrolledWindow'] = builder
     common.widgets_from_xml['EditScrolledWindow'] = xml_builder
 
+    common.widget_classes['EditTopLevelPanel'] = EditTopLevelPanel
     common.widgets_from_xml['EditTopLevelPanel'] = xml_toplevel_builder
+    common.widget_classes['EditTopLevelScrolledWindow'] = EditTopLevelPanel
     common.widgets_from_xml['EditTopLevelScrolledWindow'] = xml_toplevel_builder
     from tree import WidgetTree
     import os.path
@@ -394,8 +398,10 @@ def initialize():
     WidgetTree.images['EditTopLevelScrolledWindow'] = icon
 
     # these are for backwards compatibility (may be removed someday...)
+    common.widget_classes['SplitterPane'] = EditPanel
     common.widgets_from_xml['SplitterPane'] = xml_builder
     WidgetTree.images['SplitterPane'] = os.path.join( config.icons_path, 'panel.xpm' )
+    common.widget_classes['NotebookPane'] = EditPanel
     common.widgets_from_xml['NotebookPane'] = xml_builder
     WidgetTree.images['NotebookPane'] = os.path.join( config.icons_path, 'panel.xpm' )
     return common.make_object_button('EditPanel', 'panel.xpm', tip='Add a Panel/ScrolledWindow')

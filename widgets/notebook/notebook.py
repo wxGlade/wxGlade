@@ -401,6 +401,7 @@ def xml_builder(attrs, parent, pos=None):
 
 def initialize():
     "initialization function for the module: returns a wxBitmapButton to be added to the main palette"
+    common.widget_classes['EditNotebook'] = EditNotebook
     common.widgets['EditNotebook'] = builder
     common.widgets_from_xml['EditNotebook'] = xml_builder
     return common.make_object_button('EditNotebook', 'notebook.xpm')

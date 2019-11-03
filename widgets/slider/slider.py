@@ -62,20 +62,9 @@ class EditSlider(ManagedBase, EditStylesMixin):
         ManagedBase.properties_changed(self, modified)
 
 
-
-editor_class = EditSlider
-editor_icon = 'slider.xpm'
-editor_name = 'EditSlider'
-editor_style = ''
-
-dlg_title = _('wxSlider')
-box_title = _('Orientation')
-choices = 'wxSL_HORIZONTAL|wxSL_VERTICAL'
-
-
 def builder(parent, pos):
     "factory function for editor objects from GUI"
-    dialog = wcodegen.WidgetStyleSelectionDialog( dlg_title, box_title, choices )
+    dialog = wcodegen.WidgetStyleSelectionDialog( _('wxSlider'), _('Orientation'), 'wxSL_HORIZONTAL|wxSL_VERTICAL' )
     with misc.disable_stay_on_top(common.adding_window or parent):
         res = dialog.ShowModal()
     style = dialog.get_selection()
@@ -85,7 +74,7 @@ def builder(parent, pos):
 
     name = common.root.get_next_name('slider_%d', parent)
     with parent.frozen():
-        editor = editor_class(name, parent, style, pos)
+        editor = EditSlider(name, parent, style, pos)
         editor.properties["flag"].set("wxEXPAND")
         if parent.widget: editor.create()
     return editor
@@ -98,11 +87,12 @@ def xml_builder(attrs, parent, pos=None):
         name = attrs['name']
     except KeyError:
         raise XmlParsingError(_("'name' attribute missing"))
-    return editor_class(name, parent, editor_style, pos)
+    return EditSlider(name, parent, '', pos)
 
 
 def initialize():
     "initialization function for the module: returns a wxBitmapButton to be added to the main palette"
-    common.widgets[editor_name] = builder
-    common.widgets_from_xml[editor_name] = xml_builder
-    return common.make_object_button(editor_name, editor_icon)
+    common.widget_classes['EditSlider'] = EditSlider
+    common.widgets['EditSlider'] = builder
+    common.widgets_from_xml['EditSlider'] = xml_builder
+    return common.make_object_button('EditSlider', 'slider.xpm')

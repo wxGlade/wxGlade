@@ -84,6 +84,7 @@ def xml_builder(attrs, parent, pos=None):
 
 def initialize():
     "initialization function for the module: returns a wxBitmapButton to be added to the main palette"
+    common.widget_classes['EditStaticText'] = EditStaticText
     common.widgets['EditStaticText'] = builder
     common.widgets_from_xml['EditStaticText'] = xml_builder
 

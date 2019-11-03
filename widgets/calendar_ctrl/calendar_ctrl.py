@@ -80,6 +80,7 @@ def xml_builder(attrs, parent, pos=None):
 
 def initialize():
     "initialization function for the module; returns an icon to be added to the main palette"
+    common.widget_classes['EditCalendarCtrl'] = EditCalendarCtrl
     common.widgets['EditCalendarCtrl'] = builder
     common.widgets_from_xml['EditCalendarCtrl'] = xml_builder
 
