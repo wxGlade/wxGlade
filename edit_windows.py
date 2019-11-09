@@ -847,6 +847,10 @@ class TopLevelBase(WindowBase, PreviewMixin):
                 return (False, 'Menu or tool bar already set for this window')
             return (True, None)
 
+        if widget and widget.IS_TOPLEVEL:
+            # a toplevel dragged internally on another toplevel -> just re-order
+            return ("Reorder", None)
+
         if self.children and not self.children[0].IS_SLOT:
             return (False, 'Sizer or child widget already set for this window')
 

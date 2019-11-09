@@ -141,6 +141,18 @@ class DropTarget(wx.DropTarget):
             pos = dst_widget.pos
             dst_widget.sizer._insert_slot(pos)
             dst_widget = dst_widget.sizer.children[pos] # the slot
+        elif compatible=="Reorder":
+            # a toplevel dragged onto another toplevel
+            # internal drag: just re-order; external drag: paste before
+            src_index = common.root.children.index(src_widget)
+            dst_index = common.root.children.index(dst_widget)
+            common.root.children.insert(dst_index, src_widget)
+            if src_index>dst_index:
+                del common.root.children[src_index+1]
+            else:
+                del common.root.children[src_index]
+            common.app_tree.SortChildren(common.root.item)  # this does sort one level only
+            return default
 
         if not hasattr(dst_widget, "clipboard_paste"):
             return wx.DragCancel

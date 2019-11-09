@@ -56,6 +56,7 @@ User Interface:
  * add a template manager for (custom) widgets or complete parts of a design?
  * remove config.preferences.show_progress and always show ProgressDialog
 done:
+ * allow re-ordering toplevel windows by drag and drop
  * better accessibility for palete, grid properties and other property editors
  * pasting of menu and tool bars to/from application and frame
  * when Layout-Expand inside a grid sizer is checked -> add dialog to report and make growable

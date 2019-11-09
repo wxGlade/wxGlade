@@ -389,6 +389,17 @@ class WidgetTree(wx.TreeCtrl):#, Tree):
             import utilities
             utilities.TreePrinter(self)
 
+    def OnCompareItems(self, item1, item2):
+        # only used when re-ordering toplevel items
+        editor1 = self._GetItemData(item1)
+        editor2 = self._GetItemData(item2)
+        parent = editor1.parent
+        assert parent is editor2.parent and parent is common.root
+        index1 = parent.children.index(editor1)
+        index2 = parent.children.index(editor2)
+        if index1<index2: return -1
+        return +1
+
     def refresh(self, editor, refresh_label=True, refresh_image=True):
         # refresh label and/or image
         if editor.item is None: return
