@@ -18,7 +18,7 @@ class EditStaticBitmap(ManagedBase, EditStylesMixin, BitmapMixin):
     "Class to handle wxStaticBitmap objects"
     update_widget_style = False
     WX_CLASS = 'wxStaticBitmap'
-    _PROPERTIES = ["Widget", "bitmap", "attribute", "style"]
+    _PROPERTIES = ["Widget", "bitmap", "attribute", "scale_mode", "style"]
     PROPERTIES = ManagedBase.PROPERTIES + _PROPERTIES + ManagedBase.EXTRA_PROPERTIES
     ManagedBase.MOVE_PROPERTY(PROPERTIES, "attribute", "name")
     _PROPERTY_LABELS = {"attribute":'Store as attribute'}
@@ -33,6 +33,7 @@ class EditStaticBitmap(ManagedBase, EditStylesMixin, BitmapMixin):
         filedialog_style = wx.FD_OPEN | wx.FD_FILE_MUST_EXIST  # for the following two properties
         self.bitmap    = np.BitmapProperty(bmp_file)
         self.attribute = np.CheckBoxProperty(False, default_value=False)
+        self.scale_mode = np.ListBoxPropertyD("None", ["None", "Fill", "AspecFit", "AspectFill"])
 
     def create_widget(self):
         bmp = self.get_preview_obj_bitmap()
@@ -44,6 +45,8 @@ class EditStaticBitmap(ManagedBase, EditStylesMixin, BitmapMixin):
                     return bmp.GetWidth(), bmp.GetHeight()
                 return wx.StaticBitmap.GetBestSize(self.widget)
             self.widget.GetBestSize = get_best_size
+        if self.properties["scale_mode"].is_active():
+            self.widget.SetScaleMode(self.widget)
 
     def properties_changed(self, modified=None):
         "update label (and size if label/stockitem have changed)"
@@ -52,6 +55,9 @@ class EditStaticBitmap(ManagedBase, EditStylesMixin, BitmapMixin):
             self.widget.SetBitmap(bmp)
 
             self._set_widget_best_size()
+        if not modified or "scale_mode" in modified and self.widget:
+            if hasattr(self.widget, "SetScaleMode"):
+                self.widget.SetScaleMode(self.widget)
 
         EditStylesMixin.properties_changed(self, modified)
         ManagedBase.properties_changed(self, modified)
