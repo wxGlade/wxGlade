@@ -463,6 +463,7 @@ class TestGui(WXGladeGUITest):
     def test_missing_application_attributes(self):
         #"Test load wxg file w/ missing <application> attributes and generate code"
         "convert .xrc file with missing <application> attributes to .wxg and load it"
+        # this will fail on Python 3.8 as the ordering of elements is not defined
         # convert .xrc to .wxg
         infilename  = self._get_casefile_path('app_wo_attrs_gui.xrc')
         generated_filename = self._get_outputfile_path('app_wo_attrs_gui.wxg')
