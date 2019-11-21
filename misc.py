@@ -52,7 +52,7 @@ def set_focused_widget(widget, force=False, delayed=False):
         show_widget(widget)
         widget.update_view(selected=True)
         # set focus in Design window to move away from certain widgets
-        if set_focus and (widget.widget, "HasFocus") and not widget.widget.HasFocus():
+        if set_focus and hasattr(widget.widget, "HasFocus") and not widget.widget.HasFocus():
             widget.widget.SetFocus()
 
 
