@@ -1331,7 +1331,7 @@ class GridSizerBase(SizerBase):
             self.widget.SetSizeHints(self.window.widget)
 
     def _can_add_insert_slots(self, report=False):
-        if self.rows and self.cols:
+        if self.rows and self.cols and len(self.children)==self.rows*self.cols:
             # if both are defined, a re-sizing would need to be done
             if report:
                 misc.error_message("Can't add or insert slots as sizer's Rows and Cols are fixed (see Properties -> Grid).")
@@ -1492,19 +1492,19 @@ class GridSizerBase(SizerBase):
     @_frozen
     def properties_changed(self, modified):
         rows, cols = self._get_actual_rows_cols()
-        if rows*cols < len(self.children) - 1:
+        if rows*cols < len(self.children):
             # number of rows/cols too low; this is not called if rows or col==0
             if not modified or "cols" in modified:
                 # adjust number of rows if required
-                if rows*cols < len(self.children) - 1:
+                if rows*cols < len(self.children):
                     # more rows required
-                    rows = (len(self.children)-1) // (cols or 1)
-                    if (len(self.children)-1) % (cols or 1): rows += 1
+                    rows = len(self.children) // (cols or 1)
+                    if len(self.children) % (cols or 1): rows += 1
                 self.properties["rows"].set(rows)
                 if modified and not "rows" in modified: modified.append("rows")
             elif "rows" in modified:
-                cols = (len(self.children)-1) // (rows or 1)
-                if (len(self.children)-1) % (rows or 1): cols += 1
+                cols = len(self.children) // (rows or 1)
+                if len(self.children) % (rows or 1): cols += 1
                 self.properties["cols"].set(cols)
                 if modified and not "cols" in modified: modified.append("cols")
 
