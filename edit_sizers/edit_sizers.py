@@ -2370,8 +2370,6 @@ def grid_builder(parent, pos):
         # add the slots
         for i in range(rows*cols):
             editor._add_slot()
-        if rows!=0:
-            editor.properties["rows"].set(rows)
         editor.layout()
 
         if parent.widget: editor.create()
