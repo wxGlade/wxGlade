@@ -1281,8 +1281,12 @@ class CustomGridBagSizer(CustomFlexGridSizer):
 
 class GridSizerBase(SizerBase):
     "Base class for Grid sizers"
-    _PROPERTY_HELP = {"rows":"Numbers of sizer rows; can be set to 0 for 'as many as required'",
-                      "cols":"Numbers of sizer columns; can be set to 0 for 'as many as required'",
+    _PROPERTY_HELP = {"rows":"Number of sizer rows; can be set to 0 for 'as many as required'.\n"
+                             "This will re-arrange the children and empty slots, but not add/remove slots.\n"
+                             "To insert/add rows, better use the context menu items",
+                      "cols":"Number of sizer columns; can be set to 0 for 'as many as required'.\n"
+                             "This will re-arrange the children and empty slots, but not add/remove slots.\n"
+                             "To insert/add columns, better use the context menu items",
                       "vgap":'Vertical extra space between all children',
                       "hgap":'Horizontal extra space between all children'}
 
@@ -1374,7 +1378,7 @@ class GridSizerBase(SizerBase):
         if pos==-1:
             add_row = rows
             # ensure that the last row is full
-            for n in range( len(self.children) -rows*cols ):
+            for n in range( rows*cols - len(self.children) ):
                 self._insert_slot( len(self.children) )
         else:
             add_row, dummy = self._get_row_col(pos)
