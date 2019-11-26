@@ -2377,7 +2377,7 @@ def grid_builder(parent, pos):
     return editor
 
 
-def grid_xml_builder(attrs, parent, sizeritem, pos=None):
+def grid_xml_builder(attrs, parent, pos=None):
     "factory function to build EditGridSizer objects from a XML file"
     from xml_parse import XmlParsingError
 
