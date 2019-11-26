@@ -675,7 +675,7 @@ class Slot(EditBase):
             return
 
         # set focused widget
-        i = self.pos - 1
+        i = self.pos
         self._remove()
         if i >= len(self.parent.children):
             i = len(self.parent.children)-1
