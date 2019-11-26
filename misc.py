@@ -63,10 +63,10 @@ def _set_focused_widget(widget, force=False):
     set_focused_widget(widget, force)
 
 
-def rebuild_tree(widget=None, recursive=True, focus=True):
+def rebuild_tree(widget=None, recursive=True, focus=True, freeze=False):
     # re-build tree control for the widget and it's children; set focus to it; called after creation or modification
     common.app_tree.saved = False
-    common.app_tree.build(widget, recursive)
+    common.app_tree.build(widget, recursive, freeze)
     if focus and widget is not None:
         set_focused_widget(widget, force=widget==common.root)
 

@@ -990,7 +990,7 @@ class wxGladeFrame(wx.Frame):
 
                 return False
 
-        misc.rebuild_tree(common.root)
+        misc.rebuild_tree(common.root, freeze=True)
 
         common.app_tree.auto_expand = True  # re-enable auto-expansion of nodes
 

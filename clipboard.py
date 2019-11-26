@@ -311,7 +311,8 @@ def _paste(parent, pos, clipboard_data):
             parser.parse_string(xml_utf8)
             if parent and hasattr(parent, "on_child_pasted"):
                 parent.on_child_pasted()  # trigger e.g. re-sizing of the children
-        misc.rebuild_tree( parser.top_obj )
+        freeze = parser._object_counter>80  # for more objects, we freeze the Tree during re-build
+        misc.rebuild_tree( parser.top_obj, freeze=freeze )
         return True  # Widget hierarchy pasted.
     except xml_parse.XmlParsingError:
         if config.debugging: raise

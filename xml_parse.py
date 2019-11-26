@@ -366,6 +366,7 @@ class ClipboardXmlWidgetBuilder(XmlWidgetBuilder):
     def __init__(self, parent, pos, proportion, span, flag, border):
         XmlWidgetBuilder.__init__(self)
         self._renamed = {}
+        self._object_counter = 0
         self.parent = parent
         if not parent:
             # e.g. a frame is pasted: update with the top level names
@@ -489,6 +490,7 @@ class ClipboardXmlWidgetBuilder(XmlWidgetBuilder):
                 except AttributeError:
                     self._logger.exception( _('Exception caused by obj: %s'), self.top_obj )
             self.depth_level += 1
+            self._object_counter += 1
 
     def endElement(self, name):
         if name == 'object':

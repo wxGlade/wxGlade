@@ -354,16 +354,15 @@ class WidgetTree(wx.TreeCtrl):#, Tree):
         for child, item in zip(children, items):
             self._build_children(child, item)
 
-    def build(self, editor=None, recursive=True):
+    def build(self, editor=None, recursive=True, freeze=False):
         if DEBUG:
             print("="*80)
             print("build", editor, recursive)
         # (re-)build tree from data structure
         # e.g. .build(control)
         # XXX if recursive is not True, ensure that all children are refreshed, as e.g. slot numbers may have changed
-        self.Freeze()
+        if freeze: self.Freeze()  # Freeze/Thaw makes the tree scroll around, so it should only be used for major change
         try:
-    
             if editor is None:
                 editor = self.root
                 item = self.GetRootItem()
@@ -383,7 +382,7 @@ class WidgetTree(wx.TreeCtrl):#, Tree):
                     item = editor.item
             self._build_children(editor, item, recursive)
         finally:
-            self.Thaw()
+            if freeze: self.Thaw()
         #if config.debugging or DEBUG:
         if DEBUG:
             import utilities
