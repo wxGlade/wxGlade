@@ -186,6 +186,12 @@ class EditNotebook(ManagedBase, EditStylesMixin):
         del self.properties["tabs"].value[index]
         self.set_tabs(old_labels, indices)
 
+        if self.children:
+            if index>=len(self.children): index -= 1
+            misc.set_focused_widget(self.children[index])
+        else:
+            misc.set_focused_widget(self)
+
     @misc.restore_focus
     def set_tabs(self, old_labels, indices):  # called from tabs proberty on Apply button
         """tabs: list of strings
