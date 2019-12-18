@@ -446,7 +446,8 @@ class ClipboardXmlWidgetBuilder(XmlWidgetBuilder):
             except:
                 pass
 
-        # add _copy to the old name
+        # add _copy or _copy_N to the old name
+        if oldname.endswith('_copy'): oldname = oldname[:-5]
         i = 0
         if self.parent is not None:
             while newname in self.have_names:
