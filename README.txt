@@ -20,8 +20,9 @@ If you have a choice, you should prefer wxPython Phoenix running on Python 3.x.
 Installation
 ------------
 
-To start the program, enter ``python wxglade.py`` in your shell or use
-whatever is required to start a python application on your platform.
+To start the program, enter ``python3 wxglade.py`` or ``python wxglade.py`` in
+your shell or use whatever is required to start a python application on
+your platform.
 If you want to build a GUI for wxPython Classic or Phoenix:
 Start wxGlade in your target version - if it runs under Phoenix, it will
 create Phoenix code.
