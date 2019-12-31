@@ -47,7 +47,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = 'wxGlade'
-copyright = '2017-2019, Dietmar Schwertberger'
+copyright = '2017-2020, Dietmar Schwertberger'
 author = 'Dietmar Schwertberger'
 
 # The version info for the project you're documenting, acts as replacement for

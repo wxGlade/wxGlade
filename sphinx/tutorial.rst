@@ -693,6 +693,16 @@ Some things to remember, to save you a lot of work:
    * Repeat: :kbd:`Ctrl-R` or "Edit->Re-do" or toolbar second right-arrow
 
 
+Please keep in mind how to create a good structure:
+
+  * Always use the simplest available sizers.
+    Usually you will need mainly box sizers and maybe one or two FlexGridSizers.
+  * Use nested sizers to match the hierarchical / logical structure of your project. This will make it easy
+    to re-arrange things to find the best user interface.
+  * Never ever try to use a grid sizer as main sizer of a window trying to resemble pixel placement or
+    Tkinter's grid geometry manager. This is a mess to create and maintain.
+
+
 *********************************************************************
 Next steps
 *********************************************************************
