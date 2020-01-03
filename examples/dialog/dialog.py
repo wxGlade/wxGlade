@@ -42,9 +42,12 @@ class MyFrame(wx.Frame):
         # end wxGlade
 
     def on_button_show_modal(self, event):  # wxGlade: MyFrame.<event_handler>
+        # instantiate dialog and set text control to initial value
         with MyDialog(self) as dlg:
             dlg.text_ctrl_1.SetValue(self.text_ctrl_1.GetValue())
+            # show as modal dialog
             if dlg.ShowModal() == wx.ID_OK:
+                # user has hit OK -> read text control value
                 self.text_ctrl_1.SetValue(dlg.text_ctrl_1.GetValue())
 
 # end of class MyFrame
