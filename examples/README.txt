@@ -2,6 +2,8 @@ wxGlade Examples:
 
 AllWidgets:  examples showing most of the supported controls for wxPython 2.8 and >=3.0
 
+dialog:      use a dialog created with wxGlade
+
 html:        use wx.html.HtmlWindow to display simple HTML pages
 html2:       use wx.html2.WebView to display HTML with Javascript and CSS
              (not available on wxPython 2.8)
