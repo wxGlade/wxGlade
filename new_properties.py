@@ -1409,7 +1409,8 @@ class TextProperty(Property):
         if keycode == wx.WXK_ESCAPE:
             # reset
             self.text.SetValue( self._convert_to_text(self.value) )
-            self.text.SetInsertionPointEnd()
+            if self.text.GetInsertionPoint()!=-1:
+                self.text.SetInsertionPointEnd()
         if not self.multiline and keycode==13:
             # enter
             if self._check_for_user_modification(): return
