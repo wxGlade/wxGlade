@@ -625,6 +625,7 @@ class BaseWidgetWriter(StylesMixin, BaseCodeWriter):
 
         for event, handler in sorted( events ):
             if not handler: continue
+            # XXX bind with exception handler instead
 
             if self.codegen.preview and handler.startswith("lambda "):
                 if self.codegen.language!='python': continue
@@ -811,7 +812,7 @@ class CppWidgetCodeWriter(CppMixin, BaseWidgetWriter):
                 self.tmpl_before.append( '%s%s,\n' % (self.codegen.tabs(1), self.codegen.quote_str(choice[0])) )
             self.tmpl_before.append('};\n')
         else:
-            self.tmpl_before.append('const wxString %(name)s_choices[] = {};\n')
+            self.tmpl_before.append('const wxString %(name)s_choices[] = NULL;\n')
 
         return
 
