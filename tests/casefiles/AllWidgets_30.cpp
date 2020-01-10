@@ -137,7 +137,7 @@ All_Widgets_Frame::All_Widgets_Frame(wxWindow* parent, wxWindowID id, const wxSt
     notebook_1_wxChoice = new wxPanel(notebook_1, wxID_ANY);
     notebook_1->AddPage(notebook_1_wxChoice, _("wxChoice"));
     wxBoxSizer* sizer_5 = new wxBoxSizer(wxHORIZONTAL);
-    const wxString choice_empty_choices[] = {};
+    const wxString choice_empty_choices[] = NULL;
     choice_empty = new wxChoice(notebook_1_wxChoice, wxID_ANY, wxDefaultPosition, wxDefaultSize, 0, choice_empty_choices);
     sizer_5->Add(choice_empty, 1, wxALL, 5);
     const wxString choice_filled_choices[] = {
@@ -152,7 +152,7 @@ All_Widgets_Frame::All_Widgets_Frame(wxWindow* parent, wxWindowID id, const wxSt
     wxBoxSizer* sizer_6 = new wxBoxSizer(wxVERTICAL);
     wxBoxSizer* sizer_7 = new wxBoxSizer(wxHORIZONTAL);
     sizer_6->Add(sizer_7, 1, wxEXPAND, 0);
-    const wxString combo_box_empty_choices[] = {};
+    const wxString combo_box_empty_choices[] = NULL;
     combo_box_empty = new wxComboBox(notebook_1_wxComboBox, wxID_ANY, wxT(""), wxDefaultPosition, wxDefaultSize, 0, combo_box_empty_choices, 0);
     sizer_7->Add(combo_box_empty, 1, wxALL, 5);
     const wxString combo_box_filled_choices[] = {
@@ -188,7 +188,7 @@ All_Widgets_Frame::All_Widgets_Frame(wxWindow* parent, wxWindowID id, const wxSt
     notebook_1_wxListBox = new wxPanel(notebook_1, wxID_ANY);
     notebook_1->AddPage(notebook_1_wxListBox, _("wxListBox"));
     wxBoxSizer* sizer_4 = new wxBoxSizer(wxVERTICAL);
-    const wxString list_box_empty_choices[] = {};
+    const wxString list_box_empty_choices[] = NULL;
     list_box_empty = new wxListBox(notebook_1_wxListBox, wxID_ANY, wxDefaultPosition, wxDefaultSize, 0, list_box_empty_choices, 0);
     sizer_4->Add(list_box_empty, 1, wxALL|wxEXPAND, 5);
     const wxString list_box_filled_choices[] = {
@@ -211,7 +211,7 @@ All_Widgets_Frame::All_Widgets_Frame(wxWindow* parent, wxWindowID id, const wxSt
     notebook_1_wxRadioBox = new wxPanel(notebook_1, wxID_ANY);
     notebook_1->AddPage(notebook_1_wxRadioBox, _("wxRadioBox"));
     wxGridSizer* grid_sizer_1 = new wxGridSizer(2, 2, 0, 0);
-    const wxString radio_box_empty1_choices[] = {};
+    const wxString radio_box_empty1_choices[] = NULL;
     radio_box_empty1 = new wxRadioBox(notebook_1_wxRadioBox, wxID_ANY, _("radio_box_empty1"), wxDefaultPosition, wxDefaultSize, 0, radio_box_empty1_choices, 1, wxRA_SPECIFY_ROWS);
     grid_sizer_1->Add(radio_box_empty1, 1, wxALL|wxEXPAND, 5);
     const wxString radio_box_filled1_choices[] = {
@@ -222,7 +222,7 @@ All_Widgets_Frame::All_Widgets_Frame(wxWindow* parent, wxWindowID id, const wxSt
     radio_box_filled1 = new wxRadioBox(notebook_1_wxRadioBox, wxID_ANY, _("radio_box_filled1"), wxDefaultPosition, wxDefaultSize, 3, radio_box_filled1_choices, 0, wxRA_SPECIFY_ROWS);
     radio_box_filled1->SetSelection(1);
     grid_sizer_1->Add(radio_box_filled1, 1, wxALL|wxEXPAND, 5);
-    const wxString radio_box_empty2_choices[] = {};
+    const wxString radio_box_empty2_choices[] = NULL;
     radio_box_empty2 = new wxRadioBox(notebook_1_wxRadioBox, wxID_ANY, _("radio_box_empty2"), wxDefaultPosition, wxDefaultSize, 0, radio_box_empty2_choices, 1, wxRA_SPECIFY_COLS);
     grid_sizer_1->Add(radio_box_empty2, 1, wxALL|wxEXPAND, 5);
     const wxString radio_box_filled2_choices[] = {
