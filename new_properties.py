@@ -1702,7 +1702,7 @@ def _split_dlgu_suffix(s, orient=None, force_dlgu=False):
     if len(s)>1 and s[-1]=="d":
         return int(s[:-1]), "d"+orient
     if len(s)>2 and s[-2:] in ("dx","dy"):
-        suffix = s[:-2]
+        suffix = s[-2:]
         #if orient and suffix[-1]==orient: suffix = suffix[0]
         return int(s[:-2]), suffix
     if force_dlgu:
@@ -1761,12 +1761,12 @@ class SizePropertyD(IntPairPropertyD):
 
 
 class DimProperty(TextProperty):
-    # DimProperty takes an integer and optionally dialog units denoted by "d"
+    # DimProperty takes an integer and optionally dialog units denoted by "d", "dx" or "dy"
     validation_re = re.compile( _leading + _ge_0 + _dlu + _trailing) # dimension >=0 and optional DLU
     normalization = "%s%s" # for normalization % valiation_re.match(...).groups()
 
     def __init__(self, value="0", default_value=_DefaultArgument, name=None):
-        TextProperty.__init__(self, value, False, False, default_value, name)
+        TextProperty.__init__(self, str(value), False, False, default_value, name)
 
     def _set_converter(self, value):
         # used by set()
