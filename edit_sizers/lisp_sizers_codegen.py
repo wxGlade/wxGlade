@@ -49,12 +49,13 @@ class BaseLispSizerBuilder(BaseSizerBuilder):
 
         flag = child.properties["flag"].get_string_value()  # as string, joined with "|"
         flag = self.codegen.cn_f(flag) or '0'
+        border = self.codegen.generate_code_dim( child.properties["border"], "x" )  # for "d", use "dx"
 
         if child.IS_SIZER:
             tmpl_sizeritem = '(wxSizer_AddSizer (%s obj) (%s obj) %s %s %s nil)\n'
         else:
             tmpl_sizeritem = '(wxSizer_AddWindow (%s obj) (%s obj) %s %s %s nil)\n'
-        stmt = tmpl_sizeritem % ( sizer_name, obj_name, child.proportion, flag, child.border )
+        stmt = tmpl_sizeritem % ( sizer_name, obj_name, child.proportion, flag, border )
 
         return [stmt]
 

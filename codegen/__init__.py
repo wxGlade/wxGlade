@@ -1,7 +1,7 @@
 """Common code used by all code generators
 
 @copyright: 2011-2016 Carsten Grohmann
-@copyright: 2017-2019 Dietmar Schwertberger
+@copyright: 2017-2020 Dietmar Schwertberger
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
@@ -145,6 +145,7 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
       - generate_code_background(), generate_code_font(), generate_code_foreground()
       - generate_code_id()
       - generate_code_size()
+      - generate_code_dim()
       - format_generic_access()
       - _code_statements
 
@@ -1054,6 +1055,12 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
     def generate_code_size(self, obj):
         "Returns the code fragment that sets the size of the given object."
         raise NotImplementedError
+
+    def generate_code_dim(self, dim_property, default_orientation=None):
+        "Returns the code fragment that sets the dimension of the given object, optionally in dialog units."
+        # this is only implemented for Python and C++
+        # the default here just returns the size in pixels or -1
+        return dim_property.get_size_dlgu_suffix()[0]
 
     def generate_common_properties(self, widget):
         """generates the code for various properties common to all widgets (background and foreground colours, font,...)

@@ -435,22 +435,46 @@ from %(top_win_module)s import %(top_win_class)s\n\n"""
             return '%s = %s\n' % (name, val), name
         return 'global %s; %s = %s\n' % (name, name, val), name
 
+    def _generate_dialog_dim_orient(self, objname, size, orient):
+        # for a single value in given orientation "x" or "y"
+        if orient=="x":
+            if compat.IS_CLASSIC:
+                return '%s(%s, (%d, -1)).x' %(self.cn('wxDLG_SZE'), objname, size)
+            return '%s(%s, %s(%d, -1)).x' %(self.cn('wxDLG_UNIT'), objname, self.cn("wxSize"), size)
+        if compat.IS_CLASSIC:
+            return '%s(%s, (-1, %d)).y' %(self.cn('wxDLG_SZE'), objname, size)
+        return '%s(%s, %s(-1, %d)).y' %(self.cn('wxDLG_UNIT'), objname, self.cn("wxSize"), size)
+
+    def generate_code_dim(self, dim_property, default_orientation="x"):
+        dim, suffix = dim_property.get_size_dlgu_suffix(default_orientation)
+        if suffix:
+            return self._generate_dialog_dim_orient('self', dim, suffix[1])
+        if dim<0: dim = 0
+        return str(dim)
+
     def generate_code_size(self, obj, size=None):
         objname = self.format_generic_access(obj)
-        if size is None:
-            size = obj.properties["size"].get_string_value()
-        use_dialog_units = (size[-1] == 'd')
-        if not obj.parent_window:
-            method = 'SetSize'
-        else:
-            method = 'SetMinSize'
-        if use_dialog_units:
-            if compat.IS_CLASSIC:
-                return '%s.%s(%s(%s, (%s)))\n' % ( objname, method, self.cn('wxDLG_SZE'), objname, size[:-1] )
-            else:
-                return '%s.%s(%s(%s, %s(%s)))\n' % ( objname, method, self.cn('wxDLG_UNIT'), objname, self.cn("wxSize"), size[:-1] )
-        else:
+        method = 'SetMinSize'  if obj.parent_window else  'SetSize'
+
+        if size is not None:
+            # only used for custom widget preview with a value of "10, 10"
             return '%s.%s((%s))\n' % (objname, method, size)
+
+        w, ws, h, hs = obj.properties["size"].get_size_dlgu_suffix()  # ws, hs: "dx" or "dy" for dialog units
+
+        if ws=="dx" and hs=="dy":
+            # dialog units for both, in their 'natural' direction
+            if compat.IS_CLASSIC:
+                size = '%s(%s, (%d, %d))' % ( self.cn('wxDLG_SZE'), objname, w, h )
+            else:
+                size = '%s(%s, %s(%d, %d))' % ( self.cn('wxDLG_UNIT'), objname, self.cn("wxSize"), w, h )
+        else:
+            # pixels or dialog units with 'non-natural' orientation, at least for one dimension
+            if ws: w = self._generate_dialog_dim_orient(objname, w, ws[1])
+            if hs: h = self._generate_dialog_dim_orient(objname, h, hs[1])
+            size = "(%s, %s)" %(w, h)
+
+        return '%s.%s(%s)\n' % (objname, method, size)
 
     def _quote_str(self, s):
         """\

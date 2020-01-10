@@ -58,7 +58,7 @@ class wxGladePreferences(wxGladePreferencesUI):
     def _fix_spin_ctrls(self):
         "Workaround to a wxGTK 2.8.4.2 bug in wx.SpinCtrl.GetValue"
         done = {}
-        for name in ('autosave_delay', 'number_history', 'default_border_size'):
+        for name in ('autosave_delay', 'number_history'):  #, 'default_border_size'):
             def fix(n):
                 done[n] = False
 

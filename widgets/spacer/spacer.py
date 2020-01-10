@@ -3,12 +3,12 @@ Spacers to use in sizers
 
 @copyright: 2002-2007 Alberto Griggio
 @copyright: 2014-2016 Carsten Grohmann
-@copyright: 2016-2019 Dietmar Schwertberger
+@copyright: 2016-2020 Dietmar Schwertberger
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
 import wx
-import common, misc
+import common, misc, config
 import new_properties as np
 from edit_windows import ManagedBase
 
@@ -24,12 +24,19 @@ class EditSpacer(ManagedBase):
         ManagedBase.__init__(self, 'spacer', 'spacer', parent, pos)
 
         # initialise instance properties
-        self.width  = np.SpinProperty(width,  immediate=True)
-        self.height = np.SpinProperty(height, immediate=True)
+        self.width  = np.DimProperty(width)
+        self.height = np.DimProperty(height)
+
+    def _get_size(self):
+        # DDD
+        w = self.properties['width'].get_dim(self.parent.widget)
+        h = self.properties['height'].get_dim(self.parent.widget)
+        return (w, h)
 
     def create_widget(self):
         style = wx.SIMPLE_BORDER | wx.FULL_REPAINT_ON_RESIZE
-        self.widget = wx.Window(self.parent_window.widget, self.id, size=(self.width, self.height), style=style)
+        size = self._get_size()
+        self.widget = wx.Window(self.parent_window.widget, self.id, size=size, style=style)
         self.widget.GetBestSize = self.widget.GetSize
         self.widget.Bind(wx.EVT_PAINT, self.on_paint)
 
@@ -53,7 +60,7 @@ class EditSpacer(ManagedBase):
 
     def properties_changed(self, modified):
         if not modified or "width" in modified or "height" in modified:
-            size = (self.width, self.height)
+            size = self._get_size()
             if self.widget: self.widget.SetSize(size)
             self.parent.set_item_best_size(self, size=size)
         ManagedBase.properties_changed(self, modified)
@@ -63,8 +70,10 @@ class _Dialog(wx.Dialog):
     def __init__(self):
         wx.Dialog.__init__(self, common.main, -1, _("Enter size"), wx.GetMousePosition())
         # the controls
-        self.width  = wx.SpinCtrl(self, -1, "20")
-        self.height = wx.SpinCtrl(self, -1, "20")
+        self.width  = wx.SpinCtrl(self, -1, "20", min=0, max=1000)
+        self.height = wx.SpinCtrl(self, -1, "20", min=0, max=1000)
+        self.use_dlu = wx.CheckBox(self, -1, 'Use dialog units')
+        self.use_dlu.SetValue(config.preferences.use_dialog_units)
         self.width.SetFocus()
         self.width.SetSelection(-1, -1)
         self.height.SetSelection(-1, -1)
@@ -76,6 +85,7 @@ class _Dialog(wx.Dialog):
             gsizer.Add(wx.StaticText(self, -1, _(label)), 0, wx.ALL | wx.ALIGN_CENTER_VERTICAL, 5)
             gsizer.Add(control, 0, wx.ALL | wx.EXPAND | wx.ALIGN_CENTER_VERTICAL, 3)
         sizer.Add(gsizer)
+        sizer.Add(self.use_dlu, 0, wx.ALL|wx.ALIGN_CENTER, 3)
         # horizontal sizer for action buttons
         hsizer = wx.BoxSizer(wx.HORIZONTAL)
         hsizer.Add( wx.Button(self, wx.ID_CANCEL, _('Cancel')), 1, wx.ALL, 5)
@@ -93,8 +103,12 @@ def builder(parent, pos):
     dialog = _Dialog()
     with misc.disable_stay_on_top(common.adding_window or parent):
         res = dialog.ShowModal()
-    width  = dialog.width.GetValue()
-    height = dialog.height.GetValue()
+    width  = str(dialog.width.GetValue())
+    height = str(dialog.height.GetValue())
+    use_dlu = dialog.use_dlu.GetValue()
+    if use_dlu:
+        width  += 'dx'
+        height += 'dy'
     dialog.Destroy()
     if res != wx.ID_OK:
         return

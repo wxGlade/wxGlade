@@ -49,7 +49,7 @@ def xrc_code_generator(obj):
                 if obj.flag:
                     flag = obj.properties["flag"].get_string_value()
                     output.append(tabs1 + '<flag>%s</flag>\n' % self.cn_f(flag))
-                if obj.border:
+                if obj.border!='0':
                     output.append(tabs1 + '<border>%s</border>\n' % obj.border)
             else:
                 # just an empty sizer slot

@@ -126,7 +126,8 @@ class wxGladePreferencesUI(wx.Dialog):
         self.default_border = wx.CheckBox(self.notebook_1_pane_2, wx.ID_ANY, _("Default border width for widgets"))
         sizer_7.Add(self.default_border, 0, wx.ALIGN_CENTER_VERTICAL | wx.ALL, 5)
         
-        self.default_border_size = wx.SpinCtrl(self.notebook_1_pane_2, wx.ID_ANY, "", min=0, max=20, style=0)
+        #self.default_border_size = wx.SpinCtrl(self.notebook_1_pane_2, wx.ID_ANY, "", min=0, max=20, style=0)
+        self.default_border_size = wx.TextCtrl(self.notebook_1_pane_2, wx.ID_ANY, "")
         sizer_7.Add(self.default_border_size, 0, wx.ALL, 5)
         
         sizer_7_copy = wx.BoxSizer(wx.HORIZONTAL)

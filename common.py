@@ -769,7 +769,7 @@ class Preferences(ConfigParser.ConfigParser):
         'remember_geometry': True,
         'local_widget_path': '',
         'default_border': False,
-        'default_border_size': 3,
+        'default_border_size': "3",
         'show_sizer_handle': True,
         'show_palette_icons': True,
         'show_palette_labels': False,

@@ -1061,19 +1061,36 @@ void %(klass)s::%(handler)s(%(evt_type)s &event)  // wxGlade: %(klass)s.<event_h
             val = val
         return '%s = %s' % (name, val), name
 
+    def _generate_dialog_dim_orient(self, objname, size, orient):
+        # for a single value in given orientation "x" or "y"
+        if orient=="x":
+            'wxDLG_UNIT(%s, wxSize(%d, -1)).x' %(objname, size)
+        return 'wxDLG_UNIT(%s, wxSize(-1, %d)).y' %(objname, size)
+
+    def generate_code_dim(self, dim_property, default_orientation="x"):
+        dim, suffix = dim_property.get_size_dlgu_suffix(default_orientation)
+        if suffix:
+            return self._generate_dialog_dim_orient('this', dim, suffix[1])
+        if dim<0: dim = 0
+        return str(dim)
+
     def generate_code_size(self, obj):
         objname = self.format_generic_access(obj)
-        if obj.IS_CLASS:
-            name2 = 'this'
-        else:
-            name2 = obj.name
-        size = obj.properties["size"].get_string_value()
-        use_dialog_units = (size[-1] == 'd')
+        name2 = 'this'  if obj.IS_CLASS else  obj.name
         method = 'SetMinSize'  if obj.parent_window else  'SetSize'
 
-        if use_dialog_units:
-            return '%s%s(wxDLG_UNIT(%s, wxSize(%s)));\n' % (objname, method, name2, size[:-1])
-        return '%s%s(wxSize(%s));\n' % (objname, method, size)
+        w, ws, h, hs = obj.properties["size"].get_size_dlgu_suffix()  # ws, hs: "dx" or "dy" for dialog units
+
+        if ws=="dx" and hs=="dy":
+            # dialog units for both, in their 'natural' direction
+            size = '%s(%s, %s(%d, %d))' % ( self.cn('wxDLG_UNIT'), name2, self.cn("wxSize"), w, h )
+        else:
+            # pixels or dialog units with 'non-natural' orientation, at least for one dimension
+            if ws: w = self._generate_dialog_dim_orient(name2, w, ws[1])
+            if hs: h = self._generate_dialog_dim_orient(name2, h, hs[1])
+            size = "wxSize(%s, %s)" %(w, h)
+
+        return '%s%s(%s);\n' % (objname, method, size)
 
     def quote_path(self, s):
         return 'wxT(%s)' % super(CPPCodeWriter, self).quote_path(s)

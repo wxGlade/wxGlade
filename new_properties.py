@@ -5,7 +5,7 @@ File has been created in 2016; parts are from the old version of widget_properti
 
 Interface to owner modified; see below for class PropertyOwner
 
-@copyright: 2016-2019 Dietmar Schwertberger
+@copyright: 2016-2020 Dietmar Schwertberger
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
@@ -30,6 +30,7 @@ _ge_m1    = r"((?:-1)|(?:\d+))"    # a number group matching integers >=-1
 _g_0      = r"([1-9]\d*)"          # a number group matching integers >0
 _ge_0     = r"(\d+)"               # a number group matching integers >=0
 _comma    = r"\s*,\s*"             # a comma, optionally with surrounding whitespace
+_dlu      = r"\s*((?:d[xy]?)?)"    # the trailing d,dx,dy for "dialog units"
 _trailing = r"\s*\)?\s*$"          # whitespace, optionally including a closing ")"
 
 _float    = r"([+-]?\d*(?:\.\d*))"  # a number group matching a float
@@ -1037,6 +1038,11 @@ class ManagedFlags(_CheckListProperty):
 
     FLAG_NAMES  = sum( FLAG_DESCRIPTION.values(), [] )
     FLAG_VALUES = [getattr(wx, name[2:]) for name in FLAG_NAMES]
+    
+    #BORDER_UNITS       = [None,     "dx",    "dy"]  # for border; for Spacer width/height it will also be used
+    #BORDER_UNIT_LABELS = ["Pixels", "DLG X", "DLG Y"]
+    #BORDER_UNIT_HELP   = ["Border size is in pixels",
+                          #"Border size is in Dialog Units (x)", "Border size is in Dialog Units (y)"]
 
     def __init__(self, value, default_value=_DefaultArgument, name=None):
         self.styles = self.FLAG_DESCRIPTION
@@ -1636,45 +1642,152 @@ class IntPairPropertyD(TextPropertyD):
         return (int(a), int(b))
 
 
+
+def get_geometry_int(geom):
+    tmp = str(geom)
+    geom = tmp.strip()
+    if geom.isdigit(): return (int(geom), '')
+
+    size = 0
+    orient = ''  # 'x', 'y' for xDLU or "" to use size as-is.
+
+    if len(geom) > 1 and geom[-1] == 'd' and geom[:-1].isdigit():
+        size = int(geom[:-1])
+        orient = 'x'
+    elif len(geom) > 2 and geom[-2:] == 'dx' and geom[:-2].isdigit():
+        size = int(geom[:-2])
+        orient = 'x'
+    elif len(geom) > 2 and geom[-2:] == 'dy' and geom[:-2].isdigit():
+        size = int(geom[:-2])
+        orient = 'y'
+    return (size, orient)
+
+
+def get_geometry_value(geom):
+    (size, orient) = get_geometry_int(geom)
+    vdlu, hdlu = get_vdlu_hdlu()
+    if orient == 'x':
+        return int(size * hdlu)
+    elif orient == 'y':
+        return int(size * vdlu)
+    return size
+
+
+def get_dlu_dim(size, orient, widget=None):
+    if not orient:
+        return size
+
+    if widget:
+        w, h = size, size
+        if compat.IS_CLASSIC:
+            wd, hd = wx.DLG_SZE(widget, (size, size))
+        else:
+            wd, hd = wx.DLG_UNIT(widget, wx.Size(size, size))
+        if orient == 'x':
+            return wd
+        return hd
+
+    vdlu, hdlu = get_vdlu_hdlu()
+    if orient == 'x':
+        return int(size * hdlu)
+    return int(size * vdlu)
+
+
+def _split_dlgu_suffix(s, orient=None, force_dlgu=False):
+    # split off suffix from dimension string
+    # orient: 'x' or 'y' or None
+    s = s.lower()
+    #if s in ("-1", "-1d", "-1dx", "-1dy"):
+        #return -1, None
+    if len(s)>1 and s[-1]=="d":
+        return int(s[:-1]), "d"+orient
+    if len(s)>2 and s[-2:] in ("dx","dy"):
+        suffix = s[:-2]
+        #if orient and suffix[-1]==orient: suffix = suffix[0]
+        return int(s[:-2]), suffix
+    if force_dlgu:
+        return int(s), "d"+orient
+    return int(s), None
+
+
+def _get_dlg_size(widget, w,h):
+    if compat.IS_CLASSIC:
+        return wx.DLG_SZE(widget, (w, h))
+    return wx.DLG_UNIT(widget, wx.Size(w, h))
+
+
 class SizePropertyD(IntPairPropertyD):
-    d = r"(\s*[dD]?)" # the trailig d for "dialog units"
-    validation_re = re.compile( _leading + _ge_m1 + _comma + _ge_m1 + d + _trailing )  # match pair of integers >=- 1
-    del d
-    normalization = "%s, %s%s" # for normalization % valiation_re.match(...).groups()
+    # match pair of integers >=- 1 with optional suffixes "d", "dx", "dy"
+    validation_re = re.compile( _leading + _ge_m1 + _dlu + _comma + _ge_m1 + _dlu + _trailing, re.IGNORECASE )
+    normalization = "%s%s, %s%s" # for normalization % valiation_re.match(...).groups()
 
     def set(self, value, activate=None, deactivate=None, notify=False):
         IntPairPropertyD.set(self, value, activate, deactivate, notify)
+
+    def get_size_dlgu_suffix(self):
+        # return e.g. (-1,None, -1,None) or (10, "d", 20, "d"), (10,"d", 20, "dx")
+        # where "d" is for dialog units and "dx" or "dy" for dialog units of the other dimension
+        w, h = self.value.split(",")
+        w, ws = _split_dlgu_suffix(w, "x", force_dlgu=h.endswith("d"))
+        h, hs = _split_dlgu_suffix(h, "y")
+        return (w, ws, h, hs)
+        
     def get_size(self, widget=None):
-        "widget argument is used to calculate size in Dialog units, using wx.DLG_SZE"
+        "widget argument is used to calculate best size or size in Dialog units, using wx.DLG_SZE"
         if not self.is_active():
             if widget:
                 return widget.GetBestSize()
             raise ValueError("internal error")
 
-        w, h = self.value.split(",")
+        w, ws, h, hs = self.get_size_dlgu_suffix()
 
-        if h[-1] in 'dD':
-            h = h[:-1]
-            use_dialog_units = True
-        else:
-            use_dialog_units = False
-
-        w,h = int(w), int(h)
         if widget is None: return (w,h)
-    
-        if use_dialog_units:
-            if compat.IS_CLASSIC:
-                wd, hd = wx.DLG_SZE(widget, (w, h))
-            else:
-                wd, hd = wx.DLG_UNIT(widget, wx.Size(w, h))
-            if w!=-1: w = wd
-            if h!=-1: h = hd
+
+        if (ws or hs) and ( ws in ("dx",None) or hs in ("dy",None) ):
+            # "natural" orientation, at least for one dimension
+            wd, hd = _get_dlg_size(widget, w, h)
+        # for "non-natural" orientation(s):
+        if ws=="dy": wd = _get_dlg_size(widget, w, w)[1]
+        if hs=="dx": hd = _get_dlg_size(widget, h, h)[0]
+
+        if ws: w = wd
+        if hs: h = hd
 
         if w==-1 or h==-1:
             best_size = widget.GetBestSize()
             if w == -1: w = best_size[0]
             if h == -1: h = best_size[1]
         return (w,h)
+
+
+class DimProperty(TextProperty):
+    # DimProperty takes an integer and optionally dialog units denoted by "d"
+    validation_re = re.compile( _leading + _ge_0 + _dlu + _trailing) # dimension >=0 and optional DLU
+    normalization = "%s%s" # for normalization % valiation_re.match(...).groups()
+
+    def __init__(self, value="0", default_value=_DefaultArgument, name=None):
+        TextProperty.__init__(self, value, False, False, default_value, name)
+
+    def _set_converter(self, value):
+        # used by set()
+        if not isinstance(value, compat.basestring):
+            value = str(value)
+        if self.STRIP or self.strip:
+            value = value.strip()
+        return value
+
+    def get_dim(self, widget=None):
+        "return value in pixels; if required, widget argument is used to calculate size in Dialog units, using wx.DLG_SZE"
+        dim, orient = get_geometry_int(self.value)
+        if orient:
+            return get_dlu_dim(dim, orient, widget)
+        return dim
+
+    def get_size_dlgu_suffix(self, default_orientation="x"):
+        # return e.g. (-1,None, -1,None) or (10, "dx", 20, "dy"), (10,"dy", 20, "dx")
+        # where None is for pixels or -1 and "dx" or "dy" is for dialog units
+        d, ds = _split_dlgu_suffix(self.value, default_orientation)
+        return d, ds
 
 
 class IntRangePropertyA(IntPairPropertyD):
@@ -1726,7 +1839,7 @@ class FloatRangePropertyA(IntRangePropertyA):
         return (float(a), float(b))
 
 
-del _leading, _ge_m1, _g_0, _ge_0, _comma, _trailing, _float, _int
+del _leading, _ge_m1, _g_0, _ge_0, _comma, _dlu, _trailing, _float, _int
 ########################################################################################################################
 
 class ComboBoxProperty(TextProperty):

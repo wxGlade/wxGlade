@@ -537,7 +537,7 @@ class ManagedBase(WindowBase):
         self.pos        = np.LayoutPosProperty(pos)            # position within the sizer, 0-based
         self.span       = np.LayoutSpanProperty((1,1))         # cell spanning for GridBagSizer
         self.proportion = np.LayoutProportionProperty(0)       # item growth in sizer main direction
-        self.border     = np.SpinProperty(0, immediate=True)   # border width
+        self.border     = np.DimProperty(0)                    # border width
         self.flag       = np.ManagedFlags(wx.ADJUST_MINSIZE)   # alignment, border; expansion in other dir.
 
     def check_defaults(self):

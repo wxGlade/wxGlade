@@ -643,7 +643,7 @@ class Sizeritem(np.PropertyOwner):
         np.PropertyOwner.__init__(self)
         self.proportion = np.LayoutProportionProperty(0)
         self.span = np.LayoutSpanProperty((1,1))
-        self.border = np.SpinProperty(0)
+        self.border = np.DimProperty(0)
         self.flag = np.ManagedFlags(None)
         self.pos = np.SpinProperty(None)
 

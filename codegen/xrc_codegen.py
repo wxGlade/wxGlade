@@ -62,7 +62,7 @@ class SizerItemXrcObject(XrcObject):
         flag = self.obj.properties["flag"].get_string_value()
         if flag and flag!='0':
             output.append(tabs1 + '<flag>%s</flag>\n' % self.cn_f(flag))
-        if self.obj.border:
+        if self.obj.border!='0':
             output.append(tabs1 + '<border>%s</border>\n' % self.obj.border)
         if self.obj.parent._IS_GRIDBAG:
             cellpos = self.obj.parent._get_row_col(self.obj.pos)
@@ -99,7 +99,7 @@ class SpacerXrcObject(XrcObject):
             if obj.flag:
                 flag = obj.properties["flag"].get_string_value()
                 output.append(tabs1 + '<flag>%s</flag>\n' % self.cn_f(flag))
-            if obj.border:
+            if obj.border!='0':
                 output.append(tabs1 + '<border>%s</border>\n' % obj.border)
         else:
             # just an empty sizer slot

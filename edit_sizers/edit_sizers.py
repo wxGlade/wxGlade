@@ -179,8 +179,8 @@ class BaseSizerBuilder(object):
         if self.klass != 'wxGridBagSizer':
             self.tmpl_dict['rows'] = obj.rows
             self.tmpl_dict['cols'] = obj.cols
-        self.tmpl_dict['vgap'] = obj.vgap
-        self.tmpl_dict['hgap'] = obj.hgap
+        self.tmpl_dict['vgap'] = self.codegen.generate_code_dim(obj.properties["vgap"])
+        self.tmpl_dict['hgap'] = self.codegen.generate_code_dim(obj.properties["hgap"])
         return self._get_code(obj)
 
     def get_code_wxFlexGridSizer(self, obj):
@@ -222,12 +222,13 @@ class BaseSizerBuilder(object):
 
         flag = child.properties["flag"].get_string_value()  # as string, joined with "|"
         flag = self.codegen.cn_f(flag) or '0'
+        border = self.codegen.generate_code_dim( child.properties["border"], "x" )  # for "d", use "dx"
 
         if self.klass!="wxGridBagSizer":
-            stmt = self.codegen.tmpl_sizeritem % ( sizer_name, obj_name, child.proportion, flag, child.border )
+            stmt = self.codegen.tmpl_sizeritem % ( sizer_name, obj_name, child.proportion, flag, border )
         else:
             pos = obj._get_row_col(child.pos)
-            stmt = self.codegen.tmpl_gridbagsizeritem % ( sizer_name, obj_name, pos, child.span, flag, child.border )
+            stmt = self.codegen.tmpl_gridbagsizeritem % ( sizer_name, obj_name, pos, child.span, flag, border )
 
         return [stmt]
 
@@ -355,7 +356,7 @@ class SizerBase(Sizer, np.PropertyOwner):
             self.pos        = np.LayoutPosProperty(pos)        # the position within the sizer, 0-based
             self.span       = np.LayoutSpanProperty((1,1) )  # row,colspan for items in GridBagSizers
             self.proportion = np.LayoutProportionProperty(1)
-            self.border     = np.SpinProperty(0, immediate=True)
+            self.border     = np.DimProperty(0)
             self.flag       = np.ManagedFlags(wx.EXPAND)
             self._has_layout = True
         else:
@@ -617,25 +618,27 @@ class SizerBase(Sizer, np.PropertyOwner):
         else:
             w, h = best_size
 
+        border = item.properties["border"].get_dim(self.parent_window.widget)
+
         if pos>len(self.widget.GetChildren()):
             ## I have to set wxADJUST_MINSIZE to handle a bug that I'm not able to detect (yet): if the width or height
             ## of a widget is -1, the layout is messed up!
             if self._IS_GRIDBAG:
-                self.widget.Add( item.widget, pos, item.span, item.flag, item.border )
+                self.widget.Add( item.widget, pos, item.span, item.flag, border )
             else:
-                self.widget.Add( item.widget, item.proportion, item.flag, item.border )
+                self.widget.Add( item.widget, item.proportion, item.flag, border )
 
             self.widget.SetItemMinSize(item.widget, w, h)
             return
 
         if self._IS_GRIDBAG:
             # XXX check item.widget.span and remove empty slots
-            self.widget.Add( item.widget, pos, item.span, item.flag, item.border, destroy=True )
+            self.widget.Add( item.widget, pos, item.span, item.flag, border, destroy=True )
             self.widget.Layout()
             return
 
         # no GridBagSizer
-        self.widget.Insert(pos+self.widget._BTN_OFFSET, item.widget, item.proportion, item.flag, item.border)
+        self.widget.Insert(pos+self.widget._BTN_OFFSET, item.widget, item.proportion, item.flag, border)
 
         try:  # if the item was a window, set its size to a reasonable value
             self.widget.SetItemMinSize(item.widget, w, h)  # w,h is GBestSize
@@ -700,7 +703,7 @@ class SizerBase(Sizer, np.PropertyOwner):
             if (item.GetFlag() & wx.EXPAND) and not (widget.flag & wx.EXPAND): size_was_reduced = True
             item.SetFlag(widget.flag)
         if modified is None or "border" in modified:
-            item.SetBorder(widget.border)
+            item.SetBorder( widget.properties["border"].get_dim(widget.widget) )
         if (modified is None or "span" in modified) and self._IS_GRIDBAG:
             self._check_slots(remove_only=True)
             item.SetSpan(widget.span)
@@ -717,8 +720,7 @@ class SizerBase(Sizer, np.PropertyOwner):
                 if w == -1: w = best_size[0]
                 if h == -1: h = best_size[1]
             elif widget.__class__.__name__=="EditSpacer":
-                w = widget.width
-                h = widget.height
+                w, h = widget.get_size(widget.widget)
             else:
                 if size_was_reduced and  widget.__class__.__name__ in ("EditPanel","CustomWidget"):
                     # if proportion is reduced and no size defined, set to a minimum size of 20,20
@@ -1292,7 +1294,7 @@ class GridSizerBase(SizerBase):
 
     EXTRA_PROPERTIES = ["Grid", "rows", "cols", "vgap", "hgap"]
 
-    def __init__(self, name, klass, parent, pos, rows=3, cols=3, vgap=0, hgap=0):
+    def __init__(self, name, klass, parent, pos, rows=3, cols=3, vgap="0", hgap="0"):
         SizerBase.__init__(self, name, klass, None, parent, pos)
         if self.WX_CLASS == "wxGridBagSizer":
             val_range=(1,1000)
@@ -1301,8 +1303,8 @@ class GridSizerBase(SizerBase):
             val_range=(0,1000)
         self.rows = np.SpinProperty(rows, val_range=val_range, immediate=True)
         self.cols = np.SpinProperty(cols, val_range=val_range, immediate=True)
-        self.vgap = np.SpinProperty(vgap, immediate=True)
-        self.hgap = np.SpinProperty(hgap, immediate=True)
+        self.vgap = np.DimProperty(vgap)
+        self.hgap = np.DimProperty(hgap)
 
     def create_widget(self):
         "This must be overriden and called at the end of the overriden version"
@@ -1534,12 +1536,15 @@ class GridSizerBase(SizerBase):
                     self.widget.SetCols(self.cols)
                     layout = True
             if not modified or "hgap" in modified and self.widget:
-                if self.widget.GetHGap()!=self.hgap:
-                    self.widget.SetHGap(self.hgap)
+                # DDD check which widget to use: self.widget, parent.widget or whatever
+                dim = self.properties['hgap'].get_dim(self.parent_window.widget)
+                if self.widget.GetHGap()!=dim:
+                    self.widget.SetHGap(dim)
                     layout = True
             if not modified or "vgap" in modified and self.widget:
-                if self.widget.GetVGap()!=self.vgap:
-                    self.widget.SetVGap(self.vgap)
+                dim = self.properties['vgap'].get_dim(self.parent_window.widget)
+                if self.widget.GetVGap()!=dim:
+                    self.widget.SetVGap(dim)
                     layout = True
 
         if "growable_rows" in self.properties and self.widget:
@@ -1558,11 +1563,14 @@ class EditGridSizer(GridSizerBase):
     "Class to handle wxGridSizer objects"
     WX_CLASS = "wxGridSizer"
 
-    def __init__(self, name, parent, pos, rows=3, cols=3, vgap=0, hgap=0):
+    def __init__(self, name, parent, pos, rows=3, cols=3, vgap="0", hgap="0"):
         GridSizerBase.__init__(self, name, 'wxGridSizer', parent, pos, rows, cols, vgap, hgap)
 
     def create_widget(self, dont_add=False):
-        self.widget = CustomGridSizer(self, self.rows, self.cols, self.vgap, self.hgap)
+        # DDD self.parent_window.widget or self.parent.widget?
+        vgap = self.properties['vgap'].get_dim(self.parent_window.widget)
+        hgap = self.properties['hgap'].get_dim(self.parent_window.widget)
+        self.widget = CustomGridSizer(self, self.rows, self.cols, vgap, hgap)
         if self.parent.IS_SIZER and not dont_add:
             self.sizer.add_item(self, self.pos) # , self.widget.GetMinSize())
         GridSizerBase.create_widget(self)
@@ -1690,7 +1698,7 @@ class EditFlexGridSizer(GridSizerBase):
     _PROPERTY_HELP = {"growable_rows":'Select growable rows',
                       "growable_cols":'Select growable columns'}
 
-    def __init__(self, name, parent, pos, rows=3, cols=3, vgap=0, hgap=0):
+    def __init__(self, name, parent, pos, rows=3, cols=3, vgap="0", hgap="0"):
         GridSizerBase.__init__(self, name, self.WX_CLASS, parent, pos, rows, cols, vgap, hgap)
         self.growable_rows = _GrowablePropertyD([], default_value=[])
         self.growable_cols = _GrowablePropertyD([], default_value=[])
@@ -1698,7 +1706,10 @@ class EditFlexGridSizer(GridSizerBase):
         self.properties["growable_cols"].title = 'Select growable cols'
 
     def create_widget(self, dont_add=False):
-        self.widget = CustomFlexGridSizer(self, self.rows, self.cols, self.vgap, self.hgap)
+        # DDD self.parent_window.widget or self.parent.widget?
+        vgap = self.properties['vgap'].get_dim(self.parent_window.widget)
+        hgap = self.properties['hgap'].get_dim(self.parent_window.widget)
+        self.widget = CustomFlexGridSizer(self, self.rows, self.cols, vgap, hgap)
         GridSizerBase.create_widget(self)
         self._set_growable()
         if self.parent.IS_SIZER and not dont_add:
@@ -1764,7 +1775,10 @@ class EditGridBagSizer(EditFlexGridSizer):
                       "cols":"Numbers of sizer columns; this is just used internally for wxGlade design, not by wx"}
 
     def create_widget(self, dont_add=False):  # this one does not call GridSizerBase.create_widget, as the strategy here is different
-        self.widget = CustomGridBagSizer(self, self.rows, self.cols, self.vgap, self.hgap)
+        # DDD self.parent_window.widget or self.parent.widget?
+        vgap = self.properties['vgap'].get_dim(self.parent_window.widget)
+        hgap = self.properties['hgap'].get_dim(self.parent_window.widget)
+        self.widget = CustomGridBagSizer(self, self.rows, self.cols, vgap, hgap)
         #GridSizerBase.create_widget(self)
         ################################################################################################################
         
@@ -2089,8 +2103,8 @@ def change_sizer(old, new):
 
             szr.properties["rows"].set( rows )
             szr.properties["cols"].set( cols )
-            szr.properties["hgap"].set( getattr(old, "hgap", 0) )
-            szr.properties["vgap"].set( getattr(old, "vgap", 0) )
+            szr.properties["hgap"].set( getattr(old, "hgap", "0") )
+            szr.properties["vgap"].set( getattr(old, "vgap", "0") )
             szr.properties_changed( ["rows","cols","hgap","vgap"] )
         if isinstance(szr, EditFlexGridSizer) and isinstance(old, EditFlexGridSizer):
             # take growable rows and cols from old sizer
