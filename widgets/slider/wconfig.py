@@ -49,8 +49,7 @@ config = {
             'desc': _('Displays ticks on the bottom (this is the default).'),
         },
         'wxSL_SELRANGE': {
-            'desc': _('Allows the user to select a range on the slider. '
-                      'Windows only.'),
+            'desc': _('Allows to display a range on the slider using slider.SetSelection(min,max); Windows only. '),
         },
         'wxSL_INVERSE': {
             'desc': _('Inverses the minimum and maximum endpoints on the '
