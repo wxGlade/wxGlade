@@ -405,26 +405,31 @@ class WindowBase(EditBase):
 
             # try to preserve the user's choice
             size_prop = prop_size.value.strip()
+            width_prop, ws, height_prop, hs = prop_size.get_size_dlgu_suffix()
 
-            if prop_size.is_active():
-                use_dialog_units = size_prop and size_prop[-1] == 'd'
-                if use_dialog_units: size_prop = size_prop[:-1]  # drop the left 'd'
+            #if prop_size.is_active():
+                #use_dialog_units = size_prop and size_prop[-1] == 'd'
+                #if use_dialog_units: size_prop = size_prop[:-1]  # drop the left 'd'
 
-                weidth_prop, height_prop = [int(t) for t in size_prop.split(',')]
-            else:
-                use_dialog_units = config.preferences.use_dialog_units
-                weidth_prop, height_prop = 0, 0
+                #width_prop, height_prop = [int(t) for t in size_prop.split(',')]
+            #else:
+                #use_dialog_units = config.preferences.use_dialog_units
+                #width_prop, height_prop = 0, 0
 
-            if use_dialog_units:
-                weidth_widget, height_widget = compat.ConvertPixelsToDialog(self.widget, self.widget.GetSize() )
-            else:
-                weidth_widget, height_widget = self.widget.GetSize()
+            #if use_dialog_units:
+                #width_widget, height_widget = compat.ConvertPixelsToDialog(self.widget, self.widget.GetSize() )
+            #else:
+                #width_widget, height_widget = self.widget.GetSize()
+            width_widget, height_widget = prop_size.get_size(self.widget)
 
-            if weidth_prop == -1: weidth_widget = -1
+            if width_prop == -1: width_widget = -1
             if height_prop == -1: height_widget = -1
 
-            size_widget = "%s, %s" % (weidth_widget, height_widget)
-            if use_dialog_units: size_widget += "d"
+            # DDD
+            # use reverse of compat.ConvertPixelsToDialog(self.widget, self.widget.GetSize() ) ?
+
+            size_widget = "%s%s, %s%s" % (width_widget, ws or "", height_widget, hs or "")
+            #if use_dialog_units: size_widget += "d"
 
             # There are an infinite loop of wxSizeEvents. All events have  the same id.
             # It looks currently like a bug in the underlaying wx libraries especially in the GTK part.
@@ -432,7 +437,8 @@ class WindowBase(EditBase):
             # The issue probably occur only within EditGrid.
             # This is workaround prevents the propagation if the size hasn't changed.
             # Related SF bug report: #170
-            if size_prop != size_widget:
+            #if (w,h) != (width_prop,height_prop):
+            if size_widget!=prop_size.value:
                 # set to the actual value, either because wx forced it or just for displaying
                 prop_size.set(size_widget)
         except KeyError:
