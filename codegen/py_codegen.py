@@ -41,7 +41,7 @@ class SourceFileContent(BaseSourceFileContent):
         r'^\s+'                                            # leading spaces (mandatory)
         r'def\s+(?P<handler>[A-Za-z_]+\w*)'                # event handler name
         r'\s*'                                             # optional spaces
-        r'\(.*\):'                                         # function parameters
+        r'\(.*\)(?:\s*->\s*None)*:'                              # function parameters and optional PEP 3107 -- Function Annotations 
         r'\s*'                                             # optional spaces
         r'#\s*wxGlade:\s*(?P<class>\w+)\.<event_handler>'  # wxGlade event handler statement with class name
         r'\s*$' )                                          # tailing spaces
