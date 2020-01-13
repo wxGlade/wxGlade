@@ -1635,7 +1635,10 @@ class IntPairPropertyD(TextPropertyD):
         match = self.validation_re.match(value)
         #if not match: return self.value
         if not match: return None
-        return self.normalization%match.groups()
+        ret = self.normalization%match.groups()
+        if self.validation_re.flags & re.IGNORECASE:
+            ret = ret.lower()
+        return ret
 
     def get_tuple(self, widget=None):
         a, b = self.value.split(",")
@@ -1721,9 +1724,6 @@ class SizePropertyD(IntPairPropertyD):
     validation_re = re.compile( _leading + _ge_m1 + _dlu + _comma + _ge_m1 + _dlu + _trailing, re.IGNORECASE )
     normalization = "%s%s, %s%s" # for normalization % valiation_re.match(...).groups()
 
-    def set(self, value, activate=None, deactivate=None, notify=False):
-        IntPairPropertyD.set(self, value, activate, deactivate, notify)
-
     def get_size_dlgu_suffix(self):
         # return e.g. (-1,None, -1,None) or (10, "d", 20, "d"), (10,"d", 20, "dx")
         # where "d" is for dialog units and "dx" or "dy" for dialog units of the other dimension
@@ -1762,7 +1762,7 @@ class SizePropertyD(IntPairPropertyD):
 
 class DimProperty(TextProperty):
     # DimProperty takes an integer and optionally dialog units denoted by "d", "dx" or "dy"
-    validation_re = re.compile( _leading + _ge_0 + _dlu + _trailing) # dimension >=0 and optional DLU
+    validation_re = re.compile( _leading + _ge_0 + _dlu + _trailing, re.IGNORECASE) # dimension >=0 and optional DLU
     normalization = "%s%s" # for normalization % valiation_re.match(...).groups()
 
     def __init__(self, value="0", default_value=_DefaultArgument, name=None):

@@ -395,52 +395,50 @@ class WindowBase(EditBase):
             compat.DestroyLater(old_widget)
             self.finish_widget_creation()  # this will add the new widget to the sizer (default argument re_add=True)
 
+    def _set_changed_size(self, size):
+        # set size property if 'size' is different from current value
+        # if the property is defined in dialog units, the pixel size will be converted
+        # called from on_size and _set_widget_best_size
+        prop_size = self.properties['size']
+
+        # try to preserve the user's choice
+        width_prop, ws, height_prop, hs = prop_size.get_size_dlgu_suffix()
+        width_widget, height_widget = size
+
+        if width_prop == -1: width_widget = -1
+        if height_prop == -1: height_widget = -1
+
+        if ws=="dx" and hs=="dy": ws, hs = (None,"d")
+
+        # if required, convert pixels to dialog units
+        if (ws, hs)==(None,"d"):
+            # dialog units with natural orientation
+            width_widget, height_widget = compat.ConvertPixelsToDialog(self.widget, (width_widget,height_widget) )
+        elif ws or hs:
+              # dialog units with at least one direction in non-natural orientation
+            if ws=="dx" and width_widget!=-1:
+                width_widget = compat.ConvertPixelsToDialog(self.widget, (width_widget,width_widget) )[0]
+            elif ws=="dy" and width_widget!=-1:
+                width_widget = compat.ConvertPixelsToDialog(self.widget, (width_widget,width_widget) )[1]
+            if hs=="dx" and height_widget!=-1:
+                height_widget = compat.ConvertPixelsToDialog(self.widget, (height_widget,height_widget) )[0]
+            elif hs=="dy" and height_widget!=-1:
+                height_widget = compat.ConvertPixelsToDialog(self.widget, (height_widget,height_widget) )[1]
+
+        # the actual size of the widget, as string, to be compared with the property value
+        size_widget = "%s%s, %s%s" % (width_widget, ws or "", height_widget, hs or "")
+
+        if size_widget!=prop_size.value:
+            # set to the actual value, either because wx forced it or just for displaying
+            prop_size.set(size_widget)
+
     def on_size(self, event):
         "Update the value of the 'size' property"
         if not self.widget: return  # this can happen on destruction
         if event.GetEventObject() is None: return
         event.Skip()
         try:
-            prop_size = self.properties['size']
-
-            # try to preserve the user's choice
-            size_prop = prop_size.value.strip()
-            width_prop, ws, height_prop, hs = prop_size.get_size_dlgu_suffix()
-
-            #if prop_size.is_active():
-                #use_dialog_units = size_prop and size_prop[-1] == 'd'
-                #if use_dialog_units: size_prop = size_prop[:-1]  # drop the left 'd'
-
-                #width_prop, height_prop = [int(t) for t in size_prop.split(',')]
-            #else:
-                #use_dialog_units = config.preferences.use_dialog_units
-                #width_prop, height_prop = 0, 0
-
-            #if use_dialog_units:
-                #width_widget, height_widget = compat.ConvertPixelsToDialog(self.widget, self.widget.GetSize() )
-            #else:
-                #width_widget, height_widget = self.widget.GetSize()
-            width_widget, height_widget = prop_size.get_size(self.widget)
-
-            if width_prop == -1: width_widget = -1
-            if height_prop == -1: height_widget = -1
-
-            # DDD
-            # use reverse of compat.ConvertPixelsToDialog(self.widget, self.widget.GetSize() ) ?
-
-            size_widget = "%s%s, %s%s" % (width_widget, ws or "", height_widget, hs or "")
-            #if use_dialog_units: size_widget += "d"
-
-            # There are an infinite loop of wxSizeEvents. All events have  the same id.
-            # It looks currently like a bug in the underlaying wx libraries especially in the GTK part.
-            # The bug doesn't occur on Windows.
-            # The issue probably occur only within EditGrid.
-            # This is workaround prevents the propagation if the size hasn't changed.
-            # Related SF bug report: #170
-            #if (w,h) != (width_prop,height_prop):
-            if size_widget!=prop_size.value:
-                # set to the actual value, either because wx forced it or just for displaying
-                prop_size.set(size_widget)
+            self._set_changed_size( self.widget.GetSize() )
         except KeyError:
             logging.exception(_('Internal Error'))
 
@@ -625,7 +623,7 @@ class ManagedBase(WindowBase):
             best_size = self.widget.GetBestSize()
             self.parent.set_item_best_size(self, best_size)
             if not size_p.is_active():
-                size_p.set( best_size )
+                self._set_changed_size(best_size)
 
     def destroy_widget(self):
         if self.sel_marker:
