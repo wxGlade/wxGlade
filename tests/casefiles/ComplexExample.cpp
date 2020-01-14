@@ -20,8 +20,8 @@ PyOgg2_MyFrame::PyOgg2_MyFrame(wxWindow* parent, wxWindowID id, const wxString& 
     wxFrame(parent, id, title, pos, size, wxDEFAULT_FRAME_STYLE)
 {
     // begin wxGlade: PyOgg2_MyFrame::PyOgg2_MyFrame
-    SetSize(wxSize(600, 500));
     SetTitle(_("mp3 2 ogg"));
+    SetSize(wxSize(600, 500));
     Mp3_To_Ogg_menubar = new wxMenuBar();
     wxMenu *wxglade_tmp_menu;
     wxglade_tmp_menu = new wxMenu();
@@ -178,8 +178,8 @@ MyFrameGrid::MyFrameGrid(wxWindow* parent, wxWindowID id, const wxString& title,
     wxFrame(parent, id, title, pos, size, wxDEFAULT_FRAME_STYLE)
 {
     // begin wxGlade: MyFrameGrid::MyFrameGrid
-    SetSize(wxSize(492, 300));
     SetTitle(_("FrameOggCompressionDetails"));
+    SetSize(wxSize(492, 300));
     _szr_frame = new wxBoxSizer(wxVERTICAL);
     grid_sizer = new wxFlexGridSizer(3, 1, 0, 0);
     _szr_frame->Add(grid_sizer, 1, wxEXPAND, 0);

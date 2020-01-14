@@ -83,8 +83,8 @@
 "Method creates the objects contained in the class."
         ;;; begin wxGlade: PyOgg2_MyFrame.__init__
         (setf (slot-top-window obj) (wxFrame_create nil wxID_ANY "" -1 -1 -1 -1 wxDEFAULT_FRAME_STYLE))
-        (slot-top-window obj).wxWindow_SetSize((600, 500))
         (wxFrame_SetTitle (slot-top-window obj) (_"mp3 2 ogg"))
+        (slot-top-window obj).wxWindow_SetSize((600, 500))
         
         
         ;;; Menu Bar
@@ -291,8 +291,8 @@
 "Method creates the objects contained in the class."
         ;;; begin wxGlade: MyFrameGrid.__init__
         (setf (slot-top-window obj) (wxFrame_create nil wxID_ANY "" -1 -1 -1 -1 wxDEFAULT_FRAME_STYLE))
-        (slot-top-window obj).wxWindow_SetSize((492, 300))
         (wxFrame_SetTitle (slot-top-window obj) (_"FrameOggCompressionDetails"))
+        (slot-top-window obj).wxWindow_SetSize((492, 300))
         
         (setf (slot--szr-frame obj) (wxBoxSizer_Create wxVERTICAL))
         

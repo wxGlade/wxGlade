@@ -72,8 +72,8 @@ sub new {
         unless defined $style;
 
     $self = $self->SUPER::new( $parent, $id, $title, $pos, $size, $style, $name );
-    $self->SetSize(Wx::Size->new(1688, 1058));
     $self->SetTitle("Frame");
+    $self->SetSize(Wx::Size->new(1688, 1058));
     
     $self->{notebook_1_Debug} = DebugPanel->new($self, wxID_ANY);
     $self->Layout();

@@ -31,3 +31,5 @@ sphinx/images/*.*
 tests/generated/PythonSubclass/PythonSubclass.py
 docs/doctrees/*.*
 docs/html/_sources/*.*
+/tests/test_bugs_new_38-64.py
+/tests/test_gui_new_38-64.py

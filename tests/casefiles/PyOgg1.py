@@ -33,7 +33,6 @@ class PyOgg1_MyDialog(wx.Dialog):
         # begin wxGlade: PyOgg1_MyDialog.__init__
         kwds["style"] = kwds.get("style", 0) | wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER
         wx.Dialog.__init__(self, *args, **kwds)
-        self.SetSize((500, 300))
         self.SetTitle(_("mp3 2 ogg"))
         self.SetSize((500, 300))
         self.SetFocus()

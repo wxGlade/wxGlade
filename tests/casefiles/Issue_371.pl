@@ -38,11 +38,11 @@ sub new {
         unless defined $style;
 
     $self = $self->SUPER::new( $parent, $id, $title, $pos, $size, $style, $name );
-    $self->SetSize(Wx::Size->new(985, 852));
     $self->SetTitle(_T("Frame"));
     my $icon = &Wx::wxNullIcon;
     $icon->CopyFromBitmap(Wx::ICON(icon));
     $self->SetIcon($icon);
+    $self->SetSize(Wx::Size->new(985, 852));
     
     $self->{sizer_top} = Wx::BoxSizer->new(wxHORIZONTAL);
     

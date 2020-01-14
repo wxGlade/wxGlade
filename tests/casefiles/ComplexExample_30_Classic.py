@@ -20,8 +20,8 @@ class PyOgg2_MyFrame(wx.Frame):
         # begin wxGlade: PyOgg2_MyFrame.__init__
         kwds["style"] = kwds.get("style", 0) | wx.DEFAULT_FRAME_STYLE
         wx.Frame.__init__(self, *args, **kwds)
-        self.SetSize((600, 500))
         self.SetTitle(_("mp3 2 ogg"))
+        self.SetSize((600, 500))
         
         # Menu Bar
         self.Mp3_To_Ogg_menubar = wx.MenuBar()
@@ -190,8 +190,8 @@ class MyFrameGrid(wx.Frame):
         # begin wxGlade: MyFrameGrid.__init__
         kwds["style"] = kwds.get("style", 0) | wx.DEFAULT_FRAME_STYLE
         wx.Frame.__init__(self, *args, **kwds)
-        self.SetSize((492, 300))
         self.SetTitle(_("FrameOggCompressionDetails"))
+        self.SetSize((492, 300))
         
         self._szr_frame = wx.BoxSizer(wx.VERTICAL)
         

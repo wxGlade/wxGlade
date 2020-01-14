@@ -36,8 +36,8 @@ class Frame(wx.Frame):
         # begin wxGlade: Frame.__init__
         kwds["style"] = kwds.get("style", 0) | wx.DEFAULT_FRAME_STYLE
         wx.Frame.__init__(self, *args, **kwds)
-        self.SetSize((1688, 1058))
         self.SetTitle("Frame")
+        self.SetSize((1688, 1058))
         
         self.notebook_1_Debug = DebugPanel(self, wx.ID_ANY)
         self.Layout()

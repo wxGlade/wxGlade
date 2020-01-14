@@ -20,11 +20,11 @@ MenuTestFrame::MenuTestFrame(wxWindow* parent, wxWindowID id, const wxString& ti
     wxFrame(parent, id, title, pos, size, wxDEFAULT_FRAME_STYLE)
 {
     // begin wxGlade: MenuTestFrame::MenuTestFrame
-    SetSize(wxSize(800, 417));
     SetTitle(wxT("All Widgets"));
     wxIcon _icon;
     _icon.CopyFromBitmap(wxArtProvider::GetBitmap(wxART_TIP, wxART_OTHER, wxSize(32, 32)));
     SetIcon(_icon);
+    SetSize(wxSize(800, 417));
     test_menubar = new wxMenuBar();
     wxMenu *wxglade_tmp_menu;
     wxMenuItem *wxglade_tmp_item;

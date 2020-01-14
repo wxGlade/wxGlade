@@ -35,8 +35,8 @@ sub new {
         unless defined $style;
 
     $self = $self->SUPER::new( $parent, $id, $title, $pos, $size, $style, $name );
-    $self->SetSize(Wx::Size->new(600, 500));
     $self->SetTitle(_T("mp3 2 ogg"));
+    $self->SetSize(Wx::Size->new(600, 500));
     
     
 
@@ -260,8 +260,8 @@ sub new {
         unless defined $style;
 
     $self = $self->SUPER::new( $parent, $id, $title, $pos, $size, $style, $name );
-    $self->SetSize(Wx::Size->new(492, 300));
     $self->SetTitle(_T("FrameOggCompressionDetails"));
+    $self->SetSize(Wx::Size->new(492, 300));
     
     $self->{_szr_frame} = Wx::BoxSizer->new(wxVERTICAL);
     

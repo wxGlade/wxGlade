@@ -46,8 +46,8 @@
 (defmethod init ((obj Frame194))
 "Method creates the objects contained in the class."
         ;;; begin wxGlade: Frame194.__init__
-        (slot-top-window obj).wxWindow_SetSize((800, 600))
         (wxFrame_SetTitle (slot-top-window obj) (_"frame_1"))
+        (slot-top-window obj).wxWindow_SetSize((800, 600))
         
         (setf (slot-sizer-1 obj) (wxGridSizer_Create 2 3 0 0))
         

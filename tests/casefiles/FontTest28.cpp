@@ -20,13 +20,13 @@ MyFrame::MyFrame(wxWindow* parent, wxWindowID id, const wxString& title, const w
     wxFrame(parent, id, title, pos, size, wxDEFAULT_FRAME_STYLE)
 {
     // begin wxGlade: MyFrame::MyFrame
-    SetSize(wxSize(400, 300));
     SetTitle(wxT("frame"));
+    SetSize(wxSize(400, 300));
     wxBoxSizer* sizer_1 = new wxBoxSizer(wxVERTICAL);
     text_ctrl_1 = new wxTextCtrl(this, wxID_ANY, wxT("Some Input"), wxDefaultPosition, wxDefaultSize, wxTE_READONLY);
+    text_ctrl_1->SetFont(wxFont(16, wxDEFAULT, wxNORMAL, wxBOLD, 0, wxT("")));
     text_ctrl_1->SetBackgroundColour(wxColour(0, 255, 127));
     text_ctrl_1->SetForegroundColour(wxColour(255, 0, 0));
-    text_ctrl_1->SetFont(wxFont(16, wxDEFAULT, wxNORMAL, wxBOLD, 0, wxT("")));
     text_ctrl_1->SetFocus();
     sizer_1->Add(text_ctrl_1, 1, wxALL|wxEXPAND, 5);
     wxStaticText* label_1 = new wxStaticText(this, wxID_ANY, wxT("label_1"));

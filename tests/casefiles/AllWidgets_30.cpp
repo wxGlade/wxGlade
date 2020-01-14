@@ -20,11 +20,11 @@ All_Widgets_Frame::All_Widgets_Frame(wxWindow* parent, wxWindowID id, const wxSt
     wxFrame(parent, id, title, pos, size, wxDEFAULT_FRAME_STYLE)
 {
     // begin wxGlade: All_Widgets_Frame::All_Widgets_Frame
-    SetSize(wxSize(800, 417));
     SetTitle(_("All Widgets"));
     wxIcon _icon;
     _icon.CopyFromBitmap(wxArtProvider::GetBitmap(wxART_TIP, wxART_OTHER, wxSize(32, 32)));
     SetIcon(_icon);
+    SetSize(wxSize(800, 417));
     All_Widgets_menubar = new wxMenuBar();
     wxMenu *wxglade_tmp_menu;
     wxglade_tmp_menu = new wxMenu();

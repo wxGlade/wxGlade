@@ -18,15 +18,15 @@ class MyFrame(wx.Frame):
         # begin wxGlade: MyFrame.__init__
         kwds["style"] = kwds.get("style", 0) | wx.DEFAULT_FRAME_STYLE
         wx.Frame.__init__(self, *args, **kwds)
-        self.SetSize((400, 300))
         self.SetTitle("frame")
+        self.SetSize((400, 300))
         
         sizer_1 = wx.BoxSizer(wx.VERTICAL)
         
         self.text_ctrl_1 = wx.TextCtrl(self, wx.ID_ANY, "Some Input", style=wx.TE_READONLY)
+        self.text_ctrl_1.SetFont(wx.Font(16, wx.DEFAULT, wx.NORMAL, wx.BOLD, 0, ""))
         self.text_ctrl_1.SetBackgroundColour(wx.Colour(0, 255, 127))
         self.text_ctrl_1.SetForegroundColour(wx.Colour(255, 0, 0))
-        self.text_ctrl_1.SetFont(wx.Font(16, wx.DEFAULT, wx.NORMAL, wx.BOLD, 0, ""))
         self.text_ctrl_1.SetFocus()
         sizer_1.Add(self.text_ctrl_1, 1, wx.ALL | wx.EXPAND, 5)
         

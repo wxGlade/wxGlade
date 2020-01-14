@@ -203,9 +203,9 @@
 "Method creates the objects contained in the class."
         ;;; begin wxGlade: All_Widgets_Frame.__init__
         (setf (slot-top-window obj) (wxFrame_create nil wxID_ANY "" -1 -1 -1 -1 wxDEFAULT_FRAME_STYLE))
-        (slot-top-window obj).wxWindow_SetSize((800, 417))
         (wxFrame_SetTitle (slot-top-window obj) (_"All Widgets"))
         ;;; generating code for setting icons is not implemented
+        (slot-top-window obj).wxWindow_SetSize((800, 417))
         
         
         ;;; Menu Bar

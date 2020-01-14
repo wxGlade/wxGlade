@@ -19,8 +19,8 @@ class Frame186(wx.Frame):
         # begin wxGlade: Frame186.__init__
         kwds["style"] = kwds.get("style", 0)
         wx.Frame.__init__(self, *args, **kwds)
-        self.SetSize((300, 300))
         self.SetTitle(_("frame_1"))
+        self.SetSize((300, 300))
         
         # Menu Bar
         self.Bug186_Frame_menubar = wx.MenuBar()

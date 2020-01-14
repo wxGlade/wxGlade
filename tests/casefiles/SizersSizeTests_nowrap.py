@@ -19,8 +19,8 @@ class MyFrame(wx.Frame):
         # begin wxGlade: MyFrame.__init__
         kwds["style"] = kwds.get("style", 0) | wx.DEFAULT_FRAME_STYLE
         wx.Frame.__init__(self, *args, **kwds)
-        self.SetSize((600, 400))
         self.SetTitle(_("frame"))
+        self.SetSize((600, 400))
         
         sizer_1 = wx.BoxSizer(wx.VERTICAL)
         

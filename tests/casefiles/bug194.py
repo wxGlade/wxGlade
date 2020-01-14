@@ -19,8 +19,8 @@ class Frame194(wx.Frame):
         # begin wxGlade: Frame194.__init__
         kwds["style"] = kwds.get("style", 0)
         wx.Frame.__init__(self, *args, **kwds)
-        self.SetSize((800, 600))
         self.SetTitle(_("frame_1"))
+        self.SetSize((800, 600))
         
         sizer_1 = wx.GridSizer(2, 3, 0, 0)
         

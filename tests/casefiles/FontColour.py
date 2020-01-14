@@ -24,9 +24,9 @@ class MyFrame(wx.Frame):
         sizer_1 = wx.BoxSizer(wx.VERTICAL)
         
         self.text_ctrl_1 = wx.TextCtrl(self, wx.ID_ANY, _("Some Input"), style=wx.TE_READONLY)
+        self.text_ctrl_1.SetFont(wx.Font(16, wx.DEFAULT, wx.NORMAL, wx.BOLD, 0, ""))
         self.text_ctrl_1.SetBackgroundColour(wx.Colour(0, 255, 127))
         self.text_ctrl_1.SetForegroundColour(wx.Colour(255, 0, 0))
-        self.text_ctrl_1.SetFont(wx.Font(16, wx.DEFAULT, wx.NORMAL, wx.BOLD, 0, ""))
         self.text_ctrl_1.SetFocus()
         sizer_1.Add(self.text_ctrl_1, 1, wx.ALL | wx.EXPAND, 5)
         

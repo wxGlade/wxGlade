@@ -49,15 +49,15 @@
 "Method creates the objects contained in the class."
         ;;; begin wxGlade: MyFrame.__init__
         (setf (slot-top-window obj) (wxFrame_create nil wxID_ANY "" -1 -1 -1 -1 wxDEFAULT_FRAME_STYLE))
-        (slot-top-window obj).wxWindow_SetSize((400, 300))
         (wxFrame_SetTitle (slot-top-window obj) "frame")
+        (slot-top-window obj).wxWindow_SetSize((400, 300))
         
         (setf (slot-sizer-1 obj) (wxBoxSizer_Create wxVERTICAL))
         
         (setf (slot-text-ctrl-1 obj) (wxTextCtrl_Create (slot-top-window obj) wxID_ANY "Some Input" -1 -1 -1 -1 wxTE_READONLY))
+        (wxWindow_SetFont (slot-text-ctrl-1 obj) (wxFont_Create 16 wxDEFAULT wxNORMAL wxBOLD 0 "" wxFONTENCODING_DEFAULT))
         (wxWindow_SetBackgroundColour (slot-text-ctrl-1 obj) (wxColour_CreateRGB 0, 255, 127))
         (wxWindow_SetForegroundColour (slot-text-ctrl-1 obj) (wxColour_CreateRGB 255, 0, 0))
-        (wxWindow_SetFont (slot-text-ctrl-1 obj) (wxFont_Create 16 wxDEFAULT wxNORMAL wxBOLD 0 "" wxFONTENCODING_DEFAULT))
         (wxWindow_SetFocus (slot-text-ctrl-1 obj))
         (wxSizer_AddWindow (slot-sizer-1 obj) (slot-text-ctrl-1 obj) 1 (logior wxALL wxEXPAND) 5 nil)
         

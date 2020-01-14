@@ -18,8 +18,8 @@ class MyFrame(wx.Frame):
         # begin wxGlade: MyFrame.__init__
         kwds["style"] = kwds.get("style", 0)
         wx.Frame.__init__(self, *args, **kwds)
-        self.SetSize((200, 200))
         self.SetTitle("frame_1")
+        self.SetSize((200, 200))
         
         # Tool Bar
         self.frame_1_toolbar = wx.ToolBar(self, -1)

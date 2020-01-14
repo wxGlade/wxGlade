@@ -20,11 +20,11 @@ FrameMain::FrameMain(wxWindow* parent, wxWindowID id, const wxString& title, con
     wxFrame(parent, id, title, pos, size, wxDEFAULT_FRAME_STYLE)
 {
     // begin wxGlade: FrameMain::FrameMain
-    SetSize(wxSize(985, 852));
     SetTitle(_("Frame"));
     wxIcon _icon;
     _icon.CopyFromBitmap(wxICON(icon));
     SetIcon(_icon);
+    SetSize(wxSize(985, 852));
     wxBoxSizer* sizer_top = new wxBoxSizer(wxHORIZONTAL);
     panel_top = new wxPanel(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxBORDER_STATIC|wxTAB_TRAVERSAL);
     sizer_top->Add(panel_top, 1, wxEXPAND, 0);

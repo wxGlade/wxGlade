@@ -22,11 +22,11 @@ class All_Widgets_Frame(wx.Frame):
         # begin wxGlade: All_Widgets_Frame.__init__
         kwds["style"] = kwds.get("style", 0) | wx.DEFAULT_FRAME_STYLE
         wx.Frame.__init__(self, *args, **kwds)
-        self.SetSize((800, 417))
         self.SetTitle(_("All Widgets"))
         _icon = wx.NullIcon
         _icon.CopyFromBitmap(wx.ArtProvider.GetBitmap(wx.ART_TIP, wx.ART_OTHER, (32, 32)))
         self.SetIcon(_icon)
+        self.SetSize((800, 417))
         
         # Menu Bar
         self.All_Widgets_menubar = wx.MenuBar()

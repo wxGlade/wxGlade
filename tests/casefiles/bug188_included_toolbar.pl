@@ -31,8 +31,8 @@ sub new {
 
     # begin wxGlade: MyFrame::new
     $self = $self->SUPER::new( $parent, $id, $title, $pos, $size, $style, $name );
-    $self->SetSize(Wx::Size->new(200, 200));
     $self->SetTitle("frame_1");
+    $self->SetSize(Wx::Size->new(200, 200));
     
     
     # Tool Bar

@@ -32,8 +32,8 @@ sub new {
 
     # begin wxGlade: Frame194::new
     $self = $self->SUPER::new( $parent, $id, $title, $pos, $size, $style, $name );
-    $self->SetSize(Wx::Size->new(800, 600));
     $self->SetTitle(_T("frame_1"));
+    $self->SetSize(Wx::Size->new(800, 600));
     
     $self->{sizer_1} = Wx::GridSizer->new(2, 3, 0, 0);
     

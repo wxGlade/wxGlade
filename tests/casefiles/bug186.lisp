@@ -49,8 +49,8 @@
 (defmethod init ((obj Frame186))
 "Method creates the objects contained in the class."
         ;;; begin wxGlade: Frame186.__init__
-        (slot-top-window obj).wxWindow_SetSize((300, 300))
         (wxFrame_SetTitle (slot-top-window obj) (_"frame_1"))
+        (slot-top-window obj).wxWindow_SetSize((300, 300))
         
         
         ;;; Menu Bar

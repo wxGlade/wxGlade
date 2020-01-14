@@ -20,8 +20,8 @@ MyFrame::MyFrame(wxWindow* parent, wxWindowID id, const wxString& title, const w
     wxFrame(parent, id, title, pos, size, wxDEFAULT_FRAME_STYLE)
 {
     // begin wxGlade: MyFrame::MyFrame
-    SetSize(wxSize(600, 400));
     SetTitle(_("frame"));
+    SetSize(wxSize(600, 400));
     wxBoxSizer* sizer_1 = new wxBoxSizer(wxVERTICAL);
     notebook_1 = new wxNotebook(this, wxID_ANY);
     sizer_1->Add(notebook_1, 1, wxEXPAND, 0);

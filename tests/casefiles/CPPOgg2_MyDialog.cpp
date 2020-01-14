@@ -20,7 +20,6 @@ CPPOgg2_MyDialog::CPPOgg2_MyDialog(wxWindow* parent, wxWindowID id, const wxStri
     wxDialog(parent, id, title, pos, size, wxCAPTION|wxCLOSE_BOX|wxDEFAULT_DIALOG_STYLE|wxRESIZE_BORDER|wxSYSTEM_MENU)
 {
     // begin wxGlade: CPPOgg2_MyDialog::CPPOgg2_MyDialog
-    SetSize(wxSize(500, 300));
     SetTitle(_("mp3 2 ogg"));
     SetSize(wxSize(500, 300));
     wxFlexGridSizer* sizer_1 = new wxFlexGridSizer(3, 1, 0, 0);

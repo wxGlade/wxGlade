@@ -20,7 +20,6 @@ CPPOgg1_MyDialog::CPPOgg1_MyDialog(wxWindow* parent, wxWindowID id, const wxStri
     wxDialog(parent, id, title, pos, size, wxDEFAULT_DIALOG_STYLE|wxRESIZE_BORDER)
 {
     // begin wxGlade: CPPOgg1_MyDialog::CPPOgg1_MyDialog
-    SetSize(wxSize(500, 300));
     SetTitle(_("mp3 2 ogg"));
     SetSize(wxSize(500, 300));
     SetFocus();

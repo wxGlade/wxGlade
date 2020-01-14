@@ -23,11 +23,11 @@ class FrameMain(wx.Frame):
         # begin wxGlade: FrameMain.__init__
         kwds["style"] = kwds.get("style", 0) | wx.DEFAULT_FRAME_STYLE
         wx.Frame.__init__(self, *args, **kwds)
-        self.SetSize((985, 852))
         self.SetTitle(_("Frame"))
         _icon = wx.NullIcon
         _icon.CopyFromBitmap(wx.ICON(icon))
         self.SetIcon(_icon)
+        self.SetSize((985, 852))
         
         sizer_top = wx.BoxSizer(wx.HORIZONTAL)
         

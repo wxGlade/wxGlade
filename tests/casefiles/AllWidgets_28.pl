@@ -40,11 +40,11 @@ sub new {
         unless defined $style;
 
     $self = $self->SUPER::new( $parent, $id, $title, $pos, $size, $style, $name );
-    $self->SetSize(Wx::Size->new(800, 417));
     $self->SetTitle(_T("All Widgets"));
     my $icon = &Wx::wxNullIcon;
     $icon->CopyFromBitmap(Wx::ArtProvider::GetBitmap(wxART_TIP, wxART_OTHER, Wx::Size->new(32, 32)));
     $self->SetIcon($icon);
+    $self->SetSize(Wx::Size->new(800, 417));
     
     
 

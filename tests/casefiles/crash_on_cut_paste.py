@@ -18,8 +18,8 @@ class MeasurementFrame(wx.Frame):
         # begin wxGlade: MeasurementFrame.__init__
         kwds["style"] = kwds.get("style", 0) | wx.DEFAULT_FRAME_STYLE
         wx.Frame.__init__(self, *args, **kwds)
-        self.SetSize((400, 340))
         self.SetTitle("ATV Tester")
+        self.SetSize((400, 340))
         
         sizer_limit = wx.BoxSizer(wx.VERTICAL)
         

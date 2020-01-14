@@ -20,8 +20,8 @@ Frame194::Frame194(wxWindow* parent, wxWindowID id, const wxString& title, const
     wxFrame(parent, id, title, pos, size, style)
 {
     // begin wxGlade: Frame194::Frame194
-    SetSize(wxSize(800, 600));
     SetTitle(_("frame_1"));
+    SetSize(wxSize(800, 600));
     wxGridSizer* sizer_1 = new wxGridSizer(2, 3, 0, 0);
     const wxString list_box_single_choices[] = {
         _("Listbox wxLB_SINGLE"),

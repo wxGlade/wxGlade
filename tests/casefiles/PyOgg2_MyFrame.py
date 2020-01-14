@@ -20,8 +20,8 @@ class PyOgg2_MyFrame(wx.Frame):
         # begin wxGlade: PyOgg2_MyFrame.__init__
         kwds["style"] = kwds.get("style", 0) | wx.DEFAULT_FRAME_STYLE
         wx.Frame.__init__(self, *args, **kwds)
-        self.SetSize((400, 300))
         self.SetTitle(_("FrameOggCompressionDetails"))
+        self.SetSize((400, 300))
         
         sizer_5 = wx.BoxSizer(wx.VERTICAL)
         

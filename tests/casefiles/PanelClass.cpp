@@ -33,8 +33,8 @@ Frame::Frame(wxWindow* parent, wxWindowID id, const wxString& title, const wxPoi
     wxFrame(parent, id, title, pos, size, wxDEFAULT_FRAME_STYLE)
 {
     // begin wxGlade: Frame::Frame
-    SetSize(wxSize(1688, 1058));
     SetTitle(wxT("Frame"));
+    SetSize(wxSize(1688, 1058));
     notebook_1_Debug = new DebugPanel(this, wxID_ANY);
     Layout();
     // end wxGlade

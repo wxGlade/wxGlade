@@ -20,8 +20,8 @@ CPPOgg2_MyFrame::CPPOgg2_MyFrame(wxWindow* parent, wxWindowID id, const wxString
     wxFrame(parent, id, title, pos, size, wxDEFAULT_FRAME_STYLE)
 {
     // begin wxGlade: CPPOgg2_MyFrame::CPPOgg2_MyFrame
-    SetSize(wxSize(400, 300));
     SetTitle(_("FrameOggCompressionDetails"));
+    SetSize(wxSize(400, 300));
     wxBoxSizer* sizer_5 = new wxBoxSizer(wxVERTICAL);
     wxFlexGridSizer* grid_sizer_3 = new wxFlexGridSizer(3, 1, 0, 0);
     sizer_5->Add(grid_sizer_3, 1, wxEXPAND, 0);

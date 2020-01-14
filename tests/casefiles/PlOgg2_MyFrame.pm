@@ -34,8 +34,8 @@ sub new {
         unless defined $style;
 
     $self = $self->SUPER::new( $parent, $id, $title, $pos, $size, $style, $name );
-    $self->SetSize(Wx::Size->new(400, 300));
     $self->SetTitle(_T("FrameOggCompressionDetails"));
+    $self->SetSize(Wx::Size->new(400, 300));
     
     $self->{sizer_5} = Wx::BoxSizer->new(wxVERTICAL);
     

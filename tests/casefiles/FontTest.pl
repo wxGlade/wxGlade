@@ -34,15 +34,15 @@ sub new {
         unless defined $style;
 
     $self = $self->SUPER::new( $parent, $id, $title, $pos, $size, $style, $name );
-    $self->SetSize(Wx::Size->new(400, 300));
     $self->SetTitle("frame");
+    $self->SetSize(Wx::Size->new(400, 300));
     
     $self->{sizer_1} = Wx::BoxSizer->new(wxVERTICAL);
     
     $self->{text_ctrl_1} = Wx::TextCtrl->new($self, wxID_ANY, "Some Input", wxDefaultPosition, wxDefaultSize, wxTE_READONLY);
+    $self->{text_ctrl_1}->SetFont(Wx::Font->new(16, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_BOLD, 0, ""));
     $self->{text_ctrl_1}->SetBackgroundColour(Wx::Colour->new(0, 255, 127));
     $self->{text_ctrl_1}->SetForegroundColour(Wx::Colour->new(255, 0, 0));
-    $self->{text_ctrl_1}->SetFont(Wx::Font->new(16, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_BOLD, 0, ""));
     $self->{text_ctrl_1}->SetFocus();
     $self->{sizer_1}->Add($self->{text_ctrl_1}, 1, wxALL|wxEXPAND, 5);
     
