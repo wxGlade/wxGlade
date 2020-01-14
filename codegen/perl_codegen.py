@@ -375,10 +375,6 @@ sub %(handler)s {
         # class parent constructor
         write(tab + '$self = $self->SUPER::new( %s );\n' % ", ".join(new_signature))
 
-        # set size here to avoid problems with splitter windows
-        if 'size' in code_obj.properties and code_obj.properties["size"].is_active():
-            write( tab+ self.generate_code_size(code_obj) )
-
         for l in builder.get_properties_code(code_obj):
             write(tab + l)
 

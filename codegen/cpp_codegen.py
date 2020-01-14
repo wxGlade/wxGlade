@@ -715,10 +715,6 @@ class CPPCodeWriter(BaseLangCodeWriter, wcodegen.CppMixin):
             for l in code_obj.properties["extracode_pre"].get_lines():
                 swrite(tab + l)
 
-        # set size here to avoid problems with splitter windows
-        if 'size' in code_obj.properties and code_obj.properties["size"].is_active():
-            swrite( tab + self.generate_code_size(code_obj) )
-
         for l in builder.get_properties_code(code_obj):
             swrite(tab + l)
 

@@ -1066,21 +1066,18 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
         """generates the code for various properties common to all widgets (background and foreground colours, font,...)
         returns a list of strings containing the generated code"""
         out = []
-        props = [p.name for p in widget.get_properties() if p.is_active()]
-        if widget.check_prop('size') and widget.base!='wxFrame':
-            out.append(self.generate_code_size(widget))
-        if widget.check_prop('background'): out.append(self.generate_code_background(widget))
-        if widget.check_prop('foreground'): out.append(self.generate_code_foreground(widget))
-        if widget.check_prop('font'):       out.append(self.generate_code_font(widget))
-        # tooltip
-        if widget.check_prop('tooltip')  and widget.tooltip:   out.append( self._generic_code(widget, 'tooltip') )
+        if widget.check_prop('font'):           out.append( self.generate_code_font(widget) )
+        if widget.check_prop('size'):           out.append( self.generate_code_size(widget) )
+        if widget.check_prop('background'):     out.append( self.generate_code_background(widget) )
+        if widget.check_prop('foreground'):     out.append( self.generate_code_foreground(widget) )
+        if widget.check_prop_truth('tooltip' ): out.append( self._generic_code(widget, 'tooltip') )
         # trivial boolean properties
-        if widget.check_prop('disabled') and widget.disabled: out.append( self._generic_code(widget, 'disabled') )
-        if widget.check_prop('focused' ) and widget.focused:  out.append( self._generic_code(widget, 'focused') )
-        if widget.check_prop('hidden'  ) and widget.hidden:   out.append( self._generic_code(widget, 'hidden') )
+        if widget.check_prop_truth('disabled'): out.append( self._generic_code(widget, 'disabled') )
+        if widget.check_prop_truth('focused' ): out.append( self._generic_code(widget, 'focused') )
+        if widget.check_prop_truth('hidden'  ): out.append( self._generic_code(widget, 'hidden') )
 
         if widget.check_prop('extraproperties') and not self.preview:
-            out.extend(self.generate_code_extraproperties(widget))
+            out.extend( self.generate_code_extraproperties(widget) )
         out = [l for l in out if l is not None]
         return out
 
