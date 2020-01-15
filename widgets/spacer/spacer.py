@@ -28,9 +28,9 @@ class EditSpacer(ManagedBase):
         self.height = np.DimProperty(height)
 
     def _get_size(self):
-        # DDD
-        w = self.properties['width'].get_dim(self.parent.widget)
-        h = self.properties['height'].get_dim(self.parent.widget)
+        # return size (width, height) in pixels
+        w = self.properties['width'].get_dim(self.parent_window.widget)
+        h = self.properties['height'].get_dim(self.parent_window.widget)
         return (w, h)
 
     def create_widget(self):
@@ -59,9 +59,9 @@ class EditSpacer(ManagedBase):
         dc.DrawText(text, x, y)
 
     def properties_changed(self, modified):
-        if not modified or "width" in modified or "height" in modified:
+        if (not modified or "width" in modified or "height" in modified) and self.widget:
             size = self._get_size()
-            if self.widget: self.widget.SetSize(size)
+            self.widget.SetSize(size)
             self.parent.set_item_best_size(self, size=size)
         ManagedBase.properties_changed(self, modified)
 

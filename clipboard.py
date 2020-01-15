@@ -216,7 +216,7 @@ def dump_widget(widget):
 
 def widget2clipboard(option, span, flag, border, xml_unicode):
     """Pickle all parameter to store them as a string in the clipboard.
-    
+
     option, flag, border: widget layout properties
     xml_unicode: XML representation of this widget"""
     clipboard_data = compat.pickle.dumps((option, span, flag, border, xml_unicode))
@@ -235,9 +235,8 @@ def clipboard2widget(clipboard_data):
     bound = xml_unicode.rfind('>') + 1
     xml_unicode = xml_unicode[:bound]
 
-    # option, flag and border are integers.
+    # option (proportion) is an integer
     if option is not None: option = int(option)
-    if border is not None: border = int(border)
 
     return option, span, flag, border, xml_unicode
 

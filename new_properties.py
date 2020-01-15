@@ -1681,6 +1681,8 @@ def get_dlu_dim(size, orient, widget=None):
         return size
 
     if widget:
+        if isinstance(widget, wx.Sizer):
+            widget = widget.GetContainingWindow()
         w, h = size, size
         if compat.IS_CLASSIC:
             wd, hd = wx.DLG_SZE(widget, (size, size))
