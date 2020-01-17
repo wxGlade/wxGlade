@@ -17,6 +17,7 @@ class BaseCPPSizerBuilder(BaseSizerBuilder):
 
     tmpl_SetSizer = '%(parent_ref)sSetSizer(%(sizer_name)s);\n'
     tmpl_Fit = '%(sizer_name)s->Fit(%(parent_widget)s);\n'
+    tmpl_Realize = '%(sizer_name)s->Realize();\n'
     tmpl_SetSizeHints = '%(sizer_name)s->SetSizeHints(%(parent_widget)s);\n'
 
     def _get_wparent(self, obj):

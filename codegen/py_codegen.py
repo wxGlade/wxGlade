@@ -199,6 +199,7 @@ class PythonCodeWriter(BaseLangCodeWriter, wcodegen.PythonMixin):
     tmpl_class_end_nomarker = '\n'
     tmpl_func_empty = '%(tab)spass\n'
     tmpl_sizeritem = '%s.Add(%s, %s, %s, %s)\n'
+    tmpl_sizeritem_button = '%s.AddButton(%s)\n'
     tmpl_gridbagsizeritem = '%s.Add(%s, %s, %s, %s, %s)\n'
     if compat.IS_CLASSIC:
         tmpl_gridbagsizerspacer = '%s.Add((%s, %s), %s, %s, %s, %s)\n'

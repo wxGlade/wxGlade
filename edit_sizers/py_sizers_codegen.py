@@ -19,6 +19,7 @@ class BasePythonSizerBuilder(BaseSizerBuilder):
 
     tmpl_SetSizer = '%(parent_widget)s.SetSizer(%(sizer_name)s)\n'
     tmpl_Fit = '%(sizer_name)s.Fit(%(parent_widget)s)\n'
+    tmpl_Realize = '%(sizer_name)s.Realize()\n'
     tmpl_SetSizeHints = '%(sizer_name)s.SetSizeHints(%(parent_widget)s)\n'
 
     def _get_wparent(self, obj):
@@ -33,6 +34,11 @@ class BasePythonSizerBuilder(BaseSizerBuilder):
 class PythonBoxSizerBuilder(BasePythonSizerBuilder):
     klass = 'wxBoxSizer'
     tmpl = '%(sizer_name)s = %(klass)s(%(orient)s)\n'
+
+
+class PythonStdDialogButtonSizerBuilder(BasePythonSizerBuilder):
+    klass = 'wxStdDialogButtonSizer'
+    tmpl = '%(sizer_name)s = %(klass)s()\n'
 
 
 class PythonWrapSizerBuilder(PythonBoxSizerBuilder):
@@ -66,6 +72,7 @@ class PythonGridBagSizerBuilder(PythonFlexGridSizerBuilder):
 def initialize():
     cn = common.class_names
     cn['EditBoxSizer'] = 'wxBoxSizer'
+    cn['EditStdDialogButtonSizer'] = 'wxStdDialogButtonSizer'
     cn['EditWrapSizer'] = 'wxWrapSizer'
     cn['EditStaticBoxSizer'] = 'wxStaticBoxSizer'
     cn['EditGridSizer'] = 'wxGridSizer'
@@ -76,6 +83,7 @@ def initialize():
     if pygen:
         awh = pygen.register_widget_code_generator
         awh('wxBoxSizer', PythonBoxSizerBuilder())
+        awh('wxStdDialogButtonSizer', PythonStdDialogButtonSizerBuilder())
         awh('wxWrapSizer', PythonWrapSizerBuilder())
         awh('wxStaticBoxSizer', PythonStaticBoxSizerBuilder())
         awh('wxGridSizer', PythonGridSizerBuilder())

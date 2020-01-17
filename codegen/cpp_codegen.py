@@ -271,6 +271,7 @@ class CPPCodeWriter(BaseLangCodeWriter, wcodegen.CppMixin):
     tmpl_cfunc_end = '}\n\n'
 
     tmpl_sizeritem = '%s->Add(%s, %s, %s, %s);\n'
+    tmpl_sizeritem_button = '%s->AddButton(%s)\n'
     tmpl_gridbagsizeritem = '%s->Add(%s, wxGBPosition%s, wxGBSpan%s, %s, %s);\n'
     tmpl_gridbagsizerspacer = '%s->Add(%s, %s, wxGBPosition%s, wxGBSpan%s, %s, %s);\n'
     tmpl_spacersize = '%s, %s'

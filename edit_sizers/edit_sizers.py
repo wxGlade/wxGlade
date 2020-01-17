@@ -7,7 +7,6 @@ Hierarchy of Sizers supported by wxGlade
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
-import logging
 import wx
 from wx.lib.buttons import GenButton
 
@@ -107,6 +106,7 @@ class BaseSizerBuilder(object):
 
     tmpl_SetSizer = ''        # Template to call SetSizer()
     tmpl_Fit = ''             # Template to call Fit()
+    tmpl_Realize = ''         # Template to call Realize() for StdDialogButtonSizer
     tmpl_SetSizeHints = ''    # Template to set the size hints
     tmpl_AddGrowableRow = ''  # Template for wxFlexGridSizer to set growable rows
     tmpl_AddGrowableCol = ''  # Template for wxFlexGridSizer to set growable columns
@@ -153,26 +153,31 @@ class BaseSizerBuilder(object):
     def get_code(self, obj):
         "Generates the language specific code for sizer specified in L{klass}"
         self._prepare_tmpl_content(obj)
-        if self.klass == 'wxBoxSizer':       return self.get_code_wxBoxSizer(obj)
-        if self.klass == 'wxWrapSizer':      return self.get_code_wxBoxSizer(obj)  # the same here
-        if self.klass == 'wxStaticBoxSizer': return self.get_code_wxStaticBoxSizer(obj)
-        if self.klass == 'wxGridSizer':      return self.get_code_wxGridSizer(obj)
-        if self.klass == 'wxFlexGridSizer':  return self.get_code_wxFlexGridSizer(obj)
-        if self.klass == 'wxGridBagSizer':   return self.get_code_wxFlexGridSizer(obj)
+        if self.klass == 'wxBoxSizer':             return self.get_code_wxBoxSizer(obj)
+        if self.klass == 'wxWrapSizer':            return self.get_code_wxBoxSizer(obj)  # the same here
+        if self.klass == 'wxStaticBoxSizer':       return self.get_code_wxStaticBoxSizer(obj)
+        if self.klass == 'wxStdDialogButtonSizer': return self.get_code_wxStdDialogButtonSizer(obj)
+        if self.klass == 'wxGridSizer':            return self.get_code_wxGridSizer(obj)
+        if self.klass == 'wxFlexGridSizer':        return self.get_code_wxFlexGridSizer(obj)
+        if self.klass == 'wxGridBagSizer':         return self.get_code_wxFlexGridSizer(obj)
         return self._get_code(obj)
 
     def get_code_wxStaticBoxSizer(self, obj):
         "Set sizer specific properties and generate the code"
-        #self.tmpl_dict['orient'] = self.codegen.cn( obj.properties.get('orient', 'wxHORIZONTAL') )
         self.tmpl_dict['orient'] = self.codegen.cn( obj.properties["orient"].get_string_value() )
         self.tmpl_dict['label'] = self.codegen.quote_str( obj.label )
         return self._get_code(obj)
 
     def get_code_wxBoxSizer(self, obj):
         "Set sizer specific properties and generate the code"
-        #self.tmpl_dict['orient'] = self.codegen.cn( obj.properties.get('orient', 'wxHORIZONTAL') )
         self.tmpl_dict['orient'] = self.codegen.cn( obj.properties["orient"].get_string_value() )
         return self._get_code(obj)
+
+    def get_code_wxStdDialogButtonSizer(self, obj):
+        "Set sizer specific properties and generate the code"
+        init, layout = self._get_code(obj)
+        layout.append(self.tmpl_Realize % self.tmpl_dict)
+        return init, layout
 
     def get_code_wxGridSizer(self, obj):
         "Set sizer specific properties and generate the code"
@@ -222,6 +227,14 @@ class BaseSizerBuilder(object):
 
         flag = child.properties["flag"].get_string_value()  # as string, joined with "|"
         flag = self.codegen.cn_f(flag) or '0'
+
+        if self.klass=="wxStdDialogButtonSizer" and child.WX_CLASS=='wxButton':
+            # XXX optionally use SetAffirmativeButton, SetCancelButton, SetNegativeButton
+            id_value = child.check_prop("id") and child.properties["id"].value.strip() or ""  # e.g. 'wxID_CANCEL'
+            if ( (child.check_prop("stockitem") and child.stockitem in obj.BUTTON_STOCKITEMS) or 
+                 (id_value and id_value.startswith("wxID_") and id_value[5:] in obj.BUTTON_STOCKITEMS) ):
+                tmpl = self.codegen.tmpl_sizeritem_button
+                return [tmpl % ( sizer_name, obj_name )]
 
         if self.klass!="wxGridBagSizer":
             stmt = self.codegen.tmpl_sizeritem % ( sizer_name, obj_name, child.proportion, flag, child.border )
@@ -301,7 +314,8 @@ class ClassOrientProperty(np.RadioProperty):
         CHOICES += [
                 ('wxWrapSizer (wxVERTICAL)', 'without box and label; wraps around'),
                 ('wxWrapSizer (wxHORIZONTAL)', 'without box and label; wraps around') ]
-    CHOICES += [('wxGridSizer', None),
+    CHOICES += [('wxStdDialogButtonSizer', 'for dialog buttons (will be rearranged acc. to platform style guide)'),
+                ('wxGridSizer', None),
                 ('wxFlexGridSizer', "with columns/rows of different widths"),
                 ('wxGridBagSizer', "with cell spanning (i.e. item may populate multiple grid cells)")]
 
@@ -973,10 +987,6 @@ class SizerBase(Sizer, np.PropertyOwner):
             else:
                 name = "EditHorizontalWrapSizer"
 
-        elif name == "EditSplitterWindow":
-            if self.orientation=="wxSPLIT_HORIZONTAL":
-                name = 'EditSplitterWindow-h'
-
         return name
 
 
@@ -1094,6 +1104,18 @@ if HAVE_WRAP_SIZER:
                 self.sizer._add_item( self, self.pos, self.widget.GetMinSize() )
 
 
+class EditStdDialogButtonSizer(EditBoxSizer):
+    "Class to handle wxStdDialogButtonSizer objects"
+    WX_CLASS = "wxStdDialogButtonSizer"
+    # the stockitems that are handled specially by StdDialogButtonSizer
+    BUTTON_STOCKITEMS = ["OK", "YES", "SAVE", "APPLY", "CLOSE","NO", "CANCEL", "HELP", "CONTEXT_HELP"]
+    def __init__(self, name, parent, pos, elements=0):
+        # elements: number of slots
+        BoxSizerBase.__init__(self, name, parent, pos, wx.HORIZONTAL, elements)
+
+    def get_class_orient(self):
+        return self.WX_CLASS
+
 
 class wxGladeStaticBoxSizer(wx.StaticBoxSizer):
     _BTN_OFFSET = 1
@@ -1145,7 +1167,6 @@ class EditStaticBoxSizer(BoxSizerBase):
             self.widget.GetStaticBox().SetLabel(self.label or "")
             #self.layout()
         if modified and "name" in modified:
-            previous_name = self.properties["name"].previous_value
             common.app_tree.refresh(self, refresh_label=True, refresh_image=False)
         elif not modified or "label" in modified or "name" in modified and self.node:
             common.app_tree.refresh(self, refresh_label=True, refresh_image=False)
@@ -2058,6 +2079,7 @@ def change_sizer(old, new):
                                                                       getattr(old, 'label', old.name), 0),
         'wxStaticBoxSizer (wxHORIZONTAL)': lambda: EditStaticBoxSizer(old.name, old.parent, pos, wx.HORIZONTAL,
                                                                       getattr(old, 'label', old.name), 0),
+        'wxStdDialogButtonSizer':          lambda: EditStdDialogButtonSizer(old.name, old.parent, pos, 0),
         'wxGridSizer':     lambda: EditGridSizer(old.name, old.parent, pos, rows=0, cols=0),
         'wxFlexGridSizer': lambda: EditFlexGridSizer(old.name, old.parent, pos, rows=0, cols=0),
         'wxGridBagSizer': lambda: EditGridBagSizer(old.name, old.parent, pos, rows=0, cols=0) }
@@ -2153,13 +2175,14 @@ def change_sizer(old, new):
         misc.set_focused_widget(szr)
 
 
-def _builder(parent, pos, orientation=wx.VERTICAL, slots=1, is_static=False, label="",
-             is_wrap=False):
+def _builder(parent, pos, orientation=wx.VERTICAL, slots=1, is_static=False, label="", is_wrap=False):
     num = slots
     name = common.root.get_next_name('sizer_%d', parent)
 
     # add slots later
-    if is_static:
+    if orientation=="StdDialogButtonSizer":
+        editor = EditStdDialogButtonSizer(name, parent, pos, 0)
+    elif is_static:
         editor = EditStaticBoxSizer(name, parent, pos, orientation, label, 0)
     elif is_wrap:
         editor = EditWrapSizer(name, parent, pos, orientation, 0)
@@ -2167,7 +2190,11 @@ def _builder(parent, pos, orientation=wx.VERTICAL, slots=1, is_static=False, lab
         editor = EditBoxSizer(name, parent, pos, orientation, 0)
 
     if parent.IS_SIZER:
-        editor.properties['flag'].set('wxEXPAND')
+        if orientation=="StdDialogButtonSizer":
+            editor.properties['proportion'].set(0)
+            editor.properties['flag'].set('wxALIGN_RIGHT')
+        else:
+            editor.properties['flag'].set('wxEXPAND')
         editor.properties['pos'].set(pos)
 
     # add the slots
@@ -2178,16 +2205,15 @@ def _builder(parent, pos, orientation=wx.VERTICAL, slots=1, is_static=False, lab
     if parent.widget: editor.create()
     return editor
 
-    # set focus on the sizer again
-    common.app_tree.select_item(sz.node)
-
 
 class _SizerDialog(wx.Dialog):
     def __init__(self, parent):
         pos = wx.GetMousePosition()
         wx.Dialog.__init__( self, misc.get_toplevel_parent(parent), -1, _('Select sizer type'), pos )
-        self.orientation = wx.RadioBox( self, -1, _('Orientation'), choices=[_('Horizontal'), _('Vertical')] )
+        choices = [_('Horizontal'), _('Vertical'), 'StdDialogButtonSizer']
+        self.orientation = wx.RadioBox( self, -1, _('Orientation'), choices=choices )
         self.orientation.SetSelection(0)
+        self.orientation.Bind(wx.EVT_RADIOBOX, self.on_choice_orientation)
         tmp = wx.BoxSizer(wx.HORIZONTAL)
         tmp.Add( wx.StaticText(self, -1, _('Slots: ')), 0, wx.ALL | wx.ALIGN_CENTER_VERTICAL, 3 )
         self.num = wx.SpinCtrl(self, -1)
@@ -2215,7 +2241,8 @@ class _SizerDialog(wx.Dialog):
             szr.Add(self.checkbox_wrap, 0, wx.ALL | wx.EXPAND, 4)
 
         # horizontal sizer for action buttons
-        hsizer = wx.BoxSizer(wx.HORIZONTAL)
+        #hsizer = wx.BoxSizer(wx.HORIZONTAL)
+        hsizer = wx.StdDialogButtonSizer()
         hsizer.Add( wx.Button(self, wx.ID_CANCEL, _('Cancel')), 1, wx.ALL, 5)
         btn = wx.Button(self, wx.ID_OK, _('OK'))
         btn.SetDefault()
@@ -2235,6 +2262,14 @@ class _SizerDialog(wx.Dialog):
         self.label.Enable(False)
         if HAVE_WRAP_SIZER:
             self.checkbox_wrap.SetValue(0)
+    
+    def on_choice_orientation(self, event):
+        choice = event.GetSelection()
+        self.checkbox_wrap.Enable( choice<2 )
+        self.checkbox_static.Enable( choice<2 and not self.checkbox_wrap.IsChecked() )
+        self.label.Enable( choice<2 and self.checkbox_static.IsChecked() )
+        if choice==2 and self.num.Value<2:
+            self.num.SetValue(2)
 
     def on_check_statbox(self, event):
         checked = event.IsChecked()
@@ -2257,10 +2292,14 @@ def builder(parent, pos):
     dialog = _SizerDialog(common.adding_window or parent)
     with misc.disable_stay_on_top(common.adding_window or parent):
         res = dialog.ShowModal()
-    if dialog.orientation.GetStringSelection() == _('Horizontal'):
+    choice = dialog.orientation.GetSelection()  # 0, 1 or 2
+    if choice==0:
         orientation = wx.HORIZONTAL
-    else:
+    elif choice==1:
         orientation = wx.VERTICAL
+    else:
+        orientation = "StdDialogButtonSizer"
+
     num = dialog.num.GetValue()
     wrap = HAVE_WRAP_SIZER and dialog.checkbox_wrap.GetValue() or False
     label = dialog.label.GetValue()
@@ -2287,6 +2326,8 @@ def xml_builder(attrs, parent, pos=None):
         return EditStaticBoxSizer(name, parent, pos, orientation, '', 0)
     if attrs['base'] == 'EditWrapSizer':
         return EditWrapSizer(name, parent, pos, orientation, 0)
+    if attrs['base'] == 'EditStdDialogButtonSizer':
+        return EditStdDialogButtonSizer(name, parent, pos, 0)
     return EditBoxSizer(name, parent, pos, orientation, 0)
 
 
@@ -2401,6 +2442,7 @@ def init_all():
     common.widgets['EditGridSizer'] = grid_builder
 
     common.widget_classes['EditBoxSizer'] = EditBoxSizer
+    common.widget_classes['EditStdDialogButtonSizer'] = EditStdDialogButtonSizer
     if HAVE_WRAP_SIZER:
         common.widget_classes['EditWrapSizer'] = EditWrapSizer
     common.widget_classes['EditStaticBoxSizer'] = EditStaticBoxSizer
@@ -2409,6 +2451,7 @@ def init_all():
     common.widget_classes['EditGridBagSizer'] = EditGridBagSizer
 
     common.widgets_from_xml['EditBoxSizer'] = xml_builder
+    common.widgets_from_xml['EditStdDialogButtonSizer'] = xml_builder
     if HAVE_WRAP_SIZER:
         common.widgets_from_xml['EditWrapSizer'] = xml_builder
     common.widgets_from_xml['EditStaticBoxSizer'] = xml_builder
@@ -2429,6 +2472,7 @@ def init_all():
 
     WidgetTree.images['EditVerticalSizer']   = os.path.join( config.icons_path, 'sizer_v.xpm' )
     WidgetTree.images['EditHorizontalSizer'] = os.path.join( config.icons_path, 'sizer_h.xpm' )
+    WidgetTree.images['EditStdDialogButtonSizer'] = os.path.join( config.icons_path, 'sizer_h.xpm' )
 
     WidgetTree.images['EditVerticalSizerSlot']   = os.path.join( config.icons_path, 'sizer_slot_v.xpm' )
     WidgetTree.images['EditHorizontalSizerSlot'] = os.path.join( config.icons_path, 'sizer_slot_h.xpm' )

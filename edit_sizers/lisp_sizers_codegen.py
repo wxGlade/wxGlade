@@ -18,6 +18,7 @@ class BaseLispSizerBuilder(BaseSizerBuilder):
 
     tmpl_SetSizer = '(wxWindow_SetSizer %(parent_widget)s (%(sizer_name)s obj))\n'
     tmpl_Fit = '(wxSizer_Fit (%(sizer_name)s obj) %(parent_widget)s)\n'
+    tmpl_Realize = '(wxSizer_Realize (%(sizer_name)s obj))\n'
     tmpl_SetSizeHints = '(wxSizer_SetSizeHints (slot-%(sizer_name)s obj) %(parent_widget)s)\n'
 
     tmpl_wparent = '(slot-frame obj)'
@@ -49,6 +50,13 @@ class BaseLispSizerBuilder(BaseSizerBuilder):
 
         flag = child.properties["flag"].get_string_value()  # as string, joined with "|"
         flag = self.codegen.cn_f(flag) or '0'
+
+
+        if self.klass=="wxStdDialogButtonSizer" and child.WX_CLASS=='wxButton':
+            # XXX optionally use SetAffirmativeButton, SetCancelButton, SetNegativeButton
+            if child.check_prop("stockitem"):
+                tmpl_sizeritem = '(wxSizer_AddButton (%s obj) (%s obj))\n'
+                return [tmpl_sizeritem % ( sizer_name, obj_name )]
 
         if child.IS_SIZER:
             tmpl_sizeritem = '(wxSizer_AddSizer (%s obj) (%s obj) %s %s %s nil)\n'
