@@ -22,7 +22,15 @@ class MyFrame(wx.Frame):
         # begin wxGlade: MyFrame.__init__
         kwds["style"] = kwds.get("style", 0) | wx.DEFAULT_FRAME_STYLE
         wx.Frame.__init__(self, *args, **kwds)
+        self.SetSize((400, 349))
+        self.SetTitle("wx.lib.agw.speedmeter example")
+        
+        sizer_1 = wx.BoxSizer(wx.VERTICAL)
+        
         self.panel_1 = wx.Panel(self, wx.ID_ANY)
+        sizer_1.Add(self.panel_1, 1, wx.EXPAND, 0)
+        
+        sizer_2 = wx.BoxSizer(wx.VERTICAL)
         
         #################################################################
         # the custom widget SpeedMeter:
@@ -48,18 +56,6 @@ class MyFrame(wx.Frame):
         # Try To Comment This Line And See It For Yourself!
         self.speed_meter.DrawExternalArc(False)
         #################################################################
-        
-        self.slider_1 = wx.Slider(self.panel_1, wx.ID_ANY, 44, 0, 200)
-
-        self.__set_properties()
-        self.__do_layout()
-
-        self.Bind(wx.EVT_COMMAND_SCROLL, lambda event: self.speed_meter.SetSpeedValue(event.GetEventObject().GetValue()), self.slider_1)
-        # end wxGlade
-
-    def __set_properties(self):
-        # begin wxGlade: MyFrame.__set_properties
-        self.SetTitle("wx.lib.agw.speedmeter example")
         self.speed_meter.SetAngleRange(-pi/6, 7*pi/6)
         self.speed_meter.SetHandColour(wx.Colour(255, 50, 0))
         self.speed_meter.SetIntervalColours([wx.BLACK]*10)
@@ -69,23 +65,24 @@ class MyFrame(wx.Frame):
         self.speed_meter.SetSpeedValue(44)
         self.speed_meter.SetTicksColour(wx.WHITE)
         self.speed_meter.SetTicksFont(wx.Font(10, wx.FONTFAMILY_SWISS, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL))
-        # end wxGlade
-
-    def __do_layout(self):
-        # begin wxGlade: MyFrame.__do_layout
-        sizer_1 = wx.BoxSizer(wx.VERTICAL)
-        sizer_2 = wx.BoxSizer(wx.VERTICAL)
-        sizer_3 = wx.BoxSizer(wx.HORIZONTAL)
         sizer_2.Add(self.speed_meter, 1, wx.ALL | wx.EXPAND, 3)
+        
+        sizer_3 = wx.BoxSizer(wx.HORIZONTAL)
+        sizer_2.Add(sizer_3, 0, wx.EXPAND, 0)
+        
         label_1 = wx.StaticText(self.panel_1, wx.ID_ANY, "Drag this:")
         sizer_3.Add(label_1, 0, wx.ALIGN_CENTER_VERTICAL, 0)
+        
+        self.slider_1 = wx.Slider(self.panel_1, wx.ID_ANY, 44, 0, 200)
         sizer_3.Add(self.slider_1, 1, wx.EXPAND, 0)
-        sizer_2.Add(sizer_3, 0, wx.EXPAND, 0)
+        
         self.panel_1.SetSizer(sizer_2)
-        sizer_1.Add(self.panel_1, 1, wx.EXPAND, 0)
+        
         self.SetSizer(sizer_1)
+        
         self.Layout()
-        self.SetSize((400, 349))
+
+        self.Bind(wx.EVT_COMMAND_SCROLL, lambda event: self.speed_meter.SetSpeedValue(event.GetEventObject().GetValue()), self.slider_1)
         # end wxGlade
 
 # end of class MyFrame
