@@ -266,7 +266,20 @@ class WindowBase(EditBase):
                 "If you want to specify either width or height, you can use -1\n"
                 "for the other direction to keep the default for that.\n"
                 "E.g. '200,-1' or '-1,200'.\n"
-                "(The default value is '-1,-1' .)"}
+                "(The default value is '-1,-1' .)",
+
+        "size_sizehints": "Specify the size of the widget.\n"
+                "This might be overridden if Sizehints property is enabled.\n\n"
+                "E.g. '200,100' for a width of 200 pixels and a height of 100.\n\n"
+                "If you want to specify either width or height, you can use -1\n"
+                "for the other direction to keep the default for that.\n"
+                "E.g. '200,-1' or '-1,200'.\n"
+                "(The default value is '-1,-1' .)",
+
+        "sizehints":"Call SetSizeHints method of the toplevel sizer.\n"
+                    "This resizes the window such that it fits the sizer's minimal size.\n"
+                    "Setting this usually overrides the size property."
+    }
 
     _PROPERTY_LABELS = {"attribute":'Store as attribute'}  # used in many derived widget editors
 

@@ -3,7 +3,7 @@ wxDialog objects (incl. wxMenuBar, wxToolBar and wxStatusBar)
 
 @copyright: 2002-2007 Alberto Griggio
 @copyright: 2014-2016 Carsten Grohmann
-@copyright: 2016-2019 Dietmar Schwertberger
+@copyright: 2016-2020 Dietmar Schwertberger
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
@@ -12,7 +12,7 @@ import wx
 
 import common, compat, config, misc
 import new_properties as np
-from edit_windows import TopLevelBase, EditStylesMixin
+from edit_windows import WindowBase, TopLevelBase, EditStylesMixin
 from gui_mixins import BitmapMixin
 
 
@@ -21,6 +21,7 @@ class EditDialog(TopLevelBase, EditStylesMixin, BitmapMixin):
     _PROPERTIES =["Widget", "title", "icon", "centered", "sizehints","menubar", "toolbar", "statusbar", "style"]
     PROPERTIES = TopLevelBase.PROPERTIES + _PROPERTIES + TopLevelBase.EXTRA_PROPERTIES
     _PROPERTY_LABELS = { "sizehints":'Set Size Hints'}
+    _PROPERTY_HELP = {"size":WindowBase._PROPERTY_HELP["size_sizehints"]}
     
     def __init__(self, name, parent, title, style=wx.DEFAULT_DIALOG_STYLE, klass='wxDialog'):
         TopLevelBase.__init__(self, name, klass, parent, title=title)

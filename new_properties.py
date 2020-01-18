@@ -3053,7 +3053,8 @@ class ExtraPropertiesProperty(GridProperty):
     LABEL = 'Extra properties for this widget'
     TOOLTIP = ('You can use this property to add some extra custom properties to this widget.\n\n'
                'For each property "prop" with value "val", wxGlade will generate a'
-               '"widget.SetProp(val)" line (or a "<prop>val</prop>" line for XRC).')
+               '"widget.SetProp(val)" line (or a "<prop>val</prop>" line for XRC).\n'
+               'This code is inserted after extracode_post.')
     _PROPORTION = 3
     SKIP_EMPTY = True
 

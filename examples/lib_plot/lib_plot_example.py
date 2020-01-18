@@ -17,70 +17,79 @@ import wx.lib.plot
 class MyFrame(wx.Frame):
     def __init__(self, *args, **kwds):
         # begin wxGlade: MyFrame.__init__
-        kwds["style"] = wx.DEFAULT_FRAME_STYLE
+        kwds["style"] = kwds.get("style", 0) | wx.DEFAULT_FRAME_STYLE
         wx.Frame.__init__(self, *args, **kwds)
+        self.SetSize((400, 349))
+        self.SetTitle("wx.lib.plot example")
+        
+        sizer_1 = wx.BoxSizer(wx.VERTICAL)
+        
         self.panel_1 = wx.Panel(self, wx.ID_ANY)
+        sizer_1.Add(self.panel_1, 1, wx.EXPAND, 0)
+        
+        sizer_2 = wx.BoxSizer(wx.VERTICAL)
+        
         #################################################################
         # the custom widget:
         self.plot_canvas = wx.lib.plot.PlotCanvas(self.panel_1, wx.ID_ANY)
-        # code to be inserted after:
         self.plot_datasets = [] # list of wx.lib.plot.PolyLine instances
         #################################################################
+        sizer_2.Add(self.plot_canvas, 1, wx.ALL | wx.EXPAND, 3)
+        
+        sizer_4 = wx.BoxSizer(wx.HORIZONTAL)
+        sizer_2.Add(sizer_4, 0, wx.ALL | wx.EXPAND, 5)
+        
+        label_4 = wx.StaticText(self.panel_1, wx.ID_ANY, "f(x) = ")
+        sizer_4.Add(label_4, 0, wx.ALIGN_CENTER_VERTICAL | wx.ALL, 5)
+        
         self.text_function = wx.TextCtrl(self.panel_1, wx.ID_ANY, "sin(x)")
+        sizer_4.Add(self.text_function, 1, 0, 0)
+        
         self.choice_colour = wx.Choice(self.panel_1, wx.ID_ANY, choices=["black", "red", "green", "blue", "yellow"])
+        self.choice_colour.SetSelection(0)
+        sizer_4.Add(self.choice_colour, 0, wx.EXPAND, 0)
+        
+        sizer_3 = wx.BoxSizer(wx.HORIZONTAL)
+        sizer_2.Add(sizer_3, 0, wx.ALL | wx.EXPAND, 5)
+        
+        label_1 = wx.StaticText(self.panel_1, wx.ID_ANY, "xmin")
+        sizer_3.Add(label_1, 0, wx.ALIGN_CENTER_VERTICAL, 0)
+        
         self.text_xmin = wx.TextCtrl(self.panel_1, wx.ID_ANY, "0")
+        self.text_xmin.SetMinSize((40, -1))
+        sizer_3.Add(self.text_xmin, 0, 0, 0)
+        
+        label_2 = wx.StaticText(self.panel_1, wx.ID_ANY, "xmax")
+        sizer_3.Add(label_2, 0, wx.ALIGN_CENTER_VERTICAL, 0)
+        
         self.text_max = wx.TextCtrl(self.panel_1, wx.ID_ANY, "10")
+        self.text_max.SetMinSize((40, -1))
+        sizer_3.Add(self.text_max, 0, 0, 0)
+        
+        label_3 = wx.StaticText(self.panel_1, wx.ID_ANY, "step")
+        sizer_3.Add(label_3, 0, wx.ALIGN_CENTER_VERTICAL, 0)
+        
         self.text_xstep = wx.TextCtrl(self.panel_1, wx.ID_ANY, "0.1")
+        self.text_xstep.SetMinSize((40, -1))
+        sizer_3.Add(self.text_xstep, 0, 0, 0)
+        
+        sizer_3.Add((20, 20), 1, 0, 0)
+        
         self.button_plot = wx.Button(self.panel_1, wx.ID_ANY, "Plot")
+        self.button_plot.SetDefault()
+        sizer_3.Add(self.button_plot, 0, 0, 0)
+        
         self.button_clear = wx.Button(self.panel_1, wx.ID_ANY, "Clear")
-
-        self.__set_properties()
-        self.__do_layout()
+        sizer_3.Add(self.button_clear, 0, wx.LEFT, 8)
+        
+        self.panel_1.SetSizer(sizer_2)
+        
+        self.SetSizer(sizer_1)
+        
+        self.Layout()
 
         self.Bind(wx.EVT_BUTTON, self.on_button_plot, self.button_plot)
         self.Bind(wx.EVT_BUTTON, lambda event:(self.plot_canvas.Clear(), self.plot_datasets.clear()), self.button_clear)
-        # end wxGlade
-
-    def __set_properties(self):
-        # begin wxGlade: MyFrame.__set_properties
-        self.SetTitle("wx.lib.plot example")
-        self.choice_colour.SetSelection(0)
-        self.text_xmin.SetMinSize((40, -1))
-        self.text_max.SetMinSize((40, -1))
-        self.text_xstep.SetMinSize((40, -1))
-        self.button_plot.SetDefault()
-        # end wxGlade
-
-    def __do_layout(self):
-        # begin wxGlade: MyFrame.__do_layout
-        sizer_1 = wx.BoxSizer(wx.VERTICAL)
-        sizer_2 = wx.BoxSizer(wx.VERTICAL)
-        sizer_3 = wx.BoxSizer(wx.HORIZONTAL)
-        sizer_4 = wx.BoxSizer(wx.HORIZONTAL)
-        sizer_2.Add(self.plot_canvas, 1, wx.ALL | wx.EXPAND, 3)
-        label_4 = wx.StaticText(self.panel_1, wx.ID_ANY, "f(x) = ")
-        sizer_4.Add(label_4, 0, wx.ALIGN_CENTER_VERTICAL | wx.ALL, 5)
-        sizer_4.Add(self.text_function, 1, 0, 0)
-        sizer_4.Add(self.choice_colour, 0, wx.EXPAND, 0)
-        sizer_2.Add(sizer_4, 0, wx.ALL | wx.EXPAND, 5)
-        label_1 = wx.StaticText(self.panel_1, wx.ID_ANY, "xmin")
-        sizer_3.Add(label_1, 0, wx.ALIGN_CENTER_VERTICAL, 0)
-        sizer_3.Add(self.text_xmin, 0, 0, 0)
-        label_2 = wx.StaticText(self.panel_1, wx.ID_ANY, "xmax")
-        sizer_3.Add(label_2, 0, wx.ALIGN_CENTER_VERTICAL, 0)
-        sizer_3.Add(self.text_max, 0, 0, 0)
-        label_3 = wx.StaticText(self.panel_1, wx.ID_ANY, "step")
-        sizer_3.Add(label_3, 0, wx.ALIGN_CENTER_VERTICAL, 0)
-        sizer_3.Add(self.text_xstep, 0, 0, 0)
-        sizer_3.Add((20, 20), 1, 0, 0)
-        sizer_3.Add(self.button_plot, 0, 0, 0)
-        sizer_3.Add(self.button_clear, 0, wx.LEFT, 8)
-        sizer_2.Add(sizer_3, 0, wx.ALL | wx.EXPAND, 5)
-        self.panel_1.SetSizer(sizer_2)
-        sizer_1.Add(self.panel_1, 1, wx.EXPAND, 0)
-        self.SetSizer(sizer_1)
-        self.Layout()
-        self.SetSize((400, 349))
         # end wxGlade
 
     def on_button_plot(self, event):  # wxGlade: MyFrame.<event_handler>
