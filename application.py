@@ -574,7 +574,7 @@ class Application(EditRoot):
 
         preview_filename = self._get_preview_filename()
         if preview_filename is None: return
-        widget_class_name = widget.klass
+
 
         # make a valid name for the class (this can be invalid for some sensible reasons...)
         widget_class = widget.klass[widget.klass.rfind('.') + 1:]
@@ -582,6 +582,9 @@ class Application(EditRoot):
         # ALB 2003-11-08: always randomize the class name: this is to make preview work even when there are multiple
         # classes with the same name (which makes sense for XRC output...)
         widget_class = '_%d_%s' % (random.randrange(10 ** 8, 10 ** 9), widget_class)
+
+        # set property to the temporary value; this will be restored in CodeWriter._generate_code or below
+        widget._restore_data = {"class":widget.klass}
         widget.properties["class"].set(widget_class)
 
         if wx.Platform == "__WXMAC__" and not compat.PYTHON2:
@@ -604,12 +607,12 @@ class Application(EditRoot):
                 return None
 
             try:
-                preview_class = getattr(preview_module, widget.klass)
+                preview_class = getattr(preview_module, widget_class) # .klass)
             except AttributeError:
                 # module loade previously -> do a re-load XXX this is required for Python 3; check alternatives
                 import importlib
                 preview_module = importlib.reload(preview_module)
-                preview_class = getattr(preview_module, widget.klass)
+                preview_class = getattr(preview_module, widget_class)
 
             if not preview_class:
                 misc.error_message( _('No preview class "%s" found.\nThe details are written to the log file.\n'
@@ -672,8 +675,10 @@ class Application(EditRoot):
             widget.preview_widget = None
             widget.properties["preview"].set_label(_('Show Preview'))
             bugdialog.Show(_("Generate Preview"), inst)
-        # XXX restore app state
-        widget.properties["class"].set(widget_class_name)
+
+        if hasattr(widget, "_restore_data"):
+            widget.properties["class"].set( widget._restore_data["class"] )
+
         return frame
     
     def on_char_hook(self, event):

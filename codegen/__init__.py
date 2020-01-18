@@ -481,7 +481,8 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
                 self.add_object(parent_klass, parent, parent_builder, obj)
             return
 
-        obj._restore_data = {}  # XXX remove this hack: _is_class currently will modify some attributes to be restored later
+        if not hasattr(obj, "_restore_data"):
+            obj._restore_data = {}  # XXX remove this hack: _is_class currently will modify some attributes to be restored later
         try:
             IS_CLASS = self._is_class(obj)
             # first the item
