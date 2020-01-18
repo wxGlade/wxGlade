@@ -296,29 +296,28 @@ class LispCodeWriter(BaseLangCodeWriter, wcodegen.LispMixin):
         self.lang_mapping = { 'top_win': self._format_name(top_win), }
         BaseLangCodeWriter.add_app(self, app, top_win_class)
 
-    def add_object(self, parent_klass, parent, parent_builder, sub_obj):
+    def add_object(self, parent_klass, parent, parent_builder, obj):
         # get the widget builder instance
 
         # the lisp code gen add some hard coded depedencies
         # TODO: Move the hard coded dependencies to the widgets resp. sizers
 
-        builder = self._get_object_builder(parent_klass, sub_obj)
+        builder = self._get_object_builder(parent_klass, obj)
         if not builder: return None
 
-        if sub_obj.name not in ("spacer","sizerslot", "SLOT"):
-            self.class_lines.append( self._format_name(sub_obj.name) )
-        if (sub_obj.klass == "wxBoxSizer"  or sub_obj.klass == "wxStaticBoxSizer" or
-            sub_obj.klass == "wxGridSizer" or sub_obj.klass == "wxFlexGridSizer"):
+        if obj.name not in ("spacer","sizerslot", "SLOT"):
+            self.class_lines.append( self._format_name(obj.name) )
+        if obj.klass in ("wxBoxSizer", "wxStaticBoxSizer", "wxGridSizer", "wxFlexGridSizer"):
             self.dependencies['(use-package :wxSizer)'] = 1
         else:
-            if sub_obj.klass not in ("spacer", "sizerslot"):
-                key = '(use-package :%s)' % sub_obj.klass
+            if obj.klass not in ("spacer", "sizerslot"):
+                key = '(use-package :%s)' % obj.klass
                 self.dependencies[key] = 1
 
-        if sub_obj.klass == "wxMenuBar":
+        if obj.klass == "wxMenuBar":
             self.dependencies['(use-package :wxMenu)'] = 1
 
-        return BaseLangCodeWriter.add_object(self, parent_klass, parent, parent_builder, sub_obj)
+        return BaseLangCodeWriter.add_object(self, parent_klass, parent, parent_builder, obj)
 
     def generate_code_background(self, obj):
         self.dependencies['(use-package :wxColour)'] = 1
@@ -387,6 +386,10 @@ class LispCodeWriter(BaseLangCodeWriter, wcodegen.LispMixin):
 
         for l in builder.get_properties_code(code_obj):
             write(tab + l)
+
+        if code_obj.check_prop_truth('extraproperties'):
+            for l in builder.generate_code_extraproperties(code_obj):
+                write(tab + l)
 
         # the initial and final code for the contained elements
         for l in self.classes[code_obj].init:

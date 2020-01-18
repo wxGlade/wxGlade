@@ -894,29 +894,31 @@ class CPPCodeWriter(BaseLangCodeWriter, wcodegen.CppMixin):
             self.output_header.extend(header_buffer)
             self.output_file.extend(source_buffer)
 
-    def add_object(self, klass, parent, parent_builder, sub_obj):
+    def add_object(self, klass, parent, parent_builder, obj):
         # get the widget builder instance
-        builder = self._get_object_builder(klass, sub_obj)
+        builder = self._get_object_builder(klass, obj)
         if not builder: return None
 
         try:
-            init, ids, final = builder.get_code(sub_obj)
+            init, ids, final = builder.get_code(obj)
         except:
-            print(sub_obj)
+            print(obj)
             raise  # this shouldn't happen
 
-        if not sub_obj.IS_SIZER:  # the object is a wxWindow instance
-            if "extracode_pre" in sub_obj.properties and sub_obj.extracode_pre:
-                init = sub_obj.properties["extracode_pre"].get_lines() + init
-            if "extracode_post" in sub_obj.properties and sub_obj.extracode_post:
-                init += sub_obj.properties["extracode_post"].get_lines()
+        if not obj.IS_SIZER:  # the object is a wxWindow instance
+            if obj.check_prop_truth("extracode_pre"):
+                init = obj.properties["extracode_pre"].get_lines() + init
+            if obj.check_prop_truth("extracode_post"):
+                init += obj.properties["extracode_post"].get_lines()
+            if obj.check_prop_truth('extraproperties'):  # insert these only after extracode_post
+                init += self.generate_code_extraproperties(obj)
 
             mycn = getattr(builder, 'cn', self.cn)
-            for win_id, evt, handler, evt_type in builder.get_event_handlers(sub_obj):
+            for win_id, evt, handler, evt_type in builder.get_event_handlers(obj):
                 klass.event_handlers.append( (win_id, mycn(evt), handler, evt_type) )
 
             # try to see if there's some extra code to add to this class
-            extra_code = getattr(builder, 'extracode', getattr(sub_obj, 'extracode', "") or "" )
+            extra_code = getattr(builder, 'extracode', getattr(obj, 'extracode', "") or "" )
             if extra_code:
                 extra_code = re.sub(r'\\n', '\n', extra_code)
                 extra_code = re.split(re.compile(r'^###\s*$', re.M), extra_code, 1)
@@ -926,30 +928,30 @@ class CPPCodeWriter(BaseLangCodeWriter, wcodegen.CppMixin):
                 # if we are not overwriting existing source, warn the user about the presence of extra code
                 if not self.multiple_files and self.previous_source:
                     self.warning( '%s has extra code, but you are not overwriting existing sources: please check '
-                                  'that the resulting code is correct!' % sub_obj.name )
+                                  'that the resulting code is correct!' % obj.name )
 
             klass.ids.extend(ids)
             # attribute is a special property which control whether sub_obj must be accessible as an attribute of
             # top_obj, or as a local variable in the do_layout method
-            if self.store_as_attr(sub_obj):
-                klass.sub_objs.append((sub_obj.klass, sub_obj.name))
-        elif sub_obj.klass != "sizerslot":
+            if self.store_as_attr(obj):
+                klass.sub_objs.append((obj.klass, obj.name))
+        elif obj.klass != "sizerslot":
             # the object is a sizer
-            if self.store_as_attr(sub_obj):
-                klass.sub_objs.append((sub_obj.klass, sub_obj.name))
+            if self.store_as_attr(obj):
+                klass.sub_objs.append((obj.klass, obj.name))
 
         klass.init.extend(init)
 
         if parent_builder:  # add to sizer or notebook
-            klass.init.extend( parent_builder.get_code_per_child(parent, sub_obj) )
+            klass.init.extend( parent_builder.get_code_per_child(parent, obj) )
 
 
         klass.final[:0] = final
-        if self.multiple_files and (sub_obj.IS_CLASS and sub_obj.base != sub_obj.klass):
-            klass.dependencies.append(sub_obj.klass)
+        if self.multiple_files and (obj.IS_CLASS and obj.base != obj.klass):
+            klass.dependencies.append(obj.klass)
         else:
-            if sub_obj.base in self.obj_builders:
-                headers = getattr(self.obj_builders[sub_obj.base], 'import_modules', [])
+            if obj.base in self.obj_builders:
+                headers = getattr(self.obj_builders[obj.base], 'import_modules', [])
                 klass.dependencies.extend(headers)
         return builder
 

@@ -376,11 +376,15 @@ sub %(handler)s {
         write(tab + '$self = $self->SUPER::new( %s );\n' % ", ".join(new_signature))
 
         # set size here to avoid problems with splitter windows
-        if 'size' in code_obj.properties and code_obj.properties["size"].is_active():
-            write( tab+ self.generate_code_size(code_obj) )
+        if code_obj.check_prop('size'):
+            write( tab + self.generate_code_size(code_obj) )
 
         for l in builder.get_properties_code(code_obj):
             write(tab + l)
+
+        if code_obj.check_prop_truth('extraproperties'):
+            for l in builder.generate_code_extraproperties(code_obj):
+                write(tab + l)
 
         # the initial and final code for the contained elements
         for l in self.classes[code_obj].init:

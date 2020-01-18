@@ -3188,3 +3188,7 @@ class PropertyOwner(object):
         prop = self.properties[name]
         if prop.blocked: return False
         return prop.is_active()
+    def check_prop_truth(self, name):
+        # return True if property exists, is active and not blocked and the value is tested for truth
+        if not self.check_prop(name): return False
+        return bool(self.properties[name].value)

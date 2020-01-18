@@ -305,10 +305,11 @@ from %(top_win_module)s import %(top_win_class)s\n\n"""
             base = mycn(code_obj.base)
             if custom_base:
                 base = ", ".join([b.strip() for b in custom_base.split(',')])
-            if self.preview and code_obj.klass == base:
-                klass = code_obj.klass + ('_%d' % random.randrange(10 ** 8, 10 ** 9))
-            else:
-                klass = code_obj.klass
+            # not used; maybe use this instead of changing class property in application.preview
+            #if self.preview and code_obj.klass == base:
+                #klass = code_obj.klass + ('_%d' % random.randrange(10 ** 8, 10 ** 9))
+            #else:
+                #klass = code_obj.klass
             write('\nclass %s(%s):\n' % (self.get_class(fmt_klass), base))
             write(self.tabs(1) + 'def __init__(self, *args, **kwds):\n')
         elif custom_base:
@@ -346,11 +347,15 @@ from %(top_win_module)s import %(top_win_class)s\n\n"""
             write(tab + '%s.__init__(self, *args, **kwds)\n' % mycn(code_obj.base))
 
         # set size here to avoid problems with splitter windows
-        if 'size' in code_obj.properties and code_obj.properties["size"].is_active():
+        if code_obj.check_prop('size'):
             write( tab + self.generate_code_size(code_obj) )
 
         for l in builder.get_properties_code(code_obj):
             write(tab + l)
+
+        if not self.preview and code_obj.check_prop_truth('extraproperties'):
+            for l in self.generate_code_extraproperties(code_obj):
+                write(tab + l)
 
         # the initial and final code for the contained elements
         for l in self.classes[code_obj].init:
