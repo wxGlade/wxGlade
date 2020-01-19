@@ -1,60 +1,17 @@
 
-Property: "no_code"
-
-
-new    Dialog: is called with klass="MyDialog" -> no events are defined
-loaded Dialog: is called with klass="wxDialog"  -> events are defined
-
-same for Frame
- -> use "wxDialog" to call  TopLevelBase.__init__(self, name, klass, parent, title=title)
- in xml_parse.py:
-            p = self.obj.properties.get("class")
-            if p and not p.readonly:  # can happen when pasting a standalone ToolBar or MenuBar to a Frame
-                p.set(self.klass)
-
-
-
-##########################################################################################
-# C++
-
-dynamic binding:  https://docs.wxwidgets.org/3.0/overview_events.html#overview_events_bind
-
-##########################################################################################
-
-MAc OS:
- wxPython. A simple fix for this issue is to just add a newline character to the button's label. 
- Example: b1 = Button(frame, ID_ANY, "Button\n")
-
-SpinCtrl: when focus moves from Design to Tree and then back, the old focus is gained again
-
-compatibility checks  /  tooltip help
-
-  (After calling a builder, call something like ManagedBase.on_load(self) to replace Nones in .children with Slots)
-
-##########################################################################################
-
-Panel:
- t.b.d.: auto-create SLOT or not? maybe for notebook, splitter and toplevel
- 
- 
-I could change the autosave to save to a file and then only after saving give the file the final name such that a partial save is not considered for a restore.
-
-##########################################################################################
-
-
 User Interface:
  * better icons for GridSizers and grid sizer slots (3x3); merged cells for GridBagSizer
- * multiple selections in Tree window -> allow editing properties for multiple widgets at the same time
  * support events from the base classes and the addition of any event as text (-> rev. 1.0)
  * implement undo/re-do; use this for GUI scripting (testing)
  * better avoid overlapping / invisible design window; same for dialogs with "Pin"
  * code properties: use stc and resize dynamically (-> rev. 1.0)
- * toolbar and maybe menu editor: add Drop target for images (-> rev. 1.0)
  * grid properties: implement validation in 'on_cell_changing'
  * Frame, Notebook, Calendar: re-create on style change, depending on changed flags and platform
    e.g. on MacOS and GTK the main Frame styles can't be modified (see patch_recreate.txt)
  * add a template manager for (custom) widgets or complete parts of a design?
  * remove config.preferences.show_progress and always show ProgressDialog
+Not by me, but maybe someone contributes:
+ * toolbar and maybe menu editor: add Drop target for images (-> rev. 1.0)
 done:
  * allow re-ordering toplevel windows by drag and drop
  * better accessibility for palete, grid properties and other property editors
@@ -71,6 +28,7 @@ done:
  * use Freeze/Thaw on updates
  * grid property editors: support clipboard
 probably not:
+ * multiple selections in Tree window -> allow editing properties for multiple widgets at the same time
  * change the user interface towards ribbons, property grid and a single frame instead of separate windows?
  * alternatively, use WrapSizer for the Palette window (-> rev. 0.9)
 
@@ -79,6 +37,8 @@ Code generation:
  * better integrate automatic and user generated code (-> rev. 1.0)
  * Code (property): read user code from file?
  * refactor xrc_codegen.py to write XRC directly, not via separate hierarchy of XrcObjects
+Contribution required:
+ * C++ dynamic event binding:  https://docs.wxwidgets.org/3.0/overview_events.html#overview_events_bind
 done:
  * make C++ event handlers virtual void again
  * improve readability of the generated code
@@ -131,15 +91,16 @@ done:
 
 Additional Widgets:
  * lib.buttons (feature request #45 Add support for generic buttons) (-> rev. 1.0)
- * StdDialogButtonSizer?  with SetAffirmativeButton etc.
  * stc.StyledTextCtrl
  * MediaCtrl?
  * ColourPickerCtrl, FontPickerCtrl?
  * FilePickerCtrl, DirPickerCtrl?
- * Simplebook, Choicebook
+ * Simplebook, Choicebook (example for Simplebook is supplied already)
  * ListBook, CheckListBox?
  * FoldPanelBar, AGWInfoBar?
  * LedBarGraph?
+WIP:
+ * StdDialogButtonSizer?  with SetAffirmativeButton etc.
 done:
  * GridBagSizer
  * WrapSizer
@@ -171,12 +132,15 @@ done:
  * Grid col resizing in design window
  * better dialog code
 
+
 Documentation:
+ * update for 1.0 (one window, no sizers between Frame and Panel)
 done:
  * Note "Repeat and Re-do"
 
 
 Development process:
+done:
  * move to GitHub
 
 
