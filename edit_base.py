@@ -28,6 +28,7 @@ else:
 class EditBase(np.PropertyOwner):
     #is_sizer = False
     IS_TOPLEVEL = IS_SLOT = IS_SIZER = IS_WINDOW = IS_ROOT = IS_TOPLEVEL_WINDOW = False
+    CAN_BE_CLASS = False
     IS_CLASS = False  # generate class for this item; can be dynamically set during code generation
     WX_CLASS = None # needs to be defined in every derived class; e.g. "wxFrame", "wxBoxSizer", "TopLevelPanel"
     IS_NAMED = True  # default, only False for Spacer

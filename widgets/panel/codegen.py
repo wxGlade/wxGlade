@@ -124,13 +124,9 @@ def initialize():
     klass = 'wxPanel'
     common.class_names['EditPanel'] = klass
     common.class_names['EditTopLevelPanel'] = klass
-    common.toplevels['EditPanel'] = 1
-    common.toplevels['EditTopLevelPanel'] = 1
 
     common.class_names['EditScrolledWindow'] = 'wxScrolledWindow'
     common.class_names['EditTopLevelScrolledWindow'] = 'wxScrolledWindow'
-    common.toplevels['EditScrolledWindow'] = 1
-    common.toplevels['EditTopLevelScrolledWindow'] = 1
 
     common.register('python', klass,              PythonPanelGenerator(klass))
     common.register('python', 'wxScrolledWindow', PythonPanelGenerator(klass))

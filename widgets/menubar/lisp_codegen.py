@@ -79,5 +79,4 @@ class LispMenubarGenerator(wcodegen.LispWidgetCodeWriter):
 def initialize():
     klass = 'wxMenuBar'
     common.class_names['EditMenuBar'] = klass
-    common.toplevels['EditMenuBar'] = 1
     common.register('lisp', klass, LispMenubarGenerator(klass) )

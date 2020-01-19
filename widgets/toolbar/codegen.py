@@ -311,7 +311,6 @@ class CppCodeGenerator(wcodegen.CppWidgetCodeWriter):
 def initialize():
     klass = 'wxToolBar'
     common.class_names['EditToolBar'] = klass
-    common.toplevels['EditToolBar'] = 1
     common.register('python', klass, PythonCodeGenerator(klass))
     common.register('C++',    klass, CppCodeGenerator(klass))
     common.register('XRC',    klass, xrc_code_generator)

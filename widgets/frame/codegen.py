@@ -109,8 +109,6 @@ def initialize():
     cn = common.class_names
     cn['EditFrame'] = klass
     cn['EditMDIChildFrame'] = 'wxMDIChildFrame'
-    common.toplevels['EditFrame'] = 1
-    common.toplevels['EditMDIChildFrame'] = 1
 
     pygen = common.code_writers.get('python')
     if pygen:

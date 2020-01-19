@@ -92,8 +92,6 @@ def initialize():
     klass = 'wxStatusBar'
     cn = common.class_names
     cn['EditStatusBar'] = klass
-    common.toplevels['EditFrame'] = 1
-    common.toplevels['EditMDIChildFrame'] = 1
 
     pygen = common.code_writers.get('python')
     if pygen:

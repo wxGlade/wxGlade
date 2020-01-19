@@ -81,7 +81,5 @@ def initialize():
     klass = 'wxPanel'
     common.class_names['EditPanel'] = klass
     common.class_names['EditTopLevelPanel'] = klass
-    common.toplevels['EditPanel'] = 1
-    common.toplevels['EditTopLevelPanel'] = 1
     common.register('perl', klass, PerlPanelGenerator(klass))
     common.register('perl', 'wxScrolledWindow', PerlPanelGenerator(klass))

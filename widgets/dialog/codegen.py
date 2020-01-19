@@ -79,7 +79,6 @@ def xrc_code_generator(obj):
 def initialize():
     klass = 'wxDialog'
     common.class_names['EditDialog'] = klass
-    common.toplevels['EditDialog'] = 1
     common.register('python', klass, PythonDialogGenerator(klass))
     common.register('C++', klass, CppDialogGenerator(klass))
     common.register('XRC', klass, xrc_code_generator)

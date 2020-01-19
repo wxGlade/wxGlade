@@ -73,6 +73,7 @@ class EditNotebook(ManagedBase, EditStylesMixin):
     update_widget_style = False
 
     WX_CLASS = "wxNotebook"
+    CAN_BE_CLASS = True
     _PROPERTIES = ["Widget", "no_custom_class", "style", "tabs"]
     PROPERTIES = ManagedBase.PROPERTIES + _PROPERTIES + ManagedBase.EXTRA_PROPERTIES
 

@@ -305,7 +305,6 @@ class CppMenubarGenerator(wcodegen.CppWidgetCodeWriter):
 def initialize():
     klass = 'wxMenuBar'
     common.class_names['EditMenuBar'] = klass
-    common.toplevels['EditMenuBar'] = 1
     common.register('python', klass, PythonMenubarGenerator(klass) )
     common.register('C++',    klass, CppMenubarGenerator(klass),   )
     common.register('XRC',    klass, xrc_code_generator,           )

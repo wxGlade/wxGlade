@@ -45,8 +45,6 @@ def initialize():
     cn = common.class_names
     cn['EditFrame'] = klass
     cn['EditMDIChildFrame'] = 'wxMDIChildFrame'
-    common.toplevels['EditFrame'] = 1
-    common.toplevels['EditMDIChildFrame'] = 1
 
     plgen = common.code_writers.get('perl')
     if plgen:

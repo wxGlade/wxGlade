@@ -717,6 +717,7 @@ class TopLevelBase(WindowBase, PreviewMixin):
 
     IS_TOPLEVEL = True
     IS_TOPLEVEL_WINDOW = True  # will be False for TopLevelPanel and MDIChildFrame
+    CAN_BE_CLASS = True
     CHILDREN = 1  # a sizer or a widget
 
     _PROPERTY_HELP={ "extracode_pre": "This code will be inserted at the beginning of the constructor.",

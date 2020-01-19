@@ -338,8 +338,6 @@ class XRCCodeWriter(BaseLangCodeWriter, wcodegen.XRCMixin):
         parent = obj.parent
         parent_class_object = obj.parent_class_object  # used for adding to this object's sizer
 
-        can_be_toplevel = obj.__class__.__name__ in common.toplevels
-
         # XXX check for alternatives
         # classname is used only for 'EditTopLevelScrolledWindow' vs. 'EditTopLevelPanel'
         classname = getattr(obj, '_classname', obj.__class__.__name__)
@@ -348,15 +346,11 @@ class XRCCodeWriter(BaseLangCodeWriter, wcodegen.XRCMixin):
             obj.properties["base"].set_temp( base )
 
         IS_CLASS = obj.IS_TOPLEVEL
-        if obj.klass != obj.base and can_be_toplevel:
+        if obj.klass != obj.base and obj.CAN_BE_CLASS:
             IS_CLASS = True
             # for panel objects, if the user sets a custom class but (s)he doesn't want the code to be generated...
             if obj.check_prop("no_custom_class") and obj.no_custom_class and not self.preview:
                 IS_CLASS = False
-        elif self.preview and not can_be_toplevel and obj.base != 'CustomWidget':
-            # if this is a custom class, but not a toplevel one, for the preview we have to use the "real" class
-            # CustomWidgets handle this in a special way (see widgets/custom_widget/codegen.py)
-            obj.properties["klass"].set_temp(obj.base) # XXX handle this in a different way
 
         obj.IS_CLASS = IS_CLASS
 

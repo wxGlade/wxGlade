@@ -100,5 +100,4 @@ class LispCodeGenerator(wcodegen.LispWidgetCodeWriter):
 def initialize():
     klass = 'wxToolBar'
     common.class_names['EditToolBar'] = klass
-    common.toplevels['EditToolBar'] = 1
     common.register('lisp', klass, LispCodeGenerator(klass) )#, 'tools', ToolsHandler)

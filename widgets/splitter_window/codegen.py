@@ -200,8 +200,6 @@ def initialize():
     klass = 'wxSplitterWindow'
     common.class_names['EditSplitterWindow'] = klass
     common.class_names['SplitterPane'] = 'wxPanel'
-    common.toplevels['EditSplitterWindow'] = 1
-    common.toplevels['SplitterPane'] = 1
     common.register('python', klass, PythonSplitterWindowGenerator(klass))
     common.register('C++',    klass, CppSplitterWindowGenerator(klass))
     common.register('XRC',    klass, xrc_code_generator)

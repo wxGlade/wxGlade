@@ -104,6 +104,4 @@ def initialize():
     klass = 'wxSplitterWindow'
     common.class_names['EditSplitterWindow'] = klass
     common.class_names['SplitterPane'] = 'wxPanel'
-    common.toplevels['EditSplitterWindow'] = 1
-    common.toplevels['SplitterPane'] = 1
     common.register('lisp', klass, LispSplitterWindowGenerator(klass))

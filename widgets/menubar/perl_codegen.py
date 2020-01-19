@@ -120,5 +120,4 @@ class PerlMenubarGenerator(wcodegen.PerlWidgetCodeWriter):
 def initialize():
     klass = 'wxMenuBar'
     common.class_names['EditMenuBar'] = klass
-    common.toplevels['EditMenuBar'] = 1
     common.register('perl', klass, PerlMenubarGenerator(klass), ) #'menus', MenuHandler)
