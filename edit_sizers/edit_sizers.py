@@ -2472,7 +2472,7 @@ def init_all():
 
     WidgetTree.images['EditVerticalSizer']   = os.path.join( config.icons_path, 'sizer_v.xpm' )
     WidgetTree.images['EditHorizontalSizer'] = os.path.join( config.icons_path, 'sizer_h.xpm' )
-    WidgetTree.images['EditStdDialogButtonSizer'] = os.path.join( config.icons_path, 'sizer_h.xpm' )
+    WidgetTree.images['EditStdDialogButtonSizer'] = os.path.join( config.icons_path, 'button_sizer.xpm' )
 
     WidgetTree.images['EditVerticalSizerSlot']   = os.path.join( config.icons_path, 'sizer_slot_v.xpm' )
     WidgetTree.images['EditHorizontalSizerSlot'] = os.path.join( config.icons_path, 'sizer_slot_h.xpm' )
