@@ -90,7 +90,9 @@ class EditBase(EventsMixin, edit_base.EditBase):
                      "name":_("Name of the variable for assigning the reference to the created widget instance.\n\n"
                               "(Valid: alphanumeric characters and underscore, also minus, but not at the beginning)\n"
                               "If the config setting is to have unique names, a non-unique name will be indicated"
-                              " by a yellow background"),
+                              " by a yellow background.\n\n"
+                              "You may edit this in the Tree view as well."),
+                     "label": _("You may edit this in the Tree view as well."),
                      "custom_base": _("A comma-separated list of custom base classes. The first will be invoked\n"
                                       "with the same parameters as this class, while for the others the default\n"
                                       "constructor will be used. You should probably not use this if \n"

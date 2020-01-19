@@ -26,7 +26,10 @@ class EditButton(ManagedBase, EditStylesMixin, BitmapMixin):
     PROPERTIES = ManagedBase.PROPERTIES + _PROPERTIES + ManagedBase.EXTRA_PROPERTIES
 
     _PROPERTY_HELP = {"default":"This sets the button to be the default item for the panel or dialog box.",
-                      "stockitem":"Standard IDs for button identifiers"}
+                      "stockitem":"Standard IDs for button identifiers.\n\n"
+                                  "You can edit these in the Tree view as well.\n\n"
+                                  "If stockitem buttons like OK and CANCEL are placed in a StdDialogButtonSizer, "
+                                  "they will be re-ordered according to the platform style guide."}
 
     def __init__(self, name, parent, label, pos):
         # Initialise parent classes

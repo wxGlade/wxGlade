@@ -134,7 +134,7 @@ class WidgetTree(wx.TreeCtrl):#, Tree):
         new_value = evt.Label
         if new_value==widget._get_tree_label(): return
 
-        new_name = new_label = new_title = new_tab = new_class = None
+        new_name = new_label = new_title = new_tab = new_class = new_stockitem = None
         
         if widget.klass != widget.base and widget.klass != 'wxScrolledWindow':
             if new_value.count("(")==1 and new_value.count(")")==1:
@@ -143,7 +143,16 @@ class WidgetTree(wx.TreeCtrl):#, Tree):
                 if pre.endswith(" "): pre = pre[:-1]
                 new_value = pre+post
 
-        if "label" in widget.properties and widget._label_editable():
+        if "stockitem" in widget.properties:
+            if ":" in new_value:
+                new_name, new_stockitem = new_value.split(":", 1)
+                new_stockitem = new_stockitem.strip().upper()
+                if not new_stockitem in widget.STOCKITEMS: new_stockitem = None
+            elif new_value.strip().upper() in widget.STOCKITEMS:
+                new_stockitem = new_value.strip().upper()
+            else:
+                new_name = new_value
+        elif "label" in widget.properties and widget._label_editable():
             new_name, new_label = self._split_name_label(new_value)
         elif "label" in widget.properties:
             # label is not editable, but name may have changed
@@ -180,11 +189,16 @@ class WidgetTree(wx.TreeCtrl):#, Tree):
         if new_label is not None:
             label_p = widget.properties["label"]
             if new_label==label_p.get(): new_label = None
-        if not new_name and new_label is None and new_title is None and new_tab is None and new_class is None:
+        if (not new_name and new_label is None and new_title is None and new_tab is None and new_class is None
+            and not new_stockitem):
             # no change or an error
             wx.Bell()
             evt.Veto()
             return
+        # check title
+        if new_stockitem is not None:
+            stockitem_p = widget.properties["stockitem"]
+            if new_stockitem==stockitem_p.get(): new_stockitem = None
         # check title
         if new_title is not None:
             title_p = widget.properties["title"]
@@ -217,6 +231,10 @@ class WidgetTree(wx.TreeCtrl):#, Tree):
             label_p.previous_value = label_p.value
             label_p.set(new_label, notify=False)
             modified.add("label")
+        if new_stockitem:
+            stockitem_p.previous_value = stockitem_p.value
+            stockitem_p.set(new_stockitem, notify=False)
+            modified.add("stockitem")
         if new_title:
             title_p.previous_value = title_p.value
             title_p.set(new_title, notify=False)

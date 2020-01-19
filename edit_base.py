@@ -401,7 +401,9 @@ class EditBase(np.PropertyOwner):
             if getattr(self, "has_title", None):
                 # include title
                 s += ': "%s"'%self.title
-        elif "label" in self.properties and self.properties["label"].is_active():
+        elif self.check_prop("stockitem"):
+            s = "%s: %s"%(s, self.stockitem)
+        elif self.check_prop("label"):
             # include label of control
             label = self.label
             label = label.replace("\n","\\n").replace("\t","\\t")
