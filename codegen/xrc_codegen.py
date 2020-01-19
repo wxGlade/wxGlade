@@ -340,55 +340,46 @@ class XRCCodeWriter(BaseLangCodeWriter, wcodegen.XRCMixin):
 
         can_be_toplevel = obj.__class__.__name__ in common.toplevels
 
-        old_class = old_base = None  # restore values for preview
-        try:
-            # XXX check for alternatives
-            # classname is used only for 'EditTopLevelScrolledWindow' vs. 'EditTopLevelPanel'
-            classname = getattr(obj, '_classname', obj.__class__.__name__)
-            base = common.class_names[classname]
-            if base!=obj.base:
-                old_base = obj.base
-                obj.base = base
+        # XXX check for alternatives
+        # classname is used only for 'EditTopLevelScrolledWindow' vs. 'EditTopLevelPanel'
+        classname = getattr(obj, '_classname', obj.__class__.__name__)
+        base = common.class_names[classname]
+        if base!=obj.base:
+            obj.properties["base"].set_temp( base )
 
-            IS_CLASS = obj.IS_TOPLEVEL
-            if obj.klass != obj.base and can_be_toplevel:
-                IS_CLASS = True
-                # for panel objects, if the user sets a custom class but (s)he doesn't want the code to be generated...
-                if obj.check_prop("no_custom_class") and obj.no_custom_class and not self.preview:
-                    IS_CLASS = False
-            elif self.preview and not can_be_toplevel and obj.base != 'CustomWidget':
-                # if this is a custom class, but not a toplevel one, for the preview we have to use the "real" class
-                # CustomWidgets handle this in a special way (see widgets/custom_widget/codegen.py)
-                old_class = obj.properties["klass"].get()
-                obj.properties["klass"].set(obj.base) # XXX handle this in a different way
+        IS_CLASS = obj.IS_TOPLEVEL
+        if obj.klass != obj.base and can_be_toplevel:
+            IS_CLASS = True
+            # for panel objects, if the user sets a custom class but (s)he doesn't want the code to be generated...
+            if obj.check_prop("no_custom_class") and obj.no_custom_class and not self.preview:
+                IS_CLASS = False
+        elif self.preview and not can_be_toplevel and obj.base != 'CustomWidget':
+            # if this is a custom class, but not a toplevel one, for the preview we have to use the "real" class
+            # CustomWidgets handle this in a special way (see widgets/custom_widget/codegen.py)
+            obj.properties["klass"].set_temp(obj.base) # XXX handle this in a different way
 
-            obj.IS_CLASS = IS_CLASS
+        obj.IS_CLASS = IS_CLASS
 
-            # first the item
-            if IS_CLASS:
-                self.add_class(obj)
-            if not obj.IS_TOPLEVEL:
-                added = self.add_object(obj)  # added can be False if the widget is not supported
-            else:
-                added = False
+        # first the item
+        if IS_CLASS:
+            self.add_class(obj)
+        if not obj.IS_TOPLEVEL:
+            added = self.add_object(obj)  # added can be False if the widget is not supported
+        else:
+            added = False
 
-            # then the children
-            for child in obj.get_all_children():
-                assert obj.children.count(child)<=1
-                self._generate_code(None, None, None, child)  # XRCCodeWriter does not use the other args
+        # then the children
+        for child in obj.get_all_children():
+            assert obj.children.count(child)<=1
+            self._generate_code(None, None, None, child)  # XRCCodeWriter does not use the other args
 
-            if IS_CLASS:
-                self.finalize_class(obj)
+        if IS_CLASS:
+            self.finalize_class(obj)
 
-            # check whether the object belongs to some sizer; if applicable, add it to the sizer at the top of the stack
-            if added and parent.IS_SIZER:
-                if obj.classname not in ("spacer",):  # spacer and slot are adding itself to the sizer
-                    self.add_sizeritem(parent_class_object, parent, obj)
-        finally:
-            # XXX handle this in a different way
-            if old_class is not None: obj.properties["klass"].set(old_class)
-            if old_base  is not None: obj.base = old_base
-
+        # check whether the object belongs to some sizer; if applicable, add it to the sizer at the top of the stack
+        if added and parent.IS_SIZER:
+            if obj.classname not in ("spacer",):  # spacer and slot are adding itself to the sizer
+                self.add_sizeritem(parent_class_object, parent, obj)
 
     def add_app(self, app, top_win_class):
         "In the case of XRC output, there's no wxApp code to generate"

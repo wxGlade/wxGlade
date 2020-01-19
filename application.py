@@ -562,15 +562,6 @@ class Application(EditRoot):
     def preview(self, widget, position=None):
         """Generate and instantiate preview widget.
         None will be returned in case of errors. The error details are written to the application log file."""
-        # some checks
-        #if compat.IS_PHOENIX:
-            #found = common.app_tree.find_widgets_by_classnames(widget.node, "EditPropertyGridManager")
-            #if found:
-                #error = ("Preview with PropertyGridManager controls is currently deactivated as it causes crashes "
-                         #"with wxPython Phoenix")
-                #wx.MessageBox( error, _('Error'), wx.OK | wx.CENTRE | wx.ICON_EXCLAMATION )
-                #return
-        # XXX check other things as well, e.g. different bitmap sizes for BitmapButton
 
         preview_filename = self._get_preview_filename()
         if preview_filename is None: return
@@ -580,16 +571,11 @@ class Application(EditRoot):
             import importlib
             importlib.invalidate_caches()
 
-        widget_class_name = widget.klass
         # make a valid name for the class (this can be invalid for some sensible reasons...)
-        widget_class = widget.klass[widget.klass.rfind('.') + 1:]
-        widget_class = widget.klass[widget.klass.rfind(':') + 1:]
-        # ALB 2003-11-08: always randomize the class name: this is to make preview work even when there are multiple
-        # classes with the same name (which makes sense for XRC output...)
-        widget_class = '_%d_%s' % (random.randrange(10 ** 8, 10 ** 9), widget_class)
-
-        # set property to the temporary value; this will be restored in CodeWriter._generate_code
-        widget.properties["class"].set_temp(widget_class)
+        preview_classname = widget.klass.split('.')[-1].split(':')[-1]
+        # randomize the class name to make preview work when there are multiple classes with the same name (e.g. XRC)
+        preview_classname = '_%d_%s' % (random.randrange(10 ** 8, 10 ** 9), preview_classname)
+        widget.properties["class"].set_temp(preview_classname)
 
         frame = None
         try:
@@ -606,12 +592,12 @@ class Application(EditRoot):
                 return None
 
             try:
-                preview_class = getattr(preview_module, widget_class) # .klass)
+                preview_class = getattr(preview_module, preview_classname) # .klass)
             except AttributeError:
                 # module loade previously -> do a re-load XXX this is required for Python 3; check alternatives
                 import importlib
                 preview_module = importlib.reload(preview_module)
-                preview_class = getattr(preview_module, widget_class)
+                preview_class = getattr(preview_module, preview_classname)
 
             if not preview_class:
                 misc.error_message( _('No preview class "%s" found.\nThe details are written to the log file.\n'
@@ -626,7 +612,7 @@ class Application(EditRoot):
                 frame.SetClientSize((w + 20, h + 20))
             elif not issubclass(preview_class, (wx.Frame,wx.Dialog)):
                 # the toplevel class isn't really toplevel, add a frame...
-                frame = wx.Frame(None, -1, widget_class_name)
+                frame = wx.Frame(None, -1, widget.klass)
                 if issubclass(preview_class, wx.MenuBar):
                     menubar = preview_class()
                     frame.SetMenuBar(menubar)
