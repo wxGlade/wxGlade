@@ -8,7 +8,7 @@ wxButton objects
 """
 
 import wx
-import config, common, compat
+import common, compat
 from edit_windows import ManagedBase, EditStylesMixin
 import new_properties as np
 from .button_stockitems import *
@@ -25,7 +25,8 @@ class EditButton(ManagedBase, EditStylesMixin, BitmapMixin):
                    "default", "style"]
     PROPERTIES = ManagedBase.PROPERTIES + _PROPERTIES + ManagedBase.EXTRA_PROPERTIES
 
-    _PROPERTY_HELP = {"default":"This sets the button to be the default item for the panel or dialog box.",
+    _PROPERTY_HELP = {"default":"This sets the button to be the default item for the toplevel window.\n"
+                                "(On Windows this is only supported for Dialogs.)",
                       "stockitem":"Standard IDs for button identifiers.\n\n"
                                   "You can edit these in the Tree view as well.\n\n"
                                   "If stockitem buttons like OK and CANCEL are placed in a StdDialogButtonSizer, "

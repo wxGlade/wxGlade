@@ -143,7 +143,7 @@ class WidgetTree(wx.TreeCtrl):#, Tree):
                 if pre.endswith(" "): pre = pre[:-1]
                 new_value = pre+post
 
-        if "stockitem" in widget.properties:
+        if widget.check_prop_truth("stockitem"):
             if ":" in new_value:
                 new_name, new_stockitem = new_value.split(":", 1)
                 new_stockitem = new_stockitem.strip().upper()
