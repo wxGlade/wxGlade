@@ -109,6 +109,14 @@ class Property(object):
             self.update_display()
         if notify: self._notify()
 
+    def set_temp(self, value):
+        # set e.g. to a temporary class name during preview; restored in CodeWriter.clean_up()
+        if value==self.value: return
+        if not hasattr(self.owner, "_restore_data"): self.owner._restore_data ={}
+        if not self.name in self.owner._restore_data:
+            self.owner._restore_data[self.name] = self.value
+        self.value = value
+
     def load(self, value, activate=None, deactivate=None, notify=False):
         # called from xml_parse ... add_property(self, name, val)
         # a derived class like TextProperty may implement a load method, e.g. to unescape strings
@@ -3184,11 +3192,21 @@ class PropertyOwner(object):
             if prop.attributename in without: continue  # for e.g. option/proportion
             if prop is not None: ret.append(prop)
         return ret
+
+    def restore_properties(self):
+        # restore values that were overwritten by obj.properties["name"].set_temp(value)
+        d = getattr(self, "_restore_data", None)
+        if d is None: return
+        for name, value in d.items():
+            self.properties[name].value = value
+        del self._restore_data
+
     def check_prop(self, name):
         if not name in self.properties: return False
         prop = self.properties[name]
         if prop.blocked: return False
         return prop.is_active()
+
     def check_prop_truth(self, name):
         # return True if property exists, is active and not blocked and the value is tested for truth
         if not self.check_prop(name): return False

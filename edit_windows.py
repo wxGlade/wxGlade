@@ -118,7 +118,7 @@ class EditBase(EventsMixin, edit_base.EditBase):
         if not custom_class: klass_p.readonly = True
 
         # Name of object's wxWidget class; base and klass are mostly the same, except e.g. wxDialog:
-        self.base = klass  # not editable; e.g. wxFrame or wxComboBox; used to find the code generator
+        self.base = np.TextProperty(klass)  # not editable; e.g. wxFrame or wxComboBox; used to find the code generator
 
         if getattr(self, '_custom_base_classes', False):
             # for notebook, panel and splitter window

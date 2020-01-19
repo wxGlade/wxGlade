@@ -303,13 +303,7 @@ from %(top_win_module)s import %(top_win_class)s\n\n"""
         # generate constructor code
         if is_new:
             base = mycn(code_obj.base)
-            if custom_base:
-                base = ", ".join([b.strip() for b in custom_base.split(',')])
-            # not used; maybe use this instead of changing class property in application.preview
-            #if self.preview and code_obj.klass == base:
-                #klass = code_obj.klass + ('_%d' % random.randrange(10 ** 8, 10 ** 9))
-            #else:
-                #klass = code_obj.klass
+            if custom_base: base = ", ".join([b.strip() for b in custom_base.split(',')])
             write('\nclass %s(%s):\n' % (self.get_class(fmt_klass), base))
             write(self.tabs(1) + 'def __init__(self, *args, **kwds):\n')
         elif custom_base:

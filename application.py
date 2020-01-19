@@ -518,7 +518,7 @@ class Application(EditRoot):
             bugdialog.Show(_('Generate Code'), inst)
             return
         finally:
-            writer.clean_up(self)
+            writer.clean_up(widget or self)
 
         if preview or not config.use_gui: return
         if config.preferences.show_completion:
@@ -575,7 +575,12 @@ class Application(EditRoot):
         preview_filename = self._get_preview_filename()
         if preview_filename is None: return
 
+        if wx.Platform == "__WXMAC__" and not compat.PYTHON2:
+            # workaround for Mac OS testing: sometimes the caches need to be invalidated
+            import importlib
+            importlib.invalidate_caches()
 
+        widget_class_name = widget.klass
         # make a valid name for the class (this can be invalid for some sensible reasons...)
         widget_class = widget.klass[widget.klass.rfind('.') + 1:]
         widget_class = widget.klass[widget.klass.rfind(':') + 1:]
@@ -583,14 +588,8 @@ class Application(EditRoot):
         # classes with the same name (which makes sense for XRC output...)
         widget_class = '_%d_%s' % (random.randrange(10 ** 8, 10 ** 9), widget_class)
 
-        # set property to the temporary value; this will be restored in CodeWriter._generate_code or below
-        widget._restore_data = {"class":widget.klass}
-        widget.properties["class"].set(widget_class)
-
-        if wx.Platform == "__WXMAC__" and not compat.PYTHON2:
-            # workaround for Mac OS testing: sometimes the caches need to be invalidated
-            import importlib
-            importlib.invalidate_caches()
+        # set property to the temporary value; this will be restored in CodeWriter._generate_code
+        widget.properties["class"].set_temp(widget_class)
 
         frame = None
         try:
@@ -675,9 +674,6 @@ class Application(EditRoot):
             widget.preview_widget = None
             widget.properties["preview"].set_label(_('Show Preview'))
             bugdialog.Show(_("Generate Preview"), inst)
-
-        if hasattr(widget, "_restore_data"):
-            widget.properties["class"].set( widget._restore_data["class"] )
 
         return frame
     

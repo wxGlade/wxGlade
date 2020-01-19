@@ -329,6 +329,9 @@ class EditBase(np.PropertyOwner):
                                                      common.format_xml_attrs(base=classname),
                                                      no_custom) )
 
+        if config.debugging and getattr(self, "_restore_properties", None):
+            raise ValueError("properties not restored")
+        self.restore_properties()
         # write properties, but without name and class
         # XXX be 100% compatible to 0.7.2, where option is written into the object; remove later
         properties = self.get_properties(without=set(MANAGED_PROPERTIES))

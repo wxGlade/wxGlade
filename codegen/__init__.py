@@ -442,9 +442,7 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
         # classname is used only for 'EditTopLevelScrolledWindow' vs. 'EditTopLevelPanel'
         classname = getattr(obj, '_classname', obj.__class__.__name__)
         base = common.class_names[classname]
-        if base!=obj.base:
-            obj._restore_data["base"] = obj.base
-            obj.base = base
+        obj.properties["base"].set_temp(base)
 
         IS_CLASS = obj.IS_TOPLEVEL
         can_be_toplevel = obj.__class__.__name__ in common.toplevels
@@ -456,21 +454,11 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
         elif self.preview and not can_be_toplevel and obj.base != 'CustomWidget':
             # if this is a custom class, but not a toplevel one, for the preview we have to use the "real" class
             # CustomWidgets handle this in a special way (see widgets/custom_widget/codegen.py)
-            obj._restore_data["class"] = obj.properties["klass"].get()
-            obj.properties["klass"].set(obj.base) # XXX handle this in a different way
+            obj.properties["klass"].set_temp(obj.base) # XXX handle this in a different way
 
         obj.IS_CLASS = IS_CLASS
 
         return IS_CLASS
-
-    def _restore_obj(self, obj):
-        # restore attributes that were modified by _is_class()
-        # XXX handle this in a different way
-        if "class" in obj._restore_data:
-            obj.properties["klass"].set(obj._restore_data["class"])
-        if "base" in obj._restore_data:
-            obj.base = obj._restore_data["base"]
-        del obj._restore_data
 
     def _generate_code(self, parent_klass, parent, parent_builder, obj):
         # recursively generate code, for anything except application.Application
@@ -481,26 +469,20 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
                 self.add_object(parent_klass, parent, parent_builder, obj)
             return
 
-        if not hasattr(obj, "_restore_data"):
-            obj._restore_data = {}  # XXX remove this hack: _is_class currently will modify some attributes to be restored later
-        try:
-            IS_CLASS = self._is_class(obj)
-            # first the item
-            klass = IS_CLASS and self.add_class(obj) or None
-            if not obj.IS_TOPLEVEL:
-                builder = self.add_object(parent_klass, parent, parent_builder, obj)
-            else:
-                builder = None
+        IS_CLASS = self._is_class(obj)
+        # first the item
+        klass = IS_CLASS and self.add_class(obj) or None
+        if not obj.IS_TOPLEVEL:
+            builder = self.add_object(parent_klass, parent, parent_builder, obj)
+        else:
+            builder = None
 
-            # then the children
-            for child in obj.get_all_children():
-                self._generate_code(klass or parent_klass, obj, builder, child)
+        # then the children
+        for child in obj.get_all_children():
+            self._generate_code(klass or parent_klass, obj, builder, child)
 
-            if IS_CLASS:
-                self.finalize_class(obj)
-
-        finally:
-            self._restore_obj(obj)
+        if IS_CLASS:
+            self.finalize_class(obj)
 
     def generate_code(self, root, widget=None):
         "entry point for recursive code generation via _generate_code()"
@@ -560,8 +542,12 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
             self.save_file(self.output_file_name, self.output_file, self._app_added)
             self.output_file = None
 
-    def clean_up(self, root):
-        pass
+    def clean_up(self, obj):
+        if hasattr(obj, "xrc"):
+            del obj.xrc
+        obj.restore_properties()
+        for c in obj.children or []:
+            self.clean_up(c)
 
     def add_app(self, app, top_win):
         """Generates the code for a wxApp instance.

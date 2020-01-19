@@ -27,7 +27,7 @@ class EditFrame(TopLevelBase, EditStylesMixin, BitmapMixin):
 
     def __init__(self, name, parent, title, style=wx.DEFAULT_FRAME_STYLE, klass='wxFrame'): #XXX style is not used
         TopLevelBase.__init__(self, name, klass, parent, title=title)
-        self.base = 'wxFrame'
+        self.properties["base"].set('wxFrame')
         EditStylesMixin.__init__(self)
         self.properties["style"].set(style)
 

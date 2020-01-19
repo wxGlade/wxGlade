@@ -323,16 +323,6 @@ class XRCCodeWriter(BaseLangCodeWriter, wcodegen.XRCMixin):
         self.save_file( self.output_file_name, self.out_file )
         self.out_file = None
 
-    def _clean_up_node(self, node):
-        if hasattr(node, "xrc"):
-            del node.xrc
-        for c in node.children or []:
-            self._clean_up_node(c)
-
-    def clean_up(self, root):
-        # root is a Tree node
-        self._clean_up_node(root)
-
     def _generate_code(self, klass, parent, parent_builder, obj):
         # XXX old implementation from __init__.py before re-factoring 'real' code generation
         # recursively generate code, for anything except application.Application
