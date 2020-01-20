@@ -300,16 +300,6 @@ class Application(EditRoot):
     def get_output_path(self):
         return os.path.normpath(os.path.expanduser(self.output_path))
 
-    #def _add_page(self, label, page, sizer):
-        #"Add a page to properties notebook"
-        #page.SetAutoLayout(True)
-        #page.SetSizer(sizer)
-        #sizer.Layout()
-        #sizer.Fit(page)
-        #self.notebook.AddPage(page, label)
-        #h = page.GetSize()[1]
-        #page.SetScrollbars(1, 5, 1, int(math.ceil(h / 5.0)))
-
     def set_encoding(self, value):
         try:
             unicode('a', value)
@@ -720,10 +710,6 @@ class Application(EditRoot):
     def popup_menu(self, event, pos=None):
         # right click event -> expand all or show context menu
         expanded = True
-        #for child_node in common.root.children or []:
-            #if not common.app_tree.IsExpanded(child_node.item) and child_node.children:
-                #expanded = False
-                #break
         for child in self.children:
             if not common.app_tree.IsExpanded(child.item) and child.children:
                 expanded = False
