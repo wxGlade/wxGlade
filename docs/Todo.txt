@@ -1,18 +1,19 @@
 
 User Interface:
  * better icons for GridSizers and grid sizer slots (3x3); merged cells for GridBagSizer
- * support events from the base classes and the addition of any event as text (-> rev. 1.0)
+ * easy selection of events from the base classes (-> rev. 1.0)
  * implement undo/re-do; use this for GUI scripting (testing)
  * better avoid overlapping / invisible design window; same for dialogs with "Pin"
  * code properties: use stc and resize dynamically (-> rev. 1.0)
  * grid properties: implement validation in 'on_cell_changing'
  * Frame, Notebook, Calendar: re-create on style change, depending on changed flags and platform
    e.g. on MacOS and GTK the main Frame styles can't be modified (see patch_recreate.txt)
- * add a template manager for (custom) widgets or complete parts of a design?
- * remove config.preferences.show_progress and always show ProgressDialog
+ * remove config.preferences.show_progress and always show ProgressDialog?
 Not by me, but maybe someone contributes:
  * toolbar and maybe menu editor: add Drop target for images (-> rev. 1.0)
+ * add a template manager for (custom) widgets or complete parts of a design?
 done:
+ * allow the addition of any event as text
  * allow re-ordering toplevel windows by drag and drop
  * better accessibility for palete, grid properties and other property editors
  * pasting of menu and tool bars to/from application and frame
@@ -89,6 +90,7 @@ done:
  * MenuBar: don't create widget on Mac OS
  * Panel: use ScrolledWindow only when "Scrolled" is checked
 
+
 Additional Widgets:
  * lib.buttons (feature request #45 Add support for generic buttons) (-> rev. 1.0)
  * stc.StyledTextCtrl
@@ -99,9 +101,8 @@ Additional Widgets:
  * ListBook, CheckListBox?
  * FoldPanelBar, AGWInfoBar?
  * LedBarGraph?
-WIP:
- * StdDialogButtonSizer?  with SetAffirmativeButton etc.
 done:
+ * StdDialogButtonSizer
  * GridBagSizer
  * WrapSizer
  * SpinCtrlDouble
@@ -111,7 +112,6 @@ probably not:
  * matplotlib (example is supplied already)
  * Py (shell) (example is supplied already)
  * html2 (example is supplied already)
-
 
 
 Bitmaps:
@@ -135,6 +135,8 @@ done:
 
 Documentation:
  * update for 1.0 (one window, no sizers between Frame and Panel)
+ * add Dialog documentation
+ * add structure examples (e.g. Panel as own class)
 done:
  * Note "Repeat and Re-do"
 
