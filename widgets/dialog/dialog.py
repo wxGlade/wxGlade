@@ -125,10 +125,10 @@ def xml_builder(attrs, parent, pos=None):
     "factory to build EditDialog objects from a XML file"
     from xml_parse import XmlParsingError
     try:
-        label = attrs['name']
+        name = attrs['name']
     except KeyError:
         raise XmlParsingError(_("'name' attribute missing"))
-    return EditDialog(label, parent, "", style=0)
+    return EditDialog(name, parent, "", style=0)
 
 
 def initialize():

@@ -106,9 +106,8 @@ class CppMDIChildFrameCodeGenerator(CppFrameCodeGenerator):
 
 def initialize():
     klass = 'wxFrame'
-    cn = common.class_names
-    cn['EditFrame'] = klass
-    cn['EditMDIChildFrame'] = 'wxMDIChildFrame'
+    common.class_names['EditFrame'] = klass
+    common.class_names['EditMDIChildFrame'] = 'wxMDIChildFrame'
 
     pygen = common.code_writers.get('python')
     if pygen:
