@@ -156,7 +156,7 @@
             </object>
         </object>
     </object>
-    <!-- code generator for wxFrame objects not available -->
+    <!-- code generator for wxMDIChildFrame objects not available -->
     <object class="wxMenuBar" name="menubar">
     </object>
     <object class="wxToolBar" name="toolbar">

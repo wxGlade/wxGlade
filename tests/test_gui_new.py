@@ -139,7 +139,7 @@ class TestGui(WXGladeGUITest):
         # test changes in data structure and code generation from 0.9 to 1.0
         # "D:\Python\wxglade\wxGladeFeatures\BasesEtc\BasesEtc.wxg"
         # with sizers, test files generated with v0.9.5
-        self.load_and_generate('BasesEtc_w_sizers', test_GUI=True)
+        self.load_and_generate('BasesEtc_w_sizers', test_GUI=True, excluded=("lisp",))
 
     def test_keep_code_migration(self):
         # test migration from 0.9 to 1.0: __do_layout and __set_properties should be removed
