@@ -15,12 +15,13 @@ from edit_windows import ManagedBase
 
 class EditSpacer(ManagedBase):
     "Class to handle spacers for sizers"
-    WX_CLASS = 'Spacer'
+    WX_CLASS = 'spacer'
     IS_NAMED = False
     _PROPERTIES = ["Layout", "width", "height", "pos", "proportion", "border", "flag"]
     PROPERTIES = _PROPERTIES + ManagedBase.EXTRA_PROPERTIES
 
     def __init__(self, name, parent, width, height, pos):
+        #ManagedBase.__init__(self, 'spacer', 'spacer', parent, pos)
         ManagedBase.__init__(self, 'spacer', 'spacer', parent, pos)
 
         # initialise instance properties

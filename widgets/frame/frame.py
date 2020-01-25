@@ -145,6 +145,7 @@ class EditFrame(TopLevelBase, EditStylesMixin, BitmapMixin):
 
 
 class EditMDIChildFrame(EditFrame):
+    WX_CLASS = "wxMDIChildFrame"
     IS_TOPLEVEL_WINDOW = False  # avoid to appear in the "Top Window" property of the app
     PROPERTIES = [p for p in EditFrame.PROPERTIES if p!="statusbar"]
     ATT_CHILDREN = ["_menubar", "_toolbar"]

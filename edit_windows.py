@@ -120,7 +120,8 @@ class EditBase(EventsMixin, edit_base.EditBase):
         if not custom_class: klass_p.readonly = True
 
         # Name of object's wxWidget class; base and klass are mostly the same, except e.g. wxDialog:
-        self.base = np.TextProperty(klass)  # not editable; e.g. wxFrame or wxComboBox; used to find the code generator
+        #assert klass==self.WX_CLASS
+        self.base = np.TextProperty(self.WX_CLASS)  # not editable; e.g. wxFrame or wxComboBox; used to find the code generator
 
         if getattr(self, '_custom_base_classes', False):
             # for notebook, panel and splitter window
@@ -801,7 +802,7 @@ class TopLevelBase(WindowBase, PreviewMixin):
 
     def duplicate(self, *args):
         clipboard.copy(self)
-        clipboard.paste(common.root.widget)
+        clipboard.paste(common.root)
 
     def _create_popup_menu(self, widget):
         # remove, hide
@@ -1086,7 +1087,7 @@ class EditStylesMixin(np.PropertyOwner):
         if old_style == new_style: return
 
         recreate = self.recreate_on_style_change
-        if self.base == "wxButton" and (old_style & wx.BU_EXACTFIT != new_style & wx.BU_EXACTFIT):
+        if self.WX_CLASS == "wxButton" and (old_style & wx.BU_EXACTFIT != new_style & wx.BU_EXACTFIT):
             recreate = True  # workaround
 
         if not recreate:

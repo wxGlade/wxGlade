@@ -116,7 +116,7 @@ class CppSplitterWindowGenerator(wcodegen.CppWidgetCodeWriter):
             parent = 'this'
         if obj.IS_CLASS:
             l = ['%s = new %s(%s, %s);\n' % (obj.name, obj.klass, parent, id)]
-            return l, ids, [], []
+            return l, ids, []
 
         init.append( '%s = new %s(%s, %s%s);\n' % (obj.name, obj.klass, parent, id, self.tmpl_dict['style']) )
 
@@ -148,12 +148,12 @@ class CppSplitterWindowGenerator(wcodegen.CppWidgetCodeWriter):
         return init, ids, layout_buf
 
     def get_layout_code(self, obj):
-        win_1 = window.window_1
-        win_2 = window.window_2
-        orientation = window.properties['orientation'].get_string_value()
+        win_1 = obj.window_1
+        win_2 = obj.window_2
+        orientation = obj.properties['orientation'].get_string_value()
         props_buf = []
         if win_1 and win_2:
-            sash_pos = window.sash_pos
+            sash_pos = obj.sash_pos
             if sash_pos!="": sash_pos = ', %s' % sash_pos
             if orientation == 'wxSPLIT_VERTICAL':
                 f_name = 'SplitVertically'

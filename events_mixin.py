@@ -102,7 +102,8 @@ class EventsMixin(object):
     def __init__(self):
         # get events known by this widget
         try:
-            events = list( config.widget_config[self.klass]['events'].keys() )
+            #events = list( config.widget_config[self.klass]['events'].keys() )
+            events = list( config.widget_config[self.WX_CLASS]['events'].keys() )
             if 'default' in events: events.remove('default')
             events.sort()
         except KeyError:

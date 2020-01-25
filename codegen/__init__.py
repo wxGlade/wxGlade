@@ -438,11 +438,8 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
 
     def _is_class(self, obj):
         # check whether to add a new class to the generated code and modify some attributes in place
-        # XXX check for alternatives
-        # classname is used only for 'EditTopLevelScrolledWindow' vs. 'EditTopLevelPanel'
-        classname = getattr(obj, '_classname', obj.__class__.__name__)
-        base = common.class_names[classname]
-        obj.properties["base"].set_temp(base)
+        base = obj.WX_CLASS
+        obj.properties["base"].set_temp(obj.WX_CLASS)
 
         IS_CLASS = obj.IS_TOPLEVEL
         CAN_BE_CLASS = obj.CAN_BE_CLASS
@@ -451,7 +448,7 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
             # for panel objects, if the user sets a custom class but (s)he doesn't want the code to be generated...
             if obj.check_prop("no_custom_class") and obj.no_custom_class and not self.preview:
                 IS_CLASS = False
-        elif self.preview and not CAN_BE_CLASS and obj.base != 'CustomWidget':
+        elif self.preview and not CAN_BE_CLASS and obj.WX_CLASS != 'CustomWidget':
             # if this is a custom class, but not a toplevel one, for the preview we have to use the "real" class
             # CustomWidgets handle this in a special way (see widgets/custom_widget/codegen.py)
             obj.properties["klass"].set_temp(obj.base) # XXX handle this in a different way

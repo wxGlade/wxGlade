@@ -42,6 +42,15 @@ class PanelBase(EditStylesMixin):
 
         if style: self.properties["style"].set(style)
 
+    def get_editor_name(self):
+        ret = self.__class__.__name__
+        if self.WX_CLASS=="wxScrolledWindow":
+            # self.scrolled is True
+            # "EditPanel"         -> 'EditScrolledWindow'
+            # "EditTopLevelPanel" -> "EditTopLevelScrolledWindow"
+            ret = ret.replace("Panel", "ScrolledWindow")
+        return ret
+
     def finish_widget_creation(self):
         super(PanelBase, self).finish_widget_creation(sel_marker_parent=self.widget)
         if self.scrollable:
@@ -139,7 +148,7 @@ class PanelBase(EditStylesMixin):
 
 class EditPanel(PanelBase, ManagedBase):
     "Class to handle wxPanel objects"
-    WX_CLASS = "wxPanel"
+    WX_CLASS = "wxPanel"  # this will be overwritten in properties_changed depending on the "scrolled" property
     PROPERTIES = ManagedBase.PROPERTIES + PanelBase._PROPERTIES + ManagedBase.EXTRA_PROPERTIES
     CAN_BE_CLASS = True
 
@@ -234,11 +243,9 @@ class EditPanel(PanelBase, ManagedBase):
     def properties_changed(self, modified):
         if not modified or "scrollable" in modified:
             if self.scrollable:
-                # 2003-06-26 ALB: change the "class name", to allow code generation
-                # for a wxScrolledWindow (see Node.write and common.class_names usage in xml_parse.py)
-                self._classname = 'EditScrolledWindow'
+                self.WX_CLASS = "wxScrolledWindow"
             else:
-                self._classname = self.__class__.__name__
+                self.WX_CLASS = "wxPanel"
         PanelBase.properties_changed(self, modified)
         ManagedBase.properties_changed(self, modified)
 
@@ -255,7 +262,8 @@ class EditPanel(PanelBase, ManagedBase):
 
 class EditTopLevelPanel(PanelBase, TopLevelBase):
     IS_TOPLEVEL_WINDOW = False  # avoid to appear in the "Top Window" property of the app
-    WX_CLASS = "TopLevelPanel"
+    #WX_CLASS = "TopLevelPanel"
+    WX_CLASS = "wxPanel"
     PROPERTIES = TopLevelBase.PROPERTIES + PanelBase._PROPERTIES + TopLevelBase.EXTRA_PROPERTIES
 
     def __init__(self, name, parent, klass='wxPanel', style='wxTAB_TRAVERSAL'):
@@ -329,11 +337,9 @@ class EditTopLevelPanel(PanelBase, TopLevelBase):
     def properties_changed(self, modified):
         if not modified or "scrollable" in modified:
             if self.scrollable:
-                # 2003-06-26 ALB: change the "class name", to allow code generation
-                # for a wxScrolledWindow (see Node.write and common.class_names usage in xml_parse.py)
-                self._classname = 'EditTopLevelScrolledWindow'
+                self.WX_CLASS = "wxScrolledWindow"
             else:
-                self._classname = self.__class__.__name__
+                self.WX_CLASS = "wxPanel"
         if not modified or "name" in modified:
             if self.widget:
                 self.widget.GetParent().SetTitle(misc.design_title(self.name))

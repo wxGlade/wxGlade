@@ -7,7 +7,7 @@ To be done: write XRC directly instead of using BaseLangCodeWriter as base.
 
 @copyright: 2002-2007 Alberto Griggio
 @copyright: 2012-2016 Carsten Grohmann
-@copyright: 2019 Dietmar Schwertberger
+@copyright: 2019-2020 Dietmar Schwertberger
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
@@ -115,7 +115,8 @@ class DefaultXrcObject(XrcObject):
         XrcObject.__init__(self, widget.klass)
         self.widget = widget
         self.name = widget.name
-        self.klass = widget.base  # custom classes aren't allowed in XRC
+        #self.klass = widget.base  # custom classes aren't allowed in XRC
+        self.klass = widget.WX_CLASS  # custom classes aren't allowed in XRC
         self.subclass = widget.klass
 
     def write_property(self, name, val, output, ntabs):

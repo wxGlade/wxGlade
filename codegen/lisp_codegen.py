@@ -505,9 +505,9 @@ class LispCodeWriter(BaseLangCodeWriter, wcodegen.LispMixin):
         if not style: return ''
         style = style.strip().replace('.', '')
 
-        if code_obj.base == "wxFrame":
+        if code_obj.WX_CLASS == "wxFrame":
             stmt = '%%(tab)s(setf (slot-top-window obj) (wxFrame_create nil wxID_ANY \"\" -1 -1 -1 -1 %s))\n' % style
-        elif code_obj.base == "wxDialog":
+        elif code_obj.WX_CLASS == "wxDialog":
             stmt = '%%(tab)s(setf (slot-top-window obj) (wxDialog_create nil wxID_ANY \"\" -1 -1 -1 -1 %s))\n' % style
             self.dependencies['(use-package :wxButton)'] = 1
         else:

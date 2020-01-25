@@ -30,6 +30,7 @@ class EditBase(np.PropertyOwner):
     IS_TOPLEVEL = IS_SLOT = IS_SIZER = IS_WINDOW = IS_ROOT = IS_TOPLEVEL_WINDOW = False
     CAN_BE_CLASS = False
     IS_CLASS = False  # generate class for this item; can be dynamically set during code generation
+    # usually this one is fixed, but EditPanel/EditToplevelPanel will overwrite it depending on the "scrollable" property
     WX_CLASS = None # needs to be defined in every derived class; e.g. "wxFrame", "wxBoxSizer", "TopLevelPanel"
     IS_NAMED = True  # default, only False for Spacer
     #CHILDREN = 1  # 0 or a fixed number or None for e.g. a sizer with a variable number of children; -1 for 0 or 1
@@ -313,11 +314,15 @@ class EditBase(np.PropertyOwner):
         misc.rebuild_tree(self.parent, recursive=False, focus=True)
 
     # XML generation ###################################################################################################
+    def get_editor_name(self):
+        # the panel classes will return something else here, depending on self.scrollable
+        return self.__class__.__name__
     def write(self, output, tabs):
         "Writes the xml code for the widget to the given output file"
         # write object tag, including class, name, base
-        classname = getattr(self, '_classname', self.__class__.__name__)
-        if classname=="EditToplevelMenuBar": classname = "EditMenuBar"
+        #classname = getattr(self, '_classname', self.__class__.__name__)
+        #if classname=="EditToplevelMenuBar": classname = "EditMenuBar"
+        classname = self.get_editor_name()
         # to disable custom class code generation (for panels...)
         if getattr(self, 'no_custom_class', False):
             no_custom = u' no_custom_class="1"'
