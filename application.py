@@ -596,6 +596,7 @@ class Application(EditRoot):
 
             if issubclass(preview_class, wx.MDIChildFrame):
                 frame = wx.MDIParentFrame(None, -1, '')
+                frame.SetMenuBar( wx.MenuBar() )  # avoid assertion error
                 child = preview_class(frame, -1, '')
                 child.SetTitle('<Preview> - ' + child.GetTitle())
                 w, h = child.GetSize()
