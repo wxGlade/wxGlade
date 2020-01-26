@@ -21,7 +21,6 @@ class PyOgg2_MyDialog(wx.Dialog):
         wx.Dialog.__init__(self, *args, **kwds)
         self.SetSize((500, 300))
         self.SetTitle(_("mp3 2 ogg"))
-        self.SetSize((500, 300))
         
         sizer_1 = wx.FlexGridSizer(3, 1, 0, 0)
         

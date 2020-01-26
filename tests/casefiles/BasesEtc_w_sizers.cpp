@@ -152,7 +152,6 @@ MyDialog::MyDialog(wxWindow* parent, wxWindowID id, const wxString& title, const
     // begin wxGlade: MyDialog::MyDialog
     SetSize(wxSize(400, 300));
     SetTitle(wxT("dialog"));
-    SetSize(wxSize(400, 300));
     wxBoxSizer* sizer_1 = new wxBoxSizer(wxVERTICAL);
     sizer_1->Add(0, 0, 0, 0, 0);
     
@@ -166,7 +165,6 @@ MyPanel::MyPanel(wxWindow* parent, wxWindowID id, const wxPoint& pos, const wxSi
     wxPanel(parent, id, pos, size, wxTAB_TRAVERSAL)
 {
     // begin wxGlade: MyPanel::MyPanel
-    SetSize(wxSize(400, 300));
     SetSize(wxSize(400, 300));
     wxBoxSizer* sizer_1 = new wxBoxSizer(wxVERTICAL);
     sizer_1->Add(0, 0, 0, 0, 0);
@@ -182,7 +180,6 @@ MyMDIChildFrame::MyMDIChildFrame(wxMDIParentFrame* parent, wxWindowID id, const 
     // begin wxGlade: MyMDIChildFrame::MyMDIChildFrame
     SetSize(wxSize(400, 300));
     SetTitle(wxT("frame_1"));
-    SetSize(wxSize(400, 300));
     wxBoxSizer* sizer_1 = new wxBoxSizer(wxVERTICAL);
     sizer_1->Add(0, 0, 0, 0, 0);
     
@@ -215,7 +212,6 @@ MyDialogWithBases::MyDialogWithBases(wxWindow* parent, wxWindowID id, const wxSt
     // begin wxGlade: MyDialogWithBases::MyDialogWithBases
     SetSize(wxSize(400, 300));
     SetTitle(wxT("dialog"));
-    SetSize(wxSize(400, 300));
     wxBoxSizer* sizer_1 = new wxBoxSizer(wxVERTICAL);
     sizer_1->Add(0, 0, 0, 0, 0);
     
@@ -230,7 +226,6 @@ MyPanelWithBases::MyPanelWithBases(wxWindow* parent, wxWindowID id, const wxPoin
 {
     // begin wxGlade: MyPanelWithBases::MyPanelWithBases
     SetSize(wxSize(400, 300));
-    SetSize(wxSize(400, 300));
     wxBoxSizer* sizer_1 = new wxBoxSizer(wxVERTICAL);
     sizer_1->Add(0, 0, 0, 0, 0);
     
@@ -243,7 +238,6 @@ MyPanelScrolled::MyPanelScrolled(wxWindow* parent, wxWindowID id, const wxPoint&
     wxScrolledWindow(parent, id, pos, size, wxTAB_TRAVERSAL)
 {
     // begin wxGlade: MyPanelScrolled::MyPanelScrolled
-    SetSize(wxSize(400, 300));
     SetSize(wxSize(400, 300));
     SetScrollRate(10, 10);
     wxBoxSizer* sizer_1 = new wxBoxSizer(wxVERTICAL);

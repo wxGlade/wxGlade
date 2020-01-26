@@ -22,7 +22,6 @@ CPPOgg1_MyDialog::CPPOgg1_MyDialog(wxWindow* parent, wxWindowID id, const wxStri
     // begin wxGlade: CPPOgg1_MyDialog::CPPOgg1_MyDialog
     SetSize(wxSize(500, 300));
     SetTitle(_("mp3 2 ogg"));
-    SetSize(wxSize(500, 300));
     SetFocus();
     wxFlexGridSizer* sizer_1 = new wxFlexGridSizer(3, 1, 0, 0);
     notebook_1 = new wxNotebook(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, 0);

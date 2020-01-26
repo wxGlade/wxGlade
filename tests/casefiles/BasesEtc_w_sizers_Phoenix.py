@@ -191,7 +191,6 @@ class MyDialog(wx.Dialog):
         wx.Dialog.__init__(self, *args, **kwds)
         self.SetSize((400, 300))
         self.SetTitle("dialog")
-        self.SetSize((400, 300))
         
         sizer_1 = wx.BoxSizer(wx.VERTICAL)
         
@@ -209,7 +208,6 @@ class MyPanel(wx.Panel):
         # begin wxGlade: MyPanel.__init__
         kwds["style"] = kwds.get("style", 0) | wx.TAB_TRAVERSAL
         wx.Panel.__init__(self, *args, **kwds)
-        self.SetSize((400, 300))
         self.SetSize((400, 300))
         
         sizer_1 = wx.BoxSizer(wx.VERTICAL)
@@ -230,7 +228,6 @@ class MyMDIChildFrame(wx.MDIChildFrame):
         wx.MDIChildFrame.__init__(self, *args, **kwds)
         self.SetSize((400, 300))
         self.SetTitle("frame_1")
-        self.SetSize((400, 300))
         
         sizer_1 = wx.BoxSizer(wx.VERTICAL)
         
@@ -269,7 +266,6 @@ class MyDialogWithBases(MyDialogBase, mydialogbases.MyDialogBase):
         mydialogbases.MyDialogBase.__init__(self)
         self.SetSize((400, 300))
         self.SetTitle("dialog")
-        self.SetSize((400, 300))
         
         sizer_1 = wx.BoxSizer(wx.VERTICAL)
         
@@ -289,7 +285,6 @@ class MyPanelWithBases(MyPanelBase, mypanelbases.MyPanelBase):
         MyPanelBase.__init__(self, *args, **kwds)
         mypanelbases.MyPanelBase.__init__(self)
         self.SetSize((400, 300))
-        self.SetSize((400, 300))
         
         sizer_1 = wx.BoxSizer(wx.VERTICAL)
         
@@ -307,7 +302,6 @@ class MyPanelScrolled(wx.ScrolledWindow):
         # begin wxGlade: MyPanelScrolled.__init__
         kwds["style"] = kwds.get("style", 0) | wx.TAB_TRAVERSAL
         wx.ScrolledWindow.__init__(self, *args, **kwds)
-        self.SetSize((400, 300))
         self.SetSize((400, 300))
         self.SetScrollRate(10, 10)
         

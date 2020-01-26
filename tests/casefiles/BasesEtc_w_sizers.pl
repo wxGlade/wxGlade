@@ -342,7 +342,6 @@ sub new {
     $self = $self->SUPER::new( $parent, $id, $title, $pos, $size, $style, $name );
     $self->SetSize(Wx::Size->new(400, 300));
     $self->SetTitle("dialog");
-    $self->SetSize(Wx::Size->new(400, 300));
     
     $self->{sizer_1} = Wx::BoxSizer->new(wxVERTICAL);
     
@@ -380,7 +379,6 @@ sub new {
         unless defined $style;
 
     $self = $self->SUPER::new( $parent, $id, $pos, $size, $style, $name );
-    $self->SetSize(Wx::Size->new(400, 300));
     $self->SetSize(Wx::Size->new(400, 300));
     
     $self->{sizer_1} = Wx::BoxSizer->new(wxVERTICAL);
@@ -422,7 +420,6 @@ sub new {
     $self = $self->SUPER::new( $parent, $id, $title, $pos, $size, $style, $name );
     $self->SetSize(Wx::Size->new(400, 300));
     $self->SetTitle("frame_1");
-    $self->SetSize(Wx::Size->new(400, 300));
     
     $self->{sizer_1} = Wx::BoxSizer->new(wxVERTICAL);
     
@@ -505,7 +502,6 @@ sub new {
     $self = $self->SUPER::new( $parent, $id, $title, $pos, $size, $style, $name );
     $self->SetSize(Wx::Size->new(400, 300));
     $self->SetTitle("dialog");
-    $self->SetSize(Wx::Size->new(400, 300));
     
     $self->{sizer_1} = Wx::BoxSizer->new(wxVERTICAL);
     
@@ -544,7 +540,6 @@ sub new {
 
     $self = $self->SUPER::new( $parent, $id, $pos, $size, $style, $name );
     $self->SetSize(Wx::Size->new(400, 300));
-    $self->SetSize(Wx::Size->new(400, 300));
     
     $self->{sizer_1} = Wx::BoxSizer->new(wxVERTICAL);
     
@@ -582,7 +577,6 @@ sub new {
         unless defined $style;
 
     $self = $self->SUPER::new( $parent, $id, $pos, $size, $style, $name );
-    $self->SetSize(Wx::Size->new(400, 300));
     $self->SetSize(Wx::Size->new(400, 300));
     $self->SetScrollRate(10, 10);
     
