@@ -34,12 +34,12 @@ class PythonNotebookGenerator(wcodegen.PythonWidgetCodeWriter):
             init.append(id_name)
         init.append(('self.%s = ' + self.cn(klass) + '(%s, %s%s)\n')%(window.name, parent, id, self.tmpl_dict['style']))
 
-        init += self.codegen.generate_common_properties(window)
+        init += self.codegen.generate_code_common_properties(window)
         return init, []
 
     def get_layout_code(self, obj):
         # called for a toplevel class
-        return self.codegen.generate_common_properties(obj)
+        return self.codegen.generate_code_common_properties(obj)
 
     def get_code_per_child(self, obj, child):
         i = obj.children.index(child)

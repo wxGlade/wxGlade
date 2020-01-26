@@ -18,7 +18,7 @@ class PythonSplitterWindowGenerator(wcodegen.PythonWidgetCodeWriter):
 
         init = []
         post = []
-        init += self.codegen.generate_common_properties(obj)
+        init += self.codegen.generate_code_common_properties(obj)
 
         id_name, id = self.codegen.generate_code_id(obj)
         parent = self.format_widget_access(obj.parent_window)
