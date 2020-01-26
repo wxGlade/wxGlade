@@ -1038,7 +1038,7 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
         """generates the code for various properties common to all widgets (background and foreground colours, font,...)
         returns a list of strings containing the generated code"""
         out = []
-        if widget.check_prop('size') and widget.WX_CLASS!='wxFrame':
+        if widget.check_prop('size') and not widget.IS_CLASS:
             out.append(self.generate_code_size(widget))
         if widget.check_prop('background'): out.append(self.generate_code_background(widget))
         if widget.check_prop('foreground'): out.append(self.generate_code_foreground(widget))
