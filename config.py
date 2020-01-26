@@ -1,10 +1,9 @@
 """
 Configuration related stuff
 
-@note: Don't place code with gettext or dependencies to other wxGlade
-       parts here!
+note: Don't place code with gettext or dependencies to other wxGlade parts here!
 
-@see: L{preferencesdialog}
+see: preferencesdialog
 @copyright: 2007 Alberto Griggio
 @copyright: 2013-2016 Carsten Grohmann
 @copyright: 2017-2020 Dietmar Schwertberger
@@ -69,7 +68,7 @@ use_file_history =  True       # Flag to use a file history
 
 
 backed_up = {}      # Set of file names already backed up during this session (a dictionary);  see: common.save_file()
-preferences = None  # User preferences;  @type: common.Preferences   @see: L{common.Preferences}
+preferences = None  # User preferences; type common.Preferences
 
 
 label_width = 96     # width of labels in Property window

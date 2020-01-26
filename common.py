@@ -115,7 +115,7 @@ def load_code_writers():
 
 
 def load_config():
-    "Load widget configuration;  @see: L{plugins.load_widgets_from_dir()}"
+    "Load widget configuration;  see: plugins.load_widgets_from_dir()"
     # load the "built-in" and "user" widgets
     plugins.load_widgets_from_dir( config.widgets_path,                  'wconfig' )
     plugins.load_widgets_from_dir( config.preferences.local_widget_path, 'wconfig' )
@@ -158,9 +158,9 @@ def load_widgets():
 
     Scans the built-in and user widget directories to find the installed widgets and loads it.
 
-    @rtype: OrderedDict
+    returns OrderedDict
 
-    @see: L{plugins.load_widgets_from_dir()} for more details e.g. the structure of the dictionary."""
+    see: plugins.load_widgets_from_dir() for more details e.g. the structure of the dictionary."""
     # load the "built-in" and "user" widgets
     core_buttons  = plugins.load_widgets_from_dir(config.widgets_path, default_section=_('Core widgets'))
     local_buttons = plugins.load_widgets_from_dir(config.preferences.local_widget_path,
@@ -430,7 +430,7 @@ def autosave_current():
 
 
 def remove_autosaved(filename=None):
-    "Remove the automatic backup;  @see: L{get_name_for_autosave()}"
+    "Remove the automatic backup;  see: get_name_for_autosave()"
     autosave_name = get_name_for_autosave(filename)
     if os.path.exists(autosave_name):
         try:
@@ -492,7 +492,7 @@ def restore_from_autosaved(filename):
 
 
 def init_paths(options):
-    "Set all wxGlade related paths; the paths will be stored in L{config}."
+    "Set all wxGlade related paths; the paths will be stored in config."
     # use directory of the exe in case of frozen packages e.g. PyInstaller or py2exe
     if hasattr(sys, 'frozen'):
         wxglade_path = os.path.dirname(sys.argv[0])
@@ -720,7 +720,7 @@ def init_preferences():
 
 
 def save_preferences():
-    "Save current settings as well as the file history;  @see: L{config.history_file} and L{config.use_file_history}"
+    "Save current settings as well as the file history; see: config.history_file and config.use_file_history"
     # let the exception be raised
     path = os.path.dirname(config.rc_file)
     if not os.path.isdir(path):
@@ -742,7 +742,7 @@ def save_preferences():
 
 
 def load_file_history():
-    "Loads the file history and returns a list of paths;  @see: L{config.history_file} and L{config.use_file_history}"
+    "Loads the file history and returns a list of paths; see: config.history_file and config.use_file_history"
     try:
         infile = codecs.open(config.history_file, encoding='utf-8')
         lines = infile.readlines()

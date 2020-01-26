@@ -19,17 +19,17 @@ import new_properties as np
 
 class FileDirDialog(object):
     """Custom class which displays a FileDialog or a DirDialog, according to the value of the
-    L{Application.multiple_files} of its parent (instance of L{Application}).
+    Application.multiple_files of its parent (instance of Application).
 
-    @ivar default_extension: The default extension will be added to all file names without extension.
-    @ivar file_message: Message to show on the file dialog
-    @ivar dir_message: Message to show on the directory dialog
+    default_extension: The default extension will be added to all file names without extension.
+    file_message: Message to show on the file dialog
+    dir_message: Message to show on the directory dialog
 
-    @ivar file_style: Style for the file dialog
-    @ivar dir_style:  Style for the directory dialog
-    @ivar value:      Value returned by file or directory dialog on success
-    @ivar parent:     Parent instance of L{Application}
-    @ivar prev_dir:   Previous directory"""
+    file_style: Style for the file dialog
+    dir_style:  Style for the directory dialog
+    value:      Value returned by file or directory dialog on success
+    parent:     Parent instance of Application
+    prev_dir:   Previous directory"""
 
     def __init__(self, parent, wildcard=_("All files|*"), file_message=_("Choose a file"),dir_message=None,file_style=0):
         self.prev_dir = config.preferences.codegen_path or ""
@@ -63,7 +63,7 @@ class FileDirDialog(object):
         return wx.ID_CANCEL
 
     def get_value(self):
-        "Return the dialog value returned during the last L{ShowModal()} call;  @see: L{value}"
+        "Return the dialog value returned during the last ShowModal() call."
         return self.value
 
 
@@ -695,7 +695,7 @@ class Application(EditRoot):
                     check_rec(c)
 
     def _update_output_path(self, language):
-        "Update wildcards and default extension in the generic file and directory dialog (L{FileDirDialog})."
+        "Update wildcards and default extension in the generic file and directory dialog (FileDirDialog)."
 
         prop = self.properties["output_path"]
         prop.message = _("Select output file")  if self.multiple_files else  _("Select output directory")

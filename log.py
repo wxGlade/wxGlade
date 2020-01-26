@@ -5,18 +5,18 @@ This module provides a own logger class as well as specific functions to improve
 
 wxGlade uses the python logging instance with three log handler attached.
 
-The first handler L{StringHandler} is used to cache messages later displaying calling getBufferAsList() or
+The first handler StringHandler is used to cache messages later displaying calling getBufferAsList() or
 getBufferAsString().
 
-The second handler C{logging.StreamHandler} to print error messages to sys.stderr.
+The second handler logging.StreamHandler to print error messages to sys.stderr.
 
-The third handler C{logging.FileHandler} writes all messages into a file. This
+The third handler logging.FileHandler writes all messages into a file. This
 behaviour is useful to store logged exceptions permanently.
 
 @todo: Integrate Unicode logging fix.
 
 @copyright: 2013-2016 Carsten Grohmann
-@copyright: 2017 Dietmar Schwertberger
+@copyright: 2017-2020 Dietmar Schwertberger
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 

@@ -114,7 +114,7 @@ class BaseSizerBuilder(object):
 
     def __init__(self):
         "Initialise sizer builder"
-        self.tmpl_dict = {}                          # properties to replace in L{tmpl}
+        self.tmpl_dict = {}                               # properties to replace in tmpl
         self.codegen = common.code_writers[self.language] #language specific code generator (codegen.BaseLangCodeWriter)
 
     def _get_wparent(self, topl, obj):
@@ -131,7 +131,7 @@ class BaseSizerBuilder(object):
         self.tmpl_dict['sizer_name'] = self.codegen._format_classattr(obj)
 
     def _get_code(self, obj):
-        "Generates the language specific code for sizer specified in L{klass}"
+        "Generates the language specific code for sizer specified in klass"
         if not self.tmpl:
             return [], []  # init, final
 
@@ -152,7 +152,7 @@ class BaseSizerBuilder(object):
         return init, layout  # init, post
 
     def get_code(self, obj):
-        "Generates the language specific code for sizer specified in L{klass}"
+        "Generates the language specific code for sizer specified in klass"
         self._prepare_tmpl_content(obj)
         if self.klass == 'wxBoxSizer':             return self.get_code_wxBoxSizer(obj)
         if self.klass == 'wxWrapSizer':            return self.get_code_wxBoxSizer(obj)  # the same here

@@ -125,7 +125,7 @@ class ClassLines(object):
         self.child_order = []
         self.dependencies = {}    # Names of the modules this class depends on
         self.deps = []
-        self.event_handlers = []  # Lines to bind events (see L{wcodegen.BaseWidgetWriter.get_event_handlers()})
+        self.event_handlers = []  # Lines to bind events (see wcodegen.BaseWidgetWriter.get_event_handlers())
         self.extra_code = []      # Extra code to output before this class
         self.done = False         # If True, the code for this class has already been generated
         # XXX refactor init and final into init_code, final_code?
@@ -175,7 +175,7 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
      curr_tab:                Current indentation level
      indent_amount:           An indentation level is  indent_symbol*indent_amount;
                                will be initialised with config.default_indent_amount
-     indent_symbol:           Character to use for indentation; will be initialised with L{config.default_indent_symbol}
+     indent_symbol:           Character to use for indentation; will be initialised with config.default_indent_symbol
 
      nonce:                   Random number used to be sure that the replaced tags in the sources are the right ones
                               (see BaseSourceFileContent, add_class and create_nonce)
@@ -205,7 +205,7 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
      _use_gettext:           If True, enable gettext support; will be initialised with config.default_use_gettext
 
      _widget_extra_modules:  Map of widget class names to a list of extra modules needed for the widget
-                              (e.g. C{'wxGrid': 'from wxLisp.grid import *\\n'})."""
+                              (e.g. 'wxGrid': 'from wxLisp.grid import *\\n')."""
 
     _code_statements = {}
     """Language specific code templates for for small statements.
@@ -213,8 +213,8 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
     The statements are stored in a dictionary. The property names are the keys.
     
     The keys may have one of two different extensions: 
-     - "C{_<major version>X}"               e.g. "C{tooltip_3X}" to generate tooltips source code for wxWidgets 3.x
-     - "C{_<major version><minor version>}" e.g. "C{wxcolour_28}" to generate source code for wxWidgets 2.8 only
+     - "_<major version>X"               e.g. "tooltip_3X" to generate tooltips source code for wxWidgets 3.x
+     - "_<major version><minor version>" e.g. "wxcolour_28" to generate source code for wxWidgets 2.8 only
 
     The extensions will be evaluated from most specific to generic.
 
@@ -552,7 +552,7 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
 
         This fallback mechanism works bidirectional.
 
-        L{app_mapping} will be reset to default values and updated with L{lang_mapping}.
+        app_mapping will be reset to default values and updated with lang_mapping.
 
         see: tmpl_appfile, tmpl_detailed, tmpl_gettext_detailed, tmpl_simple, tmpl_gettext_simple, app_mapping,
              lang_mapping"""
@@ -910,7 +910,7 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
         return nonce
 
     def generate_code_background(self, obj):
-        "Returns the code fragment that sets the background colour of the given object; @see: L{_get_colour()}"
+        "Returns the code fragment that sets the background colour of the given object; see: _get_colour()"
         # check if there is an code template for this property
         tmpl = self._get_code_statement('backgroundcolour')
         if not tmpl:
@@ -1004,7 +1004,7 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
         return stmt
 
     def generate_code_foreground(self, obj):
-        "Returns the code fragment that sets the foreground colour of the given object; @see: L{_get_colour()}"
+        "Returns the code fragment that sets the foreground colour of the given object; see: _get_colour()"
         # check if there is an code template for this property
         tmpl = self._get_code_statement('foregroundcolour' )
         if not tmpl:
@@ -1020,14 +1020,14 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
     def generate_code_id(self, obj, id=None):
         """Generate the code for the widget ID.
 
-        The parameter C{id} is evaluated first. An empty string for C{id} returns C{'', 'wxID_ANY'}.
+        The parameter id is evaluated first. An empty string for id returns ('', 'wxID_ANY').
 
         Returns a tuple of two string. The two strings are:
          1. A line to the declare the variable. It's empty if the object id is a constant
          2. The value of the id
 
-        @param obj: An instance of L{xml_parse.CodeObject}
-        @param id:  Widget ID definition as String."""
+        obj: An instance of xml_parse.CodeObject
+        id:  Widget ID definition as String."""
         raise NotImplementedError
 
     def generate_code_size(self, obj):
@@ -1162,9 +1162,9 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
 
     def store_as_attr(self, obj):
         """Returns True if 'obj' should be added as an attribute of its parent's class,
-        False if it should be created as a local variable of C{__do_layout}.
+        False if it should be created as a local variable.
         
-        The function returns True of the object klass is listed in L{classattr_always}.
+        The function returns True of the object klass is listed in classattr_always.
 
         The function returns True for all widgets except sizers, if
          - the property exists and is an integer greater equal 1
@@ -1174,7 +1174,7 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
         The function returns True for sizers, if
          - the property exists and is an integer greater equal 1
 
-        @see: L{classattr_always}
+        see: classattr_always
         """
         if obj.klass in self.classattr_always:
             return True
@@ -1210,9 +1210,9 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
         This may happen if we're not generating multiple files, and one of the container class names is changed.
 
         The indentation of the string depends values detected during the initial parsing of the source file.
-        Those values are stored in L{BaseSourceFileContent.spaces}.
+        Those values are stored in BaseSourceFileContent.spaces.
 
-        @param source: Source content string with tags to replace"""
+        source: Source content string with tags to replace"""
 
         tags = re.compile( r'(<%swxGlade replace ([a-zA-Z_]\w*) +[.\w]+>)' % self.nonce)
         for i,line in enumerate(source.content):
@@ -1255,7 +1255,7 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
         return name
 
     def _format_classattr(self, obj):
-        "Format the object name to store as a class attribute; obj: Instance of L{xml_parse.CodeObject}"
+        "Format the object name to store as a class attribute; obj: Instance of xml_parse.CodeObject"
         if not obj:
             return ''
         elif not getattr(obj, 'name', None):
@@ -1277,7 +1277,7 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
 
     def _format_style(self, style, code_obj):
         """Return the formatted styles to insert into constructor code.
-        The function just returned L{tmpl_style}. Write a derived version implementation if more logic is needed."""
+        The function just returned tmpl_style. Write a derived version implementation if more logic is needed."""
         if code_obj.IS_CLASS:
             if style:
                 return self.tmpl_toplevel_style
@@ -1289,12 +1289,12 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
     def _generic_code(self, obj, prop_name):
         """Create a code statement for calling a method e.g. to hide a widget.
 
-        @param obj:       Instance of L{xml_parse.CodeObject}
-        @param prop_name: Name of the property to set
+        obj:       Instance of xml_parse.CodeObject
+        prop_name: Name of the property to set
 
-        @return: Code statement or None
+        returns Code statement or None
 
-        @see: L{_code_statements}"""
+        see: _code_statements"""
 
         value = obj.properties[prop_name].get_value()
         if isinstance(value, compat.basestring): value = self.quote_str(obj.tooltip)
@@ -1305,12 +1305,12 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
 
     def _get_code_statement(self, prop_name):
         """Return non-formatted code statement related to prop_name.
-        This function handled the properties extensions described in L{_code_statements}.
+        This function handled the properties extensions described in _code_statements.
 
-        @param prop_name: Name of the property to set
-        @return: Code statement or None
+        prop_name: Name of the property to set
+        returns Code statement or None
 
-        @see: L{_code_statements}"""
+        see: _code_statements"""
 
         prop_name_major = '%s_%d' % ( prop_name, self.for_version[0] )
         prop_name_detailed = '%s_%d%d' % ( prop_name, self.for_version[0], self.for_version[1] )
@@ -1330,7 +1330,7 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
 
     def format_generic_access(self, obj):
         """Format a generic and language specific access to the given object.
-        For example: C{self}, C{$self} or C{$self->}."""
+        For example: 'self'}, '$self' or '$self->'."""
         raise NotImplementedError
 
     def _get_colour(self, colourvalue):
@@ -1420,12 +1420,12 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
         
         The message msg will be split into single lines and every line will be properly formatted.
         
-        @param klass: Instance of L{ClassLines} to add the code in
-        @param msg:   Multiline message
+        klass: Instance of ClassLines to add the code in
+        msg:   Multiline message
         
-        @param sub_obj: Object to generate code for (CodeObject instance)
+        sub_obj: Object to generate code for (CodeObject instance)
         
-        @see: L{_format_comment()}"""
+        see: _format_comment()"""
         code_lines = []
 
         # add leading empty line
@@ -1456,12 +1456,12 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
         return '%d, %d, %d' % ( int(s[1:3], 16), int(s[3:5], 16), int(s[5:], 16) )
 
     def _tagcontent(self, tag, content, newline=False):
-        """Returns content embedded between C{begin wxGlade} and C{end wxGlade} sequence.
+        """Returns content embedded between 'begin wxGlade' and 'end wxGlade' sequence.
 
-        @return: Embedded content string
-        @param tag: used in C{begin wxGlade} statement to indicate different blocks
-        @param content: Content to enter as string or list of strings
-        @param newline: Add a tailing empty line?"""
+        returns: Embedded content string
+        tag:     used in 'begin wxGlade' statement to indicate different blocks
+        content: Content to enter as string or list of strings
+        newline: Add a tailing empty line?"""
         code_list = []
         if self._mark_blocks:
             code_list.append( '%s begin wxGlade: %s' % (self.comment_sign, tag) )
@@ -1485,11 +1485,11 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
 
     def copy(self):
         """Return a deep copy of the current instance.
-        The instance will be reinitialised with defaults automatically in L{__setstate__()}."""
+        The instance will be reinitialised with defaults automatically in __setstate__()."""
         return copy.deepcopy(self)
 
     def __getstate__(self):
-        """Return the state dict of this instance except the L{_logger} and the L{classes} attributes.
+        """Return the state dict of this instance except the _logger and the classes attributes.
         Both attributes caused copy errors due to file locking resp. weak references in XML SAX module."""
         state = self.__dict__.copy()
         del state['_logger']
@@ -1498,7 +1498,7 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
 
     def __setstate__(self, state):
         """Update the instance using values from dict 'state'.
-        The code generator will be reinitialised after the state has been updated; see L{new_project()}"""
+        The code generator will be reinitialised after the state has been updated; see new_project()"""
         self.__dict__.update(state)
         self._logger = logging.getLogger(self.__class__.__name__)
 

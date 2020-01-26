@@ -462,20 +462,17 @@ sub %(handler)s {
         return '%s->%s(Wx::Size->new(%s));\n' % (objname, method, size)
 
     def _quote_str(self, s):
-        """\
-        Escape all unicode characters to there unicode code points in form
-        of \\uxxxx. The returned string is a pure ascii string.
-
+        """Escape all unicode characters to there unicode code points in form of \\uxxxx.
+        The returned string is a pure ascii string.
         Normal ascii characters like \\n or \\t won't be escaped.
 
-        @note: wxGlade don't handles file encoding well currently. Thereby
-               we escape all unicode characters.
+        note: wxGlade don't handles file encoding well currently. Thereby
+              we escape all unicode characters.
 
-        @note: The string 's' is encoded with L{self.app_encoding} already.
+        note: The string 's' is encoded with self.app_encoding already.
 
-        @see: L{BaseLangCodeWriter._quote_str} for additional details
-        @see: L{_recode_x80_xff()}
-        """
+        see: BaseLangCodeWriter._quote_str for additional details
+        see: _recode_x80_xff()"""
         s = s.replace('$', r'\$')
         s = s.replace('@', r'\@')
 

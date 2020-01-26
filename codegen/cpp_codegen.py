@@ -236,7 +236,7 @@ class CPPCodeWriter(BaseLangCodeWriter, wcodegen.CppMixin):
     last_generated_id: Last generated Id number (wxNewId() is not used yet)
     tmpl_init_gettext: Template for inclusion of i18n headers and defining APP_CATALOG constant or None
 
-    @see: L{BaseLangCodeWriter}"""
+    see: BaseLangCodeWriter"""
     ClassLines = ClassLines
     _code_statements = {
         'backgroundcolour': "%(objname)sSetBackgroundColour(%(value)s);\n",
@@ -962,7 +962,7 @@ class CPPCodeWriter(BaseLangCodeWriter, wcodegen.CppMixin):
             tab: Indentation of function body (str)
             prev_src: Previous source code (SourceFileContent)
             event_handlers: List of event handlers
-        @see: L{tmpl_func_event_stub}"""
+        see: tmpl_func_event_stub"""
         code_lines = []
         swrite = code_lines.append
 

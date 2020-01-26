@@ -75,7 +75,7 @@ class EditBase(EventsMixin, edit_base.EditBase):
     """Base class of every window available in the builder.
 
     This class holds the basic properties for this object.
-    The properties that control the layout (i.e. the behaviour when inside a sizer) are in L{ManagedBase}."""
+    The properties that control the layout (i.e. the behaviour when inside a sizer) are in ManagedBase."""
     can_preview = False
     _PROPERTIES = ["Common", "name","class", "custom_base"] # "custom_base" will be set to None or a property
     PROPERTIES = _PROPERTIES
@@ -1028,15 +1028,15 @@ class EditStylesMixin(np.PropertyOwner):
     widget_writer: Widget code writer (wcodegen.BaseWidgetWriter)
 
     """
-    codegen = None             # Code generator class; @see: L{codegen.BaseLangCodeWriter}
-    update_widget_style = True # Flag to update the widget style if a style is set using L{set_style()}
+    codegen = None             # Code generator class; see: codegen.BaseLangCodeWriter
+    update_widget_style = True # Flag to update the widget style if a style is set using set_style()
     recreate_on_style_change = False
 
     def __init__(self, klass='', styles=[]):
         """Initialise instance
 
         klass: Name of the wxWidget klass
-        styles: Supported styles, for more details see L{widget_properties.CheckListProperty}; list or OrderedDict"""
+        styles: Supported styles, for more details see widget_properties.CheckListProperty; list or OrderedDict"""
 
         self.style_names = []
 

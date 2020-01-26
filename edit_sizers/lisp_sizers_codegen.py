@@ -22,13 +22,11 @@ class BaseLispSizerBuilder(BaseSizerBuilder):
     tmpl_SetSizeHints = '(wxSizer_SetSizeHints (slot-%(sizer_name)s obj) %(parent_widget)s)\n'
 
     tmpl_wparent = '(slot-frame obj)'
-    """Only in Lisp the widgets parent statement differs between
-    C{slot-frame obj} and C{slot-top-window obj}.
+    """Only in Lisp the widgets parent statement differs between 'slot-frame obj' and 'slot-top-window obj'.
 
-    @todo: Clarify why the widget parent differs between different sizers in Lisp.
+    todo: Clarify why the widget parent differs between different sizers in Lisp.
 
-    see: L{_get_wparent()}
-    """
+    see: _get_wparent()"""
 
     def _get_wparent(self, obj):
         window = obj.parent_window

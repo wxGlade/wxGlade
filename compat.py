@@ -40,18 +40,14 @@ def SizerItem_AssignWindow(item, window):
     """
     Wrapper for wxSizerItem.SetWindow() resp. wxSizerItem.AssignWindow()
 
-    wxSizerItem.SetWindow() is deprecated since wxPython 2.9 use
-    wxSizerItem.AssignWindow() instead.
+    wxSizerItem.SetWindow() is deprecated since wxPython 2.9 use wxSizerItem.AssignWindow() instead.
 
-    Depending on the wxPython version L{SizerItem_SetWindow28()} or
-    L{SizerItem_AssignWindow()} will be used.
+    Depending on the wxPython version SizerItem_SetWindow28() or SizerItem_AssignWindow() will be used.
 
-    @param item:   Instance of wxSizerItem
-    @param window: Instance of wxWindow
+    item:   Instance of wxSizerItem
+    window: Instance of wxWindow
 
-    @see: L{SizerItem_SetWindow()}
-    @see: L{SizerItem_SetWindow28()}
-    @see: L{SizerItem_AssignWindow()}
+    see: SizerItem_SetWindow(), SizerItem_SetWindow28(), SizerItem_AssignWindow()
     """
     item.AssignWindow(window)
 
@@ -60,19 +56,14 @@ def SizerItem_SetWindow28(item, window):
     """
     Wrapper for wxSizerItem.SetWindow() resp. wxSizerItem.AssignWindow()
 
-    wxSizerItem.SetWindow() is deprecated since wxPython 2.9 use
-    wxSizerItem.AssignWindow() instead.
+    wxSizerItem.SetWindow() is deprecated since wxPython 2.9 use wxSizerItem.AssignWindow() instead.
 
-    Depending on the wxPython version L{SizerItem_SetWindow28()} or
-    L{SizerItem_AssignWindow()} will be used.
+    Depending on the wxPython version SizerItem_SetWindow28() or SizerItem_AssignWindow() will be used.
 
-    @param item:   Instance of wxSizerItem
-    @param window: Instance of wxWindow
+    item:   Instance of wxSizerItem
+    window: Instance of wxWindow
 
-    @see: L{SizerItem_SetWindow()}
-    @see: L{SizerItem_SetWindow28()}
-    @see: L{SizerItem_AssignWindow()}
-    """
+    see: SizerItem_SetWindow(), SizerItem_SetWindow28(), SizerItem_AssignWindow()"""
     item.SetWindow(window)
 
 
@@ -80,12 +71,10 @@ def SizerItem_SetSizer(item, sizer):
     """
     Wrapper for wxSizerItem.SetSizer() resp. wxSizerItem.AssignSizer()
 
-    wxSizerItem.SetSizer() is deprecated since wxPython 2.9 use
-    wxSizerItem.AssignSizer() instead.
+    wxSizerItem.SetSizer() is deprecated since wxPython 2.9 use wxSizerItem.AssignSizer() instead.
 
-    @param item:  Instance of wxSizerItem
-    @param sizer: Instance of wxSizer
-    """
+    item:  Instance of wxSizerItem
+    sizer: Instance of wxSizer"""
     # don't use for now, as this causes crashes in e.g. change_sizer
     #if hasattr(item, 'AssignSizer'):
         #item.AssignSizer(sizer)

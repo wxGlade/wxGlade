@@ -3000,7 +3000,7 @@ class GridProperty(Property):
     def _update_remove_button(self):
         """Enable or disable remove button
 
-        The state of the remove button depends on the number of rows and L{self.can_remove_last}."""
+        The state of the remove button depends on the number of rows and self.can_remove_last."""
         if not self.grid or not self.buttons: return
         if self.can_remove and not self.can_remove_last:
             self.buttons[-1].Enable(self.grid.GetNumberRows() > 1)

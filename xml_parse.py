@@ -1,7 +1,7 @@
 """
 Parsers used to load an app and to generate the code from a XML file.
 
-See L{wcodegen.taghandler} for custom tag handler base classes.
+See wcodegen.taghandler for custom tag handler base classes.
 
 @copyright: 2002-2007 Alberto Griggio
 @copyright: 2016 Carsten Grohmann
@@ -15,8 +15,7 @@ from xml.sax.handler import ContentHandler
 
 import time
 
-import common, config, compat
-import edit_sizers
+import common, config
 
 
 class XmlParsingError(SAXException):
