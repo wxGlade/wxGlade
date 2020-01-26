@@ -888,6 +888,8 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
             # store the contents to filename
             self.save_file(filename, out)
         else:  # not self.multiple_files
+            for dep in self.classes[klass].dependencies:
+                self._current_extra_modules[dep] = 1
             if prev_src:
                 # if this is a new class, add its code to the new_classes list of the SourceFileContent instance
                 if is_new:
@@ -897,8 +899,6 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
                 return
             else:
                 # write the class body onto the single source file
-                for dep in self.classes[klass].dependencies:
-                    self._current_extra_modules[dep] = 1
                 if self.classes[klass].extra_code:
                     self._current_extra_code.extend(self.classes[klass].extra_code[::-1])
                 for line in obuffer:
