@@ -26,8 +26,7 @@ class PerlPanelGenerator(wcodegen.PerlWidgetCodeWriter):
             if id_name:
                 l.append(id_name)
 
-            klass = panel.base
-            if klass != panel.klass:
+            if panel.klass != panel.WX_CLASS:
                 klass = panel.klass
             else:
                 klass = klass.replace('wx', 'Wx::', 1)

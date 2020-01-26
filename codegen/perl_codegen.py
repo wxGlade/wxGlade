@@ -303,7 +303,7 @@ sub %(handler)s {
         code_lines = []
         write = code_lines.append
 
-        builder = self.obj_builders[code_obj.base]
+        builder = self.obj_builders[code_obj.WX_CLASS]
         mycn = getattr(builder, 'cn', self.cn)
         mycn_f = getattr(builder, 'cn_f', self.cn_f)
 
@@ -317,7 +317,7 @@ sub %(handler)s {
         # generate constructor code
         if is_new:
             write('package %s;\n\n' % code_obj.klass)
-            write('use Wx qw[:everything];\nuse base qw(%s);\nuse strict;\n\n' % code_obj.base.replace('wx', 'Wx::', 1))
+            write('use Wx qw[:everything];\nuse base qw(%s);\nuse strict;\n\n' % code_obj.WX_CLASS.replace('wx', 'Wx::', 1))
 
             if self._use_gettext:
                 if self.multiple_files:

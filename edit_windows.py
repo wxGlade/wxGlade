@@ -119,10 +119,6 @@ class EditBase(EventsMixin, edit_base.EditBase):
         # only for StatusBar, ToolBar and also non-standalone MenuBar it's False
         if not custom_class: klass_p.readonly = True
 
-        # Name of object's wxWidget class; base and klass are mostly the same, except e.g. wxDialog:
-        #assert klass==self.WX_CLASS
-        self.base = np.TextProperty(self.WX_CLASS)  # not editable; e.g. wxFrame or wxComboBox; used to find the code generator
-
         if getattr(self, '_custom_base_classes', False):
             # for notebook, panel and splitter window
             self.custom_base = np.TextPropertyD("", multiline=False, default_value=None)
@@ -1041,7 +1037,6 @@ class EditStylesMixin(np.PropertyOwner):
 
         klass: Name of the wxWidget klass
         styles: Supported styles, for more details see L{widget_properties.CheckListProperty}; list or OrderedDict"""
-        assert klass or hasattr(self, 'base')
 
         self.style_names = []
 
@@ -1049,12 +1044,7 @@ class EditStylesMixin(np.PropertyOwner):
         # writer. Mostly the wxWidget class is stored in self.base. If
         # not you've to set manually using constructors 'klass' parameter.
         # The 'klass' parameter will preferred used.
-        if klass:
-            klass = klass
-        elif getattr(self, 'base', None):
-            klass = self.base
-        else:
-            raise TypeError('Can not determinate wxWidgets class')
+        klass = klass or self.WX_CLASS
 
         # set code generator only once per class
         if not self.codegen:

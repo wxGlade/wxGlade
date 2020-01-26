@@ -487,7 +487,7 @@ class CPPCodeWriter(BaseLangCodeWriter, wcodegen.CppMixin):
     def add_class(self, code_obj):
         assert code_obj not in self.classes
         try:
-            builder = self.obj_builders[code_obj.base]
+            builder = self.obj_builders[code_obj.WX_CLASS]
         except KeyError:
             self._logger.error('%s', code_obj)
             # this is an error, let the exception be raised; the details are logged by the global exception handler
@@ -497,8 +497,7 @@ class CPPCodeWriter(BaseLangCodeWriter, wcodegen.CppMixin):
 
     def finalize_class(self, code_obj):
         # write the collected code for the class and its children
-        # shortcuts
-        base = code_obj.base
+        base = code_obj.WX_CLASS
         klass = self.classes[code_obj]
         classname = code_obj.klass
         fmt_klass = self.cn_class(classname)
@@ -947,11 +946,11 @@ class CPPCodeWriter(BaseLangCodeWriter, wcodegen.CppMixin):
 
 
         klass.final[:0] = final
-        if self.multiple_files and (obj.IS_CLASS and obj.base != obj.klass):
+        if self.multiple_files and (obj.IS_CLASS and obj.WX_CLASS != obj.klass):
             klass.dependencies.append(obj.klass)
         else:
-            if obj.base in self.obj_builders:
-                headers = getattr(self.obj_builders[obj.base], 'import_modules', [])
+            if obj.WX_CLASS in self.obj_builders:
+                headers = getattr(self.obj_builders[obj.WX_CLASS], 'import_modules', [])
                 klass.dependencies.extend(headers)
         return builder
 
@@ -1016,7 +1015,7 @@ void %(klass)s::%(handler)s(%(evt_type)s &event)  // wxGlade: %(klass)s.<event_h
             has_event_table = False
 
         if is_new or not has_event_table:
-            write('\nBEGIN_EVENT_TABLE(%s, %s)\n' % (code_obj.klass, code_obj.base))
+            write('\nBEGIN_EVENT_TABLE(%s, %s)\n' % (code_obj.klass, code_obj.WX_CLASS))
         write(tab + '// begin wxGlade: %s::event_table\n' % code_obj.klass)
 
         for obj, event, handler, evt_type in event_handlers:

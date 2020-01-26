@@ -36,6 +36,7 @@ def _frozen(method):
 
 class SizerSlot(edit_base.Slot):
     "A window to represent a slot in a sizer"
+    WX_CLASS ="sizerslot"
     def __init__(self, parent, pos=0, label=None):
         edit_base.Slot.__init__(self, parent, pos, label)
         self.klass = self.classname = self.base = "sizerslot"
@@ -357,7 +358,6 @@ class SizerBase(Sizer, np.PropertyOwner):
         self.klass        = np.Property(klass, name="class")             # class and orient are hidden
         self.orient       = OrientProperty(orient)                       # they will be set from the class_orient property
         self.class_orient = ClassOrientProperty(self.get_class_orient()) # this will set the class and orient properties
-        self.base         = np.TextProperty(klass, "base")
         self.attribute    = np.CheckBoxProperty(False, default_value=False)
         self.fit          = np.ActionButtonProperty(self.fit_parent)
 

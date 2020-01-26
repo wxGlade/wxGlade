@@ -94,7 +94,7 @@ class PythonCodeGenerator(wcodegen.PythonWidgetCodeWriter):
         if style:
             style = ', style=' + self.cn_f( 'wxTB_HORIZONTAL|' + style )
         klass = obj.klass
-        if klass == obj.base:
+        if klass == obj.WX_CLASS:
             klass = self.cn(klass)
         code = ['# Tool Bar\n',
                 'self.%s = %s(self, -1%s)\n' % (obj.name, klass, style)

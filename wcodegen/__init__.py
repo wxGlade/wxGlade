@@ -418,7 +418,7 @@ class BaseWidgetWriter(StylesMixin, BaseCodeWriter):
         self.tmpl_dict['obj_name'] = self.codegen._format_name(obj.name)
 
         klass = obj.klass
-        if klass == obj.base:
+        if klass == obj.WX_CLASS:
             klass = self.cn(klass)
         else:
             klass = self.cn_class(klass)

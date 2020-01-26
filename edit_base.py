@@ -400,8 +400,7 @@ class EditBase(np.PropertyOwner):
     def _get_tree_label(self):
         # get a label for node
         s = self.name
-        if (self.WX_CLASS=="CustomWidget" or
-            (self.klass != self.base and self.klass != 'wxScrolledWindow') ):
+        if (self.WX_CLASS=="CustomWidget" or (self.klass != self.WX_CLASS and self.klass != 'wxScrolledWindow') ):
             # special case...
             s += ' (%s)' % self.klass
             if getattr(self, "has_title", None):

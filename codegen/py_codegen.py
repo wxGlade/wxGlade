@@ -223,7 +223,7 @@ from %(top_win_module)s import %(top_win_class)s\n\n"""
 
         if klass:
             # create application class
-            if top_win and top_win.base=="wxDialog":
+            if top_win and top_win.WX_CLASS=="wxDialog":
                 # use ShowModal()/Destroy for dialogs
                 show_code = ['%(tab)s%(tab)sself.%(top_win)s.ShowModal()',
                             '%(tab)s%(tab)sself.%(top_win)s.Destroy()']
@@ -253,7 +253,7 @@ from %(top_win_module)s import %(top_win_class)s\n\n"""
                 ret.append( '%(tab)s%(name)s.MainLoop()' )
             else:
                 # use PySimpleApp
-                if top_win and top_win.base=="wxDialog":
+                if top_win and top_win.WX_CLASS=="wxDialog":
                     show_code = ['%(tab)s%(top_win)s.ShowModal()',
                                  '%(tab)s%(top_win)s.Destroy()']
                 else:
@@ -290,7 +290,7 @@ from %(top_win_module)s import %(top_win_class)s\n\n"""
         code_lines = []
         write = code_lines.append
 
-        builder = self.obj_builders[code_obj.base]
+        builder = self.obj_builders[code_obj.WX_CLASS]
         mycn = getattr(builder, 'cn', self.cn)
         mycn_f = getattr(builder, 'cn_f', self.cn_f)
         fmt_klass = self.cn_class(code_obj.klass)
@@ -302,7 +302,7 @@ from %(top_win_module)s import %(top_win_class)s\n\n"""
 
         # generate constructor code
         if is_new:
-            base = mycn(code_obj.base)
+            base = mycn(code_obj.WX_CLASS)
             if custom_base: base = ", ".join([b.strip() for b in custom_base.split(',')])
             write('\nclass %s(%s):\n' % (self.get_class(fmt_klass), base))
             write(self.tabs(1) + 'def __init__(self, *args, **kwds):\n')
@@ -338,7 +338,7 @@ from %(top_win_module)s import %(top_win_class)s\n\n"""
                 else:
                     write(tab + '%s.__init__(self)\n' % b)
         else:
-            write(tab + '%s.__init__(self, *args, **kwds)\n' % mycn(code_obj.base))
+            write(tab + '%s.__init__(self, *args, **kwds)\n' % mycn(code_obj.WX_CLASS))
 
         # set size here to avoid problems with splitter windows
         if code_obj.check_prop('size'):

@@ -438,12 +438,9 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
 
     def _is_class(self, obj):
         # check whether to add a new class to the generated code and modify some attributes in place
-        base = obj.WX_CLASS
-        obj.properties["base"].set_temp(obj.WX_CLASS)
-
         IS_CLASS = obj.IS_TOPLEVEL
         CAN_BE_CLASS = obj.CAN_BE_CLASS
-        if obj.klass != obj.base and CAN_BE_CLASS:
+        if obj.klass != obj.WX_CLASS and CAN_BE_CLASS:
             IS_CLASS = True
             # for panel objects, if the user sets a custom class but (s)he doesn't want the code to be generated...
             if obj.check_prop("no_custom_class") and obj.no_custom_class and not self.preview:
@@ -451,7 +448,7 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
         elif self.preview and not CAN_BE_CLASS and obj.WX_CLASS != 'CustomWidget':
             # if this is a custom class, but not a toplevel one, for the preview we have to use the "real" class
             # CustomWidgets handle this in a special way (see widgets/custom_widget/codegen.py)
-            obj.properties["klass"].set_temp(obj.base) # XXX handle this in a different way
+            obj.properties["klass"].set_temp(obj.WX_CLASS) # XXX handle this in a different way
 
         obj.IS_CLASS = IS_CLASS
 
@@ -609,8 +606,6 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
         """Add an object for that a Python/C++/... class will be generated.
         This is done for each toplevel element as well as for elements with a custom class property.
         See the _is_class(code_obj) method above."""
-        # shortcuts
-        base = code_obj.base
         klass = code_obj.klass
 
         assert code_obj not in self.classes
@@ -628,7 +623,7 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
             prev_src = self.previous_source
 
         try:
-            builder = self.obj_builders[base]
+            builder = self.obj_builders[code_obj.WX_CLASS]
         except KeyError:
             self._logger.error('%s', code_obj)
             # this is an error, let the exception be raised the details are logged by the global exception handler
@@ -647,8 +642,6 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
 
     def finalize_class(self, code_obj):
         "Finalize and write the code for the class that was started with add_class(code_obj)."
-        # shortcuts
-        base = code_obj.base
         klass = code_obj.klass
 
         if self.multiple_files:
@@ -662,7 +655,7 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
             # previous_source is the SourceFileContent instance that keeps info about the single file to generate
             prev_src = self.previous_source
 
-        builder = self.obj_builders[base]
+        builder = self.obj_builders[code_obj.WX_CLASS]
         mycn = getattr(builder, 'cn', self.cn)
         mycn_f = getattr(builder, 'cn_f', self.cn_f)
 
@@ -853,10 +846,10 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
         if final:
             parent_klass.final.insert(0, "\n")
             parent_klass.final[:0] = final
-        if self.multiple_files and (obj.IS_CLASS and obj.base != obj.klass):
+        if self.multiple_files and (obj.IS_CLASS and obj.WX_CLASS != obj.klass):
             key = self._format_import(obj.klass)
             parent_klass.dependencies[key] = 1
-        for dep in getattr(self.obj_builders.get(obj.base), 'import_modules', []):
+        for dep in getattr(self.obj_builders.get(obj.WX_CLASS), 'import_modules', []):
             parent_klass.dependencies[dep] = 1
         return builder
 
@@ -865,7 +858,7 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
 
         # Check for widget builder object
         try:
-            builder = self.obj_builders[obj.base]
+            builder = self.obj_builders[obj.WX_CLASS]
         except KeyError:
             # no code generator found: write a comment about it
             name = getattr(obj, "name", "None")
@@ -1045,7 +1038,7 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
         """generates the code for various properties common to all widgets (background and foreground colours, font,...)
         returns a list of strings containing the generated code"""
         out = []
-        if widget.check_prop('size') and widget.base!='wxFrame':
+        if widget.check_prop('size') and widget.WX_CLASS!='wxFrame':
             out.append(self.generate_code_size(widget))
         if widget.check_prop('background'): out.append(self.generate_code_background(widget))
         if widget.check_prop('foreground'): out.append(self.generate_code_foreground(widget))

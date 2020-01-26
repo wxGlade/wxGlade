@@ -30,8 +30,7 @@ class PerlSplitterWindowGenerator(wcodegen.PerlWidgetCodeWriter):
             if id_name:
                 l.append(id_name)
 
-            klass = obj.base
-            if klass != obj.klass:
+            if obj.klass != obj.WX_CLASS:
                 klass = obj.klass
             else:
                 klass = self.cn(klass)

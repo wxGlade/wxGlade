@@ -31,7 +31,7 @@ class PythonCodeGenerator(wcodegen.PythonWidgetCodeWriter):
         if id_name:
             init.append(id_name)
         klass = obj.klass
-        if klass == obj.base:
+        if klass == obj.WX_CLASS:
             klass = self.cn(klass)
         init.append('self.%s = %s(%s, %s, size=(1, 1))\n' % (obj.name, klass, parent, id))
         init += self.get_properties_code(obj)

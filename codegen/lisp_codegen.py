@@ -327,7 +327,7 @@ class LispCodeWriter(BaseLangCodeWriter, wcodegen.LispMixin):
         code_lines = []
         write = code_lines.append
 
-        builder = self.obj_builders[code_obj.base]
+        builder = self.obj_builders[code_obj.WX_CLASS]
         mycn = getattr(builder, 'cn', self.cn)
         mycn_f = getattr(builder, 'cn_f', self.cn_f)
 
@@ -338,7 +338,7 @@ class LispCodeWriter(BaseLangCodeWriter, wcodegen.LispMixin):
 
         # generate constructor code
         if is_new:
-            base = mycn(code_obj.base)
+            base = mycn(code_obj.WX_CLASS)
             write('\n(defclass %s()\n' % code_obj.klass)
             write(tab + "((top-window :initform nil :accessor slot-top-window)")
             for l in self.class_lines:
@@ -497,7 +497,7 @@ class LispCodeWriter(BaseLangCodeWriter, wcodegen.LispMixin):
         return '(require "%s")\n' % klass
 
     def _format_style(self, style, code_obj):
-        builder = self.obj_builders[code_obj.base]
+        builder = self.obj_builders[code_obj.WX_CLASS]
         mycn_f = getattr(builder, 'cn_f', self.cn_f)
 
         if not style: return ''

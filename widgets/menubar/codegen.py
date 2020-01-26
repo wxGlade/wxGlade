@@ -92,7 +92,7 @@ class PythonMenubarGenerator(wcodegen.PythonWidgetCodeWriter):
         return id_declarations + out
 
     def get_code(self, obj):
-        if obj.klass == obj.base:
+        if obj.klass == obj.WX_CLASS:
             klass = self.cn(obj.klass)
         else:
             klass = obj.klass
