@@ -321,7 +321,7 @@ sub %(handler)s {
 
             if self._use_gettext:
                 if self.multiple_files:
-                    self.classes[code_obj].dependencies["use Wx::Locale gettext => '_T';\n"] = 1
+                    self.classes[code_obj].dependencies.add( "use Wx::Locale gettext => '_T';\n" )
                 else:
                     write("use Wx::Locale gettext => '_T';\n")
 
@@ -330,7 +330,7 @@ sub %(handler)s {
             # TODO: Don't add dependencies twice with Perl
 
             # write the module dependencies for this class (package)
-            dep_list = sorted( self.classes[code_obj].dependencies.keys() )
+            dep_list = sorted( self.classes[code_obj].dependencies )
             if dep_list:
                 code = self._tagcontent('dependencies', dep_list, True)
                 write(code)

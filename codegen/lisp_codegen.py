@@ -271,16 +271,9 @@ class LispCodeWriter(BaseLangCodeWriter, wcodegen.LispMixin):
             """(ffi:default-foreign-language :stdc)\n\n""",
             ]
 
-        self.dependencies = {
-            '(use-package :wxCL)':         1,
-            '(use-package :wxFrame)':      1,
-            '(use-package :wx_main)':      1,
-            '(use-package :wx_wrapper)':   1,
-            '(use-package :wxWindow)':     1,
-            '(use-package :wxColour)':     1,
-            '(use-package :wxEvtHandler)': 1,
-            '(use-package :wxEvent)':      1,
-            }
+        self.dependencies = {'(use-package :wxCL)', '(use-package :wxFrame)', '(use-package :wx_main)',
+            '(use-package :wx_wrapper)', '(use-package :wxWindow)',
+            '(use-package :wxColour)', '(use-package :wxEvtHandler)', '(use-package :wxEvent)'}
 
     def check_values(self):
         BaseLangCodeWriter.check_values(self)
@@ -308,19 +301,18 @@ class LispCodeWriter(BaseLangCodeWriter, wcodegen.LispMixin):
         if obj.name not in ("spacer","sizerslot", "SLOT"):
             self.class_lines.append( self._format_name(obj.name) )
         if obj.klass in ("wxBoxSizer", "wxStaticBoxSizer", "wxGridSizer", "wxFlexGridSizer"):
-            self.dependencies['(use-package :wxSizer)'] = 1
+            self.dependencies.add( '(use-package :wxSizer)' )
         else:
             if obj.klass not in ("spacer", "sizerslot"):
-                key = '(use-package :%s)' % obj.klass
-                self.dependencies[key] = 1
+                self.dependencies.add( '(use-package :%s)'%obj.klass )
 
         if obj.klass == "wxMenuBar":
-            self.dependencies['(use-package :wxMenu)'] = 1
+            self.dependencies.add( '(use-package :wxMenu)' )
 
         return BaseLangCodeWriter.add_object(self, parent_klass, parent, parent_builder, obj)
 
     def generate_code_background(self, obj):
-        self.dependencies['(use-package :wxColour)'] = 1
+        self.dependencies.add( '(use-package :wxColour)' )
         return BaseLangCodeWriter.generate_code_background(self, obj)
 
     def generate_code_ctor(self, code_obj, is_new, tab):
@@ -430,11 +422,11 @@ class LispCodeWriter(BaseLangCodeWriter, wcodegen.LispMixin):
         return code_lines
 
     def generate_code_font(self, obj):
-        self.dependencies['(use-package :wxFont)'] = 1
+        self.dependencies.add( '(use-package :wxFont)' )
         return BaseLangCodeWriter.generate_code_font(self, obj)
 
     def generate_code_foreground(self, obj):
-        self.dependencies['(use-package :wxColour)'] = 1
+        self.dependencies.add( '(use-package :wxColour)' )
         return BaseLangCodeWriter.generate_code_foreground(self, obj)
 
     def generate_code_id(self, obj, id=None):
@@ -509,7 +501,7 @@ class LispCodeWriter(BaseLangCodeWriter, wcodegen.LispMixin):
             stmt = '%%(tab)s(setf (slot-top-window obj) (wxFrame_create nil wxID_ANY \"\" -1 -1 -1 -1 %s))\n' % style
         elif code_obj.WX_CLASS == "wxDialog":
             stmt = '%%(tab)s(setf (slot-top-window obj) (wxDialog_create nil wxID_ANY \"\" -1 -1 -1 -1 %s))\n' % style
-            self.dependencies['(use-package :wxButton)'] = 1
+            self.dependencies.add( '(use-package :wxButton)' )
         else:
             stmt = ''
 

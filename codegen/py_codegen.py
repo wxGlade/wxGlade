@@ -281,7 +281,7 @@ from %(top_win_module)s import %(top_win_class)s\n\n"""
             if self.multiple_files:
                 self.lang_mapping['import_gettext'] = 'import gettext\n'
             else:
-                self.dependencies['import gettext\n'] = 1
+                self.dependencies.add( 'import gettext\n' )
 
         BaseLangCodeWriter.add_app(self, app, top_win)
 

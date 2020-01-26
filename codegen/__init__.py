@@ -123,7 +123,7 @@ class ClassLines(object):
     "Stores the lines of source code for a custom class"
     def __init__(self):
         self.child_order = []
-        self.dependencies = {}    # Names of the modules this class depends on
+        self.dependencies = set() # Names of the modules this class depends on
         self.deps = []
         self.event_handlers = []  # Lines to bind events (see wcodegen.BaseWidgetWriter.get_event_handlers())
         self.extra_code = []      # Extra code to output before this class
@@ -298,7 +298,7 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
         self.app_name = None
         self.classes = OrderedDict()
         self.curr_tab = 0
-        self.dependencies = {}
+        self.dependencies = set()
         self.for_version = config.for_version
         self.header_lines = []
         self.indent_symbol = config.default_indent_symbol
@@ -316,7 +316,7 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
         self.previous_source = None
         self._app_added = False
         self._current_extra_code = []
-        self._current_extra_modules = {}
+        self._current_extra_modules = set()
         self._overwrite = config.default_overwrite
         self._mark_blocks = True # YYY config.mark_blocks
         self._textdomain = 'app'
@@ -498,12 +498,11 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
             else:
                 code = ""
             self.previous_source.replace( '<%swxGlade insert new_classes>' % self.nonce, code )
-            code = "".join(sorted(self._current_extra_modules.keys()))
+            code = "".join( sorted(self._current_extra_modules) )
             self.previous_source.replace( '<%swxGlade extra_modules>\n' % self.nonce, code )
 
             # module dependencies of all classes
-            dep_list = sorted( self.dependencies.keys() )
-            code = self._tagcontent('dependencies', dep_list)
+            code = self._tagcontent( 'dependencies', sorted(self.dependencies) )
             self.previous_source.replace( '<%swxGlade replace dependencies>' % self.nonce, code )
 
             # extra code (see the 'extracode' property of top-level widgets)
@@ -521,12 +520,11 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
             self.save_file( self.previous_source.name, content, content_only=True )
 
         elif not self.multiple_files:
-            code = "".join(sorted(self._current_extra_modules.keys()))
+            code = "".join( sorted(self._current_extra_modules) )
             self.output_file_replace( '<%swxGlade extra_modules>\n' % self.nonce, code )
 
             # module dependencies of all classes
-            dep_list = sorted( self.dependencies.keys() )
-            code = self._tagcontent('dependencies', dep_list)
+            code = self._tagcontent( 'dependencies', sorted(self.dependencies) )
             self.output_file_replace( '<%swxGlade replace dependencies>' % self.nonce, code )
 
             # extra code (see the 'extracode' property of top-level widgets)
@@ -617,7 +615,7 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
                 prev_src = None
             else:
                 prev_src = self.SourceFileContent(filename, self)
-            self._current_extra_modules = {}
+            self._current_extra_modules = set()
         else:
             # previous_source is the SourceFileContent instance that keeps info about the single file to generate
             prev_src = self.previous_source
@@ -633,9 +631,7 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
             pass
         else:
             mods = getattr(builder, 'extra_modules', [])
-            if mods:
-                for m in mods:
-                    self._current_extra_modules[m] = 1
+            self._current_extra_modules.update( mods )
 
         ret = self.classes[code_obj] = self.ClassLines()
         return ret
@@ -742,16 +738,14 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
             obuffer.append( self.tmpl_class_end_nomarker )
 
         if self.multiple_files:
+            dep_list = sorted( self.classes[code_obj].dependencies | self.dependencies )  # module dependencies of class
             if prev_src:
                 prev_src.replace('<%swxGlade insert new_classes>' % self.nonce, "")
 
                 # insert the extra modules
-                prev_src.replace( '<%swxGlade extra_modules>\n' % self.nonce, list(self._current_extra_modules.keys()) )
+                prev_src.replace( '<%swxGlade extra_modules>\n' % self.nonce, sorted(self._current_extra_modules) )
 
                 # insert the module dependencies of this class
-                dep_list = list( self.classes[code_obj].dependencies.keys() )
-                dep_list.extend(self.dependencies.keys())
-                dep_list.sort()
                 code = self._tagcontent('dependencies', dep_list)
                 prev_src.replace('<%swxGlade replace dependencies>' % self.nonce, code)
                 prev_src.replace('<%swxGlade replace %s dependencies>' % (self.nonce, klass), code)  # for Perl
@@ -773,14 +767,11 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
             out.extend( self.header_lines )
 
             # write the module dependencies for this class
-            dep_list = list( self.classes[code_obj].dependencies.keys() )
-            dep_list.extend(self.dependencies.keys())
-            dep_list.sort()
             code = self._tagcontent('dependencies', dep_list, True)
             out.append(code)
 
             # insert the extra code of this class
-            code = self._tagcontent( 'extracode', self.classes[code_obj].extra_code[::-1], True )
+            code = self._tagcontent( 'extracode', reversed(self.classes[code_obj].extra_code), True )
             out.append(code)
 
             # write the class body
@@ -788,21 +779,18 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
             # store the contents to filename
             self.save_file(filename, out)
         else:  # not self.multiple_files
-            extra_code = [l for l in self.classes[code_obj].extra_code[::-1] if not l in self._current_extra_code]
+            self._current_extra_modules.update( self.classes[code_obj].dependencies )
+            extra_code = [l for l in reversed(self.classes[code_obj].extra_code) if not l in self._current_extra_code]
             if prev_src:
                 # if this is a new class, add its code to the new_classes list of the SourceFileContent instance
                 if is_new:
                     prev_src.new_classes.append("".join(obuffer))
-                elif self.classes[code_obj].extra_code:
+                else:
                     self._current_extra_code.extend(extra_code)
-                return
             else:
                 # write the class body onto the single source file
-                for dep in self.classes[code_obj].dependencies:
-                    self._current_extra_modules[dep] = 1
                 self._current_extra_code.extend(extra_code)
-                for line in obuffer:
-                    self.output_file.append(line)
+                self.output_file.extend(obuffer)
 
     def add_object(self, parent_klass, parent, parent_builder, obj):
         """Adds the code to build 'obj' to the class body in parent_klass. (Not called for toplevel elements.)"""
@@ -848,9 +836,9 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
             parent_klass.final[:0] = final
         if self.multiple_files and (obj.IS_CLASS and obj.WX_CLASS != obj.klass):
             key = self._format_import(obj.klass)
-            parent_klass.dependencies[key] = 1
-        for dep in getattr(self.obj_builders.get(obj.WX_CLASS), 'import_modules', []):
-            parent_klass.dependencies[dep] = 1
+            parent_klass.dependencies.add( key )
+        import_modules = getattr(self.obj_builders.get(obj.WX_CLASS), 'import_modules', [])
+        parent_klass.dependencies.update( import_modules )
         return builder
 
     def _get_object_builder(self, parent_klass, obj):

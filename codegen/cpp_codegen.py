@@ -225,7 +225,7 @@ class ClassLines(BaseClassLines):
         self.sub_objs = [] # List of 2-tuples (type, name) of the sub-objects; attributes of the toplevel object
         self.extra_code_h   = [] # Extra header code to output
         self.extra_code_cpp = [] # Extra source code to output
-        self.dependencies = []     # List not dictionary
+        self.dependencies = set()
 
 
 class CPPCodeWriter(BaseLangCodeWriter, wcodegen.CppMixin):
@@ -430,9 +430,9 @@ class CPPCodeWriter(BaseLangCodeWriter, wcodegen.CppMixin):
                 tag = match.groups()
                 if tag[2] == 'dependencies':
                     #self._logger.debug('writing dependencies')
-                    deps = []
+                    deps = set()
                     for code in self.classes.values():
-                        deps.extend(code.dependencies)
+                        deps.update(code.dependencies)
                     lines = self._format_dependencies( deps )
                 elif tag[2] == 'methods':
                     lines = '%svoid set_properties();\n%svoid do_layout();\n' % (self.tabs(1), self.tabs(1))
@@ -462,9 +462,9 @@ class CPPCodeWriter(BaseLangCodeWriter, wcodegen.CppMixin):
             self.output_header.append('\n#endif // %s\n' % oh)
 
             # write the list of include files
-            deps = []
+            deps = set()
             for code in self.classes.values():
-                deps.extend(code.dependencies)
+                deps.update(code.dependencies)
             code = self._format_dependencies( deps )
             self.output_header_replace( '<%swxGlade replace  dependencies>' % self.nonce, code )
 
@@ -801,7 +801,7 @@ class CPPCodeWriter(BaseLangCodeWriter, wcodegen.CppMixin):
 
         if self.multiple_files:
             if base in self.obj_builders:
-                klass.dependencies.extend( getattr(self.obj_builders[base], 'import_modules', []) )
+                klass.dependencies.update( getattr(self.obj_builders[base], 'import_modules', []) )
 
             if prev_src:
                 tag = '<%swxGlade insert new_classes>' % self.nonce
@@ -951,7 +951,7 @@ class CPPCodeWriter(BaseLangCodeWriter, wcodegen.CppMixin):
         else:
             if obj.WX_CLASS in self.obj_builders:
                 headers = getattr(self.obj_builders[obj.WX_CLASS], 'import_modules', [])
-                klass.dependencies.extend(headers)
+                klass.dependencies.update(headers)
         return builder
 
     def generate_code_event_handler(self, code_obj, is_new, tab, prev_src, event_handlers):
@@ -1093,7 +1093,7 @@ void %(klass)s::%(handler)s(%(evt_type)s &event)  // wxGlade: %(klass)s.<event_h
     def _format_dependencies(self, dependencies):
         "Format a list of header files for the dependencies output"
         dep_list = []
-        for dependency in sorted( set(dependencies) ):  # unique and sorted
+        for dependency in sorted(dependencies):  # unique and sorted
             if dependency and ('"' != dependency[0] != '<'):
                 dep_list.append('#include "%s.h"\n' % dependency)
             else:
