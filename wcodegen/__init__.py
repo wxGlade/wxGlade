@@ -564,7 +564,7 @@ class BaseWidgetWriter(StylesMixin, BaseCodeWriter):
             for line in self.tmpl_after:
                 lines.append(line % self.tmpl_dict)
 
-        lines.extend( self.codegen.generate_common_properties(obj) )
+        lines.extend( self.codegen.generate_code_common_properties(obj) )
 
         if self.tmpl_props:
             for line in self.tmpl_props:

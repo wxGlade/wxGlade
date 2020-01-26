@@ -75,7 +75,7 @@ class PerlCodeGenerator(wcodegen.PerlWidgetCodeWriter):
             if size>0:
                 out.append( '%s->SetRowSize(%s, %s);\n' % (name, i, size) )
 
-        out.extend(self.codegen.generate_common_properties(obj))
+        out.extend(self.codegen.generate_code_common_properties(obj))
         return out
 
 

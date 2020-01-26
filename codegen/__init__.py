@@ -1034,7 +1034,7 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
         "Returns the code fragment that sets the size of the given object."
         raise NotImplementedError
 
-    def generate_common_properties(self, widget):
+    def generate_code_common_properties(self, widget):
         """generates the code for various properties common to all widgets (background and foreground colours, font,...)
         returns a list of strings containing the generated code"""
         out = []
@@ -1044,7 +1044,7 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
         if widget.check_prop('foreground'): out.append(self.generate_code_foreground(widget))
         if widget.check_prop('font'):       out.append(self.generate_code_font(widget))
         # tooltip
-        if widget.check_prop('tooltip')  and widget.tooltip:   out.append( self._generic_code(widget, 'tooltip') )
+        if widget.check_prop('tooltip')  and widget.tooltip:  out.append( self._generic_code(widget, 'tooltip') )
         # trivial boolean properties
         if widget.check_prop('disabled') and widget.disabled: out.append( self._generic_code(widget, 'disabled') )
         if widget.check_prop('focused' ) and widget.focused:  out.append( self._generic_code(widget, 'focused') )

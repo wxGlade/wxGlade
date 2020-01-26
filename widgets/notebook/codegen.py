@@ -112,13 +112,13 @@ class CppNotebookGenerator(wcodegen.CppWidgetCodeWriter):
             return l, ids, []
         init = ['%s = new %s(%s, %s%s);\n' % (window.name, window.klass, parent, id, self.tmpl_dict['style'])]
 
-        init += self.codegen.generate_common_properties(window)
+        init += self.codegen.generate_code_common_properties(window)
 
         return init, ids, []
 
     def get_layout_code(self, obj):
         # called for a toplevel class
-        return self.codegen.generate_common_properties(obj)
+        return self.codegen.generate_code_common_properties(obj)
 
     def get_code_per_child(self, obj, child):
         i = obj.children.index(child)

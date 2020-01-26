@@ -84,7 +84,7 @@ class CppFrameCodeGenerator(wcodegen.CppWidgetCodeWriter):
             out.append('wxIcon _icon;\n')
             out.append('_icon.CopyFromBitmap(%s);\n' % stmt_icon)
             out.append('SetIcon(_icon);\n')
-        out.extend(self.codegen.generate_common_properties(obj))
+        out.extend(self.codegen.generate_code_common_properties(obj))
         return out
 
     def get_layout_code(self, obj):
