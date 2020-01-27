@@ -763,14 +763,15 @@ class Slot(EditBase):
         if self._dont_destroy: return  # on a notebook page
         self.widget.Hide()
 
-        # unbind events to prevent new created (and queued) events
-        self.widget.Bind(wx.EVT_PAINT, None)
-        self.widget.Bind(wx.EVT_RIGHT_DOWN, None)
-        self.widget.Bind(wx.EVT_LEFT_DOWN, None)
-        self.widget.Bind(wx.EVT_MIDDLE_DOWN, None)
-        self.widget.Bind(wx.EVT_ENTER_WINDOW, None)
-        self.widget.Bind(wx.EVT_LEAVE_WINDOW, None)
-        self.widget.Bind(wx.EVT_KEY_DOWN, None)
+        if wx.VERSION_STRING!="2.8.12.0":
+            # unbind events to prevent new created (and queued) events
+            self.widget.Bind(wx.EVT_PAINT, None)
+            self.widget.Bind(wx.EVT_RIGHT_DOWN, None)
+            self.widget.Bind(wx.EVT_LEFT_DOWN, None)
+            self.widget.Bind(wx.EVT_MIDDLE_DOWN, None)
+            self.widget.Bind(wx.EVT_ENTER_WINDOW, None)
+            self.widget.Bind(wx.EVT_LEAVE_WINDOW, None)
+            self.widget.Bind(wx.EVT_KEY_DOWN, None)
         if detach and self.parent.IS_SIZER and self.parent.widget:
             self.parent.widget.Detach(self.widget)  # this will happen during recursive removal only
         compat.DestroyLater(self.widget)
