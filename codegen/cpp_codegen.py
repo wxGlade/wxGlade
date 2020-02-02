@@ -123,6 +123,7 @@ class SourceFileContent(BaseSourceFileContent):
         inside_comment = False
         tmp_in = self._load_file(filename)
         out_lines = []
+        check_old_methods = []  # list of indices with set_properties or do_layout
         for line in tmp_in:
             comment_index = line.find('/*')
             if not inside_comment and comment_index != -1 and comment_index > line.find('//'):
@@ -157,6 +158,10 @@ class SourceFileContent(BaseSourceFileContent):
                         which_class = self.format_classname(which_class)
                     self.spaces[which_class] = spaces
                     inside_block = True
+                    if which_block in ("do_layout","set_properties"):
+                        # probably to be removed
+                        check_old_methods.append( len(out_lines) )
+
                     out_lines.append( '<%swxGlade replace %s %s>' %
                                       (self.nonce, result.group('classname'), result.group('block') ) )
                 else:
@@ -204,6 +209,13 @@ class SourceFileContent(BaseSourceFileContent):
             # if we are here, the previous ``version'' of the file did not contain any class, so we must add the
             # new_classes tag at the end of the file
             out_lines.append('<%swxGlade insert new_classes>' % self.nonce)
+
+        # when moving from 0.9 to 1.0: remove empty methods "do_layout" and "set_properties"
+        while check_old_methods:
+            i = check_old_methods.pop(-1)
+            if out_lines[i+1].strip()=='}':  # just end of block -> remove incl. trailing empty lines
+                self._remove_method(out_lines, i-2, i+1)
+
         # set the ``persistent'' content of the file
         if is_header:
             self.header_content = out_lines
@@ -762,13 +774,6 @@ class CPPCodeWriter(BaseLangCodeWriter, wcodegen.CppMixin):
                 self.warning( "wxGlade %s::%s block not found, relative code NOT generated" % (fmt_klass, fmt_klass) )
             source_buffer = []
             swrite = source_buffer.append
-
-        if prev_src and not is_new:
-            # remove __set_properties and __do_layout, if in old file
-            tag = '<%swxGlade replace %s set_properties>' % (self.nonce, classname)
-            prev_src.replace(tag, [])
-            tag = '<%swxGlade replace %s %s>' % (self.nonce, classname, 'do_layout')
-            prev_src.replace(tag, [])
 
         # generate code for event table
         code_lines = self.generate_code_event_table( code_obj, is_new, tab, prev_src, event_handlers )

@@ -134,10 +134,8 @@ class SourceFileContent(BaseSourceFileContent):
         # when moving from 0.9 to 1.0: remove empty methods "__do_layout" and "__set_properties"
         while check_old_methods:
             i = check_old_methods.pop(-1)
-            if not out_lines[i+1].strip():
-                del out_lines[i-1:i+2]
-            elif out_lines[i+1].lstrip().startswith("def"):  # no empty line
-                del out_lines[i-1:i+1]
+            if len(out_lines)==i+1 or not out_lines[i+1].strip() or out_lines[i+1].lstrip().startswith("def"):
+                self._remove_method(out_lines, i-1, i)
 
         # set the ``persistent'' content of the file
         self.content = out_lines #"".join(out_lines)

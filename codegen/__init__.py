@@ -81,6 +81,13 @@ class BaseSourceFileContent(object):
         self.class_name = None
         self.new_classes_inserted = False
 
+    def _remove_method(self, out_lines, i0, i1):
+        # helper for derived classes at end of _build_untouched to remove empty methods
+        del out_lines[i0:i1+1]
+        # remove trailing empty lines
+        while len(out_lines)>i0 and not out_lines[i0].strip():
+            del out_lines[i0]
+
     def format_classname(self, class_name):
         "Format class name read from existing source file; may be overwritten in derived class"
         return class_name
@@ -710,13 +717,12 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
                 self.warning( tmpl % { 'name': code_obj.name, 'ctor': self.name_ctor } )
             obuffer = []
 
-
-        if prev_src and not is_new:
-            # remove __set_properties and __do_layout, if in old file
-            tag = '<%swxGlade replace %s %s>' % (self.nonce, klass, '__set_properties')
-            prev_src.replace(tag, [])
-            tag = '<%swxGlade replace %s %s>' % (self.nonce, klass, '__do_layout')
-            prev_src.replace(tag, [])
+        #if prev_src and not is_new:
+            ## remove __set_properties and __do_layout, if in old file
+            #tag = '<%swxGlade replace %s %s>' % (self.nonce, klass, '__set_properties')
+            #prev_src.replace(tag, [])
+            #tag = '<%swxGlade replace %s %s>' % (self.nonce, klass, '__do_layout')
+            #prev_src.replace(tag, [])
 
         # generate code for event handler stubs
         code_lines = self.generate_code_event_handler( code_obj, is_new, tab, prev_src, event_handlers )
@@ -1453,16 +1459,15 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
         code_list = []
         if self._mark_blocks:
             code_list.append( '%s begin wxGlade: %s' % (self.comment_sign, tag) )
-        if isinstance(content, list):
-            for entry in content:
-                code_list.append(entry.rstrip())
-        elif isinstance(content, compat.basestring):
+        if isinstance(content, compat.basestring):
             # don't append empty content
             _content = content.rstrip()
             if _content:
                 code_list.append(_content)
-        else:
-            raise AssertionError('Unknown content type: %s' % type(content))
+        else:  # list or iterator
+            for entry in content:
+                code_list.append(entry.rstrip())
+
         if self._mark_blocks:
             code_list.append( '%s end wxGlade' % self.comment_sign )
         # newline for "end wxGlade" line

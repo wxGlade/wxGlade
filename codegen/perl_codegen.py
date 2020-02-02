@@ -73,6 +73,7 @@ class SourceFileContent(BaseSourceFileContent):
         inside_pod = False
         tmp_in = self._load_file(self.name)
         out_lines = []
+        check_old_methods = []  # list of indices with set_properties or do_layout
         for line in tmp_in:
             result = self.rec_pod.match(line)
             if result:
@@ -86,14 +87,12 @@ class SourceFileContent(BaseSourceFileContent):
             result = self.rec_class_decl.match(line)
             if result:
                 if not self.class_name:
-                    # this is the first class declared in the file: insert the
-                    # new ones before this
+                    # this is the first class declared in the file: insert the new ones before this
                     out_lines.append( '<%swxGlade insert new_classes>' % self.nonce )
                     self.new_classes_inserted = True
                 self.class_name = result.group(1)
                 self.class_name = self.format_classname(self.class_name)
-                self.classes[self.class_name] = 1  # add the found class to the list
-                                              # of classes of this module
+                self.classes[self.class_name] = 1  # add the found class to the list of classes of this module
                 out_lines.append(line)
             elif not inside_block:
                 result = self.rec_block_start.match(line)
@@ -111,6 +110,9 @@ class SourceFileContent(BaseSourceFileContent):
                     if not self.class_name:
                         out_lines.append( '<%swxGlade replace %s>' % (self.nonce, which_block) )
                     else:
+                        if which_block in ("__do_layout","__set_properties"):
+                            # probably to be removed
+                            check_old_methods.append( len(out_lines) )
                         out_lines.append( '<%swxGlade replace %s %s>' % (self.nonce, which_class, which_block) )
                 else:
                     result = self.rec_event_handler.match(line)
@@ -129,12 +131,18 @@ class SourceFileContent(BaseSourceFileContent):
             else:
                 # ignore all the lines inside a wxGlade block
                 if self.rec_block_end.match(line):
-##                     self._logger.debug('end block')
                     inside_block = False
         if not self.new_classes_inserted:
             # if we are here, the previous ``version'' of the file did not contain any class, so we must add the
             # new_classes tag at the end of the file
             out_lines.append( '<%swxGlade insert new_classes>' % self.nonce )
+
+        # when moving from 0.9 to 1.0: remove empty methods "do_layout" and "set_properties"
+        while check_old_methods:
+            i = check_old_methods.pop(-1)
+            if out_lines[i+1].strip()=='}':  # just end of block -> remove incl. trailing empty lines
+                self._remove_method(out_lines, i-2, i+1)
+
         # set the ``persistent'' content of the file
         self.content = out_lines
 
