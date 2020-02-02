@@ -130,9 +130,6 @@
                                     <border>8</border>
                                     <flag>wxLEFT</flag>
                                     <object class="wxButton" name="button_clear" base="EditButton">
-                                        <events>
-                                            <handler event="EVT_BUTTON">lambda event:(self.matplotlib_axes.clear(),self.matplotlib_canvas.draw())</handler>
-                                        </events>
                                         <label>Clear</label>
                                     </object>
                                 </object>
