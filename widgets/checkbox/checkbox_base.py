@@ -7,17 +7,14 @@ Code shared between different language code generators
 
 
 class CheckBoxMixin(object):
-    """\
-    Generic code to handle wxCheckbox code in all language code generators
-    """
+    "Generic code to handle wxCheckbox code in all language code generators"
 
     def _prepare_checkbox_content(self, obj):
-        """\
+        """
         Prepare template variables for 3-state checkbox
 
-        @param obj: Instance of L{xml_parse.CodeObject}
-        @type obj: xml_parse.CodeObject
-        """
+        obj: Instance of xml_parse.CodeObject
+        obj: xml_parse.CodeObject"""
         checked = obj.checked
         if self.cn_f('wxCHK_3STATE') in self.tmpl_dict['style']:
             checked = self.config['number2state'][checked]

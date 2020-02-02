@@ -26,8 +26,7 @@ class PerlPanelGenerator(wcodegen.PerlWidgetCodeWriter):
             if id_name:
                 l.append(id_name)
 
-            klass = panel.base
-            if klass != panel.klass:
+            if panel.klass != panel.WX_CLASS:
                 klass = panel.klass
             else:
                 klass = klass.replace('wx', 'Wx::', 1)
@@ -57,7 +56,7 @@ class PerlPanelGenerator(wcodegen.PerlWidgetCodeWriter):
 
         init.append( '$self->{%s} = %s->new(%s, %s%s);\n' % (panel.name, klass, parent, id, extra) )
 
-        init += self.codegen.generate_common_properties(panel)
+        init += self.codegen.generate_code_common_properties(panel)
         if scrollable and panel.check_prop("scroll_rate"):
             init.append( '$self->{%s}->SetScrollRate(%s);\n' % (panel.name, panel.scroll_rate) )
         return init, []
@@ -65,7 +64,7 @@ class PerlPanelGenerator(wcodegen.PerlWidgetCodeWriter):
     def get_properties_code(self, obj):
         # XXX check whether this can be used to unify with above code:
         # self.format_widget_access(obj)
-        props_buf = self.codegen.generate_common_properties(obj)
+        props_buf = self.codegen.generate_code_common_properties(obj)
         if obj.scrollable and obj.check_prop("scroll_rate"):
             props_buf.append('$self->SetScrollRate(%s);\n' % obj.scroll_rate)
         return props_buf
@@ -81,7 +80,5 @@ def initialize():
     klass = 'wxPanel'
     common.class_names['EditPanel'] = klass
     common.class_names['EditTopLevelPanel'] = klass
-    common.toplevels['EditPanel'] = 1
-    common.toplevels['EditTopLevelPanel'] = 1
     common.register('perl', klass, PerlPanelGenerator(klass))
     common.register('perl', 'wxScrolledWindow', PerlPanelGenerator(klass))

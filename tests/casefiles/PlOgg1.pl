@@ -39,7 +39,6 @@ sub new {
     $self = $self->SUPER::new( $parent, $id, $title, $pos, $size, $style, $name );
     $self->SetSize(Wx::Size->new(500, 300));
     $self->SetTitle(_T("mp3 2 ogg"));
-    $self->SetSize(Wx::Size->new(500, 300));
     $self->SetFocus();
     
     $self->{sizer_1} = Wx::FlexGridSizer->new(3, 1, 0, 0);

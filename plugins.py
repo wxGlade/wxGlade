@@ -22,30 +22,20 @@ rec_module = re.compile(r'^(?P<module>\w+)')
 """Regex to match modules"""
 
 
-def load_widgets_from_dir(widget_dir, submodule='',
-                          default_section='not_set'):
-    """\
-    Load and initialise the all widgets listed in widgets.txt in the given directory.
+def load_widgets_from_dir(widget_dir, submodule='', default_section='not_set'):
+    """Load and initialise the all widgets listed in widgets.txt in the given directory.
 
     If you need to import a submodule instead, just specify the name of the submodule and "<module name>.<submodule>"
     will be imported. This is useful to import language specific code generators.
 
-    @param widget_dir: Directory to search for widgets
-    @type widget_dir:  str
+    widget_dir:      Directory to search for widgets
+    submodule:       Submodule to import
+    default_section: Section name to group all widgets, if no section has been found
 
-    @param submodule: Submodule to import
-    @type submodule:  str
+    returns: In GUI-Mode: OrderedDict with module sections as key and assigned list of wxBitmapButtons
+             In batch mode: empty OrderedDict
 
-    @param default_section: Section name to group all widgets, if no section has been found
-    @type default_section: str
-
-    @return: In GUI-Mode: a dict with module sections as key and assigned list of wxBitmapButtons, the dict is empty
-             in batch mode.
-    @rtype:  OrderedDict
-
-    @see: L{import_module()}
-    @see: L{config.use_gui} - for "GUI" or "batch" mode
-    """
+    see: import_module(); config.use_gui - for "GUI" or "batch" mode"""
     buttons = OrderedDict()
 
     # language code generators e.g. perl_codegen
@@ -158,15 +148,11 @@ def _modulenames_from_file(filename, default_section):
 def _process_widget_config(module):
     """\
     Process widget configuration stored in modules 'config' dictionary. The
-    processed configuration will be stored in L{config.widget_config}.
+    processed configuration will be stored in config.widget_config.
 
-    @param module: Already imported module
-    @type module: module
-
-    @see: L{config.widget_config}
-
-    @rtype: bool
-    """
+    module: Already imported module
+    
+    returns bool"""
     name = getattr(module, '__name__', str(module))
     if not hasattr(module, 'config'):
         logging.debug(_('Missing configuration in module %s'), name)
@@ -231,32 +217,22 @@ def _init_codegen_gui(widget_dir, widget_name):
 
 
 def import_module(widget_dir, module_name):
-    """\
-    Import a single module from a ZIP file or from the directory structure.
+    """Import a single module from a ZIP file or from the directory structure.
 
-    The consistency of ZIP files will be checked by calling L{is_valid_zip()}.
+    The consistency of ZIP files will be checked by calling is_valid_zip().
 
-    If widget ZIP files are found, they will be process first and the default
-    Python imports will be the second.
+    If widget ZIP files are found, they will be process first and the default Python imports will be the second.
 
-    widget_dir will be added to the Python search path temporarily if it's
-    not path of sys.path already.
+    widget_dir will be added to the Python search path temporarily if it's not path of sys.path already.
 
     Example::
         >>> import_module('./mywidgets', 'static_text')
        <module 'static_text' from 'mywidgets/static_text.zip/static_text/__init__.pyc'>
 
-    @param widget_dir: Directory to search for widgets
-    @type widget_dir:  str
+    widget_dir:  Directory to search for widgets
+    module_name: Name of the module to import
 
-    @param module_name: Name of the module to import
-    @type module_name:  str
-
-    @return: Imported module or None in case of errors
-    @rtype:  Module | None
-
-    @see: L{is_valid_zip()}
-    """
+    returns Imported module or None in case of errors"""
     # split module name into module name and sub module name
     basemodule = module_name.split('.', 1)[0]
 
@@ -300,21 +276,14 @@ def import_module(widget_dir, module_name):
 
 
 def is_valid_zip(filename, module_name):
-    """\
-    Check the consistency of the given ZIP files. It's a formal check as well
-    as a check of the content.
+    """Check the consistency of the given ZIP files. It's a formal check as well as a check of the content.
 
-    @param filename: Name of the ZIP file to check
-    @type filename:  str
+    filename:    Name of the ZIP file to check
+    module_name: Name of the module to import
 
-    @param module_name: Name of the module to import
-    @type module_name:  str
+    returns: True, if the ZIP is a valid widget zip file
 
-    @return: True, if the ZIP is a valid widget zip file
-    @rtype:  bool
-
-    @see: L{_get_zipfile_filelist()}
-    """
+    see: _get_zipfile_filelist()"""
     if not os.path.exists(filename):
         logging.debug(_('File %s does not exists.'), filename)
         return False

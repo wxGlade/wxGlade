@@ -665,6 +665,7 @@ class MenuHandler(BaseXmlBuilderTagHandler):
 class EditMenuBar(EditBase, PreviewMixin):
 
     WX_CLASS = "wxMenuBar"
+    CAN_BE_CLASS = True
     _PROPERTIES = ["menus", "preview"]
     PROPERTIES = EditBase.PROPERTIES + _PROPERTIES + EditBase.EXTRA_PROPERTIES
     CHILDREN = 0
@@ -679,7 +680,6 @@ class EditMenuBar(EditBase, PreviewMixin):
             custom_class = False
             pos = "_menubar"
         EditBase.__init__(self, name, klass, parent, custom_class, pos)
-        self.properties["base"].set('wxMenuBar')
 
         self.menus = MenuProperty()
         self.window_id = None  # just a dummy for code generation

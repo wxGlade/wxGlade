@@ -75,7 +75,7 @@ class EditBase(EventsMixin, edit_base.EditBase):
     """Base class of every window available in the builder.
 
     This class holds the basic properties for this object.
-    The properties that control the layout (i.e. the behaviour when inside a sizer) are in L{ManagedBase}."""
+    The properties that control the layout (i.e. the behaviour when inside a sizer) are in ManagedBase."""
     can_preview = False
     _PROPERTIES = ["Common", "name","class", "custom_base"] # "custom_base" will be set to None or a property
     PROPERTIES = _PROPERTIES
@@ -118,9 +118,6 @@ class EditBase(EventsMixin, edit_base.EditBase):
         self.custom_class = custom_class
         # only for StatusBar, ToolBar and also non-standalone MenuBar it's False
         if not custom_class: klass_p.readonly = True
-
-        # Name of object's wxWidget class; base and klass are mostly the same, except e.g. wxDialog:
-        self.base = np.TextProperty(klass)  # not editable; e.g. wxFrame or wxComboBox; used to find the code generator
 
         if getattr(self, '_custom_base_classes', False):
             # for notebook, panel and splitter window
@@ -717,6 +714,7 @@ class TopLevelBase(WindowBase, PreviewMixin):
 
     IS_TOPLEVEL = True
     IS_TOPLEVEL_WINDOW = True  # will be False for TopLevelPanel and MDIChildFrame
+    CAN_BE_CLASS = True
     CHILDREN = 1  # a sizer or a widget
 
     _PROPERTY_HELP={ "extracode_pre": "This code will be inserted at the beginning of the constructor.",
@@ -800,7 +798,7 @@ class TopLevelBase(WindowBase, PreviewMixin):
 
     def duplicate(self, *args):
         clipboard.copy(self)
-        clipboard.paste(common.root.widget)
+        clipboard.paste(common.root)
 
     def _create_popup_menu(self, widget):
         # remove, hide
@@ -1030,16 +1028,15 @@ class EditStylesMixin(np.PropertyOwner):
     widget_writer: Widget code writer (wcodegen.BaseWidgetWriter)
 
     """
-    codegen = None             # Code generator class; @see: L{codegen.BaseLangCodeWriter}
-    update_widget_style = True # Flag to update the widget style if a style is set using L{set_style()}
+    codegen = None             # Code generator class; see: codegen.BaseLangCodeWriter
+    update_widget_style = True # Flag to update the widget style if a style is set using set_style()
     recreate_on_style_change = False
 
     def __init__(self, klass='', styles=[]):
         """Initialise instance
 
         klass: Name of the wxWidget klass
-        styles: Supported styles, for more details see L{widget_properties.CheckListProperty}; list or OrderedDict"""
-        assert klass or hasattr(self, 'base')
+        styles: Supported styles, for more details see widget_properties.CheckListProperty; list or OrderedDict"""
 
         self.style_names = []
 
@@ -1047,12 +1044,7 @@ class EditStylesMixin(np.PropertyOwner):
         # writer. Mostly the wxWidget class is stored in self.base. If
         # not you've to set manually using constructors 'klass' parameter.
         # The 'klass' parameter will preferred used.
-        if klass:
-            klass = klass
-        elif getattr(self, 'base', None):
-            klass = self.base
-        else:
-            raise TypeError('Can not determinate wxWidgets class')
+        klass = klass or self.WX_CLASS
 
         # set code generator only once per class
         if not self.codegen:
@@ -1085,7 +1077,7 @@ class EditStylesMixin(np.PropertyOwner):
         if old_style == new_style: return
 
         recreate = self.recreate_on_style_change
-        if self.base == "wxButton" and (old_style & wx.BU_EXACTFIT != new_style & wx.BU_EXACTFIT):
+        if self.WX_CLASS == "wxButton" and (old_style & wx.BU_EXACTFIT != new_style & wx.BU_EXACTFIT):
             recreate = True  # workaround
 
         if not recreate:

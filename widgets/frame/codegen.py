@@ -24,7 +24,7 @@ class PythonFrameCodeGenerator(wcodegen.PythonWidgetCodeWriter):
             out.append('_icon = %s\n' % self.cn('wxNullIcon'))
             out.append('_icon.CopyFromBitmap(%s)\n' % stmt_icon)
             out.append('self.SetIcon(_icon)\n')
-        out.extend(self.codegen.generate_common_properties(obj))
+        out.extend(self.codegen.generate_code_common_properties(obj))
         return out
 
     def get_layout_code(self, obj):
@@ -84,7 +84,7 @@ class CppFrameCodeGenerator(wcodegen.CppWidgetCodeWriter):
             out.append('wxIcon _icon;\n')
             out.append('_icon.CopyFromBitmap(%s);\n' % stmt_icon)
             out.append('SetIcon(_icon);\n')
-        out.extend(self.codegen.generate_common_properties(obj))
+        out.extend(self.codegen.generate_code_common_properties(obj))
         return out
 
     def get_layout_code(self, obj):
@@ -106,11 +106,8 @@ class CppMDIChildFrameCodeGenerator(CppFrameCodeGenerator):
 
 def initialize():
     klass = 'wxFrame'
-    cn = common.class_names
-    cn['EditFrame'] = klass
-    cn['EditMDIChildFrame'] = 'wxMDIChildFrame'
-    common.toplevels['EditFrame'] = 1
-    common.toplevels['EditMDIChildFrame'] = 1
+    common.class_names['EditFrame'] = klass
+    common.class_names['EditMDIChildFrame'] = 'wxMDIChildFrame'
 
     pygen = common.code_writers.get('python')
     if pygen:

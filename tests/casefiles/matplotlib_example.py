@@ -19,65 +19,75 @@ from matplotlib.backends.backend_wxagg import FigureCanvasWxAgg as FigureCanvas
 class MyFrame(wx.Frame):
     def __init__(self, *args, **kwds):
         # begin wxGlade: MyFrame.__init__
-        kwds["style"] = wx.DEFAULT_FRAME_STYLE
+        kwds["style"] = kwds.get("style", 0) | wx.DEFAULT_FRAME_STYLE
         wx.Frame.__init__(self, *args, **kwds)
+        self.SetSize((400, 300))
+        self.SetTitle("matplotlib canvas example")
+        
+        sizer_1 = wx.BoxSizer(wx.VERTICAL)
+        
         self.panel_1 = wx.Panel(self, wx.ID_ANY)
+        sizer_1.Add(self.panel_1, 1, wx.EXPAND, 0)
+        
+        sizer_2 = wx.BoxSizer(wx.VERTICAL)
+        
         figure = self.matplotlib_figure = Figure()
         # 1x1 grid, first subplot
         self.matplotlib_axes = figure.add_subplot(111)
         self.matplotlib_canvas = FigureCanvas(self.panel_1, wx.ID_ANY, figure)
-        self.text_function = wx.TextCtrl(self.panel_1, wx.ID_ANY, "sin(x)")
-        self.text_xmin = wx.TextCtrl(self.panel_1, wx.ID_ANY, "0")
-        self.text_max = wx.TextCtrl(self.panel_1, wx.ID_ANY, "10")
-        self.text_xstep = wx.TextCtrl(self.panel_1, wx.ID_ANY, "0.1")
-        self.button_plot = wx.Button(self.panel_1, wx.ID_ANY, "Plot")
-        self.button_clear = wx.Button(self.panel_1, wx.ID_ANY, "Clear")
-
-        self.__set_properties()
-        self.__do_layout()
-
-        self.Bind(wx.EVT_BUTTON, self.on_button_plot, self.button_plot)
-        self.Bind(wx.EVT_BUTTON, lambda event:(self.matplotlib_axes.clear(),self.matplotlib_canvas.draw()), self.button_clear)
-        # end wxGlade
-
-    def __set_properties(self):
-        # begin wxGlade: MyFrame.__set_properties
-        self.SetTitle("matplotlib canvas example")
-        self.text_xmin.SetMinSize((40, -1))
-        self.text_max.SetMinSize((40, -1))
-        self.text_xstep.SetMinSize((40, -1))
-        self.button_plot.SetDefault()
-        # end wxGlade
-    def __do_layout(self):
-        # begin wxGlade: MyFrame.__do_layout
-        sizer_1 = wx.BoxSizer(wx.VERTICAL)
-        sizer_2 = wx.BoxSizer(wx.VERTICAL)
-        sizer_3 = wx.BoxSizer(wx.HORIZONTAL)
-        sizer_4 = wx.BoxSizer(wx.HORIZONTAL)
         sizer_2.Add(self.matplotlib_canvas, 1, wx.ALL | wx.EXPAND, 3)
+        
+        sizer_4 = wx.BoxSizer(wx.HORIZONTAL)
+        sizer_2.Add(sizer_4, 0, wx.ALL | wx.EXPAND, 5)
+        
         label_4 = wx.StaticText(self.panel_1, wx.ID_ANY, "f(x) = ")
         sizer_4.Add(label_4, 0, wx.ALIGN_CENTER_VERTICAL | wx.ALL, 5)
+        
+        self.text_function = wx.TextCtrl(self.panel_1, wx.ID_ANY, "sin(x)")
         sizer_4.Add(self.text_function, 1, 0, 0)
-        sizer_2.Add(sizer_4, 0, wx.ALL | wx.EXPAND, 5)
+        
+        sizer_3 = wx.BoxSizer(wx.HORIZONTAL)
+        sizer_2.Add(sizer_3, 0, wx.ALL | wx.EXPAND, 5)
+        
         label_1 = wx.StaticText(self.panel_1, wx.ID_ANY, "xmin")
         sizer_3.Add(label_1, 0, wx.ALIGN_CENTER_VERTICAL, 0)
+        
+        self.text_xmin = wx.TextCtrl(self.panel_1, wx.ID_ANY, "0")
+        self.text_xmin.SetMinSize((40, -1))
         sizer_3.Add(self.text_xmin, 0, 0, 0)
+        
         label_2 = wx.StaticText(self.panel_1, wx.ID_ANY, "xmax")
         sizer_3.Add(label_2, 0, wx.ALIGN_CENTER_VERTICAL, 0)
+        
+        self.text_max = wx.TextCtrl(self.panel_1, wx.ID_ANY, "10")
+        self.text_max.SetMinSize((40, -1))
         sizer_3.Add(self.text_max, 0, 0, 0)
+        
         label_3 = wx.StaticText(self.panel_1, wx.ID_ANY, "step")
         sizer_3.Add(label_3, 0, wx.ALIGN_CENTER_VERTICAL, 0)
+        
+        self.text_xstep = wx.TextCtrl(self.panel_1, wx.ID_ANY, "0.1")
+        self.text_xstep.SetMinSize((40, -1))
         sizer_3.Add(self.text_xstep, 0, 0, 0)
+        
         sizer_3.Add((20, 20), 1, 0, 0)
+        
+        self.button_plot = wx.Button(self.panel_1, wx.ID_ANY, "Plot")
+        self.button_plot.SetDefault()
         sizer_3.Add(self.button_plot, 0, 0, 0)
+        
+        self.button_clear = wx.Button(self.panel_1, wx.ID_ANY, "Clear")
         sizer_3.Add(self.button_clear, 0, wx.LEFT, 8)
-        sizer_2.Add(sizer_3, 0, wx.ALL | wx.EXPAND, 5)
+        
         self.panel_1.SetSizer(sizer_2)
-        sizer_1.Add(self.panel_1, 1, wx.EXPAND, 0)
+        
         self.SetSizer(sizer_1)
+        
         self.Layout()
-        self.SetSize((400, 300))
+
+        self.Bind(wx.EVT_BUTTON, self.on_button_plot, self.button_plot)
         # end wxGlade
+        # some extra code at end of MyFrame
 
     def on_button_plot(self, event):  # wxGlade: MyFrame.<event_handler>
         import numpy

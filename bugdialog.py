@@ -63,7 +63,7 @@ class BugReport(bugdialog_ui.UIBugDialog):
         exc_type: Exception type as string
         header: Initial message
 
-        see: L{SetContent(), SetContentEI()"""
+        see: SetContent(), SetContentEI()"""
         details = log.getBufferAsString()
 
         if not exc_msg:
@@ -97,7 +97,7 @@ class BugReport(bugdialog_ui.UIBugDialog):
 
 
 def Show(msg, exc):
-    """Wrapper for creating a L{BugReport} dialog and show the details of the given exception instance.
+    """Wrapper for creating a BugReport dialog and show the details of the given exception instance.
 
     msg: Short description of the action that has raised this error
     exc: Caught exception
@@ -110,14 +110,14 @@ def Show(msg, exc):
 
 
 def ShowEI(exc_type, exc_value, exc_tb, msg=None):
-    """Wrapper for creating a L{BugReport} dialog and show the given exception details.
+    """Wrapper for creating a BugReport dialog and show the given exception details.
 
     exc_type: Exception type
     exc_value: Exception value
     exc_tb: Exception traceback
     msg: Short description of the exception
 
-    see: L{Show(), BugReport.SetContent()"""
+    see: Show(), BugReport.SetContent()"""
     dialog = BugReport()
     dialog.SetContentEI(exc_type, exc_value, exc_tb, msg)
     dialog.ShowModal()

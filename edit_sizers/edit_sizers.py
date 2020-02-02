@@ -36,6 +36,7 @@ def _frozen(method):
 
 class SizerSlot(edit_base.Slot):
     "A window to represent a slot in a sizer"
+    WX_CLASS ="sizerslot"
     def __init__(self, parent, pos=0, label=None):
         edit_base.Slot.__init__(self, parent, pos, label)
         self.klass = self.classname = self.base = "sizerslot"
@@ -113,7 +114,7 @@ class BaseSizerBuilder(object):
 
     def __init__(self):
         "Initialise sizer builder"
-        self.tmpl_dict = {}                          # properties to replace in L{tmpl}
+        self.tmpl_dict = {}                               # properties to replace in tmpl
         self.codegen = common.code_writers[self.language] #language specific code generator (codegen.BaseLangCodeWriter)
 
     def _get_wparent(self, topl, obj):
@@ -130,7 +131,7 @@ class BaseSizerBuilder(object):
         self.tmpl_dict['sizer_name'] = self.codegen._format_classattr(obj)
 
     def _get_code(self, obj):
-        "Generates the language specific code for sizer specified in L{klass}"
+        "Generates the language specific code for sizer specified in klass"
         if not self.tmpl:
             return [], []  # init, final
 
@@ -151,7 +152,7 @@ class BaseSizerBuilder(object):
         return init, layout  # init, post
 
     def get_code(self, obj):
-        "Generates the language specific code for sizer specified in L{klass}"
+        "Generates the language specific code for sizer specified in klass"
         self._prepare_tmpl_content(obj)
         if self.klass == 'wxBoxSizer':             return self.get_code_wxBoxSizer(obj)
         if self.klass == 'wxWrapSizer':            return self.get_code_wxBoxSizer(obj)  # the same here
@@ -357,7 +358,6 @@ class SizerBase(Sizer, np.PropertyOwner):
         self.klass        = np.Property(klass, name="class")             # class and orient are hidden
         self.orient       = OrientProperty(orient)                       # they will be set from the class_orient property
         self.class_orient = ClassOrientProperty(self.get_class_orient()) # this will set the class and orient properties
-        self.base         = np.TextProperty(klass, "base")
         self.attribute    = np.CheckBoxProperty(False, default_value=False)
         self.fit          = np.ActionButtonProperty(self.fit_parent)
 

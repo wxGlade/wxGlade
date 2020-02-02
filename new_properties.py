@@ -1565,7 +1565,7 @@ class ClassProperty(TextProperty):
     def _check_class_uniqueness(self, klass):
         """Check whether the class name is unique, as otherwise the source code would be overwritten.
         Returns string message if not unique, None else."""
-        if klass==self.owner.base: return None
+        if klass==self.owner.WX_CLASS: return None
         if "." in klass:
             leaf = klass.rsplit(".",1)[-1]
         else:
@@ -1588,7 +1588,7 @@ class ClassProperty(TextProperty):
                     result = check(c.children)
                     if result: return result
                 if c is not self.owner:
-                    if c.klass==c.base: continue
+                    if c.klass==c.WX_CLASS: continue
                     if c.klass==klass:
                         return self._UNIQUENESS_MSG1
                     if leaf and "." in c.klass and leaf==c.klass.rsplit(".",1)[-1]:
@@ -3000,7 +3000,7 @@ class GridProperty(Property):
     def _update_remove_button(self):
         """Enable or disable remove button
 
-        The state of the remove button depends on the number of rows and L{self.can_remove_last}."""
+        The state of the remove button depends on the number of rows and self.can_remove_last."""
         if not self.grid or not self.buttons: return
         if self.can_remove and not self.can_remove_last:
             self.buttons[-1].Enable(self.grid.GetNumberRows() > 1)
@@ -3186,7 +3186,7 @@ class PropertyOwner(object):
         # return list of properties to be written to XML file
         ret = []
         for name in self.property_names:
-            if name in ("class","name","base") or name in without: continue
+            if name in ("class","name") or name in without: continue
             prop = self.properties[name]
             if not prop.HAS_DATA: continue
             if prop.attributename in without: continue  # for e.g. option/proportion

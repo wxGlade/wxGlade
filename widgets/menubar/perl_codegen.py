@@ -87,14 +87,12 @@ class PerlMenubarGenerator(wcodegen.PerlWidgetCodeWriter):
         return ids + out
 
     def get_code(self, obj):
-        klass = obj.base
-        if klass != obj.klass:
+        if obj.klass != obj.WX_CLASS:
             klass = obj.klass
         else:
-            klass = self.cn(klass)
+            klass = self.cn(obj.WX_CLASS)
 
-        init = ['\n\n', '# Menu Bar\n\n', '$self->{%s} = %s->new();\n' %
-                (obj.name, klass)]
+        init = [ '\n\n', '# Menu Bar\n\n', '$self->{%s} = %s->new();\n' % (obj.name, klass) ]
         init.extend(self.get_init_code(obj))
         init.append('$self->SetMenuBar($self->{%s});\n' % obj.name)
         init.append('\n')
@@ -120,5 +118,4 @@ class PerlMenubarGenerator(wcodegen.PerlWidgetCodeWriter):
 def initialize():
     klass = 'wxMenuBar'
     common.class_names['EditMenuBar'] = klass
-    common.toplevels['EditMenuBar'] = 1
     common.register('perl', klass, PerlMenubarGenerator(klass), ) #'menus', MenuHandler)

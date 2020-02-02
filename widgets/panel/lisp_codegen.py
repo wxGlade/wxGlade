@@ -41,14 +41,14 @@ class LispPanelGenerator(wcodegen.LispWidgetCodeWriter):
 
         init.append( '(setf (slot-%s obj) (wxPanel_Create %s %s -1 -1 -1 -1 %s))\n' % (panel_name, parent, id, style) )
 
-        init += self.codegen.generate_common_properties(panel)
+        init += self.codegen.generate_code_common_properties(panel)
         if scrollable and panel.check_prop("scroll_rate"):
             sr = panel.scroll_rate.replace(',', ' ')
             init.append( '(wxScrolledWindow:wxScrolledWindow_SetScrollRate (slot-%s obj) %s)\n'% (panel_name, sr) )
         return init, []
 
     def get_properties_code(self, obj):
-        props_buf = self.codegen.generate_common_properties(obj)
+        props_buf = self.codegen.generate_code_common_properties(obj)
         if obj.scrollable and obj.check_prop("scroll_rate"):
             sr = obj.scroll_rate.replace(',', ' ')
             props_buf.append('(wxScrolledWindow:wxScrolledWindow_SetScrollRate (slot-%s obj))\n' % sr)
@@ -65,7 +65,5 @@ def initialize():
     klass = 'wxPanel'
     common.class_names['EditPanel'] = klass
     common.class_names['EditTopLevelPanel'] = klass
-    common.toplevels['EditPanel'] = 1
-    common.toplevels['EditTopLevelPanel'] = 1
     common.register('lisp', klass, LispPanelGenerator(klass))
     common.register('lisp', 'wxScrolledWindow', LispPanelGenerator(klass))

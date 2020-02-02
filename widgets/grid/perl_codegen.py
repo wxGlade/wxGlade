@@ -20,11 +20,10 @@ class PerlCodeGenerator(wcodegen.PerlWidgetCodeWriter):
         if id_name:
             init.append(id_name)
 
-        klass = obj.base
-        if klass != obj.klass:
+        if obj.klass != obj.WX_CLASS:
             klass = obj.klass
         else:
-            klass = klass.replace('wx', 'Wx::', 1)
+            klass = obj.WX_CLASS.replace('wx', 'Wx::', 1)
 
         init.append('$self->{%s} = %s->new(%s, %s);\n' % (obj.name, klass, parent, id))
         init += self.get_properties_code(obj)
@@ -76,7 +75,7 @@ class PerlCodeGenerator(wcodegen.PerlWidgetCodeWriter):
             if size>0:
                 out.append( '%s->SetRowSize(%s, %s);\n' % (name, i, size) )
 
-        out.extend(self.codegen.generate_common_properties(obj))
+        out.extend(self.codegen.generate_code_common_properties(obj))
         return out
 
 

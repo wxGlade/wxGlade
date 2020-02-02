@@ -26,7 +26,7 @@ class PerlFrameCodeGenerator(wcodegen.PerlWidgetCodeWriter):
             out.append('my $icon = &Wx::wxNullIcon;\n')
             out.append('$icon->CopyFromBitmap(%s);\n' % stmt_icon)
             out.append('$self->SetIcon($icon);\n')
-        out.extend(self.codegen.generate_common_properties(obj))
+        out.extend(self.codegen.generate_code_common_properties(obj))
         return out
 
     def get_layout_code(self, obj):
@@ -45,8 +45,6 @@ def initialize():
     cn = common.class_names
     cn['EditFrame'] = klass
     cn['EditMDIChildFrame'] = 'wxMDIChildFrame'
-    common.toplevels['EditFrame'] = 1
-    common.toplevels['EditMDIChildFrame'] = 1
 
     plgen = common.code_writers.get('perl')
     if plgen:

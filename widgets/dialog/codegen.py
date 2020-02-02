@@ -3,6 +3,7 @@ Code generator functions for wxDialog objects
 
 @copyright: 2002-2007 Alberto Griggio
 @copyright: 2014-2016 Carsten Grohmann
+@copyright: 2019-2020 Dietmar Schwertberger
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
@@ -17,13 +18,13 @@ class PythonDialogGenerator(wcodegen.PythonWidgetCodeWriter):
     def get_properties_code(self, obj):
         out = []
         if obj.title:
-            out.append('self.SetTitle(%s)\n' % self.codegen.quote_str(obj.title))
+            out.append( 'self.SetTitle(%s)\n' % self.codegen.quote_str(obj.title) )
         if obj.icon:
-            stmt_icon = self.generate_code_bitmap(obj.icon)
-            out.append('_icon = %s\n' % self.cn('wxNullIcon'))
-            out.append('_icon.CopyFromBitmap(%s)\n' % stmt_icon)
-            out.append('self.SetIcon(_icon)\n')
-        out.extend(self.codegen.generate_common_properties(obj))
+            stmt_icon = self.generate_code_bitmap(obj.icon )
+            out.append( '_icon = %s\n' % self.cn('wxNullIcon') )
+            out.append( '_icon.CopyFromBitmap(%s)\n' % stmt_icon )
+            out.append( 'self.SetIcon(_icon)\n' )
+        out.extend(self.codegen.generate_code_common_properties(obj))
         return out
 
     def get_layout_code(self, obj):
@@ -48,13 +49,13 @@ class CppDialogGenerator(wcodegen.CppWidgetCodeWriter):
         Returns a list of strings containing the generated code"""
         out = []
         if obj.title:
-            out.append('SetTitle(%s);\n' % self.codegen.quote_str(obj.title))
+            out.append( 'SetTitle(%s);\n' % self.codegen.quote_str(obj.title) )
         if obj.icon:
             stmt_icon = self.generate_code_bitmap(obj.icon)
-            out.append('wxIcon _icon;\n')
-            out.append('_icon.CopyFromBitmap(%s);\n' % stmt_icon)
-            out.append('SetIcon(_icon);\n')
-        out.extend(self.codegen.generate_common_properties(obj))
+            out.append( 'wxIcon _icon;\n' )
+            out.append( '_icon.CopyFromBitmap(%s);\n' % stmt_icon )
+            out.append( 'SetIcon(_icon);\n' )
+        out.extend( self.codegen.generate_code_common_properties(obj) )
         return out
 
     def get_layout_code(self, obj):
@@ -79,7 +80,6 @@ def xrc_code_generator(obj):
 def initialize():
     klass = 'wxDialog'
     common.class_names['EditDialog'] = klass
-    common.toplevels['EditDialog'] = 1
     common.register('python', klass, PythonDialogGenerator(klass))
     common.register('C++', klass, CppDialogGenerator(klass))
     common.register('XRC', klass, xrc_code_generator)

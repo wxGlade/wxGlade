@@ -1,9 +1,10 @@
 """
 Dialog for editing wxGlade preferences
 
-@see: L{config.preferences}
+see: config.preferences
 @copyright: 2007 Alberto Griggio
-@copyright: 20013-2016 Carsten Grohmann
+@copyright: 2013-2016 Carsten Grohmann
+@copyright: 2019-2020 Dietmar Schwertberger
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 

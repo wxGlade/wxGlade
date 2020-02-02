@@ -34,12 +34,12 @@ class PythonNotebookGenerator(wcodegen.PythonWidgetCodeWriter):
             init.append(id_name)
         init.append(('self.%s = ' + self.cn(klass) + '(%s, %s%s)\n')%(window.name, parent, id, self.tmpl_dict['style']))
 
-        init += self.codegen.generate_common_properties(window)
+        init += self.codegen.generate_code_common_properties(window)
         return init, []
 
     def get_layout_code(self, obj):
         # called for a toplevel class
-        return self.codegen.generate_common_properties(obj)
+        return self.codegen.generate_code_common_properties(obj)
 
     def get_code_per_child(self, obj, child):
         i = obj.children.index(child)
@@ -112,13 +112,13 @@ class CppNotebookGenerator(wcodegen.CppWidgetCodeWriter):
             return l, ids, []
         init = ['%s = new %s(%s, %s%s);\n' % (window.name, window.klass, parent, id, self.tmpl_dict['style'])]
 
-        init += self.codegen.generate_common_properties(window)
+        init += self.codegen.generate_code_common_properties(window)
 
         return init, ids, []
 
     def get_layout_code(self, obj):
         # called for a toplevel class
-        return self.codegen.generate_common_properties(obj)
+        return self.codegen.generate_code_common_properties(obj)
 
     def get_code_per_child(self, obj, child):
         i = obj.children.index(child)
@@ -132,8 +132,6 @@ def initialize():
     klass = 'wxNotebook'
     common.class_names['EditNotebook'] = klass
     common.class_names['NotebookPane'] = 'wxPanel'
-    common.toplevels['EditNotebook'] = 1
-    common.toplevels['NotebookPane'] = 1
     common.register('python', klass, PythonNotebookGenerator(klass) )
     common.register('C++',    klass, CppNotebookGenerator(klass) )
     common.register('XRC',    klass, xrc_code_generator )

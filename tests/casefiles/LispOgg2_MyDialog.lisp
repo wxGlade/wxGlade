@@ -71,7 +71,6 @@
         (setf (slot-top-window obj) (wxDialog_create nil wxID_ANY "" -1 -1 -1 -1 (logior wxDEFAULT_DIALOG_STYLE wxRESIZE_BORDER)))
         (slot-top-window obj).wxWindow_SetSize((500, 300))
         (wxWindow_SetTitle (slot-Mp3-To-Ogg self) (_"mp3 2 ogg"))
-        (slot-top-window obj).wxWindow_SetSize((500, 300))
         
         (setf (slot-sizer-1 obj) (wxGridSizer_Create 3 1 0 0))
         

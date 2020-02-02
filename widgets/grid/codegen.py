@@ -31,7 +31,7 @@ class PythonCodeGenerator(wcodegen.PythonWidgetCodeWriter):
         if id_name:
             init.append(id_name)
         klass = obj.klass
-        if klass == obj.base:
+        if klass == obj.WX_CLASS:
             klass = self.cn(klass)
         init.append('self.%s = %s(%s, %s, size=(1, 1))\n' % (obj.name, klass, parent, id))
         init += self.get_properties_code(obj)
@@ -86,7 +86,7 @@ class PythonCodeGenerator(wcodegen.PythonWidgetCodeWriter):
             if size>0:
                 out.append( '%s.SetRowSize(%s, %s)\n' % (name, i, size) )
 
-        out.extend(self.codegen.generate_common_properties(obj))
+        out.extend(self.codegen.generate_code_common_properties(obj))
         return out
 
 
@@ -154,7 +154,7 @@ class CppCodeGenerator(wcodegen.CppWidgetCodeWriter):
             if size>0:
                 out.append('%s->SetRowSize(%s, %s);\n' % (name, i, size))
 
-        out.extend(self.codegen.generate_common_properties(obj))
+        out.extend(self.codegen.generate_code_common_properties(obj))
         return out
 
 

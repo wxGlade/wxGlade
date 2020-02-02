@@ -92,7 +92,7 @@ class PythonMenubarGenerator(wcodegen.PythonWidgetCodeWriter):
         return id_declarations + out
 
     def get_code(self, obj):
-        if obj.klass == obj.base:
+        if obj.klass == obj.WX_CLASS:
             klass = self.cn(obj.klass)
         else:
             klass = obj.klass
@@ -305,7 +305,6 @@ class CppMenubarGenerator(wcodegen.CppWidgetCodeWriter):
 def initialize():
     klass = 'wxMenuBar'
     common.class_names['EditMenuBar'] = klass
-    common.toplevels['EditMenuBar'] = 1
     common.register('python', klass, PythonMenubarGenerator(klass) )
     common.register('C++',    klass, CppMenubarGenerator(klass),   )
     common.register('XRC',    klass, xrc_code_generator,           )

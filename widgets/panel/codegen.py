@@ -40,13 +40,13 @@ class PythonPanelGenerator(wcodegen.PythonWidgetCodeWriter):
             if klass in ('wxPanel', 'wxScrolledWindow'):
                 klass = self.cn(klass)
         init.append( 'self.%s = %s(%s, %s%s)\n' % (panel.name, klass, parent, id, style) )
-        init.extend( self.codegen.generate_common_properties(panel) )
+        init.extend( self.codegen.generate_code_common_properties(panel) )
         if panel.scrollable and panel.check_prop("scroll_rate"):
             init.append( 'self.%s.SetScrollRate(%s)\n' % (panel.name, panel.scroll_rate) )
         return init, []
 
     def get_properties_code(self, obj):
-        props_buf = self.codegen.generate_common_properties(obj)
+        props_buf = self.codegen.generate_code_common_properties(obj)
         if obj.scrollable and obj.check_prop("scroll_rate"):
             props_buf.append('self.SetScrollRate(%s)\n' % obj.scroll_rate)
         return props_buf
@@ -90,13 +90,13 @@ class CppPanelGenerator(wcodegen.CppWidgetCodeWriter):
         else:
             klass = panel.klass
         init = [ '%s = new %s(%s, %s%s);\n' % (panel.name, klass, parent, id, extra) ]
-        init += self.codegen.generate_common_properties(panel)
+        init += self.codegen.generate_code_common_properties(panel)
         if scrollable and panel.check_prop("scroll_rate"):
             init.append('%s->SetScrollRate(%s);\n' % (panel.name, panel.scroll_rate))
         return init, ids, []
 
     def get_properties_code(self, obj):
-        props_buf = self.codegen.generate_common_properties(obj)
+        props_buf = self.codegen.generate_code_common_properties(obj)
         if obj.scrollable and obj.check_prop("scroll_rate"):
             props_buf.append('SetScrollRate(%s);\n' % obj.scroll_rate)
         return props_buf
@@ -124,13 +124,9 @@ def initialize():
     klass = 'wxPanel'
     common.class_names['EditPanel'] = klass
     common.class_names['EditTopLevelPanel'] = klass
-    common.toplevels['EditPanel'] = 1
-    common.toplevels['EditTopLevelPanel'] = 1
 
     common.class_names['EditScrolledWindow'] = 'wxScrolledWindow'
     common.class_names['EditTopLevelScrolledWindow'] = 'wxScrolledWindow'
-    common.toplevels['EditScrolledWindow'] = 1
-    common.toplevels['EditTopLevelScrolledWindow'] = 1
 
     common.register('python', klass,              PythonPanelGenerator(klass))
     common.register('python', 'wxScrolledWindow', PythonPanelGenerator(klass))

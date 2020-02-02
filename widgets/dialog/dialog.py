@@ -25,7 +25,6 @@ class EditDialog(TopLevelBase, EditStylesMixin, BitmapMixin):
     
     def __init__(self, name, parent, title, style=wx.DEFAULT_DIALOG_STYLE, klass='wxDialog'):
         TopLevelBase.__init__(self, name, klass, parent, title=title)
-        self.properties["base"].set( 'wxDialog' )
         EditStylesMixin.__init__(self)
         self.properties["style"].set(style)
 
@@ -125,10 +124,10 @@ def xml_builder(attrs, parent, pos=None):
     "factory to build EditDialog objects from a XML file"
     from xml_parse import XmlParsingError
     try:
-        label = attrs['name']
+        name = attrs['name']
     except KeyError:
         raise XmlParsingError(_("'name' attribute missing"))
-    return EditDialog(label, parent, "", style=0)
+    return EditDialog(name, parent, "", style=0)
 
 
 def initialize():

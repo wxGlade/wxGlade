@@ -27,7 +27,6 @@ class EditFrame(TopLevelBase, EditStylesMixin, BitmapMixin):
 
     def __init__(self, name, parent, title, style=wx.DEFAULT_FRAME_STYLE, klass='wxFrame'): #XXX style is not used
         TopLevelBase.__init__(self, name, klass, parent, title=title)
-        self.properties["base"].set('wxFrame')
         EditStylesMixin.__init__(self)
         self.properties["style"].set(style)
 
@@ -145,13 +144,10 @@ class EditFrame(TopLevelBase, EditStylesMixin, BitmapMixin):
 
 
 class EditMDIChildFrame(EditFrame):
+    WX_CLASS = "wxMDIChildFrame"
     IS_TOPLEVEL_WINDOW = False  # avoid to appear in the "Top Window" property of the app
     PROPERTIES = [p for p in EditFrame.PROPERTIES if p!="statusbar"]
     ATT_CHILDREN = ["_menubar", "_toolbar"]
-    #def __init__(self, *args, **kwds):
-        #EditFrame.__init__(self, *args, **kwds)
-        #self.base = 'wxFrame' # XXX is this correct?
-
 
 
 def builder(parent, pos, klass=None, base=None, name=None):

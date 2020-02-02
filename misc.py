@@ -228,7 +228,7 @@ def string_to_color(color):
 
 def format_for_version(version):
     "Return the version information in a string; e.g. format_for_version((2, 8)) -> '2.8'"
-    # see: L{wxglade.codegen.BaseLangCodeWriter.for_version}
+    # see: wxglade.codegen.BaseLangCodeWriter.for_version
     return '%s.%s' % version
 
 def format_supported_by(version):

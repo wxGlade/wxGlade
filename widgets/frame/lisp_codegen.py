@@ -22,7 +22,7 @@ class LispFrameCodeGenerator(wcodegen.LispWidgetCodeWriter):
             append( '(wxFrame_SetTitle (slot-top-window obj) %s)\n' % self.codegen.quote_str(obj.title) )
         if obj.icon:
             append( ';;; generating code for setting icons is not implemented\n' )
-        out.extend(self.codegen.generate_common_properties(obj))
+        out.extend(self.codegen.generate_code_common_properties(obj))
         return out
 
     def get_layout_code(self, obj):
@@ -41,8 +41,6 @@ def initialize():
     cn = common.class_names
     cn['EditFrame'] = klass
     cn['EditMDIChildFrame'] = 'wxMDIChildFrame'
-    common.toplevels['EditFrame'] = 1
-    common.toplevels['EditMDIChildFrame'] = 1
 
     lispgen = common.code_writers.get('lisp')
     if lispgen:

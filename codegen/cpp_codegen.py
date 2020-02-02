@@ -123,6 +123,7 @@ class SourceFileContent(BaseSourceFileContent):
         inside_comment = False
         tmp_in = self._load_file(filename)
         out_lines = []
+        check_old_methods = []  # list of indices with set_properties or do_layout
         for line in tmp_in:
             comment_index = line.find('/*')
             if not inside_comment and comment_index != -1 and comment_index > line.find('//'):
@@ -157,6 +158,10 @@ class SourceFileContent(BaseSourceFileContent):
                         which_class = self.format_classname(which_class)
                     self.spaces[which_class] = spaces
                     inside_block = True
+                    if which_block in ("do_layout","set_properties"):
+                        # probably to be removed
+                        check_old_methods.append( len(out_lines) )
+
                     out_lines.append( '<%swxGlade replace %s %s>' %
                                       (self.nonce, result.group('classname'), result.group('block') ) )
                 else:
@@ -204,6 +209,13 @@ class SourceFileContent(BaseSourceFileContent):
             # if we are here, the previous ``version'' of the file did not contain any class, so we must add the
             # new_classes tag at the end of the file
             out_lines.append('<%swxGlade insert new_classes>' % self.nonce)
+
+        # when moving from 0.9 to 1.0: remove empty methods "do_layout" and "set_properties"
+        while check_old_methods:
+            i = check_old_methods.pop(-1)
+            if out_lines[i+1].strip()=='}':  # just end of block -> remove incl. trailing empty lines
+                self._remove_method(out_lines, i-2, i+1)
+
         # set the ``persistent'' content of the file
         if is_header:
             self.header_content = out_lines
@@ -225,7 +237,7 @@ class ClassLines(BaseClassLines):
         self.sub_objs = [] # List of 2-tuples (type, name) of the sub-objects; attributes of the toplevel object
         self.extra_code_h   = [] # Extra header code to output
         self.extra_code_cpp = [] # Extra source code to output
-        self.dependencies = []     # List not dictionary
+        self.dependencies = set()
 
 
 class CPPCodeWriter(BaseLangCodeWriter, wcodegen.CppMixin):
@@ -236,7 +248,7 @@ class CPPCodeWriter(BaseLangCodeWriter, wcodegen.CppMixin):
     last_generated_id: Last generated Id number (wxNewId() is not used yet)
     tmpl_init_gettext: Template for inclusion of i18n headers and defining APP_CATALOG constant or None
 
-    @see: L{BaseLangCodeWriter}"""
+    see: BaseLangCodeWriter"""
     ClassLines = ClassLines
     _code_statements = {
         'backgroundcolour': "%(objname)sSetBackgroundColour(%(value)s);\n",
@@ -430,9 +442,9 @@ class CPPCodeWriter(BaseLangCodeWriter, wcodegen.CppMixin):
                 tag = match.groups()
                 if tag[2] == 'dependencies':
                     #self._logger.debug('writing dependencies')
-                    deps = []
+                    deps = set()
                     for code in self.classes.values():
-                        deps.extend(code.dependencies)
+                        deps.update(code.dependencies)
                     lines = self._format_dependencies( deps )
                 elif tag[2] == 'methods':
                     lines = '%svoid set_properties();\n%svoid do_layout();\n' % (self.tabs(1), self.tabs(1))
@@ -462,9 +474,9 @@ class CPPCodeWriter(BaseLangCodeWriter, wcodegen.CppMixin):
             self.output_header.append('\n#endif // %s\n' % oh)
 
             # write the list of include files
-            deps = []
+            deps = set()
             for code in self.classes.values():
-                deps.extend(code.dependencies)
+                deps.update(code.dependencies)
             code = self._format_dependencies( deps )
             self.output_header_replace( '<%swxGlade replace  dependencies>' % self.nonce, code )
 
@@ -487,7 +499,7 @@ class CPPCodeWriter(BaseLangCodeWriter, wcodegen.CppMixin):
     def add_class(self, code_obj):
         assert code_obj not in self.classes
         try:
-            builder = self.obj_builders[code_obj.base]
+            builder = self.obj_builders[code_obj.WX_CLASS]
         except KeyError:
             self._logger.error('%s', code_obj)
             # this is an error, let the exception be raised; the details are logged by the global exception handler
@@ -497,8 +509,7 @@ class CPPCodeWriter(BaseLangCodeWriter, wcodegen.CppMixin):
 
     def finalize_class(self, code_obj):
         # write the collected code for the class and its children
-        # shortcuts
-        base = code_obj.base
+        base = code_obj.WX_CLASS
         klass = self.classes[code_obj]
         classname = code_obj.klass
         fmt_klass = self.cn_class(classname)
@@ -764,13 +775,6 @@ class CPPCodeWriter(BaseLangCodeWriter, wcodegen.CppMixin):
             source_buffer = []
             swrite = source_buffer.append
 
-        if prev_src and not is_new:
-            # remove __set_properties and __do_layout, if in old file
-            tag = '<%swxGlade replace %s set_properties>' % (self.nonce, classname)
-            prev_src.replace(tag, [])
-            tag = '<%swxGlade replace %s %s>' % (self.nonce, classname, 'do_layout')
-            prev_src.replace(tag, [])
-
         # generate code for event table
         code_lines = self.generate_code_event_table( code_obj, is_new, tab, prev_src, event_handlers )
 
@@ -802,7 +806,7 @@ class CPPCodeWriter(BaseLangCodeWriter, wcodegen.CppMixin):
 
         if self.multiple_files:
             if base in self.obj_builders:
-                klass.dependencies.extend( getattr(self.obj_builders[base], 'import_modules', []) )
+                klass.dependencies.update( getattr(self.obj_builders[base], 'import_modules', []) )
 
             if prev_src:
                 tag = '<%swxGlade insert new_classes>' % self.nonce
@@ -947,12 +951,12 @@ class CPPCodeWriter(BaseLangCodeWriter, wcodegen.CppMixin):
 
 
         klass.final[:0] = final
-        if self.multiple_files and (obj.IS_CLASS and obj.base != obj.klass):
+        if self.multiple_files and (obj.IS_CLASS and obj.WX_CLASS != obj.klass):
             klass.dependencies.append(obj.klass)
         else:
-            if obj.base in self.obj_builders:
-                headers = getattr(self.obj_builders[obj.base], 'import_modules', [])
-                klass.dependencies.extend(headers)
+            if obj.WX_CLASS in self.obj_builders:
+                headers = getattr(self.obj_builders[obj.WX_CLASS], 'import_modules', [])
+                klass.dependencies.update(headers)
         return builder
 
     def generate_code_event_handler(self, code_obj, is_new, tab, prev_src, event_handlers):
@@ -963,7 +967,7 @@ class CPPCodeWriter(BaseLangCodeWriter, wcodegen.CppMixin):
             tab: Indentation of function body (str)
             prev_src: Previous source code (SourceFileContent)
             event_handlers: List of event handlers
-        @see: L{tmpl_func_event_stub}"""
+        see: tmpl_func_event_stub"""
         code_lines = []
         swrite = code_lines.append
 
@@ -1016,7 +1020,7 @@ void %(klass)s::%(handler)s(%(evt_type)s &event)  // wxGlade: %(klass)s.<event_h
             has_event_table = False
 
         if is_new or not has_event_table:
-            write('\nBEGIN_EVENT_TABLE(%s, %s)\n' % (code_obj.klass, code_obj.base))
+            write('\nBEGIN_EVENT_TABLE(%s, %s)\n' % (code_obj.klass, code_obj.WX_CLASS))
         write(tab + '// begin wxGlade: %s::event_table\n' % code_obj.klass)
 
         for obj, event, handler, evt_type in event_handlers:
@@ -1094,7 +1098,7 @@ void %(klass)s::%(handler)s(%(evt_type)s &event)  // wxGlade: %(klass)s.<event_h
     def _format_dependencies(self, dependencies):
         "Format a list of header files for the dependencies output"
         dep_list = []
-        for dependency in sorted( set(dependencies) ):  # unique and sorted
+        for dependency in sorted(dependencies):  # unique and sorted
             if dependency and ('"' != dependency[0] != '<'):
                 dep_list.append('#include "%s.h"\n' % dependency)
             else:

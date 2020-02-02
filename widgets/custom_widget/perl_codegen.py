@@ -28,7 +28,7 @@ class PerlCustomWidgetGenerator(wcodegen.PerlWidgetCodeWriter):
         else:
             ctor = widget.klass + '->new'
         init.append( '$self->{%s} = %s(%s);\n' % (widget.name, ctor, ", ".join(arguments)) )
-        init += self.codegen.generate_common_properties(widget)
+        init += self.codegen.generate_code_common_properties(widget)
 
         return init, []
 

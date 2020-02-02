@@ -50,7 +50,7 @@ class PythonCustomWidgetGenerator(wcodegen.PythonWidgetCodeWriter):
         else:
             ctor = widget.klass
         init.append( 'self.%s = %s(%s)\n' % (widget.name, ctor, ", ".join(arguments)) )
-        init += self.codegen.generate_common_properties(widget)
+        init += self.codegen.generate_code_common_properties(widget)
         return init, []
 
     def get_code_preview(self, widget):
@@ -107,7 +107,7 @@ class CppCustomWidgetGenerator(wcodegen.CppWidgetCodeWriter):
         else:
             ctor = 'new ' + widget.klass
         init = [ '%s = %s(%s);\n' % (widget.name, ctor, ", ".join(arguments)) ]
-        init += self.codegen.generate_common_properties(widget)
+        init += self.codegen.generate_code_common_properties(widget)
         return init, ids, []
 
 

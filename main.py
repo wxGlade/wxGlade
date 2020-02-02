@@ -1112,7 +1112,7 @@ class wxGladeFrame(wx.Frame):
             event.Veto()
 
     def show_about_box(self):
-        "show the about dialog;  @see: L{about.wxGladeAboutBox}"
+        "show the about dialog;  see: about.wxGladeAboutBox"
         about_box = about.wxGladeAboutBox()
         about_box.ShowModal()
         about_box.Destroy()
@@ -1326,7 +1326,7 @@ class wxGladeFrame(wx.Frame):
 class wxGlade(wx.App):
     """wxGlade application class
     
-    @ivar _exception_orig: Reference to original implementation of logging.exception()"""
+    _exception_orig: Reference to original implementation of logging.exception()"""
 
     def OnInit(self):
         sys.stdout = sys.__stdout__
@@ -1336,7 +1336,7 @@ class wxGlade(wx.App):
         sys.excepthook = self.graphical_exception_handler
 
         # use graphical implementation to show caught exceptions
-        self._exception_orig = logging.exception
+        self._exception_orig = logging.exception  # Reference to original implementation of logging.exception()
         logging.exception = self.exception
 
         # needed for wx >= 2.3.4 to disable wxPyAssertionError exceptions
@@ -1363,18 +1363,15 @@ class wxGlade(wx.App):
         return 0
 
     def OnIdle(self, event):
-        "Idle tasks - currently show error messages only;  @see: L{show_msgdialog()}"
+        "Idle tasks - currently show error messages only;  see: show_msgdialog()"
         self.show_msgdialog()
         event.Skip()
 
     def show_msgdialog(self):
-        """\
+        """
         Check for log messages and show them
 
-        @see: L{main.wxGlade.OnIdle()}
-        @see: L{log.getBufferAsList()}
-        @see: L{msgdialog.MessageDialog}
-        """
+        see: main.wxGlade.OnIdle(), log.getBufferAsList(), msgdialog.MessageDialog"""
         log_msg = log.getBufferAsString()
         if not log_msg:
             return
@@ -1394,43 +1391,29 @@ class wxGlade(wx.App):
         msg_dialog.Destroy()
 
     def graphical_exception_handler(self, exc_type, exc_value, exc_tb):
-        """\
-        Show detailed information about uncaught exceptions in
-        L{bugdialog.BugReport}.
+        """Show detailed information about uncaught exceptions in bugdialog.BugReport.
 
         The shown exception will be logged to the log file in parallel.
+        The exception information will be cleared after the bug dialog has closed.
 
-        The exception information will be cleared after the bug dialog has
-        closed.
+        exc_type:  Type of the exception (normally a class object)
+        exc_value: The "value" of the exception
+        exc_tb:    Call stack of the exception
 
-        @param exc_type:  Type of the exception (normally a class object)
-        @param exc_value: The "value" of the exception
-        @param exc_tb:    Call stack of the exception
-
-        @see: L{bugdialog.BugReport()}
-        @see: L{bugdialog.Show()}
-        """
+        see: bugdialog.BugReport(), bugdialog.Show()"""
         bugdialog.ShowEI(exc_type, exc_value, exc_tb)
         if compat.PYTHON2: sys.exc_clear()
 
     def exception(self, msg, *args, **kwargs):
-        """\
-        Graphical replacement of C{logging.exception()}.
+        """Graphical replacement of logging.exception().
 
-        All exception details logged with C{logging.exception()} will be shown
-        in L{bugdialog.BugReport}.
-
+        All exception details logged with logging.exception() will be shown in bugdialog.BugReport.
         The shown exception will be logged to the log file ding.
+        The exception information will be cleared after the bug dialog has closed.
 
-        The exception information will be cleared after the bug dialog has
-        closed.
+        msg: Short description of the exception
 
-        @param msg: Short description of the exception
-        @type msg:  str
-
-        @see: L{bugdialog.BugReport}
-        @see: L{bugdialog.ShowEI()}
-        """
+        see: bugdialog.BugReport, bugdialog.ShowEI()"""
         if args:
             try:
                 msg = msg % args

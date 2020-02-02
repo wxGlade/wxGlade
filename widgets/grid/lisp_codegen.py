@@ -71,7 +71,7 @@ class LispCodeGenerator(wcodegen.LispWidgetCodeWriter):
             if size>0:
                 out.append('(wxGrid_SetRowSize (slot-%s obj) %s %s)\n' % (name, i, size))
 
-        out.extend(self.codegen.generate_common_properties(obj))
+        out.extend(self.codegen.generate_code_common_properties(obj))
         return out
 
 

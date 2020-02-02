@@ -270,7 +270,7 @@ User Code: Implement Functionality
 **********************************
 
 There are two ways to implement functionality for your application:
- * Directly edit the code file()s) written by wxGlade.
+ * Directly edit the code file(s) written by wxGlade.
  * Import the generated module(s) and override class and event handler in your own code files.
 
 For anything else than simple glue code, the latter is the recommended approach.

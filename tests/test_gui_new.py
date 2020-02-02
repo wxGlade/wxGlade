@@ -135,22 +135,21 @@ class TestGui(WXGladeGUITest):
         # store sizer references
         self.load_and_generate('Sizers_classattr', test_GUI=False)
 
+    def test_bases_etc(self):
+        # test changes in data structure and code generation from 0.9 to 1.0
+        # "D:\Python\wxglade\wxGladeFeatures\BasesEtc\BasesEtc.wxg"
+        # with sizers, test files generated with v0.9.5
+        self.load_and_generate('BasesEtc_w_sizers', test_GUI=True, excluded=("lisp",))
+
     def test_keep_code_migration(self):
         # test migration from 0.9 to 1.0: __do_layout and __set_properties should be removed
-        # copy old version to generated
-        old_filename = self._get_casefile_path('matplotlib_example.py')
-        generate_filename = self._get_outputfile_path('matplotlib_example.py')
-        self._copy_and_modify(old_filename, generate_filename)
-        # load file
-        infilename = self._get_casefile_path('matplotlib_example.wxg')
-        common.main._open_app(infilename, use_progress_dialog=False, add_to_history=False)
-        # set output filename and generate code
-        app = common.root
-        app.properties["output_path"].set(generate_filename)
-        common.app_tree.root.generate_code()
-        # compare result
-        expected_filename = self._get_casefile_path('matplotlib_example_expected.py')
-        self._compare_files(expected_filename, generate_filename, check_mtime=True)
+        # copy old files
+        for ext in ("py","cpp","pl","lisp"):
+            old_filename = self._get_casefile_path('matplotlib_example_old.%s'%ext)
+            generate_filename = self._get_outputfile_path('matplotlib_example.%s'%ext)
+            self._copy_and_modify(old_filename, generate_filename)
+        # the standard test will do the rest
+        self.load_and_generate('matplotlib_example', test_GUI=True)
 
     def test_Python_Ogg1(self):
         "Test Python code generation with overwriting a single existing file, preserving manually added code"

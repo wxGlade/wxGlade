@@ -19,17 +19,17 @@ import new_properties as np
 
 class FileDirDialog(object):
     """Custom class which displays a FileDialog or a DirDialog, according to the value of the
-    L{Application.multiple_files} of its parent (instance of L{Application}).
+    Application.multiple_files of its parent (instance of Application).
 
-    @ivar default_extension: The default extension will be added to all file names without extension.
-    @ivar file_message: Message to show on the file dialog
-    @ivar dir_message: Message to show on the directory dialog
+    default_extension: The default extension will be added to all file names without extension.
+    file_message: Message to show on the file dialog
+    dir_message: Message to show on the directory dialog
 
-    @ivar file_style: Style for the file dialog
-    @ivar dir_style:  Style for the directory dialog
-    @ivar value:      Value returned by file or directory dialog on success
-    @ivar parent:     Parent instance of L{Application}
-    @ivar prev_dir:   Previous directory"""
+    file_style: Style for the file dialog
+    dir_style:  Style for the directory dialog
+    value:      Value returned by file or directory dialog on success
+    parent:     Parent instance of Application
+    prev_dir:   Previous directory"""
 
     def __init__(self, parent, wildcard=_("All files|*"), file_message=_("Choose a file"),dir_message=None,file_style=0):
         self.prev_dir = config.preferences.codegen_path or ""
@@ -63,7 +63,7 @@ class FileDirDialog(object):
         return wx.ID_CANCEL
 
     def get_value(self):
-        "Return the dialog value returned during the last L{ShowModal()} call;  @see: L{value}"
+        "Return the dialog value returned during the last ShowModal() call."
         return self.value
 
 
@@ -299,16 +299,6 @@ class Application(EditRoot):
 
     def get_output_path(self):
         return os.path.normpath(os.path.expanduser(self.output_path))
-
-    #def _add_page(self, label, page, sizer):
-        #"Add a page to properties notebook"
-        #page.SetAutoLayout(True)
-        #page.SetSizer(sizer)
-        #sizer.Layout()
-        #sizer.Fit(page)
-        #self.notebook.AddPage(page, label)
-        #h = page.GetSize()[1]
-        #page.SetScrollbars(1, 5, 1, int(math.ceil(h / 5.0)))
 
     def set_encoding(self, value):
         try:
@@ -562,15 +552,6 @@ class Application(EditRoot):
     def preview(self, widget, position=None):
         """Generate and instantiate preview widget.
         None will be returned in case of errors. The error details are written to the application log file."""
-        # some checks
-        #if compat.IS_PHOENIX:
-            #found = common.app_tree.find_widgets_by_classnames(widget.node, "EditPropertyGridManager")
-            #if found:
-                #error = ("Preview with PropertyGridManager controls is currently deactivated as it causes crashes "
-                         #"with wxPython Phoenix")
-                #wx.MessageBox( error, _('Error'), wx.OK | wx.CENTRE | wx.ICON_EXCLAMATION )
-                #return
-        # XXX check other things as well, e.g. different bitmap sizes for BitmapButton
 
         preview_filename = self._get_preview_filename()
         if preview_filename is None: return
@@ -580,16 +561,11 @@ class Application(EditRoot):
             import importlib
             importlib.invalidate_caches()
 
-        widget_class_name = widget.klass
         # make a valid name for the class (this can be invalid for some sensible reasons...)
-        widget_class = widget.klass[widget.klass.rfind('.') + 1:]
-        widget_class = widget.klass[widget.klass.rfind(':') + 1:]
-        # ALB 2003-11-08: always randomize the class name: this is to make preview work even when there are multiple
-        # classes with the same name (which makes sense for XRC output...)
-        widget_class = '_%d_%s' % (random.randrange(10 ** 8, 10 ** 9), widget_class)
-
-        # set property to the temporary value; this will be restored in CodeWriter._generate_code
-        widget.properties["class"].set_temp(widget_class)
+        preview_classname = widget.klass.split('.')[-1].split(':')[-1]
+        # randomize the class name to make preview work when there are multiple classes with the same name (e.g. XRC)
+        preview_classname = '_%d_%s' % (random.randrange(10 ** 8, 10 ** 9), preview_classname)
+        widget.properties["class"].set_temp(preview_classname)
 
         frame = None
         try:
@@ -606,12 +582,12 @@ class Application(EditRoot):
                 return None
 
             try:
-                preview_class = getattr(preview_module, widget_class) # .klass)
+                preview_class = getattr(preview_module, preview_classname) # .klass)
             except AttributeError:
                 # module loade previously -> do a re-load XXX this is required for Python 3; check alternatives
                 import importlib
                 preview_module = importlib.reload(preview_module)
-                preview_class = getattr(preview_module, widget_class)
+                preview_class = getattr(preview_module, preview_classname)
 
             if not preview_class:
                 misc.error_message( _('No preview class "%s" found.\nThe details are written to the log file.\n'
@@ -620,13 +596,14 @@ class Application(EditRoot):
 
             if issubclass(preview_class, wx.MDIChildFrame):
                 frame = wx.MDIParentFrame(None, -1, '')
+                frame.SetMenuBar( wx.MenuBar() )  # avoid assertion error
                 child = preview_class(frame, -1, '')
                 child.SetTitle('<Preview> - ' + child.GetTitle())
                 w, h = child.GetSize()
                 frame.SetClientSize((w + 20, h + 20))
             elif not issubclass(preview_class, (wx.Frame,wx.Dialog)):
                 # the toplevel class isn't really toplevel, add a frame...
-                frame = wx.Frame(None, -1, widget_class_name)
+                frame = wx.Frame(None, -1, widget.klass)
                 if issubclass(preview_class, wx.MenuBar):
                     menubar = preview_class()
                     frame.SetMenuBar(menubar)
@@ -718,7 +695,7 @@ class Application(EditRoot):
                     check_rec(c)
 
     def _update_output_path(self, language):
-        "Update wildcards and default extension in the generic file and directory dialog (L{FileDirDialog})."
+        "Update wildcards and default extension in the generic file and directory dialog (FileDirDialog)."
 
         prop = self.properties["output_path"]
         prop.message = _("Select output file")  if self.multiple_files else  _("Select output directory")
@@ -734,10 +711,6 @@ class Application(EditRoot):
     def popup_menu(self, event, pos=None):
         # right click event -> expand all or show context menu
         expanded = True
-        #for child_node in common.root.children or []:
-            #if not common.app_tree.IsExpanded(child_node.item) and child_node.children:
-                #expanded = False
-                #break
         for child in self.children:
             if not common.app_tree.IsExpanded(child.item) and child.children:
                 expanded = False

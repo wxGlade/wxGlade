@@ -28,7 +28,9 @@ else:
 class EditBase(np.PropertyOwner):
     #is_sizer = False
     IS_TOPLEVEL = IS_SLOT = IS_SIZER = IS_WINDOW = IS_ROOT = IS_TOPLEVEL_WINDOW = False
+    CAN_BE_CLASS = False
     IS_CLASS = False  # generate class for this item; can be dynamically set during code generation
+    # usually this one is fixed, but EditPanel/EditToplevelPanel will overwrite it depending on the "scrollable" property
     WX_CLASS = None # needs to be defined in every derived class; e.g. "wxFrame", "wxBoxSizer", "TopLevelPanel"
     IS_NAMED = True  # default, only False for Spacer
     #CHILDREN = 1  # 0 or a fixed number or None for e.g. a sizer with a variable number of children; -1 for 0 or 1
@@ -312,11 +314,15 @@ class EditBase(np.PropertyOwner):
         misc.rebuild_tree(self.parent, recursive=False, focus=True)
 
     # XML generation ###################################################################################################
+    def get_editor_name(self):
+        # the panel classes will return something else here, depending on self.scrollable
+        return self.__class__.__name__
     def write(self, output, tabs):
         "Writes the xml code for the widget to the given output file"
         # write object tag, including class, name, base
-        classname = getattr(self, '_classname', self.__class__.__name__)
-        if classname=="EditToplevelMenuBar": classname = "EditMenuBar"
+        #classname = getattr(self, '_classname', self.__class__.__name__)
+        #if classname=="EditToplevelMenuBar": classname = "EditMenuBar"
+        classname = self.get_editor_name()
         # to disable custom class code generation (for panels...)
         if getattr(self, 'no_custom_class', False):
             no_custom = u' no_custom_class="1"'
@@ -394,8 +400,7 @@ class EditBase(np.PropertyOwner):
     def _get_tree_label(self):
         # get a label for node
         s = self.name
-        if (self.WX_CLASS=="CustomWidget" or
-            (self.klass != self.base and self.klass != 'wxScrolledWindow') ):
+        if (self.WX_CLASS=="CustomWidget" or (self.klass != self.WX_CLASS and self.klass != 'wxScrolledWindow') ):
             # special case...
             s += ' (%s)' % self.klass
             if getattr(self, "has_title", None):
@@ -758,14 +763,15 @@ class Slot(EditBase):
         if self._dont_destroy: return  # on a notebook page
         self.widget.Hide()
 
-        # unbind events to prevent new created (and queued) events
-        self.widget.Bind(wx.EVT_PAINT, None)
-        self.widget.Bind(wx.EVT_RIGHT_DOWN, None)
-        self.widget.Bind(wx.EVT_LEFT_DOWN, None)
-        self.widget.Bind(wx.EVT_MIDDLE_DOWN, None)
-        self.widget.Bind(wx.EVT_ENTER_WINDOW, None)
-        self.widget.Bind(wx.EVT_LEAVE_WINDOW, None)
-        self.widget.Bind(wx.EVT_KEY_DOWN, None)
+        if wx.VERSION_STRING!="2.8.12.0":
+            # unbind events to prevent new created (and queued) events
+            self.widget.Bind(wx.EVT_PAINT, None)
+            self.widget.Bind(wx.EVT_RIGHT_DOWN, None)
+            self.widget.Bind(wx.EVT_LEFT_DOWN, None)
+            self.widget.Bind(wx.EVT_MIDDLE_DOWN, None)
+            self.widget.Bind(wx.EVT_ENTER_WINDOW, None)
+            self.widget.Bind(wx.EVT_LEAVE_WINDOW, None)
+            self.widget.Bind(wx.EVT_KEY_DOWN, None)
         if detach and self.parent.IS_SIZER and self.parent.widget:
             self.parent.widget.Detach(self.widget)  # this will happen during recursive removal only
         compat.DestroyLater(self.widget)

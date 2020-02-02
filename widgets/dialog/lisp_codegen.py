@@ -23,7 +23,7 @@ class LispDialogGenerator(wcodegen.LispWidgetCodeWriter):
             out.append( '(wxWindow_SetTitle (slot-%s self) %s)\n' % (obj_name, self.codegen.quote_str(obj.title)) )
         if obj.icon:
             out.append( ';;; generating code for setting icons is not implemented\n' )
-        out.extend(self.codegen.generate_common_properties(obj))
+        out.extend(self.codegen.generate_code_common_properties(obj))
         return out
 
     def get_layout_code(self, obj):
@@ -37,5 +37,4 @@ class LispDialogGenerator(wcodegen.LispWidgetCodeWriter):
 def initialize():
     klass = 'wxDialog'
     common.class_names['EditDialog'] = klass
-    common.toplevels['EditDialog'] = 1
     common.register('lisp', klass, LispDialogGenerator(klass))

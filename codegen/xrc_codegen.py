@@ -7,7 +7,7 @@ To be done: write XRC directly instead of using BaseLangCodeWriter as base.
 
 @copyright: 2002-2007 Alberto Griggio
 @copyright: 2012-2016 Carsten Grohmann
-@copyright: 2019 Dietmar Schwertberger
+@copyright: 2019-2020 Dietmar Schwertberger
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
@@ -115,7 +115,8 @@ class DefaultXrcObject(XrcObject):
         XrcObject.__init__(self, widget.klass)
         self.widget = widget
         self.name = widget.name
-        self.klass = widget.base  # custom classes aren't allowed in XRC
+        #self.klass = widget.base  # custom classes aren't allowed in XRC
+        self.klass = widget.WX_CLASS  # custom classes aren't allowed in XRC
         self.subclass = widget.klass
 
     def write_property(self, name, val, output, ntabs):
@@ -261,7 +262,7 @@ class NotImplementedXrcObject(XrcObject):
         self.code_obj = code_obj
 
     def write(self, output, ntabs):
-        msg = 'code generator for %s objects not available' % self.code_obj.base
+        msg = 'code generator for %s objects not available' % self.code_obj.WX_CLASS
         self.warning('%s' % msg)
         output.append( '%s%s\n' % (self.tabs(ntabs), self._format_comment(msg)) )
 
@@ -338,57 +339,35 @@ class XRCCodeWriter(BaseLangCodeWriter, wcodegen.XRCMixin):
         parent = obj.parent
         parent_class_object = obj.parent_class_object  # used for adding to this object's sizer
 
-        can_be_toplevel = obj.__class__.__name__ in common.toplevels
+        IS_CLASS = obj.IS_TOPLEVEL
+        if obj.klass != obj.WX_CLASS and obj.CAN_BE_CLASS:
+            IS_CLASS = True
+            # for panel objects, if the user sets a custom class but (s)he doesn't want the code to be generated...
+            if obj.check_prop("no_custom_class") and obj.no_custom_class and not self.preview:
+                IS_CLASS = False
 
-        old_class = old_base = None  # restore values for preview
-        try:
-            # XXX check for alternatives
-            # classname is used only for 'EditTopLevelScrolledWindow' vs. 'EditTopLevelPanel'
-            classname = getattr(obj, '_classname', obj.__class__.__name__)
-            base = common.class_names[classname]
-            if base!=obj.base:
-                old_base = obj.base
-                obj.base = base
+        obj.IS_CLASS = IS_CLASS
 
-            IS_CLASS = obj.IS_TOPLEVEL
-            if obj.klass != obj.base and can_be_toplevel:
-                IS_CLASS = True
-                # for panel objects, if the user sets a custom class but (s)he doesn't want the code to be generated...
-                if obj.check_prop("no_custom_class") and obj.no_custom_class and not self.preview:
-                    IS_CLASS = False
-            elif self.preview and not can_be_toplevel and obj.base != 'CustomWidget':
-                # if this is a custom class, but not a toplevel one, for the preview we have to use the "real" class
-                # CustomWidgets handle this in a special way (see widgets/custom_widget/codegen.py)
-                old_class = obj.properties["klass"].get()
-                obj.properties["klass"].set(obj.base) # XXX handle this in a different way
+        # first the item
+        if IS_CLASS:
+            self.add_class(obj)
+        if not obj.IS_TOPLEVEL:
+            added = self.add_object(obj)  # added can be False if the widget is not supported
+        else:
+            added = False
 
-            obj.IS_CLASS = IS_CLASS
+        # then the children
+        for child in obj.get_all_children():
+            assert obj.children.count(child)<=1
+            self._generate_code(None, None, None, child)  # XRCCodeWriter does not use the other args
 
-            # first the item
-            if IS_CLASS:
-                self.add_class(obj)
-            if not obj.IS_TOPLEVEL:
-                added = self.add_object(obj)  # added can be False if the widget is not supported
-            else:
-                added = False
+        if IS_CLASS:
+            self.finalize_class(obj)
 
-            # then the children
-            for child in obj.get_all_children():
-                assert obj.children.count(child)<=1
-                self._generate_code(None, None, None, child)  # XRCCodeWriter does not use the other args
-
-            if IS_CLASS:
-                self.finalize_class(obj)
-
-            # check whether the object belongs to some sizer; if applicable, add it to the sizer at the top of the stack
-            if added and parent.IS_SIZER:
-                if obj.classname not in ("spacer",):  # spacer and slot are adding itself to the sizer
-                    self.add_sizeritem(parent_class_object, parent, obj)
-        finally:
-            # XXX handle this in a different way
-            if old_class is not None: obj.properties["klass"].set(old_class)
-            if old_base  is not None: obj.base = old_base
-
+        # check whether the object belongs to some sizer; if applicable, add it to the sizer at the top of the stack
+        if added and parent.IS_SIZER:
+            if obj.classname not in ("spacer",):  # spacer and slot are adding itself to the sizer
+                self.add_sizeritem(parent_class_object, parent, obj)
 
     def add_app(self, app, top_win_class):
         "In the case of XRC output, there's no wxApp code to generate"
@@ -399,7 +378,7 @@ class XRCCodeWriter(BaseLangCodeWriter, wcodegen.XRCMixin):
         # what we need in XRC is not top_obj, but sub_obj's true parent we don't need the sizer, but the window
 
         top_obj = sub_obj.parent_window
-        builder = self.obj_builders.get( sub_obj.base, DefaultXrcObject )
+        builder = self.obj_builders.get( sub_obj.WX_CLASS, DefaultXrcObject )
         try:
             # check whether we already created the xrc_obj
             xrc_obj = sub_obj.xrc
@@ -417,7 +396,7 @@ class XRCCodeWriter(BaseLangCodeWriter, wcodegen.XRCMixin):
         #else:
         if not getattr(top_obj, "xrc"):
             # ...otherwise, create it and store it in the self.xrc_objects dict
-            top_xrc = self.obj_builders.get( top_obj.base, DefaultXrcObject )(top_obj)
+            top_xrc = self.obj_builders.get( top_obj.WX_CLASS, DefaultXrcObject )(top_obj)
             top_obj.xrc = top_xrc
             self.xrc_objects[top_obj] = top_xrc
         top_obj.xrc.children.append(xrc_obj)
@@ -434,7 +413,7 @@ class XRCCodeWriter(BaseLangCodeWriter, wcodegen.XRCMixin):
             sizer_xrc = sizer.xrc
         except AttributeError:
             # if the sizer has not an XrcObject yet, create it now
-            sizer_xrc = self.obj_builders.get( sizer.base, DefaultXrcObject )(sizer)
+            sizer_xrc = self.obj_builders.get( sizer.WX_CLASS, DefaultXrcObject )(sizer)
             sizer.xrc = sizer_xrc
         # we now have to move the children from 'toplevel' to 'sizer'
         index = top_xrc.children.index(obj_xrc)
@@ -453,7 +432,7 @@ class XRCCodeWriter(BaseLangCodeWriter, wcodegen.XRCMixin):
         since custom classes are not supported in XRC, this has effect only for true toplevel widgets, i.e. frames and
         dialogs. For other kinds of widgets, this is equivalent to add_object"""
         if not code_obj in self.xrc_objects:
-            builder = self.obj_builders.get( code_obj.base, DefaultXrcObject )
+            builder = self.obj_builders.get( code_obj.WX_CLASS, DefaultXrcObject )
             xrc_obj = builder(code_obj)
             code_obj.xrc = xrc_obj
             # add the xrc_obj to the dict of the toplevel ones

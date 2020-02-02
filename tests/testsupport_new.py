@@ -39,8 +39,8 @@ class WXGladeBaseTest(unittest.TestCase):
 
     # Language specific constants for file names: language, file prefix, file extensions
     language_constants = [("python","Py", ".py", ".py"),("perl","Pl", ".pl", ".pm"),
-                          ("C++","CPP", ".cpp", ".cpp"),("lisp","Lisp", ".lisp",".lisp"),
-                          ("XRC","xrc", ".xrc",".xrc")]
+                          ("C++","CPP", ".cpp", ".cpp"),("XRC","xrc", ".xrc",".xrc"),
+                          ("lisp","Lisp", ".lisp",".lisp")]  # keep Lisp at end as only 2.8 is supported
 
     @classmethod
     def setUpClass(cls):
@@ -342,6 +342,8 @@ class WXGladeGUITest(WXGladeBaseTest):
                 app.properties["output_path"].set( os.path.dirname(generated_filename) )
             else:
                 app.properties["output_path"].set(generated_filename)
+            if language=="lisp" and app.properties["for_version"]!="2.8":
+                app.properties["for_version"].set("2.8")
             app.properties["language"].set(language)
             self._process_wx_events()
             app.generate_code()

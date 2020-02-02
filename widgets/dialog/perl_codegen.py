@@ -26,7 +26,7 @@ class PerlDialogGenerator(wcodegen.PerlWidgetCodeWriter):
             out.append('my $icon = &Wx::wxNullIcon;\n')
             out.append('$icon->CopyFromBitmap(%s);\n' % stmt_icon)
             out.append('$self->SetIcon($icon);\n')
-        out.extend(self.codegen.generate_common_properties(obj))
+        out.extend(self.codegen.generate_code_common_properties(obj))
         return out
 
     def get_layout_code(self, obj):
@@ -39,5 +39,4 @@ class PerlDialogGenerator(wcodegen.PerlWidgetCodeWriter):
 def initialize():
     klass = 'wxDialog'
     common.class_names['EditDialog'] = klass
-    common.toplevels['EditDialog'] = 1
     common.register('perl', klass, PerlDialogGenerator(klass))

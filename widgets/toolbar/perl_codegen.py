@@ -81,11 +81,10 @@ class PerlCodeGenerator(wcodegen.PerlWidgetCodeWriter):
         else:
             extra = ''
 
-        klass = obj.base
-        if klass != obj.klass:
+        if obj.klass != obj.WX_CLASS:
             klass = obj.klass
         else:
-            klass = self.cn(klass)
+            klass = self.cn(obj.WX_CLASS)
 
         init = ['\n', '# Tool Bar\n',
                 '$self->{%s} = %s->new($self, -1%s);\n' % (obj.name, klass, extra)
@@ -101,5 +100,4 @@ class PerlCodeGenerator(wcodegen.PerlWidgetCodeWriter):
 def initialize():
     klass = 'wxToolBar'
     common.class_names['EditToolBar'] = klass
-    common.toplevels['EditToolBar'] = 1
     common.register('perl', klass, PerlCodeGenerator(klass))

@@ -58,6 +58,7 @@ class SourceFileContent(BaseSourceFileContent):
         triple_quote_str = None
         tmp_in = self._load_file(self.name)
         out_lines = []
+        check_old_methods = []  # list of indices with set_properties or do_layout
         for line in tmp_in:
             quote_index = -1
             if not inside_triple_quote:
@@ -106,6 +107,9 @@ class SourceFileContent(BaseSourceFileContent):
                     if not self.class_name:
                         out_lines.append( '<%swxGlade replace %s>' % (self.nonce, which_block) )
                     else:
+                        if which_block in ("__do_layout","__set_properties"):
+                            # probably to be removed
+                            check_old_methods.append( len(out_lines) )
                         out_lines.append( '<%swxGlade replace %s %s>' % (self.nonce, which_class, which_block) )
                 else:
                     result = self.rec_event_handler.match(line)
@@ -129,6 +133,13 @@ class SourceFileContent(BaseSourceFileContent):
             # if we are here, the previous ``version'' of the file did not contain any class, so we must add the
             # new_classes tag at the end of the file
             out_lines.append('<%swxGlade insert new_classes>' % self.nonce)
+
+        # when moving from 0.9 to 1.0: remove empty methods "do_layout" and "set_properties"
+        while check_old_methods:
+            i = check_old_methods.pop(-1)
+            if out_lines[i+1].strip()==')':  # just end of block -> remove incl. trailing empty lines
+                self._remove_method(out_lines, i-1, i+1)
+
         # set the ``persistent'' content of the file
         self.content = out_lines
 
@@ -271,16 +282,9 @@ class LispCodeWriter(BaseLangCodeWriter, wcodegen.LispMixin):
             """(ffi:default-foreign-language :stdc)\n\n""",
             ]
 
-        self.dependencies = {
-            '(use-package :wxCL)':         1,
-            '(use-package :wxFrame)':      1,
-            '(use-package :wx_main)':      1,
-            '(use-package :wx_wrapper)':   1,
-            '(use-package :wxWindow)':     1,
-            '(use-package :wxColour)':     1,
-            '(use-package :wxEvtHandler)': 1,
-            '(use-package :wxEvent)':      1,
-            }
+        self.dependencies = {'(use-package :wxCL)', '(use-package :wxFrame)', '(use-package :wx_main)',
+            '(use-package :wx_wrapper)', '(use-package :wxWindow)',
+            '(use-package :wxColour)', '(use-package :wxEvtHandler)', '(use-package :wxEvent)'}
 
     def check_values(self):
         BaseLangCodeWriter.check_values(self)
@@ -308,26 +312,25 @@ class LispCodeWriter(BaseLangCodeWriter, wcodegen.LispMixin):
         if obj.name not in ("spacer","sizerslot", "SLOT"):
             self.class_lines.append( self._format_name(obj.name) )
         if obj.klass in ("wxBoxSizer", "wxStaticBoxSizer", "wxGridSizer", "wxFlexGridSizer"):
-            self.dependencies['(use-package :wxSizer)'] = 1
+            self.dependencies.add( '(use-package :wxSizer)' )
         else:
             if obj.klass not in ("spacer", "sizerslot"):
-                key = '(use-package :%s)' % obj.klass
-                self.dependencies[key] = 1
+                self.dependencies.add( '(use-package :%s)'%obj.klass )
 
         if obj.klass == "wxMenuBar":
-            self.dependencies['(use-package :wxMenu)'] = 1
+            self.dependencies.add( '(use-package :wxMenu)' )
 
         return BaseLangCodeWriter.add_object(self, parent_klass, parent, parent_builder, obj)
 
     def generate_code_background(self, obj):
-        self.dependencies['(use-package :wxColour)'] = 1
+        self.dependencies.add( '(use-package :wxColour)' )
         return BaseLangCodeWriter.generate_code_background(self, obj)
 
     def generate_code_ctor(self, code_obj, is_new, tab):
         code_lines = []
         write = code_lines.append
 
-        builder = self.obj_builders[code_obj.base]
+        builder = self.obj_builders[code_obj.WX_CLASS]
         mycn = getattr(builder, 'cn', self.cn)
         mycn_f = getattr(builder, 'cn_f', self.cn_f)
 
@@ -338,7 +341,7 @@ class LispCodeWriter(BaseLangCodeWriter, wcodegen.LispMixin):
 
         # generate constructor code
         if is_new:
-            base = mycn(code_obj.base)
+            base = mycn(code_obj.WX_CLASS)
             write('\n(defclass %s()\n' % code_obj.klass)
             write(tab + "((top-window :initform nil :accessor slot-top-window)")
             for l in self.class_lines:
@@ -430,11 +433,11 @@ class LispCodeWriter(BaseLangCodeWriter, wcodegen.LispMixin):
         return code_lines
 
     def generate_code_font(self, obj):
-        self.dependencies['(use-package :wxFont)'] = 1
+        self.dependencies.add( '(use-package :wxFont)' )
         return BaseLangCodeWriter.generate_code_font(self, obj)
 
     def generate_code_foreground(self, obj):
-        self.dependencies['(use-package :wxColour)'] = 1
+        self.dependencies.add( '(use-package :wxColour)' )
         return BaseLangCodeWriter.generate_code_foreground(self, obj)
 
     def generate_code_id(self, obj, id=None):
@@ -497,7 +500,7 @@ class LispCodeWriter(BaseLangCodeWriter, wcodegen.LispMixin):
         return '(require "%s")\n' % klass
 
     def _format_style(self, style, code_obj):
-        builder = self.obj_builders[code_obj.base]
+        builder = self.obj_builders[code_obj.WX_CLASS]
         mycn_f = getattr(builder, 'cn_f', self.cn_f)
 
         if not style: return ''
@@ -505,11 +508,11 @@ class LispCodeWriter(BaseLangCodeWriter, wcodegen.LispMixin):
         if not style: return ''
         style = style.strip().replace('.', '')
 
-        if code_obj.base == "wxFrame":
+        if code_obj.WX_CLASS == "wxFrame":
             stmt = '%%(tab)s(setf (slot-top-window obj) (wxFrame_create nil wxID_ANY \"\" -1 -1 -1 -1 %s))\n' % style
-        elif code_obj.base == "wxDialog":
+        elif code_obj.WX_CLASS == "wxDialog":
             stmt = '%%(tab)s(setf (slot-top-window obj) (wxDialog_create nil wxID_ANY \"\" -1 -1 -1 -1 %s))\n' % style
-            self.dependencies['(use-package :wxButton)'] = 1
+            self.dependencies.add( '(use-package :wxButton)' )
         else:
             stmt = ''
 
@@ -530,6 +533,6 @@ class LispCodeWriter(BaseLangCodeWriter, wcodegen.LispMixin):
         return name.replace('_', '-')
 
 
-writer = LispCodeWriter()  # The code writer is an instance of L{LispCodeWriter}.
+writer = LispCodeWriter()  # The code writer is an instance of LispCodeWriter.
 
 language = writer.language  # Language generated by this code generator
