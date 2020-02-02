@@ -45,8 +45,7 @@
         (slot-top-window obj).wxWindow_SetSize((200, 200))
         (wxFrame_SetTitle (slot-top-window obj) "frame_1")
         
-        
-	;;; Tool Bar
+        ;;; Tool Bar
         (setf (slot-frame-1-toolbar obj) (wxToolBar_Create (slot-top-window obj) -1 -1 -1 -1 -1 wxTB_HORIZONTAL))
         (wxToolBar_AddTool (slot-frame-1-toolbar obj) wxID_UP "UpDown" wxArtProvider_GetBitmap(wxART_GO_UP wxART_OTHER wxSize_Create(32 32)) wxArtProvider_GetBitmap(wxART_GO_DOWN wxART_OTHER wxSize_Create(32 32)) wxITEM_CHECK "Up or Down" "Up or Down")
         (wxToolBar_Realize (slot-frame-1-toolbar obj))

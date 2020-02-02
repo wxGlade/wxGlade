@@ -72,12 +72,12 @@ class LispSplitterWindowGenerator(wcodegen.LispWidgetCodeWriter):
     def get_layout_code(self, obj):
         props_buf = []
 
-        win_1 = window.window_1
-        win_2 = window.window_2
-        orientation = window.properties['orientation'].get_string_value()
+        win_1 = obj.window_1
+        win_2 = obj.window_2
+        orientation = obj.properties['orientation'].get_string_value()
 
         if win_1 and win_2:
-            sash_pos = window.sash_pos
+            sash_pos = obj.sash_pos
             if sash_pos!="": sash_pos = ', %s' % sash_pos
 
             if orientation == 'wxSPLIT_VERTICAL':

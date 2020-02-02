@@ -52,7 +52,6 @@
         (slot-top-window obj).wxWindow_SetSize((300, 300))
         (wxFrame_SetTitle (slot-top-window obj) (_"frame_1"))
         
-        
         ;;; Menu Bar
         (setf (slot-Bug186-Frame-menubar obj) (wxMenuBar_Create 0))
         global myMagicMenu; myMagicMenu = wxNewId()
@@ -61,10 +60,8 @@
         		(wxMenuBar_Append (slot-Bug186-Frame-menubar obj) File (_"File")))
         (wxFrame_SetMenuBar (slot-top-window obj) (slot-Bug186-Frame-menubar obj))
         ;;; Menu Bar end
-
         
-        
-	;;; Tool Bar
+        ;;; Tool Bar
         (setf (slot-Bug186-Frame-toolbar obj) (wxToolBar_Create (slot-top-window obj) -1 -1 -1 -1 -1 wxTB_HORIZONTAL))
         global myMagicTool; myMagicTool = wxNewId()
         (wxToolBar_AddTool (slot-Bug186-Frame-toolbar obj) myMagicTool (_"Magic") wxBitmap_Create(32 32) wxNullBitmap wxITEM_NORMAL (_"Do a MAGIC action") (_"It's really MAGIC"))

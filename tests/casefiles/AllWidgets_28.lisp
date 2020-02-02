@@ -207,7 +207,6 @@
         (wxFrame_SetTitle (slot-top-window obj) (_"All Widgets"))
         ;;; generating code for setting icons is not implemented
         
-        
         ;;; Menu Bar
         (setf (slot-All-Widgets-menubar obj) (wxMenuBar_Create 0))
         global mn_IDUnix; mn_IDUnix = wxNewId()
@@ -231,14 +230,12 @@
         		(wxMenuBar_Append (slot-All-Widgets-menubar obj) wxglade_tmp_menu (_"&Help")))
         (wxFrame_SetMenuBar (slot-top-window obj) (slot-All-Widgets-menubar obj))
         ;;; Menu Bar end
-
         
         (setf (slot-All-Widgets-statusbar obj) (wxFrame_CreateStatusBar (slot-top-window obj) 1 wxST_SIZEGRIP))
         (wxStatusBar_SetStatusWidths (slot-All-Widgets-statusbar obj) 1 (vector -1))
         (wxStatusBar_SetStatusText (slot-All-Widgets-statusbar obj) (_"All Widgets statusbar") 0)
         
-        
-	;;; Tool Bar
+        ;;; Tool Bar
         (setf (slot-All-Widgets-toolbar obj) (wxToolBar_Create (slot-top-window obj) -1 -1 -1 -1 -1 wxTB_HORIZONTAL))
         (wxToolBar_AddTool (slot-All-Widgets-toolbar obj) wxID_UP (_"UpDown") wxArtProvider_GetBitmap(wxART_GO_UP wxART_OTHER wxSize_Create(32 32)) wxArtProvider_GetBitmap(wxART_GO_DOWN wxART_OTHER wxSize_Create(32 32)) wxITEM_CHECK (_"Up or Down") (_"Up or Down"))
         (wxToolBar_AddTool (slot-All-Widgets-toolbar obj) wxID_OPEN (_"Open") wxBitmap_Create(32 32) wxNullBitmap wxITEM_NORMAL (_"Open a new file") (_"Open a new file"))

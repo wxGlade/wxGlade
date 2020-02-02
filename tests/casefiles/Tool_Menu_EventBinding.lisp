@@ -47,7 +47,6 @@
         (slot-top-window obj).wxWindow_SetSize((400, 300))
         (wxFrame_SetTitle (slot-top-window obj) "frame")
         
-        
         ;;; Menu Bar
         (setf (slot-frame-menubar obj) (wxMenuBar_Create 0))
         (let ((wxglade_tmp_menu (wxMenu_Create "" 0)))
@@ -55,11 +54,9 @@
         (wxMenu_Append wxglade_tmp_menu wxID_ANY "My Menu Item 1" "without attribute name" 0)
         		(wxMenuBar_Append (slot-frame-menubar obj) wxglade_tmp_menu "Menu 1"))
         (wxFrame_SetMenuBar (slot-top-window obj) (slot-frame-menubar obj))
-        ;;; Menu Bar end
-
+        ;;; Menu Bar end        
         
-        
-	;;; Tool Bar
+        ;;; Tool Bar
         (setf (slot-frame-toolbar obj) (wxToolBar_Create (slot-top-window obj) -1 -1 -1 -1 -1 wxTB_HORIZONTAL))
         (wxToolBar_AddTool (slot-frame-toolbar obj) wxID_ANY "My Tool" (wxBitmap_CreateLoad "D:\\Python\\wxglade\\wxglade_dev_master\\icons\\button.xpm" wxBITMAP_TYPE_ANY) wxNullBitmap wxITEM_NORMAL "" "")
         (wxToolBar_Realize (slot-frame-toolbar obj))

@@ -86,7 +86,6 @@
         (slot-top-window obj).wxWindow_SetSize((600, 500))
         (wxFrame_SetTitle (slot-top-window obj) (_"mp3 2 ogg"))
         
-        
         ;;; Menu Bar
         (setf (slot-Mp3-To-Ogg-menubar obj) (wxMenuBar_Create 0))
         (let ((wxglade_tmp_menu (wxMenu_Create "" 0)))
@@ -98,15 +97,13 @@
         		(wxMenuBar_Append (slot-Mp3-To-Ogg-menubar obj) wxglade_tmp_menu (_"&Help")))
         (wxFrame_SetMenuBar (slot-top-window obj) (slot-Mp3-To-Ogg-menubar obj))
         ;;; Menu Bar end
-
         
         (setf (slot-Mp3-To-Ogg-statusbar obj) (wxFrame_CreateStatusBar (slot-top-window obj) 2 0))
         (wxStatusBar_SetStatusWidths (slot-Mp3-To-Ogg-statusbar obj) 2 (vector -2 -1))
         (wxStatusBar_SetStatusText (slot-Mp3-To-Ogg-statusbar obj) (_"Mp3_To_Ogg_statusbar") 0)
         (wxStatusBar_SetStatusText (slot-Mp3-To-Ogg-statusbar obj) "" 1)
         
-        
-	;;; Tool Bar
+        ;;; Tool Bar
         (setf (slot-Mp3-To-Ogg-toolbar obj) (wxToolBar_Create (slot-top-window obj) -1 -1 -1 -1 -1 (logior wxTB_HORIZONTAL wxTB_TEXT)))
         (wxToolBar_AddTool (slot-Mp3-To-Ogg-toolbar obj) wxID_OPEN (_"&Open") wxNullBitmap wxNullBitmap wxITEM_NORMAL (_"Open a file") (_"Open a MP3 file to convert into OGG format"))
         (wxToolBar_Realize (slot-Mp3-To-Ogg-toolbar obj))
