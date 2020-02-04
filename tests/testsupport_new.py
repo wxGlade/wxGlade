@@ -327,12 +327,15 @@ class WXGladeGUITest(WXGladeBaseTest):
                 app_basename = os.path.splitext(config.default_cpp_app_name)[0]
                 app_basename = "%s_%s"%(first_window.klass.split("_")[0], app_basename)
                 app.app_filename = app_basename
-                expected_filename = self._get_casefile_path( "%s.%s"%(app_basename, app.source_extension) )
-                # first_window.klass  # 'Bug179_Frame'
+                expected_leafname = "%s.%s"%(app_basename, app.source_extension)
             else:
-                expected_filename = self._get_casefile_path( '%s%s' % (basename, ext) )
-            if not expected_filename: continue
-            generated_filename = self._get_outputfile_path(expected_filename)
+                expected_leafname = '%s%s' % (basename, ext)
+            expected_filename = self._get_casefile_path( expected_leafname )
+            #if not expected_filename: continue
+            if expected_filename:
+                generated_filename = self._get_outputfile_path(expected_filename)
+            else:
+                generated_filename = self._get_outputfile_path(expected_leafname)
 
             # check for language first
             self.assertTrue( language in common.code_writers, "No codewriter loaded for %s" % language )
@@ -346,7 +349,11 @@ class WXGladeGUITest(WXGladeBaseTest):
                 app.properties["for_version"].set("2.8")
             app.properties["language"].set(language)
             self._process_wx_events()
-            app.generate_code()
+            try:
+                app.generate_code()
+            except:
+                if expected_filename: raise
+            if not expected_filename: continue
 
             self._assert_info_message(u'Code generation completed successfully')
 
