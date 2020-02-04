@@ -813,11 +813,10 @@ class CPPCodeWriter(BaseLangCodeWriter, wcodegen.CppMixin):
                 prev_src.replace_header(tag, "")
 
                 # insert the module dependencies of this class
-                extra_modules = klass.dependencies
                 # WARNING: there's a double space '  ' between 'replace' and 'dependencies' in the tag below,
                 # because there is no class name (see SourceFileContent, line ~147)
                 tag = '<%swxGlade replace  dependencies>' % self.nonce
-                code = self._format_dependencies(extra_modules)
+                code = self._format_dependencies(klass.dependencies)
                 prev_src.replace_header(tag, code)
 
                 # insert the extra code of this class
@@ -859,8 +858,7 @@ class CPPCodeWriter(BaseLangCodeWriter, wcodegen.CppMixin):
             hout.append('\n')
 
             # write the module dependencies for this class
-            extra_modules = klass.dependencies
-            code = self._format_dependencies(extra_modules)
+            code = self._format_dependencies(klass.dependencies)
             hout.append(code)
             hout.append('\n')
 

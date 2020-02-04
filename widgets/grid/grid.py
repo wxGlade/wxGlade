@@ -7,7 +7,6 @@ wxGrid objects
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
-import wx
 from wx.grid import *
 import common, misc, compat
 from edit_windows import ManagedBase

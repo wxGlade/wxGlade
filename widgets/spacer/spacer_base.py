@@ -5,7 +5,6 @@ Code generator functions for spacers
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
-import common
 
 class SpacerMixin(object):
     "Generic code to handle spacer code in all language code generators"

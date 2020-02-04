@@ -199,7 +199,6 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
                               previous version of the source to generate
      _app_added:             True after wxApp instance has been generated
      _current_extra_code:    Set of lines for extra code to add to the current file
-     _current_extra_modules: Set of lines of extra modules to add to the current file
 
      _overwrite:             If True, overwrite any previous version of the source file instead of updating only
                               the wxGlade blocks;  will be initialised with config.default_overwrite
@@ -209,10 +208,7 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
                               (E.g. _property_writers['wxRadioBox'] = {'choices', choices_handler})
 
      _textdomain:            gettext textdomain (see _use_gettext)
-     _use_gettext:           If True, enable gettext support; will be initialised with config.default_use_gettext
-
-     _widget_extra_modules:  Map of widget class names to a list of extra modules needed for the widget
-                              (e.g. 'wxGrid': 'from wxLisp.grid import *\\n')."""
+     _use_gettext:           If True, enable gettext support; will be initialised with config.default_use_gettext"""
 
     _code_statements = {}
     """Language specific code templates for for small statements.
@@ -323,12 +319,10 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
         self.previous_source = None
         self._app_added = False
         self._current_extra_code = []
-        self._current_extra_modules = set()
         self._overwrite = config.default_overwrite
         self._mark_blocks = True # YYY config.mark_blocks
         self._textdomain = 'app'
         self._use_gettext = config.default_use_gettext
-        self._widget_extra_modules = {}
 
     def new_project(self, app, out_path=None, preview=False):
         "Initialise generic and language independent code generator settings; see init_lang(), init_files()"
@@ -412,7 +406,6 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
                 self.output_file = []
                 self.output_file_name = out_path
                 self.output_file.extend( self.header_lines )
-                self.output_file.append('<%swxGlade extra_modules>\n' % self.nonce)
                 self.output_file.append('\n')
                 self.output_file.append('<%swxGlade replace dependencies>\n' % self.nonce)
                 self.output_file.append('<%swxGlade replace extracode>\n' % self.nonce)
@@ -505,8 +498,6 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
             else:
                 code = ""
             self.previous_source.replace( '<%swxGlade insert new_classes>' % self.nonce, code )
-            code = "".join( sorted(self._current_extra_modules) )
-            self.previous_source.replace( '<%swxGlade extra_modules>\n' % self.nonce, code )
 
             # module dependencies of all classes
             code = self._tagcontent( 'dependencies', sorted(self.dependencies) )
@@ -527,9 +518,6 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
             self.save_file( self.previous_source.name, content, content_only=True )
 
         elif not self.multiple_files:
-            code = "".join( sorted(self._current_extra_modules) )
-            self.output_file_replace( '<%swxGlade extra_modules>\n' % self.nonce, code )
-
             # module dependencies of all classes
             code = self._tagcontent( 'dependencies', sorted(self.dependencies) )
             self.output_file_replace( '<%swxGlade replace dependencies>' % self.nonce, code )
@@ -622,7 +610,7 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
                 prev_src = None
             else:
                 prev_src = self.SourceFileContent(filename, self)
-            self._current_extra_modules = set()
+            #self._current_extra_modules = set()
         else:
             # previous_source is the SourceFileContent instance that keeps info about the single file to generate
             prev_src = self.previous_source
@@ -633,12 +621,6 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
             self._logger.error('%s', code_obj)
             # this is an error, let the exception be raised the details are logged by the global exception handler
             raise
-
-        if prev_src and klass in prev_src.classes:
-            pass
-        else:
-            mods = getattr(builder, 'extra_modules', [])
-            self._current_extra_modules.update( mods )
 
         ret = self.classes[code_obj] = self.ClassLines()
         return ret
@@ -717,13 +699,6 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
                 self.warning( tmpl % { 'name': code_obj.name, 'ctor': self.name_ctor } )
             obuffer = []
 
-        #if prev_src and not is_new:
-            ## remove __set_properties and __do_layout, if in old file
-            #tag = '<%swxGlade replace %s %s>' % (self.nonce, klass, '__set_properties')
-            #prev_src.replace(tag, [])
-            #tag = '<%swxGlade replace %s %s>' % (self.nonce, klass, '__do_layout')
-            #prev_src.replace(tag, [])
-
         # generate code for event handler stubs
         code_lines = self.generate_code_event_handler( code_obj, is_new, tab, prev_src, event_handlers )
 
@@ -747,9 +722,6 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
             dep_list = sorted( self.classes[code_obj].dependencies | self.dependencies )  # module dependencies of class
             if prev_src:
                 prev_src.replace('<%swxGlade insert new_classes>' % self.nonce, "")
-
-                # insert the extra modules
-                prev_src.replace( '<%swxGlade extra_modules>\n' % self.nonce, sorted(self._current_extra_modules) )
 
                 # insert the module dependencies of this class
                 code = self._tagcontent('dependencies', dep_list)
@@ -784,8 +756,7 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
             out.extend( obuffer )
             # store the contents to filename
             self.save_file(filename, out)
-        else:  # not self.multiple_files
-            self._current_extra_modules.update( self.classes[code_obj].dependencies )
+        else:  # not self.multiple_files            self.dependencies.update( self.classes[code_obj].dependencies )
             extra_code = [l for l in reversed(self.classes[code_obj].extra_code) if not l in self._current_extra_code]
             if prev_src:
                 # if this is a new class, add its code to the new_classes list of the SourceFileContent instance
@@ -1225,7 +1196,6 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
             else:
                 command = ""
             comment = comment % {'command':command, 'comment_sign':self.comment_sign, 'indent':indent }
-            #source = source.replace(tag[0], comment)
             source.content[i] = comment
 
     def _do_replace_backslashes(self, match):
@@ -1309,8 +1279,7 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
         prop_name_major = '%s_%d' % ( prop_name, self.for_version[0] )
         prop_name_detailed = '%s_%d%d' % ( prop_name, self.for_version[0], self.for_version[1] )
 
-        # check if there is an code template for this prop_name
-        # most specific to generic
+        # check if there is an code template for this prop_name most specific to generic
         if prop_name_detailed in self._code_statements:
             prop_name_use = prop_name_detailed
         elif prop_name_major in self._code_statements:

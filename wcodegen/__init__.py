@@ -469,7 +469,7 @@ class BaseWidgetWriter(StylesMixin, BaseCodeWriter):
                 self.tmpl_props.append(tmpl)
 
         # import artprovider?
-        if need_artprovider:
+        if need_artprovider and self.tmpl_import_artprovider:
             self.import_modules.append(self.tmpl_import_artprovider)
 
         # size

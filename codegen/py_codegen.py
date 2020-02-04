@@ -119,9 +119,6 @@ class SourceFileContent(BaseSourceFileContent):
                         # add extra event handlers here...
                         out_lines.append('<%swxGlade event_handlers %s>' % (self.nonce, self.class_name))
                     out_lines.append(line)
-                    if self.is_import_line(line):
-                        # add a tag to allow extra modules
-                        out_lines.append('<%swxGlade extra_modules>\n' % self.nonce)
             else:
                 # ignore all the lines inside a wxGlade block
                 if self.rec_block_end.match(line):
@@ -139,9 +136,6 @@ class SourceFileContent(BaseSourceFileContent):
 
         # set the ``persistent'' content of the file
         self.content = out_lines #"".join(out_lines)
-
-    def is_import_line(self, line):
-        return line.startswith('import wx')
 
     def format_classname(self, class_name):
         """Format class name read from existing source file.
