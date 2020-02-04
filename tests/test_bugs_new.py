@@ -100,6 +100,23 @@ class TestBugs(WXGladeGUITest):
         """Test issue #371 - C++ code generation"""
         self.load_and_generate('Issue_371', excluded=("lisp",), test_GUI=False)
 
+    def test_issue385(self):
+        "generate code, add grid, generate code with 'keep user code', check whether imports are added"""
+        self.load_and_generate('Issue385_step_1', test_GUI=False, preview=False)  # w/o grid and 'keep user code'
+        for ext in ("py","cpp","pl","lisp","h"):
+            src = self._get_outputfile_path('Issue385_step_1.%s'%ext)
+            dst = self._get_outputfile_path('Issue385_step_2.%s'%ext)
+            if ext=="py" and not os.path.exists(src):
+                src = self._get_outputfile_path('Issue385_step_1_Classic.%s'%ext)
+                dst = self._get_outputfile_path('Issue385_step_2_Classic.%s'%ext)
+            if ext=="py" and not os.path.exists(src):
+                src = self._get_outputfile_path('Issue385_step_1_Phoenix.%s'%ext)
+                dst = self._get_outputfile_path('Issue385_step_2_Phoenix.%s'%ext)
+            if os.path.exists(dst): os.remove(dst)
+            os.rename(src, dst)
+        self.load_and_generate('Issue385_step_2', test_GUI=False, preview=False)  # w grid and 'keep user code'
+        self.load_and_generate('Issue385_step_2', test_GUI=False, preview=False)  # same, ensure nothing is doubled
+
 
 if __name__ == '__main__':
     unittest.main(exit=False)
