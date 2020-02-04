@@ -4,9 +4,9 @@
 #
 
 import wx
-import wx.grid
 
 # begin wxGlade: dependencies
+import wx.grid
 # end wxGlade
 
 # begin wxGlade: extracode

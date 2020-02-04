@@ -32,10 +32,6 @@ class MyFrame(wx.Frame):
         self.Layout()
         # end wxGlade
 
-    def __set_properties(self):
-
-    def __do_layout(self):
-
     # just an Unicode comment to raise an UnicodeDecodeError
     # German umlauts are: ��� ��� �
 

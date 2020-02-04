@@ -5,10 +5,10 @@
 #
 
 import wx
-import wx.adv
 
 # begin wxGlade: dependencies
 import gettext
+import wx.adv
 # end wxGlade
 
 # begin wxGlade: extracode

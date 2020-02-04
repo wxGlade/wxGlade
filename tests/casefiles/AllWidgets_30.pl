@@ -7,10 +7,10 @@
 
 use Wx qw[:allclasses];
 use strict;
-use Wx::ArtProvider qw/:artid :clientid/;
-use Wx::PropertyGridManager;
 
 # begin wxGlade: dependencies
+use Wx::ArtProvider qw/:artid :clientid/;
+use Wx::PropertyGridManager;
 # end wxGlade
 
 # begin wxGlade: extracode

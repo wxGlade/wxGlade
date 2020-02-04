@@ -5,11 +5,11 @@
 #
 
 import wx
-import wx.adv
-import wx.grid
 
 # begin wxGlade: dependencies
 import gettext
+import wx.adv
+import wx.grid
 # end wxGlade
 
 # begin wxGlade: extracode

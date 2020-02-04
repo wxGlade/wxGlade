@@ -4,9 +4,9 @@
 #
 
 import wx
-import wx.calendar
 
 # begin wxGlade: dependencies
+import wx.calendar
 # end wxGlade
 
 # begin wxGlade: extracode

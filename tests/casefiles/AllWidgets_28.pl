@@ -7,9 +7,9 @@
 
 use Wx qw[:allclasses];
 use strict;
-use Wx::ArtProvider qw/:artid :clientid/;
 
 # begin wxGlade: dependencies
+use Wx::ArtProvider qw/:artid :clientid/;
 # end wxGlade
 
 # begin wxGlade: extracode
