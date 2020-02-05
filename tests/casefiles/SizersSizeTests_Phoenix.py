@@ -1453,15 +1453,9 @@ class MyFrame(wx.Frame):
         self.button_1 = wx.Button(self.notebook_1_GridBagSizer_Spacers, wx.ID_ANY, _("button_1"))
         grid_sizer_1.Add(self.button_1, (0, 0), (1, 1), 0, 0)
         
-        
-        
-        
-        
-        
         grid_sizer_1.Add(20, 20, (2, 0), (1, 1), wx.EXPAND, 0)
         
         grid_sizer_1.Add(20, 20, (2, 1), (1, 1), wx.EXPAND, 0)
-        
         
         grid_sizer_1.AddGrowableRow(0)
         grid_sizer_1.AddGrowableRow(2)

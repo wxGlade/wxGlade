@@ -802,8 +802,9 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
                 if extra_code and not extra_code in parent_klass.extra_code:
                     parent_klass.extra_code.append(extra_code)
 
-        parent_klass.init.append("\n")
-        parent_klass.init.extend(init)
+        if init:
+            parent_klass.init.append("\n")
+            parent_klass.init.extend(init)
 
         if parent_builder:  # add to sizer or notebook
             parent_klass.init.extend( parent_builder.get_code_per_child(parent, obj) )

@@ -1469,15 +1469,9 @@ sub new {
     $self->{button_1} = Wx::Button->new($self->{notebook_1_GridBagSizer_Spacers}, wxID_ANY, _T("button_1"));
     $self->{grid_sizer_1}->Add($self->{button_1}, (0, 0), (1, 1), 0, 0);
     
-    
-    
-    
-    
-    
     $self->{grid_sizer_1}->Add(20, 20, (2, 0), (1, 1), wxEXPAND, 0);
     
     $self->{grid_sizer_1}->Add(20, 20, (2, 1), (1, 1), wxEXPAND, 0);
-    
     
     $self->{grid_sizer_1}->AddGrowableRow(0);
     $self->{grid_sizer_1}->AddGrowableRow(2);
