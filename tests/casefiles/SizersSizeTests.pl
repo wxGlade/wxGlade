@@ -1482,7 +1482,6 @@ sub new {
     $self->{grid_sizer_1}->AddGrowableRow(0);
     $self->{grid_sizer_1}->AddGrowableRow(2);
     $self->{grid_sizer_1}->AddGrowableCol(0);
-    $self->{grid_sizer_1}->AddGrowableCol(2);
     $self->{notebook_1_GridBagSizer_Spacers}->SetSizer($self->{grid_sizer_1});
     
     $self->{notebook_1_BorderTest}->SetSizer($self->{sizer_7});

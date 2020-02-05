@@ -1466,7 +1466,6 @@ class MyFrame(wx.Frame):
         grid_sizer_1.AddGrowableRow(0)
         grid_sizer_1.AddGrowableRow(2)
         grid_sizer_1.AddGrowableCol(0)
-        grid_sizer_1.AddGrowableCol(2)
         self.notebook_1_GridBagSizer_Spacers.SetSizer(grid_sizer_1)
         
         self.notebook_1_BorderTest.SetSizer(sizer_7)
