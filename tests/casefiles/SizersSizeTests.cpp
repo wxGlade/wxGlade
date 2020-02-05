@@ -1095,7 +1095,6 @@ void MyFrame::do_layout()
     grid_sizer_1->AddGrowableRow(0);
     grid_sizer_1->AddGrowableRow(2);
     grid_sizer_1->AddGrowableCol(0);
-    grid_sizer_1->AddGrowableCol(2);
     notebook_1->AddPage(notebook_1_pane_1, _("BoxSizer"));
     notebook_1->AddPage(notebook_1_WrapSizer, _("WrapSizer"));
     notebook_1->AddPage(notebook_1_StaticBoxSizer, _("StaticBoxSizer"));

@@ -1112,7 +1112,6 @@ sub __do_layout {
     $self->{grid_sizer_1}->AddGrowableRow(0);
     $self->{grid_sizer_1}->AddGrowableRow(2);
     $self->{grid_sizer_1}->AddGrowableCol(0);
-    $self->{grid_sizer_1}->AddGrowableCol(2);
     $self->{notebook_1}->AddPage($self->{notebook_1_pane_1}, _T("BoxSizer"));
     $self->{notebook_1}->AddPage($self->{notebook_1_WrapSizer}, _T("WrapSizer"));
     $self->{notebook_1}->AddPage($self->{notebook_1_StaticBoxSizer}, _T("StaticBoxSizer"));

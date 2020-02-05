@@ -130,7 +130,7 @@ class BaseSizerBuilder(object):
         "Set sizer specific properties and generate the code"
         result = self.get_code_wxGridSizer(obj)
 
-        if self.codegen.preview and obj.klass=="wxGridBagSizer":
+        if obj.klass=="wxGridBagSizer":
             max_row, max_col = obj._get_max_row_col()
         else:
             max_row = max_col = None

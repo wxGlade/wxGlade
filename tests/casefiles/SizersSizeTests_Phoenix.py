@@ -1088,7 +1088,6 @@ class MyFrame(wx.Frame):
         grid_sizer_1.AddGrowableRow(0)
         grid_sizer_1.AddGrowableRow(2)
         grid_sizer_1.AddGrowableCol(0)
-        grid_sizer_1.AddGrowableCol(2)
         self.notebook_1.AddPage(self.notebook_1_pane_1, _("BoxSizer"))
         self.notebook_1.AddPage(self.notebook_1_WrapSizer, _("WrapSizer"))
         self.notebook_1.AddPage(self.notebook_1_StaticBoxSizer, _("StaticBoxSizer"))
