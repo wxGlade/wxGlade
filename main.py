@@ -97,6 +97,7 @@ class wxGladePropertyPanel(wx.Panel):
         self.Layout()
 
     def on_drop_files(self, screen_xy, ctrl, filename):
+        if not self.current_widget: return False
         for p_name in self.current_widget.PROPERTIES:
             if p_name[0].isupper(): continue
             prop = self.current_widget.properties.get(p_name)
