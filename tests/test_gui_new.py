@@ -57,7 +57,7 @@ class TestGui(WXGladeGUITest):
         common.app_tree.root.properties["language"].set("lisp")
         self._process_wx_events()
         common.app_tree.root.generate_code()
-        self._assert_error_message("Generating Lisp code for wxWidgets version 3.0 is not supported")
+        self._assert_error_message("Generating Lisp code")
 
     def test_CodeGeneration_CustomWidget(self):
         'Test GUI code generation using "CustomWidget"'
@@ -298,11 +298,11 @@ class TestGui(WXGladeGUITest):
         # Single output file out_path shouldn't be a directory, non-existing file or non-writable directory
         common.app_tree.root.properties["output_path"].set(self.outDirectory)
         common.app_tree.root.generate_code()
-        self._assert_error_message( "can not be a directory when generating a single file" )
+        self._assert_error_message( "path is directory" )
 
         common.app_tree.root.properties["output_path"].set( os.path.join(self.outDirectory,"non-existing/result.py") )
         common.app_tree.root.generate_code()
-        self._assert_error_message( "must be an existing directory" )
+        self._assert_error_message( "directory does not exist" )
 
         #common.app_tree.root.properties["output_path"].set( os.path.join(self.outDirectory,"non-writable/result.py") )
         #common.app_tree.root.generate_code()
@@ -312,7 +312,7 @@ class TestGui(WXGladeGUITest):
         common.app_tree.root.properties["multiple_files"].set(1)
         common.app_tree.root.properties["output_path"].set( os.path.join(self.outDirectory,"non-existing") )
         common.app_tree.root.generate_code()
-        self._assert_error_message( " must be an existing directory" )
+        self._assert_error_message( "directory does not exist" )
 
         #common.app_tree.root.properties["output_path"].set( os.path.join(self.outDirectory,"non-writable") )
         #common.app_tree.root.generate_code()

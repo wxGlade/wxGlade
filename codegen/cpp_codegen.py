@@ -381,12 +381,20 @@ class CPPCodeWriter(BaseLangCodeWriter, wcodegen.CppMixin):
         else:
             name = os.path.splitext(out_path)[0]
             self.output_name = name
-            if not self._overwrite and self._file_exists(name + "." + self.header_extension):
-                # the file exists, we must keep all the lines not inside a wxGlade block.
-                # NOTE: this may cause troubles if out_path is not a valid source file, so be careful!
+
+            if not self._overwrite:
+                header_exists = self._file_exists(name + "." + self.header_extension)
+                source_exists = self._file_exists(name + "." + self.source_extension)
+                if (header_exists and not source_exists) or (source_exists and not header_exists):
+                    ret = _("To keep existing user code, both header and source file must exist.\n"
+                            "(files '%s...'")
+                    return ret%name
+
+            if not self._overwrite and header_exists:
+                # keep all the lines not inside a wxGlade block.
                 self.previous_source = SourceFileContent(name, self)
             else:
-                # if the file doesn't exist, create it and write the ``intro''
+                # if the file doesn't exist, create it and write the intro
                 self.previous_source = None
                 self.output_header = []
                 self.output_file   = []

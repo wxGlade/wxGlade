@@ -12,7 +12,6 @@ import os.path
 import re
 
 from codegen import BaseLangCodeWriter, BaseSourceFileContent
-import errors
 import wcodegen
 
 
@@ -281,9 +280,10 @@ class LispCodeWriter(BaseLangCodeWriter, wcodegen.LispMixin):
             '(use-package :wxColour)', '(use-package :wxEvtHandler)', '(use-package :wxEvent)'}
 
     def check_values(self):
-        BaseLangCodeWriter.check_values(self)
-        if self.for_version > (2, 8):
-            raise errors.WxgLispWx3NotSupported("%d.%d" % self.for_version)
+        error = BaseLangCodeWriter.check_values(self)
+        if not error and self.for_version > (2, 8):
+            return "Generating Lisp code is only supported for wx version 2.8"
+        return None
 
     def add_app(self, app, top_win_class):
         top_win = app.top_window

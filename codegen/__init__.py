@@ -1,3 +1,4 @@
+# -*- coding: LATIN1 -*-
 """Common code used by all code generators
 
 @copyright: 2011-2016 Carsten Grohmann
@@ -7,8 +8,7 @@
 
 import copy, logging, os, os.path, random, re, sys, time
 
-import common, config, compat, errors, misc
-import new_properties as np
+import common, config, compat, misc
 import wcodegen
 from collections import OrderedDict
 
@@ -54,6 +54,7 @@ class BaseSourceFileContent(object):
     def __init__(self, name, code_writer):
         # initialise instance logger
         self._logger = logging.getLogger(self.__class__.__name__)
+        self.OK = False
 
         # initialise instance
         self.classes = {}                  # Classes declared in the file
@@ -69,8 +70,14 @@ class BaseSourceFileContent(object):
         self.nonce = code_writer.nonce
         self.out_dir = code_writer.out_dir
         self.multiple_files = code_writer.multiple_files
-        if not self.content:
+
+        try:
             self.build_untouched_content()
+            self.OK = True
+        except UnicodeDecodeError:
+            # file could not be read and OK will remain False
+            # this will be checked in writer.init_files and returned via writer.new_project to application.generate_code
+            pass
 
     def replace(self, tag, content):
         return _replace_tag(self.content, tag, content)
@@ -78,6 +85,7 @@ class BaseSourceFileContent(object):
     def build_untouched_content(self):
         """Builds a string with the contents of the file that must be left as is, and replaces the wxGlade blocks
         with tags that in turn will be replaced by the new wxGlade blocks"""
+        # the derived classes must implement the language specific parsing
         self.class_name = None
         self.new_classes_inserted = False
 
@@ -96,10 +104,6 @@ class BaseSourceFileContent(object):
         "True if the line is the marker for class end"
         return line.strip().startswith('# end of class ')
 
-    def is_import_line(self, line):
-        "True if the line imports wx; may be overwritten in derived class"
-        return False
-
     def _load_file(self, filename):
         "Load a file and return the content. The read source file will be decoded to unicode automatically."
         # Separated for debugging purposes
@@ -107,11 +111,8 @@ class BaseSourceFileContent(object):
 
         encoding = self.code_writer.app_encoding
         if encoding:
-            try:
-                lines = [line.decode(encoding) for line in lines]
-            except UnicodeDecodeError:
-                raise errors.WxgReadSourceFileUnicodeError(filename)
-
+            # UnicodeDecodeError will be handled in application.generate_code
+            lines = [line.decode(encoding) for line in lines]
         return lines
 
     def __getstate__(self):
@@ -376,9 +377,8 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
         self.out_dir = os.path.normpath( os.path.expanduser(self.out_dir.strip()) )
         self.preview = preview
 
-        self.init_lang(app)      # call initialisation of language specific settings
-        self.check_values()            # check the validity of the set values
-        self.init_files(self.out_dir)  # call initialisation of the file handling
+        # any of the following could return an error as string
+        return self.init_lang(app) or self.check_values() or self.init_files(self.out_dir)
 
     def init_lang(self, app_attrs):
         "Initialise language specific settings; overwrite this function in the derived class"
@@ -390,16 +390,18 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
         if self.multiple_files:
             self.previous_source = None
             if not os.path.isdir(out_path):
-                raise errors.WxgOutputPathIsNotDirectory(out_path)
+                return _("Output path is not a directory")
             self.out_dir = out_path
         else:
             if os.path.isdir(out_path):
-                raise errors.WxgOutputPathIsDirectory(out_path)
+                return _("Output path is a directory")
             if not self._overwrite and self._file_exists(out_path):
                 # the file exists, we must keep all the lines not inside a
                 # wxGlade block. NOTE: this may cause troubles if out_path is
                 # not a valid source file, so be careful!
                 self.previous_source = self.SourceFileContent(out_path, self)
+                if not self.previous_source.OK:
+                    return _("Encoding error in existing file (UnicodeDecodeError) '%s'"%out_path)
             else:
                 # if the file doesn't exist, create it and write the ``intro''
                 self.previous_source = None
@@ -409,32 +411,29 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
                 self.output_file.append('\n')
                 self.output_file.append('<%swxGlade replace dependencies>\n' % self.nonce)
                 self.output_file.append('<%swxGlade replace extracode>\n' % self.nonce)
+        return None
 
     def output_file_replace(self, tag, content):
         _replace_tag(self.output_file, tag, content)
 
     def check_values(self):
-        "Check the validity of the set application values. Raises exceptions for errors; see module errors"
-        # XXX implement without exceptions: set attribute and check in application.generate_code
-        # Check if the values of use_multiple_files and out_path agree
-        if self.multiple_files:
-            if not os.path.isdir(self.out_dir):
-                raise errors.WxgOutputDirectoryNotExist(self.out_dir)
-            if not os.access(self.out_dir, os.W_OK):
-                raise errors.WxgOutputDirectoryNotWritable(self.out_dir)
-        else:
-            if os.path.isdir(self.out_dir):
-                raise errors.WxgOutputPathIsDirectory(self.out_dir)
-            directory = os.path.dirname(self.out_dir)
-            if directory:
-                if not os.path.isdir(directory):
-                    raise errors.WxgOutputDirectoryNotExist(directory)
-                if not os.access(directory, os.W_OK):
-                    raise errors.WxgOutputDirectoryNotWritable(directory)
+        "Check the validity of output directory/file name"
+        out_dir = self.out_dir
+        if not self.multiple_files:
+            if os.path.isdir(out_dir):
+                return "Output path is directory, not file"
+            out_dir = os.path.dirname(out_dir)
+
+        if not os.path.isdir(out_dir):
+            return "Output directory does not exist"
+        if not os.access(out_dir, os.W_OK):
+            return "Output directory is not writable"
 
         # It's not possible to generate code from a template directly
         if self.is_template:
-            raise errors.WxgTemplateCodegenNotPossible
+            return 'Code generation from a template is not possible'
+
+        return None
 
     def _is_class(self, obj):
         # check whether to add a new class to the generated code and modify some attributes in place
@@ -1095,12 +1094,9 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
             if isinstance(line, compat.unicode):
                 return line.encode(self.app_encoding)
             return line
-        try:
-            tmp = [encode(line) for line in tmp if line]
-        except UnicodeEncodeError as inst:
-            raise errors.WxgOutputUnicodeError( self.app_encoding,
-                                                inst.object[inst.start:inst.end].encode('unicode-escape'),
-                                                inst.start, inst.end )
+
+        # UnicodeEncodeError will be handled in application.generate_code
+        tmp = [encode(line) for line in tmp if line]
 
         # check for necessary sub directories e.g. for Perl or Python modules
         dirname = os.path.dirname(filename)
@@ -1113,10 +1109,11 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
         # save the file now
         try:
             common.save_file(filename, tmp, 'codegen')
-        except (errors.WxgBaseException, EnvironmentError):
-            # EnvironmentError's will be caught at a higher level
+        except (UnicodeEncodeError, EnvironmentError):
+            # these will be handled inside application.generate_code
             raise
         except:
+            if config.debugging: raise
             self._logger.exception(_('Internal Error'))
         if mainfile and sys.platform in ['linux2', 'darwin']:
             try:

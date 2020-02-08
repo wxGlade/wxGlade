@@ -14,7 +14,7 @@ To be done: write XRC directly instead of using BaseLangCodeWriter as base.
 from xml.sax.saxutils import escape, quoteattr
 from codegen import BaseLangCodeWriter
 from collections import OrderedDict
-import common, compat, errors
+import common
 import new_properties as np
 import wcodegen
 
@@ -304,7 +304,7 @@ class XRCCodeWriter(BaseLangCodeWriter, wcodegen.XRCMixin):
     def init_lang(self, app):
         # for now we handle only single-file code generation
         if self.multiple_files:
-            raise errors.WxgXRCMultipleFilesNotSupported()
+            return "XRC code cannot be split into multiple files"
 
         # overwrite existing sources always
         self._overwrite = True

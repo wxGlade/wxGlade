@@ -44,7 +44,7 @@ def my_displayhook(value):
 sys.displayhook = my_displayhook
 
 
-import common, config, compat, log, errors
+import common, config, compat, log
 
 
 def parse_command_line():
@@ -139,7 +139,7 @@ def command_line_code_generation(filename, language, out_path=None):
 
     try:
         if language not in common.code_writers:
-            raise errors.WxgMissingCodeWriter(language)
+            raise ValueError('Code writer for "%s" is not available.'%language)
 
         writer = common.code_writers[language]
         CodeWriter( writer=writer, input=filename, out_path=out_path )
@@ -275,7 +275,7 @@ def command_line_code_generation(filename, language, out_path=None):
             sys.exit(1)
     try:
         if language not in common.code_writers:
-            raise errors.WxgMissingCodeWriter(language)
+            raise ValueError('Code writer for "%s" is not available.'%language)
         common.root.properties["language"].set(language)
         common.root.generate_code(out_path=out_path)
     except errors.WxgBaseException as inst:

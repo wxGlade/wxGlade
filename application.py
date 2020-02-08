@@ -8,10 +8,10 @@ Application class to store properties of the application being created
 """
 
 
-import os, sys, random, re, logging, math, time
+import os, sys, random, re, logging, time
 import wx
 
-import common, config, misc, plugins, errors, compat
+import common, config, misc, plugins, compat
 import bugdialog
 import new_properties as np
 
@@ -496,15 +496,27 @@ class Application(EditRoot):
         else:
             writer = common.code_writers[self.language]#.copy()
 
+        error = writer.new_project(self, out_path, preview)
+        if error:
+            # prerequisites were checked and there is a problem
+            misc.error_message( _("Error generating code:\n%s")%error )
+            return
+
         try:
-            writer.new_project(self, out_path, preview)
             writer.generate_code(self, widget)
             writer.finalize()
-        except errors.WxgBaseException as inst:
-            misc.error_message( _("Error generating code:\n%s")%inst )
-            return
         except EnvironmentError as inst:
-            bugdialog.ShowEnvironmentError(_('An IO/OS related error is occurred:'), inst)
+            bugdialog.ShowEnvironmentError(_('An IO related error has occurred:'), inst)
+            return
+        except UnicodeEncodeError as inst:
+            msg = _("Could not convert generated source code to encoding %s.\n"
+                    '(characters "%s")')
+            chars = inst.object[inst.start:inst.end] # .encode('unicode-escape')
+            msg = msg%(self.encoding, chars)
+            misc.error_message( msg )
+            return
+        except Exception as inst:
+            # unexpected / internal error
             bugdialog.Show(_('Generate Code'), inst)
             return
         finally:
