@@ -496,22 +496,6 @@ class ClipboardXmlWidgetBuilder(XmlWidgetBuilder):
             self.depth_level += 1
 
     def endElement(self, name):
-        if name == 'object':
-            obj = self.top()
-            self.depth_level -= 1
-            if not self.depth_level:
-                common.app_tree.auto_expand = True
-                import misc
-                try:
-                    # show the first object and update its layout
-                    #if self.top_obj.node.parent.widget.is_visible():
-                    #    common.app_tree.show_widget(self.top_obj.node)
-                    if self.top_obj.node.parent.widget.widget:
-                        self.top_obj.create_widgets()
-                except AttributeError:
-                    self._logger.exception( _('Exception caused by obj: %s'), self.top_obj )
-                misc.set_focused_widget(self.top_obj)
-
         if name == 'label':
             # if e.g. a button_1 is copied to button_2, also change the label if it was "button_1"
             obj = self.top()
@@ -522,6 +506,22 @@ class ClipboardXmlWidgetBuilder(XmlWidgetBuilder):
                     self._curr_prop_val[0] = newname
 
         XmlWidgetBuilder.endElement(self, name)
+
+        if name!="object": return
+        self.depth_level -= 1
+
+        if not self.depth_level:
+            common.app_tree.auto_expand = True
+            import misc
+            try:
+                # show the first object and update its layout
+                #if self.top_obj.node.parent.widget.is_visible():
+                #    common.app_tree.show_widget(self.top_obj.node)
+                if self.top_obj.node.parent.widget.widget:
+                    self.top_obj.create_widgets()
+            except AttributeError:
+                self._logger.exception( _('Exception caused by obj: %s'), self.top_obj )
+            misc.set_focused_widget(self.top_obj)
 
 
 class XmlWidgetObject(object):

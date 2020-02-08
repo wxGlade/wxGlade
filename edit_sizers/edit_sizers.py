@@ -1707,6 +1707,7 @@ class CustomGridBagSizer(CustomFlexGridSizer):
                 old_sizer_item.AssignWindow(widget)
         else:
             self._grid.Add( widget, pos, span, flag, border )
+        print("ADDED", widget, pos, span, self._grid.GetChildren())
 
     def Detach(self, obj):
         self._grid.Detach(obj)
@@ -2234,8 +2235,9 @@ class EditGridBagSizer(EditFlexGridSizer):
         "get pos for all slots that are SizerSlots only, but are occupied by other items spanning over rows/cols"
         pos = 0
         occupied = []
-        for row in range(self.rows):
-            for col in range(self.cols):
+        rows, cols = self._get_actual_rows_cols()
+        for row in range(rows):
+            for col in range(cols):
                 pos += 1
                 if pos==len(self.children): break
                 child = self.children[pos]
