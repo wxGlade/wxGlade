@@ -2404,7 +2404,7 @@ def grid_builder(parent, pos):
         constructor = EditGridBagSizer
 
     with parent.frozen():
-        editor = constructor(name, parent, pos, 0, cols, vgap, hgap) # add slots later
+        editor = constructor(name, parent, pos, rows, cols, vgap, hgap)
         if parent.IS_SIZER:
             editor.properties['flag'].set('wxEXPAND')
             editor.properties['pos'].set(pos)
