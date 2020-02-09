@@ -111,8 +111,9 @@ class DropTarget(wx.DropTarget):
 
         if _current_drag_source is None:
             # drag from outside
-            fmt = self._get_received_format().split(".")[-1]
-            print("FMT", fmt)
+            fmt = self._get_received_format()
+            if not fmt: return (False, "Incompatible file type")
+            fmt = fmt.split(".")[-1]
             if fmt == "bitmap":
                 return widget.check_compatibility(None, fmt)
 
