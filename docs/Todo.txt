@@ -1,8 +1,9 @@
 
 User Interface:
+ * allow dropping of bitmaps onto slots
  * better icons for GridSizers and grid sizer slots (3x3); merged cells for GridBagSizer
- * easy selection of events from the base classes (-> rev. 1.0)
- * implement undo/re-do; use this for GUI scripting (testing)
+ * easy selection of events from the base classes (-> rev. 1.1)
+ * implement undo/re-do; use this for GUI scripting (testing) (-> rev. 1.1)
  * better avoid overlapping / invisible design window; same for dialogs with "Pin"
  * code properties: use stc and resize dynamically (-> rev. 1.0)
  * grid properties: implement validation in 'on_cell_changing'
@@ -35,7 +36,7 @@ probably not:
 
 
 Code generation:
- * better integrate automatic and user generated code (-> rev. 1.0)
+ * better integrate automatic and user generated code (-> rev. 1.1)
  * Code (property): read user code from file?
  * refactor xrc_codegen.py to write XRC directly, not via separate hierarchy of XrcObjects
 Contribution required:
@@ -63,6 +64,7 @@ Internal:
  * use the History instead of the logging facilities
  * add more test cases for editing
 done:
+ * simplified error handling for code generation
  * separate items and tree
  * use a structure of EditBase instances as main data structure; use tree only for the representation
  * use consistent names
@@ -85,6 +87,7 @@ Widgets:
    when font is active, generate code using StaticBox
  * Dialog: support SetAffirmativeId, SetEscapeId
  * ToolBar: optional (attribute) names
+ * StaticBitmap: support wxGenericStaticBitmap once it supports SetScaleMode
 done:
  * add wxRESERVE_SPACE_EVEN_IF_HIDDEN for managed widgets
  * MenuBar: don't create widget on Mac OS
@@ -92,7 +95,7 @@ done:
 
 
 Additional Widgets:
- * lib.buttons (feature request #45 Add support for generic buttons) (-> rev. 1.0)
+ * lib.buttons (feature request #45 Add support for generic buttons) (-> rev. 1.1)
  * stc.StyledTextCtrl
  * MediaCtrl?
  * ColourPickerCtrl, FontPickerCtrl?
