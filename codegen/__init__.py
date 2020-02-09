@@ -755,7 +755,8 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
             out.extend( obuffer )
             # store the contents to filename
             self.save_file(filename, out)
-        else:  # not self.multiple_files            self.dependencies.update( self.classes[code_obj].dependencies )
+        else:  # not self.multiple_files
+            self.dependencies.update( self.classes[code_obj].dependencies )
             extra_code = [l for l in reversed(self.classes[code_obj].extra_code) if not l in self._current_extra_code]
             if prev_src:
                 # if this is a new class, add its code to the new_classes list of the SourceFileContent instance
