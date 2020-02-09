@@ -8,13 +8,13 @@ wxBitmapButton objects
 
 import wx
 
-import common, config, compat
+import common
 from edit_windows import ManagedBase, EditStylesMixin
 from gui_mixins import BitmapMixin
 import new_properties as np
 
 
-class EditBitmapButton(ManagedBase, EditStylesMixin, BitmapMixin):
+class EditBitmapButton(BitmapMixin, ManagedBase, EditStylesMixin):
     "Class to handle wxBitmapButton objects"
 
     WX_CLASS = "wxBitmapButton"
@@ -37,13 +37,8 @@ class EditBitmapButton(ManagedBase, EditStylesMixin, BitmapMixin):
 
     def create_widget(self):
         bmp = self.get_preview_obj_bitmap()
-        #try:
         self.widget = wx.BitmapButton(self.parent_window.widget, self.id, bmp, style=self.style)
-        self.widget._bitmap_size = tuple(bmp.Size)
-        self._set_preview_bitmaps()#include_bitmap=False)
-
-        #except AttributeError:
-            #self.widget = wx.BitmapButton(self.parent_window.widget, self.id, bmp)
+        self._set_preview_bitmaps()
 
     def properties_changed(self, modified=None):
         "update label (and size if label/stockitem have changed)"

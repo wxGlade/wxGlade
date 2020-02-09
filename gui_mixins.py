@@ -6,7 +6,7 @@ Different Mixins
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
-import copy, decorators, logging
+import copy, decorators
 import wx
 
 import config, compat, misc
@@ -208,9 +208,24 @@ class BitmapMixin(object):
                       "focus_bitmap":   "Bitmap to be shown when the widget has the keyboard focus."}
     _NAMES = ( ("disabled_bitmap", "Disabled"), ("pressed_bitmap", "Pressed"),
                ("current_bitmap", "Current"),   ("focus_bitmap", "Focus") )
-    def __init__(self):
-        self.bitmap_reference = None # size of reference bitmap
 
+    def __init__(self):
+        self._reference_bitmap_size = None # size of reference bitmap
+
+    # interface for drag'n'drop of bitmap files ========================================================================
+    def check_compatibility(self, widget, typename=None):
+        # only with slots before/after
+        if typename=="bitmap":
+            return (True, None)
+        return super(BitmapMixin, self).check_compatibility(self, widget, typename)
+
+    def set_attribute(self, fmt, bitmap):
+        if fmt!="file.bitmap": return
+        prop = "bitmap" if "bitmap" in self.PROPERTIES else "icon"
+        self.properties[prop].set(bitmap)
+        self.properties_changed( [prop] )
+
+    # helpers ==========================================================================================================
     def _check_bitmaps(self, modified=None):
         # check that "bitmap" is defined if any other is defined
         # check that all have the same size as "bitmap"
@@ -219,26 +234,28 @@ class BitmapMixin(object):
             p = self.properties[p_name]
             if p.is_active():
                 active.append( (p,name) )
-        if not active: return
-        normal_p = self.properties["bitmap"]
-        warn = False
-        if not normal_p.is_active() or normal_p._error:
+
+        set_size = self.widget and self.widget.Size!=self.widget.GetBestSize() or False
+
+        if active:
+            normal_p = self.properties["bitmap"]
+            warn = False
+            if not normal_p.is_active() or normal_p._error:
+                for p, name in active:
+                    p.set_check_result(warning="'Bitmap' property must be set first")
+                    if modified and p.name in modified: warn = True  # show a dialog
+                if warn:
+                    self._logger.warning("'Bitmap' property must be set first")
+                return
+            # normal is set and has no error -> check sizes
+            if not self.widget: return
+            ref_size = normal_p._size
             for p, name in active:
-                p.set_check_result(warning="'Bitmap' property must be set first")
-                if modified and p.name in modified: warn = True  # show a dialog
-            if warn:
-                self._logger.warning("'Bitmap' property must be set first")
-            return
-        # normal is set and has no error -> check sizes
-        if not self.widget: return
-        ref_size = normal_p._size
-        set_size = False
-        for p, name in active:
-            method = getattr(self.widget, "GetBitmap%s"%name, None)
-            if method is None: continue
-            current = method()
-            if not current.IsOk() or current.Size != ref_size or (modified and p.name in modified):
-                self._set_preview_bitmap(p, name, ref_size)
+                method = getattr(self.widget, "GetBitmap%s"%name, None)
+                if method is None: continue
+                current = method()
+                if not current.IsOk() or current.Size != ref_size or (modified and p.name in modified):
+                    self._set_preview_bitmap(p, name, ref_size)
         if set_size or not modified or "bitmap" in modified:
             self._set_widget_best_size()
 
@@ -267,7 +284,6 @@ class BitmapMixin(object):
 
     def _set_preview_bitmaps(self):#, include_bitmap=True):
         # set bitmaps after the widget has been created
-        self.widget._bitmap_size = None
         if self.bitmap:
             self._set_preview_bitmap(self.properties["bitmap"], "")
         self._check_bitmaps()

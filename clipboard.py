@@ -59,6 +59,8 @@ def begin_drag(window, widget):
 
 class DropTarget(wx.DropTarget):
     # widget drag & drop support; for tree and also for the design window
+    BITMAP_FILE_EXTENSIONS = ["BMP", "ICO", "CUR", "XBM", "XPM", "TIFF", "GIF", "PNG", "JPEG", "JPG",
+                              "PNM", "PCX", "PICT", "ICON", "ANI", "IFF", "TGA"]
     def __init__(self, window, toplevel=False):
         wx.DropTarget.__init__(self)
         self.window = window  # window should have methods: check_drop_compatibility, drop
@@ -77,6 +79,10 @@ class DropTarget(wx.DropTarget):
             data_objects[fmt.GetId()] = do
             data_object.Add(do)
 
+        # add a FileDataObject to allow dropping bitmaps onto slots
+        data_objects["file.bitmap"] = self.file_data_object = wx.FileDataObject()
+        data_object.Add(self.file_data_object)
+
         self.data_objects = data_objects
         self.data_object  = data_object
 
@@ -84,7 +90,17 @@ class DropTarget(wx.DropTarget):
         if self.fmt is None:
             # unfortunately, there seems to be no way to identify the data format without actually receiving the data
             self.GetData()
-            self.fmt = self.data_object.GetReceivedFormat().GetId()
+            fmt = self.data_object.GetReceivedFormat()
+            
+            if fmt.GetType()==wx.DF_FILENAME:
+                # file being dragged
+                filenames = self.file_data_object.Filenames
+                if filenames:
+                    ext = os.path.splitext(filenames[0])[1].upper().lstrip(os.extsep)
+                    if ext in self.BITMAP_FILE_EXTENSIONS:
+                        self.fmt = "file.bitmap"
+            else:
+                self.fmt = fmt.GetId()
         return self.fmt
 
     def _check_compatibility(self, x,y):
@@ -92,6 +108,13 @@ class DropTarget(wx.DropTarget):
         widget = self.window.find_editor_by_pos(x,y)
         if widget is None:
             return (False, "No widget found")
+
+        if _current_drag_source is None:
+            # drag from outside
+            fmt = self._get_received_format().split(".")[-1]
+            print("FMT", fmt)
+            if fmt == "bitmap":
+                return widget.check_compatibility(None, fmt)
 
         if not widget.IS_SIZER and not widget.IS_TOPLEVEL and getattr(widget,"sizer",None):  # for a toplevel window, sizer is the child
             if widget.sizer._IS_GRIDBAG and not isinstance(widget, edit_sizers.SizerSlot):
@@ -104,8 +127,6 @@ class DropTarget(wx.DropTarget):
             if widget.has_ancestor(_current_drag_source): return (False, "Can't paste item into itself")
             return widget.check_compatibility(_current_drag_source)
 
-        # drag from outside
-        fmt = self._get_received_format().split(".")[-1]
         return widget.check_compatibility(None, fmt)
 
     def OnDragOver(self, x,y, default):
@@ -154,11 +175,25 @@ class DropTarget(wx.DropTarget):
             common.app_tree.SortChildren(common.root.item)  # this does sort one level only
             return default
 
+        fmt = self._get_received_format()
+        self.fmt = None
+        # non-wxglade file dropped #####################################################################################
+        if fmt=="file.bitmap":
+            bitmap = self.file_data_object.GetFilenames()[0]
+            if not os.path.isfile(bitmap): return wx.DragCancel
+            if dst_widget.IS_SLOT:
+                # fill slot with a StaticBitmap 
+                import widgets.static_bitmap.static_bitmap
+                widgets.static_bitmap.static_bitmap.builder(dst_widget.parent, dst_widget.pos, bitmap)
+                return default
+            # set attribute value
+            dst_widget.set_attribute(fmt, bitmap)
+            return default
+
+        # use cut and paste functionality from clipboard to do the actual work #########################################
         if not hasattr(dst_widget, "clipboard_paste"):
             return wx.DragCancel
 
-        # use cut and paste functionality from clipboard to do the actual work #########################################
-        fmt = self._get_received_format()
         data = self.data_objects[fmt].GetData()  # the data as string
         self.fmt = None
         if wx.Platform=="__WXMAC__":

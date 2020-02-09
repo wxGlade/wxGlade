@@ -16,7 +16,7 @@ from edit_windows import WindowBase, TopLevelBase, EditStylesMixin
 from gui_mixins import BitmapMixin
 
 
-class EditDialog(TopLevelBase, EditStylesMixin, BitmapMixin):
+class EditDialog(BitmapMixin, TopLevelBase, EditStylesMixin):
     WX_CLASS = "wxDialog"
     _PROPERTIES =["Widget", "title", "icon", "centered", "sizehints","menubar", "toolbar", "statusbar", "style"]
     PROPERTIES = TopLevelBase.PROPERTIES + _PROPERTIES + TopLevelBase.EXTRA_PROPERTIES

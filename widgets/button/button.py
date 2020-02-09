@@ -15,7 +15,7 @@ from .button_stockitems import *
 from gui_mixins import BitmapMixin
 
 
-class EditButton(ManagedBase, EditStylesMixin, BitmapMixin):
+class EditButton(BitmapMixin, ManagedBase, EditStylesMixin):
     "Class to handle wxButton objects"
 
     WX_CLASS = "wxButton"

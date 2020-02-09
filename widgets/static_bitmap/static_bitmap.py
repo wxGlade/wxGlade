@@ -14,7 +14,7 @@ from gui_mixins import BitmapMixin
 import new_properties as np
 
 
-class EditStaticBitmap(ManagedBase, EditStylesMixin, BitmapMixin):
+class EditStaticBitmap(BitmapMixin, ManagedBase, EditStylesMixin):
     "Class to handle wxStaticBitmap objects"
     update_widget_style = False
     WX_CLASS = 'wxStaticBitmap'
@@ -30,7 +30,6 @@ class EditStaticBitmap(ManagedBase, EditStylesMixin, BitmapMixin):
         EditStylesMixin.__init__(self)
 
         # initialise instance properties
-        filedialog_style = wx.FD_OPEN | wx.FD_FILE_MUST_EXIST  # for the following two properties
         self.bitmap    = np.BitmapProperty(bmp_file)
         self.attribute = np.CheckBoxProperty(False, default_value=False)
 
@@ -57,10 +56,12 @@ class EditStaticBitmap(ManagedBase, EditStylesMixin, BitmapMixin):
         ManagedBase.properties_changed(self, modified)
 
 
-def builder(parent, pos):
+def builder(parent, pos, bitmap=None):
     "factory function for EditStaticBitmap objects"
     name = common.root.get_next_name('bitmap_%d', parent)
-    bitmap = wx.FileSelector(_("Select the image"))
+    if bitmap is None:
+        bitmap = wx.FileSelector(_("Select the image"))
+        if bitmap is None: return
     with parent.frozen():
         editor = EditStaticBitmap(name, parent, bitmap, pos)
         editor.properties["style"].set_to_default()

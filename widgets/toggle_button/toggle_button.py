@@ -15,7 +15,7 @@ from gui_mixins import BitmapMixin
 import new_properties as np
 
 
-class EditToggleButton(ManagedBase, EditStylesMixin, BitmapMixin):
+class EditToggleButton(BitmapMixin, ManagedBase, EditStylesMixin):
     "Class to handle wxToggleButton objects"
 
     WX_CLASS = 'wxToggleButton'

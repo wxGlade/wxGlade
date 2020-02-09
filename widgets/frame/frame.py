@@ -15,7 +15,7 @@ from edit_windows import WindowBase, TopLevelBase, EditStylesMixin
 from gui_mixins import BitmapMixin
 
 
-class EditFrame(TopLevelBase, EditStylesMixin, BitmapMixin):
+class EditFrame(BitmapMixin, TopLevelBase, EditStylesMixin):
     WX_CLASS = "wxFrame"
     _PROPERTIES =["Widget", "title", "icon", "centered", "sizehints","menubar", "toolbar", "statusbar", "style"]
     PROPERTIES = TopLevelBase.PROPERTIES + _PROPERTIES + TopLevelBase.EXTRA_PROPERTIES
