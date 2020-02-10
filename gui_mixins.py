@@ -217,7 +217,7 @@ class BitmapMixin(object):
         # only with slots before/after
         if typename=="bitmap":
             return (True, None)
-        return super(BitmapMixin, self).check_compatibility(self, widget, typename)
+        return super(BitmapMixin, self).check_compatibility(widget, typename)
 
     def set_attribute(self, fmt, bitmap):
         if fmt!="file.bitmap": return
