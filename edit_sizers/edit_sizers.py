@@ -1986,6 +1986,7 @@ class EditGridBagSizer(EditFlexGridSizer):
 
         self._set_growable()
         self.layout(True)
+        misc.rebuild_tree(self)
 
     def remove_row(self, pos):
         row,col = self._get_row_col(pos)
@@ -2035,8 +2036,6 @@ class EditGridBagSizer(EditFlexGridSizer):
             cols_p = self.properties["cols"]
             if rows_p.previous_value is not None or cols_p.previous_value is not None:
                 # actually a user input
-                delete_rows = []
-                delete_cols = []
                 rows = cols = None # default arguments
                 if "rows" in modified:
                     previous_rows = rows_p.previous_value
