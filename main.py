@@ -15,7 +15,7 @@ from xml.sax import SAXParseException
 
 # import project modules
 import application
-import common, config, compat, misc, clipboard, history
+import common, config, compat, misc, history
 import new_properties as np
 import preferencesdialog, msgdialog, bugdialog, about
 import log
@@ -1403,6 +1403,7 @@ class wxGlade(wx.App):
         exc_tb:    Call stack of the exception
 
         see: bugdialog.BugReport(), bugdialog.Show()"""
+        if 'WINGDB_ACTIVE' in os.environ: raise
         bugdialog.ShowEI(exc_type, exc_value, exc_tb)
         if compat.PYTHON2: sys.exc_clear()
 
