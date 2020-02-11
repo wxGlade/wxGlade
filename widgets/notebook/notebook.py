@@ -98,7 +98,7 @@ class EditNotebook(ManagedBase, EditStylesMixin):
             if c.IS_SLOT:
                 self.widget.AddPage(c.widget, label)
 
-    def on_load(self):
+    def on_load(self, child=None):
         ManagedBase.on_load(self)
         self.pages = None
 

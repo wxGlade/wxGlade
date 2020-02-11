@@ -406,7 +406,6 @@ class ClipboardXmlWidgetBuilder(XmlWidgetBuilder):
             self._objects.push(fake_sizer)
             self._objects.push(fake_sizeritem)
 
-
         self.depth_level = 0
         self._appl_started = True  # no application tag when parsing from the clipboard
 
@@ -508,12 +507,13 @@ class ClipboardXmlWidgetBuilder(XmlWidgetBuilder):
         self.depth_level -= 1
 
         if not self.depth_level:
+            self.parent.on_load(child=self.top_obj)  # e.g. a GridBagSizer needs to check overlapped slots
             common.app_tree.auto_expand = True
             try:
                 # show the first object and update its layout
                 #if self.top_obj.node.parent.widget.is_visible():
                 #    common.app_tree.show_widget(self.top_obj.node)
-                if self.top_obj.parent.widget:
+                if self.parent.widget:
                     self.top_obj.create_widgets()
             except AttributeError:
                 self._logger.exception( _('Exception caused by obj: %s'), self.top_obj )
@@ -644,5 +644,5 @@ class Sizeritem(np.PropertyOwner):
         self.flag = np.ManagedFlags(None)
         self.pos = np.SpinProperty(None)
 
-    def on_load(self):
+    def on_load(self, child=None):
         pass

@@ -374,8 +374,9 @@ class EditBase(np.PropertyOwner):
                 if pos_max is not None and pos>pos_max: continue
                 Slot(self, pos)
 
-    def on_load(self):
+    def on_load(self, child=None):
         "called from XML parser, right after the widget is loaded; children have been loaded already"
+        # when a child has been pasted in, it's also called, with argument child
         if not self.CHILDREN is 0:
             self._add_slots()
 

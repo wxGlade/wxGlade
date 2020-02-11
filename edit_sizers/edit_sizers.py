@@ -1815,7 +1815,7 @@ class EditGridBagSizer(EditFlexGridSizer):
         if self.parent.IS_SIZER and not dont_add:
             self.parent._add_item(self, self.pos)
 
-    def check_span_range(self, pos, rowspan=1, colspan=1):
+    def check_span_range(self, pos, rowspan=1, colspan=1, inserting=False):
         "called from LayoutSpanProperty to set the maximum row/col span range"
         row, col = self._get_row_col(pos)
         # check max colspan
@@ -1830,7 +1830,9 @@ class EditGridBagSizer(EditFlexGridSizer):
                     break
                 child = self.children[p]
                 if not isinstance(child, SizerSlot): break
+                if inserting and child.overlapped: break
             if p>=len(self.children) or not isinstance(child, SizerSlot): break
+            if inserting and child.overlapped: break
             # only empty cells found
             max_col = c
         # check max rowspan
@@ -1845,7 +1847,9 @@ class EditGridBagSizer(EditFlexGridSizer):
                     break
                 child = self.children[p]
                 if not isinstance(child, SizerSlot): break
+                if inserting and child.overlapped: break
             if p>=len(self.children) or not isinstance(child, SizerSlot): break
+            if inserting and child.overlapped: break
             # only empty cells found
             max_row = r
         return max_row-row+1, max_col-col+1
@@ -2060,10 +2064,20 @@ class EditGridBagSizer(EditFlexGridSizer):
 
         EditFlexGridSizer.properties_changed(self, modified)
 
-    def on_load(self):
-        # called from XML parser right after loading the widget
+    def on_load(self, child=None):
+        # called from XML parser right after loading the widget or when pasting an item into a slot
+        if child is not None:
+            # an item is being pasted into a slot; we might need to limit the spanning
+            span_p = child.properties["span"]
+            if span_p.value != (1,1):
+                # check whether spanning is OK or needs to be reduced
+                span = span_p.value
+                max_span = self.check_span_range(child.pos, *span, inserting=True)
+                new_span = (min(span[0], max_span[0]), min(span[1], max_span[1]))
+                if new_span != span: span_p.set(new_span)
+
         self._check_slots(remove_only=True)
-        EditFlexGridSizer.on_load(self)
+        EditFlexGridSizer.on_load(self, child)
 
 
 def change_sizer(old, new):
