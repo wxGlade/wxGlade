@@ -11,7 +11,7 @@ import wx
 import os
 import common, config, misc, compat
 import new_properties as np
-from edit_windows import WindowBase, TopLevelBase, EditStylesMixin
+from edit_windows import WindowBase, TopLevelBase, EditStylesMixin, Slot
 from gui_mixins import BitmapMixin
 
 
@@ -150,19 +150,35 @@ class EditMDIChildFrame(EditFrame):
     ATT_CHILDREN = ["_menubar", "_toolbar"]
 
 
+# options for WindowDialog when interactively adding a Frame
+options = ["Add panel and sizer"]
+last_choices = [True]
+
+if config.debugging:
+    # for testing the error handling
+    options.append("Provoke an error")
+    last_choices.append(False)
+
+
 def builder(parent, pos, klass=None, base=None, name=None):
     "factory function for EditFrame objects"
+    global last_choices
     if klass is None or base is None:
         import window_dialog
         base_classes = ['wxFrame', 'wxMDIChildFrame']
         klass = 'wxFrame' if common.root.language.lower()=='xrc' else 'MyFrame'
         
-        dialog = window_dialog.WindowDialog(klass, base_classes, 'Select frame class', True)
+        dialog = window_dialog.WindowDialog(klass, base_classes, 'Select frame class', True, options, last_choices)
         res = dialog.show()
         dialog.Destroy()
         if res is None: return None
         klass, base = res
+        last_choices[:] = dialog.get_options()  # remember for next time
+        if config.debugging and last_choices[1]: XXX  # provoke an error
         name = dialog.get_next_name("frame")
+        interactive = True
+    else:
+        interactive = False  # last_choices not to be obeyed
 
     if base == "wxFrame":
         base_class = EditFrame
@@ -174,9 +190,14 @@ def builder(parent, pos, klass=None, base=None, name=None):
     editor.widget.Show()
     editor.design.update_label()
 
-    # add a default vertical sizer to the frame
-    import edit_sizers
-    edit_sizers._builder(editor, 0)
+    if interactive and last_choices[0]:
+        # add a default panel and vertical sizer to the frame
+        import edit_sizers, widgets.panel.panel
+        panel_editor = widgets.panel.panel.builder(editor, 0)
+        edit_sizers._builder(panel_editor, 0)
+    else:
+        # just add a slot
+        Slot(editor, 0)
 
     import clipboard
     editor.drop_target = clipboard.DropTarget(editor)

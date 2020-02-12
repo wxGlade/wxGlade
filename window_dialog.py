@@ -21,7 +21,7 @@ def _get_all_class_names(item):
 class WindowDialog(wx.Dialog):
     # dialog for builder function
     parent = parent_property = None  # used by StandaloneOrChildDialog
-    def __init__(self, klass, base_classes=None, message="Select Class", toplevel=True):
+    def __init__(self, klass, base_classes=None, message="Select Class", toplevel=True, options=None, defaults=None):
         pos = wx.GetMousePosition()
         wx.Dialog.__init__(self, common.main, -1, _(message), pos)
 
@@ -65,6 +65,18 @@ class WindowDialog(wx.Dialog):
         hszr.Add(wx.StaticText(self, -1, _("class"),), 0, wx.ALIGN_CENTRE_VERTICAL|wx.ALIGN_RIGHT|wx.EXPAND|wx.ALL, 3)
         hszr.Add(self.klass, 2)
         szr.Add(hszr, 0, wx.EXPAND)
+        
+        # options
+        if options:
+            szr.Add( (10,10) )
+            self.options = []
+            for o, option in enumerate(options):
+                cb = wx.CheckBox(self, -1, _(option))
+                cb.SetValue(defaults and defaults[o])
+                szr.Add(cb, 0, wx.ALL, 10)
+                self.options.append(cb)
+            szr.Add( (10,10) )
+
         # buttons
         btnbox = wx.BoxSizer(wx.HORIZONTAL)
         self.btnOK = btnOK = wx.Button(self, wx.ID_OK, _('OK'))
@@ -137,6 +149,9 @@ class WindowDialog(wx.Dialog):
             return klass
         base = self.base.GetStringSelection()
         return klass, base
+
+    def get_options(self):
+        return [o.GetValue() for o in self.options]
 
 
 class StandaloneOrChildDialog(WindowDialog):
