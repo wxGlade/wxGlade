@@ -185,7 +185,8 @@ class DropTarget(wx.DropTarget):
             if dst_widget.IS_SLOT:
                 # fill slot with a StaticBitmap 
                 import widgets.static_bitmap.static_bitmap
-                widgets.static_bitmap.static_bitmap.builder(dst_widget.parent, dst_widget.pos, bitmap)
+                new_widget = widgets.static_bitmap.static_bitmap.builder(dst_widget.parent, dst_widget.pos, bitmap)
+                misc.rebuild_tree(new_widget)
                 return default
             # set attribute value
             dst_widget.set_attribute(fmt, bitmap)
