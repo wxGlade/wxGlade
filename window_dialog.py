@@ -64,27 +64,32 @@ class WindowDialog(wx.Dialog):
         hszr = wx.BoxSizer(wx.HORIZONTAL)
         hszr.Add(wx.StaticText(self, -1, _("class"),), 0, wx.ALIGN_CENTRE_VERTICAL|wx.ALIGN_RIGHT|wx.EXPAND|wx.ALL, 3)
         hszr.Add(self.klass, 2)
-        szr.Add(hszr, 0, wx.EXPAND)
-        
+        szr.Add(hszr, 0, wx.EXPAND|wx.ALL, 5)
+
         # options
-        if options:
-            szr.Add( (10,10) )
+        if options and False:
+            line = wx.StaticLine(self, -1, size=(20,-1), style=wx.LI_HORIZONTAL)
+            szr.Add(line, 0, wx.GROW|wx.ALIGN_CENTER_VERTICAL|wx.ALL, 5)
+
             self.options = []
             for o, option in enumerate(options):
                 cb = wx.CheckBox(self, -1, _(option))
                 cb.SetValue(defaults and defaults[o])
-                szr.Add(cb, 0, wx.ALL, 10)
+                szr.Add(cb, 0, wx.ALL, 5)
                 self.options.append(cb)
-            szr.Add( (10,10) )
+
+            line = wx.StaticLine(self, -1, size=(20,-1), style=wx.LI_HORIZONTAL)
+            szr.Add(line, 0, wx.GROW|wx.ALIGN_CENTER_VERTICAL|wx.RIGHT|wx.TOP|wx.LEFT, 5)
 
         # buttons
-        btnbox = wx.BoxSizer(wx.HORIZONTAL)
-        self.btnOK = btnOK = wx.Button(self, wx.ID_OK, _('OK'))
-        btnCANCEL = wx.Button(self, wx.ID_CANCEL, _('Cancel'))
-        btnbox.Add(btnOK, 0, wx.ALL, 3)
-        btnbox.Add(btnCANCEL, 0, wx.ALL, 3)
-        btnOK.SetFocus()
-        szr.Add(btnbox, 0, wx.ALL|wx.ALIGN_CENTER, 3)
+        btnbox = wx.StdDialogButtonSizer()
+        self.btnOK = btnOK = wx.Button(self, wx.ID_OK)#, _('OK'))
+        btnOK.SetDefault()
+        btnCANCEL = wx.Button(self, wx.ID_CANCEL)#, _('Cancel'))
+        btnbox.AddButton(btnOK)#, 0, wx.ALL, 3)
+        btnbox.AddButton(btnCANCEL)#, 0, wx.ALL, 3)
+        btnbox.Realize()
+        szr.Add(btnbox, 0, wx.ALL|wx.ALIGN_CENTER, 5)
         self.SetAutoLayout(True)
         self.SetSizer(szr)
         szr.Fit(self)
