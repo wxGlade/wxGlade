@@ -1403,7 +1403,6 @@ class wxGlade(wx.App):
         exc_tb:    Call stack of the exception
 
         see: bugdialog.BugReport(), bugdialog.Show()"""
-        if 'WINGDB_ACTIVE' in os.environ: raise
         bugdialog.ShowEI(exc_type, exc_value, exc_tb)
         if compat.PYTHON2: sys.exc_clear()
 
