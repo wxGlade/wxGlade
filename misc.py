@@ -705,3 +705,21 @@ def get_absolute_path(path, for_preview=False):
     if not os.path.isdir(p): p = os.path.dirname(p)
 
     return os.path.abspath( os.path.join(p, path) )
+
+
+def get_relative_path(filename):
+    # returns a relative path if filename is inside the project directory
+    if filename:
+        project_path = common.root.filename
+        if project_path:
+            project_path = os.path.abspath( os.path.dirname(project_path) )
+            if filename.startswith(project_path):
+                filename = "./" + os.path.relpath(filename, project_path)
+        if os.path.sep=="\\":
+            filename = filename.replace("\\", "/")
+    return filename
+
+
+def RelativeFileSelector(message="Select the file", *args, **kwargs):
+    # returns a relative path if the selected file is inside the project directory
+    return get_relative_path( wx.FileSelector(_(message), *args, **kwargs) )

@@ -1966,13 +1966,9 @@ class FileNameProperty(DialogProperty):
     def on_drop_file(self, filename):
         if not wx.GetKeyState(wx.WXK_ALT) and not wx.GetKeyState(wx.WXK_CONTROL):
             # insert relative filename, if available and the filename is under the project directory
-            project_path = common.root.filename
-            if project_path:
-                project_path = os.path.abspath( os.path.dirname(project_path) )
-                if filename.startswith(project_path):
-                    filename = "./" + os.path.relpath(filename, project_path)
-        if os.path.sep=="\\":
-            filename = filename.replace("\\", "/")
+            filename = misc.get_relative_path(filename)
+
+        if os.path.sep=="\\": filename = filename.replace("\\", "/")
 
         self._check_for_user_modification(filename, activate=True)
         self.update_display()
@@ -2009,7 +2005,7 @@ class BitmapProperty(FileNameProperty):
         # set color to indicate errors and warnings
         bgcolor = wx.WHITE
         if self._warning:
-            bgcolor = Colour(255, 255, 0, 255)  # yellow
+            bgcolor = wx.Colour(255, 255, 0, 255)  # yellow
         if self._error:
             bgcolor = wx.RED
         self.text.SetBackgroundColour( bgcolor )
@@ -2025,8 +2021,12 @@ class BitmapProperty(FileNameProperty):
         t = FileNameProperty._find_tooltip(self)
         if t: ret.append( t )
         if ret and not self._warning and not self._error:
-            ret.append( '\n\nYou can either drop or select a file or you can specify the bitmap using '
-                        'hand-crafted statements with the prefixes "art:", "code:", "empty:" or "var:".\n'
+            ret.append( '\n\nIf the bitmap should be loaded from a file, use the "..." button or just\n'
+                        'drop a file on the text field.\n'
+                        'When dropping a file from inside the project directory, a relative path is\n'
+                        'entered unless you hold the ALT or CTRL key.\n\n'
+                        'Alternatively, you can specify the bitmap using hand-crafted statements\n'
+                        'with the prefixes "art:", "code:", "empty:" or "var:".\n'
                         'Double-click to see the wxGlade documentation how to write such statements.' )
         return "\n".join(ret)
 

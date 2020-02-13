@@ -103,6 +103,9 @@ class ToolsDialog(wx.Dialog):
         if items:
             self.add_items(items)
             self._select_item(0)
+            self._enable_fields(True)
+        else:
+            self._enable_fields(False)
 
     def on_char(self, event):
         # keyboard navigation: up/down arrows
@@ -215,6 +218,10 @@ class ToolsDialog(wx.Dialog):
             control = getattr(self, name)
             control.Enable(enable)
             if clear and isinstance(control, wx.TextCtrl): control.SetValue("")
+
+        self.bitmap1_button.Enable(enable)
+        self.bitmap2_button.Enable(enable)
+
         if clear: self._ignore_events = restore
 
     def _get_item_text(self, index, col):
@@ -420,7 +427,7 @@ class ToolsDialog(wx.Dialog):
             current = ""
         else:
             directory = ""
-        value = wx.FileSelector(_(title), directory, current, wildcard="*.*", flags=wx.FD_OPEN)
+        value = misc.RelativeFileSelector(title, directory, current, wildcard="*.*", flags=wx.FD_OPEN)
         if value:
             control.SetValue(value)
 

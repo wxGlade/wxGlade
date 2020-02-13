@@ -8,7 +8,7 @@ wxBitmapButton objects
 
 import wx
 
-import common
+import common, misc
 from edit_windows import ManagedBase, EditStylesMixin
 from gui_mixins import BitmapMixin
 import new_properties as np
@@ -50,7 +50,7 @@ class EditBitmapButton(BitmapMixin, ManagedBase, EditStylesMixin):
 def builder(parent, pos):
     "factory function for EditBitmapButton objects"
     name = common.root.get_next_name('bitmap_button_%d', parent)
-    bitmap = wx.FileSelector(_("Select the image for the button"))
+    bitmap = misc.RelativeFileSelector("Select the image for the button")
     with parent.frozen():
         editor = EditBitmapButton(name, parent, bitmap, pos)
         editor.properties["style"].set_to_default()

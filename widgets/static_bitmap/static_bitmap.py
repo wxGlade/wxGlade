@@ -8,7 +8,7 @@ wxStaticBitmap objects
 
 import wx
 
-import common, config
+import common, misc
 from edit_windows import ManagedBase, EditStylesMixin
 from gui_mixins import BitmapMixin
 import new_properties as np
@@ -60,7 +60,7 @@ def builder(parent, pos, bitmap=None):
     "factory function for EditStaticBitmap objects"
     name = common.root.get_next_name('bitmap_%d', parent)
     if bitmap is None:
-        bitmap = wx.FileSelector(_("Select the image"))
+        bitmap = misc.RelativeFileSelector("Select the image")
         if bitmap is None: return
     with parent.frozen():
         editor = EditStaticBitmap(name, parent, bitmap, pos)

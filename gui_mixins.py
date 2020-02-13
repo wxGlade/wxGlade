@@ -222,8 +222,7 @@ class BitmapMixin(object):
     def set_attribute(self, fmt, bitmap):
         if fmt!="file.bitmap": return
         prop = "bitmap" if "bitmap" in self.PROPERTIES else "icon"
-        self.properties[prop].set(bitmap)
-        self.properties_changed( [prop] )
+        self.properties[prop].on_drop_file(bitmap)  # set relative path
 
     # helpers ==========================================================================================================
     def _check_bitmaps(self, modified=None):
