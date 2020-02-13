@@ -26,9 +26,8 @@ wxglade.log
 # automatically generated version file
 version.py
 wxgladeDS.py
-tests/generated/*.*
+/tests/generated/*
 sphinx/images/*.*
-tests/generated/PythonSubclass/PythonSubclass.py
 docs/doctrees/*.*
 docs/html/_sources/*.*
 /tests/test_bugs_new_38-64.py
