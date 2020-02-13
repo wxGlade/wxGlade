@@ -46,7 +46,7 @@ class WindowDialog(wx.Dialog):
         # for frame or standalone? this is used by the derived class below and just for menu bar and tool bar
         if self.parent_property and self.parent:
             # self.parent must be set by the derived class in this case; here we check whether it is set already
-            choices = ["Add to %s '%s'"%(self.parent.base[2:], self.parent.name),
+            choices = ["Add to %s '%s'"%(self.parent.WX_CLASS[2:], self.parent.name),
                        "Standalone"]
             self.standalone  = wx.RadioBox(self, -1, ("Type"), choices=choices, style=wx.RA_VERTICAL)
             self.standalone.Bind(wx.EVT_RADIOBOX, self.on_standalone)
