@@ -67,7 +67,7 @@ class WindowDialog(wx.Dialog):
         szr.Add(hszr, 0, wx.EXPAND|wx.ALL, 5)
 
         # options
-        if options and False:
+        if options:
             line = wx.StaticLine(self, -1, size=(20,-1), style=wx.LI_HORIZONTAL)
             szr.Add(line, 0, wx.GROW|wx.ALIGN_CENTER_VERTICAL|wx.ALL, 5)
 

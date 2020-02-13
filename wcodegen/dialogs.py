@@ -36,9 +36,15 @@ class WidgetStyleSelectionDialog(wx.Dialog):
                 szr.Add(cb, 0, wx.ALL, 10)
                 self.options.append(cb)
 
-        btn = wx.Button(self, wx.ID_OK, _('OK'))
-        btn.SetDefault()
-        szr.Add(btn, 0, wx.BOTTOM | wx.ALIGN_CENTER, 10)
+        # buttons
+        btnbox = wx.StdDialogButtonSizer()
+        btnOK = wx.Button(self, wx.ID_OK)
+        btnOK.SetDefault()
+        btnCANCEL = wx.Button(self, wx.ID_CANCEL)
+        btnbox.AddButton(btnOK)
+        btnbox.AddButton(btnCANCEL)
+        btnbox.Realize()
+        szr.Add(btnbox, 0, wx.ALL|wx.ALIGN_CENTER, 5)
 
         self.SetAutoLayout(True)
         self.SetSizer(szr)
