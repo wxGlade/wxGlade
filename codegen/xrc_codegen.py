@@ -115,8 +115,7 @@ class DefaultXrcObject(XrcObject):
         XrcObject.__init__(self, widget.klass)
         self.widget = widget
         self.name = widget.name
-        #self.klass = widget.base  # custom classes aren't allowed in XRC
-        self.klass = widget.WX_CLASS  # custom classes aren't allowed in XRC
+        self.klass = widget.WX_CLASS
         self.subclass = widget.klass
 
     def write_property(self, name, val, output, ntabs):
@@ -324,6 +323,13 @@ class XRCCodeWriter(BaseLangCodeWriter, wcodegen.XRCMixin):
         self.save_file( self.output_file_name, self.out_file )
         self.out_file = None
 
+    def generate_code(self, root, widget=None):
+        "entry point for recursive code generation via _generate_code()"
+        # root must be application.Application instance for now
+        for c in root.children or []:
+            if widget is not None and c is not widget: continue # for preview
+            self._generate_code(None, None, None, c)
+
     def _generate_code(self, klass, parent, parent_builder, obj):
         # XXX old implementation from __init__.py before re-factoring 'real' code generation
         # recursively generate code, for anything except application.Application
@@ -332,7 +338,7 @@ class XRCCodeWriter(BaseLangCodeWriter, wcodegen.XRCMixin):
         if obj.IS_SLOT or obj.classname=="spacer":
             if obj.classname!="slot":  # "slot" has no code generator
                 self.add_object(obj)
-                if self.language=="XRC" and obj.classname in ("spacer", "sizerslot"):
+                if obj.classname in ("spacer", "sizerslot"):
                     self.add_sizeritem(obj.parent_class_object, obj.parent, obj)
             return
 
@@ -361,17 +367,10 @@ class XRCCodeWriter(BaseLangCodeWriter, wcodegen.XRCMixin):
             assert obj.children.count(child)<=1
             self._generate_code(None, None, None, child)  # XRCCodeWriter does not use the other args
 
-        if IS_CLASS:
-            self.finalize_class(obj)
-
         # check whether the object belongs to some sizer; if applicable, add it to the sizer at the top of the stack
         if added and parent.IS_SIZER:
             if obj.classname not in ("spacer",):  # spacer and slot are adding itself to the sizer
                 self.add_sizeritem(parent_class_object, parent, obj)
-
-    def add_app(self, app, top_win_class):
-        "In the case of XRC output, there's no wxApp code to generate"
-        pass
 
     def add_object(self, sub_obj):
         "Adds the object sub_obj to the XRC tree. The first argument is unused."
@@ -390,12 +389,8 @@ class XRCCodeWriter(BaseLangCodeWriter, wcodegen.XRCMixin):
             # (if it was there, i.e. the object is not a sizer), because this isn't a true toplevel object
             if sub_obj in self.xrc_objects:
                 del self.xrc_objects[sub_obj]
-        # let's see if sub_obj's parent already has an XrcObject: if so, it's temporarily stored in self.xrc_objects
-        #if top_obj in self.xrc_objects:
-            #top_xrc = self.xrc_objects[top_obj]
-        #else:
         if not getattr(top_obj, "xrc"):
-            # ...otherwise, create it and store it in the self.xrc_objects dict
+            # create XrcObject and store it in the self.xrc_objects dict
             top_xrc = self.obj_builders.get( top_obj.WX_CLASS, DefaultXrcObject )(top_obj)
             top_obj.xrc = top_xrc
             self.xrc_objects[top_obj] = top_xrc
@@ -437,9 +432,6 @@ class XRCCodeWriter(BaseLangCodeWriter, wcodegen.XRCMixin):
             code_obj.xrc = xrc_obj
             # add the xrc_obj to the dict of the toplevel ones
             self.xrc_objects[code_obj] = xrc_obj
-
-    def finalize_class(self, code_obj):
-        pass
 
     def generate_code_id(self, obj, id=None):
         return '', ''

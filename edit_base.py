@@ -481,7 +481,7 @@ class Slot(EditBase):
         np.PropertyOwner.__init__(self)
         # initialise instance logger
         self._logger = logging.getLogger(self.__class__.__name__)
-        self.klass = self.classname = self.base = "slot"
+        self.klass = self.classname = "slot"
         self.label = label
 
         # initialise instance properties
