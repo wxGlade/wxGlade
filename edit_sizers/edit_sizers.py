@@ -2066,6 +2066,12 @@ class EditGridBagSizer(EditFlexGridSizer):
 
     def on_load(self, child=None):
         # called from XML parser right after loading the widget or when pasting an item into a slot
+        # ensure that rows/cols is not 0; this is actually an error in the file
+        rows = self.rows
+        cols = self.cols
+        if rows==0: self.properties["rows"].set( (len(self.children)-1)//cols +1 )
+        if cols==0: self.properties["cols"].set( (len(self.children)-1)//rows +1 )
+
         if child is not None:
             # an item is being pasted into a slot; we might need to limit the spanning
             span_p = child.properties["span"]
