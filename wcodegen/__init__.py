@@ -344,7 +344,7 @@ class BaseWidgetWriter(StylesMixin, BaseCodeWriter):
         # call inherited constructor
         BaseCodeWriter.__init__(self)
         self.config = {}
-        self.klass = klass  # the .base attribute of the widgets, e.g. EditFrame.base='wxFrame'
+        self.klass = klass
 
         # store initial content
         if hasattr(self, 'import_modules'):
@@ -353,8 +353,7 @@ class BaseWidgetWriter(StylesMixin, BaseCodeWriter):
             self.__import_modules = []
 
         # Copy non-style settings (Style settings will be handled in StylesMixin fully)
-        if klass and klass in config.widget_config:
-            self.klass = klass
+        if klass in config.widget_config:
             for item in config.widget_config[self.klass]:
                 if item == 'style_defs':
                     continue
