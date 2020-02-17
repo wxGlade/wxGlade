@@ -37,7 +37,6 @@ probably not:
 
 Code generation:
  * better integrate automatic and user generated code (-> rev. 1.1)
- * Code (property): read user code from file?
  * refactor xrc_codegen.py to write XRC directly, not via separate hierarchy of XrcObjects
 Contribution required:
  * C++ dynamic event binding:  https://docs.wxwidgets.org/3.0/overview_events.html#overview_events_bind
@@ -52,6 +51,7 @@ done:
  * Python: allow lambda functions as event handlers
 probably not:
  * add a preview tab for the generated code? (no, what would be the use case?)
+ * Code (property): read user code from file?
 
 
 File Format:
