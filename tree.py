@@ -136,7 +136,7 @@ class WidgetTree(wx.TreeCtrl):#, Tree):
 
         new_name = new_label = new_title = new_tab = new_class = new_stockitem = None
         
-        if widget.klass != widget.base and widget.klass != 'wxScrolledWindow':
+        if widget.klass != widget.WX_CLASS and widget.klass != 'wxScrolledWindow':
             if new_value.count("(")==1 and new_value.count(")")==1:
                 pre, new_class = new_value.split("(")
                 new_class, post = new_class.split(")")

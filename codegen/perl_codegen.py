@@ -92,7 +92,7 @@ class SourceFileContent(BaseSourceFileContent):
                     self.new_classes_inserted = True
                 self.class_name = result.group(1)
                 self.class_name = self.format_classname(self.class_name)
-                self.classes[self.class_name] = 1  # add the found class to the list of classes of this module
+                self.classes.add( self.class_name )  # add the found class to the list of classes of this module
                 out_lines.append(line)
             elif not inside_block:
                 result = self.rec_block_start.match(line)
@@ -119,8 +119,7 @@ class SourceFileContent(BaseSourceFileContent):
                     if result:
                         which_handler = result.group('handler')
                         which_class = self.format_classname(result.group('class'))
-                        self.event_handlers.setdefault(
-                            which_class, {})[which_handler] = 1
+                        self.event_handlers.setdefault( which_class, set() ).add( which_handler )
                     if self.class_name and self.is_end_of_class(line):
                         # add extra event handlers here...
                         out_lines.append( '<%swxGlade event_handlers %s>' % (self.nonce, self.class_name) )

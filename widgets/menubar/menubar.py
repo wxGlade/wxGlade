@@ -608,19 +608,13 @@ class MenuHandler(BaseXmlBuilderTagHandler):
         if name == 'menu':
             self.menu_depth += 1
             if self.menu_depth == 1:
-                t = MenuTree(attrs['name'],
-                             attrs['label'],
-                             attrs.get('itemid', ''),
-                             attrs.get('help_str', ''),
-                             handler=attrs.get('handler', ''))
+                t = MenuTree( attrs['name'], attrs['label'], attrs.get('itemid', ''), attrs.get('help_str', ''),
+                              handler=attrs.get('handler', '') )
                 self.curr_menu.append( (t.root,) )
                 self.menus.append(t)
                 return
-            node = MenuTree.Node(label=attrs['label'],
-                                 name=attrs['name'],
-                                 id=attrs.get('itemid', ''),
-                                 help_str=attrs.get('help_str', ''),
-                                 handler=attrs.get('handler', ''))
+            node = MenuTree.Node( label=attrs['label'], name=attrs['name'], id=attrs.get('itemid', ''),
+                                  help_str=attrs.get('help_str', ''), handler=attrs.get('handler', '') )
             cm = self.curr_menu[-1]
             cm[0].children.append(node)
             node.parent = cm[0]

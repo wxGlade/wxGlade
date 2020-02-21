@@ -12,7 +12,7 @@ import os.path, re
 
 from codegen import BaseLangCodeWriter, BaseSourceFileContent, _replace_tag
 from codegen import ClassLines as BaseClassLines
-import config, compat, misc
+import config
 import wcodegen
 
 
@@ -143,7 +143,7 @@ class SourceFileContent(BaseSourceFileContent):
                     self.new_classes_inserted = True
                 self.class_name = result.group(1)
                 self.class_name = self.format_classname(self.class_name)
-                self.classes[self.class_name] = 1  # add the found class to the list of classes of this module
+                self.classes.add( self.class_name )  # add the found class to the list of classes of this module
                 out_lines.append(line)
             elif not inside_block:
                 result = self.rec_block_start.match(line)
@@ -174,7 +174,7 @@ class SourceFileContent(BaseSourceFileContent):
                             prev_was_handler = True
                             which_handler = result.group('handler')
                             which_class = self.class_name
-                            self.event_handlers.setdefault(which_class, {})[which_handler] = 1
+                            self.event_handlers.setdefault( which_class, set() ).add( which_handler )
                         else:
                             if prev_was_handler:
                                 # add extra event handlers here...
@@ -641,11 +641,11 @@ class CPPCodeWriter(BaseLangCodeWriter, wcodegen.CppMixin):
                 t = self.tabs(1)
                 hwrite('\n' + t + 'DECLARE_EVENT_TABLE();\n')
                 hwrite('\npublic:\n')
-                already_there = {}
+                already_there = set()
                 for win_id, evt, handler, evt_type in event_handlers:
                     if handler not in already_there:
                         hwrite('%svirtual void %s(%s &event); // wxGlade: <event_handler>\n' % (t, handler, evt_type))
-                        already_there[handler] = 1
+                        already_there.add( handler )
 
             hwrite('}; // wxGlade: end class\n\n')
 
@@ -691,12 +691,12 @@ class CPPCodeWriter(BaseLangCodeWriter, wcodegen.CppMixin):
             header_buffer = []
             hwrite = header_buffer.append
             if event_handlers:
-                already_there = prev_src.event_handlers.get(classname, {})
+                already_there = prev_src.event_handlers.get(classname, set())
                 t = self.tabs(1)
                 for win_id, evt, handler, evt_type in event_handlers:
                     if handler not in already_there:
                         hwrite('%svirtual void %s(%s &event); // wxGlade: <event_handler>\n' % (t, handler, evt_type))
-                        already_there[handler] = 1
+                        already_there.add( handler )
                 if classname not in prev_src.event_table_def:
                     hwrite('\nprotected:\n')
                     hwrite(self.tabs(1) + 'DECLARE_EVENT_TABLE()\n')
@@ -990,14 +990,14 @@ void %(klass)s::%(handler)s(%(evt_type)s &event)  // wxGlade: %(klass)s.<event_h
 """
 
         if prev_src:
-            already_there = prev_src.event_handlers.get(code_obj.klass, {})
+            already_there = prev_src.event_handlers.get(code_obj.klass, set())
         else:
-            already_there = {}
+            already_there = set()
 
         for win_id, event, handler, evt_type in event_handlers:
             if handler not in already_there:
                 swrite( tmpl_handler % {'evt_type': evt_type, 'handler': handler, 'klass': code_obj.klass, 'tab': tab} )
-                already_there[handler] = 1
+                already_there.add( handler )
         if is_new or not prev_src:
             swrite('\n\n')
         swrite('// wxGlade: add %s event handlers\n' % code_obj.klass)

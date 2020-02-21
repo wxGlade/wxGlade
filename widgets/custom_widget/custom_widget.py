@@ -155,7 +155,7 @@ def builder(parent, pos):
     dialog.Destroy()
     if res != wx.ID_OK: return
 
-    name = common.root.get_next_name('window_%d', parent)
+    name = parent.toplevel_parent.get_next_name('window_%d')
     with parent.frozen():
         editor = CustomWidget(name, klass, parent, pos)
         editor.properties["arguments"].set( [['$parent'], ['$id']] )  # ,['$width'],['$height']]

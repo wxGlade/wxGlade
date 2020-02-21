@@ -70,7 +70,7 @@ class EditListBox(ManagedBase, EditStylesMixin):
 
 def builder(parent, pos):
     "factory function for EditListBox objects"
-    name = common.root.get_next_name('list_box_%d', parent)
+    name = parent.toplevel_parent.get_next_name('list_box_%d')
     with parent.frozen():
         editor = EditListBox(name, parent, [[u'choice 1']], pos)
         editor.properties["style"].set_to_default()

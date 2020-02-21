@@ -47,10 +47,9 @@ def builder(parent, pos):
         res = dialog.ShowModal()
     style = dialog.get_selection()
     dialog.Destroy()
-    if res != wx.ID_OK:
-        return
+    if res != wx.ID_OK: return
 
-    name = common.root.get_next_name('gauge_%d', parent)
+    name = parent.toplevel_parent.get_next_name('gauge_%d')
     with parent.frozen():
         editor = EditGauge(name, parent, style, pos)
         editor.properties["flag"].set("wxEXPAND")

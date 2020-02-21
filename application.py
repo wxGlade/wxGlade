@@ -278,8 +278,6 @@ class Application(EditRoot):
         self.widget = None  # always None, just to keep interface to Tree similar to other editors
         self.children = []  # the toplevel windows
         self.node = None
-        
-        self._NUMBERS = {}
 
     def set_for_version(self, value):
         self.for_version = self.for_version_prop.get_string_value()
@@ -447,7 +445,6 @@ class Application(EditRoot):
         p["top_window"].set_choices([])
         # do not reset language, but call set_language anyway to update the wildcard of the file dialog
         self._set_language()
-        self._NUMBERS.clear()
 
     def init(self):
         "initializes the attributes of the app before loading a file"
@@ -766,16 +763,6 @@ class Application(EditRoot):
         return clipboard._paste(None, 0, clipboard_data)
 
     ####################################################################################################################
-    def get_next_name(self, fmt, parent):
-        names = parent.toplevel_parent.names
-        number = self._NUMBERS.get(fmt, 1)
-        while True:
-            name = fmt % number
-            if not name in names:
-                self._NUMBERS[fmt] = number
-                return name
-            number += 1
-
     def _label_editable(self):
         return False
 

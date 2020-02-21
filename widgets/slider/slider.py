@@ -72,7 +72,7 @@ def builder(parent, pos):
     if res != wx.ID_OK:
         return
 
-    name = common.root.get_next_name('slider_%d', parent)
+    name = parent.toplevel_parent.get_next_name('slider_%d')
     with parent.frozen():
         editor = EditSlider(name, parent, style, pos)
         editor.properties["flag"].set("wxEXPAND")

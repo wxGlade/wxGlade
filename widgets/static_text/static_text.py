@@ -63,7 +63,7 @@ class EditStaticText(ManagedBase, EditStylesMixin):
 
 def builder(parent, pos):
     "factory function for EditStaticText objects"
-    name = common.root.get_next_name('static_text_%d', parent)
+    name = parent.toplevel_parent.get_next_name('static_text_%d')
     with parent.frozen():
         editor = EditStaticText(name, parent, name, pos)
         editor.properties["style"].set_to_default()

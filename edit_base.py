@@ -48,7 +48,6 @@ class EditBase(np.PropertyOwner):
 
         # initialise instance properties
         self.name  = np.NameProperty(name)
-        if self.IS_TOPLEVEL: self.names = {}  # XXX change to set
 
         # initialise structure
         self.parent = parent
@@ -69,8 +68,21 @@ class EditBase(np.PropertyOwner):
             self.parent.add_item(self, pos)
 
         # the toplevel parent keeps track of the names
-        if self.IS_NAMED:
-            self.toplevel_parent.names[name] = 1
+        if self.IS_TOPLEVEL:
+            # either derived from edit_windows.TopLevelBase or a toplevel Menu/ToolBar where IS_TOPLEVEL is set True
+            self.names = set()
+            self._NUMBERS = {}  # for finding new names
+        elif self.IS_NAMED:
+            self.toplevel_parent.names.add(name)
+
+    def get_next_name(self, fmt):
+        number = self._NUMBERS.get(fmt, 1)
+        while True:
+            name = fmt % number
+            if not name in self.names:
+                self._NUMBERS[fmt] = number
+                return name
+            number += 1
 
     # tree navigation (parent and children) ############################################################################
     @property
@@ -231,11 +243,11 @@ class EditBase(np.PropertyOwner):
                 assert self.IS_NAMED
                 assert self.name not in self.toplevel_parent.names
             try:
-                del self.toplevel_parent.names[self.properties["name"].previous_value]
+                self.toplevel_parent.names.remove( self.properties["name"].previous_value )
             except KeyError:
                 if config.debugging and self.klass != "spacer" and self.properties["name"].previous_value != "spacer":
                     raise
-            self.toplevel_parent.names[self.name] = 1
+            self.toplevel_parent.names.add( self.name )
             common.app_tree.refresh(self, refresh_label=True, refresh_image=False)
         elif (not modified or "class" in modified or "name" in modified) and common.app_tree:
             common.app_tree.refresh(self, refresh_label=True, refresh_image=False)
@@ -298,7 +310,7 @@ class EditBase(np.PropertyOwner):
         common.app_tree.remove(self)  # remove mutual reference from widget to/from Tree item
         if self.IS_NAMED and self.name:
             try:
-                del self.toplevel_parent.names[self.name]
+                self.toplevel_parent.names.remove(self.name)
             except:
                 print("XXX delete: name '%s' already removed"%self.name)
 

@@ -316,7 +316,7 @@ class EditGrid(ManagedBase):
 
 def builder(parent, pos):
     "factory function for EditGrid objects"
-    name = common.root.get_next_name('grid_%d', parent)
+    name = parent.toplevel_parent.get_next_name('grid_%d')
     with parent.frozen():
         editor = EditGrid(name, parent, pos)
         # A grid should be wx.EXPANDed and 'option' should be 1, or you can't see it.

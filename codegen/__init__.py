@@ -57,7 +57,7 @@ class BaseSourceFileContent(object):
         self.OK = False
 
         # initialise instance
-        self.classes = {}                  # Classes declared in the file
+        self.classes = set()               # Classes declared in the file
         self.class_name = None             # Name of the current processed class
         self.content = []                  # Content of the source file, if it existed before this session of code gen.
         self.event_handlers = {}           # List of event handlers for each class
@@ -907,9 +907,9 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
         write = code_lines.append
 
         if prev_src and not is_new:
-            already_there = prev_src.event_handlers.get(code_obj.klass, {})
+            already_there = prev_src.event_handlers.get(code_obj.klass, set())
         else:
-            already_there = {}
+            already_there = set()
 
         for obj, event, handler, unused in event_handlers:
             # don't create handler twice
@@ -920,7 +920,7 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
             if self.language in ('python', 'lisp') and not (prev_src and not is_new):
                 write('\n')
             write(self.tmpl_func_event_stub % {'tab': tab, 'klass': self.cn_class(code_obj.klass), 'handler': handler })
-            already_there[handler] = 1
+            already_there.add( handler )
 
         return code_lines
 

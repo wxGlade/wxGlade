@@ -360,7 +360,7 @@ class EditNotebook(ManagedBase, EditStylesMixin):
         if suggestion and suggestion not in self.toplevel_parent.names:
             return suggestion
         tmpl = "%s_pane_%%d" % self.name
-        return common.root.get_next_name(tmpl, self)
+        return self.toplevel_parent.get_next_name(tmpl)
 
     def _get_slot_label(self, pos):
         title = self.tabs[pos][0]
@@ -385,9 +385,9 @@ def builder(parent, pos):
         res = dialog.ShowModal()
     style = dialog.get_selection()
     dialog.Destroy()
-    if res != wx.ID_OK:
-        return
-    name = common.root.get_next_name('notebook_%d', parent)
+    if res != wx.ID_OK: return
+
+    name = parent.toplevel_parent.get_next_name('notebook_%d')
     with parent.frozen():
         editor = EditNotebook(name, parent, style, pos)
         editor.properties["proportion"].set(1)

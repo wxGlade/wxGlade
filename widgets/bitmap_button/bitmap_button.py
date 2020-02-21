@@ -49,7 +49,7 @@ class EditBitmapButton(BitmapMixin, ManagedBase, EditStylesMixin):
 
 def builder(parent, pos):
     "factory function for EditBitmapButton objects"
-    name = common.root.get_next_name('bitmap_button_%d', parent)
+    name = parent.toplevel_parent.get_next_name('bitmap_button_%d')
     bitmap = misc.RelativeFileSelector("Select the image for the button")
     with parent.frozen():
         editor = EditBitmapButton(name, parent, bitmap, pos)

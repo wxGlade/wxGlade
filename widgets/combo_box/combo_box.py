@@ -73,7 +73,7 @@ class EditComboBox(ManagedBase, EditStylesMixin):
 
 def builder(parent, pos):
     "factory function for EditComboBox objects"
-    name = common.root.get_next_name('combo_box_%d', parent)
+    name = parent.toplevel_parent.get_next_name('combo_box_%d')
     with parent.frozen():
         editor = EditComboBox(name, parent, [], pos)
         editor.properties["style"].set_to_default()
