@@ -253,7 +253,6 @@ class EditBase(np.PropertyOwner):
             common.app_tree.refresh(self, refresh_label=True, refresh_image=False)
 
     # widget creation and destruction ##################################################################################
-
     def create_widgets(self):
         "Shows the widget of the given node and all its children"
         self.create()

@@ -95,7 +95,6 @@ class WindowDialog(wx.Dialog):
         szr.Fit(self)
 
     def get_next_class_name(self, name):
-        #names = [c.widget.klass for c in common.root.children or []]
         if not name in self.class_names: return name
         while True:
             ret = '%s%d'%(name,self.number)
@@ -103,7 +102,6 @@ class WindowDialog(wx.Dialog):
             self.number += 1
 
     def get_next_name(self, name):
-        #names = common.app_tree.get_all_names()
         names = [c.name for c in common.root.children]
         names = [n for n in names if n.startswith(name)]
         if not name in names: return name

@@ -84,14 +84,14 @@ class EditRoot(np.PropertyOwner):
     def get_path(self):
         return [self.name]
 
-    def has_name(self, widget=None):
-        # XXX check whether this is still used
-        if widget is None:
-            for c in self.children:
-                if name in c.names:
-                    return True
-            return False
-        return name in widget.toplevel_parent.names
+    #def has_name(self, widget=None):
+        ## XXX check whether this is still used
+        #if widget is None:
+            #for c in self.children:
+                #if name in c.names:
+                    #return True
+            #return False
+        #return name in widget.toplevel_parent.names
 
     def add_item(self, child, pos=None):
         # XXX pos is always None at the moment
@@ -142,7 +142,6 @@ class EditRoot(np.PropertyOwner):
         # clear all
         for n in self.children:
             n.recursive_remove()
-        #self.root.children = None
 
     def find_widget_from_path(self, path):
         index = 1  # skip 'app'
