@@ -1635,9 +1635,11 @@ class IntPairPropertyD(TextPropertyD):
     def _convert_from_text(self, value):
         "normalize string to e.g. '-1, -1'; return None if invalid"
         match = self.validation_re.match(value)
-        #if not match: return self.value
         if not match: return None
-        return self.normalization%match.groups()
+        ret = self.normalization%match.groups()
+        if self.validation_re.flags & re.IGNORECASE:
+            ret = ret.lower()
+        return ret
 
     def get_tuple(self, widget=None):
         a, b = self.value.split(",")
@@ -1646,12 +1648,13 @@ class IntPairPropertyD(TextPropertyD):
 
 class SizePropertyD(IntPairPropertyD):
     d = r"(\s*[dD]?)" # the trailig d for "dialog units"
-    validation_re = re.compile( _leading + _ge_m1 + _comma + _ge_m1 + d + _trailing )  # match pair of integers >=- 1
+    validation_re = re.compile( _leading + _ge_m1 + _comma + _ge_m1 + d + _trailing, re.IGNORECASE )
     del d
     normalization = "%s, %s%s" # for normalization % valiation_re.match(...).groups()
 
     def set(self, value, activate=None, deactivate=None, notify=False):
         IntPairPropertyD.set(self, value, activate, deactivate, notify)
+
     def get_size(self, widget=None):
         "widget argument is used to calculate size in Dialog units, using wx.DLG_SZE"
         if not self.is_active():
