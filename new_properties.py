@@ -1267,7 +1267,9 @@ class TextProperty(Property):
         return "".join(ret)
 
     def load(self, value, activate=None, deactivate=None, notify=False):
-        if value: value = self._unescape(value)
+        if value:
+            value = self._unescape(value)
+            if self.validation_re and self.validation_re.flags & re.IGNORECASE: value = value.lower()
         self.set(value, activate, deactivate, notify)
 
     def create_editor(self, panel, sizer):
