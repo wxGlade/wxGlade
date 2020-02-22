@@ -63,7 +63,7 @@ class EditToggleButton(BitmapMixin, ManagedBase, EditStylesMixin):
 
 def builder(parent, pos):
     "factory function for EditToggleButton objects"
-    name = parent.toplevel_parent.get_next_name('button_%d')
+    name = parent.toplevel_parent.get_next_contained_name('button_%d')
     with parent.frozen():
         editor = EditToggleButton(name, parent, name, pos)
         editor.properties["style"].set_to_default()

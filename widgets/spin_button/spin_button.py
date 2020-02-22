@@ -63,7 +63,7 @@ class EditSpinButton(ManagedBase, EditStylesMixin):
 
 def builder(parent, pos):
     "factory function for EditSpinButton objects"
-    name = parent.toplevel_parent.get_next_name('spin_button_%d')
+    name = parent.toplevel_parent.get_next_contained_name('spin_button_%d')
     with parent.frozen():
         editor = EditSpinButton(name, parent, pos)
         editor.properties["style"].set_to_default()

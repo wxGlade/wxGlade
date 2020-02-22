@@ -58,7 +58,7 @@ class EditRadioButton(ManagedBase, EditStylesMixin):
 
 def builder(parent, pos):
     "factory function for EditRadioButton objects"
-    name = parent.toplevel_parent.get_next_name('radio_btn_%d')
+    name = parent.toplevel_parent.get_next_contained_name('radio_btn_%d')
     with parent.frozen():
         editor = EditRadioButton(name, parent, name, pos)
         editor.properties["style"].set_to_default()

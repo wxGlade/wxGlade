@@ -51,7 +51,7 @@ class EditDatePickerCtrl(ManagedBase, EditStylesMixin):
 
 def builder(parent, pos):
     "factory function for EditDatePickerCtrl objects"
-    name = parent.toplevel_parent.get_next_name('datepicker_ctrl_%d')
+    name = parent.toplevel_parent.get_next_contained_name('datepicker_ctrl_%d')
     with parent.frozen():
         editor = EditDatePickerCtrl(name, parent, pos)
         editor.properties["style"].set_to_default()

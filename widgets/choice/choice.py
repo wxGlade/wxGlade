@@ -70,7 +70,7 @@ class EditChoice(ManagedBase):
 
 def builder(parent, pos):
     "factory function for EditChoice objects"
-    name = parent.toplevel_parent.get_next_name('choice_%d')
+    name = parent.toplevel_parent.get_next_contained_name('choice_%d')
     with parent.frozen():
         editor = EditChoice(name, parent, [(u'choice 1',)], pos)
         editor.check_defaults()

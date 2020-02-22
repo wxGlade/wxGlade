@@ -93,10 +93,9 @@ class EditButton(BitmapMixin, ManagedBase, EditStylesMixin):
         ManagedBase.properties_changed(self, modified)
 
 
-
 def builder(parent, pos):
     "factory function for EditButton objects"
-    name = parent.toplevel_parent.get_next_name('button_%d')
+    name = parent.toplevel_parent.get_next_contained_name('button_%d')
     with parent.frozen():
         editor = EditButton(name, parent, name, pos)
         editor.properties["style"].set_to_default()

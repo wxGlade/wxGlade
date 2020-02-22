@@ -58,7 +58,7 @@ class EditStaticBitmap(BitmapMixin, ManagedBase, EditStylesMixin):
 
 def builder(parent, pos, bitmap=None):
     "factory function for EditStaticBitmap objects"
-    name = parent.toplevel_parent.get_next_name('bitmap_%d')
+    name = parent.toplevel_parent.get_next_contained_name('bitmap_%d')
     if bitmap is None:
         bitmap = misc.RelativeFileSelector("Select the image")
         if bitmap is None: return

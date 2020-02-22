@@ -59,7 +59,7 @@ class EditGenericCalendarCtrl(ManagedBase, EditStylesMixin):
 
 def builder(parent, pos):
     "factory function for EditGenericCalendarCtrl objects"
-    name = parent.toplevel_parent.get_next_name('generic_calendar_ctrl_%d')
+    name = parent.toplevel_parent.get_next_contained_name('generic_calendar_ctrl_%d')
     with parent.frozen():
         editor = EditGenericCalendarCtrl(name, parent, pos)
         editor.properties["style"].set_to_default()

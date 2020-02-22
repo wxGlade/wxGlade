@@ -80,7 +80,7 @@ class EditCheckBox(ManagedBase, EditStylesMixin):
 
 def builder(parent, pos):
     "factory function for EditCheckBox objects"
-    name = parent.toplevel_parent.get_next_name('checkbox_%d')
+    name = parent.toplevel_parent.get_next_contained_name('checkbox_%d')
     with parent.frozen():
         editor = EditCheckBox(name, parent, name, pos)
         editor.properties["style"].set_to_default()

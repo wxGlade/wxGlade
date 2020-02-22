@@ -355,7 +355,7 @@ class EditTopLevelPanel(PanelBase, TopLevelBase):
 
 def builder(parent, pos):
     "factory function for EditPanel objects"
-    name = parent.toplevel_parent.get_next_name('panel_%d')
+    name = parent.toplevel_parent.get_next_contained_name('panel_%d')
     with parent.frozen():
         editor = EditPanel(name, parent, pos, style='')
         editor.properties["proportion"].set(1)

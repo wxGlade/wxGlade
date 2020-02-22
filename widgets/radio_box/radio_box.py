@@ -186,7 +186,7 @@ class EditRadioBox(ManagedBase):
 
 def builder(parent, pos):
     "factory function for EditRadioBox objects"
-    name = parent.toplevel_parent.get_next_name('radio_box_%d')
+    name = parent.toplevel_parent.get_next_contained_name('radio_box_%d')
     with parent.frozen():
         editor = EditRadioBox(name, parent, name, [[u'choice 1'],], 1, 0, pos)
         if parent.widget: editor.create()

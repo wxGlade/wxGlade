@@ -61,7 +61,7 @@ def builder(parent, pos):
     if res != wx.ID_OK:
         return
 
-    name = parent.toplevel_parent.get_next_name('static_line_%d')
+    name = parent.toplevel_parent.get_next_contained_name('static_line_%d')
     with parent.frozen():
         editor = EditStaticLine(name, parent, style, pos)
         if parent.IS_SIZER and "orient" in parent.properties and parent.orient:

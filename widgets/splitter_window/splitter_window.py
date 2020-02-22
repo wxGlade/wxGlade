@@ -272,7 +272,7 @@ def builder(parent, pos):
     if res != wx.ID_OK:
         return
 
-    name = parent.toplevel_parent.get_next_name('window_%d')
+    name = parent.toplevel_parent.get_next_contained_name('window_%d')
     with parent.frozen():
         editor = EditSplitterWindow(name, parent, orientation, pos)
         editor.properties["style"].set_to_default()

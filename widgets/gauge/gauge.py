@@ -49,7 +49,7 @@ def builder(parent, pos):
     dialog.Destroy()
     if res != wx.ID_OK: return
 
-    name = parent.toplevel_parent.get_next_name('gauge_%d')
+    name = parent.toplevel_parent.get_next_contained_name('gauge_%d')
     with parent.frozen():
         editor = EditGauge(name, parent, style, pos)
         editor.properties["flag"].set("wxEXPAND")

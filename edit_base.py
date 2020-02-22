@@ -47,7 +47,7 @@ class EditBase(np.PropertyOwner):
         self.item = None            # the TreeCtrl item
 
         # initialise instance properties
-        self.name  = np.NameProperty(name)
+        self.name = np.NameProperty(name)
 
         # initialise structure
         self.parent = parent
@@ -67,15 +67,19 @@ class EditBase(np.PropertyOwner):
         else:
             self.parent.add_item(self, pos)
 
-        # the toplevel parent keeps track of the names
+        # the toplevel parent keeps track of the names ( see next two methods ...contained_name() )
         if self.IS_TOPLEVEL:
             # either derived from edit_windows.TopLevelBase or a toplevel Menu/ToolBar where IS_TOPLEVEL is set True
             self.names = set()
             self._NUMBERS = {}  # for finding new names
         elif self.IS_NAMED:
-            self.toplevel_parent.names.add(name)
+            self.toplevel_parent.track_contained_name( new_name=name )
 
-    def get_next_name(self, fmt):
+    # manage names of contained elements ###############################################################################
+    # actually, this might be too strict if contained elements are their own classes
+    def get_next_contained_name(self, fmt):
+        # get a name that is not yet used for one of the children inside
+        # will only be used for IS_TOPLEVEL==True; currently only by TopLevelBase; in future maybe for toolbars as well
         number = self._NUMBERS.get(fmt, 1)
         while True:
             name = fmt % number
@@ -83,6 +87,17 @@ class EditBase(np.PropertyOwner):
                 self._NUMBERS[fmt] = number
                 return name
             number += 1
+
+    def track_contained_name(self, old_name=None, new_name=None):
+        # only for named elements (IS_NAMED==True)
+        #  to remove: new_name=None
+        #  to add:    old_name=None
+        # EditDialog also uses this to track names for "affirmative" and "escape" properties
+        if config.debugging or config.testing and new_name is not None:
+            #assert self.IS_NAMED
+            assert self.name not in self.names
+        if old_name is not None: self.names.remove( old_name )
+        if new_name is not None: self.names.add( new_name )
 
     # tree navigation (parent and children) ############################################################################
     @property
@@ -241,13 +256,8 @@ class EditBase(np.PropertyOwner):
         if modified and "name" in modified and self.properties["name"].previous_value is not None:
             if config.debugging or config.testing:
                 assert self.IS_NAMED
-                assert self.name not in self.toplevel_parent.names
-            try:
-                self.toplevel_parent.names.remove( self.properties["name"].previous_value )
-            except KeyError:
-                if config.debugging and self.klass != "spacer" and self.properties["name"].previous_value != "spacer":
-                    raise
-            self.toplevel_parent.names.add( self.name )
+            old_name = self.properties["name"].previous_value or None
+            self.toplevel_parent.track_contained_name(old_name, self.name)
             common.app_tree.refresh(self, refresh_label=True, refresh_image=False)
         elif (not modified or "class" in modified or "name" in modified) and common.app_tree:
             common.app_tree.refresh(self, refresh_label=True, refresh_image=False)
@@ -307,11 +317,8 @@ class EditBase(np.PropertyOwner):
                 print(" **** node_remove failed")
         self.delete()
         common.app_tree.remove(self)  # remove mutual reference from widget to/from Tree item
-        if self.IS_NAMED and self.name:
-            try:
-                self.toplevel_parent.names.remove(self.name)
-            except:
-                print("XXX delete: name '%s' already removed"%self.name)
+        if not self.IS_TOPLEVEL and self.IS_NAMED and self.name:
+            self.toplevel_parent.track_contained_name( self.name )
 
     ####################################################################################################################
 

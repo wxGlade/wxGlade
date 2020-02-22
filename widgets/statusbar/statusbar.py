@@ -173,7 +173,7 @@ def builder(parent, pos):
             number[0] -= 1
         return
 
-    name = parent.toplevel_parent.get_next_name('statusbar_%d')
+    name = parent.toplevel_parent.get_next_contained_name('statusbar_%d')
     with parent.frozen():
         editor = EditStatusBar(name, klass, parent)
         if parent.widget: editor.create()

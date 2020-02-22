@@ -2196,7 +2196,7 @@ def change_sizer(old, new):
 
 
 def _builder(parent, pos, orientation=wx.VERTICAL, slots=1, is_static=False, label="", is_wrap=False):
-    name = parent.toplevel_parent.get_next_name('sizer_%d')
+    name = parent.toplevel_parent.get_next_contained_name('sizer_%d')
 
     # add slots later
     if orientation=="StdDialogButtonSizer":
@@ -2412,7 +2412,7 @@ def grid_builder(parent, pos):
     dialog.Destroy()
     if res != wx.ID_OK: return
 
-    name = parent.toplevel_parent.get_next_name('grid_sizer_%d')
+    name = parent.toplevel_parent.get_next_contained_name('grid_sizer_%d')
     if type_=="Grid":
         constructor = EditGridSizer
     elif type_=="FlexGrid":
