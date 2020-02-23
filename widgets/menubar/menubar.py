@@ -861,7 +861,9 @@ def xml_builder(attrs, parent, pos=None):
     if not parent.IS_ROOT:
         parent.properties["menubar"].set(True, notify=True)
         if name:
-            parent._menubar.properties["name"].set(name)
+            p_name = parent._menubar.properties["name"]
+            p_name.previous_value = p_name.value
+            p_name.set(name)
             parent._menubar.properties_changed(["name"])
         return parent._menubar
     return EditMenuBar(name, attrs.get('class', 'wxMenuBar'), parent)

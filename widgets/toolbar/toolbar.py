@@ -773,7 +773,6 @@ def builder(parent, pos):
     name = dialog.get_next_name("toolbar")
     with (not parent.IS_ROOT and parent.frozen()) or misc.dummy_contextmanager():
         editor = EditToolBar(name, klass, parent)
-        #if parent and parent.widget: editor.create()
         editor.create()
         editor.widget.Show()
 
@@ -787,7 +786,9 @@ def xml_builder(attrs, parent, pos=None):
     if not parent.IS_ROOT:
         parent.properties["toolbar"].set(True, notify=True)
         if name:
-            parent._toolbar.properties["name"].set(name)
+            p_name = parent._toolbar.properties["name"]
+            p_name.previous_value = p_name.value
+            p_name.set(name)
             parent._toolbar.properties_changed(["name"])
         return parent._toolbar
     return EditToolBar(name, attrs.get('class', 'wxToolBar'), parent)

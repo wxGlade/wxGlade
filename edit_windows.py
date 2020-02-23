@@ -946,6 +946,7 @@ class TopLevelBase(WindowBase, PreviewMixin):
 
         if not modified or "name" in modified and (self.name!=self._oldname):
             self.parent.update_top_window_name(self._oldname, self.name)
+            self._oldname = self.name
 
         WindowBase.properties_changed(self, modified)
 

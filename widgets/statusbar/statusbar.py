@@ -169,8 +169,8 @@ def builder(parent, pos):
     klass = dialog.klass
     dialog.Destroy()
     if res != wx.ID_OK:
-        if number[0] > 0:
-            number[0] -= 1
+        global _NUMBER
+        if _NUMBER > 0: _NUMBER -= 1
         return
 
     name = parent.toplevel_parent.get_next_contained_name('statusbar_%d')
@@ -185,7 +185,9 @@ def xml_builder(attrs, parent, pos=None):
     name = attrs.get('name')
     if parent:
         if name:
-            parent._statusbar.properties["name"].set(name)
+            p_name = parent._statusbar.properties["name"]
+            p_name.previous_value = p_name.value
+            p_name.set(name)
             parent._statusbar.properties_changed(["name"])
         return parent._statusbar
     return EditStatusBar(name, attrs.get('class', 'wxStatusBar'), parent)

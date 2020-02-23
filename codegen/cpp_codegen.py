@@ -1052,7 +1052,7 @@ void %(klass)s::%(handler)s(%(evt_type)s &event)  // wxGlade: %(klass)s.<event_h
         if id is None:
             id = obj.window_id
         if not id:
-            if obj is not None and "stockitem" in obj.properties and obj.stockitem:
+            if obj is not None and obj.check_prop_truth("stockitem"):
                 return '', "wxID_" + obj.stockitem
             return '', 'wxID_ANY'
         id = str(id)

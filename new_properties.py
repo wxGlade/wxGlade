@@ -19,7 +19,10 @@ if wx.Platform != '__WXMSW__':
 
 
 class _DefaultArgument(object):
-    pass
+    def __bool__(self):
+        return False
+    def __nonzero__(self):
+        return False
 _DefaultArgument = _DefaultArgument()
 
 
@@ -1217,7 +1220,7 @@ class TextProperty(Property):
     _PROPORTION = 1
     def __init__(self, value="", multiline=False, strip=False, default_value=_DefaultArgument, name=None, fixed_height=False):
         self.multiline = multiline
-        self.text = self.previous_value = None
+        self.text = None
         self.strip = strip
         self.fixed_height = fixed_height  # don't grow the edit field in vertical
         Property.__init__(self, value, default_value, name)
@@ -1744,9 +1747,9 @@ del _leading, _ge_m1, _g_0, _ge_0, _comma, _trailing, _float, _int
 
 class ComboBoxProperty(TextProperty):
     _CB_STYLE = wx.CB_DROPDOWN
-    def __init__(self, value="", choices=[], default_value=_DefaultArgument, name=None):
+    def __init__(self, value="", choices=[], strip=False, default_value=_DefaultArgument, name=None):
         self.choices = choices
-        TextProperty.__init__(self, value, False, default_value, name)
+        TextProperty.__init__(self, value, False, strip, default_value, name)
 
     def create_text_ctrl(self, panel, value):
         combo = wx.ComboBox( panel, -1, self.value, choices=self.choices, style=self._CB_STYLE )

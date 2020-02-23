@@ -17,9 +17,8 @@ class PythonButtonGenerator(wcodegen.PythonWidgetCodeWriter):
     def _prepare_tmpl_content(self, obj):
         wcodegen.PythonWidgetCodeWriter._prepare_tmpl_content(self, obj)
 
-        stockitem = obj.stockitem
-        if stockitem:
-            self.tmpl_dict['id_number'] = self.codegen.cn("wxID_" + stockitem)
+        if obj.check_prop_truth("stockitem"):
+            self.tmpl_dict['id_number'] = self.codegen.cn("wxID_" + obj.stockitem)
             self.tmpl_dict['id'] = self.tmpl_dict['id_number']
             self.tmpl_dict['label'] = self.codegen.quote_str('')
 
@@ -35,10 +34,9 @@ class CppButtonGenerator(wcodegen.CppWidgetCodeWriter):
     def _prepare_tmpl_content(self, obj):
         wcodegen.CppWidgetCodeWriter._prepare_tmpl_content(self, obj)
 
-        stockitem = obj.stockitem
-        if stockitem:
+        if obj.check_prop_truth("stockitem"):
             self.tmpl_dict['label'] = self.codegen.quote_str('')
-            self.tmpl_dict['id_number'] = self.codegen.cn("wxID_" + stockitem)
+            self.tmpl_dict['id_number'] = self.codegen.cn("wxID_" + obj.stockitem)
             self.tmpl_dict['id'] = self.tmpl_dict['id_number']
 
         self.has_setdefault = obj.default

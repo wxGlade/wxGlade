@@ -437,7 +437,7 @@ class LispCodeWriter(BaseLangCodeWriter, wcodegen.LispMixin):
         if id is None:
             id = obj.window_id
         if not id:
-            if obj is not None and "stockitem" in obj.properties and obj.stockitem:
+            if obj is not None and obj.check_prop_truth("stockitem"):
                 return '', self.cn("wxID_" + obj.stockitem)
             return '', self.cn('wxID_ANY')
         tokens = id.split('=', 1)
