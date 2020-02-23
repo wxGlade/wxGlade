@@ -235,6 +235,7 @@
         
         (wxWindow_SetSizer (slot-top-window obj) (slot-sizer-1 obj))
         (wxSizer_Fit (slot-sizer-1 obj) (slot-top-window obj))
+        
         (wxWindow_layout (slot-dialog-1 self))
         (wxWindow_Centre (slot-dialog-1 self) wxBOTH)
         ;;; end wxGlade
