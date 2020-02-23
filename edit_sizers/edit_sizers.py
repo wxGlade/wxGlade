@@ -232,7 +232,7 @@ class BaseSizerBuilder(object):
         if self.klass=="wxStdDialogButtonSizer" and child.WX_CLASS=='wxButton':
             # XXX optionally use SetAffirmativeButton, SetCancelButton, SetNegativeButton
             id_value = child.check_prop("id") and child.properties["id"].value.strip() or ""  # e.g. 'wxID_CANCEL'
-            if ( (child.check_prop("stockitem") and child.stockitem in obj.BUTTON_STOCKITEMS) or 
+            if ( (child.check_prop_truth("stockitem") and child.stockitem in obj.BUTTON_STOCKITEMS) or 
                  (id_value and id_value.startswith("wxID_") and id_value[5:] in obj.BUTTON_STOCKITEMS) ):
                 tmpl = self.codegen.tmpl_sizeritem_button
                 return [tmpl % ( sizer_name, obj_name )]
