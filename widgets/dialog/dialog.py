@@ -58,6 +58,7 @@ class EditDialog(BitmapMixin, TopLevelBase, EditStylesMixin):
                                     "when the user hits Enter.\n"
                                     "(The OK button is the button with 'Stockitem' property set to 'OK'.)\n"
                                     "Select a different button to be used instead.\n"
+                                    "Usually, you need to activate 'Default' for the button as well.\n"
                                     "See SetAffirmativeId and SetEscapeId in the wx documentation.",
                       "escape":"Inside dialogs by default the CANCEL button is the one which is pressed\n"
                                "when the user hits Escape.\n"
