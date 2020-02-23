@@ -16,22 +16,66 @@ from edit_windows import WindowBase, TopLevelBase, EditStylesMixin
 from gui_mixins import BitmapMixin
 
 
+class AffirmativePropertyD(np.ListBoxPropertyD):
+
+    def track_name(self, old_name=None, new_name=None):
+        # if the current value is removed (new_name=None), it will be remembered and re-used if added again
+        # this is to keep it over a cut/paste or drag/drop
+        if self.value is not None and old_name==self.value:
+            # current button is being edited
+            if new_name is None:
+                # current button has been deleted
+                self.previous_value = old_name
+                self.value = None
+            else:
+                self.value = new_name
+        elif self.value is None and old_name is None and new_name==self.previous_value:
+            buttons = self.owner.find_children(new_name, "wxButton")
+            if buttons:
+                # the previous button has been pasted again
+                self.value = new_name
+            self.previous_value = None
+
+    def create_editor(self, panel, sizer):
+        buttons = self.owner.find_children(None, "wxButton")
+        self.choices = [button.name for button in buttons]
+        if self.deactivated:
+            # deactivated, but stockitems ID_OK or ID_CANCEL are used inside, display these as defaults
+            buttons = [b for b in buttons if b.check_prop_truth("stockitem")]
+            buttons = [b.name for b in buttons if b.stockitem==self.default_value]
+            self.value = buttons[0]  if buttons else  ""
+        super(AffirmativePropertyD, self).create_editor(panel, sizer)
+
+
 class EditDialog(BitmapMixin, TopLevelBase, EditStylesMixin):
     WX_CLASS = "wxDialog"
-    _PROPERTIES =["Widget", "title", "icon", "centered", "sizehints","menubar", "toolbar", "statusbar", "style"]
+    _PROPERTIES =["Widget", "title", "icon", "centered", "affirmative", "escape",
+                  "sizehints","menubar", "toolbar", "statusbar", "style"]
     PROPERTIES = TopLevelBase.PROPERTIES + _PROPERTIES + TopLevelBase.EXTRA_PROPERTIES
     _PROPERTY_LABELS = { "sizehints":'Set Size Hints'}
-    _PROPERTY_HELP = {"size":WindowBase._PROPERTY_HELP["size_sizehints"]}
-    
+    _PROPERTY_HELP = {"size":WindowBase._PROPERTY_HELP["size_sizehints"],
+                      "affirmative":"Inside dialogs by default the OK button is the one which is pressed\n"
+                                    "when the user hits Enter.\n"
+                                    "(The OK button is the button with 'Stockitem' property set to 'OK'.)\n"
+                                    "Select a different button to be used instead.\n"
+                                    "See SetAffirmativeId and SetEscapeId in the wx documentation.",
+                      "escape":"Inside dialogs by default the CANCEL button is the one which is pressed\n"
+                               "when the user hits Escape.\n"
+                               "(The CANCEL button is the button with 'Stockitem' property set to 'CANCEL'.)\n"
+                               "Select a different button to be used instead.\n"
+                               "See SetAffirmativeId and SetEscapeId in the wx documentation."}
+
     def __init__(self, name, parent, title, style=wx.DEFAULT_DIALOG_STYLE, klass='wxDialog'):
         TopLevelBase.__init__(self, name, klass, parent, title=title)
         EditStylesMixin.__init__(self)
         self.properties["style"].set(style)
 
         # initialise instance properties
-        self.icon      = np.BitmapPropertyD("")
-        self.centered  = np.CheckBoxProperty(False, default_value=False)
-        self.sizehints = np.CheckBoxProperty(False, default_value=False)
+        self.icon        = np.BitmapPropertyD("")
+        self.affirmative = AffirmativePropertyD("", default_value="OK")
+        self.escape      = AffirmativePropertyD("", default_value="CANCEL")
+        self.centered    = np.CheckBoxProperty(False, default_value=False)
+        self.sizehints   = np.CheckBoxProperty(False, default_value=False)
 
     def create_widget(self):
         if self.parent:
@@ -71,6 +115,10 @@ class EditDialog(BitmapMixin, TopLevelBase, EditStylesMixin):
         TopLevelBase.properties_changed(self, modified)
         EditStylesMixin.properties_changed(self, modified)
 
+    def track_contained_name(self, old_name=None, new_name=None):
+        TopLevelBase.track_contained_name(self, old_name, new_name)
+        self.properties["affirmative"].track_name( old_name, new_name )
+        self.properties["escape"].track_name( old_name, new_name )
 
 
 def builder(parent, pos):

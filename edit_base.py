@@ -183,7 +183,18 @@ class EditBase(np.PropertyOwner):
                     if child is c: return pos
                     pos += 1
         return pos + self.children.index(child)
+    
+    def find_children(self, name=None, wx_class=None):
+        ret = []
+        for child in self.get_all_children():
+            if not child: continue
+            ret += child.find_children(name, wx_class)
+            if name is not None and child.name!=name: continue
+            if wx_class is not None and child.WX_CLASS!=wx_class: continue
+            ret.append(child)
+        return ret
 
+    ####################################################################################################################
     def add_item(self, child, pos=None):
         if pos is None:
             if self.CHILDREN is None:
