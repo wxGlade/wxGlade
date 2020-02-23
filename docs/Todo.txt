@@ -37,7 +37,6 @@ probably not:
 
 Code generation:
  * better integrate automatic and user generated code (-> rev. 1.1)
- * refactor xrc_codegen.py to write XRC directly, not via separate hierarchy of XrcObjects
 Contribution required:
  * C++ dynamic event binding:  https://docs.wxwidgets.org/3.0/overview_events.html#overview_events_bind
 done:
@@ -50,6 +49,8 @@ done:
  * Code property: split into global, local/private and post-init
  * Python: allow lambda functions as event handlers
 probably not:
+ * refactor xrc_codegen.py to write XRC directly, not via separate hierarchy of XrcObjects
+   (only if someone else will do it)
  * add a preview tab for the generated code? (no, what would be the use case?)
  * Code (property): read user code from file?
 
@@ -85,10 +86,10 @@ Use either gettext or wx.GetTranslation for _
 Widgets:
  * StaticBoxSizer: add font property; use StaticBox for Design window and set font if the user changes it
    when font is active, generate code using StaticBox
- * Dialog: support SetAffirmativeId, SetEscapeId
  * ToolBar: optional (attribute) names
  * StaticBitmap: support wxGenericStaticBitmap once it supports SetScaleMode
 done:
+ * Dialog: support SetAffirmativeId, SetEscapeId
  * add wxRESERVE_SPACE_EVEN_IF_HIDDEN for managed widgets
  * MenuBar: don't create widget on Mac OS
  * Panel: use ScrolledWindow only when "Scrolled" is checked
