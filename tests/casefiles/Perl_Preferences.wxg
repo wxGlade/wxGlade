@@ -6,6 +6,8 @@
         <style>wxDEFAULT_DIALOG_STYLE</style>
         <icon>icons/icon.xpm</icon>
         <title>wxGlade: preferences</title>
+        <affirmative>ok</affirmative>
+        <escape>cancel</escape>
         <centered>1</centered>
         <object class="wxBoxSizer" name="sizer_1" base="EditBoxSizer">
             <orient>wxVERTICAL</orient>

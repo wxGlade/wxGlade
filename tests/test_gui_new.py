@@ -112,19 +112,19 @@ class TestGui(WXGladeGUITest):
         config.preferences.default_border = False
         config.preferences.default_border_size = 0
 
-        self.load_and_generate('Python_Preferences', included=["Python"], test_GUI=True)
-        self.load_and_generate('Perl_Preferences', included=["Perl"], test_GUI=False, preview=False)
+        self.load_and_generate('Python_Preferences', included=["python"], test_GUI=True)
+        self.load_and_generate('Perl_Preferences', included=["perl"], test_GUI=False, preview=False)
         self.load_and_generate('CPP_Preferences', included=["C++"], test_GUI=True)
-        self.load_and_generate('Lisp_Preferences', included=["Lisp"], test_GUI=True)
+        self.load_and_generate('Lisp_Preferences', included=["lisp"], test_GUI=True)
 
         # with default border
         config.preferences.default_border = True
         config.preferences.default_border_size = 5
 
-        self.load_and_generate('Python_Preferences', included=["Python"], test_GUI=True)
-        self.load_and_generate('Perl_Preferences', included=["Perl"], test_GUI=False, preview=False)
+        self.load_and_generate('Python_Preferences', included=["python"], test_GUI=True)
+        self.load_and_generate('Perl_Preferences', included=["perl"], test_GUI=False, preview=False)
         self.load_and_generate('CPP_Preferences', included=["C++"], test_GUI=True)
-        self.load_and_generate('Lisp_Preferences', included=["Lisp"], test_GUI=True)
+        self.load_and_generate('Lisp_Preferences', included=["lisp"], test_GUI=True)
 
         config.preferences.default_border, config.preferences.default_border_size = restore
 

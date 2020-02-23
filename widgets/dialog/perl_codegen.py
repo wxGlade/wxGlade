@@ -30,7 +30,18 @@ class PerlDialogGenerator(wcodegen.PerlWidgetCodeWriter):
         return out
 
     def get_layout_code(self, obj):
-        ret = ['$self->Layout();\n']
+        ret = []
+
+        # SetAffirmativeId and SetEscapeId, if defined
+        if obj.check_prop_truth("affirmative"):
+            buttons = obj.find_children(obj.affirmative, "wxButton")
+            if buttons: ret.append( "$self->SetAffirmativeId(%s->GetId())\n" % self.format_widget_access(buttons[0]) )
+        if obj.check_prop_truth("escape"):
+            buttons = obj.find_children(obj.escape, "wxButton")
+            if buttons: ret.append( "$self->SetEscapeId(%s->GetId())\n" % self.format_widget_access(buttons[0]) )
+        if ret: ret.append("\n")
+
+        ret.append( '$self->Layout();\n' )
         if "centered" in obj.properties and obj.centered:
             ret.append('$self->Centre();\n')
         return ret
