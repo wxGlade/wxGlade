@@ -11,7 +11,7 @@ import logging, os.path
 import wx
 import misc, common, compat, config, clipboard
 
-DEBUG = config.debugging and False
+DEBUG = config.debugging #  and False
 if DEBUG:
     import utilities
 
@@ -404,7 +404,7 @@ class WidgetTree(wx.TreeCtrl):#, Tree):
         #if config.debugging or DEBUG:
         if DEBUG:
             import utilities
-            utilities.TreePrinter(self)
+            utilities.TreePrinter(editor)
 
     def OnCompareItems(self, item1, item2):
         # only used when re-ordering toplevel items
