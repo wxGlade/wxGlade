@@ -332,8 +332,6 @@ class EditBase(np.PropertyOwner):
             self.toplevel_parent.track_contained_name( self.name )
 
     ####################################################################################################################
-
-    # XXX check this
     def remove(self, *args):
         # entry point from GUI
         common.root.saved = False  # update the status of the app
