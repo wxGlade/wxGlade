@@ -7,7 +7,6 @@ Base classes for windows used by wxGlade
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
-import re
 import wx
 
 import new_properties as np
