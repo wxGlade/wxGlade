@@ -262,13 +262,11 @@ class EditNotebook(ManagedBase, EditStylesMixin):
     def _free_slot(self, pos, force_layout=True):
         "Replaces the element at pos with an empty slot"
         if self._is_removing_pages: return
-        old_child = self.children[pos]
+
         slot = Slot(self, pos)
         slot.create()
         label = self.tabs[pos][0]
         if self.widget: self.widget.RemovePage(pos)
-
-        old_child.recursive_remove()
 
         if self.widget:
             self.widget.InsertPage(pos, slot.widget, label)
