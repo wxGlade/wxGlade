@@ -221,7 +221,7 @@ class EditBase(np.PropertyOwner):
             old_child = None
         self.children[pos] = child
         if old_child:
-            old_child.recursive_remove()
+            old_child.recursive_remove(overwritten=True)
 
     def remove_item(self, child, force_layout=True):
         "Removes child from self and adjust pos of following items"
