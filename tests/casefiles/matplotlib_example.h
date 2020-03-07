@@ -49,7 +49,7 @@ protected:
     DECLARE_EVENT_TABLE();
 
 public:
-    virtual void on_button_plot(wxCommandEvent &event); // wxGlade: <event_handler>
+    void on_button_plot(wxCommandEvent &event); // wxGlade: <event_handler>
 }; // wxGlade: end class
 
 

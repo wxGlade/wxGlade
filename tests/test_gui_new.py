@@ -142,8 +142,9 @@ class TestGui(WXGladeGUITest):
 
     def test_keep_code_migration(self):
         # test migration from 0.9 to 1.0: __do_layout and __set_properties should be removed
+        # C++: "virtual" will not be added here:  "public: void on_button_plot(wxCommandEvent &event);"
         # copy old files
-        for ext in ("py","cpp","pl","lisp"):
+        for ext in ("py","cpp","pl","lisp", "h"):
             old_filename = self._get_casefile_path('matplotlib_example_old.%s'%ext)
             generate_filename = self._get_outputfile_path('matplotlib_example.%s'%ext)
             self._copy_and_modify(old_filename, generate_filename)
