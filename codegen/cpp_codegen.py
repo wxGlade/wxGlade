@@ -455,7 +455,7 @@ class CPPCodeWriter(BaseLangCodeWriter, wcodegen.CppMixin):
                         deps.update(code.dependencies)
                     lines = self._format_dependencies( deps )
                 elif tag[2] == 'methods':
-                    lines = '%svoid set_properties();\n%svoid do_layout();\n' % (self.tabs(1), self.tabs(1))
+                    lines = ''
                 else:
                     lines = '// content of this block (%s) not found: did you rename this class?\n' % tag[2]
                 self.previous_source.replace_header(tag[0], lines)
@@ -672,7 +672,7 @@ class CPPCodeWriter(BaseLangCodeWriter, wcodegen.CppMixin):
 
             # remove methods block if in old file
             tag = '<%swxGlade replace %s methods>' % (self.nonce, classname)
-            prev_src.replace(tag, [])
+            prev_src.replace_header(tag, [])
 
             header_buffer = []
             hwrite = header_buffer.append

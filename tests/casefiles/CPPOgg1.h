@@ -40,26 +40,22 @@ public:
     CPPOgg1_MyDialog(wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint& pos=wxDefaultPosition, const wxSize& size=wxDefaultSize, long style=wxDEFAULT_DIALOG_STYLE);
 
 private:
-    // begin wxGlade: CPPOgg1_MyDialog::methods
-    void set_properties();
-    void do_layout();
-    // end wxGlade
 
 protected:
     // begin wxGlade: CPPOgg1_MyDialog::attributes
+    wxNotebook* notebook_1;
+    wxPanel* notebook_1_pane_1;
     wxTextCtrl* text_ctrl_1;
     wxButton* button_3;
-    wxPanel* notebook_1_pane_1;
-    wxRadioBox* radio_box_1;
     wxPanel* notebook_1_pane_2;
-    wxTextCtrl* text_ctrl_2;
+    wxRadioBox* radio_box_1;
     wxPanel* notebook_1_pane_3;
+    wxTextCtrl* text_ctrl_2;
+    wxPanel* notebook_1_pane_4;
     wxStaticText* label_2;
     wxTextCtrl* text_ctrl_3;
     wxButton* button_4;
     wxCheckBox* checkbox_1;
-    wxPanel* notebook_1_pane_4;
-    wxNotebook* notebook_1;
     wxStaticLine* static_line_1;
     wxButton* button_5;
     wxButton* button_2;

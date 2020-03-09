@@ -40,10 +40,6 @@ public:
     CPPOgg2_MyFrame(wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint& pos=wxDefaultPosition, const wxSize& size=wxDefaultSize, long style=wxDEFAULT_FRAME_STYLE);
 
 private:
-    // begin wxGlade: CPPOgg2_MyFrame::methods
-    void set_properties();
-    void do_layout();
-    // end wxGlade
 
 protected:
     // begin wxGlade: CPPOgg2_MyFrame::attributes
