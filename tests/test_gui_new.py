@@ -220,6 +220,8 @@ class TestGui(WXGladeGUITest):
             self._process_wx_events()
             common.app_tree.root.generate_code()
             self._compare_files(expected_filename, generate_filename, check_mtime=True)
+            if language=="C++":
+                self._compare_files(expected_filename_h, generate_filename_h, check_mtime=True)
 
     def test_all_Ogg2(self):
         "Test Python code generation with overwriting a single existing file, preserving manually added code"
@@ -244,6 +246,8 @@ class TestGui(WXGladeGUITest):
             self._process_wx_events()
             common.app_tree.root.generate_code()
             self._compare_files(expected_filename, generate_filename, check_mtime=True)
+            if language=="C++":
+                self._compare_files(expected_filename_h, generate_filename_h, check_mtime=True)
 
     def test_all_Ogg2(self):
         "Test code generation with overwriting multiples existing files, preserving manually added code"
@@ -287,6 +291,10 @@ class TestGui(WXGladeGUITest):
             self._compare_files(expected_app,    generate_app,    check_mtime=check_mtime)
             self._compare_files(expected_dialog, generate_dialog, check_mtime=check_mtime)
             self._compare_files(expected_frame,  generate_frame,  check_mtime=check_mtime)
+
+            if language=="C++":
+                self._compare_files(expected_filename_dialog_h, generate_filename_dialog_h, check_mtime=True)
+                self._compare_files(expected_filename_frame_h, generate_filename_frame_h, check_mtime=True)
 
     def test_all_Tool_Menu_EventBinding(self):
         self.load_and_generate('Tool_Menu_EventBinding', excluded=["lisp"], test_GUI=False)
