@@ -444,7 +444,7 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
             # for panel objects, if the user sets a custom class but (s)he doesn't want the code to be generated...
             if obj.check_prop("no_custom_class") and obj.no_custom_class and not self.preview:
                 IS_CLASS = False
-        elif self.preview and not CAN_BE_CLASS and obj.WX_CLASS != 'CustomWidget':
+        elif "class" in obj.PROPERTIES and self.preview and not CAN_BE_CLASS and obj.WX_CLASS != 'CustomWidget':
             # this is a custom class, but not a toplevel one; for preview we ignore this
             # CustomWidgets handles this in a special way (see widgets/custom_widget/codegen.py)
             obj.properties["klass"].set_temp(obj.WX_CLASS) # XXX handle this in a different way

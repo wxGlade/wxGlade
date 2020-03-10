@@ -518,7 +518,7 @@ sub %(handler)s {
         elif obj.name.startswith('$'):
             return obj.name
         # spacer.name is "<width>, <height>" already
-        elif obj.klass == 'spacer':
+        elif obj.WX_CLASS == 'spacer':
             return obj.name
         # Perl stores sizers always in class attributes
         elif self.store_as_attr(obj) or obj.IS_SIZER:

@@ -112,11 +112,12 @@ class DefaultXrcObject(XrcObject):
     "Standard XrcObject for every widget, used if no specific XrcObject is available"
 
     def __init__(self, widget):
-        XrcObject.__init__(self, widget.klass)
+        classname = widget.get_prop_value("class", widget.WX_CLASS)
+        XrcObject.__init__(self, classname)
         self.widget = widget
         self.name = widget.name
         self.klass = widget.WX_CLASS
-        self.subclass = widget.klass
+        self.subclass = classname
 
     def write_property(self, name, val, output, ntabs):
         if not val:
@@ -345,7 +346,7 @@ class XRCCodeWriter(BaseLangCodeWriter, wcodegen.XRCMixin):
         parent_class_object = obj.parent_class_object  # used for adding to this object's sizer
 
         IS_CLASS = obj.IS_TOPLEVEL
-        if obj.klass != obj.WX_CLASS and obj.CAN_BE_CLASS:
+        if obj.CAN_BE_CLASS and obj.klass != obj.WX_CLASS:
             IS_CLASS = True
             # for panel objects, if the user sets a custom class but (s)he doesn't want the code to be generated...
             if obj.check_prop("no_custom_class") and obj.no_custom_class and not self.preview:

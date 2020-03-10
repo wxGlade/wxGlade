@@ -10,7 +10,7 @@ wxPanel objects
 import logging
 import wx
 import clipboard
-import common, compat, config, misc
+import common, config, misc
 import new_properties as np
 from edit_windows import ManagedBase, TopLevelBase, EditStylesMixin
 
@@ -18,7 +18,6 @@ from edit_windows import ManagedBase, TopLevelBase, EditStylesMixin
 
 class PanelBase(EditStylesMixin):
     "Class PanelBase"
-    _custom_base_classes = True
 
     _PROPERTIES = ["Widget", "no_custom_class", "style", "scrollable", "scroll_rate"]
     _PROPERTY_LABELS = {'no_custom_class':"Don't generate code for this class"}
@@ -150,6 +149,7 @@ class EditPanel(PanelBase, ManagedBase):
     "Class to handle wxPanel objects"
     WX_CLASS = "wxPanel"  # this will be overwritten in properties_changed depending on the "scrolled" property
     PROPERTIES = ManagedBase.PROPERTIES + PanelBase._PROPERTIES + ManagedBase.EXTRA_PROPERTIES
+    np.insert_after(PROPERTIES, "class", "custom_base")
     CAN_BE_CLASS = True
 
     def __init__(self, name, parent, pos, style='wxTAB_TRAVERSAL'):
@@ -170,25 +170,6 @@ class EditPanel(PanelBase, ManagedBase):
                     return self.widget.GetSizer().GetMinSize()
                 return self.widget.__class__.GetBestSize(self.widget)
             self.widget.GetBestSize = GetBestSize
-        #if self.parent.WX_CLASS in ("wxFrame",):
-            ## without this, the panel will not fill the available space on pasting etc.
-            #self.widget.SetSize(self.parent.widget.GetClientSize())
-    #def create_widget(self):
-        ## to be done: use ScrolledWindow only if scrolling is required
-        #size = self._get_default_or_client_size()
-        #print("EditPanel.create_widget",self.name, size)
-        #if self.scrollable:
-            #self.widget = wx.ScrolledWindow(self.parent_window.widget, self.id, style=0)
-        #else:
-            #self.widget = wx.Panel(self.parent_window.widget, self.id, style=0)
-        #self.widget.Bind(wx.EVT_ENTER_WINDOW, self.on_enter)
-        #self.widget.GetBestSize = self.get_widget_best_size
-        #if not self.parent.IS_SIZER:
-            #def GetBestSize():
-                #if self.widget and self.widget.GetSizer():
-                    #return self.widget.GetSizer().GetMinSize()
-                #return self.widget.__class__.GetBestSize(self.widget)
-            #self.widget.GetBestSize = GetBestSize
 
     def set_sizer(self, sizer):
         # called from sizer.create: self.window.set_sizer(self)

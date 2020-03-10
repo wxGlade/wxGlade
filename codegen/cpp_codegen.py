@@ -944,11 +944,13 @@ class CPPCodeWriter(BaseLangCodeWriter, wcodegen.CppMixin):
             # attribute is a special property which control whether sub_obj must be accessible as an attribute of
             # top_obj, or as a local variable in the do_layout method
             if self.store_as_attr(obj):
-                klass.sub_objs.append((obj.klass, obj.name))
-        elif obj.klass != "sizerslot":
+                klassname = obj.get_prop_value("class", obj.WX_CLASS)
+                klass.sub_objs.append( (klassname, obj.name) )
+        elif obj.WX_CLASS != "sizerslot":
             # the object is a sizer
             if self.store_as_attr(obj):
-                klass.sub_objs.append((obj.klass, obj.name))
+                klassname = obj.get_prop_value("class", obj.WX_CLASS)
+                klass.sub_objs.append( (klassname, obj.name) )
 
         klass.init.extend(init)
 

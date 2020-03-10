@@ -81,10 +81,10 @@ class PerlCodeGenerator(wcodegen.PerlWidgetCodeWriter):
         else:
             extra = ''
 
-        if obj.klass != obj.WX_CLASS:
-            klass = obj.klass
-        else:
+        if not obj.check_prop("class") or obj.klass==obj.WX_CLASS:
             klass = self.cn(obj.WX_CLASS)
+        else:
+            klass = obj.klass
 
         init = ['\n', '# Tool Bar\n',
                 '$self->{%s} = %s->new($self, -1%s);\n' % (obj.name, klass, extra)

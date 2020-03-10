@@ -668,12 +668,12 @@ class EditMenuBar(EditBase, PreviewMixin):
         if parent.IS_ROOT:
             self.__dict__["IS_TOPLEVEL"] = True
         if self.IS_TOPLEVEL:
-            custom_class = True
             pos = None
         else:
-            custom_class = False
             pos = "_menubar"
-        EditBase.__init__(self, name, klass, parent, custom_class, pos)
+            self.__dict__["CAN_BE_CLASS"] = False
+            self.__dict__["PROPERTIES"] = [p for p in self.PROPERTIES if p!="class"]
+        EditBase.__init__(self, name, klass, parent, pos)
 
         self.menus = MenuProperty()
         self.window_id = None  # just a dummy for code generation

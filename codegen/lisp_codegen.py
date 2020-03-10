@@ -308,7 +308,7 @@ class LispCodeWriter(BaseLangCodeWriter, wcodegen.LispMixin):
             self.dependencies.add( '(use-package :wxSizer)' )
         else:
             if obj.WX_CLASS not in ("spacer", "sizerslot"):
-                self.dependencies.add( '(use-package :%s)'%obj.klass )
+                self.dependencies.add( '(use-package :%s)'%obj.get_prop_value("class", obj.WX_CLASS) )
 
         if obj.WX_CLASS == "wxMenuBar":
             self.dependencies.add( '(use-package :wxMenu)' )
@@ -481,7 +481,7 @@ class LispCodeWriter(BaseLangCodeWriter, wcodegen.LispMixin):
             return obj.name
         # spacer.name is "<width>, <height>" already, but wxLisp expect
         # a tuple instead of two single values
-        elif obj.klass in ('spacer','sizerslot'):
+        elif obj.WX_CLASS in ('spacer','sizerslot'):
             return '(%s)' % obj.name
         # wxList use class attributes always (unfortunately)
 #        elif self.store_as_attr(obj):

@@ -3138,6 +3138,13 @@ class ActionButtonProperty(Property):
     def write(self, output, tabs=0):
         return
 
+########################################################################################################################
+# functions to modify property lists in place
+
+def insert_after(PROPERTIES, after, *add):
+    i = PROPERTIES.index(after)
+    for j, name in enumerate(add):
+        PROPERTIES.insert(i+1+j, name)
 
 ########################################################################################################################
 

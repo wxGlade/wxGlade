@@ -530,12 +530,12 @@ class EditToolBar(EditBase, PreviewMixin, EditStylesMixin, BitmapMixin):
         if parent.IS_ROOT:
             self.__dict__["IS_TOPLEVEL"] = True
         if self.IS_TOPLEVEL:
-            custom_class = True
             pos = None
         else:
-            custom_class = False
+            self.__dict__["CAN_BE_CLASS"] = False
             pos = "_toolbar"
-        EditBase.__init__( self, name, 'wxToolBar', parent, custom_class, pos )
+            self.__dict__["PROPERTIES"] = [p for p in self.PROPERTIES if p!="class"]
+        EditBase.__init__( self, name, 'wxToolBar', parent, pos )
         EditStylesMixin.__init__(self)
 
         # initialise instance properties

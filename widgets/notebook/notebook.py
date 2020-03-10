@@ -68,7 +68,6 @@ class TabsHandler(BaseXmlBuilderTagHandler):
 
 class EditNotebook(ManagedBase, EditStylesMixin):
     "Class to handle wxNotebook objects"
-    _custom_base_classes = True
     _next_notebook_number = 1 # next free number for notebook names
     update_widget_style = False
 
@@ -76,6 +75,7 @@ class EditNotebook(ManagedBase, EditStylesMixin):
     CAN_BE_CLASS = True
     _PROPERTIES = ["Widget", "no_custom_class", "style", "tabs"]
     PROPERTIES = ManagedBase.PROPERTIES + _PROPERTIES + ManagedBase.EXTRA_PROPERTIES
+    np.insert_after(PROPERTIES, "class", "custom_base")
 
     def __init__(self, name, parent, style, pos):
         ManagedBase.__init__(self, name, 'wxNotebook', parent, pos)

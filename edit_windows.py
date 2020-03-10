@@ -76,7 +76,9 @@ class EditBase(EventsMixin, edit_base.EditBase):
     This class holds the basic properties for this object.
     The properties that control the layout (i.e. the behaviour when inside a sizer) are in ManagedBase."""
     can_preview = False
-    _PROPERTIES = ["Common", "name","class", "custom_base"] # "custom_base" will be set to None or a property
+    # "class" will be removed for some editors
+    # "custom_base" will be added for TopLevelBase, notebook, panel and splitter window
+    _PROPERTIES = ["Common", "name","class"]
     PROPERTIES = _PROPERTIES
 
     # the following will be placed on the last tab
@@ -107,7 +109,7 @@ class EditBase(EventsMixin, edit_base.EditBase):
                         "extracode":"Extra (import) code for this widget",
                         "extracode_pre":"Code to be inserted before",
                         "extracode_post":"Code to be inserted after"}
-    def __init__(self, name, klass, parent, custom_class=True, pos=None):
+    def __init__(self, name, klass, parent, pos=None):
         edit_base.EditBase.__init__(self, name, parent, pos)
 
         # initialise instance properties
@@ -118,24 +120,24 @@ class EditBase(EventsMixin, edit_base.EditBase):
             elif self.CAN_BE_CLASS:
                 self.klass = klass_p = np.ClassPropertyD(klass, default_value=self.WX_CLASS, name="class") # Name of the object's class: read/write or read only
             else:
+                # base class: e.g. MyStaticText instead of wxStaticText: label = MyStaticText(self, wx.ID_ANY, "label_1")
+                assert self.WX_CLASS=="CustomWidget"
                 self.klass = klass_p = np.ClassPropertyD(klass, default_value=self.WX_CLASS, name="class") # Name of the object's class: read/write or read only
-                if klass!=self.WX_CLASS and custom_class:
+                if klass!=self.WX_CLASS:# and custom_class:
                     klass_p.deactivated = False
 
-            # If True, the user can change the value of the 'class' property:
-            self.custom_class = custom_class
+            ## If True, the user can change the value of the 'class' property:
+            #self.custom_class = custom_class
         
-            if not custom_class:
-                # only for StatusBar and non-standalone ToolBar/MenuBar it's False
-                #klass_p.readonly = True
-                klass_p.blocked = True
-        print("EditBase", self.WX_CLASS, klass, custom_class, self.IS_TOPLEVEL, self.CAN_BE_CLASS)
+            #if not custom_class:
+                ## only for StatusBar and non-standalone ToolBar/MenuBar it's False
+                ##klass_p.readonly = True
+                #klass_p.blocked = True
+        print("EditBase", self.WX_CLASS, klass, self.IS_TOPLEVEL, self.CAN_BE_CLASS)
 
-        if getattr(self, '_custom_base_classes', False):
+        if "custom_base" in self.PROPERTIES:
             # for TopLevelBase, notebook, panel and splitter window
             self.custom_base = np.TextPropertyD("", multiline=False, default_value=None)
-        else:
-            self.custom_base = None
 
         self.extracode       = np.CodeProperty()
         self.extracode_pre   = np.CodeProperty()
@@ -723,8 +725,8 @@ class DesignButtonProperty(np.ActionButtonProperty):
 
 class TopLevelBase(WindowBase, PreviewMixin):
     "Base class for every non-managed window (i.e. Frames, Dialogs and TopLevelPanel)"
-    _custom_base_classes = True
     PROPERTIES = WindowBase.PROPERTIES + ["design","preview"]
+    np.insert_after(PROPERTIES, "class", "custom_base")
 
     IS_TOPLEVEL = True
     IS_TOPLEVEL_WINDOW = True  # will be False for TopLevelPanel and MDIChildFrame

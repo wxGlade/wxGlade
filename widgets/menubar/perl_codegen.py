@@ -87,10 +87,10 @@ class PerlMenubarGenerator(wcodegen.PerlWidgetCodeWriter):
         return ids + out
 
     def get_code(self, obj):
-        if obj.klass != obj.WX_CLASS:
-            klass = obj.klass
-        else:
+        if not obj.check_prop("class") or obj.klass==obj.WX_CLASS:
             klass = self.cn(obj.WX_CLASS)
+        else:
+            klass = obj.klass
 
         init = [ '\n\n', '# Menu Bar\n\n', '$self->{%s} = %s->new();\n' % (obj.name, klass) ]
         init.extend(self.get_init_code(obj))

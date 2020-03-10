@@ -37,12 +37,11 @@ class ChildWidgetNameProperty(np.Property):
 class EditSplitterWindow(ManagedBase, EditStylesMixin):
     "Class to handle wxSplitterWindow objects; orientation: Orientation of the widget as string e.g. 'wxSPLIT_VERTICAL'"
 
-    _custom_base_classes = True
-
     WX_CLASS = 'wxSplitterWindow'
     CAN_BE_CLASS = True
     _PROPERTIES = ["Widget", "no_custom_class", "style", "sash_pos", "sash_gravity", "min_pane_size"]
     PROPERTIES = ManagedBase.PROPERTIES + _PROPERTIES + ManagedBase._EXTRA_PROPERTIES
+    np.insert_after(PROPERTIES, "class", "custom_base")
     _PROPERTY_LABELS = {'no_custom_class':"Don't generate code for this class",
                         'sash_pos':"Sash position"}
     _PROPERTY_HELP = {'no_custom_class':"Don't generate code for this class",
@@ -77,14 +76,6 @@ class EditSplitterWindow(ManagedBase, EditStylesMixin):
     def _get_slot_label(self, pos):
         return "SLOT %s"%self._get_label(pos)
 
-    #def create_widget(self):
-        #if not self.parent.IS_SIZER:
-            #size = self.parent.widget.GetClientSize()
-            #self.widget = wx.SplitterWindow(self.parent_window.widget, self.id, size=size, style=self.style)
-        #else:
-            #self.widget = wx.SplitterWindow(self.parent_window.widget, self.id, style=self.style)
-        #self.split()
-
     def create_widget(self):
         size = self._get_default_or_client_size()
         self.widget = wx.SplitterWindow(self.parent_window.widget, self.id, size=size, style=self.style)
@@ -114,27 +105,6 @@ class EditSplitterWindow(ManagedBase, EditStylesMixin):
         if self.widget.GetTopLevelParent().IsShown():
             # e.g. when pasting into an existing window
             wx.CallAfter(self.widget.UpdateSize)
-
-    #def _get_client_size(self, pos):
-        ## returns the available size for a child
-
-        #width, height = self.widget.GetClientSize()
-        #sash_position = self.widget.GetSashPosition()
-        #sash_size = self.widget.GetSashSize()
-        #if self.widget.GetSplitMode()==wx.SPLIT_VERTICAL:
-            ## side by side
-            #if pos==0:
-                #width = sash_position
-            #else:
-                #width = width - sash_position - sash_size
-        #else:
-            ## top to bottom
-            #if pos==0:
-                #height = sash_position
-            #else:
-                #width = height - sash_position - sash_size
-        #print("_get_client_size", (width, height))
-        #return (width, height)
 
     def on_set_focus(self, event):
         misc.set_focused_widget(self)

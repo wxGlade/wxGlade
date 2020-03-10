@@ -508,7 +508,7 @@ from %(top_win_module)s import %(top_win_class)s\n\n"""
         elif obj.name.startswith('self.'):
             return obj.name
         # spacer.name is "<width>, <height>" already, but wxPython expect a tuple instead of two single values
-        elif obj.klass in ('spacer','sizerslot'):
+        elif obj.WX_CLASS in ('spacer','sizerslot'):
             return '(%s)' % obj.name
         elif self.store_as_attr(obj):
             return 'self.%s' % obj.name

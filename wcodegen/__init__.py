@@ -416,11 +416,10 @@ class BaseWidgetWriter(StylesMixin, BaseCodeWriter):
         self.tmpl_dict['id'] = self.tmpl_dict['id_number']
         self.tmpl_dict['obj_name'] = self.codegen._format_name(obj.name)
 
-        klass = obj.klass
-        if klass == obj.WX_CLASS:
-            klass = self.cn(klass)
+        if not obj.check_prop("class") or obj.klass == obj.WX_CLASS:
+            klass = self.cn(obj.WX_CLASS)
         else:
-            klass = self.cn_class(klass)
+            klass = self.cn_class(obj.klass)
         self.tmpl_dict['klass'] = klass
 
         self.tmpl_dict['store_as_attr'] = self.codegen.store_as_attr(obj)
