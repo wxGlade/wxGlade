@@ -335,11 +335,10 @@ class XRCCodeWriter(BaseLangCodeWriter, wcodegen.XRCMixin):
         # recursively generate code, for anything except application.Application
         # for toplevel widgets or with class different from wx... a class will be added
 
-        if obj.IS_SLOT or obj.classname=="spacer":
-            if obj.classname!="slot":  # "slot" has no code generator
+        if obj.IS_SLOT or obj.WX_CLASS=="spacer":
+            if obj.WX_CLASS:  # "slot" has no code generator, but "sizerslot" or "spacer" needs to be added
                 self.add_object(obj)
-                if obj.classname in ("spacer", "sizerslot"):
-                    self.add_sizeritem(obj.parent_class_object, obj.parent, obj)
+                self.add_sizeritem(obj.parent_class_object, obj.parent, obj)
             return
 
         parent = obj.parent
@@ -369,7 +368,7 @@ class XRCCodeWriter(BaseLangCodeWriter, wcodegen.XRCMixin):
 
         # check whether the object belongs to some sizer; if applicable, add it to the sizer at the top of the stack
         if added and parent.IS_SIZER:
-            if obj.classname not in ("spacer",):  # spacer and slot are adding itself to the sizer
+            if obj.WX_CLASS not in ("spacer",):  # spacer and slot are adding itself to the sizer
                 self.add_sizeritem(parent_class_object, parent, obj)
 
     def add_object(self, sub_obj):
@@ -412,9 +411,9 @@ class XRCCodeWriter(BaseLangCodeWriter, wcodegen.XRCMixin):
             sizer.xrc = sizer_xrc
         # we now have to move the children from 'toplevel' to 'sizer'
         index = top_xrc.children.index(obj_xrc)
-        if obj.klass == 'spacer':
+        if obj.WX_CLASS == 'spacer':
             sizer.xrc.children.append( SpacerXrcObject(obj) )
-        elif obj.klass == 'sizerslot':
+        elif obj.WX_CLASS == 'sizerslot':
             if not sizer._IS_GRIDBAG:
                 sizer.xrc.children.append( SpacerXrcObject(None) )
         else:

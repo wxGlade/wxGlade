@@ -780,7 +780,7 @@ def builder(parent, pos):
 
 
 
-def xml_builder(attrs, parent, pos=None):
+def xml_builder(parser, attrs, parent, pos=None):
     "factory to build EditToolBar objects from a XML file"
     name = attrs.get('name')
     if not parent.IS_ROOT:

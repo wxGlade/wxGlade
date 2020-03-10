@@ -41,7 +41,7 @@ class BaseLispSizerBuilder(BaseSizerBuilder):
         """Returns code that will be inserted after the child code; e.g. for adding element to a sizer.
         It's placed before the final code returned from get_code()."""
 
-        if child.classname in ("spacer","sizerslot"):  # spacer and slot are adding itself to the sizer
+        if child.WX_CLASS in ("spacer","sizerslot"):  # spacer and slot are adding itself to the sizer
             return []
         obj_name = self.codegen._format_classattr(child)
         sizer_name = self.codegen._format_classattr(obj)

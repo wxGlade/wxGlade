@@ -457,8 +457,8 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
         # recursively generate code, for anything except application.Application
         # for toplevel widgets or with class different from wx... a class will be added
 
-        if obj.IS_SLOT or obj.classname=="spacer":
-            if obj.classname!="slot":  # "slot" has no code generator
+        if obj.IS_SLOT or obj.WX_CLASS=="spacer":
+            if obj.WX_CLASS:  # "slot" has no code generator, but "sizerslot" or "spacer" needs to be added
                 self.add_object(parent_klass, parent, parent_builder, obj)
             return
 
@@ -1140,15 +1140,13 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
 
         see: classattr_always
         """
-        if obj.klass in self.classattr_always:
+        if not obj.IS_NAMED: return False
+        if obj.WX_CLASS in self.classattr_always:
             return True
         if 'attribute' in obj.properties:
             return obj.attribute
 
-        if obj.IS_SIZER:
-            return False
-        if obj.classname in ("wxStaticText","wxHyperlinkCtrl","wxStaticBitmap","wxStaticLine",
-                             'spacer', 'sizerslot', 'slot'):
+        if obj.WX_CLASS in ("wxStaticText","wxHyperlinkCtrl","wxStaticBitmap","wxStaticLine"):
             return False
         return True  # this is the default
 

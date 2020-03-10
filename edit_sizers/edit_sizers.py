@@ -216,7 +216,7 @@ class BaseSizerBuilder(object):
         """Returns code that will be inserted after the child code; e.g. for adding element to a sizer.
         It's placed before the final code returned from get_code()."""
 
-        if child.classname in ("spacer","sizerslot"):  # spacer and slot are adding itself to the sizer
+        if child.WX_CLASS in ("spacer","sizerslot"):  # spacer and slot are adding itself to the sizer
             return []
 
         # the name attribute of a spacer is already formatted "<width>, <height>".
@@ -2332,7 +2332,7 @@ def builder(parent, pos):
     return editor
 
 
-def xml_builder(attrs, parent, pos=None):
+def xml_builder(parser, attrs, parent, pos=None):
     "factory function to build EditBoxSizer objects from a XML file"
     from xml_parse import XmlParsingError
 
@@ -2436,7 +2436,7 @@ def grid_builder(parent, pos):
     return editor
 
 
-def grid_xml_builder(attrs, parent, pos=None):
+def grid_xml_builder(parser, attrs, parent, pos=None):
     "factory function to build EditGridSizer objects from a XML file"
     from xml_parse import XmlParsingError
 

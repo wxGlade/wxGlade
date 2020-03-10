@@ -364,7 +364,7 @@ def builder(parent, pos):
     return editor
 
 
-def xml_builder(attrs, parent, pos=None):
+def xml_builder(parser, attrs, parent, pos=None):
     "factory to build EditPanel objects from a XML file"
     from xml_parse import XmlParsingError
     try:
@@ -374,7 +374,7 @@ def xml_builder(attrs, parent, pos=None):
     return EditPanel(name, parent, pos=pos, style='')
 
 
-def xml_toplevel_builder(attrs, parent, pos=None):
+def xml_toplevel_builder(parser, attrs, parent, pos=None):
     from xml_parse import XmlParsingError
     try:
         label = attrs['name']

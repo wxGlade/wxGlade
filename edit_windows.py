@@ -111,15 +111,28 @@ class EditBase(EventsMixin, edit_base.EditBase):
         edit_base.EditBase.__init__(self, name, parent, pos)
 
         # initialise instance properties
-        self.classname = klass
-        self.klass = klass_p = np.ClassProperty(klass, name="class") # Name of the object's class: read/write or read only
-        # If True, the user can change the value of the 'class' property:
-        self.custom_class = custom_class
-        # only for StatusBar, ToolBar and also non-standalone MenuBar it's False
-        if not custom_class: klass_p.readonly = True
+        if "class" in self.PROPERTIES:
+            self.classname = klass
+            if self.IS_TOPLEVEL:
+                self.klass = klass_p = np.ClassProperty(klass, name="class") # Name of the object's class: read/write or read only
+            elif self.CAN_BE_CLASS:
+                self.klass = klass_p = np.ClassPropertyD(klass, default_value=self.WX_CLASS, name="class") # Name of the object's class: read/write or read only
+            else:
+                self.klass = klass_p = np.ClassPropertyD(klass, default_value=self.WX_CLASS, name="class") # Name of the object's class: read/write or read only
+                if klass!=self.WX_CLASS and custom_class:
+                    klass_p.deactivated = False
+
+            # If True, the user can change the value of the 'class' property:
+            self.custom_class = custom_class
+        
+            if not custom_class:
+                # only for StatusBar and non-standalone ToolBar/MenuBar it's False
+                #klass_p.readonly = True
+                klass_p.blocked = True
+        print("EditBase", self.WX_CLASS, klass, custom_class, self.IS_TOPLEVEL, self.CAN_BE_CLASS)
 
         if getattr(self, '_custom_base_classes', False):
-            # for notebook, panel and splitter window
+            # for TopLevelBase, notebook, panel and splitter window
             self.custom_base = np.TextPropertyD("", multiline=False, default_value=None)
         else:
             self.custom_base = None

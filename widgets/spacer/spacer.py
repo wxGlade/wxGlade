@@ -106,7 +106,7 @@ def builder(parent, pos):
     return editor
 
 
-def xml_builder(attrs, parent, pos=None):
+def xml_builder(parser, attrs, parent, pos=None):
     "factory to build EditSpacer objects from a XML file"
     return EditSpacer('spacer', parent, 1, 1, pos)
 

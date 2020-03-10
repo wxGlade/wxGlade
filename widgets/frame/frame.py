@@ -211,13 +211,13 @@ def builder(parent, pos, klass=None, base=None, name=None):
 
 
 def _make_builder(base_class):
-    def xml_builder(attrs, parent, pos=None):
+    def xml_builder(parser, attrs, parent, pos=None):
         from xml_parse import XmlParsingError
         try:
             label = attrs['name']
         except KeyError:
             raise XmlParsingError(_("'name' attribute missing"))
-        if attrs.input_file_version and attrs.input_file_version<(0,8):
+        if parser.input_file_version and parser.input_file_version<(0,8):
             # backwards compatibility
             style = "wxDEFAULT_FRAME_STYLE"
         else:

@@ -59,7 +59,7 @@ def builder(parent, pos):
     return editor
 
 
-def xml_builder(attrs, parent, pos=None):
+def xml_builder(parser, attrs, parent, pos=None):
     "factory to build EditBitmapButton objects from a XML file"
     from xml_parse import XmlParsingError
     try:
@@ -67,7 +67,7 @@ def xml_builder(attrs, parent, pos=None):
     except KeyError:
         raise XmlParsingError(_("'name' attribute missing"))
     editor = EditBitmapButton(label, parent, '', pos)
-    if attrs.input_file_version and attrs.input_file_version<(0,9):
+    if parser.input_file_version and parser.input_file_version<(0,9):
         # backwards compatibility
         editor.properties["style"].set_to_default()
     return editor

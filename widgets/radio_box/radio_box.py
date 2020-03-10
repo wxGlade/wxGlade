@@ -193,7 +193,7 @@ def builder(parent, pos):
     return editor
 
 
-def xml_builder(attrs, parent, pos=None):
+def xml_builder(parser, attrs, parent, pos=None):
     "factory to build EditRadioBox objects from a XML file"
     from xml_parse import XmlParsingError
     try:

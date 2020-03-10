@@ -347,8 +347,6 @@ class EditBase(np.PropertyOwner):
     def write(self, output, tabs):
         "Writes the xml code for the widget to the given output file"
         # write object tag, including class, name, base
-        #classname = getattr(self, '_classname', self.__class__.__name__)
-        #if classname=="EditToplevelMenuBar": classname = "EditMenuBar"
         classname = self.get_editor_name()
         # to disable custom class code generation (for panels...)
         if getattr(self, 'no_custom_class', False):
@@ -356,8 +354,9 @@ class EditBase(np.PropertyOwner):
         else:
             no_custom = ""
         outer_tabs = u'    ' * tabs
+        klass = self.get_prop_value("class", default=self.WX_CLASS)
         output.append(u'%s<object %s %s %s%s>\n' % ( outer_tabs,
-                                                     common.format_xml_attrs(**{'class': self.klass}),
+                                                     common.format_xml_attrs(**{'class': klass}),
                                                      common.format_xml_attrs(name=self.name),
                                                      common.format_xml_attrs(base=classname),
                                                      no_custom) )
@@ -428,6 +427,9 @@ class EditBase(np.PropertyOwner):
     def _get_tree_label(self):
         # get a label for node
         s = self.name
+        if not "class" in self.PROPERTIES:
+            assert self.WX_CLASS in ("spacer", )
+            return s
         if (self.WX_CLASS=="CustomWidget" or (self.klass != self.WX_CLASS and self.klass != 'wxScrolledWindow') ):
             # special case...
             s += ' (%s)' % self.klass

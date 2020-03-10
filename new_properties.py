@@ -1593,7 +1593,7 @@ class ClassProperty(TextProperty):
                     result = check(c.children)
                     if result: return result
                 if c is not self.owner:
-                    if c.klass==c.WX_CLASS: continue
+                    if not c.check_prop("class"): continue # .klass==c.WX_CLASS: continue
                     if c.klass==klass:
                         return self._UNIQUENESS_MSG1
                     if leaf and "." in c.klass and leaf==c.klass.rsplit(".",1)[-1]:
@@ -1623,6 +1623,11 @@ class ClassProperty(TextProperty):
         klass = event.GetString()
         self._check(klass)
         event.Skip()
+
+
+class ClassPropertyD(ClassProperty):
+    # for CAN_BE_CLASS
+    deactivated = True
 
 
 class IntPairPropertyD(TextPropertyD):
@@ -3215,7 +3220,11 @@ class PropertyOwner(object):
         if prop.blocked: return False
         return prop.is_active()
 
+    def get_prop_value(self, name, default):
+        # return property value if property exists, else the default
+        if not self.check_prop(name): return default
+        return self.properties[name].get()
+
     def check_prop_truth(self, name):
         # return True if property exists, is active and not blocked and the value is tested for truth
-        if not self.check_prop(name): return False
-        return bool(self.properties[name].get())
+        return self.get_prop_value(name, False) and True or False

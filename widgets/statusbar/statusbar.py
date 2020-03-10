@@ -180,7 +180,7 @@ def builder(parent, pos):
     return editor
 
 
-def xml_builder(attrs, parent, pos=None):
+def xml_builder(parser, attrs, parent, pos=None):
     "factory to build EditStatusBar objects from a XML file"
     name = attrs.get('name')
     if parent:

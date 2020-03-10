@@ -92,7 +92,8 @@ class TreePrinter:
         all_children = editor.get_all_children()
         if not all_children: return
         for child in all_children:
-            print( "  "*indent, child.WX_CLASS, child.klass, getattr(child, "custom_class", "---"), child.IS_TOPLEVEL, child.CAN_BE_CLASS)
+            klass = "class" in child.PROPERTIES and child.klass or None
+            print( "  "*indent, child.WX_CLASS, klass, getattr(child, "custom_class", "---"), child.IS_TOPLEVEL, child.CAN_BE_CLASS)
             self.prn(child, indent+1)
 
         print()

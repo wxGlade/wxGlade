@@ -526,21 +526,20 @@ class XmlWidgetObject(object):
         # initialise instance logger
         self._logger = logging.getLogger(self.__class__.__name__)
 
-        attrs.input_file_version = parser.input_file_version  # for handling backwards compatibility on loading
+        attrs = dict(attrs)
 
         self.prop_handlers = Stack()  # a stack of custom handler functions to set properties of this object
-        self.parser = parser
 
         self._properties_added = []
         try:
             base = attrs.get('base', None)
-            self.klass = attrs['class']
+            klass = attrs['class']
         except KeyError:
             raise XmlParsingError(_("'object' items must have a 'class' attribute"))
 
         # find sizeritem, sizer, parent window
         sizeritem = sizer = parent = None
-        stack = self.parser._objects[:]
+        stack = parser._objects[:]
         top = stack.pop(-1) if stack else None
 
         if top and isinstance(top.obj, Sizeritem):
@@ -573,20 +572,22 @@ class XmlWidgetObject(object):
             # build the widget
             builder = common.widgets_from_xml.get(base, None)
             if builder is None: raise XmlParsingError("Widget '%s' not supported."%base)
-            self.obj = builder(attrs, sizer or parent, pos)
-            p = self.obj.properties.get("class")
-            if p and not p.readonly:  # can happen when pasting a standalone ToolBar or MenuBar to a Frame
-                p.set(self.klass)
+            self.obj = builder(parser, attrs, sizer or parent, pos)
+            if klass!=self.obj.WX_CLASS:
+                p = self.obj.properties.get("class")
+                if p and not p.readonly:  # can happen when pasting a standalone ToolBar or MenuBar to a Frame
+                    print("Setting class property", p.value, "->", klass)
+                    p.set(klass, activate=True)
 
             self.IS_SIZER = self.obj.IS_SIZER
             self.IS_WINDOW = self.obj.IS_WINDOW
 
-        elif self.klass == 'sizeritem':
+        elif klass == 'sizeritem':
             self.obj = Sizeritem()
             self.parent = parent
             self.IS_SIZERITEM = True
 
-        elif self.klass == 'sizerslot':
+        elif klass == 'sizerslot':
             assert sizer is not None, _("malformed wxg file: slots can only be inside sizers!")
             self.obj = None
             self.IS_SLOT = True
@@ -594,7 +595,7 @@ class XmlWidgetObject(object):
             sizer.layout()
 
         # push the object on the _objects stack
-        self.parser._objects.push(self)
+        parser._objects.push(self)
 
     def add_property(self, name, val):
         """adds a property to this widget. This method is not called if there

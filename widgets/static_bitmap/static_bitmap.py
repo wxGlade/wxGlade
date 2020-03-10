@@ -70,7 +70,7 @@ def builder(parent, pos, bitmap=None):
     return editor
 
 
-def xml_builder(attrs, parent, pos=None):
+def xml_builder(parser, attrs, parent, pos=None):
     "factory to build EditStaticBitmap objects from a XML file"
     from xml_parse import XmlParsingError
     try:

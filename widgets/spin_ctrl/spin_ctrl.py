@@ -85,7 +85,7 @@ def builder(parent, pos):
     return editor
 
 
-def xml_builder(attrs, parent, pos=None):
+def xml_builder(parser, attrs, parent, pos=None):
     "factory function to build EditSpinCtrl objects from a XML file"
     from xml_parse import XmlParsingError
     try:

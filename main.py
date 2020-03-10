@@ -135,7 +135,8 @@ class wxGladePropertyPanel(wx.Panel):
         self.current_widget = edit_widget
         if edit_widget:
             # XXX set status bar
-            self.heading.SetValue( _('Properties - %s - <%s>:') % (edit_widget.klass, edit_widget.name) )
+            klass = edit_widget.get_prop_value("class", edit_widget.WX_CLASS)
+            self.heading.SetValue( _('Properties - %s - <%s>:') % (klass, edit_widget.name) )
         else:
             self.heading.SetValue( _('Properties') )
 

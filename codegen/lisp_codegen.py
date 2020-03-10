@@ -302,15 +302,15 @@ class LispCodeWriter(BaseLangCodeWriter, wcodegen.LispMixin):
         builder = self._get_object_builder(parent_klass, obj)
         if not builder: return None
 
-        if obj.name not in ("spacer","sizerslot", "SLOT"):
+        if obj.IS_NAMED:
             self.class_lines.append( self._format_name(obj.name) )
-        if obj.klass in ("wxBoxSizer", "wxStaticBoxSizer", "wxGridSizer", "wxFlexGridSizer"):
+        if obj.WX_CLASS in ("wxBoxSizer", "wxStaticBoxSizer", "wxGridSizer", "wxFlexGridSizer"):
             self.dependencies.add( '(use-package :wxSizer)' )
         else:
-            if obj.klass not in ("spacer", "sizerslot"):
+            if obj.WX_CLASS not in ("spacer", "sizerslot"):
                 self.dependencies.add( '(use-package :%s)'%obj.klass )
 
-        if obj.klass == "wxMenuBar":
+        if obj.WX_CLASS == "wxMenuBar":
             self.dependencies.add( '(use-package :wxMenu)' )
 
         return BaseLangCodeWriter.add_object(self, parent_klass, parent, parent_builder, obj)
