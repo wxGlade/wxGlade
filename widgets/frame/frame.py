@@ -19,7 +19,7 @@ class EditFrame(BitmapMixin, TopLevelBase, EditStylesMixin):
     WX_CLASS = "wxFrame"
     _PROPERTIES =["Widget", "title", "icon", "centered", "sizehints","menubar", "toolbar", "statusbar", "style"]
     PROPERTIES = TopLevelBase.PROPERTIES + _PROPERTIES + TopLevelBase.EXTRA_PROPERTIES
-    np.insert_after(PROPERTIES, "class", "custom_base")
+    #np.insert_after(PROPERTIES, "class", "custom_base")
     _PROPERTY_HELP   = { 'icon':'Icon for this window.',
                          "size":WindowBase._PROPERTY_HELP["size_sizehints"] }
     _PROPERTY_LABELS = { "sizehints":'Set Size Hints', "menubar":'Has MenuBar', "toolbar":'Has ToolBar',
