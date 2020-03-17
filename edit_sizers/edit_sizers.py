@@ -621,7 +621,6 @@ class SizerBase(Sizer, np.PropertyOwner):
         "called from finish_widget_creation() to add to sizer widget"
 
         # calculate width, height
-        size_arg = size
         if not size or -1 in size:
             best_size = item.widget.GetBestSize()
         if size:
@@ -631,35 +630,24 @@ class SizerBase(Sizer, np.PropertyOwner):
         else:
             w, h = best_size
 
-        if pos>len(self.widget.GetChildren()):
-            ## I have to set wxADJUST_MINSIZE to handle a bug that I'm not able to detect (yet): if the width or height
-            ## of a widget is -1, the layout is messed up!
-            if self._IS_GRIDBAG:
-                self.widget.Add( item.widget, pos, item.span, item.flag, item.border )
-            else:
-                self.widget.Add( item.widget, item.proportion, item.flag, item.border )
-
-            self.widget.SetItemMinSize(item.widget, w, h)
-            return
-
         if self._IS_GRIDBAG:
-            # XXX check item.widget.span and remove empty slots
+            # GridBagSizer: add at (row, col) position
             self.widget.Add( item.widget, pos, item.span, item.flag, item.border, destroy=True )
-            self.widget.Layout()
-            return
+        else:
+            # no GridBagSizer: add or insert at index position
+            if pos>len(self.widget.GetChildren()):
+                self.widget.Add( item.widget, item.proportion, item.flag, item.border )
+            else:
+                self.widget.Insert(pos+self.widget._BTN_OFFSET, item.widget, item.proportion, item.flag, item.border)
 
-        # no GridBagSizer
-        self.widget.Insert(pos+self.widget._BTN_OFFSET, item.widget, item.proportion, item.flag, item.border)
-
-        try:  # if the item was a window, set its size to a reasonable value
-            self.widget.SetItemMinSize(item.widget, w, h)  # w,h is GBestSize
+        try:
+            # if the item was a window, set its size to a reasonable value:  w,h is GetBestSize
+            self.widget.SetItemMinSize(item.widget, w, h)
         except Exception:
-            # production version: exceptions to be ignored
             if config.debugging: raise
-        if self.widget:
-            self.window.widget.Refresh()
-        if force_layout:
-            self.layout()  # update the layout of self
+
+        self.window.widget.Refresh()
+        if force_layout: self.layout()  # update the layout of self
 
     def get_child_index(self, pos):
         # return the index of the widget; in GridBagSizers, overlapped slots are skipped
@@ -677,8 +665,7 @@ class SizerBase(Sizer, np.PropertyOwner):
             w = item.GetWindow()
             w.SetContainingSizer(None)
         compat.SizerItem_SetSizer(item, notebook_sizer)
-        if force_layout:
-            self.layout()
+        if force_layout: self.layout()
 
     def set_item_best_size(self, widget, size=(-1,-1), force_layout=True):
         if not self.widget or not widget.widget: return
@@ -694,8 +681,7 @@ class SizerBase(Sizer, np.PropertyOwner):
             if h == -1: h = best_size[1]
             self.widget.SetItemMinSize(item, w, h)
 
-        if force_layout:
-            self.layout(True)
+        if force_layout: self.layout(True)
 
     @_frozen
     def item_properties_modified(self, widget, modified=None, force_layout=True):
