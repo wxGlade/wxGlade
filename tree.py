@@ -11,7 +11,7 @@ import logging, os.path
 import wx
 import misc, common, compat, config, clipboard
 
-DEBUG = config.debugging #  and False
+DEBUG = config.debugging and False
 if DEBUG:
     import utilities
 
@@ -35,8 +35,7 @@ class WidgetTree(wx.TreeCtrl):#, Tree):
         self.AssignImageList(image_list)
         application.item = self.AddRoot(_('Application'), 0)
         self._SetItemData(application.item, application)
-        self.skip_select = 0  # necessary to avoid an infinite loop on win32, as SelectItem fires an
-                              # EVT_TREE_SEL_CHANGED event
+        self.skip_select = 0  # avoid an infinite loop on win32, as SelectItem fires an EVT_TREE_SEL_CHANGED event
 
         self.drop_target = clipboard.DropTarget(self, toplevel=True)
         self.SetDropTarget(self.drop_target)
