@@ -1556,6 +1556,16 @@ class NameProperty(TextProperty):
         return True
 
 
+class InstanceClassPropertyD(TextProperty):
+    deactivated = True
+    validation_re = re.compile(r'^[a-zA-Z_]+[\w:.0-9-]*$')
+
+
+class BaseClassesPropertyD(TextProperty):
+    deactivated = True
+    validation_re = re.compile(r'^[a-zA-Z_]+[\w:.0-9-\,]*$')
+
+
 class ClassProperty(TextProperty):
     validation_re = re.compile(r'^[a-zA-Z_]+[\w:.0-9-]*$')
     _UNIQUENESS_MSG1 = "Name not unique; code will only be created for one window/widget."

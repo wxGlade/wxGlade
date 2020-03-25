@@ -124,13 +124,13 @@ class EditBase(EventsMixin, edit_base.EditBase):
                 raise ValueError("implementation error")
 
         if "instance_class" in self.PROPERTIES:
-            self.instance_class = instance_class_p = np.ClassPropertyD(instance_class, default_value=self.WX_CLASS)
+            self.instance_class = instance_class_p = np.InstanceClassPropertyD(instance_class, default_value=self.WX_CLASS)
             if instance_class is not None and instance_class!=self.WX_CLASS:
                 instance_class_p.deactivated = False
 
         if "custom_base" in self.PROPERTIES:
             # for TopLevelBase, notebook, panel and splitter window
-            self.custom_base = np.TextPropertyD("", multiline=False, default_value=None)
+            self.custom_base = np.BaseClassesPropertyD()
 
         self.extracode       = np.CodeProperty()
         self.extracode_pre   = np.CodeProperty()
