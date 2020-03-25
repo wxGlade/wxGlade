@@ -22,8 +22,8 @@ class EditSlider(ManagedBase, EditStylesMixin):
     _PROPERTIES = ["Widget", "range", "value", "style"]
     PROPERTIES = ManagedBase.PROPERTIES + _PROPERTIES + ManagedBase.EXTRA_PROPERTIES
 
-    def __init__(self, name, parent, style, pos):
-        ManagedBase.__init__(self, name, 'wxSlider', parent, pos)
+    def __init__(self, name, parent, pos, style, instance_class=None):
+        ManagedBase.__init__(self, name, parent, pos, instance_class)
         EditStylesMixin.__init__(self)
 
         # initialise instance properties
@@ -74,20 +74,17 @@ def builder(parent, pos):
 
     name = parent.toplevel_parent.get_next_contained_name('slider_%d')
     with parent.frozen():
-        editor = EditSlider(name, parent, style, pos)
+        editor = EditSlider(name, parent, pos, style)
         editor.properties["flag"].set("wxEXPAND")
         if parent.widget: editor.create()
     return editor
 
 
-def xml_builder(parser, attrs, parent, pos=None):
+def xml_builder(parent, pos, attrs):
     "Factory to build editor objects from a XML file"
-    from xml_parse import XmlParsingError
-    try:
-        name = attrs['name']
-    except KeyError:
-        raise XmlParsingError(_("'name' attribute missing"))
-    return EditSlider(name, parent, '', pos)
+    attrs.set_editor_class(EditSlider)
+    name, instance_class = attrs.get_attributes("name", "instance_class")
+    return EditSlider(name, parent, pos, '', instance_class)
 
 
 def initialize():

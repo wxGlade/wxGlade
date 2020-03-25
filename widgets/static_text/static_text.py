@@ -24,8 +24,8 @@ class EditStaticText(ManagedBase, EditStylesMixin):
                                  'Without this, you can not access the label from your program.',
                      "wrap":     'Wrap text to at most the given width.\nThe lines will be broken at word boundaries.'}
 
-    def __init__(self, name, parent, label, pos):
-        ManagedBase.__init__(self, name, 'wxStaticText', parent, pos)
+    def __init__(self, name, parent, pos, label, instance_class=None):
+        ManagedBase.__init__(self, name, parent, pos, instance_class=None)
         EditStylesMixin.__init__(self)
 
         # initialise instance properties
@@ -65,21 +65,18 @@ def builder(parent, pos):
     "factory function for EditStaticText objects"
     name = parent.toplevel_parent.get_next_contained_name('static_text_%d')
     with parent.frozen():
-        editor = EditStaticText(name, parent, name, pos)
+        editor = EditStaticText(name, parent, pos, name)
         editor.properties["style"].set_to_default()
         editor.check_defaults()
         if parent.widget: editor.create()
     return editor
 
 
-def xml_builder(parser, attrs, parent, pos=None):
+def xml_builder(parent, pos, attrs):
     "factory to build EditStaticText objects from a XML file"
-    from xml_parse import XmlParsingError
-    try:
-        label = attrs['name']
-    except KeyError:
-        raise XmlParsingError(_("'name' attribute missing"))
-    return EditStaticText(label, parent, "", pos)
+    attrs.set_editor_class(EditStaticText)
+    name, instance_class = attrs.get_attributes("name", "instance_class")
+    return EditStaticText(name, parent, pos, "", instance_class)
 
 
 def initialize():

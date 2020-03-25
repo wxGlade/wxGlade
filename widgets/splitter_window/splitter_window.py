@@ -41,7 +41,7 @@ class EditSplitterWindow(ManagedBase, EditStylesMixin):
     CAN_BE_CLASS = True
     _PROPERTIES = ["Widget", "no_custom_class", "style", "sash_pos", "sash_gravity", "min_pane_size"]
     PROPERTIES = ManagedBase.PROPERTIES + _PROPERTIES + ManagedBase._EXTRA_PROPERTIES
-    np.insert_after(PROPERTIES, "class", "custom_base")
+    np.insert_after(PROPERTIES, "name", "class", "custom_base")
     _PROPERTY_LABELS = {'no_custom_class':"Don't generate code for this class",
                         'sash_pos':"Sash position"}
     _PROPERTY_HELP = {'no_custom_class':"Don't generate code for this class",
@@ -49,8 +49,8 @@ class EditSplitterWindow(ManagedBase, EditStylesMixin):
                                      "0.5: both windows grow by equal size\n"
                                      "1.0: only left/top window grows"}
     CHILDREN = 2
-    def __init__(self, name, parent, orientation, pos, create_slots=True):
-        ManagedBase.__init__(self, name, 'wxSplitterWindow', parent, pos)
+    def __init__(self, name, parent, pos, orientation, instance_class=None, class_=None):
+        ManagedBase.__init__(self, name, parent, pos, instance_class, class_)
         EditStylesMixin.__init__(self)
 
         # initialise instance properties
@@ -244,7 +244,7 @@ def builder(parent, pos):
 
     name = parent.toplevel_parent.get_next_contained_name('window_%d')
     with parent.frozen():
-        editor = EditSplitterWindow(name, parent, orientation, pos)
+        editor = EditSplitterWindow(name, parent, pos, orientation)
         editor.properties["style"].set_to_default()
         if create_panels:
             pane1 = EditPanel(name + '_pane_1', editor, 0)
@@ -258,14 +258,11 @@ def builder(parent, pos):
         return editor
 
 
-def xml_builder(parser, attrs, parent, pos=None):
+def xml_builder(parent, pos, attrs):
     "Factory to build editor objects from a XML file"
-    from xml_parse import XmlParsingError
-    try:
-        name = attrs['name']
-    except KeyError:
-        raise XmlParsingError(_("'name' attribute missing"))
-    return EditSplitterWindow(name, parent, 'wxSPLIT_VERTICAL', pos)
+    attrs.set_editor_class(EditSplitterWindow)
+    name, class_, instance_class = attrs.get_attributes("name", "class", "instance_class")
+    return EditSplitterWindow(name, parent, pos, 'wxSPLIT_VERTICAL', instance_class, class_)
 
 
 def initialize():

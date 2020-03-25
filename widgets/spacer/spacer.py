@@ -20,9 +20,8 @@ class EditSpacer(ManagedBase):
     _PROPERTIES = ["Layout", "width", "height", "pos", "proportion", "border", "flag"]
     PROPERTIES = _PROPERTIES + ManagedBase.EXTRA_PROPERTIES
 
-    def __init__(self, name, parent, width, height, pos):
-        #ManagedBase.__init__(self, 'spacer', 'spacer', parent, pos)
-        ManagedBase.__init__(self, 'spacer', 'spacer', parent, pos)
+    def __init__(self, parent, pos, width, height, instance_class=None):
+        ManagedBase.__init__(self, 'spacer', parent, pos, instance_class)
 
         # initialise instance properties
         self.width  = np.SpinProperty(width,  immediate=True)
@@ -101,14 +100,16 @@ def builder(parent, pos):
         return
 
     with parent.frozen():
-        editor = EditSpacer( 'spacer', parent, width, height, pos )
+        editor = EditSpacer( parent, pos, width, height )
         if parent.widget: editor.create()
     return editor
 
 
-def xml_builder(parser, attrs, parent, pos=None):
+def xml_builder(parent, pos, attrs):
     "factory to build EditSpacer objects from a XML file"
-    return EditSpacer('spacer', parent, 1, 1, pos)
+    attrs.set_editor_class(EditSpacer)
+    instance_class = attrs.get_attributes("instance_class")
+    return EditSpacer(parent, pos, 1, 1, instance_class)
 
 
 def initialize():

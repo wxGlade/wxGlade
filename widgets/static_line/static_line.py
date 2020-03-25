@@ -24,8 +24,8 @@ class EditStaticLine(ManagedBase, EditStylesMixin):
     _PROPERTY_LABELS = {"attribute":'Store as attribute'}
     _PROPERTY_HELP={"attribute":'Store instance as attribute of window class; e.g. self.line_1 = wx.wxStaticLine(...)\n'
                                 'Without this, you can not access the line from your program.'}
-    def __init__(self, name, parent, style, pos):
-        ManagedBase.__init__(self, name, 'wxStaticLine', parent, pos)
+    def __init__(self, name, parent, pos, style, instance_class=None):
+        ManagedBase.__init__(self, name, parent, pos, instance_class)
         EditStylesMixin.__init__(self)
 
         # initialise instance properties
@@ -39,7 +39,6 @@ class EditStaticLine(ManagedBase, EditStylesMixin):
     def finish_widget_creation(self):
         ManagedBase.finish_widget_creation(self)
         self.sel_marker.Reparent(self.parent_window.widget)
-        #del self.properties['font']
 
     def __getitem__(self, key):
         if key != 'font':
@@ -63,7 +62,7 @@ def builder(parent, pos):
 
     name = parent.toplevel_parent.get_next_contained_name('static_line_%d')
     with parent.frozen():
-        editor = EditStaticLine(name, parent, style, pos)
+        editor = EditStaticLine(name, parent, pos, style)
         if parent.IS_SIZER and "orient" in parent.properties and parent.orient:
             if ( (parent.orient & wx.VERTICAL   and style=="wxLI_HORIZONTAL") or 
                  (parent.orient & wx.HORIZONTAL and style=="wxLI_VERTICAL") ):
@@ -72,14 +71,11 @@ def builder(parent, pos):
     return editor
 
 
-def xml_builder(parser, attrs, parent, pos=None):
+def xml_builder(parent, pos, attrs):
     "Factory to build editor objects from a XML file"
-    from xml_parse import XmlParsingError
-    try:
-        name = attrs['name']
-    except KeyError:
-        raise XmlParsingError(_("'name' attribute missing"))
-    return EditStaticLine(name, parent, '', pos)
+    attrs.set_editor_class(EditStaticLine)
+    name, instance_class = attrs.get_attributes("name", "instance_class")
+    return EditStaticLine(name, parent, pos, '', instance_class)
 
 
 def initialize():

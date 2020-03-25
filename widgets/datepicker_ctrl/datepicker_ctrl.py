@@ -28,9 +28,9 @@ class EditDatePickerCtrl(ManagedBase, EditStylesMixin):
     _PROPERTIES = ["Widget", "style"]
     PROPERTIES = ManagedBase.PROPERTIES + _PROPERTIES + ManagedBase.EXTRA_PROPERTIES
 
-    def __init__(self, name, parent, pos):
+    def __init__(self, name, parent, pos, instance_class=None):
         # Initialise parent classes
-        ManagedBase.__init__(self, name, 'wxDatePickerCtrl', parent, pos)
+        ManagedBase.__init__(self, name, parent, pos, instance_class)
         EditStylesMixin.__init__(self)
 
     def create_widget(self):
@@ -60,14 +60,11 @@ def builder(parent, pos):
     return editor
 
 
-def xml_builder(parser, attrs, parent, pos=None):
+def xml_builder(parent, pos, attrs):
     "factory to build EditDatePickerCtrl objects from a XML file"
-    from xml_parse import XmlParsingError
-    try:
-        name = attrs['name']
-    except KeyError:
-        raise XmlParsingError(_("'name' attribute missing"))
-    return EditDatePickerCtrl(name, parent, pos)
+    attrs.set_editor_class(EditDatePickerCtrl)
+    name, instance_class = attrs.get_attributes("name", "instance_class")
+    return EditDatePickerCtrl(name, parent, pos, instance_class)
 
 
 def initialize():

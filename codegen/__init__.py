@@ -303,7 +303,7 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
         self.classes = OrderedDict()
         self.curr_tab = 0
         self.dependencies = set()
-        self.for_version = config.for_version
+        self.for_version = config.for_version_min
         self.header_lines = []
         self.indent_symbol = config.default_indent_symbol
         self.indent_amount = config.default_indent_amount
@@ -438,16 +438,13 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
     def _is_class(self, obj):
         # check whether to add a new class to the generated code and modify some attributes in place
         IS_CLASS = obj.IS_TOPLEVEL
-        CAN_BE_CLASS = obj.CAN_BE_CLASS
-        if CAN_BE_CLASS and obj.klass != obj.WX_CLASS:
+        if not self.preview and obj.check_prop_truth("class"):
             IS_CLASS = True
-            # for panel objects, if the user sets a custom class but (s)he doesn't want the code to be generated...
-            if obj.check_prop("no_custom_class") and obj.no_custom_class and not self.preview:
-                IS_CLASS = False
-        elif "class" in obj.PROPERTIES and self.preview and not CAN_BE_CLASS and obj.WX_CLASS != 'CustomWidget':
+        elif "class" in obj.PROPERTIES and self.preview and not obj.CAN_BE_CLASS and obj.WX_CLASS != 'CustomWidget':
             # this is a custom class, but not a toplevel one; for preview we ignore this
             # CustomWidgets handles this in a special way (see widgets/custom_widget/codegen.py)
-            obj.properties["klass"].set_temp(obj.WX_CLASS) # XXX handle this in a different way
+            XXX
+            obj.properties["class"].set_temp(obj.WX_CLASS) # XXX handle this in a different way
 
         obj.IS_CLASS = IS_CLASS
 
@@ -829,7 +826,7 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
             # no code generator found: write a comment about it
             name = getattr(obj, "name", "None")
             name = self._format_name(name)
-            msg = _('Code for instance "%s" of "%s" not generated: no suitable writer found') % (name, obj.klass )
+            msg = _('Code for instance "%s" of "%s" not generated: no suitable writer found') % (name, obj.WX_CLASS )
             self._source_warning(parent_klass, msg, obj)
             self.warning(msg)
             return None
@@ -927,15 +924,14 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
     def generate_code_extraproperties(self, obj):
         "Returns a list of code fragments that set extra properties for the given object"
         tmpl = self._get_code_statement('extraproperties')
-        if not tmpl:
-            return []
+        if not tmpl: return []
         objname = self.format_generic_access(obj)
+        klass = self.cn_class( obj.get_prop_value("class", obj.WX_CLASS) )
 
         ret = []
         for name, value in sorted(obj.extraproperties):
             name_cap = name[0].upper() + name[1:]
-            stmt = tmpl % { 'klass': self.cn_class(obj.klass), 'objname': objname, 'propname': name,
-                            'propname_cap': name_cap, 'value': value }
+            stmt = tmpl % { 'klass':klass, 'objname':objname, 'propname':name, 'propname_cap':name_cap, 'value':value }
             ret.append(stmt)
         return ret
 

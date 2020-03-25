@@ -19,10 +19,7 @@ from edit_windows import ManagedBase, TopLevelBase, EditStylesMixin
 class PanelBase(EditStylesMixin):
     "Class PanelBase"
 
-    _PROPERTIES = ["Widget", "no_custom_class", "style", "scrollable", "scroll_rate"]
-    _PROPERTY_LABELS = {'no_custom_class':"Don't generate code for this class"}
-    _PROPERTY_HELP = {'no_custom_class':'If this is a custom class, setting this property prevents wxGlade\n'
-                                        'from generating the class definition code'}
+    _PROPERTIES = ["Widget", "style", "scrollable", "scroll_rate"]
     CHILDREN = -1  # 0 or 1; either a sizer or nothing
 
     def __init__(self, style='wxTAB_TRAVERSAL'):
@@ -34,7 +31,6 @@ class PanelBase(EditStylesMixin):
         EditStylesMixin.__init__(self, 'wxPanel')
 
         # initialise properties
-        self.no_custom_class = np.CheckBoxProperty(False, default_value=False)
         self.scrollable      = np.CheckBoxProperty(False, default_value=False)
         self.scroll_rate = prop = np.IntPairPropertyD( "10, 10" )
         prop.set_blocked(True)
@@ -148,12 +144,13 @@ class PanelBase(EditStylesMixin):
 class EditPanel(PanelBase, ManagedBase):
     "Class to handle wxPanel objects"
     WX_CLASS = "wxPanel"  # this will be overwritten in properties_changed depending on the "scrolled" property
+    WX_CLASSES = ("wxPanel", "wxScrolledWindow")
     PROPERTIES = ManagedBase.PROPERTIES + PanelBase._PROPERTIES + ManagedBase.EXTRA_PROPERTIES
-    np.insert_after(PROPERTIES, "class", "custom_base")
+    np.insert_after(PROPERTIES, "name", "class", "custom_base")
     CAN_BE_CLASS = True
 
-    def __init__(self, name, parent, pos, style='wxTAB_TRAVERSAL'):
-        ManagedBase.__init__(self, name, 'wxPanel', parent, pos)
+    def __init__(self, name, parent, pos, style='wxTAB_TRAVERSAL', instance_class=None, class_=None):
+        ManagedBase.__init__(self, name, parent, pos, instance_class, class_)
         PanelBase.__init__(self, style)
 
     def create_widget(self):
@@ -247,8 +244,8 @@ class EditTopLevelPanel(PanelBase, TopLevelBase):
     WX_CLASS = "wxPanel"
     PROPERTIES = TopLevelBase.PROPERTIES + PanelBase._PROPERTIES + TopLevelBase.EXTRA_PROPERTIES
 
-    def __init__(self, name, parent, klass='wxPanel', style='wxTAB_TRAVERSAL'):
-        TopLevelBase.__init__(self, name, klass, parent)
+    def __init__(self, name, parent, klass, style='wxTAB_TRAVERSAL', instance_class=None):
+        TopLevelBase.__init__(self, name, parent, klass)
         PanelBase.__init__(self, style)
         self.skip_on_size = False
 
@@ -345,23 +342,17 @@ def builder(parent, pos):
     return editor
 
 
-def xml_builder(parser, attrs, parent, pos=None):
+def xml_builder(parent, pos, attrs):
     "factory to build EditPanel objects from a XML file"
-    from xml_parse import XmlParsingError
-    try:
-        name = attrs['name']
-    except KeyError:
-        raise XmlParsingError(_("'name' attribute missing"))
-    return EditPanel(name, parent, pos=pos, style='')
+    attrs.set_editor_class(EditPanel)
+    name, class_, instance_class = attrs.get_attributes("name", "class", "instance_class")
+    return EditPanel(name, parent, pos, '', instance_class, class_)
 
 
-def xml_toplevel_builder(parser, attrs, parent, pos=None):
-    from xml_parse import XmlParsingError
-    try:
-        label = attrs['name']
-    except KeyError:
-        raise XmlParsingError(_("'name' attribute missing"))
-    return EditTopLevelPanel( label, parent, style='' )
+def xml_toplevel_builder(parent, pos, attrs):
+    attrs.set_editor_class(EditTopLevelPanel)
+    name, klass, instance_class = attrs.get_attributes("name", "class", "instance_class")
+    return EditTopLevelPanel( name, parent, klass, '', instance_class )
 
 
 def initialize():

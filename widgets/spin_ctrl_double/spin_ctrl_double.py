@@ -21,8 +21,8 @@ class EditSpinCtrlDouble(ManagedBase, EditStylesMixin):
     _PROPERTIES = ["Widget", "range", "value", "increment", "style"]
     PROPERTIES = ManagedBase.PROPERTIES + _PROPERTIES + ManagedBase.EXTRA_PROPERTIES
 
-    def __init__(self, name, parent, pos):
-        ManagedBase.__init__(self, name, 'wxSpinCtrlDouble', parent, pos)
+    def __init__(self, name, parent, pos, instance_class=None):
+        ManagedBase.__init__(self, name, parent, pos, instance_class)
         EditStylesMixin.__init__(self)
 
         # initialise instance properties
@@ -92,13 +92,10 @@ def builder(parent, pos):
     return editor
 
 
-def xml_builder(parser, attrs, parent, pos=None):
+def xml_builder(parent, pos, attrs):
     "factory function to build EditSpinCtrlDouble objects from a XML file"
-    from xml_parse import XmlParsingError
-    try:
-        name = attrs['name']
-    except KeyError:
-        raise XmlParsingError(_("'name' attribute missing"))
+    attrs.set_editor_class(EditSpinCtrlDouble)
+    name, instance_class = attrs.get_attributes("name", "instance_class")
     editor = EditSpinCtrlDouble( name, parent, pos )
     editor.properties["value"].set_active(False)
     return editor

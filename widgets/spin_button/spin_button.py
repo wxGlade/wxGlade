@@ -23,8 +23,8 @@ class EditSpinButton(ManagedBase, EditStylesMixin):
     PROPERTIES = ManagedBase.PROPERTIES + _PROPERTIES + ManagedBase.EXTRA_PROPERTIES
     recreate_on_style_change = True
 
-    def __init__(self, name, parent, pos):
-        ManagedBase.__init__(self, name, 'wxSpinButton', parent, pos)
+    def __init__(self, name, parent, pos, instance_class=None):
+        ManagedBase.__init__(self, name, parent, pos, instance_class)
         EditStylesMixin.__init__(self)
 
         # initialise instance properties
@@ -72,14 +72,11 @@ def builder(parent, pos):
     return editor
 
 
-def xml_builder(parser, attrs, parent, pos=None):
+def xml_builder(parent, pos, attrs):
     "factory function to build EditSpinButton objects from a XML file"
-    from xml_parse import XmlParsingError
-    try:
-        name = attrs['name']
-    except KeyError:
-        raise XmlParsingError(_("'name' attribute missing"))
-    return EditSpinButton(name, parent, pos)
+    attrs.set_editor_class(EditSpinButton)
+    name, instance_class = attrs.get_attributes("name", "instance_class")
+    return EditSpinButton(name, parent, pos, instance_class)
 
 
 def initialize():

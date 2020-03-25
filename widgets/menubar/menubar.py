@@ -656,33 +656,21 @@ class MenuHandler(BaseXmlBuilderTagHandler):
 
 
 
-class EditMenuBar(EditBase, PreviewMixin):
+class EditMenuBar(EditBase):#, PreviewMixin):
 
     WX_CLASS = "wxMenuBar"
-    CAN_BE_CLASS = True
-    _PROPERTIES = ["menus", "preview"]
+    CAN_BE_CLASS = False
+    _PROPERTIES = ["menus",]
     PROPERTIES = EditBase.PROPERTIES + _PROPERTIES + EditBase.EXTRA_PROPERTIES
     CHILDREN = 0
 
-    def __init__(self, name, klass, parent):
-        if parent.IS_ROOT:
-            self.__dict__["IS_TOPLEVEL"] = True
-        if self.IS_TOPLEVEL:
-            pos = None
-        else:
-            pos = "_menubar"
-            self.__dict__["CAN_BE_CLASS"] = False
-            self.__dict__["PROPERTIES"] = [p for p in self.PROPERTIES if p!="class"]
-        EditBase.__init__(self, name, klass, parent, pos)
+    def __init__(self, name, parent, instance_class=None):
+        EditBase.__init__(self, name, parent, "_menubar", instance_class=instance_class)
 
         self.menus = MenuProperty()
         self.window_id = None  # just a dummy for code generation
 
         self._mb = None  # the real menubar
-        if self.IS_TOPLEVEL:
-            PreviewMixin.__init__(self)  # add a preview button
-        else:
-            self.preview = None
 
     def create_widgets(self):
         EditBase.create_widgets(self)
@@ -823,6 +811,26 @@ class EditMenuBar(EditBase, PreviewMixin):
 
 
 
+class EditTopLevelMenuBar(EditMenuBar, PreviewMixin):
+    WXG_BASE = "EditMenuBar"
+    CAN_BE_CLASS = True
+    IS_TOPLEVEL = True
+    _PROPERTIES = ["menus", "preview"]
+    PROPERTIES = EditBase.PROPERTIES + _PROPERTIES + EditBase.EXTRA_PROPERTIES
+    np.insert_after(PROPERTIES, "name", "class")
+
+    def __init__(self, name, parent, class_, instance_class=None):
+        EditBase.__init__(self, name, parent, None, class_, instance_class=instance_class)
+
+        self.menus = MenuProperty()
+        self.window_id = None  # just a dummy for code generation
+
+        self._mb = None  # the real menubar
+
+        PreviewMixin.__init__(self)  # add a preview button
+
+
+
 def builder(parent, pos):
     "factory function for EditMenuBar objects"
     import window_dialog as wd
@@ -847,26 +855,53 @@ def builder(parent, pos):
         toplevel_widget.properties["menubar"].set(True, notify=True)
         return toplevel_widget._menubar
     name = dialog.get_next_name("menubar")
-    with (not parent.IS_ROOT and parent.frozen()) or misc.dummy_contextmanager():
-        editor = EditMenuBar(name, klass, parent)
-        editor.create()
-        editor.widget.Show()
+
+    base_class = EditTopLevelMenuBar if parent.IS_ROOT else EditMenuBar
+    #with (not parent.IS_ROOT and parent.frozen()) or misc.dummy_contextmanager():
+    editor = base_class(name, parent, klass)
+    editor.create()
+    editor.widget.Show()
     return editor
 
 
+#def xml_builder(parent, pos, attrs):
+    #"factory to build EditMenuBar objects from a XML file"
+    #base_class = EditToplevelMenuBar if parent.IS_ROOT else EditMenuBar
+    #attrs.set_editor_class(base_class)
+    #name, class_, instance_class = attrs.get_attributes("name", "class", "instance_class")
 
-def xml_builder(parser, attrs, parent, pos=None):
+    #if not parent.IS_ROOT:
+        #parent.properties["menubar"].set(True, notify=True)
+        #if name:
+            #p_name = parent._menubar.properties["name"]
+            #p_name.previous_value = p_name.value
+            #p_name.set(name)
+            #parent._menubar.properties_changed(["name"])
+        #return parent._menubar
+    #return base_class(name, parent, class_ )
+
+def xml_builder(parent, pos, attrs):
     "factory to build EditMenuBar objects from a XML file"
-    name = attrs.get('name')
-    if not parent.IS_ROOT:
-        parent.properties["menubar"].set(True, notify=True)
-        if name:
-            p_name = parent._menubar.properties["name"]
-            p_name.previous_value = p_name.value
-            p_name.set(name)
-            parent._menubar.properties_changed(["name"])
-        return parent._menubar
-    return EditMenuBar(name, attrs.get('class', 'wxMenuBar'), parent)
+    if parent.IS_ROOT:
+        attrs.set_editor_class(EditTopLevelMenuBar)
+        name, class_, instance_class = attrs.get_attributes("name", "class", "instance_class")
+        return EditTopLevelMenuBar(name, parent, class_, instance_class)
+
+    attrs.set_editor_class(EditMenuBar)
+    name, instance_class = attrs.get_attributes("name", "instance_class")
+    parent.properties["menubar"].set(True, notify=True)
+
+    modified = []
+    if name:
+        p_name = parent._menubar.properties["name"]
+        p_name.previous_value = p_name.value
+        p_name.set(name)  # don't use notify, in order not to trigger root.saved etc.
+        modified.append("name")
+    if instance_class:
+        parent._menubar.properties["instance_class"].set(instance_class)
+    if modified:
+        parent._menubar.properties_changed(modified)
+    return parent._menubar
 
 
 def initialize():

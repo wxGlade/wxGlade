@@ -415,13 +415,7 @@ class BaseWidgetWriter(StylesMixin, BaseCodeWriter):
         self.tmpl_dict['id_name'], self.tmpl_dict['id_number'] = self.codegen.generate_code_id(obj)
         self.tmpl_dict['id'] = self.tmpl_dict['id_number']
         self.tmpl_dict['obj_name'] = self.codegen._format_name(obj.name)
-
-        if not obj.check_prop("class") or obj.klass == obj.WX_CLASS:
-            klass = self.cn(obj.WX_CLASS)
-        else:
-            klass = self.cn_class(obj.klass)
-        self.tmpl_dict['klass'] = klass
-
+        self.tmpl_dict['klass'] = obj.get_instantiation_class(self.codegen.preview, self.cn, self.cn_class)
         self.tmpl_dict['store_as_attr'] = self.codegen.store_as_attr(obj)
 
         if obj.check_prop('style'): self.tmpl_dict['style'] = self._prepare_style(obj.properties["style"])
@@ -830,7 +824,8 @@ class CppWidgetCodeWriter(CppMixin, BaseWidgetWriter):
         if self.tmpl_dict['store_as_attr']:
             self.tmpl_dict['name'] = self.codegen._format_classattr(obj)
         else:
-            self.tmpl_dict['name'] = '%s* %s' % (obj.klass, obj.name)
+            klass = obj.get_prop_value("class", obj.WX_CLASS)
+            self.tmpl_dict['name'] = '%s* %s' % (klass, obj.name)
 
         if 'id_name' in self.tmpl_dict:
             # An enum with the IDs has been generated in codegen.cpp_codegen.CPPCodeWriter.add_class() already

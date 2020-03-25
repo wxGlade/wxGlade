@@ -3206,7 +3206,7 @@ class PropertyOwner(object):
         # return list of properties to be written to XML file
         ret = []
         for name in self.property_names:
-            if name in ("class","name") or name in without: continue
+            if name in ("class","name","instance_class") or name in without: continue
             prop = self.properties[name]
             if not prop.HAS_DATA: continue
             if prop.attributename in without: continue  # for e.g. option/proportion

@@ -22,8 +22,8 @@ class EditCheckListBox(ManagedBase, EditStylesMixin):
     _PROPERTIES = ["Widget", "style", "selection", "choices"]
     PROPERTIES = ManagedBase.PROPERTIES + _PROPERTIES + ManagedBase.EXTRA_PROPERTIES
 
-    def __init__(self, name, parent, choices, pos):
-        ManagedBase.__init__(self, name, 'wxCheckListBox', parent, pos)
+    def __init__(self, name, parent, pos, choices, instance_class=None):
+        ManagedBase.__init__(self, name, parent, pos, instance_class)
         EditStylesMixin.__init__(self)
 
         # initialise instance properties
@@ -75,20 +75,17 @@ def builder(parent, pos):
     "factory function for EditCheckListBox objects"
     name = parent.toplevel_parent.get_next_contained_name('check_list_box_%d')
     with parent.frozen():
-        editor = EditCheckListBox(name, parent, [[u'choice 1']], pos)
+        editor = EditCheckListBox(name, parent, pos, [[u'choice 1']])
         editor.properties["style"].set_to_default()
         if parent.widget: editor.create()
     return editor
 
 
-def xml_builder(parser, attrs, parent, pos=None):
+def xml_builder(parent, pos, attrs):
     "factory to build EditCheckListBox objects from a XML file"
-    from xml_parse import XmlParsingError
-    try:
-        name = attrs['name']
-    except KeyError:
-        raise XmlParsingError(_("'name' attribute missing"))
-    return EditCheckListBox(name, parent, [], pos)
+    attrs.set_editor_class(EditCheckListBox)
+    name, instance_class = attrs.get_attributes("name", "instance_class")
+    return EditCheckListBox(name, parent, pos, [], instance_class)
 
 
 def initialize():

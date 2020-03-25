@@ -308,7 +308,7 @@ class LispCodeWriter(BaseLangCodeWriter, wcodegen.LispMixin):
             self.dependencies.add( '(use-package :wxSizer)' )
         else:
             if obj.WX_CLASS not in ("spacer", "sizerslot"):
-                self.dependencies.add( '(use-package :%s)'%obj.get_prop_value("class", obj.WX_CLASS) )
+                self.dependencies.add( '(use-package :%s)'%obj.get_instantiation_class() )
 
         if obj.WX_CLASS == "wxMenuBar":
             self.dependencies.add( '(use-package :wxMenu)' )

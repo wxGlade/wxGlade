@@ -74,6 +74,10 @@ def init_codegen():
     all_widgets = load_widgets()
     sizer_buttons = load_sizers()
 
+    # initialize preview code generator
+    preview_codegen = code_writers["preview"] = code_writers["python"].copy()
+    preview_codegen.for_version = compat.version
+
     # merge sizer buttons
     for section in sizer_buttons:
         if section not in all_widgets:

@@ -28,9 +28,9 @@ class EditGenericCalendarCtrl(ManagedBase, EditStylesMixin):
     _PROPERTIES = ["Widget", "default", "style"]
     PROPERTIES = ManagedBase.PROPERTIES + _PROPERTIES + ManagedBase.EXTRA_PROPERTIES
 
-    def __init__(self, name, parent, pos):
+    def __init__(self, name, parent, pos, instance_class=None):
         # Initialise parent classes
-        ManagedBase.__init__(self, name, 'wxGenericCalendarCtrl', parent, pos)
+        ManagedBase.__init__(self, name, parent, pos, instance_class)
         EditStylesMixin.__init__(self)
 
         # initialise instance properties
@@ -68,14 +68,11 @@ def builder(parent, pos):
     return editor
 
 
-def xml_builder(parser, attrs, parent, pos=None):
+def xml_builder(parent, pos, attrs):
     "factory to build EditGenericCalendarCtrl objects from a XML file"
-    from xml_parse import XmlParsingError
-    try:
-        label = attrs['name']
-    except KeyError:
-        raise XmlParsingError(_("'name' attribute missing"))
-    return EditGenericCalendarCtrl(label, parent, pos)
+    attrs.set_editor_class(EditGenericCalendarCtrl)
+    name, instance_class = attrs.get_attributes("name", "instance_class")
+    return EditGenericCalendarCtrl(name, parent, pos, instance_class)
 
 
 def initialize():

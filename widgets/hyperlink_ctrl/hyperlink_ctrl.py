@@ -31,9 +31,9 @@ class EditHyperlinkCtrl(ManagedBase, EditStylesMixin):
                        "attribute":'Store instance as attribute of window class; e.g. self.bitmap_1 = wx.wxStaticBitmap'
                                    '(...)\nWithout this, you can not access the bitmap from your program.'}
 
-    def __init__(self, name, parent, label, pos):
+    def __init__(self, name, parent, pos, label, instance_class=None):
         # Initialise parent classes
-        ManagedBase.__init__(self, name, 'wxHyperlinkCtrl', parent, pos)
+        ManagedBase.__init__(self, name, parent, pos, instance_class)
         EditStylesMixin.__init__(self)
 
         # initialise instance properties
@@ -70,7 +70,7 @@ def builder(parent, pos):
     "factory function for EditHyperlinkCtrl objects"
     name = parent.toplevel_parent.get_next_contained_name('hyperlink_%d')
     with parent.frozen():
-        editor = EditHyperlinkCtrl(name, parent, name, pos)
+        editor = EditHyperlinkCtrl(name, parent, pos, name)
         editor.properties["style"].set_to_default()
         editor.properties["attribute"].set(True)  # allow to modificate it later on...
         editor.check_defaults()
@@ -78,14 +78,11 @@ def builder(parent, pos):
     return editor
 
 
-def xml_builder(parser, attrs, parent, pos=None):
+def xml_builder(parent, pos, attrs):
     "factory to build EditHyperlinkCtrl objects from a XML file"
-    from xml_parse import XmlParsingError
-    try:
-        name = attrs['name']
-    except KeyError:
-        raise XmlParsingError(_("'name' attribute missing"))
-    return EditHyperlinkCtrl(name, parent, "", pos)
+    attrs.set_editor_class(EditHyperlinkCtrl)
+    name, instance_class = attrs.get_attributes("name", "instance_class")
+    return EditHyperlinkCtrl(name, parent, pos, "", instance_class)
 
 
 def initialize():

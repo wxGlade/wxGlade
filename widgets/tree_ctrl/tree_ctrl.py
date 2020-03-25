@@ -21,8 +21,8 @@ class EditTreeCtrl(ManagedBase, EditStylesMixin):
     _PROPERTIES = ["Widget", "style"]
     PROPERTIES = ManagedBase.PROPERTIES + _PROPERTIES + ManagedBase.EXTRA_PROPERTIES
 
-    def __init__(self, name, parent, pos, style=wx.TR_HAS_BUTTONS|wx.BORDER_SUNKEN):
-        ManagedBase.__init__(self, name, 'wxTreeCtrl', parent, pos)
+    def __init__(self, name, parent, pos, style=wx.TR_HAS_BUTTONS|wx.BORDER_SUNKEN, instance_class=None):
+        ManagedBase.__init__(self, name, parent, pos, instance_class)
         EditStylesMixin.__init__(self)
 
         # initialise instance properties
@@ -52,7 +52,6 @@ class EditTreeCtrl(ManagedBase, EditStylesMixin):
             self._set_name()
 
 
-
 def builder(parent, pos):
     "factory function for EditTreeCtrl objects"
     name = parent.toplevel_parent.get_next_contained_name('tree_ctrl_%d')
@@ -65,14 +64,11 @@ def builder(parent, pos):
     return editor
 
 
-def xml_builder(parser, attrs, parent, pos=None):
+def xml_builder(parent, pos, attrs):
     "factory function to build EditTreeCtrl objects from a XML file"
-    from xml_parse import XmlParsingError
-    try:
-        name = attrs['name']
-    except KeyError:
-        raise XmlParsingError(_("'name' attribute missing"))
-    return EditTreeCtrl(name, parent, pos, style=0)
+    attrs.set_editor_class(EditTreeCtrl)
+    name, instance_class = attrs.get_attributes("name", "instance_class")
+    return EditTreeCtrl(name, parent, pos, style=0, instance_class=instance_class)
 
 
 def initialize():

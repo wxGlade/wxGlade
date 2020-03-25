@@ -41,7 +41,7 @@ def begin_drag(window, widget):
     do = get_data_object(widget)
     set_drag_source(widget)
 
-    if isinstance(widget, edit_sizers.Sizer):
+    if widget.IS_SIZER:
         msg = "Move sizer to empty or populated slot to insert, to a sizer to append; hold Ctrl to copy"
     elif widget.IS_TOPLEVEL:
         msg = "Move window to application object; hold Ctrl to copy"

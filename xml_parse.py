@@ -76,7 +76,7 @@ class XmlParser(ContentHandler):
 
         res['encoding'] = self._get_encoding(attrs)
 
-        for_version = attrs.get('for_version', '%s.%s' % config.for_version)
+        for_version = attrs.get('for_version', '%s.%s' % config.for_version_min)
         for_version_tuple = tuple([int(t) for t in for_version.split('.')[:2]])
         if for_version_tuple < (2, 8):
             logging.warning( _('The loaded wxGlade designs are created for wxWidgets "%s", '
@@ -84,8 +84,8 @@ class XmlParser(ContentHandler):
                              for_version )
             logging.warning( _('The designs will be loaded and converted to wxWidgets "%s" partially. '
                                'Please check the designs carefully.'),
-                            '%s.%s' % config.for_version )
-            for_version = '%s.%s' % config.for_version
+                            '%s.%s' % config.for_version_min )
+            for_version = '%s.%s' % config.for_version_min
         res['for_version'] = for_version
 
         try:
@@ -519,6 +519,62 @@ class ClipboardXmlWidgetBuilder(XmlWidgetBuilder):
                 self._logger.exception( _('Exception caused by obj: %s'), self.top_obj )
 
 
+class XMLAttrs(dict):
+    def __init__(self, parser, d):
+        dict.__init__(self, d)
+        self.input_file_version = getattr(parser, "input_file_version")
+    def set_editor_class(self, class_):
+        # set instance_class, class
+        cls = self.get("class") or None
+        IS_BASE = cls==class_.WX_CLASS or (class_.WX_CLASSES and cls in class_.WX_CLASSES)
+
+        if self.check_input_file_version( (0,9,9) ):
+            # backwards compatibility
+            if class_.IS_CLASS:
+                if not "instance_class" in self:
+                    self["instance_class"] = None
+            elif class_.CAN_BE_CLASS:
+                if IS_BASE:
+                    self["class"] = None
+                if not "instance_class" in self:
+                    self["instance_class"] = None
+            elif cls:
+                if not IS_BASE:
+                    self["instance_class"] = cls
+                else:
+                    self["instance_class"] = None
+                del self["class"]
+            return
+        # current file format: 'class' is always written
+        if not "instance_class" in self:
+            self["instance_class"] = None
+        if not class_.CAN_BE_CLASS: return
+        if cls is None or IS_BASE:
+            self["class"] = None
+
+    def check_input_file_version(self, version):
+        # return True if file version is older
+        if not self.input_file_version: return True
+        return self.input_file_version[:len(version)] < version
+    def get_attributes(self, *names):
+        # get a list of named attributes from attrs; raise parsing error if one or more are missing
+        ret = []
+        missing = []
+        for name in names:
+            try:
+                ret.append( self[name] )
+            except KeyError:
+                missing.append(name)
+        if missing:
+            missing = repr(missing)
+            if 'name' in self:
+                name = self['name']
+                raise XmlParsingError( _("attributes %s missing from object '%s'")%(missing, name) )
+            raise XmlParsingError( _("attributes %s missing from object")%missing )
+    
+        return tuple(ret)
+
+
 class XmlWidgetObject(object):
     "A class to encapsulate widget attributes read from a XML file, to store them until the widget can be created"
 
@@ -526,16 +582,13 @@ class XmlWidgetObject(object):
         # initialise instance logger
         self._logger = logging.getLogger(self.__class__.__name__)
 
-        attrs = dict(attrs)
+        attrs = XMLAttrs(parser, attrs)
 
         self.prop_handlers = Stack()  # a stack of custom handler functions to set properties of this object
 
         self._properties_added = []
-        try:
-            base = attrs.get('base', None)
-            klass = attrs['class']
-        except KeyError:
-            raise XmlParsingError(_("'object' items must have a 'class' attribute"))
+        base = attrs.get('base', None)
+        klass, = attrs.get_attributes('class')
 
         # find sizeritem, sizer, parent window
         sizeritem = sizer = parent = None
@@ -572,12 +625,8 @@ class XmlWidgetObject(object):
             # build the widget
             builder = common.widgets_from_xml.get(base, None)
             if builder is None: raise XmlParsingError("Widget '%s' not supported."%base)
-            self.obj = builder(parser, attrs, sizer or parent, pos)
-            if klass!=self.obj.WX_CLASS:
-                p = self.obj.properties.get("class")
-                if p and not p.readonly:  # can happen when pasting a standalone ToolBar or MenuBar to a Frame
-                    print("Setting class property", p.value, "->", klass)
-                    p.set(klass, activate=True)
+            self.obj = builder(sizer or parent, pos, attrs)
+            # XXX set 'class' and 'instance_class' properties here instead of doing it in each builder
 
             self.IS_SIZER = self.obj.IS_SIZER
             self.IS_WINDOW = self.obj.IS_WINDOW

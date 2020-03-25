@@ -62,8 +62,8 @@ class CustomWidget(ManagedBase):
     _PROPERTY_LABELS = { 'custom_constructor':'Custom constructor' }
     _PROPERTY_HELP   = { 'custom_constructor':'Specify a custom constructor like a factory method' }
 
-    def __init__(self, name, klass, parent, pos):
-        ManagedBase.__init__(self, name, klass, parent, pos)
+    def __init__(self, name, parent, pos, instance_class):
+        ManagedBase.__init__(self, name, parent, pos, instance_class)
 
         # initialise instance properties
         cols      = [('Arguments', np.GridProperty.STRING)]
@@ -157,7 +157,7 @@ def builder(parent, pos):
 
     name = parent.toplevel_parent.get_next_contained_name('window_%d')
     with parent.frozen():
-        editor = CustomWidget(name, klass, parent, pos)
+        editor = CustomWidget(name, parent, pos, klass)
         editor.properties["arguments"].set( [['$parent'], ['$id']] )  # ,['$width'],['$height']]
         editor.properties["proportion"].set(1)
         editor.properties["flag"].set("wxEXPAND")
@@ -165,15 +165,11 @@ def builder(parent, pos):
     return editor
 
 
-def xml_builder(parser, attrs, parent, pos=None):
+def xml_builder(parent, pos, attrs):
     "factory to build CustomWidget objects from a XML file"
-    from xml_parse import XmlParsingError
-    try:
-        name = attrs['name']
-    except KeyError:
-        raise XmlParsingError(_("'name' attribute missing"))
-    klass = attrs.get("class", "CustomWidget")
-    return CustomWidget(name, klass, parent, pos)
+    attrs.set_editor_class(CustomWidget)
+    name, instance_class = attrs.get_attributes("name", "instance_class")
+    return CustomWidget(name, parent, pos, instance_class)
 
 
 def initialize():

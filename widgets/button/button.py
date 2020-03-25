@@ -32,9 +32,9 @@ class EditButton(BitmapMixin, ManagedBase, EditStylesMixin):
                                   "If stockitem buttons like OK and CANCEL are placed in a StdDialogButtonSizer, "
                                   "they will be re-ordered according to the platform style guide."}
 
-    def __init__(self, name, parent, label, pos):
+    def __init__(self, name, parent, pos, label, instance_class=None):
         # Initialise parent classes
-        ManagedBase.__init__(self, name, 'wxButton', parent, pos)
+        ManagedBase.__init__(self, name, parent, pos, instance_class)
         EditStylesMixin.__init__(self)
         BitmapMixin.__init__(self)
 
@@ -97,21 +97,18 @@ def builder(parent, pos):
     "factory function for EditButton objects"
     name = parent.toplevel_parent.get_next_contained_name('button_%d')
     with parent.frozen():
-        editor = EditButton(name, parent, name, pos)
+        editor = EditButton(name, parent, pos, name)
         editor.properties["style"].set_to_default()
         editor.check_defaults()
         if parent.widget: editor.create()
     return editor
 
 
-def xml_builder(parser, attrs, parent, pos=None):
+def xml_builder(parent, pos, attrs):
     "factory to build EditButton objects from a XML file"
-    from xml_parse import XmlParsingError
-    try:
-        name = attrs['name']
-    except KeyError:
-        raise XmlParsingError(_("'name' attribute missing"))
-    editor = EditButton(name, parent, '', pos)
+    attrs.set_editor_class(EditButton)
+    name, instance_class = attrs.get_attributes("name", "instance_class")
+    editor = EditButton(name, parent, pos, '', instance_class)
     return editor
 
 

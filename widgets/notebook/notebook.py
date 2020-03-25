@@ -13,9 +13,6 @@ import wcodegen
 import new_properties as np
 from edit_windows import ManagedBase, EditStylesMixin, Slot
 from wcodegen.taghandler import BaseXmlBuilderTagHandler
-from xml_parse import XmlParsingError
-
-from panel import EditPanel
 
 
 class NotebookPagesProperty(np.GridProperty):
@@ -75,10 +72,10 @@ class EditNotebook(ManagedBase, EditStylesMixin):
     CAN_BE_CLASS = True
     _PROPERTIES = ["Widget", "no_custom_class", "style", "tabs"]
     PROPERTIES = ManagedBase.PROPERTIES + _PROPERTIES + ManagedBase.EXTRA_PROPERTIES
-    np.insert_after(PROPERTIES, "class", "custom_base")
+    np.insert_after(PROPERTIES, "name", "class", "custom_base")
 
-    def __init__(self, name, parent, style, pos):
-        ManagedBase.__init__(self, name, 'wxNotebook', parent, pos)
+    def __init__(self, name, parent, pos, style, instance_class=None, class_=None):
+        ManagedBase.__init__(self, name, parent, pos, instance_class, class_)
         EditStylesMixin.__init__(self)
         self.properties["style"].set(style)
 
@@ -303,10 +300,11 @@ class EditNotebook(ManagedBase, EditStylesMixin):
     def get_itempos(self, attrs):
         "Get position of sizer item (used in xml_parse)"
         # only used when loading from XML, while pages is defined
+        name = attrs.get("original_name", None) or attrs.get_attributes('name')[0]
         try:
-            name = attrs.get("original_name", None) or attrs['name']
             return self.pages.index(name)
         except ValueError:
+            from xml_parse import XmlParsingError
             raise XmlParsingError( _('Notebook widget "%s" does not have tab "%s"!')%(self.name, name) )
 
     ####################################################################################################################
@@ -387,7 +385,7 @@ def builder(parent, pos):
 
     name = parent.toplevel_parent.get_next_contained_name('notebook_%d')
     with parent.frozen():
-        editor = EditNotebook(name, parent, style, pos)
+        editor = EditNotebook(name, parent, pos, style)
         editor.properties["proportion"].set(1)
         editor.properties["flag"].set("wxEXPAND")
         if parent.widget: editor.create()
@@ -395,13 +393,11 @@ def builder(parent, pos):
     return editor
 
 
-def xml_builder(parser, attrs, parent, pos=None):
+def xml_builder(parent, pos, attrs):
     "Factory to build editor objects from a XML file"
-    try:
-        name = attrs['name']
-    except KeyError:
-        raise XmlParsingError(_("'name' attribute missing"))
-    return EditNotebook(name, parent, '', pos)
+    attrs.set_editor_class(EditNotebook)
+    name, class_, instance_class = attrs.get_attributes("name", "class", "instance_class")
+    return EditNotebook(name, parent, pos, '', instance_class, class_)
 
 
 def initialize():

@@ -66,8 +66,8 @@ class EditDialog(BitmapMixin, TopLevelBase, EditStylesMixin):
                                "Select a different button to be used instead.\n"
                                "See SetAffirmativeId and SetEscapeId in the wx documentation."}
 
-    def __init__(self, name, parent, title, style=wx.DEFAULT_DIALOG_STYLE, klass='wxDialog'):
-        TopLevelBase.__init__(self, name, klass, parent, title=title)
+    def __init__(self, name, parent, klass, title, style=wx.DEFAULT_DIALOG_STYLE, instance_class=None):
+        TopLevelBase.__init__(self, name, parent, klass, title, instance_class)
         EditStylesMixin.__init__(self)
         self.properties["style"].set(style)
 
@@ -138,11 +138,11 @@ def builder(parent, pos):
 
     if base == "wxDialog":
         is_panel = False
-        editor = EditDialog(name, parent, name, "wxDEFAULT_DIALOG_STYLE", klass=klass)
+        editor = EditDialog(name, parent, klass, name, "wxDEFAULT_DIALOG_STYLE")
     else:
         is_panel = True
         import panel
-        editor = panel.EditTopLevelPanel(name, parent, klass=klass)
+        editor = panel.EditTopLevelPanel(name, parent, klass, name)
 
     editor.create()
     if base == "wxDialog":
@@ -169,14 +169,11 @@ def builder(parent, pos):
     return editor
 
 
-def xml_builder(parser, attrs, parent, pos=None):
+def xml_builder(parent, pos, attrs):
     "factory to build EditDialog objects from a XML file"
-    from xml_parse import XmlParsingError
-    try:
-        name = attrs['name']
-    except KeyError:
-        raise XmlParsingError(_("'name' attribute missing"))
-    return EditDialog(name, parent, "", style=0)
+    attrs.set_editor_class(EditDialog)
+    name, class_, instance_class = attrs.get_attributes("name", "class", "instance_class")
+    return EditDialog(name, parent, class_, "", 0, instance_class)
 
 
 def initialize():

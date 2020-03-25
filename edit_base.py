@@ -32,11 +32,13 @@ class EditBase(np.PropertyOwner):
     IS_CLASS = False  # generate class for this item; can be dynamically set during code generation
     # usually this one is fixed, but EditPanel/EditToplevelPanel will overwrite it depending on the "scrollable" property
     WX_CLASS = None # needs to be defined in every derived class; e.g. "wxFrame", "wxBoxSizer", "TopLevelPanel"
+    WX_CLASSES = None  # used if WX_CLASS can be changed dynamically
+    WXG_BASE = None # usually None, but if defined, it will be written to the wxg file instead of the editor class name
     IS_NAMED = True  # default, only False for Spacer
     #CHILDREN = 1  # 0 or a fixed number or None for e.g. a sizer with a variable number of children; -1 for 0 or 1
     ATT_CHILDREN = None
 
-    def __init__(self, name, parent, pos=None):
+    def __init__(self, name, parent, pos):
         assert self.WX_CLASS
         np.PropertyOwner.__init__(self)
         # initialise instance logger
@@ -343,7 +345,7 @@ class EditBase(np.PropertyOwner):
     # XML generation ###################################################################################################
     def get_editor_name(self):
         # the panel classes will return something else here, depending on self.scrollable
-        return self.__class__.__name__
+        return self.WXG_BASE or self.__class__.__name__
     def write(self, output, tabs):
         "Writes the xml code for the widget to the given output file"
         # write object tag, including class, name, base
@@ -354,7 +356,12 @@ class EditBase(np.PropertyOwner):
         else:
             no_custom = ""
         outer_tabs = u'    ' * tabs
-        klass = self.get_prop_value("class", default=self.WX_CLASS)
+        if self.CAN_BE_CLASS:
+            klass = self.get_prop_value("class", default=self.WX_CLASS)
+            if self.check_prop("instance_class"):
+                XXX
+        else:
+            klass = self.get_prop_value("instance_class", default=self.WX_CLASS)
         output.append(u'%s<object %s %s %s%s>\n' % ( outer_tabs,
                                                      common.format_xml_attrs(**{'class': klass}),
                                                      common.format_xml_attrs(name=self.name),
@@ -428,7 +435,7 @@ class EditBase(np.PropertyOwner):
         # get a label for node
         s = self.name
         if not "class" in self.properties:
-            assert self.WX_CLASS in ("spacer", "wxMenuBar", "wxToolBar", "wxStatusBar")
+            #assert self.WX_CLASS in ("spacer", "wxMenuBar", "wxToolBar", "wxStatusBar")
             return s
         if (self.WX_CLASS=="CustomWidget" or (self.klass != self.WX_CLASS and self.klass != 'wxScrolledWindow') ):
             # special case...

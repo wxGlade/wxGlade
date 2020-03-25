@@ -34,7 +34,7 @@ default_multiple_files = 0   # value for writing multiple files (each class in a
 default_overwrite = 1        # value for overwriting existing sources
 default_use_gettext = False  # value to usage of gettext
 
-for_version = (2, 8) # version to generate code for
+for_version_min = (2, 8) # min version to generate code for
 
 
 # these paths, file names and strings will be set during initialisation: ###############################################

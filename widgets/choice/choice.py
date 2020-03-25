@@ -22,8 +22,8 @@ class EditChoice(ManagedBase):
     _PROPERTIES = ["Widget", "selection", "choices"]
     PROPERTIES = ManagedBase.PROPERTIES + _PROPERTIES + ManagedBase.EXTRA_PROPERTIES
 
-    def __init__(self, name, parent, choices, pos):
-        ManagedBase.__init__(self, name, 'wxChoice', parent, pos)
+    def __init__(self, name, parent, pos, choices, instance_class=None):
+        ManagedBase.__init__(self, name, parent, pos, instance_class)
 
         # initialise instance properties
         self.selection = np.SpinProperty(0, val_range=(-1,len(choices)-1), immediate=True )
@@ -72,20 +72,17 @@ def builder(parent, pos):
     "factory function for EditChoice objects"
     name = parent.toplevel_parent.get_next_contained_name('choice_%d')
     with parent.frozen():
-        editor = EditChoice(name, parent, [(u'choice 1',)], pos)
+        editor = EditChoice(name, parent, pos, [(u'choice 1',)])
         editor.check_defaults()
         if parent.widget: editor.create()
     return editor
 
 
-def xml_builder(parser, attrs, parent, pos=None):
+def xml_builder(parent, pos, attrs):
     "factory to build EditChoice objects from a XML file"
-    from xml_parse import XmlParsingError
-    try:
-        name = attrs['name']
-    except KeyError:
-        raise XmlParsingError(_("'name' attribute missing"))
-    return EditChoice(name, parent, [], pos)
+    attrs.set_editor_class(EditChoice)
+    name, instance_class = attrs.get_attributes("name", "instance_class")
+    return EditChoice(name, parent, pos, [], instance_class)
 
 
 def initialize():

@@ -30,33 +30,27 @@ class BasePerlSizerBuilder(BaseSizerBuilder):
 
 
 class PerlBoxSizerBuilder(BasePerlSizerBuilder):
-    klass = 'wxBoxSizer'
     tmpl = '%(sizer_name)s = %(klass)s->new(%(orient)s);\n'
 
 
 class PerlWrapSizerBuilder(PerlBoxSizerBuilder):
-    klass = 'wxWrapSizer'
+    pass
 
 
 class PerlStaticBoxSizerBuilder(BasePerlSizerBuilder):
-    klass = 'wxStaticBoxSizer'
     tmpl = '%(sizer_name)s = %(klass)s->new(Wx::StaticBox->new(%(parent_widget)s, wxID_ANY, %(label)s), %(orient)s);\n'
 
 
 class PerlGridSizerBuilder(BasePerlSizerBuilder):
-    klass = 'wxGridSizer'
     tmpl = '%(sizer_name)s = %(klass)s->new(%(rows)s, %(cols)s, %(vgap)s, %(hgap)s);\n'
 
 
 class PerlFlexGridSizerBuilder(PerlGridSizerBuilder):
-    klass = 'wxFlexGridSizer'
-
     tmpl_AddGrowableRow = '%(sizer_name)s->AddGrowableRow(%(row)s);\n'
     tmpl_AddGrowableCol = '%(sizer_name)s->AddGrowableCol(%(col)s);\n'
 
 
 class PerlGridBagSizerBuilder(PerlFlexGridSizerBuilder):
-    klass = 'wxGridBagSizer'
     tmpl = '%(sizer_name)s = %(klass)s->new(%(vgap)s, %(hgap)s);\n'
 
 
@@ -79,5 +73,4 @@ def initialize():
         awh('wxFlexGridSizer', PerlFlexGridSizerBuilder())
         awh('wxGridBagSizer', PerlGridBagSizerBuilder())
 
-    #common.register('perl', "sizerslot", PerlSizerSlotGenerator("sizerslot"))
     common.register('perl', "sizerslot", SlotGenerator("perl"))

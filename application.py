@@ -488,9 +488,9 @@ class Application(EditRoot):
                                            "application." )
 
         if preview:
-            writer = common.code_writers["python"].copy()
+            writer = common.code_writers["preview"]
         else:
-            writer = common.code_writers[self.language]#.copy()
+            writer = common.code_writers[self.language]
 
         error = writer.new_project(self, out_path, preview)
         if error:
@@ -513,6 +513,7 @@ class Application(EditRoot):
             return
         except Exception as inst:
             # unexpected / internal error
+            if config.testing or config.debugging: raise
             bugdialog.Show(_('Generate Code'), inst)
             return
         finally:
@@ -570,7 +571,7 @@ class Application(EditRoot):
             importlib.invalidate_caches()
 
         # make a valid name for the class (this can be invalid for some sensible reasons...)
-        preview_classname = widget.klass.split('.')[-1].split(':')[-1]
+        preview_classname = widget.WX_CLASS.split('.')[-1].split(':')[-1]
         # randomize the class name to make preview work when there are multiple classes with the same name (e.g. XRC)
         preview_classname = '_%d_%s' % (random.randrange(10 ** 8, 10 ** 9), preview_classname)
         widget.properties["class"].set_temp(preview_classname)

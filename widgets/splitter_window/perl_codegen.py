@@ -25,24 +25,15 @@ class PerlSplitterWindowGenerator(wcodegen.PerlWidgetCodeWriter):
         id_name, id = self.codegen.generate_code_id(obj)
         parent = self.format_widget_access(obj.parent_window)
 
-        if obj.IS_CLASS:
+        if obj.check_prop("class"):
             l = []
-            if id_name:
-                l.append(id_name)
-
-            if obj.klass != obj.WX_CLASS:
-                klass = obj.klass
-            else:
-                klass = self.cn(klass)
-
-            l.append( '$self->{%s} = %s->new(%s, %s);\n' % (obj.name, self.cn(klass), parent, id) )
+            if id_name: l.append(id_name)
+            l.append( '$self->{%s} = %s->new(%s, %s);\n' % (obj.name, self.cn(obj.klass), parent, id) )
             return l, []
 
-        if id_name:
-            init.append(id_name)
-
-        init.append( '$self->{%s} = %s->new(%s, %s%s);\n' % (
-                     obj.name, self.cn(obj.klass), parent, id, self.tmpl_dict['style']) )
+        if id_name: init.append(id_name)
+        klass = self.cn( obj.get_prop_value("class", obj.WX_CLASS) )
+        init.append( '$self->{%s} = %s->new(%s, %s%s);\n' % ( obj.name, klass, parent, id, self.tmpl_dict['style']) )
 
         win_1 = obj.window_1
         win_2 = obj.window_2

@@ -60,11 +60,10 @@ class EditStatusBar(EditBase, EditStylesMixin):
     WX_CLASS = 'wxStatusBar'
     _PROPERTIES = ["Widget", "style", "fields"]
     PROPERTIES = EditBase.PROPERTIES + _PROPERTIES + EditBase.EXTRA_PROPERTIES
-    PROPERTIES.remove("class")
     CHILDREN = 0
 
-    def __init__(self, name, klass, parent):
-        EditBase.__init__( self, name, klass, parent, pos="_statusbar" )
+    def __init__(self, name, parent, instance_class=None):
+        EditBase.__init__( self, name, parent, pos="_statusbar", instance_class=instance_class)
         EditStylesMixin.__init__(self)
 
         # for the statusbar fields
@@ -161,45 +160,17 @@ class Dialog(wx.Dialog):
         szr.Fit(self)
 
 
-def builder(parent, pos):
-    "factory function for EditToolBar objects"
-
-    dialog = Dialog()
-    with misc.disable_stay_on_top(common.adding_window or parent):
-        res = dialog.ShowModal()
-    klass = dialog.klass
-    dialog.Destroy()
-    if res != wx.ID_OK:
-        global _NUMBER
-        if _NUMBER > 0: _NUMBER -= 1
-        return
-
-    name = parent.toplevel_parent.get_next_contained_name('statusbar_%d')
-    with parent.frozen():
-        editor = EditStatusBar(name, klass, parent)
-        if parent.widget: editor.create()
-    return editor
-
-
-def xml_builder(parser, attrs, parent, pos=None):
-    "factory to build EditStatusBar objects from a XML file"
-    name = attrs.get('name')
-    if parent:
-        if name:
-            p_name = parent._statusbar.properties["name"]
-            p_name.previous_value = p_name.value
-            p_name.set(name)
-            parent._statusbar.properties_changed(["name"])
-        return parent._statusbar
-    return EditStatusBar(name, attrs.get('class', 'wxStatusBar'), parent)
+def xml_builder(parent, pos, attrs):
+    "factory to build EditToolBar objects from a XML file"
+    attrs.set_editor_class(EditStatusBar)
+    name, instance_class = attrs.get_attributes("name", "instance_class")
+    return EditStatusBar(name, parent, instance_class)
 
 
 def initialize():
     "initialization function for the module: returns a wxBitmapButton to be added to the main palette."
     common.widget_classes['EditStatusBar'] = EditStatusBar
     common.widgets_from_xml['EditStatusBar'] = xml_builder
-    common.widgets['EditStatusBar'] = builder
-    # no standalone status bar any more
     import config, os
     from tree import WidgetTree
     WidgetTree.images['EditStatusBar'] = os.path.join(config.icons_path, 'statusbar.xpm')

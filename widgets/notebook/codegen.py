@@ -20,19 +20,21 @@ class PythonNotebookGenerator(wcodegen.PythonWidgetCodeWriter):
         id_name, id = self.codegen.generate_code_id(window)
 
         parent = self.format_widget_access(window.parent_window)
-        if window.IS_CLASS:
+        klass = window.get_instantiation_class(self.codegen.preview, self.cn, self.cn_class)
+        if window.check_prop("class") and not self.codegen.preview:
             l = []
-            if id_name:
-                l.append(id_name)
-            l.append('self.%s = %s(%s, %s)\n' % (window.name, self.codegen.get_class(window.klass), parent, id))
+            if id_name: l.append(id_name)
+            #l.append('self.%s = %s(%s, %s)\n' % (window.name, self.codegen.get_class(window.klass), parent, id))
+            l.append('self.%s = %s(%s, %s)\n' % (window.name, klass, parent, id))
             return l, []
-        klass = window.klass
-        if self.codegen.preview:
-            klass = 'wxNotebook'
+        #if self.codegen.preview:
+            #klass = 'wxNotebook'
+        #else:
+            #klass = window.get_prop_value("class", window.WX_CLASS)
         init = []
-        if id_name:
-            init.append(id_name)
-        init.append(('self.%s = ' + self.cn(klass) + '(%s, %s%s)\n')%(window.name, parent, id, self.tmpl_dict['style']))
+        if id_name: init.append(id_name)
+        #init.append(('self.%s = ' + self.cn(window.WX_CLASS) + '(%s, %s%s)\n')%(window.name, parent, id, self.tmpl_dict['style']))
+        init.append(('self.%s = ' + klass + '(%s, %s%s)\n')%(window.name, parent, id, self.tmpl_dict['style']))
 
         init += self.codegen.generate_code_common_properties(window)
         return init, []
@@ -107,10 +109,10 @@ class CppNotebookGenerator(wcodegen.CppWidgetCodeWriter):
             parent = '%s' % window.parent_window.name
         else:
             parent = 'this'
-        if window.IS_CLASS:
+        if window.check_prop("class"):
             l = ['%s = new %s(%s, %s);\n' % (window.name, window.klass, parent, id)]
             return l, ids, []
-        init = ['%s = new %s(%s, %s%s);\n' % (window.name, window.klass, parent, id, self.tmpl_dict['style'])]
+        init = ['%s = new %s(%s, %s%s);\n' % (window.name, window.WX_CLASS, parent, id, self.tmpl_dict['style'])]
 
         init += self.codegen.generate_code_common_properties(window)
 

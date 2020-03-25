@@ -40,19 +40,11 @@ class PerlPanelGenerator(wcodegen.PerlWidgetCodeWriter):
         style = panel.properties["style"].get_string_value() or 'wxTAB_TRAVERSAL'
         if not (scrollable or style != 'wxTAB_TRAVERSAL'):
             style = ''
-        #if not int(panel.properties.get('no_custom_class', False)):
-        if not panel.no_custom_class:
-            if scrollable:
-                klass = 'Wx::ScrolledWindow'
-            else:
-                klass = 'Wx::Panel'
-        else:
-            klass = self.codegen.cn(panel.klass)
 
-        if style:
-            extra = ', wxDefaultPosition, wxDefaultSize, %s' % style
-        else:
-            extra = ''
+        klass = panel.get_prop_value("class", panel.WX_CLASS)
+        klass = self.codegen.cn(klass)
+
+        extra = style and ', wxDefaultPosition, wxDefaultSize, %s'%style or ''
 
         init.append( '$self->{%s} = %s->new(%s, %s%s);\n' % (panel.name, klass, parent, id, extra) )
 

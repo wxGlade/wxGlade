@@ -26,8 +26,8 @@ class EditFrame(BitmapMixin, TopLevelBase, EditStylesMixin):
                          "statusbar":'Has StatusBar' }
     ATT_CHILDREN = ["_menubar", "_statusbar", "_toolbar"]
 
-    def __init__(self, name, parent, title, style=wx.DEFAULT_FRAME_STYLE, klass='wxFrame'): #XXX style is not used
-        TopLevelBase.__init__(self, name, klass, parent, title=title)
+    def __init__(self, name, parent, klass, title, style=wx.DEFAULT_FRAME_STYLE, instance_class=None): #XXX style is not used
+        TopLevelBase.__init__(self, name, parent, klass, title)
         EditStylesMixin.__init__(self)
         self.properties["style"].set(style)
 
@@ -94,7 +94,7 @@ class EditFrame(BitmapMixin, TopLevelBase, EditStylesMixin):
         if self.menubar:
             # create a MenuBar
             from menubar import EditMenuBar
-            self._menubar = EditMenuBar(self.name + '_menubar', 'wxMenuBar', self)
+            self._menubar = EditMenuBar(self.name + '_menubar', self)
             if self.widget: self._menubar.create()
         else:
             # remove
@@ -105,7 +105,7 @@ class EditFrame(BitmapMixin, TopLevelBase, EditStylesMixin):
         if self.statusbar:
             # create a StatusBar
             from statusbar import EditStatusBar
-            self._statusbar = EditStatusBar(self.name + '_statusbar', 'wxStatusBar', self)
+            self._statusbar = EditStatusBar(self.name + '_statusbar', self)
             if self.widget: self._statusbar.create()
         else:
             # remove
@@ -119,7 +119,7 @@ class EditFrame(BitmapMixin, TopLevelBase, EditStylesMixin):
         if self.toolbar:
             # create a ToolBar
             from toolbar import EditToolBar
-            EditToolBar(self.name + '_toolbar', 'wxToolBar', self)
+            EditToolBar(self.name + '_toolbar', self)
             if self.widget: self._toolbar.create()
         else:
             # remove
@@ -185,7 +185,7 @@ def builder(parent, pos, klass=None, base=None, name=None):
         base_class = EditFrame
     else:
         base_class = EditMDIChildFrame
-    editor = base_class(name, parent, name, "wxDEFAULT_FRAME_STYLE", klass=klass)
+    editor = base_class(name, parent, klass, name, "wxDEFAULT_FRAME_STYLE")
     editor.properties['size'].set( (400,300), activate=True )
     editor.create()
     editor.widget.Show()
@@ -212,18 +212,15 @@ def builder(parent, pos, klass=None, base=None, name=None):
 
 
 def _make_builder(base_class):
-    def xml_builder(parser, attrs, parent, pos=None):
-        from xml_parse import XmlParsingError
-        try:
-            label = attrs['name']
-        except KeyError:
-            raise XmlParsingError(_("'name' attribute missing"))
-        if parser.input_file_version and parser.input_file_version<(0,8):
+    def xml_builder(parent, pos, attrs):
+        attrs.set_editor_class(base_class)
+        name, klass, instance_class = attrs.get_attributes("name", "class", "instance_class")
+        if attrs.input_file_version and attrs.check_input_file_version((0,8)):
             # backwards compatibility
             style = "wxDEFAULT_FRAME_STYLE"
         else:
             style = 0
-        editor = base_class(label, parent, "", style)
+        editor = base_class(name, parent, klass, "", style)
         return editor
     return xml_builder
 

@@ -24,8 +24,8 @@ class EditComboBox(ManagedBase, EditStylesMixin):
 
     update_widget_style = False
 
-    def __init__(self, name, parent, choices, pos):
-        ManagedBase.__init__(self, name, 'wxComboBox', parent, pos)
+    def __init__(self, name, parent, pos, choices, instance_class=None):
+        ManagedBase.__init__(self, name, parent, pos, instance_class)
         EditStylesMixin.__init__(self)
 
         # initialise instance properties
@@ -75,21 +75,18 @@ def builder(parent, pos):
     "factory function for EditComboBox objects"
     name = parent.toplevel_parent.get_next_contained_name('combo_box_%d')
     with parent.frozen():
-        editor = EditComboBox(name, parent, [], pos)
+        editor = EditComboBox(name, parent, pos, [])
         editor.properties["style"].set_to_default()
         editor.check_defaults()
         if parent.widget: editor.create()
     return editor
 
 
-def xml_builder(parser, attrs, parent, pos=None):
+def xml_builder(parent, pos, attrs):
     "factory to build EditComboBox objects from a XML file"
-    from xml_parse import XmlParsingError
-    try:
-        name = attrs['name']
-    except KeyError:
-        raise XmlParsingError(_("'name' attribute missing"))
-    return EditComboBox(name, parent, [], pos)
+    attrs.set_editor_class(EditComboBox)
+    name, instance_class = attrs.get_attributes("name", "instance_class")
+    return EditComboBox(name, parent, pos, [])
 
 
 def initialize():

@@ -30,7 +30,7 @@ class PythonCodeGenerator(wcodegen.PythonWidgetCodeWriter):
         init = []
         if id_name:
             init.append(id_name)
-        klass = obj.klass
+        klass = obj.get_prop_value("class", obj.WX_CLASS)
         if klass == obj.WX_CLASS:
             klass = self.cn(klass)
         init.append('self.%s = %s(%s, %s, size=(1, 1))\n' % (obj.name, klass, parent, id))
@@ -99,7 +99,8 @@ class CppCodeGenerator(wcodegen.CppWidgetCodeWriter):
         id_name, id = self.codegen.generate_code_id(obj)
         ids = [id_name]  if id_name else  []
         parent = self.format_widget_access(obj.parent_window)
-        init = ['%s = new %s(%s, %s);\n' % (obj.name, obj.klass, parent, id)]
+        klass = obj.get_prop_value("class", obj.WX_CLASS)
+        init = ['%s = new %s(%s, %s);\n' % (obj.name, klass, parent, id)]
         init += self.get_properties_code(obj)
         return init, ids, []
 

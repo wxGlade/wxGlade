@@ -94,10 +94,8 @@ class PythonCodeGenerator(wcodegen.PythonWidgetCodeWriter):
         if style:
             style = ', style=' + self.cn_f( 'wxTB_HORIZONTAL|' + style )
 
-        if not obj.check_prop("class") or obj.klass==obj.WX_CLASS:
-            klass = self.cn(obj.WX_CLASS)
-        else:
-            klass = obj.klass
+        klass = obj.get_prop_value("class", obj.WX_CLASS)
+        if klass==obj.WX_CLASS: klass = self.cn(obj.WX_CLASS)
 
         code = ['# Tool Bar\n',
                 'self.%s = %s(self, -1%s)\n' % (obj.name, klass, style)
@@ -203,10 +201,9 @@ class CppCodeGenerator(wcodegen.CppWidgetCodeWriter):
         "generates C++ code for the toolbar of a wxFrame."
         style = obj.properties['style'].get_string_value()
         style = style and (', wxDefaultPosition, wxDefaultSize, wxTB_HORIZONTAL|' + style) or ''
-        if not obj.check_prop("class") or obj.klass==obj.WX_CLASS:
-            klass = self.cn(obj.WX_CLASS)
-        else:
-            klass = obj.klass
+
+        klass = obj.get_prop_value("class", obj.WX_CLASS)
+        if klass==obj.WX_CLASS: klass = self.cn(obj.WX_CLASS)
 
         init = ['%s = new %s(this, -1%s);\n' % (obj.name, klass, style), 'SetToolBar(%s);\n' % obj.name
                 ] + self.get_properties_code(obj) + self.get_layout_code(obj)

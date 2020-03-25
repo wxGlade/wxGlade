@@ -22,12 +22,12 @@ class EditRadioButton(ManagedBase, EditStylesMixin):
     _PROPERTIES = ["Widget", "label", "clicked", "style"]
     PROPERTIES = ManagedBase.PROPERTIES + _PROPERTIES + ManagedBase.EXTRA_PROPERTIES
 
-    def __init__(self, name, parent, label, pos):
-        ManagedBase.__init__(self, name, 'wxRadioButton', parent, pos)
+    def __init__(self, name, parent, pos, label="", instance_class=None):
+        ManagedBase.__init__(self, name, parent, pos, instance_class)
         EditStylesMixin.__init__(self)
 
         # initialise instance properties
-        self.label   = np.TextProperty("", multiline="grow")
+        self.label   = np.TextProperty(label, multiline="grow")
         self.clicked = np.CheckBoxProperty(False, default_value=False)
 
     def create_widget(self):
@@ -55,26 +55,22 @@ class EditRadioButton(ManagedBase, EditStylesMixin):
         ManagedBase.properties_changed(self, modified)
 
 
-
 def builder(parent, pos):
     "factory function for EditRadioButton objects"
     name = parent.toplevel_parent.get_next_contained_name('radio_btn_%d')
     with parent.frozen():
-        editor = EditRadioButton(name, parent, name, pos)
+        editor = EditRadioButton(name, parent, pos, name)
         editor.properties["style"].set_to_default()
         editor.check_defaults()
         if parent.widget: editor.create()
     return editor
 
 
-def xml_builder(parser, attrs, parent, pos=None):
+def xml_builder(parent, pos, attrs):
     "factory to build EditRadioButton objects from a XML file"
-    from xml_parse import XmlParsingError
-    try:
-        label = attrs['name']
-    except KeyError:
-        raise XmlParsingError(_("'name' attribute missing"))
-    return EditRadioButton(label, parent, "", pos)
+    attrs.set_editor_class(EditRadioButton)
+    name, instance_class = attrs.get_attributes("name", "instance_class")
+    return EditRadioButton(name, parent, pos, "", instance_class)
 
 
 def initialize():

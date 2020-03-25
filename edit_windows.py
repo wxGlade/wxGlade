@@ -76,9 +76,8 @@ class EditBase(EventsMixin, edit_base.EditBase):
     This class holds the basic properties for this object.
     The properties that control the layout (i.e. the behaviour when inside a sizer) are in ManagedBase."""
     can_preview = False
-    # "class" will be removed for some editors
-    # "custom_base" will be added for TopLevelBase, notebook, panel and splitter window
-    _PROPERTIES = ["Common", "name","class"]
+    # "class" and "custom_base" will be added for TopLevelBase, notebook, panel and splitter window
+    _PROPERTIES = ["Common", "name", "instance_class"]
     PROPERTIES = _PROPERTIES
 
     # the following will be placed on the last tab
@@ -109,31 +108,25 @@ class EditBase(EventsMixin, edit_base.EditBase):
                         "extracode":"Extra (import) code for this widget",
                         "extracode_pre":"Code to be inserted before",
                         "extracode_post":"Code to be inserted after"}
-    def __init__(self, name, klass, parent, pos=None):
+    def __init__(self, name, parent, pos, klass=None, instance_class=None):
         edit_base.EditBase.__init__(self, name, parent, pos)
 
         # initialise instance properties
         if "class" in self.PROPERTIES:
-            self.classname = klass
             if self.IS_TOPLEVEL:
+                # actually a subclass
                 self.klass = klass_p = np.ClassProperty(klass, name="class") # Name of the object's class: read/write or read only
             elif self.CAN_BE_CLASS:
-                self.klass = klass_p = np.ClassPropertyD(klass, default_value=self.WX_CLASS, name="class") # Name of the object's class: read/write or read only
+                # actually a subclass
+                self.klass = klass_p = np.ClassPropertyD(klass, name="class") # Name of the object's class: read/write or read only
+                if klass: klass_p.deactivated = False
             else:
-                # base class: e.g. MyStaticText instead of wxStaticText: label = MyStaticText(self, wx.ID_ANY, "label_1")
-                assert self.WX_CLASS=="CustomWidget"
-                self.klass = klass_p = np.ClassPropertyD(klass, default_value=self.WX_CLASS, name="class") # Name of the object's class: read/write or read only
-                if klass!=self.WX_CLASS:# and custom_class:
-                    klass_p.deactivated = False
+                raise ValueError("implementation error")
 
-            ## If True, the user can change the value of the 'class' property:
-            #self.custom_class = custom_class
-        
-            #if not custom_class:
-                ## only for StatusBar and non-standalone ToolBar/MenuBar it's False
-                ##klass_p.readonly = True
-                #klass_p.blocked = True
-        print("EditBase", self.WX_CLASS, klass, self.IS_TOPLEVEL, self.CAN_BE_CLASS)
+        if "instance_class" in self.PROPERTIES:
+            self.instance_class = instance_class_p = np.ClassPropertyD(instance_class, default_value=self.WX_CLASS)
+            if instance_class is not None and instance_class!=self.WX_CLASS:
+                instance_class_p.deactivated = False
 
         if "custom_base" in self.PROPERTIES:
             # for TopLevelBase, notebook, panel and splitter window
@@ -145,6 +138,25 @@ class EditBase(EventsMixin, edit_base.EditBase):
         self.extraproperties = np.ExtraPropertiesProperty()
 
         EventsMixin.__init__(self)
+
+    def get_instantiation_class(self, preview=False, formatter=None, cls_formatter=None):
+        # e.g. klass = obj.get_instantiation_class(self.cn, self.cn_class)
+        if preview:
+            if self.IS_TOPLEVEL:
+                if cls_formatter is not None: return cls_formatter(self.klass)
+                return self.klass
+            if formatter is not None:
+                return formatter(self.WX_CLASS)
+            return self.WX_CLASS
+
+        if self.check_prop("instance_class"):
+            return self.instance_class
+        if self.check_prop("class"):
+            if cls_formatter is not None: return cls_formatter(self.klass)
+            return self.klass
+        if formatter is not None:
+            return formatter(self.WX_CLASS)
+        return self.WX_CLASS
 
     def get_property_handler(self, prop_name):
         """Returns a custom handler function for the property 'prop_name', used when loading this object from a XML file.
@@ -301,8 +313,8 @@ class WindowBase(EditBase):
     IS_WINDOW = True
     CHILDREN = None  # sizer or something else
 
-    def __init__(self, name, klass, parent, pos=None):
-        EditBase.__init__(self, name, klass, parent, pos=pos)
+    def __init__(self, name, parent, pos, klass, instance_class):
+        EditBase.__init__(self, name, parent, pos, klass, instance_class)
 
         self.window_id = np.TextPropertyD( "wxID_ANY", name="id", default_value=None )
         self.size      = np.SizePropertyD( "-1, -1", default_value="-1, -1" )
@@ -550,8 +562,8 @@ class ManagedBase(WindowBase):
 
     ####################################################################################################################
 
-    def __init__(self, name, klass, parent, pos):
-        WindowBase.__init__(self, name, klass, parent, pos)
+    def __init__(self, name, parent, pos, instance_class, class_=None):
+        WindowBase.__init__(self, name, parent, pos, class_, instance_class)
         # if True, the user is able to control the layout of the widget
         # inside the sizer (proportion, borders, alignment...)
         self._has_layout = parent.IS_SIZER
@@ -726,7 +738,7 @@ class DesignButtonProperty(np.ActionButtonProperty):
 class TopLevelBase(WindowBase, PreviewMixin):
     "Base class for every non-managed window (i.e. Frames, Dialogs and TopLevelPanel)"
     PROPERTIES = WindowBase.PROPERTIES + ["design","preview"]
-    np.insert_after(PROPERTIES, "class", "custom_base")
+    np.insert_after(PROPERTIES, "name", "class", "custom_base")
 
     IS_TOPLEVEL = True
     IS_TOPLEVEL_WINDOW = True  # will be False for TopLevelPanel and MDIChildFrame
@@ -736,8 +748,8 @@ class TopLevelBase(WindowBase, PreviewMixin):
     _PROPERTY_HELP={ "extracode_pre": "This code will be inserted at the beginning of the constructor.",
                      "extracode_post":"This code will be inserted at the end of the constructor." }
 
-    def __init__(self, name, klass, parent, title=None):
-        WindowBase.__init__(self, name, klass, parent, pos=None)
+    def __init__(self, name, parent, klass, title=None, instance_class=None):
+        WindowBase.__init__(self, name, parent, None, klass, instance_class)
         self._oldname = name
         self.has_title = "title" in self.PROPERTIES
         if self.has_title:
@@ -1049,7 +1061,7 @@ class EditStylesMixin(np.PropertyOwner):
     update_widget_style = True # Flag to update the widget style if a style is set using set_style()
     recreate_on_style_change = False
 
-    def __init__(self, klass='', styles=[]):
+    def __init__(self, styles=[]):
         """Initialise instance
 
         klass: Name of the wxWidget klass
@@ -1057,20 +1069,11 @@ class EditStylesMixin(np.PropertyOwner):
 
         self.style_names = []
 
-        # This class needs the wxWidget class to get the proper widget
-        # writer. Mostly the wxWidget class is stored in self.base. If
-        # not you've to set manually using constructors 'klass' parameter.
-        # The 'klass' parameter will preferred used.
-        klass = klass or self.WX_CLASS
-
-        # set code generator only once per class
         if not self.codegen:
-            self.codegen = common.code_writers['python'].copy()
-            self.codegen.for_version = compat.version
-            EditStylesMixin.codegen = self.codegen
+            EditStylesMixin.codegen = common.code_writers['preview']
 
         try:
-            self.widget_writer = self.codegen.obj_builders[klass]
+            self.widget_writer = self.codegen.obj_builders[self.WX_CLASS]
         except KeyError:
             raise NotImplementedError
         if styles:
@@ -1081,7 +1084,6 @@ class EditStylesMixin(np.PropertyOwner):
                 self.style_names = styles
         else:
             self.style_names = self.widget_writer.style_list
-        #self.style = np.WidgetStyleProperty(0) # this will use below methods
         self.style = np.WidgetStyleProperty()  # this will read it's default value
 
     def _set_widget_style(self):

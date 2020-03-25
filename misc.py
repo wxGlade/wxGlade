@@ -254,9 +254,8 @@ def get_toplevel_parent(obj):
 
 def get_toplevel_widget(widget):
     from edit_windows import EditBase, TopLevelBase
-    from edit_sizers import Sizer, SizerSlot
-    if isinstance(widget, Sizer):
-        widget = widget.window
+    from edit_sizers import SizerSlot
+    if widget.IS_SIZER: widget = widget.window
     assert isinstance(widget, (EditBase,SizerSlot)), _("EditBase or SizerBase object needed")
     while widget and not isinstance(widget, TopLevelBase):
         widget = widget.parent

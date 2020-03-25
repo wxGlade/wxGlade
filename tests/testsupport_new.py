@@ -53,7 +53,7 @@ class WXGladeBaseTest(unittest.TestCase):
         config.preferences.autosave = False
         config.preferences.write_timestamp = False
         config.preferences.show_progress = False
-        config.version = '"faked test version"'
+        #config.version = '"faked test version"'
 
         # make e.g. the preview raise Exceptions
         config.testing = True
