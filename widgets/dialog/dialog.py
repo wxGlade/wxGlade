@@ -142,7 +142,7 @@ def builder(parent, pos):
     else:
         is_panel = True
         import panel
-        editor = panel.EditTopLevelPanel(name, parent, klass, name)
+        editor = panel.EditTopLevelPanel(name, parent, klass)
 
     editor.create()
     if base == "wxDialog":

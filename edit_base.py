@@ -351,22 +351,19 @@ class EditBase(np.PropertyOwner):
         # write object tag, including class, name, base
         classname = self.get_editor_name()
         # to disable custom class code generation (for panels...)
-        if getattr(self, 'no_custom_class', False):
-            no_custom = u' no_custom_class="1"'
-        else:
-            no_custom = ""
         outer_tabs = u'    ' * tabs
+        instance_class = ''
         if self.CAN_BE_CLASS:
             klass = self.get_prop_value("class", default=self.WX_CLASS)
-            if self.check_prop("instance_class"):
-                XXX
+            if self.check_prop_truth("instance_class"):
+                instance_class = " " + common.format_xml_attrs(instance_class=self.instance_class)
         else:
             klass = self.get_prop_value("instance_class", default=self.WX_CLASS)
         output.append(u'%s<object %s %s %s%s>\n' % ( outer_tabs,
                                                      common.format_xml_attrs(**{'class': klass}),
                                                      common.format_xml_attrs(name=self.name),
                                                      common.format_xml_attrs(base=classname),
-                                                     no_custom) )
+                                                     instance_class) )
 
         if config.debugging and getattr(self, "_restore_properties", None):
             raise ValueError("properties not restored")
@@ -437,8 +434,9 @@ class EditBase(np.PropertyOwner):
         if not "class" in self.properties:
             #assert self.WX_CLASS in ("spacer", "wxMenuBar", "wxToolBar", "wxStatusBar")
             return s
-        if (self.WX_CLASS=="CustomWidget" or (self.klass != self.WX_CLASS and self.klass != 'wxScrolledWindow') ):
-            # special case...
+        if self.WX_CLASS=="CustomWidget":
+            s += ' (%s)' % self.instance_class
+        elif self.check_prop("class"):
             s += ' (%s)' % self.klass
             if getattr(self, "has_title", None):
                 # include title

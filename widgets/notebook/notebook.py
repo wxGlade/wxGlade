@@ -13,6 +13,7 @@ import wcodegen
 import new_properties as np
 from edit_windows import ManagedBase, EditStylesMixin, Slot
 from wcodegen.taghandler import BaseXmlBuilderTagHandler
+from panel import EditPanel
 
 
 class NotebookPagesProperty(np.GridProperty):

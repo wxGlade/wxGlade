@@ -1577,9 +1577,9 @@ class ClassProperty(TextProperty):
             leaf = None
 
         # shortcut: check sibilings first
-        siblings = self.owner.parent.children
+        siblings = self.owner.parent.get_all_children()
         for node in siblings:
-            if node is self.owner: continue
+            if node is self.owner or not node.check_prop("class"): continue
             if node.klass==klass:
                 return self._UNIQUENESS_MSG1
             if leaf and "." in node.klass and leaf==node.klass.rsplit(".",1)[-1]:
@@ -1592,12 +1592,11 @@ class ClassProperty(TextProperty):
                 if c.children:
                     result = check(c.children)
                     if result: return result
-                if c is not self.owner:
-                    if not c.check_prop("class"): continue # .klass==c.WX_CLASS: continue
-                    if c.klass==klass:
-                        return self._UNIQUENESS_MSG1
-                    if leaf and "." in c.klass and leaf==c.klass.rsplit(".",1)[-1]:
-                        return self._UNIQUENESS_MSG2
+                if c is self.owner or not c.check_prop("class"): continue
+                if c.klass==klass:
+                    return self._UNIQUENESS_MSG1
+                if leaf and "." in c.klass and leaf==c.klass.rsplit(".",1)[-1]:
+                    return self._UNIQUENESS_MSG2
             return None
         return check(common.root.children)
 
