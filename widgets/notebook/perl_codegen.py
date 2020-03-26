@@ -22,7 +22,7 @@ class PerlNotebookGenerator(wcodegen.PerlWidgetCodeWriter):
 
         parent = self.format_widget_access(window.parent_window)
 
-        if window.check_prop("class"):
+        if window.IS_CLASS:
             l = []
             if id_name: l.append(id_name)
             l.append( '$self->{%s} = %s->new(%s, %s);\n' % ( window.name, window.klass, parent, id) )

@@ -659,7 +659,6 @@ class MenuHandler(BaseXmlBuilderTagHandler):
 class EditMenuBar(EditBase):#, PreviewMixin):
 
     WX_CLASS = "wxMenuBar"
-    CAN_BE_CLASS = False
     _PROPERTIES = ["menus",]
     PROPERTIES = EditBase.PROPERTIES + _PROPERTIES + EditBase.EXTRA_PROPERTIES
     CHILDREN = 0
@@ -813,7 +812,6 @@ class EditMenuBar(EditBase):#, PreviewMixin):
 
 class EditTopLevelMenuBar(EditMenuBar, PreviewMixin):
     WXG_BASE = "EditMenuBar"
-    CAN_BE_CLASS = True
     IS_TOPLEVEL = True
     _PROPERTIES = ["menus", "preview"]
     PROPERTIES = EditBase.PROPERTIES + _PROPERTIES + EditBase.EXTRA_PROPERTIES

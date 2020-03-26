@@ -147,7 +147,6 @@ class EditPanel(PanelBase, ManagedBase):
     WX_CLASSES = ("wxPanel", "wxScrolledWindow")
     PROPERTIES = ManagedBase.PROPERTIES + PanelBase._PROPERTIES + ManagedBase.EXTRA_PROPERTIES
     np.insert_after(PROPERTIES, "name", "class", "custom_base")
-    CAN_BE_CLASS = True
 
     def __init__(self, name, parent, pos, style='wxTAB_TRAVERSAL'):
         ManagedBase.__init__(self, name, parent, pos)

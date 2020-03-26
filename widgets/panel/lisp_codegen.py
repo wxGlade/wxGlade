@@ -23,8 +23,7 @@ class LispPanelGenerator(wcodegen.LispWidgetCodeWriter):
 
         if panel.IS_CLASS:
             l = []
-            if id_name:
-                l.append(id_name)
+            if id_name: l.append(id_name)
 
             panel_name = panel.name
             l.append( '(setf (slot-%s obj) (wxPanel_Create %s %s -1 -1 -1 -1))\n' % (panel_name, parent, id) )

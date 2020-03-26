@@ -30,7 +30,7 @@ class BaseLispSizerBuilder(BaseSizerBuilder):
 
     def _get_wparent(self, obj):
         window = obj.parent_window
-        if not window.IS_TOPLEVEL and not window.IS_CLASS:
+        if not window.IS_CLASS:
             parent = '(slot-%s obj)' % self.codegen._format_name(window.name)
         else:
             parent = self.tmpl_wparent

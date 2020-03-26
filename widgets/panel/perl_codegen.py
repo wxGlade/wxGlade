@@ -23,14 +23,8 @@ class PerlPanelGenerator(wcodegen.PerlWidgetCodeWriter):
 
         if panel.IS_CLASS:
             l = []
-            if id_name:
-                l.append(id_name)
-
-            if panel.klass != panel.WX_CLASS:
-                klass = panel.klass
-            else:
-                klass = klass.replace('wx', 'Wx::', 1)
-
+            if id_name: l.append(id_name)
+            klass = panel.get_instantiation_class(self.cn, None)
             l.append( '$self->{%s} = %s->new(%s, %s);\n' % (panel.name, klass, parent, id) )
             return l, []
 

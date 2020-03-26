@@ -28,8 +28,7 @@ else:
 class EditBase(np.PropertyOwner):
     #is_sizer = False
     IS_TOPLEVEL = IS_SLOT = IS_SIZER = IS_WINDOW = IS_ROOT = IS_TOPLEVEL_WINDOW = False
-    CAN_BE_CLASS = False
-    IS_CLASS = False  # generate class for this item; can be dynamically set during code generation
+    IS_CLASS = None  # dynamically set during code generation if a class is generated for this item
     # usually this one is fixed, but EditPanel/EditToplevelPanel will overwrite it depending on the "scrollable" property
     WX_CLASS = None # needs to be defined in every derived class; e.g. "wxFrame", "wxBoxSizer", "TopLevelPanel"
     WX_CLASSES = None  # used if WX_CLASS can be changed dynamically
@@ -129,20 +128,21 @@ class EditBase(np.PropertyOwner):
             if item.IS_TOPLEVEL: return item
             item = item.parent
 
-    @property
-    def class_object(self):
-        # used for code generation: the object for which a class code is generated
-        item = self
-        parent = item.parent
-        while parent is not None:
-            if not item.IS_SIZER and item.IS_CLASS: return item
-            item = parent
-            parent = item.parent
-        return None
+    #@property
+    #def class_object(self):
+        ## used for code generation: the object for which a class code is generated
+        #item = self
+        #parent = item.parent
+        #while parent is not None:
+            #if not item.IS_SIZER and item.IS_CLASS: return item
+            #item = parent
+            #parent = item.parent
+        #return None
 
     @property
     def parent_class_object(self):
         # same as before, but start with parent
+        # used only for XRC code generation, so IS_CLASS is set
         item = self.parent
         parent = item.parent
         while parent is not None:
@@ -353,7 +353,7 @@ class EditBase(np.PropertyOwner):
         # to disable custom class code generation (for panels...)
         outer_tabs = u'    ' * tabs
         instance_class = ''
-        if self.CAN_BE_CLASS:
+        if "class" in self.properties:
             klass = self.get_prop_value("class", default=self.WX_CLASS)
             if self.check_prop_truth("instance_class"):
                 instance_class = " " + common.format_xml_attrs(instance_class=self.instance_class)

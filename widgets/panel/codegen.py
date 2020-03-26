@@ -13,38 +13,27 @@ import wcodegen
 
 class PythonPanelGenerator(wcodegen.PythonWidgetCodeWriter):
     def get_code(self, panel):
+        # this is not called for toplevel panels
         scrollable = panel.scrollable
         id_name, id = self.codegen.generate_code_id(panel)
         parent = self.format_widget_access(panel.parent_window)
+
+        klass = panel.get_instantiation_class(self.cn, self.cn_class, self.codegen.preview)
+
         if panel.IS_CLASS:
             l = []
             if id_name: l.append(id_name)
-            klass = panel.get_prop_value("class", panel.WX_CLASS)
-            l.append('self.%s = %s(%s, %s)\n' % (panel.name, self.codegen.get_class(klass), parent, id))
+            l.append('self.%s = %s(%s, %s)\n' % (panel.name, klass, parent, id))
             return l, []
+
         init = []
-        if id_name:
-            init.append(id_name)
+        if id_name: init.append(id_name)
+
         style = panel.properties["style"].get_string_value() or 'wxTAB_TRAVERSAL'
         if scrollable or style != 'wxTAB_TRAVERSAL':
             style = ", style=%s" % self.cn_f(style)
         else:
             style = ''
-        ##if not int(panel.properties.get('no_custom_class', False)) or panel.preview:
-        #if not panel.no_custom_class or self.codegen.preview:
-            #if scrollable:
-                #klass = self.cn( 'wxScrolledWindow')
-            #else:
-                #klass = self.cn('wxPanel')
-        #else:
-            #klass = panel.klass
-            #if klass in ('wxPanel', 'wxScrolledWindow'):
-                #klass = self.cn(klass)
-        if self.codegen.preview:
-            klass = panel.WX_CLASS
-        else:
-            klass = panel.get_prop_value("class", panel.WX_CLASS)
-        if klass==panel.WX_CLASS: klass = self.cn(klass)
 
         init.append( 'self.%s = %s(%s, %s%s)\n' % (panel.name, klass, parent, id, style) )
         init.extend( self.codegen.generate_code_common_properties(panel) )
@@ -82,7 +71,7 @@ class CppPanelGenerator(wcodegen.CppWidgetCodeWriter):
         else:
             ids = []
         parent = self.format_widget_access(panel.parent_window)
-        if panel.check_prop("class"):
+        if panel.IS_CLASS:
             l = [ '%s = new %s(%s, %s);\n' % (panel.name, panel.klass, parent, id) ]
             return l, ids, []
         extra = ''

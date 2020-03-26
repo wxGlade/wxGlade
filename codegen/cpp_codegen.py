@@ -956,7 +956,7 @@ class CPPCodeWriter(BaseLangCodeWriter, wcodegen.CppMixin):
 
 
         klass.final[:0] = final
-        if self.multiple_files and (obj.IS_CLASS and obj.WX_CLASS != obj.klass):
+        if self.multiple_files and obj.IS_CLASS:
             klass.dependencies.append(obj.klass)
         else:
             if obj.WX_CLASS in self.obj_builders:

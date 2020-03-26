@@ -415,7 +415,7 @@ class BaseWidgetWriter(StylesMixin, BaseCodeWriter):
         self.tmpl_dict['id_name'], self.tmpl_dict['id_number'] = self.codegen.generate_code_id(obj)
         self.tmpl_dict['id'] = self.tmpl_dict['id_number']
         self.tmpl_dict['obj_name'] = self.codegen._format_name(obj.name)
-        self.tmpl_dict['klass'] = obj.get_instantiation_class(self.codegen.preview, self.cn, self.cn_class)
+        self.tmpl_dict['klass'] = obj.get_instantiation_class(self.cn, self.cn_class, self.codegen.preview)
         self.tmpl_dict['store_as_attr'] = self.codegen.store_as_attr(obj)
 
         if obj.check_prop('style'): self.tmpl_dict['style'] = self._prepare_style(obj.properties["style"])

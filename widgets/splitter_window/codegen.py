@@ -23,14 +23,16 @@ class PythonSplitterWindowGenerator(wcodegen.PythonWidgetCodeWriter):
         id_name, id = self.codegen.generate_code_id(obj)
         parent = self.format_widget_access(obj.parent_window)
 
-        if obj.check_prop("class") and not self.codegen.preview:
+        klass = obj.get_instantiation_class(self.cn, None, self.codegen.preview)
+
+        if obj.IS_CLASS:
             l = []
             if id_name: l.append(id_name)
-            l.append( 'self.%s = %s(%s, %s)\n' % (obj.name, self.codegen.get_class(obj.klass), parent, id) )
+            l.append( 'self.%s = %s(%s, %s)\n' % (obj.name, self.codegen.get_class(klass), parent, id) )
             return l, []
 
         if id_name: init.append(id_name)
-        init.append('self.%s = %s(%s, %s%s)\n' % (obj.name, self.cn(obj.WX_CLASS), parent, id, self.tmpl_dict['style']))
+        init.append('self.%s = %s(%s, %s%s)\n' % (obj.name, klass, parent, id, self.tmpl_dict['style']))
 
         win_1 = obj.window_1
         win_2 = obj.window_2
@@ -113,11 +115,13 @@ class CppSplitterWindowGenerator(wcodegen.CppWidgetCodeWriter):
         else:
             parent = 'this'
 
-        if obj.check_prop("class"):
-            l = ['%s = new %s(%s, %s);\n' % (obj.name, obj.klass, parent, id)]
+        klass = obj.get_instantiation_class()
+
+        if obj.check_prop_truth("class"):
+            l = ['%s = new %s(%s, %s);\n' % (obj.name, klass, parent, id)]
             return l, ids, []
 
-        init.append( '%s = new %s(%s, %s%s);\n' % (obj.name, obj.WX_CLASS, parent, id, self.tmpl_dict['style']) )
+        init.append( '%s = new %s(%s, %s%s);\n' % (obj.name, klass, parent, id, self.tmpl_dict['style']) )
 
         win_1 = obj.window_1
         win_2 = obj.window_2

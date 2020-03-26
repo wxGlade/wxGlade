@@ -345,14 +345,7 @@ class XRCCodeWriter(BaseLangCodeWriter, wcodegen.XRCMixin):
         parent = obj.parent
         parent_class_object = obj.parent_class_object  # used for adding to this object's sizer
 
-        IS_CLASS = obj.IS_TOPLEVEL
-        if obj.CAN_BE_CLASS and obj.klass != obj.WX_CLASS:
-            IS_CLASS = True
-            # for panel objects, if the user sets a custom class but (s)he doesn't want the code to be generated...
-            if obj.check_prop("no_custom_class") and obj.no_custom_class and not self.preview:
-                IS_CLASS = False
-
-        obj.IS_CLASS = IS_CLASS
+        obj.IS_CLASS = IS_CLASS = obj.check_prop_truth("class")
 
         # first the item
         if IS_CLASS:

@@ -435,21 +435,6 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
 
         return None
 
-    def _is_class(self, obj):
-        # check whether to add a new class to the generated code and modify some attributes in place
-        IS_CLASS = obj.IS_TOPLEVEL
-        if not self.preview and obj.check_prop_truth("class"):
-            IS_CLASS = True
-        elif "class" in obj.PROPERTIES and self.preview and not obj.CAN_BE_CLASS and obj.WX_CLASS != 'CustomWidget':
-            # this is a custom class, but not a toplevel one; for preview we ignore this
-            # CustomWidgets handles this in a special way (see widgets/custom_widget/codegen.py)
-            XXX
-            obj.properties["class"].set_temp(obj.WX_CLASS) # XXX handle this in a different way
-
-        obj.IS_CLASS = IS_CLASS
-
-        return IS_CLASS
-
     def _generate_code(self, parent_klass, parent, parent_builder, obj):
         # recursively generate code, for anything except application.Application
         # for toplevel widgets or with class different from wx... a class will be added
@@ -459,7 +444,8 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
                 self.add_object(parent_klass, parent, parent_builder, obj)
             return
 
-        IS_CLASS = self._is_class(obj)
+        # XXX check: set obj.IS_CLASS again?
+        obj.IS_CLASS = IS_CLASS = obj.IS_TOPLEVEL or (not self.preview and obj.check_prop_truth("class"))
         # first the item
         klass = IS_CLASS and self.add_class(obj) or None
         if not obj.IS_TOPLEVEL:
@@ -809,7 +795,7 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
         if final:
             parent_klass.final.insert(0, "\n")
             parent_klass.final[:0] = final
-        if self.multiple_files and (obj.IS_CLASS and obj.WX_CLASS != obj.klass):
+        if self.multiple_files and obj.IS_CLASS:
             key = self._format_import(obj.klass)
             parent_klass.dependencies.add( key )
         import_modules = getattr(self.obj_builders.get(obj.WX_CLASS), 'import_modules', [])
@@ -1235,7 +1221,7 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
     def _format_style(self, style, code_obj):
         """Return the formatted styles to insert into constructor code.
         The function just returned tmpl_style. Write a derived version implementation if more logic is needed."""
-        if code_obj.IS_CLASS:
+        if code_obj.IS_TOPLEVEL or (not self.preview and code_obj.check_prop_truth("class")):
             if style:
                 return self.tmpl_toplevel_style
             return self.tmpl_toplevel_style0

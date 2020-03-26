@@ -24,11 +24,9 @@ class BasePythonSizerBuilder(BaseSizerBuilder):
 
     def _get_wparent(self, obj):
         window = obj.parent_window
-        if not window.IS_TOPLEVEL and not window.IS_CLASS:
-            return 'self.%s' % window.name
-        else:
+        if window.IS_CLASS:
             return 'self'
-
+        return 'self.%s' % window.name
 
 
 class PythonBoxSizerBuilder(BasePythonSizerBuilder):

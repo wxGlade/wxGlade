@@ -114,14 +114,12 @@ class EditBase(EventsMixin, edit_base.EditBase):
         # initialise instance properties
         if "class" in self.PROPERTIES:
             if self.IS_TOPLEVEL:
-                # actually a subclass
+                # always a class
                 self.klass = klass_p = np.ClassProperty(klass, name="class") # Name of the object's class: read/write or read only
-            elif self.CAN_BE_CLASS:
-                # actually a subclass
+            else:
+                # optionally a class
                 self.klass = klass_p = np.ClassPropertyD(klass, name="class") # Name of the object's class: read/write or read only
                 if klass: klass_p.deactivated = False
-            else:
-                raise ValueError("implementation error")
 
         if "instance_class" in self.PROPERTIES:
             self.instance_class = instance_class_p = np.InstanceClassPropertyD(instance_class, default_value=self.WX_CLASS)
@@ -139,7 +137,7 @@ class EditBase(EventsMixin, edit_base.EditBase):
 
         EventsMixin.__init__(self)
 
-    def get_instantiation_class(self, preview=False, formatter=None, cls_formatter=None):
+    def get_instantiation_class(self, formatter=None, cls_formatter=None, preview=False):
         # e.g. klass = obj.get_instantiation_class(self.cn, self.cn_class)
         if preview:
             if self.IS_TOPLEVEL:
@@ -151,7 +149,7 @@ class EditBase(EventsMixin, edit_base.EditBase):
 
         if self.check_prop("instance_class"):
             return self.instance_class
-        if self.check_prop("class"):
+        if self.check_prop_truth("class"):
             if cls_formatter is not None: return cls_formatter(self.klass)
             return self.klass
         if formatter is not None:
@@ -742,7 +740,6 @@ class TopLevelBase(WindowBase, PreviewMixin):
 
     IS_TOPLEVEL = True
     IS_TOPLEVEL_WINDOW = True  # will be False for TopLevelPanel and MDIChildFrame
-    CAN_BE_CLASS = True
     CHILDREN = 1  # a sizer or a widget
 
     _PROPERTY_HELP={ "extracode_pre": "This code will be inserted at the beginning of the constructor.",

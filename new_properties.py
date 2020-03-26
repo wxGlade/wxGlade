@@ -1635,7 +1635,6 @@ class ClassProperty(TextProperty):
 
 
 class ClassPropertyD(ClassProperty):
-    # for CAN_BE_CLASS
     deactivated = True
 
 

@@ -92,10 +92,9 @@ class CppCustomWidgetGenerator(wcodegen.CppWidgetCodeWriter):
             ids = [id_name]
         else:
             ids = []
-        if not widget.parent_window.IS_CLASS:
-            parent = '%s' % widget.parent_window.name
-        else:
-            parent = 'this'
+
+        parent = self.format_widget_access(widget.parent_window)
+
         arguments = format_ctor_arguments( widget.arguments, parent, id, widget.size )
         ctor = widget.custom_ctor.strip() or ('new ' + widget.instance_class)
         init = [ '%s = %s(%s);\n' % (widget.name, ctor, ", ".join(arguments)) ]

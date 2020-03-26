@@ -521,7 +521,6 @@ class EditToolBar(EditBase, PreviewMixin, EditStylesMixin, BitmapMixin):
     "Class to handle wxToolBar objects"
 
     WX_CLASS = 'wxToolBar'
-    CAN_BE_CLASS = False
     IS_TOPLEVEL = False
     _PROPERTIES = ["Widget", "bitmapsize", "margins", "packing", "separation", "style", "tools"]
     PROPERTIES = EditBase.PROPERTIES + _PROPERTIES + EditBase.EXTRA_PROPERTIES
@@ -737,7 +736,7 @@ class EditToolBar(EditBase, PreviewMixin, EditStylesMixin, BitmapMixin):
 
 class EditTopLevelToolBar(EditToolBar, PreviewMixin):
     WXG_BASE = "EditToolBar"
-    IS_TOPLEVEL = IS_CLASS = CAN_BE_CLASS = True
+    IS_TOPLEVEL = True
     PROPERTIES = EditToolBar.PROPERTIES[:]
     np.insert_after(PROPERTIES, "name", "class")
     np.insert_after(PROPERTIES, "tools", "preview")
