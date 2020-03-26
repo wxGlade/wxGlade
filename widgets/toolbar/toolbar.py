@@ -790,13 +790,8 @@ def xml_builder(parser, base, name, parent, pos):
     if parent.IS_ROOT:
         return EditTopLevelToolBar(name, parent, "ToolBar")
 
-    parent.properties["toolbar"].set(True, notify=True)
-    if name:
-        p_name = parent._toolbar.properties["name"]
-        p_name.previous_value = p_name.value
-        p_name.set(name)
-        parent._toolbar.properties_changed(["name"])
-    return parent._toolbar
+    parent.properties["toolbar"].set(True)
+    return EditToolBar(name, parent)
 
 
 def initialize():

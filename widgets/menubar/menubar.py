@@ -871,14 +871,8 @@ def xml_builder(parser, base, name, parent, pos):
     if parent.IS_ROOT:
         return EditTopLevelMenuBar(name, parent, "MenuBar")
 
-    parent.properties["menubar"].set(True, notify=True)
-
-    if name:
-        p_name = parent._menubar.properties["name"]
-        p_name.previous_value = p_name.value
-        p_name.set(name)  # don't use notify, in order not to trigger root.saved etc.
-        parent._menubar.properties_changed(["name"])
-    return parent._menubar
+    parent.properties["menubar"].set(True)
+    return EditMenuBar(name, parent)
 
 
 def initialize():

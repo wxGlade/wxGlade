@@ -542,7 +542,7 @@ class XmlWidgetObject(object):
         # initialise instance logger
         self._logger = logging.getLogger(self.__class__.__name__)
 
-        attrs = XMLAttrs(parser, attrs)
+        attrs = XMLAttrs(attrs)
 
         self.prop_handlers = Stack()  # a stack of custom handler functions to set properties of this object
 
