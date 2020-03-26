@@ -22,8 +22,8 @@ class EditBitmapButton(BitmapMixin, ManagedBase, EditStylesMixin):
                    "default", "style"]
     PROPERTIES = ManagedBase.PROPERTIES + _PROPERTIES + ManagedBase.EXTRA_PROPERTIES
 
-    def __init__(self, name, parent, pos, bmp_file, instance_class=None):
-        ManagedBase.__init__(self, name, parent, pos, instance_class)
+    def __init__(self, name, parent, pos, bmp_file):
+        ManagedBase.__init__(self, name, parent, pos)
         EditStylesMixin.__init__(self)
         BitmapMixin.__init__(self)
 
@@ -59,13 +59,11 @@ def builder(parent, pos):
     return editor
 
 
-def xml_builder(parent, pos, attrs):
+def xml_builder(parser, base, name, parent, pos):
     "factory to build EditBitmapButton objects from a XML file"
-    attrs.set_editor_class(EditBitmapButton)
-    name, instance_class = attrs.get_attributes("name", "instance_class")
-    editor = EditBitmapButton(name, parent, pos, '', instance_class)
+    editor = EditBitmapButton(name, parent, pos, '')
     #if attrs.input_file_version and attrs.input_file_version<(0,9):
-    if attrs.input_file_version and attrs.check_input_file_version((0,9)):  # backwards compatibility
+    if parser.input_file_version and parser.check_input_file_version((0,9)):  # backwards compatibility
         editor.properties["style"].set_to_default()
     return editor
 

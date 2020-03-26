@@ -313,7 +313,7 @@ class WindowBase(EditBase):
     IS_WINDOW = True
     CHILDREN = None  # sizer or something else
 
-    def __init__(self, name, parent, pos, klass, instance_class):
+    def __init__(self, name, parent, pos, klass, instance_class=None):
         EditBase.__init__(self, name, parent, pos, klass, instance_class)
 
         self.window_id = np.TextPropertyD( "wxID_ANY", name="id", default_value=None )
@@ -562,7 +562,7 @@ class ManagedBase(WindowBase):
 
     ####################################################################################################################
 
-    def __init__(self, name, parent, pos, instance_class, class_=None):
+    def __init__(self, name, parent, pos, instance_class=None, class_=None):
         WindowBase.__init__(self, name, parent, pos, class_, instance_class)
         # if True, the user is able to control the layout of the widget
         # inside the sizer (proportion, borders, alignment...)
@@ -748,8 +748,8 @@ class TopLevelBase(WindowBase, PreviewMixin):
     _PROPERTY_HELP={ "extracode_pre": "This code will be inserted at the beginning of the constructor.",
                      "extracode_post":"This code will be inserted at the end of the constructor." }
 
-    def __init__(self, name, parent, klass, title=None, instance_class=None):
-        WindowBase.__init__(self, name, parent, None, klass, instance_class)
+    def __init__(self, name, parent, klass, title=None):
+        WindowBase.__init__(self, name, parent, None, klass)
         self._oldname = name
         self.has_title = "title" in self.PROPERTIES
         if self.has_title:

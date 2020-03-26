@@ -28,9 +28,9 @@ class EditCalendarCtrl(ManagedBase, EditStylesMixin):
     _PROPERTIES = ["Widget", "default", "style"]
     PROPERTIES = ManagedBase.PROPERTIES + _PROPERTIES + ManagedBase.EXTRA_PROPERTIES
 
-    def __init__(self, name, parent, pos, instance_class=None):
+    def __init__(self, name, parent, pos):
         # Initialise parent classes
-        ManagedBase.__init__(self, name, parent, pos, instance_class)
+        ManagedBase.__init__(self, name, parent, pos)
         EditStylesMixin.__init__(self)
 
         # initialise instance properties
@@ -68,10 +68,8 @@ def builder(parent, pos):
     return editor
 
 
-def xml_builder(parent, pos, attrs):
-    attrs.set_editor_class(EditCalendarCtrl)
-    name, instance_class = attrs.get_attributes("name", "instance_class")
-    return EditCalendarCtrl(name, parent, pos, instance_class)
+def xml_builder(parser, base, name, parent, pos):
+    return EditCalendarCtrl(name, parent, pos)
 
 
 def initialize():

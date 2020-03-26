@@ -24,9 +24,9 @@ class EditCheckBox(ManagedBase, EditStylesMixin):
     # Convert the position of "checked" RadioProperty to wxCheckBoxState
     index2state = { 0: wx.CHK_UNCHECKED, 1: wx.CHK_CHECKED, 2: wx.CHK_UNDETERMINED }
 
-    def __init__(self, name, parent, pos, label, instance_class=None):
+    def __init__(self, name, parent, pos, label):
         "Class to handle wxCheckBox objects"
-        ManagedBase.__init__(self, name, parent, pos, instance_class)
+        ManagedBase.__init__(self, name, parent, pos)
         EditStylesMixin.__init__(self)
 
         # initialise instance properties
@@ -76,8 +76,6 @@ class EditCheckBox(ManagedBase, EditStylesMixin):
         ManagedBase.properties_changed(self, modified)
 
 
-
-
 def builder(parent, pos):
     "factory function for EditCheckBox objects"
     name = parent.toplevel_parent.get_next_contained_name('checkbox_%d')
@@ -89,11 +87,9 @@ def builder(parent, pos):
     return editor
 
 
-def xml_builder(parent, pos, attrs):
+def xml_builder(parser, base, name, parent, pos):
     "factory to build EditCheckBox objects from a XML file"
-    attrs.set_editor_class(EditCheckBox)
-    name, instance_class = attrs.get_attributes("name", "instance_class")
-    return EditCheckBox( name, parent, pos, "", instance_class )
+    return EditCheckBox( name, parent, pos, "" )
 
 
 def initialize():

@@ -49,8 +49,8 @@ class EditSplitterWindow(ManagedBase, EditStylesMixin):
                                      "0.5: both windows grow by equal size\n"
                                      "1.0: only left/top window grows"}
     CHILDREN = 2
-    def __init__(self, name, parent, pos, orientation, instance_class=None, class_=None):
-        ManagedBase.__init__(self, name, parent, pos, instance_class, class_)
+    def __init__(self, name, parent, pos, orientation):
+        ManagedBase.__init__(self, name, parent, pos)
         EditStylesMixin.__init__(self)
 
         # initialise instance properties
@@ -258,11 +258,9 @@ def builder(parent, pos):
         return editor
 
 
-def xml_builder(parent, pos, attrs):
+def xml_builder(parser, base, name, parent, pos):
     "Factory to build editor objects from a XML file"
-    attrs.set_editor_class(EditSplitterWindow)
-    name, class_, instance_class = attrs.get_attributes("name", "class", "instance_class")
-    return EditSplitterWindow(name, parent, pos, 'wxSPLIT_VERTICAL', instance_class, class_)
+    return EditSplitterWindow(name, parent, pos, 'wxSPLIT_VERTICAL')
 
 
 def initialize():

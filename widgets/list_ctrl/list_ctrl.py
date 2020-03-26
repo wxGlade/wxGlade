@@ -24,8 +24,8 @@ class EditListCtrl(ManagedBase, EditStylesMixin):
                       "columns":"Only for style LC_REPORT."}
     update_widget_style = True
 
-    def __init__(self, name, parent, pos, style=wx.LC_REPORT | wx.BORDER_SUNKEN, instance_class=None):
-        ManagedBase.__init__(self, name, parent, pos, instance_class)
+    def __init__(self, name, parent, pos, style=wx.LC_REPORT | wx.BORDER_SUNKEN):
+        ManagedBase.__init__(self, name, parent, pos)
         EditStylesMixin.__init__(self)
         if style: self.properties["style"].set(style)
         self.columns = GridColsProperty([])
@@ -122,11 +122,9 @@ def builder(parent, pos):
     return editor
 
 
-def xml_builder(parent, pos, attrs):
+def xml_builder(parser, base, name, parent, pos):
     "factory function to build EditListCtrl objects from a XML file"
-    attrs.set_editor_class(EditListCtrl)
-    name, instance_class = attrs.get_attributes("name", "instance_class")
-    return EditListCtrl(name, parent, pos, 0, instance_class)
+    return EditListCtrl(name, parent, pos, 0)
 
 
 def initialize():

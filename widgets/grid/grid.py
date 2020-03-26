@@ -174,9 +174,9 @@ class EditGrid(ManagedBase):
     #_SELECTION_MODES = { 'wxGrid.wxGridSelectCells':0, 'wxGrid.wxGridSelectRows':1, 'wxGrid.wxGridSelectColumns':2 }
     _SELECTION_MODES = ('wxGrid.wxGridSelectCells', 'wxGrid.wxGridSelectRows', 'wxGrid.wxGridSelectColumns')
 
-    def __init__(self, name, parent, pos, instance_class=None):
+    def __init__(self, name, parent, pos):
         "Class to handle wxGrid objects"
-        ManagedBase.__init__(self, name, parent, pos, instance_class)
+        ManagedBase.__init__(self, name, parent, pos)
 
         # instance properties
         self.create_grid = np.CheckBoxProperty(True)
@@ -326,11 +326,9 @@ def builder(parent, pos):
     return editor
 
 
-def xml_builder(parent, pos, attrs):
+def xml_builder(parser, base, name, parent, pos):
     "factory to build EditGrid objects from a XML file"
-    attrs.set_editor_class(EditGrid)
-    name, instance_class = attrs.get_attributes("name", "instance_class")
-    return EditGrid(name, parent, pos, instance_class)
+    return EditGrid(name, parent, pos)
 
 
 def initialize():

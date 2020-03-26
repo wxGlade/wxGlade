@@ -149,8 +149,8 @@ class EditPanel(PanelBase, ManagedBase):
     np.insert_after(PROPERTIES, "name", "class", "custom_base")
     CAN_BE_CLASS = True
 
-    def __init__(self, name, parent, pos, style='wxTAB_TRAVERSAL', instance_class=None, class_=None):
-        ManagedBase.__init__(self, name, parent, pos, instance_class, class_)
+    def __init__(self, name, parent, pos, style='wxTAB_TRAVERSAL'):
+        ManagedBase.__init__(self, name, parent, pos)
         PanelBase.__init__(self, style)
 
     def create_widget(self):
@@ -244,7 +244,7 @@ class EditTopLevelPanel(PanelBase, TopLevelBase):
     WX_CLASS = "wxPanel"
     PROPERTIES = TopLevelBase.PROPERTIES + PanelBase._PROPERTIES + TopLevelBase.EXTRA_PROPERTIES
 
-    def __init__(self, name, parent, klass, style='wxTAB_TRAVERSAL', instance_class=None):
+    def __init__(self, name, parent, klass, style='wxTAB_TRAVERSAL'):
         TopLevelBase.__init__(self, name, parent, klass)
         PanelBase.__init__(self, style)
         self.skip_on_size = False
@@ -342,17 +342,13 @@ def builder(parent, pos):
     return editor
 
 
-def xml_builder(parent, pos, attrs):
+def xml_builder(parser, base, name, parent, pos):
     "factory to build EditPanel objects from a XML file"
-    attrs.set_editor_class(EditPanel)
-    name, class_, instance_class = attrs.get_attributes("name", "class", "instance_class")
-    return EditPanel(name, parent, pos, '', instance_class, class_)
+    return EditPanel(name, parent, pos, '')
 
 
-def xml_toplevel_builder(parent, pos, attrs):
-    attrs.set_editor_class(EditTopLevelPanel)
-    name, klass, instance_class = attrs.get_attributes("name", "class", "instance_class")
-    return EditTopLevelPanel( name, parent, klass, '', instance_class )
+def xml_toplevel_builder(parser, base, name, parent, pos):
+    return EditTopLevelPanel( name, parent, "Panel", '' )
 
 
 def initialize():

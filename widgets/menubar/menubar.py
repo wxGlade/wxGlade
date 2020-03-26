@@ -664,8 +664,8 @@ class EditMenuBar(EditBase):#, PreviewMixin):
     PROPERTIES = EditBase.PROPERTIES + _PROPERTIES + EditBase.EXTRA_PROPERTIES
     CHILDREN = 0
 
-    def __init__(self, name, parent, instance_class=None):
-        EditBase.__init__(self, name, parent, "_menubar", instance_class=instance_class)
+    def __init__(self, name, parent):
+        EditBase.__init__(self, name, parent, "_menubar")
 
         self.menus = MenuProperty()
         self.window_id = None  # just a dummy for code generation
@@ -819,8 +819,8 @@ class EditTopLevelMenuBar(EditMenuBar, PreviewMixin):
     PROPERTIES = EditBase.PROPERTIES + _PROPERTIES + EditBase.EXTRA_PROPERTIES
     np.insert_after(PROPERTIES, "name", "class")
 
-    def __init__(self, name, parent, class_, instance_class=None):
-        EditBase.__init__(self, name, parent, None, class_, instance_class=instance_class)
+    def __init__(self, name, parent, class_):
+        EditBase.__init__(self, name, parent, None, class_)
 
         self.menus = MenuProperty()
         self.window_id = None  # just a dummy for code generation
@@ -829,6 +829,8 @@ class EditTopLevelMenuBar(EditMenuBar, PreviewMixin):
 
         PreviewMixin.__init__(self)  # add a preview button
 
+    def _get_tree_image(self):
+        return "EditMenuBar"
 
 
 def builder(parent, pos):
@@ -864,43 +866,18 @@ def builder(parent, pos):
     return editor
 
 
-#def xml_builder(parent, pos, attrs):
-    #"factory to build EditMenuBar objects from a XML file"
-    #base_class = EditToplevelMenuBar if parent.IS_ROOT else EditMenuBar
-    #attrs.set_editor_class(base_class)
-    #name, class_, instance_class = attrs.get_attributes("name", "class", "instance_class")
-
-    #if not parent.IS_ROOT:
-        #parent.properties["menubar"].set(True, notify=True)
-        #if name:
-            #p_name = parent._menubar.properties["name"]
-            #p_name.previous_value = p_name.value
-            #p_name.set(name)
-            #parent._menubar.properties_changed(["name"])
-        #return parent._menubar
-    #return base_class(name, parent, class_ )
-
-def xml_builder(parent, pos, attrs):
+def xml_builder(parser, base, name, parent, pos):
     "factory to build EditMenuBar objects from a XML file"
     if parent.IS_ROOT:
-        attrs.set_editor_class(EditTopLevelMenuBar)
-        name, class_, instance_class = attrs.get_attributes("name", "class", "instance_class")
-        return EditTopLevelMenuBar(name, parent, class_, instance_class)
+        return EditTopLevelMenuBar(name, parent, "MenuBar")
 
-    attrs.set_editor_class(EditMenuBar)
-    name, instance_class = attrs.get_attributes("name", "instance_class")
     parent.properties["menubar"].set(True, notify=True)
 
-    modified = []
     if name:
         p_name = parent._menubar.properties["name"]
         p_name.previous_value = p_name.value
         p_name.set(name)  # don't use notify, in order not to trigger root.saved etc.
-        modified.append("name")
-    if instance_class:
-        parent._menubar.properties["instance_class"].set(instance_class)
-    if modified:
-        parent._menubar.properties_changed(modified)
+        parent._menubar.properties_changed(["name"])
     return parent._menubar
 
 

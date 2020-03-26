@@ -62,7 +62,7 @@ class CustomWidget(ManagedBase):
     _PROPERTY_LABELS = { 'custom_constructor':'Custom constructor' }
     _PROPERTY_HELP   = { 'custom_constructor':'Specify a custom constructor like a factory method' }
 
-    def __init__(self, name, parent, pos, instance_class):
+    def __init__(self, name, parent, pos, instance_class=None):
         ManagedBase.__init__(self, name, parent, pos, instance_class)
 
         # initialise instance properties
@@ -165,11 +165,9 @@ def builder(parent, pos):
     return editor
 
 
-def xml_builder(parent, pos, attrs):
+def xml_builder(parser, base, name, parent, pos):
     "factory to build CustomWidget objects from a XML file"
-    attrs.set_editor_class(CustomWidget)
-    name, instance_class = attrs.get_attributes("name", "instance_class")
-    return CustomWidget(name, parent, pos, instance_class)
+    return CustomWidget(name, parent, pos)
 
 
 def initialize():

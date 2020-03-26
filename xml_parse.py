@@ -177,6 +177,11 @@ class XmlWidgetBuilder(XmlParser):
         self.input_file_version = input_file_version
         XmlParser.__init__(self)
 
+    def check_input_file_version(self, version):
+        # return True if file version is older
+        if not self.input_file_version: return True
+        return self.input_file_version[:len(version)] < version
+
     def startElement(self, name, attrs):
         if name == 'application':
             # get properties of the app
@@ -520,59 +525,14 @@ class ClipboardXmlWidgetBuilder(XmlWidgetBuilder):
 
 
 class XMLAttrs(dict):
-    def __init__(self, parser, d):
-        dict.__init__(self, d)
-        self.input_file_version = getattr(parser, "input_file_version")
-    def set_editor_class(self, class_):
-        # set instance_class, class
-        cls = self.get("class") or None
-        IS_BASE = cls==class_.WX_CLASS or (class_.WX_CLASSES and cls in class_.WX_CLASSES)
-
-        if self.check_input_file_version( (0,9,9) ):
-            # backwards compatibility
-            if class_.IS_CLASS:
-                if not "instance_class" in self:
-                    self["instance_class"] = None
-            elif class_.CAN_BE_CLASS:
-                if IS_BASE:
-                    self["class"] = None
-                if not "instance_class" in self:
-                    self["instance_class"] = None
-            elif cls:
-                if not IS_BASE:
-                    self["instance_class"] = cls
-                else:
-                    self["instance_class"] = None
-                del self["class"]
-            return
-        # current file format: 'class' is always written
-        if not "instance_class" in self:
-            self["instance_class"] = None
-        if not class_.CAN_BE_CLASS: return
-        if cls is None or IS_BASE:
-            self["class"] = None
-
-    def check_input_file_version(self, version):
-        # return True if file version is older
-        if not self.input_file_version: return True
-        return self.input_file_version[:len(version)] < version
-    def get_attributes(self, *names):
-        # get a list of named attributes from attrs; raise parsing error if one or more are missing
-        ret = []
-        missing = []
-        for name in names:
-            try:
-                ret.append( self[name] )
-            except KeyError:
-                missing.append(name)
-        if missing:
-            missing = repr(missing)
+    # raises XmlParsingError instead of KeyError
+    def __getitem__(self, key):
+        try:
+            return dict.__getitem__(self, key)
+        except KeyError:
             if 'name' in self:
-                name = self['name']
-                raise XmlParsingError( _("attributes %s missing from object '%s'")%(missing, name) )
-            raise XmlParsingError( _("attributes %s missing from object")%missing )
-    
-        return tuple(ret)
+                raise XmlParsingError( _("attribute %s missing from object '%s'")%(key, self['name']) )
+            raise XmlParsingError( _("attribute %s missing from object")%key )
 
 
 class XmlWidgetObject(object):
@@ -588,7 +548,7 @@ class XmlWidgetObject(object):
 
         self._properties_added = []
         base = attrs.get('base', None)
-        klass, = attrs.get_attributes('class')
+        klass = attrs['class']
 
         # find sizeritem, sizer, parent window
         sizeritem = sizer = parent = None
@@ -625,8 +585,9 @@ class XmlWidgetObject(object):
             # build the widget
             builder = common.widgets_from_xml.get(base, None)
             if builder is None: raise XmlParsingError("Widget '%s' not supported."%base)
-            self.obj = builder(sizer or parent, pos, attrs)
-            # XXX set 'class' and 'instance_class' properties here instead of doing it in each builder
+            
+            self.obj = builder(parser, base, attrs["name"], sizer or parent, pos)
+            self.set_class_attributes(parser, attrs) # set 'class' and 'instance_class' properties, if applicable
 
             self.IS_SIZER = self.obj.IS_SIZER
             self.IS_WINDOW = self.obj.IS_WINDOW
@@ -645,6 +606,43 @@ class XmlWidgetObject(object):
 
         # push the object on the _objects stack
         parser._objects.push(self)
+
+    def set_class_attributes(self, parser, attrs):
+        # old files: no 'instance_class' attribute, 'class' is 'multi purpose'
+        CLASS = self.obj.__class__
+        class_p = self.obj.properties.get("class")
+
+        class_v = attrs.get("class") or None
+        IS_BASE = class_v==CLASS.WX_CLASS or (CLASS.WX_CLASSES and class_v in CLASS.WX_CLASSES)
+
+        instance_class = attrs.get("instance_class")
+
+        if parser.check_input_file_version( (0,9,9) ):
+            # handle backwards compatibility
+            if class_p:
+                if class_p.deactivated is not None:
+                    if IS_BASE:
+                        class_v = None
+            elif class_v:
+                if not IS_BASE:
+                    instance_class = class_v
+                class_v = None
+        else:
+            # current file format: 'class' is always written
+            if class_p and class_p.deactivated is not None:
+                if IS_BASE:
+                    class_v = None
+
+        # update self.obj properties
+        modified = []
+        if class_v:
+            class_p.set( class_v, activate=True )
+            modified.append("class")
+        if instance_class:
+            self.obj.properties["instance_class"].set( instance_class, activate=True )
+            modified.append("instance_class")
+        if modified:
+            self.obj.properties_changed(modified)
 
     def add_property(self, name, val):
         """adds a property to this widget. This method is not called if there

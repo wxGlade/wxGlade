@@ -75,8 +75,8 @@ class EditNotebook(ManagedBase, EditStylesMixin):
     PROPERTIES = ManagedBase.PROPERTIES + _PROPERTIES + ManagedBase.EXTRA_PROPERTIES
     np.insert_after(PROPERTIES, "name", "class", "custom_base")
 
-    def __init__(self, name, parent, pos, style, instance_class=None, class_=None):
-        ManagedBase.__init__(self, name, parent, pos, instance_class, class_)
+    def __init__(self, name, parent, pos, style):
+        ManagedBase.__init__(self, name, parent, pos)
         EditStylesMixin.__init__(self)
         self.properties["style"].set(style)
 
@@ -301,7 +301,7 @@ class EditNotebook(ManagedBase, EditStylesMixin):
     def get_itempos(self, attrs):
         "Get position of sizer item (used in xml_parse)"
         # only used when loading from XML, while pages is defined
-        name = attrs.get("original_name", None) or attrs.get_attributes('name')[0]
+        name = attrs.get("original_name", None) or attrs['name']
         try:
             return self.pages.index(name)
         except ValueError:
@@ -394,11 +394,9 @@ def builder(parent, pos):
     return editor
 
 
-def xml_builder(parent, pos, attrs):
+def xml_builder(parser, base, name, parent, pos):
     "Factory to build editor objects from a XML file"
-    attrs.set_editor_class(EditNotebook)
-    name, class_, instance_class = attrs.get_attributes("name", "class", "instance_class")
-    return EditNotebook(name, parent, pos, '', instance_class, class_)
+    return EditNotebook(name, parent, pos, '')
 
 
 def initialize():

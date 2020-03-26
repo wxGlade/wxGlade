@@ -2303,10 +2303,8 @@ def builder(parent, pos):
     return editor
 
 
-def xml_builder(parent, pos, attrs):
+def xml_builder(parser, base, name, parent, pos):
     "factory function to build EditBoxSizer objects from a XML file"
-    name, base = attrs.get_attributes("name", "base")
-
     orientation = wx.VERTICAL  # default value
     if base == 'EditStaticBoxSizer':
         return EditStaticBoxSizer(name, parent, pos, orientation, '', 0)
@@ -2403,9 +2401,8 @@ def grid_builder(parent, pos):
     return editor
 
 
-def grid_xml_builder(parent, pos, attrs):
+def grid_xml_builder(parser, base, name, parent, pos):
     "factory function to build EditGridSizer objects from a XML file"
-    name, base = attrs.get_attributes("name", "base")
     if base == 'EditGridSizer':
         return EditGridSizer(name, parent, pos, rows=0, cols=0)
     elif base == 'EditFlexGridSizer':

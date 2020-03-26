@@ -21,8 +21,8 @@ class EditSpinCtrl(ManagedBase, EditStylesMixin):
     _PROPERTIES = ["Widget", "range", "value", "style"]
     PROPERTIES = ManagedBase.PROPERTIES + _PROPERTIES + ManagedBase.EXTRA_PROPERTIES
 
-    def __init__(self, name, parent, pos, instance_class=None):
-        ManagedBase.__init__(self, name, parent, pos, instance_class)
+    def __init__(self, name, parent, pos):
+        ManagedBase.__init__(self, name, parent, pos)
         EditStylesMixin.__init__(self)
 
         # initialise instance properties
@@ -85,11 +85,9 @@ def builder(parent, pos):
     return editor
 
 
-def xml_builder(parent, pos, attrs):
+def xml_builder(parser, base, name, parent, pos):
     "factory function to build EditSpinCtrl objects from a XML file"
-    attrs.set_editor_class(EditSpinCtrl)
-    name, instance_class = attrs.get_attributes("name", "instance_class")
-    editor = EditSpinCtrl( name, parent, pos, instance_class )
+    editor = EditSpinCtrl( name, parent, pos )
     editor.properties["value"].set_active(False)
     return editor
 

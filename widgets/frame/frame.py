@@ -26,7 +26,7 @@ class EditFrame(BitmapMixin, TopLevelBase, EditStylesMixin):
                          "statusbar":'Has StatusBar' }
     ATT_CHILDREN = ["_menubar", "_statusbar", "_toolbar"]
 
-    def __init__(self, name, parent, klass, title, style=wx.DEFAULT_FRAME_STYLE, instance_class=None): #XXX style is not used
+    def __init__(self, name, parent, klass, title, style=wx.DEFAULT_FRAME_STYLE): #XXX style is not used
         TopLevelBase.__init__(self, name, parent, klass, title)
         EditStylesMixin.__init__(self)
         self.properties["style"].set(style)
@@ -212,15 +212,13 @@ def builder(parent, pos, klass=None, base=None, name=None):
 
 
 def _make_builder(base_class):
-    def xml_builder(parent, pos, attrs):
-        attrs.set_editor_class(base_class)
-        name, klass, instance_class = attrs.get_attributes("name", "class", "instance_class")
-        if attrs.input_file_version and attrs.check_input_file_version((0,8)):
+    def xml_builder(parser, base, name, parent, pos):
+        if parser.input_file_version and parser.check_input_file_version((0,8)):
             # backwards compatibility
             style = "wxDEFAULT_FRAME_STYLE"
         else:
             style = 0
-        editor = base_class(name, parent, klass, "", style)
+        editor = base_class(name, parent, "Frame", "", style)
         return editor
     return xml_builder
 

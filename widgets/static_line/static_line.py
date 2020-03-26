@@ -24,8 +24,8 @@ class EditStaticLine(ManagedBase, EditStylesMixin):
     _PROPERTY_LABELS = {"attribute":'Store as attribute'}
     _PROPERTY_HELP={"attribute":'Store instance as attribute of window class; e.g. self.line_1 = wx.wxStaticLine(...)\n'
                                 'Without this, you can not access the line from your program.'}
-    def __init__(self, name, parent, pos, style, instance_class=None):
-        ManagedBase.__init__(self, name, parent, pos, instance_class)
+    def __init__(self, name, parent, pos, style):
+        ManagedBase.__init__(self, name, parent, pos)
         EditStylesMixin.__init__(self)
 
         # initialise instance properties
@@ -71,11 +71,9 @@ def builder(parent, pos):
     return editor
 
 
-def xml_builder(parent, pos, attrs):
+def xml_builder(parser, base, name, parent, pos):
     "Factory to build editor objects from a XML file"
-    attrs.set_editor_class(EditStaticLine)
-    name, instance_class = attrs.get_attributes("name", "instance_class")
-    return EditStaticLine(name, parent, pos, '', instance_class)
+    return EditStaticLine(name, parent, pos, '')
 
 
 def initialize():

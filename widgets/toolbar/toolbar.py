@@ -527,8 +527,8 @@ class EditToolBar(EditBase, PreviewMixin, EditStylesMixin, BitmapMixin):
     PROPERTIES = EditBase.PROPERTIES + _PROPERTIES + EditBase.EXTRA_PROPERTIES
     CHILDREN = 0
 
-    def __init__(self, name, parent, instance_class=None):
-        EditBase.__init__( self, name, parent, "_toolbar", instance_class=instance_class )
+    def __init__(self, name, parent):
+        EditBase.__init__( self, name, parent, "_toolbar" )
         EditStylesMixin.__init__(self)
         self._init_properties()
 
@@ -742,11 +742,14 @@ class EditTopLevelToolBar(EditToolBar, PreviewMixin):
     np.insert_after(PROPERTIES, "name", "class")
     np.insert_after(PROPERTIES, "tools", "preview")
 
-    def __init__(self, name, parent, klass, instance_class=None):
-        EditBase.__init__( self, name, parent, None, klass, instance_class )
+    def __init__(self, name, parent, klass):
+        EditBase.__init__( self, name, parent, None, klass )
         EditStylesMixin.__init__(self)
         self._init_properties()
         PreviewMixin.__init__(self)  # add a preview button
+
+    def _get_tree_image(self):
+        return "EditMenuBar"
 
 
 def builder(parent, pos):
@@ -782,15 +785,10 @@ def builder(parent, pos):
     return editor
 
 
-def xml_builder(parent, pos, attrs):
+def xml_builder(parser, base, name, parent, pos):
     "factory to build EditToolBar objects from a XML file"
     if parent.IS_ROOT:
-        attrs.set_editor_class(EditTopLevelToolBar)
-        name, class_, instance_class = attrs.get_attributes("name", "class", "instance_class")
-        return EditTopLevelToolBar(name, parent, class_, instance_class)
-
-    attrs.set_editor_class(EditToolBar)
-    name, instance_class = attrs.get_attributes("name", "instance_class")
+        return EditTopLevelToolBar(name, parent, "ToolBar")
 
     parent.properties["toolbar"].set(True, notify=True)
     if name:

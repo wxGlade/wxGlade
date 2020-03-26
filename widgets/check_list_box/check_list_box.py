@@ -22,8 +22,8 @@ class EditCheckListBox(ManagedBase, EditStylesMixin):
     _PROPERTIES = ["Widget", "style", "selection", "choices"]
     PROPERTIES = ManagedBase.PROPERTIES + _PROPERTIES + ManagedBase.EXTRA_PROPERTIES
 
-    def __init__(self, name, parent, pos, choices, instance_class=None):
-        ManagedBase.__init__(self, name, parent, pos, instance_class)
+    def __init__(self, name, parent, pos, choices):
+        ManagedBase.__init__(self, name, parent, pos)
         EditStylesMixin.__init__(self)
 
         # initialise instance properties
@@ -81,11 +81,9 @@ def builder(parent, pos):
     return editor
 
 
-def xml_builder(parent, pos, attrs):
+def xml_builder(parser, base, name, parent, pos):
     "factory to build EditCheckListBox objects from a XML file"
-    attrs.set_editor_class(EditCheckListBox)
-    name, instance_class = attrs.get_attributes("name", "instance_class")
-    return EditCheckListBox(name, parent, pos, [], instance_class)
+    return EditCheckListBox(name, parent, pos, [])
 
 
 def initialize():

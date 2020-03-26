@@ -66,8 +66,8 @@ class EditDialog(BitmapMixin, TopLevelBase, EditStylesMixin):
                                "Select a different button to be used instead.\n"
                                "See SetAffirmativeId and SetEscapeId in the wx documentation."}
 
-    def __init__(self, name, parent, klass, title, style=wx.DEFAULT_DIALOG_STYLE, instance_class=None):
-        TopLevelBase.__init__(self, name, parent, klass, title, instance_class)
+    def __init__(self, name, parent, klass, title, style=wx.DEFAULT_DIALOG_STYLE):
+        TopLevelBase.__init__(self, name, parent, klass, title)
         EditStylesMixin.__init__(self)
         self.properties["style"].set(style)
 
@@ -169,11 +169,9 @@ def builder(parent, pos):
     return editor
 
 
-def xml_builder(parent, pos, attrs):
+def xml_builder(parser, base, name, parent, pos):
     "factory to build EditDialog objects from a XML file"
-    attrs.set_editor_class(EditDialog)
-    name, class_, instance_class = attrs.get_attributes("name", "class", "instance_class")
-    return EditDialog(name, parent, class_, "", 0, instance_class)
+    return EditDialog(name, parent, "Dialog", "", 0)
 
 
 def initialize():
