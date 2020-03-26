@@ -339,10 +339,7 @@ class wxGladePalettePanel(wx.Panel):
 class wxGladeFrame(wx.Frame):
     "Main frame of wxGlade"
     def __init__(self):
-        self._logger = logging.getLogger(self.__class__.__name__)
         version = config.version
-        if version=='"faked test version"':
-            version = "%s on Python %d.%d"%(version, sys.version_info.major, sys.version_info.minor)
         pos, size, layout = self.init_layout_settings()
         wx.Frame.__init__(self, None, -1, "wxGlade v%s" % version, pos=pos, size=size,
                           style=wx.DEFAULT_FRAME_STYLE, name='MainFrame')
@@ -694,7 +691,7 @@ class wxGladeFrame(wx.Frame):
         elif not res:
             self.autosave_timer.Stop()
             config.preferences.autosave = False
-            self._logger.info(_('Disable autosave function permanently'))
+            logging.info(_('Disable autosave function permanently'))
             wx.MessageBox(
                 _('The autosave function failed. It has been disabled\n'
                   'permanently due to this error. Use the preferences\n'
@@ -930,7 +927,7 @@ class wxGladeFrame(wx.Frame):
 
         try:
             try:
-                self._logger.info( _('Read wxGlade project from file "%s"'), filename )
+                logging.info( _('Read wxGlade project from file "%s"'), filename )
                 input_file_version = None
 
                 if not isinstance(filename, list):
@@ -999,12 +996,12 @@ class wxGladeFrame(wx.Frame):
 
         common.app_tree.Expand(common.root.item)
         if common.root.is_template:
-            self._logger.info(_("Template loaded"))
+            logging.info(_("Template loaded"))
             common.root.template_data = template.Template(filename)
             common.root.filename = None
 
         end = time.time()
-        self._logger.info(_('Loading time: %.5f'), end - start)
+        logging.info(_('Loading time: %.5f'), end - start)
 
         common.root.saved = True
         #common.property_panel.Raise()

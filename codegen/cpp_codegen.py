@@ -8,12 +8,11 @@ C++ code generator
 """
 
 
-import os.path, re
+import os.path, re, logging
 
 from codegen import BaseLangCodeWriter, BaseSourceFileContent, _replace_tag
 from codegen import ClassLines as BaseClassLines
-import config
-import wcodegen
+import config, wcodegen
 
 
 class SourceFileContent(BaseSourceFileContent):
@@ -509,7 +508,7 @@ class CPPCodeWriter(BaseLangCodeWriter, wcodegen.CppMixin):
         try:
             builder = self.obj_builders[code_obj.WX_CLASS]
         except KeyError:
-            self._logger.error('%s', code_obj)
+            logging.error('%s', code_obj)
             # this is an error, let the exception be raised; the details are logged by the global exception handler
             raise
         ret = self.classes[code_obj] = self.ClassLines()  # ClassLines will collect the code lines incl. children

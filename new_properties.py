@@ -64,7 +64,6 @@ class Property(object):
     HAS_DATA = True
     min_version = None  # can be overwritten in instances; currently only used by BitmapProperty
     def __init__(self, value, default_value=_DefaultArgument, name=None):#, write_always=False):
-        self._logger = logging.getLogger(self.__class__.__name__)
         self.value = value
         self.previous_value = None  # only set during call of self.owner.properties_modified
         # when the property is assigned to an instance property, these will be set:
@@ -1119,7 +1118,7 @@ class WidgetStyleProperty(_CheckListProperty):
                 try:
                     style_def = self.style_defs[v]
                 except:
-                    self._logger.warning( _('Style "%s" not supported for widget "%s"')%(v, self.owner.WX_CLASS) )
+                    logging.warning( _('Style "%s" not supported for widget "%s"')%(v, self.owner.WX_CLASS) )
                     value.remove(v)
                     continue
                 if "exclude" in style_def:
@@ -2190,10 +2189,10 @@ class FontProperty(DialogProperty):
         try:
             props = [common.encode_to_unicode(s) for s in self.value]
         except:
-            self._logger.exception(_('Internal Error'))
+            logging.exception(_('Internal Error'))
             return
         if len(props) < 6:
-            self._logger.error( _('error in the value of the property "%s"'), self.name )
+            logging.error( _('error in the value of the property "%s"'), self.name )
             return
         inner_xml =  common.format_xml_tag(u'size',       props[0], tabs+1)
         inner_xml += common.format_xml_tag(u'family',     props[1], tabs+1)
@@ -2975,7 +2974,7 @@ class GridProperty(Property):
         if self.immediate and self.can_add and self.cur_row==self.grid.GetNumberRows()-1:
             return
         if not self.can_remove_last and self.grid.GetNumberRows()==1:
-            self._logger.warning( _('You can not remove the last entry!') )
+            logging.warning( _('You can not remove the last entry!') )
             return
         values = self._ensure_editing_copy()
         if values:

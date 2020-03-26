@@ -7,7 +7,7 @@ Classes to handle and display the structure of a wxGlade app
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
-import logging, os.path
+import os.path
 import wx
 import misc, common, compat, config, clipboard
 
@@ -18,9 +18,7 @@ if DEBUG:
 class WidgetTree(wx.TreeCtrl):#, Tree):
     "Tree with the ability to display the hierarchy of widgets"
     images = {} # Dictionary of icons of the widgets displayed
-    _logger = None # Class specific logging instance
     def __init__(self, parent, application):
-        self._logger = logging.getLogger(self.__class__.__name__)
         style = wx.TR_DEFAULT_STYLE|wx.TR_HAS_VARIABLE_ROW_HEIGHT
         style |= wx.TR_EDIT_LABELS
         if wx.Platform == '__WXGTK__':    style |= wx.TR_NO_LINES|wx.TR_FULL_ROW_HIGHLIGHT

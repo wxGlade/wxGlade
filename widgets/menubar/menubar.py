@@ -816,6 +816,7 @@ class EditTopLevelMenuBar(EditMenuBar, PreviewMixin):
     _PROPERTIES = ["menus", "preview"]
     PROPERTIES = EditBase.PROPERTIES + _PROPERTIES + EditBase.EXTRA_PROPERTIES
     np.insert_after(PROPERTIES, "name", "class")
+    TREE_ICON = "EditMenuBar"
 
     def __init__(self, name, parent, class_):
         EditBase.__init__(self, name, parent, None, class_)
@@ -827,8 +828,6 @@ class EditTopLevelMenuBar(EditMenuBar, PreviewMixin):
 
         PreviewMixin.__init__(self)  # add a preview button
 
-    def _get_tree_image(self):
-        return "EditMenuBar"
 
 
 def builder(parent, pos):

@@ -218,7 +218,6 @@ class Application(EditRoot):
 
     def __init__(self):
         np.PropertyOwner.__init__(self)
-        self._logger = logging.getLogger(self.__class__.__name__)
 
         self.__saved    = True  # raw value for self.saved property; if True, there are no changes to save
         self.__filename = None  # raw value for the self.filename property; Name of the output XML file
@@ -689,7 +688,7 @@ class Application(EditRoot):
                 xrcgen = common.code_writers['XRC']
                 ok = xrcgen.obj_builders.get(cname, None) is not xrcgen.NotImplementedXrcObject
             if not ok:
-                self._logger.warn( _('No %s code generator for %s (of type %s) available'),
+                logging.warn( _('No %s code generator for %s (of type %s) available'),
                                    misc.capitalize(language), widget.name, cname )
         else:
             # in this case, we check all the widgets in the tree

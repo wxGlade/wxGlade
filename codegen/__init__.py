@@ -52,8 +52,6 @@ class BaseSourceFileContent(object):
      rec_event_handler: Regexp to match event handlers"""
 
     def __init__(self, name, code_writer):
-        # initialise instance logger
-        self._logger = logging.getLogger(self.__class__.__name__)
         self.OK = False
 
         # initialise instance
@@ -114,17 +112,6 @@ class BaseSourceFileContent(object):
             # UnicodeDecodeError will be handled in application.generate_code
             lines = [line.decode(encoding) for line in lines]
         return lines
-
-    def __getstate__(self):
-        state = self.__dict__.copy()
-        del state['_logger']
-        return state
-
-    def __setstate__(self, state):
-        self.__dict__.update(state)
-
-        # re-initialise logger instance deleted from __getstate__
-        self._logger = logging.getLogger(self.__class__.__name__)
 
 
 class ClassLines(object):
@@ -585,22 +572,10 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
 
         assert code_obj not in self.classes
 
-        if self.multiple_files:
-            # let's see if the file to generate exists, and in this case create a SourceFileContent instance
-            filename = self._get_class_filename(klass)
-            if self._overwrite or not self._file_exists(filename):
-                prev_src = None
-            else:
-                prev_src = self.SourceFileContent(filename, self)
-            #self._current_extra_modules = set()
-        else:
-            # previous_source is the SourceFileContent instance that keeps info about the single file to generate
-            prev_src = self.previous_source
-
         try:
             builder = self.obj_builders[code_obj.WX_CLASS]
         except KeyError:
-            self._logger.error('%s', code_obj)
+            logging.error('%s', code_obj)
             # this is an error, let the exception be raised the details are logged by the global exception handler
             raise
 
@@ -624,7 +599,6 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
 
         builder = self.obj_builders[code_obj.WX_CLASS]
         mycn = getattr(builder, 'cn', self.cn)
-        mycn_f = getattr(builder, 'cn_f', self.cn_f)
 
         # collect all event handlers
         event_handlers = self.classes[code_obj].event_handlers
@@ -761,7 +735,7 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
         try:
             init, final = builder.get_code(obj)
         except:
-            self._logger.error('%s', obj)
+            logging.error('%s', obj)
             # this is an error, let the exception be raised the details are logged by the global exception handler
             # XXX create handler
             raise
@@ -1087,7 +1061,7 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
             try:
                 os.makedirs(dirname)
             except:
-                self._logger.exception( _('Can not create output directory "%s"'), dirname )
+                logging.exception( _('Can not create output directory "%s"'), dirname )
 
         # save the file now
         try:
@@ -1097,7 +1071,7 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
             raise
         except:
             if config.debugging: raise
-            self._logger.exception(_('Internal Error'))
+            logging.exception(_('Internal Error'))
         if mainfile and sys.platform in ['linux2', 'darwin']:
             try:
                 # make the file executable
@@ -1139,7 +1113,7 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
     def warning(self, msg):
         "Show a warning message"
         if self._show_warnings:
-            self._logger.warning(msg)
+            logging.warning(msg)
 
     def _remove_tag_re(self, source, re_string):
         "Remove all tags that match the regular expression"
@@ -1428,18 +1402,3 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
         """Return a deep copy of the current instance.
         The instance will be reinitialised with defaults automatically in __setstate__()."""
         return copy.deepcopy(self)
-
-    def __getstate__(self):
-        """Return the state dict of this instance except the _logger and the classes attributes.
-        Both attributes caused copy errors due to file locking resp. weak references in XML SAX module."""
-        state = self.__dict__.copy()
-        del state['_logger']
-        del state['classes']
-        return state
-
-    def __setstate__(self, state):
-        """Update the instance using values from dict 'state'.
-        The code generator will be reinitialised after the state has been updated; see new_project()"""
-        self.__dict__.update(state)
-        self._logger = logging.getLogger(self.__class__.__name__)
-

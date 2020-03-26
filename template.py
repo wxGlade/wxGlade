@@ -72,9 +72,6 @@ class TemplateListDialog(templates_ui.TemplateListDialog):
     """
 
     def __init__(self):
-        # initialise instance logger
-        self._logger = logging.getLogger(self.__class__.__name__)
-
         templates_ui.TemplateListDialog.__init__(self, None, -1, "")
         self.templates = []
         self.fill_template_list()
@@ -129,7 +126,7 @@ class TemplateListDialog(templates_ui.TemplateListDialog):
                 try:
                     os.unlink(self.selected_template)
                 except Exception:
-                    self._logger.exception(_('Internal Error'))
+                    logging.exception(_('Internal Error'))
                 self.fill_template_list()
                 self.selected_template = None
 

@@ -9,8 +9,7 @@ wxPanel objects
 
 import logging
 import wx
-import clipboard
-import common, config, misc
+import common, config, misc, clipboard
 import new_properties as np
 from edit_windows import ManagedBase, TopLevelBase, EditStylesMixin
 
@@ -21,13 +20,10 @@ class PanelBase(EditStylesMixin):
 
     _PROPERTIES = ["Widget", "style", "scrollable", "scroll_rate"]
     CHILDREN = -1  # 0 or 1; either a sizer or nothing
+    TREE_ICON = "EditPanel"
 
     def __init__(self, style='wxTAB_TRAVERSAL'):
         "Class to handle wxPanel objects"
-        # initialise instance logger
-        self._logger = logging.getLogger(self.__class__.__name__)
-
-        # initialise instance
         EditStylesMixin.__init__(self, 'wxPanel')
 
         # initialise properties
@@ -52,7 +48,7 @@ class PanelBase(EditStylesMixin):
             self.widget.SetScrollRate( *self.properties["scroll_rate"].get_tuple() )
         # this must be done here since ManagedBase.finish_widget_creation normally sets EVT_LEFT_DOWN to update_view
         if not self.widget.Disconnect(-1, -1, wx.wxEVT_LEFT_DOWN):
-            self._logger.warning( _("EditPanel: Unable to disconnect the event handler") )
+            logging.warning( _("EditPanel: Unable to disconnect the event handler") )
         self.widget.Bind(wx.EVT_LEFT_DOWN, self.drop_sizer)
 
     def _update_markers(self, event):
@@ -127,18 +123,6 @@ class PanelBase(EditStylesMixin):
             elif "scroll_rate" in modified and self.scrollable and isinstance(self.widget, wx.ScrolledWindow):
                 self.widget.SetScrollRate( *self.properties["scroll_rate"].get_tuple() )
         EditStylesMixin.properties_changed(self, modified)
-
-    def __getstate__(self):
-        state = self.__dict__.copy()
-        del state['_logger']
-        return state
-
-    def __setstate__(self, state):
-        self.__dict__.update(state)
-
-        # re-initialise logger instance deleted from __getstate__
-        self._logger = logging.getLogger(self.__class__.__name__)
-
 
 
 class EditPanel(PanelBase, ManagedBase):
@@ -239,7 +223,6 @@ class EditPanel(PanelBase, ManagedBase):
 
 class EditTopLevelPanel(PanelBase, TopLevelBase):
     IS_TOPLEVEL_WINDOW = False  # avoid to appear in the "Top Window" property of the app
-    #WX_CLASS = "TopLevelPanel"
     WX_CLASS = "wxPanel"
     PROPERTIES = TopLevelBase.PROPERTIES + PanelBase._PROPERTIES + TopLevelBase.EXTRA_PROPERTIES
 
@@ -357,26 +340,15 @@ def initialize():
     common.widgets_from_xml['EditPanel'] = xml_builder
 
     common.widget_classes['EditScrolledWindow'] = EditPanel
-    #common.widgets['EditScrolledWindow'] = builder
     common.widgets_from_xml['EditScrolledWindow'] = xml_builder
 
     common.widget_classes['EditTopLevelPanel'] = EditTopLevelPanel
     common.widgets_from_xml['EditTopLevelPanel'] = xml_toplevel_builder
     common.widget_classes['EditTopLevelScrolledWindow'] = EditTopLevelPanel
     common.widgets_from_xml['EditTopLevelScrolledWindow'] = xml_toplevel_builder
-    from tree import WidgetTree
-    import os.path
-    icon = os.path.join(config.icons_path, 'panel.xpm')
-    WidgetTree.images['EditTopLevelPanel'] = icon
-    WidgetTree.images['EditScrolledWindow'] = icon
-    WidgetTree.images['EditTopLevelScrolledWindow'] = icon
 
     # these are for backwards compatibility (may be removed someday...)
-    common.widget_classes['SplitterPane'] = EditPanel
     common.widgets_from_xml['SplitterPane'] = xml_builder
-    WidgetTree.images['SplitterPane'] = os.path.join( config.icons_path, 'panel.xpm' )
-    common.widget_classes['NotebookPane'] = EditPanel
     common.widgets_from_xml['NotebookPane'] = xml_builder
-    WidgetTree.images['NotebookPane'] = os.path.join( config.icons_path, 'panel.xpm' )
     return common.make_object_button('EditPanel', 'panel.xpm', tip='Add a Panel/ScrolledWindow')
 

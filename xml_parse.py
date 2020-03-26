@@ -32,7 +32,6 @@ class XmlParser(ContentHandler):
     "'abstract' base class of the parsers used to load an app and to generate the code"
 
     def __init__(self):
-        self._logger = logging.getLogger(self.__class__.__name__)
         self._objects = Stack()      # Stack of 'alive' objects
         self._curr_prop = None       # Name of the current property
         self._curr_prop_val = []     # Value of the current property; strings, to be joined
@@ -162,7 +161,7 @@ class XmlParser(ContentHandler):
             try:
                 'a'.encode(encoding)
             except LookupError:
-                self._logger.warning( _('Unknown encoding "%s", fallback to default encoding "%s"'),
+                logging.warning( _('Unknown encoding "%s", fallback to default encoding "%s"'),
                                       encoding, config.default_encoding)
                 encoding = config.default_encoding
         return encoding
@@ -492,7 +491,7 @@ class ClipboardXmlWidgetBuilder(XmlWidgetBuilder):
                 try:
                     self.top_obj = self.top().obj
                 except AttributeError:
-                    self._logger.exception( _('Exception caused by obj: %s'), self.top_obj )
+                    logging.exception( _('Exception caused by obj: %s'), self.top_obj )
             self.depth_level += 1
             self._object_counter += 1
 
@@ -521,7 +520,7 @@ class ClipboardXmlWidgetBuilder(XmlWidgetBuilder):
                 if self.parent.widget:
                     self.top_obj.create_widgets()
             except AttributeError:
-                self._logger.exception( _('Exception caused by obj: %s'), self.top_obj )
+                logging.exception( _('Exception caused by obj: %s'), self.top_obj )
 
 
 class XMLAttrs(dict):
@@ -539,9 +538,6 @@ class XmlWidgetObject(object):
     "A class to encapsulate widget attributes read from a XML file, to store them until the widget can be created"
 
     def __init__(self, attrs, parser):
-        # initialise instance logger
-        self._logger = logging.getLogger(self.__class__.__name__)
-
         attrs = XMLAttrs(attrs)
 
         self.prop_handlers = Stack()  # a stack of custom handler functions to set properties of this object
@@ -648,14 +644,14 @@ class XmlWidgetObject(object):
         """adds a property to this widget. This method is not called if there
         was a custom handler for this property, and its char_data method returned False"""
         if name == 'pos':  # sanity check, this shouldn't happen...
-            self._logger.debug('add_property(name=pos)')
+            logging.debug('add_property(name=pos)')
             return
         try:
             prop = self.obj.properties[name]
         except KeyError:
             # unknown property for this object; issue a warning and ignore the property
             if config.debugging: raise
-            self._logger.error( _("WARNING: Property '%s' not supported by this object ('%s') "), name, self.obj )
+            logging.error( _("WARNING: Property '%s' not supported by this object ('%s') "), name, self.obj )
             return
         prop.load(val, activate=True)
         self._properties_added.append(name)

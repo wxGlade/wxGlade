@@ -149,6 +149,7 @@ class EditMDIChildFrame(EditFrame):
     IS_TOPLEVEL_WINDOW = False  # avoid to appear in the "Top Window" property of the app
     PROPERTIES = [p for p in EditFrame.PROPERTIES if p!="statusbar"]
     ATT_CHILDREN = ["_menubar", "_toolbar"]
+    TREE_ICON = "EditFrame"
 
 
 # options for WindowDialog when interactively adding a Frame
@@ -211,28 +212,23 @@ def builder(parent, pos, klass=None, base=None, name=None):
     return editor
 
 
-def _make_builder(base_class):
-    def xml_builder(parser, base, name, parent, pos):
-        if parser.input_file_version and parser.check_input_file_version((0,8)):
-            # backwards compatibility
-            style = "wxDEFAULT_FRAME_STYLE"
-        else:
-            style = 0
-        editor = base_class(name, parent, "Frame", "", style)
-        return editor
-    return xml_builder
+_base_classes = {'EditFrame':EditFrame, 'EditMDIChildFrame':EditMDIChildFrame}
+def xml_builder(parser, base, name, parent, pos):
+    if parser.input_file_version and parser.check_input_file_version((0,8)):
+        # backwards compatibility
+        style = "wxDEFAULT_FRAME_STYLE"
+    else:
+        style = 0
+    return _base_classes[base](name, parent, "Frame", "", style)
 
 
 def initialize():
     "initialization function for the module: returns a wx.BitmapButton to be added to the main palette"
     common.widget_classes['EditFrame'] = EditFrame
     common.widgets['EditFrame'] = builder
-    common.widgets_from_xml['EditFrame'] = _make_builder(EditFrame)
+    common.widgets_from_xml['EditFrame'] = xml_builder
 
     common.widget_classes['EditMDIChildFrame'] = EditMDIChildFrame
-    common.widgets_from_xml['EditMDIChildFrame'] = _make_builder(EditMDIChildFrame)
+    common.widgets_from_xml['EditMDIChildFrame'] = xml_builder
 
-    from tree import WidgetTree
-    import os.path
-    WidgetTree.images['EditMDIChildFrame'] = os.path.join( config.icons_path, 'frame.xpm' )
     return common.make_object_button('EditFrame', 'frame.xpm', 1)

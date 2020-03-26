@@ -14,9 +14,9 @@ To be done: write XRC directly instead of using BaseLangCodeWriter as base.
 from xml.sax.saxutils import escape, quoteattr
 from codegen import BaseLangCodeWriter
 from collections import OrderedDict
-import common
+import common, wcodegen
 import new_properties as np
-import wcodegen
+import logging
 
 
 class XrcObject(wcodegen.XrcWidgetCodeWriter):
@@ -41,7 +41,7 @@ class XrcObject(wcodegen.XrcWidgetCodeWriter):
 
     def warning(self, msg):
         "Show a warning message"
-        self._logger.warning(msg)
+        logging.warning(msg)
 
 
 
@@ -151,7 +151,7 @@ class DefaultXrcObject(XrcObject):
                 return common.format_xml_prop(name, u'', ntabs, stock_id=art_id)
 
         elif val.startswith('code:') or val.startswith('empty:') or val.startswith('var:'):
-            self._logger.warn( _('XRC: Unsupported bitmap statement "%s" for %s "%s"'), val, self.klass, self.name )
+            logging.warn( _('XRC: Unsupported bitmap statement "%s" for %s "%s"'), val, self.klass, self.name )
             return None
 
         return common.format_xml_prop(name, val, ntabs)

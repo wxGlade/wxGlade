@@ -1,5 +1,4 @@
 
-import logging
 import wx
 import new_properties as np
 import common, misc, compat, clipboard, config
@@ -36,12 +35,11 @@ class EditBase(np.PropertyOwner):
     IS_NAMED = True  # default, only False for Spacer
     #CHILDREN = 1  # 0 or a fixed number or None for e.g. a sizer with a variable number of children; -1 for 0 or 1
     ATT_CHILDREN = None
+    TREE_ICON = None  # defaults to editor class name
 
     def __init__(self, name, parent, pos):
         assert self.WX_CLASS
         np.PropertyOwner.__init__(self)
-        # initialise instance logger
-        self._logger = logging.getLogger(self.__class__.__name__)
 
         self.widget = None          # this is the reference to the actual wxWindow widget, created when required
         self._dont_destroy = False  # for notebook pages, this will be set to True
@@ -470,8 +468,7 @@ class EditBase(np.PropertyOwner):
 
     def _get_tree_image(self):
         "Get an image name for tree display"
-        name = self.__class__.__name__
-        return name
+        return self.TREE_ICON or self.__class__.__name__
 
     def _label_editable(self):
         # returns True if the label can be edited in the Tree ctrl
@@ -513,8 +510,6 @@ class Slot(EditBase):
         assert isinstance(pos, int)
         assert not parent.IS_SLOT
         np.PropertyOwner.__init__(self)
-        # initialise instance logger
-        self._logger = logging.getLogger(self.__class__.__name__)
         self.klass = self.classname = "slot"
         self.label = label
 

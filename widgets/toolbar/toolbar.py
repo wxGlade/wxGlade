@@ -740,15 +740,13 @@ class EditTopLevelToolBar(EditToolBar, PreviewMixin):
     PROPERTIES = EditToolBar.PROPERTIES[:]
     np.insert_after(PROPERTIES, "name", "class")
     np.insert_after(PROPERTIES, "tools", "preview")
+    TREE_ICON = "EditMenuBar"
 
     def __init__(self, name, parent, klass):
         EditBase.__init__( self, name, parent, None, klass )
         EditStylesMixin.__init__(self)
         self._init_properties()
         PreviewMixin.__init__(self)  # add a preview button
-
-    def _get_tree_image(self):
-        return "EditMenuBar"
 
 
 def builder(parent, pos):
