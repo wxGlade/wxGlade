@@ -856,11 +856,10 @@ def builder(parent, pos):
         # add to toplevel widget
         toplevel_widget.properties["menubar"].set(True, notify=True)
         return toplevel_widget._menubar
-    name = dialog.get_next_name("menubar")
 
-    base_class = EditTopLevelMenuBar if parent.IS_ROOT else EditMenuBar
-    #with (not parent.IS_ROOT and parent.frozen()) or misc.dummy_contextmanager():
-    editor = base_class(name, parent, klass)
+    # a standalone menubar
+    name = dialog.get_next_name("menubar")
+    editor = EditTopLevelMenuBar(name, parent, klass)
     editor.create()
     editor.widget.Show()
     return editor

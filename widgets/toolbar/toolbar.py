@@ -775,13 +775,12 @@ def builder(parent, pos):
         # add to toplevel widget
         toplevel_widget.properties["toolbar"].set(True, notify=True)
         return toplevel_widget._toolbar
+
+    # a standalone toolbar
     name = dialog.get_next_name("toolbar")
-    base_class = EditTopLevelToolBar if parent.IS_ROOT else EditToolBar
-    #with (not parent.IS_ROOT and parent.frozen()) or misc.dummy_contextmanager():
-    editor = base_class(name, klass, parent)
+    editor = EditTopLevelToolBar(name, parent, klass)
     editor.create()
     editor.widget.Show()
-
     return editor
 
 
