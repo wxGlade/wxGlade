@@ -63,7 +63,8 @@ class CustomWidget(ManagedBase):
     _PROPERTY_HELP   = { 'custom_constructor':'Specify a custom constructor like a factory method' }
 
     def __init__(self, name, parent, pos, instance_class=None):
-        ManagedBase.__init__(self, name, parent, pos, instance_class)
+        ManagedBase.__init__(self, name, parent, pos, instance_class or "wxWindow")
+        self.properties["instance_class"].deactivated = None
 
         # initialise instance properties
         cols      = [('Arguments', np.GridProperty.STRING)]
@@ -87,7 +88,7 @@ class CustomWidget(ManagedBase):
         w, h = self.widget.GetClientSize()
         dc.DrawLine(0, 0, w, h)
         dc.DrawLine(w, 0, 0, h)
-        text = _('Custom Widget: %s') % self.klass
+        text = _('Custom Widget: %s') % self.instance_class
         tw, th = dc.GetTextExtent(text)
         x = (w - tw)//2
         y = (h - th)//2

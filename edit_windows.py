@@ -161,6 +161,12 @@ class EditBase(EventsMixin, edit_base.EditBase):
         """Returns a custom handler function for the property 'prop_name', used when loading this object from a XML file.
         handler must provide three methods: 'start_elem', 'end_elem' and 'char_data'"""
         return EventsMixin.get_property_handler(self, prop_name)
+    def properties_changed(self, modified):
+        edit_base.EditBase.properties_changed(self, modified)
+        # enable "custom_base" property only if "class" is active
+        class_p = self.properties.get("class")
+        if class_p and (not modified or "class" in modified) and class_p.deactivated is not None:
+            self.properties["custom_base"].set_blocked( block=class_p.deactivated or not class_p.value )
 
     # context menu #####################################################################################################
     def popup_menu(self, event, pos=None):
@@ -683,7 +689,6 @@ class ManagedBase(WindowBase):
             clipboard.begin_drag(window, self)
             return
         event.Skip()
-
 
 
 class PreviewMixin(object):

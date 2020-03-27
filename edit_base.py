@@ -69,7 +69,7 @@ class EditBase(np.PropertyOwner):
         # the toplevel parent keeps track of the names ( see next two methods ...contained_name() )
         if self.IS_TOPLEVEL:
             # either derived from edit_windows.TopLevelBase or a toplevel Menu/ToolBar where IS_TOPLEVEL is set True
-            self.names = set()
+            self.names = set([self.name])
             self._NUMBERS = {}  # for finding new names
         elif self.IS_NAMED:
             self.toplevel_parent.track_contained_name( new_name=name )
@@ -92,9 +92,6 @@ class EditBase(np.PropertyOwner):
         #  to remove: new_name=None
         #  to add:    old_name=None
         # EditDialog also uses this to track names for "affirmative" and "escape" properties
-        if config.debugging or config.testing and new_name is not None:
-            #assert self.IS_NAMED
-            assert self.name not in self.names
         if old_name is not None: self.names.remove( old_name )
         if new_name is not None: self.names.add( new_name )
 

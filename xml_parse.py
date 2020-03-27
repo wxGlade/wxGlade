@@ -620,7 +620,7 @@ class XmlWidgetObject(object):
                     if IS_BASE:
                         class_v = None
             elif class_v:
-                if not IS_BASE:
+                if not IS_BASE or CLASS.WX_CLASS=="CustomWidget":
                     instance_class = class_v
                 class_v = None
         else:
