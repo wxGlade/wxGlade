@@ -450,7 +450,7 @@ class ToolsProperty(np.Property):
         self.edit_btn.Bind(wx.EVT_BUTTON, self.edit_tools)
 
     def edit_tools(self, event=None):
-        if hasattr(self, "edit_btn"):
+        if hasattr(self, "edit_btn") and self.edit_btn:
             parent = self.edit_btn.GetTopLevelParent()
         elif self.owner.widget:
             parent = self.owner.widget.GetTopLevelParent()
