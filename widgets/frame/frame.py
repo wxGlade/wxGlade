@@ -69,16 +69,6 @@ class EditFrame(BitmapMixin, TopLevelBase, EditStylesMixin):
         if self.toolbar and self._toolbar.widget:
             self.widget.SetToolBar(self._toolbar.widget)
 
-    def remove(self, *args):
-        # remove menu, status and tool bar
-        if self.menubar:
-            self._menubar = self._menubar.remove(gtk_do_nothing=True)
-        if self.statusbar:
-            self._statusbar = self._statusbar.remove(do_nothing=True)
-        if self.toolbar:
-            self._toolbar = self._toolbar.remove(do_nothing=True)
-        TopLevelBase.remove(self, *args)
-
     def _set_widget_icon(self):
         if self.icon:
             bitmap = self.get_preview_obj_bitmap(self.icon.strip())

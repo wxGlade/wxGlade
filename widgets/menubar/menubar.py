@@ -738,28 +738,21 @@ class EditMenuBar(EditBase):#, PreviewMixin):
             else: self._mb.Append(m, misc.wxstr(menu.root.label))
         self._mb.Refresh()
 
-    def remove(self, *args, **kwds):
-        # entry point from GUI
-        if self.IS_TOPLEVEL:
-            if self.widget:
-                compat.DestroyLater(self.widget)
-                self.widget = None
-        else:
-            self.parent.properties['menubar'].set(False)
-            self.parent._menubar = None
-            if kwds.get('gtk_do_nothing', False) and wx.Platform == '__WXGTK__':
-                # workaround to prevent some segfaults on GTK: unfortunately,
-                # I'm not sure that this works in all cases, and moreover it
-                # could probably leak some memory (but I'm not sure)
-                self.widget = None
-            else:
-                if self.parent.widget:
-                    self.parent.widget.SetMenuBar(None)
-        EditBase.remove(self)
+    def destroy_widget(self, level):
+        # if parent is being deleted, we rely on this being destroyed
+        if level==0 and not self.IS_TOPLEVEL and self.parent.widget:
+            self.parent.widget.SetMenuBar(None)
+        if level==0:
+            EditBase.destroy_widget(self, level)
+
+    def hide_widget(self, *args):
+        if self.widget and self.IS_TOPLEVEL:
+            self.widget.Hide()
+            common.app_tree.Collapse(self.item)
+            common.app_tree.select_item(self.parent)
 
     def popup_menu(self, event, pos=None):
-        if self.parent is not None:
-            return  # do nothing in this case
+        if not self.IS_TOPLEVEL: return
         super(EditMenuBar, self).popup_menu(event, pos)
 
     def _create_popup_menu(self, widget=None):
@@ -781,12 +774,6 @@ class EditMenuBar(EditBase):#, PreviewMixin):
         misc.bind_menu_item_after(widget, item, self.properties["menus"].edit_menus)
 
         return menu
-
-    def hide_widget(self, *args):
-        if self.widget and self.IS_TOPLEVEL:
-            self.widget.Hide()
-            common.app_tree.Collapse(self.item)
-            common.app_tree.select_item(self.parent)
 
     def set_name(self, name):
         EditBase.set_name(self, name)

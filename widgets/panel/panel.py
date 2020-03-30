@@ -268,20 +268,17 @@ class EditTopLevelPanel(PanelBase, TopLevelBase):
             size_p.set(oldval)
             self.set_size()
 
+    def destroy_widget(self, level):
+        # handle containing frame
+        win = self.widget and self.widget.GetParent() or None
+        super(EditTopLevelPanel, self).destroy_widget(level)
+        if win is not None: win.Destroy()
+
     def hide_widget(self, event=None):
         # this is called from the context menu and from the EVT_CLOSE of the Frame
         self.widget.GetParent().Hide()
         common.app_tree.Collapse(self.item)
         self.design.update_label()
-
-    def destroy_widget(self):
-        # handle containing frame
-        win = None
-        if self.widget:
-            win = self.widget.GetParent()
-        super(EditTopLevelPanel, self).destroy_widget()
-        if win is not None:
-            win.Destroy()
 
     def on_size(self, event):
         # handle containing frame

@@ -666,11 +666,11 @@ class ManagedBase(WindowBase):
             if not size_p.is_active():
                 size_p.set( best_size )
 
-    def destroy_widget(self):
-        if self.sel_marker:
+    def destroy_widget(self, level):
+        if self.widget and self.sel_marker:
             self.sel_marker.Destroy()  # destroy the selection markers
             self.sel_marker = None
-        WindowBase.destroy_widget(self)
+        WindowBase.destroy_widget(self, level)
 
     def _remove(self):
         "don't set focus"
@@ -827,6 +827,19 @@ class TopLevelBase(WindowBase, PreviewMixin):
                 self.children[0].fit_parent()
         common.design_windows.append(self.widget)
 
+    def destroy_widget(self, level):
+        if self.preview_widget is not None:
+            self.preview_widget.Unbind(wx.EVT_CHAR_HOOK)
+            compat.DestroyLater(self.preview_widget)
+            self.preview_widget = None
+        if self.widget and self.widget in common.design_windows: common.design_windows.remove(self.widget)
+        WindowBase.destroy_widget(self, level)
+
+    def hide_widget(self, event=None):
+        self.widget.Hide()  # just hide, don't close
+        common.app_tree.Collapse(self.item)
+        self.design.update_label()
+
     def duplicate(self, *args):
         clipboard.copy(self)
         clipboard.paste(common.root)
@@ -949,11 +962,6 @@ class TopLevelBase(WindowBase, PreviewMixin):
         return (True, None)
         #return (False, 'Only sizers can be added here')
 
-    def hide_widget(self, event=None):
-        self.widget.Hide()  # just hide, don't close
-        common.app_tree.Collapse(self.item)
-        self.design.update_label()
-
     def on_size(self, event):
         WindowBase.on_size(self, event)
         if len(self.children)!=1 or self.children[0] is None or not self.children[0].widget: return
@@ -978,20 +986,6 @@ class TopLevelBase(WindowBase, PreviewMixin):
             self._oldname = self.name
 
         WindowBase.properties_changed(self, modified)
-
-    def delete(self, *args):
-        if self.preview_widget is not None:
-            self.preview_widget.Unbind(wx.EVT_CHAR_HOOK)
-            compat.DestroyLater(self.preview_widget)
-            self.preview_widget = None
-        widget = self.widget
-        WindowBase.delete(self)
-        if widget is not None and widget in common.design_windows: common.design_windows.remove(widget)
-
-    def remove(self):
-        if self.IS_TOPLEVEL_WINDOW:
-            self.parent.remove_top_window(self.name)
-        WindowBase.remove(self)
 
     def _find_widget_by_pos(self, w, x,y, level=1):
         "helper for find_widget_by_pos; w is the parent window/widget"

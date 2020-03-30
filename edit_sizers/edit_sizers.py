@@ -591,7 +591,7 @@ class SizerBase(edit_base.EditBase):
             if old_child and old_child.IS_SLOT and old_child.widget:
                 # XXX move Detach to delete; don't remove the leaf; also the above checks can probably be removed and just .delete() being called
                 self.widget.Detach(old_child.widget)
-                old_child.delete()
+                old_child.delete(0)
         if "rows" in self.PROPERTIES and not self._IS_GRIDBAG:
             self._adjust_rows_cols()  # for GridSizer
         self.children[pos] = item
@@ -777,7 +777,7 @@ class SizerBase(edit_base.EditBase):
             if getattr(self, 'sizer', None) is not None:
                 self.sizer.layout(recursive)
 
-    def destroy_widget(self):
+    def destroy_widget(self, level):
         # actually, the sizer widget is not destroyed
         if self._btn:
             # delete SizerHandleButton first, as the sizer widget may be destroyed already when called from change_sizer
@@ -1144,10 +1144,10 @@ class EditStaticBoxSizer(BoxSizerBase):
 
         BoxSizerBase.properties_changed(self, modified)
 
-    def destroy_widget(self):
+    def destroy_widget(self, level):
         if self.widget:
             self.widget.GetStaticBox().Destroy()
-        SizerBase.destroy_widget(self)
+        SizerBase.destroy_widget(self, level)
 
 
 
@@ -2153,7 +2153,7 @@ def change_sizer(old, new):
 
         old.toplevel = False  # could probably be omitted
         del old.children[:]
-        old.delete()
+        old.destroy_widget(0)
 
         for c in szr.children:
             if c: c.parent = szr

@@ -138,11 +138,6 @@ class EditRoot(np.PropertyOwner):
 
         output.extend( common.format_xml_tag( u'application', inner_xml, is_xml=True, **attrs ) )
 
-    def recursive_remove(self):
-        # clear all
-        for n in self.children:
-            n.recursive_remove()
-
     def find_widget_from_path(self, path):
         index = 1  # skip 'app'
         w = self
@@ -159,10 +154,8 @@ class EditRoot(np.PropertyOwner):
 
     def clear(self):
         # delete all children; call common.root.new() or .init() afterwards
-        if self.children:
-            while self.children:
-                c = self.children[-1]
-                if c: c.remove()
+        while self.children:
+            self.children[-1].recursive_remove(0)
 
     def _get_parent_tooltip(self, pos):
         return None
@@ -344,7 +337,6 @@ class Application(EditRoot):
         blocked = self.language!="C++"
         self.properties["source_extension"].set_blocked(blocked)
         self.properties["header_extension"].set_blocked(blocked)
-
 
     # properties: saved and filename
     def _get_saved(self):

@@ -92,25 +92,12 @@ class EditStatusBar(EditBase, EditStylesMixin):
 
         self.widget.SetStatusWidths(widths)
 
-    def remove(self, *args, **kwds):
-        # entry point from GUI
-        if not kwds.get('do_nothing', False):
-            self.parent.properties['statusbar'].set(False)
-            if self.parent.widget:
-                self.parent.widget.SetStatusBar(None)
-            try:
-                self.parent._statusbar = None
-            except KeyError:
-                pass
-            if self.widget:
-                self.widget.Hide()
-            EditBase.remove(self)
-        else:
-            if EditStatusBar._hidden_frame is None:
-                EditStatusBar._hidden_frame = wx.Frame(None, -1, "")
-            if self.widget is not None:
-                self.widget.Reparent(EditStatusBar._hidden_frame)
-            self.widget = None
+    def destroy_widget(self, level):
+        # if parent is being deleted, we rely on this being destroyed
+        if level==0 and not self.IS_TOPLEVEL and self.parent.widget:
+            self.parent.widget.SetStatusBar(None)
+        if level==0:
+            EditBase.destroy_widget(self, level)
 
     def popup_menu(self, *args):
         pass  # to avoid strange segfault :)

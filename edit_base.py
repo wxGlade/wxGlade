@@ -25,7 +25,6 @@ else:
 
 
 class EditBase(np.PropertyOwner):
-    #is_sizer = False
     IS_TOPLEVEL = IS_SLOT = IS_SIZER = IS_WINDOW = IS_ROOT = IS_TOPLEVEL_WINDOW = False
     IS_CLASS = None  # dynamically set during code generation if a class is generated for this item
     # usually this one is fixed, but EditPanel/EditToplevelPanel will overwrite it depending on the "scrollable" property
@@ -153,6 +152,7 @@ class EditBase(np.PropertyOwner):
         return None
 
     def get_all_children(self):
+        # this always returns a copy, as it might be used by recursive_remove
         ret = []
         if self.ATT_CHILDREN:
             for att in self.ATT_CHILDREN or []:
@@ -218,7 +218,7 @@ class EditBase(np.PropertyOwner):
             old_child = None
         self.children[pos] = child
         if old_child:
-            old_child.recursive_remove(overwritten=True)
+            old_child.recursive_remove(0, overwritten=True)
 
     def remove_item(self, child, force_layout=True):
         "Removes child from self and adjust pos of following items"
@@ -241,10 +241,8 @@ class EditBase(np.PropertyOwner):
         Example: ['frame_1', 'sizer_1', 'panel_1', 'sizer_2', 'button_1']
                  if button_1 is the currently selected widget"""
         ret = []
-        oldw = None  # the toplevel, to get the position
         w = self
         while w:
-            if w.IS_TOPLEVEL: oldw = w
             if w.IS_SLOT:
                 ret.append("SLOT %d"%w.pos)
             else:
@@ -297,15 +295,9 @@ class EditBase(np.PropertyOwner):
         if self.WX_CLASS in ("wxStatusBar",): return
         compat.SetToolTip(self.widget, self._get_tooltip_string())
 
-    def delete(self):
-        """Destructor. deallocates the popup menu, the notebook and all the properties.
-        Why we need explicit deallocation? Well, basically because otherwise we get a lot of memory leaks... :)"""
-        # XXX tell property editor
-        self.destroy_widget()
-        if misc.focused_widget is self:
-            misc.focused_widget = None
-
-    def destroy_widget(self):
+    def destroy_widget(self, level):
+        # just destroy the widget; all bookkeeping / data structure update is done in recursive_remove
+        # level is 0 for toplevel or when the user just deletes this one
         if not self.widget or self._dont_destroy: return
         if self.parent.IS_SIZER and self.parent.widget:
             self.parent.widget.Detach(self.widget)  # remove from sizer without destroying
@@ -313,28 +305,46 @@ class EditBase(np.PropertyOwner):
         self.widget = None
 
     # from tree.Tree ###################################################################################################
-    def recursive_remove(self, overwritten=False):
-        # recursively remove from parent, delete widget, remove from Tree (build to be called separately)
+    def recursive_remove(self, level, overwritten=False):
+        # this is not a GUI entry point, see remove() for this!
+
+        # recursively remove children
         if self.children:
             for c in self.get_all_children():
-                c.recursive_remove()
-        try:
-            self.parent.children.remove(self)
-        except:
-            if not overwritten:  # overwritten: overwritten in _free_slot when Slot() was created
-                print(" **** node_remove failed")
-        self.delete()
+                c.recursive_remove(level+1)
+
+        # remove self from parent
+        pos = getattr(self, "pos", None)
+        if isinstance(pos, int) or self.IS_TOPLEVEL:
+            try:
+                self.parent.children.remove(self)
+            except:
+                if not overwritten:  # overwritten: overwritten in _free_slot when Slot() was created
+                    print(" **** node_remove failed")
+        elif isinstance(pos, str):
+            if pos.startswith("_") and self.parent.check_prop_truth(pos[1:]):
+                self.parent.properties[pos[1:]].set(False)
+            setattr(self.parent, pos, None)
+
+        # delete widget
+        self.destroy_widget(level)
+
+        # remove from Tree (rebuild_tree to be called separately)
+        if misc.focused_widget is self: misc.focused_widget = None
         common.app_tree.remove(self)  # remove mutual reference from widget to/from Tree item
+
+        # bookkeeping
         if not self.IS_TOPLEVEL and self.IS_NAMED and self.name:
             self.toplevel_parent.track_contained_name( self.name )
+        if self.IS_TOPLEVEL_WINDOW:
+            self.parent.remove_top_window(self.name)
 
     ####################################################################################################################
     def remove(self, *args):
-        # entry point from GUI
-        common.root.saved = False  # update the status of the app
-        # remove is called from the context menus; for other uses, delete is applicable
-        self._dont_destroy = False  # always destroy when explicitly asked
-        self.recursive_remove()
+        # entry point from GUI or script
+        common.root.saved = False   # update the status of the app
+        self._dont_destroy = False  # always destroy, except when explicitly asked
+        self.recursive_remove(level=0)
         misc.rebuild_tree(self.parent, recursive=False, focus=True)
 
     # XML generation ###################################################################################################
@@ -782,7 +792,7 @@ class Slot(EditBase):
         clipboard.paste(self)
     ####################################################################################################################
 
-    def destroy_widget(self, detach=True):
+    def destroy_widget(self, level, detach=True):
         if self.widget is None: return
         if misc.currently_under_mouse is self.widget:
             misc.currently_under_mouse = None

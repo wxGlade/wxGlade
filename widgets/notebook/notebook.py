@@ -308,9 +308,9 @@ class EditNotebook(ManagedBase, EditStylesMixin):
             raise XmlParsingError( _('Notebook widget "%s" does not have tab "%s"!')%(self.name, name) )
 
     ####################################################################################################################
-    def destroy_widget(self):
+    def destroy_widget(self, level):
         if self.widget: self.widget.DeleteAllPages()
-        ManagedBase.destroy_widget(self)
+        ManagedBase.destroy_widget(self, level)
 
     def get_property_handler(self, name):
         if name == 'tabs':

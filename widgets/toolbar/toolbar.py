@@ -646,28 +646,22 @@ class EditToolBar(EditBase, PreviewMixin, EditStylesMixin, BitmapMixin):
             widget.SetClientSize((w, h+1))
             widget.SetClientSize((w, h))
 
+    def destroy_widget(self, level):
+        # if parent is being deleted, we rely on this being destroyed
+        if level==0 and not self.IS_TOPLEVEL and self.parent.widget:
+            self.parent.widget.SetToolBar(None)
+        if level==0:
+            EditBase.destroy_widget(self, level)
+
+    def hide_widget(self, *args):
+        if self.widget and self.widget is not self._tb:
+            self.widget.Hide()
+            common.app_tree.Collapse(self.item)
+            common.app_tree.select_item(self.parent)
+
     ####################################################################################################################
-
-    def remove(self, *args, **kwds):
-        # entry point from GUI
-        if self.IS_TOPLEVEL:
-            if self.widget:
-                compat.DestroyLater(self.widget)
-                self.widget = None
-        else:
-            self.parent.properties['toolbar'].set(False)
-            self.parent._toolbar = None
-            if kwds.get('do_nothing', False):
-                # this probably leaks memory, but avoids segfaults
-                self.widget = None
-            else:
-                if self.parent.widget:
-                    self.parent.widget.SetToolBar(None)
-        EditBase.remove(self)
-
     def popup_menu(self, event, pos=None):
-        if self.parent is not None:
-            return  # do nothing in this case
+        if not self.IS_TOPLEVEL: return
         super(EditToolBar, self).popup_menu(event, pos)
 
     def _create_popup_menu(self, widget):
@@ -691,12 +685,6 @@ class EditToolBar(EditBase, PreviewMixin, EditStylesMixin, BitmapMixin):
         misc.bind_menu_item_after(widget, item, self.hide_widget)
 
         return menu
-
-    def hide_widget(self, *args):
-        if self.widget and self.widget is not self._tb:
-            self.widget.Hide()
-            common.app_tree.Collapse(self.item)
-            common.app_tree.select_item(self.parent)
 
     def get_property_handler(self, name):
         if name == 'tools':
