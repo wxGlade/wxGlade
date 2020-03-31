@@ -581,17 +581,14 @@ class SizerBase(edit_base.EditBase):
         # called from ManagedBase.__init__ when adding an item to the end from XML parser
         # or interactively when adding an item to an empty sizer slot
         #assert item in self.children
-        if pos is None:
-            pos = len(self.children)
+        if pos is None: pos = len(self.children)
 
         if pos==len(self.children):
             self.children.append(None)
         else:
             old_child = self.children[pos]
-            if old_child and old_child.IS_SLOT and old_child.widget:
-                # XXX move Detach to delete; don't remove the leaf; also the above checks can probably be removed and just .delete() being called
-                self.widget.Detach(old_child.widget)
-                old_child.delete(0)
+            if old_child and old_child.widget:  # old_child is either None (on loading/appending) or a Slot on editing
+                old_child.destroy_widget(0)
         if "rows" in self.PROPERTIES and not self._IS_GRIDBAG:
             self._adjust_rows_cols()  # for GridSizer
         self.children[pos] = item
@@ -603,7 +600,7 @@ class SizerBase(edit_base.EditBase):
             self._add_item(item, pos, size, force_layout=force_layout)
 
     def _add_item(self, item, pos, size=None, force_layout=True):
-        "called from finish_widget_creation() to add to sizer widget"
+        "called from finish_widget_creation() to add widget to sizer widget"
 
         # calculate width, height
         if not size or -1 in size:
@@ -903,11 +900,7 @@ class SizerBase(edit_base.EditBase):
         old_child = self.children[pos]
         slot = SizerSlot(self, pos)
 
-        # replace the node with a SlotNode
-        if self.widget:
-            # required here; otherwise removal of a StaticBox of a StaticBoxSizer will cause a crash
-            self.widget.Detach(old_child.widget)
-        old_child.recursive_remove(overwritten=True)
+        old_child.recursive_remove(level=0, overwritten=True)
 
         if self.widget:
             slot.create()  # create the actual SizerSlot as wx.Window with hatched background
