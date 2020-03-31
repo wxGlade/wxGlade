@@ -149,6 +149,7 @@ class Dialog(wx.Dialog):
 
 def xml_builder(parser, base, name, parent, pos):
     "factory to build EditToolBar objects from a XML file"
+    parent.properties["statusbar"].set(True)
     return EditStatusBar(name, parent)
 
 

@@ -13,11 +13,11 @@ import wx
 
 
 
-# the SizerSlot which has the "mouse focus"; used to restore the mouse cursor if the user cancelled adding a widget
-currently_under_mouse = None
-
 _get_xpm_bitmap_re = re.compile(r'"(?:[^"]|\\")*"')
 _item_bitmaps = {}
+
+
+# handle currently focused widget ######################################################################################
 
 focused_widget = None  # the currently selected widget in GUI mode (for tree and property_panel)
 _next_focused_widget = None  # for delayed setting, to ensure that only the last call has an effect
@@ -422,6 +422,9 @@ def _add():
         if not hasattr(focused_widget, "sizer"): return
         method = getattr(focused_widget.sizer, "add_slot", None)
     if method: method()
+
+
+currently_under_mouse = None  # set when the mouse enters a sizer slot widget; see edit_base.Slot/SizeSlot
 
 def _cancel():
     if not common.adding_widget: return

@@ -267,14 +267,21 @@ class XmlWidgetBuilder(XmlParser):
             obj.obj.on_load()
         else:
             # end of a property or error
-            # case 1: set _curr_prop value
+            prop = self._curr_prop
             data = "".join(self._curr_prop_val)
+            self._curr_prop = None
+            self._curr_prop_val = []
+            if prop in ("menubar", "toolbar", "statusbar"):
+                # case 0: ignore properties: menubar, toolbar, statusbar
+                return
+
             if data:
+                # case 1: set _curr_prop value
                 try:
                     handler = self.top().prop_handlers.top()
                     if not handler or handler.char_data(data):
                         # if char_data returned False, we don't have to call add_property
-                        self.top().add_property(self._curr_prop, data)
+                        self.top().add_property(prop, data)
                 except AttributeError:
                     pass
 
@@ -288,8 +295,6 @@ class XmlWidgetBuilder(XmlParser):
                     obj.prop_handlers.pop()
             except AttributeError:
                 pass
-            self._curr_prop = None
-            self._curr_prop_val = []
 
     def characters(self, data):
         if not data or data.isspace():

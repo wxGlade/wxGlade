@@ -86,9 +86,8 @@ class EditFrame(BitmapMixin, TopLevelBase, EditStylesMixin):
             from menubar import EditMenuBar
             self._menubar = EditMenuBar(self.name + '_menubar', self)
             if self.widget: self._menubar.create()
-        else:
+        elif self._menubar:
             # remove
-            if self._menubar is None: return
             self._menubar = self._menubar.remove()
 
     def _set_status_bar(self):
@@ -97,13 +96,9 @@ class EditFrame(BitmapMixin, TopLevelBase, EditStylesMixin):
             from statusbar import EditStatusBar
             self._statusbar = EditStatusBar(self.name + '_statusbar', self)
             if self.widget: self._statusbar.create()
-        else:
+        elif self._statusbar:
             # remove
-            if self._statusbar is None: return
             self._statusbar = self._statusbar.remove()
-        if self.widget:
-            # this is needed at least on win32
-            wx.PostEvent( self.widget, wx.SizeEvent(self.widget.GetSize(), self.widget.GetId()) )
 
     def _set_tool_bar(self):
         if self.toolbar:
@@ -111,14 +106,14 @@ class EditFrame(BitmapMixin, TopLevelBase, EditStylesMixin):
             from toolbar import EditToolBar
             EditToolBar(self.name + '_toolbar', self)
             if self.widget: self._toolbar.create()
-        else:
+        elif self._toolbar:
             # remove
-            if self._toolbar is None: return
             self._toolbar = self._toolbar.remove()
 
     def properties_changed(self, modified):
         if not modified or "icon" in modified and self.widget: self._set_widget_icon()
 
+        # this is only triggered by the user clicking the checkboxes
         if not modified or "menubar" in modified:   self._set_menu_bar()
         if not modified or "statusbar" in modified: self._set_status_bar()
         if not modified or "toolbar" in modified:   self._set_tool_bar()

@@ -306,6 +306,7 @@ class EditBase(np.PropertyOwner):
 
     # from tree.Tree ###################################################################################################
     def recursive_remove(self, level, overwritten=False):
+        "recursively remove children and then self from parent; delete widget; remove from tree and do bookkeeping"
         # this is not a GUI entry point, see remove() for this!
 
         # recursively remove children
