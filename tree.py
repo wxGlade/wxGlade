@@ -132,8 +132,8 @@ class WidgetTree(wx.TreeCtrl):#, Tree):
         if new_value==widget._get_tree_label(): return
 
         new_name = new_label = new_title = new_tab = new_class = new_stockitem = None
-        
-        if widget.klass != widget.WX_CLASS and widget.klass != 'wxScrolledWindow':
+
+        if widget.check_prop_truth("class"):
             if new_value.count("(")==1 and new_value.count(")")==1:
                 pre, new_class = new_value.split("(")
                 new_class, post = new_class.split(")")
@@ -156,7 +156,7 @@ class WidgetTree(wx.TreeCtrl):#, Tree):
             new_name, dummy = self._split_name_label(new_value)
         elif getattr(widget, "has_title", None):
             new_name, new_title = self._split_name_label(new_value)
-        elif getattr(widget, "parent", None) and widget.parent.klass=="wxNotebook" and "]" in new_value:
+        elif getattr(widget, "parent", None) and widget.parent.WX_CLASS=="wxNotebook" and "]" in new_value:
             # notebook pages: include page title: "[title] name"
             new_tab, new_name = new_value.rsplit("]",1)
             if "[" in new_tab: new_tab = new_tab.split("[",1)[-1]
