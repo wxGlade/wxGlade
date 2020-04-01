@@ -437,9 +437,6 @@ class EditBase(np.PropertyOwner):
     def _get_tree_label(self):
         # get a label for node
         s = self.name
-        if not "class" in self.properties:
-            #assert self.WX_CLASS in ("spacer", "wxMenuBar", "wxToolBar", "wxStatusBar")
-            return s
         if self.WX_CLASS=="CustomWidget":
             s += ' (%s)' % self.instance_class
         elif self.check_prop("class"):
