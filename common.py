@@ -35,6 +35,7 @@ main = None            # main window
 palette = None         # the panel which contains the various buttons to add the different widgets
 property_panel = None  # panel for editing the current widgets properties
 app_tree = None        # widget hierarchy of the application; root is application itself; a tree.WidgetTree instance
+shell = None           # will be created only when selecting from the help menu
 root = None
 
 # these will be set when clicking an item on the palette window:
