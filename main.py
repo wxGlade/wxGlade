@@ -569,6 +569,11 @@ class wxGladeFrame(wx.Frame):
         misc.bind_menu_item(self, i, self.show_releases)
         help_menu.AppendSeparator() # ----------------------------------------------------------------------------------
 
+        if config.debugging:
+            i = append_menu_item(help_menu, -1, 'Shell\tF6')
+            misc.bind_menu_item(self, i, self.create_shell_window)
+            help_menu.AppendSeparator()
+
         item = append_menu_item(help_menu, wx.ID_ABOUT, _('About'), wx.ART_INFORMATION)
         misc.bind_menu_item(self, item, self.show_about_box)
 
@@ -798,6 +803,11 @@ class wxGladeFrame(wx.Frame):
                 frame.Iconize(False)
             else:
                 toplevel.widget.Raise()
+
+    def create_shell_window(self):
+        import shell_frame
+        common.shell = shell_frame.ShellFrame(None)
+        common.shell.Show()
 
     # status bar for message display ###################################################################################
     def create_statusbar(self):
