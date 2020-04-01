@@ -587,7 +587,7 @@ class SizerBase(edit_base.EditBase):
             self.children.append(None)
         else:
             old_child = self.children[pos]
-            if old_child and old_child.widget:  # old_child is either None (on loading/appending) or a Slot on editing
+            if old_child and old_child.IS_SLOT and old_child.widget:  # old_child is either None (on loading/appending) or a Slot on editing
                 old_child.destroy_widget(0)
         if "rows" in self.PROPERTIES and not self._IS_GRIDBAG:
             self._adjust_rows_cols()  # for GridSizer
