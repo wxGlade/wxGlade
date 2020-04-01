@@ -84,15 +84,6 @@ class EditRoot(np.PropertyOwner):
     def get_path(self):
         return [self.name]
 
-    #def has_name(self, widget=None):
-        ## XXX check whether this is still used
-        #if widget is None:
-            #for c in self.children:
-                #if name in c.names:
-                    #return True
-            #return False
-        #return name in widget.toplevel_parent.names
-
     def add_item(self, child, pos=None):
         # XXX pos is always None at the moment
         if pos is None:
