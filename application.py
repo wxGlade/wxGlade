@@ -139,6 +139,7 @@ class EditRoot(np.PropertyOwner):
         output.extend( common.format_xml_tag( u'application', inner_xml, is_xml=True, **attrs ) )
 
     def find_widget_from_path(self, path):
+        path = path.split("/")
         index = 1  # skip 'app'
         w = self
         for index in range(1, len(path)):

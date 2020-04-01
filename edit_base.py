@@ -249,7 +249,7 @@ class EditBase(np.PropertyOwner):
                 ret.append(w.name)
             w = w.parent
         ret.reverse()
-        return ret
+        return "/".join(ret)
 
     # property handling ################################################################################################
     @staticmethod
