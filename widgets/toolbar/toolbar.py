@@ -33,33 +33,7 @@ class ToolsDialog(wx.Dialog):
     def __init__(self, parent, owner, items=None):
         style = wx.DEFAULT_DIALOG_STYLE|wx.RESIZE_BORDER|wx.WANTS_CHARS
         wx.Dialog.__init__(self, parent, -1, _("Toolbar editor"), style=style)
-
-        # menu item fields
-        self.label = wx.TextCtrl(self, wx.ID_ANY, "")
-        self.bitmap1 = wx.TextCtrl(self, wx.ID_ANY, "")
-        self.bitmap2 = wx.TextCtrl(self, wx.ID_ANY, "")
-        self.handler = wx.TextCtrl(self, wx.ID_ANY, "")
-        self.short_help = wx.TextCtrl(self, wx.ID_ANY, "")
-        self.long_help = wx.TextCtrl(self, wx.ID_ANY, "")
-        self.id = wx.TextCtrl(self, wx.ID_ANY, "")
-        self.type = wx.RadioBox(self, wx.ID_ANY, "Type", choices=["Normal", "Checkable", "Radio"], majorDimension=1, style=wx.RA_SPECIFY_COLS)
-        # dialog action buttons; these will be handled, instead of using stock OK/Cancel buttons
-        self.ok     = wx.Button(self, wx.ID_ANY, "OK")
-        self.cancel = wx.Button(self, wx.ID_ANY, "Cancel")
-        # editor action buttons
-        self.move_up = wx.Button(self, wx.ID_ANY, "Up")
-        self.move_down = wx.Button(self, wx.ID_ANY, "Down")
-        self.add = wx.Button(self, wx.ID_ANY, "&Add")
-        self.remove = wx.Button(self, wx.ID_ANY, "&Remove")
-        self.add_sep = wx.Button(self, wx.ID_ANY, "Add Separator")
-
-        self.bitmap1_button = wx.Button(self, wx.ID_ANY, "...")
-        self.bitmap2_button = wx.Button(self, wx.ID_ANY, "...")
-
-        self.items = wx.ListCtrl(self, wx.ID_ANY, style=wx.BORDER_DEFAULT | wx.BORDER_SUNKEN | wx.LC_EDIT_LABELS | wx.LC_REPORT | wx.LC_SINGLE_SEL)
-
-        self.__do_layout()
-        self._set_tooltips()
+        self.create_gui()
 
         self.Bind(wx.EVT_TEXT, self.on_label_edited, self.label)
         self.Bind(wx.EVT_TEXT, self.on_event_handler_edited, self.handler)
@@ -99,22 +73,35 @@ class ToolsDialog(wx.Dialog):
 
         self.selected_index = -1  # index of the selected element in the wx.ListCtrl menu_items
         self._ignore_events = False
+
+        # track focus
         self._last_focus = None
+        for ctrl in (self.label, self.bitmap1, self.bitmap1, self.handler, self.short_help, self.long_help, self.id):
+            ctrl.Bind(wx.EVT_SET_FOCUS, self.on_focus)
+
         if items:
             self.add_items(items)
             self._select_item(0)
+        else:
+            self._enable_fields(False)
+
+    def on_focus(self, event):
+        # track focus
+        self._last_focus = event.GetEventObject()
+        event.Skip()
 
     def on_char(self, event):
-        # keyboard navigation: up/down arrows
+        # keyboard navigation: up/down arrows and also Tab on some buttons
         focus = self.FindFocus()
-        if focus is self.type:
-            event.Skip()
-            return
-        if isinstance(focus, wx.Button):
-            self.label.SetFocus()
-        elif isinstance(focus, wx.TextCtrl):
-            self._last_focus = focus
         k = event.GetKeyCode()
+
+        if k==wx.WXK_TAB:
+            if focus is self.type:
+                self.label.SetFocus()
+            else:
+                event.Skip()
+            return
+
         if k==wx.WXK_RETURN:  # ignore Enter key
             return
         if k==wx.WXK_DOWN:
@@ -136,8 +123,8 @@ class ToolsDialog(wx.Dialog):
         if event.GetKeyCode() != wx.WXK_RETURN:
             event.Skip()
 
-    def __do_layout(self):
-        # begin wxGlade: ToolsDialog.__do_layout
+    def create_gui(self):
+
         sizer_1 = wx.BoxSizer(wx.VERTICAL)
         sizer_2 = wx.BoxSizer(wx.HORIZONTAL)
         sizer_5 = wx.BoxSizer(wx.HORIZONTAL)
@@ -145,36 +132,68 @@ class ToolsDialog(wx.Dialog):
         grid_sizer = wx.FlexGridSizer(7, 2, 0, 0)
         sizer_bitmap1 = wx.BoxSizer(wx.HORIZONTAL)
         sizer_bitmap2 = wx.BoxSizer(wx.HORIZONTAL)
+
+        # tool fields
+        self.label = wx.TextCtrl(self, wx.ID_ANY, "")
         self.label_6 = wx.StaticText(self, wx.ID_ANY, "Label:")
         grid_sizer.Add(self.label_6, 0, wx.ALIGN_CENTER_VERTICAL | wx.LEFT | wx.RIGHT, 4)
         grid_sizer.Add(self.label, 1, wx.EXPAND, 0)
+
         label_11 = wx.StaticText(self, wx.ID_ANY, "Primary Bitmap:")
         grid_sizer.Add(label_11, 0, wx.ALIGN_CENTER_VERTICAL | wx.LEFT | wx.RIGHT, 4)
+        self.bitmap1 = wx.TextCtrl(self, wx.ID_ANY, "")
         sizer_bitmap1.Add(self.bitmap1, 1, 0, 0)
+        self.bitmap1_button = wx.Button(self, wx.ID_ANY, "...")
         sizer_bitmap1.Add(self.bitmap1_button, 0, wx.BOTTOM | wx.LEFT | wx.TOP, 0)
         grid_sizer.Add(sizer_bitmap1, 1, wx.EXPAND, 0)
+
         label_12 = wx.StaticText(self, wx.ID_ANY, "Disabled Bitmap:")
         grid_sizer.Add(label_12, 0, wx.ALIGN_CENTER_VERTICAL | wx.LEFT | wx.RIGHT, 4)
+        self.bitmap2 = wx.TextCtrl(self, wx.ID_ANY, "")
         sizer_bitmap2.Add(self.bitmap2, 1, 0, 0)
+        self.bitmap2_button = wx.Button(self, wx.ID_ANY, "...")
         sizer_bitmap2.Add(self.bitmap2_button, 0, wx.BOTTOM | wx.LEFT | wx.TOP, 0)
         grid_sizer.Add(sizer_bitmap2, 1, wx.EXPAND, 0)
+
         self.label_7 = wx.StaticText(self, wx.ID_ANY, "Event Handler:")
         grid_sizer.Add(self.label_7, 0, wx.ALIGN_CENTER_VERTICAL | wx.LEFT | wx.RIGHT, 4)
+        self.handler = wx.TextCtrl(self, wx.ID_ANY, "")
         grid_sizer.Add(self.handler, 1, wx.EXPAND, 0)
+
         self.label_9 = wx.StaticText(self, wx.ID_ANY, "Short Help:")
         grid_sizer.Add(self.label_9, 0, wx.ALIGN_CENTER_VERTICAL | wx.LEFT | wx.RIGHT, 4)
+        self.short_help = wx.TextCtrl(self, wx.ID_ANY, "")
         grid_sizer.Add(self.short_help, 1, wx.EXPAND, 0)
+
         self.label_9b = wx.StaticText(self, wx.ID_ANY, "Long Help:")
         grid_sizer.Add(self.label_9b, 0, wx.ALIGN_CENTER_VERTICAL | wx.LEFT | wx.RIGHT, 4)
+        self.long_help = wx.TextCtrl(self, wx.ID_ANY, "")
         grid_sizer.Add(self.long_help, 1, wx.EXPAND, 0)
 
         self.label_10 = wx.StaticText(self, wx.ID_ANY, "ID:")
         grid_sizer.Add(self.label_10, 0, wx.ALIGN_CENTER_VERTICAL | wx.LEFT | wx.RIGHT, 4)
+        self.id = wx.TextCtrl(self, wx.ID_ANY, "")
         grid_sizer.Add(self.id, 0, 0, 0)
         grid_sizer.AddGrowableCol(1)
+
         sizer_5.Add(grid_sizer, 2, wx.EXPAND, 0)
+
+        self.type  = wx.RadioBox(self, wx.ID_ANY, "Type", choices=["Normal", "Checkable", "Radio"],
+                                       majorDimension=1, style=wx.RA_SPECIFY_COLS)
         sizer_5.Add(self.type, 0, wx.ALL, 4)
+
         sizer_5.Add((20, 20), 1, 0, 0)
+
+        # editor action buttons
+        self.move_up = wx.Button(self, wx.ID_ANY, "Up")
+        self.move_down = wx.Button(self, wx.ID_ANY, "Down")
+        self.add = wx.Button(self, wx.ID_ANY, "&Add")
+        self.remove = wx.Button(self, wx.ID_ANY, "&Remove")
+        self.add_sep = wx.Button(self, wx.ID_ANY, "Add Separator")
+        # dialog action buttons; these will be handled, instead of using stock OK/Cancel buttons
+        self.ok     = wx.Button(self, wx.ID_ANY, "OK")
+        self.cancel = wx.Button(self, wx.ID_ANY, "Cancel")
+
         sizer_6.Add(self.ok, 0, wx.ALL, 5)
         sizer_6.Add(self.cancel, 0, wx.ALL, 5)
         sizer_5.Add(sizer_6, 0, wx.EXPAND, 0)
@@ -187,10 +206,14 @@ class ToolsDialog(wx.Dialog):
         sizer_2.Add(self.add_sep, 0, wx.ALL, 8)
         sizer_2.Add((20, 20), 2, 0, 0)
         sizer_1.Add(sizer_2, 0, wx.EXPAND, 0)
+
+        self.items = wx.ListCtrl(self, wx.ID_ANY, style=wx.BORDER_DEFAULT | wx.BORDER_SUNKEN | wx.LC_EDIT_LABELS | wx.LC_REPORT | wx.LC_SINGLE_SEL)
         sizer_1.Add(self.items, 1, wx.EXPAND, 0)
+
         self.SetSizer(sizer_1)
         sizer_1.Fit(self)
         self.Layout()
+
         # end wxGlade
     def _set_tooltips(self):
         # set tooltips
@@ -457,6 +480,7 @@ class ToolsProperty(np.Property):
         else:
             parent = None
         dialog = ToolsDialog( parent, self.owner, items=self.value )
+        if not self.value: dialog.add_item(None)
         with misc.disable_stay_on_top(common.adding_window or parent):
             res = dialog.ShowModal()
         if res == wx.ID_OK:

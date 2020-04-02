@@ -21,7 +21,6 @@ class MenuItemDialog(wx.Dialog):
     def __init__(self, parent, owner, items=None):
         style = wx.DEFAULT_DIALOG_STYLE|wx.RESIZE_BORDER|wx.WANTS_CHARS
         wx.Dialog.__init__(self, parent, -1, _("Menu editor"), style=style)
-
         self.create_gui()
 
         self.Bind(wx.EVT_TEXT, self.on_label_edited, self.label)
@@ -70,22 +69,34 @@ class MenuItemDialog(wx.Dialog):
 
         self.selected_index = -1  # index of the selected element in the wx.ListCtrl menu_items
         self._ignore_events = False
+
+        # track focus
         self._last_focus = None
+        for ctrl in (self.label, self.event_handler, self.name, self.help_str, self.id):
+            ctrl.Bind(wx.EVT_SET_FOCUS, self.on_focus)
+
         if items:
             self.add_items(items)
             self._select_item(0)
+        else:
+            self._enable_fields(False)
+
+    def on_focus(self, event):
+        # track focus
+        self._last_focus = event.GetEventObject()
+        event.Skip()
 
     def on_char(self, event):
         # keyboard navigation: up/down arrows
         focus = self.FindFocus()
-        if focus is self.check_radio:
-            event.Skip()
-            return
-        if isinstance(focus, wx.Button):
-            self.label.SetFocus()
-        elif isinstance(focus, wx.TextCtrl):
-            self._last_focus = focus
         k = event.GetKeyCode()
+        if k==wx.WXK_TAB:
+            if focus is self.check_radio:
+                self.label.SetFocus()
+            else:
+                event.Skip()
+            return
+
         if k==wx.WXK_RETURN:  # ignore Enter key
             return
         if k==wx.WXK_DOWN:
@@ -114,7 +125,6 @@ class MenuItemDialog(wx.Dialog):
             event.Skip()
 
     def create_gui(self):
-
         self.SetTitle("Menu Editor")
 
         sizer_1 = wx.BoxSizer(wx.VERTICAL)
@@ -570,7 +580,6 @@ class MenuItemDialog(wx.Dialog):
         self.EndModal(wx.ID_CANCEL)
     def on_OK(self, event):
         self.EndModal(wx.ID_OK)
-
 
 
 class MenuProperty(np.Property):
