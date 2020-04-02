@@ -29,31 +29,7 @@ class MenuItemDialog(wx.Dialog):
         style = wx.DEFAULT_DIALOG_STYLE|wx.RESIZE_BORDER|wx.WANTS_CHARS
         wx.Dialog.__init__(self, parent, -1, _("Menu editor"), style=style)
 
-        # menu item fields
-        self.label         = wx.TextCtrl(self, wx.ID_ANY, "")
-        self.event_handler = wx.TextCtrl(self, wx.ID_ANY, "")
-        self.name          = wx.TextCtrl(self, wx.ID_ANY, "")
-        self.help_str      = wx.TextCtrl(self, wx.ID_ANY, "")
-        self.id            = wx.TextCtrl(self, wx.ID_ANY, "")
-        self.type          = wx.RadioBox(self, wx.ID_ANY, "Type", choices=["Normal", "Checkable", "Radio"],
-                                         majorDimension=1, style=wx.RA_SPECIFY_COLS)
-        self.type.SetSelection(0)
-        # dialog action buttons; these will be handled, instead of using stock OK/Cancel buttons
-        self.ok     = wx.Button(self, wx.ID_ANY, "OK")
-        self.cancel = wx.Button(self, wx.ID_ANY, "Cancel")
-        # editor action buttons
-        self.move_left  = wx.Button(self, wx.ID_ANY, "&<")
-        self.move_right = wx.Button(self, wx.ID_ANY, "&>")
-        self.move_up    = wx.Button(self, wx.ID_ANY, "&Up")
-        self.move_down  = wx.Button(self, wx.ID_ANY, "&Down")
-        self.add        = wx.Button(self, wx.ID_ANY, "&Add")
-        self.remove     = wx.Button(self, wx.ID_ANY, "&Remove")
-        self.add_sep    = wx.Button(self, wx.ID_ANY, "Add &Separator")
-        self.items = wx.ListCtrl(self, wx.ID_ANY, style=wx.BORDER_DEFAULT | wx.BORDER_SUNKEN | wx.LC_EDIT_LABELS |
-                                                         wx.LC_REPORT | wx.LC_SINGLE_SEL | wx.NO_FULL_REPAINT_ON_RESIZE)
-        self.SetTitle("Menu Editor")
-        self.__do_layout()
-        self._set_tooltips()
+        self.create_gui()
 
         self.Bind(wx.EVT_TEXT, self.on_label_edited, self.label)
         self.Bind(wx.EVT_TEXT, self.on_event_handler_edited, self.event_handler)
@@ -134,31 +110,66 @@ class MenuItemDialog(wx.Dialog):
         if event.GetKeyCode() != wx.WXK_RETURN:
             event.Skip()
 
-    def __do_layout(self):
+    def create_gui(self):
+
+        self.SetTitle("Menu Editor")
+
         sizer_1 = wx.BoxSizer(wx.VERTICAL)
         sizer_2 = wx.BoxSizer(wx.HORIZONTAL)
         sizer_5 = wx.BoxSizer(wx.HORIZONTAL)
         sizer_6 = wx.BoxSizer(wx.VERTICAL)
         grid_sizer_2 = wx.FlexGridSizer(5, 2, 0, 0)
-        self.label_6 = wx.StaticText(self, wx.ID_ANY, "Label:")
-        grid_sizer_2.Add(self.label_6, 0, wx.ALIGN_CENTER_VERTICAL | wx.LEFT | wx.RIGHT, 4)
+
+        # menu item fields
+        label_6 = wx.StaticText(self, wx.ID_ANY, "Label:")
+        grid_sizer_2.Add(label_6, 0, wx.ALIGN_CENTER_VERTICAL | wx.LEFT | wx.RIGHT, 4)
+        self.label = wx.TextCtrl(self, wx.ID_ANY, "")
         grid_sizer_2.Add(self.label, 1, wx.EXPAND, 0)
-        self.label_7 = wx.StaticText(self, wx.ID_ANY, "Event Handler:")
-        grid_sizer_2.Add(self.label_7, 0, wx.ALIGN_CENTER_VERTICAL | wx.LEFT | wx.RIGHT, 4)
+        
+        label_7 = wx.StaticText(self, wx.ID_ANY, "Event Handler:")
+        grid_sizer_2.Add(label_7, 0, wx.ALIGN_CENTER_VERTICAL | wx.LEFT | wx.RIGHT, 4)
+        self.event_handler = wx.TextCtrl(self, wx.ID_ANY, "")
         grid_sizer_2.Add(self.event_handler, 1, wx.EXPAND, 0)
-        self.label_8 = wx.StaticText(self, wx.ID_ANY, "(Attribute) Name:")
-        grid_sizer_2.Add(self.label_8, 0, wx.ALIGN_CENTER_VERTICAL | wx.LEFT | wx.RIGHT, 4)
+
+        label_8 = wx.StaticText(self, wx.ID_ANY, "(Attribute) Name:")
+        grid_sizer_2.Add(label_8, 0, wx.ALIGN_CENTER_VERTICAL | wx.LEFT | wx.RIGHT, 4)
+        self.name = wx.TextCtrl(self, wx.ID_ANY, "")
         grid_sizer_2.Add(self.name, 1, wx.EXPAND, 0)
-        self.label_9 = wx.StaticText(self, wx.ID_ANY, "Help String:")
-        grid_sizer_2.Add(self.label_9, 0, wx.ALIGN_CENTER_VERTICAL | wx.LEFT | wx.RIGHT, 4)
+
+        label_9 = wx.StaticText(self, wx.ID_ANY, "Help String:")
+        grid_sizer_2.Add(label_9, 0, wx.ALIGN_CENTER_VERTICAL | wx.LEFT | wx.RIGHT, 4)
+        self.help_str = wx.TextCtrl(self, wx.ID_ANY, "")
         grid_sizer_2.Add(self.help_str, 1, wx.EXPAND, 0)
-        self.label_10 = wx.StaticText(self, wx.ID_ANY, "ID:")
-        grid_sizer_2.Add(self.label_10, 0, wx.ALIGN_CENTER_VERTICAL | wx.LEFT | wx.RIGHT, 4)
+
+        label_10 = wx.StaticText(self, wx.ID_ANY, "ID:")
+        grid_sizer_2.Add(label_10, 0, wx.ALIGN_CENTER_VERTICAL | wx.LEFT | wx.RIGHT, 4)
+        self.id = wx.TextCtrl(self, wx.ID_ANY, "")
         grid_sizer_2.Add(self.id, 0, 0, 0)
+
         grid_sizer_2.AddGrowableCol(1)
         sizer_5.Add(grid_sizer_2, 2, wx.EXPAND, 0)
+
+        # radio box for type
+        self.type = wx.RadioBox(self, wx.ID_ANY, "Type", choices=["Normal", "Checkable", "Radio"],
+                                       majorDimension=1, style=wx.RA_SPECIFY_COLS)
+        self.type.SetSelection(0)
         sizer_5.Add(self.type, 0, wx.ALL | wx.EXPAND, 4)
+
         sizer_5.Add((20, 20), 1, wx.ALIGN_CENTER_VERTICAL | wx.EXPAND, 0)
+
+        # editor action buttons
+        self.move_left  = wx.Button(self, wx.ID_ANY, "&<")
+        self.move_right = wx.Button(self, wx.ID_ANY, "&>")
+        self.move_up    = wx.Button(self, wx.ID_ANY, "&Up")
+        self.move_down  = wx.Button(self, wx.ID_ANY, "&Down")
+        self.add     = wx.Button(self, wx.ID_ANY, "&Add")
+        self.remove  = wx.Button(self, wx.ID_ANY, "&Remove")
+        self.add_sep = wx.Button(self, wx.ID_ANY, "Add &Separator")
+
+        # dialog action buttons; these will be handled, instead of using stock OK/Cancel buttons
+        self.ok     = wx.Button(self, wx.ID_ANY, "OK")
+        self.cancel = wx.Button(self, wx.ID_ANY, "Cancel")
+
         sizer_6.Add(self.ok, 0, wx.ALL, 5)
         sizer_6.Add(self.cancel, 0, wx.ALL, 5)
         sizer_5.Add(sizer_6, 0, wx.EXPAND, 0)
@@ -173,7 +184,11 @@ class MenuItemDialog(wx.Dialog):
         sizer_2.Add(self.add_sep, 0, wx.ALL, 8)
         sizer_2.Add((20, 20), 2, wx.ALIGN_CENTER_VERTICAL, 0)
         sizer_1.Add(sizer_2, 0, wx.EXPAND, 0)
+
+        self.items = wx.ListCtrl(self, wx.ID_ANY, style=wx.BORDER_DEFAULT | wx.BORDER_SUNKEN | wx.LC_EDIT_LABELS |
+                                                         wx.LC_REPORT | wx.LC_SINGLE_SEL | wx.NO_FULL_REPAINT_ON_RESIZE)
         sizer_1.Add(self.items, 1, wx.EXPAND, 0)
+
         self.SetSizer(sizer_1)
         sizer_1.Fit(self)
         sizer_1.SetSizeHints(self)
