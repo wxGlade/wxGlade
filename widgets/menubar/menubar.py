@@ -98,6 +98,14 @@ class MenuItemDialog(wx.Dialog):
             event.Skip()
             return
 
+        if event.AltDown():
+            if k==wx.WXK_RETURN or k==ord("O"):
+                self.EndModal(wx.ID_OK)
+                return
+            if k==ord("C"):
+                self.EndModal(wx.ID_CANCEL)
+                return
+
         if k==wx.WXK_RETURN:  # ignore Enter key
             return
         if k==wx.WXK_DOWN:
@@ -301,10 +309,10 @@ class MenuItemDialog(wx.Dialog):
                     s.SetSelection( int(value) )
             self.label.SetValue(self.label.GetValue().lstrip())
             self._enable_fields(True)
-            # set focus to text field again
-            focus = self.FindFocus()
-            if not isinstance(focus, wx.TextCtrl) and isinstance(self._last_focus, wx.TextCtrl):
-                self._last_focus.SetFocus()
+            ## set focus to text field again
+            #focus = self.FindFocus()
+            #if not isinstance(focus, wx.TextCtrl) and isinstance(self._last_focus, wx.TextCtrl):
+                #self._last_focus.SetFocus()
         else:
             self._enable_fields(False, clear=True)
         self._enable_buttons()
