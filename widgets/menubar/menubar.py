@@ -17,13 +17,14 @@ from edit_windows import EditBase, PreviewMixin
 
 
 class MenuItemDialog(wx.Dialog):
-    columns = ["label", "event_handler", "name", "type", "help_str", "id"]
-    column_widths = [180, 180, 120, 35, 250, 50]
-    headers = ["Label", "Event Handler", "Name", "Type", "Help String", "Id"]
+    columns = ["level", "label", "event_handler", "name", "type", "help_str", "id"]
+    column_widths = [30, 180, 180, 120, 35, 250, 50]
+    headers = ["Level", "Label", "Event Handler", "Name", "Type", "Help String", "Id"]
     coltypes = {"type":int}
-    default_item = ("item","","",0,"","")
-    separator_item = ("---","---","---","---","---","---")
-    control_names = columns
+    # these will be copied:
+    default_item = (None,"item","","",0,"","")
+    separator_item = (None,"---","---","---","---","---","---")
+    control_names = columns[1:]
 
     def __init__(self, parent, owner, items=None):
         style = wx.DEFAULT_DIALOG_STYLE|wx.RESIZE_BORDER|wx.WANTS_CHARS
@@ -243,29 +244,35 @@ class MenuItemDialog(wx.Dialog):
         if clear: self._ignore_events = restore
 
     def _get_item_text(self, index, col):
+        if isinstance(col, str): col = self.columns.index(col)
         return self.items.GetItem(index, col).GetText()
 
     def _get_all_texts(self, index):
         return [self._get_item_text(index, j) for j in range(len(self.columns))]
 
     def _set_item_string(self, index, col, s):
+        if not isinstance(s, compat.unicode): s = misc.wxstr(s)
+        if isinstance(col, str): col = self.columns.index(col)
         compat.ListCtrl_SetStringItem(self.items, index, col, s)
     
     def _insert_item_string(self, index, s):
+        if not isinstance(s, compat.unicode): s = misc.wxstr(s)
         return compat.ListCtrl_InsertStringItem(self.items, index, s)
 
     def _add_new_item(self, unindented_item):
         # helper for the next two methods
         index = self.selected_index + 1
-        indent = ""
+        item_level = 0
         if not self.items.GetItemCount():
             self._enable_fields()
         if index < 0:
             index = self.items.GetItemCount()
         elif index > 0:
-            indent = "    " * self.item_level(index-1)
+            item_level = self.item_level(index-1)
+        indent = "    " * item_level
         item = list(unindented_item)
-        item[0] = indent+item[0]
+        item[0] = str(item_level)
+        item[1] = indent+item[1]
         self._insert_item(index, item)
         self._select_item(index, force=True)
 
@@ -295,10 +302,11 @@ class MenuItemDialog(wx.Dialog):
         self._ignore_events = True
         self.items.Select(index)
 
-        if self._get_item_text(index, 2) != '---':
+        if self._get_item_text(index, "name") != '---':
             # skip if the selected item is a separator
             for i,colname in enumerate(self.columns):
-                s = getattr(self, colname)
+                s = getattr(self, colname, None)
+                if not s: continue
                 coltype = self.coltypes.get(colname,None)
                 value = self._get_item_text(index, i)
                 if coltype is None:
@@ -337,7 +345,7 @@ class MenuItemDialog(wx.Dialog):
     def on_label_edited(self, event):
         if not self._ignore_events:
             value = "    " * self.item_level(self.selected_index) + self.label.GetValue().lstrip()
-            self._set_item_string(self.selected_index, 0, value)
+            self._set_item_string(self.selected_index, self.columns.index("label"), value)
         event.Skip()
 
     def on_event_handler_edited(self, event):
@@ -363,7 +371,7 @@ class MenuItemDialog(wx.Dialog):
             # check for double names
             for i in range(self.items.GetItemCount()):
                 if i==self.selected_index: continue
-                if value == self._get_item_text(i, 2):
+                if value == self._get_item_text(i, "name"):
                     valid = False
                     self.name.SetBackgroundColour( wx.Colour(255, 255, 0, 255) )  # YELLOW
                     break
@@ -387,8 +395,7 @@ class MenuItemDialog(wx.Dialog):
 
     def item_level(self, index, label=None):
         "returns the indentation level of the menu item at the given index"
-        label = self._get_item_text(index, 0)
-        return (len(label) - len(label.lstrip())) // 4
+        return int(self._get_item_text(index, 0))
 
     def remove_item(self, event):
         "Event handler called when the Remove button is clicked"
@@ -410,9 +417,8 @@ class MenuItemDialog(wx.Dialog):
 
     def _get_item(self, index):
         ret = []
-        for c,colname in enumerate(self.columns):
-            col = self.columns.index(colname)
-            value = self._get_item_text(index, col)
+        for colname in self.columns:
+            value = self._get_item_text(index, colname)
             if colname in self.coltypes:
                 value = self.coltypes[colname](value)
             ret.append(value)
@@ -421,19 +427,19 @@ class MenuItemDialog(wx.Dialog):
     def add_items(self, menus):
         """adds the content of 'menus' to self.items. menus is a sequence of
         trees which describes the structure of the menus"""
-        indent = " " * 4
-        index = [0]
+        indent = "    "
 
         def add(node, level):
-            i = index[0]
-            label = misc.wxstr(indent * level + node.label.lstrip().replace("\t","\\t"))
-            self._insert_item_string(i, label)
-            self._set_item_string(i, 1, misc.wxstr(node.handler))
-            self._set_item_string(i, 2, misc.wxstr(node.name))
-            self._set_item_string(i, 4, misc.wxstr(node.help_str))
-            self._set_item_string(i, 5, misc.wxstr(node.id))
+            i = self.items.GetItemCount()
+            self._insert_item_string(i, level)
+            label = indent * level + node.label.lstrip().replace("\t","\\t")
+            self._set_item_string(i, "label", label)
+            self._set_item_string(i, "event_handler", node.handler)
+            self._set_item_string(i, "name", node.name)
+            self._set_item_string(i, "help_str", node.help_str)
+            self._set_item_string(i, "id", node.id)
             if node.label==node.name==node.id=='---':
-                self._set_item_string(i, 3, '')
+                self._set_item_string(i, "type", '')
             else:
                 item_type = 0
                 try:
@@ -443,8 +449,7 @@ class MenuItemDialog(wx.Dialog):
                         item_type = 2
                 except ValueError:
                     pass
-                self._set_item_string(i, 3, misc.wxstr(item_type))
-            index[0] += 1
+                self._set_item_string(i, "type", misc.wxstr(item_type))
             for item in node.children:
                 add(item, level+1)
 
@@ -459,13 +464,13 @@ class MenuItemDialog(wx.Dialog):
         trees = []
 
         def add(node, index):
-            label         = self._get_item_text(index, 0).lstrip().replace("\\t", "\t")
-            id            = self._get_item_text(index, 5)
-            name          = self._get_item_text(index, 2)
-            help_str      = self._get_item_text(index, 4)
-            event_handler = self._get_item_text(index, 1)
+            label         = self._get_item_text(index, "label").lstrip().replace("\\t", "\t")
+            id            = self._get_item_text(index, "id")
+            name          = self._get_item_text(index, "name")
+            help_str      = self._get_item_text(index, "help_str")
+            event_handler = self._get_item_text(index, "event_handler")
             try:
-                item_type = int(self._get_item_text(index, 3))
+                item_type = int(self._get_item_text(index, "type"))
             except ValueError:
                 item_type = 0
             checkable = item_type == 1 and misc.wxstr("1") or misc.wxstr("")
@@ -477,11 +482,11 @@ class MenuItemDialog(wx.Dialog):
         level = 0
         curr_item = None
         for index in range(self.items.GetItemCount()):
-            label = self._get_item_text(index, 0).replace("\\t", "\t")
-            lvl = self.item_level(index)  # get the indentation level
+            label = self._get_item_text(index, "label").replace("\\t", "\t")
+            lvl = self.item_level(index)
             if not lvl:
-                t = MenuTree( self._get_item_text(index, 2), label,
-                              id=self._get_item_text(index, 5), handler=self._get_item_text(index, 1) )
+                t = MenuTree( self._get_item_text(index, "name"), label,
+                              id=self._get_item_text(index, "id"), handler=self._get_item_text(index, "event_handler") )
                 curr_item = t.root
                 level = 1
                 trees.append(t)
@@ -498,14 +503,16 @@ class MenuItemDialog(wx.Dialog):
         return trees
 
     def _move_item_left(self, index):
-        if index > 0:
-            if ( index+1 < self.items.GetItemCount() and (self.item_level(index) < self.item_level(index+1)) ):
-                return
-            label = self._get_item_text(index, 0)
-            if label[:4] == "    ":
-                self.items.SetStringItem(index, 0, label[4:])
-                self.items.SetItemState(index, wx.LIST_STATE_SELECTED, wx.LIST_STATE_SELECTED)
-            self._enable_buttons()
+        if index < 0: return
+        level = self.item_level(index)
+        if level==0 or ( index+1 < self.items.GetItemCount() and (level < self.item_level(index+1)) ):
+            return
+        level -= 1
+        label = self._get_item_text(index, "label")
+        self._set_item_string(index, "label", label[4:])
+        self._set_item_string(index, "level", level)
+        self.items.SetItemState(index, wx.LIST_STATE_SELECTED, wx.LIST_STATE_SELECTED)
+        self._enable_buttons()
 
     def move_item_left(self, event):
         """moves the selected menu item one level up in the hierarchy, i.e.
@@ -514,11 +521,15 @@ class MenuItemDialog(wx.Dialog):
         self._move_item_left(self.selected_index)
 
     def _move_item_right(self, index):
-        if index > 0 and (self.item_level(index) <= self.item_level(index-1)):
-            label = self._get_item_text(index, 0)
-            self.items.SetStringItem(index, 0, misc.wxstr(" "*4) + label)
-            self.items.SetItemState(index, wx.LIST_STATE_SELECTED, wx.LIST_STATE_SELECTED)
-            self._enable_buttons()
+        if index <= 0: return
+        level = self.item_level(index)
+        if level > self.item_level(index-1): return
+        level += 1
+        label = self._get_item_text(index, "label")
+        self._set_item_string(index, "label", misc.wxstr(" "*4) + label)
+        self._set_item_string(index, "level", level)
+        self.items.SetItemState(index, wx.LIST_STATE_SELECTED, wx.LIST_STATE_SELECTED)
+        self._enable_buttons()
 
     def move_item_right(self, event):
         """moves the selected menu item one level down in the hierarchy, i.e.
@@ -534,7 +545,6 @@ class MenuItemDialog(wx.Dialog):
     def _do_move_item(self, event, index, is_down):
         """internal function used by move_item_up and move_item_down.
         Returns the new index of the moved item, or None if no change occurred"""
-        #index = self.selected_index
         if index <= 0: return None
 
         level = self.item_level(index)
@@ -555,13 +565,14 @@ class MenuItemDialog(wx.Dialog):
         for j in range(len(items_to_move)-1, -1, -1):
             self.items.DeleteItem(index+j)
         items_to_move.reverse()
-        for label, id, name, help_str, check_radio, event_handler in items_to_move:
-            i = self._insert_item_string(i, label)
-            self._set_item_string(i, 1, id)
-            self._set_item_string(i, 2, name)
-            self._set_item_string(i, 3, help_str)
-            self._set_item_string(i, 4, check_radio)
-            self._set_item_string(i, 5, event_handler)
+        for level, label, event_handler, name, type_, help_str, id in items_to_move:
+            i = self._insert_item_string(i, level)
+            self._set_item_string(i, "label", label)
+            self._set_item_string(i, "name", name)
+            self._set_item_string(i, "help_str", help_str)
+            self._set_item_string(i, "type", type_)
+            self._set_item_string(i, "event_handler", event_handler)
+            self._set_item_string(i, "id", id)
         ret_idx = i
         if is_down: ret_idx += len(items_to_move)
         self._select_item(ret_idx, True)
