@@ -743,6 +743,10 @@ class wxGladeFrame(wx.Frame):
         if toplevel is not None:
             toplevel.preview(refresh=True)
 
+    def show_palette(self):
+        if self.IsIconized(): self.Iconize(False)
+        self.palette.SetFocus()
+
     def show_tree(self):
         if self.IsIconized(): self.Iconize(False)
         common.app_tree.SetFocus()
