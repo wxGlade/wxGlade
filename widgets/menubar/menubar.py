@@ -24,43 +24,15 @@ class MenuItemDialog(wx.Dialog):
     # these will be copied:
     default_item = (None,"item","","",0,"","")
     separator_item = (None,"---","---","---","---","---","---")
-    control_names = columns[1:]
 
     def __init__(self, parent, owner, items=None):
         style = wx.DEFAULT_DIALOG_STYLE|wx.RESIZE_BORDER|wx.WANTS_CHARS
         wx.Dialog.__init__(self, parent, -1, _("Menu editor"), style=style)
+
         self.create_gui()
-
-        self.Bind(wx.EVT_TEXT, self.on_label_edited, self.label)
-        self.Bind(wx.EVT_TEXT, self.on_event_handler_edited, self.event_handler)
-        self.Bind(wx.EVT_TEXT, self.on_name_edited, self.name)
-        self.Bind(wx.EVT_TEXT, self.on_help_str_edited, self.help_str)
-        self.Bind(wx.EVT_TEXT, self.on_id_edited, self.id)
-        self.Bind(wx.EVT_RADIOBOX, self.on_type_edited, self.type)
-
-        self.Bind(wx.EVT_BUTTON, self.move_item_left, self.move_left)
-        self.Bind(wx.EVT_BUTTON, self.move_item_right, self.move_right)
-        self.Bind(wx.EVT_BUTTON, self.move_item_up, self.move_up)
-        self.Bind(wx.EVT_BUTTON, self.move_item_down, self.move_down)
-        self.Bind(wx.EVT_BUTTON, self.add_item, self.add)
-        self.Bind(wx.EVT_BUTTON, self.remove_item, self.remove)
-        self.Bind(wx.EVT_BUTTON, self.add_separator, self.add_sep)
-        self.Bind(wx.EVT_BUTTON, self.on_cancel, self.cancel)
-        self.Bind(wx.EVT_BUTTON, self.on_OK, self.ok)
-        self.Bind(wx.EVT_LIST_ITEM_SELECTED, self.show_item, self.items)
-
-        self.Bind(wx.EVT_CHAR_HOOK, self.on_char)
-        self.remove.Bind(wx.EVT_CHAR_HOOK, self.on_button_char)  # to ignore the Enter key while the focus is on Remove
-
+        self.bind_event_handlers()
+        self._set_tooltips()
         self.owner = owner
-
-        self.items.Bind(wx.EVT_MOUSEWHEEL, lambda e: e.Skip())  # workaround to make the scroll wheel work...
-
-        for c,header in enumerate(self.headers):
-            self.items.InsertColumn(c, _(header))
-            self.items.SetColumnWidth(c, self.column_widths[c])
-
-        self.SetSize( (900, 600) )
 
         import re
         self.handler_re = self.name_re = re.compile(r'^[a-zA-Z_]+[\w-]*(\[\w*\])*$')
@@ -68,21 +40,11 @@ class MenuItemDialog(wx.Dialog):
         self.selected_index = -1  # index of the selected element in the wx.ListCtrl menu_items
         self._ignore_events = False
 
-        # track focus
-        self._last_focus = None
-        for ctrl in (self.label, self.event_handler, self.name, self.help_str, self.id):
-            ctrl.Bind(wx.EVT_SET_FOCUS, self.on_focus)
-
         if items:
             self.add_items(items)
             self._select_item(0)
         else:
             self._enable_fields(False)
-
-    def on_focus(self, event):
-        # track focus
-        self._last_focus = event.GetEventObject()
-        event.Skip()
 
     def on_char(self, event):
         # keyboard navigation: up/down arrows
@@ -106,6 +68,10 @@ class MenuItemDialog(wx.Dialog):
             if k==ord("C"):
                 self.EndModal(wx.ID_CANCEL)
                 return
+
+        if event.ControlDown() and k==wx.WXK_RETURN:
+            self.EndModal(wx.ID_OK)
+            return
 
         if k==wx.WXK_RETURN:  # ignore Enter key
             return
@@ -144,28 +110,28 @@ class MenuItemDialog(wx.Dialog):
         grid_sizer_2 = wx.FlexGridSizer(5, 2, 0, 0)
 
         # menu item fields
-        label_6 = wx.StaticText(self, wx.ID_ANY, "Label:")
-        grid_sizer_2.Add(label_6, 0, wx.ALIGN_CENTER_VERTICAL | wx.LEFT | wx.RIGHT, 4)
+        self.label_6 = wx.StaticText(self, wx.ID_ANY, "Label:")
+        grid_sizer_2.Add(self.label_6, 0, wx.ALIGN_CENTER_VERTICAL | wx.LEFT | wx.RIGHT, 4)
         self.label = wx.TextCtrl(self, wx.ID_ANY, "")
         grid_sizer_2.Add(self.label, 1, wx.EXPAND, 0)
         
-        label_7 = wx.StaticText(self, wx.ID_ANY, "Event Handler:")
-        grid_sizer_2.Add(label_7, 0, wx.ALIGN_CENTER_VERTICAL | wx.LEFT | wx.RIGHT, 4)
+        self.label_7 = wx.StaticText(self, wx.ID_ANY, "Event Handler:")
+        grid_sizer_2.Add(self.label_7, 0, wx.ALIGN_CENTER_VERTICAL | wx.LEFT | wx.RIGHT, 4)
         self.event_handler = wx.TextCtrl(self, wx.ID_ANY, "")
         grid_sizer_2.Add(self.event_handler, 1, wx.EXPAND, 0)
 
-        label_8 = wx.StaticText(self, wx.ID_ANY, "(Attribute) Name:")
-        grid_sizer_2.Add(label_8, 0, wx.ALIGN_CENTER_VERTICAL | wx.LEFT | wx.RIGHT, 4)
+        self.label_8 = wx.StaticText(self, wx.ID_ANY, "(Attribute) Name:")
+        grid_sizer_2.Add(self.label_8, 0, wx.ALIGN_CENTER_VERTICAL | wx.LEFT | wx.RIGHT, 4)
         self.name = wx.TextCtrl(self, wx.ID_ANY, "")
         grid_sizer_2.Add(self.name, 1, wx.EXPAND, 0)
 
-        label_9 = wx.StaticText(self, wx.ID_ANY, "Help String:")
-        grid_sizer_2.Add(label_9, 0, wx.ALIGN_CENTER_VERTICAL | wx.LEFT | wx.RIGHT, 4)
+        self.label_9 = wx.StaticText(self, wx.ID_ANY, "Help String:")
+        grid_sizer_2.Add(self.label_9, 0, wx.ALIGN_CENTER_VERTICAL | wx.LEFT | wx.RIGHT, 4)
         self.help_str = wx.TextCtrl(self, wx.ID_ANY, "")
         grid_sizer_2.Add(self.help_str, 1, wx.EXPAND, 0)
 
-        label_10 = wx.StaticText(self, wx.ID_ANY, "ID:")
-        grid_sizer_2.Add(label_10, 0, wx.ALIGN_CENTER_VERTICAL | wx.LEFT | wx.RIGHT, 4)
+        self.label_10 = wx.StaticText(self, wx.ID_ANY, "ID:")
+        grid_sizer_2.Add(self.label_10, 0, wx.ALIGN_CENTER_VERTICAL | wx.LEFT | wx.RIGHT, 4)
         self.id = wx.TextCtrl(self, wx.ID_ANY, "")
         grid_sizer_2.Add(self.id, 0, 0, 0)
 
@@ -217,6 +183,36 @@ class MenuItemDialog(wx.Dialog):
         sizer_1.SetSizeHints(self)
         self.Layout()
 
+        self.SetSize( (900, 600) )
+
+    def bind_event_handlers(self):
+        self.Bind(wx.EVT_TEXT, self.on_label_edited, self.label)
+        self.Bind(wx.EVT_TEXT, self.on_event_handler_edited, self.event_handler)
+        self.Bind(wx.EVT_TEXT, self.on_name_edited, self.name)
+        self.Bind(wx.EVT_TEXT, self.on_help_str_edited, self.help_str)
+        self.Bind(wx.EVT_TEXT, self.on_id_edited, self.id)
+        self.Bind(wx.EVT_RADIOBOX, self.on_type_edited, self.type)
+
+        self.Bind(wx.EVT_BUTTON, self.move_item_left, self.move_left)
+        self.Bind(wx.EVT_BUTTON, self.move_item_right, self.move_right)
+        self.Bind(wx.EVT_BUTTON, self.move_item_up, self.move_up)
+        self.Bind(wx.EVT_BUTTON, self.move_item_down, self.move_down)
+        self.Bind(wx.EVT_BUTTON, self.add_item, self.add)
+        self.Bind(wx.EVT_BUTTON, self.remove_item, self.remove)
+        self.Bind(wx.EVT_BUTTON, self.add_separator, self.add_sep)
+        self.Bind(wx.EVT_BUTTON, self.on_cancel, self.cancel)
+        self.Bind(wx.EVT_BUTTON, self.on_OK, self.ok)
+        self.Bind(wx.EVT_LIST_ITEM_SELECTED, self.show_item, self.items)
+
+        self.Bind(wx.EVT_CHAR_HOOK, self.on_char)
+        self.remove.Bind(wx.EVT_CHAR_HOOK, self.on_button_char)  # to ignore the Enter key while the focus is on Remove
+
+        self.items.Bind(wx.EVT_MOUSEWHEEL, lambda e: e.Skip())  # workaround to make the scroll wheel work...
+
+        for c,header in enumerate(self.headers):
+            self.items.InsertColumn(c, _(header))
+            self.items.SetColumnWidth(c, self.column_widths[c])
+
     def _set_tooltips(self):
         # set tooltips
         for c in (self.label_6, self.label):
@@ -233,12 +229,19 @@ class MenuItemDialog(wx.Dialog):
         compat.SetToolTip( self.move_left,  "Move the selected item up by one menu level (Alt-Left)" )
         compat.SetToolTip( self.move_right, "Move the selected item down by one menu level (Alt-Right)" )
 
+        compat.SetToolTip( self.ok, "Alt+O or Alt+Enter or Ctrl+Enter" )
+        compat.SetToolTip( self.cancel, "Alt+C or Alt+F4" )
+        compat.SetToolTip( self.add, "Alt+A" )
+        compat.SetToolTip( self.remove, "Alt+R" )
+        compat.SetToolTip( self.add_sep, "Alt+S" )
+
     def _enable_fields(self, enable=True, clear=False):
         if clear:
             restore = self._ignore_events
             self._ignore_events = True
-        for name in self.control_names:
-            control = getattr(self, name)
+        for name in self.columns:
+            control = getattr(self, name, None)
+            if not control: continue
             control.Enable(enable)
             if clear and isinstance(control, wx.TextCtrl): control.SetValue("")
         if clear: self._ignore_events = restore
@@ -317,19 +320,11 @@ class MenuItemDialog(wx.Dialog):
                     s.SetSelection( int(value) )
             self.label.SetValue(self.label.GetValue().lstrip())
             self._enable_fields(True)
-            ## set focus to text field again
-            #focus = self.FindFocus()
-            #if not isinstance(focus, wx.TextCtrl) and isinstance(self._last_focus, wx.TextCtrl):
-                #self._last_focus.SetFocus()
         else:
             self._enable_fields(False, clear=True)
         self._enable_buttons()
         state = wx.LIST_STATE_SELECTED | wx.LIST_STATE_FOCUSED
         self.items.SetItemState(index, state, state)  # fix bug 698071
-
-        if force:
-            self.label.SetFocus()
-            self.label.SelectAll()
 
     def _enable_buttons(self):
         # activate the left/right/up/down buttons
@@ -380,8 +375,7 @@ class MenuItemDialog(wx.Dialog):
 
     def _on_edited(self, event, colname, value, valid=True):
         if valid and not self._ignore_events:
-            idx = self.columns.index(colname)
-            compat.ListCtrl_SetStringItem(self.items, self.selected_index, idx, value)
+            compat.ListCtrl_SetStringItem(self.items, self.selected_index, colname, value)
         event.Skip()
 
     def on_type_edited(self, event):
