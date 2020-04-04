@@ -530,6 +530,9 @@ class wxGladeFrame(wx.Frame):
         i = append_menu_item(view_menu, -1, _("Focus &Properties\tF3"))
         misc.bind_menu_item(self, i, self.show_props_window )
 
+        i = append_menu_item(view_menu, -1, _("Focus Pa&lette\tF4"))
+        misc.bind_menu_item(self, i, self.show_palette )
+
         # submenu focus sections >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
         view_props_menu = wx.Menu()
         # randomly select set of shortcuts to be displayed:
@@ -543,7 +546,7 @@ class wxGladeFrame(wx.Frame):
         view_menu.AppendSubMenu(view_props_menu, _("Focus Properties &Section"))
         view_menu.AppendSeparator() # <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
-        i = append_menu_item(view_menu, -1, _("Show/Hide &Design\tF4"))
+        i = append_menu_item(view_menu, -1, _("Show/Hide &Design\tF6"))
         misc.bind_menu_item(self, i, self.show_design_window)
         self._m_pin_design_window = i = append_menu_item(view_menu, -1, _("&Pin &Design\tCtrl-P"),  kind=wx.ITEM_CHECK)
         misc.bind_menu_item(self, i, self.pin_design_window)
