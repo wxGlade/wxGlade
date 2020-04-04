@@ -26,47 +26,18 @@ class ToolsDialog(wx.Dialog):
     column_widths = [180,180,     120,       120,        180,        50,     120,      50]
     headers = ["Label","Primary Bitmap","Disabled Bitmap","Short Help","Long Help","Type","Event Handler","Id"]
     coltypes = {"type":int}
+    # these will be copied:
     default_item = ("item","","","","",0,"","")
     separator_item = ("---","---","---","---","",0,"","---")
-    control_names = columns
+
     def __init__(self, parent, owner, items=None):
         style = wx.DEFAULT_DIALOG_STYLE|wx.RESIZE_BORDER|wx.WANTS_CHARS
         wx.Dialog.__init__(self, parent, -1, _("Toolbar editor"), style=style)
 
         self.create_gui()
-
-        self.Bind(wx.EVT_TEXT, self.on_label_edited, self.label)
-        self.Bind(wx.EVT_TEXT, self.on_event_handler_edited, self.handler)
-        self.Bind(wx.EVT_TEXT, self.on_help_str_edited, self.short_help)
-        self.Bind(wx.EVT_TEXT, self.on_long_help_str_edited, self.long_help)
-        self.Bind(wx.EVT_TEXT, self.on_id_edited, self.id)
-        self.Bind(wx.EVT_RADIOBOX, self.on_type_edited, self.type)
-
-        self.Bind(wx.EVT_BUTTON, self.move_item_up, self.move_up)
-        self.Bind(wx.EVT_BUTTON, self.move_item_down, self.move_down)
-        self.Bind(wx.EVT_BUTTON, self.add_item, self.add)
-        self.Bind(wx.EVT_BUTTON, self.remove_item, self.remove)
-        self.Bind(wx.EVT_BUTTON, self.add_separator, self.add_sep)
-        self.Bind(wx.EVT_BUTTON, self.on_cancel, self.cancel)
-        self.Bind(wx.EVT_BUTTON, self.on_OK, self.ok)
-        self.Bind(wx.EVT_BUTTON, self.select_bitmap1, self.bitmap1_button)
-        self.Bind(wx.EVT_BUTTON, self.select_bitmap2, self.bitmap2_button)
-        self.Bind(wx.EVT_TEXT, self.on_bitmap1_edited, self.bitmap1)
-        self.Bind(wx.EVT_TEXT, self.on_bitmap2_edited, self.bitmap2)
-        self.Bind(wx.EVT_LIST_ITEM_SELECTED, self.show_item, self.items)
-
-        self.Bind(wx.EVT_CHAR_HOOK, self.on_char)
-        self.remove.Bind(wx.EVT_CHAR_HOOK, self.on_button_char)  # to ignore the Enter key while the focus is on Remove
-
+        self.bind_event_handlers()
+        self._set_tooltips()
         self.owner = owner
-
-        self.items.Bind(wx.EVT_MOUSEWHEEL, lambda e: e.Skip())  # workaround to make the scroll wheel work...
-
-        for c,header in enumerate(self.headers):
-            self.items.InsertColumn(c, _(header))
-            self.items.SetColumnWidth(c, self.column_widths[c])
-
-        self.SetSize( (900, 600) )
 
         import re
         self.handler_re = self.name_re = re.compile(r'^[a-zA-Z_]+[\w-]*(\[\w*\])*$')
@@ -74,21 +45,11 @@ class ToolsDialog(wx.Dialog):
         self.selected_index = -1  # index of the selected element in the wx.ListCtrl menu_items
         self._ignore_events = False
 
-        # track focus
-        self._last_focus = None
-        for ctrl in (self.label, self.bitmap1, self.bitmap1, self.handler, self.short_help, self.long_help, self.id):
-            ctrl.Bind(wx.EVT_SET_FOCUS, self.on_focus)
-
         if items:
             self.add_items(items)
             self._select_item(0)
         else:
             self._enable_fields(False)
-
-    def on_focus(self, event):
-        # track focus
-        self._last_focus = event.GetEventObject()
-        event.Skip()
 
     def on_char(self, event):
         # keyboard navigation: up/down arrows and also Tab on some buttons
@@ -104,6 +65,18 @@ class ToolsDialog(wx.Dialog):
 
         if k in (wx.WXK_DOWN, wx.WXK_UP) and focus is self.type:
             event.Skip()
+            return
+
+        if event.AltDown():
+            if k==wx.WXK_RETURN or k==ord("O"):
+                self.EndModal(wx.ID_OK)
+                return
+            if k==ord("C"):
+                self.EndModal(wx.ID_CANCEL)
+                return
+
+        if event.ControlDown() and k==wx.WXK_RETURN:
+            self.EndModal(wx.ID_OK)
             return
 
         if k==wx.WXK_RETURN:  # ignore Enter key
@@ -128,7 +101,6 @@ class ToolsDialog(wx.Dialog):
             event.Skip()
 
     def create_gui(self):
-
         sizer_1 = wx.BoxSizer(wx.VERTICAL)
         sizer_2 = wx.BoxSizer(wx.HORIZONTAL)
         sizer_5 = wx.BoxSizer(wx.HORIZONTAL)
@@ -218,6 +190,38 @@ class ToolsDialog(wx.Dialog):
         sizer_1.Fit(self)
         self.Layout()
 
+        self.SetSize( (900, 600) )
+
+    def bind_event_handlers(self):
+        self.Bind(wx.EVT_TEXT, self.on_label_edited, self.label)
+        self.Bind(wx.EVT_TEXT, self.on_event_handler_edited, self.handler)
+        self.Bind(wx.EVT_TEXT, self.on_help_str_edited, self.short_help)
+        self.Bind(wx.EVT_TEXT, self.on_long_help_str_edited, self.long_help)
+        self.Bind(wx.EVT_TEXT, self.on_id_edited, self.id)
+        self.Bind(wx.EVT_RADIOBOX, self.on_type_edited, self.type)
+
+        self.Bind(wx.EVT_BUTTON, self.move_item_up, self.move_up)
+        self.Bind(wx.EVT_BUTTON, self.move_item_down, self.move_down)
+        self.Bind(wx.EVT_BUTTON, self.add_item, self.add)
+        self.Bind(wx.EVT_BUTTON, self.remove_item, self.remove)
+        self.Bind(wx.EVT_BUTTON, self.add_separator, self.add_sep)
+        self.Bind(wx.EVT_BUTTON, self.on_cancel, self.cancel)
+        self.Bind(wx.EVT_BUTTON, self.on_OK, self.ok)
+        self.Bind(wx.EVT_BUTTON, self.select_bitmap1, self.bitmap1_button)
+        self.Bind(wx.EVT_BUTTON, self.select_bitmap2, self.bitmap2_button)
+        self.Bind(wx.EVT_TEXT, self.on_bitmap1_edited, self.bitmap1)
+        self.Bind(wx.EVT_TEXT, self.on_bitmap2_edited, self.bitmap2)
+        self.Bind(wx.EVT_LIST_ITEM_SELECTED, self.show_item, self.items)
+
+        self.Bind(wx.EVT_CHAR_HOOK, self.on_char)
+        self.remove.Bind(wx.EVT_CHAR_HOOK, self.on_button_char)  # to ignore the Enter key while the focus is on Remove
+
+        self.items.Bind(wx.EVT_MOUSEWHEEL, lambda e: e.Skip())  # workaround to make the scroll wheel work...
+
+        for c,header in enumerate(self.headers):
+            self.items.InsertColumn(c, _(header))
+            self.items.SetColumnWidth(c, self.column_widths[c])
+
     def _set_tooltips(self):
         # set tooltips
         for c in (self.label_6, self.label):
@@ -234,12 +238,19 @@ class ToolsDialog(wx.Dialog):
         compat.SetToolTip( self.move_down, "Move selected item down (Alt-Down)" )
         compat.SetToolTip( self.items, "For navigation use the mouse or the up/down arrows" )
 
+        compat.SetToolTip( self.ok, "Alt+O or Alt+Enter or Ctrl+Enter" )
+        compat.SetToolTip( self.cancel, "Alt+C or Alt+F4" )
+        compat.SetToolTip( self.add, "Alt+A" )
+        compat.SetToolTip( self.remove, "Alt+R" )
+        compat.SetToolTip( self.add_sep, "Alt+S" )
+
     def _enable_fields(self, enable=True, clear=False):
         if clear:
             restore = self._ignore_events
             self._ignore_events = True
-        for name in self.control_names:
-            control = getattr(self, name)
+        for name in self.columns:
+            control = getattr(self, name, None)
+            if not control: continue
             control.Enable(enable)
             if clear and isinstance(control, wx.TextCtrl): control.SetValue("")
 
@@ -249,15 +260,19 @@ class ToolsDialog(wx.Dialog):
         if clear: self._ignore_events = restore
 
     def _get_item_text(self, index, col):
+        if isinstance(col, str): col = self.columns.index(col)
         return self.items.GetItem(index, col).GetText()
 
     def _get_all_texts(self, index):
         return [self._get_item_text(index, j) for j in range(len(self.columns))]
 
     def _set_item_string(self, index, col, s):
+        if not isinstance(s, compat.unicode): s = misc.wxstr(s)
+        if isinstance(col, str): col = self.columns.index(col)
         compat.ListCtrl_SetStringItem(self.items, index, col, s)
     
     def _insert_item_string(self, index, s):
+        if not isinstance(s, compat.unicode): s = misc.wxstr(s)
         return compat.ListCtrl_InsertStringItem(self.items, index, s)
 
     def _add_new_item(self, item):
@@ -296,7 +311,7 @@ class ToolsDialog(wx.Dialog):
         self._ignore_events = True
         self.items.Select(index)
 
-        if self._get_item_text(index, 2) != '---':
+        if self._get_item_text(index, "label") != '---':
             # skip if the selected item is a separator
             for i,colname in enumerate(self.columns):
                 s = getattr(self, colname)
@@ -310,19 +325,11 @@ class ToolsDialog(wx.Dialog):
                     s.SetSelection( int(value) )
             self.label.SetValue(self.label.GetValue().lstrip())
             self._enable_fields(True)
-            # set focus to text field again
-            focus = self.FindFocus()
-            if not isinstance(focus, wx.TextCtrl) and isinstance(self._last_focus, wx.TextCtrl):
-                self._last_focus.SetFocus()
         else:
             self._enable_fields(False, clear=True)
         self._enable_buttons()
         state = wx.LIST_STATE_SELECTED | wx.LIST_STATE_FOCUSED
         self.items.SetItemState(index, state, state)  # fix bug 698071
-
-        if force:
-            self.label.SetFocus()
-            self.label.SelectAll()
 
     def _enable_buttons(self):
         # activate the left/right/up/down buttons
@@ -335,7 +342,7 @@ class ToolsDialog(wx.Dialog):
     def on_label_edited(self, event):
         if not self._ignore_events:
             value = self.label.GetValue().lstrip()
-            self._set_item_string(self.selected_index, self.columns.index("label"), value)
+            self._set_item_string(self.selected_index, "label", value)
         event.Skip()
 
     def on_event_handler_edited(self, event):
@@ -351,8 +358,7 @@ class ToolsDialog(wx.Dialog):
 
     def _on_edited(self, event, colname, value, valid=True):
         if valid and not self._ignore_events:
-            idx = self.columns.index(colname)
-            self._set_item_string(self.selected_index, idx, value)
+            self._set_item_string(self.selected_index, colname, value)
         event.Skip()
 
     def on_type_edited(self, event):
@@ -376,7 +382,6 @@ class ToolsDialog(wx.Dialog):
     def remove_item(self, event):
         "Event handler called when the Remove button is clicked"
         if self.selected_index < 0: return
-        index = self.selected_index+1
         self.items.DeleteItem(self.selected_index)
         self._select_item(self.selected_index-1, force=True)
 
@@ -384,15 +389,14 @@ class ToolsDialog(wx.Dialog):
         self._insert_item_string(index, item[0])
         for col, value in enumerate(item):
             if col==0: continue
-            self._set_item_string(index, col, compat.unicode(value))
+            self._set_item_string(index, col, value)
         # fix bug 698074
         self.items.SetItemState(index, wx.LIST_STATE_SELECTED, wx.LIST_STATE_SELECTED)
 
     def _get_item(self, index):
         ret = []
-        for c,colname in enumerate(self.columns):
-            col = self.columns.index(colname)
-            value = self._get_item_text(index, col)
+        for colname in self.columns:
+            value = self._get_item_text(index, colname)
             if colname in self.coltypes:
                 value = self.coltypes[colname](value)
             ret.append(value)
@@ -421,8 +425,6 @@ class ToolsDialog(wx.Dialog):
     def _do_move_item(self, event, index, is_down):
         """internal function used by move_item_up and move_item_down.
         Returns the new index of the moved item, or None if no change occurred"""
-        self.items.SetFocus()
-        #index = self.selected_index
         i = index+1 if is_down else index-1
         if i < 0 or i>=self.items.GetItemCount(): return None
 
