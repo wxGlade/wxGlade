@@ -39,7 +39,6 @@ class ToolsDialog(wx.Dialog):
         self._set_tooltips()
         self.owner = owner
 
-        import re
         self.handler_re = self.name_re = re.compile(r'^[a-zA-Z_]+[\w-]*(\[\w*\])*$')
 
         self.selected_index = -1  # index of the selected element in the wx.ListCtrl menu_items

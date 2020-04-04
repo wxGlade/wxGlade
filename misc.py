@@ -529,9 +529,9 @@ accel_table = {
 
     ("",  wx.WXK_F2):    ((common,"main","show_tree"),            ()),
     ("",  wx.WXK_F3):    ((common,"main","show_props_window"),    ()),
-    ("",  wx.WXK_F4):    ((common,"main","show_design_window"),   ()),
+    ("",  wx.WXK_F4):    ((common,"main","show_palette"),         ()),
     ("",  wx.WXK_F5):    ((common,"main","preview"),              ()),
-    ("",  wx.WXK_F6):    ((common,"main","show_palette"),         ()),
+    ("",  wx.WXK_F6):    ((common,"main","show_design_window"),   ()),
 
     ("",  wx.WXK_F8):    ((common,"main","show_props_window"),    ("Common",)),
     ("C", ord('M')):     ((common,"main","show_props_window"),    ("Common",)),
