@@ -84,13 +84,19 @@ class ToolsDialog(wx.Dialog):
             if event.AltDown():
                 self.move_item_down(event)
             else:
-                self._select_item(self.selected_index+1)
+                if self.selected_index+1 < self.items.GetItemCount():
+                    self._select_item(self.selected_index+1)
+                else:
+                    wx.Bell()
             return
         if k==wx.WXK_UP:
             if event.AltDown():
                 self.move_item_up(event)
             else:
-                self._select_item(self.selected_index-1)
+                if self.selected_index>0:
+                    self._select_item(self.selected_index-1)
+                else:
+                    wx.Bell()
             return
         event.Skip()
 
@@ -164,7 +170,7 @@ class ToolsDialog(wx.Dialog):
         self.move_down = wx.Button(self, wx.ID_ANY, "Down")
         self.add = wx.Button(self, wx.ID_ANY, "&Add")
         self.remove = wx.Button(self, wx.ID_ANY, "&Remove")
-        self.add_sep = wx.Button(self, wx.ID_ANY, "Add Separator")
+        self.add_sep = wx.Button(self, wx.ID_ANY, "Add &Separator")
         # dialog action buttons; these will be handled, instead of using stock OK/Cancel buttons
         self.ok     = wx.Button(self, wx.ID_ANY, "OK")
         self.cancel = wx.Button(self, wx.ID_ANY, "Cancel")
@@ -299,12 +305,14 @@ class ToolsDialog(wx.Dialog):
         event.Skip()
 
     def _select_item(self, index, force=False):
-        if index >= self.items.GetItemCount(): return
+        item_count = self.items.GetItemCount()
+        if index == -1 and item_count: index = 0
+        if index >= item_count and item_count: index = item_count-1
         if index==self.selected_index and not force: return
-        if index == -1 and self.items.GetItemCount(): index = 0
         self.selected_index = index
         if index == -1:
             self._enable_fields(False, clear=True)
+            self._enable_buttons()
             return
 
         self._ignore_events = True
@@ -336,6 +344,7 @@ class ToolsDialog(wx.Dialog):
         item_count = self.items.GetItemCount()
         self.move_up.Enable( index>0 )
         self.move_down.Enable( index<item_count-1 )
+        self.remove.Enable(item_count)
         self._ignore_events = False
 
     def on_label_edited(self, event):
@@ -425,7 +434,9 @@ class ToolsDialog(wx.Dialog):
         """internal function used by move_item_up and move_item_down.
         Returns the new index of the moved item, or None if no change occurred"""
         i = index+1 if is_down else index-1
-        if i < 0 or i>=self.items.GetItemCount(): return None
+        if i < 0 or i>=self.items.GetItemCount():
+            wx.Bell()
+            return None
 
         item = self._get_all_texts(index)
         self.items.DeleteItem(index)

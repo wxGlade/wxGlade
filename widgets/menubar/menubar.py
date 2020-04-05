@@ -79,13 +79,19 @@ class MenuItemDialog(wx.Dialog):
             if event.AltDown():
                 self.move_item_down(event)
             else:
-                self._select_item(self.selected_index+1)
+                if self.selected_index+1 < self.items.GetItemCount():
+                    self._select_item(self.selected_index+1)
+                else:
+                    wx.Bell()
             return
         if k==wx.WXK_UP:
             if event.AltDown():
                 self.move_item_up(event)
             else:
-                self._select_item(self.selected_index-1)
+                if self.selected_index>0:
+                    self._select_item(self.selected_index-1)
+                else:
+                    wx.Bell()
             return
         if k==wx.WXK_RIGHT and event.AltDown():
             self.move_item_right(event)
@@ -294,12 +300,14 @@ class MenuItemDialog(wx.Dialog):
         event.Skip()
 
     def _select_item(self, index, force=False):
-        if index >= self.items.GetItemCount(): return
+        item_count = self.items.GetItemCount()
+        if index == -1 and item_count: index = 0
+        if index >= item_count and item_count: index = item_count-1
         if index==self.selected_index and not force: return
-        if index == -1 and self.items.GetItemCount(): index = 0
         self.selected_index = index
         if index == -1:
             self._enable_fields(False, clear=True)
+            self._enable_buttons()
             return
 
         self._ignore_events = True
@@ -329,12 +337,13 @@ class MenuItemDialog(wx.Dialog):
     def _enable_buttons(self):
         # activate the left/right/up/down buttons
         index = self.selected_index
-        item_level = self.item_level(index)
+        if index>=0: item_level = self.item_level(index)
         item_count = self.items.GetItemCount()
-        self.move_left.Enable( not (index+1<item_count and (item_level < self.item_level(index+1)) ))
+        self.move_left.Enable( index!=0 and not (index+1<item_count and (item_level < self.item_level(index+1)) ))
         self.move_right.Enable( index>=1 and item_level <= self.item_level(index-1) )
         self.move_up.Enable( index>0 )
         self.move_down.Enable( index<item_count-1 )
+        self.remove.Enable(item_count)
         self._ignore_events = False
 
     def on_label_edited(self, event):
@@ -394,12 +403,13 @@ class MenuItemDialog(wx.Dialog):
     def remove_item(self, event):
         "Event handler called when the Remove button is clicked"
         if self.selected_index < 0: return
-        index = self.selected_index+1
-        if index<self.items.GetItemCount() and (self.item_level(self.selected_index) < self.item_level(index)):
+        index = self.selected_index
+        if index+1 < self.items.GetItemCount() and (self.item_level(index) < self.item_level(index+1)):
             # the item to be deleted is parent to the following item -> move up the following item
-            self._move_item_left(index)
-        self.items.DeleteItem(self.selected_index)
-        self._select_item(self.selected_index-1, force=True)
+            self.move_item_left(index=index+1)
+        self.items.DeleteItem(index)
+        index = max(self.selected_index-1,0) if self.items.GetItemCount() else -1
+        self._select_item( index, force=True)
 
     def _insert_item(self, index, item):
         self._insert_item_string(index, item[0])
@@ -496,10 +506,17 @@ class MenuItemDialog(wx.Dialog):
 
         return trees
 
-    def _move_item_left(self, index):
-        if index < 0: return
+    def move_item_left(self, event=None, index=None):
+        """moves the selected menu item one level up in the hierarchy, i.e.
+        shifts its label 4 spaces left in self.menu_items"""
+        if index is None:
+            index = self.selected_index
+        if index <= 0:
+            wx.Bell()
+            return
         level = self.item_level(index)
         if level==0 or ( index+1 < self.items.GetItemCount() and (level < self.item_level(index+1)) ):
+            wx.Bell()
             return
         level -= 1
         label = self._get_item_text(index, "label")
@@ -508,16 +525,17 @@ class MenuItemDialog(wx.Dialog):
         self.items.SetItemState(index, wx.LIST_STATE_SELECTED, wx.LIST_STATE_SELECTED)
         self._enable_buttons()
 
-    def move_item_left(self, event):
-        """moves the selected menu item one level up in the hierarchy, i.e.
-        shifts its label 4 spaces left in self.menu_items"""
-        self.items.SetFocus()
-        self._move_item_left(self.selected_index)
-
-    def _move_item_right(self, index):
-        if index <= 0: return
+    def move_item_right(self, event):
+        """moves the selected menu item one level down in the hierarchy, i.e.
+        shifts its label 4 spaces right in self.menu_items"""
+        index = self.selected_index
+        if index <= 0:
+            wx.Bell()
+            return
         level = self.item_level(index)
-        if level > self.item_level(index-1): return
+        if level > self.item_level(index-1):
+            wx.Bell()
+            return
         level += 1
         label = self._get_item_text(index, "label")
         self._set_item_string(index, "label", misc.wxstr(" "*4) + label)
@@ -525,28 +543,26 @@ class MenuItemDialog(wx.Dialog):
         self.items.SetItemState(index, wx.LIST_STATE_SELECTED, wx.LIST_STATE_SELECTED)
         self._enable_buttons()
 
-    def move_item_right(self, event):
-        """moves the selected menu item one level down in the hierarchy, i.e.
-        shifts its label 4 spaces right in self.menu_items"""
-        self.items.SetFocus()
-        self._move_item_right(self.selected_index)
-
     def move_item_up(self, event):
         "moves the selected menu item before the previous one at the same level in self.menu_items"
-        self.items.SetFocus()
+        if self.selected_index<=0:
+            wx.Bell()
+            return
         self._do_move_item(event, self.selected_index, False)
 
     def _do_move_item(self, event, index, is_down):
         """internal function used by move_item_up and move_item_down.
         Returns the new index of the moved item, or None if no change occurred"""
-        if index <= 0: return None
+        if index <= 0:
+            wx.Bell()
+            return
 
         level = self.item_level(index)
         items_to_move = [ self._get_all_texts(index) ]
         i = index+1
         while i < self.items.GetItemCount():
             # collect the items to move up
-            if level < self.item_level(i):
+            if self.item_level(i) > level:
                 items_to_move.append(self._get_all_texts(i))
                 i += 1
             else: break
@@ -554,7 +570,9 @@ class MenuItemDialog(wx.Dialog):
         while i >= 0:
             lvl = self.item_level(i)
             if level == lvl: break
-            elif level > lvl: return None
+            elif level > lvl:
+                wx.Bell()
+                return
             i -= 1
         for j in range(len(items_to_move)-1, -1, -1):
             self.items.DeleteItem(index+j)
@@ -573,23 +591,20 @@ class MenuItemDialog(wx.Dialog):
 
     def move_item_down(self, event):
         "moves the selected menu item after the next one at the same level in self.menu_items"
-        self.items.SetFocus()
+        if self.selected_index < 0: return
         index = self.selected_index
-        self.selected_index = -1
-        if index < 0: return
 
         level = self.item_level(index)
         i = index+1
         while i < self.items.GetItemCount():
             # collect the items to move down
-            if level < self.item_level(i):
+            if self.item_level(i) > level:
                 i += 1
             else: break
         if i < self.items.GetItemCount():
             self._do_move_item(event, i, True)
         else:
-            # restore the selected index
-            self.selected_index = index
+            wx.Bell()
 
     # the action buttons are not linked to ESC and Enter to avoid accidental modifications
     def on_cancel(self, event):
