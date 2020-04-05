@@ -61,12 +61,16 @@ class WidgetTree(wx.TreeCtrl):#, Tree):
 
     def on_char(self, event):
         "called from main: start label editing on F2; skip events while editing"
-        if event.GetKeyCode()==wx.WXK_F2 and self.cur_widget and self.cur_widget._label_editable():
+        keycode = event.GetKeyCode()
+        if keycode==wx.WXK_F2 and self.cur_widget and self.cur_widget._label_editable():
             # start label editing
             self.EditLabel( self.cur_widget.item )
             return True
         if isinstance(self.FindFocus(), wx.TextCtrl):
             # currently editing
+            event.Skip()
+            return True
+        if keycode in (wx.WXK_UP, wx.WXK_DOWN, wx.WXK_LEFT, wx.WXK_RIGHT):
             event.Skip()
             return True
         return False
@@ -457,6 +461,8 @@ class WidgetTree(wx.TreeCtrl):#, Tree):
         if editor is None or editor is self.cur_widget or editor.item is None: return
         self.skip_select = True
         self.SelectItem(editor.item)
+        if not self.IsExpanded(item) and not self.HasFocus():
+            self.Expand(editor.item)
         self.skip_select = False
         self._set_cur_widget(editor)
 
@@ -466,7 +472,7 @@ class WidgetTree(wx.TreeCtrl):#, Tree):
         editor = self._GetItemData(item)
         self._set_cur_widget(editor)
         misc.set_focused_widget(editor)
-        if not self.IsExpanded(item):
+        if not self.IsExpanded(item) and not self.HasFocus():
             self.Expand(item)
         self.SetFocus()
 
