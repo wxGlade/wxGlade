@@ -4,6 +4,7 @@
 #
 # The modules can optionally be grouped by preceding section headers.
 # A section header is the name of the section enclosed in square brackets.
+# It may be followed by :K for hotkey
 #
 # Empty lines will be ignored. Lines beginning with hash sign ('#') are
 # ignored too and may be used to provide comments.
@@ -12,22 +13,22 @@
 # ('#') preceded by a whitespace character for such cases.
 
 
-[Windows]
+[Windows]:W
 frame
 dialog
 panel
 
-[Containers]
+[Containers]:C
 notebook
 splitter_window
 
-[Buttons]
+[Buttons]:B
 button
 toggle_button
 bitmap_button
 spin_button
 
-[Inputs]
+[Inputs]:I
 text_ctrl
 choice
 combo_box
@@ -37,7 +38,7 @@ checkbox
 radio_button
 radio_box
 
-[Numeric & Dates]
+[Numeric & Dates]:N
 spin_ctrl
 spin_ctrl_double
 slider
@@ -46,24 +47,24 @@ calendar_ctrl
 generic_calendar_ctrl
 datepicker_ctrl
 
-[Data]
+[Data]:D
 list_ctrl
 tree_ctrl
 grid
 
-[Static]
+[Static]:T
 static_text
 hyperlink_ctrl
 static_line
 static_bitmap
 spacer
 
-[Misc]
+[Misc]:M
 property_grid_manager
 search_ctrl
 custom_widget
 
-[Menu & Bars]
+[Menu & Bars]:R
 menubar
 toolbar
 statusbar

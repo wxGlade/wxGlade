@@ -599,6 +599,9 @@ def handle_key_event(event, window_type, window=None):
         args = (globals()[args],)
     wx.CallAfter(function, *args)
 
+# for key handler in palette window:
+palette_hotkeys = {"S":"Sizers"}  # key to section name
+
 
 def _reverse_dict(src):
     "Returns a dictionary whose keys are 'src' values and values 'src' keys."

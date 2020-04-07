@@ -286,15 +286,24 @@ class wxGladePalettePanel(wx.Panel):
         if not config.use_gui: return
         self.all_togglebuttons = []  # used by reset_togglebuttons
 
+        # for keyboard navigation:
+        self._id_to_coordinate = {}
+        self._ids_by_row = []
+        self._section_to_row = {}
+
         # build the palette for all_widgets
         sizer = wx.FlexGridSizer(0, 2, 0, 0)
         maxlen = max([len(all_widgets[sect]) for sect in all_widgets])  # the maximum number of buttons in a section
-        for section in all_widgets:
+        for row, section in enumerate(all_widgets):
+            self._section_to_row[section] = row
+            self._ids_by_row.append([])
             if section:
                 label = wx.StaticText(self, -1, "%s:" % section.replace('&', '&&'))
                 sizer.Add( label, 1, wx.ALIGN_CENTER_VERTICAL | wx.LEFT, 2 )
             bsizer = wx.BoxSizer()
-            for button in all_widgets[section]:
+            for col, button in enumerate(all_widgets[section]):
+                self._ids_by_row[-1].append(button.Id)
+                self._id_to_coordinate[button.Id] = (row,col)
                 bsizer.Add(button, flag=wx.ALL, border=1)
                 if isinstance(button, wx.ToggleButton):
                     self.all_togglebuttons.append(button)
@@ -305,6 +314,7 @@ class wxGladePalettePanel(wx.Panel):
             self._highlight_colour = None
         else:
             self._highlight_colour = wx.SystemSettings.GetColour(wx.SYS_COLOUR_HIGHLIGHT)
+        self.Bind(wx.EVT_CHAR_HOOK, self.on_char)
 
     def reset_togglebuttons(self, keep=None):
         # un-toggle all buttons except keep
@@ -317,23 +327,46 @@ class wxGladePalettePanel(wx.Panel):
                 button.SetBackgroundColour(wx.NullColour)
             if button.GetValue(): button.SetValue(False)
 
-        # on platforms other than Windows, we'll set the ToggleButton background colour to indicate the selection
-        if wx.Platform == "__WXMSW__":
-            self._highlight_colour = None
+    def on_char(self, event):
+        key = (event.GetKeyCode(), event.GetModifiers())    # modifiers: 1,2,4 for Alt, Ctrl, Shift
+
+        focused = self.FindFocus()
+        if not focused or not focused.Id in self._id_to_coordinate:
+            return event.Skip()
+
+        row, col = self._id_to_coordinate[focused.Id]
+        new_row = new_col = None
+        if key[0]==wx.WXK_UP:
+            if row>0: new_row = row-1
+        elif key[0]==wx.WXK_DOWN:
+            if row < len(self._ids_by_row)-1: new_row = row+1
+        elif key[0]==wx.WXK_LEFT:
+            if col>0: new_col = col-1
+        elif key[0]==wx.WXK_RIGHT:
+            if col < len(self._ids_by_row[row])-1: new_col = col+1
+        elif key[0]==wx.WXK_HOME:
+            new_col = 0
+        elif key[0]==wx.WXK_END:
+            new_col = len(self._ids_by_row[row])-1
+        elif key[0]==wx.WXK_PAGEUP:
+            new_row = 0
+        elif key[0]==wx.WXK_PAGEDOWN:
+            new_row = len(self._ids_by_row)-1
+        elif (ord("A") <= key[0] <= ord("Z")) and chr(key[0]) in misc.palette_hotkeys:
+            section = misc.palette_hotkeys[chr(key[0])]
+            new_row = self._section_to_row[section]
+            new_col = 0
         else:
-            self._highlight_colour = wx.SystemSettings.GetColour(wx.SYS_COLOUR_HIGHLIGHT)
+            return event.Skip()
 
-    def reset_togglebuttons(self, keep=None):
-        # un-toggle all buttons except keep
-        for button in self.all_togglebuttons:
-            if keep is not None and button is keep:
-                if self._highlight_colour:
-                    button.SetBackgroundColour(self._highlight_colour)
-                continue
-            if self._highlight_colour and button.GetBackgroundColour()==self._highlight_colour:
-                button.SetBackgroundColour(wx.NullColour)
-            if button.GetValue(): button.SetValue(False)
-
+        if new_row is None and new_col is None:
+            # limits hit
+            wx.Bell()
+        else:
+            if new_col is None: new_col = min(col, len(self._ids_by_row[new_row])-1)
+            if new_row is None: new_row = row
+            focus = self.FindWindowById(self._ids_by_row[new_row][new_col])
+            if focus: focus.SetFocus()
 
 class wxGladeFrame(wx.Frame):
     "Main frame of wxGlade"

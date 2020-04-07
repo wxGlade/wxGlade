@@ -2,24 +2,20 @@
 Functions to import modules
 
 @copyright: 2016 Carsten Grohmann
+@copyright: 2020 Dietmar Schwertberger
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
-import logging
-import os
-import re
-import sys
-import zipfile
+import os, re, sys, zipfile, logging
 from collections import OrderedDict
 
-import common
-import config
+import common, config, misc
 
-rec_section = re.compile(r'\[(?P<section>[^]]+)\]')
-"""Regex tp match section headers"""
+# Regex tp match section headers
+rec_section = re.compile(r'\[(?P<section>[^]]+)\](\:(?P<hotkey>[A-Z]))?')
 
+# Regex to match modules
 rec_module = re.compile(r'^(?P<module>\w+)')
-"""Regex to match modules"""
 
 
 def load_widgets_from_dir(widget_dir, submodule='', default_section='not_set'):
@@ -131,6 +127,8 @@ def _modulenames_from_file(filename, default_section):
         mo = rec_section.match(line)
         if mo:
             cursect = mo.group('section')
+            hotkey = mo.group('hotkey')
+            if hotkey: misc.palette_hotkeys[hotkey] = cursect
             continue
 
         mo = rec_module.match(line)
