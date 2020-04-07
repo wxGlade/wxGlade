@@ -11,7 +11,7 @@ from collections import OrderedDict
 
 import common, config, misc
 
-# Regex tp match section headers
+# Regex tp match section headers; optionally with a hotkey character
 rec_section = re.compile(r'\[(?P<section>[^]]+)\](\:(?P<hotkey>[A-Z]))?')
 
 # Regex to match modules
@@ -55,23 +55,18 @@ def load_widgets_from_dir(widget_dir, submodule='', default_section='not_set'):
     
             # step 1: import widget module
             module = import_module(widget_dir, fqmn)
-            if not module:
-                # error already logged
-                continue
+            if not module: continue  # error already logged
     
             # step 2: use individual initialisation if available
             if hasattr(module, 'initialize'):
                 button = module.initialize()
-                if config.use_gui and button:
-                    buttons[section].append(button)
+                if config.use_gui and button: buttons[section].append(button)
     
             # step 3: import and initialise Python codegen as well as widget GUI elements
             elif not submodule:
                 result, button = _init_codegen_gui(widget_dir, module_name)
-                if not result:
-                    continue
-                if config.use_gui and button:
-                    buttons[section].append(button)
+                if not result: continue
+                if config.use_gui and button: buttons[section].append(button)
     
             # step 4: do special initialisation for wconfig submodules
             elif submodule and submodule == 'wconfig':
@@ -112,16 +107,11 @@ def _modulenames_from_file(filename, default_section):
     cursect = default_section
 
     for line in module_lines:
-
         # remove empty lines, comment lines and tailing comments
         line = line.rstrip()
-        if not line:
-            continue
-        if line.startswith('#'):
-            continue
+        if not line or line.startswith('#'): continue
 
-        if cursect not in content:
-            content[cursect] = []
+        if cursect not in content: content[cursect] = []
 
         # section heading
         mo = rec_section.match(line)
@@ -144,9 +134,8 @@ def _modulenames_from_file(filename, default_section):
 
 
 def _process_widget_config(module):
-    """\
-    Process widget configuration stored in modules 'config' dictionary. The
-    processed configuration will be stored in config.widget_config.
+    """Process widget configuration stored in modules 'config' dictionary.
+    The processed configuration will be stored in config.widget_config.
 
     module: Already imported module
     
@@ -175,37 +164,24 @@ def _process_widget_config(module):
 
 
 def _init_codegen_gui(widget_dir, widget_name):
-    """\
-    Initialise Python code generator for the widget as well as widget GUI parts.
-
-    @param widget_dir: Directory to search for widgets
-    @type widget_dir:  str
-
-    @param widget_name: Widget
-    @type widget_name:  str
-
-    @rtype: (bool, wx.BitmapButton)
-    """
+    """Initialise Python code generator for the widget as well as widget GUI parts.
+    returns (bool, wx.BitmapButton)"""
     widget_button = None
 
     # initialise Python code generator
     codegen_name = '%s.codegen' % widget_name
     codegen_module = import_module(widget_dir, codegen_name)
-    if not codegen_module:
-        # error already logged
-        return False, None
+    if not codegen_module: return False, None  # error already logged
+
     if not hasattr(codegen_module, 'initialize'):
         logging.warning(_('Missing function "initialize()" in imported  module %s. Skip initialisation.'), codegen_name)
         return False, None
     codegen_module.initialize()
 
-    ## initialise GUI part
-    #if config.use_gui:
     gui_name = '%s.%s' % (widget_name, widget_name)
     gui_module = import_module(widget_dir, gui_name)
-    if not gui_module:
-        # error already logged
-        return False, None
+    if not gui_module: return False, None  # error already logged
+
     if not hasattr(gui_module, 'initialize'):
         logging.warning(_('Missing function "initialize()" in imported module %s. Skip initialisation.'), gui_name)
         return False, None
@@ -234,8 +210,7 @@ def import_module(widget_dir, module_name):
     # split module name into module name and sub module name
     basemodule = module_name.split('.', 1)[0]
 
-    if widget_dir not in sys.path:
-        sys.path.append(widget_dir)
+    if widget_dir not in sys.path: sys.path.append(widget_dir)
 
     zip_filename = os.path.join(widget_dir, '%s.zip' % basemodule)
     if os.path.exists(zip_filename):
@@ -319,15 +294,7 @@ def is_valid_zip(filename, module_name):
 
 
 def _get_zipfile_filelist(filename):
-    """\
-    Return the file list of a zip file. The list will be empty if an error
-    occurred.
-
-    @param filename: ZIP file name
-    @type filename:  str
-
-    @rtype: list
-    """
+    "Return the file list of a zip file. The list will be empty if an error occurred"
     zfile = None
     namelist = []
     try:
@@ -342,7 +309,6 @@ def _get_zipfile_filelist(filename):
             logging.warning( _('ZIP file %s is bigger than 4GB (%s). Ignoring ZIP file.'), filename, inst )
             return []
     finally:
-        if zfile:
-            zfile.close()
+        if zfile: zfile.close()
 
     return namelist
