@@ -96,7 +96,11 @@ class EditBase(np.PropertyOwner):
         if config.debugging or config.testing and new_name is not None:
             #assert self.IS_NAMED
             assert self.name not in self.names
-        if old_name is not None: self.names.remove( old_name )
+        if old_name is not None:
+            try:
+                self.names.remove( old_name )
+            except KeyError:
+                pass
         if new_name is not None: self.names.add( new_name )
 
     # tree navigation (parent and children) ############################################################################
