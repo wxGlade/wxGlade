@@ -20,10 +20,28 @@ class wxGladePreferences(wxGladePreferencesUI):
     def __init__(self, preferences):
         wxGladePreferencesUI.__init__(self, None, -1, "")
 
+        self.check_accessibility()
+
         self.choose_widget_path.Bind(wx.EVT_BUTTON, self.on_widget_path)
 
         self.preferences = preferences
         self.set_values()
+
+    def check_accessibility(self):
+        # add a warning if not NVDA etc. compatible
+        import sys, platform, compat
+        if sys.platform!="win32" or not compat.IS_PHOENIX: return
+        if platform.architecture()[0] != "32bit": return
+        version = wx.VERSION[:3]
+        if version < (4,0,4) or version > (4,0,7): return
+        panel = self.sizer_accessibility.GetContainingWindow()
+        text = wx.StaticText(panel, label="Please be warned that your version\n"
+                                          "of wxPython probably does not support "
+                                          "screen readers.\n"
+                                          "This is a problem with wxPython versions\n"
+                                          "4.0.4 to 4.0.7 on 32 bit Python on Windows.")
+        self.sizer_accessibility.Insert(0, text, 0, wx.ALL, 10)
+        self.sizer_accessibility.Layout()
 
     def set_values(self):
         try:
