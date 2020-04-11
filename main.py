@@ -265,13 +265,12 @@ class wxGladePropertyPanel(wx.Panel):
     def flush(self):
         np.flush_current_property()
 
-
-class wxGladeArtProvider(wx.ArtProvider):
-    def CreateBitmap(self, artid, client, size):
-        if wx.Platform == '__WXGTK__' and artid == wx.ART_FOLDER:
-            return wx.Bitmap(os.path.join(config.icons_path, 'closed_folder.xpm'), wx.BITMAP_TYPE_XPM)
-        return wx.NullBitmap
-
+# don't use any more; causes crashes on Cent OS 7
+#class wxGladeArtProvider(wx.ArtProvider):
+    #def CreateBitmap(self, artid, client, size):
+        #if wx.Platform == '__WXGTK__' and artid == wx.ART_FOLDER:
+            #return wx.Bitmap(os.path.join(config.icons_path, 'closed_folder.xpm'), wx.BITMAP_TYPE_XPM)
+        #return wx.NullBitmap
 
 
 class wxGladePalettePanel(wx.Panel):
@@ -1388,7 +1387,7 @@ class wxGlade(wx.App):
         common.init_preferences()
 
         self.locale = wx.Locale(wx.LANGUAGE_DEFAULT)  # avoid PyAssertionErrors
-        compat.wx_ArtProviderPush(wxGladeArtProvider())
+        #compat.wx_ArtProviderPush(wxGladeArtProvider())
 
         frame = wxGladeFrame()
         self.SetTopWindow(frame)
