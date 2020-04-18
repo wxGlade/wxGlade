@@ -150,7 +150,7 @@ class MenuItemDialog(wx.Dialog):
         self.type.SetSelection(0)
         sizer_5.Add(self.type, 0, wx.ALL | wx.EXPAND, 4)
 
-        sizer_5.Add((20, 20), 1, wx.ALIGN_CENTER_VERTICAL | wx.EXPAND, 0)
+        sizer_5.Add((20, 20), 1, 0, 0)
 
         # editor action buttons
         self.move_left  = wx.Button(self, wx.ID_ANY, "&<")
@@ -173,11 +173,11 @@ class MenuItemDialog(wx.Dialog):
         sizer_2.Add(self.move_right, 0, wx.BOTTOM | wx.RIGHT | wx.TOP, 8)
         sizer_2.Add(self.move_up, 0, wx.BOTTOM | wx.LEFT | wx.TOP, 8)
         sizer_2.Add(self.move_down, 0, wx.BOTTOM | wx.RIGHT | wx.TOP, 8)
-        sizer_2.Add((20, 20), 1, wx.ALIGN_CENTER_VERTICAL, 0)
+        sizer_2.Add((20, 20), 1, 0, 0)
         sizer_2.Add(self.add, 0, wx.BOTTOM | wx.LEFT | wx.TOP, 8)
         sizer_2.Add(self.remove, 0, wx.BOTTOM | wx.TOP, 8)
         sizer_2.Add(self.add_sep, 0, wx.ALL, 8)
-        sizer_2.Add((20, 20), 2, wx.ALIGN_CENTER_VERTICAL, 0)
+        sizer_2.Add((20, 20), 2, 0, 0)
         sizer_1.Add(sizer_2, 0, wx.EXPAND, 0)
 
         self.items = wx.ListCtrl(self, wx.ID_ANY, style=wx.BORDER_DEFAULT | wx.BORDER_SUNKEN | wx.LC_EDIT_LABELS |
