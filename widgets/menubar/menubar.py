@@ -158,7 +158,7 @@ class MenuItemDialog(wx.Dialog):
         grid_sizer_2.AddGrowableCol(1)
         sizer_5.Add(grid_sizer_2, 2, wx.EXPAND, 0)
         sizer_5.Add(self.type, 0, wx.ALL | wx.EXPAND, 4)
-        sizer_5.Add((20, 20), 1, wx.ALIGN_CENTER_VERTICAL | wx.EXPAND, 0)
+        sizer_5.Add((20, 20), 1, 0, 0)
         sizer_6.Add(self.ok, 0, wx.ALL, 5)
         sizer_6.Add(self.cancel, 0, wx.ALL, 5)
         sizer_5.Add(sizer_6, 0, wx.EXPAND, 0)
@@ -167,11 +167,11 @@ class MenuItemDialog(wx.Dialog):
         sizer_2.Add(self.move_right, 0, wx.BOTTOM | wx.RIGHT | wx.TOP, 8)
         sizer_2.Add(self.move_up, 0, wx.BOTTOM | wx.LEFT | wx.TOP, 8)
         sizer_2.Add(self.move_down, 0, wx.BOTTOM | wx.RIGHT | wx.TOP, 8)
-        sizer_2.Add((20, 20), 1, wx.ALIGN_CENTER_VERTICAL, 0)
+        sizer_2.Add((20, 20), 1, 0, 0)
         sizer_2.Add(self.add, 0, wx.BOTTOM | wx.LEFT | wx.TOP, 8)
         sizer_2.Add(self.remove, 0, wx.BOTTOM | wx.TOP, 8)
         sizer_2.Add(self.add_sep, 0, wx.ALL, 8)
-        sizer_2.Add((20, 20), 2, wx.ALIGN_CENTER_VERTICAL, 0)
+        sizer_2.Add((20, 20), 2, 0, 0)
         sizer_1.Add(sizer_2, 0, wx.EXPAND, 0)
         sizer_1.Add(self.items, 1, wx.EXPAND, 0)
         self.SetSizer(sizer_1)
@@ -817,26 +817,33 @@ class EditTopLevelMenuBar(EditMenuBar, PreviewMixin):
 
 
 
-def builder(parent, pos):
+def builder(parent, pos, klass=None):
     "factory function for EditMenuBar objects"
-    import window_dialog as wd
-    klass = 'wxMenuBar' if common.root.language.lower()=='xrc' else 'MyMenuBar'
-
-    # if e.g. on a frame, suggest the user to add the menu bar to this
-    toplevel_widget = None
-    if misc.focused_widget is not None and not misc.focused_widget.IS_ROOT:
-        toplevel_widget = misc.focused_widget.toplevel_parent
-        if not "menubar" in toplevel_widget.properties:
-            toplevel_widget = None
-    if toplevel_widget is not None:
-        dialog = wd.StandaloneOrChildDialog(klass, "Select menubar type and class", toplevel_widget, "menubar")
+    # this one is a bit special as usually it's called with parent=application
+    # if a frame w/o menubar is focused, it will ask the user whether he wants to add a menubar to that
+    if klass is None:
+        import window_dialog as wd
+        klass = 'wxMenuBar' if common.root.language.lower()=='xrc' else 'MyMenuBar'
+    
+        # if e.g. on a frame, suggest the user to add the menu bar to this
+        toplevel_widget = None
+        if misc.focused_widget is not None and not misc.focused_widget.IS_ROOT:
+            toplevel_widget = misc.focused_widget.toplevel_parent
+            if not "menubar" in toplevel_widget.properties:
+                toplevel_widget = None
+        if toplevel_widget is not None:
+            dialog = wd.StandaloneOrChildDialog(klass, "Select menubar type and class", toplevel_widget, "menubar")
+        else:
+            dialog = wd.WindowDialog(klass, None, 'Select standalone menubar class', True)
+    
+        klass = dialog.show()
+        dialog.Destroy()
+        if klass is None: return None
     else:
-        dialog = wd.WindowDialog(klass, None, 'Select standalone menubar class', True)
+        # allow to call builder(frame, None, True)
+        toplevel_widget = parent
 
-    klass = dialog.show()
-    dialog.Destroy()
-    if klass is None: return None
-    if klass is True:
+    if pos=="_menubar" or klass is True:
         # add to toplevel widget
         toplevel_widget.properties["menubar"].set(True, notify=True)
         return toplevel_widget._menubar
