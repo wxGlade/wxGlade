@@ -62,14 +62,14 @@ class WindowDialog(wx.Dialog):
         if self.standalone: szr.Add(self.standalone, 0, wx.ALL|wx.EXPAND, 5)
         if self.base:       szr.Add(self.base,       0, wx.ALL|wx.EXPAND, 5)
         hszr = wx.BoxSizer(wx.HORIZONTAL)
-        hszr.Add(wx.StaticText(self, -1, _("class"),), 0, wx.ALIGN_CENTRE_VERTICAL|wx.ALIGN_RIGHT|wx.EXPAND|wx.ALL, 3)
+        hszr.Add(wx.StaticText(self, -1, _("class"),), 0, wx.EXPAND|wx.ALL, 3)
         hszr.Add(self.klass, 2)
         szr.Add(hszr, 0, wx.EXPAND|wx.ALL, 5)
 
         # options
         if options:
             line = wx.StaticLine(self, -1, size=(20,-1), style=wx.LI_HORIZONTAL)
-            szr.Add(line, 0, wx.GROW|wx.ALIGN_CENTER_VERTICAL|wx.ALL, 5)
+            szr.Add(line, 0, wx.EXPAND|wx.ALL, 5)
 
             self.options = []
             for o, option in enumerate(options):
@@ -79,7 +79,7 @@ class WindowDialog(wx.Dialog):
                 self.options.append(cb)
 
             line = wx.StaticLine(self, -1, size=(20,-1), style=wx.LI_HORIZONTAL)
-            szr.Add(line, 0, wx.GROW|wx.ALIGN_CENTER_VERTICAL|wx.RIGHT|wx.TOP|wx.LEFT, 5)
+            szr.Add(line, 0, wx.EXPAND|wx.TOP|wx.LEFT, 5)
 
         # buttons
         btnbox = wx.StdDialogButtonSizer()
