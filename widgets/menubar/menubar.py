@@ -774,7 +774,6 @@ class EditMenuBar(EditBase, PreviewMixin):
         self._mb.Refresh()
 
     def remove(self, *args, **kwds):
-        print(self.__class__.__name__, ".remove", self, self.parent, args, kwds)
         if self.parent is not None:
             self.parent.properties['menubar'].set(False)
             self.parent._menubar = None
