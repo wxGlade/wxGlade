@@ -46,7 +46,7 @@
         (setf (slot-sizer-1 obj) (wxBoxSizer_Create wxVERTICAL))
         
         (setf (slot-label-1 obj) (wxStaticText_Create (slot-top-window obj) wxID_ANY (_"Just a label") -1 -1 -1 -1 0))
-        (wxSizer_AddWindow (slot-sizer-1 obj) (slot-label-1 obj) 1 (logior wxALIGN_CENTER wxALL wxEXPAND) 5 nil)
+        (wxSizer_AddWindow (slot-sizer-1 obj) (slot-label-1 obj) 1 (logior wxALL wxEXPAND) 5 nil)
         
         (wxWindow_SetSizer (slot-top-window obj) (slot-sizer-1 obj))
         (wxSizer_Fit (slot-sizer-1 obj) (slot-top-window obj))

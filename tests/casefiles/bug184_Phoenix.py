@@ -25,7 +25,7 @@ class Bug184_Frame(wx.Frame):
         sizer_1 = wx.BoxSizer(wx.VERTICAL)
         
         self.label_1 = wx.StaticText(self, wx.ID_ANY, _("Just a label"))
-        sizer_1.Add(self.label_1, 1, wx.ALIGN_CENTER | wx.ALL | wx.EXPAND, 5)
+        sizer_1.Add(self.label_1, 1, wx.ALL | wx.EXPAND, 5)
         
         self.SetSizer(sizer_1)
         sizer_1.Fit(self)

@@ -207,7 +207,7 @@ class MyFrame1(wx.Frame):
         self._BTN_show_docs.Enable(False)
         __szr_show_docs.Add(self._BTN_show_docs, 0, wx.ALIGN_CENTER_VERTICAL, 0)
         
-        __szr_show_docs.Add((20, 20), 1, wx.ALIGN_CENTER_VERTICAL | wx.EXPAND, 0)
+        __szr_show_docs.Add((20, 20), 1, wx.EXPAND, 0)
         
         self.SetSizer(__szr_main)
         __szr_main.Fit(self)

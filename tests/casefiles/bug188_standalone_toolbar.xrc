@@ -19,7 +19,7 @@
             <orient>wxVERTICAL</orient>
             <object class="sizeritem">
                 <option>1</option>
-                <flag>wxALIGN_CENTER|wxALL|wxEXPAND</flag>
+                <flag>wxALL|wxEXPAND</flag>
                 <object class="wxStaticText" name="label_1">
                     <label>placeholder - every design\nneeds a toplevel window</label>
                     <style>wxALIGN_CENTER</style>

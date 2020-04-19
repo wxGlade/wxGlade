@@ -388,16 +388,16 @@ sub new {
     $self->{sizer_11} = Wx::BoxSizer->new(wxVERTICAL);
     
     $self->{bitmap_empty} = Wx::StaticBitmap->new($self->{notebook_1_wxStaticBitmap}, wxID_ANY, Wx::Bitmap->new(32, 32));
-    $self->{sizer_11}->Add($self->{bitmap_empty}, 1, wxALIGN_CENTER|wxALL|wxEXPAND, 5);
+    $self->{sizer_11}->Add($self->{bitmap_empty}, 1, wxALL|wxEXPAND, 5);
     
     $self->{bitmap_file} = Wx::StaticBitmap->new($self->{notebook_1_wxStaticBitmap}, wxID_ANY, Wx::Bitmap->new("icon.xpm", wxBITMAP_TYPE_ANY));
-    $self->{sizer_11}->Add($self->{bitmap_file}, 1, wxALIGN_CENTER|wxALL|wxEXPAND, 5);
+    $self->{sizer_11}->Add($self->{bitmap_file}, 1, wxALL|wxEXPAND, 5);
     
     $self->{bitmap_nofile} = Wx::StaticBitmap->new($self->{notebook_1_wxStaticBitmap}, wxID_ANY, Wx::Bitmap->new("non-existing.bmp", wxBITMAP_TYPE_ANY));
-    $self->{sizer_11}->Add($self->{bitmap_nofile}, 1, wxALIGN_CENTER|wxALL|wxEXPAND, 5);
+    $self->{sizer_11}->Add($self->{bitmap_nofile}, 1, wxALL|wxEXPAND, 5);
     
     $self->{bitmap_art} = Wx::StaticBitmap->new($self->{notebook_1_wxStaticBitmap}, wxID_ANY, Wx::ArtProvider::GetBitmap(wxART_PRINT, wxART_OTHER, Wx::Size->new(32, 32)));
-    $self->{sizer_11}->Add($self->{bitmap_art}, 1, wxALIGN_CENTER|wxALL|wxEXPAND, 5);
+    $self->{sizer_11}->Add($self->{bitmap_art}, 1, wxALL|wxEXPAND, 5);
     
     $self->{notebook_1_wxStaticLine} = Wx::Panel->new($self->{notebook_1}, wxID_ANY);
     $self->{notebook_1}->AddPage($self->{notebook_1_wxStaticLine}, _T("wxStaticLine"));

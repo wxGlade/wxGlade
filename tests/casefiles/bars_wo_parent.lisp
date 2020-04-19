@@ -89,7 +89,7 @@
         (setf (slot-sizer-1 obj) (wxBoxSizer_Create wxVERTICAL))
         
         (setf (slot-label-1 obj) (wxStaticText_Create (slot-top-window obj) wxID_ANY "placeholder - every design\nneeds a toplevel window" -1 -1 -1 -1 wxALIGN_CENTER))
-        (wxSizer_AddWindow (slot-sizer-1 obj) (slot-label-1 obj) 1 (logior wxALIGN_CENTER wxALL wxEXPAND) 0 nil)
+        (wxSizer_AddWindow (slot-sizer-1 obj) (slot-label-1 obj) 1 (logior wxALL wxEXPAND) 0 nil)
         
         (wxWindow_SetSizer (slot-top-window obj) (slot-sizer-1 obj))
         

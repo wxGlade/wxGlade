@@ -1455,7 +1455,7 @@ sub new {
     $self->{sizer_border_5_LEFTRIGHT}->Add($self->{_0_N_N_copy_31}, 0, 0, 0);
     
     $self->{sizer_border_15_BOTTOM} = Wx::BoxSizer->new(wxVERTICAL);
-    $self->{sizer_7}->Add($self->{sizer_border_15_BOTTOM}, 1, wxALIGN_RIGHT, 15);
+    $self->{sizer_7}->Add($self->{sizer_border_15_BOTTOM}, 1, 0, 15);
     
     $self->{_0_N_N_copy_32} = Wx::TextCtrl->new($self->{notebook_1_BorderTest}, wxID_ANY, "");
     $self->{_0_N_N_copy_32}->SetMinSize(Wx::Size->new(-1, 21));

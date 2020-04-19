@@ -728,14 +728,14 @@
                             <orient>wxVERTICAL</orient>
                             <object class="sizeritem">
                                 <option>1</option>
-                                <flag>wxALIGN_CENTER|wxALL|wxEXPAND</flag>
+                                <flag>wxALL|wxEXPAND</flag>
                                 <border>5</border>
                                 <object class="wxStaticBitmap" name="bitmap_empty">
                                 </object>
                             </object>
                             <object class="sizeritem">
                                 <option>1</option>
-                                <flag>wxALIGN_CENTER|wxALL|wxEXPAND</flag>
+                                <flag>wxALL|wxEXPAND</flag>
                                 <border>5</border>
                                 <object class="wxStaticBitmap" name="bitmap_file">
                                     <bitmap>icon.xpm</bitmap>
@@ -743,7 +743,7 @@
                             </object>
                             <object class="sizeritem">
                                 <option>1</option>
-                                <flag>wxALIGN_CENTER|wxALL|wxEXPAND</flag>
+                                <flag>wxALL|wxEXPAND</flag>
                                 <border>5</border>
                                 <object class="wxStaticBitmap" name="bitmap_nofile">
                                     <bitmap>non-existing.bmp</bitmap>
@@ -751,7 +751,7 @@
                             </object>
                             <object class="sizeritem">
                                 <option>1</option>
-                                <flag>wxALIGN_CENTER|wxALL|wxEXPAND</flag>
+                                <flag>wxALL|wxEXPAND</flag>
                                 <border>5</border>
                                 <object class="wxStaticBitmap" name="bitmap_art">
                                     <bitmap stock_id="wxART_PRINT" />

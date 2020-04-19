@@ -49,7 +49,7 @@ sub new {
     $self->{sizer_2}->Add($self->{list_box_1}, 1, wxALL|wxEXPAND, 5);
     
     $self->{sizer_4} = Wx::FlexGridSizer->new(4, 1, 0, 0);
-    $self->{grid_sizer_2}->Add($self->{sizer_4}, 1, wxALIGN_CENTER|wxEXPAND, 0);
+    $self->{grid_sizer_2}->Add($self->{sizer_4}, 1, wxEXPAND, 0);
     
     $self->{sizer_4}->Add(20, 20, 0, wxEXPAND, 0);
     

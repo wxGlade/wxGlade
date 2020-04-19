@@ -1057,7 +1057,7 @@ MyFrame::MyFrame(wxWindow* parent, wxWindowID id, const wxString& title, const w
     _0_N_N_copy_31->SetMinSize(wxDLG_UNIT(_0_N_N_copy_31, wxSize(100, 21)));
     sizer_border_5_LEFTRIGHT->Add(_0_N_N_copy_31, 0, 0, 0);
     wxBoxSizer* sizer_border_15_BOTTOM = new wxBoxSizer(wxVERTICAL);
-    sizer_7->Add(sizer_border_15_BOTTOM, 1, wxALIGN_RIGHT, 15);
+    sizer_7->Add(sizer_border_15_BOTTOM, 1, 0, 15);
     _0_N_N_copy_32 = new wxTextCtrl(notebook_1_BorderTest, wxID_ANY, wxEmptyString);
     _0_N_N_copy_32->SetMinSize(wxSize(-1, 21));
     sizer_border_15_BOTTOM->Add(_0_N_N_copy_32, 0, 0, 0);

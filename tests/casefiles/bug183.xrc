@@ -8,7 +8,7 @@
             <orient>wxVERTICAL</orient>
             <object class="sizeritem">
                 <option>1</option>
-                <flag>wxALIGN_CENTER|wxALL|wxEXPAND</flag>
+                <flag>wxALL|wxEXPAND</flag>
                 <border>5</border>
                 <object class="wxStaticText" name="label_1">
                     <label>Just a label</label>
