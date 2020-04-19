@@ -770,7 +770,7 @@ class IntRadioProperty(RadioProperty):
 class _CheckListProperty(Property):
     # common base class for Flags and WidgetStyleFlags; keeps self.value_set as a set of strings
     CONTROLNAMES = ["enabler", "_choices"]
-    EXCLUDES = None
+    EXCLUDES = EXCLUDES2 = None  # EXCLUDES2 will be set dynamically
 
     def __init__(self, value, default_value=_DefaultArgument, name=None, names=None, values=None):
         self._names = names
@@ -887,6 +887,10 @@ class _CheckListProperty(Property):
         self.on_focus()
         self._change_value(value, checked)
 
+    def _check_value(self, added=None):
+        # e.g. used by ManagedFlags
+        pass
+
     def _change_value(self, value, checked):
         "user has clicked checkbox or History is setting"
         self.previous_value = set(self.value_set)
@@ -916,6 +920,8 @@ class _CheckListProperty(Property):
             if combination and self.value_set.issuperset(combination):
                 self.value_set.difference_update( combination )
                 self.value_set.add(name)
+
+        self._check_value(checked and value or None)  # e.g. used by ManagedFlags
 
         self.value = None  # to be calculated on demand
         self._notify()
@@ -951,6 +957,11 @@ class _CheckListProperty(Property):
                     checkbox.SetForegroundColour(wx.BLUE)
                 else:
                     checkbox.SetForegroundColour(default_color)
+            if self.EXCLUDES2 and name in self.EXCLUDES2:
+                checkbox.SetForegroundColour(wx.RED)
+                checkbox.Disable()
+            elif self.EXCLUDES2 is not None:
+                checkbox.Enable()
             checkbox.Refresh()
 
     ####################################################################################################################
@@ -1053,6 +1064,12 @@ class ManagedFlags(_CheckListProperty):
         self.styles = self.FLAG_DESCRIPTION
         _CheckListProperty.__init__(self, value, default_value, name, self.FLAG_NAMES, self.FLAG_VALUES)
         self.style_defs = config.widget_config['generic_styles']
+
+    def _check_value(self, added=None):
+        # remove flags that are not applicable; set EXCLUDE2
+        excludes, remove, msg = self.owner.parent._check_flags(self.value_set, added)
+        if remove: self.value_set.difference_update(remove)
+        self.EXCLUDES2 = excludes
 
     def _decode_value(self, value):
         # handle obsolete and renamed flags
