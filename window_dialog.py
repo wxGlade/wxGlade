@@ -53,7 +53,7 @@ class WindowDialog(wx.Dialog):
         if self.standalone: szr.Add(self.standalone, 0, wx.ALL|wx.EXPAND, 5)
         if self.base:       szr.Add(self.base,       0, wx.ALL|wx.EXPAND, 5)
         hszr = wx.BoxSizer(wx.HORIZONTAL)
-        hszr.Add(wx.StaticText(self, -1, _("class"),), 0, wx.ALIGN_CENTRE_VERTICAL|wx.ALIGN_RIGHT|wx.EXPAND|wx.ALL, 3)
+        hszr.Add(wx.StaticText(self, -1, _("class"),), 0, wx.EXPAND|wx.ALL, 3)
         hszr.Add(self.klass, 2)
         szr.Add(hszr, 0, wx.EXPAND)
         # buttons
