@@ -454,6 +454,8 @@ class WidgetTree(wx.TreeCtrl):#, Tree):
         if editor is None or editor is self.cur_widget or editor.item is None: return
         self.skip_select = True
         self.SelectItem(editor.item)
+        if not self.IsExpanded(editor.item) and (not hasattr(self, "HasFocus") or not self.HasFocus()):
+            self.Expand(editor.item)
         self.skip_select = False
         self._set_cur_widget(editor)
 
@@ -463,7 +465,7 @@ class WidgetTree(wx.TreeCtrl):#, Tree):
         editor = self._GetItemData(item)
         self._set_cur_widget(editor)
         misc.set_focused_widget(editor)
-        if not self.IsExpanded(item):
+        if not self.IsExpanded(item) and (not hasattr(self, "HasFocus") or not self.HasFocus()):
             self.Expand(item)
         self.SetFocus()
 
