@@ -360,16 +360,16 @@ class All_Widgets_Frame(wx.Frame):
         sizer_11 = wx.BoxSizer(wx.VERTICAL)
         
         self.bitmap_empty = wx.StaticBitmap(self.notebook_1_wxStaticBitmap, wx.ID_ANY, wx.Bitmap(32, 32))
-        sizer_11.Add(self.bitmap_empty, 1, wx.ALIGN_CENTER | wx.ALL | wx.EXPAND, 5)
+        sizer_11.Add(self.bitmap_empty, 1, wx.ALL | wx.EXPAND, 5)
         
         self.bitmap_file = wx.StaticBitmap(self.notebook_1_wxStaticBitmap, wx.ID_ANY, wx.Bitmap("icon.xpm", wx.BITMAP_TYPE_ANY))
-        sizer_11.Add(self.bitmap_file, 1, wx.ALIGN_CENTER | wx.ALL | wx.EXPAND, 5)
+        sizer_11.Add(self.bitmap_file, 1, wx.ALL | wx.EXPAND, 5)
         
         self.bitmap_nofile = wx.StaticBitmap(self.notebook_1_wxStaticBitmap, wx.ID_ANY, wx.Bitmap("non-existing.bmp", wx.BITMAP_TYPE_ANY))
-        sizer_11.Add(self.bitmap_nofile, 1, wx.ALIGN_CENTER | wx.ALL | wx.EXPAND, 5)
+        sizer_11.Add(self.bitmap_nofile, 1, wx.ALL | wx.EXPAND, 5)
         
         self.bitmap_art = wx.StaticBitmap(self.notebook_1_wxStaticBitmap, wx.ID_ANY, wx.ArtProvider.GetBitmap(wx.ART_PRINT, wx.ART_OTHER, (32, 32)))
-        sizer_11.Add(self.bitmap_art, 1, wx.ALIGN_CENTER | wx.ALL | wx.EXPAND, 5)
+        sizer_11.Add(self.bitmap_art, 1, wx.ALL | wx.EXPAND, 5)
         
         self.notebook_1_wxStaticLine = wx.Panel(self.notebook_1, wx.ID_ANY)
         self.notebook_1.AddPage(self.notebook_1_wxStaticLine, _("wxStaticLine"))

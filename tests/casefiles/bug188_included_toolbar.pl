@@ -45,7 +45,7 @@ sub new {
     $self->{sizer_1} = Wx::BoxSizer->new(wxVERTICAL);
     
     $self->{label_1} = Wx::StaticText->new($self, wxID_ANY, "placeholder - every design\nneeds a toplevel window", wxDefaultPosition, wxDefaultSize, wxALIGN_CENTER);
-    $self->{sizer_1}->Add($self->{label_1}, 1, wxALIGN_CENTER|wxALL|wxEXPAND, 0);
+    $self->{sizer_1}->Add($self->{label_1}, 1, wxALL|wxEXPAND, 0);
     
     $self->SetSizer($self->{sizer_1});
     

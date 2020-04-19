@@ -34,7 +34,7 @@ MyFrame::MyFrame(wxWindow* parent, wxWindowID id, const wxString& title, const w
     SetTitle(wxT("frame_1"));
     wxBoxSizer* sizer_1 = new wxBoxSizer(wxVERTICAL);
     label_1 = new wxStaticText(this, wxID_ANY, wxT("placeholder - every design\nneeds a toplevel window"), wxDefaultPosition, wxDefaultSize, wxALIGN_CENTER);
-    sizer_1->Add(label_1, 1, wxALIGN_CENTER|wxALL|wxEXPAND, 0);
+    sizer_1->Add(label_1, 1, wxALL|wxEXPAND, 0);
     
     SetSizer(sizer_1);
     Layout();

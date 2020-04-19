@@ -33,7 +33,7 @@ class MyDialog(wx.Dialog):
         self.sizer_2.Add(self.list_box_1, 1, wx.ALL | wx.EXPAND, 5)
         
         self.sizer_4 = wx.FlexGridSizer(4, 1, 0, 0)
-        self.grid_sizer_2.Add(self.sizer_4, 1, wx.ALIGN_CENTER | wx.EXPAND, 0)
+        self.grid_sizer_2.Add(self.sizer_4, 1, wx.EXPAND, 0)
         
         self.sizer_4.Add((20, 20), 0, wx.EXPAND, 0)
         

@@ -24,7 +24,7 @@ Bug184_Frame::Bug184_Frame(wxWindow* parent, wxWindowID id, const wxString& titl
     SetBackgroundColour(wxSystemSettings::GetColour(wxSYS_COLOUR_BACKGROUND));
     wxBoxSizer* sizer_1 = new wxBoxSizer(wxVERTICAL);
     label_1 = new wxStaticText(this, wxID_ANY, _("Just a label"));
-    sizer_1->Add(label_1, 1, wxALIGN_CENTER|wxALL|wxEXPAND, 5);
+    sizer_1->Add(label_1, 1, wxALL|wxEXPAND, 5);
     
     SetSizer(sizer_1);
     sizer_1->Fit(this);

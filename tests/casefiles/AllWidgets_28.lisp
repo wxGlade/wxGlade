@@ -534,16 +534,16 @@
         (setf (slot-sizer-11 obj) (wxBoxSizer_Create wxVERTICAL))
         
         (setf (slot-bitmap-empty obj) (wxStaticBitmap_Create (slot-notebook-1-wxStaticBitmap obj) wxID_ANY  wxBitmap_Create(32 32) -1 -1 -1 -1 0))
-        (wxSizer_AddWindow (slot-sizer-11 obj) (slot-bitmap-empty obj) 1 (logior wxALIGN_CENTER wxALL wxEXPAND) 5 nil)
+        (wxSizer_AddWindow (slot-sizer-11 obj) (slot-bitmap-empty obj) 1 (logior wxALL wxEXPAND) 5 nil)
         
         (setf (slot-bitmap-file obj) (wxStaticBitmap_Create (slot-notebook-1-wxStaticBitmap obj) wxID_ANY  (wxBitmap_CreateLoad "icon.xpm" wxBITMAP_TYPE_ANY) -1 -1 -1 -1 0))
-        (wxSizer_AddWindow (slot-sizer-11 obj) (slot-bitmap-file obj) 1 (logior wxALIGN_CENTER wxALL wxEXPAND) 5 nil)
+        (wxSizer_AddWindow (slot-sizer-11 obj) (slot-bitmap-file obj) 1 (logior wxALL wxEXPAND) 5 nil)
         
         (setf (slot-bitmap-nofile obj) (wxStaticBitmap_Create (slot-notebook-1-wxStaticBitmap obj) wxID_ANY  (wxBitmap_CreateLoad "non-existing.bmp" wxBITMAP_TYPE_ANY) -1 -1 -1 -1 0))
-        (wxSizer_AddWindow (slot-sizer-11 obj) (slot-bitmap-nofile obj) 1 (logior wxALIGN_CENTER wxALL wxEXPAND) 5 nil)
+        (wxSizer_AddWindow (slot-sizer-11 obj) (slot-bitmap-nofile obj) 1 (logior wxALL wxEXPAND) 5 nil)
         
         (setf (slot-bitmap-art obj) (wxStaticBitmap_Create (slot-notebook-1-wxStaticBitmap obj) wxID_ANY  wxArtProvider_GetBitmap(wxART_PRINT wxART_OTHER wxSize_Create(32 32)) -1 -1 -1 -1 0))
-        (wxSizer_AddWindow (slot-sizer-11 obj) (slot-bitmap-art obj) 1 (logior wxALIGN_CENTER wxALL wxEXPAND) 5 nil)
+        (wxSizer_AddWindow (slot-sizer-11 obj) (slot-bitmap-art obj) 1 (logior wxALL wxEXPAND) 5 nil)
         
         (setf (slot-notebook-1-wxStaticLine obj) (wxPanel_Create (slot-notebook-1 obj) wxID_ANY -1 -1 -1 -1 wxTAB_TRAVERSAL))
         (wxNotebook_AddPage (slot-notebook-1 obj) (slot-notebook-1-wxStaticLine obj) (_"wxStaticLine") 1 -1)

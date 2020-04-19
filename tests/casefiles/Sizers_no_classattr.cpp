@@ -30,7 +30,7 @@ MyDialog::MyDialog(wxWindow* parent, wxWindowID id, const wxString& title, const
     list_box_1 = new wxListBox(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, 0, list_box_1_choices, 0);
     sizer_2->Add(list_box_1, 1, wxALL|wxEXPAND, 5);
     wxFlexGridSizer* sizer_4 = new wxFlexGridSizer(4, 1, 0, 0);
-    grid_sizer_2->Add(sizer_4, 1, wxALIGN_CENTER|wxEXPAND, 0);
+    grid_sizer_2->Add(sizer_4, 1, wxEXPAND, 0);
     sizer_4->Add(20, 20, 0, wxEXPAND, 0);
     button_4 = new wxButton(this, wxID_ADD, wxEmptyString);
     sizer_4->Add(button_4, 0, wxALL, 5);

@@ -44,7 +44,7 @@
                     </object>
                     <object class="sizeritem">
                         <option>1</option>
-                        <flag>wxALIGN_CENTER|wxEXPAND</flag>
+                        <flag>wxEXPAND</flag>
                         <object class="wxFlexGridSizer">
                             <attribute>1</attribute>
                             <cols>1</cols>
