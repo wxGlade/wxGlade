@@ -82,7 +82,7 @@ class EditRoot(np.PropertyOwner):
         return False
 
     def get_path(self):
-        return [self.name]
+        return self.name
 
     def add_item(self, child, pos=None):
         # XXX pos is always None at the moment

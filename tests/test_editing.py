@@ -19,9 +19,8 @@ class TestEditing(WXGladeGUITest):
         basename = 'crash_on_cut_paste'
         infilename = self._get_casefile_path( '%s.wxg'%basename )
         common.main._open_app(infilename, use_progress_dialog=False, add_to_history=False)
-        path = ['App', 'frame', 'sizer_limit', 'panel_3', 'sizer_8']
-        editor = common.root.find_widget_from_path(path)
-        common.app_tree.show_toplevel( None, common.root.find_widget_from_path(path[:2]) )
+        editor = common.root.find_widget_from_path( 'App/frame/sizer_limit/panel_3/sizer_8' )
+        common.app_tree.show_toplevel( None, common.root.find_widget_from_path('App/frame') )
         self._process_wx_events()
         parent = editor.parent
 
