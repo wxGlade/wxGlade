@@ -1199,7 +1199,7 @@ class MyFrame(wx.Frame):
         sizer_border_5_LEFTRIGHT.Add(self._0_N_N_copy_31, 0, 0, 0)
         
         sizer_border_15_BOTTOM = wx.BoxSizer(wx.VERTICAL)
-        sizer_7.Add(sizer_border_15_BOTTOM, 1, wx.ALIGN_RIGHT, 15)
+        sizer_7.Add(sizer_border_15_BOTTOM, 1, 0, 15)
         
         self._0_N_N_copy_32 = wx.TextCtrl(self.notebook_1_BorderTest, wx.ID_ANY, "")
         self._0_N_N_copy_32.SetMinSize((-1, 21))
