@@ -641,7 +641,7 @@ class Sizeritem(np.PropertyOwner):
         self.proportion = np.LayoutProportionProperty(0)
         self.span = np.LayoutSpanProperty((1,1))
         self.border = np.SpinProperty(0)
-        self.flag = np.ManagedFlags(None)
+        self.flag = np.ManagedFlags(None, name="sizeritem_flags")
         self.pos = np.SpinProperty(None)
 
     def on_load(self, child=None):
