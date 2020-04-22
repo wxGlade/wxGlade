@@ -354,29 +354,25 @@ class Application(EditRoot):
         if self.__saved != value:
             self.__saved = value
             if not config.use_gui: return
-            t = common.main.GetTitle().strip()
-            if not value:
-                common.main.SetTitle('* ' + t)
-            else:
-                if t[0] == '*':
-                    common.main.SetTitle(t[1:].strip())
+            self._set_title()
     saved = property(_get_saved, _set_saved)
+
     def _get_filename(self):
         return self.__filename
     def _set_filename(self, value):
         if self.__filename != value:
             self.__filename = value
-            if not config.use_gui: return
-            if self.__saved:
-                flag = ' '
-            else:
-                flag = '* '
-            if self.__filename is not None:
-                title = '%s(%s)' % (flag, self.__filename)
-            else:
-                title = flag
-            common.main.SetTitle( _('wxGlade: %s') % title )
+            self._set_title()
     filename = property(_get_filename, _set_filename)
+
+    def _set_title(self):
+        if not config.use_gui: return
+        title = ["wxGlade: "]
+        if not self.__saved:
+            title.append( "* " )
+        if self.__filename:
+            title.append( "(%s)"%self.__filename )
+        common.main.SetTitle( "".join(title).strip() )
 
     # interface from tree ##############################################################################################
     # handle top_window property choices
