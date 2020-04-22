@@ -63,6 +63,7 @@ class Property(object):
     GROW = False # if this is True, no spacer is added after the control, so it may grow down to the lower edge
     HAS_DATA = True
     min_version = None  # can be overwritten in instances; currently only used by BitmapProperty
+
     def __init__(self, value, default_value=_DefaultArgument, name=None):#, write_always=False):
         self.value = value
         self.previous_value = None  # only set during call of self.owner.properties_modified
@@ -76,10 +77,12 @@ class Property(object):
         self.default_value = default_value
         self.controls = None
         self.editing = False
+
     def set_owner(self, owner, attributename=None):
         self.owner = owner
         self.attributename = attributename
         if self.name is None: self.name = attributename
+
     ####################################################################################################################
     # the interface from owner and application
     def get(self):
@@ -778,6 +781,10 @@ class _CheckListProperty(Property):
         self.enabler = self._choices = None
         Property.__init__(self, None, default_value, name) # with value=None, as this is to be calculated on demand only
 
+    def set_owner(self, owner, attributename):
+        Property.set_owner(self, owner, attributename)
+        self._check_value()
+
     def _ensure_values(self):
         if self._names is None or self._values is None: raise ValueError("implementation error")
 
@@ -1066,6 +1073,7 @@ class ManagedFlags(_CheckListProperty):
 
     def _check_value(self, added=None):
         # remove flags that are not applicable; set EXCLUDE2
+        if self.name != "flag" or not self.owner.parent.IS_SIZER: return
         excludes, remove, msg = self.owner.parent._check_flags(self.value_set, added)
         if remove: self.value_set.difference_update(remove)
         self.EXCLUDES2 = excludes
