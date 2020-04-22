@@ -2591,7 +2591,7 @@ class _SizerDialog(wx.Dialog):
         btn = wx.Button(self, wx.ID_OK, _('OK'))
         btn.SetDefault()
         hsizer.Add(btn, 1, wx.ALL, 5)
-        szr.Add(hsizer, 0, wx.EXPAND|wx.ALIGN_CENTER )
+        szr.Add(hsizer, 0, wx.EXPAND )
         self.SetAutoLayout(1)
         self.SetSizer(szr)
         szr.Fit(self)
