@@ -932,7 +932,7 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
         objname = self.format_generic_access(obj)
 
         ret = []
-        for name, value in sorted(obj.extraproperties):
+        for name, value in obj.extraproperties:
             name_cap = name[0].upper() + name[1:]
             stmt = tmpl % { 'klass': self.cn_class(obj.klass), 'objname': objname, 'propname': name,
                             'propname_cap': name_cap, 'value': value }

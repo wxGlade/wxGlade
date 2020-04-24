@@ -43,8 +43,8 @@ sub new {
     $self->{grid_1}->SetColLabelValue(0, "Column A");
     $self->{grid_1}->SetColLabelValue(1, "Column B");
     $self->{grid_1}->SetBackgroundColour(Wx::Colour->new(0, 255, 255));
-    $self->{grid_1}->SetCellValue(0, 0, "1");
     $self->{grid_1}->SetRowLabelValue(0, "Row 1");
+    $self->{grid_1}->SetCellValue(0, 0, "1");
     $self->{sizer_1}->Add($self->{grid_1}, 1, wxEXPAND, 0);
     
     $self->SetSizer($self->{sizer_1});
