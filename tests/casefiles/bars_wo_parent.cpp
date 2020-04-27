@@ -95,7 +95,7 @@ void MyFrame::do_layout()
 {
     // begin wxGlade: MyFrame::do_layout
     wxBoxSizer* sizer_1 = new wxBoxSizer(wxVERTICAL);
-    sizer_1->Add(label_1, 1, wxALIGN_CENTER|wxALL|wxEXPAND, 0);
+    sizer_1->Add(label_1, 1, wxALL|wxEXPAND, 0);
     SetSizer(sizer_1);
     Layout();
     // end wxGlade

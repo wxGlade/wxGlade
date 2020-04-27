@@ -1086,7 +1086,7 @@ void MyFrame::do_layout()
     sizer_border_5_LEFTRIGHT->Add(_0_N_N_copy_31, 0, 0, 0);
     sizer_7->Add(sizer_border_5_LEFTRIGHT, 1, wxLEFT|wxRIGHT, 5);
     sizer_border_15_BOTTOM->Add(_0_N_N_copy_32, 0, 0, 0);
-    sizer_7->Add(sizer_border_15_BOTTOM, 1, wxALIGN_RIGHT, 15);
+    sizer_7->Add(sizer_border_15_BOTTOM, 1, 0, 15);
     notebook_1_BorderTest->SetSizer(sizer_7);
     grid_sizer_1->Add(button_1, wxGBPosition(0, 0), wxGBSpan(1, 1), 0, 0);
     grid_sizer_1->Add(20, 20, wxGBPosition(2, 0), wxGBSpan(1, 1), wxEXPAND, 0);

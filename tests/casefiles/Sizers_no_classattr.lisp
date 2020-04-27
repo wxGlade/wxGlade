@@ -86,7 +86,7 @@
         (wxSizer_AddWindow (slot-sizer-4 obj) ((20, 20) obj) 0 wxEXPAND 0 nil)
         (wxFlexGridSizer_AddGrowableRow (slot-sizer-4 obj) 0)
         (wxFlexGridSizer_AddGrowableRow (slot-sizer-4 obj) 3)
-        (wxSizer_AddSizer (slot-grid-sizer-2 obj) (slot-sizer-4 obj) 1 (logior wxALIGN_CENTER wxEXPAND) 0 nil)
+        (wxSizer_AddSizer (slot-grid-sizer-2 obj) (slot-sizer-4 obj) 1 wxEXPAND 0 nil)
         (wxSizer_AddWindow (slot-sizer-3 obj) (slot-list-box-2 obj) 1 (logior wxALL wxEXPAND) 5 nil)
         (wxSizer_AddSizer (slot-grid-sizer-2 obj) (slot-sizer-3 obj) 1 wxEXPAND 0 nil)
         (wxFlexGridSizer_AddGrowableRow (slot-grid-sizer-2 obj) 0)

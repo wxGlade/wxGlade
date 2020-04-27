@@ -52,7 +52,7 @@ class MyDialog(wx.Dialog):
         sizer_4.Add((20, 20), 0, wx.EXPAND, 0)
         sizer_4.AddGrowableRow(0)
         sizer_4.AddGrowableRow(3)
-        grid_sizer_2.Add(sizer_4, 1, wx.ALIGN_CENTER | wx.EXPAND, 0)
+        grid_sizer_2.Add(sizer_4, 1, wx.EXPAND, 0)
         sizer_3.Add(self.list_box_2, 1, wx.ALL | wx.EXPAND, 5)
         grid_sizer_2.Add(sizer_3, 1, wx.EXPAND, 0)
         grid_sizer_2.AddGrowableRow(0)

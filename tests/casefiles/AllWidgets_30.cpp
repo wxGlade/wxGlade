@@ -367,12 +367,12 @@ void All_Widgets_Frame::do_layout()
     splitter_2->SplitVertically(splitter_2_pane_1, splitter_2_pane_2);
     sizer_25->Add(splitter_2, 1, wxALL|wxEXPAND, 5);
     notebook_1_wxSplitterWindow_vertical->SetSizer(sizer_25);
-    sizer_11->Add(bitmap_empty, 1, wxALIGN_CENTER|wxALL|wxEXPAND, 5);
-    sizer_11->Add(bitmap_file, 1, wxALIGN_CENTER|wxALL|wxEXPAND, 5);
-    sizer_11->Add(bitmap_nofile, 1, wxALIGN_CENTER|wxALL|wxEXPAND, 5);
-    sizer_11->Add(bitmap_art, 1, wxALIGN_CENTER|wxALL|wxEXPAND, 5);
-    sizer_11->Add(bitmap_null, 1, wxALIGN_CENTER|wxALL|wxEXPAND, 5);
-    sizer_11->Add(bitmap_null_sized, 1, wxALIGN_CENTER|wxALL|wxEXPAND, 5);
+    sizer_11->Add(bitmap_empty, 1, wxALL|wxEXPAND, 5);
+    sizer_11->Add(bitmap_file, 1, wxALL|wxEXPAND, 5);
+    sizer_11->Add(bitmap_nofile, 1, wxALL|wxEXPAND, 5);
+    sizer_11->Add(bitmap_art, 1, wxALL|wxEXPAND, 5);
+    sizer_11->Add(bitmap_null, 1, wxALL|wxEXPAND, 5);
+    sizer_11->Add(bitmap_null_sized, 1, wxALL|wxEXPAND, 5);
     notebook_1_wxStaticBitmap->SetSizer(sizer_11);
     sizer_10->Add(static_line_2, 1, wxALL|wxEXPAND, 5);
     sizer_10->Add(static_line_3, 1, wxALL|wxEXPAND, 5);

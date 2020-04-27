@@ -1079,7 +1079,7 @@ class MyFrame(wx.Frame):
         sizer_border_5_LEFTRIGHT.Add(self._0_N_N_copy_31, 0, 0, 0)
         sizer_7.Add(sizer_border_5_LEFTRIGHT, 1, wx.LEFT | wx.RIGHT, 5)
         sizer_border_15_BOTTOM.Add(self._0_N_N_copy_32, 0, 0, 0)
-        sizer_7.Add(sizer_border_15_BOTTOM, 1, wx.ALIGN_RIGHT, 15)
+        sizer_7.Add(sizer_border_15_BOTTOM, 1, 0, 15)
         self.notebook_1_BorderTest.SetSizer(sizer_7)
         grid_sizer_1.Add(self.button_1, (0, 0), (1, 1), 0, 0)
         grid_sizer_1.Add(20, 20, (2, 0), (1, 1), wx.EXPAND, 0)

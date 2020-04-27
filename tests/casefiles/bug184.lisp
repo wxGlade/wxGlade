@@ -54,7 +54,7 @@
 (defmethod do-layout ((obj Bug184_Frame))
         ;;; begin wxGlade: Bug184_Frame.__do_layout
         (setf (slot-sizer-1 obj) (wxBoxSizer_Create wxVERTICAL))
-        (wxSizer_AddWindow (slot-sizer-1 obj) (slot-label-1 obj) 1 (logior wxALIGN_CENTER wxALL wxEXPAND) 5 nil)
+        (wxSizer_AddWindow (slot-sizer-1 obj) (slot-label-1 obj) 1 (logior wxALL wxEXPAND) 5 nil)
         (wxWindow_SetSizer (slot-top-window obj) (slot-sizer-1 obj))
         (wxSizer_Fit (slot-sizer-1 obj) (slot-top-window obj))
         (wxFrame_layout (slot-Frame184 self))

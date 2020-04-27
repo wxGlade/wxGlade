@@ -1103,7 +1103,7 @@ sub __do_layout {
     $self->{sizer_border_5_LEFTRIGHT}->Add($self->{_0_N_N_copy_31}, 0, 0, 0);
     $self->{sizer_7}->Add($self->{sizer_border_5_LEFTRIGHT}, 1, wxLEFT|wxRIGHT, 5);
     $self->{sizer_border_15_BOTTOM}->Add($self->{_0_N_N_copy_32}, 0, 0, 0);
-    $self->{sizer_7}->Add($self->{sizer_border_15_BOTTOM}, 1, wxALIGN_RIGHT, 15);
+    $self->{sizer_7}->Add($self->{sizer_border_15_BOTTOM}, 1, 0, 15);
     $self->{notebook_1_BorderTest}->SetSizer($self->{sizer_7});
     $self->{grid_sizer_1}->Add($self->{button_1}, (0, 0), (1, 1), 0, 0);
     $self->{grid_sizer_1}->Add(20, 20, (2, 0), (1, 1), wxEXPAND, 0);

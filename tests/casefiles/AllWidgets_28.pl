@@ -360,10 +360,10 @@ sub __do_layout {
     $self->{splitter_2}->SplitVertically($self->{splitter_2_pane_1}, $self->{splitter_2_pane_2}, );
     $self->{sizer_25}->Add($self->{splitter_2}, 1, wxALL|wxEXPAND, 5);
     $self->{notebook_1_wxSplitterWindow_vertical}->SetSizer($self->{sizer_25});
-    $self->{sizer_11}->Add($self->{bitmap_empty}, 1, wxALIGN_CENTER|wxALL|wxEXPAND, 5);
-    $self->{sizer_11}->Add($self->{bitmap_file}, 1, wxALIGN_CENTER|wxALL|wxEXPAND, 5);
-    $self->{sizer_11}->Add($self->{bitmap_nofile}, 1, wxALIGN_CENTER|wxALL|wxEXPAND, 5);
-    $self->{sizer_11}->Add($self->{bitmap_art}, 1, wxALIGN_CENTER|wxALL|wxEXPAND, 5);
+    $self->{sizer_11}->Add($self->{bitmap_empty}, 1, wxALL|wxEXPAND, 5);
+    $self->{sizer_11}->Add($self->{bitmap_file}, 1, wxALL|wxEXPAND, 5);
+    $self->{sizer_11}->Add($self->{bitmap_nofile}, 1, wxALL|wxEXPAND, 5);
+    $self->{sizer_11}->Add($self->{bitmap_art}, 1, wxALL|wxEXPAND, 5);
     $self->{notebook_1_wxStaticBitmap}->SetSizer($self->{sizer_11});
     $self->{sizer_10}->Add($self->{static_line_2}, 1, wxALL|wxEXPAND, 5);
     $self->{sizer_10}->Add($self->{static_line_3}, 1, wxALL|wxEXPAND, 5);

@@ -34,7 +34,7 @@ class Bug184_Frame(wx.Frame):
     def __do_layout(self):
         # begin wxGlade: Bug184_Frame.__do_layout
         sizer_1 = wx.BoxSizer(wx.VERTICAL)
-        sizer_1.Add(self.label_1, 1, wx.ALIGN_CENTER | wx.ALL | wx.EXPAND, 5)
+        sizer_1.Add(self.label_1, 1, wx.ALL | wx.EXPAND, 5)
         self.SetSizer(sizer_1)
         sizer_1.Fit(self)
         self.Layout()

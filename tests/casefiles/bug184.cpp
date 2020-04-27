@@ -41,7 +41,7 @@ void Bug184_Frame::do_layout()
 {
     // begin wxGlade: Bug184_Frame::do_layout
     wxBoxSizer* sizer_1 = new wxBoxSizer(wxVERTICAL);
-    sizer_1->Add(label_1, 1, wxALIGN_CENTER|wxALL|wxEXPAND, 5);
+    sizer_1->Add(label_1, 1, wxALL|wxEXPAND, 5);
     SetSizer(sizer_1);
     sizer_1->Fit(this);
     Layout();

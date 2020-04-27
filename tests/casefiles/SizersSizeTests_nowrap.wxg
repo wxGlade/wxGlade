@@ -2320,7 +2320,6 @@
                             <object class="sizeritem">
                                 <option>1</option>
                                 <border>15</border>
-                                <flag>wxALIGN_RIGHT</flag>
                                 <object class="wxBoxSizer" name="sizer_border_15_BOTTOM" base="EditBoxSizer">
                                     <orient>wxVERTICAL</orient>
                                     <object class="sizeritem">
