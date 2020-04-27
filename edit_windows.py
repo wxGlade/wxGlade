@@ -580,6 +580,8 @@ class ManagedBase(WindowBase):
         # inside the sizer (proportion, borders, alignment...)
         self._has_layout = not sizer.is_virtual()
 
+        self.sizer = sizer
+
         # attributes to keep the values of the sizer properties
         self.pos        = np.LayoutPosProperty(pos)            # position within the sizer, 1-based
         self.span       = np.LayoutSpanProperty((1,1))         # cell spanning for GridBagSizer
@@ -587,7 +589,6 @@ class ManagedBase(WindowBase):
         self.border     = np.SpinProperty(0, immediate=True)   # border width
         self.flag       = np.ManagedFlags(0)                   # alignment, border; expansion in other dir.
 
-        self.sizer = sizer
         sizer.add_item(self, pos)
 
     def check_defaults(self):
@@ -628,7 +629,7 @@ class ManagedBase(WindowBase):
     def properties_changed(self, modified):
         WindowBase.properties_changed(self, modified)
         p = self.properties["flag"]
-        if modified and "flag" in modified and self.parent.IS_SIZER:
+        if modified and "flag" in modified and self.parent.is_sizer:
             p._check_value()
 
         if "flag" in modified and "wxSHAPED" in p.value_set and self.proportion:

@@ -263,6 +263,7 @@ class XmlWidgetBuilder(XmlParser):
                 return
             if obj.sizeritem:
                 obj.obj.copy_properties( obj.sizeritem, ("option","flag","border","span") )
+                obj.obj.properties["flag"]._check_value()
             obj.obj.on_load()
         else:
             # end of a property or error

@@ -761,10 +761,6 @@ class _CheckListProperty(Property):
         self.enabler = self._choices = None
         Property.__init__(self, None, default_value, name) # with value=None, as this is to be calculated on demand only
 
-    def set_owner(self, owner, attributename):
-        Property.set_owner(self, owner, attributename)
-        self._check_value()
-
     def _ensure_values(self):
         if self._names is None or self._values is None: raise ValueError("implementation error")
 
@@ -1051,8 +1047,8 @@ class ManagedFlags(_CheckListProperty):
 
     def _check_value(self, added=None):
         # remove flags that are not applicable; set EXCLUDE2
-        if self.name != "flag" or not self.owner.parent.IS_SIZER: return
-        excludes, remove, msg = self.owner.parent._check_flags(self.value_set, added)
+        if self.name != "flag" or not self.owner.sizer: return
+        excludes, remove, msg = self.owner.sizer._check_flags(self.value_set, added)
         if remove: self.value_set.difference_update(remove)
         self.EXCLUDES2 = excludes
 

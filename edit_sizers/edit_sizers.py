@@ -810,7 +810,7 @@ class SizerBase(Sizer, np.PropertyOwner):
 
     def properties_changed(self, modified):
         # "class" and "orient" will only display; "class_orient"
-        if modified and "flag" in modified and self.parent.IS_SIZER:
+        if modified and "flag" in modified and self.sizer:
             self.properties["flag"]._check_value()
 
         if modified and "name" in modified:
@@ -1007,6 +1007,7 @@ class SizerBase(Sizer, np.PropertyOwner):
         item._size = size
 
         item.sizer = self
+        item.properties["flag"]._check_value()
         item.properties["pos"].set(pos)
 
         ################################################################################################################
