@@ -461,7 +461,11 @@ class TestGui(WXGladeGUITest):
         generated_filename = self._get_outputfile_path('app_wo_attrs_gui.wxg')
         xrc2wxg.convert(infilename, generated_filename)
         # compare
-        expected_filename = self._get_casefile_path('app_wo_attrs_gui.wxg')
+        if sys.version_info[:2]< (3,8):
+            # before 3.8 attribute names were ordered, now they are preserved
+            expected_filename = self._get_casefile_path('app_wo_attrs_gui.wxg')
+        else:
+            expected_filename = self._get_casefile_path('app_wo_attrs_gui_new.wxg')
         self._compare_files(expected_filename, generated_filename)
         # open the .wxg file; there should be no problem
         self._messageBox = None
