@@ -239,9 +239,8 @@
         (setf (slot-All-Widgets-toolbar obj) (wxToolBar_Create (slot-top-window obj) -1 -1 -1 -1 -1 wxTB_HORIZONTAL))
         (wxToolBar_AddTool (slot-All-Widgets-toolbar obj) wxID_UP (_"UpDown") wxArtProvider_GetBitmap(wxART_GO_UP wxART_OTHER wxSize_Create(32 32)) wxArtProvider_GetBitmap(wxART_GO_DOWN wxART_OTHER wxSize_Create(32 32)) wxITEM_CHECK (_"Up or Down") (_"Up or Down"))
         (wxToolBar_AddTool (slot-All-Widgets-toolbar obj) wxID_OPEN (_"Open") wxBitmap_Create(32 32) wxNullBitmap wxITEM_NORMAL (_"Open a new file") (_"Open a new file"))
-        (wxToolBar_Realize (slot-All-Widgets-toolbar obj))
-        (wxToolBar_Realize (slot-All-Widgets-toolbar obj))
         (wxFrame_SetToolBar (slot-top-window obj) (slot-All-Widgets-toolbar obj))
+        (wxToolBar_Realize (slot-All-Widgets-toolbar obj))
         ;;; Tool Bar end
         
         (setf (slot-sizer-1 obj) (wxGridSizer_Create 3 1 0 0))
@@ -265,7 +264,7 @@
         (wxSizer_AddWindow (slot-sizer-13 obj) (slot-bitmap-button-empty1 obj) 1 (logior wxALL wxEXPAND) 5 nil)
         
         (setf (slot-bitmap-button-icon2 obj) (wxBitmapButton_Create (slot-notebook-1-wxBitmapButton obj) wxID_ANY (wxBitmap_CreateLoad "icon.xpm" wxBITMAP_TYPE_ANY) -1 -1 -1 -1 (logior wxBORDER_NONE wxBU_BOTTOM)))
-        (wxBitmapButton_SetBitmapDisabled (slot-(slot-bitmap-button-icon2 obj) obj) wxBitmap_Create(20 20))
+        (wxBitmapButton_SetBitmapDisabled (slot-(slot-bitmap-button-icon2 obj) obj) wxBitmap_Create(32 32))
         (slot-bitmap-button-icon2 obj).wxWindow_SetSize((slot-bitmap-button-icon2 obj).wxWindow_GetBestSize())
         (wxButton_SetDefault (slot-bitmap-button-icon2 obj))
         (wxSizer_AddWindow (slot-sizer-13 obj) (slot-bitmap-button-icon2 obj) 1 (logior wxALL wxEXPAND) 5 nil)

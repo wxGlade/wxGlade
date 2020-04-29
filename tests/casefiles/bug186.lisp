@@ -65,9 +65,8 @@
         (setf (slot-Bug186-Frame-toolbar obj) (wxToolBar_Create (slot-top-window obj) -1 -1 -1 -1 -1 wxTB_HORIZONTAL))
         global myMagicTool; myMagicTool = wxNewId()
         (wxToolBar_AddTool (slot-Bug186-Frame-toolbar obj) myMagicTool (_"Magic") wxBitmap_Create(32 32) wxNullBitmap wxITEM_NORMAL (_"Do a MAGIC action") (_"It's really MAGIC"))
-        (wxToolBar_Realize (slot-Bug186-Frame-toolbar obj))
-        (wxToolBar_Realize (slot-Bug186-Frame-toolbar obj))
         (wxFrame_SetToolBar (slot-top-window obj) (slot-Bug186-Frame-toolbar obj))
+        (wxToolBar_Realize (slot-Bug186-Frame-toolbar obj))
         ;;; Tool Bar end
         
         (setf (slot-sizer-1 obj) (wxBoxSizer_Create wxVERTICAL))

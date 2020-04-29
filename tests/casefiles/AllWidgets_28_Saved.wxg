@@ -198,7 +198,7 @@
                                 <object class="wxBitmapButton" name="bitmap_button_icon2" base="EditBitmapButton">
                                     <style>wxBU_BOTTOM|wxBORDER_NONE</style>
                                     <bitmap>icon.xpm</bitmap>
-                                    <disabled_bitmap>empty:20,20</disabled_bitmap>
+                                    <disabled_bitmap>empty:32,32</disabled_bitmap>
                                     <default>1</default>
                                 </object>
                             </object>

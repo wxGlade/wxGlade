@@ -35,7 +35,7 @@ MyFrame::MyFrame(wxWindow* parent, wxWindowID id, const wxString& title, const w
     frame_toolbar = new wxToolBar(this, -1);
     SetToolBar(frame_toolbar);
     wxToolBarToolBase *wxglade_tmp_tool;
-    wxglade_tmp_tool = frame_toolbar->AddTool(wxID_ANY, wxT("My Tool"), wxBitmap(wxT("D:\\Python\\wxglade\\wxglade_dev_master\\icons\\button.xpm"), wxBITMAP_TYPE_ANY), wxNullBitmap, wxITEM_NORMAL, wxEmptyString, wxEmptyString);
+    wxglade_tmp_tool = frame_toolbar->AddTool(wxID_ANY, wxT("My Tool"), wxBitmap(wxT("..\\..\\icons\\button.xpm"), wxBITMAP_TYPE_ANY), wxNullBitmap, wxITEM_NORMAL, wxEmptyString, wxEmptyString);
     Bind(wxEVT_MENU, &MyFrame::on_my_tool, this, wxglade_tmp_tool->GetId());
     frame_toolbar->Realize();
     wxBoxSizer* sizer_1 = new wxBoxSizer(wxVERTICAL);

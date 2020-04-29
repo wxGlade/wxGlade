@@ -67,8 +67,8 @@ class All_Widgets_Frame(wx.Frame):
         self.All_Widgets_toolbar = wx.ToolBar(self, -1)
         self.All_Widgets_toolbar.AddLabelTool(wx.ID_UP, _("UpDown"), wx.ArtProvider.GetBitmap(wx.ART_GO_UP, wx.ART_OTHER, (32, 32)), wx.ArtProvider.GetBitmap(wx.ART_GO_DOWN, wx.ART_OTHER, (32, 32)), wx.ITEM_CHECK, _("Up or Down"), _("Up or Down"))
         self.All_Widgets_toolbar.AddLabelTool(wx.ID_OPEN, _("Open"), wx.EmptyBitmap(32, 32), wx.NullBitmap, wx.ITEM_NORMAL, _("Open a new file"), _("Open a new file"))
-        self.All_Widgets_toolbar.Realize()
         self.SetToolBar(self.All_Widgets_toolbar)
+        self.All_Widgets_toolbar.Realize()
         # Tool Bar end
         
         sizer_1 = wx.FlexGridSizer(3, 1, 0, 0)

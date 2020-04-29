@@ -94,8 +94,8 @@ sub new {
     $self->{All_Widgets_toolbar} = Wx::ToolBar->new($self, -1);
     $self->{All_Widgets_toolbar}->AddTool(wxID_UP, _T("UpDown"), Wx::ArtProvider::GetBitmap(wxART_GO_UP, wxART_OTHER, Wx::Size->new(32, 32)), Wx::ArtProvider::GetBitmap(wxART_GO_DOWN, wxART_OTHER, Wx::Size->new(32, 32)), wxITEM_CHECK, _T("Up or Down"), _T("Up or Down"));
     $self->{All_Widgets_toolbar}->AddTool(wxID_OPEN, _T("Open"), Wx::Bitmap->new(32, 32), wxNullBitmap, wxITEM_NORMAL, _T("Open a new file"), _T("Open a new file"));
-    $self->{All_Widgets_toolbar}->Realize();
     $self->SetToolBar($self->{All_Widgets_toolbar});
+    $self->{All_Widgets_toolbar}->Realize();
     # Tool Bar end
     
     $self->{sizer_1} = Wx::FlexGridSizer->new(3, 1, 0, 0);
@@ -119,7 +119,7 @@ sub new {
     $self->{sizer_13}->Add($self->{bitmap_button_empty1}, 1, wxALL|wxEXPAND, 5);
     
     $self->{bitmap_button_icon2} = Wx::BitmapButton->new($self->{notebook_1_wxBitmapButton}, wxID_ANY, Wx::Bitmap->new("icon.xpm", wxBITMAP_TYPE_ANY), wxDefaultPosition, wxDefaultSize, wxBORDER_NONE|wxBU_BOTTOM);
-    $self->{bitmap_button_icon2}->SetBitmapDisabled(Wx::Bitmap->new(20, 20));
+    $self->{bitmap_button_icon2}->SetBitmapDisabled(Wx::Bitmap->new(32, 32));
     $self->{bitmap_button_icon2}->SetSize($self->{bitmap_button_icon2}->GetBestSize());
     $self->{bitmap_button_icon2}->SetDefault();
     $self->{sizer_13}->Add($self->{bitmap_button_icon2}, 1, wxALL|wxEXPAND, 5);

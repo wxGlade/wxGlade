@@ -55,8 +55,8 @@ sub new {
     $self->{Bug186_Frame_toolbar} = Wx::ToolBar->new($self, -1);
     use constant myMagicTool => Wx::NewId();
     $self->{Bug186_Frame_toolbar}->AddTool(myMagicTool, _T("Magic"), Wx::Bitmap->new(32, 32), wxNullBitmap, wxITEM_NORMAL, _T("Do a MAGIC action"), _T("It's really MAGIC"));
-    $self->{Bug186_Frame_toolbar}->Realize();
     $self->SetToolBar($self->{Bug186_Frame_toolbar});
+    $self->{Bug186_Frame_toolbar}->Realize();
     # Tool Bar end
     
     $self->{sizer_1} = Wx::BoxSizer->new(wxVERTICAL);

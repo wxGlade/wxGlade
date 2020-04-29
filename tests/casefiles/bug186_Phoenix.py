@@ -35,8 +35,8 @@ class Frame186(wx.Frame):
         self.Bug186_Frame_toolbar = wx.ToolBar(self, -1)
         global myMagicTool; myMagicTool = wx.NewId()
         self.Bug186_Frame_toolbar.AddTool(myMagicTool, _("Magic"), wx.Bitmap(32, 32), wx.NullBitmap, wx.ITEM_NORMAL, _("Do a MAGIC action"), _("It's really MAGIC"))
-        self.Bug186_Frame_toolbar.Realize()
         self.SetToolBar(self.Bug186_Frame_toolbar)
+        self.Bug186_Frame_toolbar.Realize()
         # Tool Bar end
         
         sizer_1 = wx.BoxSizer(wx.VERTICAL)
