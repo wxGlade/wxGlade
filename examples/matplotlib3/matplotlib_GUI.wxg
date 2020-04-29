@@ -89,7 +89,7 @@
                                     <object class="sizeritem">
                                         <option>1</option>
                                         <border>0</border>
-                                        <flag>wxEXPAND|wxALIGN_CENTER_VERTICAL</flag>
+                                        <flag>wxEXPAND</flag>
                                         <object class="spacer" name="spacer" base="EditSpacer">
                                             <width>20</width>
                                             <height>20</height>
@@ -310,7 +310,7 @@
                                     <object class="sizeritem">
                                         <option>1</option>
                                         <border>0</border>
-                                        <flag>wxEXPAND|wxALIGN_CENTER_VERTICAL</flag>
+                                        <flag>wxEXPAND</flag>
                                         <object class="spacer" name="spacer" base="EditSpacer">
                                             <width>20</width>
                                             <height>20</height>
