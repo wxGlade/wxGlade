@@ -79,9 +79,8 @@ import wx.html
         
         ;;; Tool Bar
         (setf (slot-frame-toolbar obj) (wxToolBar_Create (slot-top-window obj) -1 -1 -1 -1 -1 wxTB_HORIZONTAL))
-        (wxToolBar_Realize (slot-frame-toolbar obj))
-        (wxToolBar_Realize (slot-frame-toolbar obj))
         (wxFrame_SetToolBar (slot-top-window obj) (slot-frame-toolbar obj))
+        (wxToolBar_Realize (slot-frame-toolbar obj))
         ;;; Tool Bar end
         
         (setf (slot-sizer-1 obj) (wxBoxSizer_Create wxHORIZONTAL))
@@ -372,9 +371,8 @@ import wx.html
         
         ;;; Tool Bar
         (setf (slot-frame-copy-toolbar obj) (wxToolBar_Create (slot-top-window obj) -1 -1 -1 -1 -1 wxTB_HORIZONTAL))
-        (wxToolBar_Realize (slot-frame-copy-toolbar obj))
-        (wxToolBar_Realize (slot-frame-copy-toolbar obj))
         (wxFrame_SetToolBar (slot-top-window obj) (slot-frame-copy-toolbar obj))
+        (wxToolBar_Realize (slot-frame-copy-toolbar obj))
         ;;; Tool Bar end
         
         (setf (slot-sizer-1 obj) (wxBoxSizer_Create wxHORIZONTAL))

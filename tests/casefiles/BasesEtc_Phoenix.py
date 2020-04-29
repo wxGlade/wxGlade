@@ -36,8 +36,8 @@ class MyFrame(wx.Frame):
         
         # Tool Bar
         self.frame_toolbar = wx.ToolBar(self, -1)
-        self.frame_toolbar.Realize()
         self.SetToolBar(self.frame_toolbar)
+        self.frame_toolbar.Realize()
         # Tool Bar end
         
         self.panel_x = wx.Panel(self, wx.ID_ANY)
@@ -159,8 +159,8 @@ class MyFrameWithBases(TestFrame, testframe.TestFrame):
         
         # Tool Bar
         self.frame_copy_toolbar = wx.ToolBar(self, -1)
-        self.frame_copy_toolbar.Realize()
         self.SetToolBar(self.frame_copy_toolbar)
+        self.frame_copy_toolbar.Realize()
         # Tool Bar end
         
         self.panel_1 = TestPanelWithBasesInFrame(self, wx.ID_ANY)

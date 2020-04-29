@@ -80,7 +80,7 @@ All_Widgets_Frame::All_Widgets_Frame(wxWindow* parent, wxWindowID id, const wxSt
     bitmap_button_empty1->SetDefault();
     sizer_13->Add(bitmap_button_empty1, 1, wxALL|wxEXPAND, 5);
     bitmap_button_icon2 = new wxBitmapButton(notebook_1_wxBitmapButton, wxID_ANY, wxBitmap(wxT("icon.xpm"), wxBITMAP_TYPE_ANY), wxDefaultPosition, wxDefaultSize, wxBORDER_NONE|wxBU_BOTTOM);
-    bitmap_button_icon2->SetBitmapDisabled(wxBitmap(20, 20));
+    bitmap_button_icon2->SetBitmapDisabled(wxBitmap(32, 32));
     bitmap_button_icon2->SetSize(bitmap_button_icon2->GetBestSize());
     bitmap_button_icon2->SetDefault();
     sizer_13->Add(bitmap_button_icon2, 1, wxALL|wxEXPAND, 5);

@@ -65,8 +65,8 @@ sub new {
     
     # Tool Bar
     $self->{frame_toolbar} = Wx::ToolBar->new($self, -1);
-    $self->{frame_toolbar}->Realize();
     $self->SetToolBar($self->{frame_toolbar});
+    $self->{frame_toolbar}->Realize();
     # Tool Bar end
     
     $self->{sizer_1} = Wx::BoxSizer->new(wxHORIZONTAL);
@@ -298,8 +298,8 @@ sub new {
     
     # Tool Bar
     $self->{frame_copy_toolbar} = Wx::ToolBar->new($self, -1);
-    $self->{frame_copy_toolbar}->Realize();
     $self->SetToolBar($self->{frame_copy_toolbar});
+    $self->{frame_copy_toolbar}->Realize();
     # Tool Bar end
     
     $self->{sizer_1} = Wx::BoxSizer->new(wxHORIZONTAL);

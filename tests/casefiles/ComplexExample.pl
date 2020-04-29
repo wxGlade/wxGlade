@@ -74,8 +74,8 @@ sub new {
     # Tool Bar
     $self->{Mp3_To_Ogg_toolbar} = Wx::ToolBar->new($self, -1, wxDefaultPosition, wxDefaultSize, wxTB_HORIZONTAL|wxTB_TEXT);
     $self->{Mp3_To_Ogg_toolbar}->AddTool(wxID_OPEN, _T("&Open"), wxNullBitmap, wxNullBitmap, wxITEM_NORMAL, _T("Open a file"), _T("Open a MP3 file to convert into OGG format"));
-    $self->{Mp3_To_Ogg_toolbar}->Realize();
     $self->SetToolBar($self->{Mp3_To_Ogg_toolbar});
+    $self->{Mp3_To_Ogg_toolbar}->Realize();
     # Tool Bar end
     
     $self->{sizer_1} = Wx::FlexGridSizer->new(3, 1, 0, 0);

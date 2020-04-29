@@ -48,9 +48,8 @@
         ;;; Tool Bar
         (setf (slot-frame-1-toolbar obj) (wxToolBar_Create (slot-top-window obj) -1 -1 -1 -1 -1 wxTB_HORIZONTAL))
         (wxToolBar_AddTool (slot-frame-1-toolbar obj) wxID_UP "UpDown" wxArtProvider_GetBitmap(wxART_GO_UP wxART_OTHER wxSize_Create(32 32)) wxArtProvider_GetBitmap(wxART_GO_DOWN wxART_OTHER wxSize_Create(32 32)) wxITEM_CHECK "Up or Down" "Up or Down")
-        (wxToolBar_Realize (slot-frame-1-toolbar obj))
-        (wxToolBar_Realize (slot-frame-1-toolbar obj))
         (wxFrame_SetToolBar (slot-top-window obj) (slot-frame-1-toolbar obj))
+        (wxToolBar_Realize (slot-frame-1-toolbar obj))
         ;;; Tool Bar end
         
         (setf (slot-sizer-1 obj) (wxBoxSizer_Create wxVERTICAL))

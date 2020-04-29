@@ -34,10 +34,10 @@ class MyFrame(wx.Frame):
         
         # Tool Bar
         self.frame_toolbar = wx.ToolBar(self, -1)
-        tool = self.frame_toolbar.AddLabelTool(wx.ID_ANY, "My Tool", wx.Bitmap("D:\\Python\\wxglade\\wxglade_dev_master\\icons\\button.xpm", wx.BITMAP_TYPE_ANY), wx.NullBitmap, wx.ITEM_NORMAL, "", "")
+        tool = self.frame_toolbar.AddLabelTool(wx.ID_ANY, "My Tool", wx.Bitmap("..\\..\\icons\\button.xpm", wx.BITMAP_TYPE_ANY), wx.NullBitmap, wx.ITEM_NORMAL, "", "")
         self.Bind(wx.EVT_TOOL, self.on_my_tool, id=tool.GetId())
-        self.frame_toolbar.Realize()
         self.SetToolBar(self.frame_toolbar)
+        self.frame_toolbar.Realize()
         # Tool Bar end
         
         sizer_1 = wx.BoxSizer(wx.VERTICAL)

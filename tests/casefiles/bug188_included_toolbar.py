@@ -24,8 +24,8 @@ class MyFrame(wx.Frame):
         # Tool Bar
         self.frame_1_toolbar = wx.ToolBar(self, -1)
         self.frame_1_toolbar.AddLabelTool(wx.ID_UP, "UpDown", wx.ArtProvider.GetBitmap(wx.ART_GO_UP, wx.ART_OTHER, (32, 32)), wx.ArtProvider.GetBitmap(wx.ART_GO_DOWN, wx.ART_OTHER, (32, 32)), wx.ITEM_CHECK, "Up or Down", "Up or Down")
-        self.frame_1_toolbar.Realize()
         self.SetToolBar(self.frame_1_toolbar)
+        self.frame_1_toolbar.Realize()
         # Tool Bar end
         
         sizer_1 = wx.BoxSizer(wx.VERTICAL)

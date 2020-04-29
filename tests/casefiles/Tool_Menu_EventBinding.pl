@@ -55,9 +55,9 @@ sub new {
     
     # Tool Bar
     $self->{frame_toolbar} = Wx::ToolBar->new($self, -1);
-    $self->{frame_toolbar}->AddTool(wxID_ANY, "My Tool", Wx::Bitmap->new("D:\\Python\\wxglade\\wxglade_dev_master\\icons\\button.xpm", wxBITMAP_TYPE_ANY), wxNullBitmap, wxITEM_NORMAL, "", "");
-    $self->{frame_toolbar}->Realize();
+    $self->{frame_toolbar}->AddTool(wxID_ANY, "My Tool", Wx::Bitmap->new("..\\..\\icons\\button.xpm", wxBITMAP_TYPE_ANY), wxNullBitmap, wxITEM_NORMAL, "", "");
     $self->SetToolBar($self->{frame_toolbar});
+    $self->{frame_toolbar}->Realize();
     # Tool Bar end
     
     $self->{sizer_1} = Wx::BoxSizer->new(wxVERTICAL);
