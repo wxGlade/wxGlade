@@ -98,8 +98,9 @@ class PythonCodeGenerator(wcodegen.PythonWidgetCodeWriter):
             klass = self.cn(klass)
         code = ['# Tool Bar\n',
                 'self.%s = %s(self, -1%s)\n' % (obj.name, klass, style)
-                ] + self.get_init_code(obj) + self.get_properties_code(obj) + self.get_layout_code(obj) + [
+                ] + self.get_init_code(obj) + self.get_properties_code(obj) + [
                 'self.SetToolBar(self.%s)\n' % obj.name,
+                'self.%s.Realize()\n' % obj.name,
                 '# Tool Bar end\n']
         return code, []
 
