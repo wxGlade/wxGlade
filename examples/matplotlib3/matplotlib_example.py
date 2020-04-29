@@ -105,14 +105,20 @@ class MyFrame(matplotlib_GUI.MyFrame):
         # register a handler for all canvas events except 'motion_notify_event', which would cause too much traffic
         for event in ('button_press_event', 'button_release_event', 'key_press_event', 'key_release_event',
                           'draw_event', 'pick_event', 'resize_event', 'scroll_event',
-                          'figure_enter_event', 'figure_leave_event', 'axes_enter_event', 'axes_leave_event'):
+                          'figure_enter_event', 'figure_leave_event'):
             self.canvas.mpl_connect(event, self.on_canvas_event)
+        # a separate handler for these as str(event) would fail
+        for event in ('axes_enter_event', 'axes_leave_event'):
+            self.canvas.mpl_connect(event, self.on_canvas_axes_event)
         # in addition, there are events from the axes: 'xlim_changed', 'ylim_changed' (see self.get_axes())
 
     ###################################################################################################################
     # print messages
     def on_canvas_event(self, event):
         print("canvas event:", event)
+
+    def on_canvas_axes_event(self, event):
+        print("canvas axes event:", f"{event.name}: xy=({event.x}, {event.y}) xydata=({event.xdata}, {event.ydata})")
 
     ###################################################################################################################
     # global actions: add plot or clear plots or all
@@ -360,7 +366,11 @@ class MyFrame(matplotlib_GUI.MyFrame):
             except (ValueError, OverflowError):
                 pass
             else:
-                artists = [a for a in event.inaxes.mouseover_set if a.contains(event) and a.get_visible()]
+                if hasattr(event.inaxes, "_mouseover_set"):
+                    artists = [a for a in event.inaxes._mouseover_set if a.contains(event) and a.get_visible()]
+                else:
+                    # old matplotlib versions
+                    artists = [a for a in event.inaxes.mouseover_set if a.contains(event) and a.get_visible()]
 
                 if artists:
                     a = cbook._topmost_artist(artists)
