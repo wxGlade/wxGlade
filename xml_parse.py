@@ -507,16 +507,17 @@ class ClipboardXmlWidgetBuilder(XmlWidgetBuilder):
         self.depth_level -= 1
 
         if not self.depth_level:
-            self.parent.on_load(child=self.top_obj)  # e.g. a GridBagSizer needs to check overlapped slots
+            if self.parent:
+                self.parent.on_load(child=self.top_obj)  # e.g. a GridBagSizer needs to check overlapped slots
+                try:
+                    # show the first object and update its layout
+                    #if self.top_obj.node.parent.widget.is_visible():
+                    #    common.app_tree.show_widget(self.top_obj.node)
+                    if self.parent.widget:
+                        self.top_obj.create_widgets()
+                except AttributeError:
+                    self._logger.exception( _('Exception caused by obj: %s'), self.top_obj )
             common.app_tree.auto_expand = True
-            try:
-                # show the first object and update its layout
-                #if self.top_obj.node.parent.widget.is_visible():
-                #    common.app_tree.show_widget(self.top_obj.node)
-                if self.parent.widget:
-                    self.top_obj.create_widgets()
-            except AttributeError:
-                self._logger.exception( _('Exception caused by obj: %s'), self.top_obj )
 
 
 class XmlWidgetObject(object):
