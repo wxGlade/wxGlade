@@ -2399,7 +2399,7 @@ class _GridBuilderDialog(wx.Dialog):
         # static box sizer around the grid sizer
         boxsizer = wx.StaticBoxSizer(wx.StaticBox(self, -1, _("Layout")), wx.VERTICAL)
         boxsizer.Add(gsizer)
-        sizer.Add(boxsizer, 0, wx.ALL, 3)
+        sizer.Add(boxsizer, 0, wx.EXPAND | wx.ALL, 3)
 
         # horizontal sizer for action buttons
         hsizer = wx.BoxSizer(wx.HORIZONTAL)
@@ -2407,7 +2407,7 @@ class _GridBuilderDialog(wx.Dialog):
         btn = wx.Button(self, wx.ID_OK, _('OK') )
         btn.SetDefault()
         hsizer.Add(btn, 1, wx.ALL, 5)
-        sizer.Add(hsizer, 0, wx.EXPAND|wx.ALIGN_CENTER )
+        sizer.Add(hsizer, 0, wx.EXPAND )
 
         self.SetAutoLayout(True)
         self.SetSizer(sizer)
