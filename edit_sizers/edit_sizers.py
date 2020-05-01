@@ -228,7 +228,6 @@ class BaseSizerBuilder(object):
 
         flag = child.properties["flag"].get_string_value()  # as string, joined with "|"
         flag = self.codegen.cn_f(flag) or '0'
-            widget.properties["flag"]._check_value()
 
         if self.klass=="wxStdDialogButtonSizer" and child.WX_CLASS=='wxButton':
             # XXX optionally use SetAffirmativeButton, SetCancelButton, SetNegativeButton
@@ -2214,6 +2213,7 @@ def change_sizer(old, new):
 
         for widget in szr.children:
             widget.parent = szr
+            widget.properties["flag"]._check_value()
 
         if old.widget is not None:
             for c in old.widget.GetChildren():
