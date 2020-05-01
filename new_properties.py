@@ -1076,7 +1076,9 @@ class ManagedFlags(_CheckListProperty):
         # remove flags that are not applicable; set EXCLUDE2
         if self.name != "flag" or not self.owner.parent.IS_SIZER: return
         excludes, remove, msg = self.owner.parent._check_flags(self.value_set, added)
-        if remove: self.value_set.difference_update(remove)
+        if remove:
+            self.value_set.difference_update(remove)
+            self.value = None  # calculate value from value_set on demand
         self.EXCLUDES2 = excludes
 
     def _decode_value(self, value):
