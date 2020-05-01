@@ -114,7 +114,7 @@ class TemplateListDialog(wx.Dialog):
         sizer_3 = wx.StaticBoxSizer(wx.StaticBox(self, wx.ID_ANY, _("Available templates")), wx.VERTICAL)
         sizer_3.Add(self.template_names, 1, wx.ALL | wx.EXPAND, 3)
         sizer_2.Add(sizer_3, 1, wx.ALL | wx.EXPAND, 5)
-        sizer_4.Add(self.template_name, 0, wx.ALIGN_CENTER_VERTICAL | wx.ALL, 7)
+        sizer_4.Add(self.template_name, 0, wx.ALL, 7)
         sizer_5.Add(self.author, 1, 0, 0)
         sizer_4.Add(sizer_5, 0, wx.ALL | wx.EXPAND, 5)
         sizer_6.Add(self.description, 1, wx.EXPAND, 0)
