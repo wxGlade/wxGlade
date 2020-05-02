@@ -1331,7 +1331,7 @@ class wxGlade(wx.App):
         common.init_preferences()
 
         self.locale = wx.Locale(wx.LANGUAGE_DEFAULT)  # avoid PyAssertionErrors
-        compat.wx_ArtProviderPush(wxGladeArtProvider())
+        #compat.wx_ArtProviderPush(wxGladeArtProvider())  causes crashes on Cent OS 7
 
         frame = wxGladeFrame()
         self.SetTopWindow(frame)
