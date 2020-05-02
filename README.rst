@@ -35,6 +35,7 @@ Installation
 
 Download the latest released version as zip archive from
 https://sourceforge.net/projects/wxglade/
+
 Unpack the archive to a **known** location and maybe add it to the path.
 
 If you are familiar with git, you may instead just clone the repository from
