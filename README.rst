@@ -25,15 +25,28 @@ Requirements
 * wxPython (http://www.wxpython.org) >= 2.8
   (wxPython Phoenix, i.e. release >=4.0.0, is supported)
 
-If you have a choice, you should prefer wxPython Phoenix running on Python 3.x.
+If you have a choice, you should prefer wxPython Phoenix running on Python 3.x. *the Phoenix version of wxPython
+can be pip installed with `python -mpip install wxPython.*
 
 
 Installation
 ------------
 
-To start the program, enter ``python3 wxglade.py`` or ``python wxglade.py``
-in your shell or use whatever is required to start a python application on
-your platform.
+To install wxGlade download the appropriate, released, *probably the latest,* zip file 
+from [GitHub Releases](https://github.com/wxGlade/wxGlade/releases) or [SourceForge](https://sourceforge.net/projects/wxglade/).
+Once download unzip it to a **known** location, *possibly one on your path or that you add to the path*.
+
+If you have a single version of python installed you may wish to consider adding a desktop shortcut to run the
+wxGlade.py file, (or the wxGlade.pyw file). *See your operating system instrcutions on how to do this.* If you have more 
+than one version of python installed you will need to add shortcuts for each version that you wish to run wxGlade with or
+use the command line as below.
+
+Runnung wxGlade
+---------------
+
+To start the program, change directory to the installation directory you unzipped to and
+enter ``python3 wxglade.py`` or ``python wxglade.py`` in your shell or use whatever is
+required to start a python application on your platform. *If you set up a desktop shortcut then simply click on it.*
 If you want to build a GUI for wxPython Classic or Phoenix:
 Start wxGlade in your target version - if it runs under Phoenix, it will
 create Phoenix code.
