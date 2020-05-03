@@ -586,9 +586,9 @@ class LayoutSpanProperty(Property):
         self.colspin.Enable(max_cols!=1)
 
         # layout of the controls / sizers
-        hsizer.Add(wx.StaticText(panel, -1, _("Rows:")), 1, wx.LEFT | wx.ALIGN_RIGHT | wx.ALIGN_CENTER_VERTICAL, 3)
+        hsizer.Add(wx.StaticText(panel, -1, _("Rows:")), 1, wx.LEFT | wx.ALIGN_CENTER_VERTICAL, 3)
         hsizer.Add(self.rowspin, 5, wx.ALL | wx.ALIGN_CENTER, 3)
-        hsizer.Add(wx.StaticText(panel, -1, _("Cols:")), 1, wx.LEFT | wx.ALIGN_RIGHT | wx.ALIGN_CENTER_VERTICAL, 3)
+        hsizer.Add(wx.StaticText(panel, -1, _("Cols:")), 1, wx.LEFT | wx.ALIGN_CENTER_VERTICAL, 3)
         hsizer.Add(self.colspin, 5, wx.ALL | wx.ALIGN_CENTER, 3)
         sizer.Add(hsizer, 0, wx.EXPAND)
 
