@@ -53,7 +53,7 @@ class EditPropertyGridManager(ManagedBase, EditStylesMixin):
         pg.Append( wxpg.IntProperty("Int",value=123) )
         pg.Append( wxpg.FloatProperty("Float",value=123.4) )
         pg.Append( wxpg.BoolProperty("Bool",value=True) )
-        boolprop = pg.Append( wxpg.BoolProperty("Bool_with_Checkbox",value=True) )
+        pg.Append( wxpg.BoolProperty("Bool_with_Checkbox",value=True) )
         pg.SetPropertyAttribute( "Bool_with_Checkbox", "UseCheckbox", True)
         pg.Append( wxpg.PropertyCategory("2 - More Properties") )
         pg.Append( wxpg.LongStringProperty("LongString", value="This is a\nmulti-line string\nwith\ttabs\nmixed\tin."))
