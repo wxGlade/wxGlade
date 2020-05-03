@@ -35,11 +35,11 @@ class wxGladePreferences(wxGladePreferencesUI):
         version = wx.VERSION[:3]
         if version < (4,0,4) or version > (4,0,7): return
         panel = self.sizer_accessibility.GetContainingWindow()
-        text = wx.StaticText(panel, label="Please be warned that your version\n"
-                                          "of wxPython probably does not support "
-                                          "screen readers.\n"
+        text = wx.StaticText(panel, label="Please be warned that your version of wxPython\n"
+                                          "probably does not support screen readers very well.\n"
                                           "This is a problem with wxPython versions\n"
-                                          "4.0.4 to 4.0.7 on 32 bit Python on Windows.")
+                                          "4.0.4 to 4.0.7 on 32 bit Python on Windows.\n"
+                                          "A workaround is to set the name argument of CheckBox.")
         self.sizer_accessibility.Insert(0, text, 0, wx.ALL, 10)
         self.sizer_accessibility.Layout()
 

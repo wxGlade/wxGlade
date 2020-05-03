@@ -37,19 +37,23 @@ class wxGladePreferencesUI(wx.Dialog):
         
         sizer_3 = wx.BoxSizer(wx.VERTICAL)
         
-        self.show_progress = wx.CheckBox(self.notebook_1_pane_1, wx.ID_ANY, _("Show progress dialog when loading wxg files"))
+        label = _("Show progress dialog when loading wxg files")
+        self.show_progress = wx.CheckBox(self.notebook_1_pane_1, wx.ID_ANY, label, name=label)
         self.show_progress.SetValue(1)
         sizer_3.Add(self.show_progress, 0, wx.ALL | wx.EXPAND, 5)
         
-        self.remember_geometry = wx.CheckBox(self.notebook_1_pane_1, wx.ID_ANY, _("Remember position and size of wxGlade windows"))
+        label = _("Remember position and size of wxGlade windows")
+        self.remember_geometry = wx.CheckBox(self.notebook_1_pane_1, wx.ID_ANY, label, name=label)
         self.remember_geometry.SetValue(1)
         sizer_3.Add(self.remember_geometry, 0, wx.ALL | wx.EXPAND, 5)
         
-        self.show_sizer_handle = wx.CheckBox(self.notebook_1_pane_1, wx.ID_ANY, _("Show \"handles\" of sizers"))
+        label = _("Show \"handles\" of sizers")
+        self.show_sizer_handle = wx.CheckBox(self.notebook_1_pane_1, wx.ID_ANY, label, name=label)
         self.show_sizer_handle.SetValue(1)
         sizer_3.Add(self.show_sizer_handle, 0, wx.ALL | wx.EXPAND, 5)
         
-        self.show_completion = wx.CheckBox(self.notebook_1_pane_1, wx.ID_ANY, _("Show success message for code generation"))
+        label = _("Show success message for code generation")
+        self.show_completion = wx.CheckBox(self.notebook_1_pane_1, wx.ID_ANY, label, name=label)
         self.show_completion.SetValue(1)
         sizer_3.Add(self.show_completion, 0, wx.ALL | wx.EXPAND, 5)
         
@@ -85,45 +89,53 @@ class wxGladePreferencesUI(wx.Dialog):
         sizer_8 = wx.StaticBoxSizer(wx.StaticBox(self.notebook_1_pane_3, wx.ID_ANY, _("Palette Panel")), wx.HORIZONTAL)
         self.sizer_accessibility.Add(sizer_8, 0, wx.EXPAND | wx.LEFT | wx.TOP, 6)
         
-        self.show_palette_icons = wx.CheckBox(self.notebook_1_pane_3, wx.ID_ANY, _("Show icons"))
+        label = _("Show icons")
+        self.show_palette_icons = wx.CheckBox(self.notebook_1_pane_3, wx.ID_ANY, label, name=label)
         self.show_palette_icons.SetValue(1)
         sizer_8.Add(self.show_palette_icons, 0, wx.ALL | wx.EXPAND, 5)
         
-        self.show_palette_labels = wx.CheckBox(self.notebook_1_pane_3, wx.ID_ANY, _("Show labels"))
+        label = _("Show labels")
+        self.show_palette_labels = wx.CheckBox(self.notebook_1_pane_3, wx.ID_ANY, label, name=label)
         sizer_8.Add(self.show_palette_labels, 0, wx.ALL | wx.EXPAND, 5)
         
         sizer_10 = wx.StaticBoxSizer(wx.StaticBox(self.notebook_1_pane_3, wx.ID_ANY, _("Property Panel")), wx.VERTICAL)
         self.sizer_accessibility.Add(sizer_10, 0, wx.EXPAND | wx.LEFT | wx.TOP, 6)
         
-        self.show_gridproperty_editors = wx.CheckBox(self.notebook_1_pane_3, wx.ID_ANY, _("Show editors for Grid Properties"))
+        label = _("Show editors for Grid Properties")
+        self.show_gridproperty_editors = wx.CheckBox(self.notebook_1_pane_3, wx.ID_ANY, label, name=label)
         self.show_gridproperty_editors.SetToolTipString(_("As grids are not well editable with NVDA, this option will enable separate text controls for e.g. widget Events."))
         sizer_10.Add(self.show_gridproperty_editors, 0, wx.ALL | wx.EXPAND, 5)
         
-        self.use_checkboxes_workaround = wx.CheckBox(self.notebook_1_pane_3, wx.ID_ANY, _("Use checkbox label workaround"))
+        label = _("Use checkbox label workaround")
+        self.use_checkboxes_workaround = wx.CheckBox(self.notebook_1_pane_3, wx.ID_ANY, label, name=label)
         self.use_checkboxes_workaround.SetToolTipString(_("Use a workaround to add invisible labels to enable/disable checkboxes such that NVDA will indicate the property name.\nThis is not yet tested on all platforms. It may introduce display problems."))
         self.use_checkboxes_workaround.SetValue(1)
         sizer_10.Add(self.use_checkboxes_workaround, 0, wx.ALL | wx.EXPAND, 5)
         
         self.notebook_1_pane_2 = wx.Panel(self.notebook_1, wx.ID_ANY)
         self.notebook_1.AddPage(self.notebook_1_pane_2, _("Other"))
-        
+
         sizer_5 = wx.BoxSizer(wx.VERTICAL)
         
-        self.use_dialog_units = wx.CheckBox(self.notebook_1_pane_2, wx.ID_ANY, _("Use dialog units by default for size properties"))
+        label = _("Use dialog units by default for size properties")
+        self.use_dialog_units = wx.CheckBox(self.notebook_1_pane_2, wx.ID_ANY, label, name=label)
         sizer_5.Add(self.use_dialog_units, 0, wx.ALL | wx.EXPAND, 5)
         
-        self.codegen_backup = wx.CheckBox(self.notebook_1_pane_2, wx.ID_ANY, _("Create backup files for generated source"))
+        label = _("Create backup files for generated source")
+        self.codegen_backup = wx.CheckBox(self.notebook_1_pane_2, wx.ID_ANY, label, name=label)
         self.codegen_backup.SetValue(1)
         sizer_5.Add(self.codegen_backup, 0, wx.ALL | wx.EXPAND, 5)
         
-        self.allow_duplicate_names = wx.CheckBox(self.notebook_1_pane_2, wx.ID_ANY, _("Allow duplicate widget names"))
+        label = _("Allow duplicate widget names")
+        self.allow_duplicate_names = wx.CheckBox(self.notebook_1_pane_2, wx.ID_ANY, label, name=label)
         self.allow_duplicate_names.Hide()
         sizer_5.Add(self.allow_duplicate_names, 0, wx.ALL | wx.EXPAND, 5)
         
         sizer_7 = wx.BoxSizer(wx.HORIZONTAL)
         sizer_5.Add(sizer_7, 0, wx.EXPAND, 0)
         
-        self.default_border = wx.CheckBox(self.notebook_1_pane_2, wx.ID_ANY, _("Default border width for widgets"))
+        label = _("Default border width for widgets")
+        self.default_border = wx.CheckBox(self.notebook_1_pane_2, wx.ID_ANY, label, name=label)
         sizer_7.Add(self.default_border, 0, wx.ALIGN_CENTER_VERTICAL | wx.ALL, 5)
         
         self.default_border_size = wx.SpinCtrl(self.notebook_1_pane_2, wx.ID_ANY, "", min=0, max=20, style=0)
@@ -132,7 +144,8 @@ class wxGladePreferencesUI(wx.Dialog):
         sizer_7_copy = wx.BoxSizer(wx.HORIZONTAL)
         sizer_5.Add(sizer_7_copy, 0, wx.EXPAND, 0)
         
-        self.autosave = wx.CheckBox(self.notebook_1_pane_2, wx.ID_ANY, _("Auto save wxg files every "))
+        label = _("Auto save wxg files every ")
+        self.autosave = wx.CheckBox(self.notebook_1_pane_2, wx.ID_ANY, label, name=label)
         sizer_7_copy.Add(self.autosave, 0, wx.ALIGN_CENTER_VERTICAL | wx.BOTTOM | wx.LEFT | wx.TOP, 5)
         
         self.autosave_delay = wx.SpinCtrl(self.notebook_1_pane_2, wx.ID_ANY, "120", min=30, max=300, style=0)
@@ -141,14 +154,17 @@ class wxGladePreferencesUI(wx.Dialog):
         label_3 = wx.StaticText(self.notebook_1_pane_2, wx.ID_ANY, _(" seconds"))
         sizer_7_copy.Add(label_3, 0, wx.ALIGN_CENTER_VERTICAL | wx.BOTTOM | wx.FIXED_MINSIZE | wx.TOP, 5)
         
-        self.write_timestamp = wx.CheckBox(self.notebook_1_pane_2, wx.ID_ANY, _("Insert timestamp on generated source files"))
+        label = _("Insert timestamp on generated source files")
+        self.write_timestamp = wx.CheckBox(self.notebook_1_pane_2, wx.ID_ANY, label, name=label)
         self.write_timestamp.SetValue(1)
         sizer_5.Add(self.write_timestamp, 0, wx.ALL | wx.EXPAND, 5)
         
-        self.write_generated_from = wx.CheckBox(self.notebook_1_pane_2, wx.ID_ANY, _("Insert .wxg file name on generated source files"))
+        label = _("Insert .wxg file name on generated source files")
+        self.write_generated_from = wx.CheckBox(self.notebook_1_pane_2, wx.ID_ANY, label, name=label)
         sizer_5.Add(self.write_generated_from, 0, wx.ALL | wx.EXPAND, 5)
         
-        self.wxg_backup = wx.CheckBox(self.notebook_1_pane_2, wx.ID_ANY, _("Create backup wxg files"))
+        label = _("Create backup wxg files")
+        self.wxg_backup = wx.CheckBox(self.notebook_1_pane_2, wx.ID_ANY, label, name=label)
         self.wxg_backup.SetValue(1)
         sizer_5.Add(self.wxg_backup, 0, wx.ALL | wx.EXPAND, 5)
         

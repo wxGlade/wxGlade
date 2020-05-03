@@ -239,6 +239,7 @@ def make_object_button(widget, icon_path, toplevel=False, tip=None):
     if not os.path.isabs(icon_path):
         icon_path = os.path.join(config.icons_path, icon_path)
     bmp = misc.get_xpm_bitmap(icon_path)
+    label = widget.replace('Edit', '')
     if compat.version < (3,0):
         # old wx version: use BitmapButton
         tmp = wx.BitmapButton(palette, -1, bmp, size=(31,31))
@@ -251,21 +252,21 @@ def make_object_button(widget, icon_path, toplevel=False, tip=None):
         if not toplevel:
             if not config.preferences.show_palette_labels:
                 # icons only -> set size
-                tmp = wx.ToggleButton(palette, -1, size=(31,31))
+                tmp = wx.ToggleButton(palette, -1, size=(31,31), name=label)
             else:
-                tmp = wx.ToggleButton(palette, -1, widget.replace('Edit', '') )
+                tmp = wx.ToggleButton(palette, -1, label, name=label )
             tmp.Bind(wx.EVT_TOGGLEBUTTON, add_object)
         else:
             if not config.preferences.show_palette_labels:
-                tmp = wx.Button(palette, -1, size=(31,31))
+                tmp = wx.Button(palette, -1, size=(31,31), name=label)
             else:
-                tmp = wx.Button(palette, -1, widget.replace('Edit', '') ) #, size=(31,31))
+                tmp = wx.Button(palette, -1, label, name=label )
             tmp.Bind(wx.EVT_BUTTON, add_toplevel_object)
         if config.preferences.show_palette_icons:
             tmp.SetBitmap( bmp )
     refs[tmp.GetId()] = widget
     if not tip:
-        tip = _('Add a %s') % widget.replace(_('Edit'), '')
+        tip = _('Add a %s') % label
     tmp.SetToolTip(wx.ToolTip(tip))
 
     WidgetTree.images[widget] = icon_path
