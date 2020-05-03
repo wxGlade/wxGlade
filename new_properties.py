@@ -288,10 +288,12 @@ class Property(object):
         return False
 
     # editor helpers
-    def _get_label(self, label, panel):
+    def _get_label(self, label, panel, name=None):
         width, height = panel.GetTextExtent(label)
         width = max(width, config.label_width)
         if wx.Platform == '__WXMSW__':
+            if name is not None:
+                return wx.StaticText( panel, -1, label, size=(width,height), name=name )
             return wx.StaticText( panel, -1, label, size=(width,height) )
         return wx.lib.stattext.GenStaticText( panel, -1, label, size=(width,height) )
 
@@ -663,10 +665,10 @@ class CheckBoxProperty(Property):
         self.checkbox.SetValue( bool(self.value) )
 
     def create_editor(self, panel, sizer):
-        self.checkbox = wx.CheckBox(panel, -1, '')
-        self._display_value()
         label_text = self._find_label()
-        self.label_ctrl = label = self._get_label(label_text, panel)
+        self.checkbox = wx.CheckBox(panel, -1, '', name=label_text)
+        self._display_value()
+        self.label_ctrl = label = self._get_label(label_text, panel, name=label_text)
 
         if config.preferences.use_checkboxes_workaround:
             size = self.checkbox.GetSize()
