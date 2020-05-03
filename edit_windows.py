@@ -1044,14 +1044,15 @@ class EditStylesMixin(np.PropertyOwner):
                 self.sel_marker = None
             old_widget = self.widget
             old_widget.Hide()
-            si = self.sizer.widget.GetItem(old_widget)
+            inside_sizer = self.sizer and not self.sizer.is_virtual()
+            if inside_sizer: si = self.sizer.widget.GetItem(old_widget)
             self.create_widget()
-            compat.SizerItem_SetWindow(si, self.widget)
+            if inside_sizer: compat.SizerItem_SetWindow(si, self.widget)
             compat.DestroyLater(old_widget)
-            self.sizer.item_properties_modified(self)  # will call toplevel Refresh as well
+            if inside_sizer: self.sizer.item_properties_modified(self)  # will call toplevel Refresh as well
 
             self.finish_widget_creation(re_add=False)
-            self.sizer.layout()
+            if inside_sizer: self.sizer.layout()
             if focused:
                 misc.focused_widget = self
                 if self.sel_marker: self.sel_marker.Show(True)
