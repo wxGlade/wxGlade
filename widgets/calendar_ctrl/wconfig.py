@@ -9,10 +9,12 @@ config = {
     'wxklass': 'wxCalendarCtrl',
     'style_defs': {
         'wxCAL_SUNDAY_FIRST': {
-            'desc': _('Show Sunday as the first day in the week')
+            'desc': _('Show Sunday as the first day in the week'),
+            'exclude': 'wxCAL_MONDAY_FIRST'
         },
         'wxCAL_MONDAY_FIRST': {
-            'desc': _('Show Monday as the first day in the week')
+            'desc': _('Show Monday as the first day in the week'),
+            'exclude': 'wxCAL_SUNDAY_FIRST'
         },
         'wxCAL_SHOW_HOLIDAYS': {
             'desc': _('Highlight holidays in the calendar (only generic)')
@@ -21,28 +23,23 @@ config = {
             'desc': _('Disable the year changing')
         },
         'wxCAL_NO_MONTH_CHANGE': {
-            'desc': _('Disable the month (and, implicitly, the year) '
-                      'changing')
+            'desc': _('Disable the month (and, implicitly, the year) changing')
         },
         'wxCAL_SHOW_SURROUNDING_WEEKS': {
-            'desc': _('Show the neighbouring weeks in the previous and next '
-                      'months')
+            'desc': _('Show the neighbouring weeks in the previous and next months')
         },
         'wxCAL_SEQUENTIAL_MONTH_SELECTION': {
-            'desc': _('Use alternative, more compact, style for the month '
-                      'and year selection controls.')
+            'desc': _('Use alternative, more compact, style for the month and year selection controls.')
         },
         'wxCAL_SHOW_WEEK_NUMBERS': {
-            'desc': _('Show week numbers on the left side of the calendar. '
-                      '(not in generic)'),
+            'desc': _('Show week numbers on the left side of the calendar. (not in generic)'),
             'supported_by': ('wx3',),
         },
     },
     'default_style': 'wxCAL_SHOW_HOLIDAYS',
     'style_list': ['wxCAL_SUNDAY_FIRST', 'wxCAL_MONDAY_FIRST',
                    'wxCAL_SHOW_HOLIDAYS', 'wxCAL_NO_YEAR_CHANGE',
-                   'wxCAL_NO_MONTH_CHANGE', 'wxCAL_SHOW_SURROUNDING_WEEKS',
-                   'wxCAL_SHOW_WEEK_NUMBERS',
+                   'wxCAL_NO_MONTH_CHANGE', 'wxCAL_SHOW_SURROUNDING_WEEKS', 'wxCAL_SHOW_WEEK_NUMBERS',
                    'wxCAL_SEQUENTIAL_MONTH_SELECTION'],
     'events': {
         'default': {
