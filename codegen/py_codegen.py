@@ -19,22 +19,21 @@ class SourceFileContent(BaseSourceFileContent):
     rec_block_start = re.compile(
         r'^(?P<spaces>\s*)'                     # leading spaces
         r'#\s*'                                 # comment sign
-        r'begin\s+wxGlade:\s*'                  # "begin wxGlade:" statement and tailing spaces
+        r'begin\s+wxGlade:\s*'                  # "begin wxGlade:" statement and trailing spaces
         r'(?P<classname>[a-zA-Z_]+\w*)??'       # class or function name (non-greedy)
         r'[.]?'                                 # separator between class and function / block (non-greedy)
         r'(?P<block>\w+)'                       # function / block name
-        r'\s*$' )                               # tailing spaces
+        r'\s*$' )                               # trailing spaces
 
     rec_block_end = re.compile(
         r'^\s*'                                 # leading spaces
         r'#\s*'                                 # comment sign
         r'end\s+wxGlade'                        # "end exGlade" statement
-        r'\s*$' )                               # tailing spaces
+        r'\s*$' )                               # trailing spaces
 
     # Less precise regex, but matches definitions with base classes having module qualified names.
     rec_class_decl = re.compile(
-        r'^\s*'                                        # leading spaces
-        r'class\s+([a-zA-Z_]\w*)\s*(\([\s\w.,]*\))?:'  # "class <name>" statement
+        r'^class\s+([a-zA-Z_]\w*)\s*(\([\s\w.,]*\))?:' # starting wihth "class <name>" statement
         r'\s*$' )                                      # tailing spaces
 
     rec_event_handler = re.compile(
@@ -44,7 +43,7 @@ class SourceFileContent(BaseSourceFileContent):
         r'\(.*\)(?:\s*->\s*None)*:'                        # function parameters; optional PEP 3107 function annotations 
         r'\s*'                                             # optional spaces
         r'#\s*wxGlade:\s*(?P<class>\w+)\.<event_handler>'  # wxGlade event handler statement with class name
-        r'\s*$' )                                          # tailing spaces
+        r'\s*$' )                                          # trailing spaces
 
     def build_untouched_content(self):
         BaseSourceFileContent.build_untouched_content(self)
