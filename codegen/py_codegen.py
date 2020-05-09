@@ -280,7 +280,7 @@ from %(top_win_module)s import %(top_win_class)s\n\n"""
     def generate_code_ctor(self, code_obj, is_new, tab):
         # generate code for the class constructor, including all children
         code_lines = []
-        write = code_lines.append
+        write = lambda s: code_lines.append(s if s.strip() else '\n')
 
         builder = self.obj_builders[code_obj.WX_CLASS]
         mycn = getattr(builder, 'cn', self.cn)
