@@ -233,6 +233,7 @@ if len(wx.VERSION)==5:
         c.SetToolTipString(s)
     wx_EmptyBitmap = wx.EmptyBitmap
     wx_EmptyIcon = wx.EmptyIcon
+    wx_NamedColour = wx.NamedColour
     def ConvertPixelsToDialog(widget, size):
         return widget.ConvertPixelSizeToDialog(size)
 
@@ -262,6 +263,7 @@ else:
         c.SetToolTip(s)
     wx_EmptyBitmap = wx.Bitmap
     wx_EmptyIcon = wx.Icon
+    wx_NamedColour = wx.Colour
     def ConvertPixelsToDialog(widget, size):
         return widget.ConvertPixelsToDialog(size)
 
