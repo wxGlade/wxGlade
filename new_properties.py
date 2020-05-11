@@ -2118,17 +2118,17 @@ class ColorPropertyD(ColorProperty):
     deactivated = True
 
 class FontProperty(DialogProperty):
-    font_families_to = {'default': wx.DEFAULT,
-                        'decorative': wx.DECORATIVE, 'roman': wx.ROMAN,
-                        'swiss': wx.SWISS, 'script': wx.SCRIPT, 'modern': wx.MODERN }
+    font_families_to = {'default': wx.FONTFAMILY_DEFAULT,
+                        'decorative': wx.FONTFAMILY_DECORATIVE, 'roman': wx.FONTFAMILY_ROMAN,
+                        'swiss': wx.FONTFAMILY_SWISS, 'script': wx.FONTFAMILY_SCRIPT, 'modern': wx.FONTFAMILY_MODERN }
     font_families_from = misc._reverse_dict(font_families_to)
-    font_styles_to = {'normal': wx.NORMAL, 'slant': wx.SLANT, 'italic': wx.ITALIC }
+    font_styles_to = {'normal': wx.FONTSTYLE_NORMAL, 'slant': wx.FONTSTYLE_SLANT, 'italic': wx.FONTSTYLE_ITALIC }
     font_styles_from = misc._reverse_dict(font_styles_to)
-    font_weights_to = {'normal': wx.NORMAL, 'light': wx.LIGHT, 'bold': wx.BOLD }
+    font_weights_to = {'normal': wx.FONTWEIGHT_NORMAL, 'light': wx.FONTWEIGHT_LIGHT, 'bold': wx.FONTWEIGHT_BOLD }
     font_weights_from = misc._reverse_dict(font_weights_to)
 
-    font_families_to['teletype'] = wx.TELETYPE
-    font_families_from[wx.TELETYPE] = 'teletype'
+    font_families_to['teletype'] = wx.FONTFAMILY_TELETYPE
+    font_families_from[wx.FONTFAMILY_TELETYPE] = 'teletype'
 
     validation_re = re.compile(" *\[(\d+), *'(default|decorative|roman|swiss|script|modern)', *"
                                "'(normal|slant|italic)', *'(normal|light|bold)', *(0|1), *'([a-zA-Z _]*)'] *")
