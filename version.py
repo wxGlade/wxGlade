@@ -1,1 +1,1 @@
-__version__ = "0.9.5"  # don't forget to update also the wxglade shell script, sphinx/conf.py and wxglade.desktop
+__version__ = "0.9.6"  # don't forget to update also the wxglade shell script, sphinx/conf.py and wxglade.desktop
