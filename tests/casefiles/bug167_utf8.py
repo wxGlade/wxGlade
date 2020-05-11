@@ -20,15 +20,15 @@ class MyFrame(wx.Frame):
         kwds["style"] = kwds.get("style", 0)
         wx.Frame.__init__(self, *args, **kwds)
         self.SetTitle(_("frame_1"))
-        
+
         sizer_1 = wx.BoxSizer(wx.VERTICAL)
-        
+
         label_1 = wx.StaticText(self, wx.ID_ANY, _("Just a text"))
         sizer_1.Add(label_1, 0, 0, 0)
-        
+
         self.SetSizer(sizer_1)
         sizer_1.Fit(self)
-        
+
         self.Layout()
         # end wxGlade
 

@@ -19,18 +19,18 @@ class MyFrame(wx.Frame):
         kwds["style"] = kwds.get("style", 0)
         wx.Frame.__init__(self, *args, **kwds)
         self.SetTitle(_("frame_1"))
-        
+
         self.statusbar_without_labels = self.CreateStatusBar(3)
         self.statusbar_without_labels.SetStatusWidths([-1, -1, -1])
-        
+
         sizer_1 = wx.BoxSizer(wx.VERTICAL)
-        
+
         self.label_1 = wx.StaticText(self, wx.ID_ANY, _("Example of a statusbar with three fields\nbut without labels in those fields."))
         sizer_1.Add(self.label_1, 1, wx.ALL | wx.EXPAND, 5)
-        
+
         self.SetSizer(sizer_1)
         sizer_1.Fit(self)
-        
+
         self.Layout()
         # end wxGlade
 

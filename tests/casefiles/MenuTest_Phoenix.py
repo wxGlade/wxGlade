@@ -23,7 +23,7 @@ class MenuTestFrame(wx.Frame):
         _icon = wx.NullIcon
         _icon.CopyFromBitmap(wx.ArtProvider.GetBitmap(wx.ART_TIP, wx.ART_OTHER, (32, 32)))
         self.SetIcon(_icon)
-        
+
         # Menu Bar
         self.test_menubar = wx.MenuBar()
         global mn_ID1; mn_ID1 = wx.NewId()

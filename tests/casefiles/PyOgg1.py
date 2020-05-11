@@ -36,95 +36,95 @@ class PyOgg1_MyDialog(wx.Dialog):
         self.SetSize((500, 300))
         self.SetTitle(_("mp3 2 ogg"))
         self.SetFocus()
-        
+
         sizer_1 = wx.FlexGridSizer(3, 1, 0, 0)
-        
+
         self.notebook_1 = wx.Notebook(self, wx.ID_ANY, style=0)
         sizer_1.Add(self.notebook_1, 1, wx.EXPAND, 0)
-        
+
         self.notebook_1_pane_1 = wx.Panel(self.notebook_1, wx.ID_ANY)
         self.notebook_1.AddPage(self.notebook_1_pane_1, _("Input File"))
-        
+
         grid_sizer_1 = wx.FlexGridSizer(1, 3, 0, 0)
-        
+
         label_1 = wx.StaticText(self.notebook_1_pane_1, wx.ID_ANY, _("File name:"))
         grid_sizer_1.Add(label_1, 0, wx.ALIGN_CENTER_VERTICAL | wx.ALL, 5)
-        
+
         self.text_ctrl_1 = wx.TextCtrl(self.notebook_1_pane_1, wx.ID_ANY, "")
         grid_sizer_1.Add(self.text_ctrl_1, 1, wx.ALIGN_CENTER_VERTICAL | wx.ALL | wx.EXPAND, 5)
-        
+
         self.button_3 = wx.Button(self.notebook_1_pane_1, wx.ID_OPEN, "")
         grid_sizer_1.Add(self.button_3, 0, wx.ALL, 5)
-        
+
         self.notebook_1_pane_2 = wx.Panel(self.notebook_1, wx.ID_ANY)
         self.notebook_1.AddPage(self.notebook_1_pane_2, _("Converting Options"))
-        
+
         sizer_4 = wx.BoxSizer(wx.HORIZONTAL)
-        
+
         self.radio_box_1 = wx.RadioBox(self.notebook_1_pane_2, wx.ID_ANY, _("Sampling Rate"), choices=[_("44 kbit"), _("128 kbit")], majorDimension=0, style=wx.RA_SPECIFY_ROWS)
         self.radio_box_1.SetSelection(0)
         sizer_4.Add(self.radio_box_1, 0, wx.ALL | wx.EXPAND | wx.SHAPED, 5)
-        
+
         self.notebook_1_pane_3 = wx.Panel(self.notebook_1, wx.ID_ANY)
         self.notebook_1.AddPage(self.notebook_1_pane_3, _("Converting Progress"))
-        
+
         sizer_3 = wx.BoxSizer(wx.HORIZONTAL)
-        
+
         self.text_ctrl_2 = wx.TextCtrl(self.notebook_1_pane_3, wx.ID_ANY, "", style=wx.TE_MULTILINE)
         sizer_3.Add(self.text_ctrl_2, 1, wx.ALL | wx.EXPAND, 5)
-        
+
         self.notebook_1_pane_4 = wx.Panel(self.notebook_1, wx.ID_ANY)
         self.notebook_1.AddPage(self.notebook_1_pane_4, _("Output File"))
-        
+
         grid_sizer_2 = wx.FlexGridSizer(2, 3, 0, 0)
-        
+
         self.label_2 = wx.StaticText(self.notebook_1_pane_4, wx.ID_ANY, _("File name:"))
         grid_sizer_2.Add(self.label_2, 0, wx.ALIGN_CENTER_VERTICAL | wx.ALL, 5)
-        
+
         self.text_ctrl_3 = wx.TextCtrl(self.notebook_1_pane_4, wx.ID_ANY, "")
         grid_sizer_2.Add(self.text_ctrl_3, 0, wx.ALL | wx.EXPAND, 5)
-        
+
         self.button_4 = wx.Button(self.notebook_1_pane_4, wx.ID_OPEN, "")
         grid_sizer_2.Add(self.button_4, 0, wx.ALL, 5)
-        
+
         grid_sizer_2.Add((20, 20), 0, 0, 0)
-        
+
         self.checkbox_1 = wx.CheckBox(self.notebook_1_pane_4, wx.ID_ANY, _("Overwrite existing file"))
         self.checkbox_1.SetToolTipString(_("Overwrite an existing file"))
         self.checkbox_1.SetValue(1)
         grid_sizer_2.Add(self.checkbox_1, 0, wx.ALL | wx.EXPAND, 5)
-        
+
         grid_sizer_2.Add((20, 20), 0, 0, 0)
-        
+
         self.static_line_1 = wx.StaticLine(self, wx.ID_ANY)
         sizer_1.Add(self.static_line_1, 0, wx.ALL | wx.EXPAND, 5)
-        
+
         sizer_2 = wx.FlexGridSizer(1, 3, 0, 0)
         sizer_1.Add(sizer_2, 0, wx.ALIGN_RIGHT, 0)
-        
+
         self.button_5 = wx.Button(self, wx.ID_CLOSE, "")
         sizer_2.Add(self.button_5, 0, wx.ALIGN_RIGHT | wx.ALL, 5)
-        
+
         self.button_2 = wx.Button(self, wx.ID_CANCEL, "", style=wx.BU_TOP)
         sizer_2.Add(self.button_2, 0, wx.ALIGN_RIGHT | wx.ALL, 5)
-        
+
         self.button_1 = wx.Button(self, wx.ID_OK, "", style=wx.BU_TOP)
         sizer_2.Add(self.button_1, 0, wx.ALIGN_RIGHT | wx.ALL, 5)
-        
+
         grid_sizer_2.AddGrowableCol(1)
         self.notebook_1_pane_4.SetSizer(grid_sizer_2)
-        
+
         self.notebook_1_pane_3.SetSizer(sizer_3)
-        
+
         self.notebook_1_pane_2.SetSizer(sizer_4)
-        
+
         grid_sizer_1.AddGrowableCol(1)
         self.notebook_1_pane_1.SetSizer(grid_sizer_1)
-        
+
         sizer_1.AddGrowableRow(0)
         sizer_1.AddGrowableCol(0)
         self.SetSizer(sizer_1)
-        
+
         self.Layout()
         self.Centre()
 

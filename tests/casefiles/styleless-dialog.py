@@ -30,14 +30,14 @@ class StylelessFrame(wx.Frame):
         kwds["style"] = kwds.get("style", 0)
         wx.Frame.__init__(self, *args, **kwds)
         self.SetTitle(_("Style-less Frame"))
-        
+
         sizer_1 = wx.BoxSizer(wx.VERTICAL)
-        
+
         sizer_1.Add((0, 0), 0, 0, 0)
-        
+
         self.SetSizer(sizer_1)
         sizer_1.Fit(self)
-        
+
         self.Layout()
         # end wxGlade
 

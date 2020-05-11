@@ -19,9 +19,9 @@ class MyFrame(wx.Frame):
         kwds["style"] = kwds.get("style", 0) | wx.DEFAULT_FRAME_STYLE
         wx.Frame.__init__(self, *args, **kwds)
         self.SetTitle("frame_1")
-        
+
         sizer_1 = wx.BoxSizer(wx.VERTICAL)
-        
+
         self.grid_1 = wx.grid.Grid(self, wx.ID_ANY, size=(1, 1))
         self.grid_1.CreateGrid(2, 2)
         self.grid_1.SetGridLineColour(wx.Colour(255, 0, 0))
@@ -32,10 +32,10 @@ class MyFrame(wx.Frame):
         self.grid_1.SetRowLabelValue(0, "Row 1")
         self.grid_1.SetCellValue(0, 0, "1")
         sizer_1.Add(self.grid_1, 1, wx.EXPAND, 0)
-        
+
         self.SetSizer(sizer_1)
         sizer_1.Fit(self)
-        
+
         self.Layout()
 
         self.Bind(wx.grid.EVT_GRID_CMD_CELL_LEFT_CLICK, self.myEVT_GRID_CELL_LEFT_CLICK, self.grid_1)

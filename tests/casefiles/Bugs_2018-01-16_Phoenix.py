@@ -39,20 +39,20 @@ class MyFrame(wx.Frame):
         wx.Frame.__init__(self, *args, **kwds)
         self.SetSize((400, 300))
         self.SetTitle("frame")
-        
+
         sizer_1 = wx.BoxSizer(wx.VERTICAL)
-        
+
         self.notebook_1 = wx.Notebook(self, wx.ID_ANY)
         sizer_1.Add(self.notebook_1, 1, wx.EXPAND, 0)
-        
+
         self.panel_1 = YPanel(self.notebook_1, wx.ID_ANY)
         self.notebook_1.AddPage(self.panel_1, "Panel 1")
-        
+
         self.panel_2 = XPanel(self.notebook_1, wx.ID_ANY)
         self.notebook_1.AddPage(self.panel_2, "Panel 2")
-        
+
         self.SetSizer(sizer_1)
-        
+
         self.Layout()
         # end wxGlade
 

@@ -18,15 +18,15 @@ class MyFrame(wx.Frame):
         kwds["style"] = kwds.get("style", 0) | wx.DEFAULT_FRAME_STYLE
         wx.Frame.__init__(self, *args, **kwds)
         self.SetTitle("frame_1")
-        
+
         sizer_1 = wx.BoxSizer(wx.VERTICAL)
-        
+
         self.gauge_1 = wx.Gauge(self, wx.ID_ANY, 10)
         sizer_1.Add(self.gauge_1, 0, 0, 0)
-        
+
         self.SetSizer(sizer_1)
         sizer_1.Fit(self)
-        
+
         self.Layout()
         # end wxGlade
 

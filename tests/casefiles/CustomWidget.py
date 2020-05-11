@@ -19,15 +19,15 @@ class MyFrame(wx.Frame):
         kwds["style"] = kwds.get("style", 0)
         wx.Frame.__init__(self, *args, **kwds)
         self.SetTitle(_("frame_1"))
-        
+
         sizer_1 = wx.BoxSizer(wx.VERTICAL)
-        
+
         self.window_1 = CustomWidget(self, wx.ID_ANY)
         sizer_1.Add(self.window_1, 1, wx.ALL | wx.EXPAND, 5)
-        
+
         self.SetSizer(sizer_1)
         sizer_1.Fit(self)
-        
+
         self.Layout()
         # end wxGlade
 

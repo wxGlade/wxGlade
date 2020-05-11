@@ -21,60 +21,60 @@ class MyFrame(wx.Frame):
         wx.Frame.__init__(self, *args, **kwds)
         self.SetSize((400, 300))
         self.SetTitle("frame")
-        
+
         # Menu Bar
         self.frame_menubar = wx.MenuBar()
         self.SetMenuBar(self.frame_menubar)
         # Menu Bar end
-        
+
         self.frame_statusbar = self.CreateStatusBar(1)
         self.frame_statusbar.SetStatusWidths([-1])
         # statusbar fields
         frame_statusbar_fields = ["frame_statusbar"]
         for i in range(len(frame_statusbar_fields)):
             self.frame_statusbar.SetStatusText(frame_statusbar_fields[i], i)
-        
+
         # Tool Bar
         self.frame_toolbar = wx.ToolBar(self, -1)
         self.SetToolBar(self.frame_toolbar)
         self.frame_toolbar.Realize()
         # Tool Bar end
-        
+
         sizer_1 = wx.BoxSizer(wx.HORIZONTAL)
-        
+
         self.panel_x = wx.Panel(self, wx.ID_ANY)
         sizer_1.Add(self.panel_x, 1, wx.EXPAND, 0)
-        
+
         sizer_2 = wx.BoxSizer(wx.VERTICAL)
-        
+
         self.notebook_1 = wx.Notebook(self.panel_x, wx.ID_ANY)
         sizer_2.Add(self.notebook_1, 1, wx.EXPAND, 0)
-        
+
         self.notebook_1_pane_1 = wx.Panel(self.notebook_1, wx.ID_ANY)
         self.notebook_1.AddPage(self.notebook_1_pane_1, "notebook_1_pane_1")
-        
+
         sizer_2.Add((20, 20), 0, wx.ALIGN_CENTER, 0)
-        
+
         self.window_1 = wx.SplitterWindow(self.panel_x, wx.ID_ANY)
         self.window_1.SetMinimumPaneSize(20)
         sizer_2.Add(self.window_1, 1, wx.EXPAND, 0)
-        
+
         self.window_1_pane_1 = wx.Panel(self.window_1, wx.ID_ANY)
         self.window_1_pane_1.SetBackgroundColour(wx.Colour(112, 219, 147))
-        
+
         self.window_1_pane_2_scrolled = wx.ScrolledWindow(self.window_1, wx.ID_ANY, style=wx.TAB_TRAVERSAL)
         self.window_1_pane_2_scrolled.SetBackgroundColour(wx.Colour(35, 142, 35))
         self.window_1_pane_2_scrolled.SetScrollRate(10, 10)
-        
+
         self.html = wx.html.HtmlWindow(self.panel_x, wx.ID_ANY)
         sizer_2.Add(self.html, 1, wx.ALL | wx.EXPAND, 3)
-        
+
         self.window_1.SplitVertically(self.window_1_pane_1, self.window_1_pane_2_scrolled)
-        
+
         self.panel_x.SetSizer(sizer_2)
-        
+
         self.SetSizer(sizer_1)
-        
+
         self.Layout()
         # end wxGlade
 
@@ -97,7 +97,7 @@ class TestNotebookWithBasesInFrame(TestNotebook, testnotebook.TestNotebook):
         kwds["style"] = kwds.get("style", 0) | wx.NB_TOP
         TestNotebook.__init__(self, *args, **kwds)
         testnotebook.TestNotebook.__init__(self)
-        
+
         self.notebook_1_pane_1 = NotebookPageWithBases(self, wx.ID_ANY)
         self.AddPage(self.notebook_1_pane_1, "notebook_1_pane_1")
         # end wxGlade
@@ -109,10 +109,10 @@ class SplitterWindowWithBasesInFrame(TestSplitterWindow):
         # begin wxGlade: SplitterWindowWithBasesInFrame.__init__
         kwds["style"] = kwds.get("style", 0) | wx.SP_3D
         TestSplitterWindow.__init__(self, *args, **kwds)
-        
+
         self.window_1_pane_1 = wx.Panel(self, wx.ID_ANY)
         self.window_1_pane_1.SetBackgroundColour(wx.Colour(112, 219, 147))
-        
+
         self.window_1_pane_2 = wx.Panel(self, wx.ID_ANY)
         self.window_1_pane_2.SetBackgroundColour(wx.Colour(35, 142, 35))
         self.SplitVertically(self.window_1_pane_1, self.window_1_pane_2)
@@ -126,20 +126,20 @@ class TestPanelWithBasesInFrame(TestPanel, testpanel.TestPanel):
         kwds["style"] = kwds.get("style", 0)
         TestPanel.__init__(self, *args, **kwds)
         testpanel.TestPanel.__init__(self)
-        
+
         sizer_2 = wx.BoxSizer(wx.VERTICAL)
-        
+
         self.notebook_1 = TestNotebookWithBasesInFrame(self, wx.ID_ANY)
         sizer_2.Add(self.notebook_1, 1, wx.EXPAND, 0)
-        
+
         self.window_1 = SplitterWindowWithBasesInFrame(self, wx.ID_ANY)
         sizer_2.Add(self.window_1, 1, wx.EXPAND, 0)
-        
+
         self.html = wx.html.HtmlWindow(self, wx.ID_ANY)
         sizer_2.Add(self.html, 1, wx.ALL | wx.EXPAND, 3)
-        
+
         self.SetSizer(sizer_2)
-        
+
         self.Layout()
         # end wxGlade
 
@@ -153,32 +153,32 @@ class MyFrameWithBases(TestFrame, testframe.TestFrame):
         testframe.TestFrame.__init__(self)
         self.SetSize((400, 300))
         self.SetTitle("frame")
-        
+
         # Menu Bar
         self.frame_copy_menubar = wx.MenuBar()
         self.SetMenuBar(self.frame_copy_menubar)
         # Menu Bar end
-        
+
         self.frame_copy_statusbar = self.CreateStatusBar(1)
         self.frame_copy_statusbar.SetStatusWidths([-1])
         # statusbar fields
         frame_copy_statusbar_fields = ["frame_copy_statusbar"]
         for i in range(len(frame_copy_statusbar_fields)):
             self.frame_copy_statusbar.SetStatusText(frame_copy_statusbar_fields[i], i)
-        
+
         # Tool Bar
         self.frame_copy_toolbar = wx.ToolBar(self, -1)
         self.SetToolBar(self.frame_copy_toolbar)
         self.frame_copy_toolbar.Realize()
         # Tool Bar end
-        
+
         sizer_1 = wx.BoxSizer(wx.HORIZONTAL)
-        
+
         self.panel_1 = TestPanelWithBasesInFrame(self, wx.ID_ANY)
         sizer_1.Add(self.panel_1, 1, wx.EXPAND, 0)
-        
+
         self.SetSizer(sizer_1)
-        
+
         self.Layout()
         # end wxGlade
 
@@ -191,13 +191,13 @@ class MyDialog(wx.Dialog):
         wx.Dialog.__init__(self, *args, **kwds)
         self.SetSize((400, 300))
         self.SetTitle("dialog")
-        
+
         sizer_1 = wx.BoxSizer(wx.VERTICAL)
-        
+
         sizer_1.Add((0, 0), 0, 0, 0)
-        
+
         self.SetSizer(sizer_1)
-        
+
         self.Layout()
         # end wxGlade
 
@@ -209,13 +209,13 @@ class MyPanel(wx.Panel):
         kwds["style"] = kwds.get("style", 0) | wx.TAB_TRAVERSAL
         wx.Panel.__init__(self, *args, **kwds)
         self.SetSize((400, 300))
-        
+
         sizer_1 = wx.BoxSizer(wx.VERTICAL)
-        
+
         sizer_1.Add((0, 0), 0, 0, 0)
-        
+
         self.SetSizer(sizer_1)
-        
+
         self.Layout()
         # end wxGlade
 
@@ -228,13 +228,13 @@ class MyMDIChildFrame(wx.MDIChildFrame):
         wx.MDIChildFrame.__init__(self, *args, **kwds)
         self.SetSize((400, 300))
         self.SetTitle("frame_1")
-        
+
         sizer_1 = wx.BoxSizer(wx.VERTICAL)
-        
+
         sizer_1.Add((0, 0), 0, 0, 0)
-        
+
         self.SetSizer(sizer_1)
-        
+
         self.Layout()
         # end wxGlade
 
@@ -266,13 +266,13 @@ class MyDialogWithBases(MyDialogBase, mydialogbases.MyDialogBase):
         mydialogbases.MyDialogBase.__init__(self)
         self.SetSize((400, 300))
         self.SetTitle("dialog")
-        
+
         sizer_1 = wx.BoxSizer(wx.VERTICAL)
-        
+
         sizer_1.Add((0, 0), 0, 0, 0)
-        
+
         self.SetSizer(sizer_1)
-        
+
         self.Layout()
         # end wxGlade
 
@@ -285,13 +285,13 @@ class MyPanelWithBases(MyPanelBase, mypanelbases.MyPanelBase):
         MyPanelBase.__init__(self, *args, **kwds)
         mypanelbases.MyPanelBase.__init__(self)
         self.SetSize((400, 300))
-        
+
         sizer_1 = wx.BoxSizer(wx.VERTICAL)
-        
+
         sizer_1.Add((0, 0), 0, 0, 0)
-        
+
         self.SetSizer(sizer_1)
-        
+
         self.Layout()
         # end wxGlade
 
@@ -304,13 +304,13 @@ class MyPanelScrolled(wx.ScrolledWindow):
         wx.ScrolledWindow.__init__(self, *args, **kwds)
         self.SetSize((400, 300))
         self.SetScrollRate(10, 10)
-        
+
         sizer_1 = wx.BoxSizer(wx.VERTICAL)
-        
+
         sizer_1.Add((0, 0), 0, 0, 0)
-        
+
         self.SetSizer(sizer_1)
-        
+
         self.Layout()
         # end wxGlade
 

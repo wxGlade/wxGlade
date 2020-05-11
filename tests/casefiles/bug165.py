@@ -18,7 +18,7 @@ class awxNotebook(wx.Notebook):
         # begin wxGlade: awxNotebook.__init__
         kwds["style"] = kwds.get("style", 0)
         wx.Notebook.__init__(self, *args, **kwds)
-        
+
         self.notebook_1_pane_1 = wx.Panel(self, wx.ID_ANY)
         self.AddPage(self.notebook_1_pane_1, _("tab1"))
         # end wxGlade
@@ -31,15 +31,15 @@ class MyFrame(wx.Frame):
         kwds["style"] = kwds.get("style", 0)
         wx.Frame.__init__(self, *args, **kwds)
         self.SetTitle(_("frame_1"))
-        
+
         sizer_1 = wx.BoxSizer(wx.VERTICAL)
-        
+
         self.notebook_1 = awxNotebook(self, wx.ID_ANY)
         sizer_1.Add(self.notebook_1, 1, 0, 0)
-        
+
         self.SetSizer(sizer_1)
         sizer_1.Fit(self)
-        
+
         self.Layout()
         # end wxGlade
 

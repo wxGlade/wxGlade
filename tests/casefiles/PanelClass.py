@@ -19,13 +19,13 @@ class DebugPanel(wx.Panel):
         kwds["style"] = kwds.get("style", 0) | wx.TAB_TRAVERSAL
         wx.Panel.__init__(self, *args, **kwds)
         self.SetFont(wx.Font(12, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD, 0, ""))
-        
+
         sizer_2 = wx.StaticBoxSizer(wx.StaticBox(self, wx.ID_ANY, "sizer_2"), wx.VERTICAL)
-        
+
         sizer_2.Add((0, 0), 0, 0, 0)
-        
+
         self.SetSizer(sizer_2)
-        
+
         self.Layout()
         # end wxGlade
 
@@ -38,7 +38,7 @@ class Frame(wx.Frame):
         wx.Frame.__init__(self, *args, **kwds)
         self.SetSize((1688, 1058))
         self.SetTitle("Frame")
-        
+
         self.notebook_1_Debug = DebugPanel(self, wx.ID_ANY)
         self.Layout()
         # end wxGlade

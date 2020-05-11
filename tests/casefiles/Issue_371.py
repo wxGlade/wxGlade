@@ -28,14 +28,14 @@ class FrameMain(wx.Frame):
         _icon = wx.NullIcon
         _icon.CopyFromBitmap(wx.ICON(icon))
         self.SetIcon(_icon)
-        
+
         sizer_top = wx.BoxSizer(wx.HORIZONTAL)
-        
+
         self.panel_top = wx.Panel(self, wx.ID_ANY, style=wx.BORDER_STATIC | wx.TAB_TRAVERSAL)
         sizer_top.Add(self.panel_top, 1, wx.EXPAND, 0)
-        
+
         self.SetSizer(sizer_top)
-        
+
         self.Layout()
         # end wxGlade
 

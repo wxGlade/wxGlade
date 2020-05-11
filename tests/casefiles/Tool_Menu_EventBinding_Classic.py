@@ -20,7 +20,7 @@ class MyFrame(wx.Frame):
         wx.Frame.__init__(self, *args, **kwds)
         self.SetSize((400, 300))
         self.SetTitle("frame")
-        
+
         # Menu Bar
         self.frame_menubar = wx.MenuBar()
         wxglade_tmp_menu = wx.Menu()
@@ -31,7 +31,7 @@ class MyFrame(wx.Frame):
         self.frame_menubar.Append(wxglade_tmp_menu, "Menu 1")
         self.SetMenuBar(self.frame_menubar)
         # Menu Bar end
-        
+
         # Tool Bar
         self.frame_toolbar = wx.ToolBar(self, -1)
         tool = self.frame_toolbar.AddLabelTool(wx.ID_ANY, "My Tool", wx.Bitmap("..\\..\\icons\\button.xpm", wx.BITMAP_TYPE_ANY), wx.NullBitmap, wx.ITEM_NORMAL, "", "")
@@ -39,13 +39,13 @@ class MyFrame(wx.Frame):
         self.SetToolBar(self.frame_toolbar)
         self.frame_toolbar.Realize()
         # Tool Bar end
-        
+
         sizer_1 = wx.BoxSizer(wx.VERTICAL)
-        
+
         sizer_1.Add((0, 0), 0, 0, 0)
-        
+
         self.SetSizer(sizer_1)
-        
+
         self.Layout()
 
         # end wxGlade

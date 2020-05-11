@@ -23,13 +23,13 @@ class MyFrame(wx.Frame):
         wx.Frame.__init__(self, *args, **kwds)
         self.SetSize((400, 300))
         self.SetTitle("frame")
-        
+
         sizer_1 = wx.BoxSizer(wx.VERTICAL)
-        
+
         sizer_1.Add((0, 0), 0, 0, 0)
-        
+
         self.SetSizer(sizer_1)
-        
+
         self.Layout()
         # frame extra code after
 
@@ -54,14 +54,14 @@ class MyDialog(wx.Dialog):
         kwds["style"] = kwds.get("style", 0) | wx.DEFAULT_DIALOG_STYLE
         wx.Dialog.__init__(self, *args, **kwds)
         self.SetTitle("dialog")
-        
+
         sizer_1 = wx.BoxSizer(wx.VERTICAL)
-        
+
         sizer_1.Add((0, 0), 0, 0, 0)
-        
+
         self.SetSizer(sizer_1)
         sizer_1.Fit(self)
-        
+
         self.Layout()
         # dialog extra code after
 
@@ -102,14 +102,14 @@ class MyDialog1(wx.Panel):
         # panel extracode before
         kwds["style"] = kwds.get("style", 0) | wx.TAB_TRAVERSAL
         wx.Panel.__init__(self, *args, **kwds)
-        
+
         sizer_1 = wx.BoxSizer(wx.VERTICAL)
-        
+
         sizer_1.Add((0, 0), 0, 0, 0)
-        
+
         self.SetSizer(sizer_1)
         sizer_1.Fit(self)
-        
+
         self.Layout()
         # panel extracode after
         # end wxGlade

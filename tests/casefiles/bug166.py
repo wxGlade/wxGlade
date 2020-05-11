@@ -19,22 +19,22 @@ class MyFrame(wx.Frame):
         kwds["style"] = kwds.get("style", 0)
         wx.Frame.__init__(self, *args, **kwds)
         self.SetTitle("frame_1")
-        
+
         sizer_1 = wx.BoxSizer(wx.VERTICAL)
-        
+
         sizer_2 = wx.BoxSizer(wx.VERTICAL)
         sizer_1.Add(sizer_2, 1, 0, 0)
-        
+
         self.choice_1 = wx.Choice(self, wx.ID_ANY, choices=["Pure ASCII", u"German Umlauts äöüÄÖÜß"])
         self.choice_1.SetSelection(1)
         sizer_2.Add(self.choice_1, 1, wx.ALL | wx.EXPAND, 5)
-        
+
         self.label_1 = wx.StaticText(self, wx.ID_ANY, u"German Umlauts äöüÄÖÜß", style=wx.ALIGN_CENTER)
         sizer_2.Add(self.label_1, 1, wx.ALL | wx.EXPAND, 5)
-        
+
         self.SetSizer(sizer_1)
         sizer_1.Fit(self)
-        
+
         self.Layout()
         # end wxGlade
 

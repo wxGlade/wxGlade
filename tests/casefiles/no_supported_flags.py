@@ -19,15 +19,15 @@ class MyFrame(wx.Frame):
         kwds["style"] = kwds.get("style", 0) | wx.DEFAULT_FRAME_STYLE
         wx.Frame.__init__(self, *args, **kwds)
         self.SetTitle(_("frame_1"))
-        
+
         sizer_1 = wx.BoxSizer(wx.HORIZONTAL)
-        
+
         self.label_1 = wx.StaticText(self, wx.ID_ANY, _("Flag wxST_ELLIPSIZE_END is set but not\nsupported with wx 2.8. Thereby the generated\ncode should not contain this flag."))
         sizer_1.Add(self.label_1, 1, wx.ALL | wx.EXPAND, 5)
-        
+
         self.SetSizer(sizer_1)
         sizer_1.Fit(self)
-        
+
         self.Layout()
         # end wxGlade
 

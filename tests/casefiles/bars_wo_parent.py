@@ -40,14 +40,14 @@ class MyFrame(wx.Frame):
         wx.Frame.__init__(self, *args, **kwds)
         self.SetSize((200, 200))
         self.SetTitle("frame_1")
-        
+
         sizer_1 = wx.BoxSizer(wx.VERTICAL)
-        
+
         self.label_1 = wx.StaticText(self, wx.ID_ANY, "placeholder - every design\nneeds a toplevel window", style=wx.ALIGN_CENTER)
         sizer_1.Add(self.label_1, 1, wx.ALL | wx.EXPAND, 0)
-        
+
         self.SetSizer(sizer_1)
-        
+
         self.Layout()
         # end wxGlade
 

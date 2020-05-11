@@ -19,17 +19,17 @@ class MyFrame(wx.Frame):
         kwds["style"] = kwds.get("style", 0) | wx.DEFAULT_FRAME_STYLE
         wx.Frame.__init__(self, *args, **kwds)
         self.SetTitle(_("MyFrame"))
-        
+
         sizer_1 = wx.BoxSizer(wx.VERTICAL)
-        
+
         self.label_1 = wx.StaticText(self, wx.ID_ANY, _("Extraproperty example"))
         self.label_1.SetFont(wx.Font(40, wx.DEFAULT, wx.NORMAL, wx.NORMAL, 0, ""))
         self.label_1.SetFoobar(1)
         sizer_1.Add(self.label_1, 1, wx.ALL, 5)
-        
+
         self.SetSizer(sizer_1)
         sizer_1.Fit(self)
-        
+
         self.Layout()
         # end wxGlade
 

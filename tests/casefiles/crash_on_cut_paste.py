@@ -20,18 +20,18 @@ class MeasurementFrame(wx.Frame):
         wx.Frame.__init__(self, *args, **kwds)
         self.SetSize((400, 340))
         self.SetTitle("ATV Tester")
-        
+
         sizer_limit = wx.BoxSizer(wx.VERTICAL)
-        
+
         self.panel_3 = wx.Panel(self, wx.ID_ANY)
         sizer_limit.Add(self.panel_3, 1, wx.EXPAND, 0)
-        
+
         sizer_8 = wx.StaticBoxSizer(wx.StaticBox(self.panel_3, wx.ID_ANY, "History"), wx.VERTICAL)
-        
+
         self.panel_3.SetSizer(sizer_8)
-        
+
         self.SetSizer(sizer_limit)
-        
+
         self.Layout()
         # end wxGlade
 

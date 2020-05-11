@@ -20,41 +20,41 @@ class MyFrame(wx.Frame):
         wx.Frame.__init__(self, *args, **kwds)
         self.SetSize((400, 300))
         self.SetTitle("frame")
-        
+
         sizer_1 = wx.BoxSizer(wx.VERTICAL)
-        
+
         self.text_ctrl_1 = wx.TextCtrl(self, wx.ID_ANY, "Some Input", style=wx.TE_READONLY)
         self.text_ctrl_1.SetBackgroundColour(wx.Colour(0, 255, 127))
         self.text_ctrl_1.SetForegroundColour(wx.Colour(255, 0, 0))
         self.text_ctrl_1.SetFont(wx.Font(16, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD, 0, ""))
         self.text_ctrl_1.SetFocus()
         sizer_1.Add(self.text_ctrl_1, 1, wx.ALL | wx.EXPAND, 5)
-        
+
         label_1 = wx.StaticText(self, wx.ID_ANY, "label_1")
         sizer_1.Add(label_1, 0, 0, 0)
-        
+
         label_2 = wx.StaticText(self, wx.ID_ANY, "label_2")
         label_2.SetFont(wx.Font(8, wx.FONTFAMILY_DECORATIVE, wx.FONTSTYLE_SLANT, wx.FONTWEIGHT_LIGHT, 0, ""))
         sizer_1.Add(label_2, 0, 0, 0)
-        
+
         label_3 = wx.StaticText(self, wx.ID_ANY, "label_3")
         label_3.SetFont(wx.Font(8, wx.FONTFAMILY_ROMAN, wx.FONTSTYLE_ITALIC, wx.FONTWEIGHT_BOLD, 0, ""))
         sizer_1.Add(label_3, 0, 0, 0)
-        
+
         label_4 = wx.StaticText(self, wx.ID_ANY, "label_4")
         label_4.SetFont(wx.Font(8, wx.FONTFAMILY_SCRIPT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, 0, ""))
         sizer_1.Add(label_4, 0, 0, 0)
-        
+
         label_5 = wx.StaticText(self, wx.ID_ANY, "label_5")
         label_5.SetFont(wx.Font(10, wx.FONTFAMILY_SWISS, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, 0, ""))
         sizer_1.Add(label_5, 0, 0, 0)
-        
+
         label_6 = wx.StaticText(self, wx.ID_ANY, "label_6")
         label_6.SetFont(wx.Font(12, wx.FONTFAMILY_MODERN, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, 1, ""))
         sizer_1.Add(label_6, 0, 0, 0)
-        
+
         self.SetSizer(sizer_1)
-        
+
         self.Layout()
         # end wxGlade
 
