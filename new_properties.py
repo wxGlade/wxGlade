@@ -2153,7 +2153,7 @@ class ColorProperty(DialogProperty):
             return compat.wx_SystemSettings_GetColour(self.str_to_colors[color])
         elif color.startswith("#"):
             return misc.string_to_color(color)
-        ret = wx.NamedColour(color)
+        ret = compat.wx_NamedColour(color)
         if ret.IsOk():
             return ret
         return None
