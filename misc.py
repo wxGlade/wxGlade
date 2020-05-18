@@ -45,6 +45,8 @@ def set_focused_widget(widget, force=False, delayed=False):
     common.property_panel.set_widget(widget, force)
     if common.history: common.history.set_widget(widget)
     common.main.set_widget(widget)  # to update menu and toolbar
+    if common.shell:
+        common.shell.txt_path.SetValue( widget and widget.get_path() or "" )
 
     focused_time = time.time()
     if widget and widget.widget:

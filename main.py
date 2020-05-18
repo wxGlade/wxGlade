@@ -337,6 +337,23 @@ class wxGladePalettePanel(wx.Panel):
             if button.GetValue(): button.SetValue(False)
 
 
+import shell_frame
+class ShellFrame(shell_frame.ShellFrame):
+    def on_copy_path(self, event):
+        # 
+        # common.root.find_widget_from_path("app/frame/sizer_1/panel_1/sizer_2/static_text_1")
+        # common.root.children[0].children[0].children[0].children[0].children[1]
+        # common.root[0][0][0][0][1]
+        widget = misc.focused_widget
+        if not widget:
+            event.Skip()
+            return
+        path = widget.get_path()
+        command = 'widget = common.root.find_widget_from_path("%s")\r\n'%path
+        #self.shell.push(command) # or .write ?
+        self.shell.write(command)
+
+
 class wxGladeFrame(wx.Frame):
     "Main frame of wxGlade"
     def __init__(self):
@@ -806,8 +823,7 @@ class wxGladeFrame(wx.Frame):
                 toplevel.widget.Raise()
 
     def create_shell_window(self):
-        import shell_frame
-        common.shell = shell_frame.ShellFrame(None)
+        common.shell = ShellFrame(None)
         common.shell.Show()
 
     # status bar for message display ###################################################################################

@@ -23,54 +23,59 @@ class ShellFrame(wx.Frame):
         _icon = wx.NullIcon
         _icon.CopyFromBitmap(wx.Bitmap("icons/wxglade128.ico", wx.BITMAP_TYPE_ANY))
         self.SetIcon(_icon)
-        
+
         self.panel_1 = wx.Panel(self, wx.ID_ANY)
-        
+
         sizer_2 = wx.BoxSizer(wx.VERTICAL)
-        
+
         grid_sizer_1 = wx.FlexGridSizer(3, 3, 0, 0)
         sizer_2.Add(grid_sizer_1, 0, wx.EXPAND, 0)
-        
+
         static_text_1 = wx.StaticText(self.panel_1, wx.ID_ANY, "Path:")
         grid_sizer_1.Add(static_text_1, 0, wx.ALIGN_CENTER_VERTICAL, 0)
-        
+
         self.txt_path = wx.TextCtrl(self.panel_1, wx.ID_ANY, "", style=wx.TE_READONLY)
         grid_sizer_1.Add(self.txt_path, 0, wx.EXPAND, 0)
-        
+
         self.btn_copy_path = wx.Button(self.panel_1, wx.ID_ANY, "Copy path")
         grid_sizer_1.Add(self.btn_copy_path, 0, 0, 0)
-        
+
         static_text_2 = wx.StaticText(self.panel_1, wx.ID_ANY, "Path")
         grid_sizer_1.Add(static_text_2, 0, wx.ALIGN_CENTER_VERTICAL, 0)
-        
+
         self.txt_path_copy = wx.TextCtrl(self.panel_1, wx.ID_ANY, "", style=wx.TE_READONLY)
         grid_sizer_1.Add(self.txt_path_copy, 0, wx.EXPAND, 0)
-        
+
         self.btn_copy_indices = wx.Button(self.panel_1, wx.ID_ANY, "Copy indices")
         grid_sizer_1.Add(self.btn_copy_indices, 0, 0, 0)
-        
+
         static_text_3 = wx.StaticText(self.panel_1, wx.ID_ANY, "Path")
         grid_sizer_1.Add(static_text_3, 0, wx.ALIGN_CENTER_VERTICAL, 0)
-        
+
         self.txt_path_copy_1 = wx.TextCtrl(self.panel_1, wx.ID_ANY, "", style=wx.TE_READONLY)
         grid_sizer_1.Add(self.txt_path_copy_1, 0, wx.EXPAND, 0)
-        
+
         self.button_3 = wx.Button(self.panel_1, wx.ID_ANY, "button_3")
         grid_sizer_1.Add(self.button_3, 0, 0, 0)
-        
+
         self.shell = wx.py.shell.Shell(self.panel_1, wx.ID_ANY, introText = "\nThis is the shell.\nModules 'common' and 'misc' are imported already.\n\n")
         # insert some variables into the shell's locals
         import common, misc
         self.shell.interp.locals["common"] = common
         self.shell.interp.locals["misc"] = misc
-        
+
         sizer_2.Add(self.shell, 2, wx.EXPAND, 0)
-        
+
         grid_sizer_1.AddGrowableCol(1)
-        
+
         self.panel_1.SetSizer(sizer_2)
-        
+
         self.Layout()
+
+        self.Bind(wx.EVT_BUTTON, self.on_copy_path, self.btn_copy_path)
         # end wxGlade
 
+    def on_copy_path(self, event):  # wxGlade: ShellFrame.<event_handler>
+        print("Event handler 'on_copy_path' not implemented!")
+        event.Skip()
 # end of class ShellFrame
