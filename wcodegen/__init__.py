@@ -452,19 +452,23 @@ class BaseWidgetWriter(StylesMixin, BaseCodeWriter):
             if not isinstance(p, np.BitmapProperty): continue
             value = p.get_value()
             if value.startswith('art:'): need_artprovider = True
+            self.tmpl_dict[p_name] = self.generate_code_bitmap(value)
             if '%%(%s)s'%p_name in self.tmpl:
                 # constructor argument
-                self.tmpl_dict[p_name] = self.generate_code_bitmap(value)
                 have_constructor_argument = True
             elif value and (not p.min_version or self.codegen.for_version>=p.min_version):
                 # property to be set after construction, e.g.: ...SetBitmapDisabled(disabled_bitmap)
-                self.tmpl_dict[p_name] = self.generate_code_bitmap(value)
                 setname = p_name.replace( "_bitmap", "").capitalize()
                 if compat.IS_CLASSIC and setname=="Pressed":
                     setname = "Selected"  # probably only wx 2.8
                 if setname=="Bitmap": setname = ""
                 # build template, e.g. '%(name)s.SetBitmapDisabled(%(disabled_bitmap)s)\n'
+
                 tmpl = self.tmpl2_bitmap_property%(setname, p_name)
+                if p_name=="bitmap" and obj.check_prop_nodefault("bitmap_dir"):
+                    direction = self.cn( obj.properties["bitmap_dir"].get_string_value() )
+                    tmpl = self.tmpl2_bitmap_property_with_dir%(setname, p_name, direction)
+
                 self.tmpl_props.append(tmpl)
 
         # import artprovider?
@@ -788,6 +792,7 @@ class CppWidgetCodeWriter(CppMixin, BaseWidgetWriter):
     tmpl_inline_bitmap      = '%(name)s(%(bitmap)s, %(bitmap_type)s)'
     tmpl_inline_emptybitmap = 'wxBitmap(%(width)s, %(height)s)'
     tmpl2_bitmap_property   = '%%(name)s->SetBitmap%s(%%(%s)s);\n'
+    tmpl2_bitmap_property_with_dir = '%%(name)s->SetBitmap%s(%%(%s)s, %s);\n'
 
     tmpl_selection   = '%(name)s->SetSelection(%(selection)s);\n'
     tmpl_setvalue    = '%(name)s->SetValue(%(value_unquoted)s);\n'
@@ -868,6 +873,7 @@ class LispWidgetCodeWriter(LispMixin, BaseWidgetWriter):
     tmpl_inline_bitmap      = '(%(name)s_CreateLoad %(bitmap)s %(bitmap_type)s)'
     tmpl_inline_emptybitmap = 'wxBitmap_Create(%(width)s %(height)s)'
     tmpl2_bitmap_property   = '(wxBitmapButton_SetBitmap%s (slot-%%(name)s obj) %%(%s)s)\n'
+    tmpl2_bitmap_property_with_dir = '(wxBitmapButton_SetBitmap%s (slot-%%(name)s obj) %%(%s)s %s)\n'
 
     tmpl_concatenate_choices = ' '
     tmpl_selection   = '(%(klass)s_SetSelection %(name)s %(selection)s)\n'
@@ -912,6 +918,7 @@ class PerlWidgetCodeWriter(PerlMixin, BaseWidgetWriter):
     tmpl_inline_bitmap      = '%(name)s->new(%(bitmap)s, %(bitmap_type)s)'
     tmpl_inline_emptybitmap = 'Wx::Bitmap->new(%(width)s, %(height)s)'
     tmpl2_bitmap_property   = '%%(name)s->SetBitmap%s(%%(%s)s);\n'
+    tmpl2_bitmap_property_with_dir = '%%(name)s->SetBitmap%s(%%(%s)s, %s);\n'
 
     tmpl_selection   = '%(name)s->SetSelection(%(selection)s);\n'
     tmpl_setvalue    = '%(name)s->SetValue(%(value_unquoted)s);\n'
@@ -953,6 +960,7 @@ class PythonWidgetCodeWriter(PythonMixin, BaseWidgetWriter):
     else:
         tmpl_inline_emptybitmap = 'wx.Bitmap(%(width)s, %(height)s)'
     tmpl2_bitmap_property = '%%(name)s.SetBitmap%s(%%(%s)s)\n'
+    tmpl2_bitmap_property_with_dir = '%%(name)s.SetBitmap%s(%%(%s)s, dir=%s)\n'
 
     tmpl_flags       = ', style=%s'
     tmpl_selection   = '%(name)s.SetSelection(%(selection)s)\n'

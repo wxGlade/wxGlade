@@ -22,7 +22,7 @@ class EditButton(BitmapMixin, ManagedBase, EditStylesMixin):
     STOCKITEMS = sorted( ButtonStockItems.stock_ids.keys())
     _PROPERTIES = ["Widget", "label", "stockitem",
                    "bitmap", "disabled_bitmap", "pressed_bitmap", "current_bitmap", "focus_bitmap",
-                   "default", "style"]
+                   "default", "style", "bitmap_dir"]
     PROPERTIES = ManagedBase.PROPERTIES + _PROPERTIES + ManagedBase.EXTRA_PROPERTIES
 
     _PROPERTY_HELP = {"default":"This sets the button to be the default item for the toplevel window.\n"
@@ -30,7 +30,8 @@ class EditButton(BitmapMixin, ManagedBase, EditStylesMixin):
                       "stockitem":"Standard IDs for button identifiers.\n\n"
                                   "You can edit these in the Tree view as well.\n\n"
                                   "If stockitem buttons like OK and CANCEL are placed in a StdDialogButtonSizer, "
-                                  "they will be re-ordered according to the platform style guide."}
+                                  "they will be re-ordered according to the platform style guide.",
+                      "bitmap_dir":"If bitmap is set: Position of the bitmap in the button."}
 
     def __init__(self, name, parent, label, pos):
         # Initialise parent classes
@@ -49,6 +50,12 @@ class EditButton(BitmapMixin, ManagedBase, EditStylesMixin):
         self.current_bitmap  = np.BitmapPropertyD(min_version=(3,0))
         self.focus_bitmap    = np.BitmapPropertyD(min_version=(3,0))
 
+        values = [wx.LEFT, wx.RIGHT, wx.TOP, wx.BOTTOM]
+        aliases = ["wxLEFT", "wxRIGHT", "wxTOP", "wxBOTTOM"]
+        p = self.bitmap_dir = np.RadioProperty(wx.LEFT, values, columns=4, aliases=aliases, default_value=wx.LEFT)
+        p.min_version = (3,0)
+        p.blocked = True
+
     def create_widget(self):
         stockitem_p = self.properties["stockitem"]
         if stockitem_p.is_active():
@@ -56,8 +63,10 @@ class EditButton(BitmapMixin, ManagedBase, EditStylesMixin):
         else:
             label = self.label
         self.widget = wx.Button(self.parent_window.widget, self.id, label, style=self.style)
-        if compat.IS_PHOENIX:
+        if compat.version[0]>=3 and int(common.root.for_version[0])>2:
             self._set_preview_bitmaps()
+            if self.bitmap_dir!=wx.LEFT:
+                self.widget.SetBitmapPosition(self.bitmap_dir)
 
     def properties_changed(self, modified=None):
         "update label (and size if label/stockitem have changed)"
@@ -86,6 +95,12 @@ class EditButton(BitmapMixin, ManagedBase, EditStylesMixin):
 
         if (label_modified or "name" in modified) and common.app_tree:
             common.app_tree.refresh(self, refresh_label=True, refresh_image=False)
+
+        if "bitmap" in modified:
+            self.properties["bitmap_dir"].set_blocked( not self.check_prop_truth("bitmap") )
+
+        if "bitmap_dir" in modified and self.widget:
+            self.widget.SetBitmapPosition(self.bitmap_dir)
 
         BitmapMixin._properties_changed(self, modified)
         self._set_widget_best_size()

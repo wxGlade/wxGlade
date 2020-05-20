@@ -753,6 +753,7 @@ class RadioProperty(Property):
         if start_editing: self.editing = True
         if not self.editing: return
         self.options.SetSelection( self.values.index(self.value) )
+        if self.blocked: self.options.Disable()
 
     def on_radio(self, event):
         event.Skip()
@@ -3248,3 +3249,9 @@ class PropertyOwner(object):
         # return True if property exists, is active and not blocked and the value is tested for truth
         if not self.check_prop(name): return False
         return bool(self.properties[name].get())
+
+    def check_prop_nodefault(self, name):
+        # return True if property exists, is active and not blocked and the value is not the default value
+        if not self.check_prop(name): return False
+        p = self.properties[name]
+        return p.value!=p.default_value
