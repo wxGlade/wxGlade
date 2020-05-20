@@ -2999,7 +2999,7 @@ class GridProperty(Property):
             del values[self.cur_row]
             if self.with_index:
                 del self.indices[self.cur_row]
-            if self.cur_row>=len(values):
+            if self.cur_row>=len(values) and self.cur_row>0:
                 self.cur_row -= 1
 
         self._update_remove_button()
