@@ -2782,10 +2782,11 @@ class GridProperty(Property):
             return
         values = self._ensure_editing_copy()
         if values:
-            self.grid.DeleteRows(self.cur_row)
-            del values[self.cur_row]
+            cur_row = self.cur_row
+            self.grid.DeleteRows(self.cur_row)  # self.cur_row will change due to selection change
+            del values[cur_row]
             if self.with_index:
-                del self.indices[self.cur_row]
+                del self.indices[cur_row]
             if self.cur_row>=len(values) and self.cur_row>0:
                 self.cur_row -= 1
 
