@@ -1102,7 +1102,7 @@ class wxGladeFrame(wx.Frame):
                               wildcard="wxGlade files (*.wxg)|*.wxg|wxGlade Template files (*.wgt) |*.wgt|"
                               "XML files (*.xml)|*.xml|All files|*",
                               flags=wx.FD_SAVE | wx.FD_OVERWRITE_PROMPT,
-                              default_filename=common.root.filename or self.cur_dir)
+                              default_filename=common.root.filename or (self.cur_dir+os.sep+"wxglade.wxg"))
         if not fn: return
 
         # check for file extension and add default extension if missing
