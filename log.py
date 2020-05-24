@@ -20,9 +20,9 @@ behaviour is useful to store logged exceptions permanently.
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
-import datetime, inspect
+import datetime
 import logging, logging.handlers
-import os, sys, types, traceback
+import os, sys, traceback
 
 try:
     _nameToLevel = logging._levelNames
@@ -294,15 +294,12 @@ def getMessage(self):
 
     Return the message for this LogRecord after merging any user-supplied arguments with the message.
     This specific version tries to handle Unicode user-supplied arguments."""
-    if not hasattr(types, "UnicodeType"):  # if no unicode support... # XXX
-        msg = str(self.msg)
-    else:
-        msg = self.msg
-        if not isinstance(msg, types.StringTypes):
-            try:
-                msg = str(self.msg)
-            except UnicodeError:
-                msg = self.msg      # Defer encoding till later
+    msg = self.msg
+    if not isinstance(msg, compat.basestring):
+        try:
+            msg = compat.unicode(msg)
+        except UnicodeError:
+            msg = self.msg      # Defer encoding till later
     if self.args:
         try:
             msg = msg % self.args
