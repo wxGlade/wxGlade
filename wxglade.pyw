@@ -9,7 +9,7 @@ Entry point of wxGlade on windows
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
-import sys, traceback, types
+import sys, traceback
 import gettext
 t = gettext.translation(domain="wxglade", localedir="locale", fallback=True)
 t.install("wxglade")
@@ -44,7 +44,7 @@ try:
 except SystemExit as details:
     code = details.code
     title = u'Abnormal Termination of wxGlade'
-    if isinstance(code, types.IntType) and code != 0:
+    if isinstance(code, int) and code != 0:
         msg = u"""\
 wxGlade is terminating abnormally with an error.
 
@@ -52,7 +52,7 @@ Please check the wxGlade log file to get more information.
 
 The exit code is: %d
 The log file is : %s""" % (code, config.log_file)
-    elif isinstance(code, types.StringTypes):
+    elif isinstance(code, basestring):
         msg = u"""\
 wxGlade is terminating abnormally with an error.
 
