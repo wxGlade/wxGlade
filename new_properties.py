@@ -51,6 +51,8 @@ def flush_current_property():
     if not current_property or not current_property.editing: return
     current_property.flush()
 
+misc.flush_functions.append(flush_current_property)
+
 
 class Property(object):
     "Base class for property editors"

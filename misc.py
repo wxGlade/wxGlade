@@ -23,9 +23,15 @@ focused_widget = None  # the currently selected widget in GUI mode (for tree and
 _next_focused_widget = None  # for delayed setting, to ensure that only the last call has an effect
 focused_time = 0.0  # sometimes, widgets ignore focus related events during a dead time of e.g. 50ms after setting focus
 
+flush_functions = []  # these will be called before the focused widget is set; currently only used by new_properties
+
+
 def set_focused_widget(widget, force=False, delayed=False):
     if not config.use_gui: return
     global focused_widget, _next_focused_widget, focused_time
+
+    for f in flush_functions:
+        f()
 
     if delayed:
         _next_focused_widget = widget

@@ -458,10 +458,7 @@ class Application(EditRoot):
         self.properties_changed(None)
 
     def generate_code(self, preview=False, out_path=None, widget=None):
-        if config.use_gui:
-            common.property_panel.flush()
-        else:
-            np.flush_current_property()
+        np.flush_current_property()
         if out_path is None:
             out_path = os.path.expanduser(self.output_path.strip())
             if not os.path.isabs(out_path) and (out_path and self.filename):

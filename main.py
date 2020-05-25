@@ -262,8 +262,6 @@ class wxGladePropertyPanel(wx.Panel):
             # Mac OS: inital event on creation
             event.Skip()
 
-    def flush(self):
-        np.flush_current_property()
 
 # don't use any more for application; causes crashes on Cent OS 7; still used when testing
 class wxGladeArtProvider(wx.ArtProvider):
@@ -1064,7 +1062,7 @@ class wxGladeFrame(wx.Frame):
 
     def save_app(self, event=None):
         "saves a wxGlade project onto an xml file"
-        self.property_panel.flush()
+        np.flush_current_property()
         if not common.root.filename or common.root.is_template:
             self.save_app_as()
         else:
