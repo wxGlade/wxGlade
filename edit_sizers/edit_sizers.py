@@ -1706,10 +1706,11 @@ class _GrowablePropertyD(np.DialogPropertyD):
     def _set_converter(self, value):
         # used by set()
         if isinstance(value, compat.basestring):
+            if not value: return []
             try:
                 value = sorted( [int(n) for n in value.split(",") ] )
             except:
-                return None
+                return []
         return value
 
     def _convert_from_text(self, text=None):
