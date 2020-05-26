@@ -2513,7 +2513,7 @@ def grid_xml_builder(attrs, parent, pos=None):
         constructor = EditFlexGridSizer
     elif attrs['base'] == 'EditGridBagSizer':
         constructor = EditGridBagSizer
-    return constructor(name, parent, pos, rows=0, cols=0)
+    return constructor(name, parent, pos, rows=1, cols=0)
 
 
 def init_all():
