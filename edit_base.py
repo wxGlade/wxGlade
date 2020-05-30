@@ -306,7 +306,6 @@ class EditBase(np.PropertyOwner):
         compat.DestroyLater(self.widget)
         self.widget = None
 
-
     def child_widget_created(self, child):
         # implemented for notebook, splitter, sizers
         pass

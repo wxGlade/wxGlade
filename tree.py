@@ -578,6 +578,7 @@ class WidgetTree(wx.TreeCtrl):#, Tree):
             editor.widget.Layout()
 
             if wx.Platform != '__WXMSW__' and set_size is not None:
+                #  XXX integrate with above or remove above again?
                 toplevel_widget = editor.widget  # above it was not yet created
                 wx.CallAfter(toplevel_widget.SetSize, set_size)
         else:

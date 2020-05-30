@@ -263,7 +263,7 @@ class EditBase(EventsMixin, edit_base.EditBase):
     def frozen(self):
         if config.use_freeze_thaw and self.widget:
             toplevel = self.widget.GetTopLevelParent()
-            print("Freezing", toplevel)
+            if config.debugging: print("Freezing", toplevel)
             toplevel.Freeze()
         else:
             toplevel = None
@@ -275,7 +275,7 @@ class EditBase(EventsMixin, edit_base.EditBase):
                     self.widget.Refresh()
                     #self.widget.SendSizeEvent()  # would work most of the time
                     toplevel.SendSizeEvent()  # would work as well
-                print("Thawing", toplevel)
+                if config.debugging: print("Thawing", toplevel)
                 toplevel.Thaw()
 
 
@@ -354,52 +354,22 @@ class WindowBase(EditBase):
         self.toplevel_parent.parent.check_codegen(self)
 
     def finish_widget_creation(self, *args, **kwds):
-        # store the actual values of foreground, background and font as default, if the property is deactivated later
-        background_p = self.properties["background"]
-        foreground_p = self.properties["foreground"]
- 
         self.widget.Bind(wx.EVT_SIZE, self.on_size)
 
+        # store the actual values of font as default, if the property is deactivated later
         fnt = self.widget.GetFont()
-        if not fnt.IsOk():
-            fnt = wx.SystemSettings_GetFont(wx.SYS_DEFAULT_GUI_FONT)
+        if not fnt.IsOk(): fnt = wx.SystemSettings_GetFont(wx.SYS_DEFAULT_GUI_FONT)
         self._original['font'] = fnt
-        #font_p = self.properties.get('font')
-        #if font_p and font_p.is_active():
-        if self.check_prop_truth("font"):
-            self._set_font()
-  
-        if self.check_prop_truth("wrap"):
-            self.widget.Wrap(self.wrap)
- 
-        size_p = self.properties['size']
-        if size_p.is_active():
-            self.set_size()
-        #else:
-            ## this is a dirty hack: in previous versions <=0.7.2 self.set_size is practically always called
-            ## set_size then calls self.sizer.set_item(item, pos)
-            ## without calling this here, e.g. an empty notebook page is not created!
-            ## XXX this should be made more straightforward
-            #if "pos" in self.properties and hasattr(self.parent, "item_properties_modified"):
-                ##self.sizer.set_item(self.pos)
-                #self.parent.item_properties_modified(self)
-            #size_p.set('%s, %s' % tuple(self.widget.GetSize()))
- 
-        if background_p.is_active(): self.widget.SetBackgroundColour(self.background)
-        if foreground_p.is_active(): self.widget.SetForegroundColour(self.foreground)
 
-        #font_p = self.properties.get('font')
-        #if font_p and font_p.is_active():
-            #self._set_font()
-        #if hasattr(self.parent, "child_widget_created"):
-        #self.parent.child_widget_created(self)  # mainly for Notebook and Splitter
+        if self.check_prop_truth("font"): self._set_font()
+        if self.check_prop_truth("wrap"): self.widget.Wrap(self.wrap)
+        if self.check_prop("size"):       self.set_size()
+        if self.check_prop("background"): self.widget.SetBackgroundColour(self.background)
+        if self.check_prop("foreground"): self.widget.SetForegroundColour(self.foreground)
 
         EditBase.finish_widget_creation(self)
 
-        #self.widget.Bind(wx.EVT_SIZE, self.on_size)  # moved up as above settings might have an influence
-        # after setting various Properties, we must Refresh widget in order to see changes
         self.widget.Refresh()
-        #self.widget.Bind(wx.EVT_KEY_DOWN, misc.on_key_down_event)
         self.widget.Bind(wx.EVT_CHAR_HOOK, self.on_char_hook)
 
     def on_char_hook(self, event):
@@ -443,7 +413,6 @@ class WindowBase(EditBase):
                 old_widget.SetSizer(None, False)
                 sizer.SetContainingWindow(self.widget)
                 self._reparent_widget(sizer)
-                #sizer.Layout()
             else:
                 for child in self.widget.GetChildren():
                     # actually, for now a panel may only have a sizer as child, so this code is not executed
@@ -522,7 +491,7 @@ class WindowBase(EditBase):
             font = wx.Font( font[0], families[font[1]], styles[font[2]], weights[font[3]], font[4], font[5])
 
         self.widget.SetFont(font)
-        if hasattr(self.parent, "set_item_best_size") and not self.properties["size"].is_active():
+        if hasattr(self.parent, "set_item_best_size") and not self.check_prop("size"):
             self.parent.set_item_best_size(self)
 
     def set_size(self):
@@ -615,10 +584,6 @@ class ManagedBase(WindowBase):
         self.widget.Bind(wx.EVT_LEFT_DOWN, self.on_set_focus)
         self.widget.Bind(wx.EVT_MOUSE_EVENTS, self.on_mouse_events)
         self.widget.Bind(wx.EVT_MOVE, self.on_move)
-        ## unify/replace the following with 'child_widget_created' and note that GetBestSize might not work yet on gtk
-        #if re_add and hasattr(self.parent, "_add_item"): # self.parent.IS_SIZER:
-            ## re-add the item to update it; this is not to be done when a widget is replaced due to style change
-            #self.parent._add_item( self, self.pos )
 
     def update_view(self, selected):
         if self.sel_marker: self.sel_marker.Show(selected)
@@ -627,7 +592,6 @@ class ManagedBase(WindowBase):
         if self.sel_marker: self.sel_marker.update()
 
     def on_size(self, event):
-        print("EVT on_size", event, self, self.widget)
         if not self.widget: return
         old = self.size
         WindowBase.on_size(self, event)
