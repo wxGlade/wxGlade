@@ -460,9 +460,14 @@ class WidgetTree(wx.TreeCtrl):#, Tree):
         self._set_cur_widget(editor)
 
     def on_change_selection(self, event):
-        if self.skip_select: return  # triggered by self.SelectItem in self.set_current_widget
+        if self.skip_select:
+            event.Skip()
+            return  # triggered by self.SelectItem in self.set_current_widget
         item = event.GetItem()
         editor = self._GetItemData(item)
+        if not editor:  # can happen during build/rebuild_tree
+            event.Skip()
+            return
         self._set_cur_widget(editor)
         misc.set_focused_widget(editor)
         if not self.IsExpanded(item) and (not hasattr(self, "HasFocus") or not self.HasFocus()):
@@ -568,7 +573,9 @@ class WidgetTree(wx.TreeCtrl):#, Tree):
         if not editor.is_visible():
             # added by rlawson to expand node on showing top level widget
             self.ExpandAllChildren(editor.item)
-            editor.create_widgets()
+            editor.create_widgets(level=0)
+            wx.SafeYield(onlyIfNeeded=True)
+            editor.widget.Layout()
 
             if wx.Platform != '__WXMSW__' and set_size is not None:
                 toplevel_widget = editor.widget  # above it was not yet created

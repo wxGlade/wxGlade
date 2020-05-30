@@ -194,6 +194,7 @@ class EditSplitterWindow(ManagedBase, EditStylesMixin):
     def add_item(self, child, pos=None):
         if pos is not None and self.widget: self._window_old = self.children[pos]
         ManagedBase.add_item(self, child, pos)
+        # XXX this is called when loading; check if required:
         self._add_slots(pos_max=pos)
 
     def _free_slot(self, pos, force_layout=True):
@@ -205,7 +206,22 @@ class EditSplitterWindow(ManagedBase, EditStylesMixin):
         self.split()
         return slot
 
+    #def item_properties_modified(self, widget, modified=None, force_layout=True):
+        #"Updates the layout of the item"
+        #if self.widget and self._window_old:
+            ## a child was replaced
+            #if self._window_old.widget:
+                #self.widget.Unsplit(self._window_old.widget)
+            #elif self.widget.IsSplit(): # the child widget may have been delete meanwhile by tree remove_rec
+                #self.widget.Unsplit()
+        #self._window_old = None
+        #if self.children[0] and self.children[1]:
+            #self.split()
+
     def item_properties_modified(self, widget, modified=None, force_layout=True):
+        raise ValueError("XXX")
+
+    def child_widget_created(self, widget):
         "Updates the layout of the item"
         if self.widget and self._window_old:
             # a child was replaced

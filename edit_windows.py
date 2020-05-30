@@ -261,8 +261,9 @@ class EditBase(EventsMixin, edit_base.EditBase):
 
     @contextlib.contextmanager
     def frozen(self):
-        if self.widget:
+        if config.use_freeze_thaw and self.widget:
             toplevel = self.widget.GetTopLevelParent()
+            print("Freezing", toplevel)
             toplevel.Freeze()
         else:
             toplevel = None
@@ -274,6 +275,7 @@ class EditBase(EventsMixin, edit_base.EditBase):
                     self.widget.Refresh()
                     #self.widget.SendSizeEvent()  # would work most of the time
                     toplevel.SendSizeEvent()  # would work as well
+                print("Thawing", toplevel)
                 toplevel.Thaw()
 
 
@@ -356,39 +358,50 @@ class WindowBase(EditBase):
         background_p = self.properties["background"]
         foreground_p = self.properties["foreground"]
  
+        self.widget.Bind(wx.EVT_SIZE, self.on_size)
+
         fnt = self.widget.GetFont()
         if not fnt.IsOk():
             fnt = wx.SystemSettings_GetFont(wx.SYS_DEFAULT_GUI_FONT)
         self._original['font'] = fnt
+        #font_p = self.properties.get('font')
+        #if font_p and font_p.is_active():
+        if self.check_prop_truth("font"):
+            self._set_font()
+  
+        if self.check_prop_truth("wrap"):
+            self.widget.Wrap(self.wrap)
  
         size_p = self.properties['size']
         if size_p.is_active():
             self.set_size()
-        else:
-            # this is a dirty hack: in previous versions <=0.7.2 self.set_size is practically always called
-            # set_size then calls self.sizer.set_item(item, pos)
-            # without calling this here, e.g. an empty notebook page is not created!
-            # XXX this should be made more straightforward
-            if "pos" in self.properties and hasattr(self.parent, "item_properties_modified"):
-                #self.sizer.set_item(self.pos)
-                self.parent.item_properties_modified(self)
-            size_p.set('%s, %s' % tuple(self.widget.GetSize()))
+        #else:
+            ## this is a dirty hack: in previous versions <=0.7.2 self.set_size is practically always called
+            ## set_size then calls self.sizer.set_item(item, pos)
+            ## without calling this here, e.g. an empty notebook page is not created!
+            ## XXX this should be made more straightforward
+            #if "pos" in self.properties and hasattr(self.parent, "item_properties_modified"):
+                ##self.sizer.set_item(self.pos)
+                #self.parent.item_properties_modified(self)
+            #size_p.set('%s, %s' % tuple(self.widget.GetSize()))
  
         if background_p.is_active(): self.widget.SetBackgroundColour(self.background)
         if foreground_p.is_active(): self.widget.SetForegroundColour(self.foreground)
 
-        font_p = self.properties.get('font')
-        if font_p and font_p.is_active():
-            self._set_font()
+        #font_p = self.properties.get('font')
+        #if font_p and font_p.is_active():
+            #self._set_font()
+        #if hasattr(self.parent, "child_widget_created"):
+        #self.parent.child_widget_created(self)  # mainly for Notebook and Splitter
 
         EditBase.finish_widget_creation(self)
 
-        self.widget.Bind(wx.EVT_SIZE, self.on_size)
+        #self.widget.Bind(wx.EVT_SIZE, self.on_size)  # moved up as above settings might have an influence
         # after setting various Properties, we must Refresh widget in order to see changes
         self.widget.Refresh()
         #self.widget.Bind(wx.EVT_KEY_DOWN, misc.on_key_down_event)
         self.widget.Bind(wx.EVT_CHAR_HOOK, self.on_char_hook)
-    
+
     def on_char_hook(self, event):
         misc.handle_key_event(event, "design")
 
@@ -409,11 +422,12 @@ class WindowBase(EditBase):
 
     def recreate_widget(self):
         "currently used by EditTopLevelPanel to re-create after switch between ScrolledWindow and Panel"
+        # also by EditStaticText
         old_widget = self.widget
         size = self.widget.GetSize()
         with self.frozen():
             self.create_widget()
-            self.widget.SetSize(size)
+            if self.IS_TOPLEVEL_WINDOW: self.widget.SetSize(size)   # do this for IS_TOPLEVEL only?
             old_widget.Hide()
             if self.sel_marker:
                 self.sel_marker.Destroy()
@@ -517,7 +531,7 @@ class WindowBase(EditBase):
         if not size_p.is_active(): return
         size = size_p.get_size(self.widget)
         self.widget.SetSize(size)
-        if hasattr(self.parent, "set_item_best_size"):
+        if hasattr(self.parent, "set_item_best_size"):  # at this point, self.widget may not have been added to a sizer yet
             self.parent.set_item_best_size(self, size=size)
 
     def get_property_handler(self, name):
@@ -551,7 +565,6 @@ class WindowBase(EditBase):
         return EditBase.get_properties(self, without)
 
 
-
 class ManagedBase(WindowBase):
     """Base class for every window managed by a sizer.
 
@@ -564,6 +577,8 @@ class ManagedBase(WindowBase):
 
     _PROPERTY_HELP = { "border": _("Border width, if enabled below"),  "pos": _("Sizer slot") }
     _PROPERTY_LABELS = {"option": "Proportion" }
+
+    #CHILDREN = 0  # most widgets have no children
 
     ####################################################################################################################
 
@@ -600,9 +615,10 @@ class ManagedBase(WindowBase):
         self.widget.Bind(wx.EVT_LEFT_DOWN, self.on_set_focus)
         self.widget.Bind(wx.EVT_MOUSE_EVENTS, self.on_mouse_events)
         self.widget.Bind(wx.EVT_MOVE, self.on_move)
-        if re_add and hasattr(self.parent, "_add_item"): # self.parent.IS_SIZER:
-            # re-add the item to update it; this is not to be done when a widget is replaced due to style change
-            self.parent._add_item( self, self.pos )
+        ## unify/replace the following with 'child_widget_created' and note that GetBestSize might not work yet on gtk
+        #if re_add and hasattr(self.parent, "_add_item"): # self.parent.IS_SIZER:
+            ## re-add the item to update it; this is not to be done when a widget is replaced due to style change
+            #self.parent._add_item( self, self.pos )
 
     def update_view(self, selected):
         if self.sel_marker: self.sel_marker.Show(selected)
@@ -611,6 +627,7 @@ class ManagedBase(WindowBase):
         if self.sel_marker: self.sel_marker.update()
 
     def on_size(self, event):
+        print("EVT on_size", event, self, self.widget)
         if not self.widget: return
         old = self.size
         WindowBase.on_size(self, event)
@@ -772,7 +789,7 @@ class TopLevelBase(WindowBase, PreviewMixin):
         if self.children[0].IS_SIZER: return self.children[0]
         return None
 
-    def create_widgets(self):
+    def create_widgets(self, level):
         # creates/shows the widget of the given toplevel node and all its children
         wx.BeginBusyCursor()
         try:
@@ -785,7 +802,7 @@ class TopLevelBase(WindowBase, PreviewMixin):
 
             with self.frozen():
                 for c in self.get_all_children():
-                    c.create_widgets()
+                    c.create_widgets(level+1)
                 self.post_load()  # SizerBase uses this for toplevel sizers; also EditNotebook
                 self.create()
                 if self.widget.TopLevel:

@@ -155,6 +155,10 @@ class EditRoot(np.PropertyOwner):
     def _get_tooltip_string(self):
         return None
 
+    def child_widget_created(self, child):
+        # implemented for notebook, splitter, sizers
+        pass
+
 
 class Application(EditRoot):
     "Properties of the application being created"
@@ -507,7 +511,6 @@ class Application(EditRoot):
             app = wx.GetApp()
             frame = app.GetTopWindow()
             frame.user_message(_('Code generated'))
-
 
     def is_visible(self):
         return True

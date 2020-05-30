@@ -91,6 +91,7 @@ class EditBase(np.PropertyOwner):
         #  to remove: new_name=None
         #  to add:    old_name=None
         # EditDialog also uses this to track names for "affirmative" and "escape" properties
+        #print("track_contained_name", old_name,new_name, self.names)
         if old_name is not None: self.names.remove( old_name )
         if new_name is not None: self.names.add( new_name )
 
@@ -269,12 +270,12 @@ class EditBase(np.PropertyOwner):
             common.app_tree.refresh(self, refresh_label=True, refresh_image=False)
 
     # widget creation and destruction ##################################################################################
-    def create_widgets(self):
+    def create_widgets(self, level):
         "Shows the widget of the given node and all its children"
         self.create()
         if self.children:
             for c in self.children:
-                c.create_widgets()
+                c.create_widgets(level+1)
         self.post_load()  # SizerBase uses this for toplevel sizers; also EditNotebook
 
     def create(self):
@@ -291,6 +292,7 @@ class EditBase(np.PropertyOwner):
     def finish_widget_creation(self, *args, **kwds):
         "Binds the popup menu handler and connects some event handlers to self.widgets; set tooltip string"
         if not self.widget: return
+        self.parent.child_widget_created(self)  # mainly for Notebook and Splitter
         self.widget.Bind(wx.EVT_RIGHT_DOWN, self.popup_menu)
         if self.WX_CLASS in ("wxStatusBar",): return
         compat.SetToolTip(self.widget, self._get_tooltip_string())
@@ -303,6 +305,11 @@ class EditBase(np.PropertyOwner):
             self.parent.widget.Detach(self.widget)  # remove from sizer without destroying
         compat.DestroyLater(self.widget)
         self.widget = None
+
+
+    def child_widget_created(self, child):
+        # implemented for notebook, splitter, sizers
+        pass
 
     # from tree.Tree ###################################################################################################
     def recursive_remove(self, level, overwritten=False):
@@ -708,8 +715,9 @@ class Slot(EditBase):
         # does not set focus
         if not self.parent.IS_SIZER and self.parent.CHILDREN != -1: return
         with self.toplevel_parent_window.frozen():
-            self.parent.remove_item(self)  # replaces self.parent.children[pos] and detaches also widget from sizer
-            self.destroy_widget(detach=False)  # self.delete() would be OK, but would detach again...
+            self.parent.remove_item(self)  # deletes self.parent.children[pos] and detaches also widget from sizer
+            self.parent.update_tree_labels()
+            self.destroy_widget(level=0, detach=False)  # self.delete() would be OK, but would detach again...
             common.app_tree.remove(self)  # destroy tree leaf
 
     def remove(self):
@@ -719,12 +727,12 @@ class Slot(EditBase):
             self.parent.remove_tab(self.pos)
             return
 
-        # set focused widget
         i = self.pos
         self._remove()
         if i >= len(self.parent.children):
             i = len(self.parent.children)-1
         misc.rebuild_tree(self.parent, recursive=False, focus=False)
+        # set focused widget
         if i>=0:
             misc.set_focused_widget( self.parent.children[i] )
         else:

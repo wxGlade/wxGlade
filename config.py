@@ -78,6 +78,7 @@ tooltip_width = 50  # Maximum width to split tooltips into
 
 debugging = ('WINGDB_ACTIVE' in os.environ)  # if True, at many places exceptions will be raised instead of handled
 testing = False  # to be set by the testing framework
+use_freeze_thaw = True  # for debugging, you may want to set this to False
 
 ########################################################################################################################
 # Dictionary to store widget generic widget details like tooltips, different names, ...

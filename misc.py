@@ -264,7 +264,7 @@ def get_toplevel_widget(widget):
     return widget
 
 
-def check_wx_version(major, minor=0, release=0, revision=0):
+def check_wx_version_at_least(major, minor=0, release=0, revision=0):
     "returns True if the current wxPython version is at least major.minor.release"
     return wx.VERSION[:-1] >= (major, minor, release, revision)
 

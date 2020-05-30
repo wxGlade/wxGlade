@@ -105,7 +105,8 @@ class EditNotebook(ManagedBase, EditStylesMixin):
         w,h = self.properties["size"].get_size(self.widget)
         sz = self.parent
         sz.widget.SetItemMinSize(self.widget, w, h)
-        sz.layout(True)
+        #sz.layout(True)
+        sz.layout()
 
     def on_set_focus(self, event):
         # allow switching of pages
@@ -211,7 +212,7 @@ class EditNotebook(ManagedBase, EditStylesMixin):
         for index in range(len(old_labels)-1, -1, -1):
             if not index in keep_indices:
                 self._is_removing_pages = True
-                self.children[index].recursive_remove()
+                self.children[index].recursive_remove(level=0)
                 if self.widget: self.widget.RemovePage(index)    # deletes the specified page
                 del new_labels[index]                            # delete from list of names
                 self._is_removing_pages = False
@@ -273,29 +274,50 @@ class EditNotebook(ManagedBase, EditStylesMixin):
     ####################################################################################################################
     # methods moved from NotebookVirtualSizer:
 
+    #def item_properties_modified(self, widget, modified=None, force_layout=True):
+        #if not self.widget: return
+        #index = widget.pos
+        #item = self.children[index]
+        #if not item or not item.widget: return
+        #label = self.tabs[index][0]
+        #if not (index < self.widget.GetPageCount()):
+            #self.widget.AddPage(item.widget, label) # this is e.g. for the first creation after loading a file
+        #elif self.widget.GetPage(index) is not item.widget:
+            ## XXX delete this part if it's not called; insert_tab and remove_tab should handle this now
+            #if self.widget.GetPageCount()==len(self.children):
+                ##self.widget.RemovePage(index) # deletes the specified page, without deleting the associated window
+                #self.widget.DeletePage(index)  # deletes the specified page, and the associated window
+            #self.widget.InsertPage(index, item.widget, label)
+            #self.widget.SetSelection(index)
+            #try:
+                #wx.CallAfter(item.sel_marker.update)
+            #except AttributeError:
+                ##self._logger.exception(_('Internal Error'))
+                #pass
+        #if hasattr(self.parent, "set_item_best_size"):
+            ##self.sizer.set_item( self.pos, size=self.widget.GetBestSize() )
+            #self.parent.set_item_best_size( self, size=self.widget.GetBestSize() )
+
     def item_properties_modified(self, widget, modified=None, force_layout=True):
-        if not self.widget: return
-        index = widget.pos
-        item = self.children[index]
-        if not item or not item.widget: return
-        label = self.tabs[index][0]
-        if not (index < self.widget.GetPageCount()):
-            self.widget.AddPage(item.widget, label) # this is e.g. for the first creation after loading a file
-        elif self.widget.GetPage(index) is not item.widget:
+        raise ValueError("XXX")
+
+    def child_widget_created(self, child):
+        # add, insert or replace a notebook page
+        pos = child.pos
+        label = self.tabs[pos][0]
+        if not (pos < self.widget.GetPageCount()):
+            self.widget.AddPage(child.widget, label) # this is e.g. for the first creation after loading a file
+        elif self.widget.GetPage(pos) is not child.widget:
             # XXX delete this part if it's not called; insert_tab and remove_tab should handle this now
             if self.widget.GetPageCount()==len(self.children):
                 #self.widget.RemovePage(index) # deletes the specified page, without deleting the associated window
-                self.widget.DeletePage(index)  # deletes the specified page, and the associated window
-            self.widget.InsertPage(index, item.widget, label)
-            self.widget.SetSelection(index)
+                self.widget.DeletePage(pos)  # deletes the specified page, and the associated window
+            self.widget.InsertPage(pos, child.widget, label)
+            self.widget.SetSelection(pos)
             try:
-                wx.CallAfter(item.sel_marker.update)
+                wx.CallAfter(child.sel_marker.update)
             except AttributeError:
-                #self._logger.exception(_('Internal Error'))
                 pass
-        if hasattr(self.parent, "set_item_best_size"):
-            #self.sizer.set_item( self.pos, size=self.widget.GetBestSize() )
-            self.parent.set_item_best_size( self, size=self.widget.GetBestSize() )
 
     def get_itempos(self, attrs):
         "Get position of sizer item (used in xml_parse)"
