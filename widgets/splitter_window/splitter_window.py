@@ -206,19 +206,8 @@ class EditSplitterWindow(ManagedBase, EditStylesMixin):
         self.split()
         return slot
 
-    #def item_properties_modified(self, widget, modified=None, force_layout=True):
-        #"Updates the layout of the item"
-        #if self.widget and self._window_old:
-            ## a child was replaced
-            #if self._window_old.widget:
-                #self.widget.Unsplit(self._window_old.widget)
-            #elif self.widget.IsSplit(): # the child widget may have been delete meanwhile by tree remove_rec
-                #self.widget.Unsplit()
-        #self._window_old = None
-        #if self.children[0] and self.children[1]:
-            #self.split()
-
     def item_properties_modified(self, widget, modified=None, force_layout=True):
+        # code is now below in child_widget_created
         raise ValueError("XXX")
 
     def child_widget_created(self, widget):
@@ -264,6 +253,9 @@ def builder(parent, pos):
         if create_panels:
             pane1 = EditPanel(name + '_pane_1', editor, 0)
             pane2 = EditPanel(name + '_pane_2', editor, 1)
+        else:
+            editor._add_slots()  # XXX focus should be set to first slot
+            
 
         editor.properties["proportion"].set(1)
         editor.properties["flag"].set("wxEXPAND")
