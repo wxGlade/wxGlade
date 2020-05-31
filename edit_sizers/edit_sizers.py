@@ -1215,7 +1215,8 @@ class EditStaticBoxSizer(BoxSizerBase):
         if modified and "name" in modified:
             common.app_tree.refresh(self, refresh_label=True, refresh_image=False)
         elif not modified or "label" in modified or "name" in modified and self.node:
-            common.app_tree.refresh(self, refresh_label=True, refresh_image=False)
+            if common.app_tree is not None:
+                common.app_tree.refresh(self, refresh_label=True, refresh_image=False)
 
         BoxSizerBase.properties_changed(self, modified)
 
