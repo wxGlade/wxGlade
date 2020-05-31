@@ -141,7 +141,7 @@ class EditSplitterWindow(ManagedBase, EditStylesMixin):
         EditStylesMixin.properties_changed(self, modified)
         ManagedBase.properties_changed(self, modified)
 
-        if modified and "orientation" in modified:
+        if modified and "orientation" in modified and common.app_tree is not None:
             # update horizontal/vertical icons
             common.app_tree.refresh(self, refresh_label=False, refresh_image=True)
             if self.children[0] and self.children[0].IS_SLOT:

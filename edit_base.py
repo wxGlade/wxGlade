@@ -265,7 +265,8 @@ class EditBase(np.PropertyOwner):
                 assert self.IS_NAMED
             old_name = self.properties["name"].previous_value or None
             self.toplevel_parent.track_contained_name(old_name, self.name)
-            common.app_tree.refresh(self, refresh_label=True, refresh_image=False)
+            if common.app_tree is not None:
+                common.app_tree.refresh(self, refresh_label=True, refresh_image=False)
         elif (not modified or "class" in modified or "name" in modified) and common.app_tree:
             common.app_tree.refresh(self, refresh_label=True, refresh_image=False)
 
