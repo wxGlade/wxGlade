@@ -46,7 +46,8 @@ class EditRadioButton(ManagedBase, EditStylesMixin):
 
         if not modified or "label" in modified:
             self._set_label()
-            common.app_tree.refresh(self, refresh_label=True, refresh_image=False)
+            if common.app_tree:
+                common.app_tree.refresh(self, refresh_label=True, refresh_image=False)
 
         if not modified or "clicked" in modified and self.widget:
             self.widget.SetValue(self.clicked)
