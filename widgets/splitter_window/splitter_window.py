@@ -206,10 +206,6 @@ class EditSplitterWindow(ManagedBase, EditStylesMixin):
         self.split()
         return slot
 
-    def item_properties_modified(self, widget, modified=None, force_layout=True):
-        # code is now below in child_widget_created
-        raise ValueError("XXX")
-
     def child_widget_created(self, widget):
         "Updates the layout of the item"
         if self.widget and self._window_old:

@@ -192,7 +192,7 @@ class EditNotebook(ManagedBase, EditStylesMixin):
             misc.set_focused_widget(self)
 
     @misc.restore_focus
-    def set_tabs(self, old_labels, indices):  # called from tabs proberty on Apply button
+    def set_tabs(self, old_labels, indices):  # called from tabs property on Apply button
         """tabs: list of strings
         indices: the current indices of the tabs or None for a new tab; re-ordering is currently not supported"""
         keep_indices = [pos for pos in indices if pos is not None]
@@ -273,33 +273,6 @@ class EditNotebook(ManagedBase, EditStylesMixin):
 
     ####################################################################################################################
     # methods moved from NotebookVirtualSizer:
-
-    #def item_properties_modified(self, widget, modified=None, force_layout=True):
-        #if not self.widget: return
-        #index = widget.pos
-        #item = self.children[index]
-        #if not item or not item.widget: return
-        #label = self.tabs[index][0]
-        #if not (index < self.widget.GetPageCount()):
-            #self.widget.AddPage(item.widget, label) # this is e.g. for the first creation after loading a file
-        #elif self.widget.GetPage(index) is not item.widget:
-            ## XXX delete this part if it's not called; insert_tab and remove_tab should handle this now
-            #if self.widget.GetPageCount()==len(self.children):
-                ##self.widget.RemovePage(index) # deletes the specified page, without deleting the associated window
-                #self.widget.DeletePage(index)  # deletes the specified page, and the associated window
-            #self.widget.InsertPage(index, item.widget, label)
-            #self.widget.SetSelection(index)
-            #try:
-                #wx.CallAfter(item.sel_marker.update)
-            #except AttributeError:
-                ##self._logger.exception(_('Internal Error'))
-                #pass
-        #if hasattr(self.parent, "set_item_best_size"):
-            ##self.sizer.set_item( self.pos, size=self.widget.GetBestSize() )
-            #self.parent.set_item_best_size( self, size=self.widget.GetBestSize() )
-
-    def item_properties_modified(self, widget, modified=None, force_layout=True):
-        raise ValueError("XXX")
 
     def child_widget_created(self, child):
         # add, insert or replace a notebook page
@@ -410,7 +383,9 @@ def builder(parent, pos):
         editor = EditNotebook(name, parent, pos, style)
         editor.properties["proportion"].set(1)
         editor.properties["flag"].set("wxEXPAND")
-        if parent.widget: editor.create()
+        if parent.widget:
+            editor.create()
+            parent.layout()
         editor._insert_tab(0, editor.next_pane_name()) # next_pane_name will be used as label and as pane name, if possible
     return editor
 

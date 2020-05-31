@@ -45,11 +45,7 @@ class EditFrame(BitmapMixin, TopLevelBase, EditStylesMixin):
         self._menubar = self._toolbar = None  # these properties will hold the EditMenubar instances etc.
 
     def create_widget(self):
-        if self.parent:
-            parent = self.parent.widget
-        else:
-            #parent = common.palette
-            parent = None
+        parent = None
         style = self.style
         if common.pin_design_window: style |= wx.STAY_ON_TOP
         self.widget = wx.Frame(parent, self.id, self.title, style=style)
