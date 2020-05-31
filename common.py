@@ -372,11 +372,12 @@ def save_file(filename, content, which='wxg'):
 
     outfile = None
     try:
-        if os.path.isfile(filename):
-            with open(filename, 'r') as infile:
-                win_line_ending = infile.readline().endswith("\r\n")
-        else:
-            win_line_ending = sys.platform.startswith("win")
+        if which=="codegen":
+            if os.path.isfile(filename):
+                with open(filename, 'rb') as infile:
+                    win_line_ending = infile.readline().endswith(b"\r\n")
+            else:
+                win_line_ending = sys.platform.startswith("win")
 
         if need_backup:
             backup_name = filename + config.preferences.backup_suffix
@@ -392,7 +393,7 @@ def save_file(filename, content, which='wxg'):
 
         outfile = open(filename, 'wb')
         for line in content:
-            if win_line_ending:
+            if which=="codegen" and win_line_ending:
                 line = line.replace(b"\n", b"\r\n")
             outfile.write(line)
         outfile.close()
