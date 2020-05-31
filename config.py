@@ -13,6 +13,13 @@ see: preferencesdialog
 import os, sys
 
 
+debugging = ('WINGDB_ACTIVE' in os.environ)  # if True, at many places exceptions will be raised instead of handled
+
+use_gui = True   # If True, wxGlade runs in "GUI" mode, if False, in "batch" mode for generating code only
+
+testing = False  # to be set by the testing framework
+
+
 # default configuration values #########################################################################################
 default_app_name = 'app'           # application name
 
@@ -61,9 +68,6 @@ rc_file = ''                         # Path to the rc / ini file to store user p
 history_file = ''                    # Path to the history file, if used
 log_file = ''                        # Path to wxGlade log file
 
-
-
-use_gui = True                 # If True, wxGlade runs in "GUI" mode, if False, in "batch" mode for generating code only
 use_file_history =  True       # Flag to use a file history
 
 
@@ -75,9 +79,6 @@ label_width = 96     # width of labels in Property window
 
 tooltip_time = 3    # Number of seconds a tooltip will be shown
 tooltip_width = 50  # Maximum width to split tooltips into
-
-debugging = ('WINGDB_ACTIVE' in os.environ)  # if True, at many places exceptions will be raised instead of handled
-testing = False  # to be set by the testing framework
 
 ########################################################################################################################
 # Dictionary to store widget generic widget details like tooltips, different names, ...
