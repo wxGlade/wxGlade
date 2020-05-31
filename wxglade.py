@@ -264,9 +264,6 @@ def command_line_code_generation(filename, language, out_path=None):
     # main.wxGladeFrame.__init__()
     common.init_preferences()
     common.root = app = application.Application()
-    # The following lines contain code from tree.WidgetTree.__init__()
-    if config.use_gui:
-        common.app_tree = tree.WidgetTree(root_node, app)
 
     # Now we can load the file
     if filename is not None:
@@ -278,17 +275,18 @@ def command_line_code_generation(filename, language, out_path=None):
             raise ValueError('Code writer for "%s" is not available.'%language)
         common.root.properties["language"].set(language)
         common.root.generate_code(out_path=out_path)
-    except errors.WxgBaseException as inst:
-        if config.debugging: raise
-        logging.error(inst)
-        sys.exit(inst)
+    #except errors.WxgBaseException as inst:
+        #if config.debugging: raise
+        #logging.error(inst)
+        #sys.exit(inst)
     except Exception:
         if config.debugging: raise
         logging.error( _("An exception occurred while generating the code for the application.\n"
                          "If you think this is a wxGlade bug, please report it.") )
         logging.exception(_('Internal Error'))
         sys.exit(1)
-    sys.exit(0)
+    if not config.testing:
+        sys.exit(0)
 
 
 def init_stage1(options):
