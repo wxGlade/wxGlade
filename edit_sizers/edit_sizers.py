@@ -2215,7 +2215,7 @@ def change_sizer(old, new):
 
         for widget in szr.children:
             widget.parent = szr
-            widget.properties["flag"]._check_value()
+            if "flag" in widget.properties: widget.properties["flag"]._check_value()
 
         if old.widget is not None:
             for c in old.widget.GetChildren():
