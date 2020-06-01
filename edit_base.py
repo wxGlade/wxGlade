@@ -411,7 +411,7 @@ class EditBase(np.PropertyOwner):
     def on_load(self, child=None):
         "called from XML parser, right after the widget is loaded; children have been loaded already"
         # when a child has been pasted in, it's also called, with argument child
-        if not self.CHILDREN is 0:
+        if self.CHILDREN != 0:
             self._add_slots()
 
     def post_load(self):
@@ -568,7 +568,7 @@ class Slot(EditBase):
         # hack. definitely. but...
         misc.currently_under_mouse = self.widget
         # a sizer can be added to sizers or to windows with exactly one child
-        can_add_sizer = self.parent.IS_SIZER or self.parent.CHILDREN is 1
+        can_add_sizer = self.parent.IS_SIZER or self.parent.CHILDREN == 1
         if common.adding_widget and (not common.adding_sizer or can_add_sizer):
             self.widget.SetCursor(wx.CROSS_CURSOR)
         else:
@@ -740,7 +740,7 @@ class Slot(EditBase):
                 self.widget.Refresh()
                 self.widget.SetFocus()
             return
-        if common.adding_sizer and self.parent.CHILDREN is not 1 and not self.IS_SLOT:
+        if common.adding_sizer and self.parent.CHILDREN != 1 and not self.IS_SLOT:
             return
         if self.widget:
             self.widget.SetCursor(wx.NullCursor)
@@ -755,7 +755,7 @@ class Slot(EditBase):
             common.widget_to_add = None
 
     def check_drop_compatibility(self):
-        if common.adding_sizer and self.parent.CHILDREN is not 1 and not self.IS_SLOT:
+        if common.adding_sizer and self.parent.CHILDREN != 1 and not self.IS_SLOT:
             return (False, "No sizer can be added here")
         return (True,None)
 
@@ -766,7 +766,7 @@ class Slot(EditBase):
             # single or no child: no sizer but a panel or frame
             return self.parent.check_compatibility(widget, typename)
         if typename is not None:
-            if typename=="sizer" and self.parent.CHILDREN is not 1:
+            if typename=="sizer" and self.parent.CHILDREN != 1:
                 return (False, "No sizer can be pasted here")
             if typename=="window":
                 return (False, "No toplevel object can be pasted here.")
@@ -774,7 +774,7 @@ class Slot(EditBase):
 
         if widget.IS_TOPLEVEL:
             return (False, "No toplevel object can be pasted here.")
-        if self.parent.CHILDREN is not 1 and widget.IS_SIZER:
+        if self.parent.CHILDREN != 1 and widget.IS_SIZER:
             # e.g. a sizer dropped on a splitter window slot; instead, a panel would be required
             return (False, "No sizer can be pasted here")
         return (True,None)
