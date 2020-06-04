@@ -573,7 +573,7 @@ class WidgetTree(wx.TreeCtrl):#, Tree):
         if not editor.is_visible():
             # added by rlawson to expand node on showing top level widget
             self.ExpandAllChildren(editor.item)
-            if not editor.widget: editor.create()
+            editor.show_widget()
 
             if wx.Platform != '__WXMSW__' and set_size is not None:
                 #  XXX integrate with above or remove above again?

@@ -778,6 +778,13 @@ class TopLevelBase(WindowBase, PreviewMixin):
         self.widget.Raise()
         self.widget.SetFocus()
 
+    def show_widget(self):
+        if not self.widget:
+            self.create()
+        else:
+            self.widget.Show()
+            self.widget.Raise()
+
     def finish_widget_creation(self, level):
         WindowBase.finish_widget_creation(self, level)
 
