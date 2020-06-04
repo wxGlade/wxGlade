@@ -934,9 +934,7 @@ class wxGladeFrame(wx.Frame):
         if not editor: return
         misc.set_focused_widget(editor)
         if editor is common.root: return
-        editor.toplevel_parent.create_widgets(level=0)
-        wx.SafeYield(onlyIfNeeded=True)
-        self.widget.Layout()
+        editor.toplevel_parent.create()
 
         common.app_tree.ExpandAllChildren(editor.item)
 

@@ -45,8 +45,8 @@ class EditSearchCtrl(ManagedBase, EditStylesMixin):
         if self.properties["max_length"].is_active():
             self.widget.SetMaxLength(self.max_length)
 
-    def finish_widget_creation(self, sel_marker_parent=None, re_add=True):
-        ManagedBase.finish_widget_creation(self, sel_marker_parent, re_add)
+    def finish_widget_creation(self, level, sel_marker_parent=None):
+        ManagedBase.finish_widget_creation(self, sel_marker_parent)
         #self.widget.Bind(wx.EVT_SET_FOCUS, self.on_set_focus)
         self.widget.Bind(wx.EVT_CHILD_FOCUS, self.on_set_focus)
         #self.widget.Bind(wx.EVT_TEXT, self.on_set_focus)

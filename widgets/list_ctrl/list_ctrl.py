@@ -48,8 +48,8 @@ class EditListCtrl(ManagedBase, EditStylesMixin):
         prop._check_for_user_modification(value)
         prop.update_display()
 
-    def finish_widget_creation(self):
-        ManagedBase.finish_widget_creation(self, sel_marker_parent=self.widget)
+    def finish_widget_creation(self, level):
+        ManagedBase.finish_widget_creation(self, level, sel_marker_parent=self.widget)
 
     def _set_name(self):
         if not self.widget: return

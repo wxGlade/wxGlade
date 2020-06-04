@@ -36,8 +36,8 @@ class EditSpinCtrl(ManagedBase, EditStylesMixin):
         else:
             self.widget = wx.SpinCtrl(self.parent_window.widget, self.id, min=mi, max=ma)
 
-    def finish_widget_creation(self, sel_marker_parent=None, re_add=True):
-        ManagedBase.finish_widget_creation(self, sel_marker_parent, re_add)
+    def finish_widget_creation(self, level, sel_marker_parent=None):
+        ManagedBase.finish_widget_creation(self, level, sel_marker_parent)
         self.widget.Bind(wx.EVT_CHILD_FOCUS, self._on_set_focus)
         self.widget.Bind(wx.EVT_SET_FOCUS, self._on_set_focus)
         self.widget.Bind(wx.EVT_SPIN, self.on_set_focus)

@@ -38,8 +38,8 @@ class EditTreeCtrl(ManagedBase, EditStylesMixin):
         self.widget.Expand(root)
         self.widget.Expand(self._item_with_name)
 
-    def finish_widget_creation(self):
-        ManagedBase.finish_widget_creation(self, sel_marker_parent=self.widget)
+    def finish_widget_creation(self, level):
+        ManagedBase.finish_widget_creation(self, level, sel_marker_parent=self.widget)
 
     def _set_name(self):
         if not self.widget or not self._item_with_name: return

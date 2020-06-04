@@ -67,17 +67,12 @@ class SizerSlot(edit_base.Slot):
     def check_compatibility(self, widget, typename=None):
         "check whether widget can be pasted here"
         if typename is not None:
-            #if typename=="sizer" and self.sizer.is_virtual():
-                #return (False, "No sizer can be pasted here")
             if typename=="window":
                 return (False, "No toplevel object can be pasted here.")
             return (True,None)
 
         if widget.IS_TOPLEVEL:
             return (False, "No toplevel object can be pasted here.")
-        #if self.sizer.is_virtual() and isinstance(widget, Sizer):
-            ## e.g. a sizer dropped on a splitter window slot; instead, a panel would be required
-            #return (False, "No sizer can be pasted here")
         return (True,None)
 
     def write(self, output, tabs):
@@ -371,22 +366,18 @@ class SizerBase(edit_base.EditBase):
     def frozen(self):
         return self.window.frozen()
 
-    def create_widget(self, dont_add=False):
-        "Creates the wxSizer self.widget"
-        # dont_add is True when called from change_sizer, in order not to add the new widget to the parent sizer
-        raise NotImplementedError
-
-    def create(self, dont_set=False):
+    def create_widget(self):
         if self.widget: return  # nothing to do if the sizer has already been created
         self._btn = SizerHandleButton(self.window, self.id, self ) # XXX handle the popupmenu creation in SizerHandleButton
         # ScreenToClient used by WidgetTree for the popup menu
         self._btn.Bind(wx.EVT_BUTTON, self.on_selection, id=self.id)
         self._btn.Bind(wx.EVT_MOUSE_EVENTS, self.on_mouse_events, id=self.id)
-        self.create_widget(dont_set)
+
+    def finish_widget_creation(self, level):
         self.widget.Refresh = self.refresh
         self.widget.GetBestSize = self.widget.GetMinSize
         self.widget.ScreenToClient = self._btn.ScreenToClient
-        if self.toplevel and not dont_set:  # is dont_set useful here?
+        if self.toplevel:
             self.window.set_sizer(self)
         if not config.preferences.show_sizer_handle:
             self.widget.Show(self._btn, False)
@@ -599,20 +590,7 @@ class SizerBase(edit_base.EditBase):
         self.children[pos] = item
         item._size = size
 
-        ################################################################################################################
-        # actually add item.widget to self.widget, i.e. the wxWidget to the wxSizer
-        if self.widget and item.widget:
-            XXX
-            self._add_item(item, pos, size, force_layout=force_layout)
-
-
-    # this is a comment from ManagedBase.finish_widget_creation:
-    """    # unify/replace the following with 'child_widget_created' and note that GetBestSize might not work yet on gtk
-            if re_add and hasattr(self.parent, "_add_item"): # self.parent.IS_SIZER:
-                # re-add the item to update it; this is not to be done when a widget is replaced due to style change
-                self.parent._add_item( self, self.pos )
-        """
-    def child_widget_created(self, child):
+    def child_widget_created(self, child, level):
         "called from finish_widget_creation() to add widget to sizer widget"
         pos = child.pos
         if self._IS_GRIDBAG:
@@ -628,6 +606,8 @@ class SizerBase(edit_base.EditBase):
         if child.check_prop("size"):
             # size has been set in set_size, so we can just use GetSize here
             self.set_item_best_size(child, size=child.widget.GetSize())
+        if self.widget:
+            self.window.widget.Refresh()
 
     def get_child_index(self, pos):
         # return the index of the widget; in GridBagSizers, overlapped slots are skipped
@@ -715,12 +695,6 @@ class SizerBase(edit_base.EditBase):
         for c in self.children:
             if isinstance(c, SizerSlot):
                 common.app_tree.refresh(c, refresh_image=False, refresh_label=True) # refresh_name( c.node )
-
-    def layout(self):#, recursive=True):
-        # call only once after all elements were updated
-        if not self.widget: return
-        wx.SafeYield(onlyIfNeeded=True)
-        self.widget.Layout()
 
     def destroy_widget(self, level):
         # actually, the sizer widget is not destroyed
@@ -878,6 +852,22 @@ class SizerBase(edit_base.EditBase):
                 postfix = 'd'
             size_p.set('%s, %s%s' % (w, h, postfix))
 
+    def child_widgets_created(self, level):
+        """Called after loading of an app from a XML file, before showing the hierarchy of widget for the first time.
+        This is used only for container widgets, to adjust their size appropriately."""
+        if "rows" in self.PROPERTIES: self._adjust_rows_cols()  # for GridSizer
+        if not self.toplevel:
+            return
+        size_p = self.window.properties['size']
+        if not size_p.is_active():
+            self.fit_parent()
+            w, h = self.widget.GetSize()
+            postfix = ''
+            if config.preferences.use_dialog_units:
+                w, h = compat.ConvertPixelsToDialog( self.window.widget, self.widget.GetSize() )
+                postfix = 'd'
+            size_p.set('%s, %s%s' % (w, h, postfix))
+
     def _get_tree_image(self):
         "Get an image name for tree display"
         name = self.__class__.__name__
@@ -922,7 +912,6 @@ class BoxSizerBase(SizerBase):
 
         self.children = []
         for i in range(elements): self._add_slot()
-        #self.layout()
 
     def get_class_orient(self):
         return '%s (%s)'%( self.WX_CLASS, self.properties["orient"].get_string_value() )
@@ -982,10 +971,10 @@ class EditBoxSizer(BoxSizerBase):
     "Class to handle wxBoxSizer objects"
     WX_CLASS = "wxBoxSizer"
 
-    def create_widget(self, dont_add=False):
+    def create_widget(self):
+        BoxSizerBase.create_widget(self)
         self.widget = wxGladeBoxSizer(self.orient)
         self.widget.Add(self._btn, 0, wx.EXPAND)
-        self.parent.child_widget_created(self)
 
 
 if HAVE_WRAP_SIZER:
@@ -1007,9 +996,9 @@ if HAVE_WRAP_SIZER:
         WX_CLASS = "wxWrapSizer"
     
         def create_widget(self, dont_add=False):
+            BoxSizerBase.create_widget(self)
             self.widget = wxGladeWrapSizer(self.orient)
             self.widget.Add(self._btn, 0, wx.EXPAND)
-            self.parent.child_widget_created(self)
 
 
 class EditStdDialogButtonSizer(EditBoxSizer):
@@ -1051,15 +1040,14 @@ class EditStaticBoxSizer(BoxSizerBase):
         BoxSizerBase.__init__(self, name, parent, pos, orient, elements)
         self.label = np.TextProperty(label)
 
-    def create_widget(self, dont_add=False):
+    def create_widget(self):
+        BoxSizerBase.create_widget(self)
         self.widget = wxGladeStaticBoxSizer( wx.StaticBox(self.window.widget, -1, self.label), self.orient )
         self.widget.Add(self._btn, 0, wx.EXPAND)
-        self.parent.child_widget_created(self)
 
     def properties_changed(self, modified):
         if not modified or "label" in modified and self.widget:
             self.widget.GetStaticBox().SetLabel(self.label or "")
-            #self.layout()
         if modified and "name" in modified:
             common.app_tree.refresh(self, refresh_label=True, refresh_image=False)
         elif not modified or "label" in modified or "name" in modified and self.node:
@@ -1468,9 +1456,9 @@ class EditGridSizer(GridSizerBase):
     def __init__(self, name, parent, pos, rows=3, cols=3, vgap=0, hgap=0):
         GridSizerBase.__init__(self, name, parent, pos, rows, cols, vgap, hgap)
 
-    def create_widget(self, dont_add=False):
+    def create_widget(self):
+        GridSizerBase.create_widget(self)
         self.widget = CustomGridSizer(self, self.rows, self.cols, self.vgap, self.hgap)
-        self.parent.child_widget_created(self)
 
 
 class _GrowableDialog(wx.Dialog):
@@ -1494,7 +1482,6 @@ class _GrowableDialog(wx.Dialog):
     def get_value(self):
         ret = []
         for c,choice in enumerate(self._choices):
-            #in range(self.choices.GetCount()):
             if self.choices.IsChecked(c):
                 ret.append(str(int(choice)-1))
         return ",".join(ret)
@@ -1602,10 +1589,10 @@ class EditFlexGridSizer(GridSizerBase):
         self.properties["growable_rows"].title = 'Select growable rows'
         self.properties["growable_cols"].title = 'Select growable cols'
 
-    def create_widget(self, dont_add=False):
+    def create_widget(self):
+        GridSizerBase.create_widget(self)
         self.widget = CustomFlexGridSizer(self, self.rows, self.cols, self.vgap, self.hgap)
         self._set_growable()
-        self.parent.child_widget_created(self)
 
     def _set_growable(self):
         rows = self.growable_rows
@@ -1666,10 +1653,12 @@ class EditGridBagSizer(EditFlexGridSizer):
     _PROPERTY_HELP = {"rows":"Numbers of sizer rows; this is just used internally for wxGlade design, not by wx",
                       "cols":"Numbers of sizer columns; this is just used internally for wxGlade design, not by wx"}
 
-    def create_widget(self, dont_add=False):  # this one does not call GridSizerBase.create_widget, as the strategy here is different
+    def create_widget(self):
+        GridSizerBase.create_widget(self)
         self.widget = CustomGridBagSizer(self, self.rows, self.cols, self.vgap, self.hgap)
-        self._set_growable()  # XXX set only after child widgets were created?
-        self.parent.child_widget_created(self)
+
+    def child_widgets_created(self, level):
+        self._set_growable()
 
     def check_span_range(self, pos, rowspan=1, colspan=1, inserting=False):
         "called from LayoutSpanProperty to set the maximum row/col span range"
@@ -2068,7 +2057,7 @@ def _builder(parent, pos, orientation=wx.VERTICAL, slots=1, is_static=False, lab
     # add the slots
     for i in range(slots):
         editor._add_slot()
-    editor.layout()
+    #editor.layout()
 
     if parent.widget: editor.create()
     return editor
@@ -2272,7 +2261,6 @@ def grid_builder(parent, pos):
         # add the slots
         for i in range(rows*cols):
             editor._add_slot()
-        editor.layout()
 
         if parent.widget: editor.create()
 

@@ -671,8 +671,8 @@ class EditMenuBar(EditBase):#, PreviewMixin):
 
         self._mb = None  # the real menubar
 
-    def create_widgets(self, level):
-        EditBase.create_widgets(self, level)
+    def create(self):
+        EditBase.create(self)
         if self.IS_TOPLEVEL and self.widget:
             self.widget.Show()
             self.widget.Raise()

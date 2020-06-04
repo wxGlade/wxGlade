@@ -524,11 +524,7 @@ class ClipboardXmlWidgetBuilder(XmlWidgetBuilder):
                 #if self.top_obj.node.parent.widget.is_visible():
                 #    common.app_tree.show_widget(self.top_obj.node)
                 if self.parent and self.parent.widget:
-                    self.top_obj.create_widgets(level=0)
-                    # XXX move this somewhere else or add a layout() method
-                    import wx
-                    wx.SafeYield(onlyIfNeeded=True)
-                    self.top_obj.widget.Layout()
+                    self.top_obj.create()
 
             except AttributeError:
                 logging.exception( _('Exception caused by obj: %s'), self.top_obj )
@@ -609,7 +605,6 @@ class XmlWidgetObject(object):
             self.obj = None
             self.IS_SLOT = True
             sizer._add_slot(loading=True)
-            sizer.layout()
 
         # push the object on the _objects stack
         parser._objects.push(self)

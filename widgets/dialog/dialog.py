@@ -95,8 +95,8 @@ class EditDialog(BitmapMixin, TopLevelBase, EditStylesMixin):
         self.widget.SetBackgroundColour(compat.wx_SystemSettings_GetColour(wx.SYS_COLOUR_BTNFACE))
         self._set_widget_icon()
 
-    def finish_widget_creation(self):
-        TopLevelBase.finish_widget_creation(self)
+    def finish_widget_creation(self, level):
+        TopLevelBase.finish_widget_creation(self, level)
         if not self.properties['size'].is_active():
             self.widget.SetSize((400, 300))
 

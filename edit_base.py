@@ -271,33 +271,51 @@ class EditBase(np.PropertyOwner):
             common.app_tree.refresh(self, refresh_label=True, refresh_image=False)
 
     # widget creation and destruction ##################################################################################
-    def create_widgets(self, level):
-        "Shows the widget of the given node and all its children"
-        self.create()
-        if self.children:
-            for c in self.children:
-                c.create_widgets(level+1)
-        self.post_load()  # SizerBase uses this for toplevel sizers; also EditNotebook
 
     def create(self):
-        "create the wx widget"
-        if not self.IS_TOPLEVEL and self.parent.widget is None: return
-        if self.widget: return
-        self.create_widget()
-        self.finish_widget_creation()
+        # entry point to create widget including all children
+        self.recursive_create_widgets(level=0)
+        self.layout()
 
+    def recursive_create_widgets(self, level):
+        self.create_widget()
+        self.finish_widget_creation(level)
+        for c in self.get_all_children():
+            if not c.widget:
+                c.recursive_create_widgets(level+1)
+        self.child_widgets_created(level)  # if level==0, only one of the child widgets was created
+        self.parent.child_widget_created(self, level)
+
+    def layout(self):
+        # called once after all widgets incl. children were created
+        wx.SafeYield(onlyIfNeeded=True)
+        if self.IS_SIZER:
+            self.widget.Layout()
+        elif self.parent.IS_SIZER:
+            self.parent.widget.Layout()
+
+    # actual widget creation
     def create_widget(self):
         "Initializes self.widget and shows it"
         raise NotImplementedError
 
-    def finish_widget_creation(self, *args, **kwds):
+    def finish_widget_creation(self, level):
         "Binds the popup menu handler and connects some event handlers to self.widgets; set tooltip string"
         if not self.widget: return
-        self.parent.child_widget_created(self)  # mainly for Notebook and Splitter
         self.widget.Bind(wx.EVT_RIGHT_DOWN, self.popup_menu)
         if self.WX_CLASS in ("wxStatusBar",): return
         compat.SetToolTip(self.widget, self._get_tooltip_string())
 
+    # callbacks when children were created
+    def child_widget_created(self, child, level):
+        # called after child's children were also created; implemented for notebook, splitter, sizers
+        pass
+    
+    def child_widgets_created(self, level):
+        # implemented for notebook, splitter, sizers?
+        pass
+
+    # actual widget destruction, called from recursive_remove
     def destroy_widget(self, level):
         # just destroy the widget; all bookkeeping / data structure update is done in recursive_remove
         # level is 0 for toplevel or when the user just deletes this one
@@ -306,10 +324,6 @@ class EditBase(np.PropertyOwner):
             self.parent.widget.Detach(self.widget)  # remove from sizer without destroying
         compat.DestroyLater(self.widget)
         self.widget = None
-
-    def child_widget_created(self, child):
-        # implemented for notebook, splitter, sizers
-        pass
 
     # from tree.Tree ###################################################################################################
     def recursive_remove(self, level, overwritten=False):
@@ -422,11 +436,6 @@ class EditBase(np.PropertyOwner):
         # when a child has been pasted in, it's also called, with argument child
         if not self.CHILDREN is 0:
             self._add_slots()
-
-    def post_load(self):
-        """Called after the loading of an app from a XML file, before showing the hierarchy of widget for the first time.
-        The default implementation does nothing."""
-        pass
 
     def free_slot(self, pos, force_layout=True):
         "Replaces the element at pos with an empty slot"

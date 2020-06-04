@@ -353,7 +353,7 @@ class WindowBase(EditBase):
 
         self.toplevel_parent.parent.check_codegen(self)
 
-    def finish_widget_creation(self, *args, **kwds):
+    def finish_widget_creation(self, level):
         self.widget.Bind(wx.EVT_SIZE, self.on_size)
 
         # store the actual values of font as default, if the property is deactivated later
@@ -367,7 +367,7 @@ class WindowBase(EditBase):
         if self.check_prop("background"): self.widget.SetBackgroundColour(self.background)
         if self.check_prop("foreground"): self.widget.SetForegroundColour(self.foreground)
 
-        EditBase.finish_widget_creation(self)
+        EditBase.finish_widget_creation(self, level)
 
         self.widget.Refresh()
         self.widget.Bind(wx.EVT_CHAR_HOOK, self.on_char_hook)
@@ -577,10 +577,10 @@ class ManagedBase(WindowBase):
         if not flag_p.value_set.intersection(flag_p.FLAG_DESCRIPTION["Border"]):
             flag_p.add("wxALL", notify=False)
 
-    def finish_widget_creation(self, sel_marker_parent=None, re_add=True):
+    def finish_widget_creation(self, level, sel_marker_parent=None, re_add=True):
         if sel_marker_parent is None: sel_marker_parent = self.parent_window.widget
         self.sel_marker = misc.SelectionMarker(self.widget, sel_marker_parent)
-        WindowBase.finish_widget_creation(self)
+        WindowBase.finish_widget_creation(self, level)
         self.widget.Bind(wx.EVT_LEFT_DOWN, self.on_set_focus)
         self.widget.Bind(wx.EVT_MOUSE_EVENTS, self.on_mouse_events)
         self.widget.Bind(wx.EVT_MOVE, self.on_move)
@@ -753,40 +753,38 @@ class TopLevelBase(WindowBase, PreviewMixin):
         if self.children[0].IS_SIZER: return self.children[0]
         return None
 
-    def create_widgets(self, level):
+
+    def create(self):
         # creates/shows the widget of the given toplevel node and all its children
         wx.BeginBusyCursor()
         try:
-            if not self.widget:
-                self.create_widget()
-                self.finish_widget_creation()
-                if self.CHILDREN:  # not for MenuBar, ToolBar
-                    self.drop_target = clipboard.DropTarget(self)
-                    self.widget.SetDropTarget(self.drop_target)
-
-            with self.frozen():
-                for c in self.get_all_children():
-                    c.create_widgets(level+1)
-                self.post_load()  # SizerBase uses this for toplevel sizers; also EditNotebook
-                self.create()
-                if self.widget.TopLevel:
-                    self.widget.Show()
-                else:
-                    self.widget.GetParent().Show()
-
-                self.widget.Raise()
-                # set the best size for the widget (if no one is given)
-                if self.check_prop('size'):
-                    if self.sizer:  # self.sizer is the containing sizer, i.e. the parent
-                        self.sizer.fit_parent()
-                    elif self.WX_CLASS=="wxPanel" and self.children:
-                        wx.Yield()  # by now, there are probably many EVT_SIZE in the queue
-                        self.children[0].fit_parent()
+            WindowBase.create(self)
         finally:
             wx.EndBusyCursor()
+        # from old code:
+        # below, probably check_prop should be False
+        ## set the best size for the widget (if no one is given)
+        #if not self.check_prop('size'):
+            #if self.sizer:  # self.sizer is the containing sizer, i.e. the parent
+                #self.sizer.fit_parent()
+            #elif self.WX_CLASS=="wxPanel" and self.children:
+                #wx.Yield()  # by now, there are probably many EVT_SIZE in the queue
+                #self.children[0].fit_parent()
 
-    def finish_widget_creation(self, *args, **kwds):
-        WindowBase.finish_widget_creation(self)
+        wx.SafeYield()
+        self.widget.GetTopLevelParent().Show()
+        # SetFocus is required for e.g. Ubuntu w. Python 3.8 and wxPython 4.0.7 w. file SIMPLIFICATIONS\Tests_full.wxg
+        wx.SafeYield()
+        self.widget.Raise()
+        self.widget.SetFocus()
+
+    def finish_widget_creation(self, level):
+        WindowBase.finish_widget_creation(self, level)
+
+        if self.CHILDREN:  # not for MenuBar, ToolBar
+            self.drop_target = clipboard.DropTarget(self)
+            self.widget.SetDropTarget(self.drop_target)
+
         self.widget.SetMinSize = self.widget.SetSize
         if self.has_title:
             self.widget.SetTitle( misc.design_title(self.title) )
@@ -799,17 +797,19 @@ class TopLevelBase(WindowBase, PreviewMixin):
             # MSW isn't smart enough to avoid overlapping windows, so at least move it away from the 3 wxGlade frames
             self.widget.Center()
 
-    def create(self):
-        WindowBase.create(self)
-        if wx.Platform == '__WXMSW__' and "size" in self.properties:
-            # more than ugly, but effective hack to properly layout the window on Win32
-            if self.properties['size'].is_active():
-                w, h = self.widget.GetSize()
-                self.widget.SetSize((-1, h+1))
-                self.widget.SetSize((-1, h))
-            elif len(self.children)==1 and self.children[0] is not None and self.children[0].IS_SIZER:
-                self.children[0].fit_parent()
-        common.design_windows.append(self.widget)
+    # left-over from the old create method
+    # could be integrated into finish_widget_creation if required
+    #def create(self):
+        #WindowBase.create(self)
+        #if wx.Platform == '__WXMSW__' and "size" in self.properties:
+            ## more than ugly, but effective hack to properly layout the window on Win32
+            #if self.properties['size'].is_active():
+                #w, h = self.widget.GetSize()
+                #self.widget.SetSize((-1, h+1))
+                #self.widget.SetSize((-1, h))
+            #elif len(self.children)==1 and self.children[0] is not None and self.children[0].IS_SIZER:
+                #self.children[0].fit_parent()
+        #common.design_windows.append(self.widget)
 
     def destroy_widget(self, level):
         if self.preview_widget is not None:

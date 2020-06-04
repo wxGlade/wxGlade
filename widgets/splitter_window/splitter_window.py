@@ -78,10 +78,9 @@ class EditSplitterWindow(ManagedBase, EditStylesMixin):
     def create_widget(self):
         size = self._get_default_or_client_size()
         self.widget = wx.SplitterWindow(self.parent_window.widget, self.id, size=size, style=self.style)
-        self.split()
 
-    def finish_widget_creation(self):
-        ManagedBase.finish_widget_creation(self, sel_marker_parent=self.widget)
+    def finish_widget_creation(self, level):
+        ManagedBase.finish_widget_creation(self, level, sel_marker_parent=self.widget)
 
         sash_pos_p = self.properties['sash_pos']
         if sash_pos_p.is_active():
@@ -111,10 +110,6 @@ class EditSplitterWindow(ManagedBase, EditStylesMixin):
         event.Skip()
 
     def split(self):
-        if not self.widget or not self.children[0] or not self.children[1]: return
-        self.children[0].create()
-        self.children[1].create()
-        
         orientation = self.orientation
         sash_pos_p = self.properties['sash_pos']
         if sash_pos_p.is_active():
@@ -203,10 +198,10 @@ class EditSplitterWindow(ManagedBase, EditStylesMixin):
             self.widget.Unsplit(self.children[pos].widget)
         old_child = self.children[pos]
         slot = Slot(self, pos)
-        self.split()
+        if self.widget: slot.create()
         return slot
 
-    def child_widget_created(self, widget):
+    def child_widget_created(self, widget, level):
         "Updates the layout of the item"
         if self.widget and self._window_old:
             # a child was replaced
@@ -215,8 +210,11 @@ class EditSplitterWindow(ManagedBase, EditStylesMixin):
             elif self.widget.IsSplit(): # the child widget may have been delete meanwhile by tree remove_rec
                 self.widget.Unsplit()
         self._window_old = None
-        if self.children[0] and self.children[1]:
+        if level==0:  # a single child was added
             self.split()
+
+    def child_widgets_created(self, level):
+        self.split()
 
     def get_itempos(self, attrs):
         "Get position of sizer item (used in xml_parse)"

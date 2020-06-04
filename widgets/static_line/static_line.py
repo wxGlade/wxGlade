@@ -36,8 +36,8 @@ class EditStaticLine(ManagedBase, EditStylesMixin):
         self.widget = wx.StaticLine(self.parent_window.widget, self.id, style=self.style)
         self.widget.Bind(wx.EVT_LEFT_DOWN, self.on_set_focus)
 
-    def finish_widget_creation(self):
-        ManagedBase.finish_widget_creation(self)
+    def finish_widget_creation(self, level):
+        ManagedBase.finish_widget_creation(self, level)
         self.sel_marker.Reparent(self.parent_window.widget)
 
     def __getitem__(self, key):

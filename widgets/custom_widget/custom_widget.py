@@ -76,8 +76,8 @@ class CustomWidget(ManagedBase):
         self.widget.Bind(wx.EVT_PAINT, self.on_paint)
         self.widget.Bind(wx.EVT_ERASE_BACKGROUND, lambda event:None)
 
-    def finish_widget_creation(self):
-        ManagedBase.finish_widget_creation(self, sel_marker_parent=self.widget)
+    def finish_widget_creation(self, level):
+        ManagedBase.finish_widget_creation(self, level, sel_marker_parent=self.widget)
 
     def on_paint(self, event):
         dc = wx.PaintDC(self.widget)

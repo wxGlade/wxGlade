@@ -155,7 +155,7 @@ class EditRoot(np.PropertyOwner):
     def _get_tooltip_string(self):
         return None
 
-    def child_widget_created(self, child):
+    def child_widget_created(self, child, level):
         # implemented for notebook, splitter, sizers
         pass
 

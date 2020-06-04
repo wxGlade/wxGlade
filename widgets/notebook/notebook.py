@@ -90,23 +90,14 @@ class EditNotebook(ManagedBase, EditStylesMixin):
 
     def create_widget(self):
         self.widget = wx.Notebook( self.parent_window.widget, self.id, style=self.style )
-        for c,(label,) in zip(self.children, self.tabs):
-            c.create()
-            if c.IS_SLOT:
-                self.widget.AddPage(c.widget, label)
 
-    def on_load(self, child=None):
-        ManagedBase.on_load(self)
-        self.pages = None
-
-    def post_load(self):
+    def child_widgets_created(self, level):
         # at this time, all children should be available
+        self.pages = None
         if not self.parent.IS_SIZER or not self.widget: return
         w,h = self.properties["size"].get_size(self.widget)
         sz = self.parent
         sz.widget.SetItemMinSize(self.widget, w, h)
-        #sz.layout(True)
-        sz.layout()
 
     def on_set_focus(self, event):
         # allow switching of pages
@@ -262,11 +253,10 @@ class EditNotebook(ManagedBase, EditStylesMixin):
         if self._is_removing_pages: return
 
         slot = Slot(self, pos)
-        slot.create()
-        label = self.tabs[pos][0]
-        if self.widget: self.widget.RemovePage(pos)
-
         if self.widget:
+            slot.create()
+            label = self.tabs[pos][0]
+            self.widget.RemovePage(pos)
             self.widget.InsertPage(pos, slot.widget, label)
             self.widget.SetSelection(pos)
         return slot
@@ -274,7 +264,7 @@ class EditNotebook(ManagedBase, EditStylesMixin):
     ####################################################################################################################
     # methods moved from NotebookVirtualSizer:
 
-    def child_widget_created(self, child):
+    def child_widget_created(self, child, level):
         # add, insert or replace a notebook page
         pos = child.pos
         label = self.tabs[pos][0]

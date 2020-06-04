@@ -42,8 +42,8 @@ class PanelBase(EditStylesMixin):
             ret = ret.replace("Panel", "ScrolledWindow")
         return ret
 
-    def finish_widget_creation(self):
-        super(PanelBase, self).finish_widget_creation(sel_marker_parent=self.widget)
+    def finish_widget_creation(self, level):
+        super(PanelBase, self).finish_widget_creation(level, sel_marker_parent=self.widget)
         if self.scrollable:
             self.widget.SetScrollRate( *self.properties["scroll_rate"].get_tuple() )
         # this must be done here since ManagedBase.finish_widget_creation normally sets EVT_LEFT_DOWN to update_view

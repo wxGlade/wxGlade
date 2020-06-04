@@ -51,9 +51,9 @@ class EditFrame(BitmapMixin, TopLevelBase, EditStylesMixin):
         self.widget = wx.Frame(parent, self.id, self.title, style=style)
         self._set_widget_icon()
 
-    def finish_widget_creation(self):
+    def finish_widget_creation(self, level):
         # add menu, status and tool bar
-        TopLevelBase.finish_widget_creation(self)
+        TopLevelBase.finish_widget_creation(self, level)
         if not self.properties['size'].is_active():
             self.widget.SetSize((400, 300))
         if wx.Platform == '__WXMSW__':
@@ -169,8 +169,6 @@ def builder(parent, pos, klass=None, base=None, name=None):
         base_class = EditMDIChildFrame
     editor = base_class(name, parent, klass, name, "wxDEFAULT_FRAME_STYLE")
     editor.properties['size'].set( (400,300), activate=True )
-    editor.create()
-    editor.widget.Show()
     editor.design.update_label()
 
     if interactive and last_choices[0]:
@@ -182,13 +180,7 @@ def builder(parent, pos, klass=None, base=None, name=None):
         # just add a slot
         Slot(editor, 0)
 
-    import clipboard
-    editor.drop_target = clipboard.DropTarget(editor)
-    editor.widget.SetDropTarget(editor.drop_target)
-
-    if wx.Platform == '__WXMSW__':
-        #editor.widget.CenterOnScreen()
-        editor.widget.Raise()
+    editor.create()
 
     return editor
 
