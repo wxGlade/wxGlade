@@ -745,15 +745,7 @@ class SizerBase(edit_base.EditBase):
         # called from XML parser for adding empty 'sizerslot': sizer._add_slot(loading=True)
         slot = SizerSlot(self, len(self.children))
         if "rows" in self.PROPERTIES: self._adjust_rows_cols(loading)  # for GridSizer
-
-        if self.widget:
-            slot.create()  # create the actual SizerSlot widget
-            if not self._IS_GRIDBAG:
-                self.widget.Add(slot.widget, 1, wx.EXPAND)
-            else:
-                self._check_slots(remove_only=True)  # the added slot could be hidden
-                self.widget.Add( slot.widget, slot.pos, slot.span, slot.flag, slot.border )
-            self.widget.SetItemMinSize(slot.widget, 20, 20)
+        if self.widget: slot.create()
         return slot
 
     def _insert_slot(self, pos=None, select=True, no_add=False):
@@ -763,23 +755,14 @@ class SizerBase(edit_base.EditBase):
         if pos>=len(self.children) or not self.children[pos] is None:
             self.children.insert( pos, None)  # placeholder to be overwritten
         slot = SizerSlot(self, pos)
+        if "rows" in self.PROPERTIES: self._adjust_rows_cols()  # for GridSizer
+
         for p,c in enumerate(self.children):
             if c is None: continue
             pos_p = c.properties["pos"]
             if pos_p.value!=p: pos_p.value=p
 
-        if "rows" in self.PROPERTIES: self._adjust_rows_cols()  # for GridSizer
-
-        if self.widget:
-            slot.create()  # create the actual SizerSlot
-            if not no_add:
-                if not self._IS_GRIDBAG:
-                    #self.widget.Insert(pos+self.widget._BTN_OFFSET, slot.widget, slot.proportion, slot.flag)
-                    pass
-                else:
-                    self._check_slots(remove_only=True)  # the added slot could be hidden
-                    #self.widget.Add(slot.widget, slot.pos, slot.span, slot.flag, slot.border)
-            self.widget.SetItemMinSize(slot.widget, 20, 20)
+        if self.widget: slot.create()
         return slot
 
     # insert/add slot callbacks for context menus ######################################################################
@@ -1027,7 +1010,6 @@ class wxGladeStaticBoxSizer(wx.StaticBoxSizer):
         wx.StaticBoxSizer.SetItemMinSize(self, item, w, h)
 
 
-
 class EditStaticBoxSizer(BoxSizerBase):
     "Class to handle wxStaticBoxSizer objects"
     WX_CLASS = "wxStaticBoxSizer"
@@ -1060,7 +1042,6 @@ class EditStaticBoxSizer(BoxSizerBase):
         if self.widget:
             self.widget.GetStaticBox().Destroy()
         SizerBase.destroy_widget(self, level)
-
 
 
 class CustomGridSizer(wx.BoxSizer):
@@ -1230,6 +1211,7 @@ class GridSizerBase(SizerBase):
         if cols==0:    cols = (len(self.children)-1)//rows + 1
         elif rows==0:  rows = (len(self.children)-1)//cols + 1
         return rows, cols
+
     def _get_row_col(self, pos, cols=None):
         if cols is None:
             rows, cols = self._get_actual_rows_cols()
@@ -1495,7 +1477,6 @@ class _GrowableDialog(wx.Dialog):
     def set_descriptions(self, title, message):
         self.SetTitle(title)
         self.message.SetLabel(message)
-
 
 
 class _GrowablePropertyD(np.DialogPropertyD):
@@ -2227,7 +2208,6 @@ class _GridBuilderDialog(wx.Dialog):
 
         sizer.Fit(self)
         self.Layout()
-
 
 
 def grid_builder(parent, pos):
