@@ -577,6 +577,12 @@ class Slot(EditBase):
         self.widget.Bind(wx.EVT_LEAVE_WINDOW, self.on_leave)
         #self.widget.Bind(wx.EVT_CHAR_HOOK, misc.on_key_down_event)  # catch cursor keys   XXX still required?
 
+    def recursive_create_widgets(self, level):
+        if self.overlapped: return
+        self.create_widget()
+        self.finish_widget_creation(level)
+        self.parent.child_widget_created(self, level)
+
     def is_visible(self):
         return False
 
@@ -725,7 +731,7 @@ class Slot(EditBase):
         if not self.parent.IS_SIZER and self.parent.CHILDREN != -1: return
         with self.toplevel_parent_window.frozen():
             self.parent.remove_item(self)  # deletes self.parent.children[pos] and detaches also widget from sizer
-            self.parent.update_tree_labels()
+            if self.parent.IS_SIZER: self.parent.update_tree_labels()
             self.destroy_widget(level=0, detach=False)  # self.delete() would be OK, but would detach again...
             common.app_tree.remove(self)  # destroy tree leaf
 

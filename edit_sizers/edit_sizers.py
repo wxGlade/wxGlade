@@ -61,11 +61,15 @@ class SizerSlot(edit_base.Slot):
         # XXX update icon in Tree
 
     def check_drop_compatibility(self):
+        if self.overlapped:
+            return (False,"Slot/cell overlapped by another cell")
         return (True,None)
 
     # clipboard handling ###############################################################################################
     def check_compatibility(self, widget, typename=None):
         "check whether widget can be pasted here"
+        if self.overlapped:
+            return (False,"Slot/cell overlapped by another cell")
         if typename is not None:
             if typename=="window":
                 return (False, "No toplevel object can be pasted here.")
@@ -836,8 +840,7 @@ class SizerBase(edit_base.EditBase):
             size_p.set('%s, %s%s' % (w, h, postfix))
 
     def child_widgets_created(self, level):
-        """Called after loading of an app from a XML file, before showing the hierarchy of widget for the first time.
-        This is used only for container widgets, to adjust their size appropriately."""
+        # called after (all) child widgets have been created or a single one has been added
         if "rows" in self.PROPERTIES: self._adjust_rows_cols()  # for GridSizer
         if not self.toplevel:
             return
@@ -1306,7 +1309,6 @@ class GridSizerBase(SizerBase):
     @_frozen
     def remove_row(self, pos):
         rows = self.rows
-        cols = self.cols
         # calculate row and pos of the slot
         row,col = self._get_row_col(pos)
         # find the slots that are in the same row
