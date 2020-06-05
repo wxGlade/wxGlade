@@ -339,11 +339,8 @@ class wxGladePalettePanel(wx.Panel):
 
 import shell_frame
 class ShellFrame(shell_frame.ShellFrame):
-    def on_copy_path(self, event):
-        # 
-        # common.root.find_widget_from_path("app/frame/sizer_1/panel_1/sizer_2/static_text_1")
-        # common.root.children[0].children[0].children[0].children[0].children[1]
-        # common.root[0][0][0][0][1]
+    def on_btn_assign(self, event):
+        # insert a variable assignment
         widget = misc.focused_widget
         if not widget:
             event.Skip()
