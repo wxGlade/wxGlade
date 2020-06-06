@@ -1462,6 +1462,14 @@ def main(filename=None):
             win.import_xrc(filename)
         else:
             win._open_app(filename, False)
+
+            # mainly for debugging we want the first window to be opened already
+            if filename and config.open_design_window and common.root.children:
+                editor = common.root.children[0]
+                misc.set_focused_widget(editor)
+                editor.create()
+                common.app_tree.ExpandAllChildren(editor.item)
+
         win.cur_dir = os.path.dirname(filename)
     #win = app.GetTopWindow()
     ##win.import_xrc(r"D:\Python\Sources35\wxglade\wxglade_dev\tests\casefiles\CalendarCtrl.xrc")
