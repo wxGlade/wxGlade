@@ -697,7 +697,9 @@ class SizerBase(edit_base.EditBase):
         if not self.widget: return
         self.widget.Clear(delete_windows=True)
         if not self.parent.IS_SIZER: self.window.widget.SetSizer(None)
-        edit_base.EditBase.destroy_widget(self, level)
+        # the call of self.widget.Destroy() would crash on mac os
+        #edit_base.EditBase.destroy_widget(self, level)
+        self.widget = None
 
     if wx.Platform == '__WXMSW__':
         def finish_set(self):  # previously called after self.set_option(...)
