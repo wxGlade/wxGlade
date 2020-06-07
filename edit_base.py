@@ -320,12 +320,14 @@ class EditBase(np.PropertyOwner):
         # just destroy the widget; all bookkeeping / data structure update is done in recursive_remove
         # level is 0 for toplevel or when the user just deletes this one
         if not self.widget or self._dont_destroy: return
-        if self.parent.IS_SIZER and self.parent.widget:
-            self.parent.widget.Detach(self.widget)  # remove from sizer without destroying
-        compat.DestroyLater(self.widget)
+        self.widget.Destroy()
         self.widget = None
 
-    # from tree.Tree ###################################################################################################
+    def destroying_child_widget(self, child):
+        # called before a child widget is destroyed; e.g. used by splitter to unsplit
+        pass
+
+    ####################################################################################################################
     def recursive_remove(self, level, overwritten=False):
         "recursively remove children and then self from parent; delete widget; remove from tree and do bookkeeping"
         # this is not a GUI entry point, see remove() for this!
@@ -361,7 +363,6 @@ class EditBase(np.PropertyOwner):
         if self.IS_TOPLEVEL_WINDOW:
             self.parent.remove_top_window(self.name)
 
-    ####################################################################################################################
     def remove(self, *args):
         # entry point from GUI or script
         common.root.saved = False   # update the status of the app
@@ -729,11 +730,15 @@ class Slot(EditBase):
     def _remove(self):
         # does not set focus
         if not self.parent.IS_SIZER and self.parent.CHILDREN != -1: return
-        with self.toplevel_parent_window.frozen():
-            self.parent.remove_item(self)  # deletes self.parent.children[pos] and detaches also widget from sizer
-            if self.parent.IS_SIZER: self.parent.update_tree_labels()
-            self.destroy_widget(level=0, detach=False)  # self.delete() would be OK, but would detach again...
-            common.app_tree.remove(self)  # destroy tree leaf
+        #with self.toplevel_parent_window.frozen():
+        self.parent.remove_item(self)  # deletes self.parent.children[pos] and detaches also widget from sizer
+        if self.parent.IS_SIZER: self.parent.update_tree_labels()
+        if self.widget:
+            self.parent.destroying_child_widget(self)
+            self.destroy_widget(level=0)#, detach=False)  # self.delete() would be OK, but would detach again...
+            if self.parent.IS_SIZER:
+                self.parent.widget.Layout()  # calling .layout() would set the focus to Tree due to wx.SafeYield()
+        common.app_tree.remove(self)  # destroy tree leaf
 
     def remove(self):
         # entry point from GUI
@@ -804,6 +809,9 @@ class Slot(EditBase):
 
     def clipboard_paste(self, clipboard_data):
         "Insert a widget from the clipboard to the current destination"
+        if self.parent.CHILDREN==-1:
+            # e.g. Panel has special treatment
+            return self.parent.clipboard_paste(clipboard_data)
         return clipboard._paste(self.parent, self.pos, clipboard_data)
 
     def on_select_and_paste(self, *args):
@@ -813,7 +821,7 @@ class Slot(EditBase):
         clipboard.paste(self)
     ####################################################################################################################
 
-    def destroy_widget(self, level, detach=True):
+    def destroy_widget(self, level):
         if self.widget is None: return
         if misc.currently_under_mouse is self.widget:
             misc.currently_under_mouse = None
@@ -830,8 +838,6 @@ class Slot(EditBase):
             self.widget.Bind(wx.EVT_ENTER_WINDOW, None)
             self.widget.Bind(wx.EVT_LEAVE_WINDOW, None)
             self.widget.Bind(wx.EVT_KEY_DOWN, None)
-        if detach and self.parent.IS_SIZER and self.parent.widget:
-            self.parent.widget.Detach(self.widget)  # this will happen during recursive removal only
         compat.DestroyLater(self.widget)
         self.widget = None
 

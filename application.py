@@ -159,6 +159,8 @@ class EditRoot(np.PropertyOwner):
         # implemented for notebook, splitter, sizers
         pass
 
+    def destroying_child_widget(self, child):
+        pass
 
 class Application(EditRoot):
     "Properties of the application being created"

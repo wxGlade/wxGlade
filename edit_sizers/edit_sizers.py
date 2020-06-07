@@ -49,16 +49,14 @@ class SizerSlot(edit_base.Slot):
         sizer = self.parent
         if overlapped:
             if self.widget:
-                if add_to_sizer:
-                    sizer.widget.Detach(self.widget)
-                compat.DestroyLater(self.widget)
-                self.widget = None
+                self.destroying_child_widget(self)
+                self.destroy_widget(0)
         else:
             if sizer.widget and not self.widget:
                 self.create_widget()
                 if add_to_sizer:
                     sizer.widget.Add(self.widget, self.pos, self.span, wx.EXPAND, self.border)
-        # XXX update icon in Tree
+        common.app_tree.refresh(self)
 
     def check_drop_compatibility(self):
         if self.overlapped:
@@ -556,11 +554,6 @@ class SizerBase(edit_base.EditBase):
         focus = self._remove()  # slot or window
         misc.rebuild_tree(focus)
 
-    def Destroy(self):
-        GenButton.Destroy(self)
-        if misc.focused_widget is self:
-            misc.focused_widget = None
-
     def preview_parent(self):
         # context menu callback
         p = misc.get_toplevel_widget(self)
@@ -612,6 +605,11 @@ class SizerBase(edit_base.EditBase):
             self.set_item_best_size(child, size=child.widget.GetSize())
         if self.widget:
             self.window.widget.Refresh()
+
+    def destroying_child_widget(self, child):
+        # previously in _free_slot
+        # required here; otherwise removal of a StaticBox of a StaticBoxSizer will cause a crash
+        self.widget.Detach(child.widget)
 
     def get_child_index(self, pos):
         # return the index of the widget; in GridBagSizers, overlapped slots are skipped
@@ -688,11 +686,6 @@ class SizerBase(edit_base.EditBase):
             del self.children[elem.pos]
         if "rows" in self.PROPERTIES and not self._IS_GRIDBAG:
             self._adjust_rows_cols()  # for GridSizer
-        if self.widget and elem.widget:
-            if not self._IS_GRIDBAG:
-                self.widget.Detach(elem.pos+self.widget._BTN_OFFSET)
-            else:
-                self.widget.Detach(elem.widget)  # don't use pos, as for gridbag it might be invalid
 
     def update_tree_labels(self):
         #  move this part to add_item() and remove_item?
@@ -701,16 +694,10 @@ class SizerBase(edit_base.EditBase):
                 common.app_tree.refresh(c, refresh_image=False, refresh_label=True) # refresh_name( c.node )
 
     def destroy_widget(self, level):
-        # actually, the sizer widget is not destroyed
-        if self._btn:
-            # delete SizerHandleButton first, as the sizer widget may be destroyed already when called from change_sizer
-            self._btn.Destroy()
-            self._btn = None
         if not self.widget: return
-        if self.toplevel:
-            self.window.widget.SetSizer(None)
-        else:
-            self.widget.Clear()  # without deleting window items; but sets the sizer of the windows to NULL
+        self.widget.Clear(delete_windows=True)
+        if not self.parent.IS_SIZER: self.window.widget.SetSizer(None)
+        edit_base.EditBase.destroy_widget(self, level)
 
     if wx.Platform == '__WXMSW__':
         def finish_set(self):  # previously called after self.set_option(...)
@@ -804,12 +791,11 @@ class SizerBase(edit_base.EditBase):
         misc.rebuild_tree(slot, recursive=False)  # rebuild also slots
 
     @_frozen
-    def _free_slot(self, pos):#, force_layout=True):
+    def _free_slot(self, pos):
         "Replaces the element at pos with an empty slot"
         # called from ManagedBase context menu when removing an item
         old_child = self.children[pos]
         slot = SizerSlot(self, pos)
-
         old_child.recursive_remove(level=0, overwritten=True)
 
         if self.widget:
@@ -1042,8 +1028,7 @@ class EditStaticBoxSizer(BoxSizerBase):
         BoxSizerBase.properties_changed(self, modified)
 
     def destroy_widget(self, level):
-        if self.widget:
-            self.widget.GetStaticBox().Destroy()
+        self.widget.GetStaticBox().Destroy()
         SizerBase.destroy_widget(self, level)
 
 
@@ -1980,7 +1965,7 @@ def change_sizer(old, new):
                     compat.SizerItem_SetSizer(c, None)
             old.widget.Clear()  # without deleting window items; but sets the sizer of the windows to NULL
 
-            szr.create(dont_set=True)
+            szr.create()
 
         for widget in szr.children:
             if not isinstance(widget, SizerSlot):

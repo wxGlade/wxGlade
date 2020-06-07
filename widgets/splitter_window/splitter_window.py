@@ -65,7 +65,6 @@ class EditSplitterWindow(ManagedBase, EditStylesMixin):
         self.orientation = np.Property(orientation)
         self.window_1 = ChildWidgetNameProperty(0)
         self.window_2 = ChildWidgetNameProperty(1)
-        self._window_old = None
 
     def _get_label(self, pos):
         if self.orientation=="wxSPLIT_VERTICAL":
@@ -187,31 +186,22 @@ class EditSplitterWindow(ManagedBase, EditStylesMixin):
     ####################################################################################################################
     # methods moved from SplitterWindowSizer:
     def add_item(self, child, pos=None):
-        if pos is not None and self.widget: self._window_old = self.children[pos]
+        if pos is not None and self.widget and self.widget.IsSplit():
+            self.widget.Unsplit(self.children[pos].widget)
         ManagedBase.add_item(self, child, pos)
-        # XXX this is called when loading; check if required:
-        self._add_slots(pos_max=pos)
 
     def _free_slot(self, pos, force_layout=True):
         "Replaces the element at pos with an empty slot"
-        if self.widget and self.children[pos] and self.children[pos].widget:
-            self.widget.Unsplit(self.children[pos].widget)
-        old_child = self.children[pos]
         slot = Slot(self, pos)
         if self.widget: slot.create()
         return slot
 
+    def destroying_child_widget(self, child):
+        if self.widget.IsSplit():
+            self.widget.Unsplit(child.widget)
+
     def child_widget_created(self, widget, level):
-        "Updates the layout of the item"
-        if self.widget and self._window_old:
-            # a child was replaced
-            if self._window_old.widget:
-                self.widget.Unsplit(self._window_old.widget)
-            elif self.widget.IsSplit(): # the child widget may have been delete meanwhile by tree remove_rec
-                self.widget.Unsplit()
-        self._window_old = None
-        if level==0:  # a single child was added
-            self.split()
+        if level==0: self.split()  # a single child was added
 
     def child_widgets_created(self, level):
         self.split()

@@ -396,16 +396,13 @@ class WindowBase(EditBase):
         old_widget = self.widget
         size = self.widget.GetSize()
         with self.frozen():
+            self.parent.destroying_child_widget(self)
             self.create_widget()
             if self.IS_TOPLEVEL_WINDOW: self.widget.SetSize(size)   # do this for IS_TOPLEVEL only?
             old_widget.Hide()
             if self.sel_marker:
                 self.sel_marker.Destroy()
                 self.sel_marker = None
-
-            if self.parent.IS_SIZER:
-                self.parent.widget.Detach(old_widget)
-                # finish_widget_creation below will add the new widget to the sizer; alternatively add it here
 
             sizer = old_widget.GetSizer()
             if sizer:
@@ -421,7 +418,8 @@ class WindowBase(EditBase):
                 common.design_windows.remove(old_widget)
                 common.design_windows.append(self.widget)
             compat.DestroyLater(old_widget)
-            self.finish_widget_creation()  # this will add the new widget to the sizer (default argument re_add=True)
+            self.finish_widget_creation(0)
+            self.parent.child_widget_created(self, 0)
 
     def on_size(self, event):
         "Update the value of the 'size' property"
@@ -465,6 +463,11 @@ class WindowBase(EditBase):
                 prop_size.set(size_widget)
         except KeyError:
             logging.exception(_('Internal Error'))
+
+        # for a Panel this is required, while it's not required for a Frame:
+        if self.CHILDREN==-1 and self.children and self.children[0].IS_SLOT:
+            # make the slot filling the whole window
+            self.children[0].widget.SetSize(self.widget.GetClientSize())
 
     def on_child_pasted(self):
         if not self.widget: return
