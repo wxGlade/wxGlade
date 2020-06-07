@@ -79,7 +79,7 @@ class EditNotebook(ManagedBase, EditStylesMixin):
         EditStylesMixin.__init__(self)
         self.properties["style"].set(style)
 
-        self._is_removing_pages = False
+        #self._is_removing_pages = False
 
         # initialise instance properties
         self.pages = None  # on loading from XML, this will be used
@@ -106,10 +106,10 @@ class EditNotebook(ManagedBase, EditStylesMixin):
 
     ####################################################################################################################
     # new implementation, parts from previous 'virtual sizer':
-    def add_item(self, child, pos=None):
-        ManagedBase.add_item(self, child, pos)
-        # avoid widgets being destroyed; this is done by DeletePage/InsertPage
-        child._dont_destroy = True
+    #def add_item(self, child, pos=None):
+        #ManagedBase.add_item(self, child, pos)
+        ## avoid widgets being destroyed; this is done by DeletePage/InsertPage
+        #child._dont_destroy = True  # remove this; move DeletePage into destroying_child_widget
 
     def vs_insert_tab(self, index):
         "inserts or adds a page"
@@ -171,10 +171,14 @@ class EditNotebook(ManagedBase, EditStylesMixin):
 
     def remove_tab(self, index):
         # for context menu of an empty page / Slot instance
-        indices = [i for i in range(0,len(self.tabs)) if i!=index]
-        old_labels = [tab[0] for tab in self.tabs]
         del self.properties["tabs"].value[index]
-        self.set_tabs(old_labels, indices)
+        self.children[index].recursive_remove(level=0)
+
+        # adjust pos of the following pages
+        for i, page in enumerate(self.children[index:]):
+            page.properties["pos"].set(index+i)
+
+        common.app_tree.build(self, recursive=False)
 
         if self.children:
             if index>=len(self.children): index -= 1
@@ -202,11 +206,8 @@ class EditNotebook(ManagedBase, EditStylesMixin):
         # remove tabs
         for index in range(len(old_labels)-1, -1, -1):
             if not index in keep_indices:
-                self._is_removing_pages = True
                 self.children[index].recursive_remove(level=0)
-                if self.widget: self.widget.RemovePage(index)    # deletes the specified page
                 del new_labels[index]                            # delete from list of names
-                self._is_removing_pages = False
 
         # insert/add tabs
         added = None
@@ -248,34 +249,28 @@ class EditNotebook(ManagedBase, EditStylesMixin):
 
         common.app_tree.build(self, recursive=False)
 
-    def _free_slot(self, pos, force_layout=True):
-        "Replaces the element at pos with an empty slot"
-        if self._is_removing_pages: return
-
-        slot = Slot(self, pos)
-        if self.widget:
-            slot.create()
-            label = self.tabs[pos][0]
-            self.widget.RemovePage(pos)
-            self.widget.InsertPage(pos, slot.widget, label)
-            self.widget.SetSelection(pos)
-        return slot
+    #def _free_slot(self, pos, force_layout=True):
+        #"Replaces the element at pos with an empty slot"
+        #slot = Slot(self, pos)
+        #if self.widget:
+            #slot.create()
+        #return slot
 
     ####################################################################################################################
-    # methods moved from NotebookVirtualSizer:
+    def destroying_child_widget(self, child):
+        self.widget.RemovePage(child.pos) # deletes the specified page, without deleting the associated window
 
     def child_widget_created(self, child, level):
         # add, insert or replace a notebook page
         pos = child.pos
         label = self.tabs[pos][0]
         if not (pos < self.widget.GetPageCount()):
-            self.widget.AddPage(child.widget, label) # this is e.g. for the first creation after loading a file
-        elif self.widget.GetPage(pos) is not child.widget:
-            # XXX delete this part if it's not called; insert_tab and remove_tab should handle this now
-            if self.widget.GetPageCount()==len(self.children):
-                #self.widget.RemovePage(index) # deletes the specified page, without deleting the associated window
-                self.widget.DeletePage(pos)  # deletes the specified page, and the associated window
+            # this is e.g. for the first creation after loading a file
+            self.widget.AddPage(child.widget, label)
+        else:
+            # single page being replaced; e.g. panel -> slot or slot -> panel
             self.widget.InsertPage(pos, child.widget, label)
+        if level==0:
             self.widget.SetSelection(pos)
             try:
                 wx.CallAfter(child.sel_marker.update)
