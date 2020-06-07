@@ -664,9 +664,9 @@ class ManagedBase(WindowBase):
         return self.parent._free_slot(self.pos)
 
     def remove(self):
-        # entry point from GUI?
-        with self.frozen():
-            slot = self._remove()
+        # entry point from GUI
+        #with self.frozen():  # this does not work on mac os: when deleting a panel notebook page, it will remain black
+        slot = self._remove()
         misc.rebuild_tree(slot, recursive=False)
 
     def on_mouse_events(self, event):
