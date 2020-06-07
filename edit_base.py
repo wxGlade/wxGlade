@@ -350,8 +350,9 @@ class EditBase(np.PropertyOwner):
                 self.parent.properties[pos[1:]].set(False)
             setattr(self.parent, pos, None)
 
-        # delete widget
-        self.destroy_widget(level)
+        if level==0:
+            self.parent.destroying_child_widget(self)
+            self.destroy_widget(level)
 
         # remove from Tree (rebuild_tree to be called separately)
         if misc.focused_widget is self: misc.focused_widget = None
