@@ -199,10 +199,6 @@ class WXGladeCLITest(WXGladeBaseTest):
         for language, dummy, ext, dummy in self.language_constants:
             if not language in languages: continue
 
-            #expected_filename = self._get_casefile_path( '%s.py'%basename )
-            #generated_filename = self._get_outputfile_path( '%s.py'%basename )
-    
-
             if language=="C++" and app.multiple_files:
                 app_basename = os.path.splitext(config.default_cpp_app_name)[0]
                 app_basename = "%s_%s"%(first_window.klass.split("_")[0], app_basename)
@@ -299,6 +295,8 @@ class WXGladeGUITest(WXGladeBaseTest):
         cls.app = wx.App()
         cls.locale = wx.Locale(wx.LANGUAGE_DEFAULT)
         compat.wx_ArtProviderPush(main.wxGladeArtProvider())
+        import history
+        common.history = history.History()
         cls.frame = main.wxGladeFrame()
 
         # suppress wx error messages
@@ -475,3 +473,19 @@ class WXGladeGUITest(WXGladeBaseTest):
         with open(target, "wb") as outfile:
             outfile.write(content)
         shutil.copystat( source, target )
+
+    def simulate_cut(self, widget):
+        # returns XML data
+        import clipboard
+        ret = clipboard.dump_widget(widget)
+        widget.remove()
+        wx.SafeYield()
+        return ret
+
+    def simulate_paste(self, parent, pos, data):
+        # accepts XML data; returns True on success
+        import clipboard
+        ret = clipboard._paste(parent, pos, data)
+        wx.SafeYield()
+        return ret
+
