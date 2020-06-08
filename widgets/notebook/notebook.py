@@ -119,29 +119,16 @@ class EditNotebook(ManagedBase, EditStylesMixin):
         if hasattr(self.parent, "set_item_best_size"):
             self.parent.set_item_best_size( self, size=self.widget.GetBestSize() )
 
-    def insert_tab(self, index, label):
-        # add tab/page; called from GUI
-        tab = self._insert_tab(index, label)
-        misc.rebuild_tree(self)
-
     def add_slot(self):
         # actually adds a page, but it needs to be compatible to sizers
         self.insert_tab(len(self.children), "new tab")
 
-    def _insert_tab(self, index, label):
-        # add tab/page
-        tabs_p = self.properties["tabs"]
-        tabs = tabs_p.get()   # the value will be modified in place
-        tabs.insert(index, [label,])
-        tabs_p.set(tabs)
-        self.children.insert(index, None)
-
-        # adjust pos of the following pages
-        for i, page in enumerate(self.children[index+1:]):
-            pos_p = page.properties["pos"]
-            pos_p.set(index+1+i)
+    def insert_tab(self, index, label):
+        # add tab/page; called from GUI
+        self.properties["tabs"].insert( index, [label,] )
 
         # create panel and node, add to tree
+        self.insert_item(None, index)  # placeholder
         editor = EditPanel( self.next_pane_name(), self, index )
 
         if self.widget:
@@ -159,7 +146,7 @@ class EditNotebook(ManagedBase, EditStylesMixin):
             self.widget.SetSelection(index)
 
         self.properties["tabs"].update_display()
-        return editor
+        misc.rebuild_tree(self)
 
     def remove_tab(self, index):
         # for context menu of an empty page / Slot instance
@@ -353,10 +340,8 @@ def builder(parent, pos):
         editor = EditNotebook(name, parent, pos, style)
         editor.properties["proportion"].set(1)
         editor.properties["flag"].set("wxEXPAND")
-        if parent.widget:
-            editor.create()
-            parent.layout()
-        editor._insert_tab(0, editor.next_pane_name()) # next_pane_name will be used as label and as pane name, if possible
+        editor.insert_tab(0, editor.next_pane_name()) # next_pane_name will be used as label and as pane name, if possible
+        if parent.widget: editor.create()
     return editor
 
 

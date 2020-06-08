@@ -2325,6 +2325,12 @@ class GridProperty(Property):
         self.editing_values = None
         self.update_display()
 
+    def insert(self, index, item):
+        assert not self.deactivated
+        value = self.get()
+        value.insert(index, item)
+        self.set(value)
+
     def get(self):
         if self.deactivated:
             return self.default_value

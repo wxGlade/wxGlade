@@ -221,6 +221,13 @@ class EditBase(np.PropertyOwner):
         if old_child:
             old_child.recursive_remove(0, overwritten=True)
 
+    def insert_item(self, child, pos=None):
+        # for now only for child=None as placeholder; used by notebook
+        if pos is None: pos = child.pos
+        self.children.insert(pos, child)
+        for c in self.children[pos+1:]:
+            c.properties["pos"].value += 1
+
     def remove_item(self, child, force_layout=True):
         "Removes child from self and adjust pos of following items"
         if not child: return
