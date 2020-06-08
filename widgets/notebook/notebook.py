@@ -79,8 +79,6 @@ class EditNotebook(ManagedBase, EditStylesMixin):
         EditStylesMixin.__init__(self)
         self.properties["style"].set(style)
 
-        #self._is_removing_pages = False
-
         # initialise instance properties
         self.pages = None  # on loading from XML, this will be used
         tabs = []  # list of page labels of this notebook
@@ -105,12 +103,6 @@ class EditNotebook(ManagedBase, EditStylesMixin):
         event.Skip()
 
     ####################################################################################################################
-    # new implementation, parts from previous 'virtual sizer':
-    #def add_item(self, child, pos=None):
-        #ManagedBase.add_item(self, child, pos)
-        ## avoid widgets being destroyed; this is done by DeletePage/InsertPage
-        #child._dont_destroy = True  # remove this; move DeletePage into destroying_child_widget
-
     def vs_insert_tab(self, index):
         "inserts or adds a page"
         label = self.tabs[index][0]
@@ -248,13 +240,6 @@ class EditNotebook(ManagedBase, EditStylesMixin):
             self.widget.SetSelection(added)
 
         common.app_tree.build(self, recursive=False)
-
-    #def _free_slot(self, pos, force_layout=True):
-        #"Replaces the element at pos with an empty slot"
-        #slot = Slot(self, pos)
-        #if self.widget:
-            #slot.create()
-        #return slot
 
     ####################################################################################################################
     def destroying_child_widget(self, child):

@@ -319,8 +319,6 @@ class EditBase(np.PropertyOwner):
     def destroy_widget(self, level):
         # just destroy the widget; all bookkeeping / data structure update is done in recursive_remove
         # level is 0 for toplevel or when the user just deletes this one
-        #if self._dont_destroy: raise ValueError("XXX")
-        #if not self.widget or self._dont_destroy: return
         if not self.widget: return
         self.widget.Destroy()
         self.widget = None
@@ -369,7 +367,6 @@ class EditBase(np.PropertyOwner):
     def remove(self, *args):
         # entry point from GUI or script
         common.root.saved = False   # update the status of the app
-        #self._dont_destroy = False  # always destroy, except when explicitly asked
         self.recursive_remove(level=0)
         misc.rebuild_tree(self.parent, recursive=False, focus=True)
 
@@ -540,7 +537,6 @@ class Slot(EditBase):
 
         # initialise instance properties
         self.widget = None          # Reference to the widget resembling the slot (a wx.Window)
-        #self._dont_destroy = False  # for notebook pages, this will be set to True
         self.name = "SLOT"
         self.overlapped = False  # for spanning in GridBagSizer
         self.item = None
@@ -829,7 +825,6 @@ class Slot(EditBase):
         if misc.currently_under_mouse is self.widget:
             misc.currently_under_mouse = None
 
-        #if self._dont_destroy: return  # on a notebook page
         self.widget.Hide()
 
         if wx.VERSION_STRING!="2.8.12.0":
