@@ -49,7 +49,7 @@ class SizerSlot(edit_base.Slot):
         sizer = self.parent
         if overlapped:
             if self.widget:
-                self.destroying_child_widget(self)
+                self.parent.destroying_child_widget(self)
                 self.destroy_widget(0)
         else:
             if sizer.widget and not self.widget:
