@@ -112,6 +112,8 @@ class WXGladeBaseTest(unittest.TestCase):
         # open files, split into lines and convert to str/unicode
         expected  = self._read_file_lines(expected_filename)
         generated = self._read_file_lines(generated_filename)
+        if expected  and expected[0].startswith(b'#!/usr/bin/env python'):  expected[0]  = expected[0].rstrip(b"3")
+        if generated and generated[0].startswith(b'#!/usr/bin/env python'): generated[0] = generated[0].rstrip(b"3")
         if expected == generated: return False
         expected  = [s.decode('ascii', 'replace') for s in expected]
         generated = [s.decode('ascii', 'replace') for s in generated]
