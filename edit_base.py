@@ -41,7 +41,6 @@ class EditBase(np.PropertyOwner):
         np.PropertyOwner.__init__(self)
 
         self.widget = None          # this is the reference to the actual wxWindow widget, created when required
-        #self._dont_destroy = False  # for notebook pages, this will be set to True
         self.item = None            # the TreeCtrl item
 
         # initialise instance properties
