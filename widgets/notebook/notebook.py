@@ -186,7 +186,8 @@ class EditNotebook(ManagedBase, EditStylesMixin):
         for index in range(len(old_labels)-1, -1, -1):
             if not index in keep_indices:
                 self.children[index].recursive_remove(level=0)
-                del new_labels[index]                            # delete from list of names
+                # delete from list of names
+                del new_labels[index]
 
         # insert/add tabs
         added = None
