@@ -182,7 +182,10 @@ class PythonCodeWriter(BaseLangCodeWriter, wcodegen.PythonMixin):
 
     name_ctor = '__init__'
 
-    shebang = '#!/usr/bin/env python\n'
+    if compat.PYTHON2:
+        shebang = '#!/usr/bin/env python\n'
+    else:
+        shebang = '#!/usr/bin/env python3\n'
 
     SourceFileContent = SourceFileContent
 
