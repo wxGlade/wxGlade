@@ -357,13 +357,13 @@ class SizerBase(edit_base.EditBase):
 
     window = edit_base.EditBase.parent_window
 
-    def set_item(self, pos, option=None, flag=None, border=None, size=None, force_layout=True):
-        "Updates the layout of the item at the given pos"
-        raise NotImplementedError
+    #def set_item(self, pos, option=None, flag=None, border=None, size=None, force_layout=True):
+        #"Updates the layout of the item at the given pos"
+        #raise NotImplementedError
 
-    def add_item(self, item, pos=None, option=0, flag=0, border=0, size=None, force_layout=True):
-        "Adds an item to self"
-        raise NotImplementedError
+    #def add_item(self, item, pos=None, option=0, flag=0, border=0, size=None, force_layout=True):
+        #"Adds an item to self"
+        #raise NotImplementedError
 
     def frozen(self):
         return self.window.frozen()
@@ -580,8 +580,8 @@ class SizerBase(edit_base.EditBase):
             self.children.append(None)
         else:
             old_child = self.children[pos]
-            if old_child and old_child.IS_SLOT and old_child.widget:  # old_child is either None (on loading/appending) or a Slot on editing
-                old_child.destroy_widget(0)
+            if old_child:
+                self.children[pos].recursive_remove(0, keep_slot=True)
         if "rows" in self.PROPERTIES and not self._IS_GRIDBAG:
             self._adjust_rows_cols()  # for GridSizer
         self.children[pos] = item
@@ -796,9 +796,7 @@ class SizerBase(edit_base.EditBase):
     def _free_slot(self, pos):
         "Replaces the element at pos with an empty slot"
         # called from ManagedBase context menu when removing an item
-        old_child = self.children[pos]
         slot = SizerSlot(self, pos)
-        old_child.recursive_remove(level=0, overwritten=True)
 
         if self.widget:
             slot.create()  # create the actual SizerSlot as wx.Window with hatched background

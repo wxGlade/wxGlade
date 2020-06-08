@@ -194,6 +194,7 @@ class EditBase(np.PropertyOwner):
     ####################################################################################################################
     def add_item(self, child, pos=None):
         if pos is None:
+            # happens during loading
             if self.CHILDREN is None:
                 # variable number of children
                 self.children.append(child)
@@ -213,12 +214,8 @@ class EditBase(np.PropertyOwner):
         if len(self.children)<=pos:
             self.children += [None]*(pos - len(self.children) + 1)
         if self.children[pos] is not None:
-            old_child = self.children[pos]
-        else:
-            old_child = None
+            self.children[pos].recursive_remove(0, keep_slot=True)
         self.children[pos] = child
-        if old_child:
-            old_child.recursive_remove(0, overwritten=True)
 
     def insert_item(self, child, pos=None):
         # for now only for child=None as placeholder; used by notebook
@@ -334,7 +331,7 @@ class EditBase(np.PropertyOwner):
         pass
 
     ####################################################################################################################
-    def recursive_remove(self, level, overwritten=False):
+    def recursive_remove(self, level, keep_slot=False):
         "recursively remove children and then self from parent; delete widget; remove from tree and do bookkeeping"
         # this is not a GUI entry point, see remove() for this!
 
@@ -346,11 +343,11 @@ class EditBase(np.PropertyOwner):
         # remove self from parent
         pos = getattr(self, "pos", None)
         if isinstance(pos, int) or self.IS_TOPLEVEL:
-            try:
-                self.parent.children.remove(self)
-            except:
-                if not overwritten:  # overwritten: overwritten in _free_slot when Slot() was created
-                    print(" **** node_remove failed")
+            index = self.parent.children.index(self)  # pos and index might be different here already
+            if keep_slot:
+                self.parent.children[index] = None
+            else:
+                del self.parent.children[index]
         elif isinstance(pos, str):
             if pos.startswith("_") and self.parent.check_prop_truth(pos[1:]):
                 self.parent.properties[pos[1:]].set(False)
