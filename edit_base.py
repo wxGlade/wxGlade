@@ -448,9 +448,9 @@ class EditBase(np.PropertyOwner):
         misc.rebuild_tree(slot)
 
     def _free_slot(self, pos, force_layout=True):
-        with self.toplevel_parent.frozen():
-            slot = Slot(self, pos)
-            if self.widget: slot.create()  # create the actual SizerSlot as wx.Window with hatched background
+        #with self.toplevel_parent.frozen():  # this does not work on mac os: when deleting a panel notebook page, it will remain black
+        slot = Slot(self, pos)
+        if self.widget: slot.create()  # create the actual SizerSlot as wx.Window with hatched background
         return slot
 
     # for tree and help display ########################################################################################
