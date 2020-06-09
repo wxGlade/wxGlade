@@ -414,9 +414,6 @@ class WindowBase(EditBase):
                 for child in self.widget.GetChildren():
                     # actually, for now a panel may only have a sizer as child, so this code is not executed
                     self._reparent_widget(child)
-            #if old_widget in common.design_windows:
-                #common.design_windows.remove(old_widget)
-                #common.design_windows.append(self.widget)
             compat.DestroyLater(old_widget)
             self.finish_widget_creation(0)
             self.parent.child_widget_created(self, 0)
@@ -756,7 +753,6 @@ class TopLevelBase(WindowBase, PreviewMixin):
         if self.children[0].IS_SIZER: return self.children[0]
         return None
 
-
     def create(self):
         # creates/shows the widget of the given toplevel node and all its children
         wx.BeginBusyCursor()
@@ -812,7 +808,6 @@ class TopLevelBase(WindowBase, PreviewMixin):
             self.preview_widget.Unbind(wx.EVT_CHAR_HOOK)
             compat.DestroyLater(self.preview_widget)
             self.preview_widget = None
-        #if self.widget and self.widget in common.design_windows: common.design_windows.remove(self.widget)
         WindowBase.destroy_widget(self, level)
 
     def hide_widget(self, event=None):

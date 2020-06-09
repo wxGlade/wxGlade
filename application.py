@@ -160,15 +160,12 @@ class EditRoot(np.PropertyOwner):
     def _get_tooltip_string(self):
         return None
 
-    # use following to track toplevel windows and/or design window?
+    # use following to track toplevel windows?
     def child_widget_created(self, child, level):
-        # track design windows
-        common.design_windows.append(self.widget)
+        pass
 
     def destroying_child_widget(self, child):
-        # track design windows
-        if child.widget in common.design_windows:
-            common.design_windows.remove(child.widget)
+        pass
 
 class Application(EditRoot):
     "Properties of the application being created"
