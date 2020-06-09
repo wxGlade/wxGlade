@@ -1026,9 +1026,7 @@ class EditStylesMixin(np.PropertyOwner):
 
     style_set: Set of selected styles (strings)
     style_names: List of style names
-    widget_writer: Widget code writer (wcodegen.BaseWidgetWriter)
-
-    """
+    widget_writer: Widget code writer (wcodegen.BaseWidgetWriter)"""
     codegen = None             # Code generator class; see: codegen.BaseLangCodeWriter
     update_widget_style = True # Flag to update the widget style if a style is set using set_style()
     recreate_on_style_change = False
@@ -1097,7 +1095,6 @@ class EditStylesMixin(np.PropertyOwner):
             if focused:
                 misc.focused_widget = self
                 if self.sel_marker: self.sel_marker.Show(True)
-
 
     @decorators.memoize
     def wxname2attr(self, name):
