@@ -603,11 +603,17 @@ class SizerBase(edit_base.EditBase):
             self.set_item_best_size(child, size=child.widget.GetSize())
         if self.widget:
             self.window.widget.Refresh()
+            self.window.widget.Layout()
 
     def destroying_child_widget(self, child):
         # previously in _free_slot
         # required here; otherwise removal of a StaticBox of a StaticBoxSizer will cause a crash
+        # child has been removed from self.children already
         self.widget.Detach(child.widget)
+
+    def destroyed_child_widget(self):
+        self.widget.Refresh()
+        self.widget.Layout()
 
     def get_child_index(self, pos):
         # return the index of the widget; in GridBagSizers, overlapped slots are skipped
@@ -2039,8 +2045,8 @@ class _SizerDialog(wx.Dialog):
         tmp = wx.BoxSizer(wx.HORIZONTAL)
         tmp.Add( wx.StaticText(self, -1, _('Slots: ')), 0, wx.ALL | wx.ALIGN_CENTER_VERTICAL, 3 )
         self.num = wx.SpinCtrl(self, -1)
-        self.num.SetRange(1, 100)
         self.num.SetValue(1)
+        self.num.SetRange(0, 100)
         tmp.Add(self.num, 1, wx.ALL, 3)
         szr = wx.BoxSizer(wx.VERTICAL)
         szr.Add(self.orientation, 0, wx.ALL | wx.EXPAND, 4)

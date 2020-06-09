@@ -337,6 +337,10 @@ class EditBase(np.PropertyOwner):
 
     def destroying_child_widget(self, child):
         # called before a child widget is destroyed; e.g. used by splitter to unsplit
+        # child has been removed from self.children already
+        pass
+
+    def destroyed_child_widget(self):
         pass
 
     ####################################################################################################################
@@ -354,6 +358,7 @@ class EditBase(np.PropertyOwner):
         if level==0:
             self.parent.destroying_child_widget(self)
             self.destroy_widget(level)
+            self.parent.destroyed_child_widget()
 
         # remove from Tree (rebuild_tree to be called separately)
         if misc.focused_widget is self: misc.focused_widget = None

@@ -167,6 +167,10 @@ class EditRoot(np.PropertyOwner):
     def destroying_child_widget(self, child):
         pass
 
+    def destroyed_child_widget(self):
+        pass
+
+
 class Application(EditRoot):
     "Properties of the application being created"
 
