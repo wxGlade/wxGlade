@@ -96,6 +96,11 @@ class EditRoot(np.PropertyOwner):
         if child.IS_TOPLEVEL_WINDOW:
             self.add_top_window(child.name)
 
+    def remove_item(self, child, level=0, dummy=False):
+        if child.IS_TOPLEVEL_WINDOW:
+            self.remove_top_window(child.name)
+        self.children.remove(child)
+
     def write(self, output, tabs=0):
         """Writes the xml equivalent of this tree to the given output file.
         This function writes unicode to the outfile."""
@@ -155,12 +160,15 @@ class EditRoot(np.PropertyOwner):
     def _get_tooltip_string(self):
         return None
 
+    # use following to track toplevel windows and/or design window?
     def child_widget_created(self, child, level):
-        # implemented for notebook, splitter, sizers
-        pass
+        # track design windows
+        common.design_windows.append(self.widget)
 
     def destroying_child_widget(self, child):
-        pass
+        # track design windows
+        if child.widget in common.design_windows:
+            common.design_windows.remove(child.widget)
 
 class Application(EditRoot):
     "Properties of the application being created"

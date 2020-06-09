@@ -414,9 +414,9 @@ class WindowBase(EditBase):
                 for child in self.widget.GetChildren():
                     # actually, for now a panel may only have a sizer as child, so this code is not executed
                     self._reparent_widget(child)
-            if old_widget in common.design_windows:
-                common.design_windows.remove(old_widget)
-                common.design_windows.append(self.widget)
+            #if old_widget in common.design_windows:
+                #common.design_windows.remove(old_widget)
+                #common.design_windows.append(self.widget)
             compat.DestroyLater(old_widget)
             self.finish_widget_creation(0)
             self.parent.child_widget_created(self, 0)
@@ -807,26 +807,12 @@ class TopLevelBase(WindowBase, PreviewMixin):
             # MSW isn't smart enough to avoid overlapping windows, so at least move it away from the 3 wxGlade frames
             self.widget.Center()
 
-    # left-over from the old create method
-    # could be integrated into finish_widget_creation if required
-    #def create(self):
-        #WindowBase.create(self)
-        #if wx.Platform == '__WXMSW__' and "size" in self.properties:
-            ## more than ugly, but effective hack to properly layout the window on Win32
-            #if self.properties['size'].is_active():
-                #w, h = self.widget.GetSize()
-                #self.widget.SetSize((-1, h+1))
-                #self.widget.SetSize((-1, h))
-            #elif len(self.children)==1 and self.children[0] is not None and self.children[0].IS_SIZER:
-                #self.children[0].fit_parent()
-        #common.design_windows.append(self.widget)
-
     def destroy_widget(self, level):
         if self.preview_widget is not None:
             self.preview_widget.Unbind(wx.EVT_CHAR_HOOK)
             compat.DestroyLater(self.preview_widget)
             self.preview_widget = None
-        if self.widget and self.widget in common.design_windows: common.design_windows.remove(self.widget)
+        #if self.widget and self.widget in common.design_windows: common.design_windows.remove(self.widget)
         WindowBase.destroy_widget(self, level)
 
     def hide_widget(self, event=None):

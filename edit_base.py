@@ -224,12 +224,21 @@ class EditBase(np.PropertyOwner):
         for c in self.children[pos+1:]:
             c.properties["pos"].value += 1
 
-    def remove_item(self, child, force_layout=True):
+    def remove_item(self, child, level, keep_slot=False):
         "Removes child from self and adjust pos of following items"
         if not child: return
-        for c in self.children[child.pos+1:]:
-            c.properties["pos"].value -= 1
-        self.children.remove(child)
+        pos = getattr(child, "pos", None)
+        if pos is None and self.CHILDREN in (1,-1):
+            pos = 0
+        if isinstance(pos, int):
+            if keep_slot:
+                self.children[pos] = None
+            else:
+                for c in self.children[pos+1:]:
+                    c.properties["pos"].value -= 1
+                del self.children[pos]
+        else:
+            setattr(self, pos, None)
 
     def has_ancestor(self, editor):
         "Returns True if editor is parent or parents parent ..."
@@ -340,18 +349,7 @@ class EditBase(np.PropertyOwner):
             for c in self.get_all_children():
                 c.recursive_remove(level+1)
 
-        # remove self from parent
-        pos = getattr(self, "pos", None)
-        if isinstance(pos, int) or self.IS_TOPLEVEL:
-            index = self.parent.children.index(self)  # pos and index might be different here already
-            if keep_slot:
-                self.parent.children[index] = None
-            else:
-                del self.parent.children[index]
-        elif isinstance(pos, str):
-            if pos.startswith("_") and self.parent.check_prop_truth(pos[1:]):
-                self.parent.properties[pos[1:]].set(False)
-            setattr(self.parent, pos, None)
+        self.parent.remove_item(self, level, keep_slot)
 
         if level==0:
             self.parent.destroying_child_widget(self)
@@ -364,14 +362,12 @@ class EditBase(np.PropertyOwner):
         # bookkeeping
         if not self.IS_TOPLEVEL and self.IS_NAMED and self.name:
             self.toplevel_parent.track_contained_name( self.name )
-        if self.IS_TOPLEVEL_WINDOW:
-            self.parent.remove_top_window(self.name)
 
-    def remove(self, *args):
+    def remove(self, focus=True):
         # entry point from GUI or script
         common.root.saved = False   # update the status of the app
         self.recursive_remove(level=0)
-        misc.rebuild_tree(self.parent, recursive=False, focus=True)
+        misc.rebuild_tree(self.parent, recursive=False, focus=focus)
 
     # XML generation ###################################################################################################
     def get_editor_name(self):
@@ -729,31 +725,11 @@ class Slot(EditBase):
         return menu
 
     ####################################################################################################################
-    def _remove(self):
-        # does not set focus
-        if not self.parent.IS_SIZER and self.parent.CHILDREN != -1: return
-        #with self.toplevel_parent_window.frozen():
-        self.parent.remove_item(self)  # deletes self.parent.children[pos] and detaches also widget from sizer
-        if self.parent.IS_SIZER: self.parent.update_tree_labels()
-        if self.widget:
-            self.parent.destroying_child_widget(self)
-            self.destroy_widget(level=0)#, detach=False)  # self.delete() would be OK, but would detach again...
-            if self.parent.IS_SIZER:
-                self.parent.widget.Layout()  # calling .layout() would set the focus to Tree due to wx.SafeYield()
-        common.app_tree.remove(self)  # destroy tree leaf
-
     def remove(self):
         # entry point from GUI
-        common.root.saved = False  # update the status of the app
-        if self.parent.WX_CLASS in ("wxNotebook",):
-            self.parent.remove_tab(self.pos)
-            return
-
         i = self.pos
-        self._remove()
-        if i >= len(self.parent.children):
-            i = len(self.parent.children)-1
-        misc.rebuild_tree(self.parent, recursive=False, focus=False)
+        EditBase.remove(self, focus=False)
+        if i >= len(self.parent.children): i = len(self.parent.children)-1
         # set focused widget
         if i>=0:
             misc.set_focused_widget( self.parent.children[i] )

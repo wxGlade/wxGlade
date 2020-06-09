@@ -148,22 +148,10 @@ class EditNotebook(ManagedBase, EditStylesMixin):
         self.properties["tabs"].update_display()
         misc.rebuild_tree(self)
 
-    def remove_tab(self, index):
-        # for context menu of an empty page / Slot instance
-        del self.properties["tabs"].value[index]
-        self.children[index].recursive_remove(level=0)
-
-        # adjust pos of the following pages
-        for i, page in enumerate(self.children[index:]):
-            page.properties["pos"].set(index+i)
-
-        common.app_tree.build(self, recursive=False)
-
-        if self.children:
-            if index>=len(self.children): index -= 1
-            misc.set_focused_widget(self.children[index])
-        else:
-            misc.set_focused_widget(self)
+    def remove_item(self, child, level, keep_slot=False):
+        if not keep_slot:
+            del self.properties["tabs"].value[child.pos]
+        ManagedBase.remove_item(self, child, level, keep_slot)
 
     @misc.restore_focus
     def set_tabs(self, old_labels, indices):  # called from tabs property on Apply button
@@ -288,8 +276,8 @@ class EditNotebook(ManagedBase, EditStylesMixin):
         # called from managed widget items' _create_popup_menu method
         if item.IS_SLOT:
             i = misc.append_menu_item(menu, -1, _('Remove Notebook Tab\tDel') )
-            misc.bind_menu_item_after(widget, i, self.remove_tab, item.pos)
-            
+            misc.bind_menu_item_after(widget, i, item.remove)
+
         i = misc.append_menu_item(menu, -1, _('Insert Notebook Tab before') ) # \tCtrl+I') )
         misc.bind_menu_item_after(widget, i, self.insert_tab, item.pos, "new tab")
 

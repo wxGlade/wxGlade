@@ -569,11 +569,10 @@ class SizerBase(edit_base.EditBase):
             # self.widget.SetSizeHints(self.window.widget)
             self.window.widget.Layout()
 
-    def add_item(self, item, pos=None, size=None, force_layout=True):
+    def add_item(self, item, pos=None):
         "Adds an item to self."
         # called from ManagedBase.__init__ when adding an item to the end from XML parser
         # or interactively when adding an item to an empty sizer slot
-        #assert item in self.children
         if pos is None: pos = len(self.children)
 
         if pos==len(self.children):
@@ -585,7 +584,6 @@ class SizerBase(edit_base.EditBase):
         if "rows" in self.PROPERTIES and not self._IS_GRIDBAG:
             self._adjust_rows_cols()  # for GridSizer
         self.children[pos] = item
-        item._size = size
 
     def child_widget_created(self, child, level):
         "called from finish_widget_creation() to add widget to sizer widget"
@@ -677,15 +675,14 @@ class SizerBase(edit_base.EditBase):
 
         self.layout()
 
-    def remove_item(self, elem):#, force_layout=True):
+    def remove_item(self, child, level, keep_slot=False):
         "Removes elem from self"
         # called from context menu of SizerSlot; detaches element and does re-layout
-        if elem:
-            for c in self.children[elem.pos + 1:]:
-                c.properties["pos"].value -= 1
-            del self.children[elem.pos]
+        edit_base.EditBase.remove_item(self, child, level, keep_slot)
+        if level>0: return
         if "rows" in self.PROPERTIES and not self._IS_GRIDBAG:
             self._adjust_rows_cols()  # for GridSizer
+        self.update_tree_labels()
 
     def update_tree_labels(self):
         #  move this part to add_item() and remove_item?
