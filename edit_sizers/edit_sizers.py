@@ -400,6 +400,11 @@ class SizerBase(edit_base.EditBase):
             previous_name = self.properties["name"].previous_value
             common.app_tree.refresh(self, refresh_label=True, refresh_image=False)
 
+        if not modified or "class" in modified:
+            self.properties["class_orient"].set(self.get_class_orient())
+        if not modified or "orient" in modified:
+            self.properties["class_orient"].set(self.get_class_orient())
+
         if "class_orient" in modified:
             # user has selected -> change
             value = self.class_orient
@@ -1962,7 +1967,10 @@ def change_sizer(old, new):
         if not szr.parent.IS_SIZER:
             szr.window.set_sizer(szr)
 
-        if szr.widget: szr.top_sizer.layout()
+        if szr.widget:
+            szr.top_sizer.layout()
+            if szr.parent.IS_TOPLEVEL:
+                szr.fit_parent()
 
         misc.set_focused_widget(szr)
 
