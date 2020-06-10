@@ -40,6 +40,7 @@ class XmlParser(ContentHandler):
         self.parser = make_parser()
         self.parser.setContentHandler(self)
         self.locator = None # Document locator
+        self.pos = None     # only used with ClipboardXmlWidgetBuilder
 
     def parse(self, source):
         ## Permanent workaround for Python bug "Sax parser crashes if given
@@ -376,6 +377,7 @@ class ClipboardXmlWidgetBuilder(XmlWidgetBuilder):
         self._renamed = {}
         self._object_counter = 0
         self.parent = parent
+        self.pos = pos
         if not parent:
             # e.g. a frame is pasted: update with the top level names
             self.have_names = set(child.name for child in common.root.children)
@@ -584,6 +586,8 @@ class XmlWidgetObject(object):
             if pos is None and hasattr(parent, "get_itempos"):
                 # splitters and notebooks don't use sizeritems around their items in XML; pos is found from the name
                 pos = parent.get_itempos(attrs)
+            elif not sizeritem and not stack:
+                pos = parser.pos
 
             # build the widget
             builder = common.widgets_from_xml.get(base, None)

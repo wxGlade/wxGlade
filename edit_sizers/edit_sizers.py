@@ -685,13 +685,6 @@ class SizerBase(edit_base.EditBase):
         if level>0: return
         if "rows" in self.PROPERTIES and not self._IS_GRIDBAG:
             self._adjust_rows_cols()  # for GridSizer
-        self.update_tree_labels()
-
-    def update_tree_labels(self):
-        #  move this part to add_item() and remove_item?
-        for c in self.children:
-            if isinstance(c, SizerSlot):
-                common.app_tree.refresh(c, refresh_image=False, refresh_label=True) # refresh_name( c.node )
 
     def destroy_widget(self, level):
         if not self.widget: return
@@ -732,7 +725,7 @@ class SizerBase(edit_base.EditBase):
         if self.widget: slot.create()
         return slot
 
-    def _insert_slot(self, pos=None, select=True, no_add=False):
+    def _insert_slot(self, pos=None):
         "Inserts an empty slot into the sizer at pos (1 based); optionally force layout update"
         # called from context menu handler; multiple times if applicable; layout will be called there
         # also called from SizerBase._remove after a sizer has removed itself and inserts an empty slot instead
