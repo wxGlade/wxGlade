@@ -1742,7 +1742,7 @@ class EditGridBagSizer(EditFlexGridSizer):
         # actually create the new slots
         for index, child in enumerate(self.children):
             if child is not None: continue
-            self._insert_slot( index, select=False, no_add=True )
+            self._insert_slot( index )
 
         # check overlapped slots
         self._check_slots(add_to_sizer=False)
@@ -1863,32 +1863,33 @@ class EditGridBagSizer(EditFlexGridSizer):
 def change_sizer(old, new):
     "Replaces sizer instance 'old' with a new one; 'new' is the name of the new one."
     index = old.index
+    parent = old.parent
     constructors = {
-        'wxBoxSizer (wxVERTICAL)':         lambda: EditBoxSizer(old.name, old.parent, index, wx.VERTICAL, 0),
-        'wxBoxSizer (wxHORIZONTAL)':       lambda: EditBoxSizer(old.name, old.parent, index, wx.HORIZONTAL, 0),
-        'wxWrapSizer (wxVERTICAL)':        lambda: EditWrapSizer(old.name, old.parent, index, wx.VERTICAL, 0),
-        'wxWrapSizer (wxHORIZONTAL)':      lambda: EditWrapSizer(old.name, old.parent, index, wx.HORIZONTAL, 0),
-        'wxStaticBoxSizer (wxVERTICAL)':   lambda: EditStaticBoxSizer(old.name, old.parent, index, wx.VERTICAL,
+        'wxBoxSizer (wxVERTICAL)':         lambda: EditBoxSizer(old.name, parent, index, wx.VERTICAL, 0),
+        'wxBoxSizer (wxHORIZONTAL)':       lambda: EditBoxSizer(old.name, parent, index, wx.HORIZONTAL, 0),
+        'wxWrapSizer (wxVERTICAL)':        lambda: EditWrapSizer(old.name, parent, index, wx.VERTICAL, 0),
+        'wxWrapSizer (wxHORIZONTAL)':      lambda: EditWrapSizer(old.name, parent, index, wx.HORIZONTAL, 0),
+        'wxStaticBoxSizer (wxVERTICAL)':   lambda: EditStaticBoxSizer(old.name, parent, index, wx.VERTICAL,
                                                                       getattr(old, 'label', old.name), 0),
-        'wxStaticBoxSizer (wxHORIZONTAL)': lambda: EditStaticBoxSizer(old.name, old.parent, index, wx.HORIZONTAL,
+        'wxStaticBoxSizer (wxHORIZONTAL)': lambda: EditStaticBoxSizer(old.name, parent, index, wx.HORIZONTAL,
                                                                       getattr(old, 'label', old.name), 0),
-        'wxStdDialogButtonSizer':          lambda: EditStdDialogButtonSizer(old.name, old.parent, index, 0),
-        'wxGridSizer':     lambda: EditGridSizer(old.name, old.parent, index, rows=0, cols=0),
-        'wxFlexGridSizer': lambda: EditFlexGridSizer(old.name, old.parent, index, rows=0, cols=0),
-        'wxGridBagSizer': lambda: EditGridBagSizer(old.name, old.parent, index, rows=0, cols=0) }
+        'wxStdDialogButtonSizer':          lambda: EditStdDialogButtonSizer(old.name, parent, index, 0),
+        'wxGridSizer':     lambda: EditGridSizer(old.name, parent, index, rows=0, cols=0),
+        'wxFlexGridSizer': lambda: EditFlexGridSizer(old.name, parent, index, rows=0, cols=0),
+        'wxGridBagSizer': lambda: EditGridBagSizer(old.name, parent, index, rows=0, cols=0) }
 
     with old.window.frozen():
         # construct without children, take then the children from the old sizer
-        old.parent.children[index] = None  # avoid recursive_remove being called
+        parent.children[index] = None  # avoid recursive_remove being called
         szr = constructors[new]()
         if old._IS_GRIDBAG and old.widget:
-            for c in old.children:
-                if c:
-                    if c.widget:
-                        old.widget.Detach(c.widget)
-                    elif isinstance(c, SizerSlot) and c.overlapped:
+            for child in old.children:
+                if child:
+                    if child.widget:
+                        old.destroying_child_widget(child)
+                    elif child.IS_SLOT and child.overlapped:
                         # re-create hidden widget
-                        c.set_overlap(False, add_to_sizer=False)
+                        child.set_overlap(False, add_to_sizer=False)
 
         szr.children.extend(old.children)
 
@@ -1928,29 +1929,27 @@ def change_sizer(old, new):
             if "flag" in widget.properties: widget.properties["flag"]._check_value()
 
         if old.widget is not None:
+            # detach child widgets from old sizer
             for c in old.widget.GetChildren():
                 if c and c.IsSizer():
                     compat.SizerItem_SetSizer(c, None)
+
+            # destroy old and create new sizer
+            compat.DestroyLater(old._btn)
             old.widget.Clear()  # without deleting window items; but sets the sizer of the windows to NULL
 
-            szr.create()
+            szr.create_widget()
 
-        for widget in szr.children:
-            if not isinstance(widget, SizerSlot):
-                if szr.widget is not None:
-                    if not isinstance(szr, EditGridBagSizer):
-                        pos = widget.index + szr.widget._BTN_OFFSET
-                        szr.widget.Insert(pos, widget.widget, widget.proportion, widget.flag, widget.border)
-                    else:
-                        szr.widget.Add(widget.widget, widget.index, widget.span, widget.flag, widget.border)
-    
-        if szr.parent.IS_SIZER:
-            szr.copy_properties(old, szr.MANAGED_PROPERTIES, notify=False)  # span","proportion","border","flag"
-            szr.sizer.children[index] = szr
-            if szr.sizer.widget:
-                pos = szr.sizer.widget._BTN_OFFSET + szr.sizer.get_child_index(index)
-                elem = szr.sizer.widget.GetChildren()[pos]
-                compat.SizerItem_SetSizer(elem, szr.widget)
+            # move child widgets to new sizer
+            for child in szr.children:
+                if child.IS_SLOT and child.overlapped: continue
+                szr.child_widget_created(child, 0)
+
+            # move new sizer to parent if this is a sizer; sizer item is kept
+            if parent.IS_SIZER:
+                szr.copy_properties(old, szr.MANAGED_PROPERTIES, notify=False)  # span","proportion","border","flag"
+                si = szr.sizer.widget.GetItem(old.widget)
+                compat.SizerItem_SetSizer(si, szr.widget)
 
         common.app_tree.change_item_editor(old, szr, keep_children=True)
 
@@ -1958,13 +1957,12 @@ def change_sizer(old, new):
         del old.children[:]
         old.destroy_widget(0)
 
-        for c in szr.children:
-            if c: c.parent = szr
+        for child in szr.children:
+            if child: child.parent = szr
         if not szr.parent.IS_SIZER:
             szr.window.set_sizer(szr)
 
-        szr.layout()
-        if szr.widget: szr.window.widget.Refresh()
+        if szr.widget: szr.top_sizer.layout()
 
         misc.set_focused_widget(szr)
 

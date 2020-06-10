@@ -151,6 +151,18 @@ class EditBase(np.PropertyOwner):
         if self.parent.IS_SIZER: return self.parent
         return None
 
+    @property
+    def top_sizer(self):
+        # return the top containing sizer or None
+        if not self.parent.IS_SIZER:
+            if self.IS_SIZER: return self
+            return None
+        item = self.parent
+        while item.parent.IS_SIZER:
+            item = item.parent
+        return item
+
+
     def get_all_children(self):
         # this always returns a copy, as it might be used by recursive_remove
         ret = []

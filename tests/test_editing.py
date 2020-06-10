@@ -99,6 +99,8 @@ class TestEditing(WXGladeGUITest):
         widget.properties["span"].set((2,2), notify=True)
         #self.sleep(1.0)
         
+        # XXX test change_sizer
+        
         
         ## save and check .wxg file
         #generated_filename = self._get_outputfile_path(infilename)
