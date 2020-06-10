@@ -63,7 +63,7 @@ class EditStatusBar(EditBase, EditStylesMixin):
     CHILDREN = 0
 
     def __init__(self, name, parent):
-        EditBase.__init__( self, name, parent, pos="_statusbar")
+        EditBase.__init__( self, name, parent, index="_statusbar")
         EditStylesMixin.__init__(self)
 
         # for the statusbar fields
@@ -151,7 +151,7 @@ class Dialog(wx.Dialog):
         szr.Fit(self)
 
 
-def xml_builder(parser, base, name, parent, pos):
+def xml_builder(parser, base, name, parent, index):
     "factory to build EditToolBar objects from a XML file"
     parent.properties["statusbar"].set(True)
     return EditStatusBar(name, parent)

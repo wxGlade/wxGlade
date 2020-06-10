@@ -174,9 +174,9 @@ class EditGrid(ManagedBase):
     #_SELECTION_MODES = { 'wxGrid.wxGridSelectCells':0, 'wxGrid.wxGridSelectRows':1, 'wxGrid.wxGridSelectColumns':2 }
     _SELECTION_MODES = ('wxGrid.wxGridSelectCells', 'wxGrid.wxGridSelectRows', 'wxGrid.wxGridSelectColumns')
 
-    def __init__(self, name, parent, pos):
+    def __init__(self, name, parent, index):
         "Class to handle wxGrid objects"
-        ManagedBase.__init__(self, name, parent, pos)
+        ManagedBase.__init__(self, name, parent, index)
 
         # instance properties
         self.create_grid = np.CheckBoxProperty(True)
@@ -314,11 +314,11 @@ class EditGrid(ManagedBase):
 
 
 
-def builder(parent, pos):
+def builder(parent, index):
     "factory function for EditGrid objects"
     name = parent.toplevel_parent.get_next_contained_name('grid_%d')
     with parent.frozen():
-        editor = EditGrid(name, parent, pos)
+        editor = EditGrid(name, parent, index)
         # A grid should be wx.EXPANDed and 'option' should be 1, or you can't see it.
         editor.properties["proportion"].set(1)
         editor.properties["flag"].set("wxEXPAND")
@@ -326,9 +326,9 @@ def builder(parent, pos):
     return editor
 
 
-def xml_builder(parser, base, name, parent, pos):
+def xml_builder(parser, base, name, parent, index):
     "factory to build EditGrid objects from a XML file"
-    return EditGrid(name, parent, pos)
+    return EditGrid(name, parent, index)
 
 
 def initialize():

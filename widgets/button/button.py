@@ -32,9 +32,9 @@ class EditButton(BitmapMixin, ManagedBase, EditStylesMixin):
                                   "If stockitem buttons like OK and CANCEL are placed in a StdDialogButtonSizer, "
                                   "they will be re-ordered according to the platform style guide."}
 
-    def __init__(self, name, parent, pos, label):
+    def __init__(self, name, parent, index, label):
         # Initialise parent classes
-        ManagedBase.__init__(self, name, parent, pos)
+        ManagedBase.__init__(self, name, parent, index)
         EditStylesMixin.__init__(self)
         BitmapMixin.__init__(self)
 
@@ -95,20 +95,20 @@ class EditButton(BitmapMixin, ManagedBase, EditStylesMixin):
             self.parent.layout()
 
 
-def builder(parent, pos):
+def builder(parent, index):
     "factory function for EditButton objects"
     name = parent.toplevel_parent.get_next_contained_name('button_%d')
     with parent.frozen():
-        editor = EditButton(name, parent, pos, name)
+        editor = EditButton(name, parent, index, name)
         editor.properties["style"].set_to_default()
         editor.check_defaults()
         if parent.widget: editor.create()
     return editor
 
 
-def xml_builder(parser, base, name, parent, pos):
+def xml_builder(parser, base, name, parent, index):
     "factory to build EditButton objects from a XML file"
-    return EditButton(name, parent, pos, '')
+    return EditButton(name, parent, index, '')
 
 
 def initialize():

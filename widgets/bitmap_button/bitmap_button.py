@@ -22,8 +22,8 @@ class EditBitmapButton(BitmapMixin, ManagedBase, EditStylesMixin):
                    "default", "style"]
     PROPERTIES = ManagedBase.PROPERTIES + _PROPERTIES + ManagedBase.EXTRA_PROPERTIES
 
-    def __init__(self, name, parent, pos, bmp_file):
-        ManagedBase.__init__(self, name, parent, pos)
+    def __init__(self, name, parent, index, bmp_file):
+        ManagedBase.__init__(self, name, parent, index)
         EditStylesMixin.__init__(self)
         BitmapMixin.__init__(self)
 
@@ -47,21 +47,21 @@ class EditBitmapButton(BitmapMixin, ManagedBase, EditStylesMixin):
         ManagedBase.properties_changed(self, modified)
 
 
-def builder(parent, pos):
+def builder(parent, index):
     "factory function for EditBitmapButton objects"
     name = parent.toplevel_parent.get_next_contained_name('bitmap_button_%d')
     bitmap = misc.RelativeFileSelector("Select the image for the button")
     with parent.frozen():
-        editor = EditBitmapButton(name, parent, pos, bitmap)
+        editor = EditBitmapButton(name, parent, index, bitmap)
         editor.properties["style"].set_to_default()
         editor.check_defaults()
         if parent.widget: editor.create()
     return editor
 
 
-def xml_builder(parser, base, name, parent, pos):
+def xml_builder(parser, base, name, parent, index):
     "factory to build EditBitmapButton objects from a XML file"
-    editor = EditBitmapButton(name, parent, pos, '')
+    editor = EditBitmapButton(name, parent, index, '')
     #if attrs.input_file_version and attrs.input_file_version<(0,9):
     if parser.input_file_version and parser.check_input_file_version((0,9)):  # backwards compatibility
         editor.properties["style"].set_to_default()

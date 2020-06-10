@@ -21,8 +21,8 @@ class EditGauge(ManagedBase, EditStylesMixin):
     PROPERTIES = ManagedBase.PROPERTIES + _PROPERTIES + ManagedBase.EXTRA_PROPERTIES
     recreate_on_style_change = True
 
-    def __init__(self, name, parent, pos, style):
-        ManagedBase.__init__(self, name, parent, pos)
+    def __init__(self, name, parent, index, style):
+        ManagedBase.__init__(self, name, parent, index)
         EditStylesMixin.__init__(self)
         if style: self.properties["style"].set(style)
 
@@ -40,7 +40,7 @@ class EditGauge(ManagedBase, EditStylesMixin):
         ManagedBase.properties_changed(self, modified)
 
 
-def builder(parent, pos):
+def builder(parent, index):
     "Factory function for editor objects from GUI"
     dialog = wcodegen.WidgetStyleSelectionDialog( _('wxGauge'), _('Orientation'), 'wxGA_HORIZONTAL|wxGA_VERTICAL')
     with misc.disable_stay_on_top(common.adding_window or parent):
@@ -51,15 +51,15 @@ def builder(parent, pos):
 
     name = parent.toplevel_parent.get_next_contained_name('gauge_%d')
     with parent.frozen():
-        editor = EditGauge(name, parent, pos, style)
+        editor = EditGauge(name, parent, index, style)
         editor.properties["flag"].set("wxEXPAND")
         if parent.widget: editor.create()
     return editor
 
 
-def xml_builder(parser, base, name, parent, pos):
+def xml_builder(parser, base, name, parent, index):
     "Factory to build editor objects from a XML file"
-    return EditGauge(name, parent, pos, '')
+    return EditGauge(name, parent, index, '')
 
 
 def initialize():

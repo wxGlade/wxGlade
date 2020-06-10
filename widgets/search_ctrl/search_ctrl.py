@@ -23,9 +23,9 @@ class EditSearchCtrl(ManagedBase, EditStylesMixin):
     PROPERTIES = ManagedBase.PROPERTIES + _PROPERTIES + ManagedBase.EXTRA_PROPERTIES
     #recreate_on_style_change = True
 
-    def __init__(self, name, parent, pos):
+    def __init__(self, name, parent, index):
         # initialize base classes
-        ManagedBase.__init__(self, name, parent, pos)
+        ManagedBase.__init__(self, name, parent, index)
         EditStylesMixin.__init__(self)
 
         # initialize instance properties
@@ -67,20 +67,20 @@ class EditSearchCtrl(ManagedBase, EditStylesMixin):
 
 
 
-def builder(parent, pos):
+def builder(parent, index):
     "factory function for EditSearchCtrl objects"
     name = parent.toplevel_parent.get_next_contained_name('text_ctrl_%d')
     with parent.frozen():
-        editor = EditSearchCtrl(name, parent, pos)
+        editor = EditSearchCtrl(name, parent, index)
         editor.properties["style"].set_to_default()
         editor.check_defaults()
         if parent.widget: editor.create()
     return editor
 
 
-def xml_builder(parser, base, name, parent, pos):
+def xml_builder(parser, base, name, parent, index):
     "factory function to build EditSearchCtrl objects from a XML file"
-    return EditSearchCtrl(name, parent, pos)
+    return EditSearchCtrl(name, parent, index)
 
 
 def initialize():

@@ -25,7 +25,7 @@ import config, compat, plugins, misc
 
 
 widget_classes = {}   # EditWidget class name -> EditWidget class
-widgets = {}          # all widgets: EditWidget class name -> factory(parent, pos)
+widgets = {}          # all widgets: EditWidget class name -> factory(parent, index)
 widgets_from_xml = {} # Factory functions to build objects from a XML file
 
 class_names = {} # maps the name of the classes used by wxGlade to the correspondent classes of wxWindows

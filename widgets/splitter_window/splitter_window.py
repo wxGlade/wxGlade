@@ -48,8 +48,8 @@ class EditSplitterWindow(ManagedBase, EditStylesMixin):
                                      "0.5: both windows grow by equal size\n"
                                      "1.0: only left/top window grows"}
     CHILDREN = 2
-    def __init__(self, name, parent, pos, orientation):
-        ManagedBase.__init__(self, name, parent, pos)
+    def __init__(self, name, parent, index, orientation):
+        ManagedBase.__init__(self, name, parent, index)
         EditStylesMixin.__init__(self)
 
         # initialise instance properties
@@ -66,13 +66,13 @@ class EditSplitterWindow(ManagedBase, EditStylesMixin):
         self.window_1 = ChildWidgetNameProperty(0)
         self.window_2 = ChildWidgetNameProperty(1)
 
-    def _get_label(self, pos):
+    def _get_label(self, index):
         if self.orientation=="wxSPLIT_VERTICAL":
-            return ("Left","Right")[pos]
-        return ("Top","Bottom")[pos]
+            return ("Left","Right")[index]
+        return ("Top","Bottom")[index]
     
-    def _get_slot_label(self, pos):
-        return "SLOT %s"%self._get_label(pos)
+    def _get_slot_label(self, index):
+        return "SLOT %s"%self._get_label(index)
 
     def create_widget(self):
         size = self._get_default_or_client_size()
@@ -180,19 +180,19 @@ class EditSplitterWindow(ManagedBase, EditStylesMixin):
         # checks whether a widget can be dropped here
         return (False, "Items can only be added to empty slots, not to the splitter window itself.")
 
-    def _get_parent_tooltip(self, pos):
-        return "%s splitter pane:"%self._get_label(pos)
+    def _get_parent_tooltip(self, index):
+        return "%s splitter pane:"%self._get_label(index)
 
     ####################################################################################################################
     # methods moved from SplitterWindowSizer:
-    def add_item(self, child, pos=None):
-        if pos is not None and self.widget and self.widget.IsSplit():
-            self.widget.Unsplit(self.children[pos].widget)
-        ManagedBase.add_item(self, child, pos)
+    def add_item(self, child, index=None):
+        if index is not None and self.widget and self.widget.IsSplit():
+            self.widget.Unsplit(self.children[index].widget)
+        ManagedBase.add_item(self, child, index)
 
-    def _free_slot(self, pos, force_layout=True):
+    def _free_slot(self, index, force_layout=True):
         "Replaces the element at pos with an empty slot"
-        slot = Slot(self, pos)
+        slot = Slot(self, index)
         if self.widget: slot.create()
         return slot
 
@@ -219,7 +219,7 @@ box_title = _('Orientation')
 choices = 'wxSPLIT_VERTICAL (left/right)|wxSPLIT_HORIZONTAL (top/bottom)'
 
 
-def builder(parent, pos):
+def builder(parent, index):
     "Factory function for EditSplitterWindow objects"
     dialog = wcodegen.WidgetStyleSelectionDialog( dlg_title, box_title, choices, ["Create panels"],[True])
     with misc.disable_stay_on_top(common.adding_window or parent):
@@ -232,7 +232,7 @@ def builder(parent, pos):
 
     name = parent.toplevel_parent.get_next_contained_name('window_%d')
     with parent.frozen():
-        editor = EditSplitterWindow(name, parent, pos, orientation)
+        editor = EditSplitterWindow(name, parent, index, orientation)
         editor.properties["style"].set_to_default()
         if create_panels:
             pane1 = EditPanel(name + '_pane_1', editor, 0)
@@ -249,9 +249,9 @@ def builder(parent, pos):
         return editor
 
 
-def xml_builder(parser, base, name, parent, pos):
+def xml_builder(parser, base, name, parent, index):
     "Factory to build editor objects from a XML file"
-    return EditSplitterWindow(name, parent, pos, 'wxSPLIT_VERTICAL')
+    return EditSplitterWindow(name, parent, index, 'wxSPLIT_VERTICAL')
 
 
 def initialize():

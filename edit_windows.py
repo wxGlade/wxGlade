@@ -109,8 +109,8 @@ class EditBase(EventsMixin, edit_base.EditBase):
                         "extracode":"Extra (import) code for this widget",
                         "extracode_pre":"Code to be inserted before",
                         "extracode_post":"Code to be inserted after"}
-    def __init__(self, name, parent, pos, klass=None, instance_class=None):
-        edit_base.EditBase.__init__(self, name, parent, pos)
+    def __init__(self, name, parent, index, klass=None, instance_class=None):
+        edit_base.EditBase.__init__(self, name, parent, index)
 
         # initialise instance properties
         if "class" in self.PROPERTIES:
@@ -320,8 +320,8 @@ class WindowBase(EditBase):
     IS_WINDOW = True
     CHILDREN = None  # sizer or something else
 
-    def __init__(self, name, parent, pos, klass, instance_class=None):
-        EditBase.__init__(self, name, parent, pos, klass, instance_class)
+    def __init__(self, name, parent, index, klass, instance_class=None):
+        EditBase.__init__(self, name, parent, index, klass, instance_class)
 
         self.window_id = np.TextPropertyD( "wxID_ANY", name="id", default_value=None )
         self.size      = np.SizePropertyD( "-1, -1", default_value="-1, -1" )
@@ -539,30 +539,29 @@ class ManagedBase(WindowBase):
     Extends WindowBase with the addition of properties relative to the layout of the window:
     proportion/option, flag, and border."""
 
-    _PROPERTIES = ["Layout","pos", "span", "proportion", "border", "flag"]
-    SIZER_PROPERTIES = ["pos","proportion","border","flag"]
+    _PROPERTIES = ["Layout", "span", "proportion", "border", "flag"]
+    SIZER_PROPERTIES = ["proportion","border","flag"]
     PROPERTIES = WindowBase.PROPERTIES + _PROPERTIES
 
-    _PROPERTY_HELP = { "border": _("Border width, if enabled below"),  "pos": _("Sizer slot") }
+    _PROPERTY_HELP = { "border": _("Border width, if enabled below") } #,  "pos": _("Sizer slot") }
     _PROPERTY_LABELS = {"option": "Proportion" }
 
     #CHILDREN = 0  # most widgets have no children
 
     ####################################################################################################################
 
-    def __init__(self, name, parent, pos, instance_class=None, class_=None):
-        WindowBase.__init__(self, name, parent, pos, class_, instance_class)
+    def __init__(self, name, parent, index, instance_class=None, class_=None):
+        WindowBase.__init__(self, name, parent, index, class_, instance_class)
         # if True, the user is able to control the layout of the widget
         # inside the sizer (proportion, borders, alignment...)
         self._has_layout = parent.IS_SIZER
 
         # attributes to keep the values of the sizer properties
-        if pos is None:
+        if index is None:
             if self in self.parent.children:
-                pos = self.parent.children.index(self)
+                index = self.parent.children.index(self)
             else:
-                pos = len(self.parent.children) - 1
-        self.pos        = np.LayoutPosProperty(pos)            # position within the sizer, 0-based
+                index = len(self.parent.children) - 1
         self.span       = np.LayoutSpanProperty((1,1))         # cell spanning for GridBagSizer
         self.proportion = np.LayoutProportionProperty(0)       # item growth in sizer main direction
         self.border     = np.SpinProperty(0, immediate=True)   # border width
@@ -622,7 +621,7 @@ class ManagedBase(WindowBase):
             if self.parent.WX_CLASS=="wxGridBagSizer" and (not modified or "span" in modified) and self.span!=(1,1):
                 # check span range, if pasted item would span more rows/cols than available
                 span_p = self.properties["span"]
-                max_span = self.sizer.check_span_range(self.pos, *span_p.value)
+                max_span = self.sizer.check_span_range(self.index, *span_p.value)
                 max_span = ( min(span_p.value[0],max_span[0]), min(span_p.value[1],max_span[1]) )
                 if max_span!=span_p.value:
                     span_p.set(max_span, notify=False)
@@ -632,7 +631,7 @@ class ManagedBase(WindowBase):
         # if an item inside a flex grid sizer is set to EXPAND, inform the user if row and col are not growable
         if modified and "flag" in modified and self.parent.IS_SIZER and "growable_rows" in self.parent.properties:
             if p.previous_value is not None and "wxEXPAND" in p.value_set and not "wxEXPAND" in p.previous_value:
-                row, col = self.parent._get_row_col(self.pos)
+                row, col = self.parent._get_row_col(self.index)
                 if not row in self.parent.growable_rows and not col in self.parent.growable_cols:
                     wx.CallAfter(self.parent.ask_growable, row,col)
 
@@ -657,7 +656,7 @@ class ManagedBase(WindowBase):
 
     def _remove(self):
         "don't set focus"
-        return self.parent._free_slot(self.pos)
+        return self.parent._free_slot(self.index)
 
     def remove(self):
         # entry point from GUI

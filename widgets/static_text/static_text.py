@@ -24,8 +24,8 @@ class EditStaticText(ManagedBase, EditStylesMixin):
                                  'Without this, you can not access the label from your program.',
                      "wrap":     'Wrap text to at most the given width.\nThe lines will be broken at word boundaries.'}
 
-    def __init__(self, name, parent, pos, label):
-        ManagedBase.__init__(self, name, parent, pos)
+    def __init__(self, name, parent, index, label):
+        ManagedBase.__init__(self, name, parent, index)
         EditStylesMixin.__init__(self)
 
         # initialise instance properties
@@ -65,20 +65,20 @@ class EditStaticText(ManagedBase, EditStylesMixin):
         ManagedBase.properties_changed(self, modified)
 
 
-def builder(parent, pos):
+def builder(parent, index):
     "factory function for EditStaticText objects"
     name = parent.toplevel_parent.get_next_contained_name('static_text_%d')
     with parent.frozen():
-        editor = EditStaticText(name, parent, pos, name)
+        editor = EditStaticText(name, parent, index, name)
         editor.properties["style"].set_to_default()
         editor.check_defaults()
         if parent.widget: editor.create()
     return editor
 
 
-def xml_builder(parser, base, name, parent, pos):
+def xml_builder(parser, base, name, parent, index):
     "factory to build EditStaticText objects from a XML file"
-    return EditStaticText(name, parent, pos, "")
+    return EditStaticText(name, parent, index, "")
 
 
 def initialize():

@@ -408,12 +408,12 @@ def _paste():
 def _insert():
     global focused_widget
     if not focused_widget: return
-    if not hasattr(focused_widget, "sizer") or not hasattr(focused_widget, "pos"): return
     parent = focused_widget.parent
-    if parent and parent.IS_SIZER and parent._IS_GRIDBAG: return
+    if not parent or not parent.IS_SIZER: return
+    if parent._IS_GRIDBAG: return
     #method = getattr(focused_widget.sizer, "insert_slot", None)
     method = getattr(parent, "insert_slot", None)
-    if method: method(focused_widget.pos)
+    if method: method(focused_widget.index)
 
 @restore_focus
 def _add():

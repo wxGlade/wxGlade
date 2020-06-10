@@ -62,8 +62,8 @@ class CustomWidget(ManagedBase):
     _PROPERTY_LABELS = { 'custom_constructor':'Custom constructor' }
     _PROPERTY_HELP   = { 'custom_constructor':'Specify a custom constructor like a factory method' }
 
-    def __init__(self, name, parent, pos, instance_class=None):
-        ManagedBase.__init__(self, name, parent, pos, instance_class or "wxWindow")
+    def __init__(self, name, parent, index, instance_class=None):
+        ManagedBase.__init__(self, name, parent, index, instance_class or "wxWindow")
         self.properties["instance_class"].deactivated = None
 
         # initialise instance properties
@@ -146,7 +146,7 @@ class Dialog(wx.Dialog):
         self.OK_button.Enable( OK )
 
 
-def builder(parent, pos):
+def builder(parent, index):
     "factory function for CustomWidget objects"
 
     dialog = Dialog()
@@ -158,7 +158,7 @@ def builder(parent, pos):
 
     name = parent.toplevel_parent.get_next_contained_name('window_%d')
     with parent.frozen():
-        editor = CustomWidget(name, parent, pos, klass)
+        editor = CustomWidget(name, parent, index, klass)
         editor.properties["arguments"].set( [['$parent'], ['$id']] )  # ,['$width'],['$height']]
         editor.properties["proportion"].set(1)
         editor.properties["flag"].set("wxEXPAND")
@@ -166,9 +166,9 @@ def builder(parent, pos):
     return editor
 
 
-def xml_builder(parser, base, name, parent, pos):
+def xml_builder(parser, base, name, parent, index):
     "factory to build CustomWidget objects from a XML file"
-    return CustomWidget(name, parent, pos)
+    return CustomWidget(name, parent, index)
 
 
 def initialize():

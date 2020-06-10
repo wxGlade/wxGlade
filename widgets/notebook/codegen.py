@@ -69,7 +69,7 @@ def xrc_code_generator(obj):
 
         def write_child_prologue(self, child, output, ntabs):
             if self.widget.children:
-                label = self.widget.tabs[child.widget.pos][0]
+                label = self.widget.tabs[child.widget.index][0]
                 tab_s = '    ' * ntabs
                 output.append( tab_s + '<object class="notebookpage">\n' )
                 output.append( tab_s + '<label>%s</label>\n' % escape(label) )

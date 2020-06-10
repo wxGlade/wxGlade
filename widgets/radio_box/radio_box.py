@@ -22,9 +22,9 @@ class EditRadioBox(ManagedBase):
     _PROPERTIES = ["Widget", "label", "style", "dimension", "selection", "choices"]
     PROPERTIES = ManagedBase.PROPERTIES + _PROPERTIES + ManagedBase.EXTRA_PROPERTIES
 
-    def __init__(self, name, parent, pos, style, label, choices, major_dim):
+    def __init__(self, name, parent, index, style, label, choices, major_dim):
         "Class to handle wxRadioBox objects"
-        ManagedBase.__init__(self, name, parent, pos)
+        ManagedBase.__init__(self, name, parent, index)
         self.static_box = None
         
         # initialise instance properties
@@ -184,18 +184,18 @@ class EditRadioBox(ManagedBase):
         ManagedBase.properties_changed(self, modified)
 
 
-def builder(parent, pos):
+def builder(parent, index):
     "factory function for EditRadioBox objects"
     name = parent.toplevel_parent.get_next_contained_name('radio_box_%d')
     with parent.frozen():
-        editor = EditRadioBox(name, parent, pos, 0, name, [[u'choice 1'],], 1)
+        editor = EditRadioBox(name, parent, index, 0, name, [[u'choice 1'],], 1)
         if parent.widget: editor.create()
     return editor
 
 
-def xml_builder(parser, base, name, parent, pos):
+def xml_builder(parser, base, name, parent, index):
     "factory to build EditRadioBox objects from a XML file"
-    return EditRadioBox(name, parent, pos, 0, '', [], 1)
+    return EditRadioBox(name, parent, index, 0, '', [], 1)
 
 
 def initialize():

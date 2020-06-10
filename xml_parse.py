@@ -40,7 +40,7 @@ class XmlParser(ContentHandler):
         self.parser = make_parser()
         self.parser.setContentHandler(self)
         self.locator = None # Document locator
-        self.pos = None     # only used with ClipboardXmlWidgetBuilder
+        self.index = None     # only used with ClipboardXmlWidgetBuilder
 
     def parse(self, source):
         ## Permanent workaround for Python bug "Sax parser crashes if given
@@ -372,12 +372,12 @@ class ClipboardXmlWidgetBuilder(XmlWidgetBuilder):
         they keep info about the destination of the hierarchy of widgets (i.e. the target of the 'paste' command)
       - The first widget built must be hidden and shown again at the end of the operation"""
 
-    def __init__(self, parent, pos, proportion, span, flag, border):
+    def __init__(self, parent, index, proportion, span, flag, border):
         XmlWidgetBuilder.__init__(self)
         self._renamed = {}
         self._object_counter = 0
         self.parent = parent
-        self.pos = pos
+        self.index = index
         if not parent:
             # e.g. a frame is pasted: update with the top level names
             self.have_names = set(child.name for child in common.root.children)
@@ -410,7 +410,7 @@ class ClipboardXmlWidgetBuilder(XmlWidgetBuilder):
             sizeritem.properties["span"].set(span)
             sizeritem.properties["flag"].set(flag)
             sizeritem.properties["border"].set(border)
-            sizeritem.properties["pos"].set(pos)
+            sizeritem.index = index
             # fake sizer item
             fake_sizeritem = XmlClipboardObject(obj=sizeritem, parent=parent)
 
@@ -582,18 +582,18 @@ class XmlWidgetObject(object):
             # if base is not None, the object is a widget (or sizer), and not a sizeritem
             self.sizeritem = sizeritem  # the properties will be copied later in endElement
 
-            pos = getattr(sizeritem, 'pos', None)
-            if pos is None and hasattr(parent, "get_itempos"):
+            index = getattr(sizeritem, 'index', None)
+            if index is None and hasattr(parent, "get_itempos"):
                 # splitters and notebooks don't use sizeritems around their items in XML; pos is found from the name
-                pos = parent.get_itempos(attrs)
+                index = parent.get_itempos(attrs)
             elif not sizeritem and not stack:
-                pos = parser.pos
+                index = parser.index
 
             # build the widget
             builder = common.widgets_from_xml.get(base, None)
             if builder is None: raise XmlParsingError("Widget '%s' not supported."%base)
             
-            self.obj = builder(parser, base, attrs["name"], sizer or parent, pos)
+            self.obj = builder(parser, base, attrs["name"], sizer or parent, index)
             self.set_class_attributes(parser, attrs) # set 'class' and 'instance_class' properties, if applicable
 
             self.IS_SIZER = self.obj.IS_SIZER
@@ -689,14 +689,13 @@ import new_properties as np
 
 class Sizeritem(np.PropertyOwner):
     "temporarily represents a child of a sizer"
-    SIZER_PROPERTIES = ["pos","proportion","span","border","flag"]
+    SIZER_PROPERTIES = ["proportion","span","border","flag"]
     def __init__(self):
         np.PropertyOwner.__init__(self)
         self.proportion = np.LayoutProportionProperty(0)
         self.span = np.LayoutSpanProperty((1,1))
         self.border = np.SpinProperty(0)
         self.flag = np.ManagedFlags(None, name="sizeritem_flags")
-        self.pos = np.SpinProperty(None)
 
     def on_load(self, child=None):
         pass

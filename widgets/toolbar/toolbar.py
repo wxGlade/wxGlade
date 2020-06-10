@@ -742,7 +742,7 @@ class EditTopLevelToolBar(EditToolBar, PreviewMixin):
         PreviewMixin.__init__(self)  # add a preview button
 
 
-def builder(parent, pos):
+def builder(parent, index):
     "factory function for EditToolBar objects"
     import window_dialog as wd
     klass = 'wxToolBar' if common.root.language.lower()=='xrc' else 'MyToolBar'
@@ -774,7 +774,7 @@ def builder(parent, pos):
     return editor
 
 
-def xml_builder(parser, base, name, parent, pos):
+def xml_builder(parser, base, name, parent, index):
     "factory to build EditToolBar objects from a XML file"
     if parent.IS_ROOT:
         return EditTopLevelToolBar(name, parent, "ToolBar")

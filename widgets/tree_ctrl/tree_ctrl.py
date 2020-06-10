@@ -21,8 +21,8 @@ class EditTreeCtrl(ManagedBase, EditStylesMixin):
     _PROPERTIES = ["Widget", "style"]
     PROPERTIES = ManagedBase.PROPERTIES + _PROPERTIES + ManagedBase.EXTRA_PROPERTIES
 
-    def __init__(self, name, parent, pos, style=wx.TR_HAS_BUTTONS|wx.BORDER_SUNKEN):
-        ManagedBase.__init__(self, name, parent, pos)
+    def __init__(self, name, parent, index, style=wx.TR_HAS_BUTTONS|wx.BORDER_SUNKEN):
+        ManagedBase.__init__(self, name, parent, index)
         EditStylesMixin.__init__(self)
 
         # initialise instance properties
@@ -52,11 +52,11 @@ class EditTreeCtrl(ManagedBase, EditStylesMixin):
             self._set_name()
 
 
-def builder(parent, pos):
+def builder(parent, index):
     "factory function for EditTreeCtrl objects"
     name = parent.toplevel_parent.get_next_contained_name('tree_ctrl_%d')
     with parent.frozen():
-        editor = EditTreeCtrl(name, parent, pos)
+        editor = EditTreeCtrl(name, parent, index)
         editor.properties["style"].set_to_default()
         editor.properties["proportion"].set(1)
         editor.properties["flag"].set("wxEXPAND")
@@ -64,9 +64,9 @@ def builder(parent, pos):
     return editor
 
 
-def xml_builder(parser, base, name, parent, pos):
+def xml_builder(parser, base, name, parent, index):
     "factory function to build EditTreeCtrl objects from a XML file"
-    return EditTreeCtrl(name, parent, pos, style=0)
+    return EditTreeCtrl(name, parent, index, style=0)
 
 
 def initialize():

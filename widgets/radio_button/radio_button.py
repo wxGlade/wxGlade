@@ -22,8 +22,8 @@ class EditRadioButton(ManagedBase, EditStylesMixin):
     _PROPERTIES = ["Widget", "label", "clicked", "style"]
     PROPERTIES = ManagedBase.PROPERTIES + _PROPERTIES + ManagedBase.EXTRA_PROPERTIES
 
-    def __init__(self, name, parent, pos, label=""):
-        ManagedBase.__init__(self, name, parent, pos)
+    def __init__(self, name, parent, index, label=""):
+        ManagedBase.__init__(self, name, parent, index)
         EditStylesMixin.__init__(self)
 
         # initialise instance properties
@@ -56,20 +56,20 @@ class EditRadioButton(ManagedBase, EditStylesMixin):
         ManagedBase.properties_changed(self, modified)
 
 
-def builder(parent, pos):
+def builder(parent, index):
     "factory function for EditRadioButton objects"
     name = parent.toplevel_parent.get_next_contained_name('radio_btn_%d')
     with parent.frozen():
-        editor = EditRadioButton(name, parent, pos, name)
+        editor = EditRadioButton(name, parent, index, name)
         editor.properties["style"].set_to_default()
         editor.check_defaults()
         if parent.widget: editor.create()
     return editor
 
 
-def xml_builder(parser, base, name, parent, pos):
+def xml_builder(parser, base, name, parent, index):
     "factory to build EditRadioButton objects from a XML file"
-    return EditRadioButton(name, parent, pos, "")
+    return EditRadioButton(name, parent, index, "")
 
 
 def initialize():

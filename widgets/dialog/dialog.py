@@ -122,7 +122,7 @@ class EditDialog(BitmapMixin, TopLevelBase, EditStylesMixin):
         self.properties["escape"].track_name( old_name, new_name )
 
 
-def builder(parent, pos):
+def builder(parent, index):
     "factory function for EditDialog objects"
     import window_dialog
     base_classes = ['wxDialog', 'wxPanel']
@@ -169,7 +169,7 @@ def builder(parent, pos):
     return editor
 
 
-def xml_builder(parser, base, name, parent, pos):
+def xml_builder(parser, base, name, parent, index):
     "factory to build EditDialog objects from a XML file"
     return EditDialog(name, parent, "Dialog", "", 0)
 

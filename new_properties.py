@@ -541,16 +541,16 @@ class LayoutProportionProperty(SpinProperty):
         SpinProperty.create_editor(self, panel, sizer)
 
 
-class LayoutPosProperty(SpinProperty):
-    readonly = True
-    TOOLTIP = "Position of item within sizer\nCan't be edited; use Cut & Paste or Drag & Drop to reposition an item."
+#class LayoutPosProperty(SpinProperty):
+    #readonly = True
+    #TOOLTIP = "Position of item within sizer\nCan't be edited; use Cut & Paste or Drag & Drop to reposition an item."
 
-    def __init__(self, value):
-        SpinProperty.__init__(self, value, val_range=(0,1000), immediate=False, default_value=_DefaultArgument, name="pos")
+    #def __init__(self, value):
+        #SpinProperty.__init__(self, value, val_range=(0,1000), immediate=False, default_value=_DefaultArgument, name="pos")
 
-    def write(self, *args, **kwds):
-        # maybe, for GridBagSizers row/col should be written
-        pass
+    #def write(self, *args, **kwds):
+        ## maybe, for GridBagSizers row/col should be written
+        #pass
 
 
 class LayoutSpanProperty(Property):
@@ -580,7 +580,7 @@ class LayoutSpanProperty(Property):
 
     def create_editor(self, panel, sizer):
         if not _is_gridbag(self.owner.parent): return
-        max_rows, max_cols = self.owner.parent.check_span_range(self.owner.pos, *self.value)
+        max_rows, max_cols = self.owner.parent.check_span_range(self.owner.index, *self.value)
 
         hsizer = wx.BoxSizer(wx.HORIZONTAL)
         # label
@@ -641,7 +641,7 @@ class LayoutSpanProperty(Property):
         if self.rowspin and self.colspin:
             self._check_for_user_modification( (self.rowspin.GetValue(),self.colspin.GetValue() ) )
             # update ranges
-            max_rows, max_cols = self.owner.parent.check_span_range(self.owner.pos, *self.value)
+            max_rows, max_cols = self.owner.parent.check_span_range(self.owner.index, *self.value)
             self.rowspin.SetRange(1,max_rows)
             self.colspin.SetRange(1,max_cols)
             self.rowspin.Enable(max_rows!=1)

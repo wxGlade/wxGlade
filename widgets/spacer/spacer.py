@@ -17,11 +17,11 @@ class EditSpacer(ManagedBase):
     "Class to handle spacers for sizers"
     WX_CLASS = 'spacer'
     IS_NAMED = False
-    _PROPERTIES = ["Layout", "width", "height", "pos", "proportion", "border", "flag"]
+    _PROPERTIES = ["Layout", "width", "height", "proportion", "border", "flag"]
     PROPERTIES = _PROPERTIES + ManagedBase.EXTRA_PROPERTIES
 
-    def __init__(self, parent, pos, width, height):
-        ManagedBase.__init__(self, 'spacer', parent, pos)
+    def __init__(self, parent, index, width, height):
+        ManagedBase.__init__(self, 'spacer', parent, index)
 
         # initialise instance properties
         self.width  = np.SpinProperty(width,  immediate=True)
@@ -88,7 +88,7 @@ class _Dialog(wx.Dialog):
         self.SetSizer(sizer)
         sizer.Fit(self)
 
-def builder(parent, pos):
+def builder(parent, index):
     "factory function for EditSpacer objects"
     dialog = _Dialog()
     with misc.disable_stay_on_top(common.adding_window or parent):
@@ -100,14 +100,14 @@ def builder(parent, pos):
         return
 
     with parent.frozen():
-        editor = EditSpacer( parent, pos, width, height )
+        editor = EditSpacer( parent, index, width, height )
         if parent.widget: editor.create()
     return editor
 
 
-def xml_builder(parser, base, name, parent, pos):
+def xml_builder(parser, base, name, parent, index):
     "factory to build EditSpacer objects from a XML file"
-    return EditSpacer(parent, pos, 1, 1)
+    return EditSpacer(parent, index, 1, 1)
 
 
 def initialize():

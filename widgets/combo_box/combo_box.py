@@ -24,8 +24,8 @@ class EditComboBox(ManagedBase, EditStylesMixin):
 
     update_widget_style = False
 
-    def __init__(self, name, parent, pos, choices):
-        ManagedBase.__init__(self, name, parent, pos)
+    def __init__(self, name, parent, index, choices):
+        ManagedBase.__init__(self, name, parent, index)
         EditStylesMixin.__init__(self)
 
         # initialise instance properties
@@ -71,20 +71,20 @@ class EditComboBox(ManagedBase, EditStylesMixin):
         ManagedBase.properties_changed(self, modified)
 
 
-def builder(parent, pos):
+def builder(parent, index):
     "factory function for EditComboBox objects"
     name = parent.toplevel_parent.get_next_contained_name('combo_box_%d')
     with parent.frozen():
-        editor = EditComboBox(name, parent, pos, [])
+        editor = EditComboBox(name, parent, index, [])
         editor.properties["style"].set_to_default()
         editor.check_defaults()
         if parent.widget: editor.create()
     return editor
 
 
-def xml_builder(parser, base, name, parent, pos):
+def xml_builder(parser, base, name, parent, index):
     "factory to build EditComboBox objects from a XML file"
-    return EditComboBox(name, parent, pos, [])
+    return EditComboBox(name, parent, index, [])
 
 
 def initialize():

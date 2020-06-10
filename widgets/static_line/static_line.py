@@ -24,8 +24,8 @@ class EditStaticLine(ManagedBase, EditStylesMixin):
     _PROPERTY_LABELS = {"attribute":'Store as attribute'}
     _PROPERTY_HELP={"attribute":'Store instance as attribute of window class; e.g. self.line_1 = wx.wxStaticLine(...)\n'
                                 'Without this, you can not access the line from your program.'}
-    def __init__(self, name, parent, pos, style):
-        ManagedBase.__init__(self, name, parent, pos)
+    def __init__(self, name, parent, index, style):
+        ManagedBase.__init__(self, name, parent, index)
         EditStylesMixin.__init__(self)
 
         # initialise instance properties
@@ -50,7 +50,7 @@ class EditStaticLine(ManagedBase, EditStylesMixin):
         ManagedBase.properties_changed(self, modified)
 
 
-def builder(parent, pos):
+def builder(parent, index):
     "factory function for editor objects from GUI"
     dialog = wcodegen.WidgetStyleSelectionDialog(_('wxStaticLine'), _('Orientation'), 'wxLI_HORIZONTAL|wxLI_VERTICAL')
     with misc.disable_stay_on_top(common.adding_window or parent):
@@ -62,7 +62,7 @@ def builder(parent, pos):
 
     name = parent.toplevel_parent.get_next_contained_name('static_line_%d')
     with parent.frozen():
-        editor = EditStaticLine(name, parent, pos, style)
+        editor = EditStaticLine(name, parent, index, style)
         if parent.IS_SIZER and "orient" in parent.properties and parent.orient:
             if ( (parent.orient & wx.VERTICAL   and style=="wxLI_HORIZONTAL") or 
                  (parent.orient & wx.HORIZONTAL and style=="wxLI_VERTICAL") ):
@@ -71,9 +71,9 @@ def builder(parent, pos):
     return editor
 
 
-def xml_builder(parser, base, name, parent, pos):
+def xml_builder(parser, base, name, parent, index):
     "Factory to build editor objects from a XML file"
-    return EditStaticLine(name, parent, pos, '')
+    return EditStaticLine(name, parent, index, '')
 
 
 def initialize():

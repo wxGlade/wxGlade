@@ -143,7 +143,7 @@ if config.debugging:
     last_choices.append(False)
 
 
-def builder(parent, pos, klass=None, base=None, name=None):
+def builder(parent, index, klass=None, base=None, name=None):
     "factory function for EditFrame objects"
     global last_choices
     if klass is None or base is None:
@@ -186,7 +186,7 @@ def builder(parent, pos, klass=None, base=None, name=None):
 
 
 _base_classes = {'EditFrame':EditFrame, 'EditMDIChildFrame':EditMDIChildFrame}
-def xml_builder(parser, base, name, parent, pos):
+def xml_builder(parser, base, name, parent, index):
     if parser.input_file_version and parser.check_input_file_version((0,8)):
         # backwards compatibility
         style = "wxDEFAULT_FRAME_STYLE"

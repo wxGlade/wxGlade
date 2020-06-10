@@ -28,8 +28,8 @@ class LispStatusBarCodeGenerator(wcodegen.LispWidgetCodeWriter):
 
         # don't add statusbar fields without labels
         if [lb for lb in labels if lb]:
-            for pos, lb in enumerate(labels):
-                stmt = '(wxStatusBar_SetStatusText %%(name)s %s %d)\n' % (self.codegen.quote_str(lb), pos)
+            for i, lb in enumerate(labels):
+                stmt = '(wxStatusBar_SetStatusText %%(name)s %s %d)\n' % (self.codegen.quote_str(lb), i)
                 self.tmpl_props.append(stmt)
 
 

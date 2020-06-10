@@ -22,8 +22,8 @@ class EditChoice(ManagedBase):
     _PROPERTIES = ["Widget", "selection", "choices"]
     PROPERTIES = ManagedBase.PROPERTIES + _PROPERTIES + ManagedBase.EXTRA_PROPERTIES
 
-    def __init__(self, name, parent, pos, choices):
-        ManagedBase.__init__(self, name, parent, pos)
+    def __init__(self, name, parent, index, choices):
+        ManagedBase.__init__(self, name, parent, index)
 
         # initialise instance properties
         self.selection = np.SpinProperty(0, val_range=(-1,len(choices)-1), immediate=True )
@@ -68,19 +68,19 @@ class EditChoice(ManagedBase):
 
 
 
-def builder(parent, pos):
+def builder(parent, index):
     "factory function for EditChoice objects"
     name = parent.toplevel_parent.get_next_contained_name('choice_%d')
     with parent.frozen():
-        editor = EditChoice(name, parent, pos, [(u'choice 1',)])
+        editor = EditChoice(name, parent, index, [(u'choice 1',)])
         editor.check_defaults()
         if parent.widget: editor.create()
     return editor
 
 
-def xml_builder(parser, base, name, parent, pos):
+def xml_builder(parser, base, name, parent, index):
     "factory to build EditChoice objects from a XML file"
-    return EditChoice(name, parent, pos, [])
+    return EditChoice(name, parent, index, [])
 
 
 def initialize():

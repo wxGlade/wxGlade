@@ -24,8 +24,8 @@ class EditListCtrl(ManagedBase, EditStylesMixin):
                       "columns":"Only for style LC_REPORT."}
     update_widget_style = True
 
-    def __init__(self, name, parent, pos, style=wx.LC_REPORT | wx.BORDER_SUNKEN):
-        ManagedBase.__init__(self, name, parent, pos)
+    def __init__(self, name, parent, index, style=wx.LC_REPORT | wx.BORDER_SUNKEN):
+        ManagedBase.__init__(self, name, parent, index)
         EditStylesMixin.__init__(self)
         if style: self.properties["style"].set(style)
         self.columns = GridColsProperty([])
@@ -106,11 +106,11 @@ class EditListCtrl(ManagedBase, EditStylesMixin):
         return ManagedBase.get_property_handler(self, name)
 
 
-def builder(parent, pos):
+def builder(parent, index):
     "factory function for EditListCtrl objects"
     name = parent.toplevel_parent.get_next_contained_name('list_ctrl_%d')
     with parent.frozen():
-        editor = EditListCtrl(name, parent, pos)
+        editor = EditListCtrl(name, parent, index)
         #list_ctrl.properties["style"].set_to_default()  # default is wxLC_ICON
         editor.properties["columns"].set( [['A', -1], ['B', -1], ['C', -1]] )
         editor.properties["rows_number"].set(10)
@@ -118,13 +118,13 @@ def builder(parent, pos):
         editor.properties["proportion"].set(1)
         editor.properties["flag"].set("wxEXPAND")
         if parent.widget: editor.create()
-    #sizer.set_item(list_ctrl.pos, 1, wx.EXPAND)
+    #sizer.set_item(list_ctrl.index, 1, wx.EXPAND)
     return editor
 
 
-def xml_builder(parser, base, name, parent, pos):
+def xml_builder(parser, base, name, parent, index):
     "factory function to build EditListCtrl objects from a XML file"
-    return EditListCtrl(name, parent, pos, 0)
+    return EditListCtrl(name, parent, index, 0)
 
 
 def initialize():

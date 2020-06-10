@@ -28,9 +28,9 @@ class EditDatePickerCtrl(ManagedBase, EditStylesMixin):
     _PROPERTIES = ["Widget", "style"]
     PROPERTIES = ManagedBase.PROPERTIES + _PROPERTIES + ManagedBase.EXTRA_PROPERTIES
 
-    def __init__(self, name, parent, pos):
+    def __init__(self, name, parent, index):
         # Initialise parent classes
-        ManagedBase.__init__(self, name, parent, pos)
+        ManagedBase.__init__(self, name, parent, index)
         EditStylesMixin.__init__(self)
 
     def create_widget(self):
@@ -49,20 +49,20 @@ class EditDatePickerCtrl(ManagedBase, EditStylesMixin):
         ManagedBase.properties_changed(self, modified)
 
 
-def builder(parent, pos):
+def builder(parent, index):
     "factory function for EditDatePickerCtrl objects"
     name = parent.toplevel_parent.get_next_contained_name('datepicker_ctrl_%d')
     with parent.frozen():
-        editor = EditDatePickerCtrl(name, parent, pos)
+        editor = EditDatePickerCtrl(name, parent, index)
         editor.properties["style"].set_to_default()
         editor.check_defaults()
         if parent.widget: editor.create()
     return editor
 
 
-def xml_builder(parser, base, name, parent, pos):
+def xml_builder(parser, base, name, parent, index):
     "factory to build EditDatePickerCtrl objects from a XML file"
-    return EditDatePickerCtrl(name, parent, pos)
+    return EditDatePickerCtrl(name, parent, index)
 
 
 def initialize():

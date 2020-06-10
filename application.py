@@ -84,15 +84,14 @@ class EditRoot(np.PropertyOwner):
     def get_path(self):
         return self.name
 
-    def add_item(self, child, pos=None):
-        # XXX pos is always None at the moment
-        if pos is None:
+    def add_item(self, child, index=None):
+        # XXX index is always None at the moment
+        if index is None:
             self.children.append(child)
         else:
-            i = pos - 1  # XXX not correct, pos is 0-based now
-            if len(self.children)<=i:
-                self.children += [None]*(i - len(self.children) + 1)
-            self.children[i] = child
+            if len(self.children)<=index:
+                self.children += [None]*(index - len(self.children) + 1)
+            self.children[index] = child
         if child.IS_TOPLEVEL_WINDOW:
             self.add_top_window(child.name)
 
@@ -154,7 +153,7 @@ class EditRoot(np.PropertyOwner):
         while self.children:
             self.children[-1].recursive_remove(0)
 
-    def _get_parent_tooltip(self, pos):
+    def _get_parent_tooltip(self, index):
         return None
 
     def _get_tooltip_string(self):

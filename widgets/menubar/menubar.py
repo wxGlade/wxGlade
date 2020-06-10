@@ -822,7 +822,7 @@ class EditTopLevelMenuBar(EditMenuBar, PreviewMixin):
 
 
 
-def builder(parent, pos, klass=None):
+def builder(parent, index, klass=None):
     "factory function for EditMenuBar objects"
     # this one is a bit special as usually it's called with parent=application
     # if a frame w/o menubar is focused, it will ask the user whether he wants to add a menubar to that
@@ -848,7 +848,7 @@ def builder(parent, pos, klass=None):
         # allow to call builder(frame, None, True)
         toplevel_widget = parent
 
-    if pos=="_menubar" or klass is True:
+    if index=="_menubar" or klass is True:
         # add to toplevel widget
         toplevel_widget.properties["menubar"].set(True, notify=True)
         return toplevel_widget._menubar
@@ -861,7 +861,7 @@ def builder(parent, pos, klass=None):
     return editor
 
 
-def xml_builder(parser, base, name, parent, pos):
+def xml_builder(parser, base, name, parent, index):
     "factory to build EditMenuBar objects from a XML file"
     if parent.IS_ROOT:
         return EditTopLevelMenuBar(name, parent, "MenuBar")

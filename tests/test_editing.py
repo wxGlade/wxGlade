@@ -77,16 +77,16 @@ class TestEditing(WXGladeGUITest):
         # cut static box sizer
         widget = app.find_widget_from_path("app/frame/notebook_1/panel_1/sizer_2/sizer_1")
         parent = widget.parent
-        pos = widget.pos
+        index = widget.index
         data = self.simulate_cut(widget)
         # paste again
-        self.simulate_paste(parent, pos, data)
+        self.simulate_paste(parent, index, data)
 
 
         # insert panel into splitter; change "Scrollable" to test re-creation
         widget = app.find_widget_from_path("app/frame/notebook_1/window_1/SLOT 1")
         import widgets.panel.panel
-        panel = widgets.panel.panel.builder(widget.parent, widget.pos)
+        panel = widgets.panel.panel.builder(widget.parent, widget.index)
         self.assertTrue(isinstance(panel.widget, wx.Panel))
         panel.properties["scrollable"].set(True, notify=True)
         self.assertTrue(isinstance(panel.widget, wx.ScrolledWindow))

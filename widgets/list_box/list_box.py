@@ -19,8 +19,8 @@ class EditListBox(ManagedBase, EditStylesMixin):
     _PROPERTIES = ["Widget", "style", "selection", "choices"]
     PROPERTIES = ManagedBase.PROPERTIES + _PROPERTIES + ManagedBase.EXTRA_PROPERTIES
 
-    def __init__(self, name, parent, pos, choices):
-        ManagedBase.__init__(self, name, parent, pos)
+    def __init__(self, name, parent, index, choices):
+        ManagedBase.__init__(self, name, parent, index)
         EditStylesMixin.__init__(self)
 
         # initialise instance properties
@@ -68,19 +68,19 @@ class EditListBox(ManagedBase, EditStylesMixin):
 
 
 
-def builder(parent, pos):
+def builder(parent, index):
     "factory function for EditListBox objects"
     name = parent.toplevel_parent.get_next_contained_name('list_box_%d')
     with parent.frozen():
-        editor = EditListBox(name, parent, pos, [[u'choice 1']])
+        editor = EditListBox(name, parent, index, [[u'choice 1']])
         editor.properties["style"].set_to_default()
         if parent.widget: editor.create()
     return editor
 
 
-def xml_builder(parser, base, name, parent, pos):
+def xml_builder(parser, base, name, parent, index):
     "factory to build EditListBox objects from a XML file"
-    return EditListBox(name, parent, pos, [])
+    return EditListBox(name, parent, index, [])
 
 
 def initialize():

@@ -65,7 +65,7 @@ class SizerItemXrcObject(XrcObject):
         if self.obj.border:
             output.append(tabs1 + '<border>%s</border>\n' % self.obj.border)
         if self.obj.parent._IS_GRIDBAG:
-            cellpos = self.obj.parent._get_row_col(self.obj.pos)
+            cellpos = self.obj.parent._get_row_col(self.obj.index)
             output.append( tabs1 + '<cellpos>%d,%d</cellpos>\n' % cellpos )
             output.append( tabs1 + '<cellspan>%d,%d</cellspan>\n' % self.obj.span )
         # write the widget
