@@ -659,6 +659,11 @@ class EditToolBar(EditBase, PreviewMixin, EditStylesMixin, BitmapMixin):
             common.app_tree.Collapse(self.item)
             common.app_tree.select_item(self.parent)
 
+    def remove(self):
+        EditBase.remove(self)
+        if 'toolbar' in self.parent.properties:
+            self.parent.properties['toolbar'].set(False)
+
     ####################################################################################################################
     def popup_menu(self, event, pos=None):
         if not self.IS_TOPLEVEL: return

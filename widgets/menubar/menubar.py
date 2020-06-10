@@ -701,6 +701,11 @@ class EditMenuBar(EditBase):#, PreviewMixin):
         self.widget.Bind(wx.EVT_LEFT_DOWN, self.on_set_focus)
         self.set_menus()  # show the menus
 
+    def remove(self):
+        EditBase.remove(self)
+        if 'menubar' in self.parent.properties:
+            self.parent.properties['menubar'].set(False)
+
     def set_menus(self):
         if not self._mb: return  # nothing left to do
         for i in range(self._mb.GetMenuCount()):
