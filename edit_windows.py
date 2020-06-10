@@ -369,7 +369,6 @@ class WindowBase(EditBase):
 
         EditBase.finish_widget_creation(self, level)
 
-        self.widget.Refresh()
         self.widget.Bind(wx.EVT_CHAR_HOOK, self.on_char_hook)
 
     def on_char_hook(self, event):
@@ -946,8 +945,6 @@ class TopLevelBase(WindowBase, PreviewMixin):
             # resize element to fill full space; SendSizeEvent in frozen is not enough
             size = self.widget.GetClientSize()
             child.widget.SetSize( size )
-        elif child.IS_SIZER:
-            child.refresh()
 
     def properties_changed(self, modified):
         if self.has_title and (not modified or "title" in modified):

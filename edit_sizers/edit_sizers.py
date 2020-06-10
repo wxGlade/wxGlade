@@ -376,7 +376,6 @@ class SizerBase(edit_base.EditBase):
         self._btn.Bind(wx.EVT_MOUSE_EVENTS, self.on_mouse_events, id=self.id)
 
     def finish_widget_creation(self, level):
-        self.widget.Refresh = self.refresh
         self.widget.GetBestSize = self.widget.GetMinSize
         self.widget.ScreenToClient = self._btn.ScreenToClient
         if self.toplevel:
@@ -602,7 +601,6 @@ class SizerBase(edit_base.EditBase):
             # size has been set in set_size, so we can just use GetSize here
             self.set_item_best_size(child, size=child.widget.GetSize())
         if self.widget:
-            self.window.widget.Refresh()
             self.window.widget.Layout()
 
     def destroying_child_widget(self, child):
@@ -612,7 +610,6 @@ class SizerBase(edit_base.EditBase):
         self.widget.Detach(child.widget)
 
     def destroyed_child_widget(self):
-        self.widget.Refresh()
         self.widget.Layout()
 
     def get_child_index(self, pos):
@@ -715,15 +712,6 @@ class SizerBase(edit_base.EditBase):
     else:
         def finish_set(self):
             pass
-
-    def refresh(self, *args):
-        # this will be self.widget.Refresh
-        for c in self.children:
-            if c.widget:
-                try:
-                    c.widget.Refresh()
-                except AttributeError:
-                    pass
 
     def update_view(self, selected):
         if self._btn is None: return

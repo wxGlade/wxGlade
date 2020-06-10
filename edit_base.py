@@ -194,7 +194,7 @@ class EditBase(np.PropertyOwner):
     ####################################################################################################################
     def add_item(self, child, pos=None):
         if pos is None:
-            # happens during loading
+            # happens during loading or pasting
             if self.CHILDREN is None:
                 # variable number of children
                 self.children.append(child)
@@ -203,13 +203,8 @@ class EditBase(np.PropertyOwner):
             assert self.CHILDREN
             if None in self.children:
                 pos = self.children.index(None)
-            elif not self.children:
-                assert self.CHILDREN == -1
+            elif self.CHILDREN in (-1,1):
                 pos = 0
-            else:
-                old_slot = [c for c in self.children if c.IS_SLOT][0]
-                common.app_tree.remove(old_slot)
-                pos = old_slot.pos
 
         if len(self.children)<=pos:
             self.children += [None]*(pos - len(self.children) + 1)
