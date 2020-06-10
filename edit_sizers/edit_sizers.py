@@ -56,7 +56,7 @@ class SizerSlot(edit_base.Slot):
                 self.create_widget()
                 if add_to_sizer:
                     sizer.widget.Add(self.widget, self.pos, self.span, wx.EXPAND, self.border)
-        common.app_tree.refresh(self)
+        common.app_tree.refresh(self)  # XXX indicate overlapped slots
 
     def check_drop_compatibility(self):
         if self.overlapped:
@@ -572,6 +572,7 @@ class SizerBase(edit_base.EditBase):
         "Adds an item to self."
         # called from ManagedBase.__init__ when adding an item to the end from XML parser
         # or interactively when adding an item to an empty sizer slot
+        # XXX unify with edit_base.EditBase.add_item
         if pos is None: pos = len(self.children)
 
         if pos==len(self.children):
