@@ -161,7 +161,7 @@ class DropTarget(wx.DropTarget):
         elif compatible=="Slot":
             # insert a slot or fill empty slot
             index = dst_widget.index
-            dst_widget.sizer._insert_slot(indexindex)
+            dst_widget.sizer._insert_slot(index)
             dst_widget = dst_widget.sizer.children[index] # the slot
         elif compatible=="Reorder":
             # a toplevel dragged onto another toplevel

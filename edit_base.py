@@ -299,9 +299,9 @@ class EditBase(np.PropertyOwner):
     def recursive_create_widgets(self, level):
         self.create_widget()
         self.finish_widget_creation(level)
-        for c in self.get_all_children():
-            if not c.widget:
-                c.recursive_create_widgets(level+1)
+        for child in self.get_all_children():
+            if not child.widget:
+                child.recursive_create_widgets(level+1)
         self.child_widgets_created(level)  # if level==0, only one of the child widgets was created
         self.parent.child_widget_created(self, level)
 
@@ -362,7 +362,7 @@ class EditBase(np.PropertyOwner):
 
         self.parent.remove_item(self, level, keep_slot)
 
-        if level==0:
+        if level==0 and self.widget:
             self.parent.destroying_child_widget(self)
             self.destroy_widget(level)
             self.parent.destroyed_child_widget()

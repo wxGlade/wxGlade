@@ -779,8 +779,8 @@ class TopLevelBase(WindowBase, PreviewMixin):
         if not self.widget:
             self.create()
         else:
-            self.widget.Show()
-            self.widget.Raise()
+            self.widget.GetTopLevelParent().Show()  # GetTopLevelParent is required for e.g. Panel
+            self.widget.GetTopLevelParent().Raise()
 
     def finish_widget_creation(self, level):
         WindowBase.finish_widget_creation(self, level)

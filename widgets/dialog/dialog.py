@@ -49,6 +49,7 @@ class AffirmativePropertyD(np.ListBoxPropertyD):
 
 class EditDialog(BitmapMixin, TopLevelBase, EditStylesMixin):
     WX_CLASS = "wxDialog"
+    CHILDREN = -1
     _PROPERTIES =["Widget", "title", "icon", "centered", "affirmative", "escape",
                   "sizehints","menubar", "toolbar", "statusbar", "style"]
     PROPERTIES = TopLevelBase.PROPERTIES + _PROPERTIES + TopLevelBase.EXTRA_PROPERTIES
@@ -95,8 +96,7 @@ class EditDialog(BitmapMixin, TopLevelBase, EditStylesMixin):
         self.widget.SetBackgroundColour(compat.wx_SystemSettings_GetColour(wx.SYS_COLOUR_BTNFACE))
         self._set_widget_icon()
 
-    def finish_widget_creation(self, level):
-        TopLevelBase.finish_widget_creation(self, level)
+    def child_widgets_created(self, level):
         if not self.properties['size'].is_active():
             self.widget.SetSize((400, 300))
 
@@ -124,7 +124,7 @@ class EditDialog(BitmapMixin, TopLevelBase, EditStylesMixin):
 
 def builder(parent, index):
     "factory function for EditDialog objects"
-    import window_dialog
+    import window_dialog, edit_base, clipboard, panel
     base_classes = ['wxDialog', 'wxPanel']
     klass = 'wxDialog' if common.root.language.lower()=='xrc' else 'MyDialog'
 
@@ -141,8 +141,9 @@ def builder(parent, index):
         editor = EditDialog(name, parent, klass, name, "wxDEFAULT_DIALOG_STYLE")
     else:
         is_panel = True
-        import panel
         editor = panel.EditTopLevelPanel(name, parent, klass)
+
+    edit_base.Slot(editor, 0)
 
     editor.create()
     if base == "wxDialog":
@@ -158,13 +159,8 @@ def builder(parent, index):
         w.CenterOnScreen()
         w.Raise()
 
-    import clipboard
     editor.drop_target = clipboard.DropTarget(editor)
     editor.widget.SetDropTarget(editor.drop_target)
-
-    # add a default vertical sizer
-    import edit_sizers
-    edit_sizers._builder(editor, 0)
 
     return editor
 

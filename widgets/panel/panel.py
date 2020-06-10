@@ -257,16 +257,9 @@ class EditTopLevelPanel(PanelBase, TopLevelBase):
         #self.widget.SetSize = win.SetSize
 
     def create(self):
-        # XXX refactor this
-        size_p = self.properties['size']
-        oldval = size_p.get()
         super(EditTopLevelPanel, self).create()
-        if self.widget:
-            if not size_p.is_active() and self.children:
-                self.children[0].fit_parent()
-        if size_p.is_active() and oldval!=size_p.get():
-            size_p.set(oldval)
-            self.set_size()
+        if not self.check_prop("size") and self.children and self.children[0].IS_SIZER:
+            self.children[0].fit_parent()
 
     def destroy_widget(self, level):
         # handle containing frame
