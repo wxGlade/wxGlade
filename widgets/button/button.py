@@ -88,9 +88,11 @@ class EditButton(BitmapMixin, ManagedBase, EditStylesMixin):
             common.app_tree.refresh(self, refresh_label=True, refresh_image=False)
 
         BitmapMixin._properties_changed(self, modified)
-        self._set_widget_best_size()
+        #self._set_widget_best_size()
         EditStylesMixin.properties_changed(self, modified)
         ManagedBase.properties_changed(self, modified)
+        if label_modified and self.widget and not self.check_prop("size") and self.parent.IS_SIZER:
+            self.parent.layout()
 
 
 def builder(parent, pos):
