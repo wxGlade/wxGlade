@@ -572,7 +572,7 @@ def change_sizer(old, new):
 
         for widget in szr.children[1:]:
             widget.sizer = szr
-            widget.properties["flag"]._check_value()
+            if "flag" in widget.properties: widget.properties["flag"]._check_value()
 
         if old.widget is not None:
             szr.create(dont_set=True)  # here the slots are added; the .sizer attribute needs to point to szr
