@@ -208,8 +208,8 @@ class EditNotebook(ManagedBase, EditStylesMixin):
         common.app_tree.build(self, recursive=False)
 
     ####################################################################################################################
-    def destroying_child_widget(self, child):
-        self.widget.RemovePage(child.index) # deletes the specified page, without deleting the associated window
+    def destroying_child_widget(self, child, index):
+        self.widget.RemovePage(index) # deletes the specified page, without deleting the associated window
 
     def child_widget_created(self, child, level):
         # add, insert or replace a notebook page

@@ -206,6 +206,9 @@ class EditBase(np.PropertyOwner):
     ####################################################################################################################
     @property
     def index(self):
+        # index or attribute name
+        attribute_name = getattr(self, "attribute_name", None)
+        if attribute_name is not None: return attribute_name
         return self.parent.children.index(self)
 
     def add_item(self, child, index=None):
@@ -342,9 +345,11 @@ class EditBase(np.PropertyOwner):
         self.widget.Destroy()
         self.widget = None
 
-    def destroying_child_widget(self, child):
+    def destroying_child_widget(self, child, index):
         # called before a child widget is destroyed; e.g. used by splitter to unsplit
-        # child has been removed from self.children already
+        # child has been removed from self.children already,
+        #  except when a widget is re-created or a slot is just set to overlapped
+        # index can be an index or an attribute name
         pass
 
     def destroyed_child_widget(self):
@@ -354,16 +359,17 @@ class EditBase(np.PropertyOwner):
     def recursive_remove(self, level, keep_slot=False):
         "recursively remove children and then self from parent; delete widget; remove from tree and do bookkeeping"
         # this is not a GUI entry point, see remove() for this!
+        index = self.index
 
         # recursively remove children
         if self.children:
-            for c in self.get_all_children():
-                c.recursive_remove(level+1)
+            for child in self.get_all_children():
+                child.recursive_remove(level+1)
 
         self.parent.remove_item(self, level, keep_slot)
 
         if level==0 and self.widget:
-            self.parent.destroying_child_widget(self)
+            self.parent.destroying_child_widget(self, index)
             self.destroy_widget(level)
             self.parent.destroyed_child_widget()
 

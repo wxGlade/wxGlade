@@ -395,7 +395,7 @@ class WindowBase(EditBase):
         old_widget = self.widget
         size = self.widget.GetSize()
         with self.frozen():
-            self.parent.destroying_child_widget(self)
+            self.parent.destroying_child_widget(self, self.index)
             self.create_widget()
             if self.IS_TOPLEVEL_WINDOW: self.widget.SetSize(size)   # do this for IS_TOPLEVEL only?
             old_widget.Hide()

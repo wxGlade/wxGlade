@@ -196,7 +196,7 @@ class EditSplitterWindow(ManagedBase, EditStylesMixin):
         if self.widget: slot.create()
         return slot
 
-    def destroying_child_widget(self, child):
+    def destroying_child_widget(self, child, index):
         if self.widget.IsSplit():
             self.widget.Unsplit(child.widget)
 

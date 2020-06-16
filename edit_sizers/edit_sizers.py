@@ -49,7 +49,7 @@ class SizerSlot(edit_base.Slot):
         sizer = self.parent
         if overlapped:
             if self.widget:
-                self.parent.destroying_child_widget(self)
+                self.parent.destroying_child_widget(self, self.index)
                 self.destroy_widget(0)
         else:
             if sizer.widget and not self.widget:
@@ -599,10 +599,11 @@ class SizerBase(edit_base.EditBase):
         if self.widget:
             self.window.widget.Layout()
 
-    def destroying_child_widget(self, child):
+    def destroying_child_widget(self, child, index):
         # previously in _free_slot
         # required here; otherwise removal of a StaticBox of a StaticBoxSizer will cause a crash
-        # child has been removed from self.children already
+        # child has been removed from self.children already,
+        #  except when a widget is re-created or a slot is just set to overlapped
         self.widget.Detach(child.widget)
 
     def destroyed_child_widget(self):
@@ -1888,10 +1889,10 @@ def change_sizer(old, new):
         parent.children[index] = None  # avoid recursive_remove being called
         szr = constructors[new]()
         if old._IS_GRIDBAG and old.widget:
-            for child in old.children:
+            for index, child in enumerate(old.children):
                 if child:
                     if child.widget:
-                        old.destroying_child_widget(child)
+                        old.destroying_child_widget(child, index)
                     elif child.IS_SLOT and child.overlapped:
                         # re-create hidden widget
                         child.set_overlap(False, add_to_sizer=False)

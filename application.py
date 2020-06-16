@@ -163,7 +163,7 @@ class EditRoot(np.PropertyOwner):
     def child_widget_created(self, child, level):
         pass
 
-    def destroying_child_widget(self, child):
+    def destroying_child_widget(self, child, index):
         pass
 
     def destroyed_child_widget(self):
