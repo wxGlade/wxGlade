@@ -349,7 +349,7 @@ class MenuItemDialog(wx.Dialog):
     def on_label_edited(self, event):
         if not self._ignore_events:
             value = "    " * self.item_level(self.selected_index) + self.label.GetValue().lstrip()
-            self._set_item_string(self.selected_index, self.columns.index("label"), value)
+            self._set_item_string(self.selected_index, "label", value)
         event.Skip()
 
     def on_event_handler_edited(self, event):
@@ -384,7 +384,7 @@ class MenuItemDialog(wx.Dialog):
 
     def _on_edited(self, event, colname, value, valid=True):
         if valid and not self._ignore_events:
-            compat.ListCtrl_SetStringItem(self.items, self.selected_index, colname, value)
+            self._set_item_string(self.selected_index, colname, value)
         event.Skip()
 
     def on_type_edited(self, event):
