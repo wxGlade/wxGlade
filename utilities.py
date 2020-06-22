@@ -8,6 +8,7 @@ Utilities, e.g. for debugging
 
 from __future__ import print_function
 
+import sys, os
 import wx
 
 
@@ -97,3 +98,72 @@ class TreePrinter:
             self.prn(child, indent+1)
 
         print()
+
+
+def trace1(func, *args, **kwargs):
+    # use built-in trace module to write an execution trace to stdout
+    # e.g. utilities.trace1(clipboard.paste, focused_widget)
+    import sys, trace
+
+    tracer = trace.Trace(ignoredirs=[sys.prefix, sys.exec_prefix],
+                         ignoremods=["gui_mixins", "new_properties", "decorators", "__init__", "clipboard"], 
+                         trace=1, count=0)
+
+    editor = common.root.children[-1]
+    tracer.runfunc(editor.create_widgets)
+
+    # make a report, placing output in the current directory
+    r = tracer.results()
+    if filename:
+        r.write_results_file(path, lines, lnotab, lines_hit, encoding=None)
+    else:
+        r.write_results(show_missing=True, coverdir=".")
+
+
+
+def trace(filename, func, *args, **kwargs):
+    sys.settrace(trace_calls)
+    func(*args, **kwargs)
+    sys.settrace(None)
+
+
+_FILES = {}
+def _get_line(filename, line_no):
+    if not filename in _FILES:
+        _FILES[filename] = open(filename, "r").readlines()
+    return _FILES[filename][line_no-1]
+
+
+def trace_lines(frame, event, arg):
+    if event != 'line': return
+    co = frame.f_code
+    func_name = co.co_name
+    line_no = frame.f_lineno
+    filename = co.co_filename
+    if os.path.isfile(filename):
+        print( '  %30s: %5d' % (func_name, line_no), _get_line(filename, line_no), end="" )
+    else:
+        print( '  %30s: %5d' % (func_name, line_no) )
+
+def trace_calls(frame, event, arg):
+    if event != 'call': return
+    co = frame.f_code
+    func_name = co.co_name
+    
+    if func_name in ("__getattr__", "<genexpr>", "<listcomp>"): return
+    
+    if func_name in ("cn",): return
+    if func_name.startswith("_",): return
+    if func_name in ("wxname2attr",): return
+
+    filename = co.co_filename
+    if filename.startswith(sys.prefix) or filename.startswith(sys.exec_prefix): return
+
+    modulename = filename.split(os.sep)[-1].split(".")[0]
+    if modulename in ("new_properties", "gui_mixins", "decorators", "log", "main", "misc", "compat",): return
+
+    line_no = frame.f_lineno
+    print( ' -> %s:%s %s' % (modulename, line_no, func_name))
+
+    return trace_lines
+
