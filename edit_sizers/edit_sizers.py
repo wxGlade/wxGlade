@@ -845,6 +845,8 @@ class SizerBase(Sizer, np.PropertyOwner):
             if typename in ("widget","sizer"):
                 return ("AddSlot",None)
             return (False,"Only widgets and sizers can be pasted here")
+        if widget and widget.base in ("wxStatusBar", "wxToolBar", "wxMenuBar"):
+            return (False,"No status/tool/menu bar can be pasted here")
         if getattr(widget, "_is_toplevel", False):
             return (False,"No toplevel objects can be pasted here")
         return ("AddSlot",None) # a slot is to be added before inserting/pasting

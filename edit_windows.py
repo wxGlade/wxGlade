@@ -257,6 +257,9 @@ class EditBase(EventsMixin, np.PropertyOwner):
     # clipboard ########################################################################################################
     def check_compatibility(self, widget, typename=None, report=False):
         # only with slots before/after
+        if widget and widget.base in ("wxStatusBar", "wxToolBar", "wxMenuBar"):
+            # XXX these should use their own clipboard data type 'bar'
+            return (False,"No status/tool/menu bar can be pasted here")
         if typename is not None and typename=="window" or getattr(widget, "_is_toplevel",False):
             return (False,"No toplevel objects can be pasted here")
         return ("Slot",None)
@@ -831,6 +834,10 @@ class TopLevelBase(WindowBase, PreviewMixin):
     ####################################################################################################################
     def check_compatibility(self, widget, typename=None, report=True):
         "check in advance whether widget can be pasted"
+
+        if widget and widget.base in ("wxStatusBar", "wxToolBar", "wxMenuBar"):
+            # XXX this should be supported at some point in future
+            return (False,"No status/tool/menu bar can be pasted here")
 
         if self.sizer is not None:
             if report:

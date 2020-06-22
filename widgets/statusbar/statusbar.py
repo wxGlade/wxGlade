@@ -57,6 +57,7 @@ class FieldsProperty(np.GridProperty):
 class EditStatusBar(EditBase, EditStylesMixin):
     _hidden_frame = None
     update_widget_style = False  # updating does not seem to have an effect
+    _is_toplevel = False
 
     _PROPERTIES = ["Widget", "style", "fields"]
     PROPERTIES = EditBase.PROPERTIES + _PROPERTIES + EditBase.EXTRA_PROPERTIES
