@@ -73,7 +73,6 @@ class TestEditing(WXGladeGUITest):
         # ensure that there's no overlap of elements
         self.check_no_overlap(app.children[0])
 
-
         # cut static box sizer
         widget = app.find_widget_from_path("app/frame/notebook_1/panel_1/sizer_2/sizer_1")
         parent = widget.parent
@@ -81,7 +80,6 @@ class TestEditing(WXGladeGUITest):
         data = self.simulate_cut(widget)
         # paste again
         self.simulate_paste(parent, index, data)
-
 
         # insert panel into splitter; change "Scrollable" to test re-creation
         widget = app.find_widget_from_path("app/frame/notebook_1/window_1/SLOT 1")
@@ -93,20 +91,48 @@ class TestEditing(WXGladeGUITest):
         #panel.widget.GetSize()
         #wx.Size(404, 659)
         #self.sleep(1.0)
-        
+
         # set span of button inside gridbag sizer
         widget = app.find_widget_from_path("app/frame/notebook_1/window_1/window_1_pane_1/grid_sizer_1/button_3")
         widget.properties["span"].set((2,2), notify=True)
         #self.sleep(1.0)
-        
+
         # XXX test change_sizer
-        
-        
+
         ## save and check .wxg file
         #generated_filename = self._get_outputfile_path(infilename)
         #common.main._save_app(generated_filename)
         #self._compare_files(infilename, generated_filename)
 
+    def test_editing_2(self):
+        basename = 'Test_Editing'
+        infilename = self._get_casefile_path( '%s.wxg'%basename )
+        common.main._open_app(infilename, use_progress_dialog=False, add_to_history=False)
+        wx.SafeYield()
+        app = common.root  # shortcut
+        common.app_tree.show_toplevel( None, app.children[0] )
+        # ensure that there's no overlap of elements
+        self.check_no_overlap(app.children[0])
+
+        # cut static box sizer
+        widget = app.find_widget_from_path("app/frame/notebook_1/panel_1/sizer_2/sizer_1")
+        parent = widget.parent
+        index = widget.index
+        data = self.simulate_cut(widget)
+        # paste again
+        self.simulate_paste(parent, index, data)
+
+        # insert panel into splitter; change "Scrollable" to test re-creation
+        widget = app.find_widget_from_path("app/frame/notebook_1/window_1/SLOT 1")
+        import widgets.panel.panel
+        panel = widgets.panel.panel.builder(widget.parent, widget.index)
+        self.assertTrue(isinstance(panel.widget, wx.Panel))
+        panel.properties["scrollable"].set(True, notify=True)
+        self.assertTrue(isinstance(panel.widget, wx.ScrolledWindow))
+
+        # set span of button inside gridbag sizer
+        widget = app.find_widget_from_path("app/frame/notebook_1/window_1/window_1_pane_1/grid_sizer_1/button_3")
+        widget.properties["span"].set((2,2), notify=True)
 
 
 if __name__ == '__main__':
