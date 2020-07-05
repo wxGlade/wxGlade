@@ -151,6 +151,12 @@ def trace(filename, func, *args, **kwargs):
     func(*args, **kwargs)
     sys.settrace(None)
 
+def start_trace(filename):
+    sys.settrace(trace_calls)
+
+def stop_trace():
+    sys.settrace(None)
+
 
 _FILES = {}
 def _get_line(filename, line_no):
