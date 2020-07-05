@@ -420,6 +420,14 @@ class Application(EditRoot):
             if block:
                 self.properties["mark_blocks"].set(True)
             self.properties["mark_blocks"].set_blocked(block)
+        if modified and len(modified)==1 and "multiple_files" in modified:
+            # the user has just edited
+            p = self.properties["output_path"]
+            if self.multiple_files:
+                p.set(os.path.dirname(p.value) or ".")
+            else:
+                extension = common.code_writers[self.language].default_extensions[0]
+                p.set( os.path.join(p.value or "", "wxglade_out.%s"%extension) )
 
     def _init(self):
         # common part for init and new
