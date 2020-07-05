@@ -82,28 +82,23 @@ class EditRoot(np.PropertyOwner):
         return False
 
     def get_path(self):
-        return [self.name]
+        return self.name
 
-    #def has_name(self, widget=None):
-        ## XXX check whether this is still used
-        #if widget is None:
-            #for c in self.children:
-                #if name in c.names:
-                    #return True
-            #return False
-        #return name in widget.toplevel_parent.names
-
-    def add_item(self, child, pos=None):
-        # XXX pos is always None at the moment
-        if pos is None:
+    def add_item(self, child, index=None):
+        # XXX index is always None at the moment
+        if index is None:
             self.children.append(child)
         else:
-            i = pos - 1  # XXX not correct, pos is 0-based now
-            if len(self.children)<=i:
-                self.children += [None]*(i - len(self.children) + 1)
-            self.children[i] = child
+            if len(self.children)<=index:
+                self.children += [None]*(index - len(self.children) + 1)
+            self.children[index] = child
         if child.IS_TOPLEVEL_WINDOW:
             self.add_top_window(child.name)
+
+    def remove_item(self, child, level=0, dummy=False):
+        if child.IS_TOPLEVEL_WINDOW:
+            self.remove_top_window(child.name)
+        self.children.remove(child)
 
     def write(self, output, tabs=0):
         """Writes the xml equivalent of this tree to the given output file.
@@ -138,12 +133,8 @@ class EditRoot(np.PropertyOwner):
 
         output.extend( common.format_xml_tag( u'application', inner_xml, is_xml=True, **attrs ) )
 
-    def recursive_remove(self):
-        # clear all
-        for n in self.children:
-            n.recursive_remove()
-
     def find_widget_from_path(self, path):
+        path = path.split("/")
         index = 1  # skip 'app'
         w = self
         for index in range(1, len(path)):
@@ -159,16 +150,24 @@ class EditRoot(np.PropertyOwner):
 
     def clear(self):
         # delete all children; call common.root.new() or .init() afterwards
-        if self.children:
-            while self.children:
-                c = self.children[-1]
-                if c: c.remove()
+        while self.children:
+            self.children[-1].recursive_remove(0)
 
-    def _get_parent_tooltip(self, pos):
+    def _get_parent_tooltip(self, index):
         return None
 
     def _get_tooltip_string(self):
         return None
+
+    # use following to track toplevel windows?
+    def child_widget_created(self, child, level):
+        pass
+
+    def destroying_child_widget(self, child, index):
+        pass
+
+    def destroyed_child_widget(self):
+        pass
 
 
 class Application(EditRoot):
@@ -218,7 +217,6 @@ class Application(EditRoot):
 
     def __init__(self):
         np.PropertyOwner.__init__(self)
-        self._logger = logging.getLogger(self.__class__.__name__)
 
         self.__saved    = True  # raw value for self.saved property; if True, there are no changes to save
         self.__filename = None  # raw value for the self.filename property; Name of the output XML file
@@ -345,7 +343,6 @@ class Application(EditRoot):
         blocked = self.language!="C++"
         self.properties["source_extension"].set_blocked(blocked)
         self.properties["header_extension"].set_blocked(blocked)
-
 
     # properties: saved and filename
     def _get_saved(self):
@@ -481,9 +478,9 @@ class Application(EditRoot):
                                            "application." )
 
         if preview:
-            writer = common.code_writers["python"].copy()
+            writer = common.code_writers["preview"]
         else:
-            writer = common.code_writers[self.language]#.copy()
+            writer = common.code_writers[self.language]
 
         error = writer.new_project(self, out_path, preview)
         if error:
@@ -506,6 +503,7 @@ class Application(EditRoot):
             return
         except Exception as inst:
             # unexpected / internal error
+            if config.testing or config.debugging: raise
             bugdialog.Show(_('Generate Code'), inst)
             return
         finally:
@@ -520,7 +518,6 @@ class Application(EditRoot):
             app = wx.GetApp()
             frame = app.GetTopWindow()
             frame.user_message(_('Code generated'))
-
 
     def is_visible(self):
         return True
@@ -563,7 +560,7 @@ class Application(EditRoot):
             importlib.invalidate_caches()
 
         # make a valid name for the class (this can be invalid for some sensible reasons...)
-        preview_classname = widget.klass.split('.')[-1].split(':')[-1]
+        preview_classname = widget.WX_CLASS.split('.')[-1].split(':')[-1]
         # randomize the class name to make preview work when there are multiple classes with the same name (e.g. XRC)
         preview_classname = '_%d_%s' % (random.randrange(10 ** 8, 10 ** 9), preview_classname)
         widget.properties["class"].set_temp(preview_classname)
@@ -681,7 +678,7 @@ class Application(EditRoot):
                 xrcgen = common.code_writers['XRC']
                 ok = xrcgen.obj_builders.get(cname, None) is not xrcgen.NotImplementedXrcObject
             if not ok:
-                self._logger.warn( _('No %s code generator for %s (of type %s) available'),
+                logging.warn( _('No %s code generator for %s (of type %s) available'),
                                    misc.capitalize(language), widget.name, cname )
         else:
             # in this case, we check all the widgets in the tree

@@ -1,10 +1,9 @@
 
-import logging
 import wx
 import new_properties as np
 import common, misc, compat, clipboard, config
 
-MANAGED_PROPERTIES  = ["pos", "span", "proportion", "border", "flag"]
+MANAGED_PROPERTIES  = ["span", "proportion", "border", "flag"]
 
 if config.debugging:
     class _UniqueList(list):
@@ -26,24 +25,22 @@ else:
 
 
 class EditBase(np.PropertyOwner):
-    #is_sizer = False
     IS_TOPLEVEL = IS_SLOT = IS_SIZER = IS_WINDOW = IS_ROOT = IS_TOPLEVEL_WINDOW = False
-    CAN_BE_CLASS = False
-    IS_CLASS = False  # generate class for this item; can be dynamically set during code generation
+    IS_CLASS = None  # dynamically set during code generation if a class is generated for this item
     # usually this one is fixed, but EditPanel/EditToplevelPanel will overwrite it depending on the "scrollable" property
     WX_CLASS = None # needs to be defined in every derived class; e.g. "wxFrame", "wxBoxSizer", "TopLevelPanel"
+    WX_CLASSES = None  # used if WX_CLASS can be changed dynamically
+    WXG_BASE = None # usually None, but if defined, it will be written to the wxg file instead of the editor class name
     IS_NAMED = True  # default, only False for Spacer
     #CHILDREN = 1  # 0 or a fixed number or None for e.g. a sizer with a variable number of children; -1 for 0 or 1
     ATT_CHILDREN = None
+    TREE_ICON = None  # defaults to editor class name
 
-    def __init__(self, name, parent, pos=None):
+    def __init__(self, name, parent, index):
         assert self.WX_CLASS
         np.PropertyOwner.__init__(self)
-        # initialise instance logger
-        self._logger = logging.getLogger(self.__class__.__name__)
 
         self.widget = None          # this is the reference to the actual wxWindow widget, created when required
-        self._dont_destroy = False  # for notebook pages, this will be set to True
         self.item = None            # the TreeCtrl item
 
         # initialise instance properties
@@ -61,16 +58,16 @@ class EditBase(np.PropertyOwner):
             # no children
             self.children = None
         self.id = wx.NewId()  # id used for internal purpose events
-        if isinstance(pos, str):
-            setattr(self.parent, pos, self)
-            self.pos = pos
+        if isinstance(index, str):
+            setattr(self.parent, index, self)
+            self.attribute_name = index
         else:
-            self.parent.add_item(self, pos)
+            self.parent.add_item(self, index)
 
         # the toplevel parent keeps track of the names ( see next two methods ...contained_name() )
         if self.IS_TOPLEVEL:
             # either derived from edit_windows.TopLevelBase or a toplevel Menu/ToolBar where IS_TOPLEVEL is set True
-            self.names = set()
+            self.names = set([self.name])
             self._NUMBERS = {}  # for finding new names
         elif self.IS_NAMED:
             self.toplevel_parent.track_contained_name( new_name=name )
@@ -93,9 +90,7 @@ class EditBase(np.PropertyOwner):
         #  to remove: new_name=None
         #  to add:    old_name=None
         # EditDialog also uses this to track names for "affirmative" and "escape" properties
-        if config.debugging or config.testing and new_name is not None:
-            #assert self.IS_NAMED
-            assert self.name not in self.names
+        #print("track_contained_name", old_name,new_name, self.names)
         if old_name is not None:
             try:
                 self.names.remove( old_name )
@@ -131,20 +126,21 @@ class EditBase(np.PropertyOwner):
             if item.IS_TOPLEVEL: return item
             item = item.parent
 
-    @property
-    def class_object(self):
-        # used for code generation: the object for which a class code is generated
-        item = self
-        parent = item.parent
-        while parent is not None:
-            if not item.IS_SIZER and item.IS_CLASS: return item
-            item = parent
-            parent = item.parent
-        return None
+    #@property
+    #def class_object(self):
+        ## used for code generation: the object for which a class code is generated
+        #item = self
+        #parent = item.parent
+        #while parent is not None:
+            #if not item.IS_SIZER and item.IS_CLASS: return item
+            #item = parent
+            #parent = item.parent
+        #return None
 
     @property
     def parent_class_object(self):
         # same as before, but start with parent
+        # used only for XRC code generation, so IS_CLASS is set
         item = self.parent
         parent = item.parent
         while parent is not None:
@@ -159,7 +155,20 @@ class EditBase(np.PropertyOwner):
         if self.parent.IS_SIZER: return self.parent
         return None
 
+    @property
+    def top_sizer(self):
+        # return the top containing sizer or None
+        if not self.parent.IS_SIZER:
+            if self.IS_SIZER: return self
+            return None
+        item = self.parent
+        while item.parent.IS_SIZER:
+            item = item.parent
+        return item
+
+
     def get_all_children(self):
+        # this always returns a copy, as it might be used by recursive_remove
         ret = []
         if self.ATT_CHILDREN:
             for att in self.ATT_CHILDREN or []:
@@ -168,13 +177,13 @@ class EditBase(np.PropertyOwner):
         ret.extend(self.children or [])
         return ret
 
-    def _get_child(self, pos):
-        if pos is None and self.children:
+    def _get_child(self, index):
+        if index is None and self.children:
             return self.children[0]
-        if isinstance(pos, str) and pos in self.ATT_CHILDREN:
-            return getattr(self, pos)
-        if self.children and pos<=len(self.children):
-            return self.children[pos]
+        if isinstance(index, str) and index in self.ATT_CHILDREN:
+            return getattr(self, index)
+        if self.children and index<=len(self.children):
+            return self.children[index]
         return self
 
     def _get_child_pos(self, child):
@@ -199,8 +208,16 @@ class EditBase(np.PropertyOwner):
         return ret
 
     ####################################################################################################################
-    def add_item(self, child, pos=None):
-        if pos is None:
+    @property
+    def index(self):
+        # index or attribute name
+        attribute_name = getattr(self, "attribute_name", None)
+        if attribute_name is not None: return attribute_name
+        return self.parent.children.index(self)
+
+    def add_item(self, child, index=None):
+        if index is None:
+            # happens during loading or pasting
             if self.CHILDREN is None:
                 # variable number of children
                 self.children.append(child)
@@ -208,31 +225,34 @@ class EditBase(np.PropertyOwner):
             # fixed number of children; fill first free position (a None or a Slot)
             assert self.CHILDREN
             if None in self.children:
-                pos = self.children.index(None)
-            elif not self.children:
-                assert self.CHILDREN == -1
-                pos = 0
-            else:
-                old_slot = [c for c in self.children if c.IS_SLOT][0]
-                common.app_tree.remove(old_slot)
-                pos = old_slot.pos
+                index = self.children.index(None)
+            elif self.CHILDREN in (-1,1):
+                index = 0
 
-        if len(self.children)<=pos:
-            self.children += [None]*(pos - len(self.children) + 1)
-        if self.children[pos] is not None:
-            old_child = self.children[pos]
-        else:
-            old_child = None
-        self.children[pos] = child
-        if old_child:
-            old_child.recursive_remove()
+        if len(self.children)<=index:
+            self.children += [None]*(index - len(self.children) + 1)
+        if self.children[index] is not None:
+            self.children[index].recursive_remove(0, keep_slot=True)
+        self.children[index] = child
 
-    def remove_item(self, child, force_layout=True):
+    def insert_item(self, child, index):
+        # for now only for child=None as placeholder; used by notebook
+        self.children.insert(index, child)
+
+    def remove_item(self, child, level, keep_slot=False):
         "Removes child from self and adjust pos of following items"
         if not child: return
-        for c in self.children[child.pos+1:]:
-            c.properties["pos"].value -= 1
-        self.children.remove(child)
+        if child in self.children:
+            index = self.children.index(child)
+            if keep_slot:
+                self.children[index] = None
+            else:
+                del self.children[index]
+            return
+        if hasattr(child, "attribute_name"):
+            setattr(self, child.attribute_name, None)
+            return
+        raise ValueError("Internal error")
 
     def has_ancestor(self, editor):
         "Returns True if editor is parent or parents parent ..."
@@ -248,17 +268,15 @@ class EditBase(np.PropertyOwner):
         Example: ['frame_1', 'sizer_1', 'panel_1', 'sizer_2', 'button_1']
                  if button_1 is the currently selected widget"""
         ret = []
-        oldw = None  # the toplevel, to get the position
         w = self
         while w:
-            if w.IS_TOPLEVEL: oldw = w
             if w.IS_SLOT:
-                ret.append("SLOT %d"%w.pos)
+                ret.append("SLOT %d"%w.index)
             else:
                 ret.append(w.name)
             w = w.parent
         ret.reverse()
-        return ret
+        return "/".join(ret)
 
     # property handling ################################################################################################
     @staticmethod
@@ -279,95 +297,118 @@ class EditBase(np.PropertyOwner):
             common.app_tree.refresh(self, refresh_label=True, refresh_image=False)
 
     # widget creation and destruction ##################################################################################
-    def create_widgets(self):
-        "Shows the widget of the given node and all its children"
-        self.create()
-        if self.children:
-            for c in self.children:
-                c.create_widgets()
-        self.post_load()  # SizerBase uses this for toplevel sizers; also EditNotebook
 
     def create(self):
-        "create the wx widget"
-        if not self.IS_TOPLEVEL and self.parent.widget is None: return
-        if self.widget: return
-        self.create_widget()
-        self.finish_widget_creation()
+        # entry point to create widget including all children
+        self.recursive_create_widgets(level=0)
+        self.layout()
 
+    def recursive_create_widgets(self, level):
+        self.create_widget()
+        self.finish_widget_creation(level)
+        for child in self.get_all_children():
+            if not child.widget:
+                child.recursive_create_widgets(level+1)
+        self.child_widgets_created(level)  # if level==0, only one of the child widgets was created
+        self.parent.child_widget_created(self, level)
+
+    def layout(self):
+        # called once after all widgets incl. children were created or e.g. layout property modified
+        self.widget.Layout()
+
+    # actual widget creation
     def create_widget(self):
         "Initializes self.widget and shows it"
         raise NotImplementedError
 
-    def finish_widget_creation(self, *args, **kwds):
+    def finish_widget_creation(self, level):
         "Binds the popup menu handler and connects some event handlers to self.widgets; set tooltip string"
         if not self.widget: return
         self.widget.Bind(wx.EVT_RIGHT_DOWN, self.popup_menu)
         if self.WX_CLASS in ("wxStatusBar",): return
         compat.SetToolTip(self.widget, self._get_tooltip_string())
 
-    def delete(self):
-        """Destructor. deallocates the popup menu, the notebook and all the properties.
-        Why we need explicit deallocation? Well, basically because otherwise we get a lot of memory leaks... :)"""
-        # XXX tell property editor
-        self.destroy_widget()
-        if misc.focused_widget is self:
-            misc.focused_widget = None
+    # callbacks when children were created
+    def child_widget_created(self, child, level):
+        # called after child's children were also created; implemented for notebook, splitter, sizers
+        pass
+    
+    def child_widgets_created(self, level):
+        # implemented for notebook, splitter, sizers?
+        pass
 
-    def destroy_widget(self):
-        if not self.widget or self._dont_destroy: return
-        if self.parent.IS_SIZER and self.parent.widget:
-            self.parent.widget.Detach(self.widget)  # remove from sizer without destroying
-        compat.DestroyLater(self.widget)
+    # actual widget destruction, called from recursive_remove
+    def destroy_widget(self, level):
+        # just destroy the widget; all bookkeeping / data structure update is done in recursive_remove
+        # level is 0 for toplevel or when the user just deletes this one
+        if not self.widget: return
+        self.widget.Destroy()
         self.widget = None
 
-    # from tree.Tree ###################################################################################################
-    def recursive_remove(self, overwritten=False):
-        # recursively remove from parent, delete widget, remove from Tree (build to be called separately)
+    def destroying_child_widget(self, child, index):
+        # called before a child widget is destroyed; e.g. used by splitter to unsplit
+        # child has been removed from self.children already,
+        #  except when a widget is re-created or a slot is just set to overlapped
+        # index can be an index or an attribute name
+        pass
+
+    def destroyed_child_widget(self):
+        pass
+
+    ####################################################################################################################
+    def recursive_remove(self, level, keep_slot=False):
+        "recursively remove children and then self from parent; delete widget; remove from tree and do bookkeeping"
+        # this is not a GUI entry point, see remove() for this!
+        index = self.index
+
+        # recursively remove children
         if self.children:
-            for c in self.get_all_children():
-                c.recursive_remove()
-        try:
-            self.parent.children.remove(self)
-        except:
-            if not overwritten:  # overwritten: overwritten in _free_slot when Slot() was created
-                print(" **** node_remove failed")
-        self.delete()
+            for child in self.get_all_children():
+                child.recursive_remove(level+1)
+
+        self.parent.remove_item(self, level, keep_slot)
+
+        if level==0 and self.widget:
+            self.parent.destroying_child_widget(self, index)
+            self.destroy_widget(level)
+            self.parent.destroyed_child_widget()
+
+        # remove from Tree (rebuild_tree to be called separately)
+        if misc.focused_widget is self: misc.focused_widget = None
         common.app_tree.remove(self)  # remove mutual reference from widget to/from Tree item
+
+        # bookkeeping
         if not self.IS_TOPLEVEL and self.IS_NAMED and self.name:
             self.toplevel_parent.track_contained_name( self.name )
 
-    ####################################################################################################################
-
-    # XXX check this
-    def remove(self, *args):
-        # entry point from GUI
-        common.root.saved = False  # update the status of the app
-        # remove is called from the context menus; for other uses, delete is applicable
-        self._dont_destroy = False  # always destroy when explicitly asked
-        self.recursive_remove()
-        misc.rebuild_tree(self.parent, recursive=False, focus=True)
+    def remove(self, focus=True):
+        # entry point from GUI or script
+        common.root.saved = False   # update the status of the app
+        self.recursive_remove(level=0)
+        misc.rebuild_tree(self.parent, recursive=False, focus=focus)
 
     # XML generation ###################################################################################################
     def get_editor_name(self):
         # the panel classes will return something else here, depending on self.scrollable
-        return self.__class__.__name__
+        return self.WXG_BASE or self.__class__.__name__
     def write(self, output, tabs):
         "Writes the xml code for the widget to the given output file"
         # write object tag, including class, name, base
-        #classname = getattr(self, '_classname', self.__class__.__name__)
-        #if classname=="EditToplevelMenuBar": classname = "EditMenuBar"
         classname = self.get_editor_name()
         # to disable custom class code generation (for panels...)
-        if getattr(self, 'no_custom_class', False):
-            no_custom = u' no_custom_class="1"'
-        else:
-            no_custom = ""
         outer_tabs = u'    ' * tabs
+        instance_class = ''
+        if "class" in self.properties:
+            klass = self.get_prop_value("class", default=self.WX_CLASS)
+            if self.check_prop_truth("instance_class"):
+                instance_class = " " + common.format_xml_attrs(instance_class=self.instance_class)
+        else:
+            klass = self.get_prop_value("instance_class", default=self.WX_CLASS)
         output.append(u'%s<object %s %s %s%s>\n' % ( outer_tabs,
-                                                     common.format_xml_attrs(**{'class': self.klass}),
+                                                     common.format_xml_attrs(**{'class': klass}),
                                                      common.format_xml_attrs(name=self.name),
                                                      common.format_xml_attrs(base=classname),
-                                                     no_custom) )
+                                                     instance_class) )
 
         if config.debugging and getattr(self, "_restore_properties", None):
             raise ValueError("properties not restored")
@@ -401,12 +442,12 @@ class EditBase(np.PropertyOwner):
         output.append(u'%s</object>\n' % outer_tabs)
 
     # XML loading and slot handling ####################################################################################
-    def _add_slots(self, pos_max=None):
+    def _add_slots(self, max_index=None):
         "replace None with Slot"
-        for pos, child in enumerate(self.children):
+        for index, child in enumerate(self.children):
             if child is None:
-                if pos_max is not None and pos>pos_max: continue
-                Slot(self, pos)
+                if max_index is not None and index>max_index: continue
+                Slot(self, index)
 
     def on_load(self, child=None):
         "called from XML parser, right after the widget is loaded; children have been loaded already"
@@ -414,29 +455,25 @@ class EditBase(np.PropertyOwner):
         if self.CHILDREN != 0:
             self._add_slots()
 
-    def post_load(self):
-        """Called after the loading of an app from a XML file, before showing the hierarchy of widget for the first time.
-        The default implementation does nothing."""
-        pass
-
-    def free_slot(self, pos, force_layout=True):
-        "Replaces the element at pos with an empty slot"
+    def free_slot(self, index, force_layout=True):
+        "Replaces the element at index with an empty slot"
         # called from ManagedBase context menu when removing an item
-        slot = self._free_slot(pos, force_layout)
+        slot = self._free_slot(index, force_layout)
         misc.rebuild_tree(slot)
 
-    def _free_slot(self, pos, force_layout=True):
-        with self.toplevel_parent.frozen():
-            slot = Slot(self, pos)
-            if self.widget: slot.create()  # create the actual SizerSlot as wx.Window with hatched background
+    def _free_slot(self, index, force_layout=True):
+        #with self.toplevel_parent.frozen():  # this does not work on mac os: when deleting a panel notebook page, it will remain black
+        slot = Slot(self, index)
+        if self.widget: slot.create()  # create the actual SizerSlot as wx.Window with hatched background
         return slot
 
     # for tree and help display ########################################################################################
     def _get_tree_label(self):
         # get a label for node
         s = self.name
-        if (self.WX_CLASS=="CustomWidget" or (self.klass != self.WX_CLASS and self.klass != 'wxScrolledWindow') ):
-            # special case...
+        if self.WX_CLASS=="CustomWidget":
+            s += ' (%s)' % self.instance_class
+        elif self.check_prop("class"):
             s += ' (%s)' % self.klass
             if getattr(self, "has_title", None):
                 # include title
@@ -470,8 +507,7 @@ class EditBase(np.PropertyOwner):
 
     def _get_tree_image(self):
         "Get an image name for tree display"
-        name = self.__class__.__name__
-        return name
+        return self.TREE_ICON or self.__class__.__name__
 
     def _label_editable(self):
         # returns True if the label can be edited in the Tree ctrl
@@ -487,12 +523,12 @@ class EditBase(np.PropertyOwner):
         # get tooltip string: first (optional) part from parent, second from ourself
         # used as tooltip for the widget in the Design window and also for the status bar of the Palette
         tooltip = []
-        if self.check_prop("pos"):
-            tooltip.append( self.parent._get_parent_tooltip(self.pos) )
+        if self.parent.children and self in self.parent.children:
+            tooltip.append( self.parent._get_parent_tooltip(self.index) )
         tooltip.append( self._get_tooltip() )
         return "\n".join(s for s in tooltip if s)
 
-    def _get_parent_tooltip(self, pos):
+    def _get_parent_tooltip(self, index):
         # called for a child; e.g. Splitter pane may return "Left spliter pane:" for pos=0
         return None
 
@@ -502,25 +538,22 @@ class EditBase(np.PropertyOwner):
 
 class Slot(EditBase):
     "A window to represent an empty slot, e.g. single slot of a Frame or a page of a Notebook"
-    PROPERTIES = ["Slot", "pos"]
+    PROPERTIES = ["Slot"]#, "pos"]
     IS_TOPLEVEL = IS_SIZER = IS_WINDOW = False
     IS_SLOT = True
     IS_NAMED = False
     CHILDREN = 0
 
-    def __init__(self, parent, pos=0, label=None):
+    def __init__(self, parent, index, label=None):
         # XXX unify with EditBase.__init__ ?
-        assert isinstance(pos, int)
+        assert isinstance(index, int)
         assert not parent.IS_SLOT
         np.PropertyOwner.__init__(self)
-        # initialise instance logger
-        self._logger = logging.getLogger(self.__class__.__name__)
         self.klass = self.classname = "slot"
         self.label = label
 
         # initialise instance properties
         self.widget = None          # Reference to the widget resembling the slot (a wx.Window)
-        self._dont_destroy = False  # for notebook pages, this will be set to True
         self.name = "SLOT"
         self.overlapped = False  # for spanning in GridBagSizer
         self.item = None
@@ -528,8 +561,8 @@ class Slot(EditBase):
         # initialise structure
         self.parent = parent
         self.children = None
-        self.parent.add_item(self, pos)
-        self.pos = np.LayoutPosProperty(pos)  # position within the sizer or 0
+        self.parent.add_item(self, index)
+        #self.pos = np.LayoutPosProperty()  # position within the sizer or 0
 
         # the following are just set to use the same Add call as with widgets
         self.proportion = 1
@@ -560,6 +593,12 @@ class Slot(EditBase):
         self.widget.Bind(wx.EVT_ENTER_WINDOW, self.on_enter)
         self.widget.Bind(wx.EVT_LEAVE_WINDOW, self.on_leave)
         #self.widget.Bind(wx.EVT_CHAR_HOOK, misc.on_key_down_event)  # catch cursor keys   XXX still required?
+
+    def recursive_create_widgets(self, level):
+        if self.overlapped: return
+        self.create_widget()
+        self.finish_widget_creation(level)
+        self.parent.child_widget_created(self, level)
 
     def is_visible(self):
         return False
@@ -619,9 +658,9 @@ class Slot(EditBase):
             hatch = compat.BRUSHSTYLE_FDIAGONAL_HATCH
         else:
             if not "cols" in self.parent.PROPERTIES:  # horizontal/vertical sizer or grid sizer?
-                pos = self.pos
+                pos = self.index
             else:
-                pos = sum( self.sizer._get_row_col(self.pos) )
+                pos = sum( self.sizer._get_row_col(self.index) )
             hatch = compat.BRUSHSTYLE_FDIAGONAL_HATCH  if pos%2 else  compat.BRUSHSTYLE_BDIAGONAL_HATCH
         brush = wx.Brush(color, hatch)
         # draw hatched lines in foreground
@@ -645,11 +684,11 @@ class Slot(EditBase):
         # menu title
         if self.parent.IS_SIZER and "cols" in self.parent.properties:
             rows, cols = self.parent._get_actual_rows_cols()
-            # calculate row and pos of our slot
-            row,col = self.parent._get_row_col(self.pos)
+            # calculate row and col of our slot
+            row,col = self.parent._get_row_col(self.index)
             menu = wx.Menu(_("Slot %d/%d"%(row+1,col+1)))
-        elif "pos" in self.properties:
-            menu = wx.Menu(_("Slot %d"%self.pos))
+        elif self.parent.CHILDREN not in (-1,1):
+            menu = wx.Menu(_("Slot %d"%self.index))
         else:
             menu = wx.Menu(_("Slot"))
 
@@ -669,8 +708,8 @@ class Slot(EditBase):
                 # if inside a grid sizer: allow removal of empty rows/cols
                 # check whether all slots in same row/col are empty
                 row_is_empty = col_is_empty = True
-                for pos,child in enumerate(self.parent.children):
-                    child_row, child_col = self.parent._get_row_col(pos)
+                for index,child in enumerate(self.parent.children):
+                    child_row, child_col = self.parent._get_row_col(index)
                     if child_row==row and not child.IS_SLOT:
                         row_is_empty = False
                     if child_col==col and not child.IS_SLOT:
@@ -678,12 +717,12 @@ class Slot(EditBase):
 
                 # allow removal of empty row
                 i = misc.append_menu_item(menu, -1, _('Remove Row %d'%(row+1)) )
-                misc.bind_menu_item_after(widget, i, self.parent.remove_row, self.pos)
+                misc.bind_menu_item_after(widget, i, self.parent.remove_row, self.index)
                 if not row_is_empty or rows<=1: i.Enable(False)
 
                 # allow removal of empty col
                 i = misc.append_menu_item(menu, -1, _('Remove Column %d'%(col+1)) )
-                misc.bind_menu_item_after(widget, i, self.parent.remove_col, self.pos)
+                misc.bind_menu_item_after(widget, i, self.parent.remove_col, self.index)
                 if not col_is_empty or cols<=1: i.Enable(False)
                 menu.AppendSeparator()
 
@@ -704,27 +743,12 @@ class Slot(EditBase):
         return menu
 
     ####################################################################################################################
-    def _remove(self):
-        # does not set focus
-        if not self.parent.IS_SIZER and self.parent.CHILDREN != -1: return
-        with self.toplevel_parent_window.frozen():
-            self.parent.remove_item(self)  # replaces self.parent.children[pos] and detaches also widget from sizer
-            self.destroy_widget(detach=False)  # self.delete() would be OK, but would detach again...
-            common.app_tree.remove(self)  # destroy tree leaf
-
     def remove(self):
         # entry point from GUI
-        common.root.saved = False  # update the status of the app
-        if self.parent.WX_CLASS in ("wxNotebook",):
-            self.parent.remove_tab(self.pos)
-            return
-
+        i = self.index
+        EditBase.remove(self, focus=False)
+        if i >= len(self.parent.children): i = len(self.parent.children)-1
         # set focused widget
-        i = self.pos
-        self._remove()
-        if i >= len(self.parent.children):
-            i = len(self.parent.children)-1
-        misc.rebuild_tree(self.parent, recursive=False, focus=False)
         if i>=0:
             misc.set_focused_widget( self.parent.children[i] )
         else:
@@ -746,7 +770,7 @@ class Slot(EditBase):
             self.widget.SetCursor(wx.NullCursor)
         common.adding_window = event and event.GetEventObject().GetTopLevelParent() or None
         # call the appropriate builder
-        new_widget = common.widgets[common.widget_to_add](self.parent, self.pos)
+        new_widget = common.widgets[common.widget_to_add](self.parent, self.index)
         if new_widget is None: return
         misc.rebuild_tree(new_widget)
         if reset is False: return
@@ -781,7 +805,10 @@ class Slot(EditBase):
 
     def clipboard_paste(self, clipboard_data):
         "Insert a widget from the clipboard to the current destination"
-        return clipboard._paste(self.parent, self.pos, clipboard_data)
+        if self.parent.CHILDREN==-1:
+            # e.g. Panel has special treatment
+            return self.parent.clipboard_paste(clipboard_data)
+        return clipboard._paste(self.parent, self.index, clipboard_data)
 
     def on_select_and_paste(self, *args):
         "Middle-click event handler: selects the slot and, if the clipboard is not empty, pastes its content here"
@@ -790,12 +817,11 @@ class Slot(EditBase):
         clipboard.paste(self)
     ####################################################################################################################
 
-    def destroy_widget(self, detach=True):
+    def destroy_widget(self, level):
         if self.widget is None: return
         if misc.currently_under_mouse is self.widget:
             misc.currently_under_mouse = None
 
-        if self._dont_destroy: return  # on a notebook page
         self.widget.Hide()
 
         if wx.VERSION_STRING!="2.8.12.0":
@@ -807,8 +833,6 @@ class Slot(EditBase):
             self.widget.Bind(wx.EVT_ENTER_WINDOW, None)
             self.widget.Bind(wx.EVT_LEAVE_WINDOW, None)
             self.widget.Bind(wx.EVT_KEY_DOWN, None)
-        if detach and self.parent.IS_SIZER and self.parent.widget:
-            self.parent.widget.Detach(self.widget)  # this will happen during recursive removal only
         compat.DestroyLater(self.widget)
         self.widget = None
 
@@ -822,21 +846,21 @@ class Slot(EditBase):
     def _get_tree_label(self):
         if self.label: return str(self.label)
         if self.parent.CHILDREN in (1,-1): return "SLOT"
-        pos = self.pos
+        index = self.index
         if hasattr(self.parent, "_get_slot_label"):
-            return self.parent._get_slot_label(pos)
+            return self.parent._get_slot_label(index)
         if self.parent.IS_SIZER and "cols" in self.parent.properties:
             # grid sizer: display row/col
             rows, cols = self.parent._get_actual_rows_cols()
-            row = pos // cols + 1  # 1 based at the moment
-            col = pos %  cols + 1
+            row = index // cols + 1  # 1 based at the moment
+            col = index %  cols + 1
             return "SLOT  %d/%d"%(row, col)
-        return "SLOT %d"%(pos)
+        return "SLOT %d"%(index)
 
     def _get_tree_image(self):
         "Get an image name for tree display"
         if self.parent.WX_CLASS=="wxSplitterWindow":
-            return 'EditSplitterSlot-%s'%self.parent._get_label(self.pos)  # 'Left', 'Right', 'Top', 'Bottom'
+            return 'EditSplitterSlot-%s'%self.parent._get_label(self.index)  # 'Left', 'Right', 'Top', 'Bottom'
 
         if not self.parent.IS_SIZER: return "EditSlot"
         name = "EditSizerSlot"

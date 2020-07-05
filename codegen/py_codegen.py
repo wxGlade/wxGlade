@@ -181,7 +181,10 @@ class PythonCodeWriter(BaseLangCodeWriter, wcodegen.PythonMixin):
 
     name_ctor = '__init__'
 
-    shebang = '#!/usr/bin/env python\n'
+    if compat.PYTHON2:
+        shebang = '#!/usr/bin/env python\n'
+    else:
+        shebang = '#!/usr/bin/env python3\n'
 
     SourceFileContent = SourceFileContent
 
@@ -284,7 +287,7 @@ from %(top_win_module)s import %(top_win_class)s\n\n"""
         builder = self.obj_builders[code_obj.WX_CLASS]
         mycn = getattr(builder, 'cn', self.cn)
         mycn_f = getattr(builder, 'cn_f', self.cn_f)
-        fmt_klass = self.cn_class(code_obj.klass)
+        fmt_klass = self.cn_class( code_obj.get_prop_value("class", code_obj.WX_CLASS) )
 
         # custom base classes support
         custom_base = getattr(code_obj, 'custom_base', getattr(code_obj, 'custom_base', None) )
@@ -507,7 +510,7 @@ from %(top_win_module)s import %(top_win_class)s\n\n"""
         elif obj.name.startswith('self.'):
             return obj.name
         # spacer.name is "<width>, <height>" already, but wxPython expect a tuple instead of two single values
-        elif obj.klass in ('spacer','sizerslot'):
+        elif obj.WX_CLASS in ('spacer','sizerslot'):
             return '(%s)' % obj.name
         elif self.store_as_attr(obj):
             return 'self.%s' % obj.name

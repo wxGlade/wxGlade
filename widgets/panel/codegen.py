@@ -13,32 +13,28 @@ import wcodegen
 
 class PythonPanelGenerator(wcodegen.PythonWidgetCodeWriter):
     def get_code(self, panel):
+        # this is not called for toplevel panels
         scrollable = panel.scrollable
         id_name, id = self.codegen.generate_code_id(panel)
         parent = self.format_widget_access(panel.parent_window)
+
+        klass = panel.get_instantiation_class(self.cn, self.cn_class, self.codegen.preview)
+
         if panel.IS_CLASS:
             l = []
             if id_name: l.append(id_name)
-            l.append('self.%s = %s(%s, %s)\n' % (panel.name, self.codegen.get_class(panel.klass), parent, id))
+            l.append('self.%s = %s(%s, %s)\n' % (panel.name, klass, parent, id))
             return l, []
+
         init = []
-        if id_name:
-            init.append(id_name)
+        if id_name: init.append(id_name)
+
         style = panel.properties["style"].get_string_value() or 'wxTAB_TRAVERSAL'
         if scrollable or style != 'wxTAB_TRAVERSAL':
             style = ", style=%s" % self.cn_f(style)
         else:
             style = ''
-        #if not int(panel.properties.get('no_custom_class', False)) or panel.preview:
-        if not panel.no_custom_class or self.codegen.preview:
-            if scrollable:
-                klass = self.cn( 'wxScrolledWindow')
-            else:
-                klass = self.cn('wxPanel')
-        else:
-            klass = panel.klass
-            if klass in ('wxPanel', 'wxScrolledWindow'):
-                klass = self.cn(klass)
+
         init.append( 'self.%s = %s(%s, %s%s)\n' % (panel.name, klass, parent, id, style) )
         init.extend( self.codegen.generate_code_common_properties(panel) )
         if panel.scrollable and panel.check_prop("scroll_rate"):
@@ -82,13 +78,7 @@ class CppPanelGenerator(wcodegen.CppWidgetCodeWriter):
         style = panel.properties["style"].get_string_value() or 'wxTAB_TRAVERSAL'
         if scrollable or style != 'wxTAB_TRAVERSAL':
             extra = ', wxDefaultPosition, wxDefaultSize, %s' % style
-        if not panel.no_custom_class:
-            if scrollable:
-                klass = 'wxScrolledWindow'
-            else:
-                klass = 'wxPanel'
-        else:
-            klass = panel.klass
+        klass = panel.get_prop_value("class", panel.WX_CLASS)
         init = [ '%s = new %s(%s, %s%s);\n' % (panel.name, klass, parent, id, extra) ]
         init += self.codegen.generate_code_common_properties(panel)
         if scrollable and panel.check_prop("scroll_rate"):
@@ -100,7 +90,6 @@ class CppPanelGenerator(wcodegen.CppWidgetCodeWriter):
         if obj.scrollable and obj.check_prop("scroll_rate"):
             props_buf.append('SetScrollRate(%s);\n' % obj.scroll_rate)
         return props_buf
-
 
 
 def xrc_code_generator(obj):

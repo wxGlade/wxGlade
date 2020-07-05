@@ -19,6 +19,8 @@ class MenuTree(object):
         IS_CLASS = IS_SIZER = False
         klass = classname = None
         properties = []
+        IS_NAMED = True
+        WX_CLASS = None  # for Perl
         def __init__(self, label="", id="", name="", help_str="", checkable="", radio="", handler=""):
             self.label = label
             self.id = id

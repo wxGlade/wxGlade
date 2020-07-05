@@ -30,7 +30,7 @@ class BaseLispSizerBuilder(BaseSizerBuilder):
 
     def _get_wparent(self, obj):
         window = obj.parent_window
-        if not window.IS_TOPLEVEL and not window.IS_CLASS:
+        if not window.IS_CLASS:
             parent = '(slot-%s obj)' % self.codegen._format_name(window.name)
         else:
             parent = self.tmpl_wparent
@@ -41,7 +41,7 @@ class BaseLispSizerBuilder(BaseSizerBuilder):
         """Returns code that will be inserted after the child code; e.g. for adding element to a sizer.
         It's placed before the final code returned from get_code()."""
 
-        if child.classname in ("spacer","sizerslot"):  # spacer and slot are adding itself to the sizer
+        if child.WX_CLASS in ("spacer","sizerslot"):  # spacer and slot are adding itself to the sizer
             return []
         obj_name = self.codegen._format_classattr(child)
         sizer_name = self.codegen._format_classattr(obj)
@@ -50,7 +50,7 @@ class BaseLispSizerBuilder(BaseSizerBuilder):
         flag = self.codegen.cn_f(flag) or '0'
 
 
-        if self.klass=="wxStdDialogButtonSizer" and child.WX_CLASS=='wxButton':
+        if obj.WX_CLASS=="wxStdDialogButtonSizer" and child.WX_CLASS=='wxButton':
             # XXX optionally use SetAffirmativeButton, SetCancelButton, SetNegativeButton
             if child.check_prop("stockitem"):
                 tmpl_sizeritem = '(wxSizer_AddButton (%s obj) (%s obj))\n'
@@ -66,37 +66,28 @@ class BaseLispSizerBuilder(BaseSizerBuilder):
 
 
 class LispBoxSizerBuilder(BaseLispSizerBuilder):
-    klass = 'wxBoxSizer'
-
     tmpl = '(setf (%(sizer_name)s obj) (wxBoxSizer_Create %(orient)s))\n'
-
     tmpl_wparent = '(slot-top-window obj)'
 
 
 class LispWrapSizerBuilder(LispBoxSizerBuilder):
-    klass = 'wxWrapSizer'
     tmpl = '(setf (%(sizer_name)s obj) (wxWrapSizer_Create %(orient)s))\n'
 
 
 class LispStaticBoxSizerBuilder(BaseLispSizerBuilder):
-    klass = 'wxStaticBoxSizer'
     tmpl = '(setf (%(sizer_name)s obj) (StaticBoxSizer_Create (wxStaticBox:wxStaticBox_Create %(parent_widget)s %(label)s) %(orient)s))\n'
 
 
 class LispGridSizerBuilder(BaseLispSizerBuilder):
-    klass = 'wxGridSizer'
     tmpl = '(setf (%(sizer_name)s obj) (wxGridSizer_Create %(rows)s %(cols)s %(vgap)s %(hgap)s))\n'
 
 
 class LispFlexGridSizerBuilder(LispGridSizerBuilder):
-    klass = 'wxFlexGridSizer'
-
     tmpl_AddGrowableRow = '(wxFlexGridSizer_AddGrowableRow (%(sizer_name)s obj) %(row)s)\n'
     tmpl_AddGrowableCol = '(wxFlexGridSizer_AddGrowableCol (%(sizer_name)s obj) %(col)s)\n'
 
 
 class LispGridBagSizerBuilder(LispGridSizerBuilder):
-    klass = 'wxGridBagSizer'
     tmpl = '(setf (%(sizer_name)s obj) (wxGridSizer_Create %(vgap)s %(hgap)s))\n'
 
 

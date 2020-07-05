@@ -53,7 +53,7 @@ class WXGladeBaseTest(unittest.TestCase):
         config.preferences.autosave = False
         config.preferences.write_timestamp = False
         config.preferences.show_progress = False
-        config.version = '"faked test version"'
+        #config.version = '"faked test version"'
 
         # make e.g. the preview raise Exceptions
         config.testing = True
@@ -112,6 +112,8 @@ class WXGladeBaseTest(unittest.TestCase):
         # open files, split into lines and convert to str/unicode
         expected  = self._read_file_lines(expected_filename)
         generated = self._read_file_lines(generated_filename)
+        if expected  and expected[0].startswith(b'#!/usr/bin/env python'):  expected[0]  = expected[0].rstrip(b"3")
+        if generated and generated[0].startswith(b'#!/usr/bin/env python'): generated[0] = generated[0].rstrip(b"3")
         if expected == generated: return False
         expected  = [s.decode('ascii', 'replace') for s in expected]
         generated = [s.decode('ascii', 'replace') for s in generated]
@@ -199,10 +201,6 @@ class WXGladeCLITest(WXGladeBaseTest):
         for language, dummy, ext, dummy in self.language_constants:
             if not language in languages: continue
 
-            #expected_filename = self._get_casefile_path( '%s.py'%basename )
-            #generated_filename = self._get_outputfile_path( '%s.py'%basename )
-    
-
             if language=="C++" and app.multiple_files:
                 app_basename = os.path.splitext(config.default_cpp_app_name)[0]
                 app_basename = "%s_%s"%(first_window.klass.split("_")[0], app_basename)
@@ -220,7 +218,6 @@ class WXGladeCLITest(WXGladeBaseTest):
             wxglade.command_line_code_generation( infilename, language, generated_filename )
 
             app = common.root
-
 
             # set absolute "Output path", language and generate code
             #if not expected_filename: continue
@@ -254,8 +251,6 @@ class WXGladeCLITest(WXGladeBaseTest):
                     subtest += 1
         if compat.PYTHON2:
             self.assertFalse(diff_fails, "Expected and generated files do not match for %s"%",".join(diff_fails))
-
-
 
 
 import xrc2wxg
@@ -299,6 +294,8 @@ class WXGladeGUITest(WXGladeBaseTest):
         cls.app = wx.App()
         cls.locale = wx.Locale(wx.LANGUAGE_DEFAULT)
         compat.wx_ArtProviderPush(main.wxGladeArtProvider())
+        import history
+        common.history = history.History()
         cls.frame = main.wxGladeFrame()
 
         # suppress wx error messages
@@ -475,3 +472,19 @@ class WXGladeGUITest(WXGladeBaseTest):
         with open(target, "wb") as outfile:
             outfile.write(content)
         shutil.copystat( source, target )
+
+    def simulate_cut(self, widget):
+        # returns XML data
+        import clipboard
+        ret = clipboard.dump_widget(widget)
+        widget.remove()
+        wx.SafeYield()
+        return ret
+
+    def simulate_paste(self, parent, pos, data):
+        # accepts XML data; returns True on success
+        import clipboard
+        ret = clipboard._paste(parent, pos, data)
+        wx.SafeYield()
+        return ret
+

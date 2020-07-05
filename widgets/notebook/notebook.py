@@ -13,8 +13,6 @@ import wcodegen
 import new_properties as np
 from edit_windows import ManagedBase, EditStylesMixin, Slot
 from wcodegen.taghandler import BaseXmlBuilderTagHandler
-from xml_parse import XmlParsingError
-
 from panel import EditPanel
 
 
@@ -68,21 +66,18 @@ class TabsHandler(BaseXmlBuilderTagHandler):
 
 class EditNotebook(ManagedBase, EditStylesMixin):
     "Class to handle wxNotebook objects"
-    _custom_base_classes = True
     _next_notebook_number = 1 # next free number for notebook names
     update_widget_style = False
 
     WX_CLASS = "wxNotebook"
-    CAN_BE_CLASS = True
     _PROPERTIES = ["Widget", "no_custom_class", "style", "tabs"]
     PROPERTIES = ManagedBase.PROPERTIES + _PROPERTIES + ManagedBase.EXTRA_PROPERTIES
+    np.insert_after(PROPERTIES, "name", "class", "custom_base")
 
-    def __init__(self, name, parent, style, pos):
-        ManagedBase.__init__(self, name, 'wxNotebook', parent, pos)
+    def __init__(self, name, parent, index, style):
+        ManagedBase.__init__(self, name, parent, index)
         EditStylesMixin.__init__(self)
         self.properties["style"].set(style)
-
-        self._is_removing_pages = False
 
         # initialise instance properties
         self.pages = None  # on loading from XML, this will be used
@@ -93,22 +88,14 @@ class EditNotebook(ManagedBase, EditStylesMixin):
 
     def create_widget(self):
         self.widget = wx.Notebook( self.parent_window.widget, self.id, style=self.style )
-        for c,(label,) in zip(self.children, self.tabs):
-            c.create()
-            if c.IS_SLOT:
-                self.widget.AddPage(c.widget, label)
 
-    def on_load(self, child=None):
-        ManagedBase.on_load(self)
-        self.pages = None
-
-    def post_load(self):
+    def child_widgets_created(self, level):
         # at this time, all children should be available
+        self.pages = None
         if not self.parent.IS_SIZER or not self.widget: return
         w,h = self.properties["size"].get_size(self.widget)
         sz = self.parent
         sz.widget.SetItemMinSize(self.widget, w, h)
-        sz.layout(True)
 
     def on_set_focus(self, event):
         # allow switching of pages
@@ -116,12 +103,6 @@ class EditNotebook(ManagedBase, EditStylesMixin):
         event.Skip()
 
     ####################################################################################################################
-    # new implementation, parts from previous 'virtual sizer':
-    def add_item(self, child, pos=None):
-        ManagedBase.add_item(self, child, pos)
-        # avoid widgets being destroyed; this is done by DeletePage/InsertPage
-        child._dont_destroy = True
-
     def vs_insert_tab(self, index):
         "inserts or adds a page"
         label = self.tabs[index][0]
@@ -138,29 +119,16 @@ class EditNotebook(ManagedBase, EditStylesMixin):
         if hasattr(self.parent, "set_item_best_size"):
             self.parent.set_item_best_size( self, size=self.widget.GetBestSize() )
 
-    def insert_tab(self, index, label):
-        # add tab/page; called from GUI
-        tab = self._insert_tab(index, label)
-        misc.rebuild_tree(self)
-
     def add_slot(self):
         # actually adds a page, but it needs to be compatible to sizers
         self.insert_tab(len(self.children), "new tab")
 
-    def _insert_tab(self, index, label):
-        # add tab/page
-        tabs_p = self.properties["tabs"]
-        tabs = tabs_p.get()   # the value will be modified in place
-        tabs.insert(index, [label,])
-        tabs_p.set(tabs)
-        self.children.insert(index, None)
-
-        # adjust pos of the following pages
-        for i, page in enumerate(self.children[index+1:]):
-            pos_p = page.properties["pos"]
-            pos_p.set(index+1+i)
+    def insert_tab(self, index, label):
+        # add tab/page; called from GUI
+        self.properties["tabs"].insert( index, [label,] )
 
         # create panel and node, add to tree
+        self.insert_item(None, index)  # placeholder
         editor = EditPanel( self.next_pane_name(), self, index )
 
         if self.widget:
@@ -178,26 +146,18 @@ class EditNotebook(ManagedBase, EditStylesMixin):
             self.widget.SetSelection(index)
 
         self.properties["tabs"].update_display()
-        return editor
+        misc.rebuild_tree(self)
 
-    def remove_tab(self, index):
-        # for context menu of an empty page / Slot instance
-        indices = [i for i in range(0,len(self.tabs)) if i!=index]
-        old_labels = [tab[0] for tab in self.tabs]
-        del self.properties["tabs"].value[index]
-        self.set_tabs(old_labels, indices)
-
-        if self.children:
-            if index>=len(self.children): index -= 1
-            misc.set_focused_widget(self.children[index])
-        else:
-            misc.set_focused_widget(self)
+    def remove_item(self, child, level, keep_slot=False):
+        if not keep_slot:
+            del self.properties["tabs"].value[child.index]
+        ManagedBase.remove_item(self, child, level, keep_slot)
 
     @misc.restore_focus
-    def set_tabs(self, old_labels, indices):  # called from tabs proberty on Apply button
+    def set_tabs(self, old_labels, indices):  # called from tabs property on Apply button
         """tabs: list of strings
         indices: the current indices of the tabs or None for a new tab; re-ordering is currently not supported"""
-        keep_indices = [pos for pos in indices if pos is not None]
+        keep_indices = [index for index in indices if index is not None]
         if keep_indices != sorted(keep_indices):
             raise ValueError("Re-ordering is not yet implemented")
         keep_indices = set(keep_indices)
@@ -213,45 +173,33 @@ class EditNotebook(ManagedBase, EditStylesMixin):
         # remove tabs
         for index in range(len(old_labels)-1, -1, -1):
             if not index in keep_indices:
-                self._is_removing_pages = True
-                self.children[index].recursive_remove()
-                if self.widget: self.widget.RemovePage(index)    # deletes the specified page
-                del new_labels[index]                            # delete from list of names
-                self._is_removing_pages = False
+                self.children[index].recursive_remove(level=0)
+                # delete from list of names
+                del new_labels[index]
 
         # insert/add tabs
         added = None
-        for pos, (label,) in enumerate(self.tabs):
-            index = indices[pos]
-            if index is not None:
-                # old tab to be kept, just ensure that pos is correct
-                pos_p = self.children[pos].properties["pos"]
-                if pos_p.value!=pos: pos_p.set(pos)
-                continue
+        for index, (label,) in enumerate(self.tabs):
+            if indices[index] is not None: continue  # keep tab
 
             # actually add/insert
-            new_labels.insert(pos, [label,]) # this needs to be done before EditPanel calls self.virtual_sizer.add_item
-            self.children.insert(pos, None)
+            new_labels.insert(index, [label,]) # this needs to be done before EditPanel calls self.virtual_sizer.add_item
+            self.children.insert(index, None)
             # create panel and node, add to tree
             suggestion = "%s_%s" % (self.name, label)
-            editor = EditPanel( self.next_pane_name(suggestion), self, pos )
-
-            # adjust pos of the following pages
-            for p, page in enumerate(self.children[pos+1:]):
-                pos_p = page.properties["pos"]
-                pos_p.set(pos+2+p)
+            editor = EditPanel( self.next_pane_name(suggestion), self, index )
 
             if self.widget:
                 # add to widget
                 editor.create()
-                self.vs_insert_tab(pos)
+                self.vs_insert_tab(index)
     
                 try:
                     wx.CallAfter(editor.sel_marker.update)
                 except AttributeError:
                     if config.debugging: raise
 
-                added = pos  # remember last added index for selection
+                added = index  # remember last added index for selection
 
         # select the last added tab
         if added is not None and self.widget:
@@ -259,62 +207,41 @@ class EditNotebook(ManagedBase, EditStylesMixin):
 
         common.app_tree.build(self, recursive=False)
 
-    def _free_slot(self, pos, force_layout=True):
-        "Replaces the element at pos with an empty slot"
-        if self._is_removing_pages: return
-        old_child = self.children[pos]
-        slot = Slot(self, pos)
-        slot.create()
-        label = self.tabs[pos][0]
-        if self.widget: self.widget.RemovePage(pos)
-
-        old_child.recursive_remove()
-
-        if self.widget:
-            self.widget.InsertPage(pos, slot.widget, label)
-            self.widget.SetSelection(pos)
-        return slot
-
     ####################################################################################################################
-    # methods moved from NotebookVirtualSizer:
+    def destroying_child_widget(self, child, index):
+        self.widget.RemovePage(index) # deletes the specified page, without deleting the associated window
 
-    def item_properties_modified(self, widget, modified=None, force_layout=True):
-        if not self.widget: return
-        index = widget.pos
-        item = self.children[index]
-        if not item or not item.widget: return
+    def child_widget_created(self, child, level):
+        # add, insert or replace a notebook page
+        index = child.index
         label = self.tabs[index][0]
         if not (index < self.widget.GetPageCount()):
-            self.widget.AddPage(item.widget, label) # this is e.g. for the first creation after loading a file
-        elif self.widget.GetPage(index) is not item.widget:
-            # XXX delete this part if it's not called; insert_tab and remove_tab should handle this now
-            if self.widget.GetPageCount()==len(self.children):
-                #self.widget.RemovePage(index) # deletes the specified page, without deleting the associated window
-                self.widget.DeletePage(index)  # deletes the specified page, and the associated window
-            self.widget.InsertPage(index, item.widget, label)
+            # this is e.g. for the first creation after loading a file
+            self.widget.AddPage(child.widget, label)
+        else:
+            # single page being replaced; e.g. panel -> slot or slot -> panel
+            self.widget.InsertPage(index, child.widget, label)
+        if level==0:
             self.widget.SetSelection(index)
             try:
-                wx.CallAfter(item.sel_marker.update)
+                wx.CallAfter(child.sel_marker.update)
             except AttributeError:
-                #self._logger.exception(_('Internal Error'))
                 pass
-        if hasattr(self.parent, "set_item_best_size"):
-            #self.sizer.set_item( self.pos, size=self.widget.GetBestSize() )
-            self.parent.set_item_best_size( self, size=self.widget.GetBestSize() )
 
     def get_itempos(self, attrs):
         "Get position of sizer item (used in xml_parse)"
         # only used when loading from XML, while pages is defined
+        name = attrs.get("original_name", None) or attrs['name']
         try:
-            name = attrs.get("original_name", None) or attrs['name']
             return self.pages.index(name)
         except ValueError:
+            from xml_parse import XmlParsingError
             raise XmlParsingError( _('Notebook widget "%s" does not have tab "%s"!')%(self.name, name) )
 
     ####################################################################################################################
-    def destroy_widget(self):
+    def destroy_widget(self, level):
         if self.widget: self.widget.DeleteAllPages()
-        ManagedBase.destroy_widget(self)
+        ManagedBase.destroy_widget(self, level)
 
     def get_property_handler(self, name):
         if name == 'tabs':
@@ -339,12 +266,12 @@ class EditNotebook(ManagedBase, EditStylesMixin):
         # called from managed widget items' _create_popup_menu method
         if item.IS_SLOT:
             i = misc.append_menu_item(menu, -1, _('Remove Notebook Tab\tDel') )
-            misc.bind_menu_item_after(widget, i, self.remove_tab, item.pos)
-            
-        i = misc.append_menu_item(menu, -1, _('Insert Notebook Tab before') ) # \tCtrl+I') )
-        misc.bind_menu_item_after(widget, i, self.insert_tab, item.pos, "new tab")
+            misc.bind_menu_item_after(widget, i, item.remove)
 
-        if item.pos==len(self.tabs)-1: # last slot -> allow to add
+        i = misc.append_menu_item(menu, -1, _('Insert Notebook Tab before') ) # \tCtrl+I') )
+        misc.bind_menu_item_after(widget, i, self.insert_tab, item.index, "new tab")
+
+        if item.index==len(self.tabs)-1: # last slot -> allow to add
             i = misc.append_menu_item(menu, -1, _('Add Notebook Tab') ) # \tCtrl+A') )
             misc.bind_menu_item_after(widget, i, self.add_slot)
         menu.AppendSeparator()
@@ -362,9 +289,9 @@ class EditNotebook(ManagedBase, EditStylesMixin):
         tmpl = "%s_pane_%%d" % self.name
         return self.toplevel_parent.get_next_contained_name(tmpl)
 
-    def _get_slot_label(self, pos):
-        title = self.tabs[pos][0]
-        return '[%s] Page %s'%(title, pos)
+    def _get_slot_label(self, index):
+        title = self.tabs[index][0]
+        return '[%s] Page %s'%(title, index)
 
     def check_compatibility(self, widget, typename=None):
         return (False,"No objects can be pasted here; paste to empty pages instead.")
@@ -373,11 +300,11 @@ class EditNotebook(ManagedBase, EditStylesMixin):
         # checks whether a widget can be dropped here
         return (False, "Items can only be added to empty pages/slots, not to the notebook itself.")
 
-    def _get_parent_tooltip(self, pos):
-        return "Notebook page %s:"%pos
+    def _get_parent_tooltip(self, index):
+        return "Notebook page %s:"%index
 
 
-def builder(parent, pos):
+def builder(parent, index):
     "Factory function for editor objects from GUI"
     choices = 'wxNB_TOP|wxNB_BOTTOM|wxNB_LEFT|wxNB_RIGHT'
     dialog = wcodegen.WidgetStyleSelectionDialog(_('wxNotebook'), _('Orientation'), choices)
@@ -389,21 +316,17 @@ def builder(parent, pos):
 
     name = parent.toplevel_parent.get_next_contained_name('notebook_%d')
     with parent.frozen():
-        editor = EditNotebook(name, parent, style, pos)
+        editor = EditNotebook(name, parent, index, style)
         editor.properties["proportion"].set(1)
         editor.properties["flag"].set("wxEXPAND")
+        editor.insert_tab(0, editor.next_pane_name()) # next_pane_name will be used as label and as pane name, if possible
         if parent.widget: editor.create()
-        editor._insert_tab(0, editor.next_pane_name()) # next_pane_name will be used as label and as pane name, if possible
     return editor
 
 
-def xml_builder(attrs, parent, pos=None):
+def xml_builder(parser, base, name, parent, index):
     "Factory to build editor objects from a XML file"
-    try:
-        name = attrs['name']
-    except KeyError:
-        raise XmlParsingError(_("'name' attribute missing"))
-    return EditNotebook(name, parent, '', pos)
+    return EditNotebook(name, parent, index, '')
 
 
 def initialize():

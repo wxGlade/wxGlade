@@ -24,48 +24,37 @@ class BasePythonSizerBuilder(BaseSizerBuilder):
 
     def _get_wparent(self, obj):
         window = obj.parent_window
-        if not window.IS_TOPLEVEL and not window.IS_CLASS:
-            return 'self.%s' % window.name
-        else:
+        if window.IS_CLASS:
             return 'self'
-
+        return 'self.%s' % window.name
 
 
 class PythonBoxSizerBuilder(BasePythonSizerBuilder):
-    klass = 'wxBoxSizer'
     tmpl = '%(sizer_name)s = %(klass)s(%(orient)s)\n'
 
 
 class PythonStdDialogButtonSizerBuilder(BasePythonSizerBuilder):
-    klass = 'wxStdDialogButtonSizer'
     tmpl = '%(sizer_name)s = %(klass)s()\n'
 
 
 class PythonWrapSizerBuilder(PythonBoxSizerBuilder):
-    klass = 'wxWrapSizer'
+    pass
 
 
 class PythonStaticBoxSizerBuilder(BasePythonSizerBuilder):
-    klass = 'wxStaticBoxSizer'
     tmpl = '%(sizer_name)s = %(klass)s(wx.StaticBox(%(parent_widget)s, %(wxIDANY)s, %(label)s), %(orient)s)\n'
 
 
-
 class PythonGridSizerBuilder(BasePythonSizerBuilder):
-    klass = 'wxGridSizer'
     tmpl = '%(sizer_name)s = %(klass)s(%(rows)s, %(cols)s, %(vgap)s, %(hgap)s)\n'
 
 
-
 class PythonFlexGridSizerBuilder(PythonGridSizerBuilder):
-    klass = 'wxFlexGridSizer'
-
     tmpl_AddGrowableRow = '%(sizer_name)s.AddGrowableRow(%(row)s)\n'
     tmpl_AddGrowableCol = '%(sizer_name)s.AddGrowableCol(%(col)s)\n'
 
 
 class PythonGridBagSizerBuilder(PythonFlexGridSizerBuilder):
-    klass = 'wxGridBagSizer'
     tmpl = '%(sizer_name)s = %(klass)s(%(vgap)s, %(hgap)s)\n'
 
 
@@ -90,7 +79,4 @@ def initialize():
         awh('wxFlexGridSizer', PythonFlexGridSizerBuilder())
         awh('wxGridBagSizer', PythonGridBagSizerBuilder())
 
-    # handle SizerSlot
-    #common.class_names['EditSpacer'] = klass
     common.register('python', "sizerslot", SlotGenerator("python"))
-

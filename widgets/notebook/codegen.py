@@ -16,23 +16,20 @@ class PythonNotebookGenerator(wcodegen.PythonWidgetCodeWriter):
         self._reset_vars()
         wcodegen.PythonWidgetCodeWriter._prepare_tmpl_content(self, window)
 
-        prop = window.properties
         id_name, id = self.codegen.generate_code_id(window)
-
         parent = self.format_widget_access(window.parent_window)
+
+        klass = window.get_instantiation_class(self.cn, self.cn_class, self.codegen.preview)
+
         if window.IS_CLASS:
             l = []
-            if id_name:
-                l.append(id_name)
-            l.append('self.%s = %s(%s, %s)\n' % (window.name, self.codegen.get_class(window.klass), parent, id))
+            if id_name: l.append(id_name)
+            l.append('self.%s = %s(%s, %s)\n' % (window.name, klass, parent, id))
             return l, []
-        klass = window.klass
-        if self.codegen.preview:
-            klass = 'wxNotebook'
+
         init = []
-        if id_name:
-            init.append(id_name)
-        init.append(('self.%s = ' + self.cn(klass) + '(%s, %s%s)\n')%(window.name, parent, id, self.tmpl_dict['style']))
+        if id_name: init.append(id_name)
+        init.append(('self.%s = ' + klass + '(%s, %s%s)\n')%(window.name, parent, id, self.tmpl_dict['style']))
 
         init += self.codegen.generate_code_common_properties(window)
         return init, []
@@ -72,7 +69,7 @@ def xrc_code_generator(obj):
 
         def write_child_prologue(self, child, output, ntabs):
             if self.widget.children:
-                label = self.widget.tabs[child.widget.pos][0]
+                label = self.widget.tabs[child.widget.index][0]
                 tab_s = '    ' * ntabs
                 output.append( tab_s + '<object class="notebookpage">\n' )
                 output.append( tab_s + '<label>%s</label>\n' % escape(label) )
@@ -94,6 +91,7 @@ class CppNotebookGenerator(wcodegen.CppWidgetCodeWriter):
 
     def get_code(self, window):
         "generates the C++ code for wxNotebook"
+        # this is not called for toplevel classes
         self._reset_vars()
         wcodegen.CppWidgetCodeWriter._prepare_tmpl_content(self, window)
 
@@ -103,14 +101,13 @@ class CppNotebookGenerator(wcodegen.CppWidgetCodeWriter):
         else:
             ids = []
 
-        if not window.parent_window.IS_CLASS:
-            parent = '%s' % window.parent_window.name
-        else:
-            parent = 'this'
+        parent = self.format_widget_access(window.parent_window)
+        klass = window.get_instantiation_class()
+
         if window.IS_CLASS:
-            l = ['%s = new %s(%s, %s);\n' % (window.name, window.klass, parent, id)]
+            l = ['%s = new %s(%s, %s);\n' % (window.name, klass, parent, id)]
             return l, ids, []
-        init = ['%s = new %s(%s, %s%s);\n' % (window.name, window.klass, parent, id, self.tmpl_dict['style'])]
+        init = ['%s = new %s(%s, %s%s);\n' % (window.name, klass, parent, id, self.tmpl_dict['style'])]
 
         init += self.codegen.generate_code_common_properties(window)
 

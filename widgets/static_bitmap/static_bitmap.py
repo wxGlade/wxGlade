@@ -25,8 +25,8 @@ class EditStaticBitmap(BitmapMixin, ManagedBase, EditStylesMixin):
     _PROPERTY_HELP = {"attribute":'Store instance as attribute of window class; e.g. self.bitmap_1 = wx.wxStaticBitmap'
                                   '(...)\nWithout this, you can not access the bitmap from your program.'}
 
-    def __init__(self, name, parent, bmp_file, pos):
-        ManagedBase.__init__(self, name, 'wxStaticBitmap', parent, pos)
+    def __init__(self, name, parent, index, bmp_file):
+        ManagedBase.__init__(self, name, parent, index)
         EditStylesMixin.__init__(self)
 
         # initialise instance properties
@@ -56,28 +56,23 @@ class EditStaticBitmap(BitmapMixin, ManagedBase, EditStylesMixin):
         ManagedBase.properties_changed(self, modified)
 
 
-def builder(parent, pos, bitmap=None):
+def builder(parent, index, bitmap=None):
     "factory function for EditStaticBitmap objects"
     name = parent.toplevel_parent.get_next_contained_name('bitmap_%d')
     if bitmap is None:
         bitmap = misc.RelativeFileSelector("Select the image")
         if bitmap is None: return
     with parent.frozen():
-        editor = EditStaticBitmap(name, parent, bitmap, pos)
+        editor = EditStaticBitmap(name, parent, index, bitmap)
         editor.properties["style"].set_to_default()
         editor.check_defaults()
         if parent.widget: editor.create()
     return editor
 
 
-def xml_builder(attrs, parent, pos=None):
+def xml_builder(parser, base, name, parent, index):
     "factory to build EditStaticBitmap objects from a XML file"
-    from xml_parse import XmlParsingError
-    try:
-        label = attrs['name']
-    except KeyError:
-        raise XmlParsingError(_("'name' attribute missing"))
-    return EditStaticBitmap(label, parent, '', pos)
+    return EditStaticBitmap(name, parent, index, '')
 
 
 def initialize():

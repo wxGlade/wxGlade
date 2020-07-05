@@ -7,7 +7,7 @@ Classes to handle and display the structure of a wxGlade app
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
-import logging, os.path
+import os.path
 import wx
 import misc, common, compat, config, clipboard
 
@@ -18,9 +18,7 @@ if DEBUG:
 class WidgetTree(wx.TreeCtrl):#, Tree):
     "Tree with the ability to display the hierarchy of widgets"
     images = {} # Dictionary of icons of the widgets displayed
-    _logger = None # Class specific logging instance
     def __init__(self, parent, application):
-        self._logger = logging.getLogger(self.__class__.__name__)
         style = wx.TR_DEFAULT_STYLE|wx.TR_HAS_VARIABLE_ROW_HEIGHT
         style |= wx.TR_EDIT_LABELS
         if wx.Platform == '__WXGTK__':    style |= wx.TR_NO_LINES|wx.TR_FULL_ROW_HIGHLIGHT
@@ -35,8 +33,7 @@ class WidgetTree(wx.TreeCtrl):#, Tree):
         self.AssignImageList(image_list)
         application.item = self.AddRoot(_('Application'), 0)
         self._SetItemData(application.item, application)
-        self.skip_select = 0  # necessary to avoid an infinite loop on win32, as SelectItem fires an
-                              # EVT_TREE_SEL_CHANGED event
+        self.skip_select = 0  # avoid an infinite loop on win32, as SelectItem fires an EVT_TREE_SEL_CHANGED event
 
         self.drop_target = clipboard.DropTarget(self, toplevel=True)
         self.SetDropTarget(self.drop_target)
@@ -139,8 +136,8 @@ class WidgetTree(wx.TreeCtrl):#, Tree):
         if new_value==widget._get_tree_label(): return
 
         new_name = new_label = new_title = new_tab = new_class = new_stockitem = None
-        
-        if widget.klass != widget.WX_CLASS and widget.klass != 'wxScrolledWindow':
+
+        if widget.check_prop_truth("class"):
             if new_value.count("(")==1 and new_value.count(")")==1:
                 pre, new_class = new_value.split("(")
                 new_class, post = new_class.split(")")
@@ -163,7 +160,7 @@ class WidgetTree(wx.TreeCtrl):#, Tree):
             new_name, dummy = self._split_name_label(new_value)
         elif getattr(widget, "has_title", None):
             new_name, new_title = self._split_name_label(new_value)
-        elif getattr(widget, "parent", None) and widget.parent.klass=="wxNotebook" and "]" in new_value:
+        elif getattr(widget, "parent", None) and widget.parent.WX_CLASS=="wxNotebook" and "]" in new_value:
             # notebook pages: include page title: "[title] name"
             new_tab, new_name = new_value.rsplit("]",1)
             if "[" in new_tab: new_tab = new_tab.split("[",1)[-1]
@@ -408,7 +405,7 @@ class WidgetTree(wx.TreeCtrl):#, Tree):
         #if config.debugging or DEBUG:
         if DEBUG:
             import utilities
-            utilities.TreePrinter(self)
+            utilities.TreePrinter(editor)
 
     def OnCompareItems(self, item1, item2):
         # only used when re-ordering toplevel items
@@ -467,9 +464,14 @@ class WidgetTree(wx.TreeCtrl):#, Tree):
         self._set_cur_widget(editor)
 
     def on_change_selection(self, event):
-        if self.skip_select: return  # triggered by self.SelectItem in self.set_current_widget
+        if self.skip_select:
+            event.Skip()
+            return  # triggered by self.SelectItem in self.set_current_widget
         item = event.GetItem()
         editor = self._GetItemData(item)
+        if not editor:  # can happen during build/rebuild_tree
+            event.Skip()
+            return
         self._set_cur_widget(editor)
         misc.set_focused_widget(editor)
         if not self.IsExpanded(item) and (not hasattr(self, "HasFocus") or not self.HasFocus()):
@@ -575,9 +577,10 @@ class WidgetTree(wx.TreeCtrl):#, Tree):
         if not editor.is_visible():
             # added by rlawson to expand node on showing top level widget
             self.ExpandAllChildren(editor.item)
-            editor.create_widgets()
+            editor.show_widget()
 
             if wx.Platform != '__WXMSW__' and set_size is not None:
+                #  XXX integrate with above or remove above again?
                 toplevel_widget = editor.widget  # above it was not yet created
                 wx.CallAfter(toplevel_widget.SetSize, set_size)
         else:

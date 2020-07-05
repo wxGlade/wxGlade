@@ -25,8 +25,8 @@ class EditToggleButton(BitmapMixin, ManagedBase, EditStylesMixin):
     PROPERTIES = ManagedBase.PROPERTIES + _PROPERTIES + ManagedBase.EXTRA_PROPERTIES
     _PROPERTY_LABELS = {"value":"Clicked"}
 
-    def __init__(self, name, parent, label, pos):
-        ManagedBase.__init__(self, name, 'wxToggleButton', parent, pos)
+    def __init__(self, name, parent, index, label):
+        ManagedBase.__init__(self, name, parent, index)
         EditStylesMixin.__init__(self)
 
         # initialise instance variable
@@ -62,25 +62,20 @@ class EditToggleButton(BitmapMixin, ManagedBase, EditStylesMixin):
         ManagedBase.properties_changed(self, modified)
 
 
-def builder(parent, pos):
+def builder(parent, index):
     "factory function for EditToggleButton objects"
     name = parent.toplevel_parent.get_next_contained_name('button_%d')
     with parent.frozen():
-        editor = EditToggleButton(name, parent, name, pos)
+        editor = EditToggleButton(name, parent, index, name)
         editor.properties["style"].set_to_default()
         editor.check_defaults()
         if parent.widget: editor.create()
     return editor
 
 
-def xml_builder(attrs, parent, pos=None):
+def xml_builder(parser, base, name, parent, index):
     "factory to build EditToggleButton objects from a XML file"
-    from xml_parse import XmlParsingError
-    try:
-        name = attrs['name']
-    except KeyError:
-        raise XmlParsingError(_("'name' attribute missing"))
-    return EditToggleButton(name, parent, '', pos)
+    return EditToggleButton(name, parent, index, '')
 
 
 def initialize():

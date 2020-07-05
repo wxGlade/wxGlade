@@ -13,11 +13,11 @@ import wx
 
 
 
-# the SizerSlot which has the "mouse focus"; used to restore the mouse cursor if the user cancelled adding a widget
-currently_under_mouse = None
-
 _get_xpm_bitmap_re = re.compile(r'"(?:[^"]|\\")*"')
 _item_bitmaps = {}
+
+
+# handle currently focused widget ######################################################################################
 
 focused_widget = None  # the currently selected widget in GUI mode (for tree and property_panel)
 _next_focused_widget = None  # for delayed setting, to ensure that only the last call has an effect
@@ -51,6 +51,8 @@ def set_focused_widget(widget, force=False, delayed=False):
     common.property_panel.set_widget(widget, force)
     if common.history: common.history.set_widget(widget)
     common.main.set_widget(widget)  # to update menu and toolbar
+    if common.shell:
+        common.shell.txt_path.SetValue( widget and widget.get_path() or "" )
 
     focused_time = time.time()
     if widget and widget.widget:
@@ -260,16 +262,15 @@ def get_toplevel_parent(obj):
 
 def get_toplevel_widget(widget):
     from edit_windows import EditBase, TopLevelBase
-    from edit_sizers import Sizer, SizerSlot
-    if isinstance(widget, Sizer):
-        widget = widget.window
+    from edit_sizers import SizerSlot
+    if widget.IS_SIZER: widget = widget.window
     assert isinstance(widget, (EditBase,SizerSlot)), _("EditBase or SizerBase object needed")
     while widget and not isinstance(widget, TopLevelBase):
         widget = widget.parent
     return widget
 
 
-def check_wx_version(major, minor=0, release=0, revision=0):
+def check_wx_version_at_least(major, minor=0, release=0, revision=0):
     "returns True if the current wxPython version is at least major.minor.release"
     return wx.VERSION[:-1] >= (major, minor, release, revision)
 
@@ -413,12 +414,12 @@ def _paste():
 def _insert():
     global focused_widget
     if not focused_widget: return
-    if not hasattr(focused_widget, "sizer") or not hasattr(focused_widget, "pos"): return
     parent = focused_widget.parent
-    if parent and parent.IS_SIZER and parent._IS_GRIDBAG: return
+    if not parent or not parent.IS_SIZER: return
+    if parent._IS_GRIDBAG: return
     #method = getattr(focused_widget.sizer, "insert_slot", None)
     method = getattr(parent, "insert_slot", None)
-    if method: method(focused_widget.pos)
+    if method: method(focused_widget.index)
 
 @restore_focus
 def _add():
@@ -429,6 +430,9 @@ def _add():
         if not hasattr(focused_widget, "sizer"): return
         method = getattr(focused_widget.sizer, "add_slot", None)
     if method: method()
+
+
+currently_under_mouse = None  # set when the mouse enters a sizer slot widget; see edit_base.Slot/SizeSlot
 
 def _cancel():
     if not common.adding_widget: return
@@ -538,6 +542,7 @@ accel_table = {
     ("",  wx.WXK_F4):    ((common,"main","show_palette"),         ()),
     ("",  wx.WXK_F5):    ((common,"main","preview"),              ()),
     ("",  wx.WXK_F6):    ((common,"main","show_design_window"),   ()),
+    ("",  wx.WXK_F7):    ((common,"main","create_shell_window"),  ()),
 
     ("",  wx.WXK_F8):    ((common,"main","show_props_window"),    ("Common",)),
     ("C", ord('M')):     ((common,"main","show_props_window"),    ("Common",)),
@@ -702,11 +707,15 @@ def get_xpm_bitmap(path):
 
 def get_absolute_path(path, for_preview=False):
     "Get an absolute path relative to the current output directory (where the code is generated)."
+    if os.path.sep!="\\":
+        path = path.replace("\\", os.path.sep)
     if os.path.isabs(path):
         return path
     p = common.root.output_path
     if for_preview:
         p = getattr(common.root, 'real_output_path', u'')
+    if os.path.sep!="\\":
+        p = p.replace("\\", os.path.sep)
     if not os.path.isabs(p):
         # a path relative to the application filename
         appdir = os.path.dirname(common.root.filename)

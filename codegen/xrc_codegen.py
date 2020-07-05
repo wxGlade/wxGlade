@@ -14,9 +14,9 @@ To be done: write XRC directly instead of using BaseLangCodeWriter as base.
 from xml.sax.saxutils import escape, quoteattr
 from codegen import BaseLangCodeWriter
 from collections import OrderedDict
-import common
+import common, wcodegen
 import new_properties as np
-import wcodegen
+import logging
 
 
 class XrcObject(wcodegen.XrcWidgetCodeWriter):
@@ -41,7 +41,7 @@ class XrcObject(wcodegen.XrcWidgetCodeWriter):
 
     def warning(self, msg):
         "Show a warning message"
-        self._logger.warning(msg)
+        logging.warning(msg)
 
 
 
@@ -65,7 +65,7 @@ class SizerItemXrcObject(XrcObject):
         if self.obj.border:
             output.append(tabs1 + '<border>%s</border>\n' % self.obj.border)
         if self.obj.parent._IS_GRIDBAG:
-            cellpos = self.obj.parent._get_row_col(self.obj.pos)
+            cellpos = self.obj.parent._get_row_col(self.obj.index)
             output.append( tabs1 + '<cellpos>%d,%d</cellpos>\n' % cellpos )
             output.append( tabs1 + '<cellspan>%d,%d</cellspan>\n' % self.obj.span )
         # write the widget
@@ -112,11 +112,12 @@ class DefaultXrcObject(XrcObject):
     "Standard XrcObject for every widget, used if no specific XrcObject is available"
 
     def __init__(self, widget):
-        XrcObject.__init__(self, widget.klass)
+        classname = widget.get_prop_value("class", widget.WX_CLASS)
+        XrcObject.__init__(self, classname)
         self.widget = widget
         self.name = widget.name
         self.klass = widget.WX_CLASS
-        self.subclass = widget.klass
+        self.subclass = classname
 
     def write_property(self, name, val, output, ntabs):
         if not val:
@@ -150,7 +151,7 @@ class DefaultXrcObject(XrcObject):
                 return common.format_xml_prop(name, u'', ntabs, stock_id=art_id)
 
         elif val.startswith('code:') or val.startswith('empty:') or val.startswith('var:'):
-            self._logger.warn( _('XRC: Unsupported bitmap statement "%s" for %s "%s"'), val, self.klass, self.name )
+            logging.warn( _('XRC: Unsupported bitmap statement "%s" for %s "%s"'), val, self.klass, self.name )
             return None
 
         return common.format_xml_prop(name, val, ntabs)
@@ -335,24 +336,16 @@ class XRCCodeWriter(BaseLangCodeWriter, wcodegen.XRCMixin):
         # recursively generate code, for anything except application.Application
         # for toplevel widgets or with class different from wx... a class will be added
 
-        if obj.IS_SLOT or obj.classname=="spacer":
-            if obj.classname!="slot":  # "slot" has no code generator
+        if obj.IS_SLOT or obj.WX_CLASS=="spacer":
+            if obj.WX_CLASS:  # "slot" has no code generator, but "sizerslot" or "spacer" needs to be added
                 self.add_object(obj)
-                if obj.classname in ("spacer", "sizerslot"):
-                    self.add_sizeritem(obj.parent_class_object, obj.parent, obj)
+                self.add_sizeritem(obj.parent_class_object, obj.parent, obj)
             return
 
         parent = obj.parent
         parent_class_object = obj.parent_class_object  # used for adding to this object's sizer
 
-        IS_CLASS = obj.IS_TOPLEVEL
-        if obj.klass != obj.WX_CLASS and obj.CAN_BE_CLASS:
-            IS_CLASS = True
-            # for panel objects, if the user sets a custom class but (s)he doesn't want the code to be generated...
-            if obj.check_prop("no_custom_class") and obj.no_custom_class and not self.preview:
-                IS_CLASS = False
-
-        obj.IS_CLASS = IS_CLASS
+        obj.IS_CLASS = IS_CLASS = obj.check_prop_truth("class")
 
         # first the item
         if IS_CLASS:
@@ -369,7 +362,7 @@ class XRCCodeWriter(BaseLangCodeWriter, wcodegen.XRCMixin):
 
         # check whether the object belongs to some sizer; if applicable, add it to the sizer at the top of the stack
         if added and parent.IS_SIZER:
-            if obj.classname not in ("spacer",):  # spacer and slot are adding itself to the sizer
+            if obj.WX_CLASS not in ("spacer",):  # spacer and slot are adding itself to the sizer
                 self.add_sizeritem(parent_class_object, parent, obj)
 
     def add_object(self, sub_obj):
@@ -412,9 +405,9 @@ class XRCCodeWriter(BaseLangCodeWriter, wcodegen.XRCMixin):
             sizer.xrc = sizer_xrc
         # we now have to move the children from 'toplevel' to 'sizer'
         index = top_xrc.children.index(obj_xrc)
-        if obj.klass == 'spacer':
+        if obj.WX_CLASS == 'spacer':
             sizer.xrc.children.append( SpacerXrcObject(obj) )
-        elif obj.klass == 'sizerslot':
+        elif obj.WX_CLASS == 'sizerslot':
             if not sizer._IS_GRIDBAG:
                 sizer.xrc.children.append( SpacerXrcObject(None) )
         else:

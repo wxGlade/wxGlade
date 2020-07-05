@@ -21,8 +21,8 @@ class EditPropertyGridManager(ManagedBase, EditStylesMixin):
     PROPERTIES = ManagedBase.PROPERTIES + _PROPERTIES + ManagedBase.EXTRA_PROPERTIES
     recreate_on_style_change = True
 
-    def __init__(self, name, parent, pos):
-        ManagedBase.__init__(self, name, 'wxPropertyGridManager', parent, pos)
+    def __init__(self, name, parent, index):
+        ManagedBase.__init__(self, name, parent, index)
         EditStylesMixin.__init__(self)
 
     def create_widget(self):
@@ -94,11 +94,11 @@ class EditPropertyGridManager(ManagedBase, EditStylesMixin):
         ManagedBase.properties_changed(self, modified)
 
 
-def builder(parent, pos):
+def builder(parent, index):
     "factory function for EditPropertyGridManager objects"
     name = parent.toplevel_parent.get_next_contained_name('property_grid_%d')
     with parent.frozen():
-        editor = EditPropertyGridManager(name, parent, pos)
+        editor = EditPropertyGridManager(name, parent, index)
         editor.properties["style"].set_to_default()
         # A grid should be wx.EXPANDed and 'option' should be 1, or you can't see it.
         editor.properties["proportion"].set(1)
@@ -107,14 +107,9 @@ def builder(parent, pos):
     return editor
 
 
-def xml_builder(attrs, parent, pos=None):
+def xml_builder(parser, base, name, parent, index):
     "factory to build EditPropertyGridManager objects from a XML file"
-    from xml_parse import XmlParsingError
-    try:
-        label = attrs['name']
-    except KeyError:
-        raise XmlParsingError(_("'name' attribute missing"))
-    return EditPropertyGridManager( label, parent, pos )
+    return EditPropertyGridManager( name, parent, index )
 
 
 def initialize():

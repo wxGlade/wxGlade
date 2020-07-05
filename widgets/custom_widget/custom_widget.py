@@ -62,8 +62,9 @@ class CustomWidget(ManagedBase):
     _PROPERTY_LABELS = { 'custom_constructor':'Custom constructor' }
     _PROPERTY_HELP   = { 'custom_constructor':'Specify a custom constructor like a factory method' }
 
-    def __init__(self, name, klass, parent, pos):
-        ManagedBase.__init__(self, name, klass, parent, pos)
+    def __init__(self, name, parent, index, instance_class=None):
+        ManagedBase.__init__(self, name, parent, index, instance_class or "wxWindow")
+        self.properties["instance_class"].deactivated = None
 
         # initialise instance properties
         cols      = [('Arguments', np.GridProperty.STRING)]
@@ -75,8 +76,8 @@ class CustomWidget(ManagedBase):
         self.widget.Bind(wx.EVT_PAINT, self.on_paint)
         self.widget.Bind(wx.EVT_ERASE_BACKGROUND, lambda event:None)
 
-    def finish_widget_creation(self):
-        ManagedBase.finish_widget_creation(self, sel_marker_parent=self.widget)
+    def finish_widget_creation(self, level):
+        ManagedBase.finish_widget_creation(self, level, sel_marker_parent=self.widget)
 
     def on_paint(self, event):
         dc = wx.PaintDC(self.widget)
@@ -87,7 +88,7 @@ class CustomWidget(ManagedBase):
         w, h = self.widget.GetClientSize()
         dc.DrawLine(0, 0, w, h)
         dc.DrawLine(w, 0, 0, h)
-        text = _('Custom Widget: %s') % self.klass
+        text = _('Custom Widget: %s') % self.instance_class
         tw, th = dc.GetTextExtent(text)
         x = (w - tw)//2
         y = (h - th)//2
@@ -145,7 +146,7 @@ class Dialog(wx.Dialog):
         self.OK_button.Enable( OK )
 
 
-def builder(parent, pos):
+def builder(parent, index):
     "factory function for CustomWidget objects"
 
     dialog = Dialog()
@@ -157,7 +158,7 @@ def builder(parent, pos):
 
     name = parent.toplevel_parent.get_next_contained_name('window_%d')
     with parent.frozen():
-        editor = CustomWidget(name, klass, parent, pos)
+        editor = CustomWidget(name, parent, index, klass)
         editor.properties["arguments"].set( [['$parent'], ['$id']] )  # ,['$width'],['$height']]
         editor.properties["proportion"].set(1)
         editor.properties["flag"].set("wxEXPAND")
@@ -165,15 +166,9 @@ def builder(parent, pos):
     return editor
 
 
-def xml_builder(attrs, parent, pos=None):
+def xml_builder(parser, base, name, parent, index):
     "factory to build CustomWidget objects from a XML file"
-    from xml_parse import XmlParsingError
-    try:
-        name = attrs['name']
-    except KeyError:
-        raise XmlParsingError(_("'name' attribute missing"))
-    klass = attrs.get("class", "CustomWidget")
-    return CustomWidget(name, klass, parent, pos)
+    return CustomWidget(name, parent, index)
 
 
 def initialize():

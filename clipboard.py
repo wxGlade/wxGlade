@@ -41,7 +41,7 @@ def begin_drag(window, widget):
     do = get_data_object(widget)
     set_drag_source(widget)
 
-    if isinstance(widget, edit_sizers.Sizer):
+    if widget.IS_SIZER:
         msg = "Move sizer to empty or populated slot to insert, to a sizer to append; hold Ctrl to copy"
     elif widget.IS_TOPLEVEL:
         msg = "Move window to application object; hold Ctrl to copy"
@@ -160,9 +160,9 @@ class DropTarget(wx.DropTarget):
             dst_widget = dst_widget.children[-1] # the slot
         elif compatible=="Slot":
             # insert a slot or fill empty slot
-            pos = dst_widget.pos
-            dst_widget.sizer._insert_slot(pos)
-            dst_widget = dst_widget.sizer.children[pos] # the slot
+            index = dst_widget.index
+            dst_widget.sizer._insert_slot(index)
+            dst_widget = dst_widget.sizer.children[index] # the slot
         elif compatible=="Reorder":
             # a toplevel dragged onto another toplevel
             # internal drag: just re-order; external drag: paste before
@@ -185,7 +185,7 @@ class DropTarget(wx.DropTarget):
             if dst_widget.IS_SLOT:
                 # fill slot with a StaticBitmap 
                 import widgets.static_bitmap.static_bitmap
-                new_widget = widgets.static_bitmap.static_bitmap.builder(dst_widget.parent, dst_widget.pos, bitmap)
+                new_widget = widgets.static_bitmap.static_bitmap.builder(dst_widget.parent, dst_widget.index, bitmap)
                 misc.rebuild_tree(new_widget)
                 return default
             # set attribute value
@@ -299,7 +299,6 @@ def cut(widget):
         return False
 
 
-#def paste(parent, sizer, pos, clipboard_data=None):
 def paste(widget):
     """Copies a widget (and all its children) from the clipboard to the given
     destination (parent, sizer and position inside the sizer). Returns True on success."""
@@ -334,7 +333,7 @@ def paste(widget):
         misc.error_message("Paste failed")
 
 
-def _paste(parent, pos, clipboard_data):
+def _paste(parent, index, clipboard_data):
     "parse XML and insert widget"
     option, span, flag, border, xml_unicode = clipboard2widget( clipboard_data )
     if not xml_unicode: return False
@@ -343,7 +342,7 @@ def _paste(parent, pos, clipboard_data):
         wx.BeginBusyCursor()
         # widget representation is still unicode, but parser need UTF8
         xml_utf8 = xml_unicode.encode('utf8')
-        parser = xml_parse.ClipboardXmlWidgetBuilder(parent, pos, option, span, flag, border)
+        parser = xml_parse.ClipboardXmlWidgetBuilder(parent, index, option, span, flag, border)
         with parent and parent.frozen() or misc.dummy_contextmanager():
             parser.parse_string(xml_utf8)
             if parent and hasattr(parent, "on_child_pasted"):

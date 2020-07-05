@@ -62,8 +62,8 @@ class EditStatusBar(EditBase, EditStylesMixin):
     PROPERTIES = EditBase.PROPERTIES + _PROPERTIES + EditBase.EXTRA_PROPERTIES
     CHILDREN = 0
 
-    def __init__(self, name, klass, parent):
-        EditBase.__init__( self, name, klass, parent, custom_class=False, pos="_statusbar" )
+    def __init__(self, name, parent):
+        EditBase.__init__( self, name, parent, index="_statusbar")
         EditStylesMixin.__init__(self)
 
         # for the statusbar fields
@@ -77,6 +77,10 @@ class EditStatusBar(EditBase, EditStylesMixin):
         self._set_fields()
         if self.parent.widget:
             self.parent.widget.SetStatusBar(self.widget)
+
+    def remove(self, level):
+        EditBase.remove(self)
+        self.parent.properties['statusbar'].set(False)
 
     def _set_fields(self):
         if not self.widget: return
@@ -92,25 +96,12 @@ class EditStatusBar(EditBase, EditStylesMixin):
 
         self.widget.SetStatusWidths(widths)
 
-    def remove(self, *args, **kwds):
-        # entry point from GUI
-        if not kwds.get('do_nothing', False):
-            self.parent.properties['statusbar'].set(False)
-            if self.parent.widget:
-                self.parent.widget.SetStatusBar(None)
-            try:
-                self.parent._statusbar = None
-            except KeyError:
-                pass
-            if self.widget:
-                self.widget.Hide()
-            EditBase.remove(self)
-        else:
-            if EditStatusBar._hidden_frame is None:
-                EditStatusBar._hidden_frame = wx.Frame(None, -1, "")
-            if self.widget is not None:
-                self.widget.Reparent(EditStatusBar._hidden_frame)
-            self.widget = None
+    def destroy_widget(self, level):
+        # if parent is being deleted, we rely on this being destroyed
+        if level==0 and not self.IS_TOPLEVEL and self.parent.widget:
+            self.parent.widget.SetStatusBar(None)
+        if level==0:
+            EditBase.destroy_widget(self, level)
 
     def popup_menu(self, *args):
         pass  # to avoid strange segfault :)
@@ -160,45 +151,16 @@ class Dialog(wx.Dialog):
         szr.Fit(self)
 
 
-def builder(parent, pos):
-    "factory function for EditToolBar objects"
-
-    dialog = Dialog()
-    with misc.disable_stay_on_top(common.adding_window or parent):
-        res = dialog.ShowModal()
-    klass = dialog.klass
-    dialog.Destroy()
-    if res != wx.ID_OK:
-        global _NUMBER
-        if _NUMBER > 0: _NUMBER -= 1
-        return
-
-    name = parent.toplevel_parent.get_next_contained_name('statusbar_%d')
-    with parent.frozen():
-        editor = EditStatusBar(name, klass, parent)
-        if parent.widget: editor.create()
-    return editor
-
-
-def xml_builder(attrs, parent, pos=None):
-    "factory to build EditStatusBar objects from a XML file"
-    name = attrs.get('name')
-    if parent:
-        if name:
-            p_name = parent._statusbar.properties["name"]
-            p_name.previous_value = p_name.value
-            p_name.set(name)
-            parent._statusbar.properties_changed(["name"])
-        return parent._statusbar
-    return EditStatusBar(name, attrs.get('class', 'wxStatusBar'), parent)
+def xml_builder(parser, base, name, parent, index):
+    "factory to build EditToolBar objects from a XML file"
+    parent.properties["statusbar"].set(True)
+    return EditStatusBar(name, parent)
 
 
 def initialize():
     "initialization function for the module: returns a wxBitmapButton to be added to the main palette."
     common.widget_classes['EditStatusBar'] = EditStatusBar
     common.widgets_from_xml['EditStatusBar'] = xml_builder
-    common.widgets['EditStatusBar'] = builder
-    # no standalone status bar any more
     import config, os
     from tree import WidgetTree
     WidgetTree.images['EditStatusBar'] = os.path.join(config.icons_path, 'statusbar.xpm')

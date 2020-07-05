@@ -94,6 +94,7 @@ def parse_command_line():
     # from '.' if it is invoked from a shell script).
     if len(args) == 1:
         filename = args[0]
+        if filename.startswith("file://"): filename = filename[7:]
         if not os.path.isabs(filename):
             filename = os.path.join(os.getcwd(), filename)
         filename = os.path.normpath(os.path.expanduser(filename))

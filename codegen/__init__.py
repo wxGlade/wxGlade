@@ -52,8 +52,6 @@ class BaseSourceFileContent(object):
      rec_event_handler: Regexp to match event handlers"""
 
     def __init__(self, name, code_writer):
-        # initialise instance logger
-        self._logger = logging.getLogger(self.__class__.__name__)
         self.OK = False
 
         # initialise instance
@@ -114,17 +112,6 @@ class BaseSourceFileContent(object):
             # UnicodeDecodeError will be handled in application.generate_code
             lines = [line.decode(encoding) for line in lines]
         return lines
-
-    def __getstate__(self):
-        state = self.__dict__.copy()
-        del state['_logger']
-        return state
-
-    def __setstate__(self, state):
-        self.__dict__.update(state)
-
-        # re-initialise logger instance deleted from __getstate__
-        self._logger = logging.getLogger(self.__class__.__name__)
 
 
 class ClassLines(object):
@@ -303,7 +290,7 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
         self.classes = OrderedDict()
         self.curr_tab = 0
         self.dependencies = set()
-        self.for_version = config.for_version
+        self.for_version = config.for_version_min
         self.header_lines = []
         self.indent_symbol = config.default_indent_symbol
         self.indent_amount = config.default_indent_amount
@@ -435,34 +422,17 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
 
         return None
 
-    def _is_class(self, obj):
-        # check whether to add a new class to the generated code and modify some attributes in place
-        IS_CLASS = obj.IS_TOPLEVEL
-        CAN_BE_CLASS = obj.CAN_BE_CLASS
-        if CAN_BE_CLASS and obj.klass != obj.WX_CLASS:
-            IS_CLASS = True
-            # for panel objects, if the user sets a custom class but (s)he doesn't want the code to be generated...
-            if obj.check_prop("no_custom_class") and obj.no_custom_class and not self.preview:
-                IS_CLASS = False
-        elif self.preview and not CAN_BE_CLASS and obj.WX_CLASS != 'CustomWidget':
-            # this is a custom class, but not a toplevel one; for preview we ignore this
-            # CustomWidgets handles this in a special way (see widgets/custom_widget/codegen.py)
-            obj.properties["klass"].set_temp(obj.WX_CLASS) # XXX handle this in a different way
-
-        obj.IS_CLASS = IS_CLASS
-
-        return IS_CLASS
-
     def _generate_code(self, parent_klass, parent, parent_builder, obj):
         # recursively generate code, for anything except application.Application
         # for toplevel widgets or with class different from wx... a class will be added
 
-        if obj.IS_SLOT or obj.classname=="spacer":
-            if obj.classname!="slot":  # "slot" has no code generator
+        if obj.IS_SLOT or obj.WX_CLASS=="spacer":
+            if obj.WX_CLASS:  # "slot" has no code generator, but "sizerslot" or "spacer" needs to be added
                 self.add_object(parent_klass, parent, parent_builder, obj)
             return
 
-        IS_CLASS = self._is_class(obj)
+        # XXX check: set obj.IS_CLASS again?
+        obj.IS_CLASS = IS_CLASS = obj.IS_TOPLEVEL or (not self.preview and obj.check_prop_truth("class"))
         # first the item
         klass = IS_CLASS and self.add_class(obj) or None
         if not obj.IS_TOPLEVEL:
@@ -602,22 +572,10 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
 
         assert code_obj not in self.classes
 
-        if self.multiple_files:
-            # let's see if the file to generate exists, and in this case create a SourceFileContent instance
-            filename = self._get_class_filename(klass)
-            if self._overwrite or not self._file_exists(filename):
-                prev_src = None
-            else:
-                prev_src = self.SourceFileContent(filename, self)
-            #self._current_extra_modules = set()
-        else:
-            # previous_source is the SourceFileContent instance that keeps info about the single file to generate
-            prev_src = self.previous_source
-
         try:
             builder = self.obj_builders[code_obj.WX_CLASS]
         except KeyError:
-            self._logger.error('%s', code_obj)
+            logging.error('%s', code_obj)
             # this is an error, let the exception be raised the details are logged by the global exception handler
             raise
 
@@ -641,7 +599,6 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
 
         builder = self.obj_builders[code_obj.WX_CLASS]
         mycn = getattr(builder, 'cn', self.cn)
-        mycn_f = getattr(builder, 'cn_f', self.cn_f)
 
         # collect all event handlers
         event_handlers = self.classes[code_obj].event_handlers
@@ -778,7 +735,7 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
         try:
             init, final = builder.get_code(obj)
         except:
-            self._logger.error('%s', obj)
+            logging.error('%s', obj)
             # this is an error, let the exception be raised the details are logged by the global exception handler
             # XXX create handler
             raise
@@ -812,7 +769,7 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
         if final:
             parent_klass.final.insert(0, "\n")
             parent_klass.final[:0] = final
-        if self.multiple_files and (obj.IS_CLASS and obj.WX_CLASS != obj.klass):
+        if self.multiple_files and obj.IS_CLASS:
             key = self._format_import(obj.klass)
             parent_klass.dependencies.add( key )
         import_modules = getattr(self.obj_builders.get(obj.WX_CLASS), 'import_modules', [])
@@ -829,7 +786,7 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
             # no code generator found: write a comment about it
             name = getattr(obj, "name", "None")
             name = self._format_name(name)
-            msg = _('Code for instance "%s" of "%s" not generated: no suitable writer found') % (name, obj.klass )
+            msg = _('Code for instance "%s" of "%s" not generated: no suitable writer found') % (name, obj.WX_CLASS )
             self._source_warning(parent_klass, msg, obj)
             self.warning(msg)
             return None
@@ -927,15 +884,14 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
     def generate_code_extraproperties(self, obj):
         "Returns a list of code fragments that set extra properties for the given object"
         tmpl = self._get_code_statement('extraproperties')
-        if not tmpl:
-            return []
+        if not tmpl: return []
         objname = self.format_generic_access(obj)
+        klass = self.cn_class( obj.get_prop_value("class", obj.WX_CLASS) )
 
         ret = []
         for name, value in obj.extraproperties:
             name_cap = name[0].upper() + name[1:]
-            stmt = tmpl % { 'klass': self.cn_class(obj.klass), 'objname': objname, 'propname': name,
-                            'propname_cap': name_cap, 'value': value }
+            stmt = tmpl % { 'klass':klass, 'objname':objname, 'propname':name, 'propname_cap':name_cap, 'value':value }
             ret.append(stmt)
         return ret
 
@@ -1105,7 +1061,7 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
             try:
                 os.makedirs(dirname)
             except:
-                self._logger.exception( _('Can not create output directory "%s"'), dirname )
+                logging.exception( _('Can not create output directory "%s"'), dirname )
 
         # save the file now
         try:
@@ -1115,7 +1071,7 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
             raise
         except:
             if config.debugging: raise
-            self._logger.exception(_('Internal Error'))
+            logging.exception(_('Internal Error'))
         if mainfile and sys.platform in ['linux2', 'darwin']:
             try:
                 # make the file executable
@@ -1140,15 +1096,13 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
 
         see: classattr_always
         """
-        if obj.klass in self.classattr_always:
+        if not obj.IS_NAMED: return False
+        if obj.WX_CLASS in self.classattr_always:
             return True
         if 'attribute' in obj.properties:
             return obj.attribute
 
-        if obj.IS_SIZER:
-            return False
-        if obj.classname in ("wxStaticText","wxHyperlinkCtrl","wxStaticBitmap","wxStaticLine",
-                             'spacer', 'sizerslot', 'slot'):
+        if obj.WX_CLASS in ("wxStaticText","wxHyperlinkCtrl","wxStaticBitmap","wxStaticLine"):
             return False
         return True  # this is the default
 
@@ -1159,7 +1113,7 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
     def warning(self, msg):
         "Show a warning message"
         if self._show_warnings:
-            self._logger.warning(msg)
+            logging.warning(msg)
 
     def _remove_tag_re(self, source, re_string):
         "Remove all tags that match the regular expression"
@@ -1241,7 +1195,7 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
     def _format_style(self, style, code_obj):
         """Return the formatted styles to insert into constructor code.
         The function just returned tmpl_style. Write a derived version implementation if more logic is needed."""
-        if code_obj.IS_CLASS:
+        if code_obj.IS_TOPLEVEL or (not self.preview and code_obj.check_prop_truth("class")):
             if style:
                 return self.tmpl_toplevel_style
             return self.tmpl_toplevel_style0
@@ -1448,18 +1402,3 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
         """Return a deep copy of the current instance.
         The instance will be reinitialised with defaults automatically in __setstate__()."""
         return copy.deepcopy(self)
-
-    def __getstate__(self):
-        """Return the state dict of this instance except the _logger and the classes attributes.
-        Both attributes caused copy errors due to file locking resp. weak references in XML SAX module."""
-        state = self.__dict__.copy()
-        del state['_logger']
-        del state['classes']
-        return state
-
-    def __setstate__(self, state):
-        """Update the instance using values from dict 'state'.
-        The code generator will be reinitialised after the state has been updated; see new_project()"""
-        self.__dict__.update(state)
-        self._logger = logging.getLogger(self.__class__.__name__)
-

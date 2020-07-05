@@ -33,9 +33,9 @@ class EditButton(BitmapMixin, ManagedBase, EditStylesMixin):
                                   "they will be re-ordered according to the platform style guide.",
                       "bitmap_dir":"If bitmap is set: Position of the bitmap in the button."}
 
-    def __init__(self, name, parent, label, pos):
+    def __init__(self, name, parent, index, label):
         # Initialise parent classes
-        ManagedBase.__init__(self, name, 'wxButton', parent, pos)
+        ManagedBase.__init__(self, name, parent, index)
         EditStylesMixin.__init__(self)
         BitmapMixin.__init__(self)
 
@@ -103,31 +103,27 @@ class EditButton(BitmapMixin, ManagedBase, EditStylesMixin):
             self.widget.SetBitmapPosition(self.bitmap_dir)
 
         BitmapMixin._properties_changed(self, modified)
-        self._set_widget_best_size()
+        #self._set_widget_best_size()
         EditStylesMixin.properties_changed(self, modified)
         ManagedBase.properties_changed(self, modified)
+        if label_modified and self.widget and not self.check_prop("size") and self.parent.IS_SIZER:
+            self.parent.layout()
 
 
-def builder(parent, pos):
+def builder(parent, index):
     "factory function for EditButton objects"
     name = parent.toplevel_parent.get_next_contained_name('button_%d')
     with parent.frozen():
-        editor = EditButton(name, parent, name, pos)
+        editor = EditButton(name, parent, index, name)
         editor.properties["style"].set_to_default()
         editor.check_defaults()
         if parent.widget: editor.create()
     return editor
 
 
-def xml_builder(attrs, parent, pos=None):
+def xml_builder(parser, base, name, parent, index):
     "factory to build EditButton objects from a XML file"
-    from xml_parse import XmlParsingError
-    try:
-        name = attrs['name']
-    except KeyError:
-        raise XmlParsingError(_("'name' attribute missing"))
-    editor = EditButton(name, parent, '', pos)
-    return editor
+    return EditButton(name, parent, index, '')
 
 
 def initialize():

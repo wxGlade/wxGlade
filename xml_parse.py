@@ -32,7 +32,6 @@ class XmlParser(ContentHandler):
     "'abstract' base class of the parsers used to load an app and to generate the code"
 
     def __init__(self):
-        self._logger = logging.getLogger(self.__class__.__name__)
         self._objects = Stack()      # Stack of 'alive' objects
         self._curr_prop = None       # Name of the current property
         self._curr_prop_val = []     # Value of the current property; strings, to be joined
@@ -41,6 +40,7 @@ class XmlParser(ContentHandler):
         self.parser = make_parser()
         self.parser.setContentHandler(self)
         self.locator = None # Document locator
+        self.index = None     # only used with ClipboardXmlWidgetBuilder
 
     def parse(self, source):
         ## Permanent workaround for Python bug "Sax parser crashes if given
@@ -76,7 +76,7 @@ class XmlParser(ContentHandler):
 
         res['encoding'] = self._get_encoding(attrs)
 
-        for_version = attrs.get('for_version', '%s.%s' % config.for_version)
+        for_version = attrs.get('for_version', '%s.%s' % config.for_version_min)
         for_version_tuple = tuple([int(t) for t in for_version.split('.')[:2]])
         if for_version_tuple < (2, 8):
             logging.warning( _('The loaded wxGlade designs are created for wxWidgets "%s", '
@@ -84,8 +84,8 @@ class XmlParser(ContentHandler):
                              for_version )
             logging.warning( _('The designs will be loaded and converted to wxWidgets "%s" partially. '
                                'Please check the designs carefully.'),
-                            '%s.%s' % config.for_version )
-            for_version = '%s.%s' % config.for_version
+                            '%s.%s' % config.for_version_min )
+            for_version = '%s.%s' % config.for_version_min
         res['for_version'] = for_version
 
         try:
@@ -162,7 +162,7 @@ class XmlParser(ContentHandler):
             try:
                 'a'.encode(encoding)
             except LookupError:
-                self._logger.warning( _('Unknown encoding "%s", fallback to default encoding "%s"'),
+                logging.warning( _('Unknown encoding "%s", fallback to default encoding "%s"'),
                                       encoding, config.default_encoding)
                 encoding = config.default_encoding
         return encoding
@@ -176,6 +176,11 @@ class XmlWidgetBuilder(XmlParser):
         self.filename = filename
         self.input_file_version = input_file_version
         XmlParser.__init__(self)
+
+    def check_input_file_version(self, version):
+        # return True if file version is older
+        if not self.input_file_version: return True
+        return self.input_file_version[:len(version)] < version
 
     def startElement(self, name, attrs):
         if name == 'application':
@@ -263,14 +268,21 @@ class XmlWidgetBuilder(XmlParser):
             obj.obj.on_load()
         else:
             # end of a property or error
-            # case 1: set _curr_prop value
+            prop = self._curr_prop
             data = "".join(self._curr_prop_val)
+            self._curr_prop = None
+            self._curr_prop_val = []
+            if prop in ("menubar", "toolbar", "statusbar"):
+                # case 0: ignore properties: menubar, toolbar, statusbar
+                return
+
             if data:
+                # case 1: set _curr_prop value
                 try:
                     handler = self.top().prop_handlers.top()
                     if not handler or handler.char_data(data):
                         # if char_data returned False, we don't have to call add_property
-                        self.top().add_property(self._curr_prop, data)
+                        self.top().add_property(prop, data)
                 except AttributeError:
                     pass
 
@@ -284,8 +296,6 @@ class XmlWidgetBuilder(XmlParser):
                     obj.prop_handlers.pop()
             except AttributeError:
                 pass
-            self._curr_prop = None
-            self._curr_prop_val = []
 
     def characters(self, data):
         if not data or data.isspace():
@@ -362,11 +372,12 @@ class ClipboardXmlWidgetBuilder(XmlWidgetBuilder):
         they keep info about the destination of the hierarchy of widgets (i.e. the target of the 'paste' command)
       - The first widget built must be hidden and shown again at the end of the operation"""
 
-    def __init__(self, parent, pos, proportion, span, flag, border):
+    def __init__(self, parent, index, proportion, span, flag, border):
         XmlWidgetBuilder.__init__(self)
         self._renamed = {}
         self._object_counter = 0
         self.parent = parent
+        self.index = index
         if not parent:
             # e.g. a frame is pasted: update with the top level names
             self.have_names = set(child.name for child in common.root.children)
@@ -399,7 +410,7 @@ class ClipboardXmlWidgetBuilder(XmlWidgetBuilder):
             sizeritem.properties["span"].set(span)
             sizeritem.properties["flag"].set(flag)
             sizeritem.properties["border"].set(border)
-            sizeritem.properties["pos"].set(pos)
+            sizeritem.index = index
             # fake sizer item
             fake_sizeritem = XmlClipboardObject(obj=sizeritem, parent=parent)
 
@@ -487,7 +498,7 @@ class ClipboardXmlWidgetBuilder(XmlWidgetBuilder):
                 try:
                     self.top_obj = self.top().obj
                 except AttributeError:
-                    self._logger.exception( _('Exception caused by obj: %s'), self.top_obj )
+                    logging.exception( _('Exception caused by obj: %s'), self.top_obj )
             self.depth_level += 1
             self._object_counter += 1
 
@@ -509,39 +520,50 @@ class ClipboardXmlWidgetBuilder(XmlWidgetBuilder):
         if not self.depth_level:
             if self.parent:
                 self.parent.on_load(child=self.top_obj)  # e.g. a GridBagSizer needs to check overlapped slots
-                try:
-                    # show the first object and update its layout
-                    #if self.top_obj.node.parent.widget.is_visible():
-                    #    common.app_tree.show_widget(self.top_obj.node)
-                    if self.parent.widget:
-                        self.top_obj.create_widgets()
-                except AttributeError:
-                    self._logger.exception( _('Exception caused by obj: %s'), self.top_obj )
             common.app_tree.auto_expand = True
+            try:
+                if self.parent and self.parent.widget:
+                    self.top_obj.create()
+                    import wx
+                    if self.top_obj.IS_SIZER:
+                        window_widget = self.top_obj.window.widget
+                    else:
+                        window_widget = self.top_obj.widget
+                    wx.SafeYield()                          # required for gtk when e.g. pasting a StaticText with font
+                    self.top_obj.parent_window.layout()     # required for gtk when e.g. pasting a StaticText with font
+                    window_widget.Refresh()  # required if not using Freeze/Thaw on Windows
+                    window_widget.GetTopLevelParent().SendSizeEvent()
+
+            except AttributeError:
+                logging.exception( _('Exception caused by obj: %s'), self.top_obj )
+
+
+class XMLAttrs(dict):
+    # raises XmlParsingError instead of KeyError
+    def __getitem__(self, key):
+        try:
+            return dict.__getitem__(self, key)
+        except KeyError:
+            if 'name' in self:
+                raise XmlParsingError( _("attribute %s missing from object '%s'")%(key, self['name']) )
+            raise XmlParsingError( _("attribute %s missing from object")%key )
 
 
 class XmlWidgetObject(object):
     "A class to encapsulate widget attributes read from a XML file, to store them until the widget can be created"
 
     def __init__(self, attrs, parser):
-        # initialise instance logger
-        self._logger = logging.getLogger(self.__class__.__name__)
-
-        attrs.input_file_version = parser.input_file_version  # for handling backwards compatibility on loading
+        attrs = XMLAttrs(attrs)
 
         self.prop_handlers = Stack()  # a stack of custom handler functions to set properties of this object
-        self.parser = parser
 
         self._properties_added = []
-        try:
-            base = attrs.get('base', None)
-            self.klass = attrs['class']
-        except KeyError:
-            raise XmlParsingError(_("'object' items must have a 'class' attribute"))
+        base = attrs.get('base', None)
+        klass = attrs['class']
 
         # find sizeritem, sizer, parent window
         sizeritem = sizer = parent = None
-        stack = self.parser._objects[:]
+        stack = parser._objects[:]
         top = stack.pop(-1) if stack else None
 
         if top and isinstance(top.obj, Sizeritem):
@@ -566,49 +588,86 @@ class XmlWidgetObject(object):
             # if base is not None, the object is a widget (or sizer), and not a sizeritem
             self.sizeritem = sizeritem  # the properties will be copied later in endElement
 
-            pos = getattr(sizeritem, 'pos', None)
-            if pos is None and hasattr(parent, "get_itempos"):
+            index = getattr(sizeritem, 'index', None)
+            if index is None and hasattr(parent, "get_itempos"):
                 # splitters and notebooks don't use sizeritems around their items in XML; pos is found from the name
-                pos = parent.get_itempos(attrs)
+                index = parent.get_itempos(attrs)
+            elif not sizeritem and not stack:
+                index = parser.index
 
             # build the widget
             builder = common.widgets_from_xml.get(base, None)
             if builder is None: raise XmlParsingError("Widget '%s' not supported."%base)
-            self.obj = builder(attrs, sizer or parent, pos)
-            p = self.obj.properties.get("class")
-            if p and not p.readonly:  # can happen when pasting a standalone ToolBar or MenuBar to a Frame
-                p.set(self.klass)
+            
+            self.obj = builder(parser, base, attrs["name"], sizer or parent, index)
+            self.set_class_attributes(parser, attrs) # set 'class' and 'instance_class' properties, if applicable
 
             self.IS_SIZER = self.obj.IS_SIZER
             self.IS_WINDOW = self.obj.IS_WINDOW
 
-        elif self.klass == 'sizeritem':
+        elif klass == 'sizeritem':
             self.obj = Sizeritem()
             self.parent = parent
             self.IS_SIZERITEM = True
 
-        elif self.klass == 'sizerslot':
+        elif klass == 'sizerslot':
             assert sizer is not None, _("malformed wxg file: slots can only be inside sizers!")
             self.obj = None
             self.IS_SLOT = True
             sizer._add_slot(loading=True)
-            sizer.layout()
 
         # push the object on the _objects stack
-        self.parser._objects.push(self)
+        parser._objects.push(self)
+
+    def set_class_attributes(self, parser, attrs):
+        # old files: no 'instance_class' attribute, 'class' is 'multi purpose'
+        CLASS = self.obj.__class__
+        class_p = self.obj.properties.get("class")
+
+        class_v = attrs.get("class") or None
+        IS_BASE = class_v==CLASS.WX_CLASS or (CLASS.WX_CLASSES and class_v in CLASS.WX_CLASSES)
+
+        instance_class = attrs.get("instance_class")
+
+        if parser.check_input_file_version( (0,9,9) ):
+            # handle backwards compatibility
+            if class_p:
+                if class_p.deactivated is not None:
+                    if IS_BASE:
+                        class_v = None
+            elif class_v:
+                if not IS_BASE or CLASS.WX_CLASS=="CustomWidget":
+                    instance_class = class_v
+                class_v = None
+        else:
+            # current file format: 'class' is always written
+            if class_p and class_p.deactivated is not None:
+                if IS_BASE:
+                    class_v = None
+
+        # update self.obj properties
+        modified = []
+        if class_v:
+            class_p.set( class_v, activate=True )
+            modified.append("class")
+        if instance_class:
+            self.obj.properties["instance_class"].set( instance_class, activate=True )
+            modified.append("instance_class")
+        if modified:
+            self.obj.properties_changed(modified)
 
     def add_property(self, name, val):
         """adds a property to this widget. This method is not called if there
         was a custom handler for this property, and its char_data method returned False"""
         if name == 'pos':  # sanity check, this shouldn't happen...
-            self._logger.debug('add_property(name=pos)')
+            logging.debug('add_property(name=pos)')
             return
         try:
             prop = self.obj.properties[name]
         except KeyError:
             # unknown property for this object; issue a warning and ignore the property
             if config.debugging: raise
-            self._logger.error( _("WARNING: Property '%s' not supported by this object ('%s') "), name, self.obj )
+            logging.error( _("WARNING: Property '%s' not supported by this object ('%s') "), name, self.obj )
             return
         prop.load(val, activate=True)
         self._properties_added.append(name)
@@ -636,14 +695,13 @@ import new_properties as np
 
 class Sizeritem(np.PropertyOwner):
     "temporarily represents a child of a sizer"
-    SIZER_PROPERTIES = ["pos","proportion","span","border","flag"]
+    SIZER_PROPERTIES = ["proportion","span","border","flag"]
     def __init__(self):
         np.PropertyOwner.__init__(self)
         self.proportion = np.LayoutProportionProperty(0)
         self.span = np.LayoutSpanProperty((1,1))
         self.border = np.SpinProperty(0)
         self.flag = np.ManagedFlags(None, name="sizeritem_flags")
-        self.pos = np.SpinProperty(None)
 
     def on_load(self, child=None):
         pass

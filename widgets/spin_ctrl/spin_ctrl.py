@@ -21,8 +21,8 @@ class EditSpinCtrl(ManagedBase, EditStylesMixin):
     _PROPERTIES = ["Widget", "range", "value", "style"]
     PROPERTIES = ManagedBase.PROPERTIES + _PROPERTIES + ManagedBase.EXTRA_PROPERTIES
 
-    def __init__(self, name, parent, pos):
-        ManagedBase.__init__(self, name, 'wxSpinCtrl', parent, pos)
+    def __init__(self, name, parent, index):
+        ManagedBase.__init__(self, name, parent, index)
         EditStylesMixin.__init__(self)
 
         # initialise instance properties
@@ -36,8 +36,8 @@ class EditSpinCtrl(ManagedBase, EditStylesMixin):
         else:
             self.widget = wx.SpinCtrl(self.parent_window.widget, self.id, min=mi, max=ma)
 
-    def finish_widget_creation(self, sel_marker_parent=None, re_add=True):
-        ManagedBase.finish_widget_creation(self, sel_marker_parent, re_add)
+    def finish_widget_creation(self, level, sel_marker_parent=None):
+        ManagedBase.finish_widget_creation(self, level, sel_marker_parent)
         self.widget.Bind(wx.EVT_CHILD_FOCUS, self._on_set_focus)
         self.widget.Bind(wx.EVT_SET_FOCUS, self._on_set_focus)
         self.widget.Bind(wx.EVT_SPIN, self.on_set_focus)
@@ -74,25 +74,20 @@ class EditSpinCtrl(ManagedBase, EditStylesMixin):
         ManagedBase.properties_changed(self, modified)
 
 
-def builder(parent, pos):
+def builder(parent, index):
     "factory function for EditSpinCtrl objects"
     name = parent.toplevel_parent.get_next_contained_name('spin_ctrl_%d')
     with parent.frozen():
-        editor = EditSpinCtrl(name, parent, pos)
+        editor = EditSpinCtrl(name, parent, index)
         editor.properties["style"].set_to_default()
         editor.check_defaults()
         if parent.widget: editor.create()
     return editor
 
 
-def xml_builder(attrs, parent, pos=None):
+def xml_builder(parser, base, name, parent, index):
     "factory function to build EditSpinCtrl objects from a XML file"
-    from xml_parse import XmlParsingError
-    try:
-        name = attrs['name']
-    except KeyError:
-        raise XmlParsingError(_("'name' attribute missing"))
-    editor = EditSpinCtrl( name, parent, pos )
+    editor = EditSpinCtrl( name, parent, index )
     editor.properties["value"].set_active(False)
     return editor
 

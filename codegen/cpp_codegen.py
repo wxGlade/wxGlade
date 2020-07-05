@@ -8,12 +8,11 @@ C++ code generator
 """
 
 
-import os.path, re
+import os.path, re, logging
 
 from codegen import BaseLangCodeWriter, BaseSourceFileContent, _replace_tag
 from codegen import ClassLines as BaseClassLines
-import config
-import wcodegen
+import config, wcodegen
 
 
 class SourceFileContent(BaseSourceFileContent):
@@ -509,7 +508,7 @@ class CPPCodeWriter(BaseLangCodeWriter, wcodegen.CppMixin):
         try:
             builder = self.obj_builders[code_obj.WX_CLASS]
         except KeyError:
-            self._logger.error('%s', code_obj)
+            logging.error('%s', code_obj)
             # this is an error, let the exception be raised; the details are logged by the global exception handler
             raise
         ret = self.classes[code_obj] = self.ClassLines()  # ClassLines will collect the code lines incl. children
@@ -941,14 +940,13 @@ class CPPCodeWriter(BaseLangCodeWriter, wcodegen.CppMixin):
                                   'that the resulting code is correct!' % obj.name )
 
             klass.ids.extend(ids)
-            # attribute is a special property which control whether sub_obj must be accessible as an attribute of
-            # top_obj, or as a local variable in the do_layout method
-            if self.store_as_attr(obj):
-                klass.sub_objs.append((obj.klass, obj.name))
-        elif obj.klass != "sizerslot":
-            # the object is a sizer
-            if self.store_as_attr(obj):
-                klass.sub_objs.append((obj.klass, obj.name))
+
+        if self.store_as_attr(obj):
+            if obj.check_prop("instance_class"):
+                klassname = obj.instance_class
+            else:
+                klassname = obj.get_prop_value("class", obj.WX_CLASS)
+            klass.sub_objs.append( (klassname, obj.name) )
 
         klass.init.extend(init)
 
@@ -957,7 +955,7 @@ class CPPCodeWriter(BaseLangCodeWriter, wcodegen.CppMixin):
 
 
         klass.final[:0] = final
-        if self.multiple_files and (obj.IS_CLASS and obj.WX_CLASS != obj.klass):
+        if self.multiple_files and obj.IS_CLASS:
             klass.dependencies.append(obj.klass)
         else:
             if obj.WX_CLASS in self.obj_builders:

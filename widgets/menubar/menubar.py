@@ -712,36 +712,23 @@ class MenuHandler(BaseXmlBuilderTagHandler):
 
 
 
-class EditMenuBar(EditBase, PreviewMixin):
+class EditMenuBar(EditBase):#, PreviewMixin):
 
     WX_CLASS = "wxMenuBar"
-    CAN_BE_CLASS = True
-    _PROPERTIES = ["menus", "preview"]
+    _PROPERTIES = ["menus",]
     PROPERTIES = EditBase.PROPERTIES + _PROPERTIES + EditBase.EXTRA_PROPERTIES
     CHILDREN = 0
 
-    def __init__(self, name, klass, parent):
-        if parent.IS_ROOT:
-            self.__dict__["IS_TOPLEVEL"] = True
-        if self.IS_TOPLEVEL:
-            custom_class = True
-            pos = None
-        else:
-            custom_class = False
-            pos = "_menubar"
-        EditBase.__init__(self, name, klass, parent, custom_class, pos)
+    def __init__(self, name, parent):
+        EditBase.__init__(self, name, parent, "_menubar")
 
         self.menus = MenuProperty()
         self.window_id = None  # just a dummy for code generation
 
         self._mb = None  # the real menubar
-        if self.IS_TOPLEVEL:
-            PreviewMixin.__init__(self)  # add a preview button
-        else:
-            self.preview = None
 
-    def create_widgets(self):
-        EditBase.create_widgets(self)
+    def create(self):
+        EditBase.create(self)
         if self.IS_TOPLEVEL and self.widget:
             self.widget.Show()
             self.widget.Raise()
@@ -769,6 +756,11 @@ class EditMenuBar(EditBase, PreviewMixin):
 
         self.widget.Bind(wx.EVT_LEFT_DOWN, self.on_set_focus)
         self.set_menus()  # show the menus
+
+    def remove(self):
+        EditBase.remove(self)
+        if 'menubar' in self.parent.properties:
+            self.parent.properties['menubar'].set(False)
 
     def set_menus(self):
         if not self._mb: return  # nothing left to do
@@ -807,28 +799,21 @@ class EditMenuBar(EditBase, PreviewMixin):
             else: self._mb.Append(m, misc.wxstr(menu.root.label))
         self._mb.Refresh()
 
-    def remove(self, *args, **kwds):
-        # entry point from GUI
-        if self.IS_TOPLEVEL:
-            if self.widget:
-                compat.DestroyLater(self.widget)
-                self.widget = None
-        else:
-            self.parent.properties['menubar'].set(False)
-            self.parent._menubar = None
-            if kwds.get('gtk_do_nothing', False) and wx.Platform == '__WXGTK__':
-                # workaround to prevent some segfaults on GTK: unfortunately,
-                # I'm not sure that this works in all cases, and moreover it
-                # could probably leak some memory (but I'm not sure)
-                self.widget = None
-            else:
-                if self.parent.widget:
-                    self.parent.widget.SetMenuBar(None)
-        EditBase.remove(self)
+    def destroy_widget(self, level):
+        # if parent is being deleted, we rely on this being destroyed
+        if level==0 and not self.IS_TOPLEVEL and self.parent.widget:
+            self.parent.widget.SetMenuBar(None)
+        if level==0:
+            EditBase.destroy_widget(self, level)
+
+    def hide_widget(self, *args):
+        if self.widget and self.IS_TOPLEVEL:
+            self.widget.Hide()
+            common.app_tree.Collapse(self.item)
+            common.app_tree.select_item(self.parent)
 
     def popup_menu(self, event, pos=None):
-        if self.parent is not None:
-            return  # do nothing in this case
+        if not self.IS_TOPLEVEL: return
         super(EditMenuBar, self).popup_menu(event, pos)
 
     def _create_popup_menu(self, widget=None):
@@ -850,12 +835,6 @@ class EditMenuBar(EditBase, PreviewMixin):
         misc.bind_menu_item_after(widget, item, self.properties["menus"].edit_menus)
 
         return menu
-
-    def hide_widget(self, *args):
-        if self.widget and self.IS_TOPLEVEL:
-            self.widget.Hide()
-            common.app_tree.Collapse(self.item)
-            common.app_tree.select_item(self.parent)
 
     def set_name(self, name):
         EditBase.set_name(self, name)
@@ -879,50 +858,72 @@ class EditMenuBar(EditBase, PreviewMixin):
 
 
 
-def builder(parent, pos):
+class EditTopLevelMenuBar(EditMenuBar, PreviewMixin):
+    WXG_BASE = "EditMenuBar"
+    IS_TOPLEVEL = True
+    _PROPERTIES = ["menus", "preview"]
+    PROPERTIES = EditBase.PROPERTIES + _PROPERTIES + EditBase.EXTRA_PROPERTIES
+    np.insert_after(PROPERTIES, "name", "class")
+    TREE_ICON = "EditMenuBar"
+
+    def __init__(self, name, parent, class_):
+        EditBase.__init__(self, name, parent, None, class_)
+
+        self.menus = MenuProperty()
+        self.window_id = None  # just a dummy for code generation
+
+        self._mb = None  # the real menubar
+
+        PreviewMixin.__init__(self)  # add a preview button
+
+
+
+def builder(parent, index, klass=None):
     "factory function for EditMenuBar objects"
-    import window_dialog as wd
-    klass = 'wxMenuBar' if common.root.language.lower()=='xrc' else 'MyMenuBar'
-
-    # if e.g. on a frame, suggest the user to add the menu bar to this
-    toplevel_widget = None
-    if misc.focused_widget is not None and not misc.focused_widget.IS_ROOT:
-        toplevel_widget = misc.focused_widget.toplevel_parent
-        if not "menubar" in toplevel_widget.properties:
-            toplevel_widget = None
-    if toplevel_widget is not None:
-        dialog = wd.StandaloneOrChildDialog(klass, "Select menubar type and class", toplevel_widget, "menubar")
+    # this one is a bit special as usually it's called with parent=application
+    # if a frame w/o menubar is focused, it will ask the user whether he wants to add a menubar to that
+    if klass is None:
+        import window_dialog as wd
+        klass = 'wxMenuBar' if common.root.language.lower()=='xrc' else 'MyMenuBar'
+    
+        # if e.g. on a frame, suggest the user to add the menu bar to this
+        toplevel_widget = None
+        if misc.focused_widget is not None and not misc.focused_widget.IS_ROOT:
+            toplevel_widget = misc.focused_widget.toplevel_parent
+            if not "menubar" in toplevel_widget.properties:
+                toplevel_widget = None
+        if toplevel_widget is not None:
+            dialog = wd.StandaloneOrChildDialog(klass, "Select menubar type and class", toplevel_widget, "menubar")
+        else:
+            dialog = wd.WindowDialog(klass, None, 'Select standalone menubar class', True)
+    
+        klass = dialog.show()
+        dialog.Destroy()
+        if klass is None: return None
     else:
-        dialog = wd.WindowDialog(klass, None, 'Select standalone menubar class', True)
+        # allow to call builder(frame, None, True)
+        toplevel_widget = parent
 
-    klass = dialog.show()
-    dialog.Destroy()
-    if klass is None: return None
-    if klass is True:
+    if index=="_menubar" or klass is True:
         # add to toplevel widget
         toplevel_widget.properties["menubar"].set(True, notify=True)
         return toplevel_widget._menubar
+
+    # a standalone menubar
     name = dialog.get_next_name("menubar")
-    with (not parent.IS_ROOT and parent.frozen()) or misc.dummy_contextmanager():
-        editor = EditMenuBar(name, klass, parent)
-        editor.create()
-        editor.widget.Show()
+    editor = EditTopLevelMenuBar(name, parent, klass)
+    editor.create()
+    editor.widget.Show()
     return editor
 
 
-
-def xml_builder(attrs, parent, pos=None):
+def xml_builder(parser, base, name, parent, index):
     "factory to build EditMenuBar objects from a XML file"
-    name = attrs.get('name')
-    if not parent.IS_ROOT:
-        parent.properties["menubar"].set(True, notify=True)
-        if name:
-            p_name = parent._menubar.properties["name"]
-            p_name.previous_value = p_name.value
-            p_name.set(name)
-            parent._menubar.properties_changed(["name"])
-        return parent._menubar
-    return EditMenuBar(name, attrs.get('class', 'wxMenuBar'), parent)
+    if parent.IS_ROOT:
+        return EditTopLevelMenuBar(name, parent, "MenuBar")
+
+    parent.properties["menubar"].set(True)
+    return EditMenuBar(name, parent)
 
 
 def initialize():

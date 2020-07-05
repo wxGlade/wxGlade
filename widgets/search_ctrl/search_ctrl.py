@@ -23,9 +23,9 @@ class EditSearchCtrl(ManagedBase, EditStylesMixin):
     PROPERTIES = ManagedBase.PROPERTIES + _PROPERTIES + ManagedBase.EXTRA_PROPERTIES
     #recreate_on_style_change = True
 
-    def __init__(self, name, parent, pos):
+    def __init__(self, name, parent, index):
         # initialize base classes
-        ManagedBase.__init__(self, name, 'wxSearchCtrl', parent, pos)
+        ManagedBase.__init__(self, name, parent, index)
         EditStylesMixin.__init__(self)
 
         # initialize instance properties
@@ -45,8 +45,8 @@ class EditSearchCtrl(ManagedBase, EditStylesMixin):
         if self.properties["max_length"].is_active():
             self.widget.SetMaxLength(self.max_length)
 
-    def finish_widget_creation(self, sel_marker_parent=None, re_add=True):
-        ManagedBase.finish_widget_creation(self, sel_marker_parent, re_add)
+    def finish_widget_creation(self, level, sel_marker_parent=None):
+        ManagedBase.finish_widget_creation(self, sel_marker_parent)
         #self.widget.Bind(wx.EVT_SET_FOCUS, self.on_set_focus)
         self.widget.Bind(wx.EVT_CHILD_FOCUS, self.on_set_focus)
         #self.widget.Bind(wx.EVT_TEXT, self.on_set_focus)
@@ -67,25 +67,20 @@ class EditSearchCtrl(ManagedBase, EditStylesMixin):
 
 
 
-def builder(parent, pos):
+def builder(parent, index):
     "factory function for EditSearchCtrl objects"
     name = parent.toplevel_parent.get_next_contained_name('text_ctrl_%d')
     with parent.frozen():
-        editor = EditSearchCtrl(name, parent, pos)
+        editor = EditSearchCtrl(name, parent, index)
         editor.properties["style"].set_to_default()
         editor.check_defaults()
         if parent.widget: editor.create()
     return editor
 
 
-def xml_builder(attrs, parent, pos=None):
+def xml_builder(parser, base, name, parent, index):
     "factory function to build EditSearchCtrl objects from a XML file"
-    from xml_parse import XmlParsingError
-    try:
-        name = attrs['name']
-    except KeyError:
-        raise XmlParsingError(_("'name' attribute missing"))
-    return EditSearchCtrl(name, parent, pos)
+    return EditSearchCtrl(name, parent, index)
 
 
 def initialize():

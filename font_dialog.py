@@ -29,7 +29,6 @@ class wxGladeFontDialog(wx.Dialog):
     font_families_from[wx.FONTFAMILY_TELETYPE] = 'teletype'
 
     def __init__(self, *args, **kwds):
-        self._logger = logging.getLogger(self.__class__.__name__)
         kwds["style"] = wx.DEFAULT_DIALOG_STYLE
         wx.Dialog.__init__(self, *args, **kwds)
         self.label_2_copy = wx.StaticText(self, -1, _("Family:"))
@@ -106,7 +105,7 @@ class wxGladeFontDialog(wx.Dialog):
             self.point_size.SetValue(int(props[0]))
             self.point_size.SetSelection(-1,-1)
         except ValueError:
-            self._logger.exception(_('Internal Error'))
+            logging.exception(_('Internal Error'))
 
     def __set_properties(self):
         self.SetTitle(_("Select font attributes"))

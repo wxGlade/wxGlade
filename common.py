@@ -25,7 +25,7 @@ import config, compat, plugins, misc
 
 
 widget_classes = {}   # EditWidget class name -> EditWidget class
-widgets = {}          # all widgets: EditWidget class name -> factory(parent, pos)
+widgets = {}          # all widgets: EditWidget class name -> factory(parent, index)
 widgets_from_xml = {} # Factory functions to build objects from a XML file
 
 class_names = {} # maps the name of the classes used by wxGlade to the correspondent classes of wxWindows
@@ -35,6 +35,7 @@ main = None            # main window
 palette = None         # the panel which contains the various buttons to add the different widgets
 property_panel = None  # panel for editing the current widgets properties
 app_tree = None        # widget hierarchy of the application; root is application itself; a tree.WidgetTree instance
+shell = None           # will be created only when selecting from the help menu
 root = None
 
 # these will be set when clicking an item on the palette window:
@@ -42,8 +43,6 @@ adding_widget = False # If True, the user is adding a widget to some sizer
 adding_sizer = False  # "Needed to add toplevel sizers"
 widget_to_add = None  # widget class name that is being added
 adding_window = None  # the tree or the design window; used for centering dialogs
-
-design_windows = []
 
 pin_design_window = False
 
@@ -73,6 +72,10 @@ def init_codegen():
     load_code_writers()
     all_widgets = load_widgets()
     sizer_buttons = load_sizers()
+
+    # initialize preview code generator
+    preview_codegen = code_writers["preview"] = code_writers["python"].copy()
+    preview_codegen.for_version = compat.version
 
     # merge sizer buttons
     for section in sizer_buttons:

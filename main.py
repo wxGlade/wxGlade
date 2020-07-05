@@ -135,7 +135,8 @@ class wxGladePropertyPanel(wx.Panel):
         self.current_widget = edit_widget
         if edit_widget:
             # XXX set status bar
-            self.heading.SetValue( _('Properties - %s - <%s>:') % (edit_widget.klass, edit_widget.name) )
+            klass = edit_widget.get_prop_value("class", edit_widget.WX_CLASS)
+            self.heading.SetValue( _('Properties - %s - <%s>:') % (klass, edit_widget.name) )
         else:
             self.heading.SetValue( _('Properties') )
 
@@ -365,13 +366,24 @@ class wxGladePalettePanel(wx.Panel):
             focus = self.FindWindowById(self._ids_by_row[new_row][new_col])
             if focus: focus.SetFocus()
 
+import shell_frame
+class ShellFrame(shell_frame.ShellFrame):
+    def on_btn_assign(self, event):
+        # insert a variable assignment
+        widget = misc.focused_widget
+        if not widget:
+            event.Skip()
+            return
+        path = widget.get_path()
+        command = 'widget = common.root.find_widget_from_path("%s")\r\n'%path
+        #self.shell.push(command) # or .write ?
+        self.shell.write(command)
+
+
 class wxGladeFrame(wx.Frame):
     "Main frame of wxGlade"
     def __init__(self):
-        self._logger = logging.getLogger(self.__class__.__name__)
         version = config.version
-        if version=='"faked test version"':
-            version = "%s on Python %d.%d"%(version, sys.version_info.major, sys.version_info.minor)
         pos, size, layout = self.init_layout_settings()
         wx.Frame.__init__(self, None, -1, "wxGlade v%s" % version, pos=pos, size=size,
                           style=wx.DEFAULT_FRAME_STYLE, name='MainFrame')
@@ -604,6 +616,11 @@ class wxGladeFrame(wx.Frame):
         misc.bind_menu_item(self, i, self.show_releases)
         help_menu.AppendSeparator() # ----------------------------------------------------------------------------------
 
+        if config.debugging:
+            i = append_menu_item(help_menu, -1, 'Shell\tF6')
+            misc.bind_menu_item(self, i, self.create_shell_window)
+            help_menu.AppendSeparator()
+
         item = append_menu_item(help_menu, wx.ID_ABOUT, _('About'), wx.ART_INFORMATION)
         misc.bind_menu_item(self, item, self.show_about_box)
 
@@ -726,7 +743,7 @@ class wxGladeFrame(wx.Frame):
         elif not res:
             self.autosave_timer.Stop()
             config.preferences.autosave = False
-            self._logger.info(_('Disable autosave function permanently'))
+            logging.info(_('Disable autosave function permanently'))
             wx.MessageBox(
                 _('The autosave function failed. It has been disabled\n'
                   'permanently due to this error. Use the preferences\n'
@@ -838,6 +855,10 @@ class wxGladeFrame(wx.Frame):
             else:
                 toplevel.widget.Raise()
 
+    def create_shell_window(self):
+        common.shell = ShellFrame(None)
+        common.shell.Show()
+
     # status bar for message display ###################################################################################
     def create_statusbar(self):
         self.CreateStatusBar(1)
@@ -946,7 +967,8 @@ class wxGladeFrame(wx.Frame):
         if not editor: return
         misc.set_focused_widget(editor)
         if editor is common.root: return
-        editor.toplevel_parent.create_widgets()
+        editor.toplevel_parent.create()
+
         common.app_tree.ExpandAllChildren(editor.item)
 
         if not position or not editor.widget: return
@@ -966,7 +988,7 @@ class wxGladeFrame(wx.Frame):
 
         try:
             try:
-                self._logger.info( _('Read wxGlade project from file "%s"'), filename )
+                logging.info( _('Read wxGlade project from file "%s"'), filename )
                 input_file_version = None
 
                 if not isinstance(filename, list):
@@ -1035,12 +1057,12 @@ class wxGladeFrame(wx.Frame):
 
         common.app_tree.Expand(common.root.item)
         if common.root.is_template:
-            self._logger.info(_("Template loaded"))
+            logging.info(_("Template loaded"))
             common.root.template_data = template.Template(filename)
             common.root.filename = None
 
         end = time.time()
-        self._logger.info(_('Loading time: %.5f'), end - start)
+        logging.info(_('Loading time: %.5f'), end - start)
 
         common.root.saved = True
         #common.property_panel.Raise()
@@ -1476,6 +1498,14 @@ def main(filename=None):
             win.import_xrc(filename)
         else:
             win._open_app(filename, False)
+
+            # mainly for debugging we want the first window to be opened already
+            if filename and config.open_design_window and common.root.children:
+                editor = common.root.children[0]
+                misc.set_focused_widget(editor)
+                editor.create()
+                common.app_tree.ExpandAllChildren(editor.item)
+
         win.cur_dir = os.path.dirname(filename)
     #win = app.GetTopWindow()
     ##win.import_xrc(r"D:\Python\Sources35\wxglade\wxglade_dev\tests\casefiles\CalendarCtrl.xrc")

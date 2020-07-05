@@ -7,10 +7,8 @@ Menubar widget module initialization
 
 
 def initialize():
-    import config
     from . import codegen
     codegen.initialize()
-    #if config.use_gui:
     from . import menubar
     global EditMenuBar
     EditMenuBar = menubar.EditMenuBar

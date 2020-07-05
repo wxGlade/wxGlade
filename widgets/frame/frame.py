@@ -19,14 +19,15 @@ class EditFrame(BitmapMixin, TopLevelBase, EditStylesMixin):
     WX_CLASS = "wxFrame"
     _PROPERTIES =["Widget", "title", "icon", "centered", "sizehints","menubar", "toolbar", "statusbar", "style"]
     PROPERTIES = TopLevelBase.PROPERTIES + _PROPERTIES + TopLevelBase.EXTRA_PROPERTIES
+    #np.insert_after(PROPERTIES, "class", "custom_base")
     _PROPERTY_HELP   = { 'icon':'Icon for this window.',
                          "size":WindowBase._PROPERTY_HELP["size_sizehints"] }
     _PROPERTY_LABELS = { "sizehints":'Set Size Hints', "menubar":'Has MenuBar', "toolbar":'Has ToolBar',
                          "statusbar":'Has StatusBar' }
     ATT_CHILDREN = ["_menubar", "_statusbar", "_toolbar"]
 
-    def __init__(self, name, parent, title, style=wx.DEFAULT_FRAME_STYLE, klass='wxFrame'): #XXX style is not used
-        TopLevelBase.__init__(self, name, klass, parent, title=title)
+    def __init__(self, name, parent, klass, title, style=wx.DEFAULT_FRAME_STYLE): #XXX style is not used
+        TopLevelBase.__init__(self, name, parent, klass, title)
         EditStylesMixin.__init__(self)
         self.properties["style"].set(style)
 
@@ -44,19 +45,15 @@ class EditFrame(BitmapMixin, TopLevelBase, EditStylesMixin):
         self._menubar = self._toolbar = None  # these properties will hold the EditMenubar instances etc.
 
     def create_widget(self):
-        if self.parent:
-            parent = self.parent.widget
-        else:
-            #parent = common.palette
-            parent = None
+        parent = None
         style = self.style
         if common.pin_design_window: style |= wx.STAY_ON_TOP
         self.widget = wx.Frame(parent, self.id, self.title, style=style)
         self._set_widget_icon()
 
-    def finish_widget_creation(self):
+    def finish_widget_creation(self, level):
         # add menu, status and tool bar
-        TopLevelBase.finish_widget_creation(self)
+        TopLevelBase.finish_widget_creation(self, level)
         if not self.properties['size'].is_active():
             self.widget.SetSize((400, 300))
         if wx.Platform == '__WXMSW__':
@@ -67,16 +64,6 @@ class EditFrame(BitmapMixin, TopLevelBase, EditStylesMixin):
             self.widget.SetStatusBar(self._statusbar.widget)
         if self.toolbar and self._toolbar.widget:
             self.widget.SetToolBar(self._toolbar.widget)
-
-    def remove(self, *args):
-        # remove menu, status and tool bar
-        if self.menubar:
-            self._menubar = self._menubar.remove(gtk_do_nothing=True)
-        if self.statusbar:
-            self._statusbar = self._statusbar.remove(do_nothing=True)
-        if self.toolbar:
-            self._toolbar = self._toolbar.remove(do_nothing=True)
-        TopLevelBase.remove(self, *args)
 
     def _set_widget_icon(self):
         if self.icon:
@@ -93,41 +80,36 @@ class EditFrame(BitmapMixin, TopLevelBase, EditStylesMixin):
         if self.menubar:
             # create a MenuBar
             from menubar import EditMenuBar
-            self._menubar = EditMenuBar(self.name + '_menubar', 'wxMenuBar', self)
+            self._menubar = EditMenuBar(self.name + '_menubar', self)
             if self.widget: self._menubar.create()
-        else:
+        elif self._menubar:
             # remove
-            if self._menubar is None: return
             self._menubar = self._menubar.remove()
 
     def _set_status_bar(self):
         if self.statusbar:
             # create a StatusBar
             from statusbar import EditStatusBar
-            self._statusbar = EditStatusBar(self.name + '_statusbar', 'wxStatusBar', self)
+            self._statusbar = EditStatusBar(self.name + '_statusbar', self)
             if self.widget: self._statusbar.create()
-        else:
+        elif self._statusbar:
             # remove
-            if self._statusbar is None: return
             self._statusbar = self._statusbar.remove()
-        if self.widget:
-            # this is needed at least on win32
-            wx.PostEvent( self.widget, wx.SizeEvent(self.widget.GetSize(), self.widget.GetId()) )
 
     def _set_tool_bar(self):
         if self.toolbar:
             # create a ToolBar
             from toolbar import EditToolBar
-            EditToolBar(self.name + '_toolbar', 'wxToolBar', self)
+            EditToolBar(self.name + '_toolbar', self)
             if self.widget: self._toolbar.create()
-        else:
+        elif self._toolbar:
             # remove
-            if self._toolbar is None: return
             self._toolbar = self._toolbar.remove()
 
     def properties_changed(self, modified):
         if not modified or "icon" in modified and self.widget: self._set_widget_icon()
 
+        # this is only triggered by the user clicking the checkboxes
         if not modified or "menubar" in modified:   self._set_menu_bar()
         if not modified or "statusbar" in modified: self._set_status_bar()
         if not modified or "toolbar" in modified:   self._set_tool_bar()
@@ -148,6 +130,7 @@ class EditMDIChildFrame(EditFrame):
     IS_TOPLEVEL_WINDOW = False  # avoid to appear in the "Top Window" property of the app
     PROPERTIES = [p for p in EditFrame.PROPERTIES if p!="statusbar"]
     ATT_CHILDREN = ["_menubar", "_toolbar"]
+    TREE_ICON = "EditFrame"
 
 
 # options for WindowDialog when interactively adding a Frame
@@ -160,7 +143,7 @@ if config.debugging:
     last_choices.append(False)
 
 
-def builder(parent, pos, klass=None, base=None, name=None):
+def builder(parent, index, klass=None, base=None, name=None):
     "factory function for EditFrame objects"
     global last_choices
     if klass is None or base is None:
@@ -184,10 +167,8 @@ def builder(parent, pos, klass=None, base=None, name=None):
         base_class = EditFrame
     else:
         base_class = EditMDIChildFrame
-    editor = base_class(name, parent, name, "wxDEFAULT_FRAME_STYLE", klass=klass)
+    editor = base_class(name, parent, klass, name, "wxDEFAULT_FRAME_STYLE")
     editor.properties['size'].set( (400,300), activate=True )
-    editor.create()
-    editor.widget.Show()
     editor.design.update_label()
 
     if interactive and last_choices[0]:
@@ -199,44 +180,28 @@ def builder(parent, pos, klass=None, base=None, name=None):
         # just add a slot
         Slot(editor, 0)
 
-    import clipboard
-    editor.drop_target = clipboard.DropTarget(editor)
-    editor.widget.SetDropTarget(editor.drop_target)
-
-    if wx.Platform == '__WXMSW__':
-        #editor.widget.CenterOnScreen()
-        editor.widget.Raise()
+    editor.create()
 
     return editor
 
 
-def _make_builder(base_class):
-    def xml_builder(attrs, parent, pos=None):
-        from xml_parse import XmlParsingError
-        try:
-            label = attrs['name']
-        except KeyError:
-            raise XmlParsingError(_("'name' attribute missing"))
-        if attrs.input_file_version and attrs.input_file_version<(0,8):
-            # backwards compatibility
-            style = "wxDEFAULT_FRAME_STYLE"
-        else:
-            style = 0
-        editor = base_class(label, parent, "", style)
-        return editor
-    return xml_builder
+_base_classes = {'EditFrame':EditFrame, 'EditMDIChildFrame':EditMDIChildFrame}
+def xml_builder(parser, base, name, parent, index):
+    if parser.input_file_version and parser.check_input_file_version((0,8)):
+        # backwards compatibility
+        style = "wxDEFAULT_FRAME_STYLE"
+    else:
+        style = 0
+    return _base_classes[base](name, parent, "Frame", "", style)
 
 
 def initialize():
     "initialization function for the module: returns a wx.BitmapButton to be added to the main palette"
     common.widget_classes['EditFrame'] = EditFrame
     common.widgets['EditFrame'] = builder
-    common.widgets_from_xml['EditFrame'] = _make_builder(EditFrame)
+    common.widgets_from_xml['EditFrame'] = xml_builder
 
     common.widget_classes['EditMDIChildFrame'] = EditMDIChildFrame
-    common.widgets_from_xml['EditMDIChildFrame'] = _make_builder(EditMDIChildFrame)
+    common.widgets_from_xml['EditMDIChildFrame'] = xml_builder
 
-    from tree import WidgetTree
-    import os.path
-    WidgetTree.images['EditMDIChildFrame'] = os.path.join( config.icons_path, 'frame.xpm' )
     return common.make_object_button('EditFrame', 'frame.xpm', 1)

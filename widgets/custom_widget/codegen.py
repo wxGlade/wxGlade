@@ -44,11 +44,7 @@ class PythonCustomWidgetGenerator(wcodegen.PythonWidgetCodeWriter):
         init = []
         if id_name: init.append(id_name)
         arguments = format_ctor_arguments( widget.arguments, parent, id, widget.size)
-        cust_ctor = widget.custom_ctor.strip()
-        if cust_ctor:
-            ctor = cust_ctor
-        else:
-            ctor = widget.klass
+        ctor = widget.custom_ctor.strip() or widget.instance_class
         init.append( 'self.%s = %s(%s)\n' % (widget.name, ctor, ", ".join(arguments)) )
         init += self.codegen.generate_code_common_properties(widget)
         return init, []
@@ -96,16 +92,11 @@ class CppCustomWidgetGenerator(wcodegen.CppWidgetCodeWriter):
             ids = [id_name]
         else:
             ids = []
-        if not widget.parent_window.IS_CLASS:
-            parent = '%s' % widget.parent_window.name
-        else:
-            parent = 'this'
+
+        parent = self.format_widget_access(widget.parent_window)
+
         arguments = format_ctor_arguments( widget.arguments, parent, id, widget.size )
-        cust_ctor = widget.custom_ctor.strip()
-        if cust_ctor:
-            ctor = cust_ctor
-        else:
-            ctor = 'new ' + widget.klass
+        ctor = widget.custom_ctor.strip() or ('new ' + widget.instance_class)
         init = [ '%s = %s(%s);\n' % (widget.name, ctor, ", ".join(arguments)) ]
         init += self.codegen.generate_code_common_properties(widget)
         return init, ids, []
@@ -120,7 +111,7 @@ def xrc_code_generator(obj):
         def write(self, outfile, ntabs, properties=None):
             if properties is None: properties = {}
             # first, fix the class:
-            self.klass = obj.klass
+            self.subclass = self.klass = obj.instance_class
             # delete the custom constructor property
             properties['custom_ctor'] = None
             # then, the attributes:

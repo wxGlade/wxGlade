@@ -14,11 +14,11 @@ class SpacerMixin(object):
         sizer_name = self.codegen._format_classattr(sizer)
         size = (obj.width, obj.height)
         flag = self.cn_f(obj.properties["flag"].get_string_value()) or '0'
-        if sizer.klass!="wxGridBagSizer":
+        if sizer.WX_CLASS!="wxGridBagSizer":
             size = self.codegen.tmpl_spacersize%size
             stmt = self.codegen.tmpl_sizeritem % ( sizer_name, size, obj.proportion, flag, obj.border )
         else:
             # GridBagSizer
-            pos = sizer._get_row_col(obj.pos)
-            stmt = self.codegen.tmpl_gridbagsizerspacer % ( sizer_name, size[0], size[1], pos, obj.span, flag, obj.border )
+            index = sizer._get_row_col(obj.index)
+            stmt = self.codegen.tmpl_gridbagsizerspacer % ( sizer_name, size[0], size[1], index, obj.span, flag, obj.border )
         return [stmt], []

@@ -3,7 +3,7 @@ Perl generator functions for CustomWidget objects
 
 @copyright: 2002-2004 D. H. aka crazyinsomniac on sourceforge
 @copyright: 2014-2016 Carsten Grohmann
-@copyright: 2017 Dietmar Schwertberger
+@copyright: 2020 Dietmar Schwertberger
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
@@ -19,14 +19,10 @@ class PerlCustomWidgetGenerator(wcodegen.PerlWidgetCodeWriter):
         id_name, id = self.codegen.generate_code_id(widget)
         parent = self.format_widget_access(widget.parent_window)
 
-        if id_name:
-            init.append(id_name)
+        if id_name: init.append(id_name)
+
         arguments = format_ctor_arguments(widget.arguments, parent, id, widget.size)
-        cust_ctor = widget.custom_ctor.strip()
-        if cust_ctor:
-            ctor = cust_ctor
-        else:
-            ctor = widget.klass + '->new'
+        ctor = widget.custom_ctor.strip() or (widget.instance_class + '->new')
         init.append( '$self->{%s} = %s(%s);\n' % (widget.name, ctor, ", ".join(arguments)) )
         init += self.codegen.generate_code_common_properties(widget)
 

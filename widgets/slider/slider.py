@@ -22,8 +22,8 @@ class EditSlider(ManagedBase, EditStylesMixin):
     _PROPERTIES = ["Widget", "range", "value", "style"]
     PROPERTIES = ManagedBase.PROPERTIES + _PROPERTIES + ManagedBase.EXTRA_PROPERTIES
 
-    def __init__(self, name, parent, style, pos):
-        ManagedBase.__init__(self, name, 'wxSlider', parent, pos)
+    def __init__(self, name, parent, index, style):
+        ManagedBase.__init__(self, name, parent, index)
         EditStylesMixin.__init__(self)
 
         # initialise instance properties
@@ -62,7 +62,7 @@ class EditSlider(ManagedBase, EditStylesMixin):
         ManagedBase.properties_changed(self, modified)
 
 
-def builder(parent, pos):
+def builder(parent, index):
     "factory function for editor objects from GUI"
     dialog = wcodegen.WidgetStyleSelectionDialog( _('wxSlider'), _('Orientation'), 'wxSL_HORIZONTAL|wxSL_VERTICAL' )
     with misc.disable_stay_on_top(common.adding_window or parent):
@@ -74,20 +74,15 @@ def builder(parent, pos):
 
     name = parent.toplevel_parent.get_next_contained_name('slider_%d')
     with parent.frozen():
-        editor = EditSlider(name, parent, style, pos)
+        editor = EditSlider(name, parent, index, style)
         editor.properties["flag"].set("wxEXPAND")
         if parent.widget: editor.create()
     return editor
 
 
-def xml_builder(attrs, parent, pos=None):
+def xml_builder(parser, base, name, parent, index):
     "Factory to build editor objects from a XML file"
-    from xml_parse import XmlParsingError
-    try:
-        name = attrs['name']
-    except KeyError:
-        raise XmlParsingError(_("'name' attribute missing"))
-    return EditSlider(name, parent, '', pos)
+    return EditSlider(name, parent, index, '')
 
 
 def initialize():

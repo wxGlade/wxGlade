@@ -11,10 +11,12 @@ config = {
     'supported_by': ('wx3',),
     'style_defs': {
         'wxCAL_SUNDAY_FIRST': {
-            'desc': _('Show Sunday as the first day in the week')
+            'desc': _('Show Sunday as the first day in the week'),
+            'exclude': 'wxCAL_MONDAY_FIRST'
         },
         'wxCAL_MONDAY_FIRST': {
-            'desc': _('Show Monday as the first day in the week')
+            'desc': _('Show Monday as the first day in the week'),
+            'exclude': 'wxCAL_SUNDAY_FIRST'
         },
         'wxCAL_SHOW_HOLIDAYS': {
             'desc': _('Highlight holidays in the calendar (only generic)')
@@ -49,6 +51,3 @@ config = {
         'EVT_CALENDAR_WEEKDAY_CLICKED': {},
     },
 }
-
-
-

@@ -24,8 +24,8 @@ class EditStaticLine(ManagedBase, EditStylesMixin):
     _PROPERTY_LABELS = {"attribute":'Store as attribute'}
     _PROPERTY_HELP={"attribute":'Store instance as attribute of window class; e.g. self.line_1 = wx.wxStaticLine(...)\n'
                                 'Without this, you can not access the line from your program.'}
-    def __init__(self, name, parent, style, pos):
-        ManagedBase.__init__(self, name, 'wxStaticLine', parent, pos)
+    def __init__(self, name, parent, index, style):
+        ManagedBase.__init__(self, name, parent, index)
         EditStylesMixin.__init__(self)
 
         # initialise instance properties
@@ -36,10 +36,9 @@ class EditStaticLine(ManagedBase, EditStylesMixin):
         self.widget = wx.StaticLine(self.parent_window.widget, self.id, style=self.style)
         self.widget.Bind(wx.EVT_LEFT_DOWN, self.on_set_focus)
 
-    def finish_widget_creation(self):
-        ManagedBase.finish_widget_creation(self)
+    def finish_widget_creation(self, level):
+        ManagedBase.finish_widget_creation(self, level)
         self.sel_marker.Reparent(self.parent_window.widget)
-        #del self.properties['font']
 
     def __getitem__(self, key):
         if key != 'font':
@@ -51,7 +50,7 @@ class EditStaticLine(ManagedBase, EditStylesMixin):
         ManagedBase.properties_changed(self, modified)
 
 
-def builder(parent, pos):
+def builder(parent, index):
     "factory function for editor objects from GUI"
     dialog = wcodegen.WidgetStyleSelectionDialog(_('wxStaticLine'), _('Orientation'), 'wxLI_HORIZONTAL|wxLI_VERTICAL')
     with misc.disable_stay_on_top(common.adding_window or parent):
@@ -63,7 +62,7 @@ def builder(parent, pos):
 
     name = parent.toplevel_parent.get_next_contained_name('static_line_%d')
     with parent.frozen():
-        editor = EditStaticLine(name, parent, style, pos)
+        editor = EditStaticLine(name, parent, index, style)
         if parent.IS_SIZER and "orient" in parent.properties and parent.orient:
             if ( (parent.orient & wx.VERTICAL   and style=="wxLI_HORIZONTAL") or 
                  (parent.orient & wx.HORIZONTAL and style=="wxLI_VERTICAL") ):
@@ -72,14 +71,9 @@ def builder(parent, pos):
     return editor
 
 
-def xml_builder(attrs, parent, pos=None):
+def xml_builder(parser, base, name, parent, index):
     "Factory to build editor objects from a XML file"
-    from xml_parse import XmlParsingError
-    try:
-        name = attrs['name']
-    except KeyError:
-        raise XmlParsingError(_("'name' attribute missing"))
-    return EditStaticLine(name, parent, '', pos)
+    return EditStaticLine(name, parent, index, '')
 
 
 def initialize():

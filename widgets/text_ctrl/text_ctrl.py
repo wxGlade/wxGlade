@@ -23,9 +23,9 @@ class EditTextCtrl(ManagedBase, EditStylesMixin):
     PROPERTIES = ManagedBase.PROPERTIES + _PROPERTIES + ManagedBase.EXTRA_PROPERTIES
     recreate_on_style_change = True
 
-    def __init__(self, name, parent, pos):
+    def __init__(self, name, parent, index):
         # initialize base classes
-        ManagedBase.__init__(self, name, 'wxTextCtrl', parent, pos)
+        ManagedBase.__init__(self, name, parent, index)
         EditStylesMixin.__init__(self)
 
         # initialize instance properties
@@ -47,25 +47,20 @@ class EditTextCtrl(ManagedBase, EditStylesMixin):
 
 
 
-def builder(parent, pos):
+def builder(parent, index):
     "factory function for EditTextCtrl objects"
     name = parent.toplevel_parent.get_next_contained_name('text_ctrl_%d')
     with parent.frozen():
-        editor = EditTextCtrl(name, parent, pos)
+        editor = EditTextCtrl(name, parent, index)
         editor.properties["style"].set_to_default()
         editor.check_defaults()
         if parent.widget: editor.create()
     return editor
 
 
-def xml_builder(attrs, parent, pos=None):
+def xml_builder(parser, base, name, parent, index):
     "factory function to build EditTextCtrl objects from a XML file"
-    from xml_parse import XmlParsingError
-    try:
-        name = attrs['name']
-    except KeyError:
-        raise XmlParsingError(_("'name' attribute missing"))
-    return EditTextCtrl(name, parent, pos)
+    return EditTextCtrl(name, parent, index)
 
 
 def initialize():

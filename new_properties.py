@@ -67,7 +67,6 @@ class Property(object):
     min_version = None  # can be overwritten in instances; currently only used by BitmapProperty
 
     def __init__(self, value, default_value=_DefaultArgument, name=None):#, write_always=False):
-        self._logger = logging.getLogger(self.__class__.__name__)
         self.value = value
         self.previous_value = None  # only set during call of self.owner.properties_modified
         # when the property is assigned to an instance property, these will be set:
@@ -544,16 +543,16 @@ class LayoutProportionProperty(SpinProperty):
         SpinProperty.create_editor(self, panel, sizer)
 
 
-class LayoutPosProperty(SpinProperty):
-    readonly = True
-    TOOLTIP = "Position of item within sizer\nCan't be edited; use Cut & Paste or Drag & Drop to reposition an item."
+#class LayoutPosProperty(SpinProperty):
+    #readonly = True
+    #TOOLTIP = "Position of item within sizer\nCan't be edited; use Cut & Paste or Drag & Drop to reposition an item."
 
-    def __init__(self, value):
-        SpinProperty.__init__(self, value, val_range=(0,1000), immediate=False, default_value=_DefaultArgument, name="pos")
+    #def __init__(self, value):
+        #SpinProperty.__init__(self, value, val_range=(0,1000), immediate=False, default_value=_DefaultArgument, name="pos")
 
-    def write(self, *args, **kwds):
-        # maybe, for GridBagSizers row/col should be written
-        pass
+    #def write(self, *args, **kwds):
+        ## maybe, for GridBagSizers row/col should be written
+        #pass
 
 
 class LayoutSpanProperty(Property):
@@ -583,7 +582,7 @@ class LayoutSpanProperty(Property):
 
     def create_editor(self, panel, sizer):
         if not _is_gridbag(self.owner.parent): return
-        max_rows, max_cols = self.owner.parent.check_span_range(self.owner.pos, *self.value)
+        max_rows, max_cols = self.owner.parent.check_span_range(self.owner.index, *self.value)
 
         hsizer = wx.BoxSizer(wx.HORIZONTAL)
         # label
@@ -644,7 +643,7 @@ class LayoutSpanProperty(Property):
         if self.rowspin and self.colspin:
             self._check_for_user_modification( (self.rowspin.GetValue(),self.colspin.GetValue() ) )
             # update ranges
-            max_rows, max_cols = self.owner.parent.check_span_range(self.owner.pos, *self.value)
+            max_rows, max_cols = self.owner.parent.check_span_range(self.owner.index, *self.value)
             self.rowspin.SetRange(1,max_rows)
             self.colspin.SetRange(1,max_cols)
             self.rowspin.Enable(max_rows!=1)
@@ -1151,7 +1150,7 @@ class WidgetStyleProperty(_CheckListProperty):
                 try:
                     style_def = self.style_defs[v]
                 except:
-                    self._logger.warning( _('Style "%s" not supported for widget "%s"')%(v, self.owner.WX_CLASS) )
+                    logging.warning( _('Style "%s" not supported for widget "%s"')%(v, self.owner.WX_CLASS) )
                     value.remove(v)
                     continue
                 if "exclude" in style_def:
@@ -1588,6 +1587,16 @@ class NameProperty(TextProperty):
         return True
 
 
+class InstanceClassPropertyD(TextProperty):
+    deactivated = True
+    validation_re = re.compile(r'^[a-zA-Z_]+[\w:.0-9-]*$')
+
+
+class BaseClassesPropertyD(TextProperty):
+    deactivated = True
+    validation_re = re.compile(r'^[a-zA-Z_]+[\w:.0-9-\,]*$')
+
+
 class ClassProperty(TextProperty):
     validation_re = re.compile(r'^[a-zA-Z_]+[\w:.0-9-]*$')
     _UNIQUENESS_MSG1 = "Name not unique; code will only be created for one window/widget."
@@ -1609,9 +1618,9 @@ class ClassProperty(TextProperty):
             leaf = None
 
         # shortcut: check sibilings first
-        siblings = self.owner.parent.children
+        siblings = self.owner.parent.get_all_children()
         for node in siblings:
-            if node is self.owner: continue
+            if node is self.owner or not node.check_prop("class"): continue
             if node.klass==klass:
                 return self._UNIQUENESS_MSG1
             if leaf and "." in node.klass and leaf==node.klass.rsplit(".",1)[-1]:
@@ -1624,12 +1633,11 @@ class ClassProperty(TextProperty):
                 if c.children:
                     result = check(c.children)
                     if result: return result
-                if c is not self.owner:
-                    if c.klass==c.WX_CLASS: continue
-                    if c.klass==klass:
-                        return self._UNIQUENESS_MSG1
-                    if leaf and "." in c.klass and leaf==c.klass.rsplit(".",1)[-1]:
-                        return self._UNIQUENESS_MSG2
+                if c is self.owner or not c.check_prop("class"): continue
+                if c.klass==klass:
+                    return self._UNIQUENESS_MSG1
+                if leaf and "." in c.klass and leaf==c.klass.rsplit(".",1)[-1]:
+                    return self._UNIQUENESS_MSG2
             return None
         return check(common.root.children)
 
@@ -1655,6 +1663,10 @@ class ClassProperty(TextProperty):
         klass = event.GetString()
         self._check(klass)
         event.Skip()
+
+
+class ClassPropertyD(ClassProperty):
+    deactivated = True
 
 
 class IntPairPropertyD(TextPropertyD):
@@ -2209,10 +2221,10 @@ class FontProperty(DialogProperty):
         try:
             props = [common.encode_to_unicode(s) for s in self.value]
         except:
-            self._logger.exception(_('Internal Error'))
+            logging.exception(_('Internal Error'))
             return
         if len(props) < 6:
-            self._logger.error( _('error in the value of the property "%s"'), self.name )
+            logging.error( _('error in the value of the property "%s"'), self.name )
             return
         inner_xml =  common.format_xml_tag(u'size',       props[0], tabs+1)
         inner_xml += common.format_xml_tag(u'family',     props[1], tabs+1)
@@ -2315,6 +2327,12 @@ class GridProperty(Property):
         self._initialize_indices()
         self.editing_values = None
         self.update_display()
+
+    def insert(self, index, item):
+        assert not self.deactivated
+        value = self.get()
+        value.insert(index, item)
+        self.set(value)
 
     def get(self):
         if self.deactivated:
@@ -2994,7 +3012,7 @@ class GridProperty(Property):
         if self.immediate and self.can_add and self.cur_row==self.grid.GetNumberRows()-1:
             return
         if not self.can_remove_last and self.grid.GetNumberRows()==1:
-            self._logger.warning( _('You can not remove the last entry!') )
+            logging.warning( _('You can not remove the last entry!') )
             return
         values = self._ensure_editing_copy()
         if values:
@@ -3166,6 +3184,13 @@ class ActionButtonProperty(Property):
     def write(self, output, tabs=0):
         return
 
+########################################################################################################################
+# functions to modify property lists in place
+
+def insert_after(PROPERTIES, after, *add):
+    i = PROPERTIES.index(after)
+    for j, name in enumerate(add):
+        PROPERTIES.insert(i+1+j, name)
 
 ########################################################################################################################
 
@@ -3227,7 +3252,7 @@ class PropertyOwner(object):
         # return list of properties to be written to XML file
         ret = []
         for name in self.property_names:
-            if name in ("class","name") or name in without: continue
+            if name in ("class","name","instance_class") or name in without: continue
             prop = self.properties[name]
             if not prop.HAS_DATA: continue
             if prop.attributename in without: continue  # for e.g. option/proportion
@@ -3248,10 +3273,14 @@ class PropertyOwner(object):
         if prop.blocked: return False
         return prop.is_active()
 
+    def get_prop_value(self, name, default):
+        # return property value if property exists, else the default
+        if not self.check_prop(name): return default
+        return self.properties[name].get()
+
     def check_prop_truth(self, name):
         # return True if property exists, is active and not blocked and the value is tested for truth
-        if not self.check_prop(name): return False
-        return bool(self.properties[name].get())
+        return self.get_prop_value(name, False) and True or False
 
     def check_prop_nodefault(self, name):
         # return True if property exists, is active and not blocked and the value is not the default value

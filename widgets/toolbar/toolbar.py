@@ -558,23 +558,17 @@ class EditToolBar(EditBase, PreviewMixin, EditStylesMixin, BitmapMixin):
     "Class to handle wxToolBar objects"
 
     WX_CLASS = 'wxToolBar'
-    CAN_BE_CLASS = True
-    _PROPERTIES = ["Widget", "bitmapsize", "margins", "packing", "separation", "style", "tools", "preview"]
+    IS_TOPLEVEL = False
+    _PROPERTIES = ["Widget", "bitmapsize", "margins", "packing", "separation", "style", "tools"]
     PROPERTIES = EditBase.PROPERTIES + _PROPERTIES + EditBase.EXTRA_PROPERTIES
     CHILDREN = 0
 
-    def __init__(self, name, klass, parent):
-        if parent.IS_ROOT:
-            self.__dict__["IS_TOPLEVEL"] = True
-        if self.IS_TOPLEVEL:
-            custom_class = True
-            pos = None
-        else:
-            custom_class = False
-            pos = "_toolbar"
-        EditBase.__init__( self, name, 'wxToolBar', parent, custom_class, pos )
+    def __init__(self, name, parent):
+        EditBase.__init__( self, name, parent, "_toolbar" )
         EditStylesMixin.__init__(self)
+        self._init_properties()
 
+    def _init_properties(self):
         # initialise instance properties
         self.bitmapsize = np.IntPairPropertyD('16, 15', default_value='16, 15')
         self.margins    = np.IntPairPropertyD('0, 0',   default_value='0, 0')
@@ -585,11 +579,6 @@ class EditToolBar(EditBase, PreviewMixin, EditStylesMixin, BitmapMixin):
         self.window_id = None  # just a dummy for code generation
 
         self.widget = self._tb = None  # a panel and the actual ToolBar
-
-        if self.IS_TOPLEVEL:
-            PreviewMixin.__init__(self)  # add a preview button
-        else:
-            self.preview = None
 
     def create_widget(self):
         tb_style = wx.TB_HORIZONTAL | self.style
@@ -694,28 +683,27 @@ class EditToolBar(EditBase, PreviewMixin, EditStylesMixin, BitmapMixin):
             widget.SetClientSize((w, h+1))
             widget.SetClientSize((w, h))
 
-    ####################################################################################################################
+    def destroy_widget(self, level):
+        # if parent is being deleted, we rely on this being destroyed
+        if level==0 and not self.IS_TOPLEVEL and self.parent.widget:
+            self.parent.widget.SetToolBar(None)
+        if level==0:
+            EditBase.destroy_widget(self, level)
 
-    def remove(self, *args, **kwds):
-        # entry point from GUI
-        if self.IS_TOPLEVEL:
-            if self.widget:
-                compat.DestroyLater(self.widget)
-                self.widget = None
-        else:
-            self.parent.properties['toolbar'].set(False)
-            self.parent._toolbar = None
-            if kwds.get('do_nothing', False):
-                # this probably leaks memory, but avoids segfaults
-                self.widget = None
-            else:
-                if self.parent.widget:
-                    self.parent.widget.SetToolBar(None)
+    def hide_widget(self, *args):
+        if self.widget and self.widget is not self._tb:
+            self.widget.Hide()
+            common.app_tree.Collapse(self.item)
+            common.app_tree.select_item(self.parent)
+
+    def remove(self):
         EditBase.remove(self)
+        if 'toolbar' in self.parent.properties:
+            self.parent.properties['toolbar'].set(False)
 
+    ####################################################################################################################
     def popup_menu(self, event, pos=None):
-        if self.parent is not None:
-            return  # do nothing in this case
+        if not self.IS_TOPLEVEL: return
         super(EditToolBar, self).popup_menu(event, pos)
 
     def _create_popup_menu(self, widget):
@@ -739,12 +727,6 @@ class EditToolBar(EditBase, PreviewMixin, EditStylesMixin, BitmapMixin):
         misc.bind_menu_item_after(widget, item, self.hide_widget)
 
         return menu
-
-    def hide_widget(self, *args):
-        if self.widget and self.widget is not self._tb:
-            self.widget.Hide()
-            common.app_tree.Collapse(self.item)
-            common.app_tree.select_item(self.parent)
 
     def get_property_handler(self, name):
         if name == 'tools':
@@ -782,9 +764,22 @@ class EditToolBar(EditBase, PreviewMixin, EditStylesMixin, BitmapMixin):
         return (False,"Use toolbar editor: Properties -> Edit tools...")
 
 
+class EditTopLevelToolBar(EditToolBar, PreviewMixin):
+    WXG_BASE = "EditToolBar"
+    IS_TOPLEVEL = True
+    PROPERTIES = EditToolBar.PROPERTIES[:]
+    np.insert_after(PROPERTIES, "name", "class")
+    np.insert_after(PROPERTIES, "tools", "preview")
+    TREE_ICON = "EditMenuBar"
+
+    def __init__(self, name, parent, klass):
+        EditBase.__init__( self, name, parent, None, klass )
+        EditStylesMixin.__init__(self)
+        self._init_properties()
+        PreviewMixin.__init__(self)  # add a preview button
 
 
-def builder(parent, pos):
+def builder(parent, index):
     "factory function for EditToolBar objects"
     import window_dialog as wd
     klass = 'wxToolBar' if common.root.language.lower()=='xrc' else 'MyToolBar'
@@ -807,28 +802,22 @@ def builder(parent, pos):
         # add to toplevel widget
         toplevel_widget.properties["toolbar"].set(True, notify=True)
         return toplevel_widget._toolbar
-    name = dialog.get_next_name("toolbar")
-    with (not parent.IS_ROOT and parent.frozen()) or misc.dummy_contextmanager():
-        editor = EditToolBar(name, klass, parent)
-        editor.create()
-        editor.widget.Show()
 
+    # a standalone toolbar
+    name = dialog.get_next_name("toolbar")
+    editor = EditTopLevelToolBar(name, parent, klass)
+    editor.create()
+    editor.widget.Show()
     return editor
 
 
-
-def xml_builder(attrs, parent, pos=None):
+def xml_builder(parser, base, name, parent, index):
     "factory to build EditToolBar objects from a XML file"
-    name = attrs.get('name')
-    if not parent.IS_ROOT:
-        parent.properties["toolbar"].set(True, notify=True)
-        if name:
-            p_name = parent._toolbar.properties["name"]
-            p_name.previous_value = p_name.value
-            p_name.set(name)
-            parent._toolbar.properties_changed(["name"])
-        return parent._toolbar
-    return EditToolBar(name, attrs.get('class', 'wxToolBar'), parent)
+    if parent.IS_ROOT:
+        return EditTopLevelToolBar(name, parent, "ToolBar")
+
+    parent.properties["toolbar"].set(True)
+    return EditToolBar(name, parent)
 
 
 def initialize():
