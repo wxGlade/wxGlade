@@ -466,6 +466,7 @@ class Application(EditRoot):
         np.flush_current_property()
         if out_path is None:
             out_path = os.path.expanduser(self.output_path.strip())
+            if not out_path and self.multiple_files: out_path = "."
             if not os.path.isabs(out_path) and (out_path and self.filename):
                 out_path = os.path.join(os.path.dirname(self.filename), out_path)
                 out_path = os.path.normpath(out_path)

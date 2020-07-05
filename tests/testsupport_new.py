@@ -392,7 +392,8 @@ class WXGladeGUITest(WXGladeBaseTest):
         app.generate_code()
 
         # first test should fail because no output file is given
-        self._assert_error_message( u'You must specify an output file' )
+        if not app.multiple_files:
+            self._assert_error_message( u'You must specify an output file' )
 
         # now test full code generation
         for language, dummy, ext, dummy in self.language_constants:
