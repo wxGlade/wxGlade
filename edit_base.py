@@ -364,6 +364,7 @@ class EditBase(np.PropertyOwner):
         # recursively remove children
         if self.children:
             for child in self.get_all_children():
+                if child is None: continue  # this might happen during loading when a widget type is not supported
                 child.recursive_remove(level+1)
 
         self.parent.remove_item(self, level, keep_slot)
