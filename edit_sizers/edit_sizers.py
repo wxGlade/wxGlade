@@ -22,7 +22,7 @@ def _frozen(method):
     def _frozen(sizer, *args):
         if config.use_freeze_thaw and sizer.window.widget:
             toplevel = sizer.window.widget.GetTopLevelParent()
-            print("Freezing", toplevel)
+            if config.debugging: print("Freezing", toplevel)
             toplevel.Freeze()
         else:
             toplevel = None
@@ -31,7 +31,7 @@ def _frozen(method):
         finally:
             if toplevel:
                 toplevel.Refresh()
-                print("Thawing", toplevel)
+                if config.debugging: print("Thawing", toplevel)
                 toplevel.Thaw()
     return _frozen
 
