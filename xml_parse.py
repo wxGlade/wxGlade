@@ -522,11 +522,17 @@ class ClipboardXmlWidgetBuilder(XmlWidgetBuilder):
                 self.parent.on_load(child=self.top_obj)  # e.g. a GridBagSizer needs to check overlapped slots
             common.app_tree.auto_expand = True
             try:
-                # show the first object and update its layout
-                #if self.top_obj.node.parent.widget.is_visible():
-                #    common.app_tree.show_widget(self.top_obj.node)
                 if self.parent and self.parent.widget:
                     self.top_obj.create()
+                    import wx
+                    if self.top_obj.IS_SIZER:
+                        window_widget = self.top_obj.window.widget
+                    else:
+                        window_widget = self.top_obj.widget
+                    wx.SafeYield()                          # required for gtk when e.g. pasting a StaticText with font
+                    self.top_obj.parent_window.layout()     # required for gtk when e.g. pasting a StaticText with font
+                    window_widget.Refresh()  # required if not using Freeze/Thaw on Windows
+                    window_widget.GetTopLevelParent().SendSizeEvent()
 
             except AttributeError:
                 logging.exception( _('Exception caused by obj: %s'), self.top_obj )

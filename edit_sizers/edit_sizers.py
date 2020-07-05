@@ -685,7 +685,11 @@ class SizerBase(edit_base.EditBase):
 
     def destroy_widget(self, level):
         if not self.widget: return
-        self.widget.Clear(delete_windows=True)
+        if compat.IS_PHOENIX:
+            self.widget.Clear(delete_windows=True)  # not available with wxPython 3.0
+        else:
+            self.widget.DeleteWindows()
+            self.widget.Clear()
         if not self.parent.IS_SIZER: self.window.widget.SetSizer(None)
         # the call of self.widget.Destroy() would crash on mac os
         #edit_base.EditBase.destroy_widget(self, level)

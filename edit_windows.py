@@ -768,9 +768,9 @@ class TopLevelBase(WindowBase, PreviewMixin):
                 #wx.Yield()  # by now, there are probably many EVT_SIZE in the queue
                 #self.children[0].fit_parent()
 
-        wx.SafeYield()
         self.widget.GetTopLevelParent().Show()
-        # SetFocus is required for e.g. Ubuntu w. Python 3.8 and wxPython 4.0.7 w. file SIMPLIFICATIONS\Tests_full.wxg
+        # SafeYield and SetFocus are required for e.g. Ubuntu w. Python 3.8 and wxPython 4.0.7
+        # see file SIMPLIFICATIONS\Tests_full.wxg where the first frame will not be layouted
         wx.SafeYield()
         self.widget.Raise()
         self.widget.SetFocus()

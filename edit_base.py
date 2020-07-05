@@ -309,12 +309,8 @@ class EditBase(np.PropertyOwner):
         self.parent.child_widget_created(self, level)
 
     def layout(self):
-        # called once after all widgets incl. children were created
-        wx.SafeYield(onlyIfNeeded=True)
-        if self.IS_SIZER:
-            self.widget.Layout()
-        elif self.parent.IS_SIZER:
-            self.parent.widget.Layout()
+        # called once after all widgets incl. children were created or e.g. layout property modified
+        self.widget.Layout()
 
     # actual widget creation
     def create_widget(self):
