@@ -697,11 +697,15 @@ def get_xpm_bitmap(path):
 
 def get_absolute_path(path, for_preview=False):
     "Get an absolute path relative to the current output directory (where the code is generated)."
+    if os.path.sep!="\\":
+        path = path.replace("\\", os.path.sep)
     if os.path.isabs(path):
         return path
     p = common.root.output_path
     if for_preview:
         p = getattr(common.root, 'real_output_path', u'')
+    if os.path.sep!="\\":
+        p = p.replace("\\", os.path.sep)
     if not os.path.isabs(p):
         # a path relative to the application filename
         appdir = os.path.dirname(common.root.filename)
