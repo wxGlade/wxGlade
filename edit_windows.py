@@ -85,9 +85,12 @@ class EditBase(EventsMixin, edit_base.EditBase):
     _EXTRA_PROPERTIES = ["Events", "events", "Code", "extracode", "extracode_pre", "extracode_post", "extraproperties"]
     EXTRA_PROPERTIES = _EXTRA_PROPERTIES
 
-    _PROPERTY_HELP={ "class": _("If you change the default value, it will be interpreted as the name "
-                                "of the subclass of the widget.\n\nHow this name affects code generation "
-                                "depends on the kind (i.e. language) of output. See the docs for more details."),
+    _PROPERTY_HELP={ "class": ("The name of the class to be generated.\n"
+                               "E.g. for 'ClassName':\n\n"
+                               "class ClassName:\n"
+                               "    def __init__(self, ...):\n        ...\n\n"
+                               "Toplevel windows like frames or dialogs are aways classes.\n"
+                               "Notebooks, panels or splitters can be classes."),
                      "name":_("Name of the variable for assigning the reference to the created widget instance.\n\n"
                               "(Valid: alphanumeric characters and underscore, also minus, but not at the beginning)\n"
                               "If the config setting is to have unique names, a non-unique name will be indicated"
