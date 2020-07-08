@@ -65,6 +65,7 @@ class Property(object):
     GROW = False # if this is True, no spacer is added after the control, so it may grow down to the lower edge
     HAS_DATA = True
     min_version = None  # can be overwritten in instances; currently only used by BitmapProperty
+    _error = _warning = None  # used by TextProperty and derived classes
 
     def __init__(self, value, default_value=_DefaultArgument, name=None):#, write_always=False):
         self.value = value
@@ -313,6 +314,7 @@ class Property(object):
     def _mangle(self, label):
         "Returns a mangled version of label, suitable for displaying the name of a property"
         return misc.wxstr(misc.capitalize(label).replace('_', ' '))
+
     def _find_label(self):
         "check self.LABEL; then go through base classes and check the _PROPERTY_LABELS dictionaries"
         if self.LABEL: return self.LABEL
@@ -324,23 +326,26 @@ class Property(object):
             if self.name in cls._PROPERTY_LABELS:
                 return cls._PROPERTY_LABELS[self.name]
         return self._mangle(self.name)
+
     def _find_tooltip(self):
         "go through base classes and check the _PROPERTY_HELP dictionaries"
         if self.TOOLTIP: return self.TOOLTIP
-        import inspect
+        ret = []
+        if self._error:   ret.extend( [self._error, ""] )
+        if self._warning: ret.extend( [self._warning, ""] )
 
+        import inspect
         classes = inspect.getmro(self.owner.__class__)
-        help = None
         for cls in classes:
             if hasattr(cls, "_PROPERTY_HELP") and self.name in cls._PROPERTY_HELP:
-                help = cls._PROPERTY_HELP[self.name]
+                ret.append( cls._PROPERTY_HELP[self.name] )
                 break
         if self.min_version:
             min_version_s = ".".join( (str(v) for v in self.min_version) )
             min_version_s = "This property is only supported on wx %s or later."%min_version_s
-            if help:
-                help = "%s\n\n%s"%(help, min_version_s)
-        return help
+            ret.extend( ["", min_version_s] )
+        return "\n".join(ret) or None
+
     def _set_tooltip(self, *controls):
         tooltip = self._find_tooltip()
         if not tooltip: return
@@ -1414,18 +1419,12 @@ class TextProperty(Property):
     def _on_text(self, event):
         if self.deactivated or self.blocked: return
         text = event.GetString()
-        if not self.validation_re:
-            if self.control_re.search(text):
-                # strip most ASCII control characters
-                self.text.SetValue(self.control_re.sub("", text))
-                wx.Bell()
-                return
-        elif self.check(text):
-            self.text.SetBackgroundColour( compat.wx_SystemSettings_GetColour(wx.SYS_COLOUR_WINDOW) )
-            self.text.Refresh()
-        else:
-            self.text.SetBackgroundColour(wx.RED)
-            self.text.Refresh()
+        if not self.validation_re and self.control_re.search(text):
+            # strip most ASCII control characters
+            self.text.SetValue(self.control_re.sub("", text))
+            wx.Bell()
+            return
+        self.check(text)
         event.Skip()
 
     def create_additional_controls(self, panel, sizer, hsizer):
@@ -1439,8 +1438,24 @@ class TextProperty(Property):
         self.text.SetValue(self._convert_to_text(self.value) or "")
         self._set_colours()
 
+    def set_check_result(self, warning=None, error=None):
+        if warning==self._warning and error==self._error: return
+        self._warning = warning
+        self._error = error
+
+        if not self.text: return
+        compat.SetToolTip(self.text, self._find_tooltip())
+        self._set_colours()
+
     def _set_colours(self):
-        pass
+        # set color to indicate errors and warnings
+        bgcolor = wx.WHITE
+        if self._warning:
+            bgcolor = wx.Colour(255, 255, 0, 255)  # yellow
+        if self._error:
+            bgcolor = wx.RED
+        self.text.SetBackgroundColour( bgcolor )
+        self.text.Refresh()
 
     def _convert_to_text(self, value):
         """convert from self.value to string that will be displayed/edited in TextCtrl
@@ -1480,15 +1495,25 @@ class TextProperty(Property):
         return text
 
     def check(self, value):
-        "checks whether the string value matches the validation regular expression"
-        if not self.validation_re: return True
-        return bool( self.validation_re.match(value) )
-    
+        "return (result, message) where result is (True,False,'warn') for pass/fail/warning"
+        # default implementation, just strip control characters and check vs regular expression
+        if self.validation_re:
+            if not self.validation_re.match(value):
+                self.set_check_result(error="invalid")
+                return
+        warning, error = self._check(value)
+        self.set_check_result(warning, error)
+
+    def _check(self, value):
+        # called from check, if value matches validation_re
+        return None, None
+
     def flush(self):
         if self.text is None: return
         if self.text.IsBeingDeleted(): return
         if not compat.wxWindow_IsEnabled(self.text): return
         self._check_for_user_modification()
+
 
 
 class TextPropertyA(TextProperty):
@@ -1524,13 +1549,13 @@ class FloatPropertyA(TextPropertyA):
                 return None
         return str(float(value))
 
-    def check(self, value):
-        if not self.validation_re.match(value): return False
-        if self.val_range is None: return True
-        v = float(value)
-        if v<self.val_range[0] or v>self.val_range[1]:
-            return False
-        return True
+    def _check(self, value):
+        # called from check if the format was OK
+        if self.val_range is not None:
+            v = float(value)
+            if v<self.val_range[0] or v>self.val_range[1]:
+                return (None, "out of range")
+        return (None, None)
 
     def _set_converter(self, value):
         if isinstance(value, compat.unicode):
@@ -1550,41 +1575,35 @@ class FloatPropertyD(FloatPropertyA):
 class NameProperty(TextProperty):
     #validation_re  = re.compile(r'^[a-zA-Z_]+[\w-]*(\[\w*\])*$')  # Python 3 only, including non-ASCII characters
     validation_re  = re.compile(r'^[a-zA-Z_]+[a-zA-Z0-9_-]*$')  # Python 2 also; for lisp a hyphen - is allowed
+
     def _check_name_uniqueness(self, name):
         # check whether the name is unique
-        if config.preferences.allow_duplicate_names: return
+        if self.owner.IS_TOPLEVEL:
+            for child in self.owner.parent.children:
+                if child is self.owner: continue
+                if child.name==name: return False
+            return True
         if name == self.value: return True
         if name in self.owner.toplevel_parent.names:
             return False
         return True
 
-    def _on_text(self, event):
-        if self.deactivated or self.blocked: return
-        name = event.GetString()
-        match = self.validation_re.match(name)
-        if match:
-            if self._check_name_uniqueness(name):
-                self.text.SetBackgroundColour( compat.wx_SystemSettings_GetColour(wx.SYS_COLOUR_WINDOW) )
-            else:
-                self.text.SetBackgroundColour( wx.Colour(255, 255, 0, 255) )  # YELLOW
-        else:
-            self.text.SetBackgroundColour(wx.RED)
-        self.text.Refresh()
-        event.Skip()
+    # return (result, message) where result is [True, False, "warn"]
+    def _check(self, value):
+        # called from check if the format was OK
+        if self._check_name_uniqueness(value):
+            return (None,None)
+        if self.owner.IS_TOPLEVEL:
+            return ("Name not unique", None)
+        return (None, "Name not unique")
 
     def _convert_from_text(self, value):
         "normalize string to e.g. '-1, -1'; return None if invalid"
         match = self.validation_re.match(value)
         #if not match: return self.value
         if not match: return None
-        if not self._check_name_uniqueness(value): return None
+        if not self.owner.IS_TOPLEVEL and not self._check_name_uniqueness(value): return None
         return value
-
-    def check(self, value):
-        # check whether it's valid to set value
-        check = self._convert_from_text(value)
-        if check is None: return False
-        return True
 
 
 class InstanceClassPropertyD(TextProperty):
@@ -1602,11 +1621,6 @@ class ClassProperty(TextProperty):
     _UNIQUENESS_MSG1 = "Name not unique; code will only be created for one window/widget."
     _UNIQUENESS_MSG2 = ("Name not unique; imported class may be overwritten, as\n"
                         "wxGlade is currently creating code like from '... import ...'.")
-
-    def create_text_ctrl(self, panel, value):
-        text = TextProperty.create_text_ctrl(self, panel, value)
-        self._check(value, text)  # do the check now, not only on changes; to indicated non-unique class names
-        return text
 
     def _check_class_uniqueness(self, klass):
         """Check whether the class name is unique, as otherwise the source code would be overwritten.
@@ -1642,27 +1656,8 @@ class ClassProperty(TextProperty):
         return check(common.root.children)
 
     def _check(self, klass, ctrl=None):
-        # called by _on_text and create_text_ctrl to validate and indicate
-        if not self.text and not ctrl: return
-        if ctrl is None: ctrl = self.text
-        if not self.validation_re.match(klass):
-            ctrl.SetBackgroundColour(wx.RED)
-            compat.SetToolTip(ctrl, "Name is not valid.")
-        else:
-            msg = self._check_class_uniqueness(klass)
-            if not msg:
-                ctrl.SetBackgroundColour( compat.wx_SystemSettings_GetColour(wx.SYS_COLOUR_WINDOW) )
-                compat.SetToolTip( ctrl, self._find_tooltip() )
-            else:
-                ctrl.SetBackgroundColour( wx.Colour(255, 255, 0, 255) )  # YELLOW
-                compat.SetToolTip(ctrl, msg)
-        ctrl.Refresh()
-
-    def _on_text(self, event):
-        if self.deactivated or self.blocked: return
-        klass = event.GetString()
-        self._check(klass)
-        event.Skip()
+        msg = self._check_class_uniqueness(klass)
+        return (msg, None)
 
 
 class ClassPropertyD(ClassProperty):
@@ -1945,7 +1940,7 @@ class DialogProperty(TextProperty):
     def update_display(self, start_editing=False):
         TextProperty.update_display(self, start_editing)
         self._update_button()
-        
+    
     def has_control(self, control):
         if TextProperty.has_control(self, control): return True
         if self.button and control is self.button:  return True
@@ -2033,7 +2028,7 @@ class FileNamePropertyD(FileNameProperty):
 
 class BitmapProperty(FileNameProperty):
     def __init__(self, value="", name=None, min_version=None):
-        self._size = self._warning = self._error = None
+        self._size = None  # will be set when a bitmap is loaded
         style = wx.FD_OPEN | wx.FD_FILE_MUST_EXIST
         FileNameProperty.__init__(self, value, style, "", name)
         self.min_version = min_version
@@ -2045,30 +2040,9 @@ class BitmapProperty(FileNameProperty):
             self._size = bmp.Size
         if self.text: compat.SetToolTip(self.text, self._find_tooltip())
 
-    def set_check_result(self, warning=None, error=None):
-        self._warning = warning
-        self._error = error
-
-        if not self.text: return
-        compat.SetToolTip(self.text, self._find_tooltip())
-        self._set_colours()
-
-    def _set_colours(self):
-        # set color to indicate errors and warnings
-        bgcolor = wx.WHITE
-        if self._warning:
-            bgcolor = wx.Colour(255, 255, 0, 255)  # yellow
-        if self._error:
-            bgcolor = wx.RED
-        self.text.SetBackgroundColour( bgcolor )
-        self.text.Refresh()
-
     def _find_tooltip(self):
         ret = []
-        if self._error:   ret.append(self._error)
-        if self._warning: ret.append(self._warning)
         if self._size:
-            if ret: ret.append("")
             ret.append( "Size: %s\n"%self._size )
         t = FileNameProperty._find_tooltip(self)
         if t: ret.append( t )
