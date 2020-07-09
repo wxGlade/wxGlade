@@ -36,7 +36,7 @@ class PythonMenubarGenerator(wcodegen.PythonWidgetCodeWriter):
                 else:
                     if id_declaration: id_declarations.append(id_declaration)
                     id = val
-                    if val!='wx.ID_ANY': id_access = val
+                    if val!='wx.ID_ANY': id_access = "id=%s"%val
 
                 label = quote_str(item.label)
                 help_str = quote_str(item.help_str)
@@ -63,11 +63,11 @@ class PythonMenubarGenerator(wcodegen.PythonWidgetCodeWriter):
                         name = '%s.%s' % (obj_name, item.name)
                         assignment = '%s = '%name
                         if not id_access:
-                            id_access = "%s.GetId()"%name
+                            id_access = name
                     elif item.handler and not id_access:
                         # assignment to local variable to bind handler
                         assignment = 'item = '
-                        id_access = 'item.GetId()'
+                        id_access = 'item'
                     else:
                         # no assignment necessary, as no handler defined
                         assignment = ''
@@ -76,9 +76,9 @@ class PythonMenubarGenerator(wcodegen.PythonWidgetCodeWriter):
                     else:
                         out.append( '%s%s.Append(%s, %s, %s)\n' % ( assignment, menu, id, label, help_str) )
 
-                    if item.handler:
+                    if item.handler and (not self.codegen.preview or not item.handler.startswith("lambda ")):
                         handler = item.handler if "." in item.handler else "self.%s"%item.handler
-                        out.append( "self.Bind(wx.EVT_MENU, %s, id=%s)\n"%(handler, id_access) )
+                        out.append( "self.Bind(wx.EVT_MENU, %s, %s)\n"%(handler, id_access) )
 
         for m in obj.menus:
             menu = m.root
