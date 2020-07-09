@@ -368,6 +368,14 @@ class TestGui(WXGladeGUITest):
     def test_Menu(self):
         self.load_and_generate('MenuTest', excluded=["lisp"], test_GUI=True)
 
+    def test_Menu_lambda_handlers_keep_code(self):
+        # copy .py file to test "Keep user code"
+        old_filename = self._get_casefile_path('MenuHandlers_Lambda.py')
+        generate_filename = self._get_outputfile_path("MenuHandlers_Lambda.py")
+        self._copy_and_modify(old_filename, generate_filename)
+        # the standard test will do the rest
+        self.load_and_generate('MenuHandlers_Lambda', included=["python"], test_GUI=True)
+
     def _assert_styles(self, got, expected, msg=None):
         if isinstance(got,      str): got      = got.split("|")
         if isinstance(expected, str): expected = expected.split("|")

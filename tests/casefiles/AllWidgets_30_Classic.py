@@ -45,7 +45,7 @@ class All_Widgets_Frame(wx.Frame):
         self.Bind(wx.EVT_MENU, self.onSelectWindows, id=mn_IDWindows)
         wxglade_tmp_menu.AppendSeparator()
         self.All_Widgets_menubar.mn_RemoveTabs = wxglade_tmp_menu.Append(wx.ID_ANY, _("Remove Tabs"), _("Remove all leading tabs"), wx.ITEM_CHECK)
-        self.Bind(wx.EVT_MENU, self.onRemoveTabs, id=self.All_Widgets_menubar.mn_RemoveTabs.GetId())
+        self.Bind(wx.EVT_MENU, self.onRemoveTabs, self.All_Widgets_menubar.mn_RemoveTabs)
         self.All_Widgets_menubar.Append(wxglade_tmp_menu, _("&Edit"))
         wxglade_tmp_menu = wx.Menu()
         wxglade_tmp_menu.Append(wx.ID_HELP, _("Manual"), _("Show the application manual"))

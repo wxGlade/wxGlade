@@ -25,9 +25,9 @@ class MyFrame(wx.Frame):
         self.frame_menubar = wx.MenuBar()
         wxglade_tmp_menu = wx.Menu()
         self.frame_menubar.item1 = wxglade_tmp_menu.Append(wx.ID_ANY, "My Menu Item 1", "")
-        self.Bind(wx.EVT_MENU, self.on_menu_item1, id=self.frame_menubar.item1.GetId())
+        self.Bind(wx.EVT_MENU, self.on_menu_item1, self.frame_menubar.item1)
         item = wxglade_tmp_menu.Append(wx.ID_ANY, "My Menu Item 1", "without attribute name")
-        self.Bind(wx.EVT_MENU, self.on_menu_item2, id=item.GetId())
+        self.Bind(wx.EVT_MENU, self.on_menu_item2, item)
         self.frame_menubar.Append(wxglade_tmp_menu, "Menu 1")
         self.SetMenuBar(self.frame_menubar)
         # Menu Bar end
