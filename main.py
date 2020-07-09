@@ -675,10 +675,10 @@ class wxGladeFrame(wx.Frame):
         self.SetToolBar(tb)
         size = (21,21)
         add = functools.partial(self._add_label_tool, tb, size)
-        t = add( wx.ID_NEW, "New", wx.ART_NEW, wx.ITEM_NORMAL, "Open a new file (Ctrl+N)")
+        t = add( wx.ID_NEW, "New", wx.ART_NEW, wx.ITEM_NORMAL, "Start a new file (Ctrl+N)")
         self.Bind(wx.EVT_TOOL, self.new_app, t)
         
-        t = add( wx.ID_OPEN, "Open", wx.ART_FILE_OPEN, wx.ITEM_NORMAL, "Open a file (Ctrl+O)")
+        t = add( wx.ID_OPEN, "Open", wx.ART_FILE_OPEN, wx.ITEM_NORMAL, "Open an existing file (Ctrl+O)")
         self.Bind(wx.EVT_TOOL, self.open_app, t)
         
         t = add( wx.ID_SAVE, "Save", wx.ART_FILE_SAVE, wx.ITEM_NORMAL, "Save file (Ctrl+S)")
