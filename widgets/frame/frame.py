@@ -136,6 +136,10 @@ class EditMDIChildFrame(EditFrame):
 # options for WindowDialog when interactively adding a Frame
 options = ["Add panel and sizer"]
 last_choices = [True]
+_option_help = """\
+On some platforms, I think mainly Windows, the panel is responsible for the navigation through the controls.
+Without the panel you can't use Tab and Shift+Tab to navigate through the controls.
+Also on Windows the background colour of the plain frame will look darker than usual."""
 
 if config.debugging:
     # for testing the error handling
@@ -152,6 +156,7 @@ def builder(parent, index, klass=None, base=None, name=None):
         klass = 'wxFrame' if common.root.language.lower()=='xrc' else 'MyFrame'
         
         dialog = window_dialog.WindowDialog(klass, base_classes, 'Select frame class', True, options, last_choices)
+        compat.SetToolTip(dialog.options[0], _option_help)
         res = dialog.show()
         dialog.Destroy()
         if res is None: return None
