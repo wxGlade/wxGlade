@@ -85,7 +85,7 @@ class EditBase(EventsMixin, edit_base.EditBase):
     _EXTRA_PROPERTIES = ["Events", "events", "Code", "extracode", "extracode_pre", "extracode_post", "extraproperties"]
     EXTRA_PROPERTIES = _EXTRA_PROPERTIES
 
-    _PROPERTY_HELP={ "class": ("The name of the class to be generated.\n"
+    _PROPERTY_HELP={ "class": ("The name of the class to be generated.\n\n"
                                "E.g. for 'ClassName':\n\n"
                                "class ClassName:\n"
                                "    def __init__(self, ...):\n        ...\n\n"
@@ -101,6 +101,10 @@ class EditBase(EventsMixin, edit_base.EditBase):
                                       "with the same parameters as this class, while for the others the default\n"
                                       "constructor will be used. You should probably not use this if \n"
                                       "overwrite existing sources is not set."),
+                     "instance_class":("Instead of e.g. wx.TextCtrl you may specify a compatible class here,\n"
+                                "e.g. 'mycontrols.MyTextCtrl'.\n\n"
+                                "You need to ensure that the class is available.\n"
+                                "Add required import code to 'Extra (import) code for this widget' on the Code tab."),
                      "extracode":"This code will be inserted at the beginning of the file.\n"
                                  "Use this to add e.g. import statements.\n\n"
                                  "The code will be added to the section marked with '# begin wxGlade: extracode'",

@@ -60,7 +60,10 @@ class CustomWidget(ManagedBase):
     PROPERTIES = ManagedBase.PROPERTIES + _PROPERTIES + ManagedBase.EXTRA_PROPERTIES
 
     _PROPERTY_LABELS = { 'custom_constructor':'Custom constructor' }
-    _PROPERTY_HELP   = { 'custom_constructor':'Specify a custom constructor like a factory method' }
+    _PROPERTY_HELP   = { 'custom_constructor':'Specify a custom constructor like a factory method',
+                         "instance_class":("The class that should be instantiated, e.g. 'mycontrols.MyCtrl'.\n\n"
+                            "You need to ensure that the class is available.\n"
+                            "Add required import code to 'Extra (import) code for this widget' on the Code tab.")}
 
     def __init__(self, name, parent, index, instance_class=None):
         ManagedBase.__init__(self, name, parent, index, instance_class or "wxWindow")
