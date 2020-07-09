@@ -1089,7 +1089,7 @@ class EditStylesMixin(np.PropertyOwner):
             compat.DestroyLater(old_widget)
             if self.sizer: self.sizer.item_properties_modified(self)  # will call toplevel Refresh as well
 
-            self.finish_widget_creation(re_add=False)
+            self.finish_widget_creation(level=0, re_add=False)
             if self.sizer: self.sizer.layout()
             if focused:
                 misc.focused_widget = self
