@@ -8,10 +8,11 @@ wxMenuBar objects
 """
 
 import wx
+import re
 
 import common, compat, config, misc
-from MenuTree import *
 from wcodegen.taghandler import BaseXmlBuilderTagHandler
+from MenuTree import MenuTree
 import new_properties as np
 from edit_windows import EditBase, PreviewMixin
 
@@ -25,6 +26,9 @@ class MenuItemDialog(wx.Dialog):
     default_item = (None,"item","","",0,"","")
     separator_item = (None,"---","---","---","---","---","---")
 
+    name_re = re.compile(r'^[a-zA-Z_]+[\w-]*(\[\w*\])*$')
+    handler_re = re.compile(r'^(([a-zA-Z_]+[a-zA-Z0-9_-]*)|()|(lambda .*))$')
+
     def __init__(self, parent, owner, items=None):
         style = wx.DEFAULT_DIALOG_STYLE|wx.RESIZE_BORDER|wx.WANTS_CHARS
         wx.Dialog.__init__(self, parent, -1, _("Menu editor"), style=style)
@@ -33,9 +37,6 @@ class MenuItemDialog(wx.Dialog):
         self.bind_event_handlers()
         self._set_tooltips()
         self.owner = owner
-
-        import re
-        self.handler_re = self.name_re = re.compile(r'^[a-zA-Z_]+[\w-]*(\[\w*\])*$')
 
         self.selected_index = -1  # index of the selected element in the wx.ListCtrl menu_items
         self._ignore_events = False
@@ -224,7 +225,9 @@ class MenuItemDialog(wx.Dialog):
         for c in (self.label_6, self.label):
             compat.SetToolTip(c, "The menu entry text;\nenter & for access keys (using ALT key)\nappend e.g. \\tCtrl-X for keyboard shortcut")
         for c in (self.label_7, self.event_handler):
-            compat.SetToolTip(c, "Enter the name of an event handler method; this will be created as stub")
+            compat.SetToolTip(c, "Enter the name of an event handler method; this will be created as stub.\n\n"
+                                 "Alternatively, for Python you may supply a lambda function like e.g.:\n"
+                                 "lambda evt: self.on_menu_item('item x')")
         for c in (self.label_8, self.name):
             compat.SetToolTip(c, "optional: enter a name to store the menu item as attribute of the menu bar")
         for c in (self.label_10, self.id):
