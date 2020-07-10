@@ -1863,7 +1863,7 @@ class EditGridBagSizer(EditFlexGridSizer):
             if span_p.value != (1,1):
                 # check whether spanning is OK or needs to be reduced
                 span = span_p.value
-                max_span = self.check_span_range(child.pos, *span, inserting=True)
+                max_span = self.check_span_range(child.index, *span, inserting=True)
                 new_span = (min(span[0], max_span[0]), min(span[1], max_span[1]))
                 if new_span != span: span_p.set(new_span)
 
