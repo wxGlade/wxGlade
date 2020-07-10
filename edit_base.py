@@ -539,7 +539,7 @@ class EditBase(np.PropertyOwner):
 
 class Slot(EditBase):
     "A window to represent an empty slot, e.g. single slot of a Frame or a page of a Notebook"
-    PROPERTIES = ["Slot"]#, "pos"]
+    PROPERTIES = ["Slot", "info"]
     IS_TOPLEVEL = IS_SIZER = IS_WINDOW = False
     IS_SLOT = True
     IS_NAMED = False
@@ -563,7 +563,9 @@ class Slot(EditBase):
         self.parent = parent
         self.children = None
         self.parent.add_item(self, index)
-        #self.pos = np.LayoutPosProperty()  # position within the sizer or 0
+
+        # display some help
+        self.info = np.DisplayProperty(self._get_tooltip())
 
         # the following are just set to use the same Add call as with widgets
         self.proportion = 1
@@ -877,4 +879,6 @@ class Slot(EditBase):
     def _get_tooltip(self):
         if self.parent.WX_CLASS in ("wxPanel", "wxFrame"):
             return "Add a control or container or sizer here, e.g. a panel, a panel plus sizer, a notebook or a sizer."
+        if self.parent.WX_CLASS in ("wxDialog",):
+            return "Add a sizer or a control here."
         return "Add a control or container here, e.g. a panel, a panel plus sizer or a notebook."

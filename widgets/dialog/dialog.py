@@ -122,19 +122,29 @@ class EditDialog(BitmapMixin, TopLevelBase, EditStylesMixin):
         self.properties["escape"].track_name( old_name, new_name )
 
 
-def builder(parent, index):
+# options for WindowDialog when interactively adding a Frame
+options = ["Add sizer"]
+last_choices = [True]
+
+
+def builder(parent, index, klass=None, base=None, name=None):
     "factory function for EditDialog objects"
     import window_dialog, edit_base, clipboard, panel
-    base_classes = ['wxDialog', 'wxPanel']
-    klass = 'wxDialog' if common.root.language.lower()=='xrc' else 'MyDialog'
+    global last_choices
+    if klass is None or base is None:
+        base_classes = ['wxDialog', 'wxPanel']
+        klass = 'wxDialog' if common.root.language.lower()=='xrc' else 'MyDialog'
 
-    dialog = window_dialog.WindowDialog(klass, base_classes, 'Select widget type', True)
-    res = dialog.show()
-    dialog.Destroy()
-    if res is None: return
-    klass, base = res
-    name = 'dialog'  if base == "wxDialog"  else  "panel"
-    name = dialog.get_next_name(name)
+        dialog = window_dialog.WindowDialog(klass, base_classes, 'Select widget type', True, options, last_choices)
+        res = dialog.show()
+        dialog.Destroy()
+        if res is None: return
+        klass, base = res
+        name = 'dialog'  if base == "wxDialog"  else  "panel"
+        name = dialog.get_next_name(name)
+        interactive = True
+    else:
+        interactive = False
 
     if base == "wxDialog":
         is_panel = False
@@ -143,7 +153,13 @@ def builder(parent, index):
         is_panel = True
         editor = panel.EditTopLevelPanel(name, parent, klass)
 
-    edit_base.Slot(editor, 0)
+    if interactive and last_choices[0]:
+        # add a default panel and vertical sizer to the frame
+        import edit_sizers
+        edit_sizers._builder(editor, 0)
+    else:
+        # just add a slot
+        edit_base.Slot(editor, 0)
 
     editor.create()
     if base == "wxDialog":
@@ -158,9 +174,6 @@ def builder(parent, index):
             w = editor.widget.GetParent()
         w.CenterOnScreen()
         w.Raise()
-
-    editor.drop_target = clipboard.DropTarget(editor)
-    editor.widget.SetDropTarget(editor.drop_target)
 
     return editor
 

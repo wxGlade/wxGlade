@@ -3158,6 +3158,38 @@ class ActionButtonProperty(Property):
     def write(self, output, tabs=0):
         return
 
+
+class DisplayProperty(TextProperty):
+    #TOOLTIP = None
+
+    def __init__(self, value):
+        multiline = "\n" in value
+        #self.TOOLTIP = value
+        TextProperty.__init__(self, value, multiline, fixed_height=True)
+
+    def create_editor(self, panel, sizer):
+        self.text = wx.TextCtrl(panel, value=self.value, style=wx.TE_READONLY|wx.TE_MULTILINE|wx.TE_NO_VSCROLL)
+        self.text.SetBackgroundColour(wx.SystemSettings.GetColour(wx.SYS_COLOUR_BTNFACE))
+
+        # layout of the controls / sizers
+        proportion = self._PROPORTION
+        if self.multiline: # for multiline make it higher
+            h = self.text.GetCharHeight()
+            if self.multiline=="grow":
+                sizer.SetItemMinSize(self.text, -1, h * 1.5)
+                proportion = 0
+            else:
+                sizer.SetItemMinSize(self.text, -1, h * 3)
+        sizer.Add(self.text, proportion, wx.ALL |wx.EXPAND, 3)
+
+        compat.SetToolTip(self.text, self.value)
+        #self._set_tooltip(label, self.text, self.enabler, *self.additional_controls)
+
+
+    def write(self, output, tabs=0):
+        return
+
+
 ########################################################################################################################
 # functions to modify property lists in place
 
