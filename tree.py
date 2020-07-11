@@ -70,6 +70,16 @@ class WidgetTree(wx.TreeCtrl):#, Tree):
         if keycode in (wx.WXK_UP, wx.WXK_DOWN, wx.WXK_LEFT, wx.WXK_RIGHT):
             event.Skip()
             return True
+        if keycode==wx.WXK_RETURN and self.cur_widget and self.cur_widget.item:
+            if self.cur_widget.IS_TOPLEVEL:
+                self.show_toplevel(None, editor=self.cur_widget)
+                return True
+            elif not self.IsExpanded(self.cur_widget.item):
+                self.ExpandAllChildren(self.cur_widget.item)
+                return True
+            else:
+                self.Collapse(self.cur_widget.item)
+                return True
         return False
 
     def on_key_down_event(self, event):
