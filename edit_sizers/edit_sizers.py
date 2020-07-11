@@ -56,6 +56,7 @@ class SizerSlot(edit_base.Slot):
                 self.create_widget()
                 if add_to_sizer:
                     sizer.widget.Add(self.widget, self.index, self.span, wx.EXPAND, self.border)
+        self.properties["info"].set( self._get_tooltip() )
         common.app_tree.refresh(self)  # XXX indicate overlapped slots
 
     def check_drop_compatibility(self):
@@ -81,6 +82,8 @@ class SizerSlot(edit_base.Slot):
         output.extend( common.format_xml_tag( u'object', '', tabs, **{'class': 'sizerslot'}) )
 
     def _get_tooltip(self):
+        if self.overlapped:
+            return "This slot is overlapped by another cell.\n(see Properties->Layout->Span of the other cell)"
         return "Add a widget or another sizer here."
 
 
@@ -630,8 +633,7 @@ class SizerBase(edit_base.EditBase):
     @_frozen
     def item_properties_modified(self, widget, modified=None):
         "update layout properties"
-        if not self.widget or not widget.widget:
-            return
+        if not self.widget or not widget.widget: return
 
         item = self.widget.GetItem(widget.widget)  # a SizerItem or GBSizerItem instance
         if not item: return
@@ -673,7 +675,7 @@ class SizerBase(edit_base.EditBase):
                     w,h = best_size
             self.widget.SetItemMinSize(widget.widget, w, h)
 
-        self.layout()
+        self.parent_window.layout()
 
     def remove_item(self, child, level, keep_slot=False):
         "Removes elem from self"
@@ -1774,7 +1776,7 @@ class EditGridBagSizer(EditFlexGridSizer):
             self.widget.Add(child.widget, child.index, child.span, child.flag, child.border)
 
         self._set_growable()
-        self.layout()
+        self.parent_window.layout()
         misc.rebuild_tree(self)
 
     def remove_row(self, index):

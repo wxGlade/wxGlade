@@ -874,6 +874,7 @@ class Slot(EditBase):
                     name = "EditVerticalSizerSlot"
                 elif sizer_orient==wx.HORIZONTAL:
                     name = "EditHorizontalSizerSlot"
+        if self.overlapped: name += "-Disabled"
         return name
 
     def _get_tooltip(self):

@@ -26,11 +26,7 @@ class WidgetTree(wx.TreeCtrl):#, Tree):
         wx.TreeCtrl.__init__(self, parent, -1, style=style)
         self.cur_widget = None  # reference to the selected widget
         self.root = application
-        image_list = wx.ImageList(21, 21)
-        image_list.Add(wx.Bitmap(os.path.join(config.icons_path, 'application.xpm'), wx.BITMAP_TYPE_XPM))
-        for w in WidgetTree.images:
-            WidgetTree.images[w] = image_list.Add(misc.get_xpm_bitmap(WidgetTree.images[w]))
-        self.AssignImageList(image_list)
+        self._load_images()
         application.item = self.AddRoot(_('Application'), 0)
         self._SetItemData(application.item, application)
         self.skip_select = 0  # avoid an infinite loop on win32, as SelectItem fires an EVT_TREE_SEL_CHANGED event
@@ -56,6 +52,19 @@ class WidgetTree(wx.TreeCtrl):#, Tree):
         #self.Bind(wx.EVT_CHAR_HOOK, self.on_char)  # on wx 2.8 the event will not be delivered to the child
         self.Bind(wx.EVT_TREE_DELETE_ITEM, self.on_delete_item)
 
+    def _load_images(self):
+        image_list = wx.ImageList(21, 21)
+        image_list.Add(wx.Bitmap(os.path.join(config.icons_path, 'application.xpm'), wx.BITMAP_TYPE_XPM))
+        bitmaps = {}
+        for name, path in WidgetTree.images.items():
+            bitmaps[name] = misc.get_xpm_bitmap(path)
+        for name in ["EditSizerSlot"]:
+            bitmaps[name+"-Disabled"] = bitmaps[name].ConvertToDisabled()
+
+        for name, bitmap in bitmaps.items():
+            WidgetTree.images[name] = image_list.Add(bitmap)
+        self.AssignImageList(image_list)
+
     def on_char(self, event):
         "called from main: start label editing on F2; skip events while editing"
         keycode = event.GetKeyCode()
@@ -72,6 +81,7 @@ class WidgetTree(wx.TreeCtrl):#, Tree):
             return True
         if keycode==wx.WXK_RETURN and self.cur_widget and self.cur_widget.item:
             if self.cur_widget.IS_SLOT:
+                if self.cur_widget.overlapped: return True
                 return False
             if self.cur_widget.IS_TOPLEVEL and self.cur_widget.children:
                 self.show_toplevel(None, editor=self.cur_widget)
