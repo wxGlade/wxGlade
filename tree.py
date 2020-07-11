@@ -113,7 +113,7 @@ class WidgetTree(wx.TreeCtrl):#, Tree):
     def begin_edit_label(self, evt):
         # Begin editing a label. This can be prevented by calling Veto()
         widget = self._GetItemData( evt.Item )
-        if not widget._label_editable(): evt.Veto()
+        if not widget or not widget._label_editable(): evt.Veto()
 
     def _split_name_label(self, new_value):
         # split user input into name and label; if there's no colon but a quotation mark, it's just a label
