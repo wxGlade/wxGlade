@@ -71,13 +71,15 @@ class WidgetTree(wx.TreeCtrl):#, Tree):
             event.Skip()
             return True
         if keycode==wx.WXK_RETURN and self.cur_widget and self.cur_widget.item:
-            if self.cur_widget.IS_TOPLEVEL:
+            if self.cur_widget.IS_SLOT:
+                return False
+            if self.cur_widget.IS_TOPLEVEL and self.cur_widget.children:
                 self.show_toplevel(None, editor=self.cur_widget)
                 return True
-            elif not self.IsExpanded(self.cur_widget.item):
+            elif not self.IsExpanded(self.cur_widget.item) and self.cur_widget.children:
                 self.ExpandAllChildren(self.cur_widget.item)
                 return True
-            else:
+            elif self.IsExpanded(self.cur_widget.item):
                 self.Collapse(self.cur_widget.item)
                 return True
         return False
