@@ -1424,7 +1424,7 @@ class TextProperty(Property):
             self.text.SetValue(self.control_re.sub("", text))
             wx.Bell()
             return
-        self.check(text)
+        self._set_colours( self.check_value(text) )
         event.Skip()
 
     def create_additional_controls(self, panel, sizer, hsizer):
@@ -1447,13 +1447,18 @@ class TextProperty(Property):
         compat.SetToolTip(self.text, self._find_tooltip())
         self._set_colours()
 
-    def _set_colours(self):
+    def _set_colours(self, warning_error=None):
         # set color to indicate errors and warnings
-        bgcolor = wx.WHITE
-        if self._warning:
-            bgcolor = wx.Colour(255, 255, 0, 255)  # yellow
-        if self._error:
+        if warning_error:
+            warning, error = warning_error
+        else:
+            warning, error = self._warning, self._error
+        if error:
             bgcolor = wx.RED
+        elif warning:
+            bgcolor = wx.Colour(255, 255, 0, 255)  # yellow
+        else:
+            bgcolor = wx.WHITE
         self.text.SetBackgroundColour( bgcolor )
         self.text.Refresh()
 
@@ -1487,22 +1492,25 @@ class TextProperty(Property):
             self.text.SetValue( self._convert_to_text(self.value))
             return
         self.previous_value = self.value
-        return Property._check_for_user_modification(self, new_value, force, activate)
+        ret = Property._check_for_user_modification(self, new_value, force, activate)
+        self.check(self.value)
+        return ret
 
     def _convert_from_text(self, text=None):
         "convert from TextCtrl input value to self.value; change in derived classes"
         if text is None: value = self.text.GetValue()
         return text
 
-    def check(self, value):
+    def check_value(self, value):
         "return (result, message) where result is (True,False,'warn') for pass/fail/warning"
-        # default implementation, just strip control characters and check vs regular expression
-        if self.validation_re:
-            if not self.validation_re.match(value):
-                self.set_check_result(error="invalid")
-                return
+        if self.validation_re and not self.validation_re.match(value):
+            return (None, "invalid")
         warning, error = self._check(value)
-        self.set_check_result(warning, error)
+        return warning, error
+
+    def check(self, value=None):
+        if value is None: value = self.value
+        self.set_check_result( *self.check_value(value) )
 
     def _check(self, value):
         # called from check, if value matches validation_re
