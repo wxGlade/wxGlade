@@ -82,7 +82,7 @@ class _Dialog(wx.Dialog):
         btn = wx.Button(self, wx.ID_OK, _('OK') )
         btn.SetDefault()
         hsizer.Add(btn, 1, wx.ALL, 5)
-        sizer.Add(hsizer, 0, wx.EXPAND|wx.ALIGN_CENTER )
+        sizer.Add(hsizer, 0, wx.EXPAND)
 
         self.SetAutoLayout(True)
         self.SetSizer(sizer)
