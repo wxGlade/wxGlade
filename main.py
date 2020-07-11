@@ -327,6 +327,7 @@ class wxGladePalettePanel(wx.Panel):
 
     def on_char(self, event):
         key = (event.GetKeyCode(), event.GetModifiers())    # modifiers: 1,2,4 for Alt, Ctrl, Shift
+        if key[1]: return event.Skip()
 
         focused = self.FindFocus()
         if not focused or not focused.Id in self._id_to_coordinate:
