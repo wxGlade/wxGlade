@@ -281,6 +281,7 @@ class MenuItemDialog(wx.Dialog):
             index = self.items.GetItemCount()
         elif index > 0:
             item_level = self.item_level(index-1)
+        if item[1]=="---" and item_level==0: return wx.Bell()
         indent = "    " * item_level
         item = list(unindented_item)
         item[0] = str(item_level)
@@ -515,14 +516,14 @@ class MenuItemDialog(wx.Dialog):
         if index is None:
             index = self.selected_index
         if index <= 0:
-            wx.Bell()
-            return
+            return wx.Bell()
         level = self.item_level(index)
         if level==0 or ( index+1 < self.items.GetItemCount() and (level < self.item_level(index+1)) ):
-            wx.Bell()
-            return
-        level -= 1
+            return wx.Bell()
         label = self._get_item_text(index, "label")
+        if level==1 and label.endswith("---"):
+            return wx.Bell()
+        level -= 1
         self._set_item_string(index, "label", label[4:])
         self._set_item_string(index, "level", level)
         self.items.SetItemState(index, wx.LIST_STATE_SELECTED, wx.LIST_STATE_SELECTED)
@@ -557,8 +558,7 @@ class MenuItemDialog(wx.Dialog):
         """internal function used by move_item_up and move_item_down.
         Returns the new index of the moved item, or None if no change occurred"""
         if index <= 0:
-            wx.Bell()
-            return
+            return wx.Bell()
 
         level = self.item_level(index)
         items_to_move = [ self._get_all_texts(index) ]
@@ -574,8 +574,7 @@ class MenuItemDialog(wx.Dialog):
             lvl = self.item_level(i)
             if level == lvl: break
             elif level > lvl:
-                wx.Bell()
-                return
+                return wx.Bell()
             i -= 1
         for j in range(len(items_to_move)-1, -1, -1):
             self.items.DeleteItem(index+j)
