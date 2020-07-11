@@ -2306,6 +2306,7 @@ class GridProperty(Property):
         assert not self.deactivated
         value = self.get()
         value.insert(index, item)
+        self.editing_values = None
         self.set(value)
 
     def get(self):
