@@ -544,6 +544,7 @@ class Application(EditRoot):
             else:
                 dirname, basename = os.path.split(self.filename)
                 basename, extension = os.path.splitext(basename)
+                basename = basename.replace(".", "_")
                 if not os.path.exists(dirname):
                     error = "Directory '%s' not found"%dirname
                 elif not os.path.isdir(dirname):
