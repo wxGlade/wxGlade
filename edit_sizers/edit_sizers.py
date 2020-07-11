@@ -1739,7 +1739,7 @@ class EditGridBagSizer(EditFlexGridSizer):
 
         # remove the slots, if required
         set_focus = misc.focused_widget in remove_slots
-        for slot in reversed(remove_slots): slot._remove()
+        for slot in reversed(remove_slots): slot.recursive_remove(level=0)
         if set_focus:
             misc.set_focused_widget(self)
 
