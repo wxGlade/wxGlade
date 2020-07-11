@@ -59,7 +59,10 @@ class WidgetTree(wx.TreeCtrl):#, Tree):
         for name, path in WidgetTree.images.items():
             bitmaps[name] = misc.get_xpm_bitmap(path)
         for name in ["EditSizerSlot"]:
-            bitmaps[name+"-Disabled"] = bitmaps[name].ConvertToDisabled()
+            bmp = bitmaps[name]
+            if hasattr(bitmaps[name], "ConvertToDisabled"):
+                bmp = bmp.ConvertToDisabled()
+            bitmaps[name+"-Disabled"] = bmp
 
         for name, bitmap in bitmaps.items():
             WidgetTree.images[name] = image_list.Add(bitmap)
