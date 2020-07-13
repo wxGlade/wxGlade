@@ -150,7 +150,10 @@ class EditNotebook(ManagedBase, EditStylesMixin):
 
     def remove_item(self, child, level, keep_slot=False):
         if not keep_slot:
-            del self.properties["tabs"].value[child.index]
+            tabs_p = self.properties["tabs"]
+            # if the length is different, then due to tabs_p.apply calling self.set_tabs and so it's removed already
+            if len(tabs_p.value)==len(self.children):
+                del tabs_p.value[child.index]
         ManagedBase.remove_item(self, child, level, keep_slot)
 
     @misc.restore_focus
@@ -161,21 +164,16 @@ class EditNotebook(ManagedBase, EditStylesMixin):
         if keep_indices != sorted(keep_indices):
             raise ValueError("Re-ordering is not yet implemented")
         keep_indices = set(keep_indices)
-        new_labels = old_labels[:]
 
         # set tab labels of existing pages, if modified
         for (label,), index in zip(self.tabs, indices):
-            if index is not None and old_labels[index]!=label:
-                new_labels[index] = [label,]
-                if self.widget:
-                    self.widget.SetPageText(index, label)
+            if index is not None and old_labels[index]!=label and self.widget:
+                self.widget.SetPageText(index, label)
 
         # remove tabs
         for index in range(len(old_labels)-1, -1, -1):
             if not index in keep_indices:
                 self.children[index].recursive_remove(level=0)
-                # delete from list of names
-                del new_labels[index]
 
         # insert/add tabs
         added = None
@@ -183,7 +181,6 @@ class EditNotebook(ManagedBase, EditStylesMixin):
             if indices[index] is not None: continue  # keep tab
 
             # actually add/insert
-            new_labels.insert(index, [label,]) # this needs to be done before EditPanel calls self.virtual_sizer.add_item
             self.children.insert(index, None)
             # create panel and node, add to tree
             suggestion = "%s_%s" % (self.name, label)
