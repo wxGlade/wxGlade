@@ -41,8 +41,8 @@ class GridColsProperty(np.GridProperty):
         "return True if it's not the default value"
         return label != self._get_label(i)
 
-    def add_row(self, event):
-        np.GridProperty.add_row(self, event)
+    def add_row(self, *args, **kwargs):
+        np.GridProperty.add_row(self, *args, **kwargs)
         rows = self.grid.NumberRows
         label = self._get_label(rows-1)
         self.grid.SetCellValue(rows-1, 0, label)
@@ -51,8 +51,8 @@ class GridColsProperty(np.GridProperty):
         self.grid.SetCellValue(rows-1, 1, str(col_width))
         self.editing_values[-1] = [label, col_width]
 
-    def insert_row(self, event):
-        np.GridProperty.insert_row(self, event)
+    def insert_row(self, *args, **kwargs):
+        np.GridProperty.insert_row(self, *args, **kwargs)
         label = self._get_label(self.cur_row)
         self.grid.SetCellValue(self.cur_row, 0, label)
         # take the default column width from the previous row
@@ -114,8 +114,8 @@ class GridRowsProperty(GridColsProperty):
             # just write the number of rows
             output.extend( common.format_xml_tag(u'rows_number', str(len(rows)), tabs) )
 
-    def add_row(self, event):
-        np.GridProperty.add_row(self, event)
+    def add_row(self, *args, **kwargs):
+        np.GridProperty.add_row(self, *args, **kwargs)
         rows = self.grid.NumberRows
         label = self._get_label(rows-1)
         self.grid.SetCellValue(rows-1, 0, label)
@@ -124,8 +124,8 @@ class GridRowsProperty(GridColsProperty):
         self.grid.SetCellValue(rows-1, 1, str(col_width))
         self.editing_values[-1] = [label, col_width]
 
-    def insert_row(self, event):
-        np.GridProperty.insert_row(self, event)
+    def insert_row(self, *args, **kwargs):
+        np.GridProperty.insert_row(self, *args, **kwargs)
         label = self._get_label(self.cur_row)
         self.grid.SetCellValue(self.cur_row, 0, label)
         # take the default row width from the previous row
