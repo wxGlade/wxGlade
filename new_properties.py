@@ -2444,7 +2444,7 @@ class GridProperty(Property):
         self._last_focus = None
 
     def on_grid_focus(self, event):
-        self.on_focus()
+        self.on_focus(event)  # Skip will be called
         self._last_focus = "grid"
 
     def on_char(self, event):
@@ -2680,8 +2680,38 @@ class GridProperty(Property):
         self.cur_row = event.GetRow()
         self.cur_col = event.GetCol()
         event.Skip()
+        self._last_focus = "grid"
         self.on_focus()
         self._update_editors()
+
+    def _set_index(self, row=None, col=None):
+        # optionally, change the index; always select the grid row or cell
+        value = self.editing_values if self.editing_values is not None else self.value
+        row_count = len(value)
+        if self.can_add and self.immediate: row_count += 1
+        if row is not None:
+            self.cur_row = row
+        if self.cur_row<0:
+            self.cur_row = 0
+        elif self.cur_row >= row_count:
+            self.cur_row = row_count - 1
+        if col is not None:
+            self.cur_col = col
+
+        self._update_editors()
+
+        if not self.grid: return
+        self.grid.ClearSelection()
+        self.grid.MakeCellVisible(self.cur_row, 0)
+        if self._last_focus=="grid":
+            if hasattr(self.grid, "GoToCell"):
+                self.grid.GoToCell( self.cur_row, self.cur_col )
+            else:
+                self.grid.SetGridCursor(self.cur_row, self.cur_col)  # calls MakeCellVisible
+        else:
+            self.grid.SelectRow(self.cur_row)  # this will move the focus from the editor to the grid
+            if self.editors and self._last_focus=="editor":
+                self.restore_editor_focus()
 
     def update_display(self, start_editing=False):
         # update complete grid and editors
@@ -2842,9 +2872,10 @@ class GridProperty(Property):
         event.Skip()
         self._update_editors()
 
-    def _on_value_edited(self, row, col, value):
+    def _on_value_edited(self, row, col, value, set_index=None, delay=True):
         # returns False if the new value is not OK
         # grid and editors need to be updated outside
+        # set_index is used in case a row is added
 
         if not self._validate(row, col, value):
             wx.Bell()
@@ -2861,7 +2892,7 @@ class GridProperty(Property):
 
         if self.immediate or (not self.can_add and not self.can_insert and not self.can_insert):
             if row>=len(self.value):
-                self.add_row(set_focus=False, highlight=False)
+                self.add_row(row=set_index, delay=delay)
             # immediate, i.e. no editing_values
             if self.value[row] is None:
                 self.value[row] = self.default_row[:]
@@ -2897,7 +2928,6 @@ class GridProperty(Property):
         # restore focus after a button (Add/Insert/Remove) has been pressed
         if self._last_focus!="editor": return
         ctrl = self.grid.Parent.FindWindowById(self._last_focus_id)
-        #if ctrl: wx.CallAfter(ctrl.SetFocus)
         if ctrl: ctrl.SetFocus()
 
     def on_text_editor(self, event):
@@ -2912,7 +2942,7 @@ class GridProperty(Property):
         ctrl.Refresh()
         event.Skip()
 
-    def _on_editor_edited(self, event):
+    def _on_editor_edited(self, event, set_index=None):
         # called from key or focus event handler; set value if valid
         ctrl = event.GetEventObject()
         if not ctrl: return False
@@ -2925,14 +2955,11 @@ class GridProperty(Property):
         if value == self.grid.GetCellValue(self.cur_row, col):
             return False
 
-        if self._on_value_edited(self.cur_row, col, value):
+        if self._on_value_edited(self.cur_row, col, value, set_index=set_index, delay=False):
             value = self._ensure_editing_copy()[self.cur_row][col]
             self.grid.SetCellValue(self.cur_row, col, value)
+            #self.grid.Refresh()
             ret = True
-
-        self.cur_col = col
-        self.grid.SelectRow(self.cur_row)
-        self.on_focus()
 
         return ret
 
@@ -2951,12 +2978,13 @@ class GridProperty(Property):
 
         if key[0] in (wx.WXK_RETURN, wx.WXK_UP, wx.WXK_DOWN):
             # flush and if cursor key was hit, go to another line
-            self._on_editor_edited(event)
+            row = self.cur_row
             if key[0]==wx.WXK_UP:
-                self._set_row_index( self.cur_row-1 )
+                row -= 1
             elif key[0]==wx.WXK_DOWN:
-                self._set_row_index( self.cur_row+1 )
-            self._update_editors()
+                row += 1
+            self._on_editor_edited(event, set_index=row)
+            self._set_index(row)
             return
 
         # handle Ctrl-I, Ctrl-A, Ctrl-R; Alt-A will be handled by the button itself
@@ -2976,18 +3004,6 @@ class GridProperty(Property):
             #self.reset(event, from_editor)
         else:
             event.Skip()
-
-    def _set_row_index(self, row):
-        value = self.editing_values if self.editing_values is not None else self.value
-        row_count = len(value)
-        if self.can_add and self.immediate: row_count += 1
-
-        self.cur_row = row
-        if self.cur_row<0:
-            self.cur_row = 0
-        elif self.cur_row >= row_count:
-            self.cur_row = row_count - 1
-        self.grid.SelectRow(self.cur_row)
 
     def _update_editors(self, ctrl=None):
         if not self.editors: return
@@ -3023,44 +3039,41 @@ class GridProperty(Property):
 
     def on_button_add(self, event):
         if self._last_focus=="grid":
-            self.add_row(set_focus=True, highlight=False)
+            self.add_row(set_index=True)
         elif self._last_focus=="editor":
-            self.add_row(set_focus=False, highlight=True)
+            self.add_row(set_index=True)
             self.restore_editor_focus()
         else:
-            self.add_row(set_focus=False, highlight=False)
+            self.add_row(set_index=True)
 
-    def add_row(self, set_focus=False, highlight=False, delay=True):
+    def add_row(self, row=None, set_index=False, delay=True):
         self.on_focus()
         values = self._ensure_editing_copy()
-        row = len(values)
-        values.append( self._get_default_row( row ) )
+        if row is None:
+            row = len(values)
+            if self.can_add and self.immediate: row += 1
+        values.append( self._get_default_row( len(values) ) )
+
         if self.with_index:
             self.indices.append("")
         self._update_remove_button()
         self._update_apply_button()
         self._update_indices()
-        if self.can_add and self.immediate: row += 1
         if delay:
-            wx.CallAfter(self._add_grid_row, row, set_focus, highlight)  # don't modify the grid within a EVT_GRID_CELL_CHANGED handler
+            wx.CallAfter(self._add_grid_row, row, set_index)  # don't modify the grid within a EVT_GRID_CELL_CHANGED handler
         else:
-            self._add_grid_row(row, set_focus, highlight)
+            self._add_grid_row(row, set_index)
 
-    def _add_grid_row(self, row, set_focus=False, highlight=False):
+    def _add_grid_row(self, row, set_index=False):
         # called via CallAfter from add_row; either when "Add" is required or when the user has edited the last row
         if not self.grid: return
         self.grid.AppendRows()
         # fill the grid with default values; these are not in self.value unless the user edits them
+        last_row = self.grid.NumberRows-1
         for col, value in enumerate( self._get_default_row(row) ):
-            self.grid.SetCellValue(row, col, str(value))
-        if set_focus or highlight:
-            self.grid.MakeCellVisible(row, 0)
-        self.grid.ForceRefresh()
-        if set_focus: self._set_grid_focus(row)
-        if highlight:
-            self.grid.SelectRow(row)  # this will move the focus from the editor to the grid
-        self.cur_row = row
-        self._update_editors()
+            self.grid.SetCellValue(last_row, col, str(value))
+        if set_index:
+            self._set_index(row)
 
     def on_button_remove(self, event):
         if self._last_focus=="grid":
@@ -3074,18 +3087,20 @@ class GridProperty(Property):
     def remove_row(self, set_focus=True, highlight=False):
         self.on_focus()
         values = self._ensure_editing_copy()
+        row = self.cur_row
         if self.immediate and self.can_add and self.cur_row==self.grid.GetNumberRows()-1:
             # cursor is in last row, which is empty and not related to values
             # check whether the row before is empty, if yes, we still can remove; if not, return
             if self.cur_row==0 or values[self.cur_row-1]!=self.default_row:
                 if set_focus: self._set_grid_focus()
                 return
+            row -= 1
         if not self.can_remove_last and self.grid.GetNumberRows()==1:
             self._logger.warning( _('You can not remove the last entry!') )
             return
         if values:
             self.grid.DeleteRows(self.cur_row)
-            del values[self.cur_row]
+            del values[row]
             if self.with_index:
                 del self.indices[self.cur_row]
             if self.cur_row>=len(values) and self.cur_row>0:
@@ -3094,9 +3109,7 @@ class GridProperty(Property):
         self._update_remove_button()
         self._update_apply_button()
         self._update_indices()
-        self._update_editors()
-        if set_focus: self._set_grid_focus()
-        if highlight and self.cur_row>=0: self.grid.SelectRow(self.cur_row)
+        self._set_index()
 
     def on_button_insert(self, event):
         if self._last_focus=="grid":
@@ -3121,9 +3134,7 @@ class GridProperty(Property):
         self._update_remove_button()
         self._update_apply_button()
         self._update_indices()
-        self._update_editors()
-        if set_focus: self._set_grid_focus(self.cur_row)
-        if highlight: self.grid.SelectRow(self.cur_row)
+        self._set_index()
 
     def _ensure_editing_copy(self):
         if self.immediate: return self.value
