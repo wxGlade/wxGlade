@@ -121,17 +121,22 @@ def trace1(func, *args, **kwargs):
 
 
 # own implementation for wxGlade
-
+TRACING = False
 def trace(filename, func, *args, **kwargs):
-    sys.settrace(trace_calls)
+    start_trace(filename)
     func(*args, **kwargs)
-    sys.settrace(None)
+    stop_trace()
 
-def start_trace(filename):
+def start_trace():
+    global TRACING
+    if TRACING: return
+    TRACING = True
     sys.settrace(trace_calls)
 
 def stop_trace():
     sys.settrace(None)
+    global TRACING
+    TRACING = False
 
 
 _FILES = {}
@@ -160,7 +165,7 @@ def trace_calls(frame, event, arg):
     if func_name in ("__getattr__", "<genexpr>", "<listcomp>"): return
     
     if func_name in ("cn",): return
-    if func_name.startswith("_",): return
+    #if func_name.startswith("_",): return
     if func_name in ("wxname2attr",): return
 
     filename = co.co_filename
