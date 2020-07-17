@@ -136,7 +136,8 @@ class EditBase(EventsMixin, edit_base.EditBase):
 
         if "custom_base" in self.PROPERTIES:
             # for TopLevelBase, notebook, panel and splitter window
-            self.custom_base = np.BaseClassesPropertyD()
+            self.custom_base = custom_base_p = np.BaseClassesPropertyD()
+            if klass_p.deactivated: custom_base_p.set_blocked()
 
         self.extracode       = np.CodeProperty()
         self.extracode_pre   = np.CodeProperty()

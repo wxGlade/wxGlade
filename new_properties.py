@@ -1345,7 +1345,7 @@ class TextProperty(Property):
                 self.enabler.Disable()
         elif self.deactivated is not None:
             self.text.Enable(not self.deactivated)
-            panel.Bind( wx.EVT_LEFT_DOWN, self._on_text_click )
+        panel.Bind( wx.EVT_LEFT_DOWN, self._on_text_click )
         # layout of the controls / sizers
         if self._HORIZONTAL_LAYOUT:
             #self.text.SetMaxSize( (-1,200) )
@@ -1383,7 +1383,7 @@ class TextProperty(Property):
             label.SetForegroundColour(wx.BLUE)
 
     def _on_text_click(self, event):
-        if self.deactivated and not self.auto_activated and self.text:
+        if not self.blocked and self.deactivated and not self.auto_activated and self.text:
             text_rect = self.text.GetClientRect()
             text_rect.Offset(self.text.Position)
             if text_rect.Contains(event.Position):
