@@ -871,46 +871,55 @@ class BoxSizerBase(SizerBase):
 
     def _check_flags(self, flags, added=None):
         excludes = set()
-        remove = set()
+        replace = {}
         msg = None
         if self.orient==wx.VERTICAL:
             excludes = {"wxALIGN_BOTTOM", "wxALIGN_CENTER_VERTICAL", "wxALIGN_CENTER"}
             if "wxALIGN_BOTTOM" in flags:
-                remove.add("wxALIGN_BOTTOM")
+                replace["wxALIGN_BOTTOM"] = None
                 msg = "Vertical alignment flags are ignored in vertical sizers"
 
-            # We need to accept wxALIGN_CENTER_VERTICAL when it is combined with wxALIGN_CENTER_HORIZONTAL because
-            # this is known as wxALIGN_CENTER and we accept it historically in wxSizer API.
-            if not "wxALIGN_CENTER_HORIZONTAL" in flags and "wxALIGN_CENTER_VERTICAL" in flags:
+            if "wxALIGN_CENTER_VERTICAL" in flags:
                 msg = "Vertical alignment flags are ignored in vertical sizers"
-                remove.add("wxALIGN_CENTER_VERTICAL")
+                replace["wxALIGN_CENTER_VERTICAL"] = None
+
+            if "wxALIGN_CENTER" in flags:
+                msg = "Vertical alignment flags are ignored in vertical sizers"
+                replace["wxALIGN_CENTER"] = "wxALIGN_CENTER_HORIZONTAL"
 
             # Note that using alignment with wxEXPAND can make sense if wxSHAPED is also used,
             # as the item doesn't necessarily fully expand in the other direction in this case.
             if "wxEXPAND" in flags and not "wxSHAPED" in flags:
                 if "wxALIGN_RIGHT" in flags or "wxALIGN_CENTER_HORIZONTAL" in flags or "wxALIGN_CENTER" in flags:
                     msg = "Horizontal alignment flags are ignored with wxEXPAND"
-                    remove.update({"wxALIGN_RIGHT", "wxALIGN_CENTER_HORIZONTAL", "wxALIGN_CENTER"})
-                excludes.update({"wxALIGN_RIGHT", "wxALIGN_CENTER_HORIZONTAL"})
+                    if "wxALIGN_RIGHT" in flags:             replace["wxALIGN_RIGHT"] = None
+                    if "wxALIGN_CENTER_HORIZONTAL" in flags: replace["wxALIGN_CENTER_HORIZONTAL"] = None
+                    if "wxALIGN_CENTER" in flags:            replace["wxALIGN_CENTER"] = "wxALIGN_CENTER_VERTICAL"
+                excludes.update({"wxALIGN_RIGHT", "wxALIGN_CENTER_HORIZONTAL", "wxALIGN_CENTER"})
 
         else:  # horizontal
             excludes = {"wxALIGN_RIGHT", "wxALIGN_CENTER_HORIZONTAL", "wxALIGN_CENTER"}
             if "wxALIGN_RIGHT" in flags:
                 msg = "Horizontal alignment flags are ignored in horizontal sizers"
-                remove.add("wxALIGN_RIGHT")
+                replace["wxALIGN_RIGHT"] = None
     
-            if not "wxALIGN_CENTER_VERTICAL" in flags and "wxALIGN_CENTER_HORIZONTAL" in flags:
-                # the combination would be wxALIGN_CENTER and accepted
+            if "wxALIGN_CENTER_HORIZONTAL" in flags:
                 msg = "Horizontal alignment flags are ignored in horizontal sizers"
-                remove.add("wxALIGN_CENTER_HORIZONTAL")
+                replace["wxALIGN_CENTER_HORIZONTAL"] = None
+
+            if "wxALIGN_CENTER" in flags:
+                msg = "Horizontal alignment flags are ignored in horizontal sizers"
+                replace["wxALIGN_CENTER"] = "wxALIGN_CENTER_VERTICAL"
     
             if "wxEXPAND" in flags and not "wxSHAPED" in flags:
                 if "wxALIGN_BOTTOM" in flags or "wxALIGN_CENTER_VERTICAL" in flags or "wxALIGN_CENTER" in flags:
                     msg = "Vertical alignment flags are ignored with wxEXPAND"
-                    remove.update({"wxALIGN_BOTTOM", "wxALIGN_CENTER_VERTICAL"})
-                excludes.update( {"wxALIGN_BOTTOM", "wxALIGN_CENTER_VERTICAL"} )
+                    if "wxALIGN_BOTTOM" in flags:          replace["wxALIGN_BOTTOM"] = None
+                    if "wxALIGN_CENTER_VERTICAL" in flags: replace["wxALIGN_CENTER_VERTICAL"] = None
+                    if "wxALIGN_CENTER" in flags:          replace["wxALIGN_CENTER"] = "wxALIGN_CENTER_HORIZONTAL"
+                excludes.update( {"wxALIGN_BOTTOM", "wxALIGN_CENTER_VERTICAL", "wxALIGN_CENTER"} )
 
-        return excludes, remove, msg
+        return excludes, replace, msg
 
     def properties_changed(self, modified):
         if not modified or "orient" in modified and self.item and config.use_gui:
@@ -1324,19 +1333,22 @@ class GridSizerBase(SizerBase):
 
     ####################################################################################################################
     def _check_flags(self, flags, added=None):
-        remove = set()
+        replace = {}
         msg = None
         if "wxEXPAND" in flags:
             # Check that expansion will happen in at least one of the directions.
             if ( ("wxALIGN_BOTTOM" in flags or "wxALIGN_CENTER_VERTICAL" in flags or "wxALIGN_CENTER" in flags) and
                  ("wxALIGN_RIGHT" in flags or "wxALIGN_CENTER_HORIZONTAL" in flags or "wxALIGN_CENTER" in flags) ):
                 if added is None or added=="wxEXPAND":
-                    remove = {"wxALIGN_BOTTOM", "wxALIGN_CENTER_VERTICAL", "wxALIGN_CENTER",
-                              "wxALIGN_RIGHT", "wxALIGN_CENTER_HORIZONTAL"}
+                    if "wxALIGN_BOTTOM" in flags:            replace["wxALIGN_BOTTOM"] = None
+                    if "wxALIGN_CENTER_VERTICAL" in flags:   replace["wxALIGN_CENTER_VERTICAL"] = None
+                    if "wxALIGN_CENTER" in flags:            replace["wxALIGN_CENTER"] = None
+                    if "wxALIGN_RIGHT" in flags:             replace["wxALIGN_RIGHT"] = None
+                    if "wxALIGN_CENTER_HORIZONTAL" in flags: replace["wxALIGN_CENTER_HORIZONTAL"] = None
                 else:
-                    remove = {"wxEXPAND"}
+                    replace["wxEXPAND"] = None
                 msg = "wxEXPAND flag would be overridden by alignment flags"
-        return set(), remove, msg 
+        return set(), replace, msg 
 
     @_frozen
     def properties_changed(self, modified):
