@@ -873,19 +873,23 @@ class BoxSizerBase(SizerBase):
         excludes = set()
         replace = {}
         msg = None
+        if "wxALIGN_RIGHT" in flags and ("wxALIGN_CENTER" in flags or "wxALIGN_CENTER_HORIZONTAL" in flags):
+            msg = "Multiple conflicting horizontal alignment flags"
+            if "wxALIGN_CENTER" in flags:            replace["wxALIGN_CENTER"] = None
+            if "wxALIGN_CENTER_HORIZONTAL" in flags: replace["wxALIGN_CENTER_HORIZONTAL"] = None
+
+        if "wxALIGN_BOTTOM" in flags and ("wxALIGN_CENTER" in flags or "wxALIGN_CENTER_VERTICAL" in flags):
+            msg = "Multiple conflicting vertical alignment flags"
+            if "wxALIGN_CENTER" in flags:          replace["wxALIGN_CENTER"] = None
+            if "wxALIGN_CENTER_VERTICAL" in flags: replace["wxALIGN_CENTER_VERTICAL"] = None
+            
         if self.orient==wx.VERTICAL:
             excludes = {"wxALIGN_BOTTOM", "wxALIGN_CENTER_VERTICAL", "wxALIGN_CENTER"}
-            if "wxALIGN_BOTTOM" in flags:
-                replace["wxALIGN_BOTTOM"] = None
+            if "wxALIGN_BOTTOM" in flags or "wxALIGN_CENTER_VERTICAL" in flags or "wxALIGN_CENTER" in flags:
                 msg = "Vertical alignment flags are ignored in vertical sizers"
-
-            if "wxALIGN_CENTER_VERTICAL" in flags:
-                msg = "Vertical alignment flags are ignored in vertical sizers"
-                replace["wxALIGN_CENTER_VERTICAL"] = None
-
-            if "wxALIGN_CENTER" in flags:
-                msg = "Vertical alignment flags are ignored in vertical sizers"
-                replace["wxALIGN_CENTER"] = "wxALIGN_CENTER_HORIZONTAL"
+                if "wxALIGN_BOTTOM" in flags:          replace["wxALIGN_BOTTOM"] = None
+                if "wxALIGN_CENTER_VERTICAL" in flags: replace["wxALIGN_CENTER_VERTICAL"] = None
+                if "wxALIGN_CENTER" in flags:          replace["wxALIGN_CENTER"] = "wxALIGN_CENTER_HORIZONTAL"
 
             # Note that using alignment with wxEXPAND can make sense if wxSHAPED is also used,
             # as the item doesn't necessarily fully expand in the other direction in this case.
@@ -899,17 +903,11 @@ class BoxSizerBase(SizerBase):
 
         else:  # horizontal
             excludes = {"wxALIGN_RIGHT", "wxALIGN_CENTER_HORIZONTAL", "wxALIGN_CENTER"}
-            if "wxALIGN_RIGHT" in flags:
+            if "wxALIGN_RIGHT" in flags or "wxALIGN_CENTER_HORIZONTAL" in flags or "wxALIGN_CENTER" in flags:
                 msg = "Horizontal alignment flags are ignored in horizontal sizers"
-                replace["wxALIGN_RIGHT"] = None
-    
-            if "wxALIGN_CENTER_HORIZONTAL" in flags:
-                msg = "Horizontal alignment flags are ignored in horizontal sizers"
-                replace["wxALIGN_CENTER_HORIZONTAL"] = None
-
-            if "wxALIGN_CENTER" in flags:
-                msg = "Horizontal alignment flags are ignored in horizontal sizers"
-                replace["wxALIGN_CENTER"] = "wxALIGN_CENTER_VERTICAL"
+                if "wxALIGN_RIGHT" in flags:             replace["wxALIGN_RIGHT"] = None
+                if "wxALIGN_CENTER_HORIZONTAL" in flags: replace["wxALIGN_CENTER_HORIZONTAL"] = None
+                if "wxALIGN_CENTER" in flags:            replace["wxALIGN_CENTER"] = "wxALIGN_CENTER_VERTICAL"
     
             if "wxEXPAND" in flags and not "wxSHAPED" in flags:
                 if "wxALIGN_BOTTOM" in flags or "wxALIGN_CENTER_VERTICAL" in flags or "wxALIGN_CENTER" in flags:

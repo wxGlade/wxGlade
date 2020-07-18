@@ -1065,13 +1065,13 @@ class ManagedFlags(_CheckListProperty):
     RENAMES =  {'wxALIGN_CENTRE':'wxALIGN_CENTER',
                 'wxALIGN_CENTRE_VERTICAL':'wxALIGN_CENTER_VERTICAL'}
 
-    COMBINATIONS = { "wxALL":set( 'wxLEFT|wxRIGHT|wxTOP|wxBOTTOM'.split("|") ),
-                     "wxALIGN_CENTER":set( 'wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL'.split("|") ) }
-    EXCLUDES = {'wxALIGN_RIGHT':            set(['wxALIGN_CENTER","wxALIGN_CENTER_HORIZONTAL']),
-                'wxALIGN_BOTTOM':           set(['wxALIGN_CENTER","wxALIGN_CENTER_VERTICAL']),
-                'wxALIGN_CENTER_HORIZONTAL':set(["wxALIGN_RIGHT"]),
-                'wxALIGN_CENTER_VERTICAL':  set(["wxALIGN_BOTTOM"]),
-                'wxALIGN_CENTER':           set(["wxALIGN_BOTTOM","wxALIGN_RIGHT"]) }
+    COMBINATIONS = { 'wxALL':set( 'wxLEFT|wxRIGHT|wxTOP|wxBOTTOM'.split('|') ),
+                     'wxALIGN_CENTER':set( 'wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL'.split('|') ) }
+    EXCLUDES = {'wxALIGN_RIGHT':            set(['wxALIGN_CENTER','wxALIGN_CENTER_HORIZONTAL']),
+                'wxALIGN_BOTTOM':           set(['wxALIGN_CENTER','wxALIGN_CENTER_VERTICAL']),
+                'wxALIGN_CENTER_HORIZONTAL':set(['wxALIGN_RIGHT']),
+                'wxALIGN_CENTER_VERTICAL':  set(['wxALIGN_BOTTOM']),
+                'wxALIGN_CENTER':           set(['wxALIGN_BOTTOM','wxALIGN_RIGHT']) }
 
     FLAG_NAMES  = sum( FLAG_DESCRIPTION.values(), [] )
     FLAG_VALUES = [getattr(wx, name[2:]) for name in FLAG_NAMES]
