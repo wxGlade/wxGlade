@@ -341,7 +341,7 @@
                             <orient>wxHORIZONTAL</orient>
                             <object class="sizeritem">
                                 <option>1</option>
-                                <flag>wxALIGN_CENTER|wxALL</flag>
+                                <flag>wxALIGN_CENTER_VERTICAL|wxALL</flag>
                                 <border>5</border>
                                 <object class="wxDatePickerCtrl" name="datepicker_ctrl_1">
                                     <style>wxDP_SHOWCENTURY</style>

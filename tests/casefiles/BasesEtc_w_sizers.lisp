@@ -96,7 +96,7 @@ import wx.html
         (setf (slot-notebook-1-pane-1 obj) (wxPanel_Create (slot-notebook-1 obj) wxID_ANY -1 -1 -1 -1 wxTAB_TRAVERSAL))
         (wxNotebook_AddPage (slot-notebook-1 obj) (slot-notebook-1-pane-1 obj) "notebook_1_pane_1" 1 -1)
         
-        (wxSizer_AddWindow (slot-sizer-2 obj) ((20, 20) obj) 0 wxALIGN_CENTER 0 nil)
+        (wxSizer_AddWindow (slot-sizer-2 obj) ((20, 20) obj) 0 wxALIGN_CENTER_HORIZONTAL 0 nil)
         
         (setf (slot-window-1 obj) (wxSplitterWindow_Create (slot-panel-x obj) wxID_ANY -1 -1 -1 -1 wxSP_3D))
         wxSplitterWindow_SetMinimumPaneSize (slot-window-1 obj) 20)

@@ -359,7 +359,7 @@
         (setf (slot-sizer-17 obj) (wxBoxSizer_Create wxHORIZONTAL))
         
         (setf (slot-datepicker-ctrl-1 obj) (wxDatePickerCtrl_Create (slot-notebook-1-wxDatePickerCtrl obj) wxID_ANY -1 -1 -1 -1 wxDP_SHOWCENTURY))
-        (wxSizer_AddWindow (slot-sizer-17 obj) (slot-datepicker-ctrl-1 obj) 1 (logior wxALIGN_CENTER wxALL) 5 nil)
+        (wxSizer_AddWindow (slot-sizer-17 obj) (slot-datepicker-ctrl-1 obj) 1 (logior wxALIGN_CENTER_VERTICAL wxALL) 5 nil)
         
         (setf (slot-notebook-1-wxGauge obj) (wxPanel_Create (slot-notebook-1 obj) wxID_ANY -1 -1 -1 -1 wxTAB_TRAVERSAL))
         (wxNotebook_AddPage (slot-notebook-1 obj) (slot-notebook-1-wxGauge obj) (_"wxGauge") 1 -1)

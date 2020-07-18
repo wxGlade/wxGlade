@@ -38,7 +38,7 @@
                         </object>
                         <object class="spacer">
                             <size>20, 20</size>
-                            <flag>wxALIGN_CENTER</flag>
+                            <flag>wxALIGN_CENTER_HORIZONTAL</flag>
                         </object>
                         <object class="sizeritem">
                             <option>1</option>

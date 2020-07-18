@@ -166,7 +166,7 @@ All_Widgets_Frame::All_Widgets_Frame(wxWindow* parent, wxWindowID id, const wxSt
     notebook_1->AddPage(notebook_1_wxDatePickerCtrl, _("wxDatePickerCtrl"));
     wxBoxSizer* sizer_17 = new wxBoxSizer(wxHORIZONTAL);
     datepicker_ctrl_1 = new wxDatePickerCtrl(notebook_1_wxDatePickerCtrl, wxID_ANY, wxDefaultDateTime, wxDefaultPosition, wxDefaultSize, wxDP_SHOWCENTURY);
-    sizer_17->Add(datepicker_ctrl_1, 1, wxALIGN_CENTER|wxALL, 5);
+    sizer_17->Add(datepicker_ctrl_1, 1, wxALIGN_CENTER_VERTICAL|wxALL, 5);
     notebook_1_wxGauge = new wxPanel(notebook_1, wxID_ANY);
     notebook_1->AddPage(notebook_1_wxGauge, _("wxGauge"));
     wxBoxSizer* sizer_15 = new wxBoxSizer(wxHORIZONTAL);

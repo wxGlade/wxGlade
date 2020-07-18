@@ -53,7 +53,7 @@ class MyFrame(wx.Frame):
         self.notebook_1_pane_1 = wx.Panel(self.notebook_1, wx.ID_ANY)
         self.notebook_1.AddPage(self.notebook_1_pane_1, "notebook_1_pane_1")
 
-        sizer_2.Add((20, 20), 0, wx.ALIGN_CENTER, 0)
+        sizer_2.Add((20, 20), 0, wx.ALIGN_CENTER_HORIZONTAL, 0)
 
         self.window_1 = wx.SplitterWindow(self.panel_x, wx.ID_ANY)
         self.window_1.SetMinimumPaneSize(20)

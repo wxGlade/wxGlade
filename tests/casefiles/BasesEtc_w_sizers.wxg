@@ -49,7 +49,7 @@
                         <object class="sizeritem">
                             <option>0</option>
                             <border>0</border>
-                            <flag>wxALIGN_CENTER</flag>
+                            <flag>wxALIGN_CENTER_HORIZONTAL</flag>
                             <object class="spacer" name="spacer" base="EditSpacer">
                                 <width>20</width>
                                 <height>20</height>

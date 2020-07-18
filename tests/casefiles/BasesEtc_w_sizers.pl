@@ -82,7 +82,7 @@ sub new {
     $self->{notebook_1_pane_1} = Wx::Panel->new($self->{notebook_1}, wxID_ANY);
     $self->{notebook_1}->AddPage($self->{notebook_1_pane_1}, "notebook_1_pane_1");
     
-    $self->{sizer_2}->Add(20, 20, 0, wxALIGN_CENTER, 0);
+    $self->{sizer_2}->Add(20, 20, 0, wxALIGN_CENTER_HORIZONTAL, 0);
     
     $self->{window_1} = Wx::SplitterWindow->new($self->{panel_x}, wxID_ANY);
     $self->{window_1}->SetMinimumPaneSize(20);

@@ -195,7 +195,7 @@ class All_Widgets_Frame(wx.Frame):
         sizer_17 = wx.BoxSizer(wx.HORIZONTAL)
 
         self.datepicker_ctrl_1 = wx.DatePickerCtrl(self.notebook_1_wxDatePickerCtrl, wx.ID_ANY, style=wx.DP_SHOWCENTURY)
-        sizer_17.Add(self.datepicker_ctrl_1, 1, wx.ALIGN_CENTER | wx.ALL, 5)
+        sizer_17.Add(self.datepicker_ctrl_1, 1, wx.ALIGN_CENTER_VERTICAL | wx.ALL, 5)
 
         self.notebook_1_wxGauge = wx.Panel(self.notebook_1, wx.ID_ANY)
         self.notebook_1.AddPage(self.notebook_1_wxGauge, _("wxGauge"))
