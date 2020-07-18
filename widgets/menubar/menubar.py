@@ -281,9 +281,9 @@ class MenuItemDialog(wx.Dialog):
             index = self.items.GetItemCount()
         elif index > 0:
             item_level = self.item_level(index-1)
+        item = list(unindented_item)
         if item[1]=="---" and item_level==0: return wx.Bell()
         indent = "    " * item_level
-        item = list(unindented_item)
         item[0] = str(item_level)
         item[1] = indent+item[1]
         self._insert_item(index, item)
