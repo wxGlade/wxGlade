@@ -18,10 +18,12 @@ def _get_all_class_names(item):
 
     return ret
 
+
 class WindowDialog(wx.Dialog):
     # dialog for builder function
     parent = parent_property = None  # used by StandaloneOrChildDialog
-    def __init__(self, klass, base_classes=None, message="Select Class", toplevel=True, options=None, defaults=None):
+    def __init__(self, klass, base_classes=None, message="Select Class", toplevel=True, options=None, defaults=None,
+                 boxes=None):
         pos = wx.GetMousePosition()
         wx.Dialog.__init__(self, common.main, -1, _(message), pos)
 
@@ -68,24 +70,10 @@ class WindowDialog(wx.Dialog):
         hszr.Add(self.klass, 2)
         szr.Add(hszr, 0, wx.EXPAND|wx.ALL, 5)
 
-        # options
         if options:
             #line = wx.StaticLine(self, -1, size=(20,-1), style=wx.LI_HORIZONTAL)
             #szr.Add(line, 0, wx.EXPAND|wx.ALL, 5)
-
-            self.option_controls = []
-            self.option_values = []
-            for o, option in enumerate(options):
-                ctrl = wx.CheckBox(self, -1, _(option))
-                value = defaults and defaults[o]
-                ctrl.SetValue(value)
-                szr.Add(ctrl, 0, wx.ALL, 5)
-                ctrl.Bind(wx.EVT_CHECKBOX, self.callback)
-                self.option_controls.append(ctrl)
-                self.option_values.append(value)
-
-            line = wx.StaticLine(self, -1, size=(20,-1), style=wx.LI_HORIZONTAL)
-            szr.Add(line, 0, wx.EXPAND|wx.TOP|wx.LEFT, 5)
+            self._create_option_controls(szr, options, defaults, boxes)
 
         # buttons
         btnbox = wx.StdDialogButtonSizer()
@@ -99,6 +87,33 @@ class WindowDialog(wx.Dialog):
         self.SetAutoLayout(True)
         self.SetSizer(szr)
         szr.Fit(self)
+
+    def _create_option_controls(self, szr, options, defaults, boxes):
+        self.option_controls = []
+        self.option_values = []
+        szr_ = szr
+        in_box = False
+        for o, option in enumerate(options):
+            if boxes and option in boxes and boxes[option]:
+                # start a static box sizer
+                box = wx.StaticBox( self, label=_(boxes[option]) )
+                szr_ = wx.StaticBoxSizer(box, wx.VERTICAL)
+                in_box = True
+            ctrl = wx.CheckBox(self, -1, _(option))
+            value = defaults and defaults[o] or False
+            ctrl.SetValue(value)
+            szr_.Add(ctrl, 0, wx.ALL, 5 if in_box else 10)
+            self.option_controls.append(ctrl)
+            self.option_values.append(value)
+            ctrl.Bind(wx.EVT_CHECKBOX, self.callback)
+            if boxes and option in boxes and boxes[option] is None:
+                # end static box sizer
+                szr.Add(szr_, 0, wx.EXPAND|wx.ALL, 5)
+                szr_ = szr
+                in_box = False
+
+        line = wx.StaticLine(self, -1, size=(20,-1), style=wx.LI_HORIZONTAL)
+        szr.Add(line, 0, wx.EXPAND|wx.TOP|wx.LEFT, 5)
 
     def on_base_selection(self, event):
         # this can be overridden for widget specific actions
@@ -188,11 +203,13 @@ class DialogOrPanelDialog(WindowDialog):
     button_names =          ["OK", "CANCEL", "YES", "NO", "SAVE", "APPLY", "CLOSE", "HELP"]
     button_types =          ["A",  "C",      "A",   "N",   "A",   "P",     "C",     "H"]
     default_choices = [True, True, True,     False, False, False, False,   False,   False]
+    boxes = {"OK":"Add buttons", "HELP":None}
 
     def __init__(self, klass):
         base_classes = ['wxDialog', 'wxPanel']
-        options = ["Add sizer"] + ["Add %s button"%name for name in self.button_names]
-        WindowDialog.__init__(self, klass, base_classes, 'Select widget type', True, options, self.default_choices)
+        options = ["Add sizer"] + self.button_names
+        WindowDialog.__init__(self, klass, base_classes, 'Select widget type', True, options, self.default_choices,
+                              self.boxes)
         self._enable_buttons()
 
     def get_selected_buttons(self):
