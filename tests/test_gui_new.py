@@ -140,6 +140,10 @@ class TestGui(WXGladeGUITest):
         self.load_and_generate('BasesEtc_w_sizers', test_GUI=True)  # test files generated with v0.9.5 and re-ordered
         self.load_and_generate('BasesEtc', test_GUI=True)           # test files generated with 0.9.9pre
 
+    def test_grid_custom_base(self):
+        # test custom base for grid and also "Mark code block" deactivated
+        self.load_and_generate('test_grid_custom_base', test_GUI=True)
+
     def test_keep_code_migration(self):
         # test migration from 0.9 to 1.0: __do_layout and __set_properties should be removed
         # C++: "virtual" will not be added here:  "public: void on_button_plot(wxCommandEvent &event);"
