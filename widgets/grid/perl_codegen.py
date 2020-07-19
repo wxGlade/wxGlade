@@ -20,10 +20,7 @@ class PerlCodeGenerator(wcodegen.PerlWidgetCodeWriter):
         if id_name:
             init.append(id_name)
 
-        klass = obj.get_prop_value("class", obj.WX_CLASS)
-        if klass == obj.WX_CLASS:
-            klass = obj.WX_CLASS.replace('wx', 'Wx::', 1)
-
+        klass = obj.get_instantiation_class(self.cn, self.cn_class)
         init.append('$self->{%s} = %s->new(%s, %s);\n' % (obj.name, klass, parent, id))
         init += self.get_properties_code(obj)
         return init, []
