@@ -156,7 +156,7 @@ def builder(parent, index, klass=None, base=None, name=None):
         klass = 'wxFrame' if common.root.language.lower()=='xrc' else 'MyFrame'
         
         dialog = window_dialog.WindowDialog(klass, base_classes, 'Select frame class', True, options, last_choices)
-        compat.SetToolTip(dialog.options[0], _option_help)
+        compat.SetToolTip(dialog.option_controls[0], _option_help)
         res = dialog.show()
         dialog.Destroy()
         if res is None: return None

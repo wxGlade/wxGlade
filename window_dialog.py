@@ -31,6 +31,8 @@ class WindowDialog(wx.Dialog):
             # base class
             self.base  = wx.RadioBox(self, -1, ("base class"), choices=base_classes, style=wx.RA_VERTICAL)
             self.base.SetSelection(0)
+            self.Bind(wx.EVT_RADIOBOX, self.on_base_selection)
+            self.selected_base = 0
 
         self.number = 1
         self.class_names = set( _get_all_class_names(common.root) )
@@ -68,15 +70,19 @@ class WindowDialog(wx.Dialog):
 
         # options
         if options:
-            line = wx.StaticLine(self, -1, size=(20,-1), style=wx.LI_HORIZONTAL)
-            szr.Add(line, 0, wx.EXPAND|wx.ALL, 5)
+            #line = wx.StaticLine(self, -1, size=(20,-1), style=wx.LI_HORIZONTAL)
+            #szr.Add(line, 0, wx.EXPAND|wx.ALL, 5)
 
-            self.options = []
+            self.option_controls = []
+            self.option_values = []
             for o, option in enumerate(options):
-                cb = wx.CheckBox(self, -1, _(option))
-                cb.SetValue(defaults and defaults[o])
-                szr.Add(cb, 0, wx.ALL, 5)
-                self.options.append(cb)
+                ctrl = wx.CheckBox(self, -1, _(option))
+                value = defaults and defaults[o]
+                ctrl.SetValue(value)
+                szr.Add(ctrl, 0, wx.ALL, 5)
+                ctrl.Bind(wx.EVT_CHECKBOX, self.callback)
+                self.option_controls.append(ctrl)
+                self.option_values.append(value)
 
             line = wx.StaticLine(self, -1, size=(20,-1), style=wx.LI_HORIZONTAL)
             szr.Add(line, 0, wx.EXPAND|wx.TOP|wx.LEFT, 5)
@@ -93,6 +99,11 @@ class WindowDialog(wx.Dialog):
         self.SetAutoLayout(True)
         self.SetSizer(szr)
         szr.Fit(self)
+
+    def on_base_selection(self, event):
+        # this can be overridden for widget specific actions
+        self.selected_base = self.base.GetStringSelection()
+        event.Skip()
 
     def get_next_class_name(self, name):
         if not name in self.class_names: return name
@@ -153,8 +164,14 @@ class WindowDialog(wx.Dialog):
         base = self.base.GetStringSelection()
         return klass, base
 
+    def callback(self, event):
+        # update values and enable / disable dependent options
+        ctrl = event.GetEventObject()
+        i = self.option_controls.index(ctrl)
+        self.option_values[i] = ctrl.GetValue()
+
     def get_options(self):
-        return [o.GetValue() for o in self.options]
+        return self.option_values
 
 
 class StandaloneOrChildDialog(WindowDialog):
@@ -163,3 +180,49 @@ class StandaloneOrChildDialog(WindowDialog):
         self.parent = parent
         self.parent_property = parent_property
         WindowDialog.__init__(self, klass, None, message, True)
+
+
+class DialogOrPanelDialog(WindowDialog):
+    # the button types: Affirmative, Negative, Cancel, aPply, Help; on Windows wx will place them in this Order
+    all_button_types = ["A", "N", "C", "P", "H"]
+    button_names =          ["OK", "CANCEL", "YES", "NO", "SAVE", "APPLY", "CLOSE", "HELP"]
+    button_types =          ["A",  "C",      "A",   "N",   "A",   "P",     "C",     "H"]
+    default_choices = [True, True, True,     False, False, False, False,   False,   False]
+
+    def __init__(self, klass):
+        base_classes = ['wxDialog', 'wxPanel']
+        options = ["Add sizer"] + ["Add %s button"%name for name in self.button_names]
+        WindowDialog.__init__(self, klass, base_classes, 'Select widget type', True, options, self.default_choices)
+        self._enable_buttons()
+
+    def get_selected_buttons(self):
+        # returns names in the right ordering for Windows: Affirmative, Apply, Negative, Cancel, Help
+        if not self.option_values[0]: return [], []
+        names = [None]*len(self.all_button_types)
+        types = [None]*len(self.all_button_types)
+        for o, value in enumerate(self.option_values[1:]):
+            if value:
+                i = self.all_button_types.index( self.button_types[o] )
+                names[i] = self.button_names[o]
+                types[i] = self.button_types[o]
+        return [n for n in names if n], [t for t in types if t]
+
+    def callback(self, event):
+        i = self.option_controls.index( event.GetEventObject() ) - 1
+        WindowDialog.callback(self, event)
+        self._enable_buttons()
+
+    def _enable_buttons(self):
+        names, types = self.get_selected_buttons()
+        for b, type_ in enumerate(self.button_types):
+            if self.option_values[b+1]:
+                enable = True
+            else:
+                enable = not type_ in types
+            if not self.option_values[0] or self.selected_base=="wxPanel": enable = False
+            self.option_controls[1+b].Enable(enable)
+
+    def on_base_selection(self, event):
+        # enable button actions
+        WindowDialog.on_base_selection(self, event)
+        self._enable_buttons()

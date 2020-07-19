@@ -13,7 +13,7 @@ import wcodegen
 import new_properties as np
 from edit_windows import ManagedBase, EditStylesMixin, Slot
 from wcodegen.taghandler import BaseXmlBuilderTagHandler
-from panel import EditPanel
+import panel, edit_sizers, edit_base
 
 
 class NotebookPagesProperty(np.GridProperty):
@@ -123,13 +123,19 @@ class EditNotebook(ManagedBase, EditStylesMixin):
         # actually adds a page, but it needs to be compatible to sizers
         self.insert_tab(len(self.children), "new tab")
 
-    def insert_tab(self, index, label):
+    def insert_tab(self, index, label, add_panel=True, add_sizer=False):
         # add tab/page; called from GUI
         self.properties["tabs"].insert( index, [label,] )
 
         # create panel and node, add to tree
         self.insert_item(None, index)  # placeholder
-        editor = EditPanel( self.next_pane_name(), self, index )
+        if add_panel:
+            panel_editor = panel.EditPanel( self.next_pane_name(), self, index )
+            if add_sizer:
+                sizer = edit_sizers._builder(panel_editor, 0)
+        else:
+            # just add a slot
+            edit_base.Slot(self, index)
 
         if self.widget:
             # add to widget
@@ -184,7 +190,7 @@ class EditNotebook(ManagedBase, EditStylesMixin):
             self.children.insert(index, None)
             # create panel and node, add to tree
             suggestion = "%s_%s" % (self.name, label)
-            editor = EditPanel( self.next_pane_name(suggestion), self, index )
+            editor = panel.EditPanel( self.next_pane_name(suggestion), self, index )
 
             if self.widget:
                 # add to widget
@@ -304,10 +310,15 @@ class EditNotebook(ManagedBase, EditStylesMixin):
 def builder(parent, index):
     "Factory function for editor objects from GUI"
     choices = 'wxNB_TOP|wxNB_BOTTOM|wxNB_LEFT|wxNB_RIGHT'
-    dialog = wcodegen.WidgetStyleSelectionDialog(_('wxNotebook'), _('Orientation'), choices)
+    options = [("Pages", (0,20)),
+                ">Add panels",
+                ">Add sizers to panels"]
+    defaults = [1, True, False]
+    dialog = wcodegen.WidgetStyleSelectionDialog(_('wxNotebook'), _('Orientation'), choices, options, defaults)
     with misc.disable_stay_on_top(common.adding_window or parent):
         res = dialog.ShowModal()
     style = dialog.get_selection()
+    pages, add_panels, add_sizers = dialog.get_options()
     dialog.Destroy()
     if res != wx.ID_OK: return
 
@@ -316,7 +327,9 @@ def builder(parent, index):
         editor = EditNotebook(name, parent, index, style)
         editor.properties["proportion"].set(1)
         editor.properties["flag"].set("wxEXPAND")
-        editor.insert_tab(0, editor.next_pane_name()) # next_pane_name will be used as label and as pane name, if possible
+        for n in range(pages):
+            # next_pane_name will be used as label and as pane name, if possible
+            editor.insert_tab(n, editor.next_pane_name(), add_panel=add_panels, add_sizer=add_sizers) 
         if parent.widget: editor.create()
     return editor
 

@@ -833,6 +833,7 @@ class _CheckListProperty(Property):
         if new_value_set!=self.value_set:
             self.value_set = new_value_set
         Property.set(self, None, activate, deactivate, notify)  # with None, as this is to be calculated on demand only
+        self._check_value()
 
     def add(self, value, activate=False, deactivate=False, notify=True):
         if value in self.value_set: return

@@ -122,21 +122,16 @@ class EditDialog(BitmapMixin, TopLevelBase, EditStylesMixin):
         self.properties["escape"].track_name( old_name, new_name )
 
 
-# options for WindowDialog when interactively adding a Frame
-options = ["Add sizer"]
-last_choices = [True]
-
-
 def builder(parent, index, klass=None, base=None, name=None):
     "factory function for EditDialog objects"
-    import window_dialog, edit_base, clipboard, panel
-    global last_choices
+    import window_dialog, edit_base, panel
     if klass is None or base is None:
-        base_classes = ['wxDialog', 'wxPanel']
         klass = 'wxDialog' if common.root.language.lower()=='xrc' else 'MyDialog'
 
-        dialog = window_dialog.WindowDialog(klass, base_classes, 'Select widget type', True, options, last_choices)
+        dialog = window_dialog.DialogOrPanelDialog(klass)
         res = dialog.show()
+        add_sizer = dialog.get_options()[0]
+        button_names, button_types = dialog.get_selected_buttons()
         dialog.Destroy()
         if res is None: return
         klass, base = res
@@ -147,16 +142,27 @@ def builder(parent, index, klass=None, base=None, name=None):
         interactive = False
 
     if base == "wxDialog":
-        is_panel = False
         editor = EditDialog(name, parent, klass, name, "wxDEFAULT_DIALOG_STYLE")
     else:
-        is_panel = True
         editor = panel.EditTopLevelPanel(name, parent, klass)
 
-    if interactive and last_choices[0]:
-        # add a default panel and vertical sizer to the frame
-        import edit_sizers
-        edit_sizers._builder(editor, 0)
+    if interactive and add_sizer:
+        # add a default panel and vertical sizer to the frame; optionally add buttons if it's a Dialog
+        import edit_sizers, widgets.button.button
+        slots = 2 if button_names else 1
+        szr = edit_sizers._builder(editor, 0, slots=slots)
+        button_szr = edit_sizers._builder(szr, 1, "StdDialogButtonSizer", slots=len(button_names))
+        button_szr.properties["border"].set(4)
+        button_szr.properties["flag"].set("wxALL|wxALIGN_RIGHT")
+        i = 0
+        for button_name, button_type in zip(button_names, button_types):
+            name = "button_%s"%button_name
+            label = "OK" if button_name=="OK" else button_name.capitalize()
+            button = widgets.button.button.EditButton(name, button_szr, i, label)
+            button.properties["stockitem"].set(button_name, activate=True)
+            if button_type=="A": editor.properties["affirmative"].set(name, activate=True)
+            if button_type=="C": editor.properties["escape"].set(name, activate=True)
+            i += 1
     else:
         # just add a slot
         edit_base.Slot(editor, 0)
@@ -168,10 +174,7 @@ def builder(parent, index, klass=None, base=None, name=None):
         editor.widget.GetParent().Show()  # the panel is created as child of a Frame
     editor.design.update_label()
     if wx.Platform == '__WXMSW__':
-        if not is_panel:
-            w = editor.widget
-        else:
-            w = editor.widget.GetParent()
+        w = editor.widget.GetTopLevelParent()
         w.CenterOnScreen()
         w.Raise()
 
