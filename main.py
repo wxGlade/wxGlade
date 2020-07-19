@@ -1415,6 +1415,13 @@ class wxGlade(wx.App):
         self.SetExitOnFrameDelete(True)
 
         self.Bind(wx.EVT_IDLE, self.OnIdle)
+        
+        if config.inform_screen_reader:
+            message = ("It seems you have a screen reader software installed.\n"
+                       "Please be aware that there are some options to improve wxGlade accessibility\n"
+                       "with screen readers.\n"
+                       "See menu Edit -> Preferences -> Accessibility.")
+            wx.CallLater(1000, wx.MessageBox, message, "Accessibility Info")
 
         return True
 

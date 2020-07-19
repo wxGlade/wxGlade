@@ -6,7 +6,7 @@ Microsoft Windows specific helpers
 """
 
 import sys, os
-import win32api, win32con
+import win32api, win32con, pywintypes
 
 
 class RegistryCurrentUser:
@@ -100,3 +100,21 @@ def register_extensions(fileextensions, appname):
             except:
                 print("Could not register file extension %s"%fileextension)
 
+
+def check_for_key(keyname, branch=None):
+    if branch is None:
+        branch = win32con.HKEY_CURRENT_USER
+    try:
+        handle = win32api.RegOpenKeyEx(branch, keyname, 0, win32con.KEY_READ)
+        win32api.RegCloseKey(handle)
+        return True
+    except pywintypes.error:
+        return False
+
+
+def check_for_screen_reader():
+    if check_for_key("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\App Paths\\nvda.exe", win32con.HKEY_LOCAL_MACHINE):
+        return "NVDA"
+    if check_for_key("Software\\Freedom Scientific\\JAWS"):
+        return "JAWS"
+    return None

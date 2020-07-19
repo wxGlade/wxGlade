@@ -356,6 +356,8 @@ def init_stage2(use_gui):
             try:
                 import msw
                 msw.register_extensions(["wxg"], "wxGlade")
+                if not os.path.exists(config.rc_file):
+                    config.inform_screen_reader = msw.check_for_screen_reader()
             except ImportError:
                 pass
 
