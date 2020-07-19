@@ -92,8 +92,7 @@ class PythonMenubarGenerator(wcodegen.PythonWidgetCodeWriter):
         return id_declarations + out
 
     def get_code(self, obj):
-        klass = obj.get_prop_value("class", obj.WX_CLASS)
-        if klass==obj.WX_CLASS: klass = self.cn(obj.WX_CLASS)
+        klass = obj.get_instantiation_class(self.cn, self.cn_class, self.codegen.preview)
 
         code = [ '# Menu Bar\n', 'self.%s = %s()\n' % (obj.name, klass) ]
         if not obj.IS_CLASS:  # if it's a class, then the menus will be generated in the class code
@@ -178,9 +177,7 @@ class CppMenubarGenerator(wcodegen.CppWidgetCodeWriter):
     constructor = []
 
     def get_code(self, obj):
-        klass = obj.get_prop_value("class", obj.WX_CLASS)
-        if klass==obj.WX_CLASS: klass = self.cn(obj.WX_CLASS)
-
+        klass = obj.get_instantiation_class(self.cn, self.cn_class)
         init = [ '%s = new %s();\n' % (obj.name, klass) ]
         init.extend(self.get_properties_code(obj))
         init.append('SetMenuBar(%s);\n' % obj.name)
