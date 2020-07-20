@@ -877,12 +877,13 @@ class TopLevelBase(WindowBase, PreviewMixin):
         if widget is not None:
             if widget.WX_CLASS=="wxMenuBar":   typename = "menubar"
             elif widget.WX_CLASS=="wxToolBar": typename = "toolbar"
+            elif widget.WX_CLASS=="wxStatusBar": typename = "statusbar"
 
-        if typename in ("menubar", "toolbar"):
+        if typename in ("menubar", "toolbar", "statusbar"):
             if not typename in self.properties:
-                return (False, "Can't set a menu or tool bar")
+                return (False, "Can't set a menu, tool or status bar")
             if self.check_prop(typename) and getattr(self, typename):
-                return (False, 'Menu or tool bar already set for this window')
+                return (False, 'Menu, tool or status bar already set for this window')
             return (True, None)
 
         if widget and widget.IS_TOPLEVEL:

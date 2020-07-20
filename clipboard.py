@@ -27,6 +27,7 @@ window_data_format = DataFormat("wxglade.window")  # a toplevel window
 
 menubar_data_format = DataFormat("wxglade.menubar")  # a serialized menubar
 toolbar_data_format = DataFormat("wxglade.toolbar")  # a serialized toolbar
+statusbar_data_format = DataFormat("wxglade.statusbar")  # a serialized statusbar
 
 
 _current_drag_source = None  # reference to drag start; used when dragging within application
@@ -45,8 +46,8 @@ def begin_drag(window, widget):
         msg = "Move sizer to empty or populated slot to insert, to a sizer to append; hold Ctrl to copy"
     elif widget.IS_TOPLEVEL:
         msg = "Move window to application object; hold Ctrl to copy"
-    elif widget.WX_CLASS in ("wxToolBar", "wxMenuBar"):
-        msg = "Move tool or menu bar to application object or frame; hold Ctrl to copy"
+    elif widget.WX_CLASS in ("wxToolBar", "wxMenuBar", "wxStatusBar"):
+        msg = "Move tool, menu or status bar to application object or frame; hold Ctrl to copy"
     else:
         msg = "Move control to empty or populated slot to insert, to a sizer to append; hold Ctrl to copy"
     common.main.user_message( msg )
@@ -72,7 +73,8 @@ class DropTarget(wx.DropTarget):
     def _create_data_objects(self, toplevel=False):
         data_objects = {}
         data_object = wx.DataObjectComposite()
-        formats = [widget_data_format, sizer_data_format, menubar_data_format, toolbar_data_format]
+        formats = [widget_data_format, sizer_data_format,
+                   menubar_data_format, toolbar_data_format, statusbar_data_format]
         if toplevel: formats.append(window_data_format)
         for fmt in formats:
             do = wx.CustomDataObject(fmt)
@@ -227,6 +229,8 @@ def get_data_object(widget):
         do = wx.CustomDataObject(menubar_data_format)
     elif widget.WX_CLASS=="wxToolBar":
         do = wx.CustomDataObject(toolbar_data_format)
+    elif widget.WX_CLASS=="wxStatusBar":
+        do = wx.CustomDataObject(statusbar_data_format)
     elif widget.IS_TOPLEVEL:
         do = wx.CustomDataObject(window_data_format)
     else:
@@ -310,7 +314,7 @@ def paste(widget):
     try:
         data_object = None
         for fmt in [widget_data_format, sizer_data_format, window_data_format,
-                    menubar_data_format, toolbar_data_format]:
+                    menubar_data_format, toolbar_data_format, statusbar_data_format]:
             if wx.TheClipboard.IsSupported(fmt):
                 data_object = wx.CustomDataObject(fmt)
                 break
