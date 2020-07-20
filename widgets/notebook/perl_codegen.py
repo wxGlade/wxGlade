@@ -21,15 +21,15 @@ class PerlNotebookGenerator(wcodegen.PerlWidgetCodeWriter):
         id_name, id = self.codegen.generate_code_id(window)
 
         parent = self.format_widget_access(window.parent_window)
+        klass = window.get_instantiation_class(self.cn, self.cn_class)
 
         if window.IS_CLASS:
             l = []
             if id_name: l.append(id_name)
-            l.append( '$self->{%s} = %s->new(%s, %s);\n' % ( window.name, window.klass, parent, id) )
+            l.append( '$self->{%s} = %s->new(%s, %s);\n' % ( window.name, klass, parent, id) )
             return l, []
         init = []
         if id_name: init.append(id_name)
-        klass = self.cn( window.get_prop_value("class", window.WX_CLASS) )
         init.append( '$self->{%s} = %s->new(%s, %s%s);\n' % ( window.name, klass, parent, id, self.tmpl_dict['style']) )
 
         init += self.codegen.generate_code_common_properties(window)

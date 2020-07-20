@@ -20,11 +20,11 @@ class PerlPanelGenerator(wcodegen.PerlWidgetCodeWriter):
 
         id_name, id = self.codegen.generate_code_id(panel)
         parent = self.format_widget_access(panel.parent_window)
+        klass = panel.get_instantiation_class(self.cn, self.cn_class)
 
         if panel.IS_CLASS:
             l = []
             if id_name: l.append(id_name)
-            klass = panel.get_instantiation_class(self.cn, None)
             l.append( '$self->{%s} = %s->new(%s, %s);\n' % (panel.name, klass, parent, id) )
             return l, []
 
@@ -34,9 +34,6 @@ class PerlPanelGenerator(wcodegen.PerlWidgetCodeWriter):
         style = panel.properties["style"].get_string_value() or 'wxTAB_TRAVERSAL'
         if not (scrollable or style != 'wxTAB_TRAVERSAL'):
             style = ''
-
-        klass = panel.get_prop_value("class", panel.WX_CLASS)
-        klass = self.codegen.cn(klass)
 
         extra = style and ', wxDefaultPosition, wxDefaultSize, %s'%style or ''
 

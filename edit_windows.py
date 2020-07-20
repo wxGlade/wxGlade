@@ -123,10 +123,10 @@ class EditBase(EventsMixin, edit_base.EditBase):
         if "class" in self.PROPERTIES:
             if self.IS_TOPLEVEL:
                 # always a class
-                self.klass = klass_p = np.ClassProperty(klass, name="class") # Name of the object's class: read/write or read only
+                self.klass = klass_p = np.ClassProperty(klass, name="class")
             else:
                 # optionally a class
-                self.klass = klass_p = np.ClassPropertyD(klass, name="class") # Name of the object's class: read/write or read only
+                self.klass = klass_p = np.ClassPropertyD(klass, name="class")
                 if klass: klass_p.deactivated = False
 
         if "instance_class" in self.PROPERTIES:
@@ -136,7 +136,7 @@ class EditBase(EventsMixin, edit_base.EditBase):
 
         if "custom_base" in self.PROPERTIES:
             # for TopLevelBase, notebook, panel and splitter window
-            self.custom_base = custom_base_p = np.BaseClassesPropertyD()
+            self.custom_base = custom_base_p = np.BaseClassesPropertyD(default_value=self.WX_CLASS)
             if klass_p.deactivated: custom_base_p.set_blocked()
 
         self.extracode       = np.CodeProperty()

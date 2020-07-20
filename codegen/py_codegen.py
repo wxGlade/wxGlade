@@ -287,12 +287,12 @@ from %(top_win_module)s import %(top_win_class)s\n\n"""
         builder = self.obj_builders[code_obj.WX_CLASS]
         mycn = getattr(builder, 'cn', self.cn)
         mycn_f = getattr(builder, 'cn_f', self.cn_f)
-        fmt_klass = self.cn_class( code_obj.get_prop_value("class", code_obj.WX_CLASS) )
+        fmt_klass = code_obj.get_instantiation_class(None, self.cn_class)
 
         # custom base classes support
-        custom_base = getattr(code_obj, 'custom_base', getattr(code_obj, 'custom_base', None) )
-        if self.preview or (custom_base and not custom_base.strip()):
-            custom_base = None
+        custom_base = None
+        if code_obj.check_prop_nodefault('custom_base') and not self.preview:
+            custom_base = code_obj.custom_base.strip() or None
 
         # generate constructor code
         if is_new:

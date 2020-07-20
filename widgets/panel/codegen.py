@@ -71,6 +71,7 @@ class CppPanelGenerator(wcodegen.CppWidgetCodeWriter):
         else:
             ids = []
         parent = self.format_widget_access(panel.parent_window)
+        klass = panel.get_instantiation_class(self.cn, self.cn_class)
         if panel.IS_CLASS:
             l = [ '%s = new %s(%s, %s);\n' % (panel.name, panel.klass, parent, id) ]
             return l, ids, []
@@ -78,7 +79,7 @@ class CppPanelGenerator(wcodegen.CppWidgetCodeWriter):
         style = panel.properties["style"].get_string_value() or 'wxTAB_TRAVERSAL'
         if scrollable or style != 'wxTAB_TRAVERSAL':
             extra = ', wxDefaultPosition, wxDefaultSize, %s' % style
-        klass = panel.get_prop_value("class", panel.WX_CLASS)
+
         init = [ '%s = new %s(%s, %s%s);\n' % (panel.name, klass, parent, id, extra) ]
         init += self.codegen.generate_code_common_properties(panel)
         if scrollable and panel.check_prop("scroll_rate"):

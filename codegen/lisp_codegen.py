@@ -328,9 +328,7 @@ class LispCodeWriter(BaseLangCodeWriter, wcodegen.LispMixin):
         mycn_f = getattr(builder, 'cn_f', self.cn_f)
 
         # custom base classes support
-        custom_base = getattr( code_obj, 'custom_base', code_obj.properties.get('custom_base', None) )
-        if self.preview or (custom_base and not custom_base.strip()):
-            custom_base = None
+        custom_base = code_obj.check_prop_nodefault('custom_base') and code_obj.custom_base.strip() or None
 
         # generate constructor code
         if is_new:

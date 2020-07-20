@@ -1007,7 +1007,7 @@ class wxGladeFrame(wx.Frame):
                             match = version_re.match( infile.readline() )
                             if match:
                                 major, minor, sub, extension = match.groups()
-                                input_file_version = (int(major), int(minor), int(major), extension)
+                                input_file_version = (int(major), int(minor), int(sub), extension)
                                 break
                         infile.seek(0)
 

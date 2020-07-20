@@ -640,11 +640,17 @@ class XmlWidgetObject(object):
                 if not IS_BASE or CLASS.WX_CLASS=="CustomWidget":
                     instance_class = class_v
                 class_v = None
+            if attrs.get("no_custom_class", None) in ('1',1):
+                if class_v:
+                    instance_class = class_v
+                    class_v = None
         else:
             # current file format: 'class' is always written
             if class_p and class_p.deactivated is not None:
                 if IS_BASE:
                     class_v = None
+            elif not class_p:
+                class_v = None
 
         # update self.obj properties
         modified = []
@@ -660,6 +666,7 @@ class XmlWidgetObject(object):
     def add_property(self, name, val):
         """adds a property to this widget. This method is not called if there
         was a custom handler for this property, and its char_data method returned False"""
+        if name=="no_custom_class": return  # this was also stored as attribute
         if name == 'pos':  # sanity check, this shouldn't happen...
             logging.debug('add_property(name=pos)')
             return

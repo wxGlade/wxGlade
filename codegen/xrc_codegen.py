@@ -112,7 +112,11 @@ class DefaultXrcObject(XrcObject):
     "Standard XrcObject for every widget, used if no specific XrcObject is available"
 
     def __init__(self, widget):
-        classname = widget.get_prop_value("class", widget.WX_CLASS)
+        #classname = widget.get_prop_value("class", widget.WX_CLASS)  # the 0.9 implementation
+        if widget.IS_SIZER:
+            classname = widget.WX_CLASS
+        else:
+            classname = widget.get_instantiation_class()
         XrcObject.__init__(self, classname)
         self.widget = widget
         self.name = widget.name
