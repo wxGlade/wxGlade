@@ -155,6 +155,10 @@ class TestGui(WXGladeGUITest):
         # the standard test will do the rest
         self.load_and_generate('matplotlib_example', test_GUI=True)
 
+    def test_class_migration(self):
+        # test migration from 0.9 to 1.0
+        self.load_and_generate('test_no_custom_class09', test_GUI=True)
+
     def test_Python_Ogg1(self):
         "Test Python code generation with overwriting a single existing file, preserving manually added code"
         # set up filenames, copy the old file to the output path and modify it to trigger re-writing
