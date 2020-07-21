@@ -89,7 +89,8 @@ def init_codegen():
 
 def load_code_writers():
     "Fills the common.code_writers dictionary: to do so, loads the modules found in the 'codegen/' subdir"
-    logging.info('Load code generators:')
+    if config.use_gui:
+        logging.info('Load code generators:')
     codegen_path = os.path.join(config.wxglade_path, 'codegen')
     sys.path.insert(0, codegen_path)
     for module in os.listdir(codegen_path):
@@ -129,7 +130,8 @@ def load_config():
 def load_sizers():
     """Load and initialise the sizer support modules into ordered dict instance.
     See edit_sizers.edit_sizers.init_all."""
-    logging.info('Load sizer generators:')
+    if config.use_gui:
+        logging.info('Load sizer generators:')
     for lang in code_writers.keys():
         module_name = 'edit_sizers.%s_sizers_codegen' % code_writers[lang].lang_prefix
         try:
