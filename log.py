@@ -181,7 +181,10 @@ def init(filename='wxglade.log', encoding='utf-8', level=None):
 
     # instantiate console handler
     console_logger = logging.StreamHandler()
-    console_logger.setLevel(logging.INFO)
+    if config.debugging:
+        console_logger.setLevel(logging.DEBUG)
+    else:
+        console_logger.setLevel(logging.INFO)
     console_logger.setFormatter(default_formatter)
     logger.addHandler(console_logger)
 

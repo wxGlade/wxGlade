@@ -237,16 +237,16 @@ def _guiless_open_app(filename):
         common.root.filename = None
 
     end = time.time()
-    logging.info(_('Loading time: %.5f'), end - start)
+    logging.debug(_('Loading time: %.5f'), end - start)
 
     common.root.saved = True
     #common.property_panel.Raise()
 
     duration = end - start
     if filename:
-        logging.info( _("Loaded %s in %.2f seconds") % (os.path.basename(filename), duration ))
+        logging.debug( _("Loaded %s in %.2f seconds") % (os.path.basename(filename), duration ))
     else:
-        logging.info( _("Loaded in %.2f seconds") % duration )
+        logging.debug( _("Loaded in %.2f seconds") % duration )
 
     return True
 
@@ -297,27 +297,28 @@ def init_stage1(options):
     common.init_paths(options)
 
     # initialise own logging extensions
-    log.init(filename=config.log_file, encoding='utf-8', level='INFO')
+    log.init(filename=config.log_file, encoding='utf-8',
+             level='DEBUG' if config.debugging else 'INFO')
     atexit.register(log.deinit)
 
     # print versions
     logging.info( _('Starting wxGlade version "%s" on Python %s'), config.version, config.py_version )
 
     # print used paths
-    logging.info(_('Base directory:             %s'), config.wxglade_path)
-    logging.info(_('Documentation directory:    %s'), config.docs_path)
-    logging.info(_('Icons directory:            %s'), config.icons_path)
-    logging.info(_('Build-in widgets directory: %s'), config.widgets_path)
-    logging.info(_('Template directory:         %s'), config.templates_path)
-    logging.info(_('Credits file:               %s'), config.credits_file)
-    logging.info(_('License file:               %s'), config.license_file)
-    logging.info(_('Manual file:                %s'), config.manual_file)
-    logging.info(_('Tutorial file:              %s'), config.tutorial_file)
-    logging.info(_('Home directory:             %s'), config.home_path)
-    logging.info(_('Application data directory: %s'), config.appdata_path)
-    logging.info(_('Configuration file:         %s'), config.rc_file)
-    logging.info(_('History file:               %s'), config.history_file)
-    logging.info(_('Log file:                   %s'), config.log_file)
+    logging.debug(_('Base directory:             %s'), config.wxglade_path)
+    logging.debug(_('Documentation directory:    %s'), config.docs_path)
+    logging.debug(_('Icons directory:            %s'), config.icons_path)
+    logging.debug(_('Build-in widgets directory: %s'), config.widgets_path)
+    logging.debug(_('Template directory:         %s'), config.templates_path)
+    logging.debug(_('Credits file:               %s'), config.credits_file)
+    logging.debug(_('License file:               %s'), config.license_file)
+    logging.debug(_('Manual file:                %s'), config.manual_file)
+    logging.debug(_('Tutorial file:              %s'), config.tutorial_file)
+    logging.debug(_('Home directory:             %s'), config.home_path)
+    logging.debug(_('Application data directory: %s'), config.appdata_path)
+    logging.debug(_('Configuration file:         %s'), config.rc_file)
+    logging.debug(_('History file:               %s'), config.history_file)
+    logging.debug(_('Log file:                   %s'), config.log_file)
 
     # adapt application search path
     sys.path.insert(0, config.wxglade_path)

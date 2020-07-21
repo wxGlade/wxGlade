@@ -80,8 +80,6 @@ def load_widgets_from_dir(widget_dir, submodule='', default_section='not_set'):
     
             if config.use_gui and not submodule.endswith('codegen'):
                 logging.info('\t%s', module_name)
-            else:
-                logging.debug(_('Widget %s imported'), module_name)
     return buttons
 
 

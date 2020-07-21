@@ -1080,6 +1080,8 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
                 # this isn't necessarily a bad error
                 self.warning(_('Changing permission of file "%s" failed: %s') % (filename, str(e)))
 
+        logging.info('Generated %s', filename)
+
     def store_as_attr(self, obj):
         """Returns True if 'obj' should be added as an attribute of its parent's class,
         False if it should be created as a local variable.
