@@ -977,7 +977,6 @@ class wxGladeFrame(wx.Frame):
 
     def _open_app(self, filename, use_progress_dialog=True, add_to_history=True):
         "Load a new wxGlade project"
-
         error_msg = None
         infile = None
 
@@ -985,6 +984,7 @@ class wxGladeFrame(wx.Frame):
 
         common.root.clear()
         common.root.init()
+        common.app_tree.DeleteChildren(common.root.item)
         common.app_tree.auto_expand = False  # disable auto-expansion of nodes
 
         try:
