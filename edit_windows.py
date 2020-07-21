@@ -238,7 +238,7 @@ class EditBase(EventsMixin, edit_base.EditBase):
         # only with slots before/after
         if typename=="bitmap":
             return (False, "No bitmaps can be pasted here")
-        if typename is not None and typename=="window" or widget.IS_TOPLEVEL:
+        if (typename is not None and typename=="window") or (widget and widget.IS_TOPLEVEL):
             return (False,"No toplevel objects can be pasted here")
         return ("Slot",None)
 

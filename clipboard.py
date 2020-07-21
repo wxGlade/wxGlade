@@ -137,18 +137,26 @@ class DropTarget(wx.DropTarget):
         # check only if position changed
         if not self._last_check or x!=self._last_check[0] or y!=self._last_check[1]:
             self._last_check = (x,y, self._check_compatibility(x, y)[0] )
-        return self._last_check[2] and default or wx.DragNone
+        ret = self._last_check[2] and default or wx.DragNone
+        self._last_on_drag_over = ret
+        return ret
 
     def OnData(self, x,y,default):
         compatible, message = self._check_compatibility(x,y)
         if not compatible: return wx.DragCancel
 
+        # workaround for wxPython 4.1
+        if default == wx.DragNone and hasattr(self, "_last_on_drag_over"):
+            default = self._last_on_drag_over
+
+        copy = (default==wx.DragCopy)
+
+        src_widget = None
         dst_widget = self.window.find_editor_by_pos(x,y)
 
         if _current_drag_source:
             src_widget = _current_drag_source  # was set in begin_drag
 
-            copy = (default==wx.DragCopy)
             if not copy and _current_drag_source is misc.focused_widget:
                 if hasattr(_current_drag_source, "parent"):
                     misc.set_focused_widget(_current_drag_source.parent)
