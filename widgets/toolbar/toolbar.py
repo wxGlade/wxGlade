@@ -566,19 +566,18 @@ class EditToolBar(EditBase, PreviewMixin, EditStylesMixin, BitmapMixin):
     def __init__(self, name, parent):
         EditBase.__init__( self, name, parent, "_toolbar" )
         EditStylesMixin.__init__(self)
-        self._init_properties()
 
-    def _init_properties(self):
-        # initialise instance properties
+        self.tools = ToolsProperty()  # incl. the Edit button
+
         self.bitmapsize = np.IntPairPropertyD('16, 15', default_value='16, 15')
         self.margins    = np.IntPairPropertyD('0, 0',   default_value='0, 0')
         self.packing    = np.SpinPropertyD(1, val_range=(0,100), default_value=1, immediate=True)
         self.separation = np.SpinPropertyD(5, val_range=(0,100), default_value=5, immediate=True)
-        self.tools = ToolsProperty()  # incl. the Edit button
 
         self.window_id = None  # just a dummy for code generation
 
         self.widget = self._tb = None  # a panel and the actual ToolBar
+        self.parent.properties["toolbar"].set(True, notify=False)
 
     def create_widget(self):
         tb_style = wx.TB_HORIZONTAL | self.style
@@ -779,29 +778,34 @@ class EditTopLevelToolBar(EditToolBar, PreviewMixin):
         PreviewMixin.__init__(self)  # add a preview button
 
 
-def builder(parent, index):
+def builder(parent, index, klass=None):
     "factory function for EditToolBar objects"
-    import window_dialog as wd
-    klass = 'wxToolBar' if common.root.language.lower()=='xrc' else 'MyToolBar'
-
-    # if e.g. on a frame, suggest the user to add the tool bar to this
-    toplevel_widget = None
-    if misc.focused_widget is not None and not misc.focused_widget.IS_ROOT:
-        toplevel_widget = misc.focused_widget.toplevel_parent
-        if not "toolbar" in toplevel_widget.properties:
-            toplevel_widget = None
-    if toplevel_widget is not None:
-        dialog = wd.StandaloneOrChildDialog(klass, "Select toolbar type and class", toplevel_widget, "toolbar")
+    if klass is None:
+        import window_dialog as wd
+        klass = 'wxToolBar' if common.root.language.lower()=='xrc' else 'MyToolBar'
+    
+        # if e.g. on a frame, suggest the user to add the tool bar to this
+        toplevel_widget = None
+        if misc.focused_widget is not None and not misc.focused_widget.IS_ROOT:
+            toplevel_widget = misc.focused_widget.toplevel_parent
+            if not "toolbar" in toplevel_widget.properties: toplevel_widget = None
+        if toplevel_widget is not None:
+            dialog = wd.StandaloneOrChildDialog(klass, "Select toolbar type and class", toplevel_widget, "toolbar")
+        else:
+            dialog = wd.WindowDialog(klass, None, 'Select standalone toolbar class', True)
+    
+        klass = dialog.show()
+        dialog.Destroy()
+        if klass is None: return None
     else:
-        dialog = wd.WindowDialog(klass, None, 'Select standalone toolbar class', True)
+        # allow to call builder(frame, None, True)
+        toplevel_widget = parent
 
-    klass = dialog.show()
-    dialog.Destroy()
-    if klass is None: return None
-    if klass is True:
-        # add to toplevel widget
-        toplevel_widget.properties["toolbar"].set(True, notify=True)
-        return toplevel_widget._toolbar
+    if index=="_toolbar" or klass is True:
+        # add to frame
+        editor = EditToolBar(toplevel_widget.name+"_toolbar", toplevel_widget)
+        if toplevel_widget.widget: editor.create()
+        return editor
 
     # a standalone toolbar
     name = dialog.get_next_name("toolbar")
@@ -815,8 +819,6 @@ def xml_builder(parser, base, name, parent, index):
     "factory to build EditToolBar objects from a XML file"
     if parent.IS_ROOT:
         return EditTopLevelToolBar(name, parent, "ToolBar")
-
-    parent.properties["toolbar"].set(True)
     return EditToolBar(name, parent)
 
 

@@ -15,6 +15,37 @@ from edit_windows import WindowBase, TopLevelBase, EditStylesMixin, Slot
 from gui_mixins import BitmapMixin
 
 
+
+class BarProperty(np.CheckBoxProperty):
+    # when checkbox is checked, a MenuBar/ToolBar/StatusBar will be created or destroyed
+    def __init__(self, widget_name="MenuBar"):
+        self.widget_name = widget_name
+        self.widget_index = None
+        np.CheckBoxProperty.__init__(self, False, default_value=False)
+
+    def set_owner(self, owner, attributename):
+        # set e.g. owner._menubar to None; "_menubar" is the attribute name / index for storing the bar
+        np.CheckBoxProperty.set_owner(self, owner, attributename)
+        self.widget_index = "_" + attributename
+        setattr(owner, self.widget_index, None)
+
+    def on_value_edited(self, new_value, active=None):
+        # user has clicked the checkbox
+        # the main modification to np.Property.on_value_edited is that it does not store the modification in the history
+        if active is not None: self.deactivated = not active
+
+        # create or remove the bar:
+        if new_value:
+            bar = common.widgets["Edit"+self.widget_name](self.owner, self.widget_index, True)
+        else:
+            bar = getattr(self.owner, self.widget_index).remove()
+        setattr(self.owner, self.widget_index, bar)
+        misc.rebuild_tree(widget=self.owner, recursive=False, focus=True)
+
+        self.set(new_value)
+        self._notify()
+
+
 class EditFrame(BitmapMixin, TopLevelBase, EditStylesMixin):
     WX_CLASS = "wxFrame"
     _PROPERTIES =["Widget", "title", "icon", "centered", "sizehints","menubar", "toolbar", "statusbar", "style"]
@@ -35,14 +66,11 @@ class EditFrame(BitmapMixin, TopLevelBase, EditStylesMixin):
         self.icon      = np.BitmapPropertyD("")
         self.centered  = np.CheckBoxProperty(False, default_value=False)
         self.sizehints = np.CheckBoxProperty(False, default_value=False)
-        self.menubar   = np.CheckBoxProperty(False, default_value=False)
-        self.toolbar   = np.CheckBoxProperty(False, default_value=False)
-        if "statusbar" in self.PROPERTIES:
-            self.statusbar = np.CheckBoxProperty(False, default_value=False)
-            self._statusbar = None
-        else:
-            self.statusbar = None
-        self._menubar = self._toolbar = None  # these properties will hold the EditMenubar instances etc.
+
+        self.menubar   = BarProperty("MenuBar")
+        self.toolbar   = BarProperty("ToolBar")
+        if "statusbar" in self.PROPERTIES:  # not for MDIChildFrame
+            self.statusbar = BarProperty("StatusBar")
 
     def create_widget(self):
         parent = None
@@ -58,12 +86,9 @@ class EditFrame(BitmapMixin, TopLevelBase, EditStylesMixin):
             self.widget.SetSize((400, 300))
         if wx.Platform == '__WXMSW__':
             self.widget.CenterOnScreen()
-        if self.menubar and self._menubar.widget:
-            self.widget.SetMenuBar(self._menubar.widget)
-        if self.statusbar and self._statusbar.widget:
-            self.widget.SetStatusBar(self._statusbar.widget)
-        if self.toolbar and self._toolbar.widget:
-            self.widget.SetToolBar(self._toolbar.widget)
+        if self.menubar   and self._menubar.widget:   self.widget.SetMenuBar(self._menubar.widget)
+        if self.statusbar and self._statusbar.widget: self.widget.SetStatusBar(self._statusbar.widget)
+        if self.toolbar   and self._toolbar.widget:   self.widget.SetToolBar(self._toolbar.widget)
 
     def _set_widget_icon(self):
         if self.icon:
@@ -76,49 +101,8 @@ class EditFrame(BitmapMixin, TopLevelBase, EditStylesMixin):
         icon.CopyFromBitmap(bitmap)
         self.widget.SetIcon(icon)
 
-    def _set_menu_bar(self):
-        if self.menubar:
-            # create a MenuBar
-            from menubar import EditMenuBar
-            self._menubar = EditMenuBar(self.name + '_menubar', self)
-            if self.widget: self._menubar.create()
-        elif self._menubar:
-            # remove
-            self._menubar = self._menubar.remove()
-
-    def _set_status_bar(self):
-        if self.statusbar:
-            # create a StatusBar
-            from statusbar import EditStatusBar
-            self._statusbar = EditStatusBar(self.name + '_statusbar', self)
-            if self.widget: self._statusbar.create()
-        elif self._statusbar:
-            # remove
-            self._statusbar = self._statusbar.remove()
-
-    def _set_tool_bar(self):
-        if self.toolbar:
-            # create a ToolBar
-            from toolbar import EditToolBar
-            EditToolBar(self.name + '_toolbar', self)
-            if self.widget: self._toolbar.create()
-        elif self._toolbar:
-            # remove
-            self._toolbar = self._toolbar.remove()
-
     def properties_changed(self, modified):
         if not modified or "icon" in modified and self.widget: self._set_widget_icon()
-
-        # this is only triggered by the user clicking the checkboxes
-        if not modified or "menubar" in modified:   self._set_menu_bar()
-        if not modified or "statusbar" in modified: self._set_status_bar()
-        if not modified or "toolbar" in modified:   self._set_tool_bar()
-
-        if modified:
-            intersection = {"menubar","statusbar","toolbar"}.intersection(modified)
-            if intersection and self.properties[intersection.pop()].previous_value is not None:
-                # previous value is not None -> triggered by user
-                misc.rebuild_tree(widget=self, recursive=False, focus=False)
 
         TopLevelBase.properties_changed(self, modified)
         EditStylesMixin.properties_changed(self, modified)

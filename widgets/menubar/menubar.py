@@ -728,6 +728,7 @@ class EditMenuBar(EditBase):#, PreviewMixin):
         self.window_id = None  # just a dummy for code generation
 
         self._mb = None  # the real menubar
+        self.parent.properties["menubar"].set(True, notify=False)
 
     def create(self):
         EditBase.create(self)
@@ -892,8 +893,7 @@ def builder(parent, index, klass=None):
         toplevel_widget = None
         if misc.focused_widget is not None and not misc.focused_widget.IS_ROOT:
             toplevel_widget = misc.focused_widget.toplevel_parent
-            if not "menubar" in toplevel_widget.properties:
-                toplevel_widget = None
+            if not "menubar" in toplevel_widget.properties: toplevel_widget = None
         if toplevel_widget is not None:
             dialog = wd.StandaloneOrChildDialog(klass, "Select menubar type and class", toplevel_widget, "menubar")
         else:
@@ -907,9 +907,10 @@ def builder(parent, index, klass=None):
         toplevel_widget = parent
 
     if index=="_menubar" or klass is True:
-        # add to toplevel widget
-        toplevel_widget.properties["menubar"].set(True, notify=True)
-        return toplevel_widget._menubar
+        # add to frame
+        editor = EditMenuBar(toplevel_widget.name+"_menubar", toplevel_widget)
+        if toplevel_widget.widget: editor.create()
+        return editor
 
     # a standalone menubar
     name = dialog.get_next_name("menubar")
@@ -923,8 +924,6 @@ def xml_builder(parser, base, name, parent, index):
     "factory to build EditMenuBar objects from a XML file"
     if parent.IS_ROOT:
         return EditTopLevelMenuBar(name, parent, "MenuBar")
-
-    parent.properties["menubar"].set(True)
     return EditMenuBar(name, parent)
 
 

@@ -151,6 +151,14 @@ class Dialog(wx.Dialog):
         szr.Fit(self)
 
 
+
+def builder(parent, index, klass):
+    # only used from Frame.menubar property
+    editor = EditStatusBar(parent.name+"_menubar", parent)
+    if parent.widget: editor.create()
+    return editor
+
+
 def xml_builder(parser, base, name, parent, index):
     "factory to build EditToolBar objects from a XML file"
     parent.properties["statusbar"].set(True)
@@ -160,6 +168,7 @@ def xml_builder(parser, base, name, parent, index):
 def initialize():
     "initialization function for the module: returns a wxBitmapButton to be added to the main palette."
     common.widget_classes['EditStatusBar'] = EditStatusBar
+    common.widgets['EditStatusBar'] = builder   # only used from Frame.menubar property
     common.widgets_from_xml['EditStatusBar'] = xml_builder
     import config, os
     from tree import WidgetTree
