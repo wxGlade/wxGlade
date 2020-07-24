@@ -2705,16 +2705,18 @@ class GridProperty(Property):
 
         if not self.grid: return
         self.grid.ClearSelection()
-        self.grid.MakeCellVisible(self.cur_row, 0)
-        if self._last_focus=="grid":
-            if hasattr(self.grid, "GoToCell"):
-                self.grid.GoToCell( self.cur_row, self.cur_col )
+        if self.cur_row>=0:
+            self.grid.MakeCellVisible(self.cur_row, 0)
+            if self._last_focus=="grid":
+                if hasattr(self.grid, "GoToCell"):
+                    self.grid.GoToCell( self.cur_row, self.cur_col )
+                else:
+                    self.grid.SetGridCursor(self.cur_row, self.cur_col)  # calls MakeCellVisible
             else:
-                self.grid.SetGridCursor(self.cur_row, self.cur_col)  # calls MakeCellVisible
-        else:
-            self.grid.SelectRow(self.cur_row)  # this will move the focus from the editor to the grid
-            if self.editors and self._last_focus=="editor":
-                self.restore_editor_focus()
+                self.grid.SelectRow(self.cur_row)  # this will move the focus from the editor to the grid
+
+        if self.editors and self._last_focus=="editor":
+            self.restore_editor_focus()
 
     def update_display(self, start_editing=False):
         # update complete grid and editors
