@@ -618,7 +618,7 @@ class wxGladeFrame(wx.Frame):
         help_menu.AppendSeparator() # ----------------------------------------------------------------------------------
 
         if config.debugging:
-            i = append_menu_item(help_menu, -1, 'Shell\tF6')
+            i = append_menu_item(help_menu, -1, 'Shell\tF7')
             misc.bind_menu_item(self, i, self.create_shell_window)
             help_menu.AppendSeparator()
 
