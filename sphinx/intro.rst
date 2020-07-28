@@ -91,18 +91,22 @@ different layouts.
 .. |wPalette| image:: images/wPalette.png
    :width: 200
    :align: middle
+   :alt: Press F4 to focus the Palette panel
 
 .. |wTree| image:: images/wTree.png
    :width: 200
    :align: middle
+   :alt: Press F2 to focus the Tree view control
 
 .. |wProperties| image:: images/wProperties.png
    :width: 200
    :align: middle
+   :alt: Press F3 to focus the Properties notebook; see reference section for more shortcuts
 
 .. |wDesign| image:: images/wDesign.png
    :width: 200
    :align: middle
+   :alt: Press F6 to show the Design window
 
 
 .. list-table::
@@ -118,18 +122,26 @@ different layouts.
        This tree visualizes and allows editing the structure of the project with it's
        application, windows, sizers and controls. |br|
        On selection of an item, it's properties will be shown in the *Properties* notebook.
+       |br| |br|
+       Press :kbd:`F2` to focus the **Tree** view control.
    * - |wProperties|
      - Main window **Properties** notebook: |br| |br|
        This lets you display and edit the properties of applications, windows and controls. |br|
        To edit an item, select it in the *Tree* or *Design* window.
+       |br| |br|
+       Press :kbd:`F3` to focus the **Properties** notebook; see reference section for more shortcuts.
    * - |wDesign|
      - **Design** window: |br| |br|
        This one visualizes the design of the window. It is not 100% identical to the final window. |br|
        To open this window, double-click a window's icon in the *Tree* window.
+       |br| |br|
+       Press :kbd:`F6` to show the **Design** window.
    * -
      - **Preview** window |br| |br|
        A preview of the current window. |br|
        It should look 100% identical to the window when it is used in the application.
+       |br| |br|
+       Press :kbd:`F5` for the **Preview** window.
 
 
 .. seealso:: :doc:`reference` **for keyboard shortcuts and mouse actions.**
