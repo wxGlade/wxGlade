@@ -86,9 +86,9 @@ class EditFrame(BitmapMixin, TopLevelBase, EditStylesMixin):
             self.widget.SetSize((400, 300))
         if wx.Platform == '__WXMSW__':
             self.widget.CenterOnScreen()
-        if self.menubar   and self._menubar.widget:   self.widget.SetMenuBar(self._menubar.widget)
-        if self.statusbar and self._statusbar.widget: self.widget.SetStatusBar(self._statusbar.widget)
-        if self.toolbar   and self._toolbar.widget:   self.widget.SetToolBar(self._toolbar.widget)
+        if self.check_prop_truth("menubar")   and self._menubar.widget:   self.widget.SetMenuBar(self._menubar.widget)
+        if self.check_prop_truth("statusbar") and self._statusbar.widget: self.widget.SetStatusBar(self._statusbar.widget)
+        if self.check_prop_truth("toolbar")   and self._toolbar.widget:   self.widget.SetToolBar(self._toolbar.widget)
 
     def _set_widget_icon(self):
         if self.icon:

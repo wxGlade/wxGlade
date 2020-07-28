@@ -566,9 +566,11 @@ class EditToolBar(EditBase, PreviewMixin, EditStylesMixin, BitmapMixin):
     def __init__(self, name, parent):
         EditBase.__init__( self, name, parent, "_toolbar" )
         EditStylesMixin.__init__(self)
+        self._init_properties()
+        self.parent.properties["toolbar"].set(True, notify=False)
 
+    def _init_properties(self):
         self.tools = ToolsProperty()  # incl. the Edit button
-
         self.bitmapsize = np.IntPairPropertyD('16, 15', default_value='16, 15')
         self.margins    = np.IntPairPropertyD('0, 0',   default_value='0, 0')
         self.packing    = np.SpinPropertyD(1, val_range=(0,100), default_value=1, immediate=True)
@@ -577,7 +579,6 @@ class EditToolBar(EditBase, PreviewMixin, EditStylesMixin, BitmapMixin):
         self.window_id = None  # just a dummy for code generation
 
         self.widget = self._tb = None  # a panel and the actual ToolBar
-        self.parent.properties["toolbar"].set(True, notify=False)
 
     def create_widget(self):
         tb_style = wx.TB_HORIZONTAL | self.style
