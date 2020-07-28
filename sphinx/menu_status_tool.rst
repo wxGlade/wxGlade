@@ -160,11 +160,30 @@ The example menu is part of the example at wxglade/examples/Calculator:
  * `Calculator_Main.py <../../examples/Calculator/Calculator_Main.py>`_.
 
 
+Lambda Event Handlers
+=====================
+
+When creating Python code, you may also specify a lambda function as event handler.
+
+E.g. you may want to have three menu items named :code:`Insert A`, :code:`Insert B` and :code:`Insert C`.
+Instead of three separate handlers, you may enter three lambda functions that will call the same method or function
+with different arguments each:
+
+
++-----------------------------------------------------------------------+
+|.. image:: images/MenuLambdaEventHandlers.png                          |
+|    :alt: lambda evt: self.on_menu_insert_abc("A")                     |
++-----------------------------------------------------------------------+
+
+
+Of course you need to implement a method :code:`on_menu_insert_abc`.
+
+
 *********************************************************************
 Status Bar Editor
 *********************************************************************
 
-To attach a status bar to a frame, go to *Properties -> Widget* and check :guilabel:`Has StatusBar`.
+To attach a status bar to a frame, go to *Properties -> Widget* and check cHas StatusBar`.
 This will add a statusbar icon to the *Tree* window, just below the frame's icon.
 (Similar to :guilabel:`Has MenuBar` in the first screenshot on this page.)
 

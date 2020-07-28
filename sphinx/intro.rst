@@ -3,30 +3,77 @@
    <br/>
 
 
-################
-wxGlade Overview
-################
+################################
+wxGlade Overview and Quick Start
+################################
 
-***************
-Running wxGlade
-***************
+******************
+Installing wxGlade
+******************
 
-**Start:**
-To run wxGlade, start the wxglade.py or wxglade.pyw program file with the Python interpreter.
+For some Linux flavors there are system packages for wxGlade.
 
-**Other Prerequisites:**
-On Windows, the win32 extensions should be installed: https://sourceforge.net/projects/pywin32/
-If they are available, wxGlade will register for .wxg files such that you can open them via double-click.
+Other than that, there is no real installation.
+Just download the latest released version as zip archive from https://sourceforge.net/projects/wxglade/files/wxglade/
+or from the git release page at https://github.com/wxGlade/wxGlade/releases
+
+Unpack the archive to a known location and maybe add it to the path.
+
+
+If you are familiar with git, you may instead just clone the repository from https://github.com/wxGlade/wxGlade.git
+
+The master branch should be stable enough for your work and I appreciate bug reports.
+
 
 **Supported Python and wxPython Versions:**
  * The *Classic* wxPython versions 2.8 and 3.0 are supported as well as wxPython 4 *Phoenix* running under Python 3
  * Phoenix plus Python 2 will probably also work, but this is not tested at all. wxPython 2.8 is generally less tested than the more recent versions.
  * When running Python 3 + Phoenix or Python 2 + Classic, the generated Python code will not be compatible to the other version.
 
+
+**Other Prerequisites:**
+On Windows, the win32 extensions should be installed: https://pypi.org/project/pywin32/
+If they are available, wxGlade will register for .wxg files such that you can open them via double-click.
+
+
+***************
+Running wxGlade
+***************
+
+To start the program, change directory to the installation directory and enter :code:`python3 wxglade.py`
+or :code:`python wxglade.py` in your shell or use whatever is required to start a python application on your platform.
+
+You may want to add a desktop shortcut to run the ``wxGlade.py`` file (or the ``wxGlade.pyw`` file).
+
 .. note::
-    For the best user experience, run wxGlade with your target wxPython revision (i.e. 2.8 or 3.0).
+    For the best user experience, run wxGlade with your target wxPython revision (e.g. 2.8, 3.0, 4.0, 4.1).
+    
     If you use a different revision, the *Design* and *Preview* window might not look identical to your final
     program, as some styles are not supported under all revisions.
+
+.. note::
+    If you want to build a GUI for wxPython *Classic* (<=3.0) or *Phoenix* (>=4.0):
+    Start wxGlade in your target version - if it runs under *Phoenix*, it will create *Phoenix* code.
+    
+    The ``.wxg`` file format is not affected by this.
+    So you may use a single ``.wxg`` file to generate code for both *Classic* and *Phoenix*.
+    The generated code should always run under both Python 2.7 and Python 3.
+
+
+*************
+Accessibility
+*************
+
+wxGlade attempts to be accessible not only via mouse and screen but also via keyboard and screen readers.
+
+Accessibility and usability go hand in hand.
+
+
+If you are using a screen reader like NVDA or JAWS:
+
+Go to "Edit -> Preferences... -> Accessibility" to enable better compatibility.
+
+If you observe problems, please provide feedback via the mailing list or the Github issue tracker.
 
 
 ***************
@@ -112,6 +159,7 @@ Each example file includes a frame with most of the supported widgets and also a
 
 There are additional examples in ``wxglade/examples`` showing how to use the CustomWidget to integrate some widgets that are not directly supported by wxGlade. The wxGlade design window will only display a placeholder for these.
 
+ * ``dialog``: create a dialog; show it on a button press or menu item selection; retrieve the result
  * ``html``: use :code:`wx.html.HtmlWindow` to display simple HTML pages
  * ``html2``: use :code:`wx.html2.WebView` to display HTML with Javascript and CSS (not available on wxPython 2.8)
  * ``lib_plot``: use :code:`wx.lib.plot.PlotCanvas` for plotting

@@ -193,10 +193,28 @@ In the latter case, you should have enabled <em>Properties -&gt; Application -&g
 </ul>
 </dd>
 </dl>
+<div class="section" id="lambda-event-handlers">
+<h3>Lambda Event Handlers<a class="headerlink" href="#lambda-event-handlers" title="Permalink to this headline">¶</a></h3>
+<p>When creating Python code, you may also specify a lambda function as event handler.</p>
+<p>E.g. you may want to have three menu items named <code class="code docutils literal"><span class="pre">Insert</span> <span class="pre">A</span></code>, <code class="code docutils literal"><span class="pre">Insert</span> <span class="pre">B</span></code> and <code class="code docutils literal"><span class="pre">Insert</span> <span class="pre">C</span></code>.
+Instead of three separate handlers, you may enter three lambda functions that will call the same method or function
+with different arguments each:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="100%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><img alt="lambda evt: self.on_menu_insert_abc(&quot;A&quot;)" class="first last" src="_images/MenuLambdaEventHandlers.png" />
+</td>
+</tr>
+</tbody>
+</table>
+<p>Of course you need to implement a method <code class="code docutils literal"><span class="pre">on_menu_insert_abc</span></code>.</p>
+</div>
 </div>
 <div class="section" id="status-bar-editor">
 <h2>Status Bar Editor<a class="headerlink" href="#status-bar-editor" title="Permalink to this headline">¶</a></h2>
-<p>To attach a status bar to a frame, go to <em>Properties -&gt; Widget</em> and check <span class="guilabel">Has StatusBar</span>.
+<p>To attach a status bar to a frame, go to <em>Properties -&gt; Widget</em> and check cHas StatusBar`.
 This will add a statusbar icon to the <em>Tree</em> window, just below the frame’s icon.
 (Similar to <span class="guilabel">Has MenuBar</span> in the first screenshot on this page.)</p>
 <p>To add/remove fields to the status bar, go to <em>Properties -&gt; Widget -&gt; Fields</em> and use
@@ -239,7 +257,10 @@ two growing and two fixed size fields</td>
   <h3><a href="index.html">Table Of Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#">Menu, Status Bar, Tool Bar</a><ul>
-<li><a class="reference internal" href="#menu-editor">Menu Editor</a></li>
+<li><a class="reference internal" href="#menu-editor">Menu Editor</a><ul>
+<li><a class="reference internal" href="#lambda-event-handlers">Lambda Event Handlers</a></li>
+</ul>
+</li>
 <li><a class="reference internal" href="#status-bar-editor">Status Bar Editor</a></li>
 <li><a class="reference internal" href="#tool-bar-editor">Tool Bar Editor</a></li>
 </ul>

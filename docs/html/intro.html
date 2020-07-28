@@ -5,7 +5,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>wxGlade Overview &#8212; wxGlade 0.9.3 documentation</title>
+    <title>wxGlade Overview and Quick Start &#8212; wxGlade 0.9.3 documentation</title>
     <link rel="stylesheet" href="_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="stylesheet" href="_static/css/custom.css" type="text/css" />
@@ -49,15 +49,17 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="wxglade-overview">
-<h1>wxGlade Overview<a class="headerlink" href="#wxglade-overview" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="running-wxglade">
-<h2>Running wxGlade<a class="headerlink" href="#running-wxglade" title="Permalink to this headline">¶</a></h2>
-<p><strong>Start:</strong>
-To run wxGlade, start the wxglade.py or wxglade.pyw program file with the Python interpreter.</p>
-<p><strong>Other Prerequisites:</strong>
-On Windows, the win32 extensions should be installed: <a class="reference external" href="https://sourceforge.net/projects/pywin32/">https://sourceforge.net/projects/pywin32/</a>
-If they are available, wxGlade will register for .wxg files such that you can open them via double-click.</p>
+  <div class="section" id="wxglade-overview-and-quick-start">
+<h1>wxGlade Overview and Quick Start<a class="headerlink" href="#wxglade-overview-and-quick-start" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="installing-wxglade">
+<h2>Installing wxGlade<a class="headerlink" href="#installing-wxglade" title="Permalink to this headline">¶</a></h2>
+<p>For some Linux flavors there are system packages for wxGlade.</p>
+<p>Other than that, there is no real installation.
+Just download the latest released version as zip archive from <a class="reference external" href="https://sourceforge.net/projects/wxglade/files/wxglade/">https://sourceforge.net/projects/wxglade/files/wxglade/</a>
+or from the git release page at <a class="reference external" href="https://github.com/wxGlade/wxGlade/releases">https://github.com/wxGlade/wxGlade/releases</a></p>
+<p>Unpack the archive to a known location and maybe add it to the path.</p>
+<p>If you are familiar with git, you may instead just clone the repository from <a class="reference external" href="https://github.com/wxGlade/wxGlade.git">https://github.com/wxGlade/wxGlade.git</a></p>
+<p>The master branch should be stable enough for your work and I appreciate bug reports.</p>
 <dl class="docutils">
 <dt><strong>Supported Python and wxPython Versions:</strong></dt>
 <dd><ul class="first last simple">
@@ -67,12 +69,37 @@ If they are available, wxGlade will register for .wxg files such that you can op
 </ul>
 </dd>
 </dl>
+<p><strong>Other Prerequisites:</strong>
+On Windows, the win32 extensions should be installed: <a class="reference external" href="https://pypi.org/project/pywin32/">https://pypi.org/project/pywin32/</a>
+If they are available, wxGlade will register for .wxg files such that you can open them via double-click.</p>
+</div>
+<div class="section" id="running-wxglade">
+<h2>Running wxGlade<a class="headerlink" href="#running-wxglade" title="Permalink to this headline">¶</a></h2>
+<p>To start the program, change directory to the installation directory and enter <code class="code docutils literal"><span class="pre">python3</span> <span class="pre">wxglade.py</span></code>
+or <code class="code docutils literal"><span class="pre">python</span> <span class="pre">wxglade.py</span></code> in your shell or use whatever is required to start a python application on your platform.</p>
+<p>You may want to add a desktop shortcut to run the <code class="docutils literal"><span class="pre">wxGlade.py</span></code> file (or the <code class="docutils literal"><span class="pre">wxGlade.pyw</span></code> file).</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
-<p class="last">For the best user experience, run wxGlade with your target wxPython revision (i.e. 2.8 or 3.0).
-If you use a different revision, the <em>Design</em> and <em>Preview</em> window might not look identical to your final
+<p>For the best user experience, run wxGlade with your target wxPython revision (e.g. 2.8, 3.0, 4.0, 4.1).</p>
+<p class="last">If you use a different revision, the <em>Design</em> and <em>Preview</em> window might not look identical to your final
 program, as some styles are not supported under all revisions.</p>
 </div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p>If you want to build a GUI for wxPython <em>Classic</em> (&lt;=3.0) or <em>Phoenix</em> (&gt;=4.0):
+Start wxGlade in your target version - if it runs under <em>Phoenix</em>, it will create <em>Phoenix</em> code.</p>
+<p class="last">The <code class="docutils literal"><span class="pre">.wxg</span></code> file format is not affected by this.
+So you may use a single <code class="docutils literal"><span class="pre">.wxg</span></code> file to generate code for both <em>Classic</em> and <em>Phoenix</em>.
+The generated code should always run under both Python 2.7 and Python 3.</p>
+</div>
+</div>
+<div class="section" id="accessibility">
+<h2>Accessibility<a class="headerlink" href="#accessibility" title="Permalink to this headline">¶</a></h2>
+<p>wxGlade attempts to be accessible not only via mouse and screen but also via keyboard and screen readers.</p>
+<p>Accessibility and usability go hand in hand.</p>
+<p>If you are using a screen reader like NVDA or JAWS:</p>
+<p>Go to “Edit -&gt; Preferences… -&gt; Accessibility” to enable better compatibility.</p>
+<p>If you observe problems, please provide feedback via the mailing list or the Github issue tracker.</p>
 </div>
 <div class="section" id="program-windows">
 <h2>Program Windows<a class="headerlink" href="#program-windows" title="Permalink to this headline">¶</a></h2>
@@ -147,6 +174,7 @@ It should look 100% identical to the window when it is used in the application.<
 <p>There are additional examples in <code class="docutils literal"><span class="pre">wxglade/examples</span></code> showing how to use the CustomWidget to integrate some widgets that are not directly supported by wxGlade. The wxGlade design window will only display a placeholder for these.</p>
 <blockquote>
 <div><ul class="simple">
+<li><code class="docutils literal"><span class="pre">dialog</span></code>: create a dialog; show it on a button press or menu item selection; retrieve the result</li>
 <li><code class="docutils literal"><span class="pre">html</span></code>: use <code class="code docutils literal"><span class="pre">wx.html.HtmlWindow</span></code> to display simple HTML pages</li>
 <li><code class="docutils literal"><span class="pre">html2</span></code>: use <code class="code docutils literal"><span class="pre">wx.html2.WebView</span></code> to display HTML with Javascript and CSS (not available on wxPython 2.8)</li>
 <li><code class="docutils literal"><span class="pre">lib_plot</span></code>: use <code class="code docutils literal"><span class="pre">wx.lib.plot.PlotCanvas</span></code> for plotting</li>
@@ -172,8 +200,10 @@ It should look 100% identical to the window when it is used in the application.<
             </a></p>
   <h3><a href="index.html">Table Of Contents</a></h3>
   <ul>
-<li><a class="reference internal" href="#">wxGlade Overview</a><ul>
+<li><a class="reference internal" href="#">wxGlade Overview and Quick Start</a><ul>
+<li><a class="reference internal" href="#installing-wxglade">Installing wxGlade</a></li>
 <li><a class="reference internal" href="#running-wxglade">Running wxGlade</a></li>
+<li><a class="reference internal" href="#accessibility">Accessibility</a></li>
 <li><a class="reference internal" href="#program-windows">Program Windows</a></li>
 <li><a class="reference internal" href="#examples">Examples</a></li>
 </ul>

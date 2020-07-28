@@ -67,6 +67,7 @@ Create the basic structure:
 3. A frame with a sizer |sizer| and one slot is now visible in the *Tree* view and the *Design* window
    (there the slot is visualized by a hatched area)
 4. It would be possible to place controls directly on the frame, but usually a **panel** is added first, as a frame is really just a frame around the other things. |br|
+   Especially for Windows, always add a panel to have correct background colours and keyboard navigation between widgets (using the :key:`Tab` key)
    To add the panel:
 
    * in the *Palette* of the main window (again on the "Windows" line) click on the Panel icon |panel|
