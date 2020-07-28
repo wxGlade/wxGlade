@@ -51,6 +51,58 @@
             
   <div class="section" id="reference-keyboard-and-mouse-actions">
 <h1>Reference: Keyboard and Mouse Actions<a class="headerlink" href="#reference-keyboard-and-mouse-actions" title="Permalink to this headline">¶</a></h1>
+<p>On <em>Classic</em> versions of wxPython, the keyboard shortcuts will not work in the <em>Preview</em> window.</p>
+<p><strong>Main Window / All</strong></p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="47%" />
+<col width="53%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head" rowspan="2">Key/Mouse</th>
+<th class="head" rowspan="2">Action</th>
+</tr>
+<tr class="row-even"></tr>
+</thead>
+<tbody valign="top">
+<tr class="row-odd"><td><code class="kbd docutils literal"><span class="pre">F2</span></code></td>
+<td>Go to <em>Tree</em> control in main window</td>
+</tr>
+<tr class="row-even"><td><code class="kbd docutils literal"><span class="pre">F3</span></code></td>
+<td>Go to <em>Properties</em> control in main window</td>
+</tr>
+<tr class="row-odd"><td><code class="kbd docutils literal"><span class="pre">F8</span></code>, <code class="kbd docutils literal"><span class="pre">Ctrl-M</span></code></td>
+<td>Go to <em>Properties -&gt; Common</em></td>
+</tr>
+<tr class="row-even"><td><code class="kbd docutils literal"><span class="pre">F9</span></code>, <code class="kbd docutils literal"><span class="pre">Ctrl-L</span></code></td>
+<td>Go to <em>Properties -&gt; Layout</em></td>
+</tr>
+<tr class="row-odd"><td><code class="kbd docutils literal"><span class="pre">F10</span></code>, <code class="kbd docutils literal"><span class="pre">Ctrl-W</span></code></td>
+<td>Go to <em>Properties -&gt; Widget</em></td>
+</tr>
+<tr class="row-even"><td><code class="kbd docutils literal"><span class="pre">F11</span></code>, <code class="kbd docutils literal"><span class="pre">Ctrl-E</span></code></td>
+<td>Go to <em>Properties -&gt; Events</em></td>
+</tr>
+<tr class="row-odd"><td><code class="kbd docutils literal"><span class="pre">F12</span></code>, <code class="kbd docutils literal"><span class="pre">Ctrl-D</span></code></td>
+<td>Go to <em>Properties -&gt; CoDe</em></td>
+</tr>
+<tr class="row-even"><td><code class="kbd docutils literal"><span class="pre">F4</span></code></td>
+<td>Go to <em>Palette</em> control in main window</td>
+</tr>
+<tr class="row-odd"><td><code class="kbd docutils literal"><span class="pre">F5</span></code></td>
+<td>Show/Refresh <em>Preview</em> Window</td>
+</tr>
+<tr class="row-even"><td><code class="kbd docutils literal"><span class="pre">F6</span></code></td>
+<td>Show/Hide <em>Design</em> Window</td>
+</tr>
+<tr class="row-odd"><td><code class="kbd docutils literal"><span class="pre">Ctrl+S</span></code></td>
+<td>Save file</td>
+</tr>
+<tr class="row-even"><td><code class="kbd docutils literal"><span class="pre">Ctrl+G</span></code></td>
+<td>Generate Code</td>
+</tr>
+</tbody>
+</table>
 <p><strong>Tree control in the main window:</strong></p>
 <table border="1" class="docutils">
 <colgroup>
@@ -64,11 +116,23 @@
 <tr class="row-even"></tr>
 </thead>
 <tbody valign="top">
-<tr class="row-odd"><td>Double Click on toplevel control like Frame</td>
+<tr class="row-odd"><td><code class="kbd docutils literal"><span class="pre">F2</span></code></td>
+<td>Edit control name (and label for some controls)</td>
+</tr>
+<tr class="row-even"><td>Double Click on toplevel control like Frame</td>
 <td>Show Design Window Expand child items</td>
 </tr>
-<tr class="row-even"><td>Cursor Up/Down</td>
+<tr class="row-odd"><td><code class="kbd docutils literal"><span class="pre">Enter</span></code> on toplevel window</td>
+<td>Show design window</td>
+</tr>
+<tr class="row-even"><td><code class="kbd docutils literal"><span class="pre">Arrow</span> <span class="pre">up/down</span></code></td>
 <td>Navigate through tree</td>
+</tr>
+<tr class="row-odd"><td><code class="kbd docutils literal"><span class="pre">Arrow</span> <span class="pre">right/left</span></code></td>
+<td>Expand / collapse</td>
+</tr>
+<tr class="row-even"><td><code class="kbd docutils literal"><span class="pre">Enter</span></code> on empty slot</td>
+<td>Add item to slot</td>
 </tr>
 <tr class="row-odd"><td>Right Click on Application right after loading</td>
 <td>Expand all items</td>
@@ -84,9 +148,6 @@
 </tr>
 <tr class="row-odd"><td>Ctrl Drag &amp; Drop</td>
 <td>Copy item(s) to another slot</td>
-</tr>
-<tr class="row-even"><td><code class="kbd docutils literal"><span class="pre">F2</span></code></td>
-<td>Edit control name (and label for some controls)</td>
 </tr>
 </tbody>
 </table>
@@ -143,21 +204,21 @@
 <tr class="row-odd"><td><code class="kbd docutils literal"><span class="pre">Alt-A</span></code></td>
 <td>Apply changes</td>
 </tr>
-<tr class="row-even"><td><code class="kbd docutils literal"><span class="pre">Ctrl-I</span></code></td>
+<tr class="row-even"><td><code class="kbd docutils literal"><span class="pre">Ctrl-I</span></code> or <code class="kbd docutils literal"><span class="pre">Alt-I</span></code></td>
 <td>Insert entry</td>
 </tr>
-<tr class="row-odd"><td><code class="kbd docutils literal"><span class="pre">Ctrl-A</span></code></td>
+<tr class="row-odd"><td><code class="kbd docutils literal"><span class="pre">Ctrl-A</span></code> or <code class="kbd docutils literal"><span class="pre">Alt-D</span></code></td>
 <td>Add entry</td>
 </tr>
-<tr class="row-even"><td><code class="kbd docutils literal"><span class="pre">Ctrl-R</span></code></td>
+<tr class="row-even"><td><code class="kbd docutils literal"><span class="pre">Ctrl-R</span></code> or <code class="kbd docutils literal"><span class="pre">Alt-R</span></code></td>
 <td>Remove entry</td>
 </tr>
-<tr class="row-odd"><td><code class="kbd docutils literal"><span class="pre">Alt-A</span></code></td>
+<tr class="row-odd"><td><code class="kbd docutils literal"><span class="pre">Ctrl-T</span></code> or <code class="kbd docutils literal"><span class="pre">Alt-T</span></code></td>
 <td>Reset / discard changes</td>
 </tr>
 </tbody>
 </table>
-<p><strong>Menu Editor</strong></p>
+<p><strong>Palette in the main window:</strong></p>
 <table border="1" class="docutils">
 <colgroup>
 <col width="47%" />
@@ -170,48 +231,48 @@
 <tr class="row-even"></tr>
 </thead>
 <tbody valign="top">
-<tr class="row-odd"><td>Arrow up/down</td>
+<tr class="row-odd"><td><code class="kbd docutils literal"><span class="pre">Arrow</span> <span class="pre">up/down</span></code></td>
+<td>Navigate between rows</td>
+</tr>
+<tr class="row-even"><td><code class="kbd docutils literal"><span class="pre">Arrow</span> <span class="pre">right/left</span></code>,
+<code class="kbd docutils literal"><span class="pre">Tab</span></code>, <code class="kbd docutils literal"><span class="pre">Pos1</span></code>, <code class="kbd docutils literal"><span class="pre">End</span></code></td>
+<td>Navigate within row</td>
+</tr>
+<tr class="row-odd"><td><code class="kbd docutils literal"><span class="pre">W</span></code>, <code class="kbd docutils literal"><span class="pre">C</span></code>, <code class="kbd docutils literal"><span class="pre">B</span></code>, <code class="kbd docutils literal"><span class="pre">I</span></code>,
+<code class="kbd docutils literal"><span class="pre">N</span></code>, <code class="kbd docutils literal"><span class="pre">D</span></code>, <code class="kbd docutils literal"><span class="pre">T</span></code>, <code class="kbd docutils literal"><span class="pre">M</span></code>,
+<code class="kbd docutils literal"><span class="pre">R</span></code>, <code class="kbd docutils literal"><span class="pre">S</span></code></td>
+<td>Navigate to row</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Menu and Toolbar Editors</strong></p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="47%" />
+<col width="53%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head" rowspan="2">Key/Mouse</th>
+<th class="head" rowspan="2">Action</th>
+</tr>
+<tr class="row-even"></tr>
+</thead>
+<tbody valign="top">
+<tr class="row-odd"><td><code class="kbd docutils literal"><span class="pre">Arrow</span> <span class="pre">up/down</span></code></td>
 <td>go to previous/next menu item</td>
 </tr>
-</tbody>
-</table>
-<p><strong>Main Window / All</strong></p>
-<table border="1" class="docutils">
-<colgroup>
-<col width="47%" />
-<col width="53%" />
-</colgroup>
-<thead valign="bottom">
-<tr class="row-odd"><th class="head" rowspan="2">Key/Mouse</th>
-<th class="head" rowspan="2">Action</th>
+<tr class="row-even"><td><code class="kbd docutils literal"><span class="pre">Alt-A</span></code> or <code class="kbd docutils literal"><span class="pre">Alt-Enter</span></code>
+or <code class="kbd docutils literal"><span class="pre">Ctrl-Enter</span></code></td>
+<td>OK / accept changes and close dialog</td>
 </tr>
-<tr class="row-even"></tr>
-</thead>
-<tbody valign="top">
-<tr class="row-odd"><td><code class="kbd docutils literal"><span class="pre">F2</span></code></td>
-<td>Show <em>Tree</em> Window</td>
+<tr class="row-odd"><td><code class="kbd docutils literal"><span class="pre">Alt-C</span></code> or <code class="kbd docutils literal"><span class="pre">Alt-F4</span></code></td>
+<td>Cancel / discard changes and close dialog</td>
 </tr>
-<tr class="row-even"><td><code class="kbd docutils literal"><span class="pre">F3</span></code></td>
-<td>Show <em>Properties</em> Window</td>
-</tr>
-<tr class="row-odd"><td><code class="kbd docutils literal"><span class="pre">F4</span></code></td>
-<td>Show <em>Palette</em> Window</td>
-</tr>
-<tr class="row-even"><td><code class="kbd docutils literal"><span class="pre">F5</span></code></td>
-<td>Show/Refresh <em>Preview</em> Window</td>
-</tr>
-<tr class="row-odd"><td><code class="kbd docutils literal"><span class="pre">F6</span></code></td>
-<td>Show/Hide <em>Design</em> Window</td>
-</tr>
-<tr class="row-even"><td><code class="kbd docutils literal"><span class="pre">Ctrl+S</span></code></td>
-<td>Save file</td>
-</tr>
-<tr class="row-odd"><td><code class="kbd docutils literal"><span class="pre">Ctrl+G</span></code></td>
-<td>Generate Code</td>
+<tr class="row-even"><td><code class="kbd docutils literal"><span class="pre">Alt-Arrow</span> <span class="pre">up/down/left/right</span></code></td>
+<td>move item up/down/left/right</td>
 </tr>
 </tbody>
 </table>
-<p>On <em>Classic</em> versions of wxPython, the keyboard shortcuts will not work in the <em>Preview</em> window.</p>
 <p>Some more keyboard shortcuts can be found in the menus.</p>
 </div>
 
