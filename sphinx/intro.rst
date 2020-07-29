@@ -66,7 +66,8 @@ Accessibility
 
 wxGlade attempts to be accessible not only via mouse and screen but also via keyboard and screen readers.
 
-Accessibility and usability go hand in hand.
+Keep in mind for your own applications that accessibility and usability go hand in hand.
+Keep your user intefaces simple and straightforward.
 
 
 If you are using a screen reader like NVDA or JAWS:

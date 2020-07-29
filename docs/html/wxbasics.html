@@ -5,14 +5,14 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>wx Basics &#8212; wxGlade 0.9.3 documentation</title>
+    <title>wx Basics &#8212; wxGlade 1.0.0 documentation</title>
     <link rel="stylesheet" href="_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="stylesheet" href="_static/css/custom.css" type="text/css" />
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '0.9.3',
+        VERSION:     '1.0.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true,
@@ -25,7 +25,7 @@
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Tutorial Project: Calculator" href="tutorial.html" />
-    <link rel="prev" title="wxGlade Overview" href="intro.html" /> 
+    <link rel="prev" title="wxGlade Overview and Quick Start" href="intro.html" /> 
   </head>
   <body>
     <div class="related" role="navigation" aria-label="related navigation">
@@ -38,9 +38,9 @@
           <a href="tutorial.html" title="Tutorial Project: Calculator"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="intro.html" title="wxGlade Overview"
+          <a href="intro.html" title="wxGlade Overview and Quick Start"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">wxGlade 0.9.3 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">wxGlade 1.0.0 documentation</a> &#187;</li> 
       </ul>
     </div>  
 
@@ -200,7 +200,9 @@ Note that this becomes obvious when the window is resized by the user.</li>
 </tr>
 </tbody>
 </table>
-<p>This window is managed by <font color="green"> <strong>one vertical box sizer with six slots</strong> </font> for the five rows, plus a horizontal line and five <font color="blue"> <strong>horizontal box sizers</strong> </font> for the horizontally arranged controls they contain (e.g. one label and one button):</p>
+<p>This window is managed by <font color="green"> <strong>one vertical box sizer with six slots</strong> </font> for the five rows,
+plus a horizontal line and five <font color="blue"> <strong>horizontal box sizers</strong> </font> for the horizontally arranged controls
+they contain (i.e. label plus text control, label plus radio box or button plus button):</p>
 <table border="1" class="docutils align-center">
 <colgroup>
 <col width="50%" />
@@ -233,18 +235,6 @@ Actually, a GridBagSizer is almost never needed.</li>
 </ul>
 </div>
 </div>
-<div class="section" id="wxglade-requirements-and-restrictions">
-<h3>wxGlade Requirements and Restrictions<a class="headerlink" href="#wxglade-requirements-and-restrictions" title="Permalink to this headline">¶</a></h3>
-<p>The user interface and internal data structures of wxGlade impose some restrictions on the structure of a window.
-A frame or panel cannnot have a widget as direct child. They always need a toplevel sizer first. So don’t be surprised to see constructions like these:</p>
-<blockquote>
-<div><ul class="simple">
-<li>frame -&gt; sizer with single slot -&gt; panel -&gt; sizer ….</li>
-<li>frame -&gt; sizer with single slot -&gt; notebook -&gt; …</li>
-</ul>
-</div></blockquote>
-<p>On the other hand, a notebook or a splitter can have widgets as direct children.</p>
-</div>
 </div>
 </div>
 
@@ -264,7 +254,6 @@ A frame or panel cannnot have a widget as direct child. They always need a tople
 <li><a class="reference internal" href="#sizers-layout-managers">Sizers (Layout Managers)</a><ul>
 <li><a class="reference internal" href="#sizer-examples">Sizer Examples</a></li>
 <li><a class="reference internal" href="#example-application-calculator-window">Example application: Calculator window</a></li>
-<li><a class="reference internal" href="#wxglade-requirements-and-restrictions">wxGlade Requirements and Restrictions</a></li>
 </ul>
 </li>
 </ul>
@@ -273,7 +262,7 @@ A frame or panel cannnot have a widget as direct child. They always need a tople
 
   <h4>Previous topic</h4>
   <p class="topless"><a href="intro.html"
-                        title="previous chapter">wxGlade Overview</a></p>
+                        title="previous chapter">wxGlade Overview and Quick Start</a></p>
   <h4>Next topic</h4>
   <p class="topless"><a href="tutorial.html"
                         title="next chapter">Tutorial Project: Calculator</a></p>
@@ -308,9 +297,9 @@ A frame or panel cannnot have a widget as direct child. They always need a tople
           <a href="tutorial.html" title="Tutorial Project: Calculator"
              >next</a> |</li>
         <li class="right" >
-          <a href="intro.html" title="wxGlade Overview"
+          <a href="intro.html" title="wxGlade Overview and Quick Start"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">wxGlade 0.9.3 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">wxGlade 1.0.0 documentation</a> &#187;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">

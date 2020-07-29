@@ -185,7 +185,9 @@ Example application: Calculator window
 |     :width: 200                                                      |
 +----------------------------------------------------------------------+
 
-This window is managed by |green| **one vertical box sizer with six slots** |endcolor| for the five rows, plus a horizontal line and five |blue| **horizontal box sizers** |endcolor| for the horizontally arranged controls they contain (e.g. one label and one button):
+This window is managed by |green| **one vertical box sizer with six slots** |endcolor| for the five rows,
+plus a horizontal line and five |blue| **horizontal box sizers** |endcolor| for the horizontally arranged controls
+they contain (i.e. label plus text control, label plus radio box or button plus button):
 
 .. list-table::
    :header-rows: 0
@@ -220,14 +222,3 @@ Later we'll have a look at alternative structures which allow better alignment o
    :width: 200
    :align: middle
 
-
-wxGlade Requirements and Restrictions
-=====================================
-
-The user interface and internal data structures of wxGlade impose some restrictions on the structure of a window.
-A frame or panel cannnot have a widget as direct child. They always need a toplevel sizer first. So don't be surprised to see constructions like these:
-
- - frame -> sizer with single slot -> panel -> sizer ....
- - frame -> sizer with single slot -> notebook -> ...
-
-On the other hand, a notebook or a splitter can have widgets as direct children.
