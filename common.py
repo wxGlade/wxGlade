@@ -787,6 +787,7 @@ class Preferences(ConfigParser.ConfigParser):
         'show_palette_labels': False,
         'show_gridproperty_editors': False,
         'use_checkboxes_workaround': False,
+        'no_checkbox_label_colours':False,
         'allow_duplicate_names': False,
         'autosave': True,
         'autosave_delay': 120,  # in seconds

@@ -963,19 +963,20 @@ class _CheckListProperty(Property):
                 excludes = self.EXCLUDES.get(name, [])
             else:
                 excludes = self.style_defs[name].get("exclude",[])
-            default_color = wx.NullColour if not "rename_to" in self.style_defs[name] else wx.Colour(130,130,130)
-            if checked[i] and not name in self.value_set:
-                checkbox.SetForegroundColour(wx.Colour(120,120,100))  # grey
-            elif self.value_set.intersection( excludes ):
-                checkbox.SetForegroundColour(wx.RED)
-            else:
-                supported_by = self.style_defs.get(name, {}).get("supported_by", None)
-                if supported_by:
-                    checkbox.SetForegroundColour(wx.BLUE)
+            if not config.preferences.no_checkbox_label_colours:
+                default_color = wx.NullColour if not "rename_to" in self.style_defs[name] else wx.Colour(130,130,130)
+                if checked[i] and not name in self.value_set:
+                    checkbox.SetForegroundColour(wx.Colour(120,120,100))  # grey
+                elif self.value_set.intersection( excludes ):
+                    checkbox.SetForegroundColour(wx.RED)
                 else:
-                    checkbox.SetForegroundColour(default_color)
+                    supported_by = self.style_defs.get(name, {}).get("supported_by", None)
+                    if supported_by:
+                        checkbox.SetForegroundColour(wx.BLUE)
+                    else:
+                        checkbox.SetForegroundColour(default_color)
             if self.EXCLUDES2 and name in self.EXCLUDES2:
-                checkbox.SetForegroundColour(wx.RED)
+                if not config.preferences.no_checkbox_label_colours: checkbox.SetForegroundColour(wx.RED)
                 checkbox.Disable()
             elif self.EXCLUDES2 is not None:
                 checkbox.Enable()
