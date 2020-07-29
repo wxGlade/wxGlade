@@ -963,7 +963,7 @@ class _CheckListProperty(Property):
                 excludes = self.EXCLUDES.get(name, [])
             else:
                 excludes = self.style_defs[name].get("exclude",[])
-            default_color = wx.BLACK if not "rename_to" in self.style_defs[name] else wx.Colour(130,130,130)
+            default_color = wx.NullColour if not "rename_to" in self.style_defs[name] else wx.Colour(130,130,130)
             if checked[i] and not name in self.value_set:
                 checkbox.SetForegroundColour(wx.Colour(120,120,100))  # grey
             elif self.value_set.intersection( excludes ):
