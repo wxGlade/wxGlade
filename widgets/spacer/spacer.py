@@ -56,6 +56,7 @@ class EditSpacer(ManagedBase):
             size = (self.width, self.height)
             if self.widget: self.widget.SetSize(size)
             self.parent.set_item_best_size(self, size=size)
+            if self.widget: self.parent_window.layout()
         ManagedBase.properties_changed(self, modified)
 
 
