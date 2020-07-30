@@ -199,8 +199,8 @@ class WidgetTree(wx.TreeCtrl):#, Tree):
             if new_name==name_p.get(): new_name = None
         if new_name:
             # check
-            OK = name_p.check(new_name)
-            if not OK: new_name = None
+            warning, error = name_p.check_value(new_name)
+            if warning or error: new_name = None
 
         # check class/klass
         if new_class:
@@ -208,8 +208,8 @@ class WidgetTree(wx.TreeCtrl):#, Tree):
             if new_class==class_p.get(): new_class = None
         if new_class:
             # check
-            OK = class_p.check(new_class)
-            if not OK: new_class = None
+            warning, error = name_p.check_value(new_name)
+            if warning or error: new_class = None
 
         # check label
         if new_label is not None:
