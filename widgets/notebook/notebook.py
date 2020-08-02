@@ -130,12 +130,12 @@ class EditNotebook(ManagedBase, EditStylesMixin):
         # create panel and node, add to tree
         self.insert_item(None, index)  # placeholder
         if add_panel:
-            panel_editor = panel.EditPanel( self.next_pane_name(), self, index )
+            editor = panel.EditPanel( self.next_pane_name(), self, index )
             if add_sizer:
                 sizer = edit_sizers._builder(panel_editor, 0)
         else:
             # just add a slot
-            edit_base.Slot(self, index)
+            editor = edit_base.Slot(self, index)
 
         if self.widget:
             # add to widget
