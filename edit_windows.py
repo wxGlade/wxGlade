@@ -656,11 +656,11 @@ class ManagedBase(WindowBase):
             if not size_p.is_active():
                 size_p.set( best_size )
 
-    def destroy_widget(self, level):
+    def destroy_widget(self, level, later=False):
         if self.widget and self.sel_marker:
             self.sel_marker.Destroy()  # destroy the selection markers
             self.sel_marker = None
-        WindowBase.destroy_widget(self, level)
+        WindowBase.destroy_widget(self, level, later)
 
     def _remove(self):
         "don't set focus"
@@ -1084,19 +1084,12 @@ class EditStylesMixin(np.PropertyOwner):
         # this is for ManagedBase derived classes only
         with self.frozen():
             focused = misc.focused_widget is self
-            if self.sel_marker:
-                self.sel_marker.Destroy()
-                self.sel_marker = None
-            old_widget = self.widget
-            old_widget.Hide()
-            if self.sizer: si = self.sizer.widget.GetItem(old_widget)
-            self.create_widget()
-            if self.sizer: compat.SizerItem_SetWindow(si, self.widget)
-            compat.DestroyLater(old_widget)
-            if self.sizer: self.sizer.item_properties_modified(self)  # will call toplevel Refresh as well
 
-            self.finish_widget_creation(level=0, re_add=False)
-            if self.sizer: self.sizer.layout()
+            self.parent.destroying_child_widget(self, self.index)
+            self.destroy_widget(0, later=True)
+            self.parent.destroyed_child_widget()
+
+            self.create()
             if focused:
                 misc.focused_widget = self
                 if self.sel_marker: self.sel_marker.Show(True)
