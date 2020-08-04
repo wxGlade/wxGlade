@@ -7,8 +7,7 @@ wxGauge objects
 """
 
 import wx
-import common, misc
-import wcodegen
+import common
 from edit_windows import ManagedBase, EditStylesMixin
 import new_properties as np
 
@@ -42,7 +41,8 @@ class EditGauge(ManagedBase, EditStylesMixin):
 
 def builder(parent, index):
     "Factory function for editor objects from GUI"
-    dialog = wcodegen.WidgetStyleSelectionDialog( _('wxGauge'), _('Orientation'), 'wxGA_HORIZONTAL|wxGA_VERTICAL')
+    import dialogs, misc
+    dialog = dialogs.WidgetStyleSelectionDialog( _('wxGauge'), _('Orientation'), 'wxGA_HORIZONTAL|wxGA_VERTICAL')
     with misc.disable_stay_on_top(common.adding_window or parent):
         res = dialog.ShowModal()
     style = dialog.get_selection()

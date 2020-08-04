@@ -12,7 +12,6 @@ import common, config, misc, compat
 import new_properties as np
 
 import copy, logging, os.path
-from .dialogs import *
 from gui_mixins import StylesMixin
 
 

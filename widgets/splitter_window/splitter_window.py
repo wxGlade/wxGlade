@@ -10,7 +10,6 @@ wxSplitterWindow objects
 import wx
 
 import common, compat, config, misc
-import wcodegen
 import new_properties as np
 from edit_windows import ManagedBase, EditStylesMixin
 from edit_base import Slot
@@ -221,7 +220,8 @@ choices = 'wxSPLIT_VERTICAL (left/right)|wxSPLIT_HORIZONTAL (top/bottom)'
 
 def builder(parent, index):
     "Factory function for EditSplitterWindow objects"
-    dialog = wcodegen.WidgetStyleSelectionDialog( dlg_title, box_title, choices, ["Create panels"],[True])
+    import dialogs
+    dialog = dialogs.WidgetStyleSelectionDialog( dlg_title, box_title, choices, ["Create panels"], [True])
     with misc.disable_stay_on_top(common.adding_window or parent):
         res = dialog.ShowModal()
     orientation = dialog.get_selection().split(" ")[0]
@@ -239,7 +239,6 @@ def builder(parent, index):
             pane2 = EditPanel(name + '_pane_2', editor, 1)
         else:
             editor._add_slots()  # XXX focus should be set to first slot
-            
 
         editor.properties["proportion"].set(1)
         editor.properties["flag"].set("wxEXPAND")

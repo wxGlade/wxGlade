@@ -9,9 +9,8 @@ wxNotebook objects
 
 import wx
 import common, compat, misc
-import wcodegen
 import new_properties as np
-from edit_windows import ManagedBase, EditStylesMixin, Slot
+from edit_windows import ManagedBase, EditStylesMixin
 from wcodegen.taghandler import BaseXmlBuilderTagHandler
 import panel, edit_sizers, edit_base
 
@@ -294,7 +293,7 @@ class EditNotebook(ManagedBase, EditStylesMixin):
 
     def _get_slot_label(self, index):
         title = self.tabs[index][0]
-        return '[%s] Page %s'%(title, index)
+        return '[%s] PAGE %s'%(title, index)
 
     def check_compatibility(self, widget, typename=None):
         return (False,"No objects can be pasted here; paste to empty pages instead.")
@@ -309,12 +308,13 @@ class EditNotebook(ManagedBase, EditStylesMixin):
 
 def builder(parent, index):
     "Factory function for editor objects from GUI"
+    import dialogs
     choices = 'wxNB_TOP|wxNB_BOTTOM|wxNB_LEFT|wxNB_RIGHT'
     options = [("Pages", (0,20)),
                 ">Add panels",
                 ">Add sizers to panels"]
     defaults = [1, True, False]
-    dialog = wcodegen.WidgetStyleSelectionDialog(_('wxNotebook'), _('Orientation'), choices, options, defaults)
+    dialog = dialogs.WidgetStyleSelectionDialog(_('wxNotebook'), _('Orientation'), choices, options, defaults)
     with misc.disable_stay_on_top(common.adding_window or parent):
         res = dialog.ShowModal()
     style = dialog.get_selection()

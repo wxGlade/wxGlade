@@ -122,7 +122,7 @@ class Dialog(wx.Dialog):
         self.classname = wx.TextCtrl(self, -1, klass)
         sizer = wx.BoxSizer(wx.VERTICAL)
         hsizer = wx.BoxSizer(wx.HORIZONTAL)
-        hsizer.Add(wx.StaticText(self, -1, _('class')), 0, wx.ALL | wx.ALIGN_CENTER_VERTICAL, 5)
+        hsizer.Add(wx.StaticText(self, -1, _('Instance class')), 0, wx.ALL | wx.ALIGN_CENTER_VERTICAL, 5)
         hsizer.Add(self.classname, 1, wx.ALIGN_CENTER_VERTICAL|wx.TOP|wx.BOTTOM|wx.RIGHT, 3)
         sizer.Add(hsizer, 0, wx.EXPAND)
 

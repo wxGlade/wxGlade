@@ -9,7 +9,7 @@ wxStaticText objects
 
 import wx
 #import wx.lib.stattext
-import common, config
+import common
 from edit_windows import ManagedBase, EditStylesMixin
 import new_properties as np
 
@@ -67,9 +67,17 @@ class EditStaticText(ManagedBase, EditStylesMixin):
 
 def builder(parent, index):
     "factory function for EditStaticText objects"
+    import dialogs, misc
     name = parent.toplevel_parent.get_next_contained_name('label_%d')
+    dlg = dialogs.WidgetStyleSelectionDialog(_("Static Text / Label"), None, None, ["?Label"])
+    with misc.disable_stay_on_top(common.adding_window or parent):
+        res = dlg.ShowModal()
+    label, = dlg.get_options()
+    dlg.Destroy()
+    if res != wx.ID_OK: return
+
     with parent.frozen():
-        editor = EditStaticText(name, parent, index, name)
+        editor = EditStaticText(name, parent, index, label)
         editor.properties["style"].set_to_default()
         editor.check_defaults()
         if parent.widget: editor.create()

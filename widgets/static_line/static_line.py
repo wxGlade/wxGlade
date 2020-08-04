@@ -8,8 +8,7 @@ wxStaticLine objects
 """
 
 import wx
-import common, misc
-import wcodegen
+import common
 from edit_windows import ManagedBase, EditStylesMixin
 import new_properties as np
 
@@ -52,7 +51,8 @@ class EditStaticLine(ManagedBase, EditStylesMixin):
 
 def builder(parent, index):
     "factory function for editor objects from GUI"
-    dialog = wcodegen.WidgetStyleSelectionDialog(_('wxStaticLine'), _('Orientation'), 'wxLI_HORIZONTAL|wxLI_VERTICAL')
+    import dialogs, misc
+    dialog = dialogs.WidgetStyleSelectionDialog(_('wxStaticLine'), _('Orientation'), 'wxLI_HORIZONTAL|wxLI_VERTICAL')
     with misc.disable_stay_on_top(common.adding_window or parent):
         res = dialog.ShowModal()
     style = dialog.get_selection()
