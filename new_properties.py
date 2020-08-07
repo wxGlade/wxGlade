@@ -1514,7 +1514,10 @@ class TextProperty(Property):
 
     def check(self, value=None):
         if value is None: value = self.value
-        self.set_check_result( *self.check_value(value) )
+        if isinstance(value, compat.unicode):
+            self.set_check_result( *self.check_value(value) )
+        else:
+            self.set_check_result()  # if it's not a text, it must be valid
 
     def _check(self, value):
         # called from check, if value matches validation_re
