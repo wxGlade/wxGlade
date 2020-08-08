@@ -221,7 +221,7 @@ class EditBase(EventsMixin, edit_base.EditBase):
         return menu
 
     def preview_parent(self, *args):
-        widget = self.toplevel_parent_window # misc.get_toplevel_widget(self)
+        widget = self.toplevel_parent # misc.get_toplevel_widget(self)
         if widget is not None:
             wx.CallAfter( widget.preview )  # direct call would result in crash
 
