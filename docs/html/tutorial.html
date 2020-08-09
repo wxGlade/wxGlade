@@ -61,29 +61,38 @@
 <li><strong>Add the frame</strong>:<ul>
 <li>click on the Frame icon <img alt="frame" src="_images/frame.png" /> on the “Windows” line of the <em>Palette</em> panels</li>
 <li>as class name, enter <span class="guilabel">CalculatorFrame</span>: <a class="reference internal" href="_images/NewFrame_CalculatorFrame.png"><img alt="New Frame dialog" src="_images/NewFrame_CalculatorFrame.png" style="width: 30px;" /></a></li>
+<li>leave “Add panel and sizer” checked</li>
 </ul>
 </li>
-<li>A frame with a sizer <img alt="sizer" src="_images/sizer.png" /> and one slot is now visible in the <em>Tree</em> view and the <em>Design</em> window
+<li>A frame with a panel and a sizer <img alt="sizer" src="_images/sizer.png" /> with one slot is now visible in the <em>Tree</em> view and the <em>Design</em> window
 (there the slot is visualized by a hatched area)</li>
-<li>It would be possible to place controls directly on the frame, but usually a <strong>panel</strong> is added first, as a frame is really just a frame around the other things. <br/>
-Especially for Windows, always add a panel to have correct background colours and keyboard navigation between widgets (using the <a href="#id1"><span class="problematic" id="id2">:key:`Tab`</span></a> key)
-To add the panel:<ul>
-<li>in the <em>Palette</em> of the main window (again on the “Windows” line) click on the Panel icon <img alt="panel" src="_images/panel.png" />
-to start the placement</li>
-<li>in the <em>Tree</em> view or the <em>Design</em> window, click in the slot to place the panel there</li>
+<li>To extend the <strong>vertical box sizer</strong> to six slots:<ul>
+<li>go to the slot in the <em>Tree</em> view or the <em>Design</em> window</li>
+<li>use right mouse click “Add slots” or hit <code class="kbd docutils literal"><span class="pre">Ctrl-Shift-A</span></code></li>
+<li>select <span class="guilabel">5</span> and hit <span class="guilabel">OK</span></li>
+<li>alternatively you may hit <code class="kbd docutils literal"><span class="pre">Ctrl-A</span></code> five times</li>
 </ul>
 </li>
-<li>On the panel we need a <strong>vertical box sizer</strong> with six slots:<ul>
-<li>in the <em>Palette</em> on the “Sizer” line click on the BoxSizer icon <img alt="sizer" src="_images/sizer.png" /> to start the placement</li>
-<li>in the <em>Tree</em> view or the <em>Design</em> window, click on the panel to place the sizer there</li>
-<li>a dialog will open</li>
-<li>set “Orientation”  to <span class="guilabel">Vertical</span> and the number of slots to <span class="guilabel">6</span>  <a class="reference internal" href="_images/NewSizer_CalculatorVertical.png"><img alt="New Sizer dialog" src="_images/NewSizer_CalculatorVertical.png" style="width: 30px;" /></a></li>
-</ul>
-</li>
-<li>Now add a <strong>horizontal box sizer</strong> to the first slot: do as before, but keep “Orientation” as <span class="guilabel">Horizontal</span>
-and set the number of slots to <span class="guilabel">2</span></li>
-<li>Place a <strong>StaticText</strong> <img alt="static_text" src="_images/static_text.png" /> as label (found on the “Static” line of <em>Palette</em>) in the top left slot and a <strong>TextControl</strong> <img alt="text_ctrl" src="_images/text_ctrl.png" /> (found on the “Inputs” line) in the right</li>
 </ol>
+<ol class="arabic simple" start="6">
+<li>Now add a <strong>horizontal box sizer</strong> to the first slot:<ul>
+<li>in the <em>Palette</em> on the “Sizer” line click on the BoxSizer icon <img alt="sizer" src="_images/sizer.png" /> to start the placement</li>
+<li>in the <em>Tree</em> view or the <em>Design</em> window, click on the first slot to place the sizer there</li>
+<li>a dialog will open</li>
+<li>set “Orientation”  to <span class="guilabel">Horizontal</span> and the number of slots to <span class="guilabel">2</span>  <a class="reference internal" href="_images/NewSizer_CalculatorHorizontal.png"><img alt="New Sizer dialog" src="_images/NewSizer_CalculatorHorizontal.png" style="width: 30px;" /></a></li>
+</ul>
+</li>
+<li>Place a <strong>StaticText</strong> <img alt="static_text" src="_images/static_text.png" /> as label (found on the “Static” line of <em>Palette</em>) in the top left slot.
+You will be asked to enter a label text. Enter <span class="guilabel">Value 1:</span> for this.</li>
+<li>Place a <strong>TextControl</strong> <img alt="text_ctrl" src="_images/text_ctrl.png" /> (found on the “Inputs” line) in the top right slot</li>
+</ol>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">It would be possible to place sizer and controls directly on the frame, but usually a panel is added first,
+as a frame is really just a frame around the other things. <br/>
+Especially for Windows, always add a panel to have correct background colours and keyboard navigation
+between widgets (using the <code class="kbd docutils literal"><span class="pre">Tab</span></code> key)</p>
+</div>
 </div>
 <div class="section" id="adjust-properties">
 <h3>Adjust properties:<a class="headerlink" href="#adjust-properties" title="Permalink to this headline">¶</a></h3>
@@ -98,19 +107,18 @@ and set the number of slots to <span class="guilabel">2</span></li>
 </tr>
 </tbody>
 </table>
-<p>The label does not yet display anything useful and the window title is not meaningful. <br/>
+<p>The window title is not meaningful. <br/>
 Also, layout and alignment need to be changed, but we’ll change this later on.</p>
 <p><strong>So, some properties of the label and the text need to be modified:</strong></p>
 <ol class="arabic simple">
-<li>Select the label in the <em>Tree</em> view or the <em>Design</em> window.</li>
+<li>Select the frame in the <em>Tree</em> or the <em>Design</em> window.</li>
 <li>If not yet visible, make the <em>Properties</em> notebook of the main window visible by dragging the sashes
 (the separators between the three parts of the main window).</li>
-<li>In the <em>Properties</em> notebook of the main window:<ul>
-<li>Edit the label to display <span class="guilabel">Value 1:</span> by entering this on the editor’s notebook tab “Widget”. <br/>
-(You could also edit the label directly in the <em>Tree</em> window by clicking into the label and/or pressing <code class="kbd docutils literal"><span class="pre">F2</span></code>.)</li>
-</ul>
-</li>
-<li>Select the frame in the <em>Tree</em> and go to <em>Properties -&gt; Widget -&gt; Title</em> and change it from <span class="guilabel">frame</span> to <span class="guilabel">Calculator</span>.</li>
+<li>Go to <em>Properties -&gt; Widget -&gt; Title</em> and change it from <span class="guilabel">frame</span> to <span class="guilabel">Calculator</span>.</li>
+</ol>
+<blockquote>
+<div>(You could also edit the title directly in the <em>Tree</em> window by clicking into the label and/or pressing <code class="kbd docutils literal"><span class="pre">F2</span></code>.)</div></blockquote>
+<ol class="arabic simple" start="4">
 <li>You may want to define a default size for the frame: <br/>
 Go to <em>Properties -&gt; Common -&gt; Size</em> and set it to <span class="guilabel">400,300</span>. <br/>
 Without this, the frame will be created with the minimum possible size to fit all controls.</li>
@@ -184,17 +192,18 @@ To modify accordingly, just follow these steps:</p>
 <li>Go to <em>Properties -&gt; Widget</em></li>
 <li>In the section “Style”, enable <span class="guilabel">wxTE_MULTILINE</span> and <span class="guilabel">wxTE_READONLY</span></li>
 <li>Go to <em>Properties -&gt; Common</em></li>
-<li>Click the “…” button right to <span class="guilabel">Background</span> and select grey colour or <br/>
-just enter <span class="guilabel">#d4d0c8</span> into the text control.</li>
+<li>Click the “…” button right to <span class="guilabel">Background</span> and select
+<span class="guilabel">System Colour: wxSYS_COLOUR_BTNFACE</span> or <br/>
+another colour or just enter <span class="guilabel">wxSYS_COLOUR_BTNFACE</span> into the text control.</li>
 </ol>
 </div></blockquote>
 <p>The last step is to have a grey background.
 For single line read-only text controls, this is done automatically by wx, but not with multiple lines.</p>
 <p><strong>In the next steps fill the remaining slots of the main sizer:</strong></p>
 <ul class="simple">
-<li>insert a two-slot horizontal sizer with a label and a radio box into SLOT 2 <img alt="radio_box" src="_images/radio_box.png" /></li>
-<li>place a horizontal line into SLOT 4 <img alt="static_line" src="_images/static_line.png" /></li>
-<li>insert a two-slot horizontal sizer with two buttons into SLOT 6 <img alt="button" src="_images/button.png" /></li>
+<li>insert a two-slot horizontal sizer with a label <span class="guilabel">Operator:</span> and a radio box into SLOT 1 <img alt="radio_box" src="_images/radio_box.png" /></li>
+<li>place a horizontal line into SLOT 3 <img alt="static_line" src="_images/static_line.png" /></li>
+<li>insert a two-slot horizontal sizer with two buttons into SLOT 5 <img alt="button" src="_images/button.png" /></li>
 <li>For the first button, select the checkbox <em>Properties -&gt; Widget -&gt; Default</em>. <br/>
 This will make this button the default one, i.e. when the user hits Enter it will have the same effect as
 pressing this default button.</li>
@@ -235,7 +244,7 @@ To edit in the <em>Tree</em> view, you can select and then click on the label or
 <ul class="simple">
 <li>Set the names of the text controls to <span class="guilabel">text_value1</span>, <span class="guilabel">text_value2</span> and <span class="guilabel">text_result</span>.</li>
 <li>Set the name of the radio box to <span class="guilabel">radiobox_operator</span></li>
-<li>Set the labels to <span class="guilabel">Value 1:</span>, <span class="guilabel">Operator:</span>, <span class="guilabel">Value 2:</span> and <span class="guilabel">Result:</span></li>
+<li>Set the labels to <span class="guilabel">Value 2:</span> and <span class="guilabel">Result:</span></li>
 <li>Set the name of the first button to <span class="guilabel">button_execute</span> and the label to <span class="guilabel">Execute</span>.</li>
 <li>Set the name of the second button to <span class="guilabel">button_reset</span> and the label to <span class="guilabel">Reset</span>.</li>
 </ul>
@@ -281,7 +290,7 @@ window.</p>
 <p>So all elements are there, but the layout is not yet what we want to have:</p>
 <ol class="arabic simple">
 <li>We want the rows with the values, operators and buttons <strong>not to grow vertically</strong>:<ul>
-<li>select one of the horizontal sizers (e.g. <span class="guilabel">sizer_3</span> around <span class="guilabel">Value 1</span>)</li>
+<li>select one of the horizontal sizers (e.g. <span class="guilabel">sizer_2</span> around <span class="guilabel">Value 1</span>)</li>
 <li>set <em>Properties -&gt; Layout -&gt; Proportion</em> to <span class="guilabel">0</span></li>
 <li>select the next of the sizers (e.g. around <span class="guilabel">Operator</span>)</li>
 <li>either set <em>Properties -&gt; Layout -&gt; Proportion</em> to <span class="guilabel">0</span>
@@ -290,7 +299,7 @@ or just hit <code class="kbd docutils literal"><span class="pre">Ctrl-Y</span></
 </ul>
 </li>
 <li>We want the text controls to <strong>grow horizontally</strong> to fill the available space:<ul>
-<li>select one of the text controls (e.g. text_value1)</li>
+<li>select one of the text controls (e.g. <span class="guilabel">text_value1</span>)</li>
 <li>set <em>Properties -&gt; Layout -&gt; Proportion</em> to <span class="guilabel">1</span></li>
 <li>do the same for the other controls, either by modifying the Proportion properties
 or by hitting <code class="kbd docutils literal"><span class="pre">Ctrl-Y</span></code> to apply the last change to the selected control</li>
@@ -309,13 +318,14 @@ or by hitting <code class="kbd docutils literal"><span class="pre">Ctrl-Y</span>
 </ul>
 </li>
 <li>We want the buttons at the bottom to be <strong>centered</strong>; so the layout of the sizer around them needs to be set:<ul>
+<li>select sizer</li>
 <li>go to <em>Properties -&gt; Layout -&gt; Alignment</em></li>
 <li>de-select the checkbox <span class="guilabel">wxEXPAND</span></li>
 <li>select the checkbox <span class="guilabel">wxALIGN_CENTER_HORIZONTAL</span></li>
 </ul>
 </li>
 <li>We want a small <strong>border</strong> above and beyond the horizontal line and around each of the buttons:<ul>
-<li>select the horizontal line</li>
+<li>select the horizontal line <span class="guilabel">static_line_1</span></li>
 <li>set <em>Properties -&gt; Layout -&gt; Border</em> to <span class="guilabel">5</span></li>
 <li>uncheck <em>Properties -&gt; Layout -&gt; Border -&gt;</em> <span class="guilabel">wxLEFT</span> and <span class="guilabel">wxRIGHT</span></li>
 <li>select the first button</li>
@@ -390,70 +400,72 @@ to the main direction of the surrounding horizontal sizer.
 </div>
 <div class="section" id="part-3-add-a-notebook">
 <h2>Part 3: Add a Notebook<a class="headerlink" href="#part-3-add-a-notebook" title="Permalink to this headline">¶</a></h2>
-<p>For many applications it’s desirable to place the GUI elements on a notebook control. For our calculator e.g. we may want to have the controls on the first page and a log on the second page:</p>
+<p>For many applications it’s desirable to place the GUI elements on a notebook control.
+For our calculator e.g. we may want to have the controls on the first page and a log on the second page:</p>
 <table border="1" class="docutils">
 <colgroup>
 <col width="100%" />
 </colgroup>
 <tbody valign="top">
 <tr class="row-odd"><td><a class="first reference internal image-reference" href="_images/Calculator_Notebook_Design.png"><img alt="Calculator with a notebook: Design Window" src="_images/Calculator_Notebook_Design.png" style="height: 120px;" /></a>
-<a class="reference internal image-reference" href="_images/Calculator_Notebook_Preview.png"><img alt="Calculator with a notebook: Preview, page 2" src="_images/Calculator_Notebook_Preview.png" style="height: 120px;" /></a>
 <a class="last reference internal image-reference" href="_images/Calculator_Notebook_Tree.png"><img alt="Calculator with a notebook: Tree Window" src="_images/Calculator_Notebook_Tree.png" style="height: 120px;" /></a>
 </td>
 </tr>
 </tbody>
 </table>
-<p>A notebook can only be added to an empty sizer slot. In our case, we want to keep the existing controls. So we add a slot to the toplevel sizer, create the notebook there and then move the controls to the first notebook page. After that we delete the empty slot.</p>
-<p><strong>Create a slot for the notebook:</strong></p>
+<p>A notebook can be added to an empty sizer slot or as direct child of a frame, splitter or another notebook.
+In our case, we want to keep the existing controls.
+So we cut the panel sizer, add a notebook and then paste the panel to the first notebook page.</p>
+<p><strong>Cut the toplevel panel:</strong></p>
 <ul class="simple">
-<li>Go to the toplevel sizer and select “Add Slot”:</li>
+<li>Go to the toplevel panel <span class="guilabel">panel_1</span> in the <em>Tree</em> view or the <em>Design</em> window
+and select “Cut” or hit <code class="kbd docutils literal"><span class="pre">Ctrl-X</span></code>:</li>
 </ul>
 <table border="1" class="docutils">
 <colgroup>
 <col width="100%" />
 </colgroup>
 <tbody valign="top">
-<tr class="row-odd"><td><a class="reference internal" href="_images/Calculator_Notebook_AddSlot.png"><img alt="Add Slot for Notebook" src="_images/Calculator_Notebook_AddSlot.png" style="height: 120px;" /></a>
--&gt; the slot will be at the bottom:
-<a class="reference internal" href="_images/Calculator_Notebook_AddedSlot.png"><img alt="Slot for Notebook" src="_images/Calculator_Notebook_AddedSlot.png" style="height: 120px;" /></a>
-<a class="reference internal" href="_images/Calculator_Notebook_AddedSlot_Design.png"><img alt="Slot for Notebook" src="_images/Calculator_Notebook_AddedSlot_Design.png" style="height: 120px;" /></a></td>
+<tr class="row-odd"><td><a class="reference internal" href="_images/Calculator_Notebook_CutPanel.png"><img alt="Right mouse click on panel -&gt; &quot;Cut&quot;" src="_images/Calculator_Notebook_CutPanel.png" style="height: 120px;" /></a></td>
+</tr>
+</tbody>
+</table>
+<p>The panel and it’s children are now on the clipboard and can be pasted back later.
+The frame does not have a child now; this is visualized by an empty slot. Note that in the Tree view
+this <span class="guilabel">SLOT</span> looks different from a sizer slot:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="100%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><a class="reference internal" href="_images/Calculator_Notebook_FrameSlot.png"><img alt="Frame without child, visualized with just an empty SLOT" src="_images/Calculator_Notebook_FrameSlot.png" style="height: 120px;" /></a></td>
 </tr>
 </tbody>
 </table>
 <p><strong>Add a notebook:</strong></p>
 <ul class="simple">
 <li>click on the Notebook icon <img alt="notebook" src="_images/notebook.png" /> in the section “Containers” of the <em>Palette</em> panel to start placing a notebook</li>
-<li>click on the hatched area in the <em>Design</em> window or on the sizer slot <img alt="sizer_slot" src="_images/sizer_slot.png" /> in the <em>Tree</em> control of the
+<li>click on the hatched area in the <em>Design</em> window or on the frame’s slot <a href="#id2"><span class="problematic" id="id3">|frame_slot|</span></a> in the <em>Tree</em> control of the
 main window</li>
-<li>in the dialog, select <span class="guilabel">wxNB_TOP</span> to place the notebook tabs at the top</li>
+<li>in the dialog, select <span class="guilabel">wxNB_TOP</span> to place the notebook tabs at the top;
+keep “Pages” <span class="guilabel">1</span> and uncheck <span class="guilabel">Add panels</span>.</li>
 </ul>
-<p>The newly created notebook will have one page already, which consists of just a panel. It will have a default name like <span class="guilabel">notebook_1_pane_1</span>.</p>
-<p><strong>Fill the first page:</strong></p>
-<p>Move the existing controls to the first notebook page:</p>
+<p>The newly created notebook will have one page already, which does not contain anything.
+It will have a default name like <span class="guilabel">notebook_1_pane_1</span>.</p>
+<p><strong>Paste the panel to the notebook page:</strong></p>
+<blockquote>
+<div><ul class="simple">
+<li>Go to the empty notebook page <span class="guilabel">[notebook_1_pane_1]</span> in the <em>Tree</em> view or the <em>Design</em> window
+and select “Paste” or hit <code class="kbd docutils literal"><span class="pre">Ctrl-V</span></code>:</li>
+</ul>
+</div></blockquote>
+<p>The panel including sizer and all controls is now the first page of the notebook:</p>
 <table border="1" class="docutils">
 <colgroup>
-<col width="50%" />
-<col width="50%" />
+<col width="100%" />
 </colgroup>
 <tbody valign="top">
-<tr class="row-odd"><td><ul class="first last simple">
-<li>drag the containing sizer to the notebook pane <br/>
-(i.e. the panel for the first page) <br/> <br/>
-(alternatively, use Cut &amp; Paste)</li>
-</ul>
-</td>
-<td><a class="reference internal" href="_images/Calculator_Notebook_DragNDrop.png"><img alt="Drag main_sizer to notebook_1_pane_1" src="_images/Calculator_Notebook_DragNDrop.png" style="height: 120px;" /></a></td>
-</tr>
-<tr class="row-even"><td><ul class="first last simple">
-<li>delete the old, empty panel <br/>
-and then the empty slot:</li>
-</ul>
-</td>
-<td><a class="reference internal" href="_images/Calculator_Notebook_DragNDrop_Done.png"><img alt="After dragging main_sizer to notebook_1_pane_1; the original panel is empty now" src="_images/Calculator_Notebook_DragNDrop_Done.png" style="height: 120px;" /></a></td>
-</tr>
-<tr class="row-odd"><td><br/> The <em>Design</em> window should look like this, <br/>
-i.e. it has a notebook, but with only a single page:</td>
-<td><a class="reference internal" href="_images/Calculator_Notebook_DragNDrop_Done_Design.png"><img alt="Design window with single notebook page" src="_images/Calculator_Notebook_DragNDrop_Done_Design.png" style="height: 120px;" /></a></td>
+<tr class="row-odd"><td><a class="reference internal" href="_images/Calculator_Notebook_Pasted.png"><img alt="Calculator_Notebook_Pasted" src="_images/Calculator_Notebook_Pasted.png" style="height: 120px;" /></a></td>
 </tr>
 </tbody>
 </table>
@@ -478,14 +490,40 @@ enter the headings for the notebook pages</li>
 </tr>
 </tbody>
 </table>
+<p>Alternatively, you may select “Add Notebook Tab” in the <em>Tree</em> view or the <em>Design</em> window and rename the tabs in
+the <em>Tree</em> view. E.g. by changing <span class="guilabel">[notebook_1_pane_1] panel_1</span> to <span class="guilabel">[Calculator] panel_1</span>.</p>
+<p>Once you are familiar with the <em>Tree</em> view, this is the fastest way.</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="100%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><a class="reference internal" href="_images/Calculator_Notebook_Renaming.png"><img alt="Calculator_Notebook_Renaming" src="_images/Calculator_Notebook_Renaming.png" style="height: 120px;" /></a></td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="_images/Calculator_Notebook_Adding.png"><img alt="Calculator_Notebook_Adding" src="_images/Calculator_Notebook_Adding.png" style="height: 120px;" /></a></td>
+</tr>
+</tbody>
+</table>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">After adding a page to a notebook, this will contain a panel by default.
+You may delete this if you want e.g. to place a splitter on the page or e.g. a text control that should fill the
+whole page.</p>
+</div>
 <p><strong>Fill the second page:</strong></p>
-<p>You should know how to do this by now:</p>
+<p>There are two ways to place the text control on the second page:</p>
+<ol class="arabic simple">
+<li>Add a single-slot sizer to the notebook page panel. Then place the text control in the sizer slot.</li>
+<li>Remove the panel from the notebook page and add a text control instead.</li>
+</ol>
+<p>Here we will take the second option:</p>
 <ul class="simple">
-<li>add a sizer to the notebook pane (with a single slot)</li>
-<li>add a text control to the sizer slot</li>
-<li>set the layout: a “Proportion” of <span class="guilabel">1</span> and <span class="guilabel">wxEXPAND</span> such that the text control will fill the whole page</li>
+<li>remove the panel (which probably has the name <span class="guilabel">notebook_1_pane_1</span>)</li>
+<li>the empty page will be displayed in the <em>Tree</em> view as <span class="guilabel">PAGE 1</span></li>
+<li>add a text control to <span class="guilabel">PAGE 1</span></li>
 <li>set the widget style to <span class="guilabel">wxTE_MULTILINE</span> and <span class="guilabel">wxTE_READONLY</span></li>
-<li>set the widget background color to <span class="guilabel">#d4d0c8</span></li>
+<li>set the widget background color to <span class="guilabel">wxSYS_COLOUR_BTNFACE</span></li>
+<li>rename to <span class="guilabel">text_log</span></li>
 </ul>
 <p>This file can be found in the folder <code class="docutils literal"><span class="pre">wxglade/examples/Calculator</span></code>:
 <a class="reference external" href="../../examples/Calculator/Calculator-04-Notebook.wxg">Calculator-04-Notebook.wxg</a></p>
@@ -566,16 +604,16 @@ The result will look like this:</p>
 if your current file is too different, e.g. because you did not complete Part 4 above.)</p>
 <ul class="simple">
 <li>Insert/add a slot to the vertical sizer inside the notebook and panel: <br/>
-<a class="reference internal" href="_images/Calculator_GridSizer_InsertSlot.png"><img alt="InsertSlot into vertical sizer" src="_images/Calculator_GridSizer_InsertSlot.png" style="height: 80px;" /></a></li>
+<a class="reference internal" href="_images/Calculator_GridSizer_InsertSlot.png"><img alt="InsertSlot into vertical sizer: right mouse click on sizer XXX" src="_images/Calculator_GridSizer_InsertSlot.png" style="height: 80px;" /></a></li>
 <li>Add a GridSizer <img alt="grid_sizer" src="_images/grid_sizer.png" /> to this slot</li>
 <li>In the grid sizer dialog, select <span class="guilabel">FlexGrid</span>, <span class="guilabel">4</span> rows and <span class="guilabel">2</span> cols: <br/>
 <a class="reference internal" href="_images/FlexGridSizerDlg.png"><img alt="FlexGridSizer Dialog" src="_images/FlexGridSizerDlg.png" style="height: 80px;" /></a></li>
-<li>Move the labels and controls to the slots of the newly created sizer</li>
-<li>Delete the old sizer</li>
+<li>Move the labels and controls to the slots of the newly created sizer.</li>
+<li>Delete the old sizers and spacers.</li>
 <li>In <em>Properties -&gt; Grid</em>: make column 2 and row 4 growable: <br/>
 <a class="reference internal" href="_images/FlexGridSizer_Properties.png"><img alt="FlexGridSizer Properties" src="_images/FlexGridSizer_Properties.png" style="height: 80px;" /></a></li>
 <li>To make the text controls <span class="guilabel">text_value1</span> and <span class="guilabel">text_value2</span> actually fill the growable column: <br/>
-activate <em>Properties -&gt; Layout -&gt; Alignment -&gt;</em> <span class="guilabel">wxEXPAND</span> for both of them</li>
+activate <em>Properties -&gt; Layout -&gt; Alignment -&gt;</em> <span class="guilabel">wxEXPAND</span> for both of them.</li>
 </ul>
 <p>The logic with <span class="guilabel">wxEXPAND</span> is a bit different than with non-grid sizers.
 If it is active, the control will grow horizontally and vertically.

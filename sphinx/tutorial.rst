@@ -52,38 +52,43 @@ Create the basic structure:
     :width: 30
     :alt: New Frame dialog
 
-.. |NewSizer_CalculatorVertical| image:: images/NewSizer_CalculatorVertical.png
+.. |NewSizer_CalculatorHorizontal| image:: images/NewSizer_CalculatorHorizontal.png
     :width: 30
     :alt: New Sizer dialog
 
 
 
 1. Select "File->New" to **create a new file** and "File->Save" to save a .wxg file to a directory.
+
 2. **Add the frame**:
 
    * click on the Frame icon |frame| on the "Windows" line of the *Palette* panels
    * as class name, enter :guilabel:`CalculatorFrame`: |NewFrame_CalculatorFrame|
-
-3. A frame with a sizer |sizer| and one slot is now visible in the *Tree* view and the *Design* window
+   * leave "Add panel and sizer" checked
+3. A frame with a panel and a sizer |sizer| with one slot is now visible in the *Tree* view and the *Design* window
    (there the slot is visualized by a hatched area)
-4. It would be possible to place controls directly on the frame, but usually a **panel** is added first, as a frame is really just a frame around the other things. |br|
-   Especially for Windows, always add a panel to have correct background colours and keyboard navigation between widgets (using the :key:`Tab` key)
-   To add the panel:
+4. To extend the **vertical box sizer** to six slots:
 
-   * in the *Palette* of the main window (again on the "Windows" line) click on the Panel icon |panel|
-     to start the placement
-   * in the *Tree* view or the *Design* window, click in the slot to place the panel there
-
-5. On the panel we need a **vertical box sizer** with six slots:
+   * go to the slot in the *Tree* view or the *Design* window
+   * use right mouse click "Add slots" or hit :kbd:`Ctrl-Shift-A`
+   * select :guilabel:`5` and hit :guilabel:`OK`
+   * alternatively you may hit :kbd:`Ctrl-A` five times
+6. Now add a **horizontal box sizer** to the first slot:
 
    * in the *Palette* on the "Sizer" line click on the BoxSizer icon |sizer| to start the placement
-   * in the *Tree* view or the *Design* window, click on the panel to place the sizer there
+   * in the *Tree* view or the *Design* window, click on the first slot to place the sizer there
    * a dialog will open
-   * set "Orientation"  to :guilabel:`Vertical` and the number of slots to :guilabel:`6`  |NewSizer_CalculatorVertical|
+   * set "Orientation"  to :guilabel:`Horizontal` and the number of slots to :guilabel:`2`  |NewSizer_CalculatorHorizontal|
+7. Place a **StaticText** |static_text| as label (found on the "Static" line of *Palette*) in the top left slot.
+   You will be asked to enter a label text. Enter :guilabel:`Value 1:` for this.
+8. Place a **TextControl** |text_ctrl| (found on the "Inputs" line) in the top right slot
 
-6. Now add a **horizontal box sizer** to the first slot: do as before, but keep "Orientation" as :guilabel:`Horizontal`
-   and set the number of slots to :guilabel:`2`
-7. Place a **StaticText** |static_text| as label (found on the "Static" line of *Palette*) in the top left slot and a **TextControl** |text_ctrl| (found on the "Inputs" line) in the right
+
+.. note::
+   It would be possible to place sizer and controls directly on the frame, but usually a panel is added first,
+   as a frame is really just a frame around the other things. |br|
+   Especially for Windows, always add a panel to have correct background colours and keyboard navigation
+   between widgets (using the :kbd:`Tab` key)
 
 
 Adjust properties:
@@ -96,23 +101,18 @@ Adjust properties:
 |    :width: 200                            |
 +-------------------------------------------+
 
-The label does not yet display anything useful and the window title is not meaningful. |br|
+The window title is not meaningful. |br|
 Also, layout and alignment need to be changed, but we'll change this later on.
 
 
 **So, some properties of the label and the text need to be modified:**
 
-
-1. Select the label in the *Tree* view or the *Design* window.
+1. Select the frame in the *Tree* or the *Design* window.
 2. If not yet visible, make the *Properties* notebook of the main window visible by dragging the sashes
    (the separators between the three parts of the main window).
-3. In the *Properties* notebook of the main window:
-
-   * Edit the label to display :guilabel:`Value 1:` by entering this on the editor's notebook tab "Widget". |br|
-     (You could also edit the label directly in the *Tree* window by clicking into the label and/or pressing :kbd:`F2`.)
-
-4. Select the frame in the *Tree* and go to *Properties -> Widget -> Title* and change it from :guilabel:`frame` to :guilabel:`Calculator`.
-5. You may want to define a default size for the frame: |br|
+3. Go to *Properties -> Widget -> Title* and change it from :guilabel:`frame` to :guilabel:`Calculator`.
+  (You could also edit the title directly in the *Tree* window by clicking into the label and/or pressing :kbd:`F2`.)
+4. You may want to define a default size for the frame: |br|
    Go to *Properties -> Common -> Size* and set it to :guilabel:`400,300`. |br|
    Without this, the frame will be created with the minimum possible size to fit all controls.
 
@@ -185,8 +185,9 @@ To modify accordingly, just follow these steps:
  2. Go to *Properties -> Widget*
  3. In the section "Style", enable :guilabel:`wxTE_MULTILINE` and :guilabel:`wxTE_READONLY`
  4. Go to *Properties -> Common*
- 5. Click the "..." button right to :guilabel:`Background` and select grey colour or |br|
-    just enter :guilabel:`#d4d0c8` into the text control.
+ 5. Click the "..." button right to :guilabel:`Background` and select
+    :guilabel:`System Colour: wxSYS_COLOUR_BTNFACE` or |br|
+    another colour or just enter :guilabel:`wxSYS_COLOUR_BTNFACE` into the text control.
 
 The last step is to have a grey background.
 For single line read-only text controls, this is done automatically by wx, but not with multiple lines.
@@ -194,9 +195,9 @@ For single line read-only text controls, this is done automatically by wx, but n
 
 **In the next steps fill the remaining slots of the main sizer:**
 
-* insert a two-slot horizontal sizer with a label and a radio box into SLOT 2 |radio_box|
-* place a horizontal line into SLOT 4 |static_line|
-* insert a two-slot horizontal sizer with two buttons into SLOT 6 |button|
+* insert a two-slot horizontal sizer with a label :guilabel:`Operator:` and a radio box into SLOT 1 |radio_box|
+* place a horizontal line into SLOT 3 |static_line|
+* insert a two-slot horizontal sizer with two buttons into SLOT 5 |button|
 * For the first button, select the checkbox *Properties -> Widget -> Default*. |br|
   This will make this button the default one, i.e. when the user hits Enter it will have the same effect as
   pressing this default button.
@@ -238,7 +239,7 @@ This needs to be done now:
 
 * Set the names of the text controls to :guilabel:`text_value1`, :guilabel:`text_value2` and :guilabel:`text_result`.
 * Set the name of the radio box to :guilabel:`radiobox_operator`
-* Set the labels to :guilabel:`Value 1:`, :guilabel:`Operator:`, :guilabel:`Value 2:` and :guilabel:`Result:`
+* Set the labels to :guilabel:`Value 2:` and :guilabel:`Result:`
 * Set the name of the first button to :guilabel:`button_execute` and the label to :guilabel:`Execute`.
 * Set the name of the second button to :guilabel:`button_reset` and the label to :guilabel:`Reset`.
 
@@ -283,7 +284,7 @@ So all elements are there, but the layout is not yet what we want to have:
 
 1. We want the rows with the values, operators and buttons **not to grow vertically**:
 
-   * select one of the horizontal sizers (e.g. :guilabel:`sizer_3` around :guilabel:`Value 1`)
+   * select one of the horizontal sizers (e.g. :guilabel:`sizer_2` around :guilabel:`Value 1`)
    * set *Properties -> Layout -> Proportion* to :guilabel:`0`
    * select the next of the sizers (e.g. around :guilabel:`Operator`)
    * either set *Properties -> Layout -> Proportion* to :guilabel:`0`
@@ -292,7 +293,7 @@ So all elements are there, but the layout is not yet what we want to have:
 
 2. We want the text controls to **grow horizontally** to fill the available space:
 
-   * select one of the text controls (e.g. text_value1)
+   * select one of the text controls (e.g. :guilabel:`text_value1`)
    * set *Properties -> Layout -> Proportion* to :guilabel:`1`
    * do the same for the other controls, either by modifying the Proportion properties
      or by hitting :kbd:`Ctrl-Y` to apply the last change to the selected control
@@ -311,13 +312,14 @@ So all elements are there, but the layout is not yet what we want to have:
 
 5. We want the buttons at the bottom to be **centered**; so the layout of the sizer around them needs to be set:
 
+   * select sizer
    * go to *Properties -> Layout -> Alignment*
    * de-select the checkbox :guilabel:`wxEXPAND`
    * select the checkbox :guilabel:`wxALIGN_CENTER_HORIZONTAL`
 
 6. We want a small **border** above and beyond the horizontal line and around each of the buttons:
 
-   * select the horizontal line
+   * select the horizontal line :guilabel:`static_line_1`
    * set *Properties -> Layout -> Border* to :guilabel:`5`
    * uncheck *Properties -> Layout -> Border ->* :guilabel:`wxLEFT` and :guilabel:`wxRIGHT`
    * select the first button
@@ -410,7 +412,8 @@ You may try this to see the difference:
 Part 3: Add a Notebook
 *********************************************************************
 
-For many applications it's desirable to place the GUI elements on a notebook control. For our calculator e.g. we may want to have the controls on the first page and a log on the second page:
+For many applications it's desirable to place the GUI elements on a notebook control.
+For our calculator e.g. we may want to have the controls on the first page and a log on the second page:
 
 
 +----------------------------------------------------------+
@@ -418,86 +421,74 @@ For many applications it's desirable to place the GUI elements on a notebook con
 |     :height: 120                                         |
 |     :alt: Calculator with a notebook: Design Window      |
 |                                                          |
-| .. image:: images/Calculator_Notebook_Preview.png        |
-|     :height: 120                                         |
-|     :alt: Calculator with a notebook: Preview, page 2    |
-|                                                          |
 | .. image:: images/Calculator_Notebook_Tree.png           |
 |     :height: 120                                         |
 |     :alt: Calculator with a notebook: Tree Window        |
 +----------------------------------------------------------+
 
+A notebook can be added to an empty sizer slot or as direct child of a frame, splitter or another notebook.
+In our case, we want to keep the existing controls.
+So we cut the panel sizer, add a notebook and then paste the panel to the first notebook page.
 
-A notebook can only be added to an empty sizer slot. In our case, we want to keep the existing controls. So we add a slot to the toplevel sizer, create the notebook there and then move the controls to the first notebook page. After that we delete the empty slot.
+**Cut the toplevel panel:**
 
-**Create a slot for the notebook:**
+* Go to the toplevel panel :guilabel:`panel_1` in the *Tree* view or the *Design* window
+  and select "Cut" or hit :kbd:`Ctrl-X`:
 
-* Go to the toplevel sizer and select "Add Slot":
-
-.. |Calculator_Notebook_AddSlot| image:: images/Calculator_Notebook_AddSlot.png
+.. |Calculator_Notebook_CutPanel| image:: images/Calculator_Notebook_CutPanel.png
     :height: 120
-    :alt: Add Slot for Notebook
-
-.. |Calculator_Notebook_AddedSlot| image:: images/Calculator_Notebook_AddedSlot.png
-    :height: 120
-    :alt: Slot for Notebook
-
-.. |Calculator_Notebook_AddedSlot_Design| image:: images/Calculator_Notebook_AddedSlot_Design.png
-    :height: 120
-    :alt: Slot for Notebook
+    :alt: Right mouse click on panel -> "Cut"
 
 
 .. list-table::
    :header-rows: 0
 
-   * - |Calculator_Notebook_AddSlot|
-       -> the slot will be at the bottom:
-       |Calculator_Notebook_AddedSlot|
-       |Calculator_Notebook_AddedSlot_Design|
+   * - |Calculator_Notebook_CutPanel|
 
+The panel and it's children are now on the clipboard and can be pasted back later.
+The frame does not have a child now; this is visualized by an empty slot. Note that in the Tree view
+this :guilabel:`SLOT` looks different from a sizer slot:
+
+.. |Calculator_Notebook_FrameSlot| image:: images/Calculator_Notebook_FrameSlot.png
+    :height: 120
+    :alt: Frame without child, visualized with just an empty SLOT
+
+
+.. list-table::
+   :header-rows: 0
+
+   * - |Calculator_Notebook_FrameSlot|
 
 
 **Add a notebook:**
 
 * click on the Notebook icon |notebook| in the section "Containers" of the *Palette* panel to start placing a notebook
-* click on the hatched area in the *Design* window or on the sizer slot |sizer_slot| in the *Tree* control of the
+* click on the hatched area in the *Design* window or on the frame's slot |frame_slot| in the *Tree* control of the
   main window
-* in the dialog, select :guilabel:`wxNB_TOP` to place the notebook tabs at the top
+* in the dialog, select :guilabel:`wxNB_TOP` to place the notebook tabs at the top;
+  keep "Pages" :guilabel:`1` and uncheck :guilabel:`Add panels`.
 
-The newly created notebook will have one page already, which consists of just a panel. It will have a default name like :guilabel:`notebook_1_pane_1`.
-
-**Fill the first page:**
-
-Move the existing controls to the first notebook page:
+The newly created notebook will have one page already, which does not contain anything.
+It will have a default name like :guilabel:`notebook_1_pane_1`.
 
 
 
-.. |Calculator_Notebook_DragNDrop| image:: images/Calculator_Notebook_DragNDrop.png
+**Paste the panel to the notebook page:**
+
+ * Go to the empty notebook page :guilabel:`[notebook_1_pane_1]` in the *Tree* view or the *Design* window
+   and select "Paste" or hit :kbd:`Ctrl-V`: 
+
+The panel including sizer and all controls is now the first page of the notebook:
+
+.. |Calculator_Notebook_Pasted| image:: images/Calculator_Notebook_Pasted.png
     :height: 120
-    :alt: Drag main_sizer to notebook_1_pane_1
-
-.. |Calculator_Notebook_DragNDrop_Done| image:: images/Calculator_Notebook_DragNDrop_Done.png
-    :height: 120
-    :alt: After dragging main_sizer to notebook_1_pane_1; the original panel is empty now
-
-.. |Calculator_Notebook_DragNDrop_Done_Design| image:: images/Calculator_Notebook_DragNDrop_Done_Design.png
-    :height: 120
-    :alt: Design window with single notebook page
-
 
 .. list-table::
    :header-rows: 0
 
-   * - * drag the containing sizer to the notebook pane |br|
-         (i.e. the panel for the first page) |br| |br|
-         (alternatively, use Cut & Paste)
-     - |Calculator_Notebook_DragNDrop|
-   * - * delete the old, empty panel |br|
-         and then the empty slot:
-     - |Calculator_Notebook_DragNDrop_Done|
-   * - |br| The *Design* window should look like this, |br|
-       i.e. it has a notebook, but with only a single page:
-     - |Calculator_Notebook_DragNDrop_Done_Design|
+   * - |Calculator_Notebook_Pasted|
+
+
 
 **Add second notebook page and set the tab labels:**
 
@@ -519,19 +510,50 @@ Move the existing controls to the first notebook page:
      - |Calculator_Notebook|
 
 
+Alternatively, you may select "Add Notebook Tab" in the *Tree* view or the *Design* window and rename the tabs in 
+the *Tree* view. E.g. by changing :guilabel:`[notebook_1_pane_1] panel_1` to :guilabel:`[Calculator] panel_1`.
+
+Once you are familiar with the *Tree* view, this is the fastest way.
+
+.. |Calculator_Notebook_Renaming| image:: images/Calculator_Notebook_Renaming.png
+    :height: 120
+
+.. |Calculator_Notebook_Adding| image:: images/Calculator_Notebook_Adding.png
+    :height: 120
+
+.. list-table::
+   :header-rows: 0
+
+   * - |Calculator_Notebook_Renaming|
+   * - |Calculator_Notebook_Adding|
+
+
+
+.. note::
+  After adding a page to a notebook, this will contain a panel by default.
+  You may delete this if you want e.g. to place a splitter on the page or e.g. a text control that should fill the
+  whole page.
+
+
 **Fill the second page:**
 
-You should know how to do this by now:
+There are two ways to place the text control on the second page:
 
-* add a sizer to the notebook pane (with a single slot)
-* add a text control to the sizer slot
-* set the layout: a "Proportion" of :guilabel:`1` and :guilabel:`wxEXPAND` such that the text control will fill the whole page
+1. Add a single-slot sizer to the notebook page panel. Then place the text control in the sizer slot.
+2. Remove the panel from the notebook page and add a text control instead.
+
+Here we will take the second option:
+
+* remove the panel (which probably has the name :guilabel:`notebook_1_pane_1`)
+* the empty page will be displayed in the *Tree* view as :guilabel:`PAGE 1`
+* add a text control to :guilabel:`PAGE 1`
 * set the widget style to :guilabel:`wxTE_MULTILINE` and :guilabel:`wxTE_READONLY`
-* set the widget background color to :guilabel:`#d4d0c8`
+* set the widget background color to :guilabel:`wxSYS_COLOUR_BTNFACE`
+* rename to :guilabel:`text_log`
+
 
 This file can be found in the folder ``wxglade/examples/Calculator``:
 `Calculator-04-Notebook.wxg <../../examples/Calculator/Calculator-04-Notebook.wxg>`_
-
 
 
 *********************************************************************
@@ -635,7 +657,8 @@ The result will look like this:
 
 .. |VerticalSizer_InsertSlot| image:: images/Calculator_GridSizer_InsertSlot.png
     :height: 80
-    :alt: InsertSlot into vertical sizer
+    :alt: InsertSlot into vertical sizer: right mouse click on sizer XXX
+
 
 .. |FlexGridSizerDlg| image:: images/FlexGridSizerDlg.png
     :height: 80
@@ -658,12 +681,12 @@ if your current file is too different, e.g. because you did not complete Part 4 
 * Add a GridSizer |grid_sizer| to this slot
 * In the grid sizer dialog, select :guilabel:`FlexGrid`, :guilabel:`4` rows and :guilabel:`2` cols: |br|
   |FlexGridSizerDlg|
-* Move the labels and controls to the slots of the newly created sizer
-* Delete the old sizer
+* Move the labels and controls to the slots of the newly created sizer.
+* Delete the old sizers and spacers.
 * In *Properties -> Grid*: make column 2 and row 4 growable: |br|
   |FlexGridSizer_Properties|
 * To make the text controls :guilabel:`text_value1` and :guilabel:`text_value2` actually fill the growable column: |br|
-  activate *Properties -> Layout -> Alignment ->* :guilabel:`wxEXPAND` for both of them
+  activate *Properties -> Layout -> Alignment ->* :guilabel:`wxEXPAND` for both of them.
 
 The logic with :guilabel:`wxEXPAND` is a bit different than with non-grid sizers.
 If it is active, the control will grow horizontally and vertically.

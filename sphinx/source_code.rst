@@ -25,20 +25,20 @@ For our example project from the previous page 'Tutorial' we want to generate:
 
  * Python code for wxWidgets 3.0 or Phoenix
  * all code in a single file
- * output file name "Calculator.py"
+ * output file name "Calculator_GUI.py"
  * an application should be created, not just the window
 
 So we select the root element "Application" in the *Tree* view and set the properties accordingly:
 
-+-----------------------------------------------------------------------+
-|.. image:: images/Calculator_06_ApplicationProperties.png              |
-|    :width: 200                                                        |
-|    :alt: Application Properties                                       |
-+-----------------------------------------------------------------------+
++--------------------------------------------------------------------------------------------------------------------+
+|.. image:: images/Calculator_06_ApplicationProperties.png                                                           |
+|    :width: 200                                                                                                     |
+|    :alt: Application Properties: Name: app, Class: MyApp, Single file, Python, 3.0, Output path: Calculator_GUI.py |
++--------------------------------------------------------------------------------------------------------------------+
 
 To actually create the source code, press the button "Generate Source" or hit :kbd:`Ctrl-G`.
 
-The **generated source** looks like this:
+The **generated source** looks like this (some lines removed at the red lines):
 
 +-----------------------------------------------------------------------+
 |.. image:: images/Calculator_06_PythonCode.png                         |
@@ -63,10 +63,12 @@ By default, also boilerplate code for a basic application will be created.
 The Properties could look like these:
 
 .. image:: images/Toplevel_App.png
-    :alt: wxGlade title
-
+    :alt: Application Properties: Name: app, Class: MyApp, Top window: frame
+    
+    
 .. image:: images/Toplevel_Frame.png
-    :alt: wxGlade title
+    :alt: Frame Properties: Name: frame, Class: CalculatorFrame
+
 
 The toplevel window will be invoked from the generated application code::
 
@@ -95,76 +97,74 @@ wxGlade will display the class name with a yellow background if it's not unique.
 Code for Windows
 *********************************
 
-This is the full code for our main window :code:`CalculatorFrame`.
-
-
-The code is separated into creation of controls, definition of properties and layout generation::
-
+This is the full Python code for our main window :code:`CalculatorFrame`::
 
     class CalculatorFrame(wx.Frame):
         def __init__(self, *args, **kwds):
             # begin wxGlade: CalculatorFrame.__init__
-            kwds["style"] = wx.DEFAULT_FRAME_STYLE
+            kwds["style"] = kwds.get("style", 0) | wx.DEFAULT_FRAME_STYLE
             wx.Frame.__init__(self, *args, **kwds)
-            self.panel_1 = wx.Panel(self, wx.ID_ANY)
-            self.text_value1 = wx.TextCtrl(self.panel_1, wx.ID_ANY, "")
-            self.radiobox_operator = wx.RadioBox(self.panel_1, wx.ID_ANY, "",
-                choices=["+", "-", "*", "/"], majorDimension=1, style=wx.RA_SPECIFY_ROWS)
-            self.text_value2 = wx.TextCtrl(self.panel_1, wx.ID_ANY, "")
-            self.text_result = wx.TextCtrl(self.panel_1, wx.ID_ANY, "",
-                style=wx.TE_MULTILINE | wx.TE_READONLY)
-            self.btn_execute = wx.Button(self.panel_1, wx.ID_ANY, "Execute")
-            self.btn_reset = wx.Button(self.panel_1, wx.ID_ANY, "Reset")
-    
-            self.__set_properties()
-            self.__do_layout()
-    
-            # end wxGlade
-    
-        def __set_properties(self):
-            # begin wxGlade: CalculatorFrame.__set_properties
-            self.SetTitle("Calculator")
-            self.radiobox_operator.SetSelection(0)
-            self.text_result.SetBackgroundColour(wx.Colour(212, 208, 200))
-            self.btn_execute.SetDefault()
-            # end wxGlade
-    
-        def __do_layout(self):
-            # begin wxGlade: CalculatorFrame.__do_layout
-            sizer_1 = wx.BoxSizer(wx.VERTICAL)
-            sizer_2 = wx.BoxSizer(wx.VERTICAL)
-            sizer_6 = wx.BoxSizer(wx.HORIZONTAL)
-            sizer_5 = wx.BoxSizer(wx.HORIZONTAL)
-            sizer_4 = wx.BoxSizer(wx.HORIZONTAL)
-            sizer_7 = wx.BoxSizer(wx.HORIZONTAL)
-            sizer_3 = wx.BoxSizer(wx.HORIZONTAL)
-            label_1 = wx.StaticText(self.panel_1, wx.ID_ANY, "Value 1:")
-            sizer_3.Add(label_1, 0, wx.ALIGN_CENTER_VERTICAL, 0)
-            sizer_3.Add(self.text_value1, 1, 0, 0)
-            sizer_2.Add(sizer_3, 0, wx.EXPAND, 0)
-            label_4 = wx.StaticText(self.panel_1, wx.ID_ANY, "Operator:")
-            sizer_7.Add(label_4, 0, wx.ALIGN_CENTER_VERTICAL, 0)
-            sizer_7.Add(self.radiobox_operator, 0, 0, 0)
-            sizer_2.Add(sizer_7, 0, wx.EXPAND, 0)
-            label_2 = wx.StaticText(self.panel_1, wx.ID_ANY, "Value 2:")
-            sizer_4.Add(label_2, 0, wx.ALIGN_CENTER_VERTICAL, 0)
-            sizer_4.Add(self.text_value2, 1, 0, 0)
-            sizer_2.Add(sizer_4, 0, wx.EXPAND, 0)
-            static_line_1 = wx.StaticLine(self.panel_1, wx.ID_ANY)
-            sizer_2.Add(static_line_1, 0, wx.BOTTOM | wx.EXPAND | wx.TOP, 5)
-            label_3 = wx.StaticText(self.panel_1, wx.ID_ANY, "Result:")
-            sizer_5.Add(label_3, 0, 0, 0)
-            sizer_5.Add(self.text_result, 1, wx.EXPAND, 0)
-            sizer_2.Add(sizer_5, 1, wx.EXPAND, 0)
-            sizer_6.Add(self.btn_execute, 0, wx.ALL, 5)
-            sizer_6.Add(self.btn_reset, 0, wx.ALL, 5)
-            sizer_2.Add(sizer_6, 0, wx.ALIGN_CENTER, 0)
-            self.panel_1.SetSizer(sizer_2)
-            sizer_1.Add(self.panel_1, 1, wx.EXPAND, 0)
-            self.SetSizer(sizer_1)
-            self.Layout()
             self.SetSize((400, 300))
+            self.SetTitle("Calculator")
+    
+            self.notebook_1 = wx.Notebook(self, wx.ID_ANY)
+    
+            self.notebook_1_pane_1 = wx.Panel(self.notebook_1, wx.ID_ANY)
+            self.notebook_1.AddPage(self.notebook_1_pane_1, "Calculate")
+    
+            sizer_1 = wx.BoxSizer(wx.VERTICAL)
+    
+            grid_sizer_1 = wx.FlexGridSizer(4, 2, 0, 0)
+            sizer_1.Add(grid_sizer_1, 1, wx.EXPAND, 0)
+    
+            label_1 = wx.StaticText(self.notebook_1_pane_1, wx.ID_ANY, "Value 1:")
+            grid_sizer_1.Add(label_1, 0, wx.ALIGN_CENTER_VERTICAL, 0)
+    
+            self.text_value1 = wx.TextCtrl(self.notebook_1_pane_1, wx.ID_ANY, "")
+            grid_sizer_1.Add(self.text_value1, 1, wx.EXPAND, 0)
+    
+            label_4 = wx.StaticText(self.notebook_1_pane_1, wx.ID_ANY, "Operator:")
+            grid_sizer_1.Add(label_4, 0, wx.ALIGN_CENTER_VERTICAL, 0)
+    
+            self.radiobox_operator = wx.RadioBox(self.notebook_1_pane_1, wx.ID_ANY, "", choices=["+", "-", "*", "/"], majorDimension=1, style=wx.RA_SPECIFY_ROWS)
+            self.radiobox_operator.SetSelection(0)
+            grid_sizer_1.Add(self.radiobox_operator, 0, wx.ALIGN_CENTER_VERTICAL, 0)
+    
+            label_2 = wx.StaticText(self.notebook_1_pane_1, wx.ID_ANY, "Value 2:")
+            grid_sizer_1.Add(label_2, 0, wx.ALIGN_CENTER_VERTICAL, 0)
+    
+            self.text_value2 = wx.TextCtrl(self.notebook_1_pane_1, wx.ID_ANY, "")
+            grid_sizer_1.Add(self.text_value2, 1, wx.EXPAND, 0)
+    
+            label_3 = wx.StaticText(self.notebook_1_pane_1, wx.ID_ANY, "Result:")
+            grid_sizer_1.Add(label_3, 0, 0, 0)
+    
+            self.text_result = wx.TextCtrl(self.notebook_1_pane_1, wx.ID_ANY, "")
+            self.text_result.SetBackgroundColour(wx.Colour(212, 208, 200))
+            grid_sizer_1.Add(self.text_result, 1, wx.EXPAND, 0)
+    
+            sizer_6 = wx.BoxSizer(wx.HORIZONTAL)
+            sizer_1.Add(sizer_6, 0, wx.ALIGN_CENTER_HORIZONTAL, 0)
+    
+            self.button_execute = wx.Button(self.notebook_1_pane_1, wx.ID_ANY, "Execute")
+            self.button_execute.SetDefault()
+            sizer_6.Add(self.button_execute, 0, wx.ALL, 5)
+    
+            self.button_reset = wx.Button(self.notebook_1_pane_1, wx.ID_ANY, "Reset")
+            sizer_6.Add(self.button_reset, 0, wx.ALL, 5)
+    
+            self.text_log = wx.TextCtrl(self.notebook_1, wx.ID_ANY, "1+1 = 2")
+            self.text_log.SetBackgroundColour(wx.Colour(212, 208, 200))
+            self.notebook_1.AddPage(self.text_log, "Log")
+    
+            grid_sizer_1.AddGrowableRow(3)
+            grid_sizer_1.AddGrowableCol(1)
+    
+            self.notebook_1_pane_1.SetSizer(sizer_1)
+    
+            self.Layout()
             # end wxGlade
+
 
 
 When you run the Python file, the application is run and the frame created:
@@ -284,7 +284,7 @@ If you want to use the first approach, you need to set :guilabel:`Keep user code
 +-----------------------------------------------------------------------+
 |.. image:: images/Calculator_06_ApplicationKeepUserCode.png            |
 |    :width: 200                                                        |
-|    :alt: Option: Keep User Code                                       |
+|    :alt: Application Properties: Keep User Code checked               |
 +-----------------------------------------------------------------------+
 
 
