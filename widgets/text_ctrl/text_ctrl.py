@@ -29,7 +29,7 @@ class EditTextCtrl(ManagedBase, EditStylesMixin):
         EditStylesMixin.__init__(self)
 
         # initialize instance properties
-        self.value = np.TextProperty("", multiline=True)
+        self.value = np.TextProperty("", multiline="grow")
 
         #self.properties["style"].set( self.get_int_style() ) # XXX check whether this makes sense for any control
 

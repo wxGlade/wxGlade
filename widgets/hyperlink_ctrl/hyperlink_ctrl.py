@@ -23,7 +23,7 @@ else:
 class EditHyperlinkCtrl(ManagedBase, EditStylesMixin):
     "Class to handle wxHyperlinkCtrl objects"
     WX_CLASS = "wxHyperlinkCtrl"
-    _PROPERTIES = ["Widget", "label", "style", "url", "attribute"]
+    _PROPERTIES = ["Widget", "url", "label", "style", "attribute"]
     PROPERTIES = ManagedBase.PROPERTIES + _PROPERTIES + ManagedBase.EXTRA_PROPERTIES
     ManagedBase.MOVE_PROPERTY(PROPERTIES, "attribute", "name")
     _PROPERTY_HELP = { 'label':"Label of the hyperlink",
@@ -37,7 +37,7 @@ class EditHyperlinkCtrl(ManagedBase, EditStylesMixin):
         EditStylesMixin.__init__(self)
 
         # initialise instance properties
-        self.label = np.TextProperty(label, multiline=True)
+        self.label = np.TextProperty(label, multiline="grow")
         self.url   = np.TextProperty("")
         self.attribute = np.CheckBoxProperty(False, default_value=False)
 
