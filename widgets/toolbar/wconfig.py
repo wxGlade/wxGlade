@@ -29,18 +29,8 @@ config = {
             'supported_by': ('wx3',) },
         'wxTB_3DBUTTONS':  {'desc':_('show 3D buttons (wxToolBarSimple only)')},
     },
-    'style_list': ['wxTB_DEFAULT_STYLE', 'wxTB_FLAT', 'wxTB_DOCKABLE', 'wxTB_HORIZONTAL', 'wxTB_VERTICAL', 'wxTB_TEXT',
+    'style_list': ['wxTB_FLAT', 'wxTB_DOCKABLE', 'wxTB_VERTICAL', 'wxTB_TEXT',
                    'wxTB_NOICONS', 'wxTB_NODIVIDER', 'wxTB_NOALIGN', 'wxTB_HORZ_LAYOUT', 'wxTB_HORZ_TEXT',
-                   'wxTB_NO_TOOLTIPS', 'wxTB_BOTTOM', 'wxTB_RIGHT', 'wxTB_3DBUTTONS']
+                   'wxTB_NO_TOOLTIPS', 'wxTB_BOTTOM', 'wxTB_RIGHT', 'wxTB_DEFAULT_STYLE', 'wxTB_3DBUTTONS']
 }
-
-# move wxTB_DEFAULT_STYLE to top?
-#      on Windows it's 0b100 -> only TB_HORIZONTAL
-
-#TOOL_STYLE_BUTTON 
-#TOOL_STYLE_SEPARATOR
-#TOOL_STYLE_CONTROL
-
-#TB_TOP
-#TB_LEFT
 
