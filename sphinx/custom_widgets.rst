@@ -3,10 +3,24 @@
    <br/>
 
 ################
-Custom Widget
+Dialogs
 ################
 
-.. |custom| image:: images/custom.png
+.. |custom| image:: images/dialog.png
+
+
+See ``wxglade/examples/dialog`` for an example application how to create and uses dialogs.
+The example opens the dialog on pressing a button or selecting a menu entry.
+
+
+
+
+The files can be found in the folder ``wxglade/examples/dialog``:
+ * `html_example.wxg <../../examples/html/html_example.wxg>`_
+ * `html_example.py <../../examples/html/html_example.py>`_
+
+
+
 
 
 Sometimes you may want to use a widget that is not supported by wxGlade.
@@ -20,6 +34,7 @@ You will be prompted for a class name. In the *Design* and *Preview* windows, ju
 .. |CustomWidgetPropertiesCommon| image:: images/CustomWidgetPropertiesCommon.png
    :width: 300
    :align: middle
+   :alt: Instance class: wx.html.HtmlWindow
 
 .. |CustomWidgetProperties| image:: images/CustomWidgetProperties.png
    :width: 300
@@ -28,6 +43,7 @@ You will be prompted for a class name. In the *Design* and *Preview* windows, ju
 .. |CustomWidgetPropertiesCode| image:: images/CustomWidgetPropertiesCode.png
    :width: 300
    :align: middle
+   :alt: import wx.html
 
 
 
@@ -37,7 +53,7 @@ You will be prompted for a class name. In the *Design* and *Preview* windows, ju
    :align: center
 
    * - **Properties -> Common:** |br| |br|
-       Property "Class" is the name of the class that will be instantiated. |br|
+       Property "Instance Class" is the name of the class that will be instantiated. |br|
        In this example: :guilabel:`wx.html.HtmlWindow`
      - |CustomWidgetPropertiesCommon| 
    * - **Properties -> Widget:** |br| |br|
@@ -64,8 +80,8 @@ You will be prompted for a class name. In the *Design* and *Preview* windows, ju
 The Arguments :guilabel:`$parent` and :guilabel:`$id` were replaced with the required code. There are two more magic arguments: :guilabel:`$width` and :guilabel:`$height`.
 
 The files can be found in the folder ``wxglade/examples/html``:
- * `matplotlib_example.wxg <../../examples/html/html_example.wxg>`_
- * `matplotlib_example.py <../../examples/html/html_example.py>`_
+ * `html_example.wxg <../../examples/html/html_example.wxg>`_
+ * `html_example.py <../../examples/html/html_example.py>`_
 
 Custom constructor
 ==================
@@ -115,7 +131,7 @@ This example shows how to use the wxGlade CustomWidget |custom| to include a mat
 .. |matplotlib_class| image:: images/matplotlib_class.png
    :width: 460
    :align: middle
-   :alt: Class name
+   :alt: Instance class: FigureCanvas
 
 .. |matplotlib_arguments| image:: images/matplotlib_arguments.png
    :width: 460
