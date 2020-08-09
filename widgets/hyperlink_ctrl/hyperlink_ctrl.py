@@ -67,22 +67,23 @@ class EditHyperlinkCtrl(ManagedBase, EditStylesMixin):
         return getattr(module, cn)
 
 
-def builder(parent, index):
+def builder(parent, index, url=None, label=None):
     "factory function for EditHyperlinkCtrl objects"
-    import dialogs, misc
     name = parent.toplevel_parent.get_next_contained_name('hyperlink_%d')
-    dlg = dialogs.WidgetStyleSelectionDialog(_("Hyperlink"), None, None, ["?URL", "?Label"])
-    with misc.disable_stay_on_top(common.adding_window or parent):
-        res = dlg.ShowModal()
-    url, label = dlg.get_options()
-    dlg.Destroy()
-    if res != wx.ID_OK: return
+    if url is None and label is None:
+        import dialogs, misc
+        dlg = dialogs.WidgetStyleSelectionDialog(_("Hyperlink"), None, None, ["?URL", "?Label"])
+        with misc.disable_stay_on_top(common.adding_window or parent):
+            res = dlg.ShowModal()
+        url, label = dlg.get_options()
+        dlg.Destroy()
+        if res != wx.ID_OK: return
 
     with parent.frozen():
-        editor = EditHyperlinkCtrl(name, parent, index, label)
+        editor = EditHyperlinkCtrl(name, parent, index, label or "")
         editor.properties["style"].set_to_default()
         editor.properties["attribute"].set(True)  # allow to modificate it later on...
-        editor.properties["url"].set(url)
+        editor.properties["url"].set(url or "")
         editor.check_defaults()
         if parent.widget: editor.create()
     return editor

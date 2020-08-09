@@ -400,29 +400,10 @@ class TestGui(WXGladeGUITest):
         common.app_tree.root.clear()
         common.app_tree.root.init()
         import widgets.frame.frame
-        widgets.frame.frame.builder(common.root, 0, "wxFrame", "MyFrame", "frame")
+        frame = widgets.frame.frame.builder(common.root, 0, "wxFrame", "MyFrame", "frame")
 
-        item = common.app_tree.root.children[0]
-        common.adding_widget = True
-        common.widget_to_add = "EditHyperlinkCtrl"
-        if item.children[0].children:  # sizer with slot
-            item.children[0].children[0].on_drop_widget(None)
-            hyperlink = item.children[0].children[0]
-        else:  # just a slot
-            item.children[0].on_drop_widget(None)
-            hyperlink = item.children[0]
-
-        ## expand tree and show edit window
-        #tree = common.app_tree.drop_target()
-        #root = tree.GetRootItem()
-        #first, cookie = tree.GetFirstChild(root)
-        #if first.IsOk():
-            #tree.expand()
-            #self._process_wx_events()
-            #tree.SelectItem(first)
-            #self._process_wx_events()
-            #node = tree.GetPyData(first)
-            #tree.show_toplevel(node)
+        import widgets.hyperlink_ctrl.hyperlink_ctrl
+        hyperlink = widgets.hyperlink_ctrl.hyperlink_ctrl.builder(frame, 0, "Hyperlink")
         self._process_wx_events()
         # check available style names
         sp = hyperlink.properties["style"]
