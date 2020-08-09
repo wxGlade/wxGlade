@@ -359,7 +359,6 @@ Now create a file ``Calculator_Main.py`` where you can import and use the Calcul
     # -*- coding: UTF-8 -*-
     
     import wx
-    import gettext
     from Calculator_GUI import CalculatorFrame
     
     
@@ -394,7 +393,6 @@ Now create a file ``Calculator_Main.py`` where you can import and use the Calcul
     
     
     if __name__ == "__main__":
-        gettext.install("app") # replace with the appropriate catalog name
         app = MyApp(0)
         app.MainLoop()
 
@@ -403,7 +401,6 @@ The files can be found in the folder ``wxglade/examples/Calculator``:
  * `Calculator-07-Import.wxg <../../examples/Calculator/Calculator-07-Import.wxg>`_
  * `Calculator_GUI.py <../../examples/Calculator/Calculator_GUI.py>`_
  * `Calculator_Main.py <../../examples/Calculator/Calculator_Main.py>`_
-
 
 
 Additionally, these files demonstrate a menu bar which will be explained in the next section :doc:`menu_status_tool`.
