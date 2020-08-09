@@ -32,3 +32,7 @@ docs/doctrees/*.*
 docs/html/_sources/*.*
 /tests/test_bugs_new_38-64.py
 /tests/test_gui_new_38-64.py
+/Ubuntu1910.wpu
+/Ubuntu2004.wpu
+/CentOS7.wpu
+/tests/test_cli_27.py
