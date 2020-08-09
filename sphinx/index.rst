@@ -27,6 +27,7 @@
    source_code
    menu_status_tool
    bitmaps
+   dialogs
    custom_widgets
    reference
    further_reading

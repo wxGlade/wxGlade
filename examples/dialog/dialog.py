@@ -79,18 +79,23 @@ class MyDialog(wx.Dialog):
 
         sizer_1.Add((20, 20), 1, wx.EXPAND, 0)
 
-        sizer_2 = wx.BoxSizer(wx.HORIZONTAL)
-        sizer_1.Add(sizer_2, 0, wx.ALIGN_RIGHT | wx.ALL, 8)
+        sizer_2 = wx.StdDialogButtonSizer()
+        sizer_1.Add(sizer_2, 0, wx.ALIGN_RIGHT | wx.ALL, 4)
 
-        self.button_1 = wx.Button(self, wx.ID_CANCEL, "")
-        sizer_2.Add(self.button_1, 0, 0, 0)
+        self.button_OK = wx.Button(self, wx.ID_OK, "")
+        self.button_OK.SetDefault()
+        sizer_2.AddButton(self.button_OK)
 
-        self.button_2 = wx.Button(self, wx.ID_OK, "")
-        self.button_2.SetDefault()
-        sizer_2.Add(self.button_2, 0, 0, 0)
+        self.button_CANCEL = wx.Button(self, wx.ID_CANCEL, "")
+        sizer_2.AddButton(self.button_CANCEL)
+
+        sizer_2.Realize()
 
         self.SetSizer(sizer_1)
         sizer_1.Fit(self)
+
+        self.SetAffirmativeId(self.button_OK.GetId())
+        self.SetEscapeId(self.button_CANCEL.GetId())
 
         self.Layout()
         # end wxGlade

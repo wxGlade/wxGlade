@@ -1,0 +1,171 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Dialogs &#8212; wxGlade 1.0.0 documentation</title>
+    <link rel="stylesheet" href="_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="_static/css/custom.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '1.0.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Custom Widget" href="custom_widgets.html" />
+    <link rel="prev" title="Bitmaps" href="bitmaps.html" /> 
+  </head>
+  <body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="custom_widgets.html" title="Custom Widget"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="bitmaps.html" title="Bitmaps"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">wxGlade 1.0.0 documentation</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="dialogs">
+<h1>Dialogs<a class="headerlink" href="#dialogs" title="Permalink to this headline">¶</a></h1>
+<p>See <code class="docutils literal"><span class="pre">wxglade/examples/dialog</span></code> for an example application how to create and use dialogs.
+The example opens the dialog on pressing a button or selecting a menu entry.</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="100%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><a class="first last reference internal image-reference" href="_images/DialogExample.png"><img alt="screenshot from running examples/dialog/dialog.py with the dialog open" src="_images/DialogExample.png" style="width: 200px;" /></a>
+</td>
+</tr>
+</tbody>
+</table>
+<p>When you add a new dialog <img alt="dialog" src="_images/dialog.png" />, you will be offered to add some default buttons like <span class="guilabel">OK</span> and <span class="guilabel">Cancel</span>:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="100%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><a class="first last reference internal image-reference" href="_images/NewDialog.png"><img alt="screenshot for new dialog" src="_images/NewDialog.png" style="height: 200px;" /></a>
+</td>
+</tr>
+</tbody>
+</table>
+<p>These will be placed in a <span class="guilabel">StdDialogButtonSizer</span> that will arrange the buttons such that the ordering matches the OS
+style guide.</p>
+<p>Also, the buttons will use <span class="guilabel">StockItems</span> and e.g. <code class="code docutils literal"><span class="pre">button.SetDefault</span></code>,
+<code class="code docutils literal"><span class="pre">dialog.SetAffirmativeId</span></code> and <code class="code docutils literal"><span class="pre">dialog.SetEscapeId</span></code> will be called.</p>
+<p>These are the generated lines of code that are specific for stock item buttons and using them in a dialog:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">sizer_2</span> <span class="o">=</span> <span class="n">wx</span><span class="o">.</span><span class="n">StdDialogButtonSizer</span><span class="p">()</span>
+<span class="o">...</span>
+<span class="bp">self</span><span class="o">.</span><span class="n">button_OK</span> <span class="o">=</span> <span class="n">wx</span><span class="o">.</span><span class="n">Button</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">wx</span><span class="o">.</span><span class="n">ID_OK</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+<span class="bp">self</span><span class="o">.</span><span class="n">button_OK</span><span class="o">.</span><span class="n">SetDefault</span><span class="p">()</span>
+<span class="n">sizer_2</span><span class="o">.</span><span class="n">AddButton</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">button_OK</span><span class="p">)</span>
+
+<span class="bp">self</span><span class="o">.</span><span class="n">button_CANCEL</span> <span class="o">=</span> <span class="n">wx</span><span class="o">.</span><span class="n">Button</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">wx</span><span class="o">.</span><span class="n">ID_CANCEL</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+<span class="n">sizer_2</span><span class="o">.</span><span class="n">AddButton</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">button_CANCEL</span><span class="p">)</span>
+
+<span class="n">sizer_2</span><span class="o">.</span><span class="n">Realize</span><span class="p">()</span>
+<span class="o">...</span>
+<span class="bp">self</span><span class="o">.</span><span class="n">SetAffirmativeId</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">button_OK</span><span class="o">.</span><span class="n">GetId</span><span class="p">())</span>   <span class="c1"># select this button when Enter is hit</span>
+<span class="bp">self</span><span class="o">.</span><span class="n">SetEscapeId</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">button_CANCEL</span><span class="o">.</span><span class="n">GetId</span><span class="p">())</span>    <span class="c1"># select this button when Escape is hit</span>
+</pre></div>
+</div>
+<p>The dialog is created and used like this:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="k">with</span> <span class="n">MyDialog</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="k">as</span> <span class="n">dlg</span><span class="p">:</span>
+    <span class="c1"># fill dialog widgets with values here</span>
+    <span class="c1"># show as modal dialog</span>
+    <span class="k">if</span> <span class="n">dlg</span><span class="o">.</span><span class="n">ShowModal</span><span class="p">()</span> <span class="o">==</span> <span class="n">wx</span><span class="o">.</span><span class="n">ID_OK</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;User has hit OK&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<dl class="docutils">
+<dt>The files can be found in the folder <code class="docutils literal"><span class="pre">wxglade/examples/dialog</span></code>:</dt>
+<dd><ul class="first last simple">
+<li><a class="reference external" href="../../examples/dialog/dialog.wxg">dialog.wxg</a></li>
+<li><a class="reference external" href="../../examples/dialog/dialog.py">dialog.py</a></li>
+</ul>
+</dd>
+</dl>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="index.html">
+              <img class="logo" src="_static/wxglade.png" alt="Logo"/>
+            </a></p>
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="bitmaps.html"
+                        title="previous chapter">Bitmaps</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="custom_widgets.html"
+                        title="next chapter">Custom Widget</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/dialogs.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="custom_widgets.html" title="Custom Widget"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="bitmaps.html" title="Bitmaps"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">wxGlade 1.0.0 documentation</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2017-2020, Dietmar Schwertberger.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.6.4.
+    </div>
+  </body>
+</html>
