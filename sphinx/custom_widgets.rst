@@ -3,23 +3,10 @@
    <br/>
 
 ################
-Dialogs
+Custom Widget
 ################
 
-.. |custom| image:: images/dialog.png
-
-
-See ``wxglade/examples/dialog`` for an example application how to create and uses dialogs.
-The example opens the dialog on pressing a button or selecting a menu entry.
-
-
-
-
-The files can be found in the folder ``wxglade/examples/dialog``:
- * `html_example.wxg <../../examples/html/html_example.wxg>`_
- * `html_example.py <../../examples/html/html_example.py>`_
-
-
+.. |custom| image:: images/custom.png
 
 
 
