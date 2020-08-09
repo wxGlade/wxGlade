@@ -2472,18 +2472,18 @@ class GridProperty(Property):
         # handle Ctrl-I, Ctrl-A, Ctrl-R; Alt-A will be handled by the button itself
         if key in ((73,2),(73,1)) and self.can_insert:
             # Ctrl-I, Alt-I
-            self.insert_row(event)
+            self.insert_row(set_focus=True, highlight=False)
         elif key in ((65,2),(68,1)) and self.can_add:
             # Ctrl-A, Alt-D
-            self.add_row(set_focus=True, highlight=False)
+            self.add_row(set_index=True, delay=False)
         elif key==(65,1) and not self.immediate:
             # Alt-A
-            self.apply(event)
+            self.apply()
         elif key in ((82,2),(82,1)) and self.can_remove:
             # Ctrl-R, Alt-R
-            self.remove_row(event)
+            self.remove_row(set_focus=True, highlight=False)
         elif key in ((84,2),(84,1)): # Ctrl-T, Alt-T
-            self.reset(event, from_editor)
+            self.reset()
         elif key==(67,2):  # Ctrl-C
             if not self._copy(): event.Skip()
         elif key==(86,2):  # Ctrl-V
@@ -2491,7 +2491,6 @@ class GridProperty(Property):
         elif key==(88,2):  # Ctrl-X
             if not self._cut(): event.Skip()
         else:
-            #event.Skip()
             return False
         return True  # handled
 
@@ -2798,7 +2797,7 @@ class GridProperty(Property):
         self.editing_values = None
         self._initialize_indices()
         self.update_display()
-        event.Skip()
+        if event: event.Skip()
 
     def _validate(self, row, col, value, bell=True):
         if not self.validation_res or not self.validation_res[col]:
@@ -3002,7 +3001,7 @@ class GridProperty(Property):
             self.insert_row(set_focus=False, highlight=True)
         elif key in ((65,2),(68,1)) and self.can_add:
             # Ctrl-A, Alt-D
-            self.add_row(set_focus=False, highlight=True)
+            self.add_row(set_index=False, delay=False)
         #elif key==(65,1) and not self.immediate:
             ## Alt-A
             #self.apply(event)
