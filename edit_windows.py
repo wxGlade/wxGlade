@@ -498,8 +498,8 @@ class WindowBase(EditBase):
             font = wx.Font( font[0], families[font[1]], styles[font[2]], weights[font[3]], font[4], font[5])
 
         self.widget.SetFont(font)
-        if hasattr(self.parent, "set_item_best_size") and not self.check_prop("size"):
-            self.parent.set_item_best_size(self)
+        #if hasattr(self.parent, "set_item_best_size") and not self.check_prop("size"):
+            #self.parent.set_item_best_size(self)
 
     def set_size(self):
         if not self.widget: return
@@ -642,6 +642,10 @@ class ManagedBase(WindowBase):
                 row, col = self.parent._get_row_col(self.index)
                 if not row in self.parent.growable_rows and not col in self.parent.growable_cols:
                     wx.CallAfter(self.parent.ask_growable, row,col)
+
+        if modified and self.widget:
+            wx.SafeYield()  # required for gtk when e.g. increasing the font size of a label or button
+            self.widget.SendSizeEventToParent()
 
     def _set_widget_best_size(self):
         # called when the widget has been modified and this might affect the automatic size

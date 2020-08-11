@@ -51,9 +51,9 @@ class TestEditing(WXGladeGUITest):
         while time.time() < end:
             self._process_wx_events()
 
-    def check_no_overlap(self, editor):
+    def check_no_overlap(self, editor, rectangles=None):
         # recursively check that all widgets have been created and sizer children do not overlap
-        rectangles = []
+        if rectangles is None: rectangles = []
         for child in editor.get_all_children():
             if child.IS_SLOT and child.overlapped: continue
             if editor.IS_SIZER and not child.IS_SIZER:
@@ -61,6 +61,8 @@ class TestEditing(WXGladeGUITest):
                 for r in rectangles:
                     self.assertFalse( rect.Intersects(r) )
                 rectangles.append(rect)
+            elif editor.IS_SIZER and child.IS_SIZER:
+                self.check_no_overlap(child, rectangles)
             self.check_no_overlap(child)
 
     def test_editing_1(self):
@@ -105,7 +107,7 @@ class TestEditing(WXGladeGUITest):
         #self._compare_files(infilename, generated_filename)
 
     def test_editing_2(self):
-        basename = 'Test_Editing'
+        basename = 'Test_Editing2'
         infilename = self._get_casefile_path( '%s.wxg'%basename )
         common.main._open_app(infilename, use_progress_dialog=False, add_to_history=False)
         wx.SafeYield()
@@ -113,6 +115,15 @@ class TestEditing(WXGladeGUITest):
         common.app_tree.show_toplevel( None, app.children[0] )
         # ensure that there's no overlap of elements
         self.check_no_overlap(app.children[0])
+        
+        # change font size for static text and asserts it's size change
+        text = common.root.find_widget_from_path("app/frame/notebook_1/panel_1/sizer_2/static_text_1")
+        rect1 = text.widget.GetRect()
+        size1 = text.widget.GetSize()
+        font_p = text.properties["font"]
+        font_p.set( (42, 'default', 'normal', 'normal', 0, ''), notify=True)
+        self.check_no_overlap(text.parent)
+        return
 
         # cut static box sizer
         widget = app.find_widget_from_path("app/frame/notebook_1/panel_1/sizer_2/sizer_1")

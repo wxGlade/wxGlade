@@ -71,7 +71,7 @@ class EditButton(BitmapMixin, ManagedBase, EditStylesMixin):
     def properties_changed(self, modified=None):
         "update label (and size if label/stockitem have changed)"
 
-        label_modified = not modified or "label" in modified
+        label_modified = not modified or ("label" in modified or "font" in modified)
 
         if not modified or "stockitem" in modified:
             # if stockitem is set, label needs to be deactivated and window id is wxID_...
@@ -103,11 +103,8 @@ class EditButton(BitmapMixin, ManagedBase, EditStylesMixin):
             self.widget.SetBitmapPosition(self.bitmap_dir)
 
         BitmapMixin._properties_changed(self, modified)
-        #self._set_widget_best_size()
         EditStylesMixin.properties_changed(self, modified)
         ManagedBase.properties_changed(self, modified)
-        if label_modified and self.widget and not self.check_prop("size") and self.parent.IS_SIZER:
-            self.parent.layout()
 
 
 def builder(parent, index):

@@ -297,7 +297,6 @@ class EditBase(np.PropertyOwner):
             common.app_tree.refresh(self, refresh_label=True, refresh_image=False)
 
     # widget creation and destruction ##################################################################################
-
     def create(self):
         # entry point to create widget including all children
         self.recursive_create_widgets(level=0)
@@ -314,7 +313,22 @@ class EditBase(np.PropertyOwner):
 
     def layout(self):
         # called once after all widgets incl. children were created or e.g. layout property modified
+        # before 2020-08-10 the ClipboardXmlWidgetBuilder.endElement() had code with
+        #  SafeYield, layout, Refresh, GetTopLevelParent().SendSizeEvent()
         self.widget.Layout()
+        if self.IS_TOPLEVEL: return
+        if not self.IS_SIZER: self.widget.SendSizeEvent()
+        parent_window = self.parent_window
+        parent_window.widget.SendSizeEvent()
+        if hasattr(parent_window, "SendSizeEventToParent"):
+            parent_window.widget.SendSizeEventToParent()
+        # alternative implementation:
+        #import wx
+        #wx.SafeYield()
+        #w = self
+        #while not w.IS_ROOT:
+            #if not w.IS_SIZER: w.widget.SendSizeEvent()
+            #w = w.parent
 
     # actual widget creation
     def create_widget(self):

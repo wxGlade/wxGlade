@@ -525,16 +525,6 @@ class ClipboardXmlWidgetBuilder(XmlWidgetBuilder):
             try:
                 if self.parent and self.parent.widget:
                     self.top_obj.create()
-                    import wx
-                    if self.top_obj.IS_SIZER:
-                        window_widget = self.top_obj.window.widget
-                    else:
-                        window_widget = self.top_obj.widget
-                    wx.SafeYield()                          # required for gtk when e.g. pasting a StaticText with font
-                    self.top_obj.parent_window.layout()     # required for gtk when e.g. pasting a StaticText with font
-                    window_widget.Refresh()  # required if not using Freeze/Thaw on Windows
-                    window_widget.GetTopLevelParent().SendSizeEvent()
-
             except AttributeError:
                 logging.exception( _('Exception caused by obj: %s'), self.top_obj )
 
