@@ -161,7 +161,7 @@ def _guiless_open_app(filename):
     Returns True if successful."""
     import time
     from xml.sax import SAXParseException
-    from xml_parse import XmlWidgetBuilder, ProgressXmlWidgetBuilder, XmlParsingError
+    from xml_parse import XmlWidgetBuilder, XmlParsingError
     error_msg = None
     infile = None
 

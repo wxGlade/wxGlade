@@ -309,10 +309,9 @@ class XmlWidgetBuilder(XmlParser):
 class ProgressXmlWidgetBuilder(XmlWidgetBuilder):
     "Adds support for a progress dialog to the widget builder parser"
 
-    def __init__(self, *args, **kwds):
-        self.input_file = kwds.get('input_file')
+    def __init__(self, filename, input_file_version, input_file):
+        self.input_file = input_file
         if self.input_file:
-            del kwds['input_file']
             self.size = len(self.input_file.readlines())
             self.input_file.seek(0)
             import wx
@@ -323,7 +322,7 @@ class ProgressXmlWidgetBuilder(XmlWidgetBuilder):
         else:
             self.size = 0
             self.progress = None
-        XmlWidgetBuilder.__init__(self)
+        XmlWidgetBuilder.__init__(self, filename, input_file_version)
 
     def endElement(self, name):
         if self.progress:
@@ -623,7 +622,7 @@ class XmlWidgetObject(object):
         if parser.check_input_file_version( (0,9,9) ):
             # handle backwards compatibility
             if class_p:
-                if class_p.deactivated is not None:
+                if class_p.deactivated is not None:  # i.e. 'class' property is not mandatory / ClassPropertyD
                     if IS_BASE:
                         class_v = None
             elif class_v:
@@ -636,10 +635,14 @@ class XmlWidgetObject(object):
                     class_v = None
         else:
             # current file format: 'class' is always written
-            if class_p and class_p.deactivated is not None:
-                if IS_BASE:
+            # if the object does not have a 'class' property at all, the value is the instance class
+            # if it has a 'class' property, the 'instance_class' is written if required
+            if class_p:
+                if class_p.deactivated is not None and IS_BASE:
                     class_v = None
-            elif not class_p:
+            else:
+                if not IS_BASE and instance_class is None:
+                    instance_class = class_v
                 class_v = None
 
         # update self.obj properties
