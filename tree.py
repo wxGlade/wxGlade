@@ -118,6 +118,9 @@ class WidgetTree(wx.TreeCtrl):#, Tree):
         # start drag & drop
         item = evt.GetItem()
         widget = self._GetItemData(item)
+        if not widget:
+            if config.debugging: raise ValueError("internal error")
+            return
         if widget is self.root or widget.IS_SLOT: return  # application and slots can't be dragged
         self._drag_ongoing = True
         clipboard.begin_drag(self, widget)
