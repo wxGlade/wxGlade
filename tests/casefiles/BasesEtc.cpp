@@ -95,9 +95,9 @@ TestPanelWithBasesInFrame::TestPanelWithBasesInFrame(wxWindow* parent, wxWindowI
 {
     // begin wxGlade: TestPanelWithBasesInFrame::TestPanelWithBasesInFrame
     wxBoxSizer* sizer_1 = new wxBoxSizer(wxVERTICAL);
-    notebook_1 = new TestNotebookWithBasesInFrame(this, wxID_ANY);
+    notebook_1 = new mynotebook.MyNoteBook(this, wxID_ANY);
     sizer_1->Add(notebook_1, 1, wxEXPAND, 0);
-    window_1 = new SplitterWindowWithBasesInFrame(this, wxID_ANY);
+    window_1 = new mysplitter.MySplitterWindow(this, wxID_ANY);
     sizer_1->Add(window_1, 1, wxEXPAND, 0);
     html = new wx.html.HtmlWindow(this, wxID_ANY);
     sizer_1->Add(html, 1, wxALL|wxEXPAND, 3);
@@ -113,7 +113,7 @@ MyFrameWithBases::MyFrameWithBases(wxWindow* parent, wxWindowID id, const wxStri
     // begin wxGlade: MyFrameWithBases::MyFrameWithBases
     SetSize(wxSize(400, 300));
     SetTitle(wxT("frame"));
-    frame_copy_menubar = new wxMenuBar();
+    frame_copy_menubar = new mymenubar.MyMenuBar();
     SetMenuBar(frame_copy_menubar);
     frame_copy_statusbar = CreateStatusBar(1);
     int frame_copy_statusbar_widths[] = { -1 };
@@ -126,7 +126,7 @@ MyFrameWithBases::MyFrameWithBases(wxWindow* parent, wxWindowID id, const wxStri
     for(int i = 0; i < frame_copy_statusbar->GetFieldsCount(); ++i) {
         frame_copy_statusbar->SetStatusText(frame_copy_statusbar_fields[i], i);
     }
-    frame_copy_toolbar = new wxToolBar(this, -1);
+    frame_copy_toolbar = new mytoolbar.MyToolBar(this, -1);
     SetToolBar(frame_copy_toolbar);
     frame_copy_toolbar->Realize();
     panel_1 = new TestPanelWithBasesInFrame(this, wxID_ANY);

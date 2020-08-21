@@ -11,6 +11,13 @@ import wx
 
 # begin wxGlade: extracode
 import wx.html
+import mynotebook
+import mysplitter
+import mypanel
+import wx.html
+import mytoolbar
+import mystatusbar
+import mymenubar
 # end wxGlade
 
 
@@ -120,10 +127,10 @@ class TestPanelWithBasesInFrame(TestPanel, testpanel.TestPanel):
 
         sizer_1 = wx.BoxSizer(wx.VERTICAL)
 
-        self.notebook_1 = TestNotebookWithBasesInFrame(self, wx.ID_ANY)
+        self.notebook_1 = mynotebook.MyNoteBook(self, wx.ID_ANY)
         sizer_1.Add(self.notebook_1, 1, wx.EXPAND, 0)
 
-        self.window_1 = SplitterWindowWithBasesInFrame(self, wx.ID_ANY)
+        self.window_1 = mysplitter.MySplitterWindow(self, wx.ID_ANY)
         sizer_1.Add(self.window_1, 1, wx.EXPAND, 0)
 
         self.html = wx.html.HtmlWindow(self, wx.ID_ANY)
@@ -146,7 +153,7 @@ class MyFrameWithBases(TestFrame, testframe.TestFrame):
         self.SetTitle("frame")
 
         # Menu Bar
-        self.frame_copy_menubar = wx.MenuBar()
+        self.frame_copy_menubar = mymenubar.MyMenuBar()
         self.SetMenuBar(self.frame_copy_menubar)
         # Menu Bar end
 
@@ -158,12 +165,12 @@ class MyFrameWithBases(TestFrame, testframe.TestFrame):
             self.frame_copy_statusbar.SetStatusText(frame_copy_statusbar_fields[i], i)
 
         # Tool Bar
-        self.frame_copy_toolbar = wx.ToolBar(self, -1)
+        self.frame_copy_toolbar = mytoolbar.MyToolBar(self, -1)
         self.SetToolBar(self.frame_copy_toolbar)
         self.frame_copy_toolbar.Realize()
         # Tool Bar end
 
-        self.panel_1 = TestPanelWithBasesInFrame(self, wx.ID_ANY)
+        self.panel_1 = mypanel.MyPanel(self, wx.ID_ANY)
         self.Layout()
         # end wxGlade
 

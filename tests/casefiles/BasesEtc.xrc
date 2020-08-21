@@ -65,21 +65,24 @@
         <title>frame</title>
         <object class="wxMenuBar" name="frame_copy_menubar">
         </object>
-        <object class="wxStatusBar" name="frame_copy_statusbar">
+        <object class="wxStatusBar" name="frame_copy_statusbar" subclass="mystatusbar.MyStatusBar">
+            <extracode>import mystatusbar\n</extracode>
             <fields>1</fields>
             <widths>-1</widths>
         </object>
         <object class="wxToolBar" name="frame_copy_toolbar">
         </object>
-        <object class="wxPanel" name="panel_1" subclass="TestPanelWithBasesInFrame">
+        <object class="wxPanel" name="panel_1" subclass="mypanel.MyPanel">
             <custom_base>TestPanel,testpanel.TestPanel</custom_base>
+            <extracode>import mypanel\n</extracode>
             <object class="wxBoxSizer">
                 <orient>wxVERTICAL</orient>
                 <object class="sizeritem">
                     <option>1</option>
                     <flag>wxEXPAND</flag>
-                    <object class="wxNotebook" name="notebook_1" subclass="TestNotebookWithBasesInFrame">
+                    <object class="wxNotebook" name="notebook_1" subclass="mynotebook.MyNoteBook">
                         <custom_base>TestNotebook,testnotebook.TestNotebook</custom_base>
+                        <extracode>import mynotebook\n</extracode>
                         <usenotebooksizer>1</usenotebooksizer>
                         <object class="notebookpage">
                         <label>notebook_1_pane_1</label>
@@ -93,8 +96,9 @@
                 <object class="sizeritem">
                     <option>1</option>
                     <flag>wxEXPAND</flag>
-                    <object class="wxSplitterWindow" name="window_1" subclass="SplitterWindowWithBasesInFrame">
+                    <object class="wxSplitterWindow" name="window_1" subclass="mysplitter.MySplitterWindow">
                         <custom_base>TestSplitterWindow</custom_base>
+                        <extracode>import mysplitter\n</extracode>
                         <min_pane_size>20</min_pane_size>
                         <orientation>vertical</orientation>
                         <object class="wxPanel" name="window_1_pane_1">
@@ -110,7 +114,7 @@
                     <flag>wxALL|wxEXPAND</flag>
                     <border>3</border>
                     <object class="wx.html.HtmlWindow" name="html">
-                        <extracode>import wx.html</extracode>
+                        <extracode>import wx.html\n</extracode>
                     </object>
                 </object>
             </object>

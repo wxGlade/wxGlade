@@ -10,9 +10,12 @@
 
 ;;; begin wxGlade: dependencies
 (use-package :NotebookPageWithBases)
-(use-package :SplitterWindowWithBasesInFrame)
-(use-package :TestNotebookWithBasesInFrame)
-(use-package :TestPanelWithBasesInFrame)
+(use-package :mymenubar.MyMenuBar)
+(use-package :mynotebook.MyNoteBook)
+(use-package :mypanel.MyPanel)
+(use-package :mysplitter.MySplitterWindow)
+(use-package :mystatusbar.MyStatusBar)
+(use-package :mytoolbar.MyToolBar)
 (use-package :wx.html.HtmlWindow)
 (use-package :wxButton)
 (use-package :wxCL)
@@ -36,6 +39,13 @@
 
 ;;; begin wxGlade: extracode
 import wx.html
+import mynotebook
+import mysplitter
+import mypanel
+import wx.html
+import mytoolbar
+import mystatusbar
+import mymenubar
 ;;; end wxGlade
 
 

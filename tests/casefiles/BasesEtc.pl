@@ -13,6 +13,13 @@ use strict;
 
 # begin wxGlade: extracode
 import wx.html
+import mynotebook
+import mysplitter
+import mypanel
+import wx.html
+import mytoolbar
+import mystatusbar
+import mymenubar
 # end wxGlade
 
 package MyFrame;
@@ -217,10 +224,10 @@ sub new {
     
     $self->{sizer_1} = Wx::BoxSizer->new(wxVERTICAL);
     
-    $self->{notebook_1} = TestNotebookWithBasesInFrame->new($self, wxID_ANY);
+    $self->{notebook_1} = mynotebook.MyNoteBook->new($self, wxID_ANY);
     $self->{sizer_1}->Add($self->{notebook_1}, 1, wxEXPAND, 0);
     
-    $self->{window_1} = SplitterWindowWithBasesInFrame->new($self, wxID_ANY);
+    $self->{window_1} = mysplitter.MySplitterWindow->new($self, wxID_ANY);
     $self->{sizer_1}->Add($self->{window_1}, 1, wxEXPAND, 0);
     
     $self->{html} = wx.html.HtmlWindow->new($self, wxID_ANY);
@@ -266,7 +273,7 @@ sub new {
 
     # Menu Bar
 
-    $self->{frame_copy_menubar} = Wx::MenuBar->new();
+    $self->{frame_copy_menubar} = mymenubar.MyMenuBar->new();
     my $wxglade_tmp_menu;
     $self->SetMenuBar($self->{frame_copy_menubar});
     
@@ -288,12 +295,12 @@ sub new {
     
     
     # Tool Bar
-    $self->{frame_copy_toolbar} = Wx::ToolBar->new($self, -1);
+    $self->{frame_copy_toolbar} = mytoolbar.MyToolBar->new($self, -1);
     $self->SetToolBar($self->{frame_copy_toolbar});
     $self->{frame_copy_toolbar}->Realize();
     # Tool Bar end
     
-    $self->{panel_1} = TestPanelWithBasesInFrame->new($self, wxID_ANY);
+    $self->{panel_1} = mypanel.MyPanel->new($self, wxID_ANY);
     $self->Layout();
     # end wxGlade
     return $self;

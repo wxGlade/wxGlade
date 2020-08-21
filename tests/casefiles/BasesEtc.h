@@ -22,7 +22,16 @@
 
 // begin wxGlade: ::extracode
 import wx.html
+import mynotebook
+import mysplitter
+import mypanel
 import wx.html
+import mysplitter
+import mynotebook
+import mypanel
+import mytoolbar
+import mystatusbar
+import mymenubar
 // end wxGlade
 
 
@@ -110,8 +119,8 @@ private:
 
 protected:
     // begin wxGlade: TestPanelWithBasesInFrame::attributes
-    TestNotebookWithBasesInFrame* notebook_1;
-    SplitterWindowWithBasesInFrame* window_1;
+    mynotebook.MyNoteBook* notebook_1;
+    mysplitter.MySplitterWindow* window_1;
     wx.html.HtmlWindow* html;
     // end wxGlade
 }; // wxGlade: end class
@@ -128,10 +137,10 @@ private:
 
 protected:
     // begin wxGlade: MyFrameWithBases::attributes
-    wxMenuBar* frame_copy_menubar;
-    wxStatusBar* frame_copy_statusbar;
-    wxToolBar* frame_copy_toolbar;
-    TestPanelWithBasesInFrame* panel_1;
+    mymenubar.MyMenuBar* frame_copy_menubar;
+    mystatusbar.MyStatusBar* frame_copy_statusbar;
+    mytoolbar.MyToolBar* frame_copy_toolbar;
+    mypanel.MyPanel* panel_1;
     // end wxGlade
 }; // wxGlade: end class
 
