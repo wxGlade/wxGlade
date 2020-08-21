@@ -1779,23 +1779,24 @@ class EditGridBagSizer(EditFlexGridSizer):
         # check overlapped slots
         self._check_slots(add_to_sizer=False)
 
-        if not self.widget: return
-        # re-create the widget and add the items
-        for c in self.widget._grid.GetChildren():
-            if c and c.IsSizer():
-                compat.SizerItem_SetSizer(c, None)
+        if self.widget:
+            # re-create the widget and add the items
+            for c in self.widget._grid.GetChildren():
+                if c and c.IsSizer():
+                    compat.SizerItem_SetSizer(c, None)
+    
+            self.widget._grid.Clear()
+            #self.widget._grid.Destroy()  # spurious crashes, even with CallAfter
+            self.widget._create(None,None, self.vgap, self.hgap)
+            wx.BoxSizer.Add(self.widget, self.widget._grid, 1, wx.EXPAND)
+    
+            for child in self.children:
+                if not child.widget: continue # for overlapped sizer slots, widget may be None
+                self.widget.Add(child.widget, child.index, child.span, child.flag, child.border)
 
-        self.widget._grid.Clear()
-        #self.widget._grid.Destroy()  # spurious crashes, even with CallAfter
-        self.widget._create(None,None, self.vgap, self.hgap)
-        wx.BoxSizer.Add(self.widget, self.widget._grid, 1, wx.EXPAND)
+            self._set_growable()
+            self.parent_window.layout()
 
-        for child in self.children:
-            if not child.widget: continue # for overlapped sizer slots, widget may be None
-            self.widget.Add(child.widget, child.index, child.span, child.flag, child.border)
-
-        self._set_growable()
-        self.parent_window.layout()
         misc.rebuild_tree(self)
 
     def remove_row(self, index):
