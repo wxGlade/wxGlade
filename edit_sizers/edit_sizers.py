@@ -1207,6 +1207,13 @@ class GridSizerBase(SizerBase):
         rows_p.set(rows_new)
 
     # context menu actions #############################################################################################
+    def _rebuild_tree(self):
+        # refresh labels of existing slots; add tree items for new
+        for c in self.children:
+            if c.IS_SLOT and c.item:
+                common.app_tree.refresh(c)
+        misc.rebuild_tree(self)
+
     @_frozen
     def insert_row(self, pos=-1):
         "inserts slots for a new row"
@@ -1235,7 +1242,7 @@ class GridSizerBase(SizerBase):
             if "growable_rows" in self.PROPERTIES:
                 self._set_growable()
             self.layout()
-        misc.rebuild_tree(self)
+        self._rebuild_tree()
 
     @_frozen
     def insert_col(self, pos=-1):
@@ -1277,7 +1284,7 @@ class GridSizerBase(SizerBase):
             if "growable_rows" in self.PROPERTIES:
                 self._set_growable()
             self.layout()
-        misc.rebuild_tree(self)
+        self._rebuild_tree()
 
     @_frozen
     def remove_row(self, pos):
@@ -1301,7 +1308,7 @@ class GridSizerBase(SizerBase):
                 self._set_growable()
             if self.rows: self.widget.SetRows(self.rows)
             self.layout()
-        misc.rebuild_tree(self)
+        self._rebuild_tree()
 
     @_frozen
     def remove_col(self, pos):
@@ -1327,7 +1334,7 @@ class GridSizerBase(SizerBase):
                 self._set_growable()
             if self.cols: self.widget.SetCols(self.cols)
             self.layout()
-        misc.rebuild_tree(self)
+        self._rebuild_tree()
 
     ####################################################################################################################
     def _check_flags(self, flags, added=None):
@@ -1764,7 +1771,9 @@ class EditGridBagSizer(EditFlexGridSizer):
         self.children[:] = sum(new_children,[])
         # actually create the new slots
         for index, child in enumerate(self.children):
-            if child is not None: continue
+            if child is not None:
+                common.app_tree.refresh(child)
+                continue
             self._insert_slot( index )
 
         # check overlapped slots
