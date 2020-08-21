@@ -757,6 +757,7 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
             # try to see if there's some extra code to add to this class
             if not self.preview:
                 extra_code = getattr(builder, 'extracode', getattr(obj, 'extracode', "") or "" )
+                extra_code = extra_code.rstrip()
                 if extra_code and not extra_code in parent_klass.extra_code:
                     parent_klass.extra_code.append(extra_code)
 

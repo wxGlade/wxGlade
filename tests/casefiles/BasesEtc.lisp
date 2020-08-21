@@ -42,7 +42,6 @@ import wx.html
 import mynotebook
 import mysplitter
 import mypanel
-import wx.html
 import mytoolbar
 import mystatusbar
 import mymenubar
