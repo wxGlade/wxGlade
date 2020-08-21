@@ -525,14 +525,14 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
             # overwrite apps file always
             prev_src = None
 
-        # do nothing if the file exists
+        # do nothing if the file exists; this should be changed
         if prev_src: return
 
         klass = app.klass
 
         # top window and application name are mandatory
-        if not app.top_window: return
-        
+        if not top_win: return
+
         # get and fill language dependent template
         tmpl = self._get_app_template(app, top_win)
         if not tmpl: return
@@ -540,13 +540,14 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
         self._app_added = True
 
         # map to substitute template variables
+        cls = top_win.get_instantiation_class(formatter=None, cls_formatter=self.cn_class, preview=self.preview)
         self.app_mapping = {'comment_sign': self.comment_sign,
                             'header_lines': ''.join(self.header_lines),
                             'klass': self.cn_class(klass), 'name': self.app_name,
                             'overwrite': self.tmpl_overwrite % {'comment_sign': self.comment_sign},
                             'tab': self.tabs(1),
                             'textdomain': self._textdomain,
-                            'top_win_class': self.cn_class(top_win and top_win.klass or None),
+                            'top_win_class': cls,
                             'top_win_module': top_win and top_win.klass.replace('::', '_'),
                             'top_win': app.top_window }
 

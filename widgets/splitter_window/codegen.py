@@ -28,7 +28,7 @@ class PythonSplitterWindowGenerator(wcodegen.PythonWidgetCodeWriter):
         if obj.IS_CLASS:
             l = []
             if id_name: l.append(id_name)
-            l.append( 'self.%s = %s(%s, %s)\n' % (obj.name, self.codegen.get_class(klass), parent, id) )
+            l.append( 'self.%s = %s(%s, %s)\n' % (obj.name, klass, parent, id) )
             return l, []
 
         if id_name: init.append(id_name)
