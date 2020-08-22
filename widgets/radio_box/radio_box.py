@@ -32,7 +32,7 @@ class EditRadioBox(ManagedBase):
         self.dimension = np.SpinProperty(major_dim)
         self.selection = np.SpinProperty(0, val_range=(0,len(choices)-1), immediate=True )
         self.choices   = ChoicesProperty( choices, [(_('Label'), np.GridProperty.STRING)] )
-        style = style or wx.RA_SPECIFY_ROWS
+        style = style or wx.RA_SPECIFY_COLS
         styles = [wx.RA_SPECIFY_ROWS, wx.RA_SPECIFY_COLS]
         aliases = ["wxRA_SPECIFY_ROWS","wxRA_SPECIFY_COLS"]  # labels and aliases
         self.style = np.RadioProperty(style, styles, aliases, aliases=aliases, columns=2)
@@ -100,15 +100,13 @@ class EditRadioBox(ManagedBase):
         sb_sizer.Add(sizer, 1, wx.EXPAND)
         sb_sizer.SetMinSize(sizer.GetMinSize())
         sb_sizer.Fit(self.widget)
-        if hasattr(self.parent, "set_item_best_size"):
-            self.parent.set_item_best_size(self, size=self.widget.GetBestSize())
+        self.parent.layout()
 
     def _set_label(self):
         if not self.widget or not self.static_box: return
         label = self.label
         self.static_box.SetLabel(label)
-        if hasattr(self.parent, "set_item_best_size") and not self.properties['size'].is_active():
-            self.parent.set_item_best_size(self, size=self.widget.GetBestSize())
+        self.parent.layout()
 
     def _set_choices(self):
         if not self.widget: return
