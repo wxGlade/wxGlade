@@ -308,6 +308,9 @@ class Property(object):
 
     def flush(self):
         pass
+    
+    def set_focus(self):
+        pass
 
     ####################################################################################################################
     # helpers
@@ -1487,6 +1490,13 @@ class TextProperty(Property):
     def on_kill_focus(self, event):
         event.Skip()
         self.flush()
+    
+    def set_focus(self):
+        if self.blocked: return
+        if self.deactivated is False:
+            if self.enabler: self.enabler.SetFocus()
+        else:
+            if self.text: self.text.SetFocus()
 
     def _check_for_user_modification(self, new_value=None, force=False, activate=False):
         if new_value is None:

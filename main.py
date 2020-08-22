@@ -805,8 +805,6 @@ class wxGladeFrame(wx.Frame):
     def show_props_window(self, section=None):
         # XXX implement: if a section is active already, then go to first property of the page
         if not self.property_panel.notebook: return
-        # current page: self.property_panel.notebook.Selection
-        # self.property_panel.notebook.FindWindowByName("Layout")
         if self.IsIconized(): self.Iconize(False)
         self.property_panel.pagenames
         if not section:
@@ -814,7 +812,19 @@ class wxGladeFrame(wx.Frame):
         else:
             if not section in self.property_panel.pagenames:
                 return
-            self.property_panel.notebook.ChangeSelection( self.property_panel.pagenames.index(section) )
+            i = self.property_panel.pagenames.index(section)
+            if self.property_panel.notebook.GetSelection() != i:
+                self.property_panel.notebook.ChangeSelection(i)
+            else:
+                self.property_panel.notebook.SetFocus()
+                # try to set the focus if the widget has changed; this is not yet implemented for many property types
+                widget = self.property_panel.current_widget
+                if ( widget and (widget is not np.current_property.owner) and
+                     section in widget.PROPERTIES ):
+                    i_p = widget.PROPERTIES.index(section) + 1
+                    if i_p<len(widget.PROPERTIES):
+                        prop = widget.properties.get(widget.PROPERTIES[i_p])
+                        if prop: prop.set_focus()
         self.Raise()
 
     def show_design_window(self):
