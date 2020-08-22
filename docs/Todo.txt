@@ -139,10 +139,10 @@ done:
 
 
 Documentation:
+ * add structure examples (e.g. Panel as own class, Instance Class)
+done:
  * update for 1.0 (one window, no sizers between Frame and Panel)
  * add Dialog documentation
- * add structure examples (e.g. Panel as own class)
-done:
  * Note "Repeat and Re-do"
 
 
