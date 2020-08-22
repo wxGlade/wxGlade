@@ -33,8 +33,8 @@ When you add a new dialog |dialog|, you will be offered to add some default butt
 +--------------------------------------------------------------------------------------------------------------------+
 
 
-These will be placed in a :guilabel:`StdDialogButtonSizer` that will arrange the buttons such that the ordering matches the OS
-style guide.
+These will be placed in a :guilabel:`StdDialogButtonSizer` which will arrange the buttons such that the ordering matches
+the OS style guide.
 
 Also, the buttons will use :guilabel:`StockItems` and e.g. :code:`button.SetDefault`,
 :code:`dialog.SetAffirmativeId` and :code:`dialog.SetEscapeId` will be called.
