@@ -58,9 +58,17 @@ class EditRadioButton(ManagedBase, EditStylesMixin):
 
 def builder(parent, index):
     "factory function for EditRadioButton objects"
+    import dialogs, misc
     name = parent.toplevel_parent.get_next_contained_name('radio_btn_%d')
+    dlg = dialogs.WidgetStyleSelectionDialog("RadioButton", None, None, ["?Label"])
+    with misc.disable_stay_on_top(common.adding_window or parent):
+        res = dlg.ShowModal()
+    label, = dlg.get_options()
+    dlg.Destroy()
+    if res != wx.ID_OK: return
+
     with parent.frozen():
-        editor = EditRadioButton(name, parent, index, name)
+        editor = EditRadioButton(name, parent, index, label)
         editor.properties["style"].set_to_default()
         editor.check_defaults()
         if parent.widget: editor.create()

@@ -24,13 +24,13 @@ class EditCheckBox(ManagedBase, EditStylesMixin):
     # Convert the position of "checked" RadioProperty to wxCheckBoxState
     index2state = { 0: wx.CHK_UNCHECKED, 1: wx.CHK_CHECKED, 2: wx.CHK_UNDETERMINED }
 
-    def __init__(self, name, parent, index, label):
+    def __init__(self, name, parent, index, label=""):
         "Class to handle wxCheckBox objects"
         ManagedBase.__init__(self, name, parent, index)
         EditStylesMixin.__init__(self)
 
         # initialise instance properties
-        self.label = np.TextProperty("", multiline="grow")
+        self.label = np.TextProperty(label, multiline="grow")
 
         # value: Checkbox state (0 = unchecked, 1 = checked, 2 = undetermined)
         values = [0,1,2]
@@ -75,9 +75,17 @@ class EditCheckBox(ManagedBase, EditStylesMixin):
 
 def builder(parent, index):
     "factory function for EditCheckBox objects"
+    import dialogs, misc
     name = parent.toplevel_parent.get_next_contained_name('checkbox_%d')
+    dlg = dialogs.WidgetStyleSelectionDialog("CheckBox", None, None, ["?Label"])
+    with misc.disable_stay_on_top(common.adding_window or parent):
+        res = dlg.ShowModal()
+    label, = dlg.get_options()
+    dlg.Destroy()
+    if res != wx.ID_OK: return
+
     with parent.frozen():
-        editor = EditCheckBox(name, parent, index, name)
+        editor = EditCheckBox(name, parent, index, label)
         editor.properties["style"].set_to_default()
         editor.check_defaults()
         if parent.widget: editor.create()
