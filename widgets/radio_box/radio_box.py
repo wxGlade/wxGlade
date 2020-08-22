@@ -171,8 +171,8 @@ class EditRadioBox(ManagedBase):
             if self.selection>max_selection:
                 self.properties['selection'].set(max_selection)
             set_selection = True
-        
-        if not modified or "choices" in modified or "dimension" in modified:
+
+        if not modified or "choices" in modified or "dimension" in modified or "style" in modified:
             self._set_choices()  # does also update label
         elif not modified or "label" in modified:
             self._set_label()
