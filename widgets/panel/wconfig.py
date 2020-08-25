@@ -17,6 +17,7 @@ config = {
                    'wxSUNKEN_BORDER', 'wxBORDER_SUNKEN',
                    'wxRAISED_BORDER', 'wxBORDER_RAISED',
                    'wxSTATIC_BORDER', 'wxBORDER_STATIC',
+                   'wxBORDER_THEME',
                    'wxNO_BORDER', 'wxBORDER_NONE',
                    'wxTAB_TRAVERSAL', 'wxWANTS_CHARS',
                    'wxFULL_REPAINT_ON_RESIZE',

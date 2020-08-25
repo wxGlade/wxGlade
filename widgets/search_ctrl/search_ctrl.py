@@ -51,7 +51,7 @@ class EditSearchCtrl(ManagedBase, EditStylesMixin):
         self.widget.Bind(wx.EVT_CHILD_FOCUS, self.on_set_focus)
         #self.widget.Bind(wx.EVT_TEXT, self.on_set_focus)
 
-    def properties_changed(self, modified):
+    def _properties_changed(self, modified, actions):
         if "value" in modified and self.widget:
             self.widget.SetValue(self.value)
         if "search_button" in modified and self.widget:
@@ -62,8 +62,8 @@ class EditSearchCtrl(ManagedBase, EditStylesMixin):
             self.widget.SetDescriptiveText(self.descriptive_text)
         if "max_length" in modified and self.widget:
             self.widget.SetMaxLength(self.max_length)
-        EditStylesMixin.properties_changed(self, modified)
-        ManagedBase.properties_changed(self, modified)
+        EditStylesMixin._properties_changed(self, modified, actions)
+        ManagedBase._properties_changed(self, modified, actions)
 
 
 

@@ -45,9 +45,9 @@ class EditTreeCtrl(ManagedBase, EditStylesMixin):
         if not self.widget or not self._item_with_name: return
         self.widget.SetItemText(self._item_with_name, ' ' + self.name)
 
-    def properties_changed(self, modified):
-        EditStylesMixin.properties_changed(self, modified)
-        ManagedBase.properties_changed(self, modified)
+    def _properties_changed(self, modified, actions):
+        EditStylesMixin._properties_changed(self, modified, actions)
+        ManagedBase._properties_changed(self, modified, actions)
         if not modified or "name" in modified:
             self._set_name()
 

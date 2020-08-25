@@ -38,22 +38,17 @@ class EditRadioButton(ManagedBase, EditStylesMixin):
     def _set_label(self):
         if not self.widget: return
         self.widget.SetLabel(self.label)
-        if hasattr(self.parent, "set_item_best_size") and not self.properties['size'].is_active():
-            self.parent.set_item_best_size(self, size=self.widget.GetBestSize())
 
-    def properties_changed(self, modified):
-        resize = False
-
+    def _properties_changed(self, modified, actions):
         if not modified or "label" in modified:
             self._set_label()
-            if common.app_tree:
-                common.app_tree.refresh(self, refresh_label=True, refresh_image=False)
+            actions.add("layout")
 
         if not modified or "clicked" in modified and self.widget:
             self.widget.SetValue(self.clicked)
 
-        EditStylesMixin.properties_changed(self, modified)
-        ManagedBase.properties_changed(self, modified)
+        EditStylesMixin._properties_changed(self, modified, actions)
+        ManagedBase._properties_changed(self, modified, actions)
 
 
 def builder(parent, index):

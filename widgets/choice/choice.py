@@ -40,7 +40,7 @@ class EditChoice(ManagedBase):
             return ChoicesHandler(self)
         return ManagedBase.get_property_handler(self, prop_name)
 
-    def properties_changed(self, modified):
+    def _properties_changed(self, modified, actions):
         # self.selection needs to be in range (-1,len(self.choices)-1)
         choices = self.choices
         max_selection = len(choices)-1
@@ -53,8 +53,7 @@ class EditChoice(ManagedBase):
                 # update widget
                 self.widget.Clear()
                 for c in choices: self.widget.Append(c[0])
-                if hasattr(self.parent, "set_item_best_size") and not self.properties['size'].is_active():
-                    self.parent.set_item_best_size(self, size=self.widget.GetBestSize())
+                actions.add("layout")
 
         if not modified or "selection" in modified or set_selection:
             set_selection = True
@@ -63,7 +62,7 @@ class EditChoice(ManagedBase):
         if self.widget and set_selection and self.widget.GetSelection()!=self.selection:
             self.widget.SetSelection(self.selection)
 
-        ManagedBase.properties_changed(self, modified)
+        ManagedBase._properties_changed(self, modified, actions)
 
 
 

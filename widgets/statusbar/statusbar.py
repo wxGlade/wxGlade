@@ -34,8 +34,7 @@ class FieldsHandler(BaseXmlBuilderTagHandler):
             char_data = self.get_char_data()
             self.fields.append([char_data, self.width])
         else:  # name == 'fields'
-            self.owner.properties["fields"].set(self.fields)
-            self.owner.properties_changed(["fields"])
+            self.owner.properties["fields"].load(self.fields)
             return True
 
 
@@ -111,11 +110,11 @@ class EditStatusBar(EditBase, EditStylesMixin):
             return FieldsHandler(self)
         return None
 
-    def properties_changed(self, modified):
+    def _properties_changed(self, modified, actions):
         if not modified or "fields" in modified:
             self._set_fields()
-        EditStylesMixin.properties_changed(self, modified)
-        EditBase.properties_changed(self, modified)
+        EditStylesMixin._properties_changed(self, modified, actions)
+        EditBase._properties_changed(self, modified, actions)
 
     def check_compatibility(self, widget, typename=None):
         return (False,"No pasting possible here.")

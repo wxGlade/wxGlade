@@ -542,8 +542,7 @@ class ToolsHandler(BaseXmlBuilderTagHandler):
         if name == 'tool':
             self.tools.append(self.curr_tool)
         if name == 'tools':
-            self.owner.properties["tools"].set(self.tools)
-            self.owner.properties_changed(["tools"])
+            self.owner.properties["tools"].load(self.tools)
             return True
 
     def char_data(self, data):
@@ -733,30 +732,28 @@ class EditToolBar(EditBase, PreviewMixin, EditStylesMixin, BitmapMixin):
             return ToolsHandler(self)
         return None
     
-    def properties_changed(self, modified):
+    def _properties_changed(self, modified, actions):
         if not modified or "name" in modified and self.widget is not self._tb:
             self.widget.SetTitle(misc.design_title(misc.wxstr(self.name)))
-        refresh = False
+
         if not modified or "margins" in modified and self._tb:
             self._set_margins()
-            refresh = True
+            actions.add("refresh")
         if not modified or "bitmapsize" in modified and self._tb:
             self._set_bitmapsize()
-            refresh = True
+            actions.add("refresh")
         if not modified or "packing" in modified and self._tb:
             self._set_packing()
-            refresh = True
+            actions.add("refresh")
         if not modified or "separation" in modified and self._tb:
             self._set_separation()
-            refresh = True
+            actions.add("refresh")
         if not modified or "tools" in modified and self._tb:
             self._set_tools()
-            refresh = True
+            actions.add("refresh")
 
-        EditStylesMixin.properties_changed(self, modified)
-        if refresh: self._refresh_widget()
-
-        EditBase.properties_changed(self, modified)
+        EditStylesMixin._properties_changed(self, modified, actions)
+        EditBase._properties_changed(self, modified, actions)
 
     def check_compatibility(self, widget, typename=None):
         return (False,"No pasting possible here.")

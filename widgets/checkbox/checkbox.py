@@ -45,7 +45,7 @@ class EditCheckBox(ManagedBase, EditStylesMixin):
             self.properties["checked"].set(value)
         self.widget.Bind(wx.EVT_CHECKBOX, on_checkbox, id=self.id)
 
-    def properties_changed(self, modified):
+    def _properties_changed(self, modified, actions):
         if not modified or "style" in modified:
             checked_p = self.properties['checked']
             if 'wxCHK_3STATE' in self.properties["style"].value_set:
@@ -65,12 +65,10 @@ class EditCheckBox(ManagedBase, EditStylesMixin):
         if not modified or "label" in modified:
             if self.widget:
                 self.widget.SetLabel(self.label)
-                self.parent_window.layout()
-            if common.app_tree is not None:
-                common.app_tree.refresh(self, refresh_label=True, refresh_image=False)
+            actions.update(("layout","label"))
 
-        EditStylesMixin.properties_changed(self, modified)
-        ManagedBase.properties_changed(self, modified)
+        EditStylesMixin._properties_changed(self, modified, actions)
+        ManagedBase._properties_changed(self, modified, actions)
 
 
 def builder(parent, index):

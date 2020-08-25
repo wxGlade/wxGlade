@@ -32,11 +32,11 @@ class EditGauge(ManagedBase, EditStylesMixin):
         self.widget = wx.Gauge(self.parent_window.widget, self.id, self.range, style=self.style)
         if self.range>=3: self.widget.SetValue(self.range//3)
 
-    def properties_changed(self, modified):
+    def _properties_changed(self, modified, actions):
         if not modified or "range" in modified and self.widget:
             self.widget.SetRange(self.range)
-        EditStylesMixin.properties_changed(self, modified)
-        ManagedBase.properties_changed(self, modified)
+        EditStylesMixin._properties_changed(self, modified, actions)
+        ManagedBase._properties_changed(self, modified, actions)
 
 
 def builder(parent, index):

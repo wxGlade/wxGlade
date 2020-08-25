@@ -37,32 +37,25 @@ class EditStaticText(ManagedBase, EditStylesMixin):
         # up to 0.8 GenStaticText was used; it seems that nowadays StaticText handles mouse events on gtk as well
         #self.widget = wx.lib.stattext.GenStaticText(self.parent_window.widget, self.id, self.label)
         self.widget = wx.StaticText(self.parent_window.widget, self.id, self.label)
-        # now in finish_widget_creation
-        #if self.wrap:
-            #self.widget.Wrap(self.wrap)
+        # self.wrap is now handled in finish_widget_creation
 
-    def properties_changed(self, modified):
+    def _properties_changed(self, modified, actions):
         if not modified or "label" in modified:
-            if common.app_tree: common.app_tree.refresh(self, refresh_label=True)
             if self.widget:
                 p = self.properties["label"]
                 if self.wrap!=-1 or (p.previous_value and len(p.previous_value)>len(self.label)):
                     # re-create as otherwise the size would not be reduced
-                    self.recreate_widget()
+                    actions.add("recreate")
                     return
                 self.widget.SetLabel(self.label)
-                self._set_widget_best_size()
+                actions.add("layout")
 
         if (not modified or "wrap" in modified) and self.widget:
-            self.recreate_widget()  # calling .Wrap(self.wrap) would only work once and not set the size correctly
-            if self.widget and self.parent.IS_SIZER:
-                self.parent.layout()
-            else:
-                self.parent.widget.Refresh()
+            actions.add("recreate")  # calling .Wrap(self.wrap) would only work once and not set the size correctly
             return
 
-        EditStylesMixin.properties_changed(self, modified)
-        ManagedBase.properties_changed(self, modified)
+        EditStylesMixin._properties_changed(self, modified, actions)
+        ManagedBase._properties_changed(self, modified, actions)
 
 
 def builder(parent, index):

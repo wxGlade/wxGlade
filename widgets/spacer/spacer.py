@@ -51,13 +51,13 @@ class EditSpacer(ManagedBase):
         dc.DrawRectangle(x-1, y-1, tw+2, th+2)
         dc.DrawText(text, x, y)
 
-    def properties_changed(self, modified):
+    def _properties_changed(self, modified, actions):
         if not modified or "width" in modified or "height" in modified:
             size = (self.width, self.height)
             if self.widget: self.widget.SetSize(size)
             self.parent.set_item_best_size(self, size=size)
-            if self.widget: self.parent_window.layout()
-        ManagedBase.properties_changed(self, modified)
+            actions.add("layout")
+        ManagedBase._properties_changed(self, modified, actions)
 
 
 class _Dialog(wx.Dialog):

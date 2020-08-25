@@ -123,7 +123,7 @@ class EditSplitterWindow(ManagedBase, EditStylesMixin):
         if getattr(self.children[0], 'sel_marker', None): self.children[0].sel_marker.update()
         if getattr(self.children[1], 'sel_marker', None): self.children[1].sel_marker.update()
 
-    def properties_changed(self, modified):
+    def _properties_changed(self, modified, actions):
         if (not modified or "sash_pos" in modified) and self.widget and self.check_prop("sash_pos"):
             self.widget.SetSashPosition(self.sash_pos)
         if (not modified or "sash_gravity" in modified) and self.widget and self.check_prop("sash_gravity"):
@@ -131,12 +131,12 @@ class EditSplitterWindow(ManagedBase, EditStylesMixin):
         if (not modified or "min_pane_size" in modified) and self.widget and self.check_prop("min_pane_size"):
             self.widget.SetMinimumPaneSize(self.min_pane_size)
 
-        EditStylesMixin.properties_changed(self, modified)
-        ManagedBase.properties_changed(self, modified)
+        EditStylesMixin._properties_changed(self, modified, actions)
+        ManagedBase._properties_changed(self, modified, actions)
 
         if modified and "orientation" in modified and common.app_tree is not None:
             # update horizontal/vertical icons
-            common.app_tree.refresh(self, refresh_label=False, refresh_image=True)
+            actions.add("image")
             if self.children[0] and self.children[0].IS_SLOT:
                 self.children[0].label = self._get_slot_label(0)
                 common.app_tree.refresh(self.children[0])

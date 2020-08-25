@@ -101,11 +101,11 @@ class EditFrame(BitmapMixin, TopLevelBase, EditStylesMixin):
         icon.CopyFromBitmap(bitmap)
         self.widget.SetIcon(icon)
 
-    def properties_changed(self, modified):
+    def _properties_changed(self, modified, actions):
         if not modified or "icon" in modified and self.widget: self._set_widget_icon()
 
-        TopLevelBase.properties_changed(self, modified)
-        EditStylesMixin.properties_changed(self, modified)
+        TopLevelBase._properties_changed(self, modified, actions)
+        EditStylesMixin._properties_changed(self, modified, actions)
 
 
 

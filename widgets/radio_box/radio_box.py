@@ -93,12 +93,10 @@ class EditRadioBox(ManagedBase):
         for button in buttons_layout:
             w, h = button.GetBestSize()
             sizer.Add(button, 0, wx.EXPAND)
-            sizer.SetItemMinSize(button, w, h)
         self.widget.SetAutoLayout(True)
         sb_sizer = wx.StaticBoxSizer(self.static_box, wx.VERTICAL)
         self.widget.SetSizer(sb_sizer)
         sb_sizer.Add(sizer, 1, wx.EXPAND)
-        sb_sizer.SetMinSize(sizer.GetMinSize())
         sb_sizer.Fit(self.widget)
         self.parent.layout()
 
@@ -154,7 +152,7 @@ class EditRadioBox(ManagedBase):
             return ChoicesHandler(self)
         return ManagedBase.get_property_handler(self, prop_name)
 
-    def properties_changed(self, modified):
+    def _properties_changed(self, modified, actions):
         # self.selection needs to be in range (0,len(self.choices)-1)
         choices = self.choices
         max_selection = len(choices)-1 if choices else 0
@@ -174,12 +172,11 @@ class EditRadioBox(ManagedBase):
             self._set_choices()  # does also update label
         elif not modified or "label" in modified:
             self._set_label()
-            common.app_tree.refresh(self, refresh_label=True, refresh_image=False)
 
         if self.widget and set_selection:
             self._set_selection()
 
-        ManagedBase.properties_changed(self, modified)
+        ManagedBase._properties_changed(self, modified, actions)
 
 
 def builder(parent, index):

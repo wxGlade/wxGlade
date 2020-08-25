@@ -255,8 +255,6 @@ class BitmapMixin(object):
                 current = method()
                 if not current.IsOk() or current.Size != ref_size or (modified and p.name in modified):
                     self._set_preview_bitmap(p, name, ref_size)
-        if set_size or not modified or "bitmap" in modified:
-            self._set_widget_best_size()
 
     def _set_preview_bitmap(self, prop, name, ref_size=None):
         if not config.use_gui:
@@ -287,7 +285,7 @@ class BitmapMixin(object):
             self._set_preview_bitmap(self.properties["bitmap"], "")
         self._check_bitmaps()
 
-    def _properties_changed(self, modified):
+    def _properties_changed(self, modified, actions):
         if "bitmap" in modified:
             # set normal bitmap here; the others will be set in _check_bitmaps
             self._set_preview_bitmap(self.properties["bitmap"], "")

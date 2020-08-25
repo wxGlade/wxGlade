@@ -53,8 +53,7 @@ class TabsHandler(BaseXmlBuilderTagHandler):
         if name == 'tabs':
             self.parent.pages = self.pagenames
             self.parent.children = [None]*len(self.tab_names)
-            self.parent.properties['tabs'].set(self.tab_names)
-            self.parent.properties_changed(["tabs"])
+            self.parent.properties['tabs'].load(self.tab_names)
             return True
         elif name == 'tab':
             # actually, the tab labels
@@ -250,13 +249,13 @@ class EditNotebook(ManagedBase, EditStylesMixin):
             return TabsHandler(self)
         return ManagedBase.get_property_handler(self, name)
 
-    def properties_changed(self, modified):
+    def _properties_changed(self, modified, actions):
         if modified and "tabs" in modified and self.widget:
             for i,(tab,) in enumerate(self.tabs):
                 self.widget.SetPageText(i,tab)
             
-        EditStylesMixin.properties_changed(self, modified)
-        ManagedBase.properties_changed(self, modified)
+        EditStylesMixin._properties_changed(self, modified, actions)
+        ManagedBase._properties_changed(self, modified, actions)
 
     ####################################################################################################################
     def _add_popup_menu_items(self, menu, widget):

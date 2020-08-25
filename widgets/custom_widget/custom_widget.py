@@ -39,8 +39,7 @@ class ArgumentsHandler(BaseXmlBuilderTagHandler):
 
     def end_elem(self, name):
         if name == 'arguments':
-            self.parent.properties['arguments'].set(self.arguments)
-            self.parent.properties_changed(["arguments"])
+            self.parent.properties['arguments'].load(self.arguments)
             return True
         elif name == 'argument':
             char_data = self.get_char_data()
@@ -104,11 +103,10 @@ class CustomWidget(ManagedBase):
             return ArgumentsHandler(self)
         return ManagedBase.get_property_handler(self, name)
 
-    def properties_changed(self, modified):
-        if not modified or "klass" in modified:
-            if self.widget:
-                self.widget.Refresh()
-        ManagedBase.properties_changed(self, modified)
+    def _properties_changed(self, modified, actions):
+        if modified and "instance_class" in modified:
+            actions.update(("refresh","label"))
+        ManagedBase._properties_changed(self, modified, actions)
 
 
 class Dialog(wx.Dialog):

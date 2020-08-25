@@ -154,40 +154,41 @@ widget_config = {
 
         # Generic border styles
         'wxBORDER_DEFAULT': { 'desc': _('The window class will decide the kind of border to show, if any.'),
-                              'supported_by': ('wx3',) },
-        'wxSIMPLE_BORDER':  { 'desc': _('Displays a thin border around the window. '
-                                        'wxSIMPLE_BORDER is the old name for this style.'),
-                              'rename_to': 'wxBORDER_SIMPLE' },
-        'wxBORDER_SIMPLE':  { 'desc': _('Displays a thin border around the window. '
-                                        'wxSIMPLE_BORDER is the old name for this style.') },
-        'wxSUNKEN_BORDER':  { 'desc': _('Displays a sunken border. wxSUNKEN_BORDER is the old name for this style.'),
-                              'rename_to': 'wxBORDER_SUNKEN' },
-        'wxBORDER_SUNKEN':  { 'desc': _('Displays a sunken border. wxSUNKEN_BORDER is the old name for this style.') },
-        'wxRAISED_BORDER':  { 'desc': _('Displays a raised border. wxRAISED_BORDER is the old name for this style.'),
-                              'rename_to': 'wxBORDER_RAISED' },
-        'wxBORDER_RAISED':  { 'desc': _('Displays a raised border. wxRAISED_BORDER is the old name for this style.') },
-        'wxSTATIC_BORDER':  { 'desc': _('Displays a border suitable for a static control. '
-                                        'wxSTATIC_BORDER is the old name for this style. Windows only.'),
-                              'rename_to': 'wxBORDER_STATIC' },
-        'wxBORDER_STATIC':  { 'desc': _('Displays a border suitable for a static control. '
-                                        'wxSTATIC_BORDER is the old name for this style. Windows only.') },
+                              'supported_by': ('wx3',),
+                              'exclude': 'wxBORDER_NONE|wxBORDER_STATIC|wxBORDER_SIMPLE|wxBORDER_RAISED|wxBORDER_SUNKEN|wxBORDER_DOUBLE|wxBORDER_THEME'},
+        'wxBORDER_SIMPLE':  { 'desc': _('Displays a thin border around the window.'),
+                              'exclude': 'wxBORDER_DEFAULT|wxBORDER_NONE|wxBORDER_STATIC|wxBORDER_RAISED|wxBORDER_SUNKEN|wxBORDER_DOUBLE|wxBORDER_THEME'},
+        'wxBORDER_SUNKEN':  { 'desc': _('Displays a sunken border.'),
+                              'exclude': 'wxBORDER_DEFAULT|wxBORDER_NONE|wxBORDER_STATIC|wxBORDER_SIMPLE|wxBORDER_RAISED|wxBORDER_DOUBLE|wxBORDER_THEME'},
+        'wxBORDER_RAISED':  { 'desc': _('Displays a raised border.'),
+                              'exclude': 'wxBORDER_DEFAULT|wxBORDER_NONE|wxBORDER_STATIC|wxBORDER_SIMPLE|wxBORDER_SUNKEN|wxBORDER_DOUBLE|wxBORDER_THEME'},
+        'wxBORDER_STATIC':  { 'desc': _('Displays a border suitable for a static control. Windows only.'),
+                              'exclude': 'wxBORDER_DEFAULT|wxBORDER_NONE|wxBORDER_SIMPLE|wxBORDER_RAISED|wxBORDER_SUNKEN|wxBORDER_DOUBLE|wxBORDER_THEME'},
         'wxBORDER_THEME':   { 'desc': _('Displays a native border suitable for a control, on the current platform. '
                                         'On Windows XP or Vista, this will be a themed border; '
                                         'on most other platforms a sunken border will be used. '
                                         'For more information for themed borders on Windows, please see Themed borders '
-                                        'on Windows.') },
-        'wxNO_BORDER': { 'desc': _('Displays no border, overriding the default border '
-                                   'style for the window. wxNO_BORDER is the old name for this style.'),
-                         'rename_to': 'wxBORDER_NONE' },
-        'wxBORDER_NONE': { 'desc': _('Displays no border, overriding the default border style for the window.'
-                                     ' wxNO_BORDER is the old name for this style.'),
+                                        'on Windows.'),
+                              'exclude': 'wxBORDER_DEFAULT|wxBORDER_NONE|wxBORDER_STATIC|wxBORDER_SIMPLE|wxBORDER_RAISED|wxBORDER_SUNKEN|wxBORDER_DOUBLE'},
+        'wxBORDER_NONE': { 'desc': _('Displays no border, overriding the default border style for the window.'),
+                           'exclude': 'wxBORDER_DEFAULT|wxBORDER_STATIC|wxBORDER_SIMPLE|wxBORDER_RAISED|wxBORDER_SUNKEN|wxBORDER_DOUBLE|wxBORDER_THEME'
         },
-        'wxDOUBLE_BORDER': { 'desc':_('Displays a double border. wxDOUBLE_BORDER is the old name for this style. '
-                                      'Windows and Mac only.'),
+        # obsolete border style
+        'wxBORDER_DOUBLE': { 'desc':_('Displays a double border. Windows and Mac only.'),
+                             'obsolete': _('since wx3.0'),
+                             'supported_by': ('wx2',),
+                             'exclude': 'wxBORDER_DEFAULT|wxBORDER_STATIC|wxBORDER_SIMPLE|wxBORDER_RAISED|wxBORDER_SUNKEN|wxBORDER_THEME'},
+
+        # old border style names
+        'wxSIMPLE_BORDER':  { 'desc': _('Displays a thin border around the window.'), 'rename_to': 'wxBORDER_SIMPLE' },
+        'wxSUNKEN_BORDER':  { 'desc': _('Displays a sunken border.'), 'rename_to': 'wxBORDER_SUNKEN' },
+        'wxRAISED_BORDER':  { 'desc': _('Displays a raised border.'), 'rename_to': 'wxBORDER_RAISED' },
+        'wxSTATIC_BORDER':  { 'desc': _('Displays a border suitable for a static control. Windows only.'),
+                              'rename_to': 'wxBORDER_STATIC' },
+        'wxNO_BORDER': { 'desc': _('Displays no border, overriding the default border style for the window.'),
+                         'rename_to': 'wxBORDER_NONE' },
+        'wxDOUBLE_BORDER': { 'desc':_('Displays a double border. Windows and Mac only.'),
                              'rename_to': 'wxBORDER_DOUBLE' },
-        'wxBORDER_DOUBLE': { 'desc':_('Displays a double border. wxDOUBLE_BORDER is the old name for this style. '
-                                      'Windows and Mac only.'),
-                             'obsolete': _('since wx3.0') },
 
         # wxDialog styles
         'wxNO_3D': { 'desc': _('Under Windows, specifies that the child controls should not have 3D borders unless '

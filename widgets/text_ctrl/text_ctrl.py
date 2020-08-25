@@ -39,11 +39,11 @@ class EditTextCtrl(ManagedBase, EditStylesMixin):
         #    value = value.replace('\\n', '\n') # XXX is this correct? is self.value already with newlines?
         self.widget = wx.TextCtrl(self.parent_window.widget, self.id, value=value, style=self.style)
 
-    def properties_changed(self, modified):
+    def _properties_changed(self, modified, actions):
         if "value" in modified and self.widget:
             self.widget.SetValue(self.value)
-        EditStylesMixin.properties_changed(self, modified)
-        ManagedBase.properties_changed(self, modified)
+        EditStylesMixin._properties_changed(self, modified, actions)
+        ManagedBase._properties_changed(self, modified, actions)
 
 
 
