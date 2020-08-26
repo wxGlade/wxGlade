@@ -3381,7 +3381,7 @@ class PropertyOwner(object):
     def check_property_modification(self, name, value, new_value):
         # return False in derived class to veto a user modification
         return True
-
+    
     def _properties_changed(self, modified, actions):
         # action method(s)
         pass

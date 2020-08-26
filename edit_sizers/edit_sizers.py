@@ -425,22 +425,12 @@ class SizerBase(edit_base.EditBase):
 
     def properties_changed(self, modified):
         actions = edit_base.EditBase.properties_changed(self, modified)
-        # widget properties modified; trigger updates
 
-
-        # XXX check which are actually used
-
+        if config.debugging:
+            assert not {"recreate", "refresh", "sizeevent"}.intersection(actions)
         if self.widget:
-            if "recreate" in actions:
-                self.recreate_widget()
-                return
-            if "refresh" in actions:
-                self.widget.Refresh()
             if "layout" in actions:
                 self.parent_window.layout()
-            if "sizeevent" in actions:
-                wx.SafeYield()  # required for gtk when e.g. increasing the font size of a label or button
-                self.widget.SendSizeEventToParent()
         return actions
 
     def check_drop_compatibility(self):
