@@ -331,14 +331,8 @@ class EditBase(np.PropertyOwner):
         if hasattr(self.widget, "SendSizeEventToParent"):
             # following is required for gtk when e.g. pasting a button or label with non-standard font
             # on Windows it's not required; Mac Os has not been tested
+            wx.SafeYield()
             self.widget.SendSizeEventToParent()
-        # alternative implementation:
-        #import wx
-        #wx.SafeYield()
-        #w = self
-        #while not w.IS_ROOT:
-            #if not w.IS_SIZER: w.widget.SendSizeEvent()
-            #w = w.parent
 
     # actual widget creation
     def create_widget(self):
