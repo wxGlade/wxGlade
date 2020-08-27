@@ -1,1 +1,1 @@
-__version__ = "0.9.9pre"  # don't forget to update also the wxglade shell script, sphinx/conf.py and wxGlade.desktop
+__version__ = "1.0.0a1"  # don't forget to update also the wxglade shell script, sphinx/conf.py and wxGlade.desktop

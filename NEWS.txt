@@ -1,3 +1,28 @@
+Version 1.0
+
+General:
+ - sizers only required where wx requires them; not required e.g. for Frame->Panel (used to be Frame->Sizer->Panel)
+ - better handling of display updates when properties are edited
+ - accessibility and usability improvements
+ - Dialog example
+ - documentation update
+
+Internal:
+ - internal structures refactored
+ - add shell window and Tree Printer
+
+Widgets:
+ - all: separate class related properties into Class / Base Classes / Instance Class
+ - Dialog: add StdDialogButtonSizer and standard buttons (stock items); support SetAffirmativeId, SetEscapeId
+ - Button: support for image direction
+ - MenuBar: support lambda event handlers
+ - GridBagSizer: indicate overlapped slots in the Tree view
+
+Generated Code:
+ - no separation into __set_properties/__do_layout any more
+ - support for instantiation classes
+
+
 Version 0.9
 General:
  - new user interface; use Alt-1,-2,-3, the menu or the toolbar to switch between layouts

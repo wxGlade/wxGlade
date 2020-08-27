@@ -13,7 +13,7 @@ Coding convensions
 - Class names are usually CamelCase - variables, functions and method names
   are lower_case_with_unserscores
 - Constants are ``UPPER_CASE``
-- Source lines are at most 79 characters long
+- Source lines are at most 120 characters long
 - Class bodies are usually ended by a ``# end of class ClassName`` comment
 - Source files use Unix EOL conventions (LF) if possible. In any case, please
   don't mix Unix and Windows EOLs
