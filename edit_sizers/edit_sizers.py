@@ -1404,8 +1404,6 @@ class GridSizerBase(SizerBase):
                 self._set_growable()
                 actions.add("layout")
 
-        if "layout" in actions and self.widget: self.window.widget.Refresh()  # XXX delete this
-
         SizerBase._properties_changed(self, modified, actions)
 
 

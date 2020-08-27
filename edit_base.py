@@ -362,7 +362,7 @@ class EditBase(np.PropertyOwner):
         pass
 
     # actual widget destruction, called from recursive_remove
-    def destroy_widget(self, level, later=False):
+    def destroy_widget(self, level, later=True):
         # just destroy the widget; all bookkeeping / data structure update is done in recursive_remove
         # level is 0 for toplevel or when the user just deletes this one
         if not self.widget: return

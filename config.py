@@ -14,7 +14,9 @@ import os, sys
 
 
 debugging = ('WINGDB_ACTIVE' in os.environ)  # if True, at many places exceptions will be raised instead of handled
-use_freeze_thaw = True  # for debugging, you may want to set this to False
+use_freeze_thaw = False
+if sys.platform=="win32":
+    use_freeze_thaw = True  # for debugging, you may want to set this to False
 open_design_window = debugging  # if True, wxGlade will open the design window when started with a command line argument
 use_gui = True   # If True, wxGlade runs in "GUI" mode, if False, in "batch" mode for generating code only
 inform_screen_reader = None  # set if program starts for the first time and a screen reader is installed

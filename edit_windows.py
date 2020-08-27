@@ -707,7 +707,7 @@ class ManagedBase(WindowBase):
             ##if not size_p.is_active():
                 ##size_p.set( best_size )
 
-    def destroy_widget(self, level, later=False):
+    def destroy_widget(self, level, later=True):
         if self.widget and self.sel_marker:
             self.sel_marker.Destroy()  # destroy the selection markers
             self.sel_marker = None
