@@ -16,7 +16,7 @@ import new_properties as np
 
 class EditStaticBitmap(BitmapMixin, ManagedBase, EditStylesMixin):
     "Class to handle wxStaticBitmap objects"
-    update_widget_style = False
+    recreate_on_style_change = True
     WX_CLASS = 'wxStaticBitmap'
     _PROPERTIES = ["Widget", "bitmap", "attribute", "style"]
     PROPERTIES = ManagedBase.PROPERTIES + _PROPERTIES + ManagedBase.EXTRA_PROPERTIES
@@ -35,7 +35,7 @@ class EditStaticBitmap(BitmapMixin, ManagedBase, EditStylesMixin):
 
     def create_widget(self):
         bmp = self.get_preview_obj_bitmap()
-        self.widget = wx.StaticBitmap(self.parent_window.widget, self.id, bmp)
+        self.widget = wx.StaticBitmap(self.parent_window.widget, self.id, bmp, style=self.style)
         if wx.Platform == '__WXMSW__':
             def get_best_size():
                 bmp = self.widget.GetBitmap()
@@ -44,16 +44,15 @@ class EditStaticBitmap(BitmapMixin, ManagedBase, EditStylesMixin):
                 return wx.StaticBitmap.GetBestSize(self.widget)
             self.widget.GetBestSize = get_best_size
 
-    def properties_changed(self, modified=None):
+    def _properties_changed(self, modified, actions):
         "update label (and size if label/stockitem have changed)"
         if not modified or "bitmap" in modified and self.widget:
             bmp = self.get_preview_obj_bitmap(self.bitmap)
             self.widget.SetBitmap(bmp)
+            if modified: actions.add("layout")
 
-            self._set_widget_best_size()
-
-        EditStylesMixin.properties_changed(self, modified)
-        ManagedBase.properties_changed(self, modified)
+        EditStylesMixin._properties_changed(self, modified, actions)
+        ManagedBase._properties_changed(self, modified, actions)
 
 
 def builder(parent, index, bitmap=None):

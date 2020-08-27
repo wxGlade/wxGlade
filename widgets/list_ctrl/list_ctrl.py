@@ -61,10 +61,11 @@ class EditListCtrl(ManagedBase, EditStylesMixin):
             elif self.columns:
                 compat.ListCtrl_SetStringItem(self.widget, 0, 0, "List Control: %s"%self.name)
 
-    def properties_changed(self, modified):
-        EditStylesMixin.properties_changed(self, modified)
+    def _properties_changed(self, modified, actions):
+        EditStylesMixin._properties_changed(self, modified, actions)
         self._update_widget_properties(modified)
-        ManagedBase.properties_changed(self, modified)
+        if modified: actions.add("refresh")
+        ManagedBase._properties_changed(self, modified, actions)
         if not modified or "name" in modified:
             self._set_name()
 
@@ -99,7 +100,6 @@ class EditListCtrl(ManagedBase, EditStylesMixin):
                         compat.ListCtrl_InsertStringItem(self.widget, i, "")
     
             self._set_name()
-        self.widget.Refresh()
 
     def get_property_handler(self, name):
         if name == 'columns': return ColsHandler(self)

@@ -108,7 +108,7 @@ class PanelBase(EditStylesMixin):
             return self.widget.GetSize()
         return self.widget.__class__.GetBestSize(self.widget)
 
-    def properties_changed(self, modified):
+    def _properties_changed(self, modified, actions):
         if not modified or "scrollable" in modified:
             if self.scrollable:
                 if self.klass == 'wxPanel':
@@ -123,10 +123,11 @@ class PanelBase(EditStylesMixin):
 
         if self.widget and modified:
             if "scrollable" in modified and self.properties["scrollable"].previous_value!=self.scrollable:
-                self.recreate_widget()
+                #self.recreate_widget()
+                actions.add("recreate")  # XXX check recreate_widget vs. recreate_widget2
             elif "scroll_rate" in modified and self.scrollable and isinstance(self.widget, wx.ScrolledWindow):
                 self.widget.SetScrollRate( *self.properties["scroll_rate"].get_tuple() )
-        EditStylesMixin.properties_changed(self, modified)
+        EditStylesMixin._properties_changed(self, modified, actions)
 
 
 class EditPanel(PanelBase, ManagedBase):
@@ -205,14 +206,14 @@ class EditPanel(PanelBase, ManagedBase):
         if self.widget: self.widget.SetSize(size)
         return ret
 
-    def properties_changed(self, modified):
+    def _properties_changed(self, modified, actions):
         if not modified or "scrollable" in modified:
             if self.scrollable:
                 self.WX_CLASS = "wxScrolledWindow"
             else:
                 self.WX_CLASS = "wxPanel"
-        PanelBase.properties_changed(self, modified)
-        ManagedBase.properties_changed(self, modified)
+        PanelBase._properties_changed(self, modified, actions)
+        ManagedBase._properties_changed(self, modified, actions)
 
     def get_properties(self, without=set()):
         # return list of properties to be written to XML file
@@ -288,7 +289,7 @@ class EditTopLevelPanel(PanelBase, TopLevelBase):
         if self.widget.GetParent().GetClientSize() != (w, h):
             self.widget.GetParent().SetClientSize((w+2, h+2))
 
-    def properties_changed(self, modified):
+    def _properties_changed(self, modified, actions):
         if not modified or "scrollable" in modified:
             if self.scrollable:
                 self.WX_CLASS = "wxScrolledWindow"
@@ -298,8 +299,8 @@ class EditTopLevelPanel(PanelBase, TopLevelBase):
             if self.widget:
                 self.widget.GetParent().SetTitle(misc.design_title(self.name))
 
-        PanelBase.properties_changed(self, modified)
-        TopLevelBase.properties_changed(self, modified)
+        PanelBase._properties_changed(self, modified, actions)
+        TopLevelBase._properties_changed(self, modified, actions)
 
     def get_properties(self, without=set()):
         # return list of properties to be written to XML file

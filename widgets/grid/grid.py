@@ -77,8 +77,7 @@ class ColsHandler(BaseXmlBuilderTagHandler):
 
     def end_elem(self, name):
         if name == 'columns':
-            self.parent.properties['columns'].set(self.columns)
-            self.parent.properties_changed(["columns"])
+            self.parent.properties['columns'].load(self.columns)
             return True
         elif name == 'column':
             char_data = self.get_char_data()
@@ -150,8 +149,7 @@ class RowsHandler(BaseXmlBuilderTagHandler):
 
     def end_elem(self, name):
         if name == 'rows':
-            self.parent.properties['rows'].set(self.rows)
-            self.parent.properties_changed(["rows"])
+            self.parent.properties['rows'].load(self.rows, notify=True)
             return True
         elif name == 'row':
             char_data = self.get_char_data()
@@ -301,11 +299,10 @@ class EditGrid(ManagedBase):
                     self.widget.SetRowSize(i, size)
                 self.widget.SetRowLabelValue(i, label.replace('\\n', '\n'))
 
-        self.widget.ForceRefresh()
-
-    def properties_changed(self, modified):
+    def _properties_changed(self, modified, actions):
         self._update_widget_properties(modified)
-        ManagedBase.properties_changed(self, modified)
+        if modified: actions.add("refresh")
+        ManagedBase._properties_changed(self, modified, actions)
 
     def get_property_handler(self, name):
         if name == 'columns': return ColsHandler(self)

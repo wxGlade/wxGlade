@@ -404,7 +404,7 @@ class Application(EditRoot):
         return toplevel
 
     ####################################################################################################################
-    def properties_changed(self, modified):
+    def _properties_changed(self, modified, actions):
         # ['encoding', 'output_path', 'class', 'name', 'multiple_files', 'language', 'top_window', 'use_gettext',
         # 'use_gettext', 'is_template', 'overwrite', 'indent_mode', 'indent_amount', 'for_version', 'source_extension',
         # 'header_extension']

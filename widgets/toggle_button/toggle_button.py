@@ -45,21 +45,19 @@ class EditToggleButton(BitmapMixin, ManagedBase, EditStylesMixin):
         self.widget.Bind(wx.EVT_TOGGLEBUTTON, self.on_set_focus, id=self.id)
         BitmapMixin._set_preview_bitmaps(self)
 
-    def properties_changed(self, modified):
+    def _properties_changed(self, modified, actions):
+        # XXX unify with EditButton; remove "bestsize"
         if not modified or "value" in modified and self.widget:
             self.widget.SetValue(self.value)
 
         if not modified or "label" in modified:
             if self.widget:
                 self.widget.SetLabel(self.label)
-                self._set_widget_best_size()
-            if common.app_tree is not None:
-                common.app_tree.refresh(self, refresh_label=True, refresh_image=False)
+            if modified: actions.update(("bestsize", "layout", "label"))
 
-        BitmapMixin._properties_changed(self, modified)
-        self._set_widget_best_size()
-        EditStylesMixin.properties_changed(self, modified)
-        ManagedBase.properties_changed(self, modified)
+        BitmapMixin._properties_changed(self, modified, actions)
+        EditStylesMixin._properties_changed(self, modified, actions)
+        ManagedBase._properties_changed(self, modified, actions)
 
 
 def builder(parent, index):

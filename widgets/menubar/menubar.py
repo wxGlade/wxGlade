@@ -703,8 +703,7 @@ class MenuHandler(BaseXmlBuilderTagHandler):
             self.menu_depth -= 1
             self.curr_menu.pop()
         elif name == 'menus':
-            self.owner.properties["menus"].set(self.menus)
-            self.owner.properties_changed(["menus"])
+            self.owner.properties["menus"].load(self.menus)
             return True
 
     def char_data(self, data):
@@ -849,10 +848,9 @@ class EditMenuBar(EditBase):#, PreviewMixin):
             return MenuHandler(self)
         return None
 
-    def properties_changed(self, modified):
-        if not modified or "menus" in modified:
-            self.set_menus()
-        EditBase.properties_changed(self, modified)
+    def _properties_changed(self, modified, actions):
+        if not modified or "menus" in modified: self.set_menus()
+        EditBase._properties_changed(self, modified, actions)
 
     def check_compatibility(self, widget, typename=None):
         return (False,"No pasting possible here.")

@@ -69,7 +69,7 @@ class Property(object):
 
     def __init__(self, value, default_value=_DefaultArgument, name=None):#, write_always=False):
         self.value = value
-        self.previous_value = None  # only set during call of self.owner.properties_modified
+        self.previous_value = None  # only set during call of self.owner.properties_changed
         # when the property is assigned to an instance property, these will be set:
         self.owner = None
         self.name = name
@@ -3377,14 +3377,21 @@ class PropertyOwner(object):
                 prop.set(new)
         if notify:
             self.properties_changed(properties)
+
     def check_property_modification(self, name, value, new_value):
         # return False in derived class to veto a user modification
         return True
-    def properties_changed(self, modified):
-        """properties edited; trigger actions like widget or sizer update;
-        'modified' is None or a list of property names;
-        the properties_changed method of a derived class may add properties to 'modified' before calling base classes"""
+    
+    def _properties_changed(self, modified, actions):
+        # action method(s)
         pass
+
+    def properties_changed(self, modified):
+        # in derived classes, actions might be triggered depending on 'actions'
+        actions = set()
+        self._properties_changed(modified, actions)
+        return actions
+
     def get_properties(self, without=set()):
         # return list of properties to be written to XML file
         ret = []

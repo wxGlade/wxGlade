@@ -68,8 +68,11 @@ class EditButton(BitmapMixin, ManagedBase, EditStylesMixin):
             if self.bitmap_dir!=wx.LEFT:
                 self.widget.SetBitmapPosition(self.bitmap_dir)
 
-    def properties_changed(self, modified=None):
+    def _properties_changed(self, modified, actions):
         "update label (and size if label/stockitem have changed)"
+
+        if "bitmap" in modified:
+            self.properties["bitmap_dir"].set_blocked( not self.check_prop_truth("bitmap") )
 
         label_modified = not modified or ("label" in modified or "font" in modified)
 
@@ -82,29 +85,32 @@ class EditButton(BitmapMixin, ManagedBase, EditStylesMixin):
                 #self.properties["id"].default_value = new_id  # avoid this value to be written to XML
 
                 l = ButtonStockItems.stock_ids[self.stockitem]
-                if self.widget:
-                    self.widget.SetLabel(l)
+                if self.widget: self.widget.SetLabel(l)
             else:
                 self.properties["label"].set_blocked(False)
-                #self.properties["id"].default_value = "wxID_ANY"
                 label_modified = True
 
-        if label_modified and self.properties["label"].is_active():
-            if self.widget:
-                self.widget.SetLabel(self.label)
+        if modified and "font" in modified and wx.Platform == '__WXGTK__':
+            # on GTK setting a smaller font would fail
+            actions.update(("recreate","label","sizeevent"))
+            return
 
-        if (label_modified or "name" in modified) and common.app_tree:
-            common.app_tree.refresh(self, refresh_label=True, refresh_image=False)
+        if label_modified and self.properties["label"].is_active() and self.widget:
+            self.widget.SetLabel(self.label)
+            label_modified = True
 
-        if "bitmap" in modified:
-            self.properties["bitmap_dir"].set_blocked( not self.check_prop_truth("bitmap") )
+        if label_modified or (modified and "stockitem" in modified):
+            # XXX check this and unify with toggle_button
+            actions.update(("layout","minsize", "label","sizeevent"))
+
+        if modified and ("label" in modified or "stockitem" in modified): actions.add("label")
 
         if "bitmap_dir" in modified and self.widget:
             self.widget.SetBitmapPosition(self.bitmap_dir)
 
-        BitmapMixin._properties_changed(self, modified)
-        EditStylesMixin.properties_changed(self, modified)
-        ManagedBase.properties_changed(self, modified)
+        BitmapMixin._properties_changed(self, modified, actions)
+        EditStylesMixin._properties_changed(self, modified, actions)
+        ManagedBase._properties_changed(self, modified, actions)
 
 
 def builder(parent, index):

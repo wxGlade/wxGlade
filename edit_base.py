@@ -285,16 +285,24 @@ class EditBase(np.PropertyOwner):
         PROPERTIES.remove( move_property )
         PROPERTIES.insert( PROPERTIES.index(after_property)+1, move_property )
 
-    def properties_changed(self, modified):
+    def _properties_changed(self, modified, actions):
         if modified and "name" in modified and self.properties["name"].previous_value is not None:
             if config.debugging or config.testing:
                 assert self.IS_NAMED
             old_name = self.properties["name"].previous_value or None
             self.toplevel_parent.track_contained_name(old_name, self.name)
-            if common.app_tree is not None:
-                common.app_tree.refresh(self, refresh_label=True, refresh_image=False)
-        elif (not modified or "class" in modified or "name" in modified) and common.app_tree:
-            common.app_tree.refresh(self, refresh_label=True, refresh_image=False)
+
+        if modified and ("name" in modified or "label" in modified or "title" in modified):
+            actions.add("label")
+
+    def properties_changed(self, modified):
+        actions = np.PropertyOwner.properties_changed(self, modified)
+
+        if common.app_tree is not None and ("label" in actions or "image" in actions):
+            common.app_tree.refresh(self, refresh_label=("label" in actions), refresh_image=("image" in actions))
+
+        return actions
+
 
     # widget creation and destruction ##################################################################################
     def create(self):
@@ -320,15 +328,11 @@ class EditBase(np.PropertyOwner):
         if not self.IS_SIZER: self.widget.SendSizeEvent()
         parent_window = self.parent_window
         parent_window.widget.SendSizeEvent()
-        if hasattr(parent_window, "SendSizeEventToParent"):
-            parent_window.widget.SendSizeEventToParent()
-        # alternative implementation:
-        #import wx
-        #wx.SafeYield()
-        #w = self
-        #while not w.IS_ROOT:
-            #if not w.IS_SIZER: w.widget.SendSizeEvent()
-            #w = w.parent
+        if hasattr(self.widget, "SendSizeEventToParent") and wx.Platform == '__WXGTK__':
+            # following is required for gtk when e.g. pasting a button or label with non-standard font
+            # on Windows or Mac Os it's not required
+            wx.SafeYield()
+            self.widget.SendSizeEventToParent()
 
     # actual widget creation
     def create_widget(self):
@@ -352,7 +356,7 @@ class EditBase(np.PropertyOwner):
         pass
 
     # actual widget destruction, called from recursive_remove
-    def destroy_widget(self, level, later=False):
+    def destroy_widget(self, level, later=True):
         # just destroy the widget; all bookkeeping / data structure update is done in recursive_remove
         # level is 0 for toplevel or when the user just deletes this one
         if not self.widget: return

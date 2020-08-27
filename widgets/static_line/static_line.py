@@ -44,9 +44,9 @@ class EditStaticLine(ManagedBase, EditStylesMixin):
             return ManagedBase.__getitem__(self, key)
         return lambda: "", lambda v: None
 
-    def properties_changed(self, modified=None):
-        EditStylesMixin.properties_changed(self, modified)
-        ManagedBase.properties_changed(self, modified)
+    def _properties_changed(self, modified, actions):
+        EditStylesMixin._properties_changed(self, modified, actions)
+        ManagedBase._properties_changed(self, modified, actions)
 
 
 def builder(parent, index):

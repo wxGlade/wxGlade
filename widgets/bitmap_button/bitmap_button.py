@@ -40,11 +40,11 @@ class EditBitmapButton(BitmapMixin, ManagedBase, EditStylesMixin):
         self.widget = wx.BitmapButton(self.parent_window.widget, self.id, bmp, style=self.style)
         self._set_preview_bitmaps()
 
-    def properties_changed(self, modified=None):
+    def _properties_changed(self, modified, actions):
         "update label (and size if label/stockitem have changed)"
-        BitmapMixin._properties_changed(self, modified)
-        EditStylesMixin.properties_changed(self, modified)
-        ManagedBase.properties_changed(self, modified)
+        BitmapMixin._properties_changed(self, modified, actions)
+        EditStylesMixin._properties_changed(self, modified, actions)
+        ManagedBase._properties_changed(self, modified, actions)
 
 
 def builder(parent, index):

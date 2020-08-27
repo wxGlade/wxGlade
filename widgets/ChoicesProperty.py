@@ -55,8 +55,7 @@ class ChoicesHandler(BaseXmlBuilderTagHandler):
                 self.choices.append([char_data, self.cur_checked])
             self.cur_checked = None
         elif name == 'choices':
-            self.owner.properties['choices'].set(self.choices)
-            self.owner.properties_changed(["choices"])
+            self.owner.properties['choices'].load(self.choices)
             self.choices = []
             return True  # remove the handler
 

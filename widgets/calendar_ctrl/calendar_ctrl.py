@@ -52,9 +52,9 @@ class EditCalendarCtrl(ManagedBase, EditStylesMixin):
             attr = getattr(wx.calendar, cn)
         return attr
 
-    def properties_changed(self, modified=None):
-        EditStylesMixin.properties_changed(self, modified)
-        ManagedBase.properties_changed(self, modified)
+    def _properties_changed(self, modified, actions):
+        EditStylesMixin._properties_changed(self, modified, actions)
+        ManagedBase._properties_changed(self, modified, actions)
 
 
 def builder(parent, index):

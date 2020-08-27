@@ -41,7 +41,7 @@ class EditCheckListBox(ManagedBase, EditStylesMixin):
             return ChoicesHandler(self)
         return ManagedBase.get_property_handler(self, prop_name)
 
-    def properties_changed(self, modified):
+    def _properties_changed(self, modified, actions):
         # self.selection needs to be in range (-1,len(self.choices))
         choices = self.choices
         max_selection = len(choices)-1
@@ -55,8 +55,7 @@ class EditCheckListBox(ManagedBase, EditStylesMixin):
                 # update widget
                 self.widget.Clear()
                 for c in choices: self.widget.Append(c[0])
-                if hasattr(self.parent, "set_item_best_size") and not self.properties['size'].is_active():
-                    self.sizer.set_item_best_size(self, size=self.widget.GetBestSize())
+                actions.add("layout")
 
         if not modified or "selection" in modified or set_selection:
             if self.selection>max_selection:
@@ -66,8 +65,8 @@ class EditCheckListBox(ManagedBase, EditStylesMixin):
         if self.widget and set_selection:
             self.widget.SetSelection(self.selection)  # -1 is identical to wx.NOT_FOUND
 
-        EditStylesMixin.properties_changed(self, modified)
-        ManagedBase.properties_changed(self, modified)
+        EditStylesMixin._properties_changed(self, modified, actions)
+        ManagedBase._properties_changed(self, modified, actions)
 
 
 

@@ -394,14 +394,10 @@ class SizerBase(edit_base.EditBase):
         # as string
         return self.WX_CLASS
 
-    def properties_changed(self, modified):
+    def _properties_changed(self, modified, actions):
         # "class" and "orient" will only display; "class_orient"
         if modified and "flag" in modified and self.parent.IS_SIZER:
             self.properties["flag"]._check_value()
-
-        if modified and "name" in modified:
-            previous_name = self.properties["name"].previous_value
-            common.app_tree.refresh(self, refresh_label=True, refresh_image=False)
 
         if not modified or "class" in modified:
             self.properties["class_orient"].set(self.get_class_orient())
@@ -423,8 +419,19 @@ class SizerBase(edit_base.EditBase):
                         p.add("wxALL")
                 if self.widget:
                     self.sizer.item_properties_modified(self, modified)
+                    actions.add("layout")
 
-        edit_base.EditBase.properties_changed(self, modified)
+        edit_base.EditBase._properties_changed(self, modified, actions)
+
+    def properties_changed(self, modified):
+        actions = edit_base.EditBase.properties_changed(self, modified)
+
+        if config.debugging:
+            assert not {"recreate", "refresh", "sizeevent"}.intersection(actions)
+        if self.widget:
+            if "layout" in actions:
+                self.parent_window.layout()
+        return actions
 
     def check_drop_compatibility(self):
         return (False, "Items can only be added to empty slots; add/insert a slot first, if required.")
@@ -675,8 +682,6 @@ class SizerBase(edit_base.EditBase):
                     w,h = best_size
             self.widget.SetItemMinSize(widget.widget, w, h)
 
-        self.parent_window.layout()
-
     def remove_item(self, child, level, keep_slot=False):
         "Removes elem from self"
         # called from context menu of SizerSlot; detaches element and does re-layout
@@ -919,12 +924,10 @@ class BoxSizerBase(SizerBase):
 
         return excludes, replace, msg
 
-    def properties_changed(self, modified):
-        if not modified or "orient" in modified and self.item and config.use_gui:
-            # update the image
-            common.app_tree.refresh(self, refresh_label=False, refresh_image=True)
-
-        SizerBase.properties_changed(self, modified)
+    def _properties_changed(self, modified, actions):
+        if modified and "orient" in modified:
+            actions.add("image")
+        SizerBase._properties_changed(self, modified, actions)
 
 
 class EditBoxSizer(BoxSizerBase):
@@ -1004,16 +1007,10 @@ class EditStaticBoxSizer(BoxSizerBase):
         self.widget = wxGladeStaticBoxSizer( wx.StaticBox(self.window.widget, -1, self.label), self.orient )
         self.widget.Add(self._btn, 0, wx.EXPAND)
 
-    def properties_changed(self, modified):
+    def _properties_changed(self, modified, actions):
         if not modified or "label" in modified and self.widget:
             self.widget.GetStaticBox().SetLabel(self.label or "")
-        if modified and "name" in modified:
-            common.app_tree.refresh(self, refresh_label=True, refresh_image=False)
-        elif not modified or "label" in modified or "name" in modified and self.node:
-            if common.app_tree is not None:
-                common.app_tree.refresh(self, refresh_label=True, refresh_image=False)
-
-        BoxSizerBase.properties_changed(self, modified)
+        BoxSizerBase._properties_changed(self, modified, actions)
 
     def destroy_widget(self, level):
         self.widget.GetStaticBox().Destroy()
@@ -1356,7 +1353,7 @@ class GridSizerBase(SizerBase):
         return set(), replace, msg 
 
     @_frozen
-    def properties_changed(self, modified):
+    def _properties_changed(self, modified, actions):
         rows, cols = self._get_actual_rows_cols()
         if rows*cols < len(self.children):
             # number of rows/cols too low; this is not called if rows or col==0
@@ -1384,36 +1381,30 @@ class GridSizerBase(SizerBase):
             elif self.WX_CLASS != "wxGridBagSizer":
                 self.properties["rows"].set_range(0,1000)
 
-        layout = False
-
         if not "class_orient" in modified:  # otherwise, change_sizer will be called and we can skip the following
             if not modified or "rows" in modified and self.widget:
                 if self.widget.GetRows()!=self.rows:
                     self.widget.SetRows(self.rows)
-                    layout = True
+                    actions.add("layout")
             if not modified or "cols" in modified and self.widget:
                 if self.widget.GetCols()!=self.cols:
                     self.widget.SetCols(self.cols)
-                    layout = True
+                    actions.add("layout")
             if not modified or "hgap" in modified and self.widget:
                 if self.widget.GetHGap()!=self.hgap:
                     self.widget.SetHGap(self.hgap)
-                    layout = True
+                    actions.add("layout")
             if not modified or "vgap" in modified and self.widget:
                 if self.widget.GetVGap()!=self.vgap:
                     self.widget.SetVGap(self.vgap)
-                    layout = True
+                    actions.add("layout")
 
         if "growable_rows" in self.properties and self.widget:
             if not modified or "growable_rows" in modified or "growable_cols" in modified:
                 self._set_growable()
-                layout = True
+                actions.add("layout")
 
-        if layout:
-            self.layout()
-            if self.widget: self.window.widget.Refresh()
-
-        SizerBase.properties_changed(self, modified)
+        SizerBase._properties_changed(self, modified, actions)
 
 
 class EditGridSizer(GridSizerBase):
@@ -1795,7 +1786,6 @@ class EditGridBagSizer(EditFlexGridSizer):
                 self.widget.Add(child.widget, child.index, child.span, child.flag, child.border)
 
             self._set_growable()
-            self.parent_window.layout()
 
         misc.rebuild_tree(self)
 
@@ -1803,11 +1793,13 @@ class EditGridBagSizer(EditFlexGridSizer):
         row,col = self._get_row_col(index)
         rows = [r for r in range(self.rows) if r!=row]
         self._recreate(rows, None, self.rows, self.cols)
+        if self.widget: self.parent_window.layout()
 
     def remove_col(self, index):
         row,col = self._get_row_col(index)
         cols = [c for c in range(self.cols) if c!=col]
         self._recreate(None, cols, self.rows, self.cols)
+        if self.widget: self.parent_window.layout()
 
     def insert_row(self, index=-1):
         row,col = self._get_row_col(index)
@@ -1817,6 +1809,7 @@ class EditGridBagSizer(EditFlexGridSizer):
         else:
             rows.insert(row, None)
         self._recreate(rows, None, self.rows, self.cols)
+        if self.widget: self.parent_window.layout()
 
     def insert_col(self, index=-1):
         row,col = self._get_row_col(index)
@@ -1826,6 +1819,7 @@ class EditGridBagSizer(EditFlexGridSizer):
         else:
             cols.insert(col, None)
         self._recreate(None, cols, self.rows, self.cols)
+        if self.widget: self.parent_window.layout()
 
     def _set_row_col_range(self):
         "set ranges of rows/cols properties"
@@ -1841,7 +1835,7 @@ class EditGridBagSizer(EditFlexGridSizer):
         if name=="cols" and new_value<max_col+1: return False
         return EditFlexGridSizer.check_property_modification(self, name, value, new_value)
 
-    def properties_changed(self, modified):
+    def _properties_changed(self, modified, actions):
         if modified and ("rows" in modified or "cols" in modified):
             rows_p = self.properties["rows"]
             cols_p = self.properties["cols"]
@@ -1867,9 +1861,10 @@ class EditGridBagSizer(EditFlexGridSizer):
                         # remove cols
                         cols = list(range(cols_p.value))
                 self._recreate(rows, cols, previous_rows, previous_cols)
+                actions.add("layout")
                 return
 
-        EditFlexGridSizer.properties_changed(self, modified)
+        EditFlexGridSizer._properties_changed(self, modified, actions)
 
     def on_load(self, child=None):
         # called from XML parser right after loading the widget or when pasting an item into a slot

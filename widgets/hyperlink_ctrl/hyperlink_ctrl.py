@@ -44,20 +44,17 @@ class EditHyperlinkCtrl(ManagedBase, EditStylesMixin):
     def create_widget(self):
         self.widget = HyperlinkCtrl(self.parent_window.widget, self.id, self.label, self.url)
 
-    def properties_changed(self, modified):
+    def _properties_changed(self, modified, actions):
         if not modified or "label" in modified:
-            if self.widget:
-                self.widget.SetLabel(self.label)
-                self._set_widget_best_size()
-            if common.app_tree:
-                common.app_tree.refresh(self, refresh_label=True, refresh_image=False)
+            if self.widget: self.widget.SetLabel(self.label)
+            if modified: actions.add("layout")
 
         if not modified or "url" in modified:
-            if self.widget:
-                self.widget.SetURL(self.url)
+            if self.widget: self.widget.SetURL(self.url)
+            if modified: actions.add("layout")
 
-        EditStylesMixin.properties_changed(self, modified)
-        ManagedBase.properties_changed(self, modified)
+        EditStylesMixin._properties_changed(self, modified, actions)
+        ManagedBase._properties_changed(self, modified, actions)
 
     # handle compatibility:
     @decorators.memoize

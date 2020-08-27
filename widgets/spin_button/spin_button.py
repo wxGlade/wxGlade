@@ -36,7 +36,7 @@ class EditSpinButton(ManagedBase, EditStylesMixin):
         self.widget.SetRange( *self.properties["range"].get_tuple() )
         self.widget.SetValue( self.value )
 
-    def properties_changed(self, modified):  # from EditSlider
+    def _properties_changed(self, modified, actions):  # from EditSlider
         if not modified or "range" in modified and self.widget:
             mi,ma = self.properties["range"].get_tuple()
             self.widget.SetRange(mi, ma)
@@ -56,9 +56,8 @@ class EditSpinButton(ManagedBase, EditStylesMixin):
                     value = ma
                 if self.widget: self.widget.SetValue(value)
 
-        EditStylesMixin.properties_changed(self, modified)
-        ManagedBase.properties_changed(self, modified)
-
+        EditStylesMixin._properties_changed(self, modified, actions)
+        ManagedBase._properties_changed(self, modified, actions)
 
 
 def builder(parent, index):
