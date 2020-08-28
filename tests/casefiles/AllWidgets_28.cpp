@@ -312,14 +312,14 @@ All_Widgets_Frame::All_Widgets_Frame(wxWindow* parent, wxWindowID id, const wxSt
     notebook_1_wxStaticText = new wxPanel(notebook_1, wxID_ANY);
     notebook_1->AddPage(notebook_1_wxStaticText, _("wxStaticText"));
     wxFlexGridSizer* grid_sizer_3 = new wxFlexGridSizer(1, 3, 0, 0);
-    label_1 = new wxStaticText(notebook_1_wxStaticText, wxID_ANY, _("red text (RGB)"), wxDefaultPosition, wxDefaultSize, wxALIGN_CENTER);
+    label_1 = new wxStaticText(notebook_1_wxStaticText, wxID_ANY, _("red text (RGB)"), wxDefaultPosition, wxDefaultSize, wxALIGN_CENTER_HORIZONTAL);
     label_1->SetForegroundColour(wxColour(255, 0, 0));
     grid_sizer_3->Add(label_1, 1, wxALL|wxEXPAND, 5);
-    label_4 = new wxStaticText(notebook_1_wxStaticText, wxID_ANY, _("black on red (RGB)"), wxDefaultPosition, wxDefaultSize, wxALIGN_CENTER);
+    label_4 = new wxStaticText(notebook_1_wxStaticText, wxID_ANY, _("black on red (RGB)"), wxDefaultPosition, wxDefaultSize, wxALIGN_CENTER_HORIZONTAL);
     label_4->SetBackgroundColour(wxColour(255, 0, 0));
     label_4->SetToolTip(_("Background colour won't show, check documentation for more details"));
     grid_sizer_3->Add(label_4, 1, wxALL|wxEXPAND, 5);
-    label_5 = new wxStaticText(notebook_1_wxStaticText, wxID_ANY, _("green on pink (RGB)"), wxDefaultPosition, wxDefaultSize, wxALIGN_CENTER);
+    label_5 = new wxStaticText(notebook_1_wxStaticText, wxID_ANY, _("green on pink (RGB)"), wxDefaultPosition, wxDefaultSize, wxALIGN_CENTER_HORIZONTAL);
     label_5->SetBackgroundColour(wxColour(255, 0, 255));
     label_5->SetForegroundColour(wxColour(0, 255, 0));
     label_5->SetToolTip(_("Background colour won't show, check documentation for more details"));

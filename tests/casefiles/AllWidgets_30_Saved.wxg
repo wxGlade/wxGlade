@@ -929,7 +929,7 @@
                                 <flag>wxALL|wxEXPAND</flag>
                                 <object class="wxStaticText" name="label_1" base="EditStaticText">
                                     <foreground>#ff0000</foreground>
-                                    <style>wxALIGN_CENTER</style>
+                                    <style>wxALIGN_CENTER_HORIZONTAL</style>
                                     <label>red text (RGB)</label>
                                     <attribute>1</attribute>
                                 </object>
@@ -941,7 +941,7 @@
                                 <object class="wxStaticText" name="label_4" base="EditStaticText">
                                     <background>#ff0000</background>
                                     <tooltip>Background colour won't show, check documentation for more details</tooltip>
-                                    <style>wxALIGN_CENTER</style>
+                                    <style>wxALIGN_CENTER_HORIZONTAL</style>
                                     <label>black on red (RGB)</label>
                                     <attribute>1</attribute>
                                 </object>
@@ -954,7 +954,7 @@
                                     <background>#ff00ff</background>
                                     <foreground>#00ff00</foreground>
                                     <tooltip>Background colour won't show, check documentation for more details</tooltip>
-                                    <style>wxALIGN_CENTER</style>
+                                    <style>wxALIGN_CENTER_HORIZONTAL</style>
                                     <label>green on pink (RGB)</label>
                                     <attribute>1</attribute>
                                 </object>

@@ -569,16 +569,16 @@
         
         (setf (slot-grid-sizer-3 obj) (wxGridSizer_Create 1 3 0 0))
         
-        (setf (slot-label-1 obj) (wxStaticText_Create (slot-notebook-1-wxStaticText obj) wxID_ANY (_"red text (RGB)") -1 -1 -1 -1 wxALIGN_CENTER))
+        (setf (slot-label-1 obj) (wxStaticText_Create (slot-notebook-1-wxStaticText obj) wxID_ANY (_"red text (RGB)") -1 -1 -1 -1 wxALIGN_CENTER_HORIZONTAL))
         (wxWindow_SetForegroundColour (slot-label-1 obj) (wxColour_CreateRGB 255, 0, 0))
         (wxSizer_AddWindow (slot-grid-sizer-3 obj) (slot-label-1 obj) 1 (logior wxALL wxEXPAND) 5 nil)
         
-        (setf (slot-label-4 obj) (wxStaticText_Create (slot-notebook-1-wxStaticText obj) wxID_ANY (_"black on red (RGB)") -1 -1 -1 -1 wxALIGN_CENTER))
+        (setf (slot-label-4 obj) (wxStaticText_Create (slot-notebook-1-wxStaticText obj) wxID_ANY (_"black on red (RGB)") -1 -1 -1 -1 wxALIGN_CENTER_HORIZONTAL))
         (wxWindow_SetBackgroundColour (slot-label-4 obj) (wxColour_CreateRGB 255, 0, 0))
         (wxWindow_SetToolTip (slot-label-4 obj)(_"Background colour won't show, check documentation for more details"))
         (wxSizer_AddWindow (slot-grid-sizer-3 obj) (slot-label-4 obj) 1 (logior wxALL wxEXPAND) 5 nil)
         
-        (setf (slot-label-5 obj) (wxStaticText_Create (slot-notebook-1-wxStaticText obj) wxID_ANY (_"green on pink (RGB)") -1 -1 -1 -1 wxALIGN_CENTER))
+        (setf (slot-label-5 obj) (wxStaticText_Create (slot-notebook-1-wxStaticText obj) wxID_ANY (_"green on pink (RGB)") -1 -1 -1 -1 wxALIGN_CENTER_HORIZONTAL))
         (wxWindow_SetBackgroundColour (slot-label-5 obj) (wxColour_CreateRGB 255, 0, 255))
         (wxWindow_SetForegroundColour (slot-label-5 obj) (wxColour_CreateRGB 0, 255, 0))
         (wxWindow_SetToolTip (slot-label-5 obj)(_"Background colour won't show, check documentation for more details"))

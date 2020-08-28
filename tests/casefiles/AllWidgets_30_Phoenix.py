@@ -421,16 +421,16 @@ class All_Widgets_Frame(wx.Frame):
 
         grid_sizer_3 = wx.FlexGridSizer(1, 3, 0, 0)
 
-        self.label_1 = wx.StaticText(self.notebook_1_wxStaticText, wx.ID_ANY, _("red text (RGB)"), style=wx.ALIGN_CENTER)
+        self.label_1 = wx.StaticText(self.notebook_1_wxStaticText, wx.ID_ANY, _("red text (RGB)"), style=wx.ALIGN_CENTER_HORIZONTAL)
         self.label_1.SetForegroundColour(wx.Colour(255, 0, 0))
         grid_sizer_3.Add(self.label_1, 1, wx.ALL | wx.EXPAND, 5)
 
-        self.label_4 = wx.StaticText(self.notebook_1_wxStaticText, wx.ID_ANY, _("black on red (RGB)"), style=wx.ALIGN_CENTER)
+        self.label_4 = wx.StaticText(self.notebook_1_wxStaticText, wx.ID_ANY, _("black on red (RGB)"), style=wx.ALIGN_CENTER_HORIZONTAL)
         self.label_4.SetBackgroundColour(wx.Colour(255, 0, 0))
         self.label_4.SetToolTip(_("Background colour won't show, check documentation for more details"))
         grid_sizer_3.Add(self.label_4, 1, wx.ALL | wx.EXPAND, 5)
 
-        self.label_5 = wx.StaticText(self.notebook_1_wxStaticText, wx.ID_ANY, _("green on pink (RGB)"), style=wx.ALIGN_CENTER)
+        self.label_5 = wx.StaticText(self.notebook_1_wxStaticText, wx.ID_ANY, _("green on pink (RGB)"), style=wx.ALIGN_CENTER_HORIZONTAL)
         self.label_5.SetBackgroundColour(wx.Colour(255, 0, 255))
         self.label_5.SetForegroundColour(wx.Colour(0, 255, 0))
         self.label_5.SetToolTip(_("Background colour won't show, check documentation for more details"))

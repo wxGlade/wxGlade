@@ -424,16 +424,16 @@ sub new {
     
     $self->{grid_sizer_3} = Wx::FlexGridSizer->new(1, 3, 0, 0);
     
-    $self->{label_1} = Wx::StaticText->new($self->{notebook_1_wxStaticText}, wxID_ANY, _T("red text (RGB)"), wxDefaultPosition, wxDefaultSize, wxALIGN_CENTER);
+    $self->{label_1} = Wx::StaticText->new($self->{notebook_1_wxStaticText}, wxID_ANY, _T("red text (RGB)"), wxDefaultPosition, wxDefaultSize, wxALIGN_CENTER_HORIZONTAL);
     $self->{label_1}->SetForegroundColour(Wx::Colour->new(255, 0, 0));
     $self->{grid_sizer_3}->Add($self->{label_1}, 1, wxALL|wxEXPAND, 5);
     
-    $self->{label_4} = Wx::StaticText->new($self->{notebook_1_wxStaticText}, wxID_ANY, _T("black on red (RGB)"), wxDefaultPosition, wxDefaultSize, wxALIGN_CENTER);
+    $self->{label_4} = Wx::StaticText->new($self->{notebook_1_wxStaticText}, wxID_ANY, _T("black on red (RGB)"), wxDefaultPosition, wxDefaultSize, wxALIGN_CENTER_HORIZONTAL);
     $self->{label_4}->SetBackgroundColour(Wx::Colour->new(255, 0, 0));
     $self->{label_4}->SetToolTipString(_T("Background colour won't show, check documentation for more details"));
     $self->{grid_sizer_3}->Add($self->{label_4}, 1, wxALL|wxEXPAND, 5);
     
-    $self->{label_5} = Wx::StaticText->new($self->{notebook_1_wxStaticText}, wxID_ANY, _T("green on pink (RGB)"), wxDefaultPosition, wxDefaultSize, wxALIGN_CENTER);
+    $self->{label_5} = Wx::StaticText->new($self->{notebook_1_wxStaticText}, wxID_ANY, _T("green on pink (RGB)"), wxDefaultPosition, wxDefaultSize, wxALIGN_CENTER_HORIZONTAL);
     $self->{label_5}->SetBackgroundColour(Wx::Colour->new(255, 0, 255));
     $self->{label_5}->SetForegroundColour(Wx::Colour->new(0, 255, 0));
     $self->{label_5}->SetToolTipString(_T("Background colour won't show, check documentation for more details"));

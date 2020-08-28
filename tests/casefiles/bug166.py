@@ -29,7 +29,7 @@ class MyFrame(wx.Frame):
         self.choice_1.SetSelection(1)
         sizer_2.Add(self.choice_1, 1, wx.ALL | wx.EXPAND, 5)
 
-        self.label_1 = wx.StaticText(self, wx.ID_ANY, u"German Umlauts äöüÄÖÜß", style=wx.ALIGN_CENTER)
+        self.label_1 = wx.StaticText(self, wx.ID_ANY, u"German Umlauts äöüÄÖÜß", style=wx.ALIGN_CENTER_HORIZONTAL)
         sizer_2.Add(self.label_1, 1, wx.ALL | wx.EXPAND, 5)
 
         self.SetSizer(sizer_1)

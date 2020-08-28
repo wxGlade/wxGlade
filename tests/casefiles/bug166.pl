@@ -42,7 +42,7 @@ sub new {
     $self->{choice_1}->SetSelection(1);
     $self->{sizer_2}->Add($self->{choice_1}, 1, wxALL|wxEXPAND, 5);
     
-    $self->{label_1} = Wx::StaticText->new($self, wxID_ANY, "German Umlauts \N{U+00e4}\N{U+00f6}\N{U+00fc}\N{U+00c4}\N{U+00d6}\N{U+00dc}\N{U+00df}", wxDefaultPosition, wxDefaultSize, wxALIGN_CENTER);
+    $self->{label_1} = Wx::StaticText->new($self, wxID_ANY, "German Umlauts \N{U+00e4}\N{U+00f6}\N{U+00fc}\N{U+00c4}\N{U+00d6}\N{U+00dc}\N{U+00df}", wxDefaultPosition, wxDefaultSize, wxALIGN_CENTER_HORIZONTAL);
     $self->{sizer_2}->Add($self->{label_1}, 1, wxALL|wxEXPAND, 5);
     
     $self->SetSizer($self->{sizer_1});

@@ -25,7 +25,7 @@
                 <border>0</border>
                 <flag>wxALL|wxEXPAND</flag>
                 <object class="wxStaticText" name="label_1" base="EditStaticText">
-                    <style>wxALIGN_CENTER</style>
+                    <style>wxALIGN_CENTER_HORIZONTAL</style>
                     <label>placeholder - every design\nneeds a toplevel window</label>
                     <attribute>1</attribute>
                 </object>

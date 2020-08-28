@@ -872,7 +872,7 @@
                                 <object class="wxStaticText" name="label_1">
                                     <fg>#ff0000</fg>
                                     <label>red text (RGB)</label>
-                                    <style>wxALIGN_CENTER</style>
+                                    <style>wxALIGN_CENTER_HORIZONTAL</style>
                                 </object>
                             </object>
                             <object class="sizeritem">
@@ -882,7 +882,7 @@
                                 <object class="wxStaticText" name="label_4">
                                     <bg>#ff0000</bg>
                                     <label>black on red (RGB)</label>
-                                    <style>wxALIGN_CENTER</style>
+                                    <style>wxALIGN_CENTER_HORIZONTAL</style>
                                     <tooltip>Background colour won't show, check documentation for more details</tooltip>
                                 </object>
                             </object>
@@ -894,7 +894,7 @@
                                     <bg>#ff00ff</bg>
                                     <fg>#00ff00</fg>
                                     <label>green on pink (RGB)</label>
-                                    <style>wxALIGN_CENTER</style>
+                                    <style>wxALIGN_CENTER_HORIZONTAL</style>
                                     <tooltip>Background colour won't show, check documentation for more details</tooltip>
                                 </object>
                             </object>

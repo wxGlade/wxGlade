@@ -31,7 +31,7 @@ MyFrame::MyFrame(wxWindow* parent, wxWindowID id, const wxString& title, const w
     choice_1 = new wxChoice(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, 2, choice_1_choices);
     choice_1->SetSelection(1);
     sizer_2->Add(choice_1, 1, wxALL|wxEXPAND, 5);
-    label_1 = new wxStaticText(this, wxID_ANY, wxT("German Umlauts äöüÄÖÜß"), wxDefaultPosition, wxDefaultSize, wxALIGN_CENTER);
+    label_1 = new wxStaticText(this, wxID_ANY, wxT("German Umlauts äöüÄÖÜß"), wxDefaultPosition, wxDefaultSize, wxALIGN_CENTER_HORIZONTAL);
     sizer_2->Add(label_1, 1, wxALL|wxEXPAND, 5);
     
     SetSizer(sizer_1);

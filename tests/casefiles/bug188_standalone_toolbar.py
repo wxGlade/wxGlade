@@ -34,7 +34,7 @@ class MyFrame(wx.Frame):
 
         sizer_1 = wx.BoxSizer(wx.VERTICAL)
 
-        self.label_1 = wx.StaticText(self, wx.ID_ANY, "placeholder - every design\nneeds a toplevel window", style=wx.ALIGN_CENTER)
+        self.label_1 = wx.StaticText(self, wx.ID_ANY, "placeholder - every design\nneeds a toplevel window", style=wx.ALIGN_CENTER_HORIZONTAL)
         sizer_1.Add(self.label_1, 1, wx.ALL | wx.EXPAND, 0)
 
         self.SetSizer(sizer_1)

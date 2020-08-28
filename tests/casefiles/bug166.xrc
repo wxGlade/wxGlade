@@ -28,7 +28,7 @@
                         <border>5</border>
                         <object class="wxStaticText" name="label_1">
                             <label>German Umlauts äöüÄÖÜß</label>
-                            <style>wxALIGN_CENTER</style>
+                            <style>wxALIGN_CENTER_HORIZONTAL</style>
                         </object>
                     </object>
                 </object>

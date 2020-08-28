@@ -54,7 +54,7 @@
         (wxChoice_SetSelection (slot-choice-1 obj) 1)
         (wxSizer_AddWindow (slot-sizer-2 obj) (slot-choice-1 obj) 1 (logior wxALL wxEXPAND) 5 nil)
         
-        (setf (slot-label-1 obj) (wxStaticText_Create (slot-top-window obj) wxID_ANY "German Umlauts äöüÄÖÜß" -1 -1 -1 -1 wxALIGN_CENTER))
+        (setf (slot-label-1 obj) (wxStaticText_Create (slot-top-window obj) wxID_ANY "German Umlauts äöüÄÖÜß" -1 -1 -1 -1 wxALIGN_CENTER_HORIZONTAL))
         (wxSizer_AddWindow (slot-sizer-2 obj) (slot-label-1 obj) 1 (logior wxALL wxEXPAND) 5 nil)
         
         (wxWindow_SetSizer (slot-top-window obj) (slot-sizer-1 obj))
