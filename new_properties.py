@@ -793,6 +793,8 @@ class _CheckListProperty(Property):
         self.value_set = self._decode_value(value)
         self.enabler = self._choices = None
         Property.__init__(self, None, default_value, name) # with value=None, as this is to be calculated on demand only
+        self._ignore_names = set()  # flag values to be ignored for DesignWindow
+        self._one_required = None
 
     def set_owner(self, owner, attributename):
         Property.set_owner(self, owner, attributename)
@@ -825,7 +827,7 @@ class _CheckListProperty(Property):
             if self.value_set: self._ensure_values()
             self.value = 0
             for i, name in enumerate(self._names):
-                if name in self.value_set:
+                if name in self.value_set and not name in self._ignore_names:
                     value = self._values[i]
                     if value is not None: self.value |= value
         return Property.get(self)
@@ -922,6 +924,8 @@ class _CheckListProperty(Property):
             else:
                 excludes = self.style_defs[value].get("exclude",[])
             self.value_set.difference_update( excludes )
+            excludes = self.style_defs[value].get("disable",[])
+            self.value_set.difference_update( excludes )
         else:
             if value in self.value_set:
                 self.value_set.remove(value)
@@ -966,6 +970,12 @@ class _CheckListProperty(Property):
                 excludes = self.EXCLUDES.get(name, [])
             else:
                 excludes = self.style_defs[name].get("exclude",[])
+            if self.EXCLUDES2:
+                excludes2 = self.EXCLUDES2
+            else:
+                excludes2 = self.style_defs[name].get("disabled",None)
+                if excludes2 is not None and self.value_set.intersection( excludes2 ):
+                    excludes2 = [name]
             if not config.preferences.no_checkbox_label_colours:
                 default_color = wx.NullColour if not "rename_to" in self.style_defs[name] else wx.Colour(130,130,130)
                 if checked[i] and not name in self.value_set:
@@ -978,10 +988,14 @@ class _CheckListProperty(Property):
                         checkbox.SetForegroundColour(wx.BLUE)
                     else:
                         checkbox.SetForegroundColour(default_color)
-            if self.EXCLUDES2 and name in self.EXCLUDES2:
+            if self._one_required and name in self._one_required and checked[i]:
+                wx.CallAfter( checkbox.Disable )
+            elif excludes2 and name in excludes2:
                 if not config.preferences.no_checkbox_label_colours: checkbox.SetForegroundColour(wx.RED)
                 checkbox.Disable()
-            elif self.EXCLUDES2 is not None:
+            elif excludes2 is not None:
+                checkbox.Enable()
+            elif self._one_required and name in self._one_required and not checked[i]:
                 checkbox.Enable()
             checkbox.Refresh()
 

@@ -22,7 +22,7 @@ class EditListCtrl(ManagedBase, EditStylesMixin):
     PROPERTIES = ManagedBase.PROPERTIES + _PROPERTIES + ManagedBase.EXTRA_PROPERTIES
     _PROPERTY_HELP = {"rows_number":"This is just used for the design and preview windows.",
                       "columns":"Only for style LC_REPORT."}
-    update_widget_style = True
+    recreate_on_style_change = True
 
     def __init__(self, name, parent, index, style=wx.LC_REPORT | wx.BORDER_SUNKEN):
         ManagedBase.__init__(self, name, parent, index)
@@ -30,6 +30,8 @@ class EditListCtrl(ManagedBase, EditStylesMixin):
         if style: self.properties["style"].set(style)
         self.columns = GridColsProperty([])
         self.rows_number = np.SpinProperty(0, immediate=True, default_value=0)
+        self.properties["style"]._ignore_names = {"wxLC_VIRTUAL"}
+        self.properties["style"]._one_required = {"wxLC_ICON", "wxLC_SMALL_ICON", "wxLC_LIST", "wxLC_REPORT"}
 
     def create_widget(self):
         self.widget = wx.ListCtrl(self.parent_window.widget, self.id, style=self.style)
@@ -63,6 +65,7 @@ class EditListCtrl(ManagedBase, EditStylesMixin):
 
     def _properties_changed(self, modified, actions):
         EditStylesMixin._properties_changed(self, modified, actions)
+        if "recreate2" in actions: return
         self._update_widget_properties(modified)
         if modified: actions.add("refresh")
         ManagedBase._properties_changed(self, modified, actions)

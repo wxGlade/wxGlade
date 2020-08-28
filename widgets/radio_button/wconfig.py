@@ -18,12 +18,8 @@ config = {
                       'button as not belonging to a group, and implement '
                       'the mutually-exclusive group behaviour yourself.'),
         },
-        'wxRB_USE_CHECKBOX': {
-            'desc': _('Use a checkbox button instead of radio button (currently supported only on PalmOS).'),
-            'supported_by': ('wx2',),
-        },
     },
-    'style_list': ['wxRB_GROUP', 'wxRB_SINGLE', 'wxRB_USE_CHECKBOX'],
+    'style_list': ['wxRB_GROUP', 'wxRB_SINGLE'],
     'events': {
         'EVT_RADIOBUTTON': {},
     },

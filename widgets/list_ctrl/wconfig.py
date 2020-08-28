@@ -19,7 +19,7 @@ config = {
         },
         'wxLC_VIRTUAL': {
             'desc': _('The application provides items text on demand. May only be used with wxLC_REPORT.'),
-            'exclude': 'wxLC_LIST|wxLC_ICON|wxLC_SMALL_ICON',
+            'disabled': 'wxLC_LIST|wxLC_ICON|wxLC_SMALL_ICON',
         },
         'wxLC_ICON': {
             'desc': _('Large icon view, with optional labels.'),

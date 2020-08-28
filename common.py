@@ -884,7 +884,7 @@ def style_attrs_to_sets(styles):
 
     returns: Style dictionary with modified attributes"""
     for style_name in styles.keys():
-        for attr in ['combination', 'exclude', 'include', 'require', ]:
+        for attr in ['combination', 'exclude', 'include', 'require', 'disabled']:
             try:
                 styles[style_name][attr] = set(styles[style_name][attr].split('|'))
             except (AttributeError, KeyError):

@@ -22,7 +22,7 @@ class EditComboBox(ManagedBase, EditStylesMixin):
     _PROPERTIES = ["Widget", "style", "selection", "choices"]
     PROPERTIES = ManagedBase.PROPERTIES + _PROPERTIES + ManagedBase.EXTRA_PROPERTIES
 
-    update_widget_style = False
+    recreate_on_style_change = True
 
     def __init__(self, name, parent, index, choices):
         ManagedBase.__init__(self, name, parent, index)
@@ -35,7 +35,7 @@ class EditComboBox(ManagedBase, EditStylesMixin):
     def create_widget(self):
         choices = [c[0] for c in self.choices]
         selection = self.selection
-        self.widget = wx.ComboBox(self.parent_window.widget, self.id, choices=choices)
+        self.widget = wx.ComboBox(self.parent_window.widget, self.id, choices=choices, style=self.style)
         self.widget.Bind(wx.EVT_SET_FOCUS, self.on_set_focus)
         self.widget.SetSelection(selection)
 
