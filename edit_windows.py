@@ -1104,26 +1104,6 @@ class EditStylesMixin(np.PropertyOwner):
             self.style_names = self.widget_writer.style_list
         self.style = np.WidgetStyleProperty()  # this will read it's default value
 
-    #def _set_widget_style(self):
-        #"""Set a new widget style if the style has changed.
-        #For some widgets style changes are not possible, so they need to be re-created.
-        #The attribute recreate_on_style_change needs to be True in this case."""
-
-
-        ## some widgets can't be updated, e.g. Gauge can't be switched between horizontal and vertical after creation
-        ## this is for ManagedBase derived classes only
-        #with self.frozen():
-            #focused = misc.focused_widget is self
-
-            #self.parent.destroying_child_widget(self, self.index)
-            #self.destroy_widget(0, later=True)
-            #self.parent.destroyed_child_widget()
-
-            #self.create()
-            #if focused:
-                #misc.focused_widget = self
-                #if self.sel_marker: self.sel_marker.Show(True)
-
     @decorators.memoize
     def wxname2attr(self, name):
         """Return the attribute specified by the name. Only wx attributes are supported.
@@ -1154,6 +1134,7 @@ class EditStylesMixin(np.PropertyOwner):
     def _properties_changed(self, modified, actions):
         if not modified or not "style" in modified: return
         if not self.widget or not self.update_widget_style: return
+        if "recreate" in actions or "recreate2" in actions: return
         old_style = self.widget.GetWindowStyleFlag()
         new_style = self.style
         if old_style == new_style: return

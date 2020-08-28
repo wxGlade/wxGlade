@@ -65,7 +65,6 @@ class TabsHandler(BaseXmlBuilderTagHandler):
 class EditNotebook(ManagedBase, EditStylesMixin):
     "Class to handle wxNotebook objects"
     _next_notebook_number = 1 # next free number for notebook names
-    update_widget_style = False
 
     WX_CLASS = "wxNotebook"
     _PROPERTIES = ["Widget", "no_custom_class", "style", "tabs"]
@@ -240,20 +239,37 @@ class EditNotebook(ManagedBase, EditStylesMixin):
             raise XmlParsingError( _('Notebook widget "%s" does not have tab "%s"!')%(self.name, name) )
 
     ####################################################################################################################
-    def destroy_widget(self, level):
+    def destroy_widget(self, level, later=True):
         if self.widget: self.widget.DeleteAllPages()
-        ManagedBase.destroy_widget(self, level)
+        ManagedBase.destroy_widget(self, level, later)
 
     def get_property_handler(self, name):
         if name == 'tabs':
             return TabsHandler(self)
         return ManagedBase.get_property_handler(self, name)
 
+    def _get_direction(self, value_set):
+        if value_set is None: return None
+        if 'wxNB_LEFT' in value_set: return "L"
+        if 'wxNB_RIGHT' in value_set: return "R"
+        if 'wxNB_BOTTOM' in value_set: return "B"
+        return "T"
+
     def _properties_changed(self, modified, actions):
         if modified and "tabs" in modified and self.widget:
             for i,(tab,) in enumerate(self.tabs):
                 self.widget.SetPageText(i,tab)
-            
+        
+        if modified and "style" in modified:
+            # wxNB_TOP to wxNB_BOTTOM can be changed on the fly; any other change requires re-creation
+            p = self.properties["style"]
+            new = self._get_direction(p.value_set)
+            old = self._get_direction(p.previous_value)
+            if wx.Platform=="__WXMSW__" and ((old=="T" and new=="B") or (old=="B" and new=="T")):
+                actions.add("layout")
+            elif old!=new:
+                actions.add("recreate2")
+
         EditStylesMixin._properties_changed(self, modified, actions)
         ManagedBase._properties_changed(self, modified, actions)
 
