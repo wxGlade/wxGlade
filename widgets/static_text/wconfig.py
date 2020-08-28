@@ -2,6 +2,7 @@
 wxStaticText widget configuration
 
 @copyright: 2014-2016 Carsten Grohmann
+@copyright: 2020 Dietmar Schwertberger
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
@@ -37,9 +38,10 @@ config = {
                       'uses wxControl::Ellipsize.'),
             'supported_by': ('wx3',),
         },
+        'wxALIGN_CENTRE':{'rename_to':'wxALIGN_CENTER_HORIZONTAL'},
+        'wxALIGN_CENTER':{'rename_to':'wxALIGN_CENTER_HORIZONTAL'},
     },
-    'style_list': ['wxALIGN_LEFT', 'wxALIGN_RIGHT', 'wxALIGN_CENTRE',
-                   'wxALIGN_CENTER', 'wxALIGN_CENTRE_HORIZONTAL',
+    'style_list': ['wxALIGN_LEFT', 'wxALIGN_RIGHT', 'wxALIGN_CENTER_HORIZONTAL',
                    'wxST_NO_AUTORESIZE', 'wxST_ELLIPSIZE_START',
                    'wxST_ELLIPSIZE_MIDDLE', 'wxST_ELLIPSIZE_END'],
 }

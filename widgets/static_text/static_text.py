@@ -36,7 +36,7 @@ class EditStaticText(ManagedBase, EditStylesMixin):
     def create_widget(self):
         # up to 0.8 GenStaticText was used; it seems that nowadays StaticText handles mouse events on gtk as well
         #self.widget = wx.lib.stattext.GenStaticText(self.parent_window.widget, self.id, self.label)
-        self.widget = wx.StaticText(self.parent_window.widget, self.id, self.label)
+        self.widget = wx.StaticText(self.parent_window.widget, self.id, self.label, style=self.style)
         # self.wrap is now handled in finish_widget_creation
 
     def _properties_changed(self, modified, actions):
@@ -52,6 +52,10 @@ class EditStaticText(ManagedBase, EditStylesMixin):
 
         if (not modified or "wrap" in modified) and self.widget:
             actions.add("recreate2")  # calling .Wrap(self.wrap) would only work once and not set the size correctly
+            return
+
+        if modified and "style" in modified and wx.Platform!="__WXMSW__":
+            actions.add("recreate2")
             return
 
         EditStylesMixin._properties_changed(self, modified, actions)
