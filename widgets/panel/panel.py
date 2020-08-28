@@ -123,8 +123,7 @@ class PanelBase(EditStylesMixin):
 
         if self.widget and modified:
             if "scrollable" in modified and self.properties["scrollable"].previous_value!=self.scrollable:
-                #self.recreate_widget()
-                actions.add("recreate")  # XXX check recreate_widget vs. recreate_widget2
+                actions.add("recreate")
             elif "scroll_rate" in modified and self.scrollable and isinstance(self.widget, wx.ScrolledWindow):
                 self.widget.SetScrollRate( *self.properties["scroll_rate"].get_tuple() )
         EditStylesMixin._properties_changed(self, modified, actions)

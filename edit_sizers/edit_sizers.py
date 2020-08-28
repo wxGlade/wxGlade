@@ -427,7 +427,7 @@ class SizerBase(edit_base.EditBase):
         actions = edit_base.EditBase.properties_changed(self, modified)
 
         if config.debugging:
-            assert not {"recreate", "refresh", "sizeevent"}.intersection(actions)
+            assert not {"recreate", "recreate2", "refresh", "sizeevent"}.intersection(actions)
         if self.widget:
             if "layout" in actions:
                 self.parent_window.layout()

@@ -45,13 +45,13 @@ class EditStaticText(ManagedBase, EditStylesMixin):
                 p = self.properties["label"]
                 if self.wrap!=-1 or (p.previous_value and len(p.previous_value)>len(self.label)):
                     # re-create as otherwise the size would not be reduced
-                    actions.add("recreate")
+                    actions.add("recreate2")
                     return
                 self.widget.SetLabel(self.label)
                 actions.add("layout")
 
         if (not modified or "wrap" in modified) and self.widget:
-            actions.add("recreate")  # calling .Wrap(self.wrap) would only work once and not set the size correctly
+            actions.add("recreate2")  # calling .Wrap(self.wrap) would only work once and not set the size correctly
             return
 
         EditStylesMixin._properties_changed(self, modified, actions)

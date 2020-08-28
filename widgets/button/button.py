@@ -92,7 +92,7 @@ class EditButton(BitmapMixin, ManagedBase, EditStylesMixin):
 
         if modified and "font" in modified and wx.Platform == '__WXGTK__':
             # on GTK setting a smaller font would fail
-            actions.update(("recreate","label","sizeevent"))
+            actions.update(("recreate2","label","sizeevent"))
             return
 
         if label_modified and self.properties["label"].is_active() and self.widget:

@@ -400,7 +400,6 @@ class WindowBase(EditBase):
 
     def recreate_widget(self):
         "currently used by EditTopLevelPanel to re-create after switch between ScrolledWindow and Panel"
-        # also by EditStaticText
         old_widget = self.widget
         size = self.widget.GetSize()
         with self.frozen():
@@ -559,9 +558,11 @@ class WindowBase(EditBase):
         # widget properties modified; trigger updates
         if self.widget:
             if config.debugging: print("Actions", actions)
-            if "recreate" in actions:
+            if "recreate2" in actions:
                 self.recreate_widget2()
-                #self.recreate_widget()
+                self.layout()
+            elif "recreate" in actions:
+                self.recreate_widget()
                 self.layout()
             elif "refresh" in actions:
                 self.widget.Refresh()
@@ -1158,11 +1159,11 @@ class EditStylesMixin(np.PropertyOwner):
         if old_style == new_style: return
 
         if self.recreate_on_style_change:
-            actions.add("recreate")
+            actions.add("recreate2")
         if self.WX_CLASS == "wxButton" and (old_style & wx.BU_EXACTFIT != new_style & wx.BU_EXACTFIT):
-            actions.add("recreate")  # workaround
+            actions.add("recreate2")  # workaround
 
-        if not "recreate" in actions:
+        if not "recreate2" in actions:
             # update style without re-creating the widget
             self.widget.SetWindowStyleFlag(new_style)
             actions.add("refresh")
