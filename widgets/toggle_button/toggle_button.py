@@ -46,14 +46,13 @@ class EditToggleButton(BitmapMixin, ManagedBase, EditStylesMixin):
         BitmapMixin._set_preview_bitmaps(self)
 
     def _properties_changed(self, modified, actions):
-        # XXX unify with EditButton; remove "bestsize"
         if not modified or "value" in modified and self.widget:
             self.widget.SetValue(self.value)
 
         if not modified or "label" in modified:
             if self.widget:
                 self.widget.SetLabel(self.label)
-            if modified: actions.update(("bestsize", "layout", "label"))
+            if modified: actions.update(("layout", "label"))
 
         BitmapMixin._properties_changed(self, modified, actions)
         EditStylesMixin._properties_changed(self, modified, actions)

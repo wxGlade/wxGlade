@@ -558,17 +558,13 @@ class WindowBase(EditBase):
         actions = EditBase.properties_changed(self, modified)
         # widget properties modified; trigger updates
         if self.widget:
-            print("Actions", actions)
+            if config.debugging: print("Actions", actions)
             if "recreate" in actions:
                 self.recreate_widget2()
                 #self.recreate_widget()
                 self.layout()
             elif "refresh" in actions:
                 self.widget.Refresh()
-            if "minsize" in actions and self.widget:
-                self.widget.SetMinSize((-1,-1))  # otherwise e.g. buttons will not shrionk
-            #if "bestsize" in actions:
-                #self._set_widget_best_size()  # only implemented for ManagedBase
             if "layout" in actions:
                 self.layout()
             if "sizeevent" in actions:

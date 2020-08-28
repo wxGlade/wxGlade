@@ -100,8 +100,7 @@ class EditButton(BitmapMixin, ManagedBase, EditStylesMixin):
             label_modified = True
 
         if label_modified or (modified and "stockitem" in modified):
-            # XXX check this and unify with toggle_button
-            actions.update(("layout","minsize", "label","sizeevent"))
+            actions.update(("layout","label","sizeevent"))
 
         if modified and ("label" in modified or "stockitem" in modified): actions.add("label")
 
