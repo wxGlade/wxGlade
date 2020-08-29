@@ -74,13 +74,13 @@ class EditBase(np.PropertyOwner):
 
     # manage names of contained elements ###############################################################################
     # actually, this might be too strict if contained elements are their own classes
-    def get_next_contained_name(self, fmt):
+    def get_next_contained_name(self, fmt, exclude=None):
         # get a name that is not yet used for one of the children inside
         # will only be used for IS_TOPLEVEL==True; currently only by TopLevelBase; in future maybe for toolbars as well
         number = self._NUMBERS.get(fmt, 1)
         while True:
             name = fmt % number
-            if not name in self.names:
+            if not name in self.names and (not exclude or not name in exclude):
                 self._NUMBERS[fmt] = number
                 return name
             number += 1

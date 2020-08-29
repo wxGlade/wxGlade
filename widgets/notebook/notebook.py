@@ -127,7 +127,8 @@ class EditNotebook(ManagedBase, EditStylesMixin):
         # create panel and node, add to tree
         self.insert_item(None, index)  # placeholder
         if add_panel:
-            editor = panel.EditPanel( self.next_pane_name(), self, index )
+            if not isinstance(add_panel, compat.unicode): add_panel = self.next_pane_name()
+            editor = panel.EditPanel( add_panel, self, index )
             if add_sizer:
                 sizer = edit_sizers._builder(panel_editor, 0)
         else:
@@ -304,7 +305,8 @@ class EditNotebook(ManagedBase, EditStylesMixin):
         if suggestion and suggestion not in self.toplevel_parent.names:
             return suggestion
         tmpl = "%s_pane_%%d" % self.name
-        return self.toplevel_parent.get_next_contained_name(tmpl)
+        tabs = set(tab[0] for tab in self.tabs)
+        return self.toplevel_parent.get_next_contained_name(tmpl, tabs)
 
     def _get_slot_label(self, index):
         title = self.tabs[index][0]
@@ -344,7 +346,8 @@ def builder(parent, index):
         editor.properties["flag"].set("wxEXPAND")
         for n in range(pages):
             # next_pane_name will be used as label and as pane name, if possible
-            editor.insert_tab(n, editor.next_pane_name(), add_panel=add_panels, add_sizer=add_sizers) 
+            name = editor.next_pane_name()
+            editor.insert_tab(n, name, add_panel=add_panels and name or False, add_sizer=add_sizers) 
         if parent.widget: editor.create()
     return editor
 
