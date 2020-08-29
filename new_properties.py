@@ -967,12 +967,17 @@ class _CheckListProperty(Property):
                 checkbox.SetValue(False)
             # display included flags in grey and excluded flags red
             if self.EXCLUDES:
+                # mutually exclusive, e.g. ALIGN_RIGHT if ALIGN_CENTER is set
+                # red / enabled / can be checked and will then deactivate the other one
                 excludes = self.EXCLUDES.get(name, [])
             else:
                 excludes = self.style_defs[name].get("exclude",[])
             if self.EXCLUDES2:
+                # dynamically excluded, e.g. horizontal alignment flag in horizontal sizer
+                # grey / disabled / can not be checked
                 excludes2 = self.EXCLUDES2
             else:
+                # disable if any of the flags in 'disabled' is set
                 excludes2 = self.style_defs[name].get("disabled",None)
                 if excludes2 is not None and self.value_set.intersection( excludes2 ):
                     excludes2 = [name]
