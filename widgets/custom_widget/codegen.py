@@ -32,7 +32,7 @@ def format_ctor_arguments(arguments, parent, id, size):
 
 
 class PythonCustomWidgetGenerator(wcodegen.PythonWidgetCodeWriter):
-    def get_code(self, widget):
+    def get_code(self, widget, widget_access=None, parent_access=None):
         #if self.codegen.preview and widget.klass not in widget.parser.class_names:
         if self.codegen.preview:
             # if this CustomWidget refers to another class in the same wxg
@@ -40,12 +40,13 @@ class PythonCustomWidgetGenerator(wcodegen.PythonWidgetCodeWriter):
             return self.get_code_preview(widget)
         prop = widget.properties
         id_name, id = self.codegen.generate_code_id(widget)
-        parent = self.format_widget_access(widget.parent_window)
+        if parent_access is None: parent_access = self.format_widget_access(widget.parent_window)
         init = []
         if id_name: init.append(id_name)
-        arguments = format_ctor_arguments( widget.arguments, parent, id, widget.size)
+        arguments = format_ctor_arguments( widget.arguments, parent_access, id, widget.size)
         ctor = widget.custom_ctor.strip() or widget.instance_class
-        init.append( 'self.%s = %s(%s)\n' % (widget.name, ctor, ", ".join(arguments)) )
+        if widget_access is None: widget_access = 'self.%s'%widget.name
+        init.append( '%s = %s(%s)\n' % (widget_access, ctor, ", ".join(arguments)) )
         init += self.codegen.generate_code_common_properties(widget)
         return init, []
 

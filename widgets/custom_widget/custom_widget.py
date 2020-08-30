@@ -8,7 +8,7 @@ Custom wxWindow objects
 """
 
 import wx
-import common, misc
+import common, misc, compat
 from wcodegen.taghandler import BaseXmlBuilderTagHandler
 import new_properties as np
 from edit_windows import ManagedBase
@@ -55,14 +55,15 @@ class CustomWidget(ManagedBase):
     custom_ctor: if not empty, an arbitrary piece of code that will be used instead of the constructor name"""
 
     WX_CLASS = "CustomWidget"
-    _PROPERTIES = ["Widget", "custom_ctor", "arguments"]
+    _PROPERTIES = ["Widget", "custom_ctor", "show_design", "arguments"]
     PROPERTIES = ManagedBase.PROPERTIES + _PROPERTIES + ManagedBase.EXTRA_PROPERTIES
 
-    _PROPERTY_LABELS = { 'custom_constructor':'Custom constructor' }
+    _PROPERTY_LABELS = { 'custom_constructor':'Cust. constructor' }
     _PROPERTY_HELP   = { 'custom_constructor':'Specify a custom constructor like a factory method',
                          "instance_class":("The class that should be instantiated, e.g. 'mycontrols.MyCtrl'.\n\n"
                             "You need to ensure that the class is available.\n"
-                            "Add required import code to 'Extra (import) code for this widget' on the Code tab.")}
+                            "Add required import code to 'Extra (import) code for this widget' on the Code tab."),
+                         'show_design':'Highly experimental:\nUse custom class and code already in Design window.'}
 
     def __init__(self, name, parent, index, instance_class=None):
         ManagedBase.__init__(self, name, parent, index, instance_class or "wxWindow")
@@ -73,10 +74,49 @@ class CustomWidget(ManagedBase):
         self.arguments   = ArgumentsProperty( [], cols )
         self.custom_ctor = np.TextPropertyD("", name="custom_constructor", strip=True, default_value="")
 
+        self.show_design = np.CheckBoxProperty(False)
+        self._error_message = None
+
     def create_widget(self):
+        self._error_message = None
+        if self.show_design and common.root.language=="python":
+            # update path
+            import os, sys
+            dirname = os.path.dirname( common.root.filename )
+            if not dirname in sys.path: sys.path.insert(0, dirname)
+            # build code
+            code_gen = common.code_writers["python"]
+            code_gen.new_project(common.root)
+            builder = code_gen.obj_builders["CustomWidget"]
+            widget_access = "self.widget"
+            parent_access = "self.parent_window.widget"
+            lines = []
+            if self.check_prop_truth("extracode"):
+                lines.append( self.extracode )
+            if self.check_prop_truth("extracode_pre"):
+                lines.append( self.extracode_pre )
+            lines += builder.get_code(self, widget_access, parent_access)[0]
+            if self.check_prop_truth("extracode_post"):
+                lines.append( self.extracode_post )
+            if self.check_prop_truth("extraproperties"):
+                lines += code_gen.generate_code_extraproperties(self, widget_access)
+            code = "\n".join(lines)
+            if self.check_prop_truth("extracode_pre") or self.check_prop_truth("extracode_post"):
+                # replace widget and parent access in manually entered extra code
+                code = code.replace("self.%s"%self.name, widget_access)
+                code = code.replace(builder.format_widget_access(self.parent_window), parent_access)
+            # execute code
+            try:
+                exec(code)
+                return
+            except:
+                exc_type, exc_value, exc_traceback = sys.exc_info()
+                self._error_message = "%s: %s"%(exc_type, exc_value)
+        # default / fallback in case of exception
         self.widget = wx.Window(self.parent_window.widget , self.id, style=wx.BORDER_SUNKEN | wx.FULL_REPAINT_ON_RESIZE)
         self.widget.Bind(wx.EVT_PAINT, self.on_paint)
         self.widget.Bind(wx.EVT_ERASE_BACKGROUND, lambda event:None)
+        if self._error_message: compat.SetToolTip( self.widget, self._error_message )
 
     def finish_widget_creation(self, level):
         ManagedBase.finish_widget_creation(self, level, sel_marker_parent=self.widget)
@@ -94,7 +134,11 @@ class CustomWidget(ManagedBase):
         tw, th = dc.GetTextExtent(text)
         x = (w - tw)//2
         y = (h - th)//2
-        dc.SetPen(wx.ThePenList.FindOrCreatePen(wx.BLACK, 0, wx.TRANSPARENT))
+        if self._error_message:
+            text = "%s\n%s"%(text, self._error_message)
+            dc.SetTextForeground(wx.RED)
+        dc.SetPen(wx.ThePenList.FindOrCreatePen(wx.BLACK, 0, wx.TRANSPARENT))  # transparent: border colour
+        #dc.SetPen(pen)
         dc.DrawRectangle(x-1, y-1, tw+2, th+2)
         dc.DrawText(text, x, y)
 
@@ -106,6 +150,8 @@ class CustomWidget(ManagedBase):
     def _properties_changed(self, modified, actions):
         if modified and "instance_class" in modified:
             actions.update(("refresh","label"))
+        if modified and "show_design" in modified or self.show_design:
+            actions.add("recreate2")
         ManagedBase._properties_changed(self, modified, actions)
 
 
