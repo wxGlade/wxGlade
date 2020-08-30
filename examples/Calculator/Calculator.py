@@ -27,7 +27,7 @@ class CalculatorFrame(wx.Frame):
         sizer_1 = wx.BoxSizer(wx.VERTICAL)
 
         sizer_2 = wx.BoxSizer(wx.HORIZONTAL)
-        sizer_1.Add(sizer_2, 0, wx.EXPAND, 0)
+        sizer_1.Add(sizer_2, 0, wx.ALL | wx.EXPAND, 4)
 
         label_1 = wx.StaticText(self.panel_1, wx.ID_ANY, "Value 1:")
         sizer_2.Add(label_1, 0, wx.ALIGN_CENTER_VERTICAL, 0)
@@ -36,7 +36,7 @@ class CalculatorFrame(wx.Frame):
         sizer_2.Add(self.text_value1, 1, 0, 0)
 
         sizer_3 = wx.BoxSizer(wx.HORIZONTAL)
-        sizer_1.Add(sizer_3, 0, wx.EXPAND, 0)
+        sizer_1.Add(sizer_3, 0, wx.ALL | wx.EXPAND, 4)
 
         label_4 = wx.StaticText(self.panel_1, wx.ID_ANY, "Operator:")
         sizer_3.Add(label_4, 0, wx.ALIGN_CENTER_VERTICAL, 0)
@@ -46,7 +46,7 @@ class CalculatorFrame(wx.Frame):
         sizer_3.Add(self.radiobox_operator, 0, 0, 0)
 
         sizer_4 = wx.BoxSizer(wx.HORIZONTAL)
-        sizer_1.Add(sizer_4, 0, wx.EXPAND, 0)
+        sizer_1.Add(sizer_4, 0, wx.ALL | wx.EXPAND, 4)
 
         label_2 = wx.StaticText(self.panel_1, wx.ID_ANY, "Value 2:")
         sizer_4.Add(label_2, 0, wx.ALIGN_CENTER_VERTICAL, 0)
@@ -58,7 +58,7 @@ class CalculatorFrame(wx.Frame):
         sizer_1.Add(static_line_1, 0, wx.BOTTOM | wx.EXPAND | wx.TOP, 5)
 
         sizer_5 = wx.BoxSizer(wx.HORIZONTAL)
-        sizer_1.Add(sizer_5, 1, wx.EXPAND, 0)
+        sizer_1.Add(sizer_5, 1, wx.ALL | wx.EXPAND, 4)
 
         label_3 = wx.StaticText(self.panel_1, wx.ID_ANY, "Result:")
         sizer_5.Add(label_3, 0, 0, 0)

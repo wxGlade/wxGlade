@@ -200,8 +200,9 @@ they contain (i.e. label plus text control, label plus radio box or button plus 
        The inputs for Value 1 and 2 are set to grow horizontally;
        the Result output is growing horizontally and EXPANDing vertically. 
      - In the *Tree* window, you can see the hierarchical structure: |br|
-       |Calculator_06_tree| |br|
-       Note that horizontal and vertical sizers are |br| visualized with different icons: |sizer_h| |sizer| .
+       |Calculator_06_tree| |br| |br|
+       Note that |blue| horizontal |endcolor| and |green| vertical |endcolor| sizers are |br| 
+       visualized with different icons: |sizer_h| |sizer| .
 
 
 Later we'll have a look at alternative structures which allow better alignment of the fields.

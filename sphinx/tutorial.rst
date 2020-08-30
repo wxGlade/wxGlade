@@ -317,7 +317,7 @@ So all elements are there, but the layout is not yet what we want to have:
    * de-select the checkbox :guilabel:`wxEXPAND`
    * select the checkbox :guilabel:`wxALIGN_CENTER_HORIZONTAL`
 
-6. We want a small **border** above and beyond the horizontal line and around each of the buttons:
+6. We want a small **border above and beyond** the horizontal line and around each of the buttons:
 
    * select the horizontal line :guilabel:`static_line_1`
    * set *Properties -> Layout -> Border* to :guilabel:`5`
@@ -325,6 +325,13 @@ So all elements are there, but the layout is not yet what we want to have:
    * select the first button
    * set *Properties -> Layout -> Border* to :guilabel:`5`
    * do the same with the second button (e.g. by selecting it and then hitting :kbd:`Ctrl-Y`)
+
+7. We want a small **border around** beyond the pairs of label and value:
+
+   * select the horizontal sizer :guilabel:`sizer_2` around the first line
+   * set *Properties -> Layout -> Border* to :guilabel:`4`
+   * do the same with the sizers around :guilabel:`Operator` and :guilabel:`Value 2`
+   (e.g. by selecting it and then hitting :kbd:`Ctrl-Y`)
 
 
 At this point, it's time for a **preview**: |br|
@@ -599,7 +606,8 @@ In our example, we may place a spacer to the left and right of the operator radi
      - |Calculator_Spacers_Design0|
 
    * - 
-       * insert spacers into these slots |br| (e.g. with "Width" :guilabel:`20` and "Height" :guilabel:`0`) 
+       * insert spacers |spacer| into these slots |br| (e.g. with "Width" :guilabel:`20` and
+         "Height" :guilabel:`20`) 
        * set "Proportion" to :guilabel:`1` |br| 
          to make them grow 
      - |Calculator_Spacers_Design|
@@ -609,10 +617,10 @@ In our example, we may place a spacer to the left and right of the operator radi
    * - |br| In the *Properties* notebook you can see |br|
        the settings to make the spacers grow:
      - |Calculator_Spacers_Properties|
-   * - As the spacers have a height of 0, you will not see them in the design window. |br| |br|
-       If you don't like this, you may actually set the "Height" property to a different value and
-       maybe even set :guilabel:`EXPAND`. For the actual window this will not make a difference,
-       as the spacers are invisible, but the spacers will be visible in the *Design* window:
+   * - As the spacers have a height of :guilabel:`20`, they're now looking a bit odd in the *Design* window. |br|
+       You may want to make them disappear by setting the theight to :guilabel:`0` or to fill the available space
+       by checking :guilabel:`EXPAND`. |br|
+       For the actual window this will not make a difference in this case.
      - |Calculator_Spacers2|
 
 

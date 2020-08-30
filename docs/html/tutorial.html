@@ -288,8 +288,9 @@ window.</p>
 </tbody>
 </table>
 <p>So all elements are there, but the layout is not yet what we want to have:</p>
-<ol class="arabic simple">
-<li>We want the rows with the values, operators and buttons <strong>not to grow vertically</strong>:<ul>
+<ol class="arabic">
+<li><p class="first">We want the rows with the values, operators and buttons <strong>not to grow vertically</strong>:</p>
+<ul class="simple">
 <li>select one of the horizontal sizers (e.g. <span class="guilabel">sizer_2</span> around <span class="guilabel">Value 1</span>)</li>
 <li>set <em>Properties -&gt; Layout -&gt; Proportion</em> to <span class="guilabel">0</span></li>
 <li>select the next of the sizers (e.g. around <span class="guilabel">Operator</span>)</li>
@@ -298,33 +299,38 @@ or just hit <code class="kbd docutils literal"><span class="pre">Ctrl-Y</span></
 <li>do the same for the remaining sizers (e.g. around <span class="guilabel">Value 2</span> and the buttons)</li>
 </ul>
 </li>
-<li>We want the text controls to <strong>grow horizontally</strong> to fill the available space:<ul>
+<li><p class="first">We want the text controls to <strong>grow horizontally</strong> to fill the available space:</p>
+<ul class="simple">
 <li>select one of the text controls (e.g. <span class="guilabel">text_value1</span>)</li>
 <li>set <em>Properties -&gt; Layout -&gt; Proportion</em> to <span class="guilabel">1</span></li>
 <li>do the same for the other controls, either by modifying the Proportion properties
 or by hitting <code class="kbd docutils literal"><span class="pre">Ctrl-Y</span></code> to apply the last change to the selected control</li>
 </ul>
 </li>
-<li>The labels <span class="guilabel">Value 1</span>, <span class="guilabel">Operator</span> and <span class="guilabel">Value 2</span> should better
-<strong>align vertically</strong> with their text controls:<ul>
+<li><p class="first">The labels <span class="guilabel">Value 1</span>, <span class="guilabel">Operator</span> and <span class="guilabel">Value 2</span> should better
+<strong>align vertically</strong> with their text controls:</p>
+<ul class="simple">
 <li>select label</li>
 <li>set the checkbox <em>Properties -&gt; Layout -&gt; Alignment -&gt;</em> <span class="guilabel">wxALIGN_CENTER_VERTICAL</span></li>
 <li>do the same for the other two labels</li>
 </ul>
 </li>
-<li>We want the Result text control to <strong>fill the available vertical space</strong>:<ul>
+<li><p class="first">We want the Result text control to <strong>fill the available vertical space</strong>:</p>
+<ul class="simple">
 <li>select text control</li>
 <li>set the checkbox <em>Properties -&gt; Layout -&gt; Alignment -&gt;</em> <span class="guilabel">wxEXPAND</span></li>
 </ul>
 </li>
-<li>We want the buttons at the bottom to be <strong>centered</strong>; so the layout of the sizer around them needs to be set:<ul>
+<li><p class="first">We want the buttons at the bottom to be <strong>centered</strong>; so the layout of the sizer around them needs to be set:</p>
+<ul class="simple">
 <li>select sizer</li>
 <li>go to <em>Properties -&gt; Layout -&gt; Alignment</em></li>
 <li>de-select the checkbox <span class="guilabel">wxEXPAND</span></li>
 <li>select the checkbox <span class="guilabel">wxALIGN_CENTER_HORIZONTAL</span></li>
 </ul>
 </li>
-<li>We want a small <strong>border</strong> above and beyond the horizontal line and around each of the buttons:<ul>
+<li><p class="first">We want a small <strong>border above and beyond</strong> the horizontal line and around each of the buttons:</p>
+<ul class="simple">
 <li>select the horizontal line <span class="guilabel">static_line_1</span></li>
 <li>set <em>Properties -&gt; Layout -&gt; Border</em> to <span class="guilabel">5</span></li>
 <li>uncheck <em>Properties -&gt; Layout -&gt; Border -&gt;</em> <span class="guilabel">wxLEFT</span> and <span class="guilabel">wxRIGHT</span></li>
@@ -332,6 +338,14 @@ or by hitting <code class="kbd docutils literal"><span class="pre">Ctrl-Y</span>
 <li>set <em>Properties -&gt; Layout -&gt; Border</em> to <span class="guilabel">5</span></li>
 <li>do the same with the second button (e.g. by selecting it and then hitting <code class="kbd docutils literal"><span class="pre">Ctrl-Y</span></code>)</li>
 </ul>
+</li>
+<li><p class="first">We want a small <strong>border around</strong> beyond the pairs of label and value:</p>
+<ul class="simple">
+<li>select the horizontal sizer <span class="guilabel">sizer_2</span> around the first line</li>
+<li>set <em>Properties -&gt; Layout -&gt; Border</em> to <span class="guilabel">4</span></li>
+<li>do the same with the sizers around <span class="guilabel">Operator</span> and <span class="guilabel">Value 2</span></li>
+</ul>
+<p>(e.g. by selecting it and then hitting <code class="kbd docutils literal"><span class="pre">Ctrl-Y</span></code>)</p>
 </li>
 </ol>
 <p>At this point, it’s time for a <strong>preview</strong>: <br/>
@@ -548,7 +562,8 @@ whole page.</p>
 <td><a class="reference internal" href="_images/Calculator_Spacers_Design0.png"><img alt="Calculator with empty slots for spacers" src="_images/Calculator_Spacers_Design0.png" style="width: 180px;" /></a></td>
 </tr>
 <tr class="row-even"><td><ul class="first last simple">
-<li>insert spacers into these slots <br/> (e.g. with “Width” <span class="guilabel">20</span> and “Height” <span class="guilabel">0</span>)</li>
+<li>insert spacers <img alt="spacer" src="_images/spacer.png" /> into these slots <br/> (e.g. with “Width” <span class="guilabel">20</span> and
+“Height” <span class="guilabel">20</span>)</li>
 <li>set “Proportion” to <span class="guilabel">1</span> <br/>
 to make them grow</li>
 </ul>
@@ -562,10 +577,10 @@ to make them grow</li>
 the settings to make the spacers grow:</td>
 <td><a class="reference internal" href="_images/Calculator_Spacers_Properties.png"><img alt="Spacer Properties" src="_images/Calculator_Spacers_Properties.png" style="width: 180px;" /></a></td>
 </tr>
-<tr class="row-odd"><td>As the spacers have a height of 0, you will not see them in the design window. <br/> <br/>
-If you don’t like this, you may actually set the “Height” property to a different value and
-maybe even set <span class="guilabel">EXPAND</span>. For the actual window this will not make a difference,
-as the spacers are invisible, but the spacers will be visible in the <em>Design</em> window:</td>
+<tr class="row-odd"><td>As the spacers have a height of <span class="guilabel">20</span>, they’re now looking a bit odd in the <em>Design</em> window. <br/>
+You may want to make them disappear by setting the theight to <span class="guilabel">0</span> or to fill the available space
+by checking <span class="guilabel">EXPAND</span>. <br/>
+For the actual window this will not make a difference in this case.</td>
 <td><a class="reference internal" href="_images/Calculator_Spacers2.png"><img alt="One spacer with height 10 and one with 20" src="_images/Calculator_Spacers2.png" style="width: 180px;" /></a></td>
 </tr>
 </tbody>
