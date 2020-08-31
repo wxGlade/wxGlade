@@ -127,12 +127,12 @@ _NUMBER = 0
 class Dialog(wx.Dialog):
     def __init__(self):
         global _NUMBER
-        wx.Dialog.__init__(self, None, -1, _('Select toolbar class'))
+        wx.Dialog.__init__(self, None, -1, _('Select statusbar class'))
         
         if common.root.language.lower() == 'xrc':
-            klass = 'wxToolBar'
+            klass = 'wxStatusBar'
         else:
-            klass = 'MyToolBar%s' % (_NUMBER or "")
+            klass = 'MyStatusBar%s' % (_NUMBER or "")
             _NUMBER += 1
 
         # class
@@ -153,13 +153,13 @@ class Dialog(wx.Dialog):
 
 def builder(parent, index, klass):
     # only used from Frame.menubar property
-    editor = EditStatusBar(parent.name+"_menubar", parent)
+    editor = EditStatusBar(parent.name+"_statusbar", parent)
     if parent.widget: editor.create()
     return editor
 
 
 def xml_builder(parser, base, name, parent, index):
-    "factory to build EditToolBar objects from a XML file"
+    "factory to build EditStatusBar objects from a XML file"
     parent.properties["statusbar"].set(True)
     return EditStatusBar(name, parent)
 
