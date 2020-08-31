@@ -568,7 +568,7 @@ class WindowBase(EditBase):
                 self.widget.Refresh()
             if "layout" in actions:
                 self.layout()
-            if "sizeevent" in actions:
+            if "sizeevent" in actions and hasattr(self.widget, "SendSizeEventToParent"):
                 wx.SafeYield()  # required for gtk when e.g. increasing the font size of a label or button
                 self.widget.SendSizeEventToParent()
         return actions
