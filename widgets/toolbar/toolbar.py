@@ -154,7 +154,11 @@ class ToolsDialog(wx.Dialog):
         self.label_10 = wx.StaticText(self, wx.ID_ANY, "ID:")
         grid_sizer.Add(self.label_10, 0, wx.ALIGN_CENTER_VERTICAL | wx.LEFT | wx.RIGHT, 4)
         self.id = wx.TextCtrl(self, wx.ID_ANY, "")
-        grid_sizer.Add(self.id, 0, 0, 0)
+        hsizer = wx.BoxSizer(wx.HORIZONTAL)
+        hsizer.Add(self.id, 1)
+        hsizer.Add((4, 4), 1)
+        grid_sizer.Add(hsizer, 1, wx.EXPAND, 0)
+
         grid_sizer.AddGrowableCol(1)
 
         sizer_5.Add(grid_sizer, 2, wx.EXPAND, 0)
