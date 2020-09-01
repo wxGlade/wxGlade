@@ -130,7 +130,7 @@ class EditNotebook(ManagedBase, EditStylesMixin):
             if not isinstance(add_panel, compat.unicode): add_panel = self.next_pane_name()
             editor = panel.EditPanel( add_panel, self, index )
             if add_sizer:
-                sizer = edit_sizers._builder(panel_editor, 0)
+                sizer = edit_sizers._builder(editor, 0)
         else:
             # just add a slot
             editor = edit_base.Slot(self, index)
