@@ -411,10 +411,11 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
                 return "Output path is directory, not file"
             out_dir = os.path.dirname(out_dir)
 
-        if not os.path.isdir(out_dir):
-            return "Output directory does not exist"
-        if not os.access(out_dir, os.W_OK):
-            return "Output directory is not writable"
+        if out_dir:
+            if not os.path.isdir(out_dir):
+                return "Output directory does not exist"
+            if not os.access(out_dir, os.W_OK):
+                return "Output directory is not writable"
 
         # It's not possible to generate code from a template directly
         if self.is_template:
