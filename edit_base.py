@@ -397,7 +397,8 @@ class EditBase(np.PropertyOwner):
 
         # remove from Tree (rebuild_tree to be called separately)
         if misc.focused_widget is self: misc.focused_widget = None
-        common.app_tree.remove(self)  # remove mutual reference from widget to/from Tree item
+        if common.app_tree is not None:
+            common.app_tree.remove(self)  # remove mutual reference from widget to/from Tree item
 
         # bookkeeping
         if not self.IS_TOPLEVEL and self.IS_NAMED and self.name:
