@@ -16,8 +16,10 @@
 # Keep this up to date with version.py and sphinx/conf.py
 WXG_VERSION="1.0.0a4"
 
+CURR_DIR=$(dirname "$0")
+
 # search order for Python interpreter
-INTERPRETER_LIST="python3 python2 \
+INTERPRETER_LIST="${CURR_DIR}/python python3 python2 \
                   python2.7 python27 \
                   python"
 
@@ -51,7 +53,6 @@ for INTERPRETER in $INTERPRETER_LIST; do
 
   # search wxglade.py
   # dist-packages is only used in Debian and Debian derivates
-  CURR_DIR=$(dirname "$0")
   for DIR in \
      "${CURR_DIR}" \
      "${WXG_MODULE_PATH}" \

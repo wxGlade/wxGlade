@@ -84,7 +84,7 @@ wxPython, that helps you create wxWidgets/wxPython user interfaces. At
 the moment it can generate Python, C++, Perl, Lisp and XRC (wxWidgets'
 XML resources) code."""
 
-text_files = ['CHANGES.txt', 'CONTRIBUTING.txt', 'CREDITS.txt',
+text_files = ['CONTRIBUTING.txt', 'CREDITS.txt',
               'LICENSE.txt', 'NEWS.txt', 'README.txt', 'docs/Todo.txt',]
 
 data_files = [
