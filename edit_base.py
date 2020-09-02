@@ -328,11 +328,11 @@ class EditBase(np.PropertyOwner):
         if not self.IS_SIZER: self.widget.SendSizeEvent()
         parent_window = self.parent_window
         parent_window.widget.SendSizeEvent()
-        if hasattr(self.widget, "SendSizeEventToParent") and wx.Platform == '__WXGTK__':
+        if hasattr(self.widget, "SendSizeEvent") and wx.Platform == '__WXGTK__':
             # following is required for gtk when e.g. pasting a button or label with non-standard font
             # on Windows or Mac Os it's not required
             wx.SafeYield()
-            self.widget.SendSizeEventToParent()
+            compat.wxWindow_SendSizeEventToParent(self.widget)
 
     # actual widget creation
     def create_widget(self):
