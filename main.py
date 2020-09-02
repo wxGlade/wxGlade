@@ -686,19 +686,22 @@ class wxGladeFrame(wx.Frame):
         self.Bind(wx.EVT_TOOL, self.save_app, t)
 
         if config.debugging and hasattr(wx, "ART_PLUS"):
-            t = add( wx.ID_SAVE, "Add", wx.ART_PLUS, wx.ITEM_NORMAL, "Add widget (Ctrl+A)")
+            t = add( -1, "Add", wx.ART_PLUS, wx.ITEM_NORMAL, "Add widget (Ctrl+A)")
             t.Enable(False)
 
             # XXX switch between wx.ART_DELETE for filled slots and wx.ART_MINUS for empty slots
-            t = add( wx.ID_SAVE, "Remove", wx.ART_MINUS, wx.ITEM_NORMAL, "Add widget (Ctrl+A)")
+            t = add( -1, "Remove", wx.ART_MINUS, wx.ITEM_NORMAL, "Add widget (Ctrl+A)")
             t.Enable(False)
 
             tb.AddSeparator()
 
-        self._tool_redo = t = add( wx.ID_SAVE, "Re-do", wx.ART_REDO, wx.ITEM_NORMAL, "Re-do (Ctrl+Y)" )
+        self._tool_redo = t = add( wx.ID_REDO, "Re-do", wx.ART_REDO, wx.ITEM_NORMAL, "Re-do (Ctrl+Y)" )
         t.Enable(False)
-        self._tool_repeat = t = add( wx.ID_SAVE, "Repeat", wx.ART_REDO, wx.ITEM_NORMAL, "Repeat  (Ctrl+R)" )
+        self.Bind(wx.EVT_TOOL, lambda evt: common.history.redo(misc.focused_widget), t)
+        
+        self._tool_repeat = t = add( -1, "Repeat", wx.ART_REDO, wx.ITEM_NORMAL, "Repeat (Ctrl+R)" )
         t.Enable(False)
+        self.Bind(wx.EVT_TOOL, lambda evt: common.history.repeat(misc.focused_widget), t)
 
         tb.AddSeparator()
         t = add(-1, "Generate Code", wx.ART_EXECUTABLE_FILE, wx.ITEM_NORMAL, "Generate Code (Ctrl+G)" )
