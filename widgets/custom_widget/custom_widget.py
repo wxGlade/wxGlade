@@ -74,7 +74,7 @@ class CustomWidget(ManagedBase):
         self.arguments   = ArgumentsProperty( [], cols )
         self.custom_ctor = np.TextPropertyD("", name="custom_constructor", strip=True, default_value="")
 
-        self.show_design = np.CheckBoxProperty(False)
+        self.show_design = np.CheckBoxProperty(False, default_value=False)
         self._error_message = None
 
     def create_widget(self):
@@ -106,20 +106,29 @@ class CustomWidget(ManagedBase):
                 code = code.replace("self.%s"%self.name, widget_access)
                 code = code.replace(builder.format_widget_access(self.parent_window), parent_access)
             # execute code
+            before = set(sys.modules.keys())
             try:
                 exec(code)
+                after = set(sys.modules.keys())
+                for modulename in (after - before):
+                    if modulename in code: print(modulename)
                 return
             except:
                 exc_type, exc_value, exc_traceback = sys.exc_info()
                 self._error_message = "%s: %s"%(exc_type, exc_value)
+                if self.widget: self.widget.Destroy()
         # default / fallback in case of exception
         self.widget = wx.Window(self.parent_window.widget , self.id, style=wx.BORDER_SUNKEN | wx.FULL_REPAINT_ON_RESIZE)
         self.widget.Bind(wx.EVT_PAINT, self.on_paint)
-        self.widget.Bind(wx.EVT_ERASE_BACKGROUND, lambda event:None)
+        self.widget.Bind(wx.EVT_ERASE_BACKGROUND, self.on_erase_background)
         if self._error_message: compat.SetToolTip( self.widget, self._error_message )
 
     def finish_widget_creation(self, level):
         ManagedBase.finish_widget_creation(self, level, sel_marker_parent=self.widget)
+
+    def on_erase_background(self, event):
+        # ignore event for less flickering; 
+        pass
 
     def on_paint(self, event):
         dc = wx.PaintDC(self.widget)
