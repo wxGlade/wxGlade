@@ -9,7 +9,7 @@ wxStaticText objects
 
 import wx
 #import wx.lib.stattext
-import common
+import common, compat
 from edit_windows import ManagedBase, EditStylesMixin
 import new_properties as np
 
@@ -55,6 +55,12 @@ class EditStaticText(ManagedBase, EditStylesMixin):
             return
 
         if modified and "style" in modified and wx.Platform!="__WXMSW__":
+            actions.add("recreate2")
+            return
+
+        if modified and wx.Platform == "__WXGTK__" and compat.version == (2, 8):
+            # Under wxGTK StaticText is not a real widget, so SendSizeEvent() creates an event without EventObject and
+            # wxGlade doesn't update the UI. So we force a recreate2
             actions.add("recreate2")
             return
 

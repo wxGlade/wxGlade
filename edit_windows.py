@@ -505,9 +505,14 @@ class WindowBase(EditBase):
     def _set_font(self):
         if not self.widget: return
         font_p = self.properties["font"]
-        if not font_p.is_active(): 
-            font = wx.Font()
-            font.SetNativeFontInfo( self._original["font"] )
+        if not font_p.is_active():
+            try:
+                font = wx.Font()
+                font.SetNativeFontInfo( self._original["font"] )
+            except TypeError:
+                # wxPython 2.8
+                font = self.widget.GetFont()
+                font.SetNativeFontInfoFromString( self._original["font"] )
         else:
             font = font_p.value
             families = np.FontProperty.font_families_to
@@ -568,9 +573,9 @@ class WindowBase(EditBase):
                 self.widget.Refresh()
             if "layout" in actions:
                 self.layout()
-            if "sizeevent" in actions and hasattr(self.widget, "SendSizeEventToParent"):
+            if "sizeevent" in actions:
                 wx.SafeYield()  # required for gtk when e.g. increasing the font size of a label or button
-                self.widget.SendSizeEventToParent()
+                compat.wxWindow_SendSizeEventToParent(self.widget)
         return actions
 
     def get_properties(self, without=set()):

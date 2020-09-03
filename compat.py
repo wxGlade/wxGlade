@@ -195,6 +195,27 @@ else:
         widget.Hide()
         wx.CallAfter(_Destroy, widget)
 
+def wxWindow_SendSizeEventToParent28(item, flags=0):
+    """\
+    Implementation of wxWindow.SendSizeEventToParent for wxPython 2.8
+
+    @param item:  Instance of wxWindow
+    @param flags: flags parameter for SendSizeEvent (ignored)
+    """
+    parent = item.GetParent()
+    if parent and not parent.IsBeingDeleted():
+        parent.SendSizeEvent()
+
+
+def wxWindow_SendSizeEventToParent3(item, flags=0):
+    """\
+    Wrapper of wxWindow.SendSizeEventToParent
+
+    @param item:  Instance of wxWindow
+    @param flags: flags parameter for SendSizeEvent
+    """
+    item.SendSizeEventToParent(flags)
+
 
 # Set different functions depending on the active wxPython version
 if wx.VERSION[:2] >= (2, 9):
@@ -202,11 +223,13 @@ if wx.VERSION[:2] >= (2, 9):
     GridSizer_GetCols = GridSizer_GetCols3
     SizerItem_SetWindow = SizerItem_AssignWindow
     wxWindow_IsEnabled = wxWindow_IsThisEnabled
+    wxWindow_SendSizeEventToParent = wxWindow_SendSizeEventToParent3
 else:
     GridSizer_GetRows = GridSizer_GetRows28
     GridSizer_GetCols = GridSizer_GetCols28
     SizerItem_SetWindow = SizerItem_SetWindow28
     wxWindow_IsEnabled = wxWindow_IsEnabled28
+    wxWindow_SendSizeEventToParent = wxWindow_SendSizeEventToParent28
 
 
 import wx.grid

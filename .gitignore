@@ -9,6 +9,7 @@
 bdist
 build
 dist
+/wxGlade.egg-info
 
 # build related files
 logdict*.log
