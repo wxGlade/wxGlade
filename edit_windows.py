@@ -445,8 +445,8 @@ class WindowBase(EditBase):
     def on_size(self, event):
         "Update the value of the 'size' property"
         if not self.widget: return  # this can happen on destruction
-        if event.GetEventObject() is None: return
         event.Skip()
+        if event.GetEventObject() is None: return
         try:
             prop_size = self.properties['size']
 
