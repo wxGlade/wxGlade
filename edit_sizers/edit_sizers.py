@@ -609,6 +609,14 @@ class SizerBase(edit_base.EditBase):
         if self.widget:
             self.window.widget.Layout()
 
+    def _layout(self):
+        # for delayed callback; see next method
+        if self.widget: self.widget.Layout()
+
+    def on_child_pasted(self):
+        # otherwise EXPAND may not be obeyed
+        wx.CallLater(1, self._layout)
+
     def destroying_child_widget(self, child, index):
         # previously in _free_slot
         # required here; otherwise removal of a StaticBox of a StaticBoxSizer will cause a crash
