@@ -303,7 +303,6 @@ class EditBase(np.PropertyOwner):
 
         return actions
 
-
     # widget creation and destruction ##################################################################################
     def create(self):
         # entry point to create widget including all children
@@ -314,8 +313,7 @@ class EditBase(np.PropertyOwner):
         self.create_widget()
         self.finish_widget_creation(level)
         for child in self.get_all_children():
-            if not child.widget:
-                child.recursive_create_widgets(level+1)
+            child.recursive_create_widgets(level+1)
         self.child_widgets_created(level)  # if level==0, only one of the child widgets was created
         self.parent.child_widget_created(self, level)
 

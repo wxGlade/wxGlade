@@ -92,7 +92,7 @@ class PythonCodeGenerator(wcodegen.PythonWidgetCodeWriter):
         "function that generates Python code for the menubar of a wxFrame"
         style = obj.properties['style'].get_string_value()
         if style:
-            style = ', style=' + self.cn_f( 'wxTB_HORIZONTAL|' + style )
+            style = ', style=' + self.cn_f(style)
 
         klass = obj.get_instantiation_class(self.cn, self.cn_class, self.codegen.preview)
 

@@ -362,7 +362,6 @@ class SizerBase(edit_base.EditBase):
         return self.window.frozen()
 
     def create_widget(self):
-        if self.widget: return  # nothing to do if the sizer has already been created
         self._btn = SizerHandleButton(self.window, self.id, self ) # XXX handle the popupmenu creation in SizerHandleButton
         # ScreenToClient used by WidgetTree for the popup menu
         self._btn.Bind(wx.EVT_BUTTON, self.on_selection, id=self.id)
@@ -728,6 +727,7 @@ class SizerBase(edit_base.EditBase):
             color = wx.RED
         else:
             color = compat.wx_SystemSettings_GetColour(wx.SYS_COLOUR_BTNFACE)
+        if not self._btn or self._btn.IsBeingDeleted(): return
         self._btn.SetBackgroundColour(color)
         self._btn.Refresh(True)
 

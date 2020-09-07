@@ -401,7 +401,6 @@ class WindowBase(EditBase):
     def recreate_widget(self):
         "currently used by EditTopLevelPanel to re-create after switch between ScrolledWindow and Panel"
         old_widget = self.widget
-        size = self.widget.GetSize()
         with self.frozen():
             self.parent.destroying_child_widget(self, self.index)
             self.create_widget()
@@ -429,16 +428,23 @@ class WindowBase(EditBase):
         # XXX unify this with recreate_widget above?
         # some widgets can't be updated, e.g. Gauge can't be switched between horizontal and vertical after creation
         # this is for ManagedBase derived classes only
-        print("recreate_widget2", self)
-        with self.frozen():
+        # restore position and size for toplevels; focus else
+        if self.IS_TOPLEVEL:
+            rect = self.widget.GetTopLevelParent().GetRect()
+        else:
             focused = misc.focused_widget is self
 
+        with self.frozen():
             self.parent.destroying_child_widget(self, self.index)
             self.destroy_widget(0, later=True)
             self.parent.destroyed_child_widget()
 
             self.create()
-            if focused:
+
+            # restore position and size for toplevels; focus else
+            if self.IS_TOPLEVEL:
+                self.widget.GetTopLevelParent().SetRect(rect)
+            elif focused:
                 misc.focused_widget = self
                 if self.sel_marker: self.sel_marker.Show(True)
 
@@ -860,12 +866,12 @@ class TopLevelBase(WindowBase, PreviewMixin):
             # MSW isn't smart enough to avoid overlapping windows, so at least move it away from the 3 wxGlade frames
             self.widget.Center()
 
-    def destroy_widget(self, level):
+    def destroy_widget(self, level, later=True):
         if self.preview_widget is not None:
             self.preview_widget.Unbind(wx.EVT_CHAR_HOOK)
             compat.DestroyLater(self.preview_widget)
             self.preview_widget = None
-        WindowBase.destroy_widget(self, level)
+        WindowBase.destroy_widget(self, level, later)
 
     def hide_widget(self, event=None):
         self.widget.Hide()  # just hide, don't close
@@ -1022,7 +1028,7 @@ class TopLevelBase(WindowBase, PreviewMixin):
             x0,y0,width,height = w.GetRect()
             return self._find_widget_by_pos(page, x-x0,y-y0, level+1)
         ret = []
-        # check the widget itself
+        # check the widget itself; except for the toplevel, this is redundant
         if w.IsTopLevel():  # for a Frame, Rect is the screen position
             x0,y0,width,height = w.GetClientRect()
         else:
@@ -1045,8 +1051,7 @@ class TopLevelBase(WindowBase, PreviewMixin):
     def find_editor_by_pos(self, x,y):
         "find the Edit item at a given position"
         if self.widget is None: return None
-        x0,y0,width,height = self.widget.ClientRect
-        found = self._find_widget_by_pos(self.widget, x-x0,y-y0)
+        found = self._find_widget_by_pos(self.widget, x,y)
         while found:
             w = self._find_editor( found.pop(-1), self )
             if w: return w

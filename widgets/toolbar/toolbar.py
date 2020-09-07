@@ -584,7 +584,7 @@ class EditToolBar(EditBase, PreviewMixin, EditStylesMixin, BitmapMixin):
         self.widget = self._tb = None  # a panel and the actual ToolBar
 
     def create_widget(self):
-        tb_style = wx.TB_HORIZONTAL | self.style
+        tb_style = self.style
         if wx.Platform == '__WXGTK__':
             tb_style |= wx.TB_DOCKABLE | wx.TB_FLAT
         if self.IS_TOPLEVEL:
@@ -680,11 +680,6 @@ class EditToolBar(EditBase, PreviewMixin, EditStylesMixin, BitmapMixin):
             w = widget.GetClientSize()[0]
             h = self.widget.GetSize()[1] // 2
             widget.SetClientSize((w, h))
-        else:
-            widget = self.parent.widget
-            w, h = widget.GetClientSize()
-            widget.SetClientSize((w, h+1))
-            widget.SetClientSize((w, h))
 
     def destroy_widget(self, level):
         # if parent is being deleted, we rely on this being destroyed
@@ -735,8 +730,12 @@ class EditToolBar(EditBase, PreviewMixin, EditStylesMixin, BitmapMixin):
         if name == 'tools':
             return ToolsHandler(self)
         return None
-    
+
     def _properties_changed(self, modified, actions):
+        if modified and "style" in modified:
+            actions.add("recreate_parent")
+            return
+        
         if not modified or "name" in modified and self.widget is not self._tb:
             self.widget.SetTitle(misc.design_title(misc.wxstr(self.name)))
 
@@ -758,6 +757,15 @@ class EditToolBar(EditBase, PreviewMixin, EditStylesMixin, BitmapMixin):
 
         EditStylesMixin._properties_changed(self, modified, actions)
         EditBase._properties_changed(self, modified, actions)
+
+    def properties_changed(self, modified):
+        actions = EditBase.properties_changed(self, modified)
+        # widget properties modified; trigger updates
+        if self.widget:
+            if config.debugging: print("Actions", actions)
+            if "recreate_parent" in actions:
+                self.parent.recreate_widget2()
+        return actions
 
     def check_compatibility(self, widget, typename=None):
         return (False,"No pasting possible here.")
