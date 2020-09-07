@@ -942,7 +942,7 @@ class EditBoxSizer(BoxSizerBase):
 
 if HAVE_WRAP_SIZER:
     class wxGladeWrapSizer(wx.WrapSizer):
-        _BTN_OFFSET = 0
+        _BTN_OFFSET = 1
         def SetItemMinSize(self, item, w, h):
             if w==-1 or h==-1:
                 try:
