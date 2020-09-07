@@ -2086,8 +2086,9 @@ class _SizerDialog(wx.Dialog):
     
     def on_choice_orientation(self, event):
         choice = event.GetSelection()
-        self.checkbox_wrap.Enable( choice<2 )
-        self.checkbox_static.Enable( choice<2 and not self.checkbox_wrap.IsChecked() )
+        if HAVE_WRAP_SIZER:
+            self.checkbox_wrap.Enable( choice<2 )
+            self.checkbox_static.Enable( choice<2 and not self.checkbox_wrap.IsChecked() )
         self.label.Enable( choice<2 and self.checkbox_static.IsChecked() )
         if choice==2 and self.num.Value<2:
             self.num.SetValue(2)
