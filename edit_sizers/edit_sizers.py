@@ -1013,7 +1013,7 @@ class EditStaticBoxSizer(BoxSizerBase):
         BoxSizerBase._properties_changed(self, modified, actions)
 
     def destroy_widget(self, level):
-        self.widget.GetStaticBox().Destroy()
+        if self.widget: self.widget.GetStaticBox().Destroy()
         SizerBase.destroy_widget(self, level)
 
 
