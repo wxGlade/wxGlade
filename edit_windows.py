@@ -399,11 +399,12 @@ class WindowBase(EditBase):
                 if child: self._reparent_widget(child)
 
     def recreate_widget(self):
-        "currently used by EditTopLevelPanel to re-create after switch between ScrolledWindow and Panel"
+        "re-create widget and re-parent children"
+        # currently used by panel on modification of 'scrolled' to switch between ScrolledWindow and Panel
         old_widget = self.widget
         with self.frozen():
             self.parent.destroying_child_widget(self, self.index)
-            self.create_widget()
+            self.create_widget()  # this is not recursive
             if self.IS_TOPLEVEL_WINDOW: self.widget.SetSize(size)   # do this for IS_TOPLEVEL only?
             old_widget.Hide()
             if self.sel_marker:
@@ -425,9 +426,7 @@ class WindowBase(EditBase):
             self.parent.child_widget_created(self, 0)
 
     def recreate_widget2(self):
-        # XXX unify this with recreate_widget above?
-        # some widgets can't be updated, e.g. Gauge can't be switched between horizontal and vertical after creation
-        # this is for ManagedBase derived classes only
+        "destroy widget (incl. children) and recursively re-create, typically when a style can't be changed dynamically"
         # restore position and size for toplevels; focus else
         if self.IS_TOPLEVEL:
             rect = self.widget.GetTopLevelParent().GetRect()
