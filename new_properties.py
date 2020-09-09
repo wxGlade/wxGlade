@@ -207,7 +207,6 @@ class Property(object):
             control.Enable(active)
         self.on_value_edited(self.value, active)
         self.activate_controls()
-        self._set_colours(self.check_value(self.value))
 
     ####################################################################################################################
     # XML file
@@ -1288,6 +1287,10 @@ class TextProperty(Property):
         self.fixed_height = fixed_height  # don't grow the edit field in vertical
         Property.__init__(self, value, default_value, name)
 
+    def toggle_active(self, active=None, refresh=True):
+        Property.toggle_active(self, active, refresh)
+        if self.text: self._set_colours(self.check_value(self.value))
+
     def _set_converter(self, value):
         # used by set()
         if self.STRIP or self.strip:
@@ -1476,6 +1479,7 @@ class TextProperty(Property):
 
     def _set_colours(self, warning_error=None):
         # set color to indicate errors and warnings
+        if not self.text: return
         if warning_error:
             warning, error = warning_error
         else:
