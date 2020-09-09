@@ -207,6 +207,7 @@ class Property(object):
             control.Enable(active)
         self.on_value_edited(self.value, active)
         self.activate_controls()
+        self._set_colours(self.check_value(self.value))
 
     ####################################################################################################################
     # XML file
@@ -1526,7 +1527,7 @@ class TextProperty(Property):
             return
         self.previous_value = self.value
         ret = Property._check_for_user_modification(self, new_value, force, activate)
-        self.check(self.value)
+        self.check(self.value)  # a value can be valid, but e.g. a non-unique name to be visualized in color
         return ret
 
     def _convert_from_text(self, text=None):
@@ -1535,7 +1536,7 @@ class TextProperty(Property):
         return text
 
     def check_value(self, value):
-        "return (result, message) where result is (True,False,'warn') for pass/fail/warning"
+        "return (warning, error)"
         if self.validation_re and not self.validation_re.match(value):
             return (None, "invalid")
         warning, error = self._check(value)
@@ -2175,10 +2176,11 @@ class ColorProperty(DialogProperty):
             value = misc.color_to_string(value)
         return value
 
-    def get_color(self):
+    def get_color(self, color=None):
         # return a wx.Colour instance
-        if not self.is_active(): return self.default_value
-        color = self.get()
+        if color is None:
+            if not self.is_active(): return self.default_value
+            color = self.get()
         if color is None: return self.default_value
         if color=="wxNullColour": return wx.NullColour
         if color in self.str_to_colors:
@@ -2203,7 +2205,28 @@ class ColorProperty(DialogProperty):
         else:
             self.button.SetBackgroundColour(color)
 
+    def _convert_from_text(self, value):
+        # returns a string if valid, None otherwise
+        try:
+            if not self.get_color(value): return None
+            return value
+        except:
+            return None
+    
+    def _convert_to_text(self, value):
+        # just used when user entered an invalid value to reset to either None/"" or a string
+        if value is None: return ""
+        return value
 
+    def check_value(self, value):
+        "return (warning, error)"
+        try:
+            checked = self.get_color(value)
+        except:
+            checked = None
+        if not checked:  # get_color returned None or raised an exception
+            return (None, "invalid")
+        return (None,None)
 
 
 class ColorPropertyD(ColorProperty):

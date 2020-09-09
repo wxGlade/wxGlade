@@ -965,9 +965,9 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
         out = []
         if widget.check_prop('size') and not widget.IS_CLASS:
             out.append(self.generate_code_size(widget))
-        if widget.check_prop('background'): out.append(self.generate_code_background(widget))
-        if widget.check_prop('foreground'): out.append(self.generate_code_foreground(widget))
-        if widget.check_prop('font'):       out.append(self.generate_code_font(widget))
+        if widget.check_prop_truth('background'): out.append(self.generate_code_background(widget))
+        if widget.check_prop_truth('foreground'): out.append(self.generate_code_foreground(widget))
+        if widget.check_prop('font'):             out.append(self.generate_code_font(widget))
         # tooltip
         if widget.check_prop('tooltip')  and widget.tooltip:  out.append( self._generic_code(widget, 'tooltip') )
         # trivial boolean properties
