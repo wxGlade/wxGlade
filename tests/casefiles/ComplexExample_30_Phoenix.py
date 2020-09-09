@@ -46,7 +46,7 @@ class PyOgg2_MyFrame(wx.Frame):
             self.Mp3_To_Ogg_statusbar.SetStatusText(Mp3_To_Ogg_statusbar_fields[i], i)
 
         # Tool Bar
-        self.Mp3_To_Ogg_toolbar = wx.ToolBar(self, -1, style=wx.TB_HORIZONTAL | wx.TB_TEXT)
+        self.Mp3_To_Ogg_toolbar = wx.ToolBar(self, -1, style=wx.TB_TEXT)
         self.Mp3_To_Ogg_toolbar.AddTool(wx.ID_OPEN, _("&Open"), wx.NullBitmap, wx.NullBitmap, wx.ITEM_NORMAL, _("Open a file"), _("Open a MP3 file to convert into OGG format"))
         self.Bind(wx.EVT_TOOL, self.OnOpen, id=wx.ID_OPEN)
         self.SetToolBar(self.Mp3_To_Ogg_toolbar)
