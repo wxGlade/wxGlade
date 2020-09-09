@@ -553,18 +553,18 @@ class CPPCodeWriter(BaseLangCodeWriter, wcodegen.CppMixin):
         if extra_code:
             extra_code = re.sub(r'\\n', '\n', extra_code)
             extra_code = re.split(re.compile(r'^###\s*$', re.M), extra_code, 1)
-            klass.extra_code_h.append(extra_code[0])
+            klass.extra_code_h.append(extra_code[0].rstrip())
             if len(extra_code) > 1:
-                klass.extra_code_cpp.append(extra_code[1])
+                klass.extra_code_cpp.append(extra_code[1].rstrip())
             if not is_new:
                 self.warning( '%s has extra code, but you are not overwriting existing sources:'
                               ' please check that the resulting code is correct!' % code_obj.name )
 
         if not self.multiple_files:
             if klass.extra_code_h:
-                self._current_extra_code_h.append( "".join( klass.extra_code_h[::-1] ) )
+                self._current_extra_code_h.append( "\n".join( klass.extra_code_h[::-1] ) )
             if klass.extra_code_cpp:
-                self._current_extra_code_cpp.append( "".join( klass.extra_code_cpp[::-1] ) )
+                self._current_extra_code_cpp.append( "\n".join( klass.extra_code_cpp[::-1] ) )
 
         default_sign = [('wxWindow*', 'parent'), ('wxWindowID', 'id')]
         sign = getattr(builder, 'constructor', default_sign)
@@ -929,9 +929,9 @@ class CPPCodeWriter(BaseLangCodeWriter, wcodegen.CppMixin):
             if extra_code:
                 extra_code = re.sub(r'\\n', '\n', extra_code)
                 extra_code = re.split(re.compile(r'^###\s*$', re.M), extra_code, 1)
-                klass.extra_code_h.append(extra_code[0])
+                klass.extra_code_h.append(extra_code[0].rstrip())
                 if len(extra_code) > 1:
-                    klass.extra_code_cpp.append(extra_code[1])
+                    klass.extra_code_cpp.append(extra_code[1].rstrip())
                 # if we are not overwriting existing source, warn the user about the presence of extra code
                 if not self.multiple_files and self.previous_source:
                     self.warning( '%s has extra code, but you are not overwriting existing sources: please check '
