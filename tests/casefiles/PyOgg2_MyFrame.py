@@ -30,6 +30,14 @@ class PyOgg2_MyFrame(wx.Frame):
 
         self.grid_1 = wx.grid.Grid(self, wx.ID_ANY, size=(1, 1))
         self.grid_1.CreateGrid(8, 3)
+        self.grid_1.SetRowLabelValue(0, _("0"))
+        self.grid_1.SetRowLabelValue(1, _("1"))
+        self.grid_1.SetRowLabelValue(2, _("2"))
+        self.grid_1.SetRowLabelValue(3, _("3"))
+        self.grid_1.SetRowLabelValue(4, _("4"))
+        self.grid_1.SetRowLabelValue(5, _("5"))
+        self.grid_1.SetRowLabelValue(6, _("6"))
+        self.grid_1.SetRowLabelValue(7, _("7"))
         grid_sizer_3.Add(self.grid_1, 1, wx.EXPAND, 0)
 
         self.static_line_2 = wx.StaticLine(self, wx.ID_ANY)

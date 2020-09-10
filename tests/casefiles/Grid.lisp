@@ -49,6 +49,8 @@
         (wxGrid_SetLabelBackgroundColour (slot-grid-1 obj) (wxColour:wxColour_CreateFromStock 216, 191, 216))
         (wxGrid_SetColLabelValue (slot-grid-1 obj) 0 "Column A")
         (wxGrid_SetColLabelValue (slot-grid-1 obj) 1 "Column B")
+        (wxGrid_SetRowLabelValue (slot-grid-1 obj) 0 "0")
+        (wxGrid_SetRowLabelValue (slot-grid-1 obj) 1 "1")
         (wxWindow_SetBackgroundColour (slot-grid-1 obj) (wxColour_CreateRGB 0, 255, 255))
         (wxGrid_SetRowLabelValue (slot-(slot-grid-1 obj) obj) 0, "Row 1")
         (wxGrid_SetCellValue (slot-(slot-grid-1 obj) obj) 0, 0, "1")

@@ -297,6 +297,14 @@
         
         (setf (slot-grid obj) (wxGrid_Create (slot-top-window obj) wxID_ANY -1 -1 -1 -1 wxWANTS_CHARS))
         (wxGrid_CreateGrid (slot-grid obj) 8 3 0)
+        (wxGrid_SetRowLabelValue (slot-grid obj) 0 (_"0"))
+        (wxGrid_SetRowLabelValue (slot-grid obj) 1 (_"1"))
+        (wxGrid_SetRowLabelValue (slot-grid obj) 2 (_"2"))
+        (wxGrid_SetRowLabelValue (slot-grid obj) 3 (_"3"))
+        (wxGrid_SetRowLabelValue (slot-grid obj) 4 (_"4"))
+        (wxGrid_SetRowLabelValue (slot-grid obj) 5 (_"5"))
+        (wxGrid_SetRowLabelValue (slot-grid obj) 6 (_"6"))
+        (wxGrid_SetRowLabelValue (slot-grid obj) 7 (_"7"))
         (wxSizer_AddWindow (slot-grid-sizer obj) (slot-grid obj) 1 wxEXPAND 0 nil)
         
         (setf (slot-static-line obj) (wxStaticLine_Create (slot-top-window obj) wxID_ANY -1 -1 -1 -1 wxLI_HORIZONTAL))

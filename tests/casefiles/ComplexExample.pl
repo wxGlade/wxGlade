@@ -271,6 +271,14 @@ sub new {
     
     $self->{grid} = Wx::Grid->new($self, wxID_ANY);
     $self->{grid}->CreateGrid(8, 3);
+    $self->{grid}->SetRowLabelValue(0, _T("0"));
+    $self->{grid}->SetRowLabelValue(1, _T("1"));
+    $self->{grid}->SetRowLabelValue(2, _T("2"));
+    $self->{grid}->SetRowLabelValue(3, _T("3"));
+    $self->{grid}->SetRowLabelValue(4, _T("4"));
+    $self->{grid}->SetRowLabelValue(5, _T("5"));
+    $self->{grid}->SetRowLabelValue(6, _T("6"));
+    $self->{grid}->SetRowLabelValue(7, _T("7"));
     $self->{grid_sizer}->Add($self->{grid}, 1, wxEXPAND, 0);
     
     $self->{static_line} = Wx::StaticLine->new($self, wxID_ANY);

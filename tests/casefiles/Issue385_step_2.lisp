@@ -43,6 +43,16 @@
         
         (setf (slot-grid-1 obj) (wxGrid_Create (slot-top-window obj) wxID_ANY -1 -1 -1 -1 wxWANTS_CHARS))
         (wxGrid_CreateGrid (slot-grid-1 obj) 10 0 0)
+        (wxGrid_SetRowLabelValue (slot-grid-1 obj) 0 "0")
+        (wxGrid_SetRowLabelValue (slot-grid-1 obj) 1 "1")
+        (wxGrid_SetRowLabelValue (slot-grid-1 obj) 2 "2")
+        (wxGrid_SetRowLabelValue (slot-grid-1 obj) 3 "3")
+        (wxGrid_SetRowLabelValue (slot-grid-1 obj) 4 "4")
+        (wxGrid_SetRowLabelValue (slot-grid-1 obj) 5 "5")
+        (wxGrid_SetRowLabelValue (slot-grid-1 obj) 6 "6")
+        (wxGrid_SetRowLabelValue (slot-grid-1 obj) 7 "7")
+        (wxGrid_SetRowLabelValue (slot-grid-1 obj) 8 "8")
+        (wxGrid_SetRowLabelValue (slot-grid-1 obj) 9 "9")
         (wxFrame_layout (slot-frame self))
         ;;; end wxGlade
         )

@@ -44,6 +44,14 @@ sub new {
     
     $self->{grid_1} = Wx::Grid->new($self, wxID_ANY);
     $self->{grid_1}->CreateGrid(8, 3);
+    $self->{grid_1}->SetRowLabelValue(0, _T("0"));
+    $self->{grid_1}->SetRowLabelValue(1, _T("1"));
+    $self->{grid_1}->SetRowLabelValue(2, _T("2"));
+    $self->{grid_1}->SetRowLabelValue(3, _T("3"));
+    $self->{grid_1}->SetRowLabelValue(4, _T("4"));
+    $self->{grid_1}->SetRowLabelValue(5, _T("5"));
+    $self->{grid_1}->SetRowLabelValue(6, _T("6"));
+    $self->{grid_1}->SetRowLabelValue(7, _T("7"));
     $self->{grid_sizer_3}->Add($self->{grid_1}, 1, wxEXPAND, 0);
     
     $self->{static_line_2} = Wx::StaticLine->new($self, wxID_ANY);

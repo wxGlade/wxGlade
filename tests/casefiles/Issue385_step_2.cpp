@@ -24,6 +24,16 @@ MyFrame::MyFrame(wxWindow* parent, wxWindowID id, const wxString& title, const w
     SetTitle(wxT("frame"));
     grid_1 = new wxGrid(this, wxID_ANY);
     grid_1->CreateGrid(10, 0);
+    grid_1->SetRowLabelValue(0, wxT("0"));
+    grid_1->SetRowLabelValue(1, wxT("1"));
+    grid_1->SetRowLabelValue(2, wxT("2"));
+    grid_1->SetRowLabelValue(3, wxT("3"));
+    grid_1->SetRowLabelValue(4, wxT("4"));
+    grid_1->SetRowLabelValue(5, wxT("5"));
+    grid_1->SetRowLabelValue(6, wxT("6"));
+    grid_1->SetRowLabelValue(7, wxT("7"));
+    grid_1->SetRowLabelValue(8, wxT("8"));
+    grid_1->SetRowLabelValue(9, wxT("9"));
     Layout();
     // end wxGlade
 }
