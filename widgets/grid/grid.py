@@ -87,7 +87,7 @@ class ColsHandler(BaseXmlBuilderTagHandler):
 
 class GridRowsProperty(GridColsProperty):
     def _get_label(self, row):
-        return str(row)
+        return str(row+1)
 
     def _check_label(self, label, i):
         "return True if it's not the default value"
