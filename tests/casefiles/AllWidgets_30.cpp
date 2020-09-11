@@ -179,16 +179,6 @@ All_Widgets_Frame::All_Widgets_Frame(wxWindow* parent, wxWindowID id, const wxSt
     grid_1->CreateGrid(10, 3);
     grid_1->SetSelectionMode(wxGrid::wxGridSelectColumns);
     grid_1->SetColLabelValue(1, _("B\nB"));
-    grid_1->SetRowLabelValue(0, _("0"));
-    grid_1->SetRowLabelValue(1, _("1"));
-    grid_1->SetRowLabelValue(2, _("2"));
-    grid_1->SetRowLabelValue(3, _("3"));
-    grid_1->SetRowLabelValue(4, _("4"));
-    grid_1->SetRowLabelValue(5, _("5"));
-    grid_1->SetRowLabelValue(6, _("6"));
-    grid_1->SetRowLabelValue(7, _("7"));
-    grid_1->SetRowLabelValue(8, _("8"));
-    grid_1->SetRowLabelValue(9, _("9"));
     sizer_19->Add(grid_1, 1, wxEXPAND, 0);
     notebook_1_wxHyperlinkCtrl = new wxPanel(notebook_1, wxID_ANY);
     notebook_1->AddPage(notebook_1_wxHyperlinkCtrl, _("wxHyperlinkCtrl"));

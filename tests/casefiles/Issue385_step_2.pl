@@ -39,16 +39,6 @@ sub new {
     
     $self->{grid_1} = Wx::Grid->new($self, wxID_ANY);
     $self->{grid_1}->CreateGrid(10, 0);
-    $self->{grid_1}->SetRowLabelValue(0, "0");
-    $self->{grid_1}->SetRowLabelValue(1, "1");
-    $self->{grid_1}->SetRowLabelValue(2, "2");
-    $self->{grid_1}->SetRowLabelValue(3, "3");
-    $self->{grid_1}->SetRowLabelValue(4, "4");
-    $self->{grid_1}->SetRowLabelValue(5, "5");
-    $self->{grid_1}->SetRowLabelValue(6, "6");
-    $self->{grid_1}->SetRowLabelValue(7, "7");
-    $self->{grid_1}->SetRowLabelValue(8, "8");
-    $self->{grid_1}->SetRowLabelValue(9, "9");
     $self->Layout();
     # end wxGlade
     return $self;

@@ -42,8 +42,6 @@ sub new {
     $self->{grid_1}->SetLabelBackgroundColour(Wx::Colour->new(216, 191, 216));
     $self->{grid_1}->SetColLabelValue(0, "Column A");
     $self->{grid_1}->SetColLabelValue(1, "Column B");
-    $self->{grid_1}->SetRowLabelValue(0, "0");
-    $self->{grid_1}->SetRowLabelValue(1, "1");
     $self->{grid_1}->SetBackgroundColour(Wx::Colour->new(0, 255, 255));
     $self->{grid_1}->SetRowLabelValue(0, "Row 1");
     $self->{grid_1}->SetCellValue(0, 0, "1");

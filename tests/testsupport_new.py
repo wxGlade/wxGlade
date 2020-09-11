@@ -189,7 +189,6 @@ class WXGladeCLITest(WXGladeBaseTest):
         languages = self._get_languages(excluded, included)
         infilename = self._get_casefile_path( '%s.wxg'%basename )
 
-
         if compat.PYTHON2:
             # the languages that failed due to differences to expected files
             diff_fails = []

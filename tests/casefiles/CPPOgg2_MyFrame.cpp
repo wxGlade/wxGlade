@@ -27,14 +27,6 @@ CPPOgg2_MyFrame::CPPOgg2_MyFrame(wxWindow* parent, wxWindowID id, const wxString
     sizer_5->Add(grid_sizer_3, 1, wxEXPAND, 0);
     grid_1 = new wxGrid(this, wxID_ANY);
     grid_1->CreateGrid(8, 3);
-    grid_1->SetRowLabelValue(0, _("0"));
-    grid_1->SetRowLabelValue(1, _("1"));
-    grid_1->SetRowLabelValue(2, _("2"));
-    grid_1->SetRowLabelValue(3, _("3"));
-    grid_1->SetRowLabelValue(4, _("4"));
-    grid_1->SetRowLabelValue(5, _("5"));
-    grid_1->SetRowLabelValue(6, _("6"));
-    grid_1->SetRowLabelValue(7, _("7"));
     grid_sizer_3->Add(grid_1, 1, wxEXPAND, 0);
     static_line_2 = new wxStaticLine(this, wxID_ANY);
     grid_sizer_3->Add(static_line_2, 0, wxALL|wxEXPAND, 5);

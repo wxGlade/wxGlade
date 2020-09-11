@@ -201,14 +201,6 @@ class MyFrameGrid(wx.Frame):
 
         self.grid = wx.grid.Grid(self, wx.ID_ANY, size=(1, 1))
         self.grid.CreateGrid(8, 3)
-        self.grid.SetRowLabelValue(0, _("0"))
-        self.grid.SetRowLabelValue(1, _("1"))
-        self.grid.SetRowLabelValue(2, _("2"))
-        self.grid.SetRowLabelValue(3, _("3"))
-        self.grid.SetRowLabelValue(4, _("4"))
-        self.grid.SetRowLabelValue(5, _("5"))
-        self.grid.SetRowLabelValue(6, _("6"))
-        self.grid.SetRowLabelValue(7, _("7"))
         self.grid_sizer.Add(self.grid, 1, wx.EXPAND, 0)
 
         self.static_line = wx.StaticLine(self, wx.ID_ANY)

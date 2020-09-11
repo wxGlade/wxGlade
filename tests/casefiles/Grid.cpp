@@ -28,8 +28,6 @@ MyFrame::MyFrame(wxWindow* parent, wxWindowID id, const wxString& title, const w
     grid_1->SetLabelBackgroundColour(wxColour(216, 191, 216));
     grid_1->SetColLabelValue(0, wxT("Column A"));
     grid_1->SetColLabelValue(1, wxT("Column B"));
-    grid_1->SetRowLabelValue(0, wxT("0"));
-    grid_1->SetRowLabelValue(1, wxT("1"));
     grid_1->SetBackgroundColour(wxColour(0, 255, 255));
     grid_1->SetRowLabelValue(0, "Row 1");
     grid_1->SetCellValue(0, 0, "1");

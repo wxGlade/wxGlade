@@ -185,14 +185,6 @@ MyFrameGrid::MyFrameGrid(wxWindow* parent, wxWindowID id, const wxString& title,
     _szr_frame->Add(grid_sizer, 1, wxEXPAND, 0);
     grid = new wxGrid(this, wxID_ANY);
     grid->CreateGrid(8, 3);
-    grid->SetRowLabelValue(0, _("0"));
-    grid->SetRowLabelValue(1, _("1"));
-    grid->SetRowLabelValue(2, _("2"));
-    grid->SetRowLabelValue(3, _("3"));
-    grid->SetRowLabelValue(4, _("4"));
-    grid->SetRowLabelValue(5, _("5"));
-    grid->SetRowLabelValue(6, _("6"));
-    grid->SetRowLabelValue(7, _("7"));
     grid_sizer->Add(grid, 1, wxEXPAND, 0);
     static_line = new wxStaticLine(this, wxID_ANY);
     grid_sizer->Add(static_line, 0, wxALL|wxEXPAND, 5);
