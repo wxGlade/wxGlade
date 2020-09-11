@@ -331,6 +331,8 @@ class EditBase(np.PropertyOwner):
             # on Windows or Mac Os it's not required
             wx.SafeYield()
             compat.wxWindow_SendSizeEventToParent(self.widget)
+        # following is required when e.g. adding a slot or widget to a sizer on a panel in a sizer
+        compat.wxWindow_SendSizeEventToParent(self.parent_window.widget)
 
     # actual widget creation
     def create_widget(self):
