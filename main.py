@@ -871,6 +871,7 @@ class wxGladeFrame(wx.Frame):
 
     def create_shell_window(self):
         common.shell = ShellFrame(None)
+        if misc.focused_widget: common.shell.txt_path.SetValue( misc.focused_widget.get_path() )
         common.shell.Show()
 
     # status bar for message display ###################################################################################
