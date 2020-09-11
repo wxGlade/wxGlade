@@ -28,7 +28,7 @@ class GridColsProperty(np.GridProperty):
                 inner_xml += common.format_xml_tag(u'column', label, tabs+1, size=size)
             output.extend( common.format_xml_tag(u'columns', inner_xml, tabs, is_xml=True) )
 
-    def _get_label(self, col):
+    def _get_default_label(self, col):
         s = []
         while True:
             s.append(chr(ord('A') + col%26))
@@ -39,10 +39,10 @@ class GridColsProperty(np.GridProperty):
 
     def _check_label(self, label, i):
         "return True if it's not the default value"
-        return label != self._get_label(i)
+        return label != self._get_default_label(i)
 
     def _get_default_row(self, row):
-        label = self._get_label(row)
+        label = self._get_default_label(row)
         values = self._ensure_editing_copy()
         # by default, take width from previous column
         col_width = values and values[row-1][1] or -1
@@ -73,16 +73,16 @@ class ColsHandler(BaseXmlBuilderTagHandler):
 
 
 class GridRowsProperty(GridColsProperty):
-    def _get_label(self, row):
+    def _get_default_label(self, row):
         return str(row+1)
 
     def _check_label(self, label, i):
         "return True if it's not the default value"
-        return label != self._get_label(i)
+        return label != self._get_default_label(i)
 
     def load(self, value, activate=None, deactivate=None, notify=False):
         if isinstance(value, compat.unicode):
-            value =  [[self._get_label(row),-1] for row in range(int(value))]
+            value =  [[self._get_default_label(row),-1] for row in range(int(value))]
         np.GridProperty.load(self, value, activate, deactivate, notify)
 
     def write(self, output, tabs):
@@ -101,7 +101,7 @@ class GridRowsProperty(GridColsProperty):
             output.extend( common.format_xml_tag(u'rows_number', str(len(rows)), tabs) )
 
     def _get_default_row(self, row):
-        label = self._get_label(row)
+        label = self._get_default_label(row)
         values = self._ensure_editing_copy()
         # by default, take width from previous row
         col_width = values and values[row-1][1] or -1
