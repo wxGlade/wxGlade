@@ -3135,7 +3135,7 @@ class GridProperty(Property):
         # fill the grid with default values; these are not in self.value unless the user edits them
         last_row = self.grid.NumberRows-1
         for col, value in enumerate( self._get_default_row(row) ):
-            self.grid.SetCellValue(last_row, col, str(value))
+            self.grid.SetCellValue(last_row, col, compat.unicode(value))
         if set_index:
             self._set_index(row)
 
@@ -3195,6 +3195,8 @@ class GridProperty(Property):
         if self.cur_row==-1: self.cur_row=0
         if self.with_index:
             self.indices.insert(self.cur_row, "")
+        for col, value in enumerate( values[self.cur_row] ):
+            self.grid.SetCellValue(self.cur_row, col, compat.unicode(value))
         self._update_remove_button()
         self._update_apply_button()
         self._update_indices()

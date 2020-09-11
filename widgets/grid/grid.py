@@ -41,25 +41,12 @@ class GridColsProperty(np.GridProperty):
         "return True if it's not the default value"
         return label != self._get_label(i)
 
-    def add_row(self, *args, **kwargs):
-        np.GridProperty.add_row(self, *args, **kwargs)
-        rows = self.grid.NumberRows
-        label = self._get_label(rows-1)
-        self.grid.SetCellValue(rows-1, 0, label)
-        # take the default column width from the previous row
-        col_width = -1 if rows==1 else int(self.grid.GetCellValue(rows-2, 1))
-        self.grid.SetCellValue(rows-1, 1, str(col_width))
-        self.editing_values[-1] = [label, col_width]
-
-    def insert_row(self, *args, **kwargs):
-        np.GridProperty.insert_row(self, *args, **kwargs)
-        label = self._get_label(self.cur_row)
-        self.grid.SetCellValue(self.cur_row, 0, label)
-        # take the default column width from the previous row
-        col_width = -1 if self.cur_row<1 else int(self.grid.GetCellValue(self.cur_row-1, 1))
-        self.grid.SetCellValue(self.cur_row, 1, str(col_width))
-        self.editing_values[self.cur_row] = [label, col_width]
-
+    def _get_default_row(self, row):
+        label = self._get_label(row)
+        values = self._ensure_editing_copy()
+        # by default, take width from previous column
+        col_width = values and values[row-1][1] or -1
+        return [label, col_width]
 
 
 class ColsHandler(BaseXmlBuilderTagHandler):
@@ -95,7 +82,7 @@ class GridRowsProperty(GridColsProperty):
 
     def load(self, value, activate=None, deactivate=None, notify=False):
         if isinstance(value, compat.unicode):
-            value =  [[str(n+1),-1] for n in range(int(value))]
+            value =  [[self._get_label(row),-1] for row in range(int(value))]
         np.GridProperty.load(self, value, activate, deactivate, notify)
 
     def write(self, output, tabs):
@@ -113,24 +100,12 @@ class GridRowsProperty(GridColsProperty):
             # just write the number of rows
             output.extend( common.format_xml_tag(u'rows_number', str(len(rows)), tabs) )
 
-    def add_row(self, *args, **kwargs):
-        np.GridProperty.add_row(self, *args, **kwargs)
-        rows = self.grid.NumberRows
-        label = self._get_label(rows-1)
-        self.grid.SetCellValue(rows-1, 0, label)
-        # take the default row width from the previous row
-        col_width = -1 if rows==1 else int(self.grid.GetCellValue(rows-2, 1))
-        self.grid.SetCellValue(rows-1, 1, str(col_width))
-        self.editing_values[-1] = [label, col_width]
-
-    def insert_row(self, *args, **kwargs):
-        np.GridProperty.insert_row(self, *args, **kwargs)
-        label = self._get_label(self.cur_row)
-        self.grid.SetCellValue(self.cur_row, 0, label)
-        # take the default row width from the previous row
-        col_width = -1 if self.cur_row<1 else int(self.grid.GetCellValue(self.cur_row-1, 1))
-        self.grid.SetCellValue(self.cur_row, 1, str(col_width))
-        self.editing_values[self.cur_row] = [label, col_width]
+    def _get_default_row(self, row):
+        label = self._get_label(row)
+        values = self._ensure_editing_copy()
+        # by default, take width from previous row
+        col_width = values and values[row-1][1] or -1
+        return [label, col_width]
 
 
 
