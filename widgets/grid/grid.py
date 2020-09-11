@@ -95,7 +95,7 @@ class GridRowsProperty(GridColsProperty):
 
     def load(self, value, activate=None, deactivate=None, notify=False):
         if isinstance(value, compat.unicode):
-            value =  [[str(n),-1] for n in range(int(value))]
+            value =  [[str(n+1),-1] for n in range(int(value))]
         np.GridProperty.load(self, value, activate, deactivate, notify)
 
     def write(self, output, tabs):
@@ -103,7 +103,7 @@ class GridRowsProperty(GridColsProperty):
         inner_xml = []
         rows = self.get()
         for i, (label, size) in enumerate(rows):
-            if size!=-1 or label!=str(i):
+            if size!=-1 or self._check_label(label, i):
                 is_default=False
             inner_xml += common.format_xml_tag(u'row', label, tabs+1, size=size)
         if not is_default:
@@ -180,7 +180,7 @@ class EditGrid(ManagedBase):
         self.create_grid = np.CheckBoxProperty(True)
         columns = [['A', -1], ['B', -1], ['C', -1]]
         self.columns = GridColsProperty([])
-        rows =  [[str(n),-1] for n in range(10)]
+        rows =  [[str(n+1),-1] for n in range(10)]
         self.rows = GridRowsProperty( rows )
         self.properties["rows_number"] = self.properties["rows"]  # backward compatibility
         #self.rows_number        = np.SpinProperty(10, immediate=True)
