@@ -11,9 +11,9 @@ config = {
         'wxTB_FLAT':       {'desc':_('Gives the toolbar a flat look (Windows and GTK only).')},
         'wxTB_DOCKABLE':   {'desc':_('Makes the toolbar floatable and dockable (GTK only).')},
         
-        'wxTB_HORIZONTAL': {'desc':_('Specifies horizontal layout (default).'),
+        'wxTB_HORIZONTAL': {'desc':_('Specifies horizontal layout (default).\n(alias: wxTB_TOP)'),
                             'exclude':'wxTB_VERTICAL|wxTB_BOTTOM|wxTB_RIGHT'},
-        'wxTB_VERTICAL':   {'desc':_('Specifies vertical layout.'),
+        'wxTB_VERTICAL':   {'desc':_('Specifies vertical layout.\n(alias: wxTB_LEFT)'),
                             'exclude':'wxTB_HORIZONTAL|wxTB_BOTTOM|wxTB_RIGHT|wxTB_DEFAULT_STYLE'},
         'wxTB_BOTTOM':     {'desc':_('Align the toolbar at the bottom of parent window.'),
                             'exclude':'wxTB_HORIZONTAL|wxTB_VERTICAL|wxTB_RIGHT|wxTB_DEFAULT_STYLE'
@@ -30,15 +30,20 @@ config = {
         'wxTB_HORZ_TEXT':  {'desc':_('Combination of wxTB_HORZ_LAYOUT and wxTB_TEXT.'),
                             'combination': 'wxTB_HORZ_LAYOUT|wxTB_TEXT' },
         'wxTB_NO_TOOLTIPS':{'desc':_("Don't show the short help tooltips for the tools when the mouse hovers over them.")},
+
+        'wxTB_LEFT':       {'rename_to':'wxTB_VERTICAL'},
+        'wxTB_TOP':        {'rename_to':'wxTB_HORIZONTAL'},
+
         'wxTB_DEFAULT_STYLE': {
-            'desc': _('Combination of wxTB_HORIZONTAL and wxTB_FLAT. This style is new since wxWidgets 2.9.5.'),
-            'combination': 'wxTB_HORIZONTAL|wxTB_FLAT',
+            'desc': _('Flags that are closest to the native look. Currently identical to wxTB_HORIZONTAL.\n'
+                      'This style is new since wxWidgets 2.9.5.'),
+            'combination': 'wxTB_HORIZONTAL',
             'exclude':'wxTB_VERTICAL|wxTB_BOTTOM|wxTB_RIGHT',
             'supported_by': ('wx3',) },
         'wxTB_3DBUTTONS':  {'desc':_('show 3D buttons (wxToolBarSimple only)')},
     },
-    'style_list': ['wxTB_DEFAULT_STYLE', 'wxTB_FLAT', 'wxTB_DOCKABLE', 'wxTB_HORIZONTAL', 'wxTB_VERTICAL', 'wxTB_TEXT',
+    'style_list': ['wxTB_DEFAULT_STYLE', 'wxTB_FLAT', 'wxTB_DOCKABLE',
+                   'wxTB_HORIZONTAL', 'wxTB_VERTICAL', 'wxTB_BOTTOM', 'wxTB_RIGHT', 'wxTB_TEXT',
                    'wxTB_NOICONS', 'wxTB_NODIVIDER', 'wxTB_NOALIGN', 'wxTB_HORZ_LAYOUT', 'wxTB_HORZ_TEXT',
-                   'wxTB_NO_TOOLTIPS', 'wxTB_BOTTOM', 'wxTB_RIGHT', 'wxTB_3DBUTTONS']
+                   'wxTB_NO_TOOLTIPS', 'wxTB_3DBUTTONS']
 }
-
