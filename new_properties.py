@@ -678,6 +678,7 @@ class CheckBoxProperty(Property):
         label_text = self._find_label()
         self.checkbox = wx.CheckBox(panel, -1, '', name=label_text)
         self._display_value()
+        if self.blocked: self.checkbox.Disable()
         self.label_ctrl = label = self._get_label(label_text, panel, name=label_text)
 
         if config.preferences.use_checkboxes_workaround:

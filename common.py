@@ -773,6 +773,7 @@ class Preferences(ConfigParser.ConfigParser):
         'open_save_path': '',
         'codegen_path': '',
         'use_dialog_units': False,
+        'allow_custom_widgets':False,
         'number_history': 12,
         'show_progress': True,
         'wxg_backup': True,
