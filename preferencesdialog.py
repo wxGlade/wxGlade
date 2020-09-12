@@ -47,6 +47,7 @@ class wxGladePreferences(wxGladePreferencesUI):
         try:
             self.open_save_path.SetValue(self.preferences.open_save_path)
             self.codegen_path.SetValue(self.preferences.codegen_path)
+            self.allow_custom_widgets.SetValue( self.preferences.allow_custom_widgets )
             self.use_dialog_units.SetValue( self.preferences.use_dialog_units )
             self.number_history.SetValue(self.preferences.number_history)
             self.show_progress.SetValue(self.preferences.show_progress)
@@ -103,6 +104,7 @@ class wxGladePreferences(wxGladePreferencesUI):
         prefs = self.preferences
         prefs['open_save_path'] = self.open_save_path.GetValue()
         prefs['codegen_path'] = self.codegen_path.GetValue()
+        prefs['allow_custom_widgets'] = self.allow_custom_widgets.GetValue()
         prefs['use_dialog_units'] = self.use_dialog_units.GetValue()
         prefs['number_history'] = self.number_history.GetValue()
         prefs['show_progress'] = self.show_progress.GetValue()

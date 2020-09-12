@@ -8,7 +8,7 @@ Custom wxWindow objects
 """
 
 import wx
-import common, misc, compat
+import common, misc, compat, config
 from wcodegen.taghandler import BaseXmlBuilderTagHandler
 import new_properties as np
 from edit_windows import ManagedBase
@@ -63,7 +63,9 @@ class CustomWidget(ManagedBase):
                          "instance_class":("The class that should be instantiated, e.g. 'mycontrols.MyCtrl'.\n\n"
                             "You need to ensure that the class is available.\n"
                             "Add required import code to 'Extra (import) code for this widget' on the Code tab."),
-                         'show_design':'Highly experimental:\nUse custom class and code already in Design window.'}
+                         'show_design':("Highly experimental:\nUse custom class and code already in Design window.\n\n"
+                                        "Only available if option 'Allow custom widget code in Design and Preview"
+                                        " windows' is checked.")}
 
     def __init__(self, name, parent, index, instance_class=None):
         ManagedBase.__init__(self, name, parent, index, instance_class or "wxWindow")
@@ -75,11 +77,13 @@ class CustomWidget(ManagedBase):
         self.custom_ctor = np.TextPropertyD("", name="custom_constructor", strip=True, default_value="")
 
         self.show_design = np.CheckBoxProperty(False, default_value=False)
-        self._error_message = None
+        if not config.preferences.allow_custom_widgets:
+            self.properties["show_design"].set_blocked()
+        self._error_message = None  # when there's an error message due to the previous option
 
     def create_widget(self):
         self._error_message = None
-        if self.show_design and common.root.language=="python":
+        if self.show_design and common.root.language=="python" and config.preferences.allow_custom_widgets:
             # update path
             import os, sys
             dirname = os.path.dirname( common.root.filename )
