@@ -87,6 +87,7 @@ Widgets:
  * StaticBoxSizer: add font property; use StaticBox for Design window and set font if the user changes it
    when font is active, generate code using StaticBox
  * ToolBar: optional (attribute) names
+ * ToolBar: support adding controls; TOOL_STYLE_BUTTON, TOOL_STYLE_SEPARATOR, TOOL_STYLE_CONTROL
  * StaticBitmap: support wxGenericStaticBitmap once it supports SetScaleMode
  * wxBitmapComboBox
 done:
