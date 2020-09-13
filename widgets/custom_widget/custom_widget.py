@@ -55,7 +55,7 @@ class CustomWidget(ManagedBase):
     custom_ctor: if not empty, an arbitrary piece of code that will be used instead of the constructor name"""
 
     WX_CLASS = "CustomWidget"
-    _PROPERTIES = ["Widget", "custom_ctor", "show_design", "arguments"]
+    _PROPERTIES = ["Widget", "custom_ctor", "show_design", "show_preview", "arguments"]
     PROPERTIES = ManagedBase.PROPERTIES + _PROPERTIES + ManagedBase.EXTRA_PROPERTIES
 
     _PROPERTY_LABELS = { 'custom_constructor':'Cust. constructor' }
@@ -64,6 +64,9 @@ class CustomWidget(ManagedBase):
                             "You need to ensure that the class is available.\n"
                             "Add required import code to 'Extra (import) code for this widget' on the Code tab."),
                          'show_design':("Highly experimental:\nUse custom class and code already in Design window.\n\n"
+                                        "Only available if option 'Allow custom widget code in Design and Preview"
+                                        " windows' is checked."),
+                         'show_preview':("Highly experimental:\nUse custom class and code already in Preview window.\n\n"
                                         "Only available if option 'Allow custom widget code in Design and Preview"
                                         " windows' is checked.")}
 
@@ -77,8 +80,10 @@ class CustomWidget(ManagedBase):
         self.custom_ctor = np.TextPropertyD("", name="custom_constructor", strip=True, default_value="")
 
         self.show_design = np.CheckBoxProperty(False, default_value=False)
+        self.show_preview = np.CheckBoxProperty(False, default_value=False)
         if not config.preferences.allow_custom_widgets:
             self.properties["show_design"].set_blocked()
+            self.properties["show_preview"].set_blocked()
         self._error_message = None  # when there's an error message due to the previous option
 
     def create_widget(self):

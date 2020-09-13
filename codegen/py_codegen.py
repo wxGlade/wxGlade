@@ -311,7 +311,7 @@ from %(top_win_module)s import %(top_win_class)s\n\n"""
                                            'function':self.name_ctor, 'klass':fmt_klass, 'tab':tab} )
 
         # the optional initial code from the code properties
-        if not self.preview and code_obj.check_prop("extracode_pre"):
+        if self._check_code_prop(code_obj, "extracode_pre"):
             for l in code_obj.properties["extracode_pre"].get_lines():
                 write(tab + l)
 
@@ -343,7 +343,7 @@ from %(top_win_module)s import %(top_win_class)s\n\n"""
         for l in builder.get_properties_code(code_obj):
             write(tab + l)
 
-        if not self.preview and code_obj.check_prop_truth('extraproperties'):
+        if self._check_code_prop(code_obj, "extraproperties"):
             for l in self.generate_code_extraproperties(code_obj):
                 write(tab + l)
 
@@ -363,7 +363,7 @@ from %(top_win_module)s import %(top_win_class)s\n\n"""
             write(tab + l)
 
         # the optional final code from the code properties
-        if not self.preview and code_obj.check_prop("extracode_post"):
+        if self._check_code_prop(code_obj, "extracode_post"):
             for l in code_obj.properties["extracode_post"].get_lines():
                 write(tab + l)
 
