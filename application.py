@@ -518,7 +518,7 @@ class Application(EditRoot):
         finally:
             writer.clean_up(widget or self)
 
-        if preview or not config.use_gui: return
+        if preview or not config.use_gui: return writer
         if config.preferences.show_completion:
             # Show informational dialog
             misc.info_message("Code generation completed successfully")
@@ -577,12 +577,15 @@ class Application(EditRoot):
 
         frame = None
         try:
-            self.generate_code(True, preview_filename, widget)
+            # create preview module
+            writer = self.generate_code(True, preview_filename, widget)
             # import generated preview module dynamically
             preview_path = os.path.dirname(preview_filename)
             preview_module_name = os.path.basename(preview_filename)
             preview_module_name = os.path.splitext(preview_module_name)[0]
-            preview_module = plugins.import_module(preview_path, preview_module_name)
+            if preview_path not in sys.path: sys.path.append(preview_path)
+            preview_module = __import__(preview_module_name, {}, {}, ['just_not_empty'])
+
             if not preview_module:
                 misc.error_message( _('Can not import the preview module from file \n"%s".\n'
                                       'The details are written to the log file.\n'
@@ -658,7 +661,14 @@ class Application(EditRoot):
             if config.debugging or config.testing: raise
             widget.preview_widget = None
             widget.properties["preview"].set_label(_('Show Preview'))
-            bugdialog.Show(_("Generate Preview"), inst)
+            if writer.have_extracode:
+                # could be caused by user code: just report
+                msg = ["Exception during preview, potentially due to invalid code in custom widget:","",
+                       inst.__class__.__name__, inst.msg]
+                wx.MessageBox("\n".join(msg), "Preview Error", wx.CANCEL|wx.CENTRE|wx.ICON_EXCLAMATION, parent=common.main)
+            else:
+                # internal error to be reported
+                bugdialog.Show(_("Generate Preview"), inst)
 
         return frame
     

@@ -363,6 +363,7 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
             self.out_dir = out_path or config.default_output_file
         self.out_dir = os.path.normpath( os.path.expanduser(self.out_dir.strip()) )
         self.preview = preview
+        self.have_extracode = False  # set to True if (extra) code for custom widget is added
 
         # any of the following could return an error as string
         return self.init_lang(app) or self.check_values() or self.init_files(self.out_dir)
@@ -728,6 +729,16 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
                 self._current_extra_code.extend(extra_code)
                 self.output_file.extend(obuffer)
 
+    def _check_code_prop(self, obj, property_name):
+        # check whether user code from named property should be added: for preview only if 'show_preview' is selected
+        if self.preview:
+            if not config.preferences.allow_custom_widgets: return False
+            if not obj.check_prop_truth("show_preview"): return False
+        if obj.check_prop(property_name):
+            self.have_extracode = True
+            return True
+        return False
+
     def add_object(self, parent_klass, parent, parent_builder, obj):
         """Adds the code to build 'obj' to the class body in parent_klass. (Not called for toplevel elements.)"""
 
@@ -743,24 +754,24 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
             raise
 
         if not obj.IS_SIZER and not obj.IS_CLASS:  # the object is a wxWindow instance
-            if not self.preview:
-                if obj.check_prop_truth("extracode_pre"):
-                    init = obj.properties["extracode_pre"].get_lines() + init
-                if obj.check_prop_truth("extracode_post"):
-                    init += obj.properties["extracode_post"].get_lines()
-                if obj.check_prop_truth('extraproperties'):  # insert these only after extracode_post
-                    init += self.generate_code_extraproperties(obj)
+            if self._check_code_prop(obj, "extracode_pre"):
+                init = obj.properties["extracode_pre"].get_lines() + init
+            if self._check_code_prop(obj, "extracode_post"):
+                init += obj.properties["extracode_post"].get_lines()
+            if self._check_code_prop(obj, "extraproperties"):  # insert these only after extracode_post
+                init += self.generate_code_extraproperties(obj)
 
             mycn = getattr(builder, 'cn', self.cn)
             for obj_, evt, handler, evt_type in builder.get_event_handlers(obj):
                 parent_klass.event_handlers.append( (obj_, mycn(evt), handler, evt_type) )
 
             # try to see if there's some extra code to add to this class
-            if not self.preview:
+            if not self.preview or obj.check_prop_truth("show_preview"):
                 extra_code = getattr(builder, 'extracode', getattr(obj, 'extracode', "") or "" )
                 extra_code = extra_code.rstrip()
                 if extra_code and not extra_code in parent_klass.extra_code:
                     parent_klass.extra_code.append(extra_code)
+                    self.have_extracode = True
 
         if init:
             parent_klass.init.append("\n")

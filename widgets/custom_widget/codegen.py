@@ -7,7 +7,7 @@ Code generator functions for CustomWidget objects
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
-import logging, common
+import logging, common, config
 import wcodegen
 
 
@@ -34,11 +34,11 @@ def format_ctor_arguments(arguments, parent, id, size):
 class PythonCustomWidgetGenerator(wcodegen.PythonWidgetCodeWriter):
     def get_code(self, widget, widget_access=None, parent_access=None):
         #if self.codegen.preview and widget.klass not in widget.parser.class_names:
-        if self.codegen.preview:
+        if self.codegen.preview and (not widget.show_preview or not config.preferences.allow_custom_widgets):
             # if this CustomWidget refers to another class in the same wxg
             # file, use that for the preview
             return self.get_code_preview(widget)
-        prop = widget.properties
+        self.codegen.have_extracode = True
         id_name, id = self.codegen.generate_code_id(widget)
         if parent_access is None: parent_access = self.format_widget_access(widget.parent_window)
         init = []
