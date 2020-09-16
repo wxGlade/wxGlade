@@ -2040,7 +2040,7 @@ class _SizerDialog(wx.Dialog):
         pos = wx.GetMousePosition()
         wx.Dialog.__init__( self, misc.get_toplevel_parent(parent), -1, _('Select sizer type'), pos )
         choices = [_('Horizontal'), _('Vertical'), 'StdDialogButtonSizer']
-        self.orientation = wx.RadioBox( self, -1, _('Orientation'), choices=choices )
+        self.orientation = wx.RadioBox( self, -1, _('Orientation'), choices=choices, majorDimension=1 )
         self.orientation.SetSelection(0)
         self.orientation.Bind(wx.EVT_RADIOBOX, self.on_choice_orientation)
         tmp = wx.BoxSizer(wx.HORIZONTAL)
