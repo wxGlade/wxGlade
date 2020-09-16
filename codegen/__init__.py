@@ -454,7 +454,7 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
         for c in root.children or []:
             if widget is not None and c is not widget: continue # for preview
             self._generate_code(None, None, None, c)
-        if not root.IS_ROOT: return
+        if not root.IS_ROOT or self.preview: return
         topwin = [c for c in root.children if c.name==root.top_window]
         topwin = topwin and topwin[0] or root.children and root.children[0] or None
         self.add_app(root, topwin)
@@ -550,7 +550,7 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
                             'textdomain': self._textdomain,
                             'top_win_class': cls,
                             'top_win_module': top_win and top_win.klass.replace('::', '_'),
-                            'top_win': app.top_window }
+                            'top_win': top_win.name }
 
         # extend default mapping with language specific mapping
         if self.lang_mapping:
