@@ -1536,11 +1536,13 @@ class TextProperty(Property):
 
     def _convert_from_text(self, text=None):
         "convert from TextCtrl input value to self.value; change in derived classes"
-        if text is None: value = self.text.GetValue()
+        if text is None: text = self.text.GetValue()
         return text
 
     def check_value(self, value):
         "return (warning, error)"
+        if value is None:
+            return (None, "empty")
         if self.validation_re and not self.validation_re.match(value):
             return (None, "invalid")
         warning, error = self._check(value)
