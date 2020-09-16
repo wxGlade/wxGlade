@@ -149,20 +149,21 @@ def builder(parent, index, klass=None, base=None, name=None):
     if interactive and add_sizer:
         # add a default panel and vertical sizer to the frame; optionally add buttons if it's a Dialog
         import edit_sizers, widgets.button.button
-        slots = 2 if button_names else 1
+        slots = 2  if base=="wxDialog" and button_names else  1
         szr = edit_sizers._builder(editor, 0, slots=slots)
-        button_szr = edit_sizers._builder(szr, 1, "StdDialogButtonSizer", slots=len(button_names))
-        button_szr.properties["border"].set(4)
-        button_szr.properties["flag"].set("wxALL|wxALIGN_RIGHT")
-        i = 0
-        for button_name, button_type in zip(button_names, button_types):
-            name = "button_%s"%button_name
-            label = "OK" if button_name=="OK" else button_name.capitalize()
-            button = widgets.button.button.EditButton(name, button_szr, i, label)
-            button.properties["stockitem"].set(button_name, activate=True)
-            if button_type=="A": editor.properties["affirmative"].set(name, activate=True)
-            if button_type=="C": editor.properties["escape"].set(name, activate=True)
-            i += 1
+        if base=="wxDialog":
+            button_szr = edit_sizers._builder(szr, 1, "StdDialogButtonSizer", slots=len(button_names))
+            button_szr.properties["border"].set(4)
+            button_szr.properties["flag"].set("wxALL|wxALIGN_RIGHT")
+            i = 0
+            for button_name, button_type in zip(button_names, button_types):
+                name = "button_%s"%button_name
+                label = "OK" if button_name=="OK" else button_name.capitalize()
+                button = widgets.button.button.EditButton(name, button_szr, i, label)
+                button.properties["stockitem"].set(button_name, activate=True)
+                if button_type=="A": editor.properties["affirmative"].set(name, activate=True)
+                if button_type=="C": editor.properties["escape"].set(name, activate=True)
+                i += 1
     else:
         # just add a slot
         edit_base.Slot(editor, 0)
