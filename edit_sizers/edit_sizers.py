@@ -2036,28 +2036,37 @@ def _builder(parent, index, orientation=wx.VERTICAL, slots=1, is_static=False, l
 
 
 class _SizerDialog(wx.Dialog):
-    def __init__(self, parent):
+    def __init__(self, parent, to_dialog):
         pos = wx.GetMousePosition()
         wx.Dialog.__init__( self, misc.get_toplevel_parent(parent), -1, _('Select sizer type'), pos )
-        choices = [_('Horizontal'), _('Vertical'), 'StdDialogButtonSizer']
-        self.orientation = wx.RadioBox( self, -1, _('Orientation'), choices=choices, majorDimension=1 )
-        self.orientation.SetSelection(0)
-        self.orientation.Bind(wx.EVT_RADIOBOX, self.on_choice_orientation)
+        szr = wx.BoxSizer(wx.VERTICAL)
+
+        # static box sizer with radio buttons for orientation / type
+        self.orientation = 0
+        self.radios = []
+        vsizer = wx.StaticBoxSizer(wx.VERTICAL, self, _('Orientation'))
+        for i, choice in enumerate( ('Horizontal', 'Vertical') ):
+            radio = wx.RadioButton(self, -1, _(choice), style=wx.RB_GROUP if i==0 else 0)
+            vsizer.Add(radio, 0, wx.ALL, 4)
+            radio.Bind(wx.EVT_RADIOBUTTON, self.on_choice_orientation)
+            self.radios.append(radio)
+        szr.Add(vsizer, 0, wx.ALL | wx.EXPAND, 4)
+
         tmp = wx.BoxSizer(wx.HORIZONTAL)
         tmp.Add( wx.StaticText(self, -1, _('Slots: ')), 0, wx.ALL | wx.ALIGN_CENTER_VERTICAL, 3 )
         self.num = wx.SpinCtrl(self, -1)
         self.num.SetValue(1)
         self.num.SetRange(0, 100)
         tmp.Add(self.num, 1, wx.ALL, 3)
-        szr = wx.BoxSizer(wx.VERTICAL)
-        szr.Add(self.orientation, 0, wx.ALL | wx.EXPAND, 4)
         szr.Add(tmp, 0, wx.EXPAND)
+
         self.checkbox_static = wx.CheckBox(self, -1, _('Has a Static Box:'))
-        compat.SetToolTip(self.checkbox_static, "Use wxStaticBoxSizer")
+        compat.SetToolTip(self.checkbox_static, "Use wxStaticBoxSizer with box and label")
         self.label = wx.TextCtrl(self, -1, "")
         self.label.Enable(False)
-        self.checkbox_static.Bind(wx.EVT_CHECKBOX, self.on_check_statbox)
+        self.checkbox_static.Bind(wx.EVT_CHECKBOX, self._set_active)
         szr.Add(self.checkbox_static, 0, wx.ALL | wx.EXPAND, 4)
+
         tmp = wx.BoxSizer(wx.HORIZONTAL)
         tmp.Add(wx.StaticText(self, -1, _("Label: ")), 0, wx.ALIGN_CENTER)
         tmp.Add(self.label, 1)
@@ -2066,69 +2075,74 @@ class _SizerDialog(wx.Dialog):
         if HAVE_WRAP_SIZER:
             self.checkbox_wrap = wx.CheckBox(self, -1, _('Wraps around'))
             compat.SetToolTip(self.checkbox_wrap, "Use wxWrapSizer")
-            self.checkbox_wrap.Bind(wx.EVT_CHECKBOX, self.on_check_wrapbox)
+            self.checkbox_wrap.Bind(wx.EVT_CHECKBOX, self._set_active)
             szr.Add(self.checkbox_wrap, 0, wx.ALL | wx.EXPAND, 4)
 
+        if to_dialog:
+            # option for 'StdDialogButtonSizer'
+            self.checkbox_dlgbutton = wx.CheckBox(self, -1, "StdDialogButtonSizer")
+            compat.SetToolTip(self.checkbox_dlgbutton, "Horizontal sizer for action buttons in dialogs")
+            self.checkbox_dlgbutton.Bind(wx.EVT_CHECKBOX, self.on_checkbox_dlgbutton)
+            szr.Add(self.checkbox_dlgbutton, 0, wx.ALL | wx.EXPAND, 4)
+        else:
+            self.checkbox_dlgbutton = None
+
         # horizontal sizer for action buttons
-        #hsizer = wx.BoxSizer(wx.HORIZONTAL)
         hsizer = wx.StdDialogButtonSizer()
         hsizer.Add( wx.Button(self, wx.ID_CANCEL, _('Cancel')), 1, wx.ALL, 5)
         btn = wx.Button(self, wx.ID_OK, _('OK'))
         btn.SetDefault()
         hsizer.Add(btn, 1, wx.ALL, 5)
         szr.Add(hsizer, 0, wx.EXPAND )
+
         self.SetAutoLayout(1)
         self.SetSizer(szr)
         szr.Fit(self)
         self.Layout()
-        #self.CenterOnScreen()
 
-    def reset(self):
-        self.orientation.SetSelection(0)
-        self.num.SetValue(1)
-        self.checkbox_static.SetValue(0)
-        self.label.SetValue("")
-        self.label.Enable(False)
-        if HAVE_WRAP_SIZER:
-            self.checkbox_wrap.SetValue(0)
-    
     def on_choice_orientation(self, event):
-        choice = event.GetSelection()
-        if HAVE_WRAP_SIZER:
-            self.checkbox_wrap.Enable( choice<2 )
-            self.checkbox_static.Enable( choice<2 and not self.checkbox_wrap.IsChecked() )
-        self.label.Enable( choice<2 and self.checkbox_static.IsChecked() )
-        if choice==2 and self.num.Value<2:
-            self.num.SetValue(2)
+        self.orientation = self.radios.index(event.GetEventObject())
+        self._set_active()
 
-    def on_check_statbox(self, event):
-        checked = event.IsChecked()
-        self.label.Enable(checked)
-        if HAVE_WRAP_SIZER:
-            self.checkbox_wrap.Enable(not checked)
-            if checked: self.checkbox_wrap.SetValue(False)
+    def on_checkbox_dlgbutton(self, event):
+        if event.IsChecked() and self.num.Value<2: self.num.SetValue(2)
+        self._set_active()
 
-    def on_check_wrapbox(self, event):
-        checked = event.IsChecked()
-        self.checkbox_static.Enable(not checked)
-        if checked:
-            self.checkbox_static.SetValue(False)
-            self.label.Disable()
+    def _set_active(self, event=None):
+        # dynamically activate and deactivate controls
+        if HAVE_WRAP_SIZER:
+            can_be_wrap = not self.checkbox_static.IsChecked()
+            if self.checkbox_dlgbutton and self.checkbox_dlgbutton.IsChecked(): can_be_wrap = False
+            self.checkbox_wrap.Enable( can_be_wrap )
+
+        can_be_static = self.orientation<2
+        if HAVE_WRAP_SIZER and self.checkbox_wrap.IsChecked(): can_be_static = False
+        if self.checkbox_dlgbutton and self.checkbox_dlgbutton.IsChecked(): can_be_static = False
+        self.checkbox_static.Enable( can_be_static )
+
+        self.label.Enable( self.checkbox_static.IsChecked() )
+
+        if self.checkbox_dlgbutton:
+            can_be_dialogbutton_sizer = self.orientation==0 and not self.checkbox_static.IsChecked()
+            if HAVE_WRAP_SIZER and self.checkbox_wrap.IsChecked(): can_be_dialogbutton_sizer = False
+            self.checkbox_dlgbutton.Enable( can_be_dialogbutton_sizer )
+            
+            self.radios[1].Enable( not self.checkbox_dlgbutton.IsChecked() )
 
 
 def builder(parent, index):
     "factory function for box sizers"
 
-    dialog = _SizerDialog(common.adding_window or parent)
+    dialog = _SizerDialog(common.adding_window or parent, parent.toplevel_parent.WX_CLASS=="wxDialog")
     with misc.disable_stay_on_top(common.adding_window or parent):
         res = dialog.ShowModal()
-    choice = dialog.orientation.GetSelection()  # 0, 1 or 2
-    if choice==0:
-        orientation = wx.HORIZONTAL
-    elif choice==1:
-        orientation = wx.VERTICAL
+    if dialog.orientation==0:
+        if dialog.checkbox_dlgbutton and dialog.checkbox_dlgbutton.IsChecked():
+            orientation = "StdDialogButtonSizer"
+        else:
+            orientation = wx.HORIZONTAL
     else:
-        orientation = "StdDialogButtonSizer"
+        orientation = wx.VERTICAL
 
     num = dialog.num.GetValue()
     wrap = HAVE_WRAP_SIZER and dialog.checkbox_wrap.GetValue() or False
