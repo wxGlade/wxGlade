@@ -52,4 +52,3 @@ class ButtonStockItems(object):
         "ZOOM_IN" :             "Zoom &In",
         "ZOOM_OUT" :            "Zoom &Out",
     }
-
