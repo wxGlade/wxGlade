@@ -161,8 +161,11 @@ def builder(parent, index, klass=None, base=None, name=None):
                 label = "OK" if button_name=="OK" else button_name.capitalize()
                 button = widgets.button.button.EditButton(name, button_szr, i, label)
                 button.properties["stockitem"].set(button_name, activate=True)
-                if button_type=="A": editor.properties["affirmative"].set(name, activate=True)
-                if button_type=="C": editor.properties["escape"].set(name, activate=True)
+                if button_type=="A":
+                    editor.properties["affirmative"].set(name, activate=True)
+                    button.properties["default"].set(True)
+                if button_type=="C":
+                    editor.properties["escape"].set(name, activate=True)
                 i += 1
     else:
         # just add a slot
