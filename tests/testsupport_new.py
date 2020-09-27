@@ -386,12 +386,11 @@ class WXGladeGUITest(WXGladeBaseTest):
                     self._compare_files(compare_filename, generated_filename)
                 subtest += 1
 
-        # try to generate code with empty output path -> will fail
-        app.properties["output_path"].set("")
-        app.generate_code()
-
         # first test should fail because no output file is given
         if not app.multiple_files:
+            # try to generate code with empty output path -> will fail
+            app.properties["output_path"].set("")
+            app.generate_code()
             self._assert_error_message( u'You must specify an output file' )
 
         # now test full code generation
