@@ -19,26 +19,23 @@ from edit_windows import EditBase, PreviewMixin, EditStylesMixin
 from gui_mixins import BitmapMixin
 from wcodegen.taghandler import BaseXmlBuilderTagHandler
 
+if compat.IS_CLASSIC:
+    from .ToolsDialog28 import ToolsDialog as _ToolsDialog
+else:
+    from .ToolsDialog import ToolsDialog as _ToolsDialog
 
-class ToolsDialog(wx.Dialog):
-    # initially based on MenuItemDialog; with more abstraction, e.g. columns
+class ToolsDialog(_ToolsDialog):
+    # _ToolsDialog is generated from res/MenuItemDialog.wxg
     columns  = ["label","bitmap1","bitmap2","short_help","long_help","type","handler","id"]
-    column_widths = [180,180,     120,       120,        180,        50,     120,      50]
-    headers = ["Label","Primary Bitmap","Disabled Bitmap","Short Help","Long Help","Type","Event Handler","Id"]
     coltypes = {"type":int}
     # these will be copied:
     default_item = ("item","","","","",0,"","")
     separator_item = ("---","---","---","---","",0,"","---")
 
     def __init__(self, parent, owner, items=None):
-        style = wx.DEFAULT_DIALOG_STYLE|wx.RESIZE_BORDER|wx.WANTS_CHARS
-        wx.Dialog.__init__(self, parent, -1, _("Toolbar editor"), style=style)
-
-        self.create_gui()
-        self.bind_event_handlers()
-        self._set_tooltips()
+        _ToolsDialog.__init__(self, parent)
+        
         self.owner = owner
-
         self.handler_re = self.name_re = re.compile(r'^[a-zA-Z_]+[\w-]*(\[\w*\])*$')
 
         self.selected_index = -1  # index of the selected element in the wx.ListCtrl menu_items
@@ -49,6 +46,26 @@ class ToolsDialog(wx.Dialog):
             self._select_item(0)
         else:
             self._enable_fields(False)
+
+        self.Bind(wx.EVT_CHAR_HOOK, self.on_char)
+        self.remove.Bind(wx.EVT_CHAR_HOOK, self.on_button_char)  # to ignore the Enter key while the focus is on Remove
+        self.items.Bind(wx.EVT_MOUSEWHEEL, lambda e: e.Skip())  # workaround to make the scroll wheel work...
+
+    def on_drop_files(self, screen_xy, ctrl, filenames):
+        # as this dialog is shown modal with the main window as parent,
+        # this method is called from the main window drop target
+        if ctrl is not self.bitmap1 and ctrl is not self.bitmap2: return False
+        
+        if not wx.GetKeyState(wx.WXK_ALT) and not wx.GetKeyState(wx.WXK_CONTROL):
+            # insert relative filename, if available and the filename is under the project directory
+            filenames = [misc.get_relative_path(filename) for filename in filenames]
+
+        if os.path.sep=="\\": filenames = [filename.replace("\\", "/") for filename in filenames]
+        if len(filenames)==1:
+            ctrl.SetValue(filenames[0])
+        else:
+            other_ctrl = self.bitmap2 if ctrl is self.bitmap1 else self.bitmap1
+            other_ctrl.SetValue(filenames[1])
 
     def on_char(self, event):
         # keyboard navigation: up/down arrows and also Tab on some buttons
@@ -78,8 +95,9 @@ class ToolsDialog(wx.Dialog):
             self.EndModal(wx.ID_OK)
             return
 
-        if k==wx.WXK_RETURN:  # ignore Enter key
-            return
+        if k==wx.WXK_RETURN:  # ignore Enter key except when editing an item in the list control
+            if not (self.items.EditControl and event.GetEventObject() is self.items.EditControl):
+                return
         if k==wx.WXK_DOWN:
             if event.AltDown():
                 self.move_item_down(event)
@@ -104,154 +122,6 @@ class ToolsDialog(wx.Dialog):
         # for e.g. the Remove button we don't want an action on the Return button
         if event.GetKeyCode() != wx.WXK_RETURN:
             event.Skip()
-
-    def create_gui(self):
-        sizer_1 = wx.BoxSizer(wx.VERTICAL)
-        sizer_2 = wx.BoxSizer(wx.HORIZONTAL)
-        sizer_5 = wx.BoxSizer(wx.HORIZONTAL)
-        sizer_6 = wx.BoxSizer(wx.VERTICAL)
-        grid_sizer = wx.FlexGridSizer(7, 2, 0, 0)
-        sizer_bitmap1 = wx.BoxSizer(wx.HORIZONTAL)
-        sizer_bitmap2 = wx.BoxSizer(wx.HORIZONTAL)
-
-        # tool fields
-        self.label = wx.TextCtrl(self, wx.ID_ANY, "")
-        self.label_6 = wx.StaticText(self, wx.ID_ANY, "Label:")
-        grid_sizer.Add(self.label_6, 0, wx.ALIGN_CENTER_VERTICAL | wx.LEFT | wx.RIGHT, 4)
-        grid_sizer.Add(self.label, 1, wx.EXPAND, 0)
-
-        label_11 = wx.StaticText(self, wx.ID_ANY, "Primary Bitmap:")
-        grid_sizer.Add(label_11, 0, wx.ALIGN_CENTER_VERTICAL | wx.LEFT | wx.RIGHT, 4)
-        self.bitmap1 = wx.TextCtrl(self, wx.ID_ANY, "")
-        sizer_bitmap1.Add(self.bitmap1, 1, 0, 0)
-        self.bitmap1_button = wx.Button(self, wx.ID_ANY, "...")
-        sizer_bitmap1.Add(self.bitmap1_button, 0, wx.BOTTOM | wx.LEFT | wx.TOP, 0)
-        grid_sizer.Add(sizer_bitmap1, 1, wx.EXPAND, 0)
-
-        label_12 = wx.StaticText(self, wx.ID_ANY, "Disabled Bitmap:")
-        grid_sizer.Add(label_12, 0, wx.ALIGN_CENTER_VERTICAL | wx.LEFT | wx.RIGHT, 4)
-        self.bitmap2 = wx.TextCtrl(self, wx.ID_ANY, "")
-        sizer_bitmap2.Add(self.bitmap2, 1, 0, 0)
-        self.bitmap2_button = wx.Button(self, wx.ID_ANY, "...")
-        sizer_bitmap2.Add(self.bitmap2_button, 0, wx.BOTTOM | wx.LEFT | wx.TOP, 0)
-        grid_sizer.Add(sizer_bitmap2, 1, wx.EXPAND, 0)
-
-        self.label_7 = wx.StaticText(self, wx.ID_ANY, "Event Handler:")
-        grid_sizer.Add(self.label_7, 0, wx.ALIGN_CENTER_VERTICAL | wx.LEFT | wx.RIGHT, 4)
-        self.handler = wx.TextCtrl(self, wx.ID_ANY, "")
-        grid_sizer.Add(self.handler, 1, wx.EXPAND, 0)
-
-        self.label_9 = wx.StaticText(self, wx.ID_ANY, "Short Help:")
-        grid_sizer.Add(self.label_9, 0, wx.ALIGN_CENTER_VERTICAL | wx.LEFT | wx.RIGHT, 4)
-        self.short_help = wx.TextCtrl(self, wx.ID_ANY, "")
-        grid_sizer.Add(self.short_help, 1, wx.EXPAND, 0)
-
-        self.label_9b = wx.StaticText(self, wx.ID_ANY, "Long Help:")
-        grid_sizer.Add(self.label_9b, 0, wx.ALIGN_CENTER_VERTICAL | wx.LEFT | wx.RIGHT, 4)
-        self.long_help = wx.TextCtrl(self, wx.ID_ANY, "")
-        grid_sizer.Add(self.long_help, 1, wx.EXPAND, 0)
-
-        self.label_10 = wx.StaticText(self, wx.ID_ANY, "ID:")
-        grid_sizer.Add(self.label_10, 0, wx.ALIGN_CENTER_VERTICAL | wx.LEFT | wx.RIGHT, 4)
-        self.id = wx.TextCtrl(self, wx.ID_ANY, "")
-        hsizer = wx.BoxSizer(wx.HORIZONTAL)
-        hsizer.Add(self.id, 1)
-        hsizer.Add((4, 4), 1)
-        grid_sizer.Add(hsizer, 1, wx.EXPAND, 0)
-
-        grid_sizer.AddGrowableCol(1)
-
-        sizer_5.Add(grid_sizer, 2, wx.EXPAND, 0)
-
-        self.type  = wx.RadioBox(self, wx.ID_ANY, "Type", choices=["Normal", "Checkable", "Radio"],
-                                       majorDimension=1, style=wx.RA_SPECIFY_COLS)
-        sizer_5.Add(self.type, 0, wx.ALL, 4)
-
-        sizer_5.Add((20, 20), 1, 0, 0)
-
-        # editor action buttons
-        self.move_up = wx.Button(self, wx.ID_ANY, "Up")
-        self.move_down = wx.Button(self, wx.ID_ANY, "Down")
-        self.add = wx.Button(self, wx.ID_ANY, "&Add")
-        self.remove = wx.Button(self, wx.ID_ANY, "&Remove")
-        self.add_sep = wx.Button(self, wx.ID_ANY, "Add &Separator")
-        # dialog action buttons; these will be handled, instead of using stock OK/Cancel buttons
-        self.ok     = wx.Button(self, wx.ID_ANY, "OK")
-        self.cancel = wx.Button(self, wx.ID_ANY, "Cancel")
-
-        sizer_6.Add(self.ok, 0, wx.ALL, 5)
-        sizer_6.Add(self.cancel, 0, wx.ALL, 5)
-        sizer_5.Add(sizer_6, 0, wx.EXPAND, 0)
-        sizer_1.Add(sizer_5, 0, wx.EXPAND, 0)
-        sizer_2.Add(self.move_up, 0, wx.BOTTOM | wx.LEFT | wx.TOP, 8)
-        sizer_2.Add(self.move_down, 0, wx.BOTTOM | wx.RIGHT | wx.TOP, 8)
-        sizer_2.Add((20, 20), 1, 0, 0)
-        sizer_2.Add(self.add, 0, wx.BOTTOM | wx.LEFT | wx.TOP, 8)
-        sizer_2.Add(self.remove, 0, wx.BOTTOM | wx.TOP, 8)
-        sizer_2.Add(self.add_sep, 0, wx.ALL, 8)
-        sizer_2.Add((20, 20), 2, 0, 0)
-        sizer_1.Add(sizer_2, 0, wx.EXPAND, 0)
-
-        self.items = wx.ListCtrl(self, wx.ID_ANY, style=wx.BORDER_DEFAULT | wx.BORDER_SUNKEN | wx.LC_EDIT_LABELS | wx.LC_REPORT | wx.LC_SINGLE_SEL)
-        sizer_1.Add(self.items, 1, wx.EXPAND, 0)
-
-        self.SetSizer(sizer_1)
-        sizer_1.Fit(self)
-        self.Layout()
-
-        self.SetSize( (900, 600) )
-
-    def bind_event_handlers(self):
-        self.Bind(wx.EVT_TEXT, self.on_label_edited, self.label)
-        self.Bind(wx.EVT_TEXT, self.on_event_handler_edited, self.handler)
-        self.Bind(wx.EVT_TEXT, self.on_help_str_edited, self.short_help)
-        self.Bind(wx.EVT_TEXT, self.on_long_help_str_edited, self.long_help)
-        self.Bind(wx.EVT_TEXT, self.on_id_edited, self.id)
-        self.Bind(wx.EVT_RADIOBOX, self.on_type_edited, self.type)
-
-        self.Bind(wx.EVT_BUTTON, self.move_item_up, self.move_up)
-        self.Bind(wx.EVT_BUTTON, self.move_item_down, self.move_down)
-        self.Bind(wx.EVT_BUTTON, self.add_item, self.add)
-        self.Bind(wx.EVT_BUTTON, self.remove_item, self.remove)
-        self.Bind(wx.EVT_BUTTON, self.add_separator, self.add_sep)
-        self.Bind(wx.EVT_BUTTON, self.on_cancel, self.cancel)
-        self.Bind(wx.EVT_BUTTON, self.on_OK, self.ok)
-        self.Bind(wx.EVT_BUTTON, self.select_bitmap1, self.bitmap1_button)
-        self.Bind(wx.EVT_BUTTON, self.select_bitmap2, self.bitmap2_button)
-        self.Bind(wx.EVT_TEXT, self.on_bitmap1_edited, self.bitmap1)
-        self.Bind(wx.EVT_TEXT, self.on_bitmap2_edited, self.bitmap2)
-        self.Bind(wx.EVT_LIST_ITEM_SELECTED, self.show_item, self.items)
-
-        self.Bind(wx.EVT_CHAR_HOOK, self.on_char)
-        self.remove.Bind(wx.EVT_CHAR_HOOK, self.on_button_char)  # to ignore the Enter key while the focus is on Remove
-
-        self.items.Bind(wx.EVT_MOUSEWHEEL, lambda e: e.Skip())  # workaround to make the scroll wheel work...
-
-        for c,header in enumerate(self.headers):
-            self.items.InsertColumn(c, _(header))
-            self.items.SetColumnWidth(c, self.column_widths[c])
-
-    def _set_tooltips(self):
-        # set tooltips
-        for c in (self.label_6, self.label):
-            compat.SetToolTip(c, "The menu entry text;\nenter & for access keys (using ALT key)\nappend e.g. \\tCtrl-X for keyboard shortcut")
-        for c in (self.label_7, self.handler):
-            compat.SetToolTip(c, "Enter the name of an event handler method; this will be created as stub")
-        for c in (self.label_10, self.id):
-            compat.SetToolTip(c, "optional: enter wx ID")
-        for c in (self.label_9, self.short_help):
-            compat.SetToolTip(c , "This will be displayed as tooltip" )
-        for c in (self.label_9b, self.long_help):
-            compat.SetToolTip( c, "This will be displayed in the status bar" )
-        compat.SetToolTip( self.move_up, "Move selected item up (Alt-Up)" )
-        compat.SetToolTip( self.move_down, "Move selected item down (Alt-Down)" )
-        compat.SetToolTip( self.items, "For navigation use the mouse or the up/down arrows" )
-
-        compat.SetToolTip( self.ok, "Alt+O or Alt+Enter or Ctrl+Enter" )
-        compat.SetToolTip( self.cancel, "Alt+C or Alt+F4" )
-        compat.SetToolTip( self.add, "Alt+A" )
-        compat.SetToolTip( self.remove, "Alt+R" )
-        compat.SetToolTip( self.add_sep, "Alt+S" )
 
     def _enable_fields(self, enable=True, clear=False):
         if clear:
@@ -471,6 +341,27 @@ class ToolsDialog(wx.Dialog):
         if value:
             control.SetValue(value)
 
+    def select_bitmap1_art(self, event):
+        # select wxART... standard bitmaps
+        if compat.IS_CLASSIC:
+            import dialogs28 as dialogs
+        else:
+            import dialogs
+        dlg = dialogs.SelectArtDialog(self)
+        if hasattr(self, "_last_ART_size"):
+            dlg.spin_width.SetValue(self._last_ART_size[0])
+            dlg.spin_height.SetValue(self._last_ART_size[1])
+        user = dlg.ShowModal()
+        if user!=wx.ID_OK: return
+        width, height = self._last_ART_size = dlg.spin_width.GetValue(), dlg.spin_height.GetValue()
+        art_index = dlg.listctrl.GetFirstSelected()
+        if art_index==-1: return
+        art_name = dlg.art_names[art_index]
+        self.bitmap1.SetValue("art:wxART_%s,wxART_TOOLBAR,%d,%d"%(art_name, width, height))
+        label = self.label.GetValue()
+        if not label.strip() or label=="item":
+            self.label.SetValue(art_name.replace("_"," ").capitalize())
+
     def select_bitmap1(self, event):
         self._select_bitmap(event, "bitmap1", 'Primary Bitmap')
 
@@ -504,7 +395,7 @@ class ToolsProperty(np.Property):
             parent = self.owner.widget.GetTopLevelParent()
         else:
             parent = None
-        dialog = ToolsDialog( parent, self.owner, items=self.value )
+        dialog = ToolsDialog( common.main, self.owner, items=self.value )
         if not self.value: dialog.add_item(None)
         with misc.disable_stay_on_top(common.adding_window or parent):
             res = dialog.ShowModal()
