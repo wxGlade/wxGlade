@@ -44,19 +44,20 @@ class FileDropTarget(wx.FileDropTarget):
             wx.MessageBox( _("Please only drop one file at a time"), "wxGlade", wx.ICON_ERROR )
             return False
         if not filenames or not os.path.exists(filenames[0]): return False
-        # first check whether it's being dropped on the property panel
+        # find control under drop point; this does also work if a dialog is open
         x0,y0 = self.parent.GetClientAreaOrigin()
         screen_xy = self.parent.ClientToScreen( (x-x0,y-y0) )
         ctrl = c = wx.FindWindowAtPoint( screen_xy )
+        # go up the hierarchy and find a widget with an 'on_drop_files' method
         while c:
-            if c is self.parent.property_panel:
-                handled = self.parent.property_panel.on_drop_files(screen_xy, ctrl, filenames[0])
-                if handled:
-                    return True
-                else:
-                    break
+            if hasattr(c, "on_drop_files"):
+                handled = c.on_drop_files(screen_xy, ctrl, filenames)
+                if handled: return True
+            if c is self.parent.property_panel: break
+            if isinstance(c, wx.Dialog): return False  # when a dialog is open, don't open wxg or xrc files
             c = c.GetParent()
 
+        # not handled by a control; try to open .wxg or .XRC file
         if not self.parent.ask_save(): return False
 
         path = filenames[0]
@@ -96,7 +97,7 @@ class wxGladePropertyPanel(wx.Panel):
         self.SetSizer(sizer)
         self.Layout()
 
-    def on_drop_files(self, screen_xy, ctrl, filename):
+    def on_drop_files(self, screen_xy, ctrl, filenames):
         if not self.current_widget: return False
         for p_name in self.current_widget.PROPERTIES:
             if p_name[0].isupper(): continue
@@ -104,7 +105,7 @@ class wxGladePropertyPanel(wx.Panel):
             if not prop or not hasattr(prop, "on_drop_file"): continue
             if ( hasattr(prop, "label_ctrl") and prop.label_ctrl.ScreenRect.Contains( screen_xy ) and
                  prop.label_ctrl.IsShownOnScreen() ) or prop.has_control(ctrl):
-                return prop.on_drop_file(filename)
+                return prop.on_drop_file(filenames[0])
         return False
 
     ####################################################################################################################
