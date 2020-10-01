@@ -1543,6 +1543,7 @@ class TextProperty(Property):
         "return (warning, error)"
         if value is None:
             return (None, "empty")
+        if not isinstance(value, compat.unicode): value = self._convert_to_text(value)
         if self.validation_re and not self.validation_re.match(value):
             return (None, "invalid")
         warning, error = self._check(value)
