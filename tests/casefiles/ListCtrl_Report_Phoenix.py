@@ -23,10 +23,10 @@ class MyFrame(wx.Frame):
         sizer_1 = wx.BoxSizer(wx.VERTICAL)
 
         self.list_ctrl_1 = wx.ListCtrl(self, wx.ID_ANY, style=wx.LC_HRULES | wx.LC_REPORT | wx.LC_VRULES)
-        self.list_ctrl_1.AppendColumn("A", format=wx.LIST_FORMAT_LEFT, width=-1)
-        self.list_ctrl_1.AppendColumn("B", format=wx.LIST_FORMAT_LEFT, width=-1)
-        self.list_ctrl_1.AppendColumn("C", format=wx.LIST_FORMAT_LEFT, width=-1)
-        self.list_ctrl_1.AppendColumn("D", format=wx.LIST_FORMAT_LEFT, width=-1)
+        self.list_ctrl_1.InsertColumn(0, "A", format=wx.LIST_FORMAT_LEFT, width=-1)
+        self.list_ctrl_1.InsertColumn(1, "B", format=wx.LIST_FORMAT_LEFT, width=-1)
+        self.list_ctrl_1.InsertColumn(2, "C", format=wx.LIST_FORMAT_LEFT, width=-1)
+        self.list_ctrl_1.InsertColumn(3, "D", format=wx.LIST_FORMAT_LEFT, width=-1)
         sizer_1.Add(self.list_ctrl_1, 1, wx.EXPAND, 0)
 
         self.SetSizer(sizer_1)

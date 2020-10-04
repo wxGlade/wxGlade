@@ -43,7 +43,7 @@ class PythonListCtrlGenerator(ListCtrlPropertyGeneratorMixin, wcodegen.PythonWid
 
     def _get_row_col_templates(self):
         # templates for adding columns and rows (rows are for preview only)
-        if self.codegen.for_version >= (3,0):
+        if self.codegen.for_version >= (3,0) and compat.IS_PHOENIX:
             tmpl_append_column = '%(name)s.AppendColumn(%(heading)s, format=wx.LIST_FORMAT_LEFT, width=%(width)d)\n'
             tmpl_append_row = '%s.InsertItem(%d, "")\n'
         else:
