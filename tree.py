@@ -70,7 +70,7 @@ class WidgetTree(wx.TreeCtrl):#, Tree):
         t_right  = template.GetSubImage( (20,0,1,20) )  # typically a black line at right
         for pos_v in (0,1,2):           # active slot v
             for pos_h in (0,1,2):       # active slot h
-                img = wx.Image(21,21)
+                img = wx.EmptyImage(21, 21)
                 for x in (0,1,2):       # left, center, right
                     for y in (0,1,2):   # top, middle, button
                         t = t_active  if x==pos_h and y==pos_v else  t_empty
