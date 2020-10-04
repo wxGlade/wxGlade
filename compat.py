@@ -255,6 +255,7 @@ if len(wx.VERSION)==5:
     def SetToolTip(c, s):
         c.SetToolTipString(s)
     wx_EmptyBitmap = wx.EmptyBitmap
+    wx_EmptyImage = wx.EmptyImage
     wx_EmptyIcon = wx.EmptyIcon
     wx_NamedColour = wx.NamedColour
     def ConvertPixelsToDialog(widget, size):
@@ -285,6 +286,7 @@ else:
     def SetToolTip(c, s):
         c.SetToolTip(s)
     wx_EmptyBitmap = wx.Bitmap
+    wx_EmptyImage = wx.Image
     wx_EmptyIcon = wx.Icon
     wx_NamedColour = wx.Colour
     def ConvertPixelsToDialog(widget, size):
