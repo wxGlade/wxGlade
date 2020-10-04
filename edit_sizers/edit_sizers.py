@@ -2294,8 +2294,8 @@ def init_all():
         WidgetTree.images['EditHorizontalWrapSizer'] = os.path.join( config.icons_path, 'wrap_sizer_h.xpm')
         WidgetTree.images['EditVerticalWrapSizer'] = os.path.join( config.icons_path, 'wrap_sizer.xpm')
     WidgetTree.images['EditStaticBoxSizer'] = os.path.join( config.icons_path, 'sizer.xpm')
-    WidgetTree.images['EditFlexGridSizer']  = os.path.join( config.icons_path, 'grid_sizer.xpm' )
-    WidgetTree.images['EditGridBagSizer']  = os.path.join( config.icons_path, 'grid_sizer.xpm' )
+    WidgetTree.images['EditFlexGridSizer']  = os.path.join( config.icons_path, 'flexgrid_sizer.xpm' )
+    WidgetTree.images['EditGridBagSizer']  = os.path.join( config.icons_path, 'gridbag_sizer.xpm' )
 
     WidgetTree.images['EditVerticalSizer']   = os.path.join( config.icons_path, 'sizer_v.xpm' )
     WidgetTree.images['EditHorizontalSizer'] = os.path.join( config.icons_path, 'sizer_h.xpm' )

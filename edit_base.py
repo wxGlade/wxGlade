@@ -889,14 +889,23 @@ class Slot(EditBase):
 
         if not self.parent.IS_SIZER: return "EditSlot"
         name = "EditSizerSlot"
-        if "orient" in self.parent.properties:
+        if "rows" in self.parent.properties:
+            rows, cols = self.parent._get_actual_rows_cols()
+            row, col = self.parent._get_row_col(self.index, cols)
+            posh = posv = 1  # default
+            if row==0:        posv = 0
+            elif row+1==rows: posv = 2
+            if col==0:        posh = 0
+            elif col+1==cols: posh = 2
+            name = "EditGridSizerSlot-%s%s"%(posh, posv)
+            if self.overlapped: name += "-Disabled"
+        elif "orient" in self.parent.properties:
             sizer_orient = self.parent.orient
             if sizer_orient is not None:
                 if sizer_orient==wx.VERTICAL:
                     name = "EditVerticalSizerSlot"
                 elif sizer_orient==wx.HORIZONTAL:
                     name = "EditHorizontalSizerSlot"
-        if self.overlapped: name += "-Disabled"
         return name
 
     def _get_tooltip(self):

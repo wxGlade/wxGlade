@@ -53,17 +53,40 @@ class WidgetTree(wx.TreeCtrl):#, Tree):
         self.Bind(wx.EVT_TREE_DELETE_ITEM, self.on_delete_item)
 
     def _load_images(self):
-        image_list = wx.ImageList(21, 21)
-        image_list.Add(wx.Bitmap(os.path.join(config.icons_path, 'application.xpm'), wx.BITMAP_TYPE_XPM))
         bitmaps = {}
         for name, path in WidgetTree.images.items():
-            bitmaps[name] = misc.get_xpm_bitmap(path)
-        for name in ["EditSizerSlot"]:
-            bmp = bitmaps[name]
-            if hasattr(bitmaps[name], "ConvertToDisabled"):
-                bmp = bmp.ConvertToDisabled()
-            bitmaps[name+"-Disabled"] = bmp
+            img = misc.get_xpm_bitmap(path).ConvertToImage()
+            # add 1 white pixel more at top and bottom
+            img.Resize((21,23), (0,1), -1,-1,-1)
+            bitmaps[name] = img.ConvertToBitmap()
 
+        # grid sizer slots:
+        # load template with one active slot and build new images with slot at any position top/left to bottom/right
+        fn = os.path.join(config.icons_path, 'grid_sizer_slot_template.xpm')  # bottom / right in black
+        template = wx.Image(fn, wx.BITMAP_TYPE_XPM)
+        t_empty  = template.GetSubImage( (0,0,7,7) )    # empty slot
+        t_active = template.GetSubImage( (0,7,7,7) )    # active slot
+        t_bottom = template.GetSubImage( (0,20,20,1) )  # typically a black line at bottom
+        t_right  = template.GetSubImage( (20,0,1,20) )  # typically a black line at right
+        for pos_v in (0,1,2):           # active slot v
+            for pos_h in (0,1,2):       # active slot h
+                img = wx.Image(21,21)
+                for x in (0,1,2):       # left, center, right
+                    for y in (0,1,2):   # top, middle, button
+                        t = t_active  if x==pos_h and y==pos_v else  t_empty
+                        img.Paste(t, x*7, y*7)
+                img.Paste(t_bottom, 0,20)
+                img.Paste(t_right, 20,0)
+                # add 1 white pixel more at top and bottom, store; store also -Disabled version
+                img.Resize((21,23), (0,1), -1,-1,-1)
+                name = 'EditGridSizerSlot-%d%d'%(pos_h,pos_v)
+                bmp = bitmaps[name] = img.ConvertToBitmap()
+                if hasattr(bmp, "ConvertToDisabled"):
+                    bitmaps['%s-Disabled'%name] = bmp.ConvertToDisabled()
+
+        # store in the bitmap list
+        image_list = wx.ImageList(21, 23)
+        image_list.Add(wx.Bitmap(os.path.join(config.icons_path, 'application.xpm'), wx.BITMAP_TYPE_XPM))
         for name, bitmap in bitmaps.items():
             WidgetTree.images[name] = image_list.Add(bitmap)
         self.AssignImageList(image_list)
