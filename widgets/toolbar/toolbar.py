@@ -25,18 +25,20 @@ else:
     from .ToolsDialog import ToolsDialog as _ToolsDialog
 
 class ToolsDialog(_ToolsDialog):
-    # _ToolsDialog is generated from res/MenuItemDialog.wxg
+    # _ToolsDialog is generated from res/ToolsDialog.wxg
     columns  = ["label","bitmap1","bitmap2","short_help","long_help","type","handler","id"]
     coltypes = {"type":int}
     # these will be copied:
     default_item = ("item","","","","",0,"","")
     separator_item = ("---","---","---","---","",0,"","---")
 
+    name_re = re.compile(r'^[a-zA-Z_]+[\w-]*(\[\w*\])*$')
+    handler_re = re.compile(r'^(([a-zA-Z_]+[a-zA-Z0-9_-]*)|()|(lambda .*))$')
+
     def __init__(self, parent, owner, items=None):
         _ToolsDialog.__init__(self, parent)
-        
+
         self.owner = owner
-        self.handler_re = self.name_re = re.compile(r'^[a-zA-Z_]+[\w-]*(\[\w*\])*$')
 
         self.selected_index = -1  # index of the selected element in the wx.ListCtrl menu_items
         self._ignore_events = False
