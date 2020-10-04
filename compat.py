@@ -263,6 +263,8 @@ if len(wx.VERSION)==5:
 
     ListCtrl_SetStringItem    = wx.ListCtrl.SetStringItem
     ListCtrl_InsertStringItem = wx.ListCtrl.InsertStringItem
+    ListCtrl_InsertImageItem = wx.ListCtrl.InsertImageItem
+
     def SetCursor(window, cursor):
         window.SetCursor(wx.StockCursor(cursor))
         
@@ -294,6 +296,8 @@ else:
 
     ListCtrl_SetStringItem    = wx.ListCtrl.SetItem
     ListCtrl_InsertStringItem = wx.ListCtrl.InsertItem
+    ListCtrl_InsertImageItem = wx.ListCtrl.InsertItem
+
     def SetCursor(window, cursor):
         window.SetCursor(wx.Cursor(cursor))
 

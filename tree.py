@@ -83,10 +83,14 @@ class WidgetTree(wx.TreeCtrl):#, Tree):
                 bmp = bitmaps[name] = img.ConvertToBitmap()
                 if hasattr(bmp, "ConvertToDisabled"):
                     bitmaps['%s-Disabled'%name] = bmp.ConvertToDisabled()
+                else:
+                    bitmaps['%s-Disabled'%name] = img.AdjustChannels(1.5, 1.5, 1.5).ConvertToBitmap()
 
         # store in the bitmap list
         image_list = wx.ImageList(21, 23)
-        image_list.Add(wx.Bitmap(os.path.join(config.icons_path, 'application.xpm'), wx.BITMAP_TYPE_XPM))
+        app_image = wx.Image(os.path.join(config.icons_path, 'application.xpm'), wx.BITMAP_TYPE_XPM)
+        app_image.Resize((21,23), (0,1), -1,-1,-1)
+        image_list.Add( app_image.ConvertToBitmap() )
         for name, bitmap in bitmaps.items():
             WidgetTree.images[name] = image_list.Add(bitmap)
         self.AssignImageList(image_list)
