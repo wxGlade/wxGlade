@@ -346,10 +346,10 @@ class ToolsDialog(_ToolsDialog):
     def select_bitmap1_art(self, event):
         # select wxART... standard bitmaps
         if compat.IS_CLASSIC:
-            import dialogs28 as dialogs
+            import _dialogs28 as _dialogs
         else:
-            import dialogs
-        dlg = dialogs.SelectArtDialog(self)
+            import _dialogs
+        dlg = _dialogs.SelectArtDialog(self)
         if hasattr(self, "_last_ART_size"):
             dlg.spin_width.SetValue(self._last_ART_size[0])
             dlg.spin_height.SetValue(self._last_ART_size[1])
