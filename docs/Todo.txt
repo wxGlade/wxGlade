@@ -1,6 +1,5 @@
 
 User Interface:
- * better icons for GridSizers and grid sizer slots (3x3); merged cells for GridBagSizer
  * easy selection of events from the base classes (-> rev. 1.1)
  * implement undo/re-do; use this for GUI scripting (testing) (-> rev. 1.1)
  * better avoid overlapping / invisible design window; same for dialogs with "Pin"
@@ -13,6 +12,7 @@ Not by me, but maybe someone contributes:
  * toolbar and maybe menu editor: add Drop target for images (-> rev. 1.0)
  * add a template manager for (custom) widgets or complete parts of a design?
 done:
+ * better icons for GridSizers and grid sizer slots (3x3); merged cells for GridBagSizer
  * grid properties: implement validation in 'on_cell_changing'
  * allow dropping of bitmaps onto slots
  * allow the addition of any event as text
