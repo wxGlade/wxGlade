@@ -1386,6 +1386,27 @@ class wxGladeFrame(wx.Frame):
 
     def _check_geometry(self, x,y,width,height):
         # check whether a significant part would be visible
+        # also, at least a part of the top edge needs to be visible
+        if width<150 or height<150: return False
+
+        # check top line
+        top_line = wx.Rect(x,y,width,1)
+        min_visible = int(round(width/3))
+        top_line_OK = False
+        for d in range(wx.Display.GetCount()):
+            display = wx.Display(d)
+            client_area = display.ClientArea
+            if not client_area.width or not client_area.height:
+                # the display info is broken on some installations
+                continue
+            intersection = client_area.Intersect(top_line)
+            if intersection.width>=min_visible:
+                top_line_OK = True
+                break
+
+        if not top_line_OK: return False
+
+        # check rectangle
         geometry = wx.Rect(x,y,width,height)
 
         for d in range(wx.Display.GetCount()):
