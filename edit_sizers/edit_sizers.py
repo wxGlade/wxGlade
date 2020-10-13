@@ -2044,7 +2044,7 @@ class _SizerDialog(wx.Dialog):
         # static box sizer with radio buttons for orientation / type
         self.orientation = 0
         self.radios = []
-        vsizer = wx.StaticBoxSizer(wx.VERTICAL, self, _('Orientation'))
+        vsizer = wx.StaticBoxSizer(wx.StaticBox(self, -1, _("Orientation")), wx.VERTICAL)
         for i, choice in enumerate( ('Horizontal', 'Vertical') ):
             radio = wx.RadioButton(self, -1, _(choice), style=wx.RB_GROUP if i==0 else 0)
             vsizer.Add(radio, 0, wx.ALL, 4)
