@@ -241,6 +241,8 @@ class EditBase(EventsMixin, edit_base.EditBase):
             return (False, "No bitmaps can be pasted here")
         if (typename is not None and typename=="window") or (widget and widget.IS_TOPLEVEL):
             return (False,"No toplevel objects can be pasted here")
+        if self.parent.IS_SIZER and not self.parent._can_add_insert_slots():
+            return (False, "Slot is populated already")
         return ("Slot",None)
 
     def check_drop_compatibility(self):
