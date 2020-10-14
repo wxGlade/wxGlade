@@ -2036,17 +2036,18 @@ def _builder(parent, index, orientation=wx.VERTICAL, slots=1, is_static=False, l
 
 
 class _SizerDialog(wx.Dialog):
-    def __init__(self, parent, to_dialog):
+    def __init__(self, parent, to_dialog, default_orient=None):
         pos = wx.GetMousePosition()
         wx.Dialog.__init__( self, misc.get_toplevel_parent(parent), -1, _('Select sizer type'), pos )
         szr = wx.BoxSizer(wx.VERTICAL)
 
         # static box sizer with radio buttons for orientation / type
-        self.orientation = 0
+        self.orientation = 1 if default_orient==wx.VERTICAL else 0
         self.radios = []
         vsizer = wx.StaticBoxSizer(wx.StaticBox(self, -1, _("Orientation")), wx.VERTICAL)
         for i, choice in enumerate( ('Horizontal', 'Vertical') ):
             radio = wx.RadioButton(self, -1, _(choice), style=wx.RB_GROUP if i==0 else 0)
+            if i==self.orientation: radio.SetValue(True)
             vsizer.Add(radio, 0, wx.ALL, 4)
             radio.Bind(wx.EVT_RADIOBUTTON, self.on_choice_orientation)
             self.radios.append(radio)
@@ -2132,15 +2133,16 @@ class _SizerDialog(wx.Dialog):
 
 def builder(parent, index):
     "factory function for box sizers"
-
-    dialog = _SizerDialog(common.adding_window or parent, parent.toplevel_parent.WX_CLASS=="wxDialog")
+    default_orient = None
+    if parent.IS_SIZER and parent.check_prop("orient") and parent.orient in (wx.HORIZONTAL, wx.VERTICAL):
+        default_orient = wx.HORIZONTAL if parent.orient==wx.VERTICAL else wx.VERTICAL
+    dialog = _SizerDialog(common.adding_window or parent, parent.toplevel_parent.WX_CLASS=="wxDialog", default_orient)
     with misc.disable_stay_on_top(common.adding_window or parent):
         res = dialog.ShowModal()
-    if dialog.orientation==0:
-        if dialog.checkbox_dlgbutton and dialog.checkbox_dlgbutton.IsChecked():
-            orientation = "StdDialogButtonSizer"
-        else:
-            orientation = wx.HORIZONTAL
+    if dialog.checkbox_dlgbutton and dialog.checkbox_dlgbutton.IsChecked():
+        orientation = "StdDialogButtonSizer"
+    elif dialog.orientation==0:
+        orientation = wx.HORIZONTAL
     else:
         orientation = wx.VERTICAL
 
