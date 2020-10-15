@@ -523,8 +523,12 @@ accel_table_editors = {
     ("",  wx.WXK_ESCAPE):(_cancel, ()),
 
     ("", wx.WXK_RETURN): (drop,    ()),
-
 }
+
+if wx.Platform == "__WXMAC__":
+    # on Windows this one would go up in the hierarchy when in the Tree control
+    accel_table_editors["", wx.WXK_BACK] = (_remove, ())
+
 
 # for the palette window
 accel_table_editors_palette = {
