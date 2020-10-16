@@ -592,9 +592,12 @@ class Application(EditRoot):
             try:
                 preview_class = getattr(preview_module, preview_classname) # .klass)
             except AttributeError:
-                # module loade previously -> do a re-load XXX this is required for Python 3; check alternatives
-                import importlib
-                preview_module = importlib.reload(preview_module)
+                # module loaded previously -> do a re-load XXX this is required for Python 3; check alternatives
+                if sys.version_info.major<3:
+                    preview_module = reload(preview_module)
+                else:
+                    import importlib
+                    preview_module = importlib.reload(preview_module)
                 preview_class = getattr(preview_module, preview_classname)
 
             if not preview_class:
