@@ -3127,7 +3127,9 @@ class GridProperty(Property):
         self._update_apply_button()
         self._update_indices()
         if delay:
-            wx.CallLater(100, self._add_grid_row, row, set_index)  # don't modify the grid within a EVT_GRID_CELL_CHANGED handler
+            #  - don't modify the grid within a EVT_GRID_CELL_CHANGED handler
+            # - use CallLater to avoid GoToCell causing on_cell_changed being called due to self.grid.GoToCell
+            wx.CallLater(100, self._add_grid_row, row, set_index)
         else:
             self._add_grid_row(row, set_index)
 
