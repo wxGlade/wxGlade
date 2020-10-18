@@ -769,6 +769,7 @@ class SizerBase(edit_base.EditBase):
         if not self._can_add_insert_slots(report=True):
             return
         count = self._ask_count() if multiple else 1
+        if not count: return
         with self.window.frozen():
             for n in range(count):
                 slot = self._insert_slot(index)
@@ -780,6 +781,7 @@ class SizerBase(edit_base.EditBase):
         if not self._can_add_insert_slots(report=True):
             return
         count = self._ask_count(insert=False) if multiple else 1
+        if not count: return
         with self.window.frozen():
             for n in range(count):
                 slot = self._add_slot()
