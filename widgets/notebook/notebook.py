@@ -67,6 +67,7 @@ class EditNotebook(ManagedBase, EditStylesMixin):
     _next_notebook_number = 1 # next free number for notebook names
 
     WX_CLASS = "wxNotebook"
+    IS_CONTAINER = True
     _PROPERTIES = ["Widget", "no_custom_class", "style", "tabs"]
     PROPERTIES = ManagedBase.PROPERTIES + _PROPERTIES + ManagedBase.EXTRA_PROPERTIES
     np.insert_after(PROPERTIES, "name", "class", "custom_base")

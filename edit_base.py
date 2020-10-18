@@ -25,7 +25,7 @@ else:
 
 
 class EditBase(np.PropertyOwner):
-    IS_TOPLEVEL = IS_SLOT = IS_SIZER = IS_WINDOW = IS_ROOT = IS_TOPLEVEL_WINDOW = False
+    IS_TOPLEVEL = IS_SLOT = IS_SIZER = IS_WINDOW = IS_ROOT = IS_TOPLEVEL_WINDOW = IS_CONTAINER = False
     IS_CLASS = None  # dynamically set during code generation if a class is generated for this item
     # usually this one is fixed, but EditPanel/EditToplevelPanel will overwrite it depending on the "scrollable" property
     WX_CLASS = None # needs to be defined in every derived class; e.g. "wxFrame", "wxBoxSizer", "TopLevelPanel"
@@ -631,10 +631,12 @@ class Slot(EditBase):
     def on_enter(self, event):
         # hack. definitely. but...
         misc.currently_under_mouse = self.widget
-        # a sizer can be added to sizers or to windows with exactly one child
-        can_add_sizer = self.parent.IS_SIZER or self.parent.CHILDREN == 1
-        if common.adding_widget and (not common.adding_sizer or can_add_sizer):
-            self.widget.SetCursor(wx.CROSS_CURSOR)
+        # set cursor
+        if common.adding_widget:
+            if self.check_drop_compatibility()[0]:
+                self.widget.SetCursor(wx.CROSS_CURSOR)
+            else:
+                self.widget.SetCursor(wx.StockCursor(wx.CURSOR_NO_ENTRY))
         else:
             self.widget.SetCursor(wx.STANDARD_CURSOR)
         event.Skip()
@@ -780,16 +782,16 @@ class Slot(EditBase):
             misc.set_focused_widget( self.parent )
 
     def on_drop_widget(self, event, reset=None):
-        """replaces self with a widget in self.sizer. This method is called
-        to add every non-toplevel widget or sizer, and in turn calls the
-        appropriate builder function (found in the ``common.widgets'' dict)"""
+        """replaces self with a widget. This method is called to add every non-toplevel
+        widget or sizer, and in turn calls the appropriate builder function
+        (found in the 'common.widgets' dict)."""
         if not common.adding_widget:  # widget focused/selecte
             misc.set_focused_widget(self)
             if self.widget:
                 self.widget.Refresh()
                 self.widget.SetFocus()
             return
-        if common.adding_sizer and self.parent.CHILDREN != 1 and not self.IS_SLOT:
+        if not self.check_drop_compatibility()[0]:
             return
         if self.widget:
             self.widget.SetCursor(wx.NullCursor)
@@ -804,8 +806,12 @@ class Slot(EditBase):
             common.widget_to_add = None
 
     def check_drop_compatibility(self):
-        if common.adding_sizer and self.parent.CHILDREN != 1 and not self.IS_SLOT:
+        if common.adding_sizer and self.parent.IS_CONTAINER:
             return (False, "No sizer can be added here")
+        if self.parent.WX_CLASS in ("wxPanel", "wxScrolledWindow", ):
+            # no containers like splitter or notebook in a panel
+            if common.widget_to_add in ("EditSplitterWindow", "EditNotebook"):
+                return (False, "No container can be added here")
         return (True,None)
 
     # clipboard handling ###############################################################################################
@@ -823,7 +829,7 @@ class Slot(EditBase):
 
         if widget.IS_TOPLEVEL:
             return (False, "No toplevel object can be pasted here.")
-        if self.parent.CHILDREN != 1 and widget.IS_SIZER:
+        if self.parent.IS_CONTAINER and widget.IS_SIZER:
             # e.g. a sizer dropped on a splitter window slot; instead, a panel would be required
             return (False, "No sizer can be pasted here")
         return (True,None)
@@ -909,7 +915,9 @@ class Slot(EditBase):
         return name
 
     def _get_tooltip(self):
-        if self.parent.WX_CLASS in ("wxPanel", "wxFrame"):
+        if self.parent.WX_CLASS in ("wxPanel", "wxScrolledWindow"):
+            return "Add a sizer or a control here."
+        if self.parent.WX_CLASS in ("wxFrame",):
             return "Add a control or container or sizer here, e.g. a panel, a panel plus sizer, a notebook or a sizer."
         if self.parent.WX_CLASS in ("wxDialog",):
             return "Add a sizer or a control here."

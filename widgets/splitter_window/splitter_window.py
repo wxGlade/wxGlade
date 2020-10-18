@@ -37,6 +37,7 @@ class EditSplitterWindow(ManagedBase, EditStylesMixin):
     "Class to handle wxSplitterWindow objects; orientation: Orientation of the widget as string e.g. 'wxSPLIT_VERTICAL'"
 
     WX_CLASS = 'wxSplitterWindow'
+    IS_CONTAINER = True
     _PROPERTIES = ["Widget", "no_custom_class", "style", "sash_pos", "sash_gravity", "min_pane_size"]
     PROPERTIES = ManagedBase.PROPERTIES + _PROPERTIES + ManagedBase._EXTRA_PROPERTIES
     np.insert_after(PROPERTIES, "name", "class", "custom_base")

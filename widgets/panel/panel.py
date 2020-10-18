@@ -96,8 +96,8 @@ class PanelBase(EditStylesMixin):
 
     def check_drop_compatibility(self):
         if self.children:
-            return (False, 'Sizer already set for this panel; optionally, delete the panel and add e.g. a notebook. ')
-        
+            return (False, 'Sizer or child widget already set for this panel.')
+
         if common.adding_sizer:
             return (True, None)
         return (False, 'Only sizers can be added here; optionally, delete the panel and add e.g. a notebook. ')
