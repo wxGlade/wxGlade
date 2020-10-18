@@ -2932,10 +2932,10 @@ class GridProperty(Property):
         # Classic: handler for EVT_GRID_CMD_CELL_CHANGE
         self.on_focus()
         row,col = event.Row, event.Col
-        value = self.grid.GetCellValue(row, col)    # event.GetString would return the old value here
+        value = event.GetEventObject().GetCellValue(row, col) # event.GetString would return the old value here
         if not self._validate(row, col, value):
-            return event.Veto()                     # after that, the cell will be set to the old value again
-        self._on_value_edited(row, col, value)      # this can add a row
+            return event.Veto()                               # after that, the cell will be set to the old value again
+        self._on_value_edited(row, col, value)                # this can add a row
         event.Skip()
         self._update_editors()
 
