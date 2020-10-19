@@ -323,7 +323,7 @@ class EditBase(np.PropertyOwner):
         #  SafeYield, layout, Refresh, GetTopLevelParent().SendSizeEvent()
         self.widget.Layout()
         if self.IS_TOPLEVEL: return
-        if not self.IS_SIZER: self.widget.SendSizeEvent()
+        if self.IS_WINDOW: self.widget.SendSizeEvent()
         parent_window = self.parent_window
         parent_window.widget.SendSizeEvent()
         if hasattr(self.widget, "SendSizeEvent") and wx.Platform == '__WXGTK__':
