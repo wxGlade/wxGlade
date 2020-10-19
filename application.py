@@ -143,7 +143,7 @@ class EditRoot(np.PropertyOwner):
                 if pos<len(w.children) and w.children[pos].IS_SLOT:
                     w = w.children[pos]
                     continue
-            children = [c for c in w.children if c.name==path[index]]
+            children = [c for c in w.get_all_children() if c.name==path[index]]
             if not children: return None
             w = children[0]
         return w
