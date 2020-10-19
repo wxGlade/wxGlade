@@ -550,6 +550,7 @@ class WidgetTree(wx.TreeCtrl):#, Tree):
         elif common.adding_sizer or True:
             editor.drop_sizer()
         common.adding_window = None
+        self.SetFocus()  # required instead of Skip if widget builder is showing a dialog
 
     def on_left_dclick(self, event):
         x, y = event.GetPosition()
