@@ -805,7 +805,14 @@ class Slot(EditBase):
             common.adding_widget = common.adding_sizer = False
             common.widget_to_add = None
         if event is not None and new_widget.widget:
-            new_widget.widget.SetFocus()  # required mainly on macOS to receive keys
+            # set focus; required mainly on macOS to receive keys
+            widget = None
+            if new_widget.IS_WINDOW:
+                widget = new_widget.widget
+            elif new_widget.IS_SIZER:
+                widget = new_widget.toplevel_parent_window.widget
+            if hasattr(widget, "SetFocus"):
+                widget.SetFocus()  
 
     def check_drop_compatibility(self):
         if common.adding_sizer and self.parent.IS_CONTAINER:
