@@ -785,7 +785,7 @@ class Slot(EditBase):
         """replaces self with a widget. This method is called to add every non-toplevel
         widget or sizer, and in turn calls the appropriate builder function
         (found in the 'common.widgets' dict)."""
-        if not common.adding_widget:  # widget focused/selecte
+        if not common.adding_widget:  # widget focused/selected
             misc.set_focused_widget(self)
             if self.widget:
                 self.widget.Refresh()
@@ -804,6 +804,8 @@ class Slot(EditBase):
         if event is None or not misc.event_modifier_copy(event):
             common.adding_widget = common.adding_sizer = False
             common.widget_to_add = None
+        if event is not None and new_widget.widget:
+            new_widget.widget.SetFocus()  # required mainly on macOS to receive keys
 
     def check_drop_compatibility(self):
         if common.adding_sizer and self.parent.IS_CONTAINER:
