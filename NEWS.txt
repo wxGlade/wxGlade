@@ -16,7 +16,8 @@ Widgets:
  - Dialog: add StdDialogButtonSizer and standard buttons (stock items); support SetAffirmativeId, SetEscapeId
  - Button: support for image direction
  - MenuBar: support lambda event handlers
- - GridBagSizer: indicate overlapped slots in the Tree view
+ - ToolBar: easy selection of standard icons
+ - GridBagSizer: better icons; indicate overlapped slots in the Tree view
 
 Generated Code:
  - no separation into __set_properties/__do_layout any more
