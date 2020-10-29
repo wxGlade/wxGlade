@@ -54,7 +54,7 @@ class EditStaticText(ManagedBase, EditStylesMixin):
             actions.add("recreate2")  # calling .Wrap(self.wrap) would only work once and not set the size correctly
             return
 
-        if modified and "style" in modified and wx.Platform!="__WXMSW__":
+        if modified and ("style" in modified or "font" in modified) and wx.Platform!="__WXMSW__":
             actions.add("recreate2")
             return
 
