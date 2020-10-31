@@ -439,16 +439,9 @@ class SpinProperty(Property):
         self.spin.Bind(wx.EVT_KILL_FOCUS, self.on_kill_focus) # by default, the value is only set when the focus is lost
         self.spin.Bind(wx.EVT_SET_FOCUS, self.on_focus)
         if wx.Platform == '__WXMAC__' or self.immediate:
-            self.spin.Bind(wx.EVT_SPINCTRL, self.on_spin)
-            self.spin.Bind(wx.EVT_TEXT_ENTER, self.on_spin)   # we want the enter key (see style above)
+            self.spin.Bind(wx.EVT_SPINCTRL, self._on_spin)
+        self.spin.Bind(wx.EVT_TEXT_ENTER, self._on_enter)   # we want the enter key (see style above)
         self.editing = True
-
-    def _create_spin_ctrl(self, panel):
-        style = wx.TE_PROCESS_ENTER | wx.SP_ARROW_KEYS
-        self.spin = wx.SpinCtrl( panel, -1, style=style, min=self.val_range[0], max=self.val_range[1] )
-        val = self.value
-        if not val: self.spin.SetValue(1)  # needed for GTK to display a '0'
-        self.spin.SetValue(val)
 
     def on_kill_focus(self, event=None):
         if event is not None: event.Skip()
@@ -465,11 +458,15 @@ class SpinProperty(Property):
         if not self.editing: return
         self.spin.SetValue(self.value)
 
-    def on_spin(self, event):
+    def _on_spin(self, event):
         event.Skip()
         set_current_property(self)
         if self.spin:
             self._check_for_user_modification(self.spin.GetValue())
+
+    def _on_enter(self, event):
+        # in an EVT_TEXT_ENTER handler self.spin.GetValue() will return the old value on macOS
+        self._check_for_user_modification( event.GetString() )
 
     def set_range(self, min_v, max_v):
         new_range = (min_v, max_v)
