@@ -466,7 +466,14 @@ class SpinProperty(Property):
 
     def _on_enter(self, event):
         # in an EVT_TEXT_ENTER handler self.spin.GetValue() will return the old value on macOS
-        self._check_for_user_modification( event.GetString() )
+        try:
+            # on macOS, invalid strings may be entered
+            value = self._set_converter( event.GetString() )
+        except:
+            self.spin.SetValue(self.value)
+            wx.Bell()
+            return
+        self._check_for_user_modification( value )
 
     def set_range(self, min_v, max_v):
         new_range = (min_v, max_v)
