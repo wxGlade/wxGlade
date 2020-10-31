@@ -130,6 +130,7 @@ done:
 
 
 Widget properties etc.:
+ * all: support SetMinSize / SetMaxSize
  * RadioBox: tooltips per button
 done:
  * StaticText: Wrap
