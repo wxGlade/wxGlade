@@ -37,7 +37,7 @@ class EditSearchCtrl(ManagedBase, EditStylesMixin):
 
     def create_widget(self):
         value = self.value
-        self.widget = wx.SearchCtrl(self.parent_window.widget, self.id, value=value, style=self.style)
+        self.widget = wx.SearchCtrl(self.parent_window.widget, wx.ID_ANY, value=value, style=self.style)
         self.widget.ShowSearchButton(self.search_button)
         self.widget.ShowCancelButton(self.cancel_button)
         if self.properties["descriptive_text"].is_active():

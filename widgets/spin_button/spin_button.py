@@ -32,7 +32,7 @@ class EditSpinButton(ManagedBase, EditStylesMixin):
         self.value = np.SpinPropertyA(0, val_range=(0,100), immediate=True)
 
     def create_widget(self):
-        self.widget = wx.SpinButton(self.parent_window.widget, self.id, style=self.style)
+        self.widget = wx.SpinButton(self.parent_window.widget, wx.ID_ANY, style=self.style)
         self.widget.SetRange( *self.properties["range"].get_tuple() )
         self.widget.SetValue( self.value )
 

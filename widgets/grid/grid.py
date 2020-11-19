@@ -175,7 +175,7 @@ class EditGrid(ManagedBase):
                                                columns=3)
 
     def create_widget(self):
-        self.widget = Grid(self.parent_window.widget, self.id, (200, 200))
+        self.widget = Grid(self.parent_window.widget, wx.ID_ANY, (200, 200))
         #self.widget.CreateGrid(self.rows_number, len(self.columns))
         self.widget.CreateGrid(len(self.rows), len(self.columns))
 

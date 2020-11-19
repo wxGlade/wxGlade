@@ -31,7 +31,7 @@ class EditRadioButton(ManagedBase, EditStylesMixin):
         self.clicked = np.CheckBoxProperty(False, default_value=False)
 
     def create_widget(self):
-        self.widget = wxGladeRadioButton(self.parent_window.widget, self.id, self.label)
+        self.widget = wxGladeRadioButton(self.parent_window.widget, wx.ID_ANY, self.label)
         self.widget.SetValue(self.clicked)
         self.widget.Bind(wx.EVT_CHECKBOX, lambda e: self.widget.SetValue(self.value))
 

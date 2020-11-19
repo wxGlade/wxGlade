@@ -34,7 +34,7 @@ class EditSlider(ManagedBase, EditStylesMixin):
         mi,ma = self.properties["range"].get_tuple()
         value_p = self.properties["value"]
         value = value_p.get()  if value_p.is_active()  else  mi
-        self.widget = wx.Slider(self.parent_window.widget, self.id, value, mi, ma, style=self.style)
+        self.widget = wx.Slider(self.parent_window.widget, wx.ID_ANY, value, mi, ma, style=self.style)
 
     def _properties_changed(self, modified, actions):
         if not modified or "range" in modified:

@@ -74,7 +74,7 @@ class CustomWidget(ManagedBase):
         self.custom_ctor = np.TextPropertyD("", name="custom_constructor", strip=True, default_value="")
 
     def create_widget(self):
-        self.widget = wx.Window(self.parent_window.widget , self.id, style=wx.BORDER_SUNKEN | wx.FULL_REPAINT_ON_RESIZE)
+        self.widget = wx.Window(self.parent_window.widget, wx.ID_ANY, style=wx.BORDER_SUNKEN | wx.FULL_REPAINT_ON_RESIZE)
         self.widget.Bind(wx.EVT_PAINT, self.on_paint)
         self.widget.Bind(wx.EVT_ERASE_BACKGROUND, lambda event:None)
 

@@ -29,7 +29,7 @@ class EditListBox(ManagedBase, EditStylesMixin):
 
     def create_widget(self):
         choices = [c[0] for c in self.choices]
-        self.widget = wx.ListBox(self.parent_window.widget, self.id, choices=choices)
+        self.widget = wx.ListBox(self.parent_window.widget, wx.ID_ANY, choices=choices)
         if self.selection>=0: self.widget.SetSelection(self.selection)
         self.widget.Bind(wx.EVT_LEFT_DOWN, self.on_set_focus)
 

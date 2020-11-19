@@ -32,9 +32,9 @@ class EditSpinCtrl(ManagedBase, EditStylesMixin):
     def create_widget(self):
         mi,ma = self.properties["range"].get_tuple()
         if self.properties["value"].is_active():
-            self.widget = wx.SpinCtrl(self.parent_window.widget, self.id, min=mi, max=ma, initial=self.value)
+            self.widget = wx.SpinCtrl(self.parent_window.widget, wx.ID_ANY, min=mi, max=ma, initial=self.value)
         else:
-            self.widget = wx.SpinCtrl(self.parent_window.widget, self.id, min=mi, max=ma)
+            self.widget = wx.SpinCtrl(self.parent_window.widget, wx.ID_ANY, min=mi, max=ma)
 
     def finish_widget_creation(self, level, sel_marker_parent=None):
         ManagedBase.finish_widget_creation(self, level, sel_marker_parent)

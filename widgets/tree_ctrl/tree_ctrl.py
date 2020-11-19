@@ -30,7 +30,7 @@ class EditTreeCtrl(ManagedBase, EditStylesMixin):
         self._item_with_name = None  # a Tree item for visualization
 
     def create_widget(self):
-        self.widget = wx.TreeCtrl(self.parent_window.widget, self.id, style=self.style) # wx.TR_HAS_BUTTONS|wx.BORDER_SUNKEN)
+        self.widget = wx.TreeCtrl(self.parent_window.widget, wx.ID_ANY, style=self.style) # wx.TR_HAS_BUTTONS|wx.BORDER_SUNKEN)
         # add a couple of items just for a better appearance
         root = self.widget.AddRoot(_(' Tree Control:'))
         self._item_with_name = self.widget.AppendItem(root, ' ' + self.name)

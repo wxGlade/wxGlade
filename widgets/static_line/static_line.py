@@ -32,7 +32,7 @@ class EditStaticLine(ManagedBase, EditStylesMixin):
         if style: self.properties["style"].set(style)
 
     def create_widget(self):
-        self.widget = wx.StaticLine(self.parent_window.widget, self.id, style=self.style)
+        self.widget = wx.StaticLine(self.parent_window.widget, wx.ID_ANY, style=self.style)
         self.widget.Bind(wx.EVT_LEFT_DOWN, self.on_set_focus)
 
     def finish_widget_creation(self, level):

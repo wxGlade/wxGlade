@@ -37,7 +37,7 @@ class EditSpinCtrlDouble(ManagedBase, EditStylesMixin):
             kwargs["initial"] = self.value
         if self.properties["increment"].is_active():
             kwargs["inc"] = self.value
-        self.widget = wx.SpinCtrlDouble(self.parent_window.widget, self.id, min=mi, max=ma, **kwargs)
+        self.widget = wx.SpinCtrlDouble(self.parent_window.widget, wx.ID_ANY, min=mi, max=ma, **kwargs)
 
     def finish_widget_creation(self, level, sel_marker_parent=None):
         ManagedBase.finish_widget_creation(self, level, sel_marker_parent)

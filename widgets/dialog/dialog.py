@@ -92,7 +92,7 @@ class EditDialog(BitmapMixin, TopLevelBase, EditStylesMixin):
 
         # change 2002-10-09: now we create a wxFrame instead of a wxDialog,
         # because the latter gives troubles I wasn't able to solve when using wxPython 2.3.3.1 :-/
-        self.widget = wx.Frame(parent, self.id, "", style=default_style)
+        self.widget = wx.Frame(parent, wx.ID_ANY, "", style=default_style)
         self.widget.SetBackgroundColour(compat.wx_SystemSettings_GetColour(wx.SYS_COLOUR_BTNFACE))
         self._set_widget_icon()
 

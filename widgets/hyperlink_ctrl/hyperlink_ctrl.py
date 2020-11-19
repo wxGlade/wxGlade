@@ -42,7 +42,7 @@ class EditHyperlinkCtrl(ManagedBase, EditStylesMixin):
         self.attribute = np.CheckBoxProperty(False, default_value=False)
 
     def create_widget(self):
-        self.widget = HyperlinkCtrl(self.parent_window.widget, self.id, self.label, self.url)
+        self.widget = HyperlinkCtrl(self.parent_window.widget, wx.ID_ANY, self.label, self.url)
 
     def _properties_changed(self, modified, actions):
         if not modified or "label" in modified:

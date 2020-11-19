@@ -41,7 +41,7 @@ class EditRadioBox(ManagedBase):
 
     # widget creation / updates ########################################################################################
     def create_widget(self):
-        self.widget = wx.Panel(self.parent_window.widget, self.id)
+        self.widget = wx.Panel(self.parent_window.widget, wx.ID_ANY)
         self.widget.GetBestSize = self.GetBestSize
         self.widget.SetForegroundColour = self.SetForegroundColour
         self.widget.SetBackgroundColour = self.SetBackgroundColour

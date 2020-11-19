@@ -76,7 +76,7 @@ class EditSplitterWindow(ManagedBase, EditStylesMixin):
 
     def create_widget(self):
         size = self._get_default_or_client_size()
-        self.widget = wx.SplitterWindow(self.parent_window.widget, self.id, size=size, style=self.style)
+        self.widget = wx.SplitterWindow(self.parent_window.widget, wx.ID_ANY, size=size, style=self.style)
 
     def finish_widget_creation(self, level):
         ManagedBase.finish_widget_creation(self, level, sel_marker_parent=self.widget)

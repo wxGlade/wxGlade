@@ -35,7 +35,7 @@ class EditComboBox(ManagedBase, EditStylesMixin):
     def create_widget(self):
         choices = [c[0] for c in self.choices]
         selection = self.selection
-        self.widget = wx.ComboBox(self.parent_window.widget, self.id, choices=choices, style=self.style)
+        self.widget = wx.ComboBox(self.parent_window.widget, wx.ID_ANY, choices=choices, style=self.style)
         self.widget.Bind(wx.EVT_SET_FOCUS, self.on_set_focus)
         self.widget.SetSelection(selection)
 

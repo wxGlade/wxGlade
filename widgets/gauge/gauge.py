@@ -29,7 +29,7 @@ class EditGauge(ManagedBase, EditStylesMixin):
         self.range = np.SpinProperty(10, val_range=(0,10000000), immediate=True)
 
     def create_widget(self):
-        self.widget = wx.Gauge(self.parent_window.widget, self.id, self.range, style=self.style)
+        self.widget = wx.Gauge(self.parent_window.widget, wx.ID_ANY, self.range, style=self.style)
         if self.range>=3: self.widget.SetValue(self.range//3)
 
     def _properties_changed(self, modified, actions):

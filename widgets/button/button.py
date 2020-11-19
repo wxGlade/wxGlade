@@ -62,7 +62,7 @@ class EditButton(BitmapMixin, ManagedBase, EditStylesMixin):
             label = ButtonStockItems.stock_ids[stockitem_p.get()]
         else:
             label = self.label
-        self.widget = wx.Button(self.parent_window.widget, self.id, label, style=self.style)
+        self.widget = wx.Button(self.parent_window.widget, wx.ID_ANY, label, style=self.style)
         if compat.version[0]>=3 and int(common.root.for_version[0])>2:
             self._set_preview_bitmaps()
             if self.bitmap_dir!=wx.LEFT:

@@ -57,7 +57,6 @@ class EditBase(np.PropertyOwner):
         else:
             # no children
             self.children = None
-        self.id = wx.NewId()  # id used for internal purpose events
         if isinstance(index, str):
             setattr(self.parent, index, self)
             self.attribute_name = index

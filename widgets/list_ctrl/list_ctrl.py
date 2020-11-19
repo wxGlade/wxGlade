@@ -34,7 +34,7 @@ class EditListCtrl(ManagedBase, EditStylesMixin):
         self.properties["style"]._one_required = {"wxLC_ICON", "wxLC_SMALL_ICON", "wxLC_LIST", "wxLC_REPORT"}
 
     def create_widget(self):
-        self.widget = wx.ListCtrl(self.parent_window.widget, self.id, style=self.style)
+        self.widget = wx.ListCtrl(self.parent_window.widget, wx.ID_ANY, style=self.style)
         self._update_widget_properties(modified=None)
         self.widget.Bind(wx.EVT_LIST_COL_CLICK, self.on_set_focus)
         self.widget.Bind(wx.EVT_LIST_COL_END_DRAG, self._on_grid_col_resize)

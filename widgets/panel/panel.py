@@ -143,9 +143,9 @@ class EditPanel(PanelBase, ManagedBase):
     def create_widget(self):
         # to be done: use ScrolledWindow only if scrolling is required
         if self.scrollable:
-            self.widget = wx.ScrolledWindow(self.parent_window.widget, self.id, style=0)
+            self.widget = wx.ScrolledWindow(self.parent_window.widget, wx.ID_ANY, style=0)
         else:
-            self.widget = wx.Panel(self.parent_window.widget, self.id, style=0)
+            self.widget = wx.Panel(self.parent_window.widget, wx.ID_ANY, style=0)
         self.widget.Bind(wx.EVT_ENTER_WINDOW, self.on_enter)
         self.widget.GetBestSize = self.get_widget_best_size
         if not self.parent.IS_SIZER:
@@ -253,9 +253,9 @@ class EditTopLevelPanel(PanelBase, TopLevelBase):
                 win.CentreOnScreen()
 
         if self.scrollable:
-            self.widget = wx.ScrolledWindow(win, self.id, style=0)
+            self.widget = wx.ScrolledWindow(win, wx.ID_ANY, style=0)
         else:
-            self.widget = wx.Panel(win, self.id, style=0)
+            self.widget = wx.Panel(win, wx.ID_ANY, style=0)
         self.widget.Bind(wx.EVT_ENTER_WINDOW, self.on_enter)
         self.widget.GetBestSize = self.get_widget_best_size
         #self.widget.SetSize = win.SetSize

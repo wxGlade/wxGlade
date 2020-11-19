@@ -37,7 +37,7 @@ class EditBitmapButton(BitmapMixin, ManagedBase, EditStylesMixin):
 
     def create_widget(self):
         bmp = self.get_preview_obj_bitmap()
-        self.widget = wx.BitmapButton(self.parent_window.widget, self.id, bmp, style=self.style)
+        self.widget = wx.BitmapButton(self.parent_window.widget, wx.ID_ANY, bmp, style=self.style)
         self._set_preview_bitmaps()
 
     def _properties_changed(self, modified, actions):

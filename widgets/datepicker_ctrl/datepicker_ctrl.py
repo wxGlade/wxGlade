@@ -35,7 +35,7 @@ class EditDatePickerCtrl(ManagedBase, EditStylesMixin):
 
     def create_widget(self):
         # TODO add all the other parameters for the DatePickerCtrl initial date
-        self.widget = DatePickerCtrl(self.parent_window.widget, self.id, style=self.style)
+        self.widget = DatePickerCtrl(self.parent_window.widget, wx.ID_ANY, style=self.style)
 
     # handle compatibility:
     @decorators.memoize

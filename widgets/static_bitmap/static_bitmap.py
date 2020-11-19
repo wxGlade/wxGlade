@@ -35,7 +35,7 @@ class EditStaticBitmap(BitmapMixin, ManagedBase, EditStylesMixin):
 
     def create_widget(self):
         bmp = self.get_preview_obj_bitmap()
-        self.widget = wx.StaticBitmap(self.parent_window.widget, self.id, bmp, style=self.style)
+        self.widget = wx.StaticBitmap(self.parent_window.widget, wx.ID_ANY, bmp, style=self.style)
         if wx.Platform == '__WXMSW__':
             def get_best_size():
                 bmp = self.widget.GetBitmap()

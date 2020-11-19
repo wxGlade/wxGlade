@@ -76,7 +76,7 @@ class EditFrame(BitmapMixin, TopLevelBase, EditStylesMixin):
         parent = None
         style = self.style
         if common.pin_design_window: style |= wx.STAY_ON_TOP
-        self.widget = wx.Frame(parent, self.id, self.title, style=style)
+        self.widget = wx.Frame(parent, wx.ID_ANY, self.title, style=style)
         self._set_widget_icon()
 
     def finish_widget_creation(self, level):

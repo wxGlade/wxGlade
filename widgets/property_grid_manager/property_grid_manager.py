@@ -26,7 +26,7 @@ class EditPropertyGridManager(ManagedBase, EditStylesMixin):
         EditStylesMixin.__init__(self)
 
     def create_widget(self):
-        self.widget = PropertyGridManager(self.parent_window.widget, self.id, (200,200), style=self.style)
+        self.widget = PropertyGridManager(self.parent_window.widget, wx.ID_ANY, (200,200), style=self.style)
 
         # property grid does handle left and right mouse clicks and emits these events:
         self.widget.Bind(EVT_PG_SELECTED, self.on_set_focus)

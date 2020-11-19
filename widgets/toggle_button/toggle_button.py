@@ -40,9 +40,9 @@ class EditToggleButton(BitmapMixin, ManagedBase, EditStylesMixin):
         self.focus_bitmap    = np.BitmapPropertyD(min_version=(3,0))
 
     def create_widget(self):
-        self.widget = wx.ToggleButton(self.parent_window.widget, self.id, self.label)
+        self.widget = wx.ToggleButton(self.parent_window.widget, wx.ID_ANY, self.label)
         self.widget.SetValue(self.value)
-        self.widget.Bind(wx.EVT_TOGGLEBUTTON, self.on_set_focus, id=self.id)
+        self.widget.Bind(wx.EVT_TOGGLEBUTTON, self.on_set_focus, id=self.widget.GetId())
         BitmapMixin._set_preview_bitmaps(self)
 
     def _properties_changed(self, modified, actions):

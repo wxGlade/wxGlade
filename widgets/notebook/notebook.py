@@ -85,7 +85,7 @@ class EditNotebook(ManagedBase, EditStylesMixin):
         self.no_custom_class = np.CheckBoxProperty(False, default_value=False)
 
     def create_widget(self):
-        self.widget = wx.Notebook( self.parent_window.widget, self.id, style=self.style )
+        self.widget = wx.Notebook( self.parent_window.widget, wx.ID_ANY, style=self.style )
 
     def child_widgets_created(self, level):
         # at this time, all children should be available
