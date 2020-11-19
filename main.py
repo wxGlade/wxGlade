@@ -1450,8 +1450,8 @@ class wxGlade(wx.App):
         self.SetTopWindow(frame)
         self.SetExitOnFrameDelete(True)
 
-        self.Bind(wx.EVT_IDLE, self.OnIdle)
-        
+        self.init_idle()
+
         if config.inform_screen_reader:
             message = ("It seems you have a screen reader software installed.\n"
                        "Please be aware that there are some options to improve wxGlade accessibility\n"
@@ -1467,10 +1467,20 @@ class wxGlade(wx.App):
         logging.exception = self._exception_orig
         return 0
 
-    def OnIdle(self, event):
+    def init_idle(self):
+        if wx.Platform == "__WXMAC__" and compat.IS_CLASSIC:
+            # it seems that EVT_IDLE makes wx.CallAfter stall from time to time, so we use a timer
+            wx.CallLater(200, self.OnIdle)
+        else:
+            self.Bind(wx.EVT_IDLE, self.OnIdle)
+
+    def OnIdle(self, event=None):
         "Idle tasks - currently show error messages only;  see: show_msgdialog()"
-        self.show_msgdialog()
-        event.Skip()
+        try:
+            self.show_msgdialog()
+        finally:
+            if wx.Platform == "__WXMAC__" and compat.IS_CLASSIC:
+                wx.CallLater(200, self.OnIdle)
 
     def show_msgdialog(self):
         """
