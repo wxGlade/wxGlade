@@ -1847,7 +1847,7 @@ class ComboBoxProperty(TextProperty):
         TextProperty.__init__(self, value, False, strip, default_value, name)
 
     def create_text_ctrl(self, panel, value):
-        combo = wx.ComboBox( panel, -1, self.value, choices=self.choices, style=self._CB_STYLE )
+        combo = wx.ComboBox( panel, -1, self.value or "", choices=self.choices, style=self._CB_STYLE )
         combo.SetStringSelection(self.value)
         combo.Bind(wx.EVT_COMBOBOX, self.on_combobox)
         combo.Bind(wx.EVT_KILL_FOCUS, self.on_kill_focus)
