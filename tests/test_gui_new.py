@@ -86,6 +86,10 @@ class TestGui(WXGladeGUITest):
         self.load_and_generate('FontTest28', test_GUI=True)
         self.load_and_generate('FontTest', test_GUI=False)
 
+    def test_Frame_Size(self):
+        "Generate Fit() code for the second frame"
+        self.load_and_generate('Frame_Size', test_GUI=False)
+
     def test_Grid(self):
         "Test code generation with a grid widgets and handling events"
         self.load_and_generate('Grid', test_GUI=False)
