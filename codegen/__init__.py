@@ -641,9 +641,9 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
             # end tag
             obuffer.append( '%s%s end wxGlade\n' % (tab, self.comment_sign) )
 
-            # write class function end statement
-            if self.tmpl_cfunc_end and is_new:
-                obuffer.append( self.tmpl_cfunc_end%{'tab':tab} )
+        # write class function end statement
+        if self.tmpl_cfunc_end and is_new:
+            obuffer.append( self.tmpl_cfunc_end%{'tab':tab} )
 
         # end of ctor generation
 

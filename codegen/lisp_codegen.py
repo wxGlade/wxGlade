@@ -256,7 +256,7 @@ class LispCodeWriter(BaseLangCodeWriter, wcodegen.LispMixin):
             ret = self.tmpl_detailed
         if ret:
             if not self._mark_blocks:
-                ret.replace(";;; end of class %(klass)s\n", "")
+                ret = ret.replace(";;; end of class %(klass)s\n", "")
             return ret
         
         # check for templates for simple startup code
