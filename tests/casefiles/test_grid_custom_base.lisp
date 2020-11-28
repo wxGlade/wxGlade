@@ -52,6 +52,7 @@ import my_grid
         (wxSizer_Fit (slot-main-sizer obj) (slot-top-window obj))
         
         (wxPanel_layout (slot-test-glade self))
+        )
 
 
 
