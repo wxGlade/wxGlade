@@ -28,7 +28,18 @@ class PythonFrameCodeGenerator(wcodegen.PythonWidgetCodeWriter):
         return out
 
     def get_layout_code(self, obj):
-        ret = ['self.Layout()\n']
+        ret = []
+        if not obj.check_prop("size") and obj.children and obj.children[0].WX_CLASS=="wxPanel":
+            panel = obj.children[0]
+            if panel.children and panel.children[0].IS_SIZER:
+                # add e.g. 'sizer.Fit(self)' if frame has no explicit size and the structure is frame->panel->sizer
+                sizer = panel.children[0]
+                tmpl = self.codegen.obj_builders[sizer.WX_CLASS].tmpl_Fit
+                d = {"sizer_name":self.codegen.format_generic_access(sizer),
+                     "parent_widget":self.codegen.format_generic_access(obj)}
+                ret.append( tmpl%d )
+        ret.append( 'self.Layout()\n' )
+
         if "centered" in obj.properties and obj.centered:
             ret.append('self.Centre()\n')
         return ret
@@ -88,7 +99,18 @@ class CppFrameCodeGenerator(wcodegen.CppWidgetCodeWriter):
         return out
 
     def get_layout_code(self, obj):
-        ret = ['Layout();\n']
+        ret = []
+        if not obj.check_prop("size") and obj.children and obj.children[0].WX_CLASS=="wxPanel":
+            panel = obj.children[0]
+            if panel.children and panel.children[0].IS_SIZER:
+                # add e.g. 'sizer.Fit(frame);' if frame has no explicit size and the structure is frame->panel->sizer
+                sizer = panel.children[0]
+                tmpl = self.codegen.obj_builders[sizer.WX_CLASS].tmpl_Fit
+                d = {"sizer_name":self.codegen.format_generic_access(sizer),
+                     "parent_widget":self.codegen.format_generic_access(obj)}
+                ret.append( tmpl%d )
+        ret.append( 'Layout();\n' )
+
         if obj.centered:
             ret.append('Centre();\n')
         return ret

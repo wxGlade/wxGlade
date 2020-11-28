@@ -26,7 +26,18 @@ class LispFrameCodeGenerator(wcodegen.LispWidgetCodeWriter):
         return out
 
     def get_layout_code(self, obj):
-        ret = ['(wxFrame_layout (slot-%s self))\n' % self.codegen._format_name(obj.name)]
+        ret = []
+        if not obj.check_prop("size") and obj.children and obj.children[0].WX_CLASS=="wxPanel":
+            panel = obj.children[0]
+            if panel.children and panel.children[0].IS_SIZER:
+                # add e.g. 'sizer.Fit(self)' if frame has no explicit size and the structure is frame->panel->sizer
+                sizer = panel.children[0]
+                tmpl = self.codegen.obj_builders[sizer.WX_CLASS].tmpl_Fit
+                d = {"sizer_name":self.codegen.format_generic_access(sizer),
+                     "parent_widget":self.codegen.format_generic_access(obj)}
+                ret.append( tmpl%d )
+        ret.append( '(wxFrame_layout (slot-%s self))\n' % self.codegen._format_name(obj.name) )
+
         if obj.centered:
             ret.append('(wxFrame_Centre (slot-top-window obj) wxBOTH)\n')
         return ret
