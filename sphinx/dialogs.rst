@@ -8,6 +8,8 @@ Dialogs
 
 .. |dialog| image:: images/dialog.png
 
+Most applications consist of a 'permanent' main window - typically a frame - and 'temporary' dialogs.
+
 
 See ``wxglade/examples/dialog`` for an example application how to create and use dialogs.
 The example opens the dialog on pressing a button or selecting a menu entry.
@@ -63,6 +65,9 @@ The dialog is created and used like this: ::
        # show as modal dialog
        if dlg.ShowModal() == wx.ID_OK:
            print("User has hit OK")
+
+Please note that the dialog in the example file does not have the size property defined.
+Therefore the dialog will be created with the minimum size that fits the content.
 
 
 The files can be found in the folder ``wxglade/examples/dialog``:

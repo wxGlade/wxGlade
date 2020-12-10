@@ -58,6 +58,7 @@
 <dt>You may want to visit these pages for more information:</dt>
 <dd><ul class="first last simple">
 <li>The wxPython home page: <a class="reference external" href="https://wxpython.org/">https://wxpython.org/</a></li>
+<li>The <strong>wxPython API</strong> documentation: <a class="reference external" href="https://docs.wxpython.org/">https://docs.wxpython.org/</a></li>
 <li>An overview including a <cite>Hello World</cite> application example: <a class="reference external" href="https://wxpython.org/pages/overview/">https://wxpython.org/pages/overview/</a></li>
 <li>A more comprehensive <cite>Getting Started</cite> guide: <a class="reference external" href="https://wiki.wxpython.org/Getting%20Started">https://wiki.wxpython.org/Getting%20Started</a></li>
 <li>The wxWidgets home page: <a class="reference external" href="https://www.wxwidgets.org/">https://www.wxwidgets.org/</a></li>
@@ -67,6 +68,14 @@
 <p>The wxGlade documentation is intended to be readable without previous wx knowledge.
 It will teach you how to create windows, handle events and how to integrate with your ‘business logic’ code.
 Sooner or later you will have to look into the wx documentation, though.</p>
+<p>If you are new to wx/Python, make sure that you work through this documentation at least up to and including section
+“Create and Use Source Code”.</p>
+<p>Also please note that the <strong>wxPython demo</strong> is probably most important resource for exploring the available controls!
+The demo has examples and example code for most widgets, including the more complicated and powerful ones like the
+grid control.</p>
+<p>If you don’t have the demo, have a look here: <a class="reference external" href="https://extras.wxpython.org/wxPython4/extras/">https://extras.wxpython.org/wxPython4/extras/</a> <br/>
+Go to the subdirectory matching your wxPython version and download the demo archive. <br/>
+Then unpack the archive and run <code class="docutils literal"><span class="pre">demo.py</span></code>.</p>
 </div>
 <div class="section" id="sizers-layout-managers">
 <h2>Sizers (Layout Managers)<a class="headerlink" href="#sizers-layout-managers" title="Permalink to this headline">¶</a></h2>
@@ -76,6 +85,8 @@ Sooner or later you will have to look into the wx documentation, though.</p>
 <li>There are <em>horizontal box sizers</em>, <em>vertical box sizers</em> and <em>grid sizers</em>.</li>
 <li>The <em>box sizers</em> may have a label and a box around them. In that case they’re called <em>static box sizers</em>.</li>
 <li>Each sizer and contained sizer items can be fixed size or grow to fill the available space, e.g. when the window is resized.</li>
+<li>Typically in a main window or frame the sizer makes the contents fill the available space, while dialogs will
+be sized to the minimum required space.</li>
 </ul>
 </dd>
 </dl>
@@ -230,9 +241,9 @@ visualized with different icons: <img alt="sizer_h" src="_images/sizer_h.png" />
 Usually you will need mainly box sizers and maybe one or two FlexGridSizers.</li>
 <li>Use nested sizers to match the hierarchical / logical structure of your project. This will make it easy
 to re-arrange things to find the best user interface.</li>
-<li>Never ever try to use a GridBagSizer as main sizer of a window trying to resemble pixel placement or
+<li><strong>Never ever try to use a Grid(Bag)Sizer as main sizer</strong> of a window trying to resemble pixel placement or
 Tkinter’s grid geometry manager. This is a mess to create and maintain.
-Actually, a GridBagSizer is almost never needed.</li>
+Actually, a GridBagSizer is rarely needed.</li>
 </ul>
 </div>
 </div>

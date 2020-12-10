@@ -25,10 +25,10 @@
    wxbasics
    tutorial
    source_code
-   menu_status_tool
-   bitmaps
    dialogs
    custom_widgets
-   reference
+   menu_status_tool
+   bitmaps
    further_reading
+   reference
    acknowledgements
