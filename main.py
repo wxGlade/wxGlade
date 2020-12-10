@@ -665,7 +665,7 @@ class wxGladeFrame(wx.Frame):
             bmp = wx.Bitmap( os.path.join(config.icons_path, bmp) )
         else:
             # a wx.ART_... constant
-            bmp = wx.ArtProvider.GetBitmap(bmp, wx.ART_OTHER, size)
+            bmp = wx.ArtProvider.GetBitmap(bmp, wx.ART_TOOLBAR, size)
         return ADD(-1, _(label), bmp, wx.NullBitmap, itemtype, _(msg), _(msg_long or msg))
 
     def create_toolbar(self):
