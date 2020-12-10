@@ -1647,6 +1647,8 @@ class NameProperty(TextProperty):
     # return (result, message) where result is [True, False, "warn"]
     def _check(self, value):
         # called from check if the format was OK
+        if value and "-" in value and common.root.language!="lisp":
+            return (None, "invalid")
         if self._check_name_uniqueness(value):
             return (None,None)
         if self.owner.IS_TOPLEVEL:
@@ -1658,6 +1660,7 @@ class NameProperty(TextProperty):
         match = self.validation_re.match(value)
         #if not match: return self.value
         if not match: return None
+        if value and "-" in value and common.root.language!="lisp": return None
         if not self.owner.IS_TOPLEVEL and not self._check_name_uniqueness(value): return None
         return value
 
