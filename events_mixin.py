@@ -27,10 +27,10 @@ class EventsProperty(np.GridProperty):
                "then you need to create and register the handler yourself.\n"
                "You can do so in your own source that you derive from the\n"
                "wxGlade generated code or within wxGlade on the 'Code' tab.")
-    validation_res = [re.compile(r'^EVT_[a-zA-Z0-9_]+$', re.IGNORECASE),
+    validation_res = [re.compile(r'^([a-zA-Z_][a-zA-Z0-9_\.]*\.)?EVT_[A-Z0-9_]+$'),  # XXX avoid ..
                       re.compile(r'^(([a-zA-Z_]+[a-zA-Z0-9_-]*)|()|(lambda .*))$')]
     EDITABLE_COLS = [0,1]
-    UPPERCASE_COLS = [True,None]
+    UPPERCASE_COLS = [None,None]
     SKIP_EMPTY = True
     IS_KEY_VALUE = True
     CAN_ADD_GROUPS = True
@@ -87,7 +87,7 @@ class EventsPropertyHandler(BaseXmlBuilderTagHandler):
         if name == 'handler':
             if self.current_event and self._content:
                 char_data = self.get_char_data()
-                self.handlers[self.current_event.upper()] = char_data
+                self.handlers[self.current_event] = char_data
         elif name == 'events':
             if self.handlers:
                 self.owner.properties["events"].set_value_dict(self.handlers)
@@ -110,7 +110,7 @@ class EventsMixin(object):
             events = []  # no default handler
 
         # create Property
-        self.events = EventsProperty(events) if events else None
+        self.events = EventsProperty(events) if events is not None else None
 
     def get_property_handler(self, name):
         if name == 'events':
