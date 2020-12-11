@@ -18,7 +18,6 @@ class PythonSplitterWindowGenerator(wcodegen.PythonWidgetCodeWriter):
 
         init = []
         post = []
-        init += self.codegen.generate_code_common_properties(obj)
 
         id_name, id = self.codegen.generate_code_id(obj)
         parent = self.format_widget_access(obj.parent_window)
@@ -29,10 +28,12 @@ class PythonSplitterWindowGenerator(wcodegen.PythonWidgetCodeWriter):
             l = []
             if id_name: l.append(id_name)
             l.append( 'self.%s = %s(%s, %s)\n' % (obj.name, klass, parent, id) )
+            l.extend( self.codegen.generate_code_common_properties(obj) )
             return l, []
 
         if id_name: init.append(id_name)
         init.append('self.%s = %s(%s, %s%s)\n' % (obj.name, klass, parent, id, self.tmpl_dict['style']))
+        init.extend( self.codegen.generate_code_common_properties(obj) )
 
         win_1 = obj.window_1
         win_2 = obj.window_2
@@ -102,7 +103,6 @@ class CppSplitterWindowGenerator(wcodegen.CppWidgetCodeWriter):
 
         init = []
         layout_buf = []
-        init += self.codegen.generate_code_common_properties(obj)
 
         id_name, id = self.codegen.generate_code_id(obj)
 
@@ -122,6 +122,7 @@ class CppSplitterWindowGenerator(wcodegen.CppWidgetCodeWriter):
             return l, ids, []
 
         init.append( '%s = new %s(%s, %s%s);\n' % (obj.name, klass, parent, id, self.tmpl_dict['style']) )
+        init.extend( self.codegen.generate_code_common_properties(obj) )
 
         win_1 = obj.window_1
         win_2 = obj.window_2

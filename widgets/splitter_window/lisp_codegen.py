@@ -19,7 +19,6 @@ class LispSplitterWindowGenerator(wcodegen.LispWidgetCodeWriter):
 
         init = []
         layout_buf = []
-        init += self.codegen.generate_code_common_properties(obj)
 
         id_name, id = self.codegen.generate_code_id(obj)
         window_name = self.codegen._format_name(obj.name)
@@ -31,6 +30,7 @@ class LispSplitterWindowGenerator(wcodegen.LispWidgetCodeWriter):
                 l.append(id_name)
 
             l.append( '(setf (slot-%s obj) (wxSplitterWindow_Create %s %s))\n' % (window_name, parent, id) )
+            l.extend( self.codegen.generate_code_common_properties(obj) )
             return l, []
 
         if id_name:
@@ -38,6 +38,7 @@ class LispSplitterWindowGenerator(wcodegen.LispWidgetCodeWriter):
 
         init.append('(setf (slot-%s obj) (wxSplitterWindow_Create %s %s -1 -1 -1 -1 %s))\n'
                     % (window_name, parent, id, self.tmpl_dict['style']))
+        init.extend( self.codegen.generate_code_common_properties(obj) )
 
         win_1 = obj.window_1
         win_2 = obj.window_2
