@@ -360,6 +360,7 @@ sub new {
     $self->{sizer_29} = Wx::BoxSizer->new(wxHORIZONTAL);
     
     $self->{splitter_1} = Wx::SplitterWindow->new($self->{notebook_1_wxSplitterWindow_horizontal}, wxID_ANY, wxDefaultPosition, wxDefaultSize, 0);
+    $self->{splitter_1}->SetBackgroundColour(Wx::Colour->new(255, 0, 0));
     $self->{splitter_1}->SetMinimumPaneSize(20);
     $self->{sizer_29}->Add($self->{splitter_1}, 1, wxALL|wxEXPAND, 5);
     

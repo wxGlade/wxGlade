@@ -331,6 +331,7 @@ class All_Widgets_Frame(wx.Frame):
         sizer_29 = wx.BoxSizer(wx.HORIZONTAL)
 
         self.splitter_1 = wx.SplitterWindow(self.notebook_1_wxSplitterWindow_horizontal, wx.ID_ANY, style=0)
+        self.splitter_1.SetBackgroundColour(wx.Colour(255, 0, 0))
         self.splitter_1.SetMinimumPaneSize(20)
         sizer_29.Add(self.splitter_1, 1, wx.ALL | wx.EXPAND, 5)
 

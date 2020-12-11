@@ -271,6 +271,7 @@ All_Widgets_Frame::All_Widgets_Frame(wxWindow* parent, wxWindowID id, const wxSt
     notebook_1->AddPage(notebook_1_wxSplitterWindow_horizontal, _("wxSplitterWindow (horizontally)"));
     wxBoxSizer* sizer_29 = new wxBoxSizer(wxHORIZONTAL);
     splitter_1 = new wxSplitterWindow(notebook_1_wxSplitterWindow_horizontal, wxID_ANY, wxDefaultPosition, wxDefaultSize, 0);
+    splitter_1->SetBackgroundColour(wxColour(255, 0, 0));
     splitter_1->SetMinimumPaneSize(20);
     sizer_29->Add(splitter_1, 1, wxALL|wxEXPAND, 5);
     splitter_1_pane_1 = new wxPanel(splitter_1, wxID_ANY);

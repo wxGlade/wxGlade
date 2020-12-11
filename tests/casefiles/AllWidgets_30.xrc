@@ -673,6 +673,7 @@
                                 <flag>wxALL|wxEXPAND</flag>
                                 <border>5</border>
                                 <object class="wxSplitterWindow" name="splitter_1">
+                                    <bg>#ff0000</bg>
                                     <min_pane_size>20</min_pane_size>
                                     <orientation>horizontal</orientation>
                                     <object class="wxPanel" name="splitter_1_pane_1">
