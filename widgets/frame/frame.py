@@ -52,7 +52,11 @@ class EditFrame(BitmapMixin, TopLevelBase, EditStylesMixin):
     PROPERTIES = TopLevelBase.PROPERTIES + _PROPERTIES + TopLevelBase.EXTRA_PROPERTIES
     #np.insert_after(PROPERTIES, "class", "custom_base")
     _PROPERTY_HELP   = { 'icon':'Icon for this window.',
-                         "size":WindowBase._PROPERTY_HELP["size_sizehints"] }
+                         "size":"Specify the size of the frame.\n\n"
+                                "If you don't specify, the Fit() method of the contained sizer will be called\n"
+                                "such that the frame will fit the minimum required size of the contained widgets.\n\n"
+                                "For a frame that's unusual. Usually you set the size and make the contents expand "
+                                "to fill the available space." }
     _PROPERTY_LABELS = { "sizehints":'Set Size Hints', "menubar":'Has MenuBar', "toolbar":'Has ToolBar',
                          "statusbar":'Has StatusBar' }
     ATT_CHILDREN = ["_menubar", "_statusbar", "_toolbar"]
