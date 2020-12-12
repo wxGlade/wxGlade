@@ -35,7 +35,7 @@ sub new {
     $self = $self->SUPER::new( $parent, $id, $title, $pos, $size, $style, $name );
     $self->SetTitle(_T("wxGlade: preferences"));
     my $icon = &Wx::wxNullIcon;
-    $icon->CopyFromBitmap(Wx::Bitmap->new("icons/icon.xpm", wxBITMAP_TYPE_ANY));
+    $icon->CopyFromBitmap(Wx::Bitmap->new("icons/icon.png", wxBITMAP_TYPE_ANY));
     $self->SetIcon($icon);
     
     $self->{sizer_1} = Wx::BoxSizer->new(wxVERTICAL);

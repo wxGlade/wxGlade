@@ -27,7 +27,7 @@
 // end wxGlade
 
 // begin wxGlade: ::extracode
-#define _icon_path wxT("icons/icon.xpm")
+#define _icon_path wxT("icons/icon.png")
 // end wxGlade
 
 

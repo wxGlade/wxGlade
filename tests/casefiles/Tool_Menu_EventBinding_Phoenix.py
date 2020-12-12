@@ -34,7 +34,7 @@ class MyFrame(wx.Frame):
 
         # Tool Bar
         self.frame_toolbar = wx.ToolBar(self, -1)
-        tool = self.frame_toolbar.AddTool(wx.ID_ANY, "My Tool", wx.Bitmap("..\\..\\icons\\button.xpm", wx.BITMAP_TYPE_ANY), wx.NullBitmap, wx.ITEM_NORMAL, "", "")
+        tool = self.frame_toolbar.AddTool(wx.ID_ANY, "My Tool", wx.Bitmap("..\\..\\icons\\button.png", wx.BITMAP_TYPE_ANY), wx.NullBitmap, wx.ITEM_NORMAL, "", "")
         self.Bind(wx.EVT_TOOL, self.on_my_tool, id=tool.GetId())
         self.SetToolBar(self.frame_toolbar)
         self.frame_toolbar.Realize()

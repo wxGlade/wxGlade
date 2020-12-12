@@ -107,7 +107,7 @@
                                 <flag>wxALL|wxEXPAND</flag>
                                 <border>5</border>
                                 <object class="wxBitmapButton" name="bitmap_button_icon1">
-                                    <bitmap>icon.xpm</bitmap>
+                                    <bitmap>icon.png</bitmap>
                                     <default>1</default>
                                 </object>
                             </object>
@@ -124,7 +124,7 @@
                                 <flag>wxALL|wxEXPAND</flag>
                                 <border>5</border>
                                 <object class="wxBitmapButton" name="bitmap_button_icon2">
-                                    <bitmap>icon.xpm</bitmap>
+                                    <bitmap>icon.png</bitmap>
                                     <default>1</default>
                                     <style>wxBORDER_NONE|wxBU_BOTTOM</style>
                                 </object>
@@ -738,7 +738,7 @@
                                 <flag>wxALL|wxEXPAND</flag>
                                 <border>5</border>
                                 <object class="wxStaticBitmap" name="bitmap_file">
-                                    <bitmap>icon.xpm</bitmap>
+                                    <bitmap>icon.png</bitmap>
                                 </object>
                             </object>
                             <object class="sizeritem">

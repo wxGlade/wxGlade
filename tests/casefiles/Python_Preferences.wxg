@@ -3,7 +3,7 @@
 
 <application path="Python_Preferences.py" name="" class="" option="0" language="python" top_window="dialog_1" encoding="ISO-8859-15" use_gettext="1" overwrite="1" use_new_namespace="1" for_version="2.6" is_template="0">
     <object class="wxGladePreferencesUI" name="dialog_1" base="EditDialog">
-        <extracode># Python specific extra code, non-python code will fail!\nimport config\nimport os\n\n_icon_path = os.path.join(config.icons_path, 'icon.xpm')\n</extracode>
+        <extracode># Python specific extra code, non-python code will fail!\nimport config\nimport os\n\n_icon_path = os.path.join(config.icons_path, 'icon.png')\n</extracode>
         <style>wxDEFAULT_DIALOG_STYLE</style>
         <icon>var:_icon_path</icon>
         <title>wxGlade: preferences</title>

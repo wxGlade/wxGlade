@@ -58,7 +58,7 @@
         
         ;;; Tool Bar
         (setf (slot-frame-toolbar obj) (wxToolBar_Create (slot-top-window obj) -1 -1 -1 -1 -1 wxTB_HORIZONTAL))
-        (wxToolBar_AddTool (slot-frame-toolbar obj) wxID_ANY "My Tool" (wxBitmap_CreateLoad "D:\\Python\\wxglade\\wxglade_dev_master\\icons\\button.xpm" wxBITMAP_TYPE_ANY) wxNullBitmap wxITEM_NORMAL "" "")
+        (wxToolBar_AddTool (slot-frame-toolbar obj) wxID_ANY "My Tool" (wxBitmap_CreateLoad "D:\\Python\\wxglade\\wxglade_dev_master\\icons\\button.png" wxBITMAP_TYPE_ANY) wxNullBitmap wxITEM_NORMAL "" "")
         (wxToolBar_Realize (slot-frame-toolbar obj))
         (wxToolBar_Realize (slot-frame-toolbar obj))
         (wxFrame_SetToolBar (slot-top-window obj) (slot-frame-toolbar obj))

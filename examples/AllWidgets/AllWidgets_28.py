@@ -57,7 +57,7 @@ class All_Widgets_Frame(wx.Frame):
         # Tool Bar end
         self.notebook_1 = wx.Notebook(self, wx.ID_ANY, style=wx.NB_BOTTOM)
         self.notebook_1_wxBitmapButton = wx.Panel(self.notebook_1, wx.ID_ANY)
-        self.bitmap_button_icon1 = wx.BitmapButton(self.notebook_1_wxBitmapButton, wx.ID_ANY, wx.Bitmap("icon.xpm", wx.BITMAP_TYPE_ANY))
+        self.bitmap_button_icon1 = wx.BitmapButton(self.notebook_1_wxBitmapButton, wx.ID_ANY, wx.Bitmap("icon.png", wx.BITMAP_TYPE_ANY))
         self.bitmap_button_empty1 = wx.BitmapButton(self.notebook_1_wxBitmapButton, wx.ID_ANY, wx.EmptyBitmap(10, 10))
         self.bitmap_button_art = wx.BitmapButton(self.notebook_1_wxBitmapButton, wx.ID_ANY, wx.ArtProvider.GetBitmap(wx.ART_GO_UP, wx.ART_OTHER, (32, 32)), style=wx.BORDER_NONE | wx.BU_BOTTOM)
         self.notebook_1_wxButton = wx.Panel(self.notebook_1, wx.ID_ANY)
@@ -125,7 +125,7 @@ class All_Widgets_Frame(wx.Frame):
         self.label_right_pane = wx.StaticText(self.splitter_2_pane_2, wx.ID_ANY, _("right pane"))
         self.notebook_1_wxStaticBitmap = wx.Panel(self.notebook_1, wx.ID_ANY)
         self.bitmap_empty = wx.StaticBitmap(self.notebook_1_wxStaticBitmap, wx.ID_ANY, wx.EmptyBitmap(32, 32))
-        self.bitmap_file = wx.StaticBitmap(self.notebook_1_wxStaticBitmap, wx.ID_ANY, wx.Bitmap("icon.xpm", wx.BITMAP_TYPE_ANY))
+        self.bitmap_file = wx.StaticBitmap(self.notebook_1_wxStaticBitmap, wx.ID_ANY, wx.Bitmap("icon.png", wx.BITMAP_TYPE_ANY))
         self.bitmap_art = wx.StaticBitmap(self.notebook_1_wxStaticBitmap, wx.ID_ANY, wx.ArtProvider.GetBitmap(wx.ART_PRINT, wx.ART_OTHER, (32, 32)))
         self.notebook_1_wxStaticLine = wx.Panel(self.notebook_1, wx.ID_ANY)
         self.static_line_2 = wx.StaticLine(self.notebook_1_wxStaticLine, wx.ID_ANY, style=wx.LI_VERTICAL)

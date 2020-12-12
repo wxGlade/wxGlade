@@ -4,7 +4,7 @@
 <application path="Perl_Preferences.pl" name="" class="" option="0" language="perl" top_window="dialog_1" encoding="ISO-8859-15" use_gettext="1" overwrite="1" use_new_namespace="1" for_version="2.6" is_template="0" indent_amount="4" indent_symbol="space" source_extension=".cpp" header_extension=".h">
     <object class="wxGladePreferencesUI" name="dialog_1" base="EditDialog">
         <style>wxDEFAULT_DIALOG_STYLE</style>
-        <icon>icons/icon.xpm</icon>
+        <icon>icons/icon.png</icon>
         <title>wxGlade: preferences</title>
         <affirmative>ok</affirmative>
         <escape>cancel</escape>

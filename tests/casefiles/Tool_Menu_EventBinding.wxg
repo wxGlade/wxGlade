@@ -32,7 +32,7 @@
                     <type>0</type>
                     <short_help />
                     <long_help />
-                    <bitmap1>..\..\icons\button.xpm</bitmap1>
+                    <bitmap1>..\..\icons\button.png</bitmap1>
                     <bitmap2 />
                     <handler>on_my_tool</handler>
                 </tool>

@@ -174,7 +174,7 @@
                                 <border>5</border>
                                 <flag>wxALL|wxEXPAND</flag>
                                 <object class="wxBitmapButton" name="bitmap_button_icon1" base="EditBitmapButton">
-                                    <bitmap>icon.xpm</bitmap>
+                                    <bitmap>icon.png</bitmap>
                                     <default>1</default>
                                 </object>
                             </object>
@@ -831,7 +831,7 @@
                                 <border>5</border>
                                 <flag>wxALL|wxALIGN_CENTER_VERTICAL</flag>
                                 <object class="wxStaticBitmap" name="bitmap_file" base="EditStaticBitmap">
-                                    <bitmap>icon.xpm</bitmap>
+                                    <bitmap>icon.png</bitmap>
                                     <attribute>1</attribute>
                                 </object>
                             </object>

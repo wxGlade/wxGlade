@@ -110,7 +110,7 @@ sub new {
     
     $self->{sizer_13} = Wx::FlexGridSizer->new(2, 2, 0, 0);
     
-    $self->{bitmap_button_icon1} = Wx::BitmapButton->new($self->{notebook_1_wxBitmapButton}, wxID_ANY, Wx::Bitmap->new("icon.xpm", wxBITMAP_TYPE_ANY));
+    $self->{bitmap_button_icon1} = Wx::BitmapButton->new($self->{notebook_1_wxBitmapButton}, wxID_ANY, Wx::Bitmap->new("icon.png", wxBITMAP_TYPE_ANY));
     $self->{bitmap_button_icon1}->SetSize($self->{bitmap_button_icon1}->GetBestSize());
     $self->{bitmap_button_icon1}->SetDefault();
     $self->{sizer_13}->Add($self->{bitmap_button_icon1}, 1, wxALL|wxEXPAND, 5);
@@ -120,7 +120,7 @@ sub new {
     $self->{bitmap_button_empty1}->SetDefault();
     $self->{sizer_13}->Add($self->{bitmap_button_empty1}, 1, wxALL|wxEXPAND, 5);
     
-    $self->{bitmap_button_icon2} = Wx::BitmapButton->new($self->{notebook_1_wxBitmapButton}, wxID_ANY, Wx::Bitmap->new("icon.xpm", wxBITMAP_TYPE_ANY), wxDefaultPosition, wxDefaultSize, wxBORDER_NONE|wxBU_BOTTOM);
+    $self->{bitmap_button_icon2} = Wx::BitmapButton->new($self->{notebook_1_wxBitmapButton}, wxID_ANY, Wx::Bitmap->new("icon.png", wxBITMAP_TYPE_ANY), wxDefaultPosition, wxDefaultSize, wxBORDER_NONE|wxBU_BOTTOM);
     $self->{bitmap_button_icon2}->SetBitmapDisabled(Wx::Bitmap->new(32, 32));
     $self->{bitmap_button_icon2}->SetSize($self->{bitmap_button_icon2}->GetBestSize());
     $self->{bitmap_button_icon2}->SetDefault();
@@ -410,7 +410,7 @@ sub new {
     $self->{bitmap_empty} = Wx::StaticBitmap->new($self->{notebook_1_wxStaticBitmap}, wxID_ANY, Wx::Bitmap->new(32, 32));
     $self->{sizer_11}->Add($self->{bitmap_empty}, 1, wxALL|wxEXPAND, 5);
     
-    $self->{bitmap_file} = Wx::StaticBitmap->new($self->{notebook_1_wxStaticBitmap}, wxID_ANY, Wx::Bitmap->new("icon.xpm", wxBITMAP_TYPE_ANY));
+    $self->{bitmap_file} = Wx::StaticBitmap->new($self->{notebook_1_wxStaticBitmap}, wxID_ANY, Wx::Bitmap->new("icon.png", wxBITMAP_TYPE_ANY));
     $self->{sizer_11}->Add($self->{bitmap_file}, 1, wxALL|wxEXPAND, 5);
     
     $self->{bitmap_nofile} = Wx::StaticBitmap->new($self->{notebook_1_wxStaticBitmap}, wxID_ANY, Wx::Bitmap->new("non-existing.bmp", wxBITMAP_TYPE_ANY));

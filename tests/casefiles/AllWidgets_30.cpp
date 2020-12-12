@@ -71,7 +71,7 @@ All_Widgets_Frame::All_Widgets_Frame(wxWindow* parent, wxWindowID id, const wxSt
     notebook_1_wxBitmapButton = new wxPanel(notebook_1, wxID_ANY);
     notebook_1->AddPage(notebook_1_wxBitmapButton, _("wxBitmapButton"));
     wxFlexGridSizer* sizer_13 = new wxFlexGridSizer(2, 2, 0, 0);
-    bitmap_button_icon1 = new wxBitmapButton(notebook_1_wxBitmapButton, wxID_ANY, wxBitmap(wxT("icon.xpm"), wxBITMAP_TYPE_ANY));
+    bitmap_button_icon1 = new wxBitmapButton(notebook_1_wxBitmapButton, wxID_ANY, wxBitmap(wxT("icon.png"), wxBITMAP_TYPE_ANY));
     bitmap_button_icon1->SetSize(bitmap_button_icon1->GetBestSize());
     bitmap_button_icon1->SetDefault();
     sizer_13->Add(bitmap_button_icon1, 1, wxALL|wxEXPAND, 5);
@@ -79,7 +79,7 @@ All_Widgets_Frame::All_Widgets_Frame(wxWindow* parent, wxWindowID id, const wxSt
     bitmap_button_empty1->SetSize(bitmap_button_empty1->GetBestSize());
     bitmap_button_empty1->SetDefault();
     sizer_13->Add(bitmap_button_empty1, 1, wxALL|wxEXPAND, 5);
-    bitmap_button_icon2 = new wxBitmapButton(notebook_1_wxBitmapButton, wxID_ANY, wxBitmap(wxT("icon.xpm"), wxBITMAP_TYPE_ANY), wxDefaultPosition, wxDefaultSize, wxBORDER_NONE|wxBU_BOTTOM);
+    bitmap_button_icon2 = new wxBitmapButton(notebook_1_wxBitmapButton, wxID_ANY, wxBitmap(wxT("icon.png"), wxBITMAP_TYPE_ANY), wxDefaultPosition, wxDefaultSize, wxBORDER_NONE|wxBU_BOTTOM);
     bitmap_button_icon2->SetBitmapDisabled(wxBitmap(32, 32));
     bitmap_button_icon2->SetSize(bitmap_button_icon2->GetBestSize());
     bitmap_button_icon2->SetDefault();
@@ -302,7 +302,7 @@ All_Widgets_Frame::All_Widgets_Frame(wxWindow* parent, wxWindowID id, const wxSt
     wxBoxSizer* sizer_11 = new wxBoxSizer(wxVERTICAL);
     bitmap_empty = new wxStaticBitmap(notebook_1_wxStaticBitmap, wxID_ANY, wxBitmap(32, 32));
     sizer_11->Add(bitmap_empty, 1, wxALL|wxEXPAND, 5);
-    bitmap_file = new wxStaticBitmap(notebook_1_wxStaticBitmap, wxID_ANY, wxBitmap(wxT("icon.xpm"), wxBITMAP_TYPE_ANY));
+    bitmap_file = new wxStaticBitmap(notebook_1_wxStaticBitmap, wxID_ANY, wxBitmap(wxT("icon.png"), wxBITMAP_TYPE_ANY));
     sizer_11->Add(bitmap_file, 1, wxALL|wxEXPAND, 5);
     bitmap_nofile = new wxStaticBitmap(notebook_1_wxStaticBitmap, wxID_ANY, wxBitmap(wxT("non-existing.bmp"), wxBITMAP_TYPE_ANY));
     sizer_11->Add(bitmap_nofile, 1, wxALL|wxEXPAND, 5);

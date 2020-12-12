@@ -80,7 +80,7 @@ class All_Widgets_Frame(wx.Frame):
 
         sizer_13 = wx.FlexGridSizer(2, 2, 0, 0)
 
-        self.bitmap_button_icon1 = wx.BitmapButton(self.notebook_1_wxBitmapButton, wx.ID_ANY, wx.Bitmap("icon.xpm", wx.BITMAP_TYPE_ANY))
+        self.bitmap_button_icon1 = wx.BitmapButton(self.notebook_1_wxBitmapButton, wx.ID_ANY, wx.Bitmap("icon.png", wx.BITMAP_TYPE_ANY))
         self.bitmap_button_icon1.SetSize(self.bitmap_button_icon1.GetBestSize())
         self.bitmap_button_icon1.SetDefault()
         sizer_13.Add(self.bitmap_button_icon1, 1, wx.ALL | wx.EXPAND, 5)
@@ -90,7 +90,7 @@ class All_Widgets_Frame(wx.Frame):
         self.bitmap_button_empty1.SetDefault()
         sizer_13.Add(self.bitmap_button_empty1, 1, wx.ALL | wx.EXPAND, 5)
 
-        self.bitmap_button_icon2 = wx.BitmapButton(self.notebook_1_wxBitmapButton, wx.ID_ANY, wx.Bitmap("icon.xpm", wx.BITMAP_TYPE_ANY), style=wx.BORDER_NONE | wx.BU_BOTTOM)
+        self.bitmap_button_icon2 = wx.BitmapButton(self.notebook_1_wxBitmapButton, wx.ID_ANY, wx.Bitmap("icon.png", wx.BITMAP_TYPE_ANY), style=wx.BORDER_NONE | wx.BU_BOTTOM)
         self.bitmap_button_icon2.SetBitmapDisabled(wx.Bitmap(32, 32))
         self.bitmap_button_icon2.SetSize(self.bitmap_button_icon2.GetBestSize())
         self.bitmap_button_icon2.SetDefault()
@@ -362,7 +362,7 @@ class All_Widgets_Frame(wx.Frame):
         self.bitmap_empty = wx.StaticBitmap(self.notebook_1_wxStaticBitmap, wx.ID_ANY, wx.Bitmap(32, 32))
         sizer_11.Add(self.bitmap_empty, 1, wx.ALL | wx.EXPAND, 5)
 
-        self.bitmap_file = wx.StaticBitmap(self.notebook_1_wxStaticBitmap, wx.ID_ANY, wx.Bitmap("icon.xpm", wx.BITMAP_TYPE_ANY))
+        self.bitmap_file = wx.StaticBitmap(self.notebook_1_wxStaticBitmap, wx.ID_ANY, wx.Bitmap("icon.png", wx.BITMAP_TYPE_ANY))
         sizer_11.Add(self.bitmap_file, 1, wx.ALL | wx.EXPAND, 5)
 
         self.bitmap_nofile = wx.StaticBitmap(self.notebook_1_wxStaticBitmap, wx.ID_ANY, wx.Bitmap("non-existing.bmp", wx.BITMAP_TYPE_ANY))
