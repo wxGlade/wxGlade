@@ -262,11 +262,11 @@ def initialize():
 
     import os.path
     from tree import WidgetTree
-    WidgetTree.images['EditSplitterSlot-Left']   = os.path.join( config.icons_path, 'splitter_slot-left.xpm' )
-    WidgetTree.images['EditSplitterSlot-Right']  = os.path.join( config.icons_path, 'splitter_slot-right.xpm' )
-    WidgetTree.images['EditSplitterSlot-Top']    = os.path.join( config.icons_path, 'splitter_slot-top.xpm' )
-    WidgetTree.images['EditSplitterSlot-Bottom'] = os.path.join( config.icons_path, 'splitter_slot-bottom.xpm' )
-    WidgetTree.images['EditSplitterWindow']      = os.path.join( config.icons_path, 'splitter_window.xpm' )
-    WidgetTree.images['EditSplitterWindow-h']    = os.path.join( config.icons_path, 'splitter_window-h.xpm' )
+    WidgetTree.images['EditSplitterSlot-Left']   = os.path.join( config.icons_path, 'splitter_slot-left.png' )
+    WidgetTree.images['EditSplitterSlot-Right']  = os.path.join( config.icons_path, 'splitter_slot-right.png' )
+    WidgetTree.images['EditSplitterSlot-Top']    = os.path.join( config.icons_path, 'splitter_slot-top.png' )
+    WidgetTree.images['EditSplitterSlot-Bottom'] = os.path.join( config.icons_path, 'splitter_slot-bottom.png' )
+    WidgetTree.images['EditSplitterWindow']      = os.path.join( config.icons_path, 'splitter_window.png' )
+    WidgetTree.images['EditSplitterWindow-h']    = os.path.join( config.icons_path, 'splitter_window-h.png' )
 
-    return common.make_object_button('EditSplitterWindow', 'splitter_window.xpm')
+    return common.make_object_button('EditSplitterWindow', 'splitter_window.png')

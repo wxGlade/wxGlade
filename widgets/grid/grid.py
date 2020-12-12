@@ -309,5 +309,5 @@ def initialize():
     common.widgets['EditGrid'] = builder
     common.widgets_from_xml['EditGrid'] = xml_builder
 
-    return common.make_object_button('EditGrid', 'grid.xpm')
+    return common.make_object_button('EditGrid', 'grid.png')
 

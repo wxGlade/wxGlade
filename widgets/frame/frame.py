@@ -94,7 +94,7 @@ class EditFrame(BitmapMixin, TopLevelBase, EditStylesMixin):
         if self.icon:
             bitmap = self.get_preview_obj_bitmap(self.icon.strip())
         else:
-            xpm = os.path.join(config.icons_path, 'frame.xpm')
+            xpm = os.path.join(config.icons_path, 'frame.png')
             bitmap = misc.get_xpm_bitmap(xpm)
 
         icon = compat.wx_EmptyIcon()
@@ -193,4 +193,4 @@ def initialize():
     common.widget_classes['EditMDIChildFrame'] = EditMDIChildFrame
     common.widgets_from_xml['EditMDIChildFrame'] = xml_builder
 
-    return common.make_object_button('EditFrame', 'frame.xpm', 1)
+    return common.make_object_button('EditFrame', 'frame.png', 1)

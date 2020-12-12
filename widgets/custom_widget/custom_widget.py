@@ -178,5 +178,5 @@ def initialize():
     common.widgets['CustomWidget'] = builder
     common.widgets_from_xml['CustomWidget'] = xml_builder
 
-    return common.make_object_button('CustomWidget', 'custom.xpm', tip='Add a custom widget')
+    return common.make_object_button('CustomWidget', 'custom.png', tip='Add a custom widget')
 

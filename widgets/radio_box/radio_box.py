@@ -199,4 +199,4 @@ def initialize():
     common.widgets['EditRadioBox'] = builder
     common.widgets_from_xml['EditRadioBox'] = xml_builder
 
-    return common.make_object_button('EditRadioBox', 'radio_box.xpm')
+    return common.make_object_button('EditRadioBox', 'radio_box.png')

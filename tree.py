@@ -62,8 +62,8 @@ class WidgetTree(wx.TreeCtrl):#, Tree):
 
         # grid sizer slots:
         # load template with one active slot and build new images with slot at any position top/left to bottom/right
-        fn = os.path.join(config.icons_path, 'grid_sizer_slot_template.xpm')  # bottom / right in black
-        template = wx.Image(fn, wx.BITMAP_TYPE_XPM)
+        fn = os.path.join(config.icons_path, 'grid_sizer_slot_template.png')  # bottom / right in black
+        template = wx.Image(fn, wx.BITMAP_TYPE_PNG)
         t_empty  = template.GetSubImage( (0,0,7,7) )    # empty slot
         t_active = template.GetSubImage( (0,7,7,7) )    # active slot
         t_bottom = template.GetSubImage( (0,20,20,1) )  # typically a black line at bottom
@@ -88,7 +88,7 @@ class WidgetTree(wx.TreeCtrl):#, Tree):
 
         # store in the bitmap list
         image_list = wx.ImageList(21, 23)
-        app_image = wx.Image(os.path.join(config.icons_path, 'application.xpm'), wx.BITMAP_TYPE_XPM)
+        app_image = wx.Image(os.path.join(config.icons_path, 'application.png'), wx.BITMAP_TYPE_PNG)
         app_image.Resize((21,23), (0,1), -1,-1,-1)
         image_list.Add( app_image.ConvertToBitmap() )
         for name, bitmap in bitmaps.items():

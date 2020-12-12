@@ -488,7 +488,7 @@ class EditToolBar(EditBase, PreviewMixin, EditStylesMixin, BitmapMixin):
             self.widget.SetToolBar(self._tb)
             self.widget.SetBackgroundColour(self.widget.GetBackgroundColour())
             icon = compat.wx_EmptyIcon()
-            xpm = os.path.join(config.icons_path, 'toolbar.xpm')
+            xpm = os.path.join(config.icons_path, 'toolbar.png')
             icon.CopyFromBitmap(misc.get_xpm_bitmap(xpm))
             self.widget.SetIcon(icon)
             self.widget.Bind(wx.EVT_CLOSE, lambda e: self.hide_widget())
@@ -731,4 +731,4 @@ def initialize():
     common.widgets_from_xml['EditToolBar'] = xml_builder
     common.widgets['EditToolBar'] = builder
 
-    return common.make_object_button('EditToolBar', 'toolbar.xpm', 1)
+    return common.make_object_button('EditToolBar', 'toolbar.png', 1)

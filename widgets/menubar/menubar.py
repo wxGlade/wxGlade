@@ -616,7 +616,7 @@ class EditMenuBar(EditBase):#, PreviewMixin):
             self.widget.SetBackgroundColour(self._mb.GetBackgroundColour())
             import os
             icon = compat.wx_EmptyIcon()
-            xpm = os.path.join(config.icons_path, 'menubar.xpm')
+            xpm = os.path.join(config.icons_path, 'menubar.png')
             icon.CopyFromBitmap(misc.get_xpm_bitmap(xpm))
             self.widget.SetIcon(icon)
             self.widget.Bind(wx.EVT_CLOSE, lambda e: self.hide_widget())
@@ -802,4 +802,4 @@ def initialize():
     common.widgets['EditMenuBar'] = builder
     common.widgets_from_xml['EditMenuBar'] = xml_builder
 
-    return common.make_object_button('EditMenuBar', 'menubar.xpm', 1)
+    return common.make_object_button('EditMenuBar', 'menubar.png', 1)

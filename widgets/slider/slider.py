@@ -90,4 +90,4 @@ def initialize():
     common.widget_classes['EditSlider'] = EditSlider
     common.widgets['EditSlider'] = builder
     common.widgets_from_xml['EditSlider'] = xml_builder
-    return common.make_object_button('EditSlider', 'slider.xpm')
+    return common.make_object_button('EditSlider', 'slider.png')

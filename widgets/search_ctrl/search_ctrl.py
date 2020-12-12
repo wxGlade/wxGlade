@@ -89,4 +89,4 @@ def initialize():
     common.widgets['EditSearchCtrl'] = builder
     common.widgets_from_xml['EditSearchCtrl'] = xml_builder
 
-    return common.make_object_button('EditSearchCtrl', 'search_ctrl.xpm')
+    return common.make_object_button('EditSearchCtrl', 'search_ctrl.png')

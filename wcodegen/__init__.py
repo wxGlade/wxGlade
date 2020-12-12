@@ -495,10 +495,10 @@ class BaseWidgetWriter(StylesMixin, BaseCodeWriter):
         preview = self.codegen.preview
 
         if ( preview and ( bitmap.startswith('var:') or bitmap.startswith('code:') ) ) or (not bitmap and required):
-            preview_icon = os.path.join(config.icons_path, "icon.xpm")
+            preview_icon = os.path.join(config.icons_path, "icon.png")
             return self.tmpl_inline_bitmap % { 'name': self.codegen.cn('wxBitmap'),
                                                'bitmap': self.codegen.quote_path(preview_icon),
-                                               'bitmap_type': self.codegen.cn('wxBITMAP_TYPE_XPM') }
+                                               'bitmap_type': self.codegen.cn('wxBITMAP_TYPE_ANY') }
 
         if bitmap.startswith('var:'):
             return self.tmpl_inline_bitmap % { 'name': self.codegen.cn('wxBitmap'),

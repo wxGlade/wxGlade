@@ -363,4 +363,4 @@ def initialize():
     common.widget_classes['EditNotebook'] = EditNotebook
     common.widgets['EditNotebook'] = builder
     common.widgets_from_xml['EditNotebook'] = xml_builder
-    return common.make_object_button('EditNotebook', 'notebook.xpm')
+    return common.make_object_button('EditNotebook', 'notebook.png')

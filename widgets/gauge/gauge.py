@@ -67,4 +67,4 @@ def initialize():
     common.widget_classes['EditGauge'] = EditGauge
     common.widgets['EditGauge'] = builder
     common.widgets_from_xml['EditGauge'] = xml_builder
-    return common.make_object_button('EditGauge', 'gauge.xpm')
+    return common.make_object_button('EditGauge', 'gauge.png')

@@ -2294,23 +2294,23 @@ def init_all():
     from tree import WidgetTree
 
     if HAVE_WRAP_SIZER:
-        WidgetTree.images['EditWrapSizer'] = os.path.join( config.icons_path, 'wrap_sizer_h.xpm')
-        WidgetTree.images['EditHorizontalWrapSizer'] = os.path.join( config.icons_path, 'wrap_sizer_h.xpm')
-        WidgetTree.images['EditVerticalWrapSizer'] = os.path.join( config.icons_path, 'wrap_sizer.xpm')
-    WidgetTree.images['EditStaticBoxSizer'] = os.path.join( config.icons_path, 'sizer.xpm')
-    WidgetTree.images['EditFlexGridSizer']  = os.path.join( config.icons_path, 'flexgrid_sizer.xpm' )
-    WidgetTree.images['EditGridBagSizer']  = os.path.join( config.icons_path, 'gridbag_sizer.xpm' )
+        WidgetTree.images['EditWrapSizer'] = os.path.join( config.icons_path, 'wrap_sizer_h.png')
+        WidgetTree.images['EditHorizontalWrapSizer'] = os.path.join( config.icons_path, 'wrap_sizer_h.png')
+        WidgetTree.images['EditVerticalWrapSizer'] = os.path.join( config.icons_path, 'wrap_sizer.png')
+    WidgetTree.images['EditStaticBoxSizer'] = os.path.join( config.icons_path, 'sizer.png')
+    WidgetTree.images['EditFlexGridSizer']  = os.path.join( config.icons_path, 'flexgrid_sizer.png' )
+    WidgetTree.images['EditGridBagSizer']  = os.path.join( config.icons_path, 'gridbag_sizer.png' )
 
-    WidgetTree.images['EditVerticalSizer']   = os.path.join( config.icons_path, 'sizer_v.xpm' )
-    WidgetTree.images['EditHorizontalSizer'] = os.path.join( config.icons_path, 'sizer_h.xpm' )
-    WidgetTree.images['EditStdDialogButtonSizer'] = os.path.join( config.icons_path, 'button_sizer.xpm' )
+    WidgetTree.images['EditVerticalSizer']   = os.path.join( config.icons_path, 'sizer_v.png' )
+    WidgetTree.images['EditHorizontalSizer'] = os.path.join( config.icons_path, 'sizer_h.png' )
+    WidgetTree.images['EditStdDialogButtonSizer'] = os.path.join( config.icons_path, 'button_sizer.png' )
 
-    WidgetTree.images['EditVerticalSizerSlot']   = os.path.join( config.icons_path, 'sizer_slot_v.xpm' )
-    WidgetTree.images['EditHorizontalSizerSlot'] = os.path.join( config.icons_path, 'sizer_slot_h.xpm' )
-    WidgetTree.images['EditSizerSlot'] = os.path.join( config.icons_path, 'sizer_slot.xpm' )
-    WidgetTree.images['EditSlot'] = os.path.join( config.icons_path, 'slot.xpm' )
+    WidgetTree.images['EditVerticalSizerSlot']   = os.path.join( config.icons_path, 'sizer_slot_v.png' )
+    WidgetTree.images['EditHorizontalSizerSlot'] = os.path.join( config.icons_path, 'sizer_slot_h.png' )
+    WidgetTree.images['EditSizerSlot'] = os.path.join( config.icons_path, 'sizer_slot.png' )
+    WidgetTree.images['EditSlot'] = os.path.join( config.icons_path, 'slot.png' )
 
     ret = {'Sizers': [
-        common.make_object_button('EditBoxSizer', 'sizer.xpm'),
-        common.make_object_button('EditGridSizer', 'grid_sizer.xpm')] }
+        common.make_object_button('EditBoxSizer', 'sizer.png'),
+        common.make_object_button('EditGridSizer', 'grid_sizer.png')] }
     return ret

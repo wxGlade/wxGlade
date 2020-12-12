@@ -91,4 +91,4 @@ def initialize():
     common.widgets['EditCheckListBox'] = builder
     common.widgets_from_xml['EditCheckListBox'] = xml_builder
 
-    return common.make_object_button('EditCheckListBox', 'list_box.xpm')
+    return common.make_object_button('EditCheckListBox', 'list_box.png')

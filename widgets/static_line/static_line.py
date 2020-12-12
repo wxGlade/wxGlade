@@ -81,4 +81,4 @@ def initialize():
     common.widget_classes['EditStaticLine'] = EditStaticLine
     common.widgets['EditStaticLine'] = builder
     common.widgets_from_xml['EditStaticLine'] = xml_builder
-    return common.make_object_button('EditStaticLine', 'static_line.xpm')
+    return common.make_object_button('EditStaticLine', 'static_line.png')

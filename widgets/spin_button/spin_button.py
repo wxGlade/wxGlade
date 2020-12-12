@@ -82,4 +82,4 @@ def initialize():
     common.widgets['EditSpinButton'] = builder
     common.widgets_from_xml['EditSpinButton'] = xml_builder
 
-    return common.make_object_button('EditSpinButton', 'spinbtn.xpm')
+    return common.make_object_button('EditSpinButton', 'spinbtn.png')

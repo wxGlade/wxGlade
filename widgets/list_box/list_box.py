@@ -88,4 +88,4 @@ def initialize():
     common.widgets['EditListBox'] = builder
     common.widgets_from_xml['EditListBox'] = xml_builder
 
-    return common.make_object_button('EditListBox', 'list_box.xpm')
+    return common.make_object_button('EditListBox', 'list_box.png')

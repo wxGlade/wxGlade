@@ -104,7 +104,7 @@ class EditDialog(BitmapMixin, TopLevelBase, EditStylesMixin):
         if self.icon:
             bitmap = self.get_preview_obj_bitmap(self.icon.strip())
         else:
-            xpm = os.path.join(config.icons_path, 'dialog.xpm')
+            xpm = os.path.join(config.icons_path, 'dialog.png')
             bitmap = misc.get_xpm_bitmap(xpm)
 
         icon = compat.wx_EmptyIcon()
@@ -196,4 +196,4 @@ def initialize():
     common.widgets['EditDialog'] = builder
     common.widgets_from_xml['EditDialog'] = xml_builder
 
-    return common.make_object_button('EditDialog', 'dialog.xpm', 1, tip='Add a Dialog/Panel')
+    return common.make_object_button('EditDialog', 'dialog.png', 1, tip='Add a Dialog/Panel')

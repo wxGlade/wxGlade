@@ -80,4 +80,4 @@ def initialize():
     common.widgets['EditStaticBitmap'] = builder
     common.widgets_from_xml['EditStaticBitmap'] = xml_builder
 
-    return common.make_object_button('EditStaticBitmap', 'static_bitmap.xpm')
+    return common.make_object_button('EditStaticBitmap', 'static_bitmap.png')

@@ -13,7 +13,7 @@ import gettext
 import config
 import os
 
-_icon_path = os.path.join(config.icons_path, 'icon.xpm')
+_icon_path = os.path.join(config.icons_path, 'icon.png')
 # end wxGlade
 
 

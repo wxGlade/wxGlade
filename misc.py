@@ -300,27 +300,27 @@ def warning_message(msg, title="Warning"):
 ########################################################################################################################
 # menu helpers
 
-def append_menu_item(menu, id, text, xpm_file_or_artid=None, **kwargs): # XXX change: move id to the end of the argument list?
+def append_menu_item(menu, id, text, file_or_artid=None, **kwargs): # XXX change: move id to the end of the argument list?
     if compat.IS_CLASSIC and "helpString" in kwargs:
         kwargs["help"] = kwargs["helpString"]
         del kwargs["helpString"]
     item = wx.MenuItem(menu, id, text, **kwargs)
-    if xpm_file_or_artid is not None:
+    if file_or_artid is not None:
         path = 'msw/'  if wx.Platform == '__WXMSW__'  else  'gtk/'
         path = os.path.join(config.icons_path, path)
         bmp = None
-        if not isinstance(xpm_file_or_artid, bytes) or not xpm_file_or_artid.startswith(b'wxART_'):
+        if not isinstance(file_or_artid, bytes) or not file_or_artid.startswith(b'wxART_'):
             try:
-                bmp = _item_bitmaps[xpm_file_or_artid]
+                bmp = _item_bitmaps[file_or_artid]
             except KeyError:
-                f = os.path.join(path, xpm_file_or_artid)
+                f = os.path.join(path, file_or_artid)
                 if os.path.isfile(f):
-                    bmp = _item_bitmaps[xpm_file_or_artid] = wx.Bitmap(f, wx.BITMAP_TYPE_XPM)
+                    bmp = _item_bitmaps[file_or_artid] = wx.Bitmap(f)
                 else:
                     bmp = None
         else:
-            # xpm_file_or_artid is an id for wx.ArtProvider
-            bmp = wx.ArtProvider.GetBitmap( xpm_file_or_artid, wx.ART_MENU, (16, 16) )
+            # file_or_artid is an id for wx.ArtProvider
+            bmp = wx.ArtProvider.GetBitmap( file_or_artid, wx.ART_MENU, (16, 16) )
         if bmp is not None:
             try:
                 item.SetBitmap(bmp)
@@ -700,12 +700,12 @@ def get_xpm_bitmap(path):
                 try:
                     data = zipfile.ZipFile(archive).read(name)
                     data = [d[1:-1] for d in _get_xpm_bitmap_re.findall(data)]
-                    bmp = wx.BitmapFromXPMData(data)
+                    bmp = wx.BitmapFromXPMData(data)  # XXX
                 except:
                     logging.exception(_('Internal Error'))
                     bmp = wx.NullBitmap
     else:
-        bmp = wx.Bitmap(path, wx.BITMAP_TYPE_XPM)
+        bmp = wx.Bitmap(path)
     return bmp
 
 

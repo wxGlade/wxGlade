@@ -69,4 +69,4 @@ def initialize():
     common.widgets['EditTextCtrl'] = builder
     common.widgets_from_xml['EditTextCtrl'] = xml_builder
 
-    return common.make_object_button('EditTextCtrl', 'text_ctrl.xpm')
+    return common.make_object_button('EditTextCtrl', 'text_ctrl.png')

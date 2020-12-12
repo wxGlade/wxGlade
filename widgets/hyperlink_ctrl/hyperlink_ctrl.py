@@ -97,4 +97,4 @@ def initialize():
     common.widgets['EditHyperlinkCtrl'] = builder
     common.widgets_from_xml['EditHyperlinkCtrl'] = xml_builder
 
-    return common.make_object_button('EditHyperlinkCtrl', 'hyperlink_ctrl.xpm')
+    return common.make_object_button('EditHyperlinkCtrl', 'hyperlink_ctrl.png')

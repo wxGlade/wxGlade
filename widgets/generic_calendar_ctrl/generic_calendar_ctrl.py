@@ -79,4 +79,4 @@ def initialize():
     common.widgets['EditGenericCalendarCtrl'] = builder
     common.widgets_from_xml['EditGenericCalendarCtrl'] = xml_builder
 
-    return common.make_object_button('EditGenericCalendarCtrl', 'calendar_ctrl.xpm')
+    return common.make_object_button('EditGenericCalendarCtrl', 'calendar_ctrl.png')

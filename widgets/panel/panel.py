@@ -245,7 +245,7 @@ class EditTopLevelPanel(PanelBase, TopLevelBase):
             win = wx.Frame( common.main, -1, misc.design_title(self.name), size=(400, 300), style=style )
             import os, compat
             icon = compat.wx_EmptyIcon()
-            xpm = os.path.join(config.icons_path, 'panel.xpm')
+            xpm = os.path.join(config.icons_path, 'panel.png')
             icon.CopyFromBitmap(misc.get_xpm_bitmap(xpm))
             win.SetIcon(icon)
             win.Bind(wx.EVT_CLOSE, self.hide_widget)  # CLOSE event of the frame, not the panel
@@ -344,5 +344,5 @@ def initialize():
     # these are for backwards compatibility (may be removed someday...)
     common.widgets_from_xml['SplitterPane'] = xml_builder
     common.widgets_from_xml['NotebookPane'] = xml_builder
-    return common.make_object_button('EditPanel', 'panel.xpm', tip='Add a Panel/ScrolledWindow')
+    return common.make_object_button('EditPanel', 'panel.png', tip='Add a Panel/ScrolledWindow')
 

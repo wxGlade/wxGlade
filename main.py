@@ -269,7 +269,7 @@ class wxGladePropertyPanel(wx.Panel):
 class wxGladeArtProvider(wx.ArtProvider):
     def CreateBitmap(self, artid, client, size):
         if wx.Platform == '__WXGTK__' and artid == wx.ART_FOLDER:
-            return wx.Bitmap(os.path.join(config.icons_path, 'closed_folder.xpm'), wx.BITMAP_TYPE_XPM)
+            return wx.Bitmap(os.path.join(config.icons_path, 'closed_folder.png'))
         return wx.NullBitmap
 
 
@@ -550,7 +550,7 @@ class wxGladeFrame(wx.Frame):
         item = append_menu_item(edit_menu, -1, _('Template Manager...'))
         misc.bind_menu_item(self, item, self.manage_templates)
 
-        item = append_menu_item(edit_menu, wx.ID_PREFERENCES, _('Preferences...'), "prefs.xpm")
+        item = append_menu_item(edit_menu, wx.ID_PREFERENCES, _('Preferences...'), "prefs.png")
         misc.bind_menu_item(self, item, self.edit_preferences)
 
         menu_bar.Append(edit_menu, _("&Edit"))
@@ -558,13 +558,13 @@ class wxGladeFrame(wx.Frame):
         # Windows menu: layout and focus ===============================================================================
         view_menu = wx.Menu(style=wx.MENU_TEAROFF)
 
-        i = append_menu_item(view_menu, -1, _("Layout &1: Tree\tAlt-1"), "../layout1.xpm")
+        i = append_menu_item(view_menu, -1, _("Layout &1: Tree\tAlt-1"), "../layout1.png")
         misc.bind_menu_item(self, i, self.switch_layout, 0)
         
-        i = append_menu_item(view_menu, -1, _("Layout &2: Properties\tAlt-2"), "../layout2.xpm")
+        i = append_menu_item(view_menu, -1, _("Layout &2: Properties\tAlt-2"), "../layout2.png")
         misc.bind_menu_item(self, i, self.switch_layout, 1)
 
-        i = append_menu_item(view_menu, -1, _("Layout &3: Narrow\tAlt-3"), "../layout3.xpm")
+        i = append_menu_item(view_menu, -1, _("Layout &3: Narrow\tAlt-3"), "../layout3.png")
         misc.bind_menu_item(self, i, self.switch_layout, 2)
         view_menu.AppendSeparator()
 
@@ -596,7 +596,7 @@ class wxGladeFrame(wx.Frame):
         misc.bind_menu_item(self, i, self.pin_design_window)
         view_menu.AppendSeparator() # ----------------------------------------------------------------------------------
 
-        item = append_menu_item(view_menu, wx.ID_REFRESH, _("&Refresh Preview\tF5"), "refresh.xpm")
+        item = append_menu_item(view_menu, wx.ID_REFRESH, _("&Refresh Preview\tF5"), "refresh.png")
         misc.bind_menu_item(self, item, self.preview)
 
         menu_bar.Append(view_menu, _("&Windows"))
@@ -654,7 +654,6 @@ class wxGladeFrame(wx.Frame):
         self.Bind(wx.EVT_MENU_RANGE, self.open_from_history, id=wx.ID_FILE1, id2=wx.ID_FILE1+num_entries-1)
 
     def _add_label_tool(self, tb, size, id, label, bmp, itemtype, msg, msg_long=None):
-        os.path.join(config.icons_path, "layout2.xpm")
         ADD = tb.AddLabelTool  if compat.IS_CLASSIC else  tb.AddTool
         if compat.IS_PHOENIX:
             method = getattr(tb, "AddTool")
@@ -709,19 +708,19 @@ class wxGladeFrame(wx.Frame):
         self.Bind(wx.EVT_TOOL, lambda event: common.root.generate_code(), t)
         tb.AddSeparator()
         
-        t1 = add(-1, "Layout 1", "layout1.xpm", wx.ITEM_RADIO, "Switch layout: Tree", 
+        t1 = add(-1, "Layout 1", "layout1.png", wx.ITEM_RADIO, "Switch layout: Tree", 
                                                                "Switch layout: Palette and Properties left, Tree right")
         self.Bind(wx.EVT_TOOL, lambda event: self.switch_layout(0), t1)
-        t2 = add(-1, "Layout 2", "layout2.xpm", wx.ITEM_RADIO,"Switch layout: Properties",
+        t2 = add(-1, "Layout 2", "layout2.png", wx.ITEM_RADIO,"Switch layout: Properties",
                                                               "Switch layout: Palette and Tree top,  Properties bottom") 
         self.Bind(wx.EVT_TOOL, lambda event: self.switch_layout(1), t2)
-        t3 = add(-1, "Layout 3", "layout3.xpm", wx.ITEM_RADIO, "Switch layout: narrow",
+        t3 = add(-1, "Layout 3", "layout3.png", wx.ITEM_RADIO, "Switch layout: narrow",
                                                      "Switch layout: Palette, Tree and Properties on top of each other")
         self.Bind(wx.EVT_TOOL, lambda event: self.switch_layout(2), t3)
         self._layout_tools = [t1,t2,t3]
 
         tb.AddSeparator()
-        t = add(-1, "Pin Design Window", "pin_design.xpm", wx.ITEM_CHECK, "Pin Design Window",
+        t = add(-1, "Pin Design Window", "pin_design.png", wx.ITEM_CHECK, "Pin Design Window",
                                                                           "Pin Design Window to stay on top")
         self.Bind(wx.EVT_TOOL, lambda event: self.pin_design_window(), t)
         self._t_pin_design_window = t
@@ -1267,7 +1266,7 @@ class wxGladeFrame(wx.Frame):
     # user interface helpers
     def _set_icon(self):
         icon = compat.wx_EmptyIcon()
-        bmp = wx.Bitmap( os.path.join(config.icons_path, "icon.xpm"), wx.BITMAP_TYPE_XPM )
+        bmp = wx.Bitmap( os.path.join(config.icons_path, "icon.png") )
         icon.CopyFromBitmap(bmp)
         self.SetIcon(icon)
     def init_layout_settings(self):

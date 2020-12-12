@@ -118,5 +118,5 @@ def initialize():
     common.widgets['EditPropertyGridManager'] = builder
     common.widgets_from_xml['EditPropertyGridManager'] = xml_builder
 
-    return common.make_object_button('EditPropertyGridManager', 'grid.xpm')
+    return common.make_object_button('EditPropertyGridManager', 'grid.png')
 

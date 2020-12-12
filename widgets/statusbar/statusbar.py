@@ -171,5 +171,5 @@ def initialize():
     common.widgets_from_xml['EditStatusBar'] = xml_builder
     import config, os
     from tree import WidgetTree
-    WidgetTree.images['EditStatusBar'] = os.path.join(config.icons_path, 'statusbar.xpm')
+    WidgetTree.images['EditStatusBar'] = os.path.join(config.icons_path, 'statusbar.png')
     return []
