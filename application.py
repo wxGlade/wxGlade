@@ -383,7 +383,6 @@ class Application(EditRoot):
 
     def remove_top_window(self, name):
         p = self.properties["top_window"]
-        print("REMOVE TOP WINDOW", name, self)
         p.remove_choice(name)
 
     def update_top_window_name(self, oldname, newname):
