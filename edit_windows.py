@@ -763,6 +763,9 @@ class PreviewMixin(object):
             self.preview_widget = common.root.preview(self, self._preview_position)
             if self.preview_widget:
                 new_label = _('Close Preview')
+            if wx.Platform == '__WXGTK__':  # otherwise e.g. preview of Test_Editing2 fails sometimes
+                wx.SafeYield()
+                compat.wxWindow_SendSizeEventToParent(self.preview_widget)
         else:
             self._preview_position = self.preview_widget.GetPosition()  # remember position
             self.preview_widget.Close()
