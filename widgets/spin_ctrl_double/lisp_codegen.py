@@ -28,10 +28,12 @@ class LispSpinCtrlDoubleGenerator(wcodegen.LispWidgetCodeWriter):
 
     def get_more_properties_code(self, obj):
         ret = []
+        klass = self.tmpl_dict['klass']
+        name = self.tmpl_dict['name']
         if obj.properties["increment"].is_active():
-            klass = self.tmpl_dict['klass']
-            name = self.tmpl_dict['name']
             ret.append( '(%s_SetIncrement %s %s)\n'%(klass, name, obj.increment) )
+        if obj.properties["digits"].is_active():
+            ret.append( '(%s_SetDigits %s %s)\n'%(klass, name, obj.digits) )
         return ret
 
 

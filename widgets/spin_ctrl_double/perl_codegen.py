@@ -29,9 +29,11 @@ class PerlSpinCtrlDoubleGenerator(wcodegen.PerlWidgetCodeWriter):
 
     def get_more_properties_code(self, obj):
         ret = []
+        name = self.tmpl_dict['name']
         if obj.properties["increment"].is_active():
-            name = self.tmpl_dict['name']
             ret.append( '%s->SetIncrement(%s);\n'%(name, obj.increment) )
+        if obj.properties["digits"].is_active():
+            ret.append( '%s->SetDigits(%s);\n'%(name, obj.digits) )
         return ret
 
 

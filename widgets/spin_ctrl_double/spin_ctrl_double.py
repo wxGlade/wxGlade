@@ -18,8 +18,12 @@ class EditSpinCtrlDouble(ManagedBase, EditStylesMixin):
     "Class to handle wxSpinCtrlDouble objects"
     # XXX unify with EditSpinButton or SpinCtrl?
     WX_CLASS = 'wxSpinCtrlDouble'
-    _PROPERTIES = ["Widget", "range", "value", "increment", "style"]
+    _PROPERTIES = ["Widget", "range", "value", "increment", "digits", "style"]
     PROPERTIES = ManagedBase.PROPERTIES + _PROPERTIES + ManagedBase.EXTRA_PROPERTIES
+    _PROPERTY_HELP = { "digits": "Depending on your wx version you may need to set this explicitely.\n"
+                                 "E.g. if it's undefined with wxPython >=4.1.1 you can only enter integers\n"
+                                 "while on older versions you could enter any float number in this case.\n"
+                                 "If you want to be on the safe side, leave it active." }
 
     def __init__(self, name, parent, index):
         ManagedBase.__init__(self, name, parent, index)
@@ -29,6 +33,7 @@ class EditSpinCtrlDouble(ManagedBase, EditStylesMixin):
         self.range = np.FloatRangePropertyA( "0.0, 100.0" )
         self.value = np.SpinDoublePropertyA(0, val_range=(0.0,100.0), immediate=True, default_value="")
         self.increment = np.SpinDoublePropertyD(1.0, val_range=(0.0,100.0), immediate=True, default_value=1.0)
+        self.digits = np.SpinPropertyA(2, val_range=(0,20), immediate=True)
 
     def create_widget(self):
         mi,ma = self.properties["range"].get_tuple()
@@ -38,6 +43,8 @@ class EditSpinCtrlDouble(ManagedBase, EditStylesMixin):
         if self.properties["increment"].is_active():
             kwargs["inc"] = self.value
         self.widget = wx.SpinCtrlDouble(self.parent_window.widget, wx.ID_ANY, min=mi, max=ma, **kwargs)
+        if self.properties["digits"].is_active():
+            self.widget.SetDigits(self.digits)
 
     def finish_widget_creation(self, level, sel_marker_parent=None):
         ManagedBase.finish_widget_creation(self, level, sel_marker_parent)
@@ -61,6 +68,9 @@ class EditSpinCtrlDouble(ManagedBase, EditStylesMixin):
 
         if not modified or "increment" in modified and self.widget:
             self.widget.SetIncrement(self.increment)
+
+        if not modified or "digits" in modified and self.widget:
+            self.widget.SetDigits(self.digits)
 
         if not modified or "value" in modified or "range" in modified:
             # check that value is inside range
@@ -96,6 +106,7 @@ def xml_builder(parser, base, name, parent, index):
     "factory function to build EditSpinCtrlDouble objects from a XML file"
     editor = EditSpinCtrlDouble( name, parent, index )
     editor.properties["value"].set_active(False)
+    editor.properties["digits"].set_active(False)
     return editor
 
 
