@@ -12,7 +12,7 @@ import wcodegen
 
 
 class PythonSpinCtrlDoubleGenerator(wcodegen.PythonWidgetCodeWriter):
-    tmpl = '%(name)s = %(klass)s(%(parent)s, %(id)s, "%(value)s", min=%(minValue)s, max=%(maxValue)s%(style)s)\n'
+    tmpl = '%(name)s = %(klass)s(%(parent)s, %(id)s, initial=%(value)s, min=%(minValue)s, max=%(maxValue)s%(style)s)\n'
 
     def _prepare_tmpl_content(self, obj):
         wcodegen.PythonWidgetCodeWriter._prepare_tmpl_content(self, obj)
