@@ -574,7 +574,7 @@ class WidgetTree(wx.TreeCtrl):#, Tree):
     def on_menu(self, event):
         # the first entry in the popup menu, i.e. the name was selected
         if self._popup_menu_widget is None: return
-        if self._popup_menu_widget.IS_TOPLEVEL_WINDOW:
+        if self._popup_menu_widget.IS_TOPLEVEL:
             self.show_toplevel( None, self._popup_menu_widget )
 
     def on_mouse_events(self, event):

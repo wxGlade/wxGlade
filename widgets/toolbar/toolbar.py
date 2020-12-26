@@ -680,6 +680,10 @@ class EditTopLevelToolBar(EditToolBar, PreviewMixin):
         self._init_properties()
         PreviewMixin.__init__(self)  # add a preview button
 
+    def show_widget(self):
+        if not self.widget: self.create()
+        self.widget.Show()
+
 
 def builder(parent, index, klass=None):
     "factory function for EditToolBar objects"
