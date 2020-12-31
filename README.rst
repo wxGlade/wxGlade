@@ -5,7 +5,7 @@ wxGlade: A GUI builder for wxPython/wxWidgets
 .. image:: docs/html/_images/wxglade_large.png
    :align: center
    
-Version: 1.0.0
+Version: 1.0.1
 License: MIT (see LICENSE.txt)
 
 THIS PROGRAM COMES WITH NO WARRANTY
@@ -97,8 +97,6 @@ Please include the following information:
 * What do you want to happen?
 * What actually happened?
 * Provide a short example to reproduce the issue.
-* Maybe, include the internal error log file ``wxglade.log``
-
 
 
 Have fun!
