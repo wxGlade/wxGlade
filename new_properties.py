@@ -257,7 +257,7 @@ class Property(object):
     def update_display(self, start_editing=False):
         # when the value has changed
         # if start_editing: self.editing = True
-        # if not self.editing: return
+        # if not self.editing or not self...: return
         pass
 
     def activate_controls(self):
@@ -271,10 +271,10 @@ class Property(object):
         for controlname in self.CONTROLNAMES:
             if controlname=="enabler": continue
             control = getattr(self, controlname, None)
-            if control is None: continue
+            if not control: continue
             if isinstance(control, (tuple,list)):
                 for c in control:
-                    if c is not None: c.Enable(active)
+                    if c: c.Enable(active)
             else:
                 control.Enable(active)
 
@@ -455,7 +455,7 @@ class SpinProperty(Property):
 
     def update_display(self, start_editing=False):
         if start_editing: self.editing = True
-        if not self.editing: return
+        if not self.editing or not self.spin: return
         self.spin.SetValue(self.value)
 
     def _on_spin(self, event):
@@ -645,7 +645,7 @@ class LayoutSpanProperty(Property):
 
     def update_display(self, start_editing=False):
         if start_editing: self.editing = True
-        if not self.editing: return
+        if not self.editing or not self.rowspin or not self.colspin: return
         self.rowspin.SetValue(self.value[0])
         self.colspin.SetValue(self.value[1])
 
@@ -703,7 +703,7 @@ class CheckBoxProperty(Property):
 
     def update_display(self, start_editing=False):
         if start_editing: self.editing = True
-        if not self.editing: return
+        if not self.editing or not self.checkbox: return
         self._display_value()
 
     def on_change_val(self, event):
@@ -764,7 +764,7 @@ class RadioProperty(Property):
 
     def update_display(self, start_editing=False):
         if start_editing: self.editing = True
-        if not self.editing: return
+        if not self.editing or not self.options: return
         self.options.SetSelection( self.values.index(self.value) )
         if self.blocked: self.options.Disable()
 
@@ -775,7 +775,7 @@ class RadioProperty(Property):
         self._check_for_user_modification(new_value)
 
     def enable_item(self, index, enable=True):
-        if not self.editing: return
+        if not self.editing or not self.options: return
         self.options.EnableItem(index, enable)
 
 
@@ -963,7 +963,7 @@ class _CheckListProperty(Property):
         if not self.editing: return
         checked = self.get_list_value()
         for i,checkbox in enumerate(self._choices):
-            if checkbox is None: continue
+            if not checkbox: continue
             name = self._names[i]
             if checked[i] and not checkbox.GetValue():
                 checkbox.SetValue(True)
@@ -1411,7 +1411,7 @@ class TextProperty(Property):
         self._set_colours()
         self._set_tooltip(label, self.text, self.enabler, *self.additional_controls)
         self.editing = True
-        
+
         if hasattr(self, "_on_label_dblclick"):
             label.Bind(wx.EVT_LEFT_DCLICK, self._on_label_dblclick)
             label.SetForegroundColour(wx.BLUE)
@@ -1468,7 +1468,7 @@ class TextProperty(Property):
     def update_display(self, start_editing=False):
         # when the value has changed
         if start_editing: self.editing = True
-        if not self.editing: return
+        if not self.editing or not self.text: return
         self.text.SetValue(self._convert_to_text(self.value) or "")
         self._set_colours()
 
@@ -1864,7 +1864,7 @@ class ComboBoxProperty(TextProperty):
             self.choices[:] = choices
         if not self.value in self.choices:
             self.value = ""
-        if not self.editing: return
+        if not self.editing or not self.text: return
         # update choices, but keep current selection, if possible
         self.text.SetItems(self.choices)
         if self.value in self.choices:
@@ -2790,7 +2790,7 @@ class GridProperty(Property):
     def update_display(self, start_editing=False):
         # update complete grid and editors
         if start_editing: self.editing = True
-        if not self.editing: return
+        if not self.editing or not self.grid: return
 
         # values is a list of lists with the values of the cells
         value = self.editing_values if self.editing_values is not None else self.value

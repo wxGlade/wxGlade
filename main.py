@@ -116,6 +116,7 @@ class wxGladePropertyPanel(wx.Panel):
             return
         self.next_widget = widget
         if self.current_widget:
+            # this might not be executed if there was an error during creation of the property editors
             for editor in self.current_widget.properties.values():
                 editor.destroy_editor()
             self.current_widget = None   # delete the reference
@@ -133,6 +134,7 @@ class wxGladePropertyPanel(wx.Panel):
 
         self.current_widget = None
         self.create_editor(edit_widget)
+        # this code might not be reached in case of an error
         self.current_widget = edit_widget
         if edit_widget:
             # XXX set status bar
@@ -143,7 +145,7 @@ class wxGladePropertyPanel(wx.Panel):
 
     def create_editor(self, edit_widget):
         # fill the frame with a notebook of property editors
-        
+
         if not self.notebook: return  # already deleted
         self.current_widget_class = edit_widget.__class__
         if wx.Platform != "__WXMSW__" :
@@ -155,10 +157,10 @@ class wxGladePropertyPanel(wx.Panel):
         select_page = self.pagenames[selection]  if selection!=-1  else None
 
         # clear notebook pages
-        if self.notebook.PageCount:
-            #self.notebook.DeleteAllPages()  # deletes also the windows on the pages
-            while self.notebook.PageCount:
-                self.notebook.DeletePage(self.notebook.PageCount-1)
+        #self.notebook.DeleteAllPages()  # deletes also the windows on the pages
+        while self.notebook.PageCount:
+            print("DELETE PAGE; new widget:", edit_widget)
+            self.notebook.DeletePage(self.notebook.PageCount-1)
 
         self.pagenames = pagenames = []
         self.sizers = []
