@@ -293,7 +293,8 @@ class EditBase(EventsMixin, edit_base.EditBase):
 class WindowBase(EditBase):
     """Extends EditBase with the addition of the common properties available to
     almost every window: size, background and foreground colours, and font"""
-    _PROPERTIES = ["id", "size", "background", "foreground", "font", "tooltip", "disabled", "focused", "hidden"]
+    _PROPERTIES = ["id", "size",
+                   "background", "foreground", "font", "tooltip", "disabled", "focused", "hidden"]
     PROPERTIES = EditBase.PROPERTIES + _PROPERTIES
 
     _PROPERTY_HELP = {
@@ -374,7 +375,9 @@ class WindowBase(EditBase):
 
         if self.check_prop_truth("font"): self._set_font()
         if self.check_prop_truth("wrap"): self.widget.Wrap(self.wrap)
-        if self.check_prop("size"):       self.set_size()
+        if self.check_prop("size"):       self.set_size("size", "SetSize")
+        if self.check_prop("min_size"):   self.set_size("min_size", "SetMinSize")
+        if self.check_prop("max_size"):   self.set_size("max_size", "SetMaxSize")
         if self.check_prop("background"): self.widget.SetBackgroundColour(self.background)
         if self.check_prop("foreground"): self.widget.SetForegroundColour(self.foreground)
 
@@ -528,24 +531,23 @@ class WindowBase(EditBase):
             font = wx.Font( font[0], families[font[1]], styles[font[2]], weights[font[3]], font[4], font[5])
 
         self.widget.SetFont(font)
-        #if hasattr(self.parent, "set_item_best_size") and not self.check_prop("size"):
-            #self.parent.set_item_best_size(self)
 
-    def set_size(self):
-        if not self.widget: return
-        size_p = self.properties["size"]
-        if not size_p.is_active(): return
+    def set_size(self, prop_name, method="SetSize"):
+        size_p = self.properties[prop_name]
+        if not self.widget or not size_p.is_active(): return
         size = size_p.get_size(self.widget)
-        self.widget.SetSize(size)
-        if self.parent.IS_SIZER:
-            self.parent.set_item_best_size(self, size=size)
-        #if hasattr(self.parent, "set_item_best_size"):  # at this point, self.widget may not have been added to a sizer yet
-            #self.parent.set_item_best_size(self, size=size)
+        getattr(self.widget, method)(size)
+        if self.parent.IS_SIZER and method=="SetSize":
+            self.parent.set_item_best_size(self, size=size)  # actually, this will call SetItemMinSize
 
     def _properties_changed(self, modified, actions):
         # XXX check whether actions are required
         if modified and "size" in modified and self.widget:
-            self.set_size()
+            self.set_size("size", "SetSize")
+        if modified and "min_size" in modified and self.widget:  # only used by frame
+            self.set_size("min_size", "SetMinSize")
+        if modified and "max_size" in modified and self.widget:
+            self.set_size("max_size", "SetMaxSize")
         if not modified or "background" in modified and self.widget:
             self.widget.SetBackgroundColour(self.properties["background"].get_color())
             actions.add("refresh")
@@ -601,8 +603,11 @@ class ManagedBase(WindowBase):
     _PROPERTIES = ["Layout", "span", "proportion", "border", "flag"]
     SIZER_PROPERTIES = ["proportion","border","flag"]
     PROPERTIES = WindowBase.PROPERTIES + _PROPERTIES
+    np.insert_after(PROPERTIES, "size", "max_size")
 
-    _PROPERTY_HELP = { "border": _("Border width, if enabled below") } #,  "pos": _("Sizer slot") }
+    _PROPERTY_HELP = { "border": "Border width, if enabled below",
+                       "max_size": "Indicate maximum size to the containing sizer."}
+                       
     _PROPERTY_LABELS = {"option": "Proportion" }
 
     #CHILDREN = 0  # most widgets have no children
@@ -614,6 +619,8 @@ class ManagedBase(WindowBase):
         # if True, the user is able to control the layout of the widget
         # inside the sizer (proportion, borders, alignment...)
         self._has_layout = parent.IS_SIZER
+        if self._has_layout:
+            self.max_size  = np.SizePropertyD( "-1, -1", default_value="-1, -1" )
 
         # attributes to keep the values of the sizer properties
         if index is None:

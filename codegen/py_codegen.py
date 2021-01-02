@@ -337,6 +337,8 @@ from %(top_win_module)s import %(top_win_class)s\n\n"""
         # set size here to avoid problems with splitter windows
         if code_obj.check_prop('size'):
             write( tab + self.generate_code_size(code_obj) )
+        if code_obj.check_prop('min_size'):
+            write( tab + self.generate_code_size(code_obj, code_obj.min_size, "SetMinSize") )
 
         for l in builder.get_properties_code(code_obj):
             write(tab + l)
@@ -442,15 +444,14 @@ from %(top_win_module)s import %(top_win_class)s\n\n"""
             return '%s = %s\n' % (name, val), name
         return 'global %s; %s = %s\n' % (name, name, val), name
 
-    def generate_code_size(self, obj, size=None):
+    def generate_code_size(self, obj, size=None, method=None):
         objname = self.format_generic_access(obj)
         if size is None:
             size = obj.properties["size"].get_string_value()
         use_dialog_units = (size[-1] == 'd')
-        if not obj.parent_window:
-            method = 'SetSize'
-        else:
-            method = 'SetMinSize'
+        if method is None:
+            method = 'SetMinSize'  if obj.parent_window  else  'SetSize'
+
         if use_dialog_units:
             if compat.IS_CLASSIC:
                 return '%s.%s(%s(%s, (%s)))\n' % ( objname, method, self.cn('wxDLG_SZE'), objname, size[:-1] )

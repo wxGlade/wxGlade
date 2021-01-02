@@ -375,8 +375,10 @@ class LispCodeWriter(BaseLangCodeWriter, wcodegen.LispMixin):
                 write(stmt_style % {'style': m_style, 'tab': tab} )
 
         # set size here to avoid problems with splitter windows
-        if 'size' in code_obj.properties and code_obj.properties["size"].is_active():
+        if code_obj.check_prop('size'):
             write( tab + self.generate_code_size(code_obj) )
+        if code_obj.check_prop('min_size'):
+            write( tab + self.generate_code_size(code_obj, code_obj.min_size, "SetMinSize") )
 
         for l in builder.get_properties_code(code_obj):
             write(tab + l)
@@ -455,11 +457,13 @@ class LispCodeWriter(BaseLangCodeWriter, wcodegen.LispMixin):
             return '%s = %s\n' % (name, val), name
         return 'global %s; %s = %s\n' % (name, name, val), name
 
-    def generate_code_size(self, obj):
+    def generate_code_size(self, obj, size=None, method=None):
         objname = self.format_generic_access(obj)
-        size = obj.properties["size"].get_string_value()
+        if size is None:
+            size = obj.properties["size"].get_string_value()
         use_dialog_units = (size[-1] == 'd')
-        method = 'SetMinSize'  if obj.parent_window else  'wxWindow_SetSize'
+        if method is None:
+            method = 'SetMinSize'  if obj.parent_window else  'wxWindow_SetSize'
 
         if use_dialog_units:
             return '(%s %s(%s(%s (%s))))\n' % ( method, objname, self.cn('wxDLG_SZE'), objname, size[:-1] )

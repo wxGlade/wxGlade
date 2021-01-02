@@ -48,7 +48,7 @@ class BarProperty(np.CheckBoxProperty):
 
 class EditFrame(BitmapMixin, TopLevelBase, EditStylesMixin):
     WX_CLASS = "wxFrame"
-    _PROPERTIES =["Widget", "title", "icon", "centered", "sizehints","menubar", "toolbar", "statusbar", "style"]
+    _PROPERTIES =["Widget", "title", "icon", "centered", "sizehints","menubar", "toolbar", "statusbar", "style", "min_size"]
     PROPERTIES = TopLevelBase.PROPERTIES + _PROPERTIES + TopLevelBase.EXTRA_PROPERTIES
     #np.insert_after(PROPERTIES, "class", "custom_base")
     _PROPERTY_HELP   = { 'icon':'Icon for this window.',
@@ -75,6 +75,8 @@ class EditFrame(BitmapMixin, TopLevelBase, EditStylesMixin):
         self.toolbar   = BarProperty("ToolBar")
         if "statusbar" in self.PROPERTIES:  # not for MDIChildFrame
             self.statusbar = BarProperty("StatusBar")
+
+        self.min_size  = np.SizePropertyD( "-1, -1", default_value="-1, -1" )
 
     def create_widget(self):
         parent = None

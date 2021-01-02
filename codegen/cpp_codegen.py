@@ -733,8 +733,10 @@ class CPPCodeWriter(BaseLangCodeWriter, wcodegen.CppMixin):
                 swrite(tab + l)
 
         # set size here to avoid problems with splitter windows
-        if 'size' in code_obj.properties and code_obj.properties["size"].is_active():
+        if code_obj.check_prop('size'):
             swrite( tab + self.generate_code_size(code_obj) )
+        if code_obj.check_prop('min_size'):
+            swrite( tab + self.generate_code_size(code_obj, code_obj.min_size, "SetMinSize") )
 
         for l in builder.get_properties_code(code_obj):
             swrite(tab + l)
@@ -1070,15 +1072,17 @@ void %(klass)s::%(handler)s(%(evt_type)s &event)  // wxGlade: %(klass)s.<event_h
             val = val
         return '%s = %s' % (name, val), name
 
-    def generate_code_size(self, obj):
+    def generate_code_size(self, obj, size=None, method=None):
         objname = self.format_generic_access(obj)
         if obj.IS_CLASS:
             name2 = 'this'
         else:
             name2 = obj.name
-        size = obj.properties["size"].get_string_value()
+        if size is None:
+            size = obj.properties["size"].get_string_value()
         use_dialog_units = (size[-1] == 'd')
-        method = 'SetMinSize'  if obj.parent_window else  'SetSize'
+        if method is None:
+            method = 'SetMinSize'  if obj.parent_window else  'SetSize'
 
         if use_dialog_units:
             return '%s%s(wxDLG_UNIT(%s, wxSize(%s)));\n' % (objname, method, name2, size[:-1])

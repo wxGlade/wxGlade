@@ -766,6 +766,9 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
             parent_klass.init.append("\n")
             parent_klass.init.extend(init)
 
+        if obj.check_prop_truth("max_size"):
+            parent_klass.init.append( self.generate_code_size(obj, obj.max_size, "SetMaxSize") )
+
         if parent_builder:  # add to sizer or notebook
             parent_klass.init.extend( parent_builder.get_code_per_child(parent, obj) )
 
