@@ -90,6 +90,10 @@ class TestGui(WXGladeGUITest):
         "Generate Fit() code for the second frame"
         self.load_and_generate('Frame_Size', test_GUI=False)
 
+    def test_sizes(self):
+        # revision 1.1: test frame 'min_size' and managed 'max_size'
+        self.load_and_generate('Sizes_FrameMin_ManagedMax', test_GUI=True)
+
     def test_Grid(self):
         "Test code generation with a grid widgets and handling events"
         self.load_and_generate('Grid', test_GUI=False)
