@@ -127,6 +127,13 @@ class PanelBase(EditStylesMixin):
             elif "scroll_rate" in modified and self.scrollable and isinstance(self.widget, wx.ScrolledWindow):
                 self.widget.SetScrollRate( *self.properties["scroll_rate"].get_tuple() )
         EditStylesMixin._properties_changed(self, modified, actions)
+        if self.widget and modified and "style" in modified:
+            # unfortunately, there seems no way to trigger a refresh after style change other than resizing the window
+            sz = self.widget.GetSize()
+            self.skip_on_size = True  # required for EditTopLevelPanel
+            self.widget.SetSize( (sz[0]-1,sz[1]-1) )
+            self.skip_on_size = True
+            self.widget.SetSize(sz)
 
 
 class EditPanel(PanelBase, ManagedBase):
@@ -143,9 +150,9 @@ class EditPanel(PanelBase, ManagedBase):
     def create_widget(self):
         # to be done: use ScrolledWindow only if scrolling is required
         if self.scrollable:
-            self.widget = wx.ScrolledWindow(self.parent_window.widget, wx.ID_ANY, style=0)
+            self.widget = wx.ScrolledWindow(self.parent_window.widget, wx.ID_ANY, style=self.style)
         else:
-            self.widget = wx.Panel(self.parent_window.widget, wx.ID_ANY, style=0)
+            self.widget = wx.Panel(self.parent_window.widget, wx.ID_ANY, style=self.style)
         self.widget.Bind(wx.EVT_ENTER_WINDOW, self.on_enter)
         self.widget.GetBestSize = self.get_widget_best_size
         if not self.parent.IS_SIZER:

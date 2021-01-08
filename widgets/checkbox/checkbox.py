@@ -38,7 +38,7 @@ class EditCheckBox(ManagedBase, EditStylesMixin):
         self.value = np.IntRadioProperty(0, values, labels, columns=3, default_value=0, name="checked") # rename to value?
 
     def create_widget(self):
-        self.widget = wx.CheckBox(self.parent_window.widget, wx.ID_ANY, self.label)
+        self.widget = wx.CheckBox(self.parent_window.widget, wx.ID_ANY, self.label, style=self.style)
         self.widget.SetValue(self.value)
         def on_checkbox(event):
             value = 1 if event.IsChecked() else 0

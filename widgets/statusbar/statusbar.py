@@ -54,7 +54,7 @@ class FieldsProperty(np.GridProperty):
 
 class EditStatusBar(EditBase, EditStylesMixin):
     _hidden_frame = None
-    update_widget_style = False  # updating does not seem to have an effect
+    recreate_on_style_change = True
 
     WX_CLASS = 'wxStatusBar'
     _PROPERTIES = ["Widget", "style", "fields"]
@@ -71,7 +71,7 @@ class EditStatusBar(EditBase, EditStylesMixin):
         self.window_id = None  # just a dummy for code generation
 
     def create_widget(self):
-        self.widget = wx.StatusBar(self.parent.widget, -1)
+        self.widget = wx.StatusBar(self.parent.widget, -1, style=self.style)
         self.widget.Bind(wx.EVT_LEFT_DOWN, self.on_set_focus)
         self._set_fields()
         if self.parent.widget:
@@ -115,6 +115,9 @@ class EditStatusBar(EditBase, EditStylesMixin):
             self._set_fields()
         EditStylesMixin._properties_changed(self, modified, actions)
         EditBase._properties_changed(self, modified, actions)
+        if "recreate2" in actions:  # usually, this would be done in WindowBase, but StatusBar is derived from EditBase
+            self.destroy_widget(level=0)
+            self.create_widget()
 
     def check_compatibility(self, widget, typename=None):
         return (False,"No pasting possible here.")

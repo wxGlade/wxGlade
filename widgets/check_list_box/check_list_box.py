@@ -21,6 +21,7 @@ class EditCheckListBox(ManagedBase, EditStylesMixin):
     WX_CLASS = "wxCheckListBox"
     _PROPERTIES = ["Widget", "style", "selection", "choices"]
     PROPERTIES = ManagedBase.PROPERTIES + _PROPERTIES + ManagedBase.EXTRA_PROPERTIES
+    recreate_on_style_change = True  # otherwise an assertion is triggered
 
     def __init__(self, name, parent, index, choices):
         ManagedBase.__init__(self, name, parent, index)
@@ -32,7 +33,7 @@ class EditCheckListBox(ManagedBase, EditStylesMixin):
 
     def create_widget(self):
         choices = [c[0] for c in self.choices]
-        self.widget = wx.CheckListBox(self.parent_window.widget, wx.ID_ANY, choices=choices)
+        self.widget = wx.CheckListBox(self.parent_window.widget, wx.ID_ANY, choices=choices, style=self.style)
         self.widget.SetSelection(self.selection)
         self.widget.Bind(wx.EVT_LEFT_DOWN, self.on_set_focus)
 
