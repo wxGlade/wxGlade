@@ -127,7 +127,7 @@ class CustomWidget(ManagedBase):
                 self._error_message = "%s: %s"%(exc_type, exc_value)
                 if self.widget: self.widget.Destroy()
         # default / fallback in case of exception
-        self.widget = wx.Window(self.parent_window.widget , self.id, style=wx.BORDER_SUNKEN | wx.FULL_REPAINT_ON_RESIZE)
+        self.widget = wx.Window(self.parent_window.widget, wx.ID_ANY, style=wx.BORDER_SUNKEN | wx.FULL_REPAINT_ON_RESIZE)
         self.widget.Bind(wx.EVT_PAINT, self.on_paint)
         self.widget.Bind(wx.EVT_ERASE_BACKGROUND, self.on_erase_background)
         if self._error_message: compat.SetToolTip( self.widget, self._error_message )
