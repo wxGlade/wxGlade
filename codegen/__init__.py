@@ -887,11 +887,11 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
 
         return code_lines
 
-    def generate_code_extraproperties(self, obj):
+    def generate_code_extraproperties(self, obj, objname=None):
         "Returns a list of code fragments that set extra properties for the given object"
         tmpl = self._get_code_statement('extraproperties')
         if not tmpl: return []
-        objname = self.format_generic_access(obj)
+        if objname is None: objname = self.format_generic_access(obj)
         klass = self.cn_class( obj.get_prop_value("class", obj.WX_CLASS) )
 
         ret = []
