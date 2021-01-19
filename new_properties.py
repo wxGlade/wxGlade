@@ -3050,6 +3050,13 @@ class GridProperty(Property):
             self._update_editors()
             return
 
+        if key==(9,0) and self.editors:
+            # Tab key and config.preferences.show_gridproperty_editors active
+            if event.GetEventObject() is self.editors[-1]:
+                # avoid the focus moving from the last text control into the grid where it would be 'trapped'
+                wx.Bell()
+                return
+
         if key[0] in (wx.WXK_RETURN, wx.WXK_UP, wx.WXK_DOWN):
             # flush and if cursor key was hit, go to another line
             row = self.cur_row
