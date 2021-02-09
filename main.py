@@ -1134,12 +1134,16 @@ class wxGladeFrame(wx.Frame):
 
     def save_app_as(self):
         "saves a wxGlade project onto an xml file chosen by the user"
-        # both flags occurs several times
+        if common.root.filename:
+            default_path, default_filename = os.path.split(common.root.filename)
+        else:
+            default_path, default_filename = self.cur_dir, "wxglade.wxg"
         fn = wx.FileSelector( _("Save project as..."),
                               wildcard="wxGlade files (*.wxg)|*.wxg|wxGlade Template files (*.wgt) |*.wgt|"
                               "XML files (*.xml)|*.xml|All files|*",
                               flags=wx.FD_SAVE | wx.FD_OVERWRITE_PROMPT,
-                              default_filename=common.root.filename or (self.cur_dir+os.sep+"wxglade.wxg"))
+                              default_path=default_path,
+                              default_filename=default_filename)
         if not fn: return
 
         # check for file extension and add default extension if missing
