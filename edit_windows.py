@@ -378,8 +378,8 @@ class WindowBase(EditBase):
         if self.check_prop("size"):       self.set_size("size", "SetSize")
         if self.check_prop("min_size"):   self.set_size("min_size", "SetMinSize")
         if self.check_prop("max_size"):   self.set_size("max_size", "SetMaxSize")
-        if self.check_prop("background"): self.widget.SetBackgroundColour(self.background)
-        if self.check_prop("foreground"): self.widget.SetForegroundColour(self.foreground)
+        if self.check_prop("background"): self.widget.SetBackgroundColour(self.properties["background"].get_color())
+        if self.check_prop("foreground"): self.widget.SetForegroundColour(self.properties["foreground"].get_color())
 
         EditBase.finish_widget_creation(self, level)
 
