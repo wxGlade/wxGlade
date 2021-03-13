@@ -914,10 +914,23 @@ class TopLevelBase(WindowBase, PreviewMixin):
         misc.bind_menu_item_after(widget, i, self.duplicate)
 
         # paste
-        i = misc.append_menu_item(menu, -1, _('Paste Sizer\tCtrl+V'), wx.ART_PASTE)
-        misc.bind_menu_item_after(widget, i, clipboard.paste, self)
-        # XXX change later on to allow other widgets to be pasted
-        if self.children or not clipboard.check("sizer"): i.Enable(False)
+        if clipboard.check("menubar") and "menubar" in self.properties:
+            i = misc.append_menu_item(menu, -1, _('Paste MenuBar\tCtrl+V'), wx.ART_PASTE)
+            misc.bind_menu_item_after(widget, i, clipboard.paste, self)
+            if self.menubar: i.Enable(False)
+        elif clipboard.check("toolbar") and "toolbar" in self.properties:
+            i = misc.append_menu_item(menu, -1, _('Paste ToolBar\tCtrl+V'), wx.ART_PASTE)
+            misc.bind_menu_item_after(widget, i, clipboard.paste, self)
+            if self.toolbar: i.Enable(False)
+        elif clipboard.check("statusbar") and "statusbar" in self.properties:
+            i = misc.append_menu_item(menu, -1, _('Paste StatusBar\tCtrl+V'), wx.ART_PASTE)
+            misc.bind_menu_item_after(widget, i, clipboard.paste, self)
+            if self.statusbar: i.Enable(False)
+        else:
+            i = misc.append_menu_item(menu, -1, _('Paste Sizer\tCtrl+V'), wx.ART_PASTE)
+            misc.bind_menu_item_after(widget, i, clipboard.paste, self)
+            # XXX change later on to allow other widgets to be pasted
+            if self.children or not clipboard.check("sizer"): i.Enable(False)
 
         # preview
         menu.AppendSeparator()

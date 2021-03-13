@@ -11,7 +11,7 @@ Application class to store properties of the application being created
 import os, sys, random, re, logging, time
 import wx
 
-import common, config, misc, plugins, compat
+import common, config, misc, compat, clipboard
 import bugdialog
 import new_properties as np
 
@@ -785,6 +785,19 @@ class Application(EditRoot):
         menu = misc.wxGladePopupMenu("Application")
         i = misc.append_menu_item( menu, -1, _('Generate Code') )
         misc.bind_menu_item_after(widget, i, self.generate_code)  # a property, but it can be called
+
+        # paste
+        if clipboard.check("menubar"):
+            i = misc.append_menu_item(menu, -1, _('Paste MenuBar\tCtrl+V'), wx.ART_PASTE)
+            misc.bind_menu_item_after(widget, i, clipboard.paste, self)
+        elif clipboard.check("toolbar"):
+            i = misc.append_menu_item(menu, -1, _('Paste ToolBar\tCtrl+V'), wx.ART_PASTE)
+            misc.bind_menu_item_after(widget, i, clipboard.paste, self)
+        else:
+            i = misc.append_menu_item(menu, -1, _('Paste Toplevel Window\tCtrl+V'), wx.ART_PASTE)
+            misc.bind_menu_item_after(widget, i, clipboard.paste, self)
+            if not clipboard.check("window"): i.Enable(False)
+
         return menu
 
     def check_drop_compatibility(self):

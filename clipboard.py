@@ -374,9 +374,12 @@ def check(*formats):
     if not wx.TheClipboard.IsOpened():
         try:
             wx.TheClipboard.Open()
-            if "widget" in formats and wx.TheClipboard.IsSupported(widget_data_format): return True
-            if "window" in formats and wx.TheClipboard.IsSupported(window_data_format): return True
-            if "sizer"  in formats and wx.TheClipboard.IsSupported(sizer_data_format):  return True
+            if "widget"    in formats and wx.TheClipboard.IsSupported(widget_data_format): return True
+            if "window"    in formats and wx.TheClipboard.IsSupported(window_data_format): return True
+            if "sizer"     in formats and wx.TheClipboard.IsSupported(sizer_data_format):  return True
+            if "menubar"   in formats and wx.TheClipboard.IsSupported(menubar_data_format):  return True
+            if "toolbar"   in formats and wx.TheClipboard.IsSupported(toolbar_data_format):  return True
+            if "statusbar" in formats and wx.TheClipboard.IsSupported(statusbar_data_format):  return True
         finally:
             wx.TheClipboard.Close()
     return False
