@@ -1023,6 +1023,9 @@ class TopLevelBase(WindowBase, PreviewMixin):
             self.parent.update_top_window_name(self._oldname, self.name)
             self._oldname = self.name
 
+        if not modified or "class" in modified:
+            actions.add("label")
+
         WindowBase._properties_changed(self, modified, actions)
 
     def _find_widget_by_pos(self, w, x,y, level=1):
