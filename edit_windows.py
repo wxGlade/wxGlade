@@ -669,17 +669,17 @@ class ManagedBase(WindowBase):
         WindowBase._properties_changed(self, modified, actions)
         p = self.properties["flag"]
         if modified and "flag" in modified and self.parent.IS_SIZER:
-            p._check_value()
+            p._check_value()    # XXX PPP0  OK with history.property_changed?
 
         if "flag" in modified and "wxSHAPED" in p.value_set and self.proportion:
-            self.properties["proportion"].set(0, notify=False)
+            self.properties["proportion"].set(0, notify=False)    # XXX PPP1
         elif "option" in modified and self.proportion and "wxSHAPED" in p.value_set:
-            p.remove("wxSHAPED", notify=False)
+            p.remove("wxSHAPED", notify=False)    # XXX PPP2
 
         if "border" in modified and self.border and not "flag" in modified:
             # enable border flags if not yet done
             if not p.value_set.intersection(p.FLAG_DESCRIPTION["Border"]):
-                p.add("wxALL", notify=False)
+                p.add("wxALL", notify=False)    # XXX PPP3
                 modified.append("flag")
 
         if not modified or ("option" in modified or "flag" in modified or "border" in modified or
@@ -690,7 +690,7 @@ class ManagedBase(WindowBase):
                 max_span = self.sizer.check_span_range(self.index, *span_p.value)
                 max_span = ( min(span_p.value[0],max_span[0]), min(span_p.value[1],max_span[1]) )
                 if max_span!=span_p.value:
-                    span_p.set(max_span, notify=False)
+                    span_p.set(max_span, notify=False)  # XXX PPP4
             if self.parent.IS_SIZER:
                 self.sizer.item_properties_modified(self, modified)
                 actions.add("layout")
@@ -1042,6 +1042,9 @@ class TopLevelBase(WindowBase, PreviewMixin):
         if not modified or "name" in modified and (self.name!=self._oldname):
             self.parent.update_top_window_name(self._oldname, self.name)
             self._oldname = self.name
+
+        if not modified or "class" in modified:
+            actions.add("label")
 
         WindowBase._properties_changed(self, modified, actions)
 
