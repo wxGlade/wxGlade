@@ -375,8 +375,8 @@ class WindowBase(EditBase):
         if self.check_prop_truth("font"): self._set_font()
         if self.check_prop_truth("wrap"): self.widget.Wrap(self.wrap)
         if self.check_prop("size"):       self.set_size()
-        if self.check_prop("background"): self.widget.SetBackgroundColour(self.background)
-        if self.check_prop("foreground"): self.widget.SetForegroundColour(self.foreground)
+        if self.check_prop("background"): self.widget.SetBackgroundColour(self.properties["background"].get_color())
+        if self.check_prop("foreground"): self.widget.SetForegroundColour(self.properties["foreground"].get_color())
 
         EditBase.finish_widget_creation(self, level)
 
