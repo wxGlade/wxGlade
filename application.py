@@ -170,6 +170,37 @@ class EditRoot(np.PropertyOwner):
         pass
 
 
+class _DirDialog:
+    def __init__(self, parent, message, style):
+        self.parent = parent
+        self.message = message
+        self.style = style
+        self.value = None
+    def ShowModal(self):
+        self.value = wx.DirSelector( self.message, self.value, self.style )
+        if self.value:
+            return wx.ID_OK
+    def set_value(self, value):
+        self.value = value
+    def get_value(self):
+        return self.value
+
+
+class OutputPathProperty(np.FileNameProperty):
+    dir_message = _("Choose a directory")
+    def _create_dialog(self):
+        if not self.owner.multiple_files:
+            return np.FileNameProperty._create_dialog(self)
+        parent = self.text.GetTopLevelParent()
+        style = wx.DD_DEFAULT_STYLE | wx.DD_DIR_MUST_EXIST | wx.DD_NEW_DIR_BUTTON
+        dlg = _DirDialog(parent, self.dir_message, style=style)
+        value = self.value
+        if not value or value.strip()=="." and self.owner.filename:
+            value = os.path.dirname(self.owner.filename)
+        dlg.set_value(value)
+        return dlg
+
+
 class Application(EditRoot):
     "Properties of the application being created"
 
@@ -241,9 +272,9 @@ class Application(EditRoot):
         # C++ file extension
         self.source_extension = np.TextProperty('cpp')
         self.header_extension = np.TextProperty('h')
-        # output path
+        # output path: file or directory, depening on 'multiple_files'
         output_path = config.default_output_path  if self.multiple_files else  config.default_output_file
-        self.output_path = np.FileNameProperty(output_path, style=wx.FD_SAVE|wx.FD_OVERWRITE_PROMPT)
+        self.output_path = OutputPathProperty(output_path, style=wx.FD_SAVE|wx.FD_OVERWRITE_PROMPT)
         self._update_output_path('python')
 
         self.overwrite = np.InvCheckBoxProperty(config.default_overwrite)
