@@ -396,8 +396,8 @@ from %(top_win_module)s import %(top_win_class)s\n\n"""
                 indent = self.tabs(1)  # one additional level
                 lines.insert(0, '%stry:\n'%tab)
                 lines[1] = indent + lines[1]  # indent by one level
-                lines.append( '%sexcept AttributeError:\n'%tab )
-                lines.append( '%s%sprint("unknown event %s")\n'%(indent, tab, event) )
+                lines.append( '%sexcept:\n'%tab )
+                lines.append( '%s%sprint("could not bind event %s - ignoring error for preview")\n'%(indent, tab, event) )
 
             code_lines += lines
 
