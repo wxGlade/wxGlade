@@ -46,6 +46,7 @@ class EditSlider(ManagedBase, EditStylesMixin):
         if not modified or "value" in modified or "range" in modified:
             # check that value is inside range
             value_p = self.properties["value"]
+            common.history.monitor_property( value_p )
             if value_p.is_active():
                 mi,ma = self.properties["range"].get_tuple()
                 value = value_p.get()

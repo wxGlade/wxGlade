@@ -345,7 +345,7 @@ def paste(widget):
         misc.error_message("Paste failed")
 
 
-def _paste(parent, index, clipboard_data):
+def _paste(parent, index, clipboard_data, rebuild_tree=True):
     "parse XML and insert widget"
     option, span, flag, border, xml_unicode = clipboard2widget( clipboard_data )
     if not xml_unicode: return False
@@ -360,7 +360,7 @@ def _paste(parent, index, clipboard_data):
             if parent and hasattr(parent, "on_child_pasted"):
                 parent.on_child_pasted()  # trigger e.g. re-sizing of the children
         freeze = parser._object_counter>80  # for more objects, we freeze the Tree during re-build
-        misc.rebuild_tree( parser.top_obj, freeze=freeze )
+        if rebuild_tree: misc.rebuild_tree( parser.top_obj, freeze=freeze )
         return True  # Widget hierarchy pasted.
     except xml_parse.XmlParsingError:
         if config.debugging: raise

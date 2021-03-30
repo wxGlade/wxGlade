@@ -403,11 +403,14 @@ class EditBase(np.PropertyOwner):
         if not self.IS_TOPLEVEL and self.IS_NAMED and self.name:
             self.toplevel_parent.track_contained_name( self.name )
 
-    def remove(self, focus=True):
+    def remove(self, focus=True, user=True):
         # entry point from GUI or script
-        common.root.saved = False   # update the status of the app
+        if user:
+            common.history.widget_removing(self)
+            common.root.saved = False   # update the status of the app
         self.recursive_remove(level=0)
         misc.rebuild_tree(self.parent, recursive=False, focus=focus)
+        if user: common.history.widget_removed(None)
 
     # XML generation ###################################################################################################
     def get_editor_name(self):
@@ -743,12 +746,12 @@ class Slot(EditBase):
 
                 # allow removal of empty row
                 i = misc.append_menu_item(menu, -1, _('Remove Row %d'%(row+1)) )
-                misc.bind_menu_item_after(widget, i, self.parent.remove_row, self.index)
+                misc.bind_menu_item_after(widget, i, self.parent.remove_row, row)
                 if not row_is_empty or rows<=1: i.Enable(False)
 
                 # allow removal of empty col
                 i = misc.append_menu_item(menu, -1, _('Remove Column %d'%(col+1)) )
-                misc.bind_menu_item_after(widget, i, self.parent.remove_col, self.index)
+                misc.bind_menu_item_after(widget, i, self.parent.remove_col, col)
                 if not col_is_empty or cols<=1: i.Enable(False)
                 menu.AppendSeparator()
 
@@ -769,10 +772,10 @@ class Slot(EditBase):
         return menu
 
     ####################################################################################################################
-    def remove(self):
+    def remove(self, user=True):
         # entry point from GUI
         i = self.index
-        EditBase.remove(self, focus=False)
+        EditBase.remove(self, focus=False, user=user)
         if i >= len(self.parent.children): i = len(self.parent.children)-1
         # set focused widget
         if i>=0:
@@ -811,7 +814,8 @@ class Slot(EditBase):
             elif new_widget.IS_SIZER:
                 widget = new_widget.toplevel_parent_window.widget
             if hasattr(widget, "SetFocus"):
-                widget.SetFocus()  
+                widget.SetFocus()
+        common.history.widget_added(new_widget)
 
     def check_drop_compatibility(self):
         if common.adding_sizer and self.parent.IS_CONTAINER:

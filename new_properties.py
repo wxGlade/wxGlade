@@ -184,9 +184,7 @@ class Property(object):
             if self.editing:
                 self.update_display()
             return False
-        if activate or force:
-            self.deactivated = not activate
-        self.on_value_edited(new_value)
+        self.on_value_edited(new_value, activate or force)
         if activate or force:
             self.activate_controls()
         return True
@@ -920,6 +918,7 @@ class _CheckListProperty(Property):
 
     def _change_value(self, value, checked):
         "user has clicked checkbox or History is setting"
+        common.history.set_property_changing(self)
         self.previous_value = set(self.value_set)
         if checked:
             if value in self.value_set: return
@@ -2845,9 +2844,11 @@ class GridProperty(Property):
 
         indices = [int(i) if i else None  for i in self.indices]
         #self._changing_value = True
+        common.history.property_changing(self)
         old_value = self.value[:]
         self.value[:] = new_value
         setter(old_value, indices)
+        common.history.property_changed(self)
         #self._changing_value = False
         self.editing_values = None
         self._initialize_indices()
@@ -2859,11 +2860,12 @@ class GridProperty(Property):
     def flush(self):
         self.apply()
 
-    def reset(self, event):
+    def reset(self, event=None, update_display=True):
         "Discard the changes."
+        if self.editing_values is None: return
         self.editing_values = None
         self._initialize_indices()
-        self.update_display()
+        if update_display: self.update_display()
         if event: event.Skip()
 
     def _validate(self, row, col, value, bell=True):
@@ -2966,6 +2968,7 @@ class GridProperty(Property):
                 self.grid.SetCellValue(row, col, value)
 
         if self.immediate or (not self.can_add and not self.can_insert and not self.can_insert):
+            common.history.property_changing(self)
             if row>=len(self.value):
                 self.add_row(row=set_index, delay=delay)
             # immediate, i.e. no editing_values
@@ -2973,6 +2976,7 @@ class GridProperty(Property):
                 self.value[row] = self.default_row[:]
             self.value[row][col] = value
             self._notify()
+            common.history.property_changed(self)
             return True
 
         activate_apply = not self.editing_values
@@ -3451,7 +3455,7 @@ class PropertyOwner(object):
         return True
     
     def _properties_changed(self, modified, actions):
-        # action method(s)
+        # action method(s); check dependent properties and update widget
         pass
 
     def properties_changed(self, modified):

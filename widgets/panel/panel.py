@@ -93,6 +93,7 @@ class PanelBase(EditStylesMixin):
         if event is None or not misc.event_modifier_copy(event):
             common.adding_widget = common.adding_sizer = False
             common.widget_to_add = None
+        common.history.widget_added(new_widget)
 
     def check_drop_compatibility(self):
         if self.children:
@@ -237,8 +238,8 @@ class EditTopLevelPanel(PanelBase, TopLevelBase):
     WX_CLASS = "wxPanel"
     PROPERTIES = TopLevelBase.PROPERTIES + PanelBase._PROPERTIES + TopLevelBase.EXTRA_PROPERTIES
 
-    def __init__(self, name, parent, klass, style='wxTAB_TRAVERSAL'):
-        TopLevelBase.__init__(self, name, parent, klass)
+    def __init__(self, name, parent, index, klass, style='wxTAB_TRAVERSAL'):
+        TopLevelBase.__init__(self, name, parent, index, klass)
         PanelBase.__init__(self, style)
         self.skip_on_size = False
 
@@ -331,7 +332,7 @@ def xml_builder(parser, base, name, parent, index):
 
 
 def xml_toplevel_builder(parser, base, name, parent, index):
-    return EditTopLevelPanel( name, parent, "Panel", '' )
+    return EditTopLevelPanel( name, parent, index, "Panel", '' )
 
 
 def initialize():

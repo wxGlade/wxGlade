@@ -513,9 +513,9 @@ class SizerBase(edit_base.EditBase):
         if "rows" in self.PROPERTIES:
             row, col = self._get_row_col(item.index)
             i = misc.append_menu_item(menu, -1, _('Insert Row before') )
-            misc.bind_menu_item_after(widget, i, self.insert_row, item.index)
+            misc.bind_menu_item_after(widget, i, self.insert_row, row)
             i = misc.append_menu_item(menu, -1, _('Insert Column before') )
-            misc.bind_menu_item_after(widget, i, self.insert_col, item.index)
+            misc.bind_menu_item_after(widget, i, self.insert_col, col)
             if row==self.rows-1:
                 # last row
                 i = misc.append_menu_item(menu, -1, _('Add Row') )
@@ -555,11 +555,13 @@ class SizerBase(edit_base.EditBase):
         "removes the sizer from his parent, if it has one"
         return self.parent._free_slot( self.parent.children.index(self) )
 
-    def remove(self):
+    def remove(self, user=True):
         # entry point from GUI
+        if user: common.history.widget_removing(self)
         common.root.saved = False  # update the status of the app
         focus = self._remove()  # slot or window
         misc.rebuild_tree(focus)
+        if user: common.history.widget_removed(focus)
 
     def preview_parent(self):
         # context menu callback
@@ -778,6 +780,7 @@ class SizerBase(edit_base.EditBase):
             for n in range(count):
                 slot = self._insert_slot(index)
             if self.widget: self.layout()
+        common.history.sizer_slots_added(self, index, count)
         misc.rebuild_tree(slot, recursive=False)
 
     def add_slot(self, multiple=False):
@@ -790,6 +793,7 @@ class SizerBase(edit_base.EditBase):
             for n in range(count):
                 slot = self._add_slot()
             if self.widget: self.layout()
+        common.history.sizer_slots_added(self, -1, count)
         misc.rebuild_tree(slot, recursive=False)  # rebuild also slots
 
     @_frozen
@@ -1226,53 +1230,51 @@ class GridSizerBase(SizerBase):
         misc.rebuild_tree(self)
 
     @_frozen
-    def insert_row(self, pos=-1):
+    def insert_row(self, row, user=True):
         "inserts slots for a new row"
         rows, cols = self._get_actual_rows_cols()
 
         # calculate the row (0 based) to be inserted
-        if pos==-1:
-            add_row = rows
+        if row==-1:
+            row = rows
             # ensure that the last row is full
+            # XXX remove inserted slots from last row on undo
             for n in range( rows*cols - len(self.children) ):
                 self._insert_slot( len(self.children) )
-        else:
-            add_row, dummy = self._get_row_col(pos)
 
         if rows:
             self.properties["rows"].set( rows+1 )
             if self.widget: self.widget.SetRows(rows+1)
 
         for n in range(cols):
-            self._insert_slot( n + add_row*cols )
+            self._insert_slot( n + row*cols )
 
         if "growable_rows" in self.PROPERTIES:
-            self.properties["growable_rows"].shift_items(add_row)
+            self.properties["growable_rows"].shift_items(row)
 
         if self.widget:
             if "growable_rows" in self.PROPERTIES:
                 self._set_growable()
             self.layout()
         self._rebuild_tree()
+        if user: common.history.gridsizer_row_col_changed(self, "row", row, 1)   # XXX remove inserted slots from last row
 
     @_frozen
-    def insert_col(self, pos=-1):
+    def insert_col(self, col, user=True):
         "inserts slots for a new column"
         rows, cols = self._get_actual_rows_cols()
 
         # calculate the column (0 based) to be added
-        if pos==-1:
-            add_col = cols
-        else:
-            dummy, add_col = self._get_row_col(pos)
+        if col==-1: col = cols
 
         # calculate the column index of the last child (0 based)
         last_pos = len(self.children)
         last_pos_col = (last_pos % cols) - 1
         if last_pos_col == -1: last_pos_col = cols-1
         # fill up the last row up to the insertion position if required
-        if last_pos_col < min(add_col,cols-1):
-            for i in range(min(add_col,cols-1)-last_pos_col):
+        # XXX remove on undo again
+        if last_pos_col < min(col,cols-1):
+            for i in range(min(col,cols-1)-last_pos_col):
                 self._insert_slot( last_pos+i )
 
         # insert the new colum
@@ -1281,14 +1283,14 @@ class GridSizerBase(SizerBase):
             if self.widget: self.widget.SetCols(cols+1)
         # insert placeholders to avoid problems with GridBagSizers and overlap tests
         for r in range(rows-1,-1,-1):
-            #self.children.insert( add_col+1 + r*cols, None )
-            self.children.insert( add_col + r*cols, None )
+            #self.children.insert( col+1 + r*cols, None )
+            self.children.insert( col + r*cols, None )
         # actually create the slots
         for r in range(0,rows):
-            self._insert_slot( self._get_pos(r,add_col) )
+            self._insert_slot( self._get_pos(r,col) )
 
         if "growable_cols" in self.PROPERTIES:
-            self.properties["growable_cols"].shift_items(add_col)
+            self.properties["growable_cols"].shift_items(col)
 
         if self.widget:
             if self.widget.GetCols()!=cols+1: self.widget.SetCols(cols+1)
@@ -1296,18 +1298,16 @@ class GridSizerBase(SizerBase):
                 self._set_growable()
             self.layout()
         self._rebuild_tree()
+        if user: common.history.gridsizer_row_col_changed(self, "col", col, 1)
 
     @_frozen
-    def remove_row(self, pos):
-        rows = self.rows
-        # calculate row and pos of the slot
-        row,col = self._get_row_col(pos)
+    def remove_row(self, row, user=True):
         # find the slots that are in the same row
         slots = []
         for index,child in enumerate(self.children):
             child_row, child_col = self._get_row_col(index)
             if child_row==row: slots.append(child)
-        if rows: self.properties["rows"].set( rows-1 )
+        if self.rows: self.properties["rows"].set( self.rows-1 )
         # actually remove the slots
         for slot in reversed(slots): slot.remove()
         
@@ -1320,18 +1320,16 @@ class GridSizerBase(SizerBase):
             if self.rows: self.widget.SetRows(self.rows)
             self.layout()
         self._rebuild_tree()
+        if user: common.history.gridsizer_row_col_changed(self, "row", row, -1)
 
     @_frozen
-    def remove_col(self, pos):
-        cols = self.cols
-        # calculate row and pos of the slot
-        row,col = self._get_row_col(pos)
+    def remove_col(self, col, user=True):
         # find the slots that are in the same row
         slots = []
         for index,child in enumerate(self.children):
             child_row, child_col = self._get_row_col(index)
             if child_col==col: slots.append(child)
-        if cols: self.properties["cols"].set( cols-1 )
+        if self.cols: self.properties["cols"].set( self.cols-1 )
         # actually remove the slots
         for slot in reversed(slots): slot.remove()
 
@@ -1346,6 +1344,7 @@ class GridSizerBase(SizerBase):
             if self.cols: self.widget.SetCols(self.cols)
             self.layout()
         self._rebuild_tree()
+        if user: common.history.gridsizer_row_col_changed(self, "col", col, -1)
 
     ####################################################################################################################
     def _check_flags(self, flags, added=None):
@@ -1369,6 +1368,10 @@ class GridSizerBase(SizerBase):
     @_frozen
     def _properties_changed(self, modified, actions):
         rows, cols = self._get_actual_rows_cols()
+        rows_p = self.properties["rows"]
+        cols_p = self.properties["cols"]
+        common.history.monitor_property( rows_p )
+        common.history.monitor_property( cols_p )
         if rows*cols < len(self.children):
             # number of rows/cols too low; this is not called if rows or col==0
             if not modified or "cols" in modified:
@@ -1377,23 +1380,23 @@ class GridSizerBase(SizerBase):
                     # more rows required
                     rows = len(self.children) // (cols or 1)
                     if len(self.children) % (cols or 1): rows += 1
-                self.properties["rows"].set(rows)
+                rows_p.set(rows)
                 if modified and not "rows" in modified: modified.append("rows")
             elif "rows" in modified:
                 cols = len(self.children) // (rows or 1)
                 if len(self.children) % (rows or 1): cols += 1
-                self.properties["cols"].set(cols)
+                cols_p.set(cols)
                 if modified and not "cols" in modified: modified.append("cols")
 
         if self.WX_CLASS != "wxGridBagSizer":
             if self.rows==0:
-                self.properties["cols"].set_range(1,1000)
+                cols_p.set_range(1,1000)
             else:
-                self.properties["cols"].set_range(0,1000)
+                cols_p.set_range(0,1000)
             if self.cols==0:
-                self.properties["rows"].set_range(1,1000)
+                rows_p.set_range(1,1000)
             elif self.WX_CLASS != "wxGridBagSizer":
-                self.properties["rows"].set_range(0,1000)
+                rows_p.set_range(0,1000)
 
         if not "class_orient" in modified:  # otherwise, change_sizer will be called and we can skip the following
             if not modified or "rows" in modified and self.widget:
@@ -1803,37 +1806,39 @@ class EditGridBagSizer(EditFlexGridSizer):
 
         misc.rebuild_tree(self)
 
-    def remove_row(self, index):
-        row,col = self._get_row_col(index)
+    def remove_row(self, row, user=True):
         rows = [r for r in range(self.rows) if r!=row]
         self._recreate(rows, None, self.rows, self.cols)
         if self.widget: self.parent_window.layout()
+        if user: common.history.gridsizer_row_col_changed(self, "row", row, -1)
 
-    def remove_col(self, index):
-        row,col = self._get_row_col(index)
+    def remove_col(self, col, user=True):
         cols = [c for c in range(self.cols) if c!=col]
         self._recreate(None, cols, self.rows, self.cols)
         if self.widget: self.parent_window.layout()
+        if user: common.history.gridsizer_row_col_changed(self, "col", col, -1)
 
-    def insert_row(self, index=-1):
-        row,col = self._get_row_col(index)
+    def insert_row(self, row=-1, user=True):
         rows = [r for r in range(self.rows)]
-        if index==-1:
+        if row==-1:
+            row = len(rows)
             rows.append(None)
         else:
             rows.insert(row, None)
         self._recreate(rows, None, self.rows, self.cols)
         if self.widget: self.parent_window.layout()
+        if user: common.history.gridsizer_row_col_changed(self, "row", row, 1)
 
-    def insert_col(self, index=-1):
-        row,col = self._get_row_col(index)
+    def insert_col(self, col=-1, user=True):
         cols = [c for c in range(self.cols)]
-        if index==-1:
+        if col==-1:
+            col = len(cols)
             cols.append(None)
         else:
             cols.insert(col, None)
         self._recreate(None, cols, self.rows, self.cols)
         if self.widget: self.parent_window.layout()
+        if user: common.history.gridsizer_row_col_changed(self, "col", col, 1)
 
     def _set_row_col_range(self):
         "set ranges of rows/cols properties"

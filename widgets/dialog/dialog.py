@@ -67,8 +67,8 @@ class EditDialog(BitmapMixin, TopLevelBase, EditStylesMixin):
                                "Select a different button to be used instead.\n"
                                "See SetAffirmativeId and SetEscapeId in the wx documentation."}
 
-    def __init__(self, name, parent, klass, title, style=wx.DEFAULT_DIALOG_STYLE):
-        TopLevelBase.__init__(self, name, parent, klass, title)
+    def __init__(self, name, parent, index, klass, title, style=wx.DEFAULT_DIALOG_STYLE):
+        TopLevelBase.__init__(self, name, parent, index, klass, title)
         EditStylesMixin.__init__(self)
         self.properties["style"].set(style)
 
@@ -142,9 +142,9 @@ def builder(parent, index, klass=None, base=None, name=None):
         interactive = False
 
     if base == "wxDialog":
-        editor = EditDialog(name, parent, klass, name, "wxDEFAULT_DIALOG_STYLE")
+        editor = EditDialog(name, parent, None, klass, name, "wxDEFAULT_DIALOG_STYLE")
     else:
-        editor = panel.EditTopLevelPanel(name, parent, klass)
+        editor = panel.EditTopLevelPanel(name, parent, None, klass)
 
     if interactive and add_sizer:
         # add a default panel and vertical sizer to the frame; optionally add buttons if it's a Dialog
@@ -187,7 +187,7 @@ def builder(parent, index, klass=None, base=None, name=None):
 
 def xml_builder(parser, base, name, parent, index):
     "factory to build EditDialog objects from a XML file"
-    return EditDialog(name, parent, "Dialog", "", 0)
+    return EditDialog(name, parent, index, "Dialog", "", 0)
 
 
 def initialize():

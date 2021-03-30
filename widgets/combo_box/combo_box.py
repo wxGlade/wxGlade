@@ -62,6 +62,7 @@ class EditComboBox(ManagedBase, EditStylesMixin):
         if not modified or "selection" in modified or set_selection:
             set_selection = True
             if self.selection>max_selection:
+                common.history.monitor_property( self.properties['selection'] )
                 self.properties['selection'].set(max_selection)
         if self.widget and set_selection and self.widget.GetSelection()!=self.selection:
             self.widget.SetSelection(self.selection)

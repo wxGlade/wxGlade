@@ -8,7 +8,7 @@ wxNotebook objects
 """
 
 import wx
-import common, compat, misc
+import common, compat, misc, config
 import new_properties as np
 from edit_windows import ManagedBase, EditStylesMixin
 from wcodegen.taghandler import BaseXmlBuilderTagHandler
@@ -60,6 +60,33 @@ class TabsHandler(BaseXmlBuilderTagHandler):
             char_data = self.get_char_data()
             self.tab_names.append([misc.wxstr(char_data),])
         return False
+
+
+import history
+
+class HistoryNotebookTabsItem(history.HistoryItem):
+    def __init__(self, notebook, property_item, removed_tabs, added_tabs):
+        self.old_tabs = property_item.old.value
+        self.new_tabs = property_item.new.value
+        self.path = notebook.get_path()
+        self.removed_tabs = removed_tabs
+        self.added_tabs = added_tabs
+
+    def _do(self, old, new, added, removed):
+        notebook = common.root.find_widget_from_path(self.path)
+        assert notebook.tabs == old
+        tabs_p = notebook.properties["tabs"]
+        tabs_p.reset(update_display=False)
+        notebook.restore_tabs(old, new, added, removed)
+        tabs_p._initialize_indices()
+        tabs_p.update_display()
+
+    def undo(self):
+        #                                      reversed === sorted          reversed === highest first
+        self._do(self.new_tabs, self.old_tabs, reversed(self.removed_tabs), reversed(self.added_tabs))
+
+    def redo(self):
+        self._do(self.old_tabs, self.new_tabs, self.added_tabs, self.removed_tabs)
 
 
 class EditNotebook(ManagedBase, EditStylesMixin):
@@ -131,7 +158,7 @@ class EditNotebook(ManagedBase, EditStylesMixin):
             if not isinstance(add_panel, compat.unicode): add_panel = self.next_pane_name()
             editor = panel.EditPanel( add_panel, self, index )
             if add_sizer:
-                sizer = edit_sizers._builder(editor, 0)
+                edit_sizers._builder(editor, 0)
         else:
             # just add a slot
             editor = edit_base.Slot(self, index)
@@ -162,9 +189,12 @@ class EditNotebook(ManagedBase, EditStylesMixin):
         ManagedBase.remove_item(self, child, level, keep_slot)
 
     @misc.restore_focus
-    def set_tabs(self, old_labels, indices):  # called from tabs property on Apply button
+    def set_tabs(self, old_labels, indices, user=True):  # called from tabs property on Apply button
         """tabs: list of strings
         indices: the current indices of the tabs or None for a new tab; re-ordering is currently not supported"""
+        import clipboard
+        removed_tabs = []  # (index,xml_data)
+        added_tabs = []
         keep_indices = [index for index in indices if index is not None]
         if keep_indices != sorted(keep_indices):
             raise ValueError("Re-ordering is not yet implemented")
@@ -178,10 +208,11 @@ class EditNotebook(ManagedBase, EditStylesMixin):
         # remove tabs
         for index in range(len(old_labels)-1, -1, -1):
             if not index in keep_indices:
+                removed_tabs.append( (index, clipboard.dump_widget(self.children[index])) )
                 self.children[index].recursive_remove(level=0)
 
         # insert/add tabs
-        added = None
+        set_selected_page = None
         for index, (label,) in enumerate(self.tabs):
             if indices[index] is not None: continue  # keep tab
 
@@ -195,18 +226,54 @@ class EditNotebook(ManagedBase, EditStylesMixin):
                 # add to widget
                 editor.create()
                 self.vs_insert_tab(index)
-    
+
                 try:
                     wx.CallAfter(editor.sel_marker.update)
                 except AttributeError:
                     if config.debugging: raise
 
-                added = index  # remember last added index for selection
+                set_selected_page = index  # remember last added index for selection
+            added_tabs.append( (index, clipboard.dump_widget(editor)) )
 
         # select the last added tab
-        if added is not None and self.widget:
-            self.widget.SetSelection(added)
+        if set_selected_page is not None:
+            self.widget.SetSelection(set_selected_page)
 
+        if user:
+            # history: undo/redo
+            item = common.history._finalize_item(stop=True)  # property_changing was called for "tabs"
+            common.history.add_item( HistoryNotebookTabsItem(self, item, removed_tabs, added_tabs) )
+
+        common.app_tree.build(self, recursive=False)
+
+    def restore_tabs(self, old_value, new_value, add_tabs, remove_tabs):  # called for undo/redo
+        # add_tabs: (index, xml_data) each, where the indices refer to the new_value
+        # removed_tabs are (index, xml_data) each, where the indices refer to the old_value
+        new_labels = [v[0] for v in new_value]
+        tabs_p = self.properties["tabs"]
+
+        # remove tabs: index is highest first
+        for index, xml_data in remove_tabs:
+            self.children[index].recursive_remove(level=0)
+
+        # insert/add tabs: index is lowest first
+        set_selected_page = None
+        rebuild = []
+        for index, xml_data in add_tabs:
+            # actually add/insert
+            tabs_p.value.insert(index, [new_labels[index]])  # placeholder for pasting
+            self.children.insert(index, None)
+            import clipboard
+            clipboard._paste(self, index, xml_data)
+
+            if self.widget: set_selected_page = index  # remember last added index for selection
+
+        # select the last added tab
+        if set_selected_page is not None:
+            self.widget.SetSelection(set_selected_page)
+
+        for index in rebuild:
+            common.app_tree.build(self.children[index], recursive=True)
         common.app_tree.build(self, recursive=False)
 
     ####################################################################################################################

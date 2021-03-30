@@ -668,18 +668,20 @@ class ManagedBase(WindowBase):
     def _properties_changed(self, modified, actions):
         WindowBase._properties_changed(self, modified, actions)
         p = self.properties["flag"]
+        common.history.monitor_property( p )
         if modified and "flag" in modified and self.parent.IS_SIZER:
-            p._check_value()    # XXX PPP0  OK with history.property_changed?
+            p._check_value()
 
         if "flag" in modified and "wxSHAPED" in p.value_set and self.proportion:
-            self.properties["proportion"].set(0, notify=False)    # XXX PPP1
+            common.history.monitor_property( self.properties["proportion"] )
+            self.properties["proportion"].set(0, notify=False)
         elif "option" in modified and self.proportion and "wxSHAPED" in p.value_set:
-            p.remove("wxSHAPED", notify=False)    # XXX PPP2
+            p.remove("wxSHAPED", notify=False)
 
         if "border" in modified and self.border and not "flag" in modified:
             # enable border flags if not yet done
             if not p.value_set.intersection(p.FLAG_DESCRIPTION["Border"]):
-                p.add("wxALL", notify=False)    # XXX PPP3
+                p.add("wxALL", notify=False)
                 modified.append("flag")
 
         if not modified or ("option" in modified or "flag" in modified or "border" in modified or
@@ -690,7 +692,8 @@ class ManagedBase(WindowBase):
                 max_span = self.sizer.check_span_range(self.index, *span_p.value)
                 max_span = ( min(span_p.value[0],max_span[0]), min(span_p.value[1],max_span[1]) )
                 if max_span!=span_p.value:
-                    span_p.set(max_span, notify=False)  # XXX PPP4
+                    common.history.monitor_property( span_p )
+                    span_p.set(max_span, notify=False)
             if self.parent.IS_SIZER:
                 self.sizer.item_properties_modified(self, modified)
                 actions.add("layout")
@@ -733,11 +736,14 @@ class ManagedBase(WindowBase):
         "don't set focus"
         return self.parent._free_slot(self.index)
 
-    def remove(self):
+    def remove(self, user=True):
         # entry point from GUI
         #with self.frozen():  # this does not work on mac os: when deleting a panel notebook page, it will remain black
+        if user: common.history.widget_removing(self)
         slot = self._remove()
         misc.rebuild_tree(slot, recursive=False)
+        if user: common.history.widget_removed(slot)
+        return slot
 
     def on_mouse_events(self, event):
         if event.Dragging():
@@ -811,8 +817,8 @@ class TopLevelBase(WindowBase, PreviewMixin):
     _PROPERTY_HELP={ "extracode_pre": "This code will be inserted at the beginning of the constructor.",
                      "extracode_post":"This code will be inserted at the end of the constructor." }
 
-    def __init__(self, name, parent, klass, title=None):
-        WindowBase.__init__(self, name, parent, None, klass)
+    def __init__(self, name, parent, index, klass, title=None):
+        WindowBase.__init__(self, name, parent, index, klass)
         self._oldname = name
         if "title" in self.PROPERTIES:
             self.title = np.TextProperty(title if title is not None else name)
@@ -1017,6 +1023,7 @@ class TopLevelBase(WindowBase, PreviewMixin):
         if event is None or not misc.event_modifier_copy(event):
             common.adding_widget = common.adding_sizer = False
             common.widget_to_add = None
+        common.history.widget_added(new_widget)
 
     def check_drop_compatibility(self):
         if self.children:
