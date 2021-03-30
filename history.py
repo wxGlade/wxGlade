@@ -416,7 +416,7 @@ class History(object):
 
     def widget_removed(self, slot=None):
         if slot: slot = slot.get_path()
-        self.add_item( HistoryRemovedItem(*self._buffer, slot, self._tab) )
+        self.add_item( HistoryRemovedItem(self._buffer, slot, self._tab) )
         self._buffer = None
 
     # sizers

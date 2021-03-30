@@ -53,7 +53,7 @@ class EditCheckBox(ManagedBase, EditStylesMixin):
             else:
                 checked_p.enable_item(2, False)
                 if checked_p.value == 2:
-                    common.history.monitor_property( checked_p )
+                    if common.history: common.history.monitor_property( checked_p )
                     checked_p.set(0)
 
         if not modified or "checked" in modified:

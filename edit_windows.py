@@ -668,12 +668,12 @@ class ManagedBase(WindowBase):
     def _properties_changed(self, modified, actions):
         WindowBase._properties_changed(self, modified, actions)
         p = self.properties["flag"]
-        common.history.monitor_property( p )
+        if common.history: common.history.monitor_property( p )
         if modified and "flag" in modified and self.parent.IS_SIZER:
             p._check_value()
 
         if "flag" in modified and "wxSHAPED" in p.value_set and self.proportion:
-            common.history.monitor_property( self.properties["proportion"] )
+            if common.history: common.history.monitor_property( self.properties["proportion"] )
             self.properties["proportion"].set(0, notify=False)
         elif "option" in modified and self.proportion and "wxSHAPED" in p.value_set:
             p.remove("wxSHAPED", notify=False)
@@ -692,7 +692,7 @@ class ManagedBase(WindowBase):
                 max_span = self.sizer.check_span_range(self.index, *span_p.value)
                 max_span = ( min(span_p.value[0],max_span[0]), min(span_p.value[1],max_span[1]) )
                 if max_span!=span_p.value:
-                    common.history.monitor_property( span_p )
+                    if common.history: common.history.monitor_property( span_p )
                     span_p.set(max_span, notify=False)
             if self.parent.IS_SIZER:
                 self.sizer.item_properties_modified(self, modified)

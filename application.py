@@ -451,13 +451,13 @@ class Application(EditRoot):
             p = self.properties["mark_blocks"]
             p.set_blocked(block)
             if block:
-                common.history.monitor_property( p )
+                if common.history: common.history.monitor_property( p )
                 p.set(True)
             p.set_blocked(block)
         if modified and len(modified)==1 and "multiple_files" in modified:
             # the user has just edited
             p = self.properties["output_path"]
-            common.history.monitor_property( p )
+            if common.history: common.history.monitor_property( p )
             if self.multiple_files:
                 p.set(os.path.dirname(p.value) or ".")
             else:

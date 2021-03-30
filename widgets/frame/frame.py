@@ -61,7 +61,7 @@ class EditFrame(BitmapMixin, TopLevelBase, EditStylesMixin):
                          "statusbar":'Has StatusBar' }
     ATT_CHILDREN = ["_menubar", "_statusbar", "_toolbar"]
 
-    def __init__(self, name, parent, index, klass, title, style=wx.DEFAULT_FRAME_STYLE): #XXX style is not used
+    def __init__(self, name, parent, index, klass, title, style=wx.DEFAULT_FRAME_STYLE):
         TopLevelBase.__init__(self, name, parent, index, klass, title)
         EditStylesMixin.__init__(self)
         self.properties["style"].set(style)

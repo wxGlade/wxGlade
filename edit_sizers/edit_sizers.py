@@ -1370,8 +1370,8 @@ class GridSizerBase(SizerBase):
         rows, cols = self._get_actual_rows_cols()
         rows_p = self.properties["rows"]
         cols_p = self.properties["cols"]
-        common.history.monitor_property( rows_p )
-        common.history.monitor_property( cols_p )
+        if common.history: common.history.monitor_property( rows_p )
+        if common.history: common.history.monitor_property( cols_p )
         if rows*cols < len(self.children):
             # number of rows/cols too low; this is not called if rows or col==0
             if not modified or "cols" in modified:

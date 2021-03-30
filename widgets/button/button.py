@@ -81,7 +81,7 @@ class EditButton(BitmapMixin, ManagedBase, EditStylesMixin):
             if self.properties["stockitem"].is_active():
                 self.properties["label"].set_blocked(True)
                 new_id = "wxID_" + self.stockitem
-                common.history.monitor_property( self.properties["id"] )
+                if common.history: common.history.monitor_property( self.properties["id"] )
                 self.properties["id"].set( new_id, deactivate=True )
                 #self.properties["id"].default_value = new_id  # avoid this value to be written to XML
 
