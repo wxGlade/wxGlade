@@ -19,7 +19,7 @@ HAVE_WRAP_SIZER = hasattr(wx, "WrapSizer")  # only for 3.0
 
 def _frozen(method):
     "freeze toplevel parent during update"
-    def _frozen(sizer, *args):
+    def _frozen(sizer, *args, **kwargs):
         if config.use_freeze_thaw and sizer.window.widget:
             toplevel = sizer.window.widget.GetTopLevelParent()
             if config.debugging: print("Freezing", toplevel)
@@ -27,7 +27,7 @@ def _frozen(method):
         else:
             toplevel = None
         try:
-            return method(sizer, *args)
+            return method(sizer, *args, **kwargs)
         finally:
             if toplevel:
                 toplevel.Refresh()
@@ -1235,11 +1235,12 @@ class GridSizerBase(SizerBase):
         rows, cols = self._get_actual_rows_cols()
 
         # calculate the row (0 based) to be inserted
-        if row==-1:
+        inserted_slots = []  # remove inserted slots from last row on undo
+        if row==-1 or row==rows:
             row = rows
             # ensure that the last row is full
-            # XXX remove inserted slots from last row on undo
             for n in range( rows*cols - len(self.children) ):
+                inserted_slots.append( len(self.children) )
                 self._insert_slot( len(self.children) )
 
         if rows:
@@ -1257,7 +1258,7 @@ class GridSizerBase(SizerBase):
                 self._set_growable()
             self.layout()
         self._rebuild_tree()
-        if user: common.history.gridsizer_row_col_changed(self, "row", row, 1)   # XXX remove inserted slots from last row
+        if user: common.history.gridsizer_row_col_changed(self, "row", row, 1, inserted_slots)
 
     @_frozen
     def insert_col(self, col, user=True):
@@ -1272,9 +1273,10 @@ class GridSizerBase(SizerBase):
         last_pos_col = (last_pos % cols) - 1
         if last_pos_col == -1: last_pos_col = cols-1
         # fill up the last row up to the insertion position if required
-        # XXX remove on undo again
+        inserted_slots = []  # remove on undo again
         if last_pos_col < min(col,cols-1):
             for i in range(min(col,cols-1)-last_pos_col):
+                inserted_slots.append(last_pos+i)
                 self._insert_slot( last_pos+i )
 
         # insert the new colum
@@ -1298,10 +1300,10 @@ class GridSizerBase(SizerBase):
                 self._set_growable()
             self.layout()
         self._rebuild_tree()
-        if user: common.history.gridsizer_row_col_changed(self, "col", col, 1)
+        if user: common.history.gridsizer_row_col_changed(self, "col", col, 1, inserted_slots)
 
     @_frozen
-    def remove_row(self, row, user=True):
+    def remove_row(self, row, user=True, remove_slots=None):
         # find the slots that are in the same row
         slots = []
         for index,child in enumerate(self.children):
@@ -1309,8 +1311,12 @@ class GridSizerBase(SizerBase):
             if child_row==row: slots.append(child)
         if self.rows: self.properties["rows"].set( self.rows-1 )
         # actually remove the slots
-        for slot in reversed(slots): slot.remove()
-        
+        for slot in reversed(slots): slot.remove(user=False)
+
+        if remove_slots:
+            # remove_slots are indices that are valid after having removed the row
+            for i in sorted(remove_slots, reverse=True): self.children[i].remove(user=False)
+
         if "growable_rows" in self.PROPERTIES:
             self.properties["growable_rows"].remove_item(row)
 
@@ -1319,19 +1325,25 @@ class GridSizerBase(SizerBase):
                 self._set_growable()
             if self.rows: self.widget.SetRows(self.rows)
             self.layout()
+
         self._rebuild_tree()
         if user: common.history.gridsizer_row_col_changed(self, "row", row, -1)
 
     @_frozen
-    def remove_col(self, col, user=True):
+    def remove_col(self, col, user=True, remove_slots=None):
         # find the slots that are in the same row
+        cols = self.cols
         slots = []
         for index,child in enumerate(self.children):
             child_row, child_col = self._get_row_col(index)
             if child_col==col: slots.append(child)
         if self.cols: self.properties["cols"].set( self.cols-1 )
         # actually remove the slots
-        for slot in reversed(slots): slot.remove()
+        for slot in reversed(slots): slot.remove(user=False)
+
+        if remove_slots:
+            # remove_slots are indices that are valid after having removed the row
+            for i in sorted(remove_slots, reverse=True): self.children[i].remove(user=False)
 
         if "growable_cols" in self.PROPERTIES:
             self.properties["growable_cols"].remove_item(col)

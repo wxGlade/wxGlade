@@ -165,7 +165,7 @@ class Property(object):
         """called from self when the user has entered a new value or de-/activated the property
         controls need not to be set, but the owner needs to be notified and the application"""
         common.history.property_changing(self)
-        if active is not None:
+        if active is not None and self.deactivated is not None:
             self.deactivated = not active
         self.previous_value = self.value  # this does not work always, e.g. for GridProperty which may edit in place
         previous_modified = self.modified
@@ -185,7 +185,7 @@ class Property(object):
                 self.update_display()
             return False
         self.on_value_edited(new_value, activate or force)
-        if activate or force:
+        if (activate or force) and self.deactivated is not None:
             self.activate_controls()
         return True
 

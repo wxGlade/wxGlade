@@ -220,21 +220,22 @@ class HistorySizerSlots(HistoryItem):
 
 class HistoryGridSizerRowCol(HistoryItem):
     # for added / removed rows / cols
-    def __init__(self, sizer, type, index, count=1):
+    def __init__(self, sizer, type, index, count=1, inserted_slots=None):
         # count: negative if removed
         self.path = sizer.get_path()
         self.type = type  # "row" or "col"
         self.index = index  # row or column index
         self.count = count
+        self.inserted_slots = inserted_slots
 
     def undo(self):
         sizer = common.root.find_widget_from_path(self.path)
         if self.type=="row" and self.count==1:
-            sizer.remove_row(self.index, user=False)
+            sizer.remove_row(self.index, user=False, remove_slots=self.inserted_slots)
         elif self.type=="row" and self.count==-1:
             sizer.insert_row(self.index, user=False)
         elif self.type=="col" and self.count==1:
-            sizer.remove_col(self.index, user=False)
+            sizer.remove_col(self.index, user=False, remove_slots=self.inserted_slots)
         elif self.type=="col" and self.count==-1:
             sizer.insert_col(self.index, user=False)
 
@@ -288,7 +289,8 @@ class History(object):
     def redo(self, focused_widget):
         if not self.actions_redo:
             # XXX check whether it's the same
-            self.repeat(focused_widget, multiple=False)
+            repeated = self.repeat(focused_widget, multiple=False)
+            if not repeated: wx.Bell()
             return
         action = self.actions_redo.pop(-1)
         action.redo()
@@ -296,11 +298,11 @@ class History(object):
 
     def repeat(self, focused_widget, multiple=True):
         "apply action(s) to another widget"
-        if focused_widget is None: return
-        if not self.actions or not isinstance(self.actions[0], HistoryPropertyItem): return
-        if not self._redo_widget: return
+        if focused_widget is None: return False
+        if not self.actions or not isinstance(self.actions[0], HistoryPropertyItem): return False
+        if not self._redo_widget: return False
         path = focused_widget.get_path()
-        if path==self._redo_widget: return
+        if path==self._redo_widget: return False
 
         # find all actions that could be repeated; they need to be HistoryPropertyItems from the _redo_widget
         repeat_actions = []
@@ -333,6 +335,7 @@ class History(object):
                     force = action.new.deactivated!=prop.deactivated
                     prop._check_for_user_modification(action.new.value, force=force, activate=not action.new.deactivated)
         self._repeating = False
+        return True
 
     def add_item(self, item):
         self.actions.insert(0, item)
@@ -424,5 +427,5 @@ class History(object):
         # called from SizerBase.insert_slot and add_slot
         self.add_item( HistorySizerSlots(sizer, index, count) )
 
-    def gridsizer_row_col_changed(self, sizer, type, index, count):
-        self.add_item( HistoryGridSizerRowCol(sizer, type, index, count) )
+    def gridsizer_row_col_changed(self, sizer, type, index, count, inserted_slots=None):
+        self.add_item( HistoryGridSizerRowCol(sizer, type, index, count, inserted_slots) )
