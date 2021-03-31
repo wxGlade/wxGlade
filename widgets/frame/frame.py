@@ -92,6 +92,8 @@ class EditFrame(BitmapMixin, TopLevelBase, EditStylesMixin):
             self.widget.SetSize((400, 300))
         if wx.Platform == '__WXMSW__':
             self.widget.CenterOnScreen()
+
+    def child_widgets_created(self, level):
         if self.check_prop_truth("menubar")   and self._menubar.widget:   self.widget.SetMenuBar(self._menubar.widget)
         if self.check_prop_truth("statusbar") and self._statusbar.widget: self.widget.SetStatusBar(self._statusbar.widget)
         if self.check_prop_truth("toolbar")   and self._toolbar.widget:   self.widget.SetToolBar(self._toolbar.widget)
