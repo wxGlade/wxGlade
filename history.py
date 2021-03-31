@@ -194,6 +194,33 @@ class HistoryFilledSlot(HistoryItem):
         clipboard._paste(slot.parent, slot.index, self.xml_data, rebuild_tree=True)
 
 
+class HistoryPasted(HistoryItem):
+    def __init__(self, parent, xml_data):
+        self.parent_path = parent.get_path()
+        self.xml_data = xml_data
+        self.widget_path = None
+
+    def finalize(self, widget):
+        self.widget_path = widget.get_path()
+
+    def undo(self):
+        parent = common.root.find_widget_from_path(self.parent_path)  # can be None if e.g. a slot
+        widget = common.root.find_widget_from_path(self.widget_path)
+        slot = widget.remove(user=False)
+
+        # handle the cases:
+        #  - sizer on panel -> a slot remains
+
+        #if parent is None:
+            #if slot.get_path()==self.parent_path:
+                #slot.remove(user=False)
+        #self.slot_path = slot.get_path()
+
+    def redo(self):
+        parent = common.root.find_widget_from_path(self.parent_path)
+        parent.clipboard_paste(self.xml_data) # clipboard._paste(parent, slot.index, self.xml_data, rebuild_tree=True)
+
+
 class HistorySizerSlots(HistoryItem):
     # for added/inserted slots
     def __init__(self, sizer, index, count=1):
@@ -407,6 +434,14 @@ class History(object):
     # structural changes
     def widget_added(self, widget):
         self.add_item( HistoryFilledSlot(widget) )
+
+    def widget_pasting(self, parent, xml_data):
+        self._pasting_buffer = HistoryPasted(parent, xml_data)
+
+    def widget_pasted(self, widget):
+        self._pasting_buffer.finalize(widget)
+        self.add_item( self._pasting_buffer )
+        self._pasting_buffer = None
 
     def widget_removing(self, widget):
         # store information and XML data before the widget is actually removed

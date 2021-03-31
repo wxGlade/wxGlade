@@ -305,7 +305,7 @@ def copy(widget):
 def cut(widget):
     "Store a copy of self into the clipboard and delete the widget; returns True on success"
     if copy(widget):
-        widget.remove()
+        widget.remove(user=True)
         return True
     else:
         return False
@@ -341,14 +341,19 @@ def paste(widget):
         if message:
             misc.error_message(message)
         return False
-    if not widget.clipboard_paste(data_object.GetData()):
+    xml_data = data_object.GetData()
+    if common.history: common.history.widget_pasting(widget, xml_data)
+    pasted = widget.clipboard_paste(xml_data)
+    if not pasted:
         misc.error_message("Paste failed")
+        return
+    if common.history: common.history.widget_pasted(pasted)
 
 
 def _paste(parent, index, clipboard_data, rebuild_tree=True):
     "parse XML and insert widget"
     option, span, flag, border, xml_unicode = clipboard2widget( clipboard_data )
-    if not xml_unicode: return False
+    if not xml_unicode: return None
     import xml_parse
     try:
         wx.BeginBusyCursor()
@@ -361,10 +366,10 @@ def _paste(parent, index, clipboard_data, rebuild_tree=True):
                 parent.on_child_pasted()  # trigger e.g. re-sizing of the children
         freeze = parser._object_counter>80  # for more objects, we freeze the Tree during re-build
         if rebuild_tree: misc.rebuild_tree( parser.top_obj, freeze=freeze )
-        return True  # Widget hierarchy pasted.
+        return parser.top_obj  # Widget hierarchy pasted.
     except xml_parse.XmlParsingError:
         if config.debugging: raise
-        return False
+        return None
     finally:
         wx.EndBusyCursor()
 
