@@ -77,8 +77,8 @@ class EditStatusBar(EditBase, EditStylesMixin):
         if self.parent.widget:
             self.parent.widget.SetStatusBar(self.widget)
 
-    def remove(self):
-        EditBase.remove(self)
+    def remove(self, user=True):
+        EditBase.remove(self, user=user)
         self.parent.properties['statusbar'].set(False)
 
     def _set_fields(self):

@@ -587,8 +587,8 @@ class EditToolBar(EditBase, PreviewMixin, EditStylesMixin, BitmapMixin):
             common.app_tree.Collapse(self.item)
             common.app_tree.select_item(self.parent)
 
-    def remove(self):
-        EditBase.remove(self)
+    def remove(self, user=True):
+        EditBase.remove(self, user=user)
         if 'toolbar' in self.parent.properties:
             self.parent.properties['toolbar'].set(False)
 
