@@ -1243,7 +1243,7 @@ class GridSizerBase(SizerBase):
                 inserted_slots.append( len(self.children) )
                 self._insert_slot( len(self.children) )
 
-        if rows:
+        if self.rows:
             self.properties["rows"].set( rows+1 )
             if self.widget: self.widget.SetRows(rows+1)
 
@@ -1280,9 +1280,8 @@ class GridSizerBase(SizerBase):
                 self._insert_slot( last_pos+i )
 
         # insert the new colum
-        if self.cols:
-            self.properties["cols"].set( cols+1 )
-            if self.widget: self.widget.SetCols(cols+1)
+        if self.cols: self.properties["cols"].set( cols+1 )
+        if self.widget: self.widget.SetCols(cols+1)  # also if self.cols is 0 to avoid an exception
         # insert placeholders to avoid problems with GridBagSizers and overlap tests
         for r in range(rows-1,-1,-1):
             #self.children.insert( col+1 + r*cols, None )
@@ -1290,6 +1289,7 @@ class GridSizerBase(SizerBase):
         # actually create the slots
         for r in range(0,rows):
             self._insert_slot( self._get_pos(r,col) )
+        if self.cols==0: self.widget.SetCols(0)
 
         if "growable_cols" in self.PROPERTIES:
             self.properties["growable_cols"].shift_items(col)
@@ -1349,8 +1349,6 @@ class GridSizerBase(SizerBase):
             self.properties["growable_cols"].remove_item(col)
 
         if self.widget:
-            if not self._IS_GRIDBAG:
-                self.widget.SetCols(cols-1)
             if "growable_cols" in self.PROPERTIES:
                 self._set_growable()
             if self.cols: self.widget.SetCols(self.cols)
