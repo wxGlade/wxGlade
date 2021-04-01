@@ -1075,6 +1075,7 @@ class wxGladeFrame(wx.Frame):
                 common.root.clear()
                 common.root.new()
                 common.root.saved = True
+                if common.history: common.history.reset()
                 common.app_tree.auto_expand = True  # re-enable auto-expansion of nodes
 
                 wx.MessageBox(error_msg, _('Error'), wx.OK | wx.CENTRE | wx.ICON_ERROR)
@@ -1095,6 +1096,7 @@ class wxGladeFrame(wx.Frame):
         logging.info(_('Loading time: %.5f'), end - start)
 
         common.root.saved = True
+        if common.history: common.history.reset()
         #common.property_panel.Raise()
 
         if hasattr(self, 'file_history') and filename is not None and add_to_history and \
