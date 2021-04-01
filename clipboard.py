@@ -347,7 +347,7 @@ def paste(widget):
         if message:
             misc.error_message(message)
         return False
-    xml_data = data_object.GetData()
+    xml_data = clipboard2widget( data_object.GetData() )
     if common.history: common.history.widget_pasting(widget, xml_data)
     pasted = widget.clipboard_paste(xml_data)
     if not pasted:
