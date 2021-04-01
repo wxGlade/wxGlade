@@ -217,15 +217,16 @@ class DropTarget(wx.DropTarget):
         return default
 
     def _OnData(self, drag_source, src_widget, dst_widget, data, copy):
+        xml_data = clipboard2widget(data)
         if drag_source and not copy:
             with src_widget.frozen():
                 src_widget.remove(user=True)
-                if common.history: common.history.widget_pasting(dst_widget, data)
-                pasted = dst_widget.clipboard_paste(data)
+                if common.history: common.history.widget_pasting(dst_widget, xml_data)
+                pasted = dst_widget.clipboard_paste(xml_data)
                 if common.history: common.history.widget_pasted(pasted)
         else:
-            if common.history: common.history.widget_pasting(dst_widget, data)
-            pasted = dst_widget.clipboard_paste(data)
+            if common.history: common.history.widget_pasting(dst_widget, xml_data)
+            pasted = dst_widget.clipboard_paste(xml_data)
             if common.history: common.history.widget_pasted(pasted)
 
     def OnLeave(self):
@@ -233,7 +234,7 @@ class DropTarget(wx.DropTarget):
 
 
 def get_data_object(widget):
-    data = dump_widget(widget)
+    data = widget2clipboard( *dump_widget(widget) )
     # make a data object
     if widget.IS_SIZER:
         do = wx.CustomDataObject(sizer_data_format)
@@ -258,13 +259,13 @@ def dump_widget(widget):
     "build the XML string and pickle it together with the layout properties"
     xml_unicode = []
     widget.write(xml_unicode, 0)
-    flag = option = span = border = None
+
     flag = widget.properties.get("flag")
     if flag is not None: flag = flag.get_string_value()
     proportion = getattr(widget, "proportion", 0)
     span = getattr(widget, "span", (1,1))
     border  = getattr(widget, "border", 0)
-    return widget2clipboard( proportion, span, flag, border, "".join(xml_unicode) )
+    return ( proportion, span, flag, border, "".join(xml_unicode) )
 
 
 def widget2clipboard(option, span, flag, border, xml_unicode):
@@ -280,6 +281,7 @@ def clipboard2widget(clipboard_data):
     """Convert widget data prepared in widget2clipboard() back to single values.
 
     Returns a list [option (proportions), flag, border and widget in XML representation]"""
+    if isinstance(clipboard_data, tuple): return clipboard_data
     if isinstance(clipboard_data, memoryview) and sys.version_info[0]<3:
         clipboard_data = clipboard_data.tobytes()
     option, span, flag, border, xml_unicode = compat.pickle.loads(clipboard_data)
@@ -292,7 +294,7 @@ def clipboard2widget(clipboard_data):
     if option is not None: option = int(option)
     if border is not None: border = int(border)
 
-    return option, span, flag, border, xml_unicode
+    return (option, span, flag, border, xml_unicode)
 
 
 def copy(widget):
