@@ -219,10 +219,14 @@ class DropTarget(wx.DropTarget):
     def _OnData(self, drag_source, src_widget, dst_widget, data, copy):
         if drag_source and not copy:
             with src_widget.frozen():
-                src_widget.remove()
-                dst_widget.clipboard_paste(data)
+                src_widget.remove(user=True)
+                if common.history: common.history.widget_pasting(dst_widget, data)
+                pasted = dst_widget.clipboard_paste(data)
+                if common.history: common.history.widget_pasted(pasted)
         else:
-            dst_widget.clipboard_paste(data)
+            if common.history: common.history.widget_pasting(dst_widget, data)
+            pasted = dst_widget.clipboard_paste(data)
+            if common.history: common.history.widget_pasted(pasted)
 
     def OnLeave(self):
         self.fmt = None
