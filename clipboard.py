@@ -23,6 +23,7 @@ else:
 
 widget_data_format = DataFormat("wxglade.widget")  # a serialized widget
 sizer_data_format  = DataFormat("wxglade.sizer")   # a serialized sizer
+slot_data_format = DataFormat("wxglade.slot")   # a serialized slot
 window_data_format = DataFormat("wxglade.window")  # a toplevel window
 
 menubar_data_format = DataFormat("wxglade.menubar")  # a serialized menubar
@@ -246,6 +247,8 @@ def get_data_object(widget):
         do = wx.CustomDataObject(statusbar_data_format)
     elif widget.IS_TOPLEVEL:
         do = wx.CustomDataObject(window_data_format)
+    elif widget.IS_SLOT:  # actually, this can't be pasted anywhere for now
+        do = wx.CustomDataObject(slot_data_format)
     else:
         do = wx.CustomDataObject(widget_data_format)
     do.SetData(data)
@@ -327,7 +330,7 @@ def paste(widget):
 
     try:
         data_object = None
-        for fmt in [widget_data_format, sizer_data_format, window_data_format,
+        for fmt in [widget_data_format, sizer_data_format, slot_data_format, window_data_format,
                     menubar_data_format, toolbar_data_format, statusbar_data_format]:
             if wx.TheClipboard.IsSupported(fmt):
                 data_object = wx.CustomDataObject(fmt)

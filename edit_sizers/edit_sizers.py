@@ -74,12 +74,16 @@ class SizerSlot(edit_base.Slot):
                 return (False, "No toplevel object can be pasted here.")
             if typename in ('menubar', 'toolbar', 'statusbar'):
                 return (False, "No %s object can be pasted here."%typename)
+            if typename=="slot":
+                return (False, "No slot can be pasted here.")
             return (True,None)
 
         if widget.IS_TOPLEVEL:
             return (False, "No toplevel object can be pasted here.")
         if widget.WX_CLASS in ('wxMenuBar', 'wxToolBar', 'wxStatusBar'):
             return (False, "No %s object can be pasted here."%widget.WX_CLASS)
+        if widget.IS_SLOT:
+            return (False, "No slot can be pasted here.")
         return (True,None)
 
     def write(self, output, tabs):
