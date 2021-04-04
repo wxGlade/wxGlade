@@ -1254,9 +1254,9 @@ class GridSizerBase(SizerBase):
             self.properties["growable_rows"].shift_items(row)
 
         if self.widget:
-            if "growable_rows" in self.PROPERTIES:
-                self._set_growable()
+            if "growable_rows" in self.PROPERTIES: self._set_growable()
             self.layout()
+
         self._rebuild_tree()
         if user: common.history.gridsizer_row_col_changed(self, "row", row, 1, inserted_slots)
 
@@ -1284,21 +1284,19 @@ class GridSizerBase(SizerBase):
         if self.widget: self.widget.SetCols(cols+1)  # also if self.cols is 0 to avoid an exception
         # insert placeholders to avoid problems with GridBagSizers and overlap tests
         for r in range(rows-1,-1,-1):
-            #self.children.insert( col+1 + r*cols, None )
             self.children.insert( col + r*cols, None )
         # actually create the slots
         for r in range(0,rows):
             self._insert_slot( self._get_pos(r,col) )
-        if self.cols==0: self.widget.SetCols(0)
 
         if "growable_cols" in self.PROPERTIES:
             self.properties["growable_cols"].shift_items(col)
 
         if self.widget:
-            if self.widget.GetCols()!=cols+1: self.widget.SetCols(cols+1)
-            if "growable_rows" in self.PROPERTIES:
-                self._set_growable()
+            if "growable_rows" in self.PROPERTIES: self._set_growable()
+            if self.cols==0: self.widget.SetCols(0)
             self.layout()
+
         self._rebuild_tree()
         if user: common.history.gridsizer_row_col_changed(self, "col", col, 1, inserted_slots)
 
@@ -1321,8 +1319,7 @@ class GridSizerBase(SizerBase):
             self.properties["growable_rows"].remove_item(row)
 
         if self.widget:
-            if "growable_rows" in self.PROPERTIES:
-                self._set_growable()
+            if "growable_rows" in self.PROPERTIES: self._set_growable()
             if self.rows: self.widget.SetRows(self.rows)
             self.layout()
 
@@ -1332,7 +1329,7 @@ class GridSizerBase(SizerBase):
     @_frozen
     def remove_col(self, col, user=True, remove_slots=None):
         # find the slots that are in the same row
-        cols = self.cols
+        rows, cols = self._get_actual_rows_cols()
         slots = []
         for index,child in enumerate(self.children):
             child_row, child_col = self._get_row_col(index)
@@ -1345,14 +1342,16 @@ class GridSizerBase(SizerBase):
             # remove_slots are indices that are valid after having removed the row
             for i in sorted(remove_slots, reverse=True): self.children[i].remove(user=False)
 
+        if self.widget: self.widget.SetCols( cols-1 )  # also if self.cols is 0 to ensure correct behaviour
+
         if "growable_cols" in self.PROPERTIES:
             self.properties["growable_cols"].remove_item(col)
 
         if self.widget:
-            if "growable_cols" in self.PROPERTIES:
-                self._set_growable()
-            if self.cols: self.widget.SetCols(self.cols)
+            if "growable_cols" in self.PROPERTIES: self._set_growable()
+            if self.cols==0: self.widget.SetCols(0)
             self.layout()
+
         self._rebuild_tree()
         if user: common.history.gridsizer_row_col_changed(self, "col", col, -1)
 
