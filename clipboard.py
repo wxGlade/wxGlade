@@ -23,11 +23,11 @@ else:
 
 widget_data_format = DataFormat("wxglade.widget")  # a serialized widget
 sizer_data_format  = DataFormat("wxglade.sizer")   # a serialized sizer
-slot_data_format = DataFormat("wxglade.slot")   # a serialized slot
 window_data_format = DataFormat("wxglade.window")  # a toplevel window
+slot_data_format   = DataFormat("wxglade.slot")    # a serialized slot; actually, for now this can't be pasted
 
-menubar_data_format = DataFormat("wxglade.menubar")  # a serialized menubar
-toolbar_data_format = DataFormat("wxglade.toolbar")  # a serialized toolbar
+menubar_data_format   = DataFormat("wxglade.menubar")    # a serialized menubar
+toolbar_data_format   = DataFormat("wxglade.toolbar")    # a serialized toolbar
 statusbar_data_format = DataFormat("wxglade.statusbar")  # a serialized statusbar
 
 
@@ -323,7 +323,6 @@ def cut(widget):
 def paste(widget):
     """Copies a widget (and all its children) from the clipboard to the given
     destination (parent, sizer and position inside the sizer). Returns True on success."""
-    error = None
     if not wx.TheClipboard.Open():
         misc.error_message( "Clipboard can't be opened." )
         return False
