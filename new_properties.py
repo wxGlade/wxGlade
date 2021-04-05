@@ -918,37 +918,42 @@ class _CheckListProperty(Property):
 
     def _change_value(self, value, checked):
         "user has clicked checkbox or History is setting"
-        common.history.set_property_changing(self)
-        self.previous_value = set(self.value_set)
+        self.previous_value = self.value_set.copy()
+
+        # make a copy of the current set value and replace combinations w. single flags, as these may need to be excluded
+        value_set = self.value_set.copy()
+        for name in self.value_set:
+            combination = self.style_defs[name].get("combination",[])
+            if combination:
+                value_set.update(combination)
+                value_set.remove(name)
+
+        values = self.style_defs[value].get("combination",[value])
         if checked:
-            if value in self.value_set: return
-            self.value_set.add(value)
-            if self.EXCLUDES:
-                excludes = self.EXCLUDES.get(value, [])
-            else:
-                excludes = self.style_defs[value].get("exclude",[])
-            self.value_set.difference_update( excludes )
-            excludes = self.style_defs[value].get("disable",[])
-            self.value_set.difference_update( excludes )
+            if self.value_set.issuperset(values): return
+            value_set.update(values)
+            for value in values:
+                if self.EXCLUDES:
+                    excludes = self.EXCLUDES.get(value, [])
+                else:
+                    excludes = self.style_defs[value].get("exclude",[])
+                value_set.difference_update(excludes)
+                excludes = self.style_defs[value].get("disable",[])
+                value_set.difference_update(excludes)
         else:
-            if value in self.value_set:
-                self.value_set.remove(value)
-                self.value_set.difference_update( self.style_defs[value].get("combination",[]) )
-            else:
-                # check if it was set due to a combination
-                for name in self._names:
-                    combination = self.style_defs[name].get("combination",[])
-                    if value in combination and name in self.value_set:
-                        self.value_set.remove(name)
-                        self.value_set.update(c for c in combination if c!=value)
+            value_set.difference_update(values)
 
         # check for combinations: if all flags of a combination are in value_set, we need only the combination
         for name in self._names:
             combination = self.style_defs[name].get("combination",[])
-            if combination and self.value_set.issuperset(combination):
-                self.value_set.difference_update( combination )
-                self.value_set.add(name)
+            if combination and value_set.issuperset(combination):
+                value_set.difference_update(combination)
+                value_set.add(name)
 
+        # actually make the changes
+        common.history.set_property_changing(self)
+        self.value_set.clear()
+        self.value_set.update(value_set)
         self._check_value(checked and value or None)  # e.g. used by ManagedFlags
 
         self.value = None  # to be calculated on demand
