@@ -3,7 +3,7 @@ Perl generator functions for wxPanel objects
 
 @copyright: 2002-2004 D.H. aka crazyinsomniac on sourceforge.net
 @copyright: 2014-2016 Carsten Grohmann
-@copyright: 2018-2020 Dietmar Schwertberger
+@copyright: 2018-2021 Dietmar Schwertberger
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 

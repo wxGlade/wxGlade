@@ -16,7 +16,7 @@ behaviour is useful to store logged exceptions permanently.
 @todo: Integrate Unicode logging fix.
 
 @copyright: 2013-2016 Carsten Grohmann
-@copyright: 2017-2020 Dietmar Schwertberger
+@copyright: 2017-2021 Dietmar Schwertberger
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 

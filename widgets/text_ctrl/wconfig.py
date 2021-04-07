@@ -2,7 +2,7 @@
 wxTextCtrl widget configuration
 
 @copyright: 2014-2016 Carsten Grohmann
-@copyright: 2017-2020 Dietmar Schwertberger
+@copyright: 2017-2021 Dietmar Schwertberger
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 

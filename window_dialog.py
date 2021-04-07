@@ -1,6 +1,6 @@
 """Dialog to ask user for base class and class name
 
-@copyright: 2016-2020 Dietmar Schwertberger
+@copyright: 2016-2021 Dietmar Schwertberger
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 

@@ -4,7 +4,7 @@ Entry point of wxGlade
 
 @copyright: 2002-2007 Alberto Griggio
 @copyright: 2013-2016 Carsten Grohmann
-@copyright: 2016-2020 Dietmar Schwertberger
+@copyright: 2016-2021 Dietmar Schwertberger
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
@@ -58,7 +58,7 @@ def parse_command_line():
     version = _("wxGlade version %s\n"
                 "Copyright (C) 2007-2012 Alberto Griggio\n"
                 "Copyright (C) 2011-2016 Carsten Grohmann\n"
-                "Copyright (C) 2016-2020 Dietmar Schwertberger\n"
+                "Copyright (C) 2016-2021 Dietmar Schwertberger\n"
                 "License MIT: The MIT License\n"
                 "             <http://www.opensource.org/licenses/mit-license.php>") % config.get_version()
     usage = _("Usage: wxglade <WXG File>             start the wxGlade GUI\n"

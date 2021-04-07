@@ -3,7 +3,7 @@ Dialog to select a color
 
 @copyright: 2007 Marcello Semboli
 @copyright: 2016 Carsten Grohmann
-@copyright: 2016-2020 Dietmar Schwertberger
+@copyright: 2016-2021 Dietmar Schwertberger
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 

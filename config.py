@@ -6,7 +6,7 @@ note: Don't place code with gettext or dependencies to other wxGlade parts here!
 see: preferencesdialog
 @copyright: 2007 Alberto Griggio
 @copyright: 2013-2016 Carsten Grohmann
-@copyright: 2017-2020 Dietmar Schwertberger
+@copyright: 2017-2021 Dietmar Schwertberger
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 

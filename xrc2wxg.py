@@ -5,7 +5,7 @@ inside sizers, no widget unknown to wxGlade, ...) into a WXG file.
 
 @copyright: 2002-2007 Alberto Griggio
 @copyright: 2014-2016 Carsten Grohmann
-@copyright: 2017-2020 Dietmar Schwertberger
+@copyright: 2017-2021 Dietmar Schwertberger
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 

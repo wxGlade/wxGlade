@@ -7,7 +7,7 @@ To be done: write XRC directly instead of using BaseLangCodeWriter as base.
 
 @copyright: 2002-2007 Alberto Griggio
 @copyright: 2012-2016 Carsten Grohmann
-@copyright: 2019-2020 Dietmar Schwertberger
+@copyright: 2019-2021 Dietmar Schwertberger
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
