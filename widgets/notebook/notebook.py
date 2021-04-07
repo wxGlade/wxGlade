@@ -101,8 +101,7 @@ class EditNotebook(ManagedBase, EditStylesMixin):
 
     def __init__(self, name, parent, index, style):
         ManagedBase.__init__(self, name, parent, index)
-        EditStylesMixin.__init__(self)
-        self.properties["style"].set(style)
+        EditStylesMixin.__init__(self, style)
 
         # initialise instance properties
         self.pages = None  # on loading from XML, this will be used

@@ -23,12 +23,11 @@ class EditSlider(ManagedBase, EditStylesMixin):
 
     def __init__(self, name, parent, index, style):
         ManagedBase.__init__(self, name, parent, index)
-        EditStylesMixin.__init__(self)
+        EditStylesMixin.__init__(self, style)
 
         # initialise instance properties
         self.range = np.IntRangePropertyA( "0, 10", notnull=True )
         self.value = np.SpinPropertyA(0, val_range=(0,10), immediate=True)
-        if style: self.properties["style"].set(style)
 
     def create_widget(self):
         mi,ma = self.properties["range"].get_tuple()

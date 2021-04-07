@@ -25,11 +25,9 @@ class EditStaticLine(ManagedBase, EditStylesMixin):
                                 'Without this, you can not access the line from your program.'}
     def __init__(self, name, parent, index, style):
         ManagedBase.__init__(self, name, parent, index)
-        EditStylesMixin.__init__(self)
+        EditStylesMixin.__init__(self, style)
 
-        # initialise instance properties
         self.attribute = np.CheckBoxProperty(False, default_value=False)
-        if style: self.properties["style"].set(style)
 
     def create_widget(self):
         self.widget = wx.StaticLine(self.parent_window.widget, wx.ID_ANY, style=self.style)

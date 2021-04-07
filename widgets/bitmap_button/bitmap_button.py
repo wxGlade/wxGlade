@@ -22,9 +22,9 @@ class EditBitmapButton(BitmapMixin, ManagedBase, EditStylesMixin):
                    "default", "style"]
     PROPERTIES = ManagedBase.PROPERTIES + _PROPERTIES + ManagedBase.EXTRA_PROPERTIES
 
-    def __init__(self, name, parent, index, bmp_file):
+    def __init__(self, name, parent, index, bmp_file, style=0):
         ManagedBase.__init__(self, name, parent, index)
-        EditStylesMixin.__init__(self)
+        EditStylesMixin.__init__(self, style)
         BitmapMixin.__init__(self)
 
         # initialise instance properties
@@ -53,7 +53,6 @@ def builder(parent, index):
     bitmap = misc.RelativeFileSelector("Select the image for the button")
     with parent.frozen():
         editor = EditBitmapButton(name, parent, index, bitmap)
-        editor.properties["style"].set_to_default()
         editor.check_defaults()
         if parent.widget: editor.create()
     return editor
@@ -61,10 +60,7 @@ def builder(parent, index):
 
 def xml_builder(parser, base, name, parent, index):
     "factory to build EditBitmapButton objects from a XML file"
-    editor = EditBitmapButton(name, parent, index, '')
-    #if attrs.input_file_version and attrs.input_file_version<(0,9):
-    if parser.input_file_version and parser.check_input_file_version((0,9)):  # backwards compatibility
-        editor.properties["style"].set_to_default()
+    editor = EditBitmapButton(name, parent, index, '', 0)
     return editor
 
 

@@ -24,14 +24,12 @@ class PanelBase(EditStylesMixin):
 
     def __init__(self, style='wxTAB_TRAVERSAL'):
         "Class to handle wxPanel objects"
-        EditStylesMixin.__init__(self, 'wxPanel')
+        EditStylesMixin.__init__(self, style, 'wxPanel')
 
         # initialise properties
         self.scrollable      = np.CheckBoxProperty(False, default_value=False)
         self.scroll_rate = prop = np.IntPairPropertyD( "10, 10" )
         prop.set_blocked(True)
-
-        if style: self.properties["style"].set(style)
 
     def get_editor_name(self):
         ret = self.__class__.__name__

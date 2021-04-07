@@ -178,7 +178,6 @@
                                 <border>5</border>
                                 <flag>wxALL|wxEXPAND</flag>
                                 <object class="wxBitmapButton" name="bitmap_button_icon1" base="EditBitmapButton">
-                                    <style>wxBU_AUTODRAW|wxBU_EXACTFIT|wxBU_NOTEXT</style>
                                     <bitmap>icon.png</bitmap>
                                     <default>1</default>
                                 </object>
@@ -188,7 +187,6 @@
                                 <border>5</border>
                                 <flag>wxALL|wxEXPAND</flag>
                                 <object class="wxBitmapButton" name="bitmap_button_empty1" base="EditBitmapButton">
-                                    <style>wxBU_AUTODRAW|wxBU_EXACTFIT|wxBU_NOTEXT</style>
                                     <bitmap>empty:10,10</bitmap>
                                     <default>1</default>
                                 </object>

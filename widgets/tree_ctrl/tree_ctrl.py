@@ -3,7 +3,7 @@ wxTreeCtrl objects
 
 @copyright: 2002-2007 Alberto Griggio
 @copyright: 2014-2016 Carsten Grohmann
-@copyright: 2016-2020 Dietmar Schwertberger
+@copyright: 2016-2021 Dietmar Schwertberger
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
@@ -23,10 +23,7 @@ class EditTreeCtrl(ManagedBase, EditStylesMixin):
 
     def __init__(self, name, parent, index, style=wx.TR_HAS_BUTTONS|wx.BORDER_SUNKEN):
         ManagedBase.__init__(self, name, parent, index)
-        EditStylesMixin.__init__(self)
-
-        # initialise instance properties
-        if style: self.properties["style"].set(style)
+        EditStylesMixin.__init__(self, style)
         self._item_with_name = None  # a Tree item for visualization
 
     def create_widget(self):
@@ -57,7 +54,6 @@ def builder(parent, index):
     name = parent.toplevel_parent.get_next_contained_name('tree_ctrl_%d')
     with parent.frozen():
         editor = EditTreeCtrl(name, parent, index)
-        editor.properties["style"].set_to_default()
         editor.properties["proportion"].set(1)
         editor.properties["flag"].set("wxEXPAND")
         if parent.widget: editor.create()

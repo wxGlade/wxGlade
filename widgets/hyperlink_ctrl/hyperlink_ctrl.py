@@ -15,9 +15,9 @@ import decorators
 
 if compat.IS_PHOENIX:
     import wx.adv
-    from wx.adv import HyperlinkCtrl
+    from wx.adv import HyperlinkCtrl, HL_DEFAULT_STYLE, HL_ALIGN_LEFT, HL_ALIGN_CENTRE, HL_ALIGN_RIGHT
 else:
-    from wx import HyperlinkCtrl
+    from wx import HyperlinkCtrl, HL_DEFAULT_STYLE, HL_ALIGN_LEFT, HL_ALIGN_CENTRE, HL_ALIGN_RIGHT
 
 
 class EditHyperlinkCtrl(ManagedBase, EditStylesMixin):
@@ -31,10 +31,11 @@ class EditHyperlinkCtrl(ManagedBase, EditStylesMixin):
                        "attribute":'Store instance as attribute of window class; e.g. self.bitmap_1 = wx.wxStaticBitmap'
                                    '(...)\nWithout this, you can not access the bitmap from your program.'}
 
-    def __init__(self, name, parent, index, label):
+    def __init__(self, name, parent, index, label, style=HL_DEFAULT_STYLE):
         # Initialise parent classes
         ManagedBase.__init__(self, name, parent, index)
-        EditStylesMixin.__init__(self)
+        EditStylesMixin.__init__(self, style)
+        self.properties["style"]._one_required = ['wxHL_ALIGN_CENTRE', 'wxHL_ALIGN_LEFT', 'wxHL_ALIGN_RIGHT']
 
         # initialise instance properties
         self.label = np.TextProperty(label, multiline="grow")
@@ -42,7 +43,10 @@ class EditHyperlinkCtrl(ManagedBase, EditStylesMixin):
         self.attribute = np.CheckBoxProperty(False, default_value=False)
 
     def create_widget(self):
-        self.widget = HyperlinkCtrl(self.parent_window.widget, wx.ID_ANY, self.label, self.url, style=self.style)
+        style = self.style
+        if not style & HL_ALIGN_LEFT and not style & HL_ALIGN_CENTRE and not style & HL_ALIGN_RIGHT:
+            style |= HL_ALIGN_CENTRE
+        self.widget = HyperlinkCtrl(self.parent_window.widget, wx.ID_ANY, self.label, self.url, style=style)
 
     def _properties_changed(self, modified, actions):
         if not modified or "label" in modified:
@@ -78,7 +82,6 @@ def builder(parent, index, url=None, label=None):
 
     with parent.frozen():
         editor = EditHyperlinkCtrl(name, parent, index, label or "")
-        editor.properties["style"].set_to_default()
         editor.properties["attribute"].set(True)  # allow to modificate it later on...
         editor.properties["url"].set(url or "")
         editor.check_defaults()
@@ -88,7 +91,7 @@ def builder(parent, index, url=None, label=None):
 
 def xml_builder(parser, base, name, parent, index):
     "factory to build EditHyperlinkCtrl objects from a XML file"
-    return EditHyperlinkCtrl(name, parent, index, "")
+    return EditHyperlinkCtrl(name, parent, index, "", 0)
 
 
 def initialize():

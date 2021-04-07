@@ -23,9 +23,9 @@ class EditSpinButton(ManagedBase, EditStylesMixin):
     PROPERTIES = ManagedBase.PROPERTIES + _PROPERTIES + ManagedBase.EXTRA_PROPERTIES
     recreate_on_style_change = True
 
-    def __init__(self, name, parent, index):
+    def __init__(self, name, parent, index, style='wxSP_VERTICAL'):
         ManagedBase.__init__(self, name, parent, index)
-        EditStylesMixin.__init__(self)
+        EditStylesMixin.__init__(self, style)
 
         # initialise instance properties
         self.range = np.IntRangePropertyA( "0, 100" )
@@ -66,7 +66,6 @@ def builder(parent, index):
     name = parent.toplevel_parent.get_next_contained_name('spin_button_%d')
     with parent.frozen():
         editor = EditSpinButton(name, parent, index)
-        editor.properties["style"].set_to_default()
         editor.check_defaults()
         if parent.widget: editor.create()
     return editor
@@ -74,7 +73,7 @@ def builder(parent, index):
 
 def xml_builder(parser, base, name, parent, index):
     "factory function to build EditSpinButton objects from a XML file"
-    return EditSpinButton(name, parent, index)
+    return EditSpinButton(name, parent, index, '')
 
 
 def initialize():

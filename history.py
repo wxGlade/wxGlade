@@ -30,7 +30,6 @@ class PropertyValue(object):
     def __init__(self, prop):
         self.deactivated = prop.deactivated
         self.value = copy_value(prop)
-        self.modified = prop.modified
 
     def set(self, p):
         # apply value to a property instance
@@ -48,17 +47,16 @@ class PropertyValue(object):
                 value.update(self.value)
             else:
                 p.value = self.value
-        p.modified = self.modified
         activate = self.deactivated!=p.deactivated
         p.deactivated = self.deactivated
         p.update_display()
         if activate: p.activate_controls()
 
     def __eq__(self, other):
-        return self.deactivated==other.deactivated and self.value==other.value and self.modified==other.modified
+        return self.deactivated==other.deactivated and self.value==other.value
 
     def __repr__(self):
-        return "(%r, %r, %r)"%(self.deactivated, self.value, self.modified)
+        return "(%r, %r)"%(self.deactivated, self.value)
 
 
 class HistoryItem(object):
@@ -290,8 +288,8 @@ class History(object):
         self.can_undo = self.can_redo = self.can_repeat = False
 
     def reset(self):
-        self.actions.clear()
-        self.actions_redo.clear()
+        del self.actions[:]
+        del self.actions_redo[:]
         self.can_undo = False
         self.can_redo = False
         self.can_repeat = len(self._redo_info) > 1
@@ -378,7 +376,7 @@ class History(object):
                 self._redo_info.append(key)
 
         if self.actions_redo:
-            self.actions_redo.clear()
+            del self.actions_redo[:]
 
         if config.debugging:
             print("UndoBuffer:")
@@ -409,7 +407,7 @@ class History(object):
         item = self._buffer
         self._buffer = None  if not stop else  False
         item.finalize(self._monitor)
-        self._monitor.clear()
+        del self._monitor
         return item
 
     def property_changed(self, prop, user=True):
@@ -454,7 +452,8 @@ class History(object):
 
     def widget_removed(self, slot=None):
         if slot: slot = slot.get_path()
-        self.add_item( HistoryRemovedItem(*self._buffer, slot, self._tab) )
+        args = self._buffer + (slot, self._tab)
+        self.add_item( HistoryRemovedItem(*args) )
         self._buffer = None
 
     # sizers

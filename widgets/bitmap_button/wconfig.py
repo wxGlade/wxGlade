@@ -26,7 +26,6 @@ config = {
                                    'uses a standard id would display a label too. '),
                           'supported_by': ('wx3',), },
         },
-    'default_style': 'wxBU_EXACTFIT|wxBU_NOTEXT|wxBU_AUTODRAW',
     'style_list': ['wxBU_AUTODRAW', 'wxBU_LEFT', 'wxBU_RIGHT', 'wxBU_TOP', 'wxBU_BOTTOM', 'wxBU_EXACTFIT',
                    'wxBU_NOTEXT', 'wxBORDER_NONE', 'wxNO_BORDER'], # NO_BORDER is obsolete
     'events': {'EVT_BUTTON': {}, },

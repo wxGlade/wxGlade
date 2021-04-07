@@ -1123,7 +1123,7 @@ class EditStylesMixin(np.PropertyOwner):
     update_widget_style = True # Flag to update the widget style if a style is set using set_style()
     recreate_on_style_change = False
 
-    def __init__(self, styles=[]):
+    def __init__(self, style=0, styles=[]):
         """Initialise instance
 
         klass: Name of the wxWidget klass
@@ -1146,7 +1146,7 @@ class EditStylesMixin(np.PropertyOwner):
                 self.style_names = styles
         else:
             self.style_names = self.widget_writer.style_list
-        self.style = np.WidgetStyleProperty()  # this will read it's default value
+        self.style = np.WidgetStyleProperty(style)  # this will read it's default value
 
     @decorators.memoize
     def wxname2attr(self, name):

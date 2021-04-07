@@ -18,7 +18,9 @@ class PythonHyperlinkCtrlGenerator(wcodegen.PythonWidgetCodeWriter):
         def cn(self, name):
             # don't process already formatted items again
             if name.startswith('wx.'):  return name
-            if name.startswith('wx'):   return 'wx.adv.' + name[2:]
+            if name.startswith('wx'):
+                if name=='wxBORDER_NONE': return 'wx.BORDER_NONE'
+                return 'wx.adv.' + name[2:]
             if name.startswith('EVT_'): return 'wx.adv.' + name
             return name
 

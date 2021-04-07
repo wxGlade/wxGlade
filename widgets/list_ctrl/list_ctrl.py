@@ -26,12 +26,11 @@ class EditListCtrl(ManagedBase, EditStylesMixin):
 
     def __init__(self, name, parent, index, style=wx.LC_REPORT | wx.BORDER_SUNKEN):
         ManagedBase.__init__(self, name, parent, index)
-        EditStylesMixin.__init__(self)
-        if style: self.properties["style"].set(style)
+        EditStylesMixin.__init__(self, style)
         self.columns = GridColsProperty([])
         self.rows_number = np.SpinProperty(0, immediate=True, default_value=0)
         self.properties["style"]._ignore_names = {"wxLC_VIRTUAL"}
-        self.properties["style"]._one_required = {"wxLC_ICON", "wxLC_SMALL_ICON", "wxLC_LIST", "wxLC_REPORT"}
+        self.properties["style"]._one_required = ["wxLC_ICON", "wxLC_SMALL_ICON", "wxLC_LIST", "wxLC_REPORT"]
 
     def create_widget(self):
         self.widget = wx.ListCtrl(self.parent_window.widget, wx.ID_ANY, style=self.style)
@@ -113,11 +112,10 @@ def builder(parent, index):
     "factory function for EditListCtrl objects"
     name = parent.toplevel_parent.get_next_contained_name('list_ctrl_%d')
     with parent.frozen():
-        editor = EditListCtrl(name, parent, index)
+        editor = EditListCtrl(name, parent, index, ["wxLC_REPORT", "wxLC_HRULES", "wxLC_VRULES"])
         #list_ctrl.properties["style"].set_to_default()  # default is wxLC_ICON
         editor.properties["columns"].set( [['A', -1], ['B', -1], ['C', -1]] )
         editor.properties["rows_number"].set(10)
-        editor.properties["style"].set( ["wxLC_REPORT", "wxLC_HRULES", "wxLC_VRULES"] )
         editor.properties["proportion"].set(1)
         editor.properties["flag"].set("wxEXPAND")
         if parent.widget: editor.create()

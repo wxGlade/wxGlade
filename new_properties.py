@@ -5,7 +5,7 @@ File has been created in 2016; parts are from the old version of widget_properti
 
 Interface to owner modified; see below for class PropertyOwner
 
-@copyright: 2016-2020 Dietmar Schwertberger
+@copyright: 2016-2021 Dietmar Schwertberger
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
@@ -74,7 +74,6 @@ class Property(object):
         self.owner = None
         self.name = name
         self.attributename = None
-        self.modified = False  # either by the user or from loaded file; WidgetStyleProperty.write uses it
         # this can be set to True by the owner, depending on another property value; value will still be written to XML
         self.blocked = False
         self.default_value = default_value
@@ -103,7 +102,6 @@ class Property(object):
         updates display if editor is visible; doesn't notify owner or application!
         optionally, the property will be activated or deactivated"""
         self.value = self._set_converter(value)
-        self.modified = True
         if activate is None and deactivate is None:
             self.update_display()
             if notify: self._notify()
@@ -168,7 +166,6 @@ class Property(object):
         if active is not None and self.deactivated is not None:
             self.deactivated = not active
         self.previous_value = self.value  # this does not work always, e.g. for GridProperty which may edit in place
-        previous_modified = self.modified
         self.set(value)
         self._notify()
         common.history.property_changed(self)
@@ -190,7 +187,6 @@ class Property(object):
         return True
 
     def _notify(self):
-        self.modified = True
         common.root.saved = False
         self.owner.properties_changed([self.name])
 
@@ -865,17 +861,9 @@ class _CheckListProperty(Property):
     def get_string_value(self):
         "Return the selected styles joined with '|', for writing to XML file"
         if not self.value_set: return ""
-        # handle combinations: remove the individual components
-        value_set = set(self.value_set)
-        #for name in self._names:
-            #combination = self.style_defs[name].get("combination",[])
-            #if combination and name in value_set or value_set.intersection(combination)==combination:
-                #value_set.add(name)
-                #value_set -= combination
-
         ret = []
         for name in self._names:
-            if name in value_set:
+            if name in self.value_set:
                 ret.append(name)
         return '|'.join(ret)
 
@@ -942,6 +930,12 @@ class _CheckListProperty(Property):
                 value_set.difference_update(excludes)
         else:
             value_set.difference_update(values)
+
+        if self._one_required and not value_set.intersection(self._one_required):
+            if value in self._one_required:
+                value_set.add(value)
+            else:
+                value_set.add(self._one_required[0])
 
         # check for combinations: if all flags of a combination are in value_set, we need only the combination
         for name in self._names:
@@ -1156,9 +1150,10 @@ class ManagedFlags(_CheckListProperty):
 
 class WidgetStyleProperty(_CheckListProperty):
     # for widget style flags; XXX handle combinations and exclusions
-    def __init__(self):
+    def __init__(self, value=0):
         # the value will be set later in set_owner()
         _CheckListProperty.__init__(self, value=0)
+        self._value = value
 
     def set_owner(self, owner, attname):
         "style information is taken from self.owner.widget_writer"
@@ -1169,10 +1164,10 @@ class WidgetStyleProperty(_CheckListProperty):
         self.styles["Style"] = widget_writer.style_list
         self._names = sum( self.styles.values(), [] )
         self._values = None
-        self.set(widget_writer.default_style)
-        self.default_value = set(self.value_set)
-        self.set("")
-        self.modified = False
+
+        self.default_value = self._decode_value( widget_writer.default_style )
+        self.set(self._value)
+        del self._value
 
     def set_to_default(self):
         # for use after interactively creating an instance
@@ -1257,7 +1252,6 @@ class WidgetStyleProperty(_CheckListProperty):
                 checkbox.Bind(wx.EVT_CHECKBOX, self.on_checkbox)
 
     def write(self, output, tabs=0):
-        if isinstance(self.default_value, set) and self.value_set==self.default_value and not self.modified: return
         value = self.get_string_value()
         if value:
             output.extend( common.format_xml_tag(self.name, value, tabs) )

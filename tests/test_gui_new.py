@@ -415,7 +415,8 @@ class TestGui(WXGladeGUITest):
         self._process_wx_events()
         # check available style names
         sp = hyperlink.properties["style"]
-        style_names = ['wxHL_ALIGN_CENTRE','wxHL_ALIGN_LEFT','wxHL_ALIGN_RIGHT','wxHL_CONTEXTMENU','wxHL_DEFAULT_STYLE']
+        style_names = ['wxHL_ALIGN_CENTRE','wxHL_ALIGN_LEFT','wxHL_ALIGN_RIGHT','wxHL_CONTEXTMENU','wxHL_DEFAULT_STYLE',
+                       'wxBORDER_NONE']
         self._assert_styles(sp._names, style_names, "Style names for HyperlinkCtrl")
 
         # test setting all styles and check whether some are combined  (not too useful, as no exclusions are defined)

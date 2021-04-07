@@ -253,12 +253,12 @@
         
         (setf (slot-sizer-13 obj) (wxGridSizer_Create 2 2 0 0))
         
-        (setf (slot-bitmap-button-icon1 obj) (wxBitmapButton_Create (slot-notebook-1-wxBitmapButton obj) wxID_ANY (wxBitmap_CreateLoad "icon.png" wxBITMAP_TYPE_ANY) -1 -1 -1 -1 wxBU_EXACTFIT|wxBU_NOTEXT|wxBU_AUTODRAW))
+        (setf (slot-bitmap-button-icon1 obj) (wxBitmapButton_Create (slot-notebook-1-wxBitmapButton obj) wxID_ANY (wxBitmap_CreateLoad "icon.png" wxBITMAP_TYPE_ANY) -1 -1 -1 -1 0))
         (slot-bitmap-button-icon1 obj).wxWindow_SetSize((slot-bitmap-button-icon1 obj).wxWindow_GetBestSize())
         (wxButton_SetDefault (slot-bitmap-button-icon1 obj))
         (wxSizer_AddWindow (slot-sizer-13 obj) (slot-bitmap-button-icon1 obj) 1 (logior wxALL wxEXPAND) 5 nil)
         
-        (setf (slot-bitmap-button-empty1 obj) (wxBitmapButton_Create (slot-notebook-1-wxBitmapButton obj) wxID_ANY wxBitmap_Create(10 10) -1 -1 -1 -1 wxBU_EXACTFIT|wxBU_NOTEXT|wxBU_AUTODRAW))
+        (setf (slot-bitmap-button-empty1 obj) (wxBitmapButton_Create (slot-notebook-1-wxBitmapButton obj) wxID_ANY wxBitmap_Create(10 10) -1 -1 -1 -1 0))
         (slot-bitmap-button-empty1 obj).wxWindow_SetSize((slot-bitmap-button-empty1 obj).wxWindow_GetBestSize())
         (wxButton_SetDefault (slot-bitmap-button-empty1 obj))
         (wxSizer_AddWindow (slot-sizer-13 obj) (slot-bitmap-button-empty1 obj) 1 (logior wxALL wxEXPAND) 5 nil)
