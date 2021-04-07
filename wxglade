@@ -14,7 +14,7 @@
 #  3. in a parallel Python module directory
 
 # Keep this up to date with version.py and sphinx/conf.py
-WXG_VERSION="1.0.1"
+WXG_VERSION="1.1.0"
 
 CURR_DIR=$(dirname "$0")
 
