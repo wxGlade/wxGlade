@@ -295,6 +295,7 @@ class XmlWidgetBuilder(XmlParser):
                 handler = obj.prop_handlers.top()
                 if handler.end_elem(name):
                     obj.prop_handlers.pop()
+                    obj._properties_added.append(name)
             except AttributeError:
                 pass
 
