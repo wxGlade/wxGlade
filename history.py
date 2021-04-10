@@ -351,7 +351,7 @@ class History(object):
                 print("Repeating %s"%action)
             prop = focused_widget.properties[action.name]
             if isinstance(action, HistorySetPropertyItem):
-                prop._change_value(action.value, action.checked)
+                prop._change_value(action.flag_value, action.checked)
             elif isinstance(action, HistoryPropertyItem):
                 if prop.deactivated is None:
                     # a property that can not be deactivated
