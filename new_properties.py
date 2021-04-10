@@ -181,7 +181,7 @@ class Property(object):
             if self.editing:
                 self.update_display()
             return False
-        self.on_value_edited(new_value, activate or force)
+        self.on_value_edited(new_value, activate or force or None)
         if (activate or force) and self.deactivated is not None:
             self.activate_controls()
         return True
