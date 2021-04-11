@@ -110,10 +110,9 @@ class CustomWidget(ManagedBase):
             if self.check_prop_truth("extraproperties"):
                 lines += code_gen.generate_code_extraproperties(self, widget_access)
             code = "\n".join(lines)
-            if self.check_prop_truth("extracode_pre") or self.check_prop_truth("extracode_post"):
-                # replace widget and parent access in manually entered extra code
-                code = code.replace("self.%s"%self.name, widget_access)
-                code = code.replace(builder.format_widget_access(self.parent_window), parent_access)
+            # replace widget and parent access in manually entered extra code
+            code = code.replace("self.%s"%self.name, widget_access)
+            code = code.replace(builder.format_widget_access(self.parent_window), parent_access)
             # execute code
             before = set(sys.modules.keys())
             try:
