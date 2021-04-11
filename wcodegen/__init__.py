@@ -594,11 +594,6 @@ class BaseWidgetWriter(StylesMixin, BaseCodeWriter):
         events = [(name,handler) for name, handler in obj.events if handler.strip()]
         if not events: return ret
 
-        if 'events' not in self.config:
-            logging.warn( _('Object %(name)s(%(klass)s contains unknown events: %(events)s)'),
-                               {'name':obj.name,'klass': obj.klass, 'events':events})
-            return ret
-
         try:
             default_event = self.config['events']['default']['type']
         except KeyError:
