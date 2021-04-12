@@ -566,6 +566,7 @@ class SizerBase(edit_base.EditBase):
         focus = self._remove()  # slot or window
         misc.rebuild_tree(focus)
         if user: common.history.widget_removed(focus)
+        return focus  # for undo
 
     def preview_parent(self):
         # context menu callback
