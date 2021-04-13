@@ -798,6 +798,7 @@ class Slot(EditBase):
         if self.widget:
             self.widget.SetCursor(wx.NullCursor)
         common.adding_window = event and event.GetEventObject().GetTopLevelParent() or None
+        common.history.widget_adding(self)
         # call the appropriate builder
         new_widget = common.widgets[common.widget_to_add](self.parent, self.index)
         if new_widget is None: return

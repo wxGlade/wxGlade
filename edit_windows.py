@@ -1016,6 +1016,7 @@ class TopLevelBase(WindowBase, PreviewMixin):
             self.on_set_focus(event)  # default behaviour: call show_properties
             return
         if self.widget: self.widget.SetCursor(wx.STANDARD_CURSOR)
+        common.history.widget_adding(self)
         new_widget = common.widgets[common.widget_to_add](self, None)
         if new_widget is None: return
         misc.rebuild_tree(new_widget)

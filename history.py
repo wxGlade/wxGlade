@@ -174,49 +174,31 @@ class HistoryRemovedItem(HistoryItem):
         widget.remove(user=False)
 
 
-class HistoryFilledSlot(HistoryItem):
-    def __init__(self, item):
+class HistoryAddedItem(HistoryItem):
+    def __init__(self, parent, xml_data=None):
+        self.parent_path = parent.get_path()  # either parent or the slot that is being replaced
+        self.IS_SLOT = parent.IS_SLOT
+        self.xml_data = xml_data  # could be set on undo
+        self.path = None
+
+    def finalize(self, item):
         self.path = item.get_path()
-        self.xml_data = None  # will be set on undo
-        self.slot_path = None
 
     def undo(self):
         item = common.root.find_widget_from_path(self.path)
         if self.xml_data is None:
             self.xml_data = clipboard.dump_widget(item)
         slot = item.remove(user=False)
-        self.slot_path = slot.get_path()
-
-    def redo(self):
-        slot = common.root.find_widget_from_path(self.slot_path)
-        clipboard._paste(slot.parent, slot.index, self.xml_data, rebuild_tree=True)
-
-
-class HistoryPasted(HistoryItem):
-    def __init__(self, parent, xml_data):
-        self.parent_path = parent.get_path()
-        self.xml_data = xml_data
-        self.widget_path = None
-
-    def finalize(self, widget):
-        self.widget_path = widget.get_path()
-
-    def undo(self):
-        parent = common.root.find_widget_from_path(self.parent_path)  # can be None if e.g. a slot
-        widget = common.root.find_widget_from_path(self.widget_path)
-        slot = widget.remove(user=False)
-
-        # handle the cases:
-        #  - sizer on panel -> a slot remains
-
-        #if parent is None:
-            #if slot.get_path()==self.parent_path:
-                #slot.remove(user=False)
-        #self.slot_path = slot.get_path()
+        if not self.IS_SLOT:
+            slot.remove(user=False)
 
     def redo(self):
         parent = common.root.find_widget_from_path(self.parent_path)
-        parent.clipboard_paste(self.xml_data) # clipboard._paste(parent, slot.index, self.xml_data, rebuild_tree=True)
+        if self.IS_SLOT:
+            # parent is a slot -> actual parent is parent.parent
+            clipboard._paste(parent.parent, parent.index, self.xml_data, rebuild_tree=True)
+        else:
+            clipboard._paste(parent, 0, self.xml_data, rebuild_tree=True)
 
 
 class HistorySizerSlots(HistoryItem):
@@ -430,16 +412,16 @@ class History(object):
 
     ####################################################################################################################
     # structural changes
+    def widget_adding(self, parent, xml_data=None):
+        # for pasting or single widget dropping
+        # parent can be a slot, which will be filled/replaced
+        # or e.g. a panel where a sizer will be added without having a slot before
+        self._adding_buffer = HistoryAddedItem(parent, xml_data)
+
     def widget_added(self, widget):
-        self.add_item( HistoryFilledSlot(widget) )
-
-    def widget_pasting(self, parent, xml_data):
-        self._pasting_buffer = HistoryPasted(parent, xml_data)
-
-    def widget_pasted(self, widget):
-        self._pasting_buffer.finalize(widget)
-        self.add_item( self._pasting_buffer )
-        self._pasting_buffer = None
+        self._adding_buffer.finalize(widget)
+        self.add_item( self._adding_buffer )
+        self._adding_buffer = None
 
     def widget_removing(self, widget):
         # store information and XML data before the widget is actually removed

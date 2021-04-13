@@ -222,13 +222,13 @@ class DropTarget(wx.DropTarget):
         if drag_source and not copy:
             with src_widget.frozen():
                 src_widget.remove(user=True)
-                if common.history: common.history.widget_pasting(dst_widget, xml_data)
+                if common.history: common.history.widget_adding(dst_widget, xml_data)
                 pasted = dst_widget.clipboard_paste(xml_data)
-                if common.history: common.history.widget_pasted(pasted)
+                if common.history: common.history.widget_added(pasted)
         else:
-            if common.history: common.history.widget_pasting(dst_widget, xml_data)
+            if common.history: common.history.widget_adding(dst_widget, xml_data)
             pasted = dst_widget.clipboard_paste(xml_data)
-            if common.history: common.history.widget_pasted(pasted)
+            if common.history: common.history.widget_added(pasted)
 
     def OnLeave(self):
         self.fmt = None
@@ -350,12 +350,12 @@ def paste(widget):
             misc.error_message(message)
         return False
     xml_data = clipboard2widget( data_object.GetData() )
-    if common.history: common.history.widget_pasting(widget, xml_data)
+    if common.history: common.history.widget_adding(widget, xml_data)
     pasted = widget.clipboard_paste(xml_data)
     if not pasted:
         misc.error_message("Paste failed")
         return
-    if common.history: common.history.widget_pasted(pasted)
+    if common.history: common.history.widget_added(pasted)
 
 
 def _paste(parent, index, clipboard_data, rebuild_tree=True):
