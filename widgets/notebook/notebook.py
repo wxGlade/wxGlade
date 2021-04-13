@@ -145,7 +145,13 @@ class EditNotebook(ManagedBase, EditStylesMixin):
 
     def add_slot(self):
         # actually adds a page, but it needs to be compatible to sizers
-        self.insert_tab(len(self.children), "new tab")
+        common.history.property_changing( self.properties["tabs"] )
+        index = len(self.children)
+        editor = self.insert_tab(index, "new tab")
+        item = common.history._finalize_item(stop=True)  # property_changing was called for "tabs"
+        import clipboard
+        added_tabs = [ (index, clipboard.dump_widget(editor)) ]
+        common.history.add_item( HistoryNotebookTabsItem(self, item, [], added_tabs) )
 
     def insert_tab(self, index, label, add_panel=True, add_sizer=False):
         # add tab/page; called from GUI
@@ -178,8 +184,11 @@ class EditNotebook(ManagedBase, EditStylesMixin):
 
         self.properties["tabs"].update_display()
         misc.rebuild_tree(self)
+        return editor
 
     def remove_item(self, child, level, keep_slot=False):
+        # history is handled from EditBase.remove    (when the empty page/slot is removed)
+        #                      or ManagedBase.remove (when e.g. the panel is removed, but the page/slot remains)
         if not keep_slot:
             tabs_p = self.properties["tabs"]
             # if the length is different, then due to tabs_p.apply calling self.set_tabs and so it's removed already

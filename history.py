@@ -381,7 +381,7 @@ class History(object):
 
     def monitor_property(self, prop):
         # monitor dependent properties; these will be un-/re-done together with the main property
-        if self._buffer is None: return
+        if not self._buffer: return
         self._monitor.append( (prop, PropertyValue(prop)))
 
     def _finalize_item(self, stop=False):
