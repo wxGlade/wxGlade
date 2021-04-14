@@ -279,6 +279,7 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
         self.obj_properties = {}
         self._property_writers = {}
         self._init_vars()
+        self._init_cache()  # the cache is mainly used to inject values for CustomWidget
 
     def _init_vars(self):
         """Set instance variables (back) to default values during class instantiation (__init__) and before
@@ -312,11 +313,27 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
         self._textdomain = 'app'
         self._use_gettext = config.default_use_gettext
 
+    ####################################################################################################################
+    # the cache is mainly used to inject values for CustomWidget
+    def _init_cache(self):
+        self._cache = {}
+
+    def cache(self, widget, key, value):
+        # e.g. code_gen.cache(custom_widget, "attribute_access", "self.widget")
+        # supported keys for now: "attribute_access"
+        self._cache.setdefault(widget, {})[key] = value
+        return value
+
+    def get_cached(self, widget, key, default=None):
+        return self._cache.get("", {}).get(key, default)
+
+    ####################################################################################################################
     def new_project(self, app, out_path=None, preview=False):
         "Initialise generic and language independent code generator settings; see init_lang(), init_files()"
 
         # set (most of) instance variables back to default values
         self._init_vars()
+        self._init_cache()
 
         # application name
         self.app_name = app.name
@@ -898,11 +915,11 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
 
         return code_lines
 
-    def generate_code_extraproperties(self, obj, objname=None):
+    def generate_code_extraproperties(self, obj):
         "Returns a list of code fragments that set extra properties for the given object"
         tmpl = self._get_code_statement('extraproperties')
         if not tmpl: return []
-        if objname is None: objname = self.format_generic_access(obj)
+        objname = self.format_generic_access(obj)
         klass = self.cn_class( obj.get_prop_value("class", obj.WX_CLASS) )
 
         ret = []

@@ -97,22 +97,30 @@ class CustomWidget(ManagedBase):
             code_gen = common.code_writers["python"]
             code_gen.new_project(common.root)
             builder = code_gen.obj_builders["CustomWidget"]
+
+            # replace e.g. "self.%s"%name with "self.widget"
+            original_widget_access = builder.format_widget_access(self)
             widget_access = "self.widget"
+            original_parent_access = builder.format_widget_access(self.parent_window)
             parent_access = "self.parent_window.widget"
+            code_gen.cache(self, "attribute_access", widget_access)
+            code_gen.cache(self.parent_window, "attribute_access", parent_access)
+
             lines = []
             if self.check_prop_truth("extracode"):
                 lines.append( self.extracode )
             if self.check_prop_truth("extracode_pre"):
                 lines.append( self.extracode_pre )
-            lines += builder.get_code(self, widget_access, parent_access)[0]
+            lines += builder.get_code(self)[0]
             if self.check_prop_truth("extracode_post"):
                 lines.append( self.extracode_post )
             if self.check_prop_truth("extraproperties"):
-                lines += code_gen.generate_code_extraproperties(self, widget_access)
+                lines += code_gen.generate_code_extraproperties(self)
             code = "\n".join(lines)
-            # replace widget and parent access in manually entered extra code
-            code = code.replace("self.%s"%self.name, widget_access)
-            code = code.replace(builder.format_widget_access(self.parent_window), parent_access)
+            if self.check_prop_truth("extracode_pre") or self.check_prop_truth("extracode_post"):
+                # replace widget and parent access in manually entered extra code
+                code = code.replace(original_widget_access, widget_access)
+                code = code.replace(original_parent_access, parent_access)
             # execute code
             before = set(sys.modules.keys())
             try:

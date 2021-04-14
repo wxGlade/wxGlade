@@ -524,9 +524,10 @@ from %(top_win_module)s import %(top_win_class)s\n\n"""
         return os.path.join( self.out_dir, klass.replace('.', os.sep) + '.py' )
 
     def format_generic_access(self, obj):
-        if obj.IS_CLASS:
-            return 'self'
-        return self._format_classattr(obj)
+        ret = self.get_cached(obj, 'attribute_access')
+        if ret is not None: return ret
+        ret = obj.IS_CLASS and 'self' or self._format_classattr(obj)
+        return self.cache(obj, 'attribute_access', ret)
 
 
 writer = PythonCodeWriter()  # The code writer is an instance of PythonCodeWriter.
