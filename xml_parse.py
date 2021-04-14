@@ -589,7 +589,7 @@ class XmlWidgetObject(object):
             # build the widget
             builder = common.widgets_from_xml.get(base, None)
             if builder is None: raise XmlParsingError("Widget '%s' not supported."%base)
-            
+
             self.obj = builder(parser, base, attrs["name"], sizer or parent, index)
             self.set_class_attributes(parser, attrs) # set 'class' and 'instance_class' properties, if applicable
 
@@ -602,10 +602,17 @@ class XmlWidgetObject(object):
             self.IS_SIZERITEM = True
 
         elif klass == 'sizerslot':
-            assert sizer is not None, _("malformed wxg file: slots can only be inside sizers!")
+            assert sizer is not None, _("malformed wxg file: sizer slots can only be inside sizers!")
             self.obj = None
             self.IS_SLOT = True
             sizer._add_slot(loading=True)
+
+        elif klass == 'slot':
+            # for a slot in a panel
+            self.obj = None
+            self.IS_SLOT = True
+            assert parent.CHILDREN == -1
+            parent._add_slot()
 
         # push the object on the _objects stack
         parser._objects.push(self)

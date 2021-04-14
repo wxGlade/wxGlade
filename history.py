@@ -133,13 +133,20 @@ class HistorySetPropertyItem(HistoryPropertyItem):
 
 
 class HistoryRemovedItem(HistoryItem):
-    def __init__(self, IS_SLOT, index, path, xml_data, slot_path=None, tab_name=None):
-        self.IS_SLOT = IS_SLOT
-        self.index = index
-        self.path = path
-        self.xml_data = xml_data
-        self.slot_path = slot_path
-        self.slot_tab = tab_name
+    def __init__(self, widget):
+        self.IS_SLOT = widget.IS_SLOT
+        self.index = widget.index
+        self.path = widget.get_path()
+        self.xml_data = clipboard.dump_widget(widget)
+        self.slot_path = self.slot_tab = None
+
+        parent = widget.parent
+        if widget.IS_SLOT and parent.IS_CONTAINER and parent.check_prop("tabs"):
+            # a slot / page is being removed from a notebook -> store tab name
+            self.slot_tab = parent.tabs[widget.index][0]
+
+    def finalize(self, slot=None):
+        if slot: self.slot_path = slot.get_path()
 
     def undo(self):
         path = self.slot_path or self.path.rsplit("/",1)[0]  # slot or parent
@@ -425,17 +432,11 @@ class History(object):
 
     def widget_removing(self, widget):
         # store information and XML data before the widget is actually removed
-        self._buffer = (widget.IS_SLOT, widget.index, widget.get_path(), clipboard.dump_widget(widget))
-        self._tab = None
-        parent = widget.parent
-        if widget.IS_SLOT and parent.IS_CONTAINER:
-            if parent.check_prop("tabs"):
-                self._tab = parent.tabs[widget.index][0]
+        self._buffer = HistoryRemovedItem(widget)
 
     def widget_removed(self, slot=None):
-        if slot: slot = slot.get_path()
-        args = self._buffer + (slot, self._tab)
-        self.add_item( HistoryRemovedItem(*args) )
+        self._buffer.finalize(slot)
+        self.add_item( self._buffer )
         self._buffer = None
 
     # sizers

@@ -474,6 +474,11 @@ class EditBase(np.PropertyOwner):
                 if max_index is not None and index>max_index: continue
                 Slot(self, index)
 
+    def _add_slot(self):
+        # used when loading or pasting an (optional) slot to a panel
+        self.children.append(None)
+        self._add_slots()  # replace the None with a slot
+
     def on_load(self, child=None):
         "called from XML parser, right after the widget is loaded; children have been loaded already"
         # when a child has been pasted in, it's also called, with argument child
@@ -884,7 +889,8 @@ class Slot(EditBase):
             misc.set_focused_widget(None)
 
     def write(self, output, tabs):
-        return
+        if self.parent.CHILDREN==-1:
+            output.extend( common.format_xml_tag( u'object', '', tabs, **{'class': 'slot'}) )
 
     # for tree and help display ########################################################################################
     def _get_tree_label(self):
