@@ -634,6 +634,7 @@ class EditMenuBar(EditBase):#, PreviewMixin):
         EditBase.remove(self, user=user)
         if 'menubar' in self.parent.properties:
             self.parent.properties['menubar'].set(False)
+        return None   # explicitely return not a Slot; see history
 
     def set_menus(self):
         if not self._mb: return  # nothing left to do

@@ -146,9 +146,12 @@ class HistoryRemovedItem(HistoryItem):
             self.slot_tab = parent.tabs[widget.index][0]
 
     def finalize(self, slot=None):
-        if slot: self.slot_path = slot.get_path()
+        if slot:
+            # a slot has been left
+            self.slot_path = slot.get_path()
 
     def undo(self):
+        # identical to HistoryAddedItem.redo, except for the slot_tab part
         path = self.slot_path or self.path.rsplit("/",1)[0]  # slot or parent
         widget = common.root.find_widget_from_path(path)
         if widget.IS_ROOT:# or widget.IS_CONTAINER:
@@ -177,35 +180,62 @@ class HistoryRemovedItem(HistoryItem):
             widget.clipboard_paste(self.xml_data)
 
     def redo(self):
+        # identical to HistoryAddedItem.undo
         widget = common.root.find_widget_from_path(self.path)
-        widget.remove(user=False)
+        slot = widget.remove(user=False)
+        if slot is not None and not self.slot_path:
+            # a slot has been left there, but should not be
+            slot.remove(user=False)
 
 
 class HistoryAddedItem(HistoryItem):
     def __init__(self, parent, xml_data=None):
-        self.parent_path = parent.get_path()  # either parent or the slot that is being replaced
-        self.IS_SLOT = parent.IS_SLOT
+        self.slot_path = parent.IS_SLOT and parent.get_path() or None
         self.xml_data = xml_data  # could be set on undo
-        self.path = None
+        self.path = self.index = None
 
     def finalize(self, item):
         self.path = item.get_path()
+        self.index = item.index
+        self.IS_SLOT = item.IS_SLOT
 
     def undo(self):
-        item = common.root.find_widget_from_path(self.path)
-        if self.xml_data is None:
-            self.xml_data = clipboard.dump_widget(item)
-        slot = item.remove(user=False)
-        if not self.IS_SLOT:
+        # identical to HistoryRemovedItem.redo
+        widget = common.root.find_widget_from_path(self.path)
+        if self.xml_data is None: self.xml_data = clipboard.dump_widget(widget)
+        slot = widget.remove(user=False)
+        if slot is not None and not self.slot_path:
+            # a slot has been left there, but should not be
             slot.remove(user=False)
 
     def redo(self):
-        parent = common.root.find_widget_from_path(self.parent_path)
-        if self.IS_SLOT:
-            # parent is a slot -> actual parent is parent.parent
-            clipboard._paste(parent.parent, parent.index, self.xml_data, rebuild_tree=True)
+        # identical to HistoryRemovedItem.undo, except for the slot_tab part
+        path = self.slot_path or self.path.rsplit("/",1)[0]  # slot or parent
+        widget = common.root.find_widget_from_path(path)
+        if widget.IS_ROOT:# or widget.IS_CONTAINER:
+            widget.clipboard_paste(self.xml_data, self.index)
+        elif self.IS_SLOT:
+            widget.insert_item(None, self.index)  # placeholder
+            #if self.slot_tab is not None:
+                #tabs_p = widget.properties["tabs"]
+                #tabs_p.value.insert(self.index, [self.slot_tab])
+                #tabs_p.reset()
+            if widget.IS_SIZER:
+                from edit_sizers import SizerSlot as Slot
+            else:
+                from edit_base import Slot
+            slot = Slot(widget, index=self.index)
+            if widget.widget:
+                slot.create_widget()
+                widget.child_widget_created(slot, 0)
+            # update structure
+            misc.rebuild_tree( widget, focus=False )
+            # update following slots
+            for c in widget.children[self.index+1:]:
+                if c.IS_SLOT: common.app_tree.refresh(c)
+            misc.set_focused_widget(slot)
         else:
-            clipboard._paste(parent, 0, self.xml_data, rebuild_tree=True)
+            widget.clipboard_paste(self.xml_data)
 
 
 class HistorySizerSlots(HistoryItem):

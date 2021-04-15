@@ -591,6 +591,7 @@ class EditToolBar(EditBase, PreviewMixin, EditStylesMixin, BitmapMixin):
         EditBase.remove(self, user=user)
         if 'toolbar' in self.parent.properties:
             self.parent.properties['toolbar'].set(False)
+        return None   # explicitely return not a Slot; see history
 
     ####################################################################################################################
 

@@ -80,6 +80,7 @@ class EditStatusBar(EditBase, EditStylesMixin):
     def remove(self, user=True):
         EditBase.remove(self, user=user)
         self.parent.properties['statusbar'].set(False)
+        return None   # explicitely return not a Slot; see history
 
     def _set_fields(self):
         if not self.widget: return
