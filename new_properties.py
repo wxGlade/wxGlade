@@ -1493,7 +1493,7 @@ class TextProperty(Property):
         elif warning:
             bgcolor = wx.Colour(255, 255, 0, 255)  # yellow
         else:
-            bgcolor = wx.WHITE
+            bgcolor = compat.wx_SystemSettings_GetColour(wx.SYS_COLOUR_WINDOW)
         self.text.SetBackgroundColour( bgcolor )
         self.text.Refresh()
 
