@@ -775,6 +775,7 @@ class Preferences(ConfigParser.ConfigParser):
         'use_dialog_units': False,
         'allow_custom_widgets':False,
         'number_history': 12,
+        'font_scale_tree': 1.0,
         'show_progress': True,
         'wxg_backup': True,
         'codegen_backup': True,
