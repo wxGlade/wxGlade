@@ -792,6 +792,8 @@ class wxGladeFrame(wx.Frame):
             wx.MessageBox( _('Changes will take effect after wxGlade is restarted'),
                            _('Preferences saved'), wx.OK|wx.CENTRE|wx.ICON_INFORMATION )
             dialog.set_preferences()
+        else:
+            dialog.canceled()
         dialog.Destroy()
 
     def _get_toplevel(self):

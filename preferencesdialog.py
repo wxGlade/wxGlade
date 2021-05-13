@@ -11,9 +11,14 @@ see: config.preferences
 # import general python modules
 import os
 import wx
+import compat, common
 
 import bugdialog
-from preferences_ui import wxGladePreferencesUI
+if compat.IS_CLASSIC:
+    # actually 3.0 would have SpinCtrlDouble, but then we'd need a third version
+    from res.preferences_ui28 import wxGladePreferencesUI
+else:
+    from res.preferences_ui import wxGladePreferencesUI
 
 
 class wxGladePreferences(wxGladePreferencesUI):
@@ -26,6 +31,20 @@ class wxGladePreferences(wxGladePreferencesUI):
 
         self.preferences = preferences
         self.set_values()
+
+        if hasattr(self, "font_scale_tree"):
+            self._font_scaled_tree = False
+            self.font_scale_tree.Bind(wx.EVT_SPINCTRLDOUBLE, self._on_font_scale_tree)
+
+    def _on_font_scale_tree(self, event):
+        self._font_scaled_tree = True
+        common.app_tree.scale_font(self.font_scale_tree.GetValue())
+        event.Skip()
+
+    def canceled(self):
+        # undo changes that have been applied instantly
+        if hasattr(self, "font_scale_tree") and self._font_scaled_tree:
+            common.app_tree.scale_font( self.preferences['font_scale_tree'] )
 
     def check_accessibility(self):
         # add a warning if not NVDA etc. compatible
@@ -50,7 +69,8 @@ class wxGladePreferences(wxGladePreferencesUI):
             self.allow_custom_widgets.SetValue( self.preferences.allow_custom_widgets )
             self.use_dialog_units.SetValue( self.preferences.use_dialog_units )
             self.number_history.SetValue(self.preferences.number_history)
-            self.font_scale_tree.SetValue(self.preferences.font_scale_tree)
+            if hasattr(self, "font_scale_tree"):
+                self.font_scale_tree.SetValue(self.preferences.font_scale_tree)
             self.show_progress.SetValue(self.preferences.show_progress)
             self.wxg_backup.SetValue(self.preferences.wxg_backup)
             self.codegen_backup.SetValue(self.preferences.codegen_backup)
@@ -108,7 +128,8 @@ class wxGladePreferences(wxGladePreferencesUI):
         prefs['allow_custom_widgets'] = self.allow_custom_widgets.GetValue()
         prefs['use_dialog_units'] = self.use_dialog_units.GetValue()
         prefs['number_history'] = self.number_history.GetValue()
-        prefs['font_scale_tree'] = self.font_scale_tree.GetValue()
+        if hasattr(self, "font_scale_tree"):
+            prefs['font_scale_tree'] = self.font_scale_tree.GetValue()
         prefs['show_progress'] = self.show_progress.GetValue()
         prefs['wxg_backup'] = self.wxg_backup.GetValue()
         prefs['codegen_backup'] = self.codegen_backup.GetValue()

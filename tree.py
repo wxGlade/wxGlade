@@ -27,6 +27,8 @@ class WidgetTree(wx.TreeCtrl):#, Tree):
         scale = config.preferences.font_scale_tree
         if scale!=1.0:
             self.SetFont( self.GetFont().Scaled(scale) )
+        self.scale_font( config.preferences.font_scale_tree )
+
         self.cur_widget = None  # reference to the selected widget
         self.root = application
         self._load_images()
@@ -54,6 +56,13 @@ class WidgetTree(wx.TreeCtrl):#, Tree):
         self.Bind(wx.EVT_KEY_DOWN, self.on_key_down_event)
         #self.Bind(wx.EVT_CHAR_HOOK, self.on_char)  # on wx 2.8 the event will not be delivered to the child
         self.Bind(wx.EVT_TREE_DELETE_ITEM, self.on_delete_item)
+
+    def scale_font(self, scale=1.0):
+        if wx.VERSION[0]<3: return  # 2.8 fonts have no Scaled method
+        if not hasattr(self, "_font"):
+            if scale==1.0: return
+            self._font = self.GetFont()
+        self.SetFont( self._font if scale==1.0 else self._font.Scaled(scale) )
 
     def _load_images(self):
         bitmaps = {}
