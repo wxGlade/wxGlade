@@ -300,7 +300,7 @@ class History(object):
         self.actions = []
         self.actions_redo = [] # on undo, the action is moved from actions to actions_redo
         self.depth = depth
-        self._buffer = None
+        self._buffer = self._structure_item = None
         self._redo_widget = None # the widget that originally was modified
         self._redo_info = []  # name of properties
         self._repeating = False
@@ -453,21 +453,21 @@ class History(object):
         # for pasting or single widget dropping
         # parent can be a slot, which will be filled/replaced
         # or e.g. a panel where a sizer will be added without having a slot before
-        self._adding_buffer = HistoryAddedItem(parent, xml_data)
+        self._structure_item = HistoryAddedItem(parent, xml_data)
 
     def widget_added(self, widget):
-        self._adding_buffer.finalize(widget)
-        self.add_item( self._adding_buffer )
-        self._adding_buffer = None
+        self._structure_item.finalize(widget)
+        self.add_item( self._structure_item )
+        self._structure_item = None
 
     def widget_removing(self, widget):
         # store information and XML data before the widget is actually removed
-        self._buffer = HistoryRemovedItem(widget)
+        self._structure_item = HistoryRemovedItem(widget)
 
     def widget_removed(self, slot=None):
-        self._buffer.finalize(slot)
-        self.add_item( self._buffer )
-        self._buffer = None
+        self._structure_item.finalize(slot)
+        self.add_item( self._structure_item )
+        self._structure_item = None
 
     # sizers
     def sizer_slots_added(self, sizer, index, count):
