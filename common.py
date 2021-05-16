@@ -217,6 +217,8 @@ def add_toplevel_object(event):
     palette.reset_togglebuttons()
     editor = widgets[refs[event.GetId()]](root, 0)
     if editor is None: return
+    history.widget_adding(root)
+    history.widget_added(editor)
     misc.rebuild_tree(widget=editor, recursive=editor.children, focus=True)
 
 
