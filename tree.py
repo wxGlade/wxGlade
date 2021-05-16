@@ -58,7 +58,7 @@ class WidgetTree(wx.TreeCtrl):#, Tree):
         self.Bind(wx.EVT_TREE_DELETE_ITEM, self.on_delete_item)
 
     def scale_font(self, scale=1.0):
-        if wx.VERSION[0]<3: return  # 2.8 fonts have no Scaled method
+        if not hasattr(wx, "SpinCtrlDouble"): return
         if not hasattr(self, "_font"):
             if scale==1.0: return
             self._font = self.GetFont()
