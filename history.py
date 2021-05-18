@@ -154,6 +154,12 @@ class HistoryRemovedItem(HistoryItem):
         # identical to HistoryAddedItem.redo, except for the slot_tab part
         path = self.slot_path or self.path.rsplit("/",1)[0]  # slot or parent
         widget = common.root.find_widget_from_path(path)
+        if widget is None:
+            # something was pasted/added to e.g. a panel which had a slot as child
+            parent_path, leaf = path.rsplit("/", 1)
+            assert leaf.startswith('SLOT ')
+            widget = common.root.find_widget_from_path(parent_path)
+
         if widget.IS_ROOT:# or widget.IS_CONTAINER:
             widget.clipboard_paste(self.xml_data, self.index)
         elif self.IS_SLOT:
