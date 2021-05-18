@@ -933,6 +933,7 @@ class wxGladeFrame(wx.Frame):
         misc.rebuild_tree(common.root)
         common.root.saved = True
         common.remove_autosaved()
+        if common.history: common.history.reset()
         if config.preferences.autosave and self.autosave_timer is not None:
             self.autosave_timer.Start()
 
