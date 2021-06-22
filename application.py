@@ -690,6 +690,8 @@ class Application(EditRoot):
             frame.Show()
             # install handler for key down events
             frame.Bind(wx.EVT_CHAR_HOOK, self.on_char_hook)
+            # keep a reference to the Close method in case it's overwritten by some widget
+            frame._close_method = preview_class.Close
 
             # remove the temporary file
             if not config.debugging:

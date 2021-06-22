@@ -781,7 +781,7 @@ class PreviewMixin(object):
                 compat.wxWindow_SendSizeEventToParent(self.preview_widget)
         else:
             self._preview_position = self.preview_widget.GetPosition()  # remember position
-            self.preview_widget.Close()
+            self.preview_widget._close_method(self.preview_widget)
             self.preview_widget = None
             new_label = _('Show Preview')
             if refresh: wx.CallAfter(self.on_preview)
