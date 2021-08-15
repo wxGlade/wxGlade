@@ -267,7 +267,7 @@ class All_Widgets_Frame(wx.Frame):
         self.radio_box_empty2 = wx.RadioBox(self.notebook_1_wxRadioBox, wx.ID_ANY, _("radio_box_empty2"), choices=[""], majorDimension=1, style=wx.RA_SPECIFY_COLS)
         grid_sizer_1.Add(self.radio_box_empty2, 1, wx.ALL | wx.EXPAND, 5)
 
-        self.radio_box_filled2 = wx.RadioBox(self.notebook_1_wxRadioBox, wx.ID_ANY, _("radio_box_filled2"), choices=[_("choice 1"), _("choice 2 (pre-selected)")], majorDimension=0, style=wx.RA_SPECIFY_COLS)
+        self.radio_box_filled2 = wx.RadioBox(self.notebook_1_wxRadioBox, wx.ID_ANY, _("radio_box_filled2"), choices=[_("choice 1 %"), _("choice 2 (pre-selected)")], majorDimension=0, style=wx.RA_SPECIFY_COLS)
         self.radio_box_filled2.SetSelection(1)
         grid_sizer_1.Add(self.radio_box_filled2, 1, wx.ALL | wx.EXPAND, 5)
 

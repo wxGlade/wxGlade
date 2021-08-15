@@ -226,7 +226,7 @@ All_Widgets_Frame::All_Widgets_Frame(wxWindow* parent, wxWindowID id, const wxSt
     radio_box_empty2 = new wxRadioBox(notebook_1_wxRadioBox, wxID_ANY, _("radio_box_empty2"), wxDefaultPosition, wxDefaultSize, 0, radio_box_empty2_choices, 1, wxRA_SPECIFY_COLS);
     grid_sizer_1->Add(radio_box_empty2, 1, wxALL|wxEXPAND, 5);
     const wxString radio_box_filled2_choices[] = {
-        _("choice 1"),
+        _("choice 1 %"),
         _("choice 2 (pre-selected)"),
     };
     radio_box_filled2 = new wxRadioBox(notebook_1_wxRadioBox, wxID_ANY, _("radio_box_filled2"), wxDefaultPosition, wxDefaultSize, 2, radio_box_filled2_choices, 0, wxRA_SPECIFY_COLS);

@@ -584,7 +584,7 @@
                                     <dimension>0</dimension>
                                     <selection>1</selection>
                                     <choices>
-                                        <choice>choice 1</choice>
+                                        <choice>choice 1 %</choice>
                                         <choice>choice 2 (pre-selected)</choice>
                                     </choices>
                                     <style>wxRA_SPECIFY_COLS</style>
