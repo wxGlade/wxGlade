@@ -296,7 +296,7 @@ sub new {
     $self->{radio_box_empty2} = Wx::RadioBox->new($self->{notebook_1_wxRadioBox}, wxID_ANY, _T("radio_box_empty2"), wxDefaultPosition, wxDefaultSize, [], 1, wxRA_SPECIFY_COLS);
     $self->{grid_sizer_1}->Add($self->{radio_box_empty2}, 1, wxALL|wxEXPAND, 5);
     
-    $self->{radio_box_filled2} = Wx::RadioBox->new($self->{notebook_1_wxRadioBox}, wxID_ANY, _T("radio_box_filled2"), wxDefaultPosition, wxDefaultSize, [_T("choice 1"), _T("choice 2 (pre-selected)")], 0, wxRA_SPECIFY_COLS);
+    $self->{radio_box_filled2} = Wx::RadioBox->new($self->{notebook_1_wxRadioBox}, wxID_ANY, _T("radio_box_filled2"), wxDefaultPosition, wxDefaultSize, [_T("choice 1 %"), _T("choice 2 (pre-selected)")], 0, wxRA_SPECIFY_COLS);
     $self->{radio_box_filled2}->SetSelection(1);
     $self->{grid_sizer_1}->Add($self->{radio_box_filled2}, 1, wxALL|wxEXPAND, 5);
     
