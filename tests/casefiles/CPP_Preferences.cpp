@@ -131,8 +131,8 @@ wxGladePreferencesUI::wxGladePreferencesUI(wxWindow* parent, wxWindowID id, cons
     notebook_1_pane_1->SetSizer(sizer_3);
     SetSizer(sizer_1);
     sizer_1->Fit(this);
-    SetAffirmativeId(ok->GetId())
-    SetEscapeId(cancel->GetId())
+    SetAffirmativeId(ok->GetId());
+    SetEscapeId(cancel->GetId());
     
     Layout();
     Centre();
