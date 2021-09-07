@@ -96,7 +96,7 @@
         
         (wxWindow_SetSizer (slot-panel-1 obj) (slot-sizer-1 obj))
         
-        (wxSizer_Fit ((slot-sizer-1 obj) obj) (slot-top-window obj))
+        (wxSizer_Fit (slot-sizer-1 obj) (slot-top-window obj))
         (wxFrame_layout (slot-frame-no-size self))
         )
 

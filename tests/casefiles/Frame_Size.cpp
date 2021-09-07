@@ -43,7 +43,7 @@ MyFrame::MyFrame(wxWindow* parent, wxWindowID id, const wxString& title, const w
     sizer_1->Add(button_1, 0, 0, 0);
     
     panel_1->SetSizer(sizer_1);
-    sizer_1->->Fit();
+    sizer_1->Fit();
     Layout();
 }
 

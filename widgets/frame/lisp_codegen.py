@@ -33,7 +33,7 @@ class LispFrameCodeGenerator(wcodegen.LispWidgetCodeWriter):
                 # add e.g. 'sizer.Fit(self)' if frame has no explicit size and the structure is frame->panel->sizer
                 sizer = panel.children[0]
                 tmpl = self.codegen.obj_builders[sizer.WX_CLASS].tmpl_Fit
-                d = {"sizer_name":self.codegen.format_generic_access(sizer),
+                d = {"sizer_name":self.codegen._format_classattr(sizer),
                      "parent_widget":self.codegen.format_generic_access(obj)}
                 ret.append( tmpl%d )
         ret.append( '(wxFrame_layout (slot-%s self))\n' % self.codegen._format_name(obj.name) )
