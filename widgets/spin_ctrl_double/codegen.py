@@ -58,9 +58,9 @@ class CppSpinCtrlDoubleGenerator(wcodegen.CppWidgetCodeWriter):
         ret = []
         name = self.tmpl_dict['name']
         if obj.properties["increment"].is_active():
-            ret.append( '%s.SetIncrement(%s);\n'%(name, obj.increment) )
+            ret.append( '%s->SetIncrement(%s);\n'%(name, obj.increment) )
         if obj.properties["digits"].is_active():
-            ret.append( '%s.SetDigits(%s);\n'%(name, obj.digits) )
+            ret.append( '%s->SetDigits(%s);\n'%(name, obj.digits) )
         return ret
 
 
