@@ -125,6 +125,7 @@ protected:
     wxSpinButton* spin_button;
     wxPanel* notebook_1_wxSpinCtrl;
     wxSpinCtrl* spin_ctrl_1;
+    wxSpinCtrlDouble* spin_ctrl_double_1;
     wxScrolledWindow* notebook_1_wxSplitterWindow_horizontal;
     wxSplitterWindow* splitter_1;
     wxPanel* splitter_1_pane_1;

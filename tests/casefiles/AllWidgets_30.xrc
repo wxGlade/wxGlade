@@ -648,16 +648,23 @@
                     <object class="wxPanel" name="notebook_1_wxSpinCtrl">
                         <style>wxTAB_TRAVERSAL</style>
                         <object class="wxBoxSizer">
-                            <orient>wxHORIZONTAL</orient>
+                            <orient>wxVERTICAL</orient>
                             <object class="sizeritem">
-                                <option>1</option>
-                                <flag>wxALL</flag>
+                                <flag>wxALL|wxEXPAND</flag>
                                 <border>5</border>
                                 <object class="wxSpinCtrl" name="spin_ctrl_1">
                                     <min>0</min>
                                     <max> 100</max>
                                     <style>wxALIGN_RIGHT|wxSP_ARROW_KEYS</style>
                                     <value>4</value>
+                                </object>
+                            </object>
+                            <object class="sizeritem">
+                                <object class="wxSpinCtrlDouble" name="spin_ctrl_double_1">
+                                    <digits>2</digits>
+                                    <min>0.0</min>
+                                    <max> 100.0</max>
+                                    <value>0.0</value>
                                 </object>
                             </object>
                         </object>

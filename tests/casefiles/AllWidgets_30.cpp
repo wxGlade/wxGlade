@@ -263,9 +263,12 @@ All_Widgets_Frame::All_Widgets_Frame(wxWindow* parent, wxWindowID id, const wxSt
     sizer_16->Add(spin_button, 1, wxALL, 5);
     notebook_1_wxSpinCtrl = new wxPanel(notebook_1, wxID_ANY);
     notebook_1->AddPage(notebook_1_wxSpinCtrl, _("wxSpinCtrl"));
-    wxBoxSizer* sizer_14 = new wxBoxSizer(wxHORIZONTAL);
+    wxBoxSizer* sizer_14 = new wxBoxSizer(wxVERTICAL);
     spin_ctrl_1 = new wxSpinCtrl(notebook_1_wxSpinCtrl, wxID_ANY, wxT("4"), wxDefaultPosition, wxDefaultSize, wxALIGN_RIGHT|wxSP_ARROW_KEYS, 0, 100);
-    sizer_14->Add(spin_ctrl_1, 1, wxALL, 5);
+    sizer_14->Add(spin_ctrl_1, 0, wxALL|wxEXPAND, 5);
+    spin_ctrl_double_1 = new wxSpinCtrlDouble(notebook_1_wxSpinCtrl, wxID_ANY, wxT("0.0"), wxDefaultPosition, wxDefaultSize, wxSP_ARROW_KEYS, 0.0, 100.0);
+    spin_ctrl_double_1->SetDigits(2);
+    sizer_14->Add(spin_ctrl_double_1, 0, 0, 0);
     notebook_1_wxSplitterWindow_horizontal = new wxScrolledWindow(notebook_1, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL);
     notebook_1_wxSplitterWindow_horizontal->SetScrollRate(10, 10);
     notebook_1->AddPage(notebook_1_wxSplitterWindow_horizontal, _("wxSplitterWindow (horizontally)"));

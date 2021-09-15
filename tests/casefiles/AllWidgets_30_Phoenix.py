@@ -319,10 +319,14 @@ class All_Widgets_Frame(wx.Frame):
         self.notebook_1_wxSpinCtrl = wx.Panel(self.notebook_1, wx.ID_ANY)
         self.notebook_1.AddPage(self.notebook_1_wxSpinCtrl, _("wxSpinCtrl"))
 
-        sizer_14 = wx.BoxSizer(wx.HORIZONTAL)
+        sizer_14 = wx.BoxSizer(wx.VERTICAL)
 
         self.spin_ctrl_1 = wx.SpinCtrl(self.notebook_1_wxSpinCtrl, wx.ID_ANY, "4", min=0, max=100, style=wx.ALIGN_RIGHT | wx.SP_ARROW_KEYS)
-        sizer_14.Add(self.spin_ctrl_1, 1, wx.ALL, 5)
+        sizer_14.Add(self.spin_ctrl_1, 0, wx.ALL | wx.EXPAND, 5)
+
+        self.spin_ctrl_double_1 = wx.SpinCtrlDouble(self.notebook_1_wxSpinCtrl, wx.ID_ANY, initial=0.0, min=0.0, max=100.0)
+        self.spin_ctrl_double_1.SetDigits(2)
+        sizer_14.Add(self.spin_ctrl_double_1, 0, 0, 0)
 
         self.notebook_1_wxSplitterWindow_horizontal = wx.ScrolledWindow(self.notebook_1, wx.ID_ANY, style=wx.TAB_TRAVERSAL)
         self.notebook_1_wxSplitterWindow_horizontal.SetScrollRate(10, 10)

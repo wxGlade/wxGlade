@@ -696,15 +696,25 @@
                     <object class="wxPanel" name="notebook_1_wxSpinCtrl" base="EditPanel">
                         <style>wxTAB_TRAVERSAL</style>
                         <object class="wxBoxSizer" name="sizer_14" base="EditBoxSizer">
-                            <orient>wxHORIZONTAL</orient>
+                            <orient>wxVERTICAL</orient>
                             <object class="sizeritem">
-                                <option>1</option>
+                                <option>0</option>
                                 <border>5</border>
-                                <flag>wxALL</flag>
+                                <flag>wxALL|wxEXPAND</flag>
                                 <object class="wxSpinCtrl" name="spin_ctrl_1" base="EditSpinCtrl">
-                                    <style>wxSP_ARROW_KEYS|wxTE_RIGHT</style>
+                                    <style>wxSP_ARROW_KEYS|wxALIGN_RIGHT</style>
                                     <range>0, 100</range>
                                     <value>4</value>
+                                </object>
+                            </object>
+                            <object class="sizeritem">
+                                <option>0</option>
+                                <border>0</border>
+                                <object class="wxSpinCtrlDouble" name="spin_ctrl_double_1" base="EditSpinCtrlDouble">
+                                    <style>wxSP_ARROW_KEYS</style>
+                                    <range>0.0, 100.0</range>
+                                    <value>0</value>
+                                    <digits>2</digits>
                                 </object>
                             </object>
                         </object>

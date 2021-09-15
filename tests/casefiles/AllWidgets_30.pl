@@ -348,10 +348,14 @@ sub new {
     $self->{notebook_1_wxSpinCtrl} = Wx::Panel->new($self->{notebook_1}, wxID_ANY);
     $self->{notebook_1}->AddPage($self->{notebook_1_wxSpinCtrl}, _T("wxSpinCtrl"));
     
-    $self->{sizer_14} = Wx::BoxSizer->new(wxHORIZONTAL);
+    $self->{sizer_14} = Wx::BoxSizer->new(wxVERTICAL);
     
     $self->{spin_ctrl_1} = Wx::SpinCtrl->new($self->{notebook_1_wxSpinCtrl}, wxID_ANY, "4", wxDefaultPosition, wxDefaultSize, wxALIGN_RIGHT|wxSP_ARROW_KEYS, 0, 100, 4);
-    $self->{sizer_14}->Add($self->{spin_ctrl_1}, 1, wxALL, 5);
+    $self->{sizer_14}->Add($self->{spin_ctrl_1}, 0, wxALL|wxEXPAND, 5);
+    
+    $self->{spin_ctrl_double_1} = Wx::SpinCtrlDouble->new($self->{notebook_1_wxSpinCtrl}, wxID_ANY, "0.0", wxDefaultPosition, wxDefaultSize, wxSP_ARROW_KEYS, 0.0, 100.0, 0.0);
+    $self->{spin_ctrl_double_1}->SetDigits(2);
+    $self->{sizer_14}->Add($self->{spin_ctrl_double_1}, 0, 0, 0);
     
     $self->{notebook_1_wxSplitterWindow_horizontal} = Wx::ScrolledWindow->new($self->{notebook_1}, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL);
     $self->{notebook_1_wxSplitterWindow_horizontal}->SetScrollRate(10, 10);
