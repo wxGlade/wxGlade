@@ -187,7 +187,7 @@ class WXGladeCLITest(WXGladeBaseTest):
     def generate(self, basename, excluded=None, included=None):
         "Load a wxGlade document 'basename' and generate code for all languages except the ones in list 'excluded'"
         languages = self._get_languages(excluded, included)
-        infilename = self._get_casefile_path( '%s.wxg'%basename )
+        infilename = self._get_inputfile_path( '%s.wxg'%basename )
 
         if compat.PYTHON2:
             # the languages that failed due to differences to expected files
