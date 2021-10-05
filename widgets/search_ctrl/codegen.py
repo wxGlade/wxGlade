@@ -27,19 +27,20 @@ class PythonSearchCtrlGenerator(wcodegen.PythonWidgetCodeWriter):
 
 
 class CppSearchCtrlGenerator(wcodegen.CppWidgetCodeWriter):
+    import_modules = ['<wx/srchctrl.h>']
     tmpl = '%(name)s = new %(klass)s(%(parent)s, %(id)s, %(value)s%(style)s);\n'
     def get_more_properties_code(self, obj):
         ret = []
         name = self.tmpl_dict['name']
         if not obj.search_button:
-            ret.append( '%s.ShowSearchButton(false);\n'%name )
+            ret.append( '%s->ShowSearchButton(false);\n'%name )
         if obj.cancel_button:
-            ret.append( '%s.ShowCancelButton(true);\n'%name )
+            ret.append( '%s->ShowCancelButton(true);\n'%name )
         if obj.properties["descriptive_text"].is_active():
             text =  self.codegen.quote_str(obj.descriptive_text)
-            ret.append( '%s.SetDescriptiveText(%s);\n'%(name, text) )
+            ret.append( '%s->SetDescriptiveText(%s);\n'%(name, text) )
         if obj.properties["max_length"].is_active():
-            ret.append( '%s.SetMaxLength(%d);\n'%(name, obj.max_length) )
+            ret.append( '%s->SetMaxLength(%d);\n'%(name, obj.max_length) )
         return ret
 
 
