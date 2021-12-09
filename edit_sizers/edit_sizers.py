@@ -57,7 +57,8 @@ class SizerSlot(edit_base.Slot):
                 if add_to_sizer:
                     sizer.widget.Add(self.widget, self.index, self.span, wx.EXPAND, self.border)
         self.properties["info"].set( self._get_tooltip() )
-        common.app_tree.refresh(self)  # XXX indicate overlapped slots
+        if config.use_gui:
+            common.app_tree.refresh(self)  # XXX indicate overlapped slots
 
     def check_drop_compatibility(self):
         if self.overlapped:
