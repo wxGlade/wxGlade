@@ -46,6 +46,7 @@ class SizerSlot(edit_base.Slot):
         # interface from GridBagSizer; so self.parent is a sizer
         if overlapped==self.overlapped: return
         self.overlapped = overlapped
+        if not config.use_gui: return
         sizer = self.parent
         if overlapped:
             if self.widget:
@@ -57,8 +58,7 @@ class SizerSlot(edit_base.Slot):
                 if add_to_sizer:
                     sizer.widget.Add(self.widget, self.index, self.span, wx.EXPAND, self.border)
         self.properties["info"].set( self._get_tooltip() )
-        if config.use_gui:
-            common.app_tree.refresh(self)  # XXX indicate overlapped slots
+        common.app_tree.refresh(self)  # XXX indicate overlapped slots
 
     def check_drop_compatibility(self):
         if self.overlapped:
