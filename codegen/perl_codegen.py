@@ -204,7 +204,7 @@ sub %(handler)s {
     tmpl_func_empty = '%(tab)sreturn;\n'
 
     tmpl_sizeritem = '%s->Add(%s, %s, %s, %s);\n'
-    tmpl_gridbagsizeritem = '%s->Add(%s, %s, %s, %s, %s);\n'
+    tmpl_gridbagsizeritem = '%s->Add(%s, Wx::GBPosition->new%s, Wx::GBSpan->new%s, %s, %s);\n'
     tmpl_gridbagsizerspacer = '%s->Add(%s, %s, %s, %s, %s, %s);\n'
     tmpl_spacersize = '%s, %s'
 
