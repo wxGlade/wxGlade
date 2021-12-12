@@ -2942,6 +2942,7 @@ class GridProperty(Property):
         self.on_focus()
         row,col = event.Row, event.Col
         value = event.GetEventObject().GetCellValue(row, col) # event.GetString would return the old value here
+        if event.GetString()==value:
             # no change; this can happend due to a call to SafeYield when 'sizeevent' is required
             return event.Veto()
         if not self._validate(row, col, value):
