@@ -1387,7 +1387,7 @@ class TextProperty(Property):
             if self.multiline: # for multiline make it higher
                 h = self.text.GetCharHeight()
                 if self.multiline=="grow":
-                    hsizer.SetItemMinSize(self.text, 100, h * 1.5)
+                    hsizer.SetItemMinSize(self.text, 100, int(round(h*1.5)))
                 else:
                     hsizer.SetItemMinSize(self.text, 100, h * 4)
             if self.fixed_height or self.multiline=="grow":
@@ -1401,7 +1401,7 @@ class TextProperty(Property):
             if self.multiline: # for multiline make it higher
                 h = self.text.GetCharHeight()
                 if self.multiline=="grow":
-                    hsizer.SetItemMinSize(self.text, -1, h * 1.5)
+                    hsizer.SetItemMinSize(self.text, -1, int(round(h*1.5)))
                     proportion = 0
                 else:
                     hsizer.SetItemMinSize(self.text, -1, h * 3)
