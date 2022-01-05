@@ -62,6 +62,7 @@ class PropertyValue(object):
 class HistoryItem(object):
     def __init__(self, prop):
         self.path = prop.owner.get_path()
+        self.path2 = None  # can be different if the name of the widget has been changed
         self.name = prop.name
 
     def get_key(self):
@@ -78,6 +79,7 @@ class HistoryPropertyItem(HistoryItem):
 
     def finalize(self, monitor):
         self.new = PropertyValue(self._prop)
+        self.path2 = self._prop.owner.get_path()
         self._prop = None
         # check whether other, depending properties were changed as well
         for prop, old in monitor:
@@ -86,7 +88,7 @@ class HistoryPropertyItem(HistoryItem):
                 self.dependent.append( [prop.owner.get_path(), prop.name, old, new] )
 
     def undo(self):
-        owner = common.root.find_widget_from_path(self.path)
+        owner = common.root.find_widget_from_path(self.path2)
         p = owner.properties[self.name]
         self.old.set(p)
         changed = [self.name]

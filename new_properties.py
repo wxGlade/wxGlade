@@ -3137,10 +3137,15 @@ class GridProperty(Property):
     def add_row(self, row=None, set_index=False, delay=True):
         self.on_focus()
         values = self._ensure_editing_copy()
+        new_row_values = self._get_default_row( len(values) )
         if row is None:
             row = len(values)
             if self.can_add and self.immediate: row += 1
-        values.append( self._get_default_row( len(values) ) )
+
+        if self.immediate and (not self.SKIP_EMPTY or any(new_row_values)):
+            common.history.property_changing(self)
+
+        values.append( new_row_values )
 
         if self.with_index:
             self.indices.append("")
@@ -3153,6 +3158,10 @@ class GridProperty(Property):
             wx.CallLater(100, self._add_grid_row, row, set_index)
         else:
             self._add_grid_row(row, set_index)
+
+        if self.immediate and (not self.SKIP_EMPTY or any(new_row_values)):
+            self._notify()
+            common.history.property_changed(self)
 
     def _add_grid_row(self, row, set_index=False):
         # called via CallAfter from add_row; either when "Add" is required or when the user has edited the last row
@@ -3188,6 +3197,12 @@ class GridProperty(Property):
         if not self.can_remove_last and self.grid.GetNumberRows()==1:
             self._logger.warning( _('You can not remove the last entry!') )
             return
+
+        if values and self.SKIP_EMPTY:
+            row_is_not_empty = any(values[row])
+        if self.immediate and (not self.SKIP_EMPTY or row_is_not_empty):
+            common.history.property_changing(self)
+
         if values:
             self.grid.DeleteRows(self.cur_row)
             del values[row]
@@ -3200,6 +3215,9 @@ class GridProperty(Property):
         self._update_apply_button()
         self._update_indices()
         self._set_index()
+        if self.immediate and (not self.SKIP_EMPTY or row_is_not_empty):
+            self._notify()
+            common.history.property_changed(self)
 
     def on_button_insert(self, event):
         if self._last_focus=="grid":
@@ -3215,9 +3233,14 @@ class GridProperty(Property):
         self.grid.InsertRows(self.cur_row)
         self.grid.MakeCellVisible(self.cur_row, 0)
         self.grid.ForceRefresh()
+
         values = self._ensure_editing_copy()
-        row = self._get_default_row(self.cur_row)
-        values.insert(self.cur_row, row)
+        new_row_values = self._get_default_row(self.cur_row)
+
+        if self.immediate and (not self.SKIP_EMPTY or any(new_row_values)):
+            common.history.property_changing(self)
+
+        values.insert(self.cur_row, new_row_values)
         if self.cur_row==-1: self.cur_row=0
         if self.with_index:
             self.indices.insert(self.cur_row, "")
@@ -3227,6 +3250,10 @@ class GridProperty(Property):
         self._update_apply_button()
         self._update_indices()
         self._set_index()
+
+        if self.immediate and (not self.SKIP_EMPTY or any(new_row_values)):
+            self._notify()
+            common.history.property_changed(self)
 
     def _ensure_editing_copy(self):
         if self.immediate: return self.value
