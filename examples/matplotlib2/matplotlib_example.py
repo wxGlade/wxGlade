@@ -11,6 +11,7 @@ class MyFrame(matplotlib_GUI.MyFrame):
 
     def on_button_plot(self, event):
         import numpy
+        # check arguments and indicate errors
         xmin = xmax = step = None
         try:
             xmin = float( self.text_xmin.GetValue() )
@@ -27,7 +28,10 @@ class MyFrame(matplotlib_GUI.MyFrame):
             self.text_xstep.SetBackgroundColour(wx.WHITE)
         except:
             self.text_xstep.SetBackgroundColour(wx.RED)
-            
+
+        if xmin is None or xmax is None or step is None: return
+
+        # plot y = f(x)
         x = numpy.arange(xmin, xmax, step)
         # build globals with some functions
         g = {}
