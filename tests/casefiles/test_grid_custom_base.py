@@ -17,7 +17,7 @@ class TestGlade(wx.Panel):
 
         main_sizer = wx.BoxSizer(wx.HORIZONTAL)
 
-        self.grid = my_grid.MyGrid(self, wx.ID_ANY, size=(1, 1))
+        self.grid = my_grid.MyGrid(self, wx.ID_ANY)
         self.grid.CreateGrid(0, 1)
         self.grid.SetRowLabelSize(0)
         self.grid.SetColLabelSize(0)

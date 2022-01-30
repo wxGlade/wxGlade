@@ -199,7 +199,7 @@ class MyFrameGrid(wx.Frame):
         self.grid_sizer = wx.FlexGridSizer(3, 1, 0, 0)
         self._szr_frame.Add(self.grid_sizer, 1, wx.EXPAND, 0)
 
-        self.grid = wx.grid.Grid(self, wx.ID_ANY, size=(1, 1))
+        self.grid = wx.grid.Grid(self, wx.ID_ANY)
         self.grid.CreateGrid(8, 3)
         self.grid_sizer.Add(self.grid, 1, wx.EXPAND, 0)
 

@@ -22,7 +22,7 @@ class MyFrame(wx.Frame):
 
         sizer_1 = wx.BoxSizer(wx.VERTICAL)
 
-        self.grid_1 = wx.grid.Grid(self, wx.ID_ANY, size=(1, 1))
+        self.grid_1 = wx.grid.Grid(self, wx.ID_ANY)
         self.grid_1.CreateGrid(2, 2)
         self.grid_1.SetGridLineColour(wx.Colour(255, 0, 0))
         self.grid_1.SetLabelBackgroundColour(wx.Colour(216, 191, 216))

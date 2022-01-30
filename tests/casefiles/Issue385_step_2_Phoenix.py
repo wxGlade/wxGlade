@@ -22,7 +22,7 @@ class MyFrame(wx.Frame):
         self.SetSize((400, 682))
         self.SetTitle("frame")
 
-        self.grid_1 = wx.grid.Grid(self, wx.ID_ANY, size=(1, 1))
+        self.grid_1 = wx.grid.Grid(self, wx.ID_ANY)
         self.grid_1.CreateGrid(10, 0)
         self.Layout()
         # end wxGlade

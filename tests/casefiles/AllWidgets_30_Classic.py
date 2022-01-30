@@ -210,7 +210,7 @@ class All_Widgets_Frame(wx.Frame):
 
         sizer_19 = wx.BoxSizer(wx.HORIZONTAL)
 
-        self.grid_1 = wx.grid.Grid(self.notebook_1_wxGrid, wx.ID_ANY, size=(1, 1))
+        self.grid_1 = wx.grid.Grid(self.notebook_1_wxGrid, wx.ID_ANY)
         self.grid_1.CreateGrid(10, 3)
         self.grid_1.SetSelectionMode(wx.grid.Grid.SelectColumns)
         self.grid_1.SetColLabelValue(1, _("B\nB"))
