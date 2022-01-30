@@ -35,3 +35,6 @@ docs/html/_sources/*.*
 /tests/test_gui_new_38-64.py
 *.xpm
 *.xcf
+/tests/test_bugs_new_310-64.py
+/tests/test_cli_27.py
+/tests/test_gui_new_310-64.py
