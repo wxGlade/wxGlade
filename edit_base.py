@@ -325,9 +325,11 @@ class EditBase(np.PropertyOwner):
         if self.IS_WINDOW: self.widget.SendSizeEvent()
         parent_window = self.parent_window
         parent_window.widget.SendSizeEvent()
-        if hasattr(self.widget, "SendSizeEvent") and wx.Platform == '__WXGTK__':
-            # following is required for gtk when e.g. pasting a button or label with non-standard font
-            # on Windows or Mac Os it's not required
+        if ( hasattr(self.widget, "SendSizeEvent") and not self.IS_SIZER and
+             (wx.Platform == '__WXGTK__' or not self.parent.IS_SIZER) ):
+            # following is required for
+            # - gtk when e.g. pasting a button or label with non-standard font; not for Windows or Mac Os
+            # - adding e.g. a grid or text control to a frame (without a sizer); not for panel
             wx.SafeYield()
             compat.wxWindow_SendSizeEventToParent(self.widget)
         # following is required when e.g. adding a slot or widget to a sizer on a panel in a sizer
