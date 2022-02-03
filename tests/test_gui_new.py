@@ -94,6 +94,10 @@ class TestGui(WXGladeGUITest):
         # revision 1.1: test frame 'min_size' and managed 'max_size'
         self.load_and_generate('Sizes_FrameMin_ManagedMax', test_GUI=True)
 
+    def test_event_binding(self):
+        "bind mouse events for/to button, panel, frame; will not work if bound to frame"
+        self.load_and_generate('Event_Binding', test_GUI=False)
+
     def test_Grid(self):
         "Test code generation with a grid widgets and handling events"
         self.load_and_generate('Grid', test_GUI=False)
