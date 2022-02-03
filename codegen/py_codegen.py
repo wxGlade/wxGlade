@@ -387,7 +387,7 @@ from %(top_win_module)s import %(top_win_class)s\n\n"""
             if 'EVT_NAVIGATION_KEY' in event:
                 tmpl = '%(tab)sself.Bind(%(event)s, %(handler)s)\n'
             else:
-                tmpl = '%(tab)sself.Bind(%(event)s, %(handler)s, %(obj_name_id)s)\n'
+                tmpl = '%(tab)s%(obj_name_id)s.Bind(%(event)s, %(handler)s)\n'
 
             lines = [tmpl % {'tab':tab, 'event':self.cn(event), 'handler':handler, 'obj_name_id':obj_name_id}]
 
