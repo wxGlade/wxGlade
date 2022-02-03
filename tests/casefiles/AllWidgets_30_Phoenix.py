@@ -575,10 +575,10 @@ class All_Widgets_Frame(wx.Frame):
         self.Layout()
         self.Centre()
 
-        self.Bind(wx.EVT_NOTEBOOK_PAGE_CHANGED, self.OnNotebookPageChanged, self.notebook_1)
-        self.Bind(wx.EVT_NOTEBOOK_PAGE_CHANGING, self.OnNotebookPageChanging, self.notebook_1)
+        self.notebook_1.Bind(wx.EVT_NOTEBOOK_PAGE_CHANGED, self.OnNotebookPageChanged)
+        self.notebook_1.Bind(wx.EVT_NOTEBOOK_PAGE_CHANGING, self.OnNotebookPageChanging)
         self.Bind(wx.EVT_NAVIGATION_KEY, self.OnBitmapButtonPanelNavigationKey)
-        self.Bind(wx.EVT_BUTTON, self.onStartConverting, self.button_1)
+        self.button_1.Bind(wx.EVT_BUTTON, self.onStartConverting)
         # end wxGlade
 
     def onSelectUnix(self, event):  # wxGlade: All_Widgets_Frame.<event_handler>

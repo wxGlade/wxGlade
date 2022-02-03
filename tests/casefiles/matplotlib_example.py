@@ -87,7 +87,7 @@ class MyFrame(wx.Frame):
 
         self.Layout()
 
-        self.Bind(wx.EVT_BUTTON, self.on_button_plot, self.button_plot)
+        self.button_plot.Bind(wx.EVT_BUTTON, self.on_button_plot)
         # end wxGlade
         # some extra code at end of MyFrame
 

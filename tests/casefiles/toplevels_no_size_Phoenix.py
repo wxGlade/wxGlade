@@ -97,9 +97,9 @@ class wxgMeasurementsByDayPnl(wx.Panel):
 
         self.Layout()
 
-        self.Bind(wx.EVT_LIST_ITEM_SELECTED, self._on_day_selected, self._LCTRL_days)
-        self.Bind(wx.EVT_LIST_ITEM_SELECTED, self._on_result_selected, self._LCTRL_results)
-        self.Bind(wx.EVT_BUTTON, self._on_show_docs_button_pressed, self._BTN_show_docs)
+        self._LCTRL_days.Bind(wx.EVT_LIST_ITEM_SELECTED, self._on_day_selected)
+        self._LCTRL_results.Bind(wx.EVT_LIST_ITEM_SELECTED, self._on_result_selected)
+        self._BTN_show_docs.Bind(wx.EVT_BUTTON, self._on_show_docs_button_pressed)
         # end wxGlade
 
     def _on_day_selected(self, event):  # wxGlade: wxgMeasurementsByDayPnl.<event_handler>
@@ -137,8 +137,8 @@ class wxgMeasurementsByDayPnl(wx.Panel):
 
         self.Layout()
 
-        self.Bind(wx.EVT_LIST_ITEM_SELECTED, self._on_day_selected, self._LCTRL_days)
-        self.Bind(wx.EVT_LIST_ITEM_SELECTED, self._on_day_selected, self._LCTRL_days_copy)
+        self._LCTRL_days.Bind(wx.EVT_LIST_ITEM_SELECTED, self._on_day_selected)
+        self._LCTRL_days_copy.Bind(wx.EVT_LIST_ITEM_SELECTED, self._on_day_selected)
         # end wxGlade
 
     def _on_day_selected(self, event):  # wxGlade: wxgMeasurementsByDayPnl.<event_handler>
@@ -214,9 +214,9 @@ class MyFrame1(wx.Frame):
 
         self.Layout()
 
-        self.Bind(wx.EVT_LIST_ITEM_SELECTED, self._on_day_selected, self._LCTRL_days)
-        self.Bind(wx.EVT_LIST_ITEM_SELECTED, self._on_result_selected, self._LCTRL_results)
-        self.Bind(wx.EVT_BUTTON, self._on_show_docs_button_pressed, self._BTN_show_docs)
+        self._LCTRL_days.Bind(wx.EVT_LIST_ITEM_SELECTED, self._on_day_selected)
+        self._LCTRL_results.Bind(wx.EVT_LIST_ITEM_SELECTED, self._on_result_selected)
+        self._BTN_show_docs.Bind(wx.EVT_BUTTON, self._on_show_docs_button_pressed)
         # end wxGlade
 
     def _on_day_selected(self, event):  # wxGlade: MyFrame1.<event_handler>

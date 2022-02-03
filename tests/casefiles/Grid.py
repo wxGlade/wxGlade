@@ -38,7 +38,7 @@ class MyFrame(wx.Frame):
 
         self.Layout()
 
-        self.Bind(wx.grid.EVT_GRID_CMD_CELL_LEFT_CLICK, self.myEVT_GRID_CELL_LEFT_CLICK, self.grid_1)
+        self.grid_1.Bind(wx.grid.EVT_GRID_CMD_CELL_LEFT_CLICK, self.myEVT_GRID_CELL_LEFT_CLICK)
         # end wxGlade
 
     def myEVT_GRID_CELL_LEFT_CLICK(self, event):  # wxGlade: MyFrame.<event_handler>

@@ -164,7 +164,7 @@ class PyOgg2_MyFrame(wx.Frame):
         self.Layout()
         self.Centre()
 
-        self.Bind(wx.EVT_BUTTON, self.startConverting, self.button_1)
+        self.button_1.Bind(wx.EVT_BUTTON, self.startConverting)
         # end wxGlade
 
     def OnOpen(self, event):  # wxGlade: PyOgg2_MyFrame.<event_handler>

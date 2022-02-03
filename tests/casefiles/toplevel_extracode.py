@@ -33,8 +33,8 @@ class MyFrame(wx.Frame):
         self.Layout()
         # frame extra code after
 
-        self.Bind(wx.EVT_CLOSE, self.on_close_frame, self)
-        self.Bind(wx.EVT_MENU_CLOSE, self.on_menu_close_frame, self)
+        self.Bind(wx.EVT_CLOSE, self.on_close_frame)
+        self.Bind(wx.EVT_MENU_CLOSE, self.on_menu_close_frame)
         # end wxGlade
 
     def on_close_frame(self, event):  # wxGlade: MyFrame.<event_handler>
@@ -65,7 +65,7 @@ class MyDialog(wx.Dialog):
         self.Layout()
         # dialog extra code after
 
-        self.Bind(wx.EVT_CLOSE, self.on_close_dialog, self)
+        self.Bind(wx.EVT_CLOSE, self.on_close_dialog)
         # end wxGlade
 
     def on_close_dialog(self, event):  # wxGlade: MyDialog.<event_handler>

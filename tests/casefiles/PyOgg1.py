@@ -128,7 +128,7 @@ class PyOgg1_MyDialog(wx.Dialog):
         self.Layout()
         self.Centre()
 
-        self.Bind(wx.EVT_BUTTON, self.startConverting, self.button_1)
+        self.button_1.Bind(wx.EVT_BUTTON, self.startConverting)
         # end wxGlade
 
     def __set_properties(self):
