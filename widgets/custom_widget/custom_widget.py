@@ -182,13 +182,13 @@ class CustomWidget(ManagedBase):
 
 class Dialog(wx.Dialog):
     import re
-    validation_re  = re.compile(r'^[a-zA-Z_\.]+[\w-]*(\[\w*\])*$')  # does not avoid ".."
+    validation_re  = re.compile(r'^[a-zA-Z_\.\:]+[\w-]*(\[\w*\])*$')  # does not avoid ".."
     def __init__(self):
         title = _('Enter widget class')
         wx.Dialog.__init__(self, None, -1, title, wx.GetMousePosition())
         klass = 'CustomWidget'
 
-        self.classname = wx.TextCtrl(self, -1, klass)
+        self.classname = wx.TextCtrl(self, -1, klass, size=(200,-1))
         sizer = wx.BoxSizer(wx.VERTICAL)
         hsizer = wx.BoxSizer(wx.HORIZONTAL)
         hsizer.Add(wx.StaticText(self, -1, _('Instance class')), 0, wx.ALL | wx.ALIGN_CENTER_VERTICAL, 5)
@@ -206,7 +206,7 @@ class Dialog(wx.Dialog):
         self.SetAutoLayout(True)
         self.SetSizer(sizer)
         sizer.Fit(self)
-        w = self.GetTextExtent(title)[0] + 50
+        w = self.GetTextExtent(title)[0] *2
         if self.GetSize()[0] < w:
             self.SetSize((w, -1))
         self.classname.Bind(wx.EVT_TEXT, self.validate)
@@ -215,6 +215,7 @@ class Dialog(wx.Dialog):
         class_name = self.classname.GetValue()
         OK = bool( self.validation_re.match(class_name) )
         if ".." in class_name or class_name.endswith("."): OK = False
+        if class_name.startswith(":") or (":" in class_name and not "::" in class_name): OK = False
         self.OK_button.Enable( OK )
 
 
