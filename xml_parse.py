@@ -316,7 +316,7 @@ class ProgressXmlWidgetBuilder(XmlWidgetBuilder):
             self.size = len(self.input_file.readlines())
             self.input_file.seek(0)
             import wx
-            self.progress = wx.ProgressDialog( _("Loading..."), _("Please wait while loading the app"), 20 )
+            self.progress = wx.ProgressDialog( _("Loading..."), _("Please wait while loading the app"), 20, common.main )
             self.step = 4
             self.i = 1
             self._last_progress_update = time.time()
