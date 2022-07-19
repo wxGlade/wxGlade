@@ -38,7 +38,7 @@ for INTERPRETER in $INTERPRETER_LIST; do
   PYTHON_BIN=$INTERPRETER
 
   # determined current python version
-  PY_VERSION=$(${PYTHON_BIN} -c 'import re, sys; print(re.match(r"^([0-9]+.[0-9]+)", sys.version).group())')
+  PY_VERSION=$(${PYTHON_BIN} -c 'import platform; print(".".join(platform.python_version_tuple()[:2]))')
 
   EGG_DIR="wxGlade-${WXG_VERSION}-py${PY_VERSION}.egg"
 
