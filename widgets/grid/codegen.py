@@ -2,8 +2,7 @@
 Code generator functions for wxGrid objects
 
 @copyright: 2002-2007 Alberto Griggio
-@copyright: 2016-2020 Dietmar Schwertberger
-@copyright: 2017 Dietmar Schwertberger
+@copyright: 2016-2022 Dietmar Schwertberger
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
@@ -16,12 +15,12 @@ class PythonCodeGenerator(wcodegen.PythonWidgetCodeWriter):
     import_modules = ['import wx.grid\n']
 
     def cn(self, c):
-        #self._logger.debug('PythonStaticTextGenerator.cn with arg:', c)
-        # TODO remove ugly hack for wxColour
-        if c == 'wxColour':
-            return wcodegen.PythonWidgetCodeWriter.cn(self, c)
-        if c[:2] == 'wx':
-            c = c[2:]
+        if c.startswith("EVT_GRID_"): return self.grid_cn(c)
+        return wcodegen.PythonWidgetCodeWriter.cn(self, c)
+
+    def grid_cn(self, c):
+        # for wxGrid class
+        if c[:2] == 'wx': c = c[2:]
         return 'wx.grid.' + c
 
     def get_code(self, obj):
@@ -30,7 +29,7 @@ class PythonCodeGenerator(wcodegen.PythonWidgetCodeWriter):
         init = []
         if id_name:
             init.append(id_name)
-        klass = obj.get_instantiation_class(self.cn, self.cn_class, self.codegen.preview)
+        klass = obj.get_instantiation_class(self.grid_cn, self.cn_class, self.codegen.preview)
         init.append('self.%s = %s(%s, %s)\n' % (obj.name, klass, parent, id))
         init += self.get_properties_code(obj)
         return init, []
@@ -66,7 +65,7 @@ class PythonCodeGenerator(wcodegen.PythonWidgetCodeWriter):
         sel_mode = obj.properties["selection_mode"].get_string_value()
         if sel_mode and sel_mode != 'wxGrid.wxGridSelectCells':
             sel_mode = sel_mode.replace('wxGrid.wxGrid','')
-            out.append('%s.SetSelectionMode(%s)\n' % (name, self.cn('wxGrid') + "." + sel_mode))
+            out.append( '%s.SetSelectionMode(%s)\n' % (name, self.grid_cn('wxGrid') + "." + sel_mode) )
 
         # set columns
         for i, (label, size) in enumerate(columns):
