@@ -98,6 +98,11 @@ Sizer Examples
 .. |gridbag| image:: images/gridbag.png
     :width: 300
 
+.. |wrap1| image:: images/wrap1.png
+    :width: 300
+.. |wrap2| image:: images/wrap2.png
+    :width: 215
+
 .. list-table::
    :widths: 60 40
    :header-rows: 0
@@ -174,6 +179,12 @@ Sizer Examples
        * All the buttons have their EXPAND property set so that they fill all the space in the cell(s).
 
      - |gridbag|
+   * - **WrapSizer**
+
+       * This sizer is similar to a BoxSizer, but allows to overflow to multiple rows/columns.
+       * The example shows the same sizer with three buttons with two different widths of the containing frame.
+
+     - |wrap1|   |wrap2|
 
 
 
