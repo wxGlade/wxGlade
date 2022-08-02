@@ -16,6 +16,7 @@
 #include <wx/image.h>
 
 // begin wxGlade: ::dependencies
+#include <wx/grid.h>
 // end wxGlade
 
 // begin wxGlade: ::extracode
@@ -35,6 +36,7 @@ protected:
     // begin wxGlade: MyFrame::attributes
     wxPanel* panel_1;
     wxButton* button_1;
+    wxGrid* grid_1;
     // end wxGlade
 
     DECLARE_EVENT_TABLE();
@@ -44,6 +46,8 @@ public:
     virtual void on_button(wxCommandEvent &event); // wxGlade: <event_handler>
     virtual void on_left_down(wxCommandEvent &event); // wxGlade: <event_handler>
     virtual void on_mouse_events(wxCommandEvent &event); // wxGlade: <event_handler>
+    virtual void on_grid_cmd_cell_changed(wxGridEvent &event); // wxGlade: <event_handler>
+    virtual void on_grid_text_enter(wxGridEvent &event); // wxGlade: <event_handler>
     virtual void on_left_down_frame(wxCommandEvent &event); // wxGlade: <event_handler>
 }; // wxGlade: end class
 

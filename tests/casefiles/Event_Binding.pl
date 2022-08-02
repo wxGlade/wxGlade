@@ -44,6 +44,11 @@ sub new {
     $self->{button_1} = Wx::Button->new($self->{panel_1}, wxID_ANY, "button_1");
     $self->{sizer_1}->Add($self->{button_1}, 0, 0, 0);
     
+    $self->{grid_1} = Wx::Grid->new($self->{panel_1}, wxID_ANY);
+    $self->{grid_1}->CreateGrid(10, 4);
+    $self->{grid_1}->SetSelectionMode(wxGridSelectRows);
+    $self->{sizer_1}->Add($self->{grid_1}, 1, wxEXPAND, 0);
+    
     $self->{panel_1}->SetSizer($self->{sizer_1});
     
     $self->Layout();
@@ -51,6 +56,8 @@ sub new {
     Wx::Event::EVT_BUTTON($self, $self->{button_1}->GetId, $self->can('on_button'));
     Wx::Event::EVT_LEFT_DOWN($self, $self->{button_1}->GetId, $self->can('on_left_down'));
     Wx::Event::EVT_MOUSE_EVENTS($self, $self->{button_1}->GetId, $self->can('on_mouse_events'));
+    Wx::Event::EVT_GRID_CMD_CELL_CHANGED($self, $self->{grid_1}->GetId, $self->can('on_grid_cmd_cell_changed'));
+    Wx::Event::EVT_TEXT_ENTER($self, $self->{grid_1}->GetId, $self->can('on_grid_text_enter'));
     Wx::Event::EVT_LEFT_DOWN($self, $self->GetId, $self->can('on_left_down_frame'));
 
     # end wxGlade
@@ -90,6 +97,24 @@ sub on_mouse_events {
     my ($self, $event) = @_;
     # wxGlade: MyFrame::on_mouse_events <event_handler>
     warn "Event handler (on_mouse_events) not implemented";
+    $event->Skip;
+    # end wxGlade
+}
+
+
+sub on_grid_cmd_cell_changed {
+    my ($self, $event) = @_;
+    # wxGlade: MyFrame::on_grid_cmd_cell_changed <event_handler>
+    warn "Event handler (on_grid_cmd_cell_changed) not implemented";
+    $event->Skip;
+    # end wxGlade
+}
+
+
+sub on_grid_text_enter {
+    my ($self, $event) = @_;
+    # wxGlade: MyFrame::on_grid_text_enter <event_handler>
+    warn "Event handler (on_grid_text_enter) not implemented";
     $event->Skip;
     # end wxGlade
 }
