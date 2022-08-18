@@ -422,6 +422,13 @@ class wxGladeFrame(wx.Frame):
         self.create_statusbar()  # create statusbar for display of messages
 
         self.Show()
+
+        w, h = self.GetSize()
+        if w>size[0] or h>size[1]:
+            # can happen on e.g. Linux due to menu/tool/status bar
+            new_size = ( 2*size[0] - w, 2*size[1] - h )
+            self.SetSize(new_size)
+
         #misc.set_focused_widget(common.root)
         self.Bind(wx.EVT_CLOSE, self.on_close)
 

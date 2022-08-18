@@ -15,6 +15,7 @@
 (use-package :wxEvent)
 (use-package :wxEvtHandler)
 (use-package :wxFrame)
+(use-package :wxGrid)
 (use-package :wxPanel)
 (use-package :wxSizer)
 (use-package :wxWindow)
@@ -30,7 +31,8 @@
         ((top-window :initform nil :accessor slot-top-window)
         (panel-1 :initform nil :accessor slot-panel-1)
         (sizer-1 :initform nil :accessor slot-sizer-1)
-        (button-1 :initform nil :accessor slot-button-1)))
+        (button-1 :initform nil :accessor slot-button-1)
+        (grid-1 :initform nil :accessor slot-grid-1)))
 
 (defun make-MyFrame ()
         (let ((obj (make-instance 'MyFrame)))
@@ -53,6 +55,11 @@
         (setf (slot-button-1 obj) (wxButton_Create (slot-panel-1 obj) wxID_ANY "button_1" -1 -1 -1 -1 0))
         (wxSizer_AddWindow (slot-sizer-1 obj) (slot-button-1 obj) 0 0 0 nil)
         
+        (setf (slot-grid-1 obj) (wxGrid_Create (slot-panel-1 obj) wxID_ANY -1 -1 -1 -1 wxWANTS_CHARS))
+        (wxGrid_CreateGrid (slot-grid-1 obj) 10 4 0)
+        (wxGrid_SetSelectionMode (slot-grid-1 obj) wxGridSelectRows)
+        (wxSizer_AddWindow (slot-sizer-1 obj) (slot-grid-1 obj) 1 wxEXPAND 0 nil)
+        
         (wxWindow_SetSizer (slot-panel-1 obj) (slot-sizer-1 obj))
         
         (wxFrame_layout (slot-frame self))
@@ -65,6 +72,10 @@
         (wxClosure_Create #'on_left_down obj))
         (wxEvtHandler_Connect (slot-top-window obj) obj.button-1 (expwxEVT_MOUSE_EVENTS)
         (wxClosure_Create #'on_mouse_events obj))
+        (wxEvtHandler_Connect (slot-top-window obj) obj.grid-1 (expwxEVT_GRID_CMD_CELL_CHANGED)
+        (wxClosure_Create #'on_grid_cmd_cell_changed obj))
+        (wxEvtHandler_Connect (slot-top-window obj) obj.grid-1 (expwxEVT_TEXT_ENTER)
+        (wxClosure_Create #'on_grid_text_enter obj))
         (wxEvtHandler_Connect (slot-top-window obj) obj (expwxEVT_LEFT_DOWN)
         (wxClosure_Create #'on_left_down_frame obj))
         ;;; end wxGlade
@@ -87,6 +98,16 @@
 
 (defun on_mouse_events (function data event) ;;; wxGlade: MyFrame.<event_handler>
         (print "Event handler 'on_mouse_events' not implemented!")
+        (when event
+                (wxEvent:wxEvent_Skip event)))
+
+(defun on_grid_cmd_cell_changed (function data event) ;;; wxGlade: MyFrame.<event_handler>
+        (print "Event handler 'on_grid_cmd_cell_changed' not implemented!")
+        (when event
+                (wxEvent:wxEvent_Skip event)))
+
+(defun on_grid_text_enter (function data event) ;;; wxGlade: MyFrame.<event_handler>
+        (print "Event handler 'on_grid_text_enter' not implemented!")
         (when event
                 (wxEvent:wxEvent_Skip event)))
 

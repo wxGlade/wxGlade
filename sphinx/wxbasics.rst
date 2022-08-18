@@ -62,13 +62,14 @@ Sizers (Layout Managers)
 With wxWidgets / wxPython and similar toolkits, usually controls are not placed at pixel positions on their windows, but the layout of a window is managed by *sizers*.
  - There are *horizontal box sizers*, *vertical box sizers* and *grid sizers*.
  - The *box sizers* may have a label and a box around them. In that case they're called *static box sizers*.
+ - There are also variants of the *box sizers*, called *wrap sizers*.
+   These will wrap around if there's not enough space for it's children.
  - Each sizer and contained sizer items can be fixed size or grow to fill the available space, e.g. when the window is resized.
  - Typically in a main window or frame the sizer makes the contents fill the available space, while dialogs will
    be sized to the minimum required space.
 
 Sizer Examples
 ==============
-
 
 
 .. |vertical| image:: images/vertical.png
@@ -97,6 +98,11 @@ Sizer Examples
 
 .. |gridbag| image:: images/gridbag.png
     :width: 300
+
+.. |wrap1| image:: images/wrap1.png
+    :width: 300
+.. |wrap2| image:: images/wrap2.png
+    :width: 215
 
 .. list-table::
    :widths: 60 40
@@ -174,6 +180,20 @@ Sizer Examples
        * All the buttons have their EXPAND property set so that they fill all the space in the cell(s).
 
      - |gridbag|
+   * - **WrapSizer**
+
+       * This sizer is similar to a BoxSizer, but allows to overflow to multiple rows/columns.
+       * The example shows the same sizer with three buttons with two different widths of the containing frame.
+
+     - |wrap1|   |wrap2|
+
+
+In wxGlade you can easily change the sizer type:
+
++--------------------------------------+
+|  .. image:: images/SizerTypes.png    |
+|     :width: 242                      |
++--------------------------------------+
 
 
 

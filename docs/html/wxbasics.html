@@ -5,14 +5,14 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>wx Basics &#8212; wxGlade 1.0.0 documentation</title>
+    <title>wx Basics &#8212; wxGlade 1.1.0pre documentation</title>
     <link rel="stylesheet" href="_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="stylesheet" href="_static/css/custom.css" type="text/css" />
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '1.0.0',
+        VERSION:     '1.1.0pre',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true,
@@ -40,7 +40,7 @@
         <li class="right" >
           <a href="intro.html" title="wxGlade Overview and Quick Start"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">wxGlade 1.0.0 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">wxGlade 1.1.0pre documentation</a> &#187;</li> 
       </ul>
     </div>  
 
@@ -84,6 +84,8 @@ Then unpack the archive and run <code class="docutils literal"><span class="pre"
 <dd><ul class="first last simple">
 <li>There are <em>horizontal box sizers</em>, <em>vertical box sizers</em> and <em>grid sizers</em>.</li>
 <li>The <em>box sizers</em> may have a label and a box around them. In that case they’re called <em>static box sizers</em>.</li>
+<li>There are also variants of the <em>box sizers</em>, called <em>wrap sizers</em>.
+These will wrap around if there’s not enough space for it’s children.</li>
 <li>Each sizer and contained sizer items can be fixed size or grow to fill the available space, e.g. when the window is resized.</li>
 <li>Typically in a main window or frame the sizer makes the contents fill the available space, while dialogs will
 be sized to the minimum required space.</li>
@@ -195,6 +197,25 @@ Note that this becomes obvious when the window is resized by the user.</li>
 </ul>
 </td>
 <td><a class="reference internal" href="_images/gridbag.png"><img alt="gridbag" src="_images/gridbag.png" style="width: 300px;" /></a></td>
+</tr>
+<tr class="row-even"><td><p class="first"><strong>WrapSizer</strong></p>
+<ul class="last simple">
+<li>This sizer is similar to a BoxSizer, but allows to overflow to multiple rows/columns.</li>
+<li>The example shows the same sizer with three buttons with two different widths of the containing frame.</li>
+</ul>
+</td>
+<td><a class="reference internal" href="_images/wrap1.png"><img alt="wrap1" src="_images/wrap1.png" style="width: 300px;" /></a>   <a class="reference internal" href="_images/wrap2.png"><img alt="wrap2" src="_images/wrap2.png" style="width: 215px;" /></a></td>
+</tr>
+</tbody>
+</table>
+<p>In wxGlade you can easily change the sizer type:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="100%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><a class="first last reference internal image-reference" href="_images/SizerTypes.png"><img alt="_images/SizerTypes.png" src="_images/SizerTypes.png" style="width: 242px;" /></a>
+</td>
 </tr>
 </tbody>
 </table>
@@ -311,7 +332,7 @@ Actually, a GridBagSizer is rarely needed.</li>
         <li class="right" >
           <a href="intro.html" title="wxGlade Overview and Quick Start"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">wxGlade 1.0.0 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">wxGlade 1.1.0pre documentation</a> &#187;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
