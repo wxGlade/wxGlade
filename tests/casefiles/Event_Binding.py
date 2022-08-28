@@ -31,7 +31,7 @@ class MyFrame(wx.Frame):
 
         self.grid_1 = wx.grid.Grid(self.panel_1, wx.ID_ANY)
         self.grid_1.CreateGrid(10, 4)
-        self.grid_1.SetSelectionMode(self.grid_1.SelectRows)
+        self.grid_1.SetSelectionMode(wx.grid.Grid.SelectRows)
         sizer_1.Add(self.grid_1, 1, wx.EXPAND, 0)
 
         self.panel_1.SetSizer(sizer_1)
