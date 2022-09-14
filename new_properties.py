@@ -3038,7 +3038,7 @@ class GridProperty(Property):
 
         if self._on_value_edited(self.cur_row, col, value, set_index=set_index, delay=False):
             value = self._ensure_editing_copy()[self.cur_row][col]
-            self.grid.SetCellValue(self.cur_row, col, value)
+            self.grid.SetCellValue(self.cur_row, col, compat.unicode(value))
             #self.grid.Refresh()
             ret = True
 
