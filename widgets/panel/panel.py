@@ -9,7 +9,7 @@ wxPanel objects
 
 import logging
 import wx
-import common, config, misc, clipboard
+import common, config, misc, clipboard, compat
 import new_properties as np
 from edit_windows import ManagedBase, TopLevelBase, EditStylesMixin
 
@@ -135,6 +135,20 @@ class PanelBase(EditStylesMixin):
             self.skip_on_size = True
             self.widget.SetSize(sz)
 
+    def _get_tooltip(self):
+        if self.children: return None
+        if self.parent.WX_CLASS in ("wxSplitterWindow", "wxNotebook"):
+            return "Add a sizer here; optionally, delete the panel and add e.g. a notebook, splitter or grid. "
+        return "Add a sizer here"
+    
+    def add_item(self, child, index=None):
+        ManagedBase.add_item(self, child, index)
+        if self.widget: compat.SetToolTip(self.widget, self._get_tooltip_string())
+
+    def remove_item(self, child, level, keep_slot=False):
+        ManagedBase.remove_item(self, child, level, keep_slot)
+        if self.widget: compat.SetToolTip(self.widget, self._get_tooltip_string())
+
 
 class EditPanel(PanelBase, ManagedBase):
     "Class to handle wxPanel objects"
@@ -225,11 +239,6 @@ class EditPanel(PanelBase, ManagedBase):
         # return list of properties to be written to XML file
         if not self.scrollable: without.add("scroll_rate")
         return ManagedBase.get_properties(self, without)
-
-    def _get_tooltip(self):
-        if self.parent.WX_CLASS in ("wxSplitterWindow", "wxNotebook"):
-            return "Add a sizer here; optionally, delete the panel and add e.g. a notebook, splitter or grid. "
-        return "Add a sizer here"
 
 
 class EditTopLevelPanel(PanelBase, TopLevelBase):

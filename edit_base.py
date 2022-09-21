@@ -937,7 +937,7 @@ class Slot(EditBase):
 
     def _get_tooltip(self):
         if self.parent.WX_CLASS in ("wxPanel", "wxScrolledWindow"):
-            return "Add a sizer or a control here."
+            return "Add a sizer here."
         if self.parent.WX_CLASS in ("wxFrame",):
             return "Add a control or container or sizer here, e.g. a panel, a panel plus sizer, a notebook or a sizer."
         if self.parent.WX_CLASS in ("wxDialog",):
