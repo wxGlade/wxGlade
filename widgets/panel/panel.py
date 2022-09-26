@@ -12,6 +12,7 @@ import wx
 import common, config, misc, clipboard, compat
 import new_properties as np
 from edit_windows import ManagedBase, TopLevelBase, EditStylesMixin
+from edit_base import EditBase
 
 
 
@@ -140,13 +141,13 @@ class PanelBase(EditStylesMixin):
         if self.parent.WX_CLASS in ("wxSplitterWindow", "wxNotebook"):
             return "Add a sizer here; optionally, delete the panel and add e.g. a notebook, splitter or grid. "
         return "Add a sizer here"
-    
+
     def add_item(self, child, index=None):
-        ManagedBase.add_item(self, child, index)
+        EditBase.add_item(self, child, index)
         if self.widget: compat.SetToolTip(self.widget, self._get_tooltip_string())
 
     def remove_item(self, child, level, keep_slot=False):
-        ManagedBase.remove_item(self, child, level, keep_slot)
+        EditBase.remove_item(self, child, level, keep_slot)
         if self.widget: compat.SetToolTip(self.widget, self._get_tooltip_string())
 
 
