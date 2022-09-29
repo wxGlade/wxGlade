@@ -382,10 +382,11 @@ class WindowBase(EditBase):
         if self.check_prop("foreground"): self.widget.SetForegroundColour(self.properties["foreground"].get_color())
 
         EditBase.finish_widget_creation(self, level)
-
+        print("Binding EVT_CHAR_HOOK", self.widget)
         self.widget.Bind(wx.EVT_CHAR_HOOK, self.on_char_hook)
 
     def on_char_hook(self, event):
+        print("WindowBase on_char_hook")
         misc.handle_key_event(event, "design")
 
     def _reparent_widget(self, widget):

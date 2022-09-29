@@ -714,6 +714,7 @@ class Application(EditRoot):
     
     def on_char_hook(self, event):
         # handler for EVT_CHAR_HOOK events on preview windows
+        print("Application on_char_hook")
         if event.GetKeyCode()==wx.WXK_ESCAPE:
             wx.FindWindowById(event.GetId()).GetTopLevelParent().Close()
             return

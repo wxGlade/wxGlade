@@ -330,6 +330,7 @@ class wxGladePalettePanel(wx.Panel):
 
     def on_char(self, event):
         key = (event.GetKeyCode(), event.GetModifiers())    # modifiers: 1,2,4 for Alt, Ctrl, Shift
+        print("*** Palette on_char", key)
         if key[1]: return event.Skip()
 
         focused = self.FindFocus()
@@ -469,7 +470,7 @@ class wxGladeFrame(wx.Frame):
                 window_type = "properties"
             if window_type: break
             parent = parent.GetParent()
-
+        print("*** on_char_hook", window_type, event.GetKeyCode(), "****")
         # forward to specific controls / properties? (on wx 2.8 installing EVT_CHAR_HOOK on controls does not work)
         if window_type=="properties" and grid and grid.Name!="grid":
             # forward event to grid property?
