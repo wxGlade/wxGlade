@@ -89,7 +89,7 @@ class EditSplitterWindow(ManagedBase, EditStylesMixin):
 
         sash_gravity_p = self.properties['sash_gravity']
         if sash_gravity_p.is_active():
-            self.widget.SetSashPosition(sash_gravity_p.get())
+            self.widget.SetSashGravity(sash_gravity_p.get())
 
         min_pane_size_p = self.properties['min_pane_size']
         if min_pane_size_p.is_active():
