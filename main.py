@@ -250,18 +250,20 @@ class wxGladePropertyPanel(wx.Panel):
     def on_notebook_size(self, event):
         # calculate available size for pages
         if self._notebook_decoration_size:
-            for scrolled in self.notebook.GetChildren():
-                self._set_page_size(scrolled)
+            for p in range( self.notebook.GetPageCount() ):
+                self._set_page_size( self.notebook.GetPage(p) )
         if event: event.Skip()
 
     def on_panel_size(self, event):
         # when the dummy panel receives a size event, we know that things are ready to calculate the notebook pages size
         # calculate decoration size from the dummy panel that was added initially
         if event.GetSize() != (0,0):
-            wp, hp = self.notebook.GetPage(0).GetSize()  # page/panel size
-            wn, hn = self.notebook.GetSize()             # notebook size
+            dummy_panel = self.notebook.GetPage(0)
+            wp, hp = dummy_panel.GetSize()    # page/panel size
+            wn, hn = self.notebook.GetSize()  # notebook size
             self._notebook_decoration_size = (wn-wp, hn-hp)
-            self.notebook.DeletePage(0)
+            self.notebook.RemovePage(0)
+            compat.DestroyLater(dummy_panel)
         else:
             # Mac OS: inital event on creation
             event.Skip()
