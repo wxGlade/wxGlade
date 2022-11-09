@@ -57,6 +57,10 @@ class WidgetTree(wx.TreeCtrl):#, Tree):
         #self.Bind(wx.EVT_CHAR_HOOK, self.on_char)  # on wx 2.8 the event will not be delivered to the child
         self.Bind(wx.EVT_TREE_DELETE_ITEM, self.on_delete_item)
 
+        if self.GetSelection().IsOk():
+            # on some platforms, an item is pre-selected -> trigger an update
+            self.Unselect()
+
     def scale_font(self, scale=1.0):
         if not hasattr(wx, "SpinCtrlDouble"): return
         if not hasattr(self, "_font"):
