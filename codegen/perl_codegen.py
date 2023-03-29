@@ -383,7 +383,7 @@ sub %(handler)s {
             write(tab + l)
 
         if code_obj.check_prop_truth('extraproperties'):
-            for l in builder.generate_code_extraproperties(code_obj):
+            for l in self.generate_code_extraproperties(code_obj):
                 write(tab + l)
 
         # the initial and final code for the contained elements
