@@ -299,6 +299,9 @@
         </object>
     </object>
     <object class="MyFrameGrid" name="FrameGrid" base="EditFrame">
+        <extraproperties>
+            <property name="BackgroundColour">wx.WHITE</property>
+        </extraproperties>
         <size>492, 300</size>
         <title>FrameOggCompressionDetails</title>
         <style>wxDEFAULT_FRAME_STYLE</style>

@@ -263,6 +263,7 @@ sub new {
     $self = $self->SUPER::new( $parent, $id, $title, $pos, $size, $style, $name );
     $self->SetSize(Wx::Size->new(492, 300));
     $self->SetTitle(_T("FrameOggCompressionDetails"));
+    $self->SetBackgroundColour(wx.WHITE);
     
     $self->{_szr_frame} = Wx::BoxSizer->new(wxVERTICAL);
     

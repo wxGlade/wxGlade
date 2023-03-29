@@ -289,6 +289,7 @@
         (setf (slot-top-window obj) (wxFrame_create nil wxID_ANY "" -1 -1 -1 -1 wxDEFAULT_FRAME_STYLE))
         (slot-top-window obj).wxWindow_SetSize((492, 300))
         (wxFrame_SetTitle (slot-top-window obj) (_"FrameOggCompressionDetails"))
+        (MyFrameGrid_SetBackgroundColour (slot-(slot-top-window obj) obj) wx.WHITE)
         
         (setf (slot--szr-frame obj) (wxBoxSizer_Create wxVERTICAL))
         
