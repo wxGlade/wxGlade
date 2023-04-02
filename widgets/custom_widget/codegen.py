@@ -72,8 +72,8 @@ def self_%s_on_paint(event):
     dc.DrawLine(w, 0, 0, h)
     text = 'Custom Widget: %s'
     tw, th = dc.GetTextExtent(text)
-    x = (w - tw)/2
-    y = (h - th)/2
+    x = (w - tw)//2
+    y = (h - th)//2
     dc.SetPen(wx.ThePenList.FindOrCreatePen(wx.BLACK, 0, wx.TRANSPARENT))
     dc.DrawRectangle(x-1, y-1, tw+2, th+2)
     dc.DrawText(text, x, y)
