@@ -249,6 +249,7 @@
         </object>
     </object>
     <object class="wxFrame" name="FrameGrid" subclass="MyFrameGrid">
+        <BackgroundColour>wx.WHITE</BackgroundColour>
         <size>492, 300</size>
         <style>wxDEFAULT_FRAME_STYLE</style>
         <title>FrameOggCompressionDetails</title>

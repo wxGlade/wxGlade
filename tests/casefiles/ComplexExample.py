@@ -193,6 +193,7 @@ class MyFrameGrid(wx.Frame):
         wx.Frame.__init__(self, *args, **kwds)
         self.SetSize((492, 300))
         self.SetTitle(_("FrameOggCompressionDetails"))
+        self.SetBackgroundColour(wx.WHITE)
 
         self._szr_frame = wx.BoxSizer(wx.VERTICAL)
 
