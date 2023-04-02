@@ -38,7 +38,7 @@ for INTERPRETER in $INTERPRETER_LIST; do
   PYTHON_BIN=$INTERPRETER
 
   # determined current python version
-  PY_VERSION=$(${PYTHON_BIN} -c 'import sys; print(sys.version[:3])')
+  PY_VERSION=$(${PYTHON_BIN} -c 'import sys; print("%d.%d"%(sys.version_info.major, sys.version_info.minor))')
 
   EGG_DIR="wxGlade-${WXG_VERSION}-py${PY_VERSION}.egg"
 
