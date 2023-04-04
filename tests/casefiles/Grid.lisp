@@ -11,6 +11,7 @@
 (use-package :wxColour)
 (use-package :wxEvent)
 (use-package :wxEvtHandler)
+(use-package :wxFont)
 (use-package :wxFrame)
 (use-package :wxGrid)
 (use-package :wxSizer)
@@ -45,6 +46,8 @@
         
         (setf (slot-grid-1 obj) (wxGrid_Create (slot-top-window obj) wxID_ANY -1 -1 -1 -1 wxWANTS_CHARS))
         (wxGrid_CreateGrid (slot-grid-1 obj) 2 2 0)
+        (wxWindow_SetLabelFont (slot-grid-1 obj) (wxFont_Create 14 wxMODERN wxNORMAL wxNORMAL 0 "" wxFONTENCODING_DEFAULT))
+        (wxWindow_SetDefaultCellFont (slot-grid-1 obj) (wxFont_Create 12 wxSWISS wxNORMAL wxNORMAL 0 "" wxFONTENCODING_DEFAULT))
         (wxGrid_SetGridLineColour (slot-grid-1 obj) (wxColour:wxColour_CreateFromStock 255, 0, 0))
         (wxGrid_SetLabelBackgroundColour (slot-grid-1 obj) (wxColour:wxColour_CreateFromStock 216, 191, 216))
         (wxGrid_SetColLabelValue (slot-grid-1 obj) 0 "Column A")

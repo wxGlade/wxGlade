@@ -24,6 +24,8 @@ class MyFrame(wx.Frame):
 
         self.grid_1 = wx.grid.Grid(self, wx.ID_ANY)
         self.grid_1.CreateGrid(2, 2)
+        self.grid_1.SetLabelFont(wx.Font(14, wx.MODERN, wx.NORMAL, wx.NORMAL, 0, ""))
+        self.grid_1.SetDefaultCellFont(wx.Font(12, wx.SWISS, wx.NORMAL, wx.NORMAL, 0, ""))
         self.grid_1.SetGridLineColour(wx.Colour(255, 0, 0))
         self.grid_1.SetLabelBackgroundColour(wx.Colour(216, 191, 216))
         self.grid_1.SetColLabelValue(0, "Column A")

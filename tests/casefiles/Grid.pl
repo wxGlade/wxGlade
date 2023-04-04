@@ -38,6 +38,8 @@ sub new {
     
     $self->{grid_1} = Wx::Grid->new($self, wxID_ANY);
     $self->{grid_1}->CreateGrid(2, 2);
+    $self->{grid_1}->SetLabelFont(Wx::Font->new(14, wxMODERN, wxNORMAL, wxNORMAL, 0, ""));
+    $self->{grid_1}->SetDefaultCellFont(Wx::Font->new(12, wxSWISS, wxNORMAL, wxNORMAL, 0, ""));
     $self->{grid_1}->SetGridLineColour(Wx::Colour->new(255, 0, 0));
     $self->{grid_1}->SetLabelBackgroundColour(Wx::Colour->new(216, 191, 216));
     $self->{grid_1}->SetColLabelValue(0, "Column A");

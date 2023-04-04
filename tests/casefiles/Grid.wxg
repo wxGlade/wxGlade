@@ -26,6 +26,22 @@
                         <column size="-1">Column B</column>
                     </columns>
                     <rows_number>2</rows_number>
+                    <label_font>
+                        <size>14</size>
+                        <family>modern</family>
+                        <style>normal</style>
+                        <weight>normal</weight>
+                        <underlined>0</underlined>
+                        <face />
+                    </label_font>
+                    <cell_font>
+                        <size>12</size>
+                        <family>swiss</family>
+                        <style>normal</style>
+                        <weight>normal</weight>
+                        <underlined>0</underlined>
+                        <face />
+                    </cell_font>
                     <lines_color>#ff0000</lines_color>
                     <label_bg_color>#d8bfd8</label_bg_color>
                     <enable_editing>1</enable_editing>
