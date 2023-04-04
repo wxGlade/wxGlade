@@ -929,7 +929,7 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
             ret.append(stmt)
         return ret
 
-    def generate_code_font(self, obj):
+    def generate_code_font(self, obj, prop_name="font", method=None):
         "Returns the code fragment that sets the font of the given object"
         stmt = None
 
@@ -939,11 +939,13 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
             msg = " %s WARNING: no code template for property '%s' registered!\n" % (self.comment_sign, 'setfont')
             self.warning(msg)
             return msg
+        if method is not None:
+            tmpl = tmpl.replace("SetFont", method)
 
         objname = self.format_generic_access(obj)
         cnfont = self.cn('wxFont')
         
-        font_p = obj.properties["font"]
+        font_p = obj.properties[prop_name]
         size, family, style, weight, underlined, face = font_p.get()
         family  = font_p.font_families[family]  # e.g. 'roman' -> 'wxROMAN'
         style   = font_p.font_styles[style]

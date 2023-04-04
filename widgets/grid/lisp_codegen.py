@@ -28,17 +28,21 @@ class LispCodeGenerator(wcodegen.LispWidgetCodeWriter):
     def get_properties_code(self, obj):
         if not obj.create_grid: return []
 
+        codegen = self.codegen
         out = []
-        name = self.codegen._format_name(obj.name)
+        name = codegen._format_name(obj.name)
 
         rows_p = obj.properties["rows"]
         cols_p = obj.properties["columns"]
         rows    = rows_p.value
         columns = cols_p.value
         out.append('(wxGrid_CreateGrid (slot-%s obj) %s %s 0)\n' % (name, len(rows), len(columns)))
-        
+
         if obj.check_prop('row_label_size'):  out.append('(wxGrid_SetRowLabelSize (slot-%s obj) %s)\n' % (name, obj.row_label_size))
         if obj.check_prop('col_label_size'):  out.append('(wxGrid_SetColLabelSize (slot-%s obj) %s)\n' % (name, obj.col_label_size))
+
+        if obj.check_prop('label_font'): out.append(codegen.generate_code_font(obj, 'label_font', 'SetLabelFont'))
+        if obj.check_prop('cell_font'):  out.append(codegen.generate_code_font(obj, 'cell_font',  'SetDefaultCellFont'))
 
         if not obj.enable_editing:      out.append('(wxGrid_EnableEditing (slot-%s obj) 0)\n' % name)
         if not obj.enable_grid_lines:   out.append('(wxGrid_EnableGridLines (slot-%s obj) 0)\n' % name)
@@ -47,10 +51,10 @@ class LispCodeGenerator(wcodegen.LispWidgetCodeWriter):
         if not obj.enable_grid_resize : out.append('(wxGrid_EnableDragGridSize (slot-%s obj) 0)\n' % name)
         if obj.check_prop('lines_color'):
             fmt = '(wxGrid_SetGridLineColour (slot-%s obj) (wxColour:wxColour_CreateFromStock %s))\n'
-            out.append( fmt % (name, self.codegen._string_to_colour(obj.lines_color)) )
+            out.append( fmt % (name, codegen._string_to_colour(obj.lines_color)) )
         if obj.check_prop('label_bg_color'):
             fmt = '(wxGrid_SetLabelBackgroundColour (slot-%s obj) (wxColour:wxColour_CreateFromStock %s))\n'
-            out.append( fmt % (name, self.codegen._string_to_colour(obj.label_bg_color)) )
+            out.append( fmt % (name, codegen._string_to_colour(obj.label_bg_color)) )
 
         sel_mode = obj.properties['selection_mode'].get_string_value()
         if sel_mode and sel_mode != 'wxGrid.wxGridSelectCells':
@@ -60,18 +64,18 @@ class LispCodeGenerator(wcodegen.LispWidgetCodeWriter):
         for i, (label, size) in enumerate(columns):
             if cols_p._check_label(label, i):
                 label = label.replace('\\n', '\n')
-                out.append('(wxGrid_SetColLabelValue (slot-%s obj) %s %s)\n' % (name, i, self.codegen.quote_str(label)))
+                out.append('(wxGrid_SetColLabelValue (slot-%s obj) %s %s)\n' % (name, i, codegen.quote_str(label)))
             if size>0:
                 out.append('(wxGrid_SetColSize (slot-%s obj) %s %s)\n' % (name, i, size))
         # set rows
         for i, (label, size) in enumerate(rows):
             if rows_p._check_label(label, i):
                 label = label.replace('\\n', '\n')
-                out.append('(wxGrid_SetRowLabelValue (slot-%s obj) %s %s)\n' % (name, i, self.codegen.quote_str(label)))
+                out.append('(wxGrid_SetRowLabelValue (slot-%s obj) %s %s)\n' % (name, i, codegen.quote_str(label)))
             if size>0:
                 out.append('(wxGrid_SetRowSize (slot-%s obj) %s %s)\n' % (name, i, size))
 
-        out.extend(self.codegen.generate_code_common_properties(obj))
+        out.extend(codegen.generate_code_common_properties(obj))
         return out
 
 

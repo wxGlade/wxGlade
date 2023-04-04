@@ -3,12 +3,12 @@ wxGrid objects
 
 @copyright: 2002-2007 Alberto Griggio
 @copyright: 2014-2016 Carsten Grohmann
-@copyright: 2016-2021 Dietmar Schwertberger
+@copyright: 2016-2023 Dietmar Schwertberger
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
 from wx.grid import *
-import common, misc, compat
+import common, misc, compat, config
 from edit_windows import ManagedBase
 import new_properties as np
 from wcodegen.taghandler import BaseXmlBuilderTagHandler
@@ -134,10 +134,13 @@ class RowsHandler(BaseXmlBuilderTagHandler):
 
 class EditGrid(ManagedBase):
     WX_CLASS = "wxGrid"
-    _PROPERTIES =["Widget", 'create_grid', 'row_label_size', 'col_label_size',
+    _PROPERTIES =["Widget", 'create_grid', 'row_label_size', 'col_label_size', 'label_font', 'cell_font',
                   'enable_editing', 'enable_grid_lines', 'enable_col_resize', 'enable_row_resize', 'enable_grid_resize',
-                  'lines_color', 'label_bg_color', 'selection_mode', 'columns', 'rows']
+                  'lines_color', 'label_bg_color', 'selection_mode',
+                  "Grid", 'columns', 'rows']
     PROPERTIES = ManagedBase.PROPERTIES + _PROPERTIES + ManagedBase.EXTRA_PROPERTIES
+    PROPERTIES = [p for p in PROPERTIES if p!='font']
+    
     _PROPERTY_HELP = {"create_grid":"The following properties are meaningful only if 'Create grid' is selected",
                       "columns":"Enter \\n for a line break in the label",
                       "rows":"Enter \\n for a line break in the label",
@@ -161,6 +164,14 @@ class EditGrid(ManagedBase):
         #self.rows_number        = np.SpinProperty(10, immediate=True)
         self.row_label_size     = np.SpinPropertyD(30, default_value=30, immediate=True)
         self.col_label_size     = np.SpinPropertyD(30, default_value=30, immediate=True)
+
+        if config.use_gui:
+            font = self._build_from_font( compat.wx_SystemSettings_GetFont(wx.SYS_DEFAULT_GUI_FONT) )
+            font[1] = 'default'
+        else:
+            font = (9, 'default', 'normal', 'normal', 0, 'Segoe UI')
+        self.label_font = np.FontPropertyD(tuple(font))
+        self.cell_font = np.FontPropertyD(tuple(font))
 
         self.lines_color        = np.ColorPropertyD('#000000', default_value='#000000')
         self.label_bg_color     = np.ColorPropertyD('#C0C0C0', default_value='#C0C0C0')
@@ -222,6 +233,7 @@ class EditGrid(ManagedBase):
             # block/unblock other properties
             blocked = not self.create_grid
             for name in self._PROPERTIES[2:]:
+                if name=="Grid": continue
                 self.properties[name].set_blocked(blocked)
 
         if not self.widget: return

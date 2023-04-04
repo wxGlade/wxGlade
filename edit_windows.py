@@ -349,7 +349,6 @@ class WindowBase(EditBase):
         self.foreground = np.ColorPropertyD(None)
         # font
         if "font" in self.PROPERTIES:
-            self._font_changed = False # this is True if the user has selected a custom font
             if config.use_gui:
                 font = self._build_from_font( compat.wx_SystemSettings_GetFont(wx.SYS_DEFAULT_GUI_FONT) )
                 font[1] = 'default'
@@ -561,7 +560,7 @@ class WindowBase(EditBase):
         EditBase._properties_changed(self, modified, actions)
 
     def get_property_handler(self, name):
-        if name == 'font':
+        if name in ('font', 'label_font', 'cell_font'):
             return FontHandler(self)
         elif name == 'extraproperties':
             return ExtraPropertiesPropertyHandler(self)

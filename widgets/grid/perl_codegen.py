@@ -28,6 +28,7 @@ class PerlCodeGenerator(wcodegen.PerlWidgetCodeWriter):
     def get_properties_code(self, obj):
         if not obj.create_grid: return []
 
+        codegen = self.codegen
         out = []
         name = self.format_widget_access(obj)
 
@@ -39,7 +40,10 @@ class PerlCodeGenerator(wcodegen.PerlWidgetCodeWriter):
 
         if obj.check_prop('row_label_size'): out.append( '%s->SetRowLabelSize(%s);\n' % (name, obj.row_label_size) )
         if obj.check_prop('col_label_size'): out.append( '%s->SetColLabelSize(%s);\n' % (name, obj.col_label_size) )
-        
+
+        if obj.check_prop('label_font'): out.append(codegen.generate_code_font(obj, 'label_font', 'SetLabelFont'))
+        if obj.check_prop('cell_font'):  out.append(codegen.generate_code_font(obj, 'cell_font',  'SetDefaultCellFont'))
+
         if not obj.enable_editing: out.append( '%s->EnableEditing(0);\n' % name )
         if not obj.enable_grid_lines: out.append( '%s->EnableGridLines(0);\n' % name )
         if not obj.enable_col_resize: out.append( '%s->EnableDragColSize(0);\n' % name )
@@ -48,10 +52,10 @@ class PerlCodeGenerator(wcodegen.PerlWidgetCodeWriter):
         
         if obj.check_prop('lines_color'):
             fmt = '%s->SetGridLineColour(Wx::Colour->new(%s));\n'
-            out.append( fmt % (name, self.codegen._string_to_colour(obj.lines_color)) )
+            out.append( fmt % (name, codegen._string_to_colour(obj.lines_color)) )
         if obj.check_prop('label_bg_color'):
             fmt = '%s->SetLabelBackgroundColour(Wx::Colour->new(%s));\n'
-            out.append( fmt % (name, self.codegen._string_to_colour(obj.label_bg_color)) )
+            out.append( fmt % (name, codegen._string_to_colour(obj.label_bg_color)) )
         sel_mode = obj.properties["selection_mode"].get_string_value()
         if sel_mode and sel_mode != 'wxGrid.wxGridSelectCells':
             out.append( '%s->SetSelectionMode(%s);\n' % (name, sel_mode.replace('wxGrid.','')) )
@@ -60,18 +64,18 @@ class PerlCodeGenerator(wcodegen.PerlWidgetCodeWriter):
         for i, (label, size) in enumerate(columns):
             if cols_p._check_label(label, i):
                 label = label.replace('\\n', '\n')
-                out.append( '%s->SetColLabelValue(%s, %s);\n' % (name, i, self.codegen.quote_str(label)) )
+                out.append( '%s->SetColLabelValue(%s, %s);\n' % (name, i, codegen.quote_str(label)) )
             if size>0:
                 out.append( '%s->SetColSize(%s, %s);\n' % (name, i, size) )
         # set rows
         for i, (label, size) in enumerate(rows):
             if rows_p._check_label(label, i):
                 label = label.replace('\\n', '\n')
-                out.append( '%s->SetRowLabelValue(%s, %s);\n' % (name, i, self.codegen.quote_str(label)) )
+                out.append( '%s->SetRowLabelValue(%s, %s);\n' % (name, i, codegen.quote_str(label)) )
             if size>0:
                 out.append( '%s->SetRowSize(%s, %s);\n' % (name, i, size) )
 
-        out.extend(self.codegen.generate_code_common_properties(obj))
+        out.extend(codegen.generate_code_common_properties(obj))
         return out
 
 
