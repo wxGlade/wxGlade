@@ -202,6 +202,8 @@ class DefaultXrcObject(XrcObject):
             elif name=='font':
                 font = prop.value
                 continue
+            elif name in ("cell_font", "label_font"):
+                continue
             elif name=="style":
                 if hasattr(prop, "value_set"):
                     if prop.value_set==prop.default_value: continue

@@ -33,8 +33,8 @@ class FontHandler(BaseXmlBuilderTagHandler):
         self.index = self.item_attrs.get(name, 5)
 
     def end_elem(self, name):
-        if name == 'font':
-            self.owner.properties['font'].set(tuple(self.props), activate=True)
+        if name in ('font', 'label_font', 'cell_font'):
+            self.owner.properties[name].set(tuple(self.props), activate=True)
             return True  # to remove this handler
 
     def char_data(self, data):

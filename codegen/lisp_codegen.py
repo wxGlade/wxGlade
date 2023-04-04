@@ -425,9 +425,9 @@ class LispCodeWriter(BaseLangCodeWriter, wcodegen.LispMixin):
 
         return code_lines
 
-    def generate_code_font(self, obj):
+    def generate_code_font(self, obj, prop_name="font", method=None):
         self.dependencies.add( '(use-package :wxFont)' )
-        return BaseLangCodeWriter.generate_code_font(self, obj)
+        return BaseLangCodeWriter.generate_code_font(self, obj, prop_name, method)
 
     def generate_code_foreground(self, obj):
         self.dependencies.add( '(use-package :wxColour)' )
