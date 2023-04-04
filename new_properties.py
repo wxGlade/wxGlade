@@ -2515,6 +2515,20 @@ class GridProperty(Property):
         self._width_delta = None
         self._last_focus = None
 
+
+    def activate_controls(self):
+        # take care of the optional, accessibility related widgets
+        Property.activate_controls(self)
+        if not self.editing: return
+        if self.blocked:
+            active = False
+        else:
+            active = not self.deactivated
+        self._update_apply_button()
+        for control in self.editors:
+            if not control: continue
+            control.Enable(active)
+
     def on_grid_focus(self, event):
         self.on_focus(event)  # Skip will be called
         self._last_focus = "grid"
@@ -3272,8 +3286,9 @@ class GridProperty(Property):
 
     def _update_apply_button(self):
         if not self.grid or not self.buttons or self.immediate: return
-        self.buttons[0].Enable(  self.editing_values is not None)  # the apply button
-        self.buttons[-1].Enable( self.editing_values is not None)  # the reset button
+        enable = self.editing_values is not None and not self.blocked
+        self.buttons[0].Enable(enable)  # the apply button
+        self.buttons[-1].Enable(enable)  # the reset button
 
     # helpers ##########################################################################################################
     def _set_col_sizes(self, sizes):
