@@ -789,7 +789,7 @@ class CppWidgetCodeWriter(CppMixin, BaseWidgetWriter):
                 self.tmpl_before.append( '%s%s,\n' % (self.codegen.tabs(1), choice) )
             self.tmpl_before.append('};\n')
         else:
-            self.tmpl_before.append('const wxString %(name)s_choices[] = {};\n')
+            self.tmpl_before.append('const wxString *%(name)s_choices = NULL;\n')
 
         return
 
