@@ -59,13 +59,13 @@ def xrc_code_generator(obj):
 
         def write_property(self, name, val, output, tabs):
             if name == 'label':
-                # translate & into _ as accelerator marker
+                # translate & into _ as accelerator marker, but leave &&
                 val2 = val.replace('&', '_')
-                if val.count('&&') > 0:
+                if '&&' in val:
+                    index = -1
                     while True:
-                        index = val.find('&&')
-                        if index < 0:
-                            break
+                        index = val.find('&&', index+1)
+                        if index < 0: break
                         val = val2[:index] + '&&' + val2[index+2:]
                 else:
                     val = val2
