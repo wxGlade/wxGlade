@@ -46,6 +46,7 @@ gauge
 calendar_ctrl
 generic_calendar_ctrl
 datepicker_ctrl
+timepicker_ctrl
 
 [Data]:D
 list_ctrl

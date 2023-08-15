@@ -16,7 +16,7 @@ import decorators
 if compat.IS_PHOENIX:
     #import wx.adv
     from wx.adv import TimePickerCtrl
-else:
+elif hasattr(wx, "TimePickerCtrl"):
     #import wx.calendar
     from wx import TimePickerCtrl
 
@@ -67,6 +67,7 @@ def xml_builder(parser, base, name, parent, index):
 
 def initialize():
     "initialization function for the module: returns a wxBitmapButton to be added to the main palette"
+    if not hasattr(wx, "TimePickerCtrl"): return None
     common.widget_classes['EditTimePickerCtrl'] = EditTimePickerCtrl
     common.widgets['EditTimePickerCtrl'] = builder
     common.widgets_from_xml['EditTimePickerCtrl'] = xml_builder
