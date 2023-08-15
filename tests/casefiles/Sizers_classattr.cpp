@@ -26,7 +26,7 @@ MyDialog::MyDialog(wxWindow* parent, wxWindowID id, const wxString& title, const
     grid_sizer_1->Add(grid_sizer_2, 1, wxEXPAND, 0);
     sizer_2 = new wxStaticBoxSizer(new wxStaticBox(this, wxID_ANY, _("Unassigned Permissions:")), wxHORIZONTAL);
     grid_sizer_2->Add(sizer_2, 1, wxEXPAND, 0);
-    const wxString list_box_1_choices[] = {};
+    const wxString *list_box_1_choices = NULL;
     list_box_1 = new wxListBox(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, 0, list_box_1_choices, 0);
     sizer_2->Add(list_box_1, 1, wxALL|wxEXPAND, 5);
     sizer_4 = new wxFlexGridSizer(4, 1, 0, 0);
@@ -39,7 +39,7 @@ MyDialog::MyDialog(wxWindow* parent, wxWindowID id, const wxString& title, const
     sizer_4->Add(20, 20, 0, wxEXPAND, 0);
     sizer_3 = new wxStaticBoxSizer(new wxStaticBox(this, wxID_ANY, _("Assigned Permissions:")), wxHORIZONTAL);
     grid_sizer_2->Add(sizer_3, 1, wxEXPAND, 0);
-    const wxString list_box_2_choices[] = {};
+    const wxString *list_box_2_choices = NULL;
     list_box_2 = new wxListBox(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, 0, list_box_2_choices, 0);
     sizer_3->Add(list_box_2, 1, wxALL|wxEXPAND, 5);
     static_line_1 = new wxStaticLine(this, wxID_ANY);
