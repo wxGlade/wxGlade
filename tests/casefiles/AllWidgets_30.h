@@ -93,6 +93,7 @@ protected:
     wxComboBox* combo_box_filled;
     wxPanel* notebook_1_wxDatePickerCtrl;
     wxDatePickerCtrl* datepicker_ctrl_1;
+    wxTimePickerCtrl* timepicker_ctrl_1;
     wxPanel* notebook_1_wxGauge;
     wxGauge* gauge_1;
     wxPanel* notebook_1_wxGrid;

@@ -224,7 +224,10 @@ sub new {
     $self->{sizer_17} = Wx::BoxSizer->new(wxHORIZONTAL);
     
     $self->{datepicker_ctrl_1} = Wx::DatePickerCtrl->new($self->{notebook_1_wxDatePickerCtrl}, wxID_ANY, Wx::DateTime->new(), wxDefaultPosition, wxDefaultSize, wxDP_SHOWCENTURY);
-    $self->{sizer_17}->Add($self->{datepicker_ctrl_1}, 1, wxALIGN_CENTER_VERTICAL|wxALL, 5);
+    $self->{sizer_17}->Add($self->{datepicker_ctrl_1}, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5);
+    
+    $self->{timepicker_ctrl_1} = Wx::TimePickerCtrl->new($self->{notebook_1_wxDatePickerCtrl}, wxID_ANY, Wx::DateTime->new(), wxDefaultPosition, wxDefaultSize, wxTP_DEFAULT);
+    $self->{sizer_17}->Add($self->{timepicker_ctrl_1}, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5);
     
     $self->{notebook_1_wxGauge} = Wx::Panel->new($self->{notebook_1}, wxID_ANY);
     $self->{notebook_1}->AddPage($self->{notebook_1_wxGauge}, _T("wxGauge"));

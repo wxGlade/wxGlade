@@ -404,11 +404,19 @@
                         <object class="wxBoxSizer" name="sizer_17" base="EditBoxSizer">
                             <orient>wxHORIZONTAL</orient>
                             <object class="sizeritem">
-                                <option>1</option>
+                                <option>0</option>
                                 <border>5</border>
                                 <flag>wxALL|wxALIGN_CENTER</flag>
                                 <object class="wxDatePickerCtrl" name="datepicker_ctrl_1" base="EditDatePickerCtrl">
                                     <style>wxDP_SHOWCENTURY</style>
+                                </object>
+                            </object>
+                            <object class="sizeritem">
+                                <option>0</option>
+                                <border>5</border>
+                                <flag>wxALL|wxALIGN_CENTER_VERTICAL</flag>
+                                <object class="wxTimePickerCtrl" name="timepicker_ctrl_1" base="EditTimePickerCtrl">
+                                    <style>wxTP_DEFAULT</style>
                                 </object>
                             </object>
                         </object>
