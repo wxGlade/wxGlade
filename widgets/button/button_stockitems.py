@@ -57,7 +57,7 @@ class ButtonStockItems(object):
         "SELECT_FONT" :         "&Font",
         "SORT_ASCENDING" :      "&Ascending",
         "SORT_DESCENDING" :     "&Descending",
-        "PELL_CHECK" :          "&Spell Check",
+        "SPELL_CHECK" :         "&Spell Check",
         "STOP" :                "&Stop",
         "STRIKETHROUGH" :       "&Strikethrough",
         "TOP" :                 "&Top",
