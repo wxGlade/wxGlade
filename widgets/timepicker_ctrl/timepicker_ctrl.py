@@ -3,7 +3,7 @@ wxTimePickerCtrl objects
 
 @copyright: 2002-2007 Alberto Griggio
 @copyright: 2014-2016 Carsten Grohmann
-@copyright: 2016-2022 Dietmar Schwertberger
+@copyright: 2016-2023 Dietmar Schwertberger
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
@@ -67,7 +67,7 @@ def xml_builder(parser, base, name, parent, index):
 
 def initialize():
     "initialization function for the module: returns a wxBitmapButton to be added to the main palette"
-    if not hasattr(wx, "TimePickerCtrl"): return None
+    if not compat.IS_PHOENIX and not hasattr(wx, "TimePickerCtrl"): return None
     common.widget_classes['EditTimePickerCtrl'] = EditTimePickerCtrl
     common.widgets['EditTimePickerCtrl'] = builder
     common.widgets_from_xml['EditTimePickerCtrl'] = xml_builder
