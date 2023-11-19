@@ -3,7 +3,7 @@ Global functions and variables
 
 @copyright: 2002-2007 Alberto Griggio
 @copyright: 2013-2016 Carsten Grohmann
-@copyright: 2016-2021 Dietmar Schwertberger
+@copyright: 2016-2023 Dietmar Schwertberger
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
@@ -727,11 +727,16 @@ def _set_file_paths(options):
 
 def init_preferences():
     "Load / initialise preferences"
-    if config.preferences is None:
-        config.preferences = Preferences()
+    if config.preferences is not None: return
+    config.preferences = Preferences()
+    try:
         config.preferences.read(config.rc_file)
-        if not config.preferences.has_section('wxglade'):
-            config.preferences.add_section('wxglade')
+    except:
+        msg = ("Could not load preferences from file '%s'.\nContinuing with default settings.\n"
+               "Go to Edit->Preferences and save preferences with 'OK'.")
+        misc.error_message(msg%config.rc_file, title="Warning", display_traceback=True)
+    if not config.preferences.has_section('wxglade'):
+        config.preferences.add_section('wxglade')
 
 
 def save_preferences():
