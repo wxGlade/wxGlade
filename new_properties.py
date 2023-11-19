@@ -2989,7 +2989,7 @@ class GridProperty(Property):
             if value != value_:
                 self.grid.SetCellValue(row, col, value)
 
-        if self.immediate or (not self.can_add and not self.can_insert and not self.can_insert):
+        if self.immediate or (not self.can_add and not self.can_insert and not self.can_remove):
             common.history.property_changing(self)
             if row>=len(self.value):
                 self.add_row(row=set_index, delay=delay)
