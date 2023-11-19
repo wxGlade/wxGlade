@@ -185,8 +185,8 @@ sub new {
     $self->SetSizer($self->{sizer_1});
     $self->{sizer_1}->Fit($self);
     
-    $self->SetAffirmativeId($self->{ok}->GetId())
-    $self->SetEscapeId($self->{cancel}->GetId())
+    $self->SetAffirmativeId($self->{ok}->GetId());
+    $self->SetEscapeId($self->{cancel}->GetId());
     
     $self->Layout();
     $self->Centre();
