@@ -350,9 +350,22 @@ class ToolsDialog(_ToolsDialog):
         else:
             import _dialogs
         dlg = _dialogs.SelectArtDialog(self)
-        if hasattr(self, "_last_ART_size"):
-            dlg.spin_width.SetValue(self._last_ART_size[0])
-            dlg.spin_height.SetValue(self._last_ART_size[1])
+
+        default_width, default_height = getattr(self, "_last_ART_size", (None,None))
+        old = self.bitmap1.GetValue().strip()
+        if old.startswith("art:wxART_"):
+            old = old[10:].split(",")
+            if len(old)==4:
+                try:
+                    default_width, default_height = int(old[2]), int(old[3])
+                except ValueError:
+                    pass
+            if old[0] in dlg.art_names:
+                dlg.listctrl.Select(dlg.art_names.index(old[0]))
+
+        if default_width: dlg.spin_width.SetValue(default_width)
+        if default_height: dlg.spin_height.SetValue(default_height)
+
         user = dlg.ShowModal()
         if user!=wx.ID_OK: return
         width, height = self._last_ART_size = dlg.spin_width.GetValue(), dlg.spin_height.GetValue()
