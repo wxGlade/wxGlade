@@ -56,7 +56,7 @@ class PropertyValue(object):
         return self.deactivated==other.deactivated and self.value==other.value
 
     def __repr__(self):
-        return "(%r, %r)"%(self.deactivated, self.value)
+        return "PropertyValue(%r, %r)"%(self.deactivated, self.value)
 
 
 class HistoryItem(object):
@@ -89,33 +89,36 @@ class HistoryPropertyItem(HistoryItem):
 
     def undo(self):
         owner = common.root.find_widget_from_path(self.path2)
-        p = owner.properties[self.name]
-        self.old.set(p)
         changed = [self.name]
         for path, name, old, new in self.dependent:
             changed.append(name)
             if path==self.path:
                 old.set( owner.properties[name] )
             else:
-                owner_ = common.root.find_widget_from_path(self.path)
+                owner_ = common.root.find_widget_from_path(path)
                 old.set( owner_.properties[name] )
+
+        p = owner.properties[self.name]
+        self.old.set(p)
+
         owner.properties_changed(changed)
-        misc.set_focused_widget(owner)
+        return owner
 
     def redo(self):
+        # required: self.path, self.name, self.new and the same for each dependent property
         owner = common.root.find_widget_from_path(self.path)
         p = owner.properties[self.name]
         self.new.set(p)
         changed = [self.name]
         for path, name, old, new in self.dependent:
-            changed.append(name)
             if path==self.path:
+                changed.append(name)
                 new.set( owner.properties[name] )
             else:
-                owner_ = common.root.find_widget_from_path(self.path)
+                owner_ = common.root.find_widget_from_path(path)
                 new.set( owner_.properties[name] )
         owner.properties_changed(changed)
-        misc.set_focused_widget(owner)
+        return owner
 
     def __repr__(self):
         return "%s(%s, %r, %r, %r)"%(self.__class__.__name__, self.path, self.name, self.old, self.new)
@@ -125,7 +128,7 @@ class HistorySetPropertyItem(HistoryPropertyItem):
     # same as before, but tracks the flag that was checked/unchecked (self.flag_value, self.checked)
     def __init__(self, prop):
         HistoryPropertyItem.__init__(self, prop)
-        self.flag_value = self.checked = None
+        self.flag_value = self.checked = None  # these are set from History.set_property_changed
 
     def __repr__(self):
         return "%s(%s, %s, %r, %r)"%(self.__class__.__name__, self.path, self.name, self.flag_value, self.checked)
@@ -309,8 +312,8 @@ class History(object):
         self.actions_redo = [] # on undo, the action is moved from actions to actions_redo
         self.depth = depth
         self._buffer = self._structure_item = None
-        self._redo_widget = None # the widget that originally was modified
-        self._redo_info = []  # name of properties
+        self._repeat_widget = None # the widget that originally was modified
+        self._repeat_info = []  # name of properties
         self._repeating = False
         self.can_undo = self.can_redo = self.can_repeat = False
 
@@ -319,24 +322,30 @@ class History(object):
         del self.actions_redo[:]
         self.can_undo = False
         self.can_redo = False
-        self.can_repeat = len(self._redo_info) > 1
+        self.can_repeat = bool(self._repeat_info)
 
     def set_widget(self, widget):
         # for enabling/disabling tools and menus
         path = widget and widget.get_path() or []
-        if path==self._redo_widget or self._redo_widget is None:
-            self.can_repeat = self.can_redo = False
+        if path==self._repeat_widget or self._repeat_widget is None:
+            self.can_repeat = False
+        elif self._repeat_info and widget:
+            # check whether all required properties are available; this is not perfect, though
+            available_properties = [p for p in self._repeat_info if p in widget.properties]
+            self.can_repeat = len(available_properties)==len(self._repeat_info)
+            print("SET WIDGET", len(available_properties), len(self._repeat_info))
         else:
-            self.can_redo = True
-            self.can_repeat = len(self._redo_info) > 1
+            self.can_repeat = False
+        self.can_redo = bool(self.actions_redo)
         self.can_undo = bool(self.actions)
 
     def undo(self, focused_widget):
         if not self.actions:
             return wx.Bell()
         action = self.actions.pop(0)
-        action.undo()
+        widget = action.undo()
         self.actions_redo.append(action)
+        misc.set_focused_widget(widget)
 
     def redo(self, focused_widget):
         if not self.actions_redo:
@@ -345,24 +354,25 @@ class History(object):
             if not repeated: wx.Bell()
             return
         action = self.actions_redo.pop(-1)
-        action.redo()
+        widget = action.redo()
         self.actions.insert(0, action)
+        misc.set_focused_widget(widget)
 
     def repeat(self, focused_widget, multiple=True):
         "apply action(s) to another widget"
         if focused_widget is None: return False
         if not self.actions or not isinstance(self.actions[0], HistoryPropertyItem): return False
-        if not self._redo_widget: return False
+        if not self._repeat_widget: return False
         path = focused_widget.get_path()
-        if path==self._redo_widget: return False
+        if path==self._repeat_widget: return False
 
         # find all actions that could be repeated; they need to be HistoryPropertyItems from the _redo_widget
         repeat_actions = []
         repeat_actions_keys = set()  # set of names, to avoid multiple changes of the same property
         for i,action in enumerate(self.actions):
             if not isinstance(action, HistoryPropertyItem):break
-            if repeat_actions and action.path!=self._redo_widget: break
-            if action.path==self._redo_widget:
+            if repeat_actions and action.path!=self._repeat_widget: break
+            if action.path==self._repeat_widget:
                 action_key = action.get_key()  # this may be a tuple for HistorySetPropertyItem
                 if action.name in focused_widget.properties and not action_key in repeat_actions_keys:
                     repeat_actions.append( action )
@@ -389,18 +399,21 @@ class History(object):
         self._repeating = False
         return True
 
-    def add_item(self, item):
+    def add_item(self, item, can_repeat=True):
         self.actions.insert(0, item)
         if len(self.actions)>self.depth:
             del self.actions[-1]
-        if not self._repeating and isinstance(item, HistoryPropertyItem):
+        if not self._repeating and isinstance(item, HistoryPropertyItem) and can_repeat:
             path = item.path
-            if path != self._redo_widget:
-                self._redo_widget = path
-                del self._redo_info[:]
+            if path != self._repeat_widget:
+                self._repeat_widget = path
+                del self._repeat_info[:]
             key = item.get_key()
-            if not key in self._redo_info:
-                self._redo_info.append(key)
+            if not key in self._repeat_info:
+                self._repeat_info.append(key)
+        elif not can_repeat:
+            self._repeat_widget = None
+            del self._repeat_info[:]
 
         if self.actions_redo:
             del self.actions_redo[:]
@@ -409,6 +422,10 @@ class History(object):
             print("UndoBuffer:")
             for entry in self.actions:
                 print(entry)
+
+        # update menu and toolbar
+        self.set_widget(misc.focused_widget)
+        if common.main: common.main.set_widget(misc.focused_widget)
 
     ####################################################################################################################
     # property changes: interface from Property instances
@@ -465,7 +482,7 @@ class History(object):
 
     def widget_added(self, widget):
         self._structure_item.finalize(widget)
-        self.add_item( self._structure_item )
+        self.add_item( self._structure_item, can_repeat=False )
         self._structure_item = None
 
     def widget_removing(self, widget):
@@ -474,13 +491,13 @@ class History(object):
 
     def widget_removed(self, slot=None):
         self._structure_item.finalize(slot)
-        self.add_item( self._structure_item )
+        self.add_item( self._structure_item, can_repeat=False )
         self._structure_item = None
 
     # sizers
     def sizer_slots_added(self, sizer, index, count):
         # called from SizerBase.insert_slot and add_slot
-        self.add_item( HistorySizerSlots(sizer, index, count) )
+        self.add_item( HistorySizerSlots(sizer, index, count), can_repeat=False )
 
     def gridsizer_row_col_changed(self, sizer, type, index, count, inserted_slots=None):
-        self.add_item( HistoryGridSizerRowCol(sizer, type, index, count, inserted_slots) )
+        self.add_item( HistoryGridSizerRowCol(sizer, type, index, count, inserted_slots), can_repeat=False )

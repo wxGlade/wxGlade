@@ -3,7 +3,7 @@ wxNotebook objects
 
 @copyright: 2002-2007 Alberto Griggio
 @copyright: 2016 Carsten Grohmann
-@copyright: 2016-2021 Dietmar Schwertberger
+@copyright: 2016-2023 Dietmar Schwertberger
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
@@ -80,13 +80,14 @@ class HistoryNotebookTabsItem(history.HistoryItem):
         notebook.restore_tabs(old, new, added, removed)
         tabs_p._initialize_indices()
         tabs_p.update_display()
+        return notebook
 
     def undo(self):
         #                                      reversed === sorted          reversed === highest first
-        self._do(self.new_tabs, self.old_tabs, reversed(self.removed_tabs), reversed(self.added_tabs))
+        return self._do(self.new_tabs, self.old_tabs, reversed(self.removed_tabs), reversed(self.added_tabs))
 
     def redo(self):
-        self._do(self.old_tabs, self.new_tabs, self.added_tabs, self.removed_tabs)
+        return self._do(self.old_tabs, self.new_tabs, self.added_tabs, self.removed_tabs)
 
 
 class EditNotebook(ManagedBase, EditStylesMixin):
@@ -151,7 +152,7 @@ class EditNotebook(ManagedBase, EditStylesMixin):
         item = common.history._finalize_item(stop=True)  # property_changing was called for "tabs"
         import clipboard
         added_tabs = [ (index, clipboard.dump_widget(editor)) ]
-        common.history.add_item( HistoryNotebookTabsItem(self, item, [], added_tabs) )
+        common.history.add_item( HistoryNotebookTabsItem(self, item, [], added_tabs), can_repeat=False )
 
     def insert_tab(self, index, label, add_panel=True, add_sizer=False):
         # add tab/page; called from GUI
@@ -250,19 +251,21 @@ class EditNotebook(ManagedBase, EditStylesMixin):
         if user:
             # history: undo/redo
             item = common.history._finalize_item(stop=True)  # property_changing was called for "tabs"
-            common.history.add_item( HistoryNotebookTabsItem(self, item, removed_tabs, added_tabs) )
+            common.history.add_item( HistoryNotebookTabsItem(self, item, removed_tabs, added_tabs), can_repeat=False )
 
         common.app_tree.build(self, recursive=False)
 
     def restore_tabs(self, old_value, new_value, add_tabs, remove_tabs):  # called for undo/redo
         # add_tabs: (index, xml_data) each, where the indices refer to the new_value
         # removed_tabs are (index, xml_data) each, where the indices refer to the old_value
+        old_labels = [v[0] for v in old_value]  # will be modified when adding or removing tabs, to check for changes
         new_labels = [v[0] for v in new_value]
         tabs_p = self.properties["tabs"]
 
         # remove tabs: index is highest first
         for index, xml_data in remove_tabs:
             self.children[index].recursive_remove(level=0)
+            del old_labels[index]
 
         # insert/add tabs: index is lowest first
         set_selected_page = None
@@ -271,6 +274,7 @@ class EditNotebook(ManagedBase, EditStylesMixin):
             # actually add/insert
             tabs_p.value.insert(index, [new_labels[index]])  # placeholder for pasting
             self.children.insert(index, None)
+            old_labels.insert(index, None)
             import clipboard
             clipboard._paste(self, index, xml_data)
 
@@ -279,6 +283,13 @@ class EditNotebook(ManagedBase, EditStylesMixin):
         # select the last added tab
         if set_selected_page is not None:
             self.widget.SetSelection(set_selected_page)
+        tabs_p.value[:] = [[l] for l in new_labels]
+        # change labels, if required
+        if self.widget:
+            for index, label in enumerate(old_labels):
+                if label is None or label==new_labels[index]: continue
+                print("setting label", index, new_labels[index])
+                self.widget.SetPageText(index, new_labels[index])
 
         for index in rebuild:
             common.app_tree.build(self.children[index], recursive=True)
@@ -332,11 +343,16 @@ class EditNotebook(ManagedBase, EditStylesMixin):
         if 'wxNB_BOTTOM' in value_set: return "B"
         return "T"
 
+    def check_property_modification(self, name, value, new_value):
+        # avoid repeat if the number of pages does not match
+        if name=="tabs" and len(value)!=len(new_value): return False
+        return True
+
     def _properties_changed(self, modified, actions):
         if modified and "tabs" in modified and self.widget:
             for i,(tab,) in enumerate(self.tabs):
                 self.widget.SetPageText(i,tab)
-        
+
         if modified and "style" in modified:
             # wxNB_TOP to wxNB_BOTTOM can be changed on the fly; any other change requires re-creation
             p = self.properties["style"]

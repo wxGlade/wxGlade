@@ -40,6 +40,9 @@ class EditStaticText(ManagedBase, EditStylesMixin):
         # self.wrap is now handled in finish_widget_creation
 
     def _properties_changed(self, modified, actions):
+        if modified and "label" in modified:
+            actions.add("label")
+
         if not modified or "label" in modified:
             if self.widget:
                 p = self.properties["label"]

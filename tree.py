@@ -284,39 +284,68 @@ class WidgetTree(wx.TreeCtrl):#, Tree):
                 if notebook.tabs[index][0]==new_tab:
                     new_tab = None
                 else:
-                    new_tabs = notebook.tabs[:]
+                    new_tabs = [t[:] for t in notebook.tabs]  # a GridProperty, i.e. a list of lists
                     new_tabs[index][0] = new_tab
             else:
                 new_tab = None
 
+        # helper to set a property as main or monitored for history
+        changing_properties = []
+        def add_to_history(p):
+            if not changing_properties:
+                common.history.property_changing(p)
+            else:
+                common.history.monitor_property(p)
+            changing_properties.append(p)
+
         # actually modify the values
         modified = set()
+
         if new_name:
+            add_to_history(name_p)
             name_p.previous_value = name_p.value
             name_p.set(new_name, notify=False)
             modified.add("name")
         if new_class:
+            add_to_history(class_p)
             class_p.previous_value = class_p.value
             class_p.set(new_class, notify=False)
             modified.add("class")
         if new_label:
+            add_to_history(label_p)
             label_p.previous_value = label_p.value
             label_p.set(new_label, notify=False)
             modified.add("label")
         if new_stockitem:
+            add_to_history(stockitem_p)
             stockitem_p.previous_value = stockitem_p.value
             stockitem_p.set(new_stockitem, notify=False)
             modified.add("stockitem")
         if new_title:
+            add_to_history(title_p)
             title_p.previous_value = title_p.value
             title_p.set(new_title, notify=False)
             modified.add("title")
+        if new_tab:
+            from widgets.notebook.notebook import HistoryNotebookTabsItem
+            add_to_history(tabs_p)
+            tabs_p.previous_value = tabs_p.value  # XXX the value is a list of lists; check whether it's used
+            tabs_p.set(new_tabs, notify=True)
+            modified.add("tabs")
         if modified:
             widget.properties_changed(modified)
             self.root.saved = False  # update the status of the app
-        if new_tab:
-            tabs_p.previous_value = tabs_p.value
-            tabs_p.set(new_tabs, notify=True)
+            if new_tab and len(modified)==1:
+                # "tabs" is the only changed property
+                item = common.history._finalize_item(stop=True)  # property_changing was called for "tabs"
+                common.history.add_item( HistoryNotebookTabsItem(notebook, item, [], []) )
+            else:
+                common.history.property_changed(changing_properties[0])
+                if new_tab:
+                    # "tabs" is a monitored property: replace history item in 'dependent'
+                    item = common.history.actions[-1].dependent[-1]
+                    common.history.actions[-1].dependent[-1] = HistoryNotebookTabsItem(notebook, item, [], [])
+
         wx.CallAfter( self.refresh, widget, refresh_label=True)  # setting from within the event handler does not work
 
     if compat.IS_CLASSIC:
