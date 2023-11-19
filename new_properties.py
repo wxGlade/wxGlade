@@ -65,7 +65,7 @@ class Property(object):
     GROW = False # if this is True, no spacer is added after the control, so it may grow down to the lower edge
     HAS_DATA = True
     min_version = None  # can be overwritten in instances; currently only used by BitmapProperty
-    _error = _warning = None  # used by TextProperty and derived classes
+    _error = _warning = _checked = None  # used by TextProperty and derived classes
 
     def __init__(self, value, default_value=_DefaultArgument, name=None):#, write_always=False):
         self.value = value
@@ -1292,7 +1292,11 @@ class TextProperty(Property):
 
     def toggle_active(self, active=None, refresh=True):
         Property.toggle_active(self, active, refresh)
-        if self.text: self._set_colours(self.check_value(self.value))
+        if self.text:
+            if self._checked==self.value:
+                self._set_colours()  # required e.g. for BitmapProperty where value is checked on loading
+            else:
+                self._set_colours(self.check_value(self.value))
 
     def _set_converter(self, value):
         # used by set()
@@ -1471,13 +1475,14 @@ class TextProperty(Property):
         self.text.SetValue(self._convert_to_text(self.value) or "")
         self._set_colours()
 
-    def set_check_result(self, warning=None, error=None):
-        if warning==self._warning and error==self._error: return
+    def set_check_result(self, checked, warning=None, error=None):
+        if checked==self._checked and warning==self._warning and error==self._error: return
+        self._checked = checked
         self._warning = warning
         self._error = error
 
         if not self.text: return
-        compat.SetToolTip(self.text, self._find_tooltip())
+        compat.SetToolTip(self.text, self._find_tooltip() or "")
         self._set_colours()
 
     def _set_colours(self, warning_error=None):
@@ -1554,10 +1559,11 @@ class TextProperty(Property):
 
     def check(self, value=None):
         if value is None: value = self.value
+        if value == self._checked: return  # already checked
         if isinstance(value, compat.unicode):
-            self.set_check_result( *self.check_value(value) )
+            self.set_check_result( value, *self.check_value(value) )
         else:
-            self.set_check_result()  # if it's not a text, it must be valid
+            self.set_check_result(value)  # if it's not a text, it must be valid
 
     def _check(self, value):
         # called from check, if value matches validation_re
@@ -2122,7 +2128,7 @@ class BitmapProperty(FileNameProperty):
 class BitmapPropertyD(BitmapProperty):
     deactivated = True
     def __init__(self, value="", name=None, min_version=None):
-        self._size = self._warning = self._error = None
+        self._size = self._warning = self._error = self._checked = None
         style = wx.FD_OPEN | wx.FD_FILE_MUST_EXIST
         self.min_version = min_version
         FileNameProperty.__init__(self, value, style, '', name)

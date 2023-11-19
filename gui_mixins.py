@@ -291,34 +291,41 @@ class BitmapMixin(object):
             self._set_preview_bitmap(self.properties["bitmap"], "")
         self._check_bitmaps(modified)
 
-    def get_preview_obj_bitmap(self, bitmap=None):
+    def get_preview_obj_bitmap(self, bitmap=None, prop=None):
         """Create a wx.Bitmap or wx.EmptyBitmap from the given statement.
         If no statement is given, the instance variable named "bitmap" is used.
 
         bitmap: Bitmap definition (str or None)
 
         see: get_preview_obj_artprovider(), get_preview_obj_emptybitmap()"""
-        if bitmap is None:
+        if bitmap is None and prop is not None:
+            bitmap = prop.value
+            if bitmap: bitmap = bitmap.strip()
+        elif bitmap is None:
             bitmap = getattr(self, 'bitmap', None)
 
         if not bitmap:
-            return compat.wx_EmptyBitmap(1, 1)
+            if prop: prop.set_check_result(bitmap, warning="Empty bitmap")
+            return compat.wx_EmptyBitmap(16, 16)
 
         if bitmap.startswith('var:') or bitmap.startswith('code:'):
+            if prop: prop.set_check_result(bitmap)
             return compat.wx_EmptyBitmap(16, 16)
         elif bitmap.startswith('empty:'):
+            if prop: prop.set_check_result(bitmap)
             return self.get_preview_obj_emptybitmap(bitmap)
         elif bitmap.startswith('art:'):
-            return self.get_preview_obj_artprovider(bitmap)
+            return self.get_preview_obj_artprovider(bitmap, prop)
         else:
             bitmap = misc.get_absolute_path(bitmap)
             return wx.Bitmap(bitmap, wx.BITMAP_TYPE_ANY)
 
-    def get_preview_obj_artprovider(self, bitmap):
+    def get_preview_obj_artprovider(self, bitmap, prop=None):
         """Create a wxBitmap or wx.EmptyBitmap from the given statement using wxArtProvider.
         (note: Preview shows only wxART_* resources.)
 
         bitmap: Bitmap definition (str or None)
+        prop: a new_properties.Property instance to set an error message
 
         see: Lwcodegen.BaseWidgetWriter.get_inline_stmt_artprovider()"""
         # keep in sync with BitmapMixin.get_inline_stmt_artprovider()
@@ -326,6 +333,7 @@ class BitmapMixin(object):
         art_client = 'wxART_OTHER'
         size = wx.DefaultSize
 
+        error = None  # error string, including %s for the bitmap string
         # art:ArtID,ArtClient
         # art:ArtID,ArtClient,width,height
         try:
@@ -340,14 +348,32 @@ class BitmapMixin(object):
                 raise ValueError
 
         except (ValueError, TypeError):
-            logging.warn( 'Malformed statement to create a bitmap via wxArtProvider(): %s', bitmap )
+            error = 'Malformed statement to create a bitmap via wxArtProvider(): %s'
+            logging.warn( error, bitmap )
 
         # show wx art resources only
         if not art_id.startswith('wx'):     art_id     = 'wxART_HELP'
         if not art_client.startswith('wx'): art_client = 'wxART_OTHER'
+        
+        try:
+            art_id = self.wxname2attr(self.codegen.cn(art_id))
+        except AttributeError:
+            error = "Art id '%s' not found"
+            logging.warn( msg, art_id )
+            art_id = wx.ART_HELP
 
-        return wx.ArtProvider.GetBitmap( self.wxname2attr(self.codegen.cn(art_id)),
-                                         self.wxname2attr(self.codegen.cn(art_client)), size )
+        try:
+            art_client = self.wxname2attr(self.codegen.cn(art_client))
+        except AttributeError:
+            error = "Art client '%s' not found"
+            logging.warn( msg, art_id )
+            art_client = wx.ART_OTHER
+
+        if prop is not None:
+            if error: prop.set_check_result(bitmap, error=error%bitmap)
+            else:     prop.set_check_result(bitmap)
+
+        return wx.ArtProvider.GetBitmap( art_id, art_client, size )
 
     def get_preview_obj_emptybitmap(self, bitmap):
         """Create an empty wx.EmptyBitmap instance from the given statement.

@@ -95,7 +95,7 @@ class EditFrame(BitmapMixin, TopLevelBase, EditStylesMixin):
 
     def _set_widget_icon(self):
         if self.icon:
-            bitmap = self.get_preview_obj_bitmap(self.icon.strip())
+            bitmap = self.get_preview_obj_bitmap(prop=self.properties["icon"])
         else:
             xpm = os.path.join(config.icons_path, 'frame.png')
             bitmap = misc.get_xpm_bitmap(xpm)
