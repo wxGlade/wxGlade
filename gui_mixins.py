@@ -2,11 +2,11 @@
 Different Mixins
 
 @copyright: 2014-2016 Carsten Grohmann
-@copyright: 2017-2021 Dietmar Schwertberger
+@copyright: 2017-2023 Dietmar Schwertberger
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
-import copy, decorators, logging
+import copy, decorators, logging, os
 import wx
 
 import config, compat, misc
@@ -241,7 +241,7 @@ class BitmapMixin(object):
             warn = False
             if not normal_p.is_active() or normal_p._error:
                 for p, name in active:
-                    p.set_check_result(warning="'Bitmap' property must be set first")
+                    p.set_check_result(p.get_value(), warning="'Bitmap' property must be set first")
                     if modified and p.name in modified: warn = True  # show a dialog
                 if warn:
                     logging.warning("'Bitmap' property must be set first")
@@ -262,12 +262,23 @@ class BitmapMixin(object):
         bmp = prop.get_value()
         OK = True
         if bmp:
-            bmp_d = self.get_preview_obj_bitmap(bmp)
-            if ref_size and bmp_d.Size != ref_size:
-                prop.set_check_result(error="Size %s is different from normal bitmap %s."%(bmp_d.Size, ref_size))
+            try:
+                bmp_d = self.get_preview_obj_bitmap(bmp, prop)
+            except:
+                # if invalid:
+                #  if previously was valid -> use an empty bitmap of the same size
+                #  else -> check other bitmaps for sizes
+                prop.set_check_result(bmp, error="Invalid/non-existent bitmap")
+                if ref_size:
+                    bmp_d = compat.wx_EmptyBitmap(*ref_size)
+                else:
+                    bmp_d = compat.wx_EmptyBitmap(16, 16)
                 OK = False
-            else:
-                prop.set_check_result(error=None)
+            if ref_size and bmp_d.Size != ref_size:
+                prop.set_check_result(bmp, error="Size %s is different from normal bitmap %s."%(bmp_d.Size, ref_size))
+                OK = False
+            elif OK:
+                prop.set_check_result(bmp, error=None)
         else:
             bmp_d = wx.NullBitmap
         prop.set_bitmap(bmp_d)
@@ -317,8 +328,12 @@ class BitmapMixin(object):
         elif bitmap.startswith('art:'):
             return self.get_preview_obj_artprovider(bitmap, prop)
         else:
-            bitmap = misc.get_absolute_path(bitmap)
-            return wx.Bitmap(bitmap, wx.BITMAP_TYPE_ANY)
+            filename = misc.get_absolute_path(bitmap)
+            if not os.path.exists(filename):
+                #raise ValueError("file not found")
+                if prop: prop.set_check_result(bitmap, error="File not found: '%s'"%bitmap)
+                return compat.wx_EmptyBitmap(16, 16)
+            return wx.Bitmap(filename, wx.BITMAP_TYPE_ANY)
 
     def get_preview_obj_artprovider(self, bitmap, prop=None):
         """Create a wxBitmap or wx.EmptyBitmap from the given statement using wxArtProvider.
