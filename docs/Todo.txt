@@ -1,13 +1,10 @@
 
 User Interface:
- * easy selection of events from the base classes (-> rev. 1.1)
+ * easy selection of events from the base classes (-> rev. 1.2)
  * better avoid overlapping / invisible design window; same for dialogs with "Pin"
  * use undo/redo methods for GUI scripting (testing) (-> rev. 1.2)
- * code properties: use stc and resize dynamically (-> rev. 1.0)
- * Frame, Notebook, Calendar: re-create on style change, depending on changed flags and platform
-   e.g. on MacOS and GTK the main Frame styles can't be modified (see patch_recreate.txt)
+ * code properties: use stc and resize dynamically (-> rev. 1.2)
  * remove config.preferences.show_progress and always show ProgressDialog?
- * add DirPicker for output path selection
 Not by me, but maybe someone contributes:
  * toolbar and maybe menu editor: add Drop target for images (-> rev. 1.0)
  * add a template manager for (custom) widgets or complete parts of a design?
@@ -32,6 +29,9 @@ done:
  * use Freeze/Thaw on updates
  * grid property editors: support clipboard
 probably not:
+ * Frame, Notebook, Calendar: re-create on style change, depending on changed flags and platform
+   e.g. on MacOS and GTK the main Frame styles can't be modified (see patch_recreate.txt)
+ * add DirPicker for output path selection
  * multiple selections in Tree window -> allow editing properties for multiple widgets at the same time
  * change the user interface towards ribbons, property grid and a single frame instead of separate windows?
  * alternatively, use WrapSizer for the Palette window (-> rev. 0.9)
@@ -65,6 +65,7 @@ done:
 
 
 Internal:
+ * better handling of bitmap problems in gui_mixins (missing, size mismatch etc., loading of wxg files)
  * use the History instead of the logging facilities
  * add more test cases for editing
 done:
