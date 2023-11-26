@@ -392,10 +392,9 @@ class WindowBase(EditBase):
         if isinstance(widget, wx.Window):
             widget.Reparent(self.widget)
         elif isinstance(widget, wx.Sizer):
-            if isinstance(widget, wx.StaticBoxSizer):
-                # the StaticBox is a widget
-                sb = widget.GetStaticBox()
-                sb.Reparent(self.widget)
+            if hasattr(widget, "reparenting"):
+                # for (wxGlade)StaticBoxSizer and CustomGridSizer
+                widget.reparenting(self.widget)
             # go through all children
             for si in widget.GetChildren():
                 if si is None: continue
@@ -417,13 +416,13 @@ class WindowBase(EditBase):
 
             sizer = old_widget.GetSizer()
             if sizer:
-                self.widget.SetSizer(sizer)
                 old_widget.SetSizer(None, False)
-                sizer.SetContainingWindow(self.widget)
                 self._reparent_widget(sizer)
+                self.widget.SetSizer(sizer)
+                sizer.SetContainingWindow(self.widget)
             else:
-                for child in self.widget.GetChildren():
-                    # actually, for now a panel may only have a sizer as child, so this code is not executed
+                for child in old_widget.GetChildren():
+                    # no sizer, but a single child or just a slot
                     self._reparent_widget(child)
             compat.DestroyLater(old_widget)
             self.finish_widget_creation(0)

@@ -1003,6 +1003,11 @@ class EditStdDialogButtonSizer(EditBoxSizer):
 
 class wxGladeStaticBoxSizer(wx.StaticBoxSizer):
     _BTN_OFFSET = 1
+
+    def reparenting(self, new_parent):
+        sb = self.GetStaticBox()
+        sb.Reparent(new_parent)
+
     def SetItemMinSize(self, item, w, h):
         if w==-1 or h==-1:
             try:
@@ -1060,6 +1065,10 @@ class CustomGridSizer(wx.BoxSizer):
 
     def __getattr__(self, name):
         return getattr(self._grid, name)
+
+    def reparenting(self, new_parent):
+        if self.parent._btn:
+            self.parent._btn.Reparent(new_parent)
 
     def GetBestSize(self):
         return self._grid.GetMinSize()
