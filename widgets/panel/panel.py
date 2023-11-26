@@ -47,7 +47,7 @@ class PanelBase(EditStylesMixin):
         else:
             super(PanelBase, self).finish_widget_creation(level, sel_marker_parent=self.widget)
 
-        if self.scrollable:
+        if self.scrollable and self.check_prop("scroll_rate"):
             self.widget.SetScrollRate( *self.properties["scroll_rate"].get_tuple() )
         # this must be done here since ManagedBase.finish_widget_creation normally sets EVT_LEFT_DOWN to update_view
         if not self.widget.Disconnect(-1, -1, wx.wxEVT_LEFT_DOWN):
@@ -114,12 +114,11 @@ class PanelBase(EditStylesMixin):
             if self.scrollable:
                 if self.klass == 'wxPanel':
                     self.properties["class"].set('wxScrolledWindow')
-                self.properties['scroll_rate'].toggle_active(True)
+                self.properties['scroll_rate'].set_active(True)
                 self.properties['scroll_rate'].set_blocked(False)
             else:
                 if self.klass == 'wxScrolledWindow':
                     self.properties["class"].set('wxPanel')
-                self.properties['scroll_rate'].toggle_active(False)
                 self.properties['scroll_rate'].set_blocked(True)
 
         if self.widget and modified:
