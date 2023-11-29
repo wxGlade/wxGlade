@@ -358,8 +358,12 @@ def restore_focus(func):
     "try to restore the input focus"
     def wrapper(*args, **kwargs):
         focus = common.app_tree.FindFocus()
+        toplevel = focus and focus.GetTopLevelParent()
+        if toplevel is not common.main:
+            focus = toplevel
         ret = func(*args, **kwargs)
-        if focus: focus.SetFocus()
+        if bool(focus) and focus.IsShown():
+            focus.SetFocus()
         return ret
     wrapper.__name__ = func.__name__
     return wrapper
