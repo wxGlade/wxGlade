@@ -6,6 +6,8 @@ General:
 Widgets:
  - support TimePickerCtrl where available
 
+Generated Code:
+ - Python: bind events to object instead of frame (Issue #507)
 
 Version 1.0
 
