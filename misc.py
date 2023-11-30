@@ -354,21 +354,6 @@ def exec_after(func, *args, **kwargs):
 import clipboard
 
 
-def restore_focus(func):
-    "try to restore the input focus"
-    def wrapper(*args, **kwargs):
-        focus = common.app_tree.FindFocus()
-        toplevel = focus and focus.GetTopLevelParent()
-        if toplevel is not common.main:
-            focus = toplevel
-        ret = func(*args, **kwargs)
-        if bool(focus) and focus.IsShown():
-            focus.SetFocus()
-        return ret
-    wrapper.__name__ = func.__name__
-    return wrapper
-
-
 def _can_remove():
     global focused_widget
     if focused_widget is None or not hasattr(focused_widget, "remove"): return False
@@ -381,7 +366,7 @@ def _can_remove():
             return False
     return True
 
-@restore_focus
+
 def _remove():
     global focused_widget
     if not _can_remove(): return
@@ -391,7 +376,6 @@ def _remove():
         # usually, remove() should set the focus to the empty slot or the parent of the widget, if not clear it here
         focused_widget = None
 
-@restore_focus
 def _cut():
     global focused_widget
     if not _can_remove():
@@ -406,7 +390,6 @@ def _copy():
         return
     clipboard.copy(focused_widget)
 
-@restore_focus
 def _paste():
     if focused_widget is None: return
     if not hasattr(focused_widget, "clipboard_paste"):
@@ -414,7 +397,6 @@ def _paste():
         return
     clipboard.paste(focused_widget)
 
-@restore_focus
 def _insert():
     global focused_widget
     if not focused_widget: return
@@ -425,7 +407,6 @@ def _insert():
     method = getattr(parent, "insert_slot", None)
     if method: method(focused_widget.index)
 
-@restore_focus
 def _add():
     global focused_widget
     if not focused_widget: return
@@ -448,7 +429,6 @@ def _cancel():
     compat.SetToolTip(common.app_tree, "")
     common.main.user_message("Canceled")
 
-@restore_focus
 def drop():
     global focused_widget
     method = None
@@ -466,7 +446,6 @@ def drop():
     if method: method(None, False)  # don't reset, but continue adding
 
 
-@restore_focus
 def navigate(up):
     # move up or down in tree
     focus = focused_widget

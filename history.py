@@ -166,7 +166,7 @@ class HistoryRemovedItem(HistoryItem):
             widget = common.root.find_widget_from_path(parent_path)
 
         if widget.IS_ROOT:# or widget.IS_CONTAINER:
-            widget.clipboard_paste(self.xml_data, self.index)
+            return widget.clipboard_paste(self.xml_data, self.index)
         elif self.IS_SLOT:
             widget.insert_item(None, self.index)  # placeholder
             if self.slot_tab is not None:
@@ -186,9 +186,9 @@ class HistoryRemovedItem(HistoryItem):
             # update following slots
             for c in widget.children[self.index+1:]:
                 if c.IS_SLOT: common.app_tree.refresh(c)
-            misc.set_focused_widget(slot)
+            return slot
         else:
-            widget.clipboard_paste(self.xml_data)
+            return widget.clipboard_paste(self.xml_data)
 
     def redo(self):
         # identical to HistoryAddedItem.undo
@@ -197,6 +197,8 @@ class HistoryRemovedItem(HistoryItem):
         if slot is not None and not self.slot_path:
             # a slot has been left there, but should not be
             slot.remove(user=False)
+        else:
+            return slot
 
 
 class HistoryAddedItem(HistoryItem):
@@ -218,13 +220,15 @@ class HistoryAddedItem(HistoryItem):
         if slot is not None and not self.slot_path:
             # a slot has been left there, but should not be
             slot.remove(user=False)
+        else:
+            return slot
 
     def redo(self):
         # identical to HistoryRemovedItem.undo, except for the slot_tab part
         path = self.slot_path or self.path.rsplit("/",1)[0]  # slot or parent
         widget = common.root.find_widget_from_path(path)
         if widget.IS_ROOT:# or widget.IS_CONTAINER:
-            widget.clipboard_paste(self.xml_data, self.index)
+            return widget.clipboard_paste(self.xml_data, self.index)
         elif self.IS_SLOT:
             widget.insert_item(None, self.index)  # placeholder
             #if self.slot_tab is not None:
@@ -244,9 +248,9 @@ class HistoryAddedItem(HistoryItem):
             # update following slots
             for c in widget.children[self.index+1:]:
                 if c.IS_SLOT: common.app_tree.refresh(c)
-            misc.set_focused_widget(slot)
+            return slot
         else:
-            widget.clipboard_paste(self.xml_data)
+            return widget.clipboard_paste(self.xml_data)
 
 
 class HistorySizerSlots(HistoryItem):
