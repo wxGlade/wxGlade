@@ -197,7 +197,6 @@ class EditNotebook(ManagedBase, EditStylesMixin):
                 del tabs_p.value[child.index]
         ManagedBase.remove_item(self, child, level, keep_slot)
 
-    @misc.restore_focus
     def set_tabs(self, old_labels, indices, user=True):  # called from tabs property on Apply button
         """tabs: list of strings
         indices: the current indices of the tabs or None for a new tab; re-ordering is currently not supported"""
