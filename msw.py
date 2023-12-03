@@ -89,7 +89,13 @@ def register_extensions(fileextensions, appname):
             print("Could not register file extension %s"%fileextension)
         # register command
         key2 = RegistryCurrentUser(prefix+name)
-        value2 = '%s "%s" "%%1"'%(sys.executable, os.path.abspath( sys.argv[0] ))
+
+        if not os.path.extsep in os.path.basename(sys.argv[0]):
+            # when "wxglade.exe" is executed, sys.argv[0] is without file extension: just add ".exe"
+            value2 = '"%s.exe" "%%1"'%(os.path.abspath( sys.argv[0] ))
+        else:
+            value2 = '%s "%s" "%%1"'%(sys.executable, os.path.abspath( sys.argv[0] ))
+
         try:
             current = key2.shell.open.command['']
         except:
