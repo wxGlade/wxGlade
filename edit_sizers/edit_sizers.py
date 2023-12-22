@@ -680,9 +680,16 @@ class SizerBase(edit_base.EditBase):
 
         # set either specified size or GetBestSize
         if item.IsWindow():
-            widget.widget.SetMinSize( (-1,-1) )  # needed e.g. for TextCtrl after a style change
-            best_size = widget.widget.GetBestSize()
             size_p = widget.properties["size"]
+            best_size = widget.widget.GetBestSize()
+            if compat.USE_ISSUE_536_WORKAROUND and widget.WX_CLASS =='wxTextCtrl':
+                # avoid issue 536 (too large values from GetBestSize)
+                if not size_p.is_active(): return
+                best_size = (best_size[0], widget.widget.GetSize()[1])
+            else:
+                # does invalidate GetBestSize
+                widget.widget.SetMinSize( (-1, -1) )
+
             if size_p.is_active():
                 size = size_p.get_size(widget.widget) # XXX check dialog units -> call with window
                 w, h = size
