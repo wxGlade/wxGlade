@@ -1791,6 +1791,9 @@ class SizePropertyD(IntPairPropertyD):
 
         if w==-1 or h==-1:
             best_size = widget.GetBestSize()
+            if compat.USE_ISSUE_536_WORKAROUND and self.owner.WX_CLASS=='wxTextCtrl':
+                # avoid issue 536 (too large values from GetBestSize)
+                best_size = (best_size[0], widget.GetSize()[1])
             if w == -1: w = best_size[0]
             if h == -1: h = best_size[1]
         return (w,h)
