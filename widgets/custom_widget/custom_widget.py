@@ -185,7 +185,8 @@ class Dialog(wx.Dialog):
     validation_re  = re.compile(r'^[a-zA-Z_\.\:]+[\w-]*(\[\w*\])*$')  # does not avoid ".."
     def __init__(self):
         title = _('Enter widget class')
-        wx.Dialog.__init__(self, None, -1, title, wx.GetMousePosition())
+        style = wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER
+        wx.Dialog.__init__(self, None, -1, title, wx.GetMousePosition(), style=style)
         klass = 'CustomWidget'
 
         self.classname = wx.TextCtrl(self, -1, klass, size=(200,-1))
@@ -206,9 +207,11 @@ class Dialog(wx.Dialog):
         self.SetAutoLayout(True)
         self.SetSizer(sizer)
         sizer.Fit(self)
-        w = self.GetTextExtent(title)[0] *2
-        if self.GetSize()[0] < w:
-            self.SetSize((w, -1))
+        width = self.GetSize()[0]
+        min_width = max([self.GetTextExtent(title)[0] *2,
+                         self.GetTextExtent("X"*30)[0] - self.classname.GetSize()[0]+width])
+        if width < min_width:
+            self.SetSize((min_width, -1))
         self.classname.Bind(wx.EVT_TEXT, self.validate)
 
     def validate(self, event):
