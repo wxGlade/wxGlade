@@ -11,6 +11,13 @@ Entry point of wxGlade
 import atexit
 import codecs
 import logging, os, sys, gettext, optparse
+import ctypes
+
+# Fixes blurriness in windows
+try:
+    ctypes.windll.shcore.SetProcessDpiAwareness(1)
+except:
+    pass # not windows
 
 # Use a NullWriter with Unicode support (encoding attribute) to catch and
 # drop all output in PyInstaller environment (standalone Edition)
