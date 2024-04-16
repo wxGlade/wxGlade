@@ -5,7 +5,7 @@ File has been created in 2016; parts are from the old version of widget_properti
 
 Interface to owner modified; see below for class PropertyOwner
 
-@copyright: 2016-2021 Dietmar Schwertberger
+@copyright: 2016-2024 Dietmar Schwertberger
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
@@ -879,7 +879,7 @@ class _CheckListProperty(Property):
             static_box = wx.StaticBox(panel, -1, box_label, style=wx.FULL_REPAINT_ON_RESIZE)
             box_sizer = wx.StaticBoxSizer(static_box, wx.VERTICAL)
             for style in self.styles[box_label]:
-                checkbox = wx.CheckBox(panel, -1, style)
+                checkbox = wx.CheckBox(static_box, -1, style)
 
                 if style in tooltips: compat.SetToolTip(checkbox, tooltips[style])
                 self._choices.append(checkbox)
@@ -1236,7 +1236,7 @@ class WidgetStyleProperty(_CheckListProperty):
             if "obsolete" in style_def or "rename_to" in style_def:
                 self._choices.append(None)
                 continue
-            checkbox = wx.CheckBox(panel, -1, name)
+            checkbox = wx.CheckBox(static_box, -1, name)
 
             if name in tooltips:
                 compat.SetToolTip( checkbox, tooltips[name] )
