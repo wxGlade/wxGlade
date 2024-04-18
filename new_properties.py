@@ -878,8 +878,9 @@ class _CheckListProperty(Property):
         for box_label in self.styles.keys():
             static_box = wx.StaticBox(panel, -1, box_label, style=wx.FULL_REPAINT_ON_RESIZE)
             box_sizer = wx.StaticBoxSizer(static_box, wx.VERTICAL)
+            parent = static_box if compat.version>=(3, 0) else panel
             for style in self.styles[box_label]:
-                checkbox = wx.CheckBox(static_box, -1, style)
+                checkbox = wx.CheckBox(parent, -1, style)
 
                 if style in tooltips: compat.SetToolTip(checkbox, tooltips[style])
                 self._choices.append(checkbox)
@@ -1227,6 +1228,7 @@ class WidgetStyleProperty(_CheckListProperty):
 
         static_box = wx.StaticBox(panel, -1, _("Style"), style=wx.FULL_REPAINT_ON_RESIZE)
         box_sizer = wx.StaticBoxSizer(static_box, wx.VERTICAL)
+        parent = static_box if compat.version>=(3, 0) else panel
         for name, flag_value in zip(self._names, self._values):
             if name in widget_writer.style_defs:
                 style_def = widget_writer.style_defs[name]
@@ -1236,7 +1238,7 @@ class WidgetStyleProperty(_CheckListProperty):
             if "obsolete" in style_def or "rename_to" in style_def:
                 self._choices.append(None)
                 continue
-            checkbox = wx.CheckBox(static_box, -1, name)
+            checkbox = wx.CheckBox(parent, -1, name)
 
             if name in tooltips:
                 compat.SetToolTip( checkbox, tooltips[name] )
@@ -2421,30 +2423,31 @@ class GridProperty(Property):
         "Actually builds the grid to set the value of the property interactively"
 
         label   = self._find_label()
-        static_box = wx.StaticBox(panel, -1, label)
+        static_box = parent = wx.StaticBox(panel, -1, label)
         box_sizer = wx.StaticBoxSizer(static_box, wx.VERTICAL)
+        parent = static_box if compat.version>=(3, 0) else panel
 
         # the buttons ##################################################################################################
         extra_flag = wx.FIXED_MINSIZE
         if self.can_add or self.can_insert or self.can_remove:
             btn_sizer = wx.BoxSizer(wx.HORIZONTAL)
             if not self.immediate:
-                apply_btn = wx.Button(static_box, wx.ID_ANY, _("  &Apply  "), style=wx.BU_EXACTFIT)
+                apply_btn = wx.Button(parent, wx.ID_ANY, _("  &Apply  "), style=wx.BU_EXACTFIT)
                 compat.SetToolTip(apply_btn, "Alt-A")
                 btn_sizer.Add(apply_btn, 0, extra_flag | wx.RIGHT, 16)
 
             # the add/insert/remove buttons
             add_btn = insert_btn = remove_btn = None
             if self.can_add:
-                add_btn = wx.Button(static_box, wx.ID_ANY, _("  A&dd  "), style=wx.BU_EXACTFIT)
+                add_btn = wx.Button(parent, wx.ID_ANY, _("  A&dd  "), style=wx.BU_EXACTFIT)
                 compat.SetToolTip(add_btn, "Ctrl-A, Alt-D")
                 add_btn.Bind(wx.EVT_BUTTON, self.on_button_add)
             if self.can_insert:
-                insert_btn = wx.Button(static_box, wx.ID_ANY, _("  &Insert  "), style=wx.BU_EXACTFIT)
+                insert_btn = wx.Button(parent, wx.ID_ANY, _("  &Insert  "), style=wx.BU_EXACTFIT)
                 insert_btn.Bind(wx.EVT_BUTTON, self.on_button_insert)
                 compat.SetToolTip(insert_btn, "Ctrl-I, Alt-I")
             if self.can_remove:
-                remove_btn = wx.Button(static_box, wx.ID_ANY, _("  &Remove  "), style=wx.BU_EXACTFIT)
+                remove_btn = wx.Button(parent, wx.ID_ANY, _("  &Remove  "), style=wx.BU_EXACTFIT)
                 remove_btn.Bind(wx.EVT_BUTTON, self.on_button_remove)
                 compat.SetToolTip(remove_btn, "Ctrl-R, Alt-R")
             self.buttons = [add_btn, insert_btn, remove_btn]
@@ -2452,7 +2455,7 @@ class GridProperty(Property):
                 if btn: btn_sizer.Add( btn, 0, wx.LEFT | wx.RIGHT | extra_flag, 4 )
             if not self.immediate:
                 self.buttons.insert(0, apply_btn)
-                reset_btn = wx.Button(static_box, wx.ID_ANY, _("  Rese&t  "), style=wx.BU_EXACTFIT)
+                reset_btn = wx.Button(parent, wx.ID_ANY, _("  Rese&t  "), style=wx.BU_EXACTFIT)
                 compat.SetToolTip(reset_btn, "Alt-T or Ctrl-T")
                 reset_btn.Bind(wx.EVT_BUTTON, self.reset)
                 btn_sizer.AddStretchSpacer()
@@ -2467,8 +2470,8 @@ class GridProperty(Property):
             edit_sizer = wx.FlexGridSizer(len(self.col_defs), 2, 3, 3)
             edit_sizer.AddGrowableCol(1)
             for i, (label,datatype) in enumerate(self.col_defs):
-                edit_sizer.Add(wx.StaticText(static_box, -1, _(label)), 0, wx.ALIGN_CENTER_VERTICAL)
-                editor = wx.TextCtrl(static_box)
+                edit_sizer.Add(wx.StaticText(parent, -1, _(label)), 0, wx.ALIGN_CENTER_VERTICAL)
+                editor = wx.TextCtrl(parent)
                 edit_sizer.Add(editor, 1, wx.EXPAND)
                 self.editors.append(editor)
                 editor.Bind(wx.EVT_KILL_FOCUS, self.on_kill_focus_editor)
@@ -2478,7 +2481,7 @@ class GridProperty(Property):
                 editor.Bind(wx.EVT_TEXT, self.on_text_editor)
 
         # the grid #####################################################################################################
-        self.grid = wx.grid.Grid(static_box, -1)
+        self.grid = wx.grid.Grid(parent, -1)
         self.grid.Name = self.name
         rowcount = len(self.value)
         if self.can_add and self.immediate: rowcount += 1
