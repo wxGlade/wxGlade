@@ -1,4 +1,5 @@
 
+# Dietmar Schwertberger 2023:
 # building a binary distribution for Windows using embeddable interpreter:
 """
 download and unpack embedable archive, e.g. https://www.python.org/ftp/python/3.12.0/python-3.12.0-embed-amd64.zip
