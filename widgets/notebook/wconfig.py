@@ -2,7 +2,7 @@
 wxNotebook widget configuration
 
 @copyright: 2014-2016 Carsten Grohmann
-@copyright: 2017 Dietmar Schwertberger
+@copyright: 2017-2024 Dietmar Schwertberger
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
@@ -35,10 +35,7 @@ config = {
             'desc': _('(Windows only) Display a solid colour on notebook '
                       'pages, and not a gradient, which can reduce '
                       'performance.'),
-        },
-        'wxNB_FLAT': {
-            'desc': _('(Windows CE only) Show tabs in a flat style.'),
-        },
+        }
     },
     'default_style': 'wxNB_TOP',
     'style_list': ['wxNB_TOP', 'wxNB_LEFT', 'wxNB_RIGHT', 'wxNB_BOTTOM',
