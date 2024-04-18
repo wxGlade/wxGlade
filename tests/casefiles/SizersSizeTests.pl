@@ -531,235 +531,235 @@ sub new {
     $self->{sizer_3_nosize_copy} = Wx::StaticBoxSizer->new(Wx::StaticBox->new($self->{notebook_1_StaticBoxSizer}, wxID_ANY, _T("sizer_3_nosize_copy")), wxVERTICAL);
     $self->{sizer_3}->Add($self->{sizer_3_nosize_copy}, 1, wxEXPAND, 0);
     
-    $self->{_0_N_N_copy_6} = Wx::TextCtrl->new($self->{notebook_1_StaticBoxSizer}, wxID_ANY, "");
+    $self->{_0_N_N_copy_6} = Wx::TextCtrl->new($self->{sizer_3_nosize_copy}->GetStaticBox(), wxID_ANY, "");
     $self->{sizer_3_nosize_copy}->Add($self->{_0_N_N_copy_6}, 0, 0, 0);
     
-    $self->{_1_N_N_copy_6} = Wx::TextCtrl->new($self->{notebook_1_StaticBoxSizer}, wxID_ANY, "");
+    $self->{_1_N_N_copy_6} = Wx::TextCtrl->new($self->{sizer_3_nosize_copy}->GetStaticBox(), wxID_ANY, "");
     $self->{sizer_3_nosize_copy}->Add($self->{_1_N_N_copy_6}, 1, 0, 0);
     
-    $self->{_0_X_N_copy_6} = Wx::TextCtrl->new($self->{notebook_1_StaticBoxSizer}, wxID_ANY, "");
+    $self->{_0_X_N_copy_6} = Wx::TextCtrl->new($self->{sizer_3_nosize_copy}->GetStaticBox(), wxID_ANY, "");
     $self->{sizer_3_nosize_copy}->Add($self->{_0_X_N_copy_6}, 0, wxEXPAND, 0);
     
-    $self->{_1_X_N_copy_6} = Wx::TextCtrl->new($self->{notebook_1_StaticBoxSizer}, wxID_ANY, "");
+    $self->{_1_X_N_copy_6} = Wx::TextCtrl->new($self->{sizer_3_nosize_copy}->GetStaticBox(), wxID_ANY, "");
     $self->{sizer_3_nosize_copy}->Add($self->{_1_X_N_copy_6}, 1, wxEXPAND, 0);
     
-    $self->{_0_N_F_copy_6} = Wx::TextCtrl->new($self->{notebook_1_StaticBoxSizer}, wxID_ANY, "");
+    $self->{_0_N_F_copy_6} = Wx::TextCtrl->new($self->{sizer_3_nosize_copy}->GetStaticBox(), wxID_ANY, "");
     $self->{sizer_3_nosize_copy}->Add($self->{_0_N_F_copy_6}, 0, wxFIXED_MINSIZE, 0);
     
-    $self->{_1_N_F_copy_6} = Wx::TextCtrl->new($self->{notebook_1_StaticBoxSizer}, wxID_ANY, "");
+    $self->{_1_N_F_copy_6} = Wx::TextCtrl->new($self->{sizer_3_nosize_copy}->GetStaticBox(), wxID_ANY, "");
     $self->{sizer_3_nosize_copy}->Add($self->{_1_N_F_copy_6}, 1, wxFIXED_MINSIZE, 0);
     
-    $self->{_0_X_F_copy_6} = Wx::TextCtrl->new($self->{notebook_1_StaticBoxSizer}, wxID_ANY, "");
+    $self->{_0_X_F_copy_6} = Wx::TextCtrl->new($self->{sizer_3_nosize_copy}->GetStaticBox(), wxID_ANY, "");
     $self->{sizer_3_nosize_copy}->Add($self->{_0_X_F_copy_6}, 0, wxEXPAND|wxFIXED_MINSIZE, 0);
     
-    $self->{_1_X_F_copy_6} = Wx::TextCtrl->new($self->{notebook_1_StaticBoxSizer}, wxID_ANY, "");
+    $self->{_1_X_F_copy_6} = Wx::TextCtrl->new($self->{sizer_3_nosize_copy}->GetStaticBox(), wxID_ANY, "");
     $self->{sizer_3_nosize_copy}->Add($self->{_1_X_F_copy_6}, 1, wxEXPAND|wxFIXED_MINSIZE, 0);
     
     $self->{sizer_4_abs_copy} = Wx::StaticBoxSizer->new(Wx::StaticBox->new($self->{notebook_1_StaticBoxSizer}, wxID_ANY, _T("sizer_4_abs_copy")), wxVERTICAL);
     $self->{sizer_3}->Add($self->{sizer_4_abs_copy}, 1, wxEXPAND, 0);
     
-    $self->{_0_N_N_copy_copy} = Wx::TextCtrl->new($self->{notebook_1_StaticBoxSizer}, wxID_ANY, "");
+    $self->{_0_N_N_copy_copy} = Wx::TextCtrl->new($self->{sizer_4_abs_copy}->GetStaticBox(), wxID_ANY, "");
     $self->{_0_N_N_copy_copy}->SetMinSize(Wx::Size->new(100, 21));
     $self->{sizer_4_abs_copy}->Add($self->{_0_N_N_copy_copy}, 0, 0, 0);
     
-    $self->{_1_N_N_copy_copy} = Wx::TextCtrl->new($self->{notebook_1_StaticBoxSizer}, wxID_ANY, "");
+    $self->{_1_N_N_copy_copy} = Wx::TextCtrl->new($self->{sizer_4_abs_copy}->GetStaticBox(), wxID_ANY, "");
     $self->{_1_N_N_copy_copy}->SetMinSize(Wx::Size->new(100, 21));
     $self->{sizer_4_abs_copy}->Add($self->{_1_N_N_copy_copy}, 1, 0, 0);
     
-    $self->{_0_X_N_copy_copy} = Wx::TextCtrl->new($self->{notebook_1_StaticBoxSizer}, wxID_ANY, "");
+    $self->{_0_X_N_copy_copy} = Wx::TextCtrl->new($self->{sizer_4_abs_copy}->GetStaticBox(), wxID_ANY, "");
     $self->{_0_X_N_copy_copy}->SetMinSize(Wx::Size->new(100, 21));
     $self->{sizer_4_abs_copy}->Add($self->{_0_X_N_copy_copy}, 0, wxEXPAND, 0);
     
-    $self->{_1_X_N_copy_copy} = Wx::TextCtrl->new($self->{notebook_1_StaticBoxSizer}, wxID_ANY, "");
+    $self->{_1_X_N_copy_copy} = Wx::TextCtrl->new($self->{sizer_4_abs_copy}->GetStaticBox(), wxID_ANY, "");
     $self->{_1_X_N_copy_copy}->SetMinSize(Wx::Size->new(100, 21));
     $self->{sizer_4_abs_copy}->Add($self->{_1_X_N_copy_copy}, 1, wxEXPAND, 0);
     
-    $self->{_0_N_F_copy_copy} = Wx::TextCtrl->new($self->{notebook_1_StaticBoxSizer}, wxID_ANY, "");
+    $self->{_0_N_F_copy_copy} = Wx::TextCtrl->new($self->{sizer_4_abs_copy}->GetStaticBox(), wxID_ANY, "");
     $self->{_0_N_F_copy_copy}->SetMinSize(Wx::Size->new(100, 21));
     $self->{sizer_4_abs_copy}->Add($self->{_0_N_F_copy_copy}, 0, wxFIXED_MINSIZE, 0);
     
-    $self->{_1_N_F_copy_copy} = Wx::TextCtrl->new($self->{notebook_1_StaticBoxSizer}, wxID_ANY, "");
+    $self->{_1_N_F_copy_copy} = Wx::TextCtrl->new($self->{sizer_4_abs_copy}->GetStaticBox(), wxID_ANY, "");
     $self->{_1_N_F_copy_copy}->SetMinSize(Wx::Size->new(100, 21));
     $self->{sizer_4_abs_copy}->Add($self->{_1_N_F_copy_copy}, 1, wxFIXED_MINSIZE, 0);
     
-    $self->{_0_X_F_copy_copy} = Wx::TextCtrl->new($self->{notebook_1_StaticBoxSizer}, wxID_ANY, "");
+    $self->{_0_X_F_copy_copy} = Wx::TextCtrl->new($self->{sizer_4_abs_copy}->GetStaticBox(), wxID_ANY, "");
     $self->{_0_X_F_copy_copy}->SetMinSize(Wx::Size->new(100, 21));
     $self->{sizer_4_abs_copy}->Add($self->{_0_X_F_copy_copy}, 0, wxEXPAND|wxFIXED_MINSIZE, 0);
     
-    $self->{_1_X_F_copy_copy} = Wx::TextCtrl->new($self->{notebook_1_StaticBoxSizer}, wxID_ANY, "");
+    $self->{_1_X_F_copy_copy} = Wx::TextCtrl->new($self->{sizer_4_abs_copy}->GetStaticBox(), wxID_ANY, "");
     $self->{_1_X_F_copy_copy}->SetMinSize(Wx::Size->new(100, 21));
     $self->{sizer_4_abs_copy}->Add($self->{_1_X_F_copy_copy}, 1, wxEXPAND|wxFIXED_MINSIZE, 0);
     
     $self->{sizer_5_dlg_copy} = Wx::StaticBoxSizer->new(Wx::StaticBox->new($self->{notebook_1_StaticBoxSizer}, wxID_ANY, _T("sizer_5_dlg_copy")), wxVERTICAL);
     $self->{sizer_3}->Add($self->{sizer_5_dlg_copy}, 1, wxEXPAND, 0);
     
-    $self->{_0_N_N_copy_7} = Wx::TextCtrl->new($self->{notebook_1_StaticBoxSizer}, wxID_ANY, "");
+    $self->{_0_N_N_copy_7} = Wx::TextCtrl->new($self->{sizer_5_dlg_copy}->GetStaticBox(), wxID_ANY, "");
     $self->{_0_N_N_copy_7}->SetMinSize($self->{_0_N_N_copy_7}->ConvertDialogSizeToPixels(Wx::Size->new(100, 21)));
     $self->{sizer_5_dlg_copy}->Add($self->{_0_N_N_copy_7}, 0, 0, 0);
     
-    $self->{_1_N_N_copy_7} = Wx::TextCtrl->new($self->{notebook_1_StaticBoxSizer}, wxID_ANY, "");
+    $self->{_1_N_N_copy_7} = Wx::TextCtrl->new($self->{sizer_5_dlg_copy}->GetStaticBox(), wxID_ANY, "");
     $self->{_1_N_N_copy_7}->SetMinSize($self->{_1_N_N_copy_7}->ConvertDialogSizeToPixels(Wx::Size->new(100, 21)));
     $self->{sizer_5_dlg_copy}->Add($self->{_1_N_N_copy_7}, 1, 0, 0);
     
-    $self->{_0_X_N_copy_7} = Wx::TextCtrl->new($self->{notebook_1_StaticBoxSizer}, wxID_ANY, "");
+    $self->{_0_X_N_copy_7} = Wx::TextCtrl->new($self->{sizer_5_dlg_copy}->GetStaticBox(), wxID_ANY, "");
     $self->{_0_X_N_copy_7}->SetMinSize($self->{_0_X_N_copy_7}->ConvertDialogSizeToPixels(Wx::Size->new(100, 21)));
     $self->{sizer_5_dlg_copy}->Add($self->{_0_X_N_copy_7}, 0, wxEXPAND, 0);
     
-    $self->{_1_X_N_copy_7} = Wx::TextCtrl->new($self->{notebook_1_StaticBoxSizer}, wxID_ANY, "");
+    $self->{_1_X_N_copy_7} = Wx::TextCtrl->new($self->{sizer_5_dlg_copy}->GetStaticBox(), wxID_ANY, "");
     $self->{_1_X_N_copy_7}->SetMinSize($self->{_1_X_N_copy_7}->ConvertDialogSizeToPixels(Wx::Size->new(100, 21)));
     $self->{sizer_5_dlg_copy}->Add($self->{_1_X_N_copy_7}, 1, wxEXPAND, 0);
     
-    $self->{_0_N_F_copy_7} = Wx::TextCtrl->new($self->{notebook_1_StaticBoxSizer}, wxID_ANY, "");
+    $self->{_0_N_F_copy_7} = Wx::TextCtrl->new($self->{sizer_5_dlg_copy}->GetStaticBox(), wxID_ANY, "");
     $self->{_0_N_F_copy_7}->SetMinSize($self->{_0_N_F_copy_7}->ConvertDialogSizeToPixels(Wx::Size->new(100, 21)));
     $self->{sizer_5_dlg_copy}->Add($self->{_0_N_F_copy_7}, 0, wxFIXED_MINSIZE, 0);
     
-    $self->{_1_N_F_copy_7} = Wx::TextCtrl->new($self->{notebook_1_StaticBoxSizer}, wxID_ANY, "");
+    $self->{_1_N_F_copy_7} = Wx::TextCtrl->new($self->{sizer_5_dlg_copy}->GetStaticBox(), wxID_ANY, "");
     $self->{_1_N_F_copy_7}->SetMinSize($self->{_1_N_F_copy_7}->ConvertDialogSizeToPixels(Wx::Size->new(100, 21)));
     $self->{sizer_5_dlg_copy}->Add($self->{_1_N_F_copy_7}, 1, wxFIXED_MINSIZE, 0);
     
-    $self->{_0_X_F_copy_7} = Wx::TextCtrl->new($self->{notebook_1_StaticBoxSizer}, wxID_ANY, "");
+    $self->{_0_X_F_copy_7} = Wx::TextCtrl->new($self->{sizer_5_dlg_copy}->GetStaticBox(), wxID_ANY, "");
     $self->{_0_X_F_copy_7}->SetMinSize($self->{_0_X_F_copy_7}->ConvertDialogSizeToPixels(Wx::Size->new(100, 21)));
     $self->{sizer_5_dlg_copy}->Add($self->{_0_X_F_copy_7}, 0, wxEXPAND|wxFIXED_MINSIZE, 0);
     
-    $self->{_1_X_F_copy_7} = Wx::TextCtrl->new($self->{notebook_1_StaticBoxSizer}, wxID_ANY, "");
+    $self->{_1_X_F_copy_7} = Wx::TextCtrl->new($self->{sizer_5_dlg_copy}->GetStaticBox(), wxID_ANY, "");
     $self->{_1_X_F_copy_7}->SetMinSize($self->{_1_X_F_copy_7}->ConvertDialogSizeToPixels(Wx::Size->new(100, 21)));
     $self->{sizer_5_dlg_copy}->Add($self->{_1_X_F_copy_7}, 1, wxEXPAND|wxFIXED_MINSIZE, 0);
     
     $self->{sizer_6_m1abs_copy} = Wx::StaticBoxSizer->new(Wx::StaticBox->new($self->{notebook_1_StaticBoxSizer}, wxID_ANY, _T("sizer_6_m1abs_copy")), wxVERTICAL);
     $self->{sizer_3}->Add($self->{sizer_6_m1abs_copy}, 1, wxEXPAND, 0);
     
-    $self->{_0_N_N_copy_8} = Wx::TextCtrl->new($self->{notebook_1_StaticBoxSizer}, wxID_ANY, "");
+    $self->{_0_N_N_copy_8} = Wx::TextCtrl->new($self->{sizer_6_m1abs_copy}->GetStaticBox(), wxID_ANY, "");
     $self->{_0_N_N_copy_8}->SetMinSize(Wx::Size->new(-1, 21));
     $self->{sizer_6_m1abs_copy}->Add($self->{_0_N_N_copy_8}, 0, 0, 0);
     
-    $self->{_1_N_N_copy_8} = Wx::TextCtrl->new($self->{notebook_1_StaticBoxSizer}, wxID_ANY, "");
+    $self->{_1_N_N_copy_8} = Wx::TextCtrl->new($self->{sizer_6_m1abs_copy}->GetStaticBox(), wxID_ANY, "");
     $self->{_1_N_N_copy_8}->SetMinSize(Wx::Size->new(-1, 21));
     $self->{sizer_6_m1abs_copy}->Add($self->{_1_N_N_copy_8}, 1, 0, 0);
     
-    $self->{_0_X_N_copy_8} = Wx::TextCtrl->new($self->{notebook_1_StaticBoxSizer}, wxID_ANY, "");
+    $self->{_0_X_N_copy_8} = Wx::TextCtrl->new($self->{sizer_6_m1abs_copy}->GetStaticBox(), wxID_ANY, "");
     $self->{_0_X_N_copy_8}->SetMinSize(Wx::Size->new(-1, 21));
     $self->{sizer_6_m1abs_copy}->Add($self->{_0_X_N_copy_8}, 0, wxEXPAND, 0);
     
-    $self->{_1_X_N_copy_8} = Wx::TextCtrl->new($self->{notebook_1_StaticBoxSizer}, wxID_ANY, "");
+    $self->{_1_X_N_copy_8} = Wx::TextCtrl->new($self->{sizer_6_m1abs_copy}->GetStaticBox(), wxID_ANY, "");
     $self->{_1_X_N_copy_8}->SetMinSize(Wx::Size->new(-1, 21));
     $self->{sizer_6_m1abs_copy}->Add($self->{_1_X_N_copy_8}, 1, wxEXPAND, 0);
     
-    $self->{_0_N_F_copy_8} = Wx::TextCtrl->new($self->{notebook_1_StaticBoxSizer}, wxID_ANY, "");
+    $self->{_0_N_F_copy_8} = Wx::TextCtrl->new($self->{sizer_6_m1abs_copy}->GetStaticBox(), wxID_ANY, "");
     $self->{_0_N_F_copy_8}->SetMinSize(Wx::Size->new(-1, 21));
     $self->{sizer_6_m1abs_copy}->Add($self->{_0_N_F_copy_8}, 0, wxFIXED_MINSIZE, 0);
     
-    $self->{_1_N_F_copy_8} = Wx::TextCtrl->new($self->{notebook_1_StaticBoxSizer}, wxID_ANY, "");
+    $self->{_1_N_F_copy_8} = Wx::TextCtrl->new($self->{sizer_6_m1abs_copy}->GetStaticBox(), wxID_ANY, "");
     $self->{_1_N_F_copy_8}->SetMinSize(Wx::Size->new(-1, 21));
     $self->{sizer_6_m1abs_copy}->Add($self->{_1_N_F_copy_8}, 1, wxFIXED_MINSIZE, 0);
     
-    $self->{_0_X_F_copy_8} = Wx::TextCtrl->new($self->{notebook_1_StaticBoxSizer}, wxID_ANY, "");
+    $self->{_0_X_F_copy_8} = Wx::TextCtrl->new($self->{sizer_6_m1abs_copy}->GetStaticBox(), wxID_ANY, "");
     $self->{_0_X_F_copy_8}->SetMinSize(Wx::Size->new(-1, 21));
     $self->{sizer_6_m1abs_copy}->Add($self->{_0_X_F_copy_8}, 0, wxEXPAND|wxFIXED_MINSIZE, 0);
     
-    $self->{_1_X_F_copy_8} = Wx::TextCtrl->new($self->{notebook_1_StaticBoxSizer}, wxID_ANY, "");
+    $self->{_1_X_F_copy_8} = Wx::TextCtrl->new($self->{sizer_6_m1abs_copy}->GetStaticBox(), wxID_ANY, "");
     $self->{_1_X_F_copy_8}->SetMinSize(Wx::Size->new(-1, 21));
     $self->{sizer_6_m1abs_copy}->Add($self->{_1_X_F_copy_8}, 1, wxEXPAND|wxFIXED_MINSIZE, 0);
     
     $self->{sizer_6_absm1_copy} = Wx::StaticBoxSizer->new(Wx::StaticBox->new($self->{notebook_1_StaticBoxSizer}, wxID_ANY, _T("sizer_6_absm1_copy")), wxVERTICAL);
     $self->{sizer_3}->Add($self->{sizer_6_absm1_copy}, 1, wxEXPAND, 0);
     
-    $self->{_0_N_N_copy_9} = Wx::TextCtrl->new($self->{notebook_1_StaticBoxSizer}, wxID_ANY, "");
+    $self->{_0_N_N_copy_9} = Wx::TextCtrl->new($self->{sizer_6_absm1_copy}->GetStaticBox(), wxID_ANY, "");
     $self->{_0_N_N_copy_9}->SetMinSize(Wx::Size->new(100, -1));
     $self->{sizer_6_absm1_copy}->Add($self->{_0_N_N_copy_9}, 0, 0, 0);
     
-    $self->{_1_N_N_copy_9} = Wx::TextCtrl->new($self->{notebook_1_StaticBoxSizer}, wxID_ANY, "");
+    $self->{_1_N_N_copy_9} = Wx::TextCtrl->new($self->{sizer_6_absm1_copy}->GetStaticBox(), wxID_ANY, "");
     $self->{_1_N_N_copy_9}->SetMinSize(Wx::Size->new(100, -1));
     $self->{sizer_6_absm1_copy}->Add($self->{_1_N_N_copy_9}, 1, 0, 0);
     
-    $self->{_0_X_N_copy_9} = Wx::TextCtrl->new($self->{notebook_1_StaticBoxSizer}, wxID_ANY, "");
+    $self->{_0_X_N_copy_9} = Wx::TextCtrl->new($self->{sizer_6_absm1_copy}->GetStaticBox(), wxID_ANY, "");
     $self->{_0_X_N_copy_9}->SetMinSize(Wx::Size->new(100, -1));
     $self->{sizer_6_absm1_copy}->Add($self->{_0_X_N_copy_9}, 0, wxEXPAND, 0);
     
-    $self->{_1_X_N_copy_9} = Wx::TextCtrl->new($self->{notebook_1_StaticBoxSizer}, wxID_ANY, "");
+    $self->{_1_X_N_copy_9} = Wx::TextCtrl->new($self->{sizer_6_absm1_copy}->GetStaticBox(), wxID_ANY, "");
     $self->{_1_X_N_copy_9}->SetMinSize(Wx::Size->new(100, -1));
     $self->{sizer_6_absm1_copy}->Add($self->{_1_X_N_copy_9}, 1, wxEXPAND, 0);
     
-    $self->{_0_N_F_copy_9} = Wx::TextCtrl->new($self->{notebook_1_StaticBoxSizer}, wxID_ANY, "");
+    $self->{_0_N_F_copy_9} = Wx::TextCtrl->new($self->{sizer_6_absm1_copy}->GetStaticBox(), wxID_ANY, "");
     $self->{_0_N_F_copy_9}->SetMinSize(Wx::Size->new(100, -1));
     $self->{sizer_6_absm1_copy}->Add($self->{_0_N_F_copy_9}, 0, wxFIXED_MINSIZE, 0);
     
-    $self->{_1_N_F_copy_9} = Wx::TextCtrl->new($self->{notebook_1_StaticBoxSizer}, wxID_ANY, "");
+    $self->{_1_N_F_copy_9} = Wx::TextCtrl->new($self->{sizer_6_absm1_copy}->GetStaticBox(), wxID_ANY, "");
     $self->{_1_N_F_copy_9}->SetMinSize(Wx::Size->new(100, -1));
     $self->{sizer_6_absm1_copy}->Add($self->{_1_N_F_copy_9}, 1, wxFIXED_MINSIZE, 0);
     
-    $self->{_0_X_F_copy_9} = Wx::TextCtrl->new($self->{notebook_1_StaticBoxSizer}, wxID_ANY, "");
+    $self->{_0_X_F_copy_9} = Wx::TextCtrl->new($self->{sizer_6_absm1_copy}->GetStaticBox(), wxID_ANY, "");
     $self->{_0_X_F_copy_9}->SetMinSize(Wx::Size->new(100, -1));
     $self->{sizer_6_absm1_copy}->Add($self->{_0_X_F_copy_9}, 0, wxEXPAND|wxFIXED_MINSIZE, 0);
     
-    $self->{_1_X_F_copy_9} = Wx::TextCtrl->new($self->{notebook_1_StaticBoxSizer}, wxID_ANY, "");
+    $self->{_1_X_F_copy_9} = Wx::TextCtrl->new($self->{sizer_6_absm1_copy}->GetStaticBox(), wxID_ANY, "");
     $self->{_1_X_F_copy_9}->SetMinSize(Wx::Size->new(100, -1));
     $self->{sizer_6_absm1_copy}->Add($self->{_1_X_F_copy_9}, 1, wxEXPAND|wxFIXED_MINSIZE, 0);
     
     $self->{sizer_6_m1dlg_copy} = Wx::StaticBoxSizer->new(Wx::StaticBox->new($self->{notebook_1_StaticBoxSizer}, wxID_ANY, _T("sizer_6_m1dlg_copy")), wxVERTICAL);
     $self->{sizer_3}->Add($self->{sizer_6_m1dlg_copy}, 1, wxEXPAND, 0);
     
-    $self->{_0_N_N_copy_10} = Wx::TextCtrl->new($self->{notebook_1_StaticBoxSizer}, wxID_ANY, "");
+    $self->{_0_N_N_copy_10} = Wx::TextCtrl->new($self->{sizer_6_m1dlg_copy}->GetStaticBox(), wxID_ANY, "");
     $self->{_0_N_N_copy_10}->SetMinSize($self->{_0_N_N_copy_10}->ConvertDialogSizeToPixels(Wx::Size->new(-1, 100)));
     $self->{sizer_6_m1dlg_copy}->Add($self->{_0_N_N_copy_10}, 0, 0, 0);
     
-    $self->{_1_N_N_copy_10} = Wx::TextCtrl->new($self->{notebook_1_StaticBoxSizer}, wxID_ANY, "");
+    $self->{_1_N_N_copy_10} = Wx::TextCtrl->new($self->{sizer_6_m1dlg_copy}->GetStaticBox(), wxID_ANY, "");
     $self->{_1_N_N_copy_10}->SetMinSize($self->{_1_N_N_copy_10}->ConvertDialogSizeToPixels(Wx::Size->new(-1, 100)));
     $self->{sizer_6_m1dlg_copy}->Add($self->{_1_N_N_copy_10}, 1, 0, 0);
     
-    $self->{_0_X_N_copy_10} = Wx::TextCtrl->new($self->{notebook_1_StaticBoxSizer}, wxID_ANY, "");
+    $self->{_0_X_N_copy_10} = Wx::TextCtrl->new($self->{sizer_6_m1dlg_copy}->GetStaticBox(), wxID_ANY, "");
     $self->{_0_X_N_copy_10}->SetMinSize($self->{_0_X_N_copy_10}->ConvertDialogSizeToPixels(Wx::Size->new(-1, 100)));
     $self->{sizer_6_m1dlg_copy}->Add($self->{_0_X_N_copy_10}, 0, wxEXPAND, 0);
     
-    $self->{_1_X_N_copy_10} = Wx::TextCtrl->new($self->{notebook_1_StaticBoxSizer}, wxID_ANY, "");
+    $self->{_1_X_N_copy_10} = Wx::TextCtrl->new($self->{sizer_6_m1dlg_copy}->GetStaticBox(), wxID_ANY, "");
     $self->{_1_X_N_copy_10}->SetMinSize($self->{_1_X_N_copy_10}->ConvertDialogSizeToPixels(Wx::Size->new(-1, 100)));
     $self->{sizer_6_m1dlg_copy}->Add($self->{_1_X_N_copy_10}, 1, wxEXPAND, 0);
     
-    $self->{_0_N_F_copy_10} = Wx::TextCtrl->new($self->{notebook_1_StaticBoxSizer}, wxID_ANY, "");
+    $self->{_0_N_F_copy_10} = Wx::TextCtrl->new($self->{sizer_6_m1dlg_copy}->GetStaticBox(), wxID_ANY, "");
     $self->{_0_N_F_copy_10}->SetMinSize($self->{_0_N_F_copy_10}->ConvertDialogSizeToPixels(Wx::Size->new(-1, 100)));
     $self->{sizer_6_m1dlg_copy}->Add($self->{_0_N_F_copy_10}, 0, wxFIXED_MINSIZE, 0);
     
-    $self->{_1_N_F_copy_10} = Wx::TextCtrl->new($self->{notebook_1_StaticBoxSizer}, wxID_ANY, "");
+    $self->{_1_N_F_copy_10} = Wx::TextCtrl->new($self->{sizer_6_m1dlg_copy}->GetStaticBox(), wxID_ANY, "");
     $self->{_1_N_F_copy_10}->SetMinSize($self->{_1_N_F_copy_10}->ConvertDialogSizeToPixels(Wx::Size->new(-1, 100)));
     $self->{sizer_6_m1dlg_copy}->Add($self->{_1_N_F_copy_10}, 1, wxFIXED_MINSIZE, 0);
     
-    $self->{_0_X_F_copy_10} = Wx::TextCtrl->new($self->{notebook_1_StaticBoxSizer}, wxID_ANY, "");
+    $self->{_0_X_F_copy_10} = Wx::TextCtrl->new($self->{sizer_6_m1dlg_copy}->GetStaticBox(), wxID_ANY, "");
     $self->{sizer_6_m1dlg_copy}->Add($self->{_0_X_F_copy_10}, 0, wxEXPAND|wxFIXED_MINSIZE, 0);
     
-    $self->{_1_X_F_copy_10} = Wx::TextCtrl->new($self->{notebook_1_StaticBoxSizer}, wxID_ANY, "");
+    $self->{_1_X_F_copy_10} = Wx::TextCtrl->new($self->{sizer_6_m1dlg_copy}->GetStaticBox(), wxID_ANY, "");
     $self->{sizer_6_m1dlg_copy}->Add($self->{_1_X_F_copy_10}, 1, wxEXPAND|wxFIXED_MINSIZE, 0);
     
     $self->{sizer_6_dlgm1_copy} = Wx::StaticBoxSizer->new(Wx::StaticBox->new($self->{notebook_1_StaticBoxSizer}, wxID_ANY, _T("sizer_6_dlgm1_copy")), wxVERTICAL);
     $self->{sizer_3}->Add($self->{sizer_6_dlgm1_copy}, 1, wxEXPAND, 0);
     
-    $self->{_0_N_N_copy_11} = Wx::TextCtrl->new($self->{notebook_1_StaticBoxSizer}, wxID_ANY, "");
+    $self->{_0_N_N_copy_11} = Wx::TextCtrl->new($self->{sizer_6_dlgm1_copy}->GetStaticBox(), wxID_ANY, "");
     $self->{_0_N_N_copy_11}->SetMinSize($self->{_0_N_N_copy_11}->ConvertDialogSizeToPixels(Wx::Size->new(100, -1)));
     $self->{sizer_6_dlgm1_copy}->Add($self->{_0_N_N_copy_11}, 0, 0, 0);
     
-    $self->{_1_N_N_copy_11} = Wx::TextCtrl->new($self->{notebook_1_StaticBoxSizer}, wxID_ANY, "");
+    $self->{_1_N_N_copy_11} = Wx::TextCtrl->new($self->{sizer_6_dlgm1_copy}->GetStaticBox(), wxID_ANY, "");
     $self->{_1_N_N_copy_11}->SetMinSize($self->{_1_N_N_copy_11}->ConvertDialogSizeToPixels(Wx::Size->new(100, -1)));
     $self->{sizer_6_dlgm1_copy}->Add($self->{_1_N_N_copy_11}, 1, 0, 0);
     
-    $self->{_0_X_N_copy_11} = Wx::TextCtrl->new($self->{notebook_1_StaticBoxSizer}, wxID_ANY, "");
+    $self->{_0_X_N_copy_11} = Wx::TextCtrl->new($self->{sizer_6_dlgm1_copy}->GetStaticBox(), wxID_ANY, "");
     $self->{_0_X_N_copy_11}->SetMinSize($self->{_0_X_N_copy_11}->ConvertDialogSizeToPixels(Wx::Size->new(100, -1)));
     $self->{sizer_6_dlgm1_copy}->Add($self->{_0_X_N_copy_11}, 0, wxEXPAND, 0);
     
-    $self->{_1_X_N_copy_11} = Wx::TextCtrl->new($self->{notebook_1_StaticBoxSizer}, wxID_ANY, "");
+    $self->{_1_X_N_copy_11} = Wx::TextCtrl->new($self->{sizer_6_dlgm1_copy}->GetStaticBox(), wxID_ANY, "");
     $self->{_1_X_N_copy_11}->SetMinSize($self->{_1_X_N_copy_11}->ConvertDialogSizeToPixels(Wx::Size->new(100, -1)));
     $self->{sizer_6_dlgm1_copy}->Add($self->{_1_X_N_copy_11}, 1, wxEXPAND, 0);
     
-    $self->{_0_N_F_copy_11} = Wx::TextCtrl->new($self->{notebook_1_StaticBoxSizer}, wxID_ANY, "");
+    $self->{_0_N_F_copy_11} = Wx::TextCtrl->new($self->{sizer_6_dlgm1_copy}->GetStaticBox(), wxID_ANY, "");
     $self->{_0_N_F_copy_11}->SetMinSize($self->{_0_N_F_copy_11}->ConvertDialogSizeToPixels(Wx::Size->new(100, -1)));
     $self->{sizer_6_dlgm1_copy}->Add($self->{_0_N_F_copy_11}, 0, wxFIXED_MINSIZE, 0);
     
-    $self->{_1_N_F_copy_11} = Wx::TextCtrl->new($self->{notebook_1_StaticBoxSizer}, wxID_ANY, "");
+    $self->{_1_N_F_copy_11} = Wx::TextCtrl->new($self->{sizer_6_dlgm1_copy}->GetStaticBox(), wxID_ANY, "");
     $self->{_1_N_F_copy_11}->SetMinSize($self->{_1_N_F_copy_11}->ConvertDialogSizeToPixels(Wx::Size->new(100, -1)));
     $self->{sizer_6_dlgm1_copy}->Add($self->{_1_N_F_copy_11}, 1, wxFIXED_MINSIZE, 0);
     
-    $self->{_0_X_F_copy_11} = Wx::TextCtrl->new($self->{notebook_1_StaticBoxSizer}, wxID_ANY, "");
+    $self->{_0_X_F_copy_11} = Wx::TextCtrl->new($self->{sizer_6_dlgm1_copy}->GetStaticBox(), wxID_ANY, "");
     $self->{_0_X_F_copy_11}->SetMinSize($self->{_0_X_F_copy_11}->ConvertDialogSizeToPixels(Wx::Size->new(100, -1)));
     $self->{sizer_6_dlgm1_copy}->Add($self->{_0_X_F_copy_11}, 0, wxEXPAND|wxFIXED_MINSIZE, 0);
     
-    $self->{_1_X_F_copy_11} = Wx::TextCtrl->new($self->{notebook_1_StaticBoxSizer}, wxID_ANY, "");
+    $self->{_1_X_F_copy_11} = Wx::TextCtrl->new($self->{sizer_6_dlgm1_copy}->GetStaticBox(), wxID_ANY, "");
     $self->{_1_X_F_copy_11}->SetMinSize($self->{_1_X_F_copy_11}->ConvertDialogSizeToPixels(Wx::Size->new(100, -1)));
     $self->{sizer_6_dlgm1_copy}->Add($self->{_1_X_F_copy_11}, 1, wxEXPAND|wxFIXED_MINSIZE, 0);
     

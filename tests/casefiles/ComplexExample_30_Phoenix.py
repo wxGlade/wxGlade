@@ -84,7 +84,7 @@ class PyOgg2_MyFrame(wx.Frame):
         sizer_3 = wx.StaticBoxSizer(wx.StaticBox(self.notebook_1_pane_2, wx.ID_ANY, _("Misc")), wx.HORIZONTAL)
         sizer_4.Add(sizer_3, 1, wx.ALL | wx.EXPAND, 5)
 
-        self.cbx_love = wx.CheckBox(self.notebook_1_pane_2, wx.ID_ANY, _(u"♥ Love this song"))
+        self.cbx_love = wx.CheckBox(sizer_3.GetStaticBox(), wx.ID_ANY, _(u"♥ Love this song"))
         self.cbx_love.SetToolTip(_(u"Yes!\nWe ♥ it!"))
         self.cbx_love.SetValue(1)
         sizer_3.Add(self.cbx_love, 0, wx.ALL | wx.SHAPED, 5)

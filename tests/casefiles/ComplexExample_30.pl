@@ -109,7 +109,7 @@ sub new {
     $self->{sizer_3} = Wx::StaticBoxSizer->new(Wx::StaticBox->new($self->{notebook_1_pane_2}, wxID_ANY, _T("Misc")), wxHORIZONTAL);
     $self->{sizer_4}->Add($self->{sizer_3}, 1, wxALL|wxEXPAND, 5);
     
-    $self->{cbx_love} = Wx::CheckBox->new($self->{notebook_1_pane_2}, wxID_ANY, _T("\N{U+2665} Love this song"));
+    $self->{cbx_love} = Wx::CheckBox->new($self->{sizer_3}->GetStaticBox(), wxID_ANY, _T("\N{U+2665} Love this song"));
     $self->{cbx_love}->SetToolTip(_T("Yes!\nWe \N{U+2665} it!"));
     $self->{cbx_love}->SetValue(1);
     $self->{sizer_3}->Add($self->{cbx_love}, 0, wxALL|wxSHAPED, 5);

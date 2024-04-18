@@ -515,235 +515,235 @@ class MyFrame(wx.Frame):
         sizer_3_nosize_copy = wx.StaticBoxSizer(wx.StaticBox(self.notebook_1_StaticBoxSizer, wx.ID_ANY, _("sizer_3_nosize_copy")), wx.VERTICAL)
         sizer_3.Add(sizer_3_nosize_copy, 1, wx.EXPAND, 0)
 
-        self._0_N_N_copy_6 = wx.TextCtrl(self.notebook_1_StaticBoxSizer, wx.ID_ANY, "")
+        self._0_N_N_copy_6 = wx.TextCtrl(sizer_3_nosize_copy.GetStaticBox(), wx.ID_ANY, "")
         sizer_3_nosize_copy.Add(self._0_N_N_copy_6, 0, 0, 0)
 
-        self._1_N_N_copy_6 = wx.TextCtrl(self.notebook_1_StaticBoxSizer, wx.ID_ANY, "")
+        self._1_N_N_copy_6 = wx.TextCtrl(sizer_3_nosize_copy.GetStaticBox(), wx.ID_ANY, "")
         sizer_3_nosize_copy.Add(self._1_N_N_copy_6, 1, 0, 0)
 
-        self._0_X_N_copy_6 = wx.TextCtrl(self.notebook_1_StaticBoxSizer, wx.ID_ANY, "")
+        self._0_X_N_copy_6 = wx.TextCtrl(sizer_3_nosize_copy.GetStaticBox(), wx.ID_ANY, "")
         sizer_3_nosize_copy.Add(self._0_X_N_copy_6, 0, wx.EXPAND, 0)
 
-        self._1_X_N_copy_6 = wx.TextCtrl(self.notebook_1_StaticBoxSizer, wx.ID_ANY, "")
+        self._1_X_N_copy_6 = wx.TextCtrl(sizer_3_nosize_copy.GetStaticBox(), wx.ID_ANY, "")
         sizer_3_nosize_copy.Add(self._1_X_N_copy_6, 1, wx.EXPAND, 0)
 
-        self._0_N_F_copy_6 = wx.TextCtrl(self.notebook_1_StaticBoxSizer, wx.ID_ANY, "")
+        self._0_N_F_copy_6 = wx.TextCtrl(sizer_3_nosize_copy.GetStaticBox(), wx.ID_ANY, "")
         sizer_3_nosize_copy.Add(self._0_N_F_copy_6, 0, wx.FIXED_MINSIZE, 0)
 
-        self._1_N_F_copy_6 = wx.TextCtrl(self.notebook_1_StaticBoxSizer, wx.ID_ANY, "")
+        self._1_N_F_copy_6 = wx.TextCtrl(sizer_3_nosize_copy.GetStaticBox(), wx.ID_ANY, "")
         sizer_3_nosize_copy.Add(self._1_N_F_copy_6, 1, wx.FIXED_MINSIZE, 0)
 
-        self._0_X_F_copy_6 = wx.TextCtrl(self.notebook_1_StaticBoxSizer, wx.ID_ANY, "")
+        self._0_X_F_copy_6 = wx.TextCtrl(sizer_3_nosize_copy.GetStaticBox(), wx.ID_ANY, "")
         sizer_3_nosize_copy.Add(self._0_X_F_copy_6, 0, wx.EXPAND | wx.FIXED_MINSIZE, 0)
 
-        self._1_X_F_copy_6 = wx.TextCtrl(self.notebook_1_StaticBoxSizer, wx.ID_ANY, "")
+        self._1_X_F_copy_6 = wx.TextCtrl(sizer_3_nosize_copy.GetStaticBox(), wx.ID_ANY, "")
         sizer_3_nosize_copy.Add(self._1_X_F_copy_6, 1, wx.EXPAND | wx.FIXED_MINSIZE, 0)
 
         sizer_4_abs_copy = wx.StaticBoxSizer(wx.StaticBox(self.notebook_1_StaticBoxSizer, wx.ID_ANY, _("sizer_4_abs_copy")), wx.VERTICAL)
         sizer_3.Add(sizer_4_abs_copy, 1, wx.EXPAND, 0)
 
-        self._0_N_N_copy_copy = wx.TextCtrl(self.notebook_1_StaticBoxSizer, wx.ID_ANY, "")
+        self._0_N_N_copy_copy = wx.TextCtrl(sizer_4_abs_copy.GetStaticBox(), wx.ID_ANY, "")
         self._0_N_N_copy_copy.SetMinSize((100, 21))
         sizer_4_abs_copy.Add(self._0_N_N_copy_copy, 0, 0, 0)
 
-        self._1_N_N_copy_copy = wx.TextCtrl(self.notebook_1_StaticBoxSizer, wx.ID_ANY, "")
+        self._1_N_N_copy_copy = wx.TextCtrl(sizer_4_abs_copy.GetStaticBox(), wx.ID_ANY, "")
         self._1_N_N_copy_copy.SetMinSize((100, 21))
         sizer_4_abs_copy.Add(self._1_N_N_copy_copy, 1, 0, 0)
 
-        self._0_X_N_copy_copy = wx.TextCtrl(self.notebook_1_StaticBoxSizer, wx.ID_ANY, "")
+        self._0_X_N_copy_copy = wx.TextCtrl(sizer_4_abs_copy.GetStaticBox(), wx.ID_ANY, "")
         self._0_X_N_copy_copy.SetMinSize((100, 21))
         sizer_4_abs_copy.Add(self._0_X_N_copy_copy, 0, wx.EXPAND, 0)
 
-        self._1_X_N_copy_copy = wx.TextCtrl(self.notebook_1_StaticBoxSizer, wx.ID_ANY, "")
+        self._1_X_N_copy_copy = wx.TextCtrl(sizer_4_abs_copy.GetStaticBox(), wx.ID_ANY, "")
         self._1_X_N_copy_copy.SetMinSize((100, 21))
         sizer_4_abs_copy.Add(self._1_X_N_copy_copy, 1, wx.EXPAND, 0)
 
-        self._0_N_F_copy_copy = wx.TextCtrl(self.notebook_1_StaticBoxSizer, wx.ID_ANY, "")
+        self._0_N_F_copy_copy = wx.TextCtrl(sizer_4_abs_copy.GetStaticBox(), wx.ID_ANY, "")
         self._0_N_F_copy_copy.SetMinSize((100, 21))
         sizer_4_abs_copy.Add(self._0_N_F_copy_copy, 0, wx.FIXED_MINSIZE, 0)
 
-        self._1_N_F_copy_copy = wx.TextCtrl(self.notebook_1_StaticBoxSizer, wx.ID_ANY, "")
+        self._1_N_F_copy_copy = wx.TextCtrl(sizer_4_abs_copy.GetStaticBox(), wx.ID_ANY, "")
         self._1_N_F_copy_copy.SetMinSize((100, 21))
         sizer_4_abs_copy.Add(self._1_N_F_copy_copy, 1, wx.FIXED_MINSIZE, 0)
 
-        self._0_X_F_copy_copy = wx.TextCtrl(self.notebook_1_StaticBoxSizer, wx.ID_ANY, "")
+        self._0_X_F_copy_copy = wx.TextCtrl(sizer_4_abs_copy.GetStaticBox(), wx.ID_ANY, "")
         self._0_X_F_copy_copy.SetMinSize((100, 21))
         sizer_4_abs_copy.Add(self._0_X_F_copy_copy, 0, wx.EXPAND | wx.FIXED_MINSIZE, 0)
 
-        self._1_X_F_copy_copy = wx.TextCtrl(self.notebook_1_StaticBoxSizer, wx.ID_ANY, "")
+        self._1_X_F_copy_copy = wx.TextCtrl(sizer_4_abs_copy.GetStaticBox(), wx.ID_ANY, "")
         self._1_X_F_copy_copy.SetMinSize((100, 21))
         sizer_4_abs_copy.Add(self._1_X_F_copy_copy, 1, wx.EXPAND | wx.FIXED_MINSIZE, 0)
 
         sizer_5_dlg_copy = wx.StaticBoxSizer(wx.StaticBox(self.notebook_1_StaticBoxSizer, wx.ID_ANY, _("sizer_5_dlg_copy")), wx.VERTICAL)
         sizer_3.Add(sizer_5_dlg_copy, 1, wx.EXPAND, 0)
 
-        self._0_N_N_copy_7 = wx.TextCtrl(self.notebook_1_StaticBoxSizer, wx.ID_ANY, "")
+        self._0_N_N_copy_7 = wx.TextCtrl(sizer_5_dlg_copy.GetStaticBox(), wx.ID_ANY, "")
         self._0_N_N_copy_7.SetMinSize(wx.DLG_SZE(self._0_N_N_copy_7, (100, 21)))
         sizer_5_dlg_copy.Add(self._0_N_N_copy_7, 0, 0, 0)
 
-        self._1_N_N_copy_7 = wx.TextCtrl(self.notebook_1_StaticBoxSizer, wx.ID_ANY, "")
+        self._1_N_N_copy_7 = wx.TextCtrl(sizer_5_dlg_copy.GetStaticBox(), wx.ID_ANY, "")
         self._1_N_N_copy_7.SetMinSize(wx.DLG_SZE(self._1_N_N_copy_7, (100, 21)))
         sizer_5_dlg_copy.Add(self._1_N_N_copy_7, 1, 0, 0)
 
-        self._0_X_N_copy_7 = wx.TextCtrl(self.notebook_1_StaticBoxSizer, wx.ID_ANY, "")
+        self._0_X_N_copy_7 = wx.TextCtrl(sizer_5_dlg_copy.GetStaticBox(), wx.ID_ANY, "")
         self._0_X_N_copy_7.SetMinSize(wx.DLG_SZE(self._0_X_N_copy_7, (100, 21)))
         sizer_5_dlg_copy.Add(self._0_X_N_copy_7, 0, wx.EXPAND, 0)
 
-        self._1_X_N_copy_7 = wx.TextCtrl(self.notebook_1_StaticBoxSizer, wx.ID_ANY, "")
+        self._1_X_N_copy_7 = wx.TextCtrl(sizer_5_dlg_copy.GetStaticBox(), wx.ID_ANY, "")
         self._1_X_N_copy_7.SetMinSize(wx.DLG_SZE(self._1_X_N_copy_7, (100, 21)))
         sizer_5_dlg_copy.Add(self._1_X_N_copy_7, 1, wx.EXPAND, 0)
 
-        self._0_N_F_copy_7 = wx.TextCtrl(self.notebook_1_StaticBoxSizer, wx.ID_ANY, "")
+        self._0_N_F_copy_7 = wx.TextCtrl(sizer_5_dlg_copy.GetStaticBox(), wx.ID_ANY, "")
         self._0_N_F_copy_7.SetMinSize(wx.DLG_SZE(self._0_N_F_copy_7, (100, 21)))
         sizer_5_dlg_copy.Add(self._0_N_F_copy_7, 0, wx.FIXED_MINSIZE, 0)
 
-        self._1_N_F_copy_7 = wx.TextCtrl(self.notebook_1_StaticBoxSizer, wx.ID_ANY, "")
+        self._1_N_F_copy_7 = wx.TextCtrl(sizer_5_dlg_copy.GetStaticBox(), wx.ID_ANY, "")
         self._1_N_F_copy_7.SetMinSize(wx.DLG_SZE(self._1_N_F_copy_7, (100, 21)))
         sizer_5_dlg_copy.Add(self._1_N_F_copy_7, 1, wx.FIXED_MINSIZE, 0)
 
-        self._0_X_F_copy_7 = wx.TextCtrl(self.notebook_1_StaticBoxSizer, wx.ID_ANY, "")
+        self._0_X_F_copy_7 = wx.TextCtrl(sizer_5_dlg_copy.GetStaticBox(), wx.ID_ANY, "")
         self._0_X_F_copy_7.SetMinSize(wx.DLG_SZE(self._0_X_F_copy_7, (100, 21)))
         sizer_5_dlg_copy.Add(self._0_X_F_copy_7, 0, wx.EXPAND | wx.FIXED_MINSIZE, 0)
 
-        self._1_X_F_copy_7 = wx.TextCtrl(self.notebook_1_StaticBoxSizer, wx.ID_ANY, "")
+        self._1_X_F_copy_7 = wx.TextCtrl(sizer_5_dlg_copy.GetStaticBox(), wx.ID_ANY, "")
         self._1_X_F_copy_7.SetMinSize(wx.DLG_SZE(self._1_X_F_copy_7, (100, 21)))
         sizer_5_dlg_copy.Add(self._1_X_F_copy_7, 1, wx.EXPAND | wx.FIXED_MINSIZE, 0)
 
         sizer_6_m1abs_copy = wx.StaticBoxSizer(wx.StaticBox(self.notebook_1_StaticBoxSizer, wx.ID_ANY, _("sizer_6_m1abs_copy")), wx.VERTICAL)
         sizer_3.Add(sizer_6_m1abs_copy, 1, wx.EXPAND, 0)
 
-        self._0_N_N_copy_8 = wx.TextCtrl(self.notebook_1_StaticBoxSizer, wx.ID_ANY, "")
+        self._0_N_N_copy_8 = wx.TextCtrl(sizer_6_m1abs_copy.GetStaticBox(), wx.ID_ANY, "")
         self._0_N_N_copy_8.SetMinSize((-1, 21))
         sizer_6_m1abs_copy.Add(self._0_N_N_copy_8, 0, 0, 0)
 
-        self._1_N_N_copy_8 = wx.TextCtrl(self.notebook_1_StaticBoxSizer, wx.ID_ANY, "")
+        self._1_N_N_copy_8 = wx.TextCtrl(sizer_6_m1abs_copy.GetStaticBox(), wx.ID_ANY, "")
         self._1_N_N_copy_8.SetMinSize((-1, 21))
         sizer_6_m1abs_copy.Add(self._1_N_N_copy_8, 1, 0, 0)
 
-        self._0_X_N_copy_8 = wx.TextCtrl(self.notebook_1_StaticBoxSizer, wx.ID_ANY, "")
+        self._0_X_N_copy_8 = wx.TextCtrl(sizer_6_m1abs_copy.GetStaticBox(), wx.ID_ANY, "")
         self._0_X_N_copy_8.SetMinSize((-1, 21))
         sizer_6_m1abs_copy.Add(self._0_X_N_copy_8, 0, wx.EXPAND, 0)
 
-        self._1_X_N_copy_8 = wx.TextCtrl(self.notebook_1_StaticBoxSizer, wx.ID_ANY, "")
+        self._1_X_N_copy_8 = wx.TextCtrl(sizer_6_m1abs_copy.GetStaticBox(), wx.ID_ANY, "")
         self._1_X_N_copy_8.SetMinSize((-1, 21))
         sizer_6_m1abs_copy.Add(self._1_X_N_copy_8, 1, wx.EXPAND, 0)
 
-        self._0_N_F_copy_8 = wx.TextCtrl(self.notebook_1_StaticBoxSizer, wx.ID_ANY, "")
+        self._0_N_F_copy_8 = wx.TextCtrl(sizer_6_m1abs_copy.GetStaticBox(), wx.ID_ANY, "")
         self._0_N_F_copy_8.SetMinSize((-1, 21))
         sizer_6_m1abs_copy.Add(self._0_N_F_copy_8, 0, wx.FIXED_MINSIZE, 0)
 
-        self._1_N_F_copy_8 = wx.TextCtrl(self.notebook_1_StaticBoxSizer, wx.ID_ANY, "")
+        self._1_N_F_copy_8 = wx.TextCtrl(sizer_6_m1abs_copy.GetStaticBox(), wx.ID_ANY, "")
         self._1_N_F_copy_8.SetMinSize((-1, 21))
         sizer_6_m1abs_copy.Add(self._1_N_F_copy_8, 1, wx.FIXED_MINSIZE, 0)
 
-        self._0_X_F_copy_8 = wx.TextCtrl(self.notebook_1_StaticBoxSizer, wx.ID_ANY, "")
+        self._0_X_F_copy_8 = wx.TextCtrl(sizer_6_m1abs_copy.GetStaticBox(), wx.ID_ANY, "")
         self._0_X_F_copy_8.SetMinSize((-1, 21))
         sizer_6_m1abs_copy.Add(self._0_X_F_copy_8, 0, wx.EXPAND | wx.FIXED_MINSIZE, 0)
 
-        self._1_X_F_copy_8 = wx.TextCtrl(self.notebook_1_StaticBoxSizer, wx.ID_ANY, "")
+        self._1_X_F_copy_8 = wx.TextCtrl(sizer_6_m1abs_copy.GetStaticBox(), wx.ID_ANY, "")
         self._1_X_F_copy_8.SetMinSize((-1, 21))
         sizer_6_m1abs_copy.Add(self._1_X_F_copy_8, 1, wx.EXPAND | wx.FIXED_MINSIZE, 0)
 
         sizer_6_absm1_copy = wx.StaticBoxSizer(wx.StaticBox(self.notebook_1_StaticBoxSizer, wx.ID_ANY, _("sizer_6_absm1_copy")), wx.VERTICAL)
         sizer_3.Add(sizer_6_absm1_copy, 1, wx.EXPAND, 0)
 
-        self._0_N_N_copy_9 = wx.TextCtrl(self.notebook_1_StaticBoxSizer, wx.ID_ANY, "")
+        self._0_N_N_copy_9 = wx.TextCtrl(sizer_6_absm1_copy.GetStaticBox(), wx.ID_ANY, "")
         self._0_N_N_copy_9.SetMinSize((100, -1))
         sizer_6_absm1_copy.Add(self._0_N_N_copy_9, 0, 0, 0)
 
-        self._1_N_N_copy_9 = wx.TextCtrl(self.notebook_1_StaticBoxSizer, wx.ID_ANY, "")
+        self._1_N_N_copy_9 = wx.TextCtrl(sizer_6_absm1_copy.GetStaticBox(), wx.ID_ANY, "")
         self._1_N_N_copy_9.SetMinSize((100, -1))
         sizer_6_absm1_copy.Add(self._1_N_N_copy_9, 1, 0, 0)
 
-        self._0_X_N_copy_9 = wx.TextCtrl(self.notebook_1_StaticBoxSizer, wx.ID_ANY, "")
+        self._0_X_N_copy_9 = wx.TextCtrl(sizer_6_absm1_copy.GetStaticBox(), wx.ID_ANY, "")
         self._0_X_N_copy_9.SetMinSize((100, -1))
         sizer_6_absm1_copy.Add(self._0_X_N_copy_9, 0, wx.EXPAND, 0)
 
-        self._1_X_N_copy_9 = wx.TextCtrl(self.notebook_1_StaticBoxSizer, wx.ID_ANY, "")
+        self._1_X_N_copy_9 = wx.TextCtrl(sizer_6_absm1_copy.GetStaticBox(), wx.ID_ANY, "")
         self._1_X_N_copy_9.SetMinSize((100, -1))
         sizer_6_absm1_copy.Add(self._1_X_N_copy_9, 1, wx.EXPAND, 0)
 
-        self._0_N_F_copy_9 = wx.TextCtrl(self.notebook_1_StaticBoxSizer, wx.ID_ANY, "")
+        self._0_N_F_copy_9 = wx.TextCtrl(sizer_6_absm1_copy.GetStaticBox(), wx.ID_ANY, "")
         self._0_N_F_copy_9.SetMinSize((100, -1))
         sizer_6_absm1_copy.Add(self._0_N_F_copy_9, 0, wx.FIXED_MINSIZE, 0)
 
-        self._1_N_F_copy_9 = wx.TextCtrl(self.notebook_1_StaticBoxSizer, wx.ID_ANY, "")
+        self._1_N_F_copy_9 = wx.TextCtrl(sizer_6_absm1_copy.GetStaticBox(), wx.ID_ANY, "")
         self._1_N_F_copy_9.SetMinSize((100, -1))
         sizer_6_absm1_copy.Add(self._1_N_F_copy_9, 1, wx.FIXED_MINSIZE, 0)
 
-        self._0_X_F_copy_9 = wx.TextCtrl(self.notebook_1_StaticBoxSizer, wx.ID_ANY, "")
+        self._0_X_F_copy_9 = wx.TextCtrl(sizer_6_absm1_copy.GetStaticBox(), wx.ID_ANY, "")
         self._0_X_F_copy_9.SetMinSize((100, -1))
         sizer_6_absm1_copy.Add(self._0_X_F_copy_9, 0, wx.EXPAND | wx.FIXED_MINSIZE, 0)
 
-        self._1_X_F_copy_9 = wx.TextCtrl(self.notebook_1_StaticBoxSizer, wx.ID_ANY, "")
+        self._1_X_F_copy_9 = wx.TextCtrl(sizer_6_absm1_copy.GetStaticBox(), wx.ID_ANY, "")
         self._1_X_F_copy_9.SetMinSize((100, -1))
         sizer_6_absm1_copy.Add(self._1_X_F_copy_9, 1, wx.EXPAND | wx.FIXED_MINSIZE, 0)
 
         sizer_6_m1dlg_copy = wx.StaticBoxSizer(wx.StaticBox(self.notebook_1_StaticBoxSizer, wx.ID_ANY, _("sizer_6_m1dlg_copy")), wx.VERTICAL)
         sizer_3.Add(sizer_6_m1dlg_copy, 1, wx.EXPAND, 0)
 
-        self._0_N_N_copy_10 = wx.TextCtrl(self.notebook_1_StaticBoxSizer, wx.ID_ANY, "")
+        self._0_N_N_copy_10 = wx.TextCtrl(sizer_6_m1dlg_copy.GetStaticBox(), wx.ID_ANY, "")
         self._0_N_N_copy_10.SetMinSize(wx.DLG_SZE(self._0_N_N_copy_10, (-1, 100)))
         sizer_6_m1dlg_copy.Add(self._0_N_N_copy_10, 0, 0, 0)
 
-        self._1_N_N_copy_10 = wx.TextCtrl(self.notebook_1_StaticBoxSizer, wx.ID_ANY, "")
+        self._1_N_N_copy_10 = wx.TextCtrl(sizer_6_m1dlg_copy.GetStaticBox(), wx.ID_ANY, "")
         self._1_N_N_copy_10.SetMinSize(wx.DLG_SZE(self._1_N_N_copy_10, (-1, 100)))
         sizer_6_m1dlg_copy.Add(self._1_N_N_copy_10, 1, 0, 0)
 
-        self._0_X_N_copy_10 = wx.TextCtrl(self.notebook_1_StaticBoxSizer, wx.ID_ANY, "")
+        self._0_X_N_copy_10 = wx.TextCtrl(sizer_6_m1dlg_copy.GetStaticBox(), wx.ID_ANY, "")
         self._0_X_N_copy_10.SetMinSize(wx.DLG_SZE(self._0_X_N_copy_10, (-1, 100)))
         sizer_6_m1dlg_copy.Add(self._0_X_N_copy_10, 0, wx.EXPAND, 0)
 
-        self._1_X_N_copy_10 = wx.TextCtrl(self.notebook_1_StaticBoxSizer, wx.ID_ANY, "")
+        self._1_X_N_copy_10 = wx.TextCtrl(sizer_6_m1dlg_copy.GetStaticBox(), wx.ID_ANY, "")
         self._1_X_N_copy_10.SetMinSize(wx.DLG_SZE(self._1_X_N_copy_10, (-1, 100)))
         sizer_6_m1dlg_copy.Add(self._1_X_N_copy_10, 1, wx.EXPAND, 0)
 
-        self._0_N_F_copy_10 = wx.TextCtrl(self.notebook_1_StaticBoxSizer, wx.ID_ANY, "")
+        self._0_N_F_copy_10 = wx.TextCtrl(sizer_6_m1dlg_copy.GetStaticBox(), wx.ID_ANY, "")
         self._0_N_F_copy_10.SetMinSize(wx.DLG_SZE(self._0_N_F_copy_10, (-1, 100)))
         sizer_6_m1dlg_copy.Add(self._0_N_F_copy_10, 0, wx.FIXED_MINSIZE, 0)
 
-        self._1_N_F_copy_10 = wx.TextCtrl(self.notebook_1_StaticBoxSizer, wx.ID_ANY, "")
+        self._1_N_F_copy_10 = wx.TextCtrl(sizer_6_m1dlg_copy.GetStaticBox(), wx.ID_ANY, "")
         self._1_N_F_copy_10.SetMinSize(wx.DLG_SZE(self._1_N_F_copy_10, (-1, 100)))
         sizer_6_m1dlg_copy.Add(self._1_N_F_copy_10, 1, wx.FIXED_MINSIZE, 0)
 
-        self._0_X_F_copy_10 = wx.TextCtrl(self.notebook_1_StaticBoxSizer, wx.ID_ANY, "")
+        self._0_X_F_copy_10 = wx.TextCtrl(sizer_6_m1dlg_copy.GetStaticBox(), wx.ID_ANY, "")
         sizer_6_m1dlg_copy.Add(self._0_X_F_copy_10, 0, wx.EXPAND | wx.FIXED_MINSIZE, 0)
 
-        self._1_X_F_copy_10 = wx.TextCtrl(self.notebook_1_StaticBoxSizer, wx.ID_ANY, "")
+        self._1_X_F_copy_10 = wx.TextCtrl(sizer_6_m1dlg_copy.GetStaticBox(), wx.ID_ANY, "")
         sizer_6_m1dlg_copy.Add(self._1_X_F_copy_10, 1, wx.EXPAND | wx.FIXED_MINSIZE, 0)
 
         sizer_6_dlgm1_copy = wx.StaticBoxSizer(wx.StaticBox(self.notebook_1_StaticBoxSizer, wx.ID_ANY, _("sizer_6_dlgm1_copy")), wx.VERTICAL)
         sizer_3.Add(sizer_6_dlgm1_copy, 1, wx.EXPAND, 0)
 
-        self._0_N_N_copy_11 = wx.TextCtrl(self.notebook_1_StaticBoxSizer, wx.ID_ANY, "")
+        self._0_N_N_copy_11 = wx.TextCtrl(sizer_6_dlgm1_copy.GetStaticBox(), wx.ID_ANY, "")
         self._0_N_N_copy_11.SetMinSize(wx.DLG_SZE(self._0_N_N_copy_11, (100, -1)))
         sizer_6_dlgm1_copy.Add(self._0_N_N_copy_11, 0, 0, 0)
 
-        self._1_N_N_copy_11 = wx.TextCtrl(self.notebook_1_StaticBoxSizer, wx.ID_ANY, "")
+        self._1_N_N_copy_11 = wx.TextCtrl(sizer_6_dlgm1_copy.GetStaticBox(), wx.ID_ANY, "")
         self._1_N_N_copy_11.SetMinSize(wx.DLG_SZE(self._1_N_N_copy_11, (100, -1)))
         sizer_6_dlgm1_copy.Add(self._1_N_N_copy_11, 1, 0, 0)
 
-        self._0_X_N_copy_11 = wx.TextCtrl(self.notebook_1_StaticBoxSizer, wx.ID_ANY, "")
+        self._0_X_N_copy_11 = wx.TextCtrl(sizer_6_dlgm1_copy.GetStaticBox(), wx.ID_ANY, "")
         self._0_X_N_copy_11.SetMinSize(wx.DLG_SZE(self._0_X_N_copy_11, (100, -1)))
         sizer_6_dlgm1_copy.Add(self._0_X_N_copy_11, 0, wx.EXPAND, 0)
 
-        self._1_X_N_copy_11 = wx.TextCtrl(self.notebook_1_StaticBoxSizer, wx.ID_ANY, "")
+        self._1_X_N_copy_11 = wx.TextCtrl(sizer_6_dlgm1_copy.GetStaticBox(), wx.ID_ANY, "")
         self._1_X_N_copy_11.SetMinSize(wx.DLG_SZE(self._1_X_N_copy_11, (100, -1)))
         sizer_6_dlgm1_copy.Add(self._1_X_N_copy_11, 1, wx.EXPAND, 0)
 
-        self._0_N_F_copy_11 = wx.TextCtrl(self.notebook_1_StaticBoxSizer, wx.ID_ANY, "")
+        self._0_N_F_copy_11 = wx.TextCtrl(sizer_6_dlgm1_copy.GetStaticBox(), wx.ID_ANY, "")
         self._0_N_F_copy_11.SetMinSize(wx.DLG_SZE(self._0_N_F_copy_11, (100, -1)))
         sizer_6_dlgm1_copy.Add(self._0_N_F_copy_11, 0, wx.FIXED_MINSIZE, 0)
 
-        self._1_N_F_copy_11 = wx.TextCtrl(self.notebook_1_StaticBoxSizer, wx.ID_ANY, "")
+        self._1_N_F_copy_11 = wx.TextCtrl(sizer_6_dlgm1_copy.GetStaticBox(), wx.ID_ANY, "")
         self._1_N_F_copy_11.SetMinSize(wx.DLG_SZE(self._1_N_F_copy_11, (100, -1)))
         sizer_6_dlgm1_copy.Add(self._1_N_F_copy_11, 1, wx.FIXED_MINSIZE, 0)
 
-        self._0_X_F_copy_11 = wx.TextCtrl(self.notebook_1_StaticBoxSizer, wx.ID_ANY, "")
+        self._0_X_F_copy_11 = wx.TextCtrl(sizer_6_dlgm1_copy.GetStaticBox(), wx.ID_ANY, "")
         self._0_X_F_copy_11.SetMinSize(wx.DLG_SZE(self._0_X_F_copy_11, (100, -1)))
         sizer_6_dlgm1_copy.Add(self._0_X_F_copy_11, 0, wx.EXPAND | wx.FIXED_MINSIZE, 0)
 
-        self._1_X_F_copy_11 = wx.TextCtrl(self.notebook_1_StaticBoxSizer, wx.ID_ANY, "")
+        self._1_X_F_copy_11 = wx.TextCtrl(sizer_6_dlgm1_copy.GetStaticBox(), wx.ID_ANY, "")
         self._1_X_F_copy_11.SetMinSize(wx.DLG_SZE(self._1_X_F_copy_11, (100, -1)))
         sizer_6_dlgm1_copy.Add(self._1_X_F_copy_11, 1, wx.EXPAND | wx.FIXED_MINSIZE, 0)
 

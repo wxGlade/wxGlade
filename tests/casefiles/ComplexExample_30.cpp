@@ -76,7 +76,7 @@ PyOgg2_MyFrame::PyOgg2_MyFrame(wxWindow* parent, wxWindowID id, const wxString& 
     sizer_4->Add(rbx_sampling_rate, 1, wxALL|wxEXPAND, 5);
     wxStaticBoxSizer* sizer_3 = new wxStaticBoxSizer(new wxStaticBox(notebook_1_pane_2, wxID_ANY, _("Misc")), wxHORIZONTAL);
     sizer_4->Add(sizer_3, 1, wxALL|wxEXPAND, 5);
-    cbx_love = new wxCheckBox(notebook_1_pane_2, wxID_ANY, _("♥ Love this song"));
+    cbx_love = new wxCheckBox(sizer_3->GetStaticBox(), wxID_ANY, _("♥ Love this song"));
     cbx_love->SetToolTip(_("Yes!\nWe ♥ it!"));
     cbx_love->SetValue(1);
     sizer_3->Add(cbx_love, 0, wxALL|wxSHAPED, 5);
