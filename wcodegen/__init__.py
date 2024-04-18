@@ -802,6 +802,9 @@ class CppWidgetCodeWriter(CppMixin, BaseWidgetWriter):
         if not parent:
             # this breaks the generated code
             self.tmpl_dict['parent'] = 'Do not use the "parent" substitution in code templates for toplevel windows'
+        elif self.codegen.for_version[0]>=3 and obj.sizer and obj.sizer.WX_CLASS=="wxStaticBoxSizer":
+            sizer_access = self.format_widget_access(obj.sizer)
+            self.tmpl_dict['parent'] = '%s->GetStaticBox()' % sizer_access
         elif not parent.IS_CLASS:
             self.tmpl_dict['parent'] = '%s' % parent.name
         else:
@@ -911,6 +914,9 @@ class PerlWidgetCodeWriter(PerlMixin, BaseWidgetWriter):
         if not parent:
             # this breaks the generated code
             self.tmpl_dict['parent'] = 'Do not use the "parent" substitution in code templates for toplevel windows'
+        elif self.codegen.for_version[0]>=3 and obj.sizer and obj.sizer.WX_CLASS=="wxStaticBoxSizer":
+            sizer_access = self.format_widget_access(obj.sizer)
+            self.tmpl_dict['parent'] = '%s->GetStaticBox()' % sizer_access
         elif not parent.IS_CLASS:
             self.tmpl_dict['parent'] = '$self->{%s}' % parent.name
         else:
@@ -953,6 +959,9 @@ class PythonWidgetCodeWriter(PythonMixin, BaseWidgetWriter):
         if not parent:
             # this breaks the generated code
             self.tmpl_dict['parent'] = 'Do not use the "parent" substitution in code templates for toplevel windows'
+        elif self.codegen.for_version[0]>=3 and obj.sizer and obj.sizer.WX_CLASS=="wxStaticBoxSizer":
+            sizer_access = self.format_widget_access(obj.sizer)
+            self.tmpl_dict['parent'] = '%s.GetStaticBox()' % sizer_access
         elif not parent.IS_CLASS:
             self.tmpl_dict['parent'] = 'self.%s' % parent.name
         else:
