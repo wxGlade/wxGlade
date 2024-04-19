@@ -39,8 +39,7 @@ config = {
     },
     'default_style': 'wxNB_TOP',
     'style_list': ['wxNB_TOP', 'wxNB_LEFT', 'wxNB_RIGHT', 'wxNB_BOTTOM',
-                   'wxNB_FIXEDWIDTH', 'wxNB_MULTILINE', 'wxNB_NOPAGETHEME',
-                   'wxNB_FLAT'],
+                   'wxNB_FIXEDWIDTH', 'wxNB_MULTILINE', 'wxNB_NOPAGETHEME'],
     'events': {
         'default': {
             'type': 'wxNotebookEvent',
