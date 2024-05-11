@@ -89,10 +89,11 @@ class wxGladePropertyPanel(wx.Panel):
         sizer.Add(self.notebook, 1, wx.EXPAND, 0)
 
         # for GTK3: add a panel to determine page size
-        p = wx.Panel(self.notebook)
+        self._dummy_page = p = wx.Panel(self.notebook)
         self.notebook.AddPage(p, "panel")
         self._notebook_decoration_size = None
         p.Bind(wx.EVT_SIZE, self.on_panel_size)
+        self._edit_triggered = False  # for MSW to avoid multiple calls to set_widget
 
         self.SetSizer(sizer)
         self.Layout()
@@ -153,8 +154,12 @@ class wxGladePropertyPanel(wx.Panel):
         self.notebook.Hide()
 
         # remember the notebook page to be selected
-        selection = self.notebook.GetSelection()
-        select_page = self.pagenames[selection]  if selection!=-1  else None
+        if self._dummy_page or not self.pagenames:
+            self._dummy_page = None
+            select_page = None
+        else:
+            selection = self.notebook.GetSelection()
+            select_page = self.pagenames[selection]  if selection!=-1  else None
 
         # clear notebook pages
         #self.notebook.DeleteAllPages()  # deletes also the windows on the pages
@@ -231,6 +236,7 @@ class wxGladePropertyPanel(wx.Panel):
     def _set_page_size(self, scrolled):
         # set ScrolledWindow and Panel to available size; enable scrolling, if required
         # gets available size for notebook pages
+        if not self.pagenames: return  # in initialization
         ws, hs = self.notebook.GetSize()
         ws -= self._notebook_decoration_size[0]
         hs -= self._notebook_decoration_size[1]
@@ -257,13 +263,16 @@ class wxGladePropertyPanel(wx.Panel):
     def on_panel_size(self, event):
         # when the dummy panel receives a size event, we know that things are ready to calculate the notebook pages size
         # calculate decoration size from the dummy panel that was added initially
+        # this might be called several times during initialization
+        # on Windows the sizes change, it's fine to take the last value; actually the correct value is required for GTK
         if event.GetSize() != (0,0):
             dummy_panel = self.notebook.GetPage(0)
             wp, hp = dummy_panel.GetSize()    # page/panel size
             wn, hn = self.notebook.GetSize()  # notebook size
             self._notebook_decoration_size = (wn-wp, hn-hp)
-            self.notebook.RemovePage(0)
-            compat.DestroyLater(dummy_panel)
+            if wx.Platform == '__WXMSW__' and not self._edit_triggered:
+                # as the dummy is not deleted any more due to GTK, we need to display something
+                wx.CallLater(150, self.set_widget, common.root)
         else:
             # Mac OS: inital event on creation
             event.Skip()
