@@ -60,7 +60,7 @@ class StructurePrinter:
             best_size = widget.GetBestSize()
         except AttributeError:
             best_size ="???"
-        print( "  "*indent, "%s: %s %s"%(cname, name, HEX), widget.GetSize(), best_size, widget.GetEffectiveMinSize() )
+        print( "  "*indent, "%x  %s: %s %s"%(widget.GetHandle(), cname, name, HEX), widget.GetSize(), best_size, widget.GetEffectiveMinSize() )
 
         if si: self._sizer_item(si, indent)
 
