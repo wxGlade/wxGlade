@@ -164,7 +164,6 @@ class wxGladePropertyPanel(wx.Panel):
         # clear notebook pages
         #self.notebook.DeleteAllPages()  # deletes also the windows on the pages
         while self.notebook.PageCount:
-            print("DELETE PAGE; new widget:", edit_widget)
             self.notebook.DeletePage(self.notebook.PageCount-1)
 
         self.pagenames = pagenames = []
