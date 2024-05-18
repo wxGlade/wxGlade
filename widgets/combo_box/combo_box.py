@@ -3,13 +3,13 @@ wxComboBox objects
 
 @copyright: 2002-2007 Alberto Griggio
 @copyright: 2014-2016 Carsten Grohmann
-@copyright: 2016-2021 Dietmar Schwertberger
+@copyright: 2016-2024 Dietmar Schwertberger
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
 import wx
 
-import common, config, compat
+import common, compat
 from edit_windows import ManagedBase, EditStylesMixin
 import new_properties as np
 from ChoicesProperty import *
@@ -35,6 +35,7 @@ class EditComboBox(ManagedBase, EditStylesMixin):
     def create_widget(self):
         choices = [c[0] for c in self.choices]
         selection = self.selection
+        if compat.IS_GTK: wx.Yield()  # avoid problems where the widget is consuming all events
         self.widget = wx.ComboBox(self.parent_window.widget, wx.ID_ANY, choices=choices, style=self.style)
         self.widget.Bind(wx.EVT_SET_FOCUS, self.on_set_focus)
         self.widget.SetSelection(selection)
