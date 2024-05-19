@@ -31,7 +31,10 @@ if version.startswith("4."): version = "3." + version[2:]
 version = (int(version[0]), int(version[2]) ) # major,minor
 
 
-USE_ISSUE_536_WORKAROUND = wx.VERSION_STRING=='4.2.1' and wx.Platform=='__WXGTK__'
+IS_GTK = wx.Platform=='__WXGTK__'
+
+# this is for text ctrl sizes:
+USE_ISSUE_536_WORKAROUND = IS_GTK and wx.VERSION_STRING=='4.2.1'
 
 
 GridSizer_GetRows = None
