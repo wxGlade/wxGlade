@@ -959,7 +959,7 @@ class CPPCodeWriter(BaseLangCodeWriter, wcodegen.CppMixin):
 
         parent_klass.final[:0] = final
         if self.multiple_files and obj.IS_CLASS:
-            parent_klass.dependencies.append(obj.klass)
+            parent_klass.dependencies.add(obj.klass)
         else:
             if obj.WX_CLASS in self.obj_builders:
                 headers = getattr(self.obj_builders[obj.WX_CLASS], 'import_modules', [])
