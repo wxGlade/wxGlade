@@ -247,6 +247,7 @@ class XmlWidgetBuilder(XmlParser):
             except AttributeError:
                 pass
             self._curr_prop = name
+            self._curr_prop_val = []  # this could be non-empty here, but that should only be spaces and newlines
 
     def endElement(self, name):
         if name == 'application':
@@ -300,9 +301,9 @@ class XmlWidgetBuilder(XmlParser):
                 pass
 
     def characters(self, data):
-        if not data or data.isspace():
-            return
+        if not data: return
         if self._curr_prop is None:
+            if data.isspace(): return
             raise XmlParsingError(_("Character data can be present only inside properties"))
         self._curr_prop_val.append(data)
 
