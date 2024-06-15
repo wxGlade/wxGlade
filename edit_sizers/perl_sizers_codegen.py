@@ -33,6 +33,10 @@ class PerlBoxSizerBuilder(BasePerlSizerBuilder):
     tmpl = '%(sizer_name)s = %(klass)s->new(%(orient)s);\n'
 
 
+class PerlStdDialogButtonSizerBuilder(BasePerlSizerBuilder):
+    tmpl = '%(sizer_name)s = %(klass)s->new();\n'
+
+
 class PerlWrapSizerBuilder(PerlBoxSizerBuilder):
     pass
 
@@ -57,6 +61,7 @@ class PerlGridBagSizerBuilder(PerlFlexGridSizerBuilder):
 def initialize():
     cn = common.class_names
     cn['EditBoxSizer'] = 'wxBoxSizer'
+    cn['EditStdDialogButtonSizer'] = 'wxStdDialogButtonSizer'
     cn['EditWrapSizer'] = 'wxWrapSizer'
     cn['EditStaticBoxSizer'] = 'wxStaticBoxSizer'
     cn['EditGridSizer'] = 'wxGridSizer'
@@ -67,6 +72,7 @@ def initialize():
     if plgen:
         awh = plgen.register_widget_code_generator
         awh('wxBoxSizer', PerlBoxSizerBuilder())
+        awh('wxStdDialogButtonSizer', PerlStdDialogButtonSizerBuilder())
         awh('wxWrapSizer', PerlWrapSizerBuilder())
         awh('wxStaticBoxSizer', PerlStaticBoxSizerBuilder())
         awh('wxGridSizer', PerlGridSizerBuilder())
