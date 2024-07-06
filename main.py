@@ -210,8 +210,8 @@ class wxGladePropertyPanel(wx.Panel):
 
         self.notebook.Show()
 
-        if wx.Platform != "__WXMSW__" and focus_before is common.app_tree:
-            focus_before.SetFocus()
+        if wx.Platform != "__WXMSW__" and focus_before is common.app_tree or focus_before is None:
+            common.app_tree.SetFocus()
 
     def start_page(self, name):
         # create a ScrolledWindow and a Panel; with only ScrolledWindow, scrolling on gtk 3 does not work
