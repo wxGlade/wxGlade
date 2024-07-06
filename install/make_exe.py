@@ -23,10 +23,13 @@ python -mpip install pywin32
 # run this script in the wxGlade directory to create wxglade.exe and wxgladew.exe:
 python/python.exe install/make_exe.py
 
+
+convert icons/wxglade.png and icons/wxglade128.png into .ico using https://github.com/dbconfig/png2ico
+
 replace icons using e.g. ResourceHacker.exe
 
 merge .exe files and directory python into wxglade source code
-remove unused libraries, e.g. pip, setuptools, distutils
+remove unused libraries, e.g. pip, setuptools, distutils, scripts
 
 """
 
