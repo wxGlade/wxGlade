@@ -5,7 +5,7 @@ wxGlade: A GUI builder for wxPython/wxWidgets
 .. image:: docs/html/_images/wxglade_large.png
    :align: center
    
-Version: 1.1.0a2
+Version: 1.1.0b1
 License: MIT (see LICENSE.txt)
 
 THIS PROGRAM COMES WITH NO WARRANTY
