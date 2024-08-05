@@ -2479,6 +2479,7 @@ class GridProperty(Property):
                 # use EVT_CHAR_HOOK as EVT_CHAR and EVT_KEY_DOWN don't work for Enter key, even with TE_PROCESS_ENTER
                 editor.Bind(wx.EVT_CHAR_HOOK, self.on_char_editor)
                 editor.Bind(wx.EVT_TEXT, self.on_text_editor)
+            self._handling_editor_event = False
 
         # the grid #####################################################################################################
         self.grid = wx.grid.Grid(parent, -1)
@@ -3063,17 +3064,20 @@ class GridProperty(Property):
         if value == self.grid.GetCellValue(self.cur_row, col):
             return False
 
+        self._handling_editor_event = True  # avoid recursive update from on_kill_focus_editor
         if self._on_value_edited(self.cur_row, col, value, set_index=set_index, delay=False):
             value = self._ensure_editing_copy()[self.cur_row][col]
             self.grid.SetCellValue(self.cur_row, col, compat.unicode(value))
             #self.grid.Refresh()
             ret = True
+        self._handling_editor_event = False
 
         return ret
 
     def on_kill_focus_editor(self, event):
-        self._on_editor_edited(event)
-        self._update_editors(event.GetEventObject())
+        if not self._handling_editor_event:
+            self._on_editor_edited(event)
+            self._update_editors(event.GetEventObject())
         event.Skip()
 
     def on_char_editor(self, event):
