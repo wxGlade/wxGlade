@@ -117,6 +117,16 @@ class EditBase(np.PropertyOwner):
             item = item.parent
             if item is None: return None
 
+    def get_parent_window2(self, codegen):
+        # go up to parent until it is no sizer or a StaticBoxSizer
+        # this is for window creation, where the parent needs to be sizer's StaticBox
+        item = self.parent
+        while True:
+            if item.IS_WINDOW: return item
+            if codegen.for_version[0]>=3 and item.IS_SIZER and item.WX_CLASS=="wxStaticBoxSizer": return item
+            item = item.parent
+            if item is None: return None
+
     @property
     def toplevel_parent_window(self):
         # go up to parent until IS_TOPLEVEL is True

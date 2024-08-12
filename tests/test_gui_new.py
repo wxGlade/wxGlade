@@ -147,6 +147,10 @@ class TestGui(WXGladeGUITest):
         # store sizer references
         self.load_and_generate('Sizers_classattr', test_GUI=False)
 
+    def test_nested_sizers(self):
+        "Test a sizer within a box sizer whether objects are created with the StaticBox as parent"
+        self.load_and_generate('nested_sizers', test_GUI=True)
+
     def test_bases_etc(self):
         # test changes in data structure and code generation from 0.9 to 1.0
         self.load_and_generate('BasesEtc_w_sizers', test_GUI=True)  # test files generated with v0.9.5 and re-ordered
