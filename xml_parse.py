@@ -134,7 +134,7 @@ class XmlParser(ContentHandler):
         res['mark_blocks'] = bool(mark_blocks)
 
 
-        res['path'] = np.TextProperty._unescape( attrs.get('path') )
+        res['path'] = np.TextProperty._unescape( attrs.get('path') or "" )
 
         res['header_extension'] = attrs.get('header_extension', config.default_header_extension)
         res['source_extension'] = attrs.get('source_extension', config.default_source_extension)
