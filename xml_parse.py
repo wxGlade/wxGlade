@@ -213,7 +213,7 @@ class XmlWidgetBuilder(XmlParser):
             if source_extension and source_extension[0] == '.':
                 p["source_extension"].set( source_extension[1:] )
                 modified.append( "source_extension" )
-                
+
             header_extension = attrs['header_extension']
             if header_extension and header_extension[0] == '.':
                 p["header_extension"].set( header_extension[1:] )

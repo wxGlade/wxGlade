@@ -24,14 +24,14 @@ class MyFrame(wx.Frame):
         wx.Frame.__init__(self, *args, **kwds)
         self.SetSize((400, 349))
         self.SetTitle("wx.lib.agw.speedmeter example")
-        
+
         sizer_1 = wx.BoxSizer(wx.VERTICAL)
-        
+
         self.panel_1 = wx.Panel(self, wx.ID_ANY)
         sizer_1.Add(self.panel_1, 1, wx.EXPAND, 0)
-        
+
         sizer_2 = wx.BoxSizer(wx.VERTICAL)
-        
+
         #################################################################
         # the custom widget SpeedMeter:
         # we use the following styles:
@@ -41,16 +41,16 @@ class MyFrame(wx.Frame):
         # SM_DRAW_SECONDARY_TICKS: We Draw Secondary (Intermediate) Ticks Between the Main Ticks (Intervals)
         self.speed_meter = SM.SpeedMeter(self.panel_1, wx.ID_ANY, agwStyle=SM.SM_DRAW_HAND | SM.SM_DRAW_SECTORS | SM.SM_DRAW_MIDDLE_TEXT | SM.SM_DRAW_SECONDARY_TICKS)
         # see also extra properties
-        
+
         intervals = list(range(0, 201, 20))
         self.speed_meter.SetIntervals(intervals)
-        
+
         self.speed_meter.SetIntervalColours([wx.BLACK]*10)
-        
+
         # Assign The Ticks: Here They Are Simply The String Equivalent Of The Intervals
         ticks = [str(interval) for interval in intervals]
         self.speed_meter.SetTicks(ticks)
-        
+
         # Do Not Draw The External (Container) Arc.
         # Drawing The External Arc May Sometimes Create Uglier Controls.
         # Try To Comment This Line And See It For Yourself!
@@ -66,20 +66,20 @@ class MyFrame(wx.Frame):
         self.speed_meter.SetTicksColour(wx.WHITE)
         self.speed_meter.SetTicksFont(wx.Font(10, wx.FONTFAMILY_SWISS, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL))
         sizer_2.Add(self.speed_meter, 1, wx.ALL | wx.EXPAND, 3)
-        
+
         sizer_3 = wx.BoxSizer(wx.HORIZONTAL)
         sizer_2.Add(sizer_3, 0, wx.EXPAND, 0)
-        
+
         label_1 = wx.StaticText(self.panel_1, wx.ID_ANY, "Drag this:")
         sizer_3.Add(label_1, 0, wx.ALIGN_CENTER_VERTICAL, 0)
-        
+
         self.slider_1 = wx.Slider(self.panel_1, wx.ID_ANY, 44, 0, 200)
         sizer_3.Add(self.slider_1, 1, wx.EXPAND, 0)
-        
+
         self.panel_1.SetSizer(sizer_2)
-        
+
         self.SetSizer(sizer_1)
-        
+
         self.Layout()
 
         self.Bind(wx.EVT_COMMAND_SCROLL, lambda event: self.speed_meter.SetSpeedValue(event.GetEventObject().GetValue()), self.slider_1)

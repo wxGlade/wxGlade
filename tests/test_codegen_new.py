@@ -13,7 +13,7 @@ import unittest
 from testsupport_new import WXGladeCLITest
 
 # import project modules
-import common, config, compat, errors, misc
+import common, config, compat, misc
 import xrc2wxg
 
 

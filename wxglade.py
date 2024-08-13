@@ -70,7 +70,7 @@ def parse_command_line():
     parser.add_option('-h', '--help', dest='help', action='store_true', help=_('show this help message and exit'))
     parser.add_option("-g", "--generate-code", type="choice", choices=languages, metavar="LANG", dest="language",
                             help=_("(required) output language, valid languages are: %s") % ", ".join(languages) )
-    
+
     parser.add_option("-o", "--output", metavar="PATH", dest="output",
                             help=_("(optional) output file in single-file mode or output directory in multi-file mode"))
 
@@ -250,7 +250,7 @@ def _guiless_open_app(filename):
 
     return True
 
-    
+
 
 def command_line_code_generation(filename, language, out_path=None):
     """Starts a code generator without starting the GUI.
@@ -351,7 +351,7 @@ def init_stage2(use_gui):
         # store current version and platform ('not_set' is default)
         config.platform = wx.Platform
         config.wx_version = wx.__version__
-        
+
         if sys.platform=="win32":
             # register ".wxg" extension
             try:

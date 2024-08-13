@@ -278,7 +278,7 @@ class BaseWidgetWriter(StylesMixin, BaseCodeWriter):
     # List of extra modules to import; this list can be changed on demand.
     # It'll be reset to the initial value stored in __import_modules within _reset_vars().
     # example: import_modules = ['use Wx::Grid;\\n']
-    import_modules = [] 
+    import_modules = []
     # Copy of the initial state of import_modules. This copy is used to restore the initial state within _reset_vars().
     __import_modules = []
 
@@ -506,7 +506,7 @@ class BaseWidgetWriter(StylesMixin, BaseCodeWriter):
                                                'bitmap_type': self.codegen.cn('wxBITMAP_TYPE_ANY') }
 
         if bitmap.startswith('empty:'): return self.get_inline_stmt_emptybitmap(bitmap)
-        if bitmap.startswith('art:'):   return self.get_inline_stmt_artprovider(bitmap) 
+        if bitmap.startswith('art:'):   return self.get_inline_stmt_artprovider(bitmap)
         if bitmap.startswith('code:'):  return '%s' % self.codegen.cn(bitmap[5:].strip())
 
         if preview:

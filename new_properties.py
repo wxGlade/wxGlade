@@ -302,7 +302,7 @@ class Property(object):
 
     def flush(self):
         pass
-    
+
     def set_focus(self):
         pass
 
@@ -578,7 +578,7 @@ class LayoutSpanProperty(Property):
         if not match: return None
         groups = match.groups()
         return (int(groups[0]),int(groups[1]))
-    
+
     def _set_converter(self, value):
         if isinstance(value, compat.basestring):
             return self._convert_from_text(value)
@@ -1524,7 +1524,7 @@ class TextProperty(Property):
     def on_kill_focus(self, event):
         event.Skip()
         self.flush()
-    
+
     def set_focus(self):
         if self.blocked: return
         if self.deactivated is False:
@@ -1782,7 +1782,7 @@ class SizePropertyD(IntPairPropertyD):
 
         w,h = int(w), int(h)
         if widget is None: return (w,h)
-    
+
         if use_dialog_units:
             if compat.IS_CLASSIC:
                 wd, hd = wx.DLG_SZE(widget, (w, h))
@@ -2009,7 +2009,7 @@ class DialogProperty(TextProperty):
     def update_display(self, start_editing=False):
         TextProperty.update_display(self, start_editing)
         self._update_button()
-    
+
     def has_control(self, control):
         if TextProperty.has_control(self, control): return True
         if self.button and control is self.button:  return True
@@ -2236,7 +2236,7 @@ class ColorProperty(DialogProperty):
             return value
         except:
             return None
-    
+
     def _convert_to_text(self, value):
         # just used when user entered an invalid value to reset to either None/"" or a string
         if value is None: return ""
@@ -2883,7 +2883,7 @@ class GridProperty(Property):
         self._update_editors()
         self._update_apply_button()
         if event is not None: event.Skip()
-    
+
     def flush(self):
         self.apply()
 
@@ -3132,7 +3132,7 @@ class GridProperty(Property):
             row = value[self.cur_row]
         except IndexError:
             row = None
-            
+
         for i, (label,datatype) in enumerate(self.col_defs):
             editor = self.editors[i]
             if ctrl is not None and editor is not ctrl: continue
@@ -3514,7 +3514,7 @@ class PropertyOwner(object):
     def check_property_modification(self, name, value, new_value):
         # return False in derived class to veto a user modification
         return True
-    
+
     def _properties_changed(self, modified, actions):
         # action method(s); check dependent properties and update widget
         pass
