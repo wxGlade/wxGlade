@@ -798,12 +798,12 @@ class CppWidgetCodeWriter(CppMixin, BaseWidgetWriter):
 
         # Toplevel widgets like wxFrame or wxDialog don't have a parent object.
         # The parent object is optional for MenuBar and ToolBar widgets.
-        parent = obj.parent_window
+        parent = obj.get_parent_window2(self.codegen)
         if not parent:
             # this breaks the generated code
             self.tmpl_dict['parent'] = 'Do not use the "parent" substitution in code templates for toplevel windows'
-        elif self.codegen.for_version[0]>=3 and obj.sizer and obj.sizer.WX_CLASS=="wxStaticBoxSizer":
-            sizer_access = self.format_widget_access(obj.sizer)
+        elif parent.IS_SIZER:
+            sizer_access = self.format_widget_access(parent)
             self.tmpl_dict['parent'] = '%s->GetStaticBox()' % sizer_access
         elif not parent.IS_CLASS:
             self.tmpl_dict['parent'] = '%s' % parent.name
@@ -910,12 +910,12 @@ class PerlWidgetCodeWriter(PerlMixin, BaseWidgetWriter):
 
         # Toplevel widgets like wxFrame or wxDialog don't have a parent object.
         # The parent object is optional for MenuBar and ToolBar widgets.
-        parent = obj.parent_window
+        parent = obj.get_parent_window2(self.codegen)
         if not parent:
             # this breaks the generated code
             self.tmpl_dict['parent'] = 'Do not use the "parent" substitution in code templates for toplevel windows'
-        elif self.codegen.for_version[0]>=3 and obj.sizer and obj.sizer.WX_CLASS=="wxStaticBoxSizer":
-            sizer_access = self.format_widget_access(obj.sizer)
+        elif parent.IS_SIZER:
+            sizer_access = self.format_widget_access(parent)
             self.tmpl_dict['parent'] = '%s->GetStaticBox()' % sizer_access
         elif not parent.IS_CLASS:
             self.tmpl_dict['parent'] = '$self->{%s}' % parent.name
@@ -955,12 +955,12 @@ class PythonWidgetCodeWriter(PythonMixin, BaseWidgetWriter):
 
         # Toplevel widgets like wxFrame or wxDialog don't have a parent object.
         # The parent object is optional for MenuBar and ToolBar widgets.
-        parent = obj.parent_window
+        parent = obj.get_parent_window2(self.codegen)
         if not parent:
             # this breaks the generated code
             self.tmpl_dict['parent'] = 'Do not use the "parent" substitution in code templates for toplevel windows'
-        elif self.codegen.for_version[0]>=3 and obj.sizer and obj.sizer.WX_CLASS=="wxStaticBoxSizer":
-            sizer_access = self.format_widget_access(obj.sizer)
+        elif parent.IS_SIZER:
+            sizer_access = self.format_widget_access(parent)
             self.tmpl_dict['parent'] = '%s.GetStaticBox()' % sizer_access
         elif not parent.IS_CLASS:
             self.tmpl_dict['parent'] = 'self.%s' % parent.name
