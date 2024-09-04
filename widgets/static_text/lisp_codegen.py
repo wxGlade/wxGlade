@@ -15,7 +15,8 @@ class LispStaticTextGenerator(wcodegen.LispWidgetCodeWriter):
     def get_more_properties_code(self, obj):
         ret = []
         if obj.wrap>0:
-            ret.append( '(%s_Wrap %s %d)\n'%(self.tmpl_dict['klass'], self.tmpl_dict['name'], obj.wrap) )
+            name = self.format_widget_access(obj)
+            ret.append( '(%s_Wrap %s %d)\n'%(self.tmpl_dict['klass'], name, obj.wrap) )
         return ret
 
 

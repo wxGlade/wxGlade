@@ -15,7 +15,8 @@ class PythonStaticTextGenerator(wcodegen.PythonWidgetCodeWriter):
     def get_more_properties_code(self, obj):
         ret = []
         if obj.wrap>0:
-            ret.append( '%s.Wrap(%d)\n'%(self.tmpl_dict['name'], obj.wrap) )
+            name = self.format_widget_access(obj)
+            ret.append( '%s.Wrap(%d)\n'%(name, obj.wrap) )
         return ret
 
 
@@ -24,7 +25,8 @@ class CppStaticTextGenerator(wcodegen.CppWidgetCodeWriter):
     def get_more_properties_code(self, obj):
         ret = []
         if obj.wrap>0:
-            ret.append( '%s.Wrap(%d);\n'%(self.tmpl_dict['name'], obj.wrap) )
+            name = self.format_widget_access(obj)
+            ret.append( '%s.Wrap(%d);\n'%(name, obj.wrap) )
         return ret
 
 

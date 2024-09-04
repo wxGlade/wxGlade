@@ -311,22 +311,22 @@ sub new {
     $self->{grid_sizer_2} = Wx::FlexGridSizer->new(3, 2, 0, 0);
     $self->{sizer_8}->Add($self->{grid_sizer_2}, 1, wxEXPAND, 0);
     
-    $self->{radio_btn_1} = Wx::RadioButton->new($self->{notebook_1_wxRadioButton}, wxID_ANY, _T("Alice"), wxDefaultPosition, wxDefaultSize, wxRB_GROUP);
+    $self->{radio_btn_1} = Wx::RadioButton->new($self->{sizer_8}->GetStaticBox(), wxID_ANY, _T("Alice"), wxDefaultPosition, wxDefaultSize, wxRB_GROUP);
     $self->{grid_sizer_2}->Add($self->{radio_btn_1}, 1, wxALL|wxEXPAND, 5);
     
-    $self->{text_ctrl_1} = Wx::TextCtrl->new($self->{notebook_1_wxRadioButton}, wxID_ANY, "");
+    $self->{text_ctrl_1} = Wx::TextCtrl->new($self->{sizer_8}->GetStaticBox(), wxID_ANY, "");
     $self->{grid_sizer_2}->Add($self->{text_ctrl_1}, 1, wxALL|wxEXPAND, 5);
     
-    $self->{radio_btn_2} = Wx::RadioButton->new($self->{notebook_1_wxRadioButton}, wxID_ANY, _T("Bob"));
+    $self->{radio_btn_2} = Wx::RadioButton->new($self->{sizer_8}->GetStaticBox(), wxID_ANY, _T("Bob"));
     $self->{grid_sizer_2}->Add($self->{radio_btn_2}, 1, wxALL|wxEXPAND, 5);
     
-    $self->{text_ctrl_2} = Wx::TextCtrl->new($self->{notebook_1_wxRadioButton}, wxID_ANY, "");
+    $self->{text_ctrl_2} = Wx::TextCtrl->new($self->{sizer_8}->GetStaticBox(), wxID_ANY, "");
     $self->{grid_sizer_2}->Add($self->{text_ctrl_2}, 1, wxALL|wxEXPAND, 5);
     
-    $self->{radio_btn_3} = Wx::RadioButton->new($self->{notebook_1_wxRadioButton}, wxID_ANY, _T("Malroy"));
+    $self->{radio_btn_3} = Wx::RadioButton->new($self->{sizer_8}->GetStaticBox(), wxID_ANY, _T("Malroy"));
     $self->{grid_sizer_2}->Add($self->{radio_btn_3}, 1, wxALL|wxEXPAND, 5);
     
-    $self->{text_ctrl_3} = Wx::TextCtrl->new($self->{notebook_1_wxRadioButton}, wxID_ANY, "");
+    $self->{text_ctrl_3} = Wx::TextCtrl->new($self->{sizer_8}->GetStaticBox(), wxID_ANY, "");
     $self->{grid_sizer_2}->Add($self->{text_ctrl_3}, 1, wxALL|wxEXPAND, 5);
     
     $self->{notebook_1_wxSlider} = Wx::Panel->new($self->{notebook_1}, wxID_ANY);
@@ -465,13 +465,15 @@ sub new {
     $self->{label_4} = Wx::StaticText->new($self->{notebook_1_wxStaticText}, wxID_ANY, _T("black on red (RGB)"), wxDefaultPosition, wxDefaultSize, wxALIGN_CENTER_HORIZONTAL);
     $self->{label_4}->SetBackgroundColour(Wx::Colour->new(255, 0, 0));
     $self->{label_4}->SetToolTip(_T("Background colour won't show, check documentation for more details"));
+    $self->{label_4}->Wrap(100);
     $self->{grid_sizer_3}->Add($self->{label_4}, 1, wxALL|wxEXPAND, 5);
     
-    $self->{label_5} = Wx::StaticText->new($self->{notebook_1_wxStaticText}, wxID_ANY, _T("green on pink (RGB)"), wxDefaultPosition, wxDefaultSize, wxALIGN_CENTER_HORIZONTAL);
-    $self->{label_5}->SetBackgroundColour(Wx::Colour->new(255, 0, 255));
-    $self->{label_5}->SetForegroundColour(Wx::Colour->new(0, 255, 0));
-    $self->{label_5}->SetToolTip(_T("Background colour won't show, check documentation for more details"));
-    $self->{grid_sizer_3}->Add($self->{label_5}, 1, wxALL|wxEXPAND, 5);
+    my $label_5 = Wx::StaticText->new($self->{notebook_1_wxStaticText}, wxID_ANY, _T("green on pink (RGB)"), wxDefaultPosition, wxDefaultSize, wxALIGN_CENTER_HORIZONTAL);
+    $label_5->SetBackgroundColour(Wx::Colour->new(255, 0, 255));
+    $label_5->SetForegroundColour(Wx::Colour->new(0, 255, 0));
+    $label_5->SetToolTip(_T("Background colour won't show, check documentation for more details"));
+    $label_5->Wrap(100);
+    $self->{grid_sizer_3}->Add($label_5, 1, wxALL|wxEXPAND, 5);
     
     $self->{notebook_1_Spacer} = Wx::Panel->new($self->{notebook_1}, wxID_ANY);
     $self->{notebook_1}->AddPage($self->{notebook_1_Spacer}, _T("Spacer"));

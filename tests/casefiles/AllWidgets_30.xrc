@@ -897,6 +897,7 @@
                                     <label>black on red (RGB)</label>
                                     <style>wxALIGN_CENTER_HORIZONTAL</style>
                                     <tooltip>Background colour won't show, check documentation for more details</tooltip>
+                                    <wrap>100</wrap>
                                 </object>
                             </object>
                             <object class="sizeritem">
@@ -909,6 +910,7 @@
                                     <label>green on pink (RGB)</label>
                                     <style>wxALIGN_CENTER_HORIZONTAL</style>
                                     <tooltip>Background colour won't show, check documentation for more details</tooltip>
+                                    <wrap>100</wrap>
                                 </object>
                             </object>
                         </object>

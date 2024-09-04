@@ -961,6 +961,7 @@
                                     <style>wxALIGN_CENTER_HORIZONTAL</style>
                                     <label>black on red (RGB)</label>
                                     <attribute>1</attribute>
+                                    <wrap>100</wrap>
                                 </object>
                             </object>
                             <object class="sizeritem">
@@ -973,7 +974,7 @@
                                     <tooltip>Background colour won't show, check documentation for more details</tooltip>
                                     <style>wxALIGN_CENTER_HORIZONTAL</style>
                                     <label>green on pink (RGB)</label>
-                                    <attribute>1</attribute>
+                                    <wrap>100</wrap>
                                 </object>
                             </object>
                         </object>

@@ -154,7 +154,6 @@ protected:
     wxPanel* notebook_1_wxStaticText;
     wxStaticText* label_1;
     wxStaticText* label_4;
-    wxStaticText* label_5;
     wxPanel* notebook_1_Spacer;
     wxStaticText* label_3;
     wxStaticText* label_2;

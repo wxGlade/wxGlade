@@ -282,22 +282,22 @@ class All_Widgets_Frame(wx.Frame):
         grid_sizer_2 = wx.FlexGridSizer(3, 2, 0, 0)
         sizer_8.Add(grid_sizer_2, 1, wx.EXPAND, 0)
 
-        self.radio_btn_1 = wx.RadioButton(self.notebook_1_wxRadioButton, wx.ID_ANY, _("Alice"), style=wx.RB_GROUP)
+        self.radio_btn_1 = wx.RadioButton(sizer_8.GetStaticBox(), wx.ID_ANY, _("Alice"), style=wx.RB_GROUP)
         grid_sizer_2.Add(self.radio_btn_1, 1, wx.ALL | wx.EXPAND, 5)
 
-        self.text_ctrl_1 = wx.TextCtrl(self.notebook_1_wxRadioButton, wx.ID_ANY, "")
+        self.text_ctrl_1 = wx.TextCtrl(sizer_8.GetStaticBox(), wx.ID_ANY, "")
         grid_sizer_2.Add(self.text_ctrl_1, 1, wx.ALL | wx.EXPAND, 5)
 
-        self.radio_btn_2 = wx.RadioButton(self.notebook_1_wxRadioButton, wx.ID_ANY, _("Bob"))
+        self.radio_btn_2 = wx.RadioButton(sizer_8.GetStaticBox(), wx.ID_ANY, _("Bob"))
         grid_sizer_2.Add(self.radio_btn_2, 1, wx.ALL | wx.EXPAND, 5)
 
-        self.text_ctrl_2 = wx.TextCtrl(self.notebook_1_wxRadioButton, wx.ID_ANY, "")
+        self.text_ctrl_2 = wx.TextCtrl(sizer_8.GetStaticBox(), wx.ID_ANY, "")
         grid_sizer_2.Add(self.text_ctrl_2, 1, wx.ALL | wx.EXPAND, 5)
 
-        self.radio_btn_3 = wx.RadioButton(self.notebook_1_wxRadioButton, wx.ID_ANY, _("Malroy"))
+        self.radio_btn_3 = wx.RadioButton(sizer_8.GetStaticBox(), wx.ID_ANY, _("Malroy"))
         grid_sizer_2.Add(self.radio_btn_3, 1, wx.ALL | wx.EXPAND, 5)
 
-        self.text_ctrl_3 = wx.TextCtrl(self.notebook_1_wxRadioButton, wx.ID_ANY, "")
+        self.text_ctrl_3 = wx.TextCtrl(sizer_8.GetStaticBox(), wx.ID_ANY, "")
         grid_sizer_2.Add(self.text_ctrl_3, 1, wx.ALL | wx.EXPAND, 5)
 
         self.notebook_1_wxSlider = wx.Panel(self.notebook_1, wx.ID_ANY)
@@ -436,13 +436,15 @@ class All_Widgets_Frame(wx.Frame):
         self.label_4 = wx.StaticText(self.notebook_1_wxStaticText, wx.ID_ANY, _("black on red (RGB)"), style=wx.ALIGN_CENTER_HORIZONTAL)
         self.label_4.SetBackgroundColour(wx.Colour(255, 0, 0))
         self.label_4.SetToolTip(_("Background colour won't show, check documentation for more details"))
+        self.label_4.Wrap(100)
         grid_sizer_3.Add(self.label_4, 1, wx.ALL | wx.EXPAND, 5)
 
-        self.label_5 = wx.StaticText(self.notebook_1_wxStaticText, wx.ID_ANY, _("green on pink (RGB)"), style=wx.ALIGN_CENTER_HORIZONTAL)
-        self.label_5.SetBackgroundColour(wx.Colour(255, 0, 255))
-        self.label_5.SetForegroundColour(wx.Colour(0, 255, 0))
-        self.label_5.SetToolTip(_("Background colour won't show, check documentation for more details"))
-        grid_sizer_3.Add(self.label_5, 1, wx.ALL | wx.EXPAND, 5)
+        label_5 = wx.StaticText(self.notebook_1_wxStaticText, wx.ID_ANY, _("green on pink (RGB)"), style=wx.ALIGN_CENTER_HORIZONTAL)
+        label_5.SetBackgroundColour(wx.Colour(255, 0, 255))
+        label_5.SetForegroundColour(wx.Colour(0, 255, 0))
+        label_5.SetToolTip(_("Background colour won't show, check documentation for more details"))
+        label_5.Wrap(100)
+        grid_sizer_3.Add(label_5, 1, wx.ALL | wx.EXPAND, 5)
 
         self.notebook_1_Spacer = wx.Panel(self.notebook_1, wx.ID_ANY)
         self.notebook_1.AddPage(self.notebook_1_Spacer, _("Spacer"))
