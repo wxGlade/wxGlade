@@ -7,13 +7,7 @@ from edit_windows import ManagedBase, EditStylesMixin
 import common, compat, config
 import decorators
 
-
-if compat.IS_PHOENIX:
-    #import wx.adv
-    from wx.adv import DirPickerCtrl
-else:
-    #import wx.calendar
-    from wx import DirPickerCtrl
+from wx import DirPickerCtrl
 
 class EditDirPickerCtrl(ManagedBase, EditStylesMixin):
     "Class to handle wxDirPickerCtrl objects"
@@ -29,14 +23,8 @@ class EditDirPickerCtrl(ManagedBase, EditStylesMixin):
         EditStylesMixin.__init__(self)
 
     def create_widget(self):
-        self.widget = DirPickerCtrl(self.parent_window.widget, wx.ID_ANY, "", "", wxDefaultPosition, wxDefaultSize, style=self.style)
-
-    # handle compatibility:
-    @decorators.memoize
-    def wxname2attr(self, name):
-        cn = self.codegen.get_class(self.codegen.cn(name))
-        module = wx if compat.IS_CLASSIC else wx.adv
-        return getattr(module, cn)
+        self.widget = DirPickerCtrl(self.parent_window.widget, wx.ID_ANY, "", "",
+                                    wx.DefaultPosition, wx.DefaultSize, style=self.style)
 
     def _properties_changed(self, modified, actions):
         EditStylesMixin._properties_changed(self, modified, actions)

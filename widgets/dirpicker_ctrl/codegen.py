@@ -10,7 +10,7 @@ class PythonDirPickerCtrlGenerator(wcodegen.PythonWidgetCodeWriter):
 
     # XXX the following needs to depend on the code generator when Phoenix is about to be supported fully:
     if compat.IS_PHOENIX:
-        import_modules = ['import wx.adv\n']
+        import_modules = ['import wx\n']
 
     if compat.IS_PHOENIX:
         def cn(self, name):
@@ -18,9 +18,9 @@ class PythonDirPickerCtrlGenerator(wcodegen.PythonWidgetCodeWriter):
             if name.startswith('wx.'):
                 return name
             if name.startswith('wx'):
-                return 'wx.adv.' + name[2:]
+                return 'wx.' + name[2:]
             elif name.startswith('EVT_'):
-                return 'wx.adv.' + name
+                return 'wx.' + name
             return name
 
     def _prepare_tmpl_content(self, obj):

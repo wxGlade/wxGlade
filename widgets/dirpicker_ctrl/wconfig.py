@@ -5,6 +5,9 @@ wxDirPickerCtrl widget configuration
 config = {
     'wxklass': 'wxDirPickerCtrl',
     'style_defs': {
+        'wxDIRP_DEFAULT_STYLE': {
+            'desc': _('The default style: includes wxDIRP_DIR_MUST_EXIST and, under wxMSW only, wxDIRP_USE_TEXTCTRL. '),
+        },
         'wxDIRP_USE_TEXTCTRL': {
             'desc': _('Creates a text control to the left of the picker button which is completely managed by the wx.DirPickerCtrl and which can be used by the user to specify a path (see SetPath). The text control is automatically synchronized with button’s value. Use functions defined in wx.PickerBase to modify the text control.'),
         },
