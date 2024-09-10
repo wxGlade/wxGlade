@@ -37,6 +37,7 @@ check_list_box
 checkbox
 radio_button
 radio_box
+dirpicker_ctrl
 
 [Numeric & Dates]:N
 spin_ctrl
