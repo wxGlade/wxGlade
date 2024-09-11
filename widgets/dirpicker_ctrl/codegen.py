@@ -1,47 +1,41 @@
 """\
 Code generator functions for wxDirPickerCtrl objects
+
+@license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
 import common, compat
 import wcodegen
 
 class PythonDirPickerCtrlGenerator(wcodegen.PythonWidgetCodeWriter):
-    tmpl = '%(name)s = %(klass)s(%(parent)s, %(id)s%(style)s)\n'
+    tmpl = '%(name)s = %(klass)s(%(parent)s, %(id)s' \
+        ', %(path)s, %(message)s' \
+        '%(style)s)\n'
 
-    # XXX the following needs to depend on the code generator when Phoenix is about to be supported fully:
-    if compat.IS_PHOENIX:
-        import_modules = ['import wx\n']
-
-    if compat.IS_PHOENIX:
-        def cn(self, name):
-            # don't process already formatted items again
-            if name.startswith('wx.'):
-                return name
-            if name.startswith('wx'):
-                return 'wx.' + name[2:]
-            elif name.startswith('EVT_'):
-                return 'wx.' + name
-            return name
+    import_modules = ['import wx\n']
 
     def _prepare_tmpl_content(self, obj):
         wcodegen.PythonWidgetCodeWriter._prepare_tmpl_content(self, obj)
         self.has_setdefault = int(obj.properties.get('default', 0))
+        self.tmpl_dict['path'] = self.codegen.quote_str(obj.path)
+        self.tmpl_dict['message'] = self.codegen.quote_str(obj.message)
         return
-
 
 
 class CppDirPickerCtrlGenerator(wcodegen.CppWidgetCodeWriter):
     import_modules = ['<wx/dirctrl.h>']
     tmpl = '%(name)s = new %(klass)s(%(parent)s, %(id)s, ' \
-           'wxDefaultDirTime, wxDefaultPosition, wxDefaultSize, ' \
-           '%(style)s);\n'
+        ', %(path)s, %(message)s' \
+        '%(style)s);\n'
 
-    prefix_style = False
-    set_default_style = True
+#    prefix_style = False
+#    set_default_style = True
 
     def _prepare_tmpl_content(self, obj):
         wcodegen.CppWidgetCodeWriter._prepare_tmpl_content(self, obj)
         self.has_setdefault = int(obj.properties.get('default', 0))
+        self.tmpl_dict['path'] = self.codegen.quote_str(obj.path)
+        self.tmpl_dict['message'] = self.codegen.quote_str(obj.message)
         return
 
 
@@ -51,17 +45,6 @@ def xrc_code_generator(obj):
 
     class DirPickerCtrlXrcObject(xrcgen.DefaultXrcObject):
         def write_property(self, name, val, output, tabs):
-            if name == 'label':
-                # translate & into _ as accelerator marker
-                val2 = val.replace('&', '_')
-                if val.count('&&') > 0:
-                    while True:
-                        index = val.find('&&')
-                        if index < 0:
-                            break
-                        val = val2[:index] + '&&' + val2[index+2:]
-                else:
-                    val = val2
             xrcgen.DefaultXrcObject.write_property(self, name, val, output, tabs)
 
     return DirPickerCtrlXrcObject(obj)
@@ -71,5 +54,5 @@ def initialize():
     klass = 'wxDirPickerCtrl'
     common.class_names['EditDirPickerCtrl'] = klass
     common.register('python', klass, PythonDirPickerCtrlGenerator(klass))
-#    common.register('C++',    klass, CppDirPickerCtrlGenerator(klass))
+    common.register('C++',    klass, CppDirPickerCtrlGenerator(klass))
 #    common.register('XRC',    klass, xrc_code_generator)

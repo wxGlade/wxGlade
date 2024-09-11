@@ -6,27 +6,42 @@ import wx
 from edit_windows import ManagedBase, EditStylesMixin
 import common, compat, config
 import decorators
+import new_properties as np
 
 from wx import DirPickerCtrl
 
 class EditDirPickerCtrl(ManagedBase, EditStylesMixin):
     "Class to handle wxDirPickerCtrl objects"
-    # XXX unify with EditCalendarCtrl?
 
     WX_CLASS = "wxDirPickerCtrl"
-    _PROPERTIES = ["Widget", "style"]
+    _PROPERTIES = ["Widget", "path", "message", "style"]
     PROPERTIES = ManagedBase.PROPERTIES + _PROPERTIES + ManagedBase.EXTRA_PROPERTIES
+    _PROPERTY_HELP = {
+        "path": 'Initial path.',
+        "message": 'Descriptive text shown in the dialog.'
+    }
+    recreate_on_style_change = True
 
     def __init__(self, name, parent, index):
         # Initialise parent classes
         ManagedBase.__init__(self, name, parent, index)
         EditStylesMixin.__init__(self)
 
+        # initialize instance properties
+        self.path = np.TextProperty("")
+        self.message = np.TextProperty("Select folder")
+
     def create_widget(self):
-        self.widget = DirPickerCtrl(self.parent_window.widget, wx.ID_ANY, "", "",
-                                    wx.DefaultPosition, wx.DefaultSize, style=self.style)
+        if compat.IS_GTK: wx.Yield()  # avoid problems where the widget is consuming all events
+        self.widget = DirPickerCtrl(self.parent_window.widget, wx.ID_ANY,
+                                    path = self.path, message = self.message,
+                                    style=self.style)
 
     def _properties_changed(self, modified, actions):
+        if "path" in modified and self.widget:
+            self.widget.SetPath(self.path)
+        if "message" in modified and self.widget:
+            self.widget.SetMessage(self.message)
         EditStylesMixin._properties_changed(self, modified, actions)
         ManagedBase._properties_changed(self, modified, actions)
 
