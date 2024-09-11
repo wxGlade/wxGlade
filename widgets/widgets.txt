@@ -38,6 +38,7 @@ checkbox
 radio_button
 radio_box
 dirpicker_ctrl
+filepicker_ctrl
 
 [Numeric & Dates]:N
 spin_ctrl
