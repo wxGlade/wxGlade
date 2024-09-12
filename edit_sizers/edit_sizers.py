@@ -104,8 +104,8 @@ class SizerHandleButton(GenButton):
         self.SetUseFocusIndicator(False)
         self.Bind(wx.EVT_RIGHT_DOWN, self.sizer.popup_menu )
         #self.Bind(wx.EVT_KEY_DOWN, misc.on_key_down_event)
-        color = compat.wx_SystemSettings_GetColour(wx.SYS_COLOUR_BTNFACE)
-        self.SetBackgroundColour(color)
+        colour = compat.wx_SystemSettings_GetColour(wx.SYS_COLOUR_BTNFACE)
+        self.SetBackgroundColour(colour)
 
 class BaseSizerBuilder(object):
     "Language independent base class for all sizer builders / code generators"
@@ -240,7 +240,7 @@ class BaseSizerBuilder(object):
         if obj.WX_CLASS=="wxStdDialogButtonSizer" and child.WX_CLASS=='wxButton':
             # XXX optionally use SetAffirmativeButton, SetCancelButton, SetNegativeButton
             id_value = child.check_prop("id") and child.properties["id"].value.strip() or ""  # e.g. 'wxID_CANCEL'
-            if ( (child.check_prop_truth("stockitem") and child.stockitem in obj.BUTTON_STOCKITEMS) or 
+            if ( (child.check_prop_truth("stockitem") and child.stockitem in obj.BUTTON_STOCKITEMS) or
                  (id_value and id_value.startswith("wxID_") and id_value[5:] in obj.BUTTON_STOCKITEMS) ):
                 tmpl = self.codegen.tmpl_sizeritem_button
                 return [tmpl % ( sizer_name, obj_name )]
@@ -547,7 +547,7 @@ class SizerBase(edit_base.EditBase):
             misc.bind_menu_item_after(widget, i, self.insert_slot, item.index)
             i = misc.append_menu_item(menu, -1, _('Insert Slots before...\tCtrl+Shift+I') )
             misc.bind_menu_item_after(widget, i, self.insert_slot, item.index, True)
-    
+
             if item.index==len(self.children)-1: # last slot -> allow to add
                 i = misc.append_menu_item(menu, -1, _('Add Slot\tCtrl+A') )
                 misc.bind_menu_item_after(widget, i, self.add_slot)
@@ -743,11 +743,11 @@ class SizerBase(edit_base.EditBase):
     def update_view(self, selected):
         if self._btn is None: return
         if selected:
-            color = wx.RED
+            colour = wx.RED
         else:
-            color = compat.wx_SystemSettings_GetColour(wx.SYS_COLOUR_BTNFACE)
+            colour = compat.wx_SystemSettings_GetColour(wx.SYS_COLOUR_BTNFACE)
         if not self._btn or self._btn.IsBeingDeleted(): return
-        self._btn.SetBackgroundColour(color)
+        self._btn.SetBackgroundColour(colour)
         self._btn.Refresh(True)
 
     # add/insert/free slots; interface mainly from context menus #######################################################
@@ -918,7 +918,7 @@ class BoxSizerBase(SizerBase):
             msg = "Multiple conflicting vertical alignment flags"
             if "wxALIGN_CENTER" in flags:          replace["wxALIGN_CENTER"] = None
             if "wxALIGN_CENTER_VERTICAL" in flags: replace["wxALIGN_CENTER_VERTICAL"] = None
-            
+
         if self.orient==wx.VERTICAL:
             excludes = {"wxALIGN_BOTTOM", "wxALIGN_CENTER_VERTICAL", "wxALIGN_CENTER"}
             if "wxALIGN_BOTTOM" in flags or "wxALIGN_CENTER_VERTICAL" in flags or "wxALIGN_CENTER" in flags:
@@ -944,7 +944,7 @@ class BoxSizerBase(SizerBase):
                 if "wxALIGN_RIGHT" in flags:             replace["wxALIGN_RIGHT"] = None
                 if "wxALIGN_CENTER_HORIZONTAL" in flags: replace["wxALIGN_CENTER_HORIZONTAL"] = None
                 if "wxALIGN_CENTER" in flags:            replace["wxALIGN_CENTER"] = "wxALIGN_CENTER_VERTICAL"
-    
+
             if "wxEXPAND" in flags and not "wxSHAPED" in flags:
                 if "wxALIGN_BOTTOM" in flags or "wxALIGN_CENTER_VERTICAL" in flags or "wxALIGN_CENTER" in flags:
                     msg = "Vertical alignment flags are ignored with wxEXPAND"
@@ -988,7 +988,7 @@ if HAVE_WRAP_SIZER:
     class EditWrapSizer(BoxSizerBase):
         "Class to handle wxWrapSizer objects"
         WX_CLASS = "wxWrapSizer"
-    
+
         def create_widget(self, dont_add=False):
             BoxSizerBase.create_widget(self)
             self.widget = wxGladeWrapSizer(self.orient)
@@ -1394,7 +1394,7 @@ class GridSizerBase(SizerBase):
                 else:
                     replace["wxEXPAND"] = None
                 msg = "wxEXPAND flag would be overridden by alignment flags"
-        return set(), replace, msg 
+        return set(), replace, msg
 
     @_frozen
     def _properties_changed(self, modified, actions):
@@ -1823,12 +1823,12 @@ class EditGridBagSizer(EditFlexGridSizer):
             for c in self.widget._grid.GetChildren():
                 if c and c.IsSizer():
                     compat.SizerItem_SetSizer(c, None)
-    
+
             self.widget._grid.Clear()
             #self.widget._grid.Destroy()  # spurious crashes, even with CallAfter
             self.widget._create(None,None, self.vgap, self.hgap)
             wx.BoxSizer.Add(self.widget, self.widget._grid, 1, wx.EXPAND)
-    
+
             for child in self.children:
                 if not child.widget: continue # for overlapped sizer slots, widget may be None
                 self.widget.Add(child.widget, child.index, child.span, child.flag, child.border)
@@ -1878,7 +1878,7 @@ class EditGridBagSizer(EditFlexGridSizer):
         cols_p = self.properties["cols"]
         rows_p.set_range(max_row+1, rows_p.val_range[1])
         cols_p.set_range(max_col+1, cols_p.val_range[1])
-    
+
     def check_property_modification(self, name, value, new_value):
         max_row, max_col = self._get_max_row_col()
         if name=="rows" and new_value<max_row+1: return False
@@ -2169,7 +2169,7 @@ class _SizerDialog(wx.Dialog):
             can_be_dialogbutton_sizer = self.orientation==0 and not self.checkbox_static.IsChecked()
             if HAVE_WRAP_SIZER and self.checkbox_wrap.IsChecked(): can_be_dialogbutton_sizer = False
             self.checkbox_dlgbutton.Enable( can_be_dialogbutton_sizer )
-            
+
             self.radios[1].Enable( not self.checkbox_dlgbutton.IsChecked() )
 
 

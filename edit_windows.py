@@ -344,9 +344,9 @@ class WindowBase(EditBase):
         # their actual values will be stored/modified after widget creation in 'finish_widget_creation'
         # before that, the actual values will be stored in this dict from the actual values of the widget:
         self._original = {'font': None}
-        # colors
-        self.background = np.ColorPropertyD(None)
-        self.foreground = np.ColorPropertyD(None)
+        # colours
+        self.background = np.ColourPropertyD(None)
+        self.foreground = np.ColourPropertyD(None)
         # font
         if "font" in self.PROPERTIES:
             if config.use_gui:
@@ -377,8 +377,8 @@ class WindowBase(EditBase):
         if self.check_prop("size"):       self.set_size("size", "SetSize")
         if self.check_prop("min_size"):   self.set_size("min_size", "SetMinSize")
         if self.check_prop("max_size"):   self.set_size("max_size", "SetMaxSize")
-        if self.check_prop("background"): self.widget.SetBackgroundColour(self.properties["background"].get_color())
-        if self.check_prop("foreground"): self.widget.SetForegroundColour(self.properties["foreground"].get_color())
+        if self.check_prop("background"): self.widget.SetBackgroundColour(self.properties["background"].get_colour())
+        if self.check_prop("foreground"): self.widget.SetForegroundColour(self.properties["foreground"].get_colour())
 
         EditBase.finish_widget_creation(self, level)
 
@@ -547,10 +547,10 @@ class WindowBase(EditBase):
         if modified and "max_size" in modified and self.widget:
             self.set_size("max_size", "SetMaxSize")
         if not modified or "background" in modified and self.widget:
-            self.widget.SetBackgroundColour(self.properties["background"].get_color())
+            self.widget.SetBackgroundColour(self.properties["background"].get_colour())
             actions.add("refresh")
         if not modified or "foreground" in modified and self.widget:
-            self.widget.SetForegroundColour(self.properties["foreground"].get_color())
+            self.widget.SetForegroundColour(self.properties["foreground"].get_colour())
             actions.add("refresh")
         if "font" in modified and self.widget:
             self._set_font()
@@ -605,7 +605,7 @@ class ManagedBase(WindowBase):
 
     _PROPERTY_HELP = { "border": "Border width, if enabled below",
                        "max_size": "Indicate maximum size to the containing sizer."}
-                       
+
     _PROPERTY_LABELS = {"option": "Proportion" }
 
     #CHILDREN = 0  # most widgets have no children
@@ -715,7 +715,7 @@ class ManagedBase(WindowBase):
         #if size_p.is_active() and size_p.get() != "-1, -1": return # fixed size
         ## find best size, apply; display if size property is not active
         #self.widget.SetMinSize( (-1,-1) )  # otherwise the size would often not be reduced, e.g. for buttons
-        
+
         #print("skipping SET BESET SIZE")
         ##if hasattr(self.parent, "set_item_best_size"):
             ##best_size = self.widget.GetBestSize()
@@ -790,16 +790,16 @@ class PreviewMixin(object):
 class DesignButtonProperty(np.ActionButtonProperty):
     def __init__(self, callback):
         np.ActionButtonProperty.__init__(self, callback)
-        self.background_color = wx.Colour(150,150,200)
+        self.background_colour = wx.Colour(150,150,200)
         self.set_label( _('Show Design Window') )
 
     def update_label(self):
         if not self.owner.widget or not self.owner.is_visible():
             label = _('Show Design Window')
-            self.background_color = wx.Colour(150,150,240)  # make button more visible
+            self.background_colour = wx.Colour(150,150,240)  # make button more visible
         else:
             label = _('Hide Design Window')
-            self.background_color = compat.wx_SystemSettings_GetColour(wx.SYS_COLOUR_BTNFACE)
+            self.background_colour = compat.wx_SystemSettings_GetColour(wx.SYS_COLOUR_BTNFACE)
         self.set_label(label)
 
 

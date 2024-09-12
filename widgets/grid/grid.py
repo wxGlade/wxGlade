@@ -140,7 +140,7 @@ class EditGrid(ManagedBase):
                   "Grid", 'columns', 'rows']
     PROPERTIES = ManagedBase.PROPERTIES + _PROPERTIES + ManagedBase.EXTRA_PROPERTIES
     PROPERTIES = [p for p in PROPERTIES if p!='font']
-    
+
     _PROPERTY_HELP = {"create_grid":"The following properties are meaningful only if 'Create grid' is selected",
                       "columns":"Enter \\n for a line break in the label",
                       "rows":"Enter \\n for a line break in the label",
@@ -173,8 +173,8 @@ class EditGrid(ManagedBase):
         self.label_font = np.FontPropertyD(tuple(font))
         self.cell_font = np.FontPropertyD(tuple(font))
 
-        self.lines_color        = np.ColorPropertyD('#000000', default_value='#000000')
-        self.label_bg_color     = np.ColorPropertyD('#C0C0C0', default_value='#C0C0C0')
+        self.lines_color        = np.ColourPropertyD('#000000', default_value='#000000')
+        self.label_bg_color     = np.ColourPropertyD('#C0C0C0', default_value='#C0C0C0')
 
         self.enable_editing     = np.CheckBoxProperty(True)
         self.enable_grid_lines  = np.CheckBoxProperty(True)
@@ -190,9 +190,9 @@ class EditGrid(ManagedBase):
         #self.widget.CreateGrid(self.rows_number, len(self.columns))
         self.widget.CreateGrid(len(self.rows), len(self.columns))
 
-        # read default colors from created widget
-        default_background = misc.color_to_string( self.widget.GetLabelBackgroundColour() )
-        default_lines      = misc.color_to_string( self.widget.GetGridLineColour() )
+        # read default colours from created widget
+        default_background = misc.colour_to_string( self.widget.GetLabelBackgroundColour() )
+        default_lines      = misc.colour_to_string( self.widget.GetGridLineColour() )
         self.properties['label_bg_color'].set_default(default_background)
         self.properties['lines_color'   ].set_default(default_lines)
 
@@ -256,8 +256,8 @@ class EditGrid(ManagedBase):
         if m("enable_col_resize"):  self.widget.EnableDragColSize(self.enable_col_resize)
         if m("enable_row_resize"):  self.widget.EnableDragRowSize(self.enable_row_resize)
         if m("enable_grid_resize"): self.widget.EnableDragGridSize(self.enable_grid_resize)
-        if m("lines_color"):        self.widget.SetGridLineColour( self.properties["lines_color"].get_color() )
-        if m("label_bg_color"):     self.widget.SetLabelBackgroundColour( self.properties["label_bg_color"].get_color() )
+        if m("lines_color"):        self.widget.SetGridLineColour( self.properties["lines_color"].get_colour() )
+        if m("label_bg_color"):     self.widget.SetLabelBackgroundColour( self.properties["label_bg_color"].get_colour() )
         if m("selection_mode"):     self.widget.SetSelectionMode(self.selection_mode)
 
         # columns and rows #############################################################################################
@@ -269,7 +269,7 @@ class EditGrid(ManagedBase):
             elif delta<0: self.widget.DeleteCols(0, -delta)
             # set column widths and labels
             for i, (label,size) in enumerate(columns):
-                size = int(size or "0") 
+                size = int(size or "0")
                 if size>0:
                     self.widget.SetColSize(i, size)
                 self.widget.SetColLabelValue(i, label.replace('\\n', '\n'))
@@ -281,7 +281,7 @@ class EditGrid(ManagedBase):
             elif delta<0: self.widget.DeleteRows(0, -delta)
             # set row heights and labels
             for i, (label,size) in enumerate(rows):
-                size = int(size or "0") 
+                size = int(size or "0")
                 if size>0:
                     self.widget.SetRowSize(i, size)
                 self.widget.SetRowLabelValue(i, label.replace('\\n', '\n'))

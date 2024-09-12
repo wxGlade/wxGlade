@@ -37,7 +37,7 @@ class wxGladeAboutBox(wx.Dialog):
     <tr><td width="50"></td><td>
     <!-- <font size="-1"> -->
     <b><p>License: MIT (see <a href="show_license">LICENSE.txt</a>)</b><br>
-    <!-- wxPyColourChooser code copyright (c) 2002-2004 <br>Michael Gilfix 
+    <!-- wxPyColourChooser code copyright (c) 2002-2004 <br>Michael Gilfix
     (wxWindows license) -->
     <p>Home page:
     <a href="http://wxglade.sourceforge.net">http://wxglade.sourceforge.net</a>
@@ -55,7 +55,7 @@ class wxGladeAboutBox(wx.Dialog):
         # it's recommended at least for GTK2 based wxPython
         if "gtk2" in wx.PlatformInfo:
             html.SetStandardFonts()
-        bgcolor = misc.color_to_string(self.GetBackgroundColour())
+        bgcolor = misc.colour_to_string(self.GetBackgroundColour())
         icon_path = os.path.join(config.icons_path, 'wxglade_small.png')
         html.SetPage( self.text % (bgcolor, icon_path, config.version, config.py_version, config.wx_version) )
         ir = html.GetInternalRepresentation()

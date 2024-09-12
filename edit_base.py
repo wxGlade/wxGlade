@@ -205,7 +205,7 @@ class EditBase(np.PropertyOwner):
                     if child is c: return pos
                     pos += 1
         return pos + self.children.index(child)
-    
+
     def find_children(self, name=None, wx_class=None):
         ret = []
         for child in self.get_all_children():
@@ -271,7 +271,7 @@ class EditBase(np.PropertyOwner):
             if editor is parent: return True
             if parent.parent is None: return False
             parent = parent.parent
-    
+
     def get_path(self):
         """returns a list of widget names, from the toplevel to the selected one
         Example: ['frame_1', 'sizer_1', 'panel_1', 'sizer_2', 'button_1']
@@ -361,7 +361,7 @@ class EditBase(np.PropertyOwner):
     def child_widget_created(self, child, level):
         # called after child's children were also created; implemented for notebook, splitter, sizers
         pass
-    
+
     def child_widgets_created(self, level):
         # implemented for notebook, splitter, sizers?
         pass
@@ -692,11 +692,11 @@ class Slot(EditBase):
                 dc.SetBackground(wx.Brush(wx.LIGHT_GREY))
             dc.Clear()
         if small and focused:
-            color = wx.WHITE
+            colour = wx.WHITE
         elif small or not focused:
-            color = wx.BLACK
+            colour = wx.BLACK
         else:
-            color = wx.BLUE
+            colour = wx.BLUE
 
         if focused:
             hatch = compat.BRUSHSTYLE_CROSSDIAG_HATCH
@@ -708,7 +708,7 @@ class Slot(EditBase):
             else:
                 pos = sum( self.sizer._get_row_col(self.index) )
             hatch = compat.BRUSHSTYLE_FDIAGONAL_HATCH  if pos%2 else  compat.BRUSHSTYLE_BDIAGONAL_HATCH
-        brush = wx.Brush(color, hatch)
+        brush = wx.Brush(colour, hatch)
         # draw hatched lines in foreground
         dc.SetBrush(brush)
         size = self.widget.GetClientSize()

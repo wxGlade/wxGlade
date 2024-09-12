@@ -202,8 +202,8 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
     """Language specific code templates for for small statements.
 
     The statements are stored in a dictionary. The property names are the keys.
-    
-    The keys may have one of two different extensions: 
+
+    The keys may have one of two different extensions:
      - "_<major version>X"               e.g. "tooltip_3X" to generate tooltips source code for wxWidgets 3.x
      - "_<major version><minor version>" e.g. "wxcolour_28" to generate source code for wxWidgets 2.8 only
 
@@ -876,8 +876,8 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
             return msg
 
         objname = self.format_generic_access(obj)
-        color = self._get_colour(obj.background)
-        stmt = tmpl % { 'objname':objname, 'value':color }
+        colour = self._get_colour(obj.background)
+        stmt = tmpl % { 'objname':objname, 'value':colour }
         return stmt
 
     def generate_code_ctor(self, code_obj, is_new, tab):
@@ -944,7 +944,7 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
 
         objname = self.format_generic_access(obj)
         cnfont = self.cn('wxFont')
-        
+
         font_p = obj.properties[prop_name]
         size, family, style, weight, underlined, face = font_p.get()
         family  = font_p.font_families[family]  # e.g. 'roman' -> 'wxROMAN'
@@ -971,8 +971,8 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
             return msg
 
         objname = self.format_generic_access(obj)
-        color = self._get_colour(obj.foreground)
-        stmt = tmpl % { 'objname':objname, 'value':color }
+        colour = self._get_colour(obj.foreground)
+        stmt = tmpl % { 'objname':objname, 'value':colour }
         return stmt
 
     def generate_code_id(self, obj, id=None):
@@ -1121,7 +1121,7 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
     def store_as_attr(self, obj):
         """Returns True if 'obj' should be added as an attribute of its parent's class,
         False if it should be created as a local variable.
-        
+
         The function returns True of the object klass is listed in classattr_always.
 
         The function returns True for all widgets except sizers, if
@@ -1305,7 +1305,7 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
         try:
             value = self._string_to_colour(colourvalue)
             tmpl = self.cn(tmpl_wxcolour)
-        except (IndexError, ValueError):  # the color is from system settings
+        except (IndexError, ValueError):  # the colour is from system settings
             value = self.cn(colourvalue)
             tmpl = self.cn(tmpl_wxsystemcolour)
         stmt = tmpl % {'value': value}
@@ -1324,7 +1324,7 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
         @param ftmpl: Template string of the function
         @param body: Content of the function
         @type body:  list[str]
-        
+
         @rtype: list[str]"""
         code_lines = []
         write = code_lines.append
@@ -1371,14 +1371,14 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
 
     def _source_warning(self, klass, msg, sub_obj):
         """Format and add a warning message to the source code.
-        
+
         The message msg will be split into single lines and every line will be properly formatted.
-        
+
         klass: Instance of ClassLines to add the code in
         msg:   Multiline message
-        
+
         sub_obj: Object to generate code for (CodeObject instance)
-        
+
         see: _format_comment()"""
         code_lines = []
 
