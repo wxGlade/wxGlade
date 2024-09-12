@@ -74,4 +74,4 @@ def initialize():
     common.widgets['EditFilePickerCtrl'] = builder
     common.widgets_from_xml['EditFilePickerCtrl'] = xml_builder
 
-    return common.make_object_button('EditFilePickerCtrl', 'datepicker_ctrl.png')
+    return common.make_object_button('EditFilePickerCtrl', 'filepicker_ctrl.png')

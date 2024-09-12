@@ -37,8 +37,6 @@ check_list_box
 checkbox
 radio_button
 radio_box
-dirpicker_ctrl
-filepicker_ctrl
 
 [Numeric & Dates]:N
 spin_ctrl
@@ -65,6 +63,8 @@ spacer
 [Misc]:M
 property_grid_manager
 search_ctrl
+dirpicker_ctrl
+filepicker_ctrl
 custom_widget
 
 [Menu & Bars]:R
