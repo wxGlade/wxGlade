@@ -222,15 +222,15 @@ def capitalize(string):
     return string.capitalize()
 
 
-def color_to_string(color):
+def colour_to_string(colour):
     "returns the hexadecimal string representation of the given colour '#RRGGBB'"
-    if color is None: return None
-    return '#%.2x%.2x%.2x'%(color.Red(), color.Green(), color.Blue())
+    if colour is None: return None
+    return '#%.2x%.2x%.2x'%(colour.Red(), colour.Green(), colour.Blue())
 
-def string_to_color(color):
-    "Hex string to wxColour instance; e.g. string_to_color('#ffffff') -> wx.Colour(255, 255, 255)"
-    if len(color)==7: return wx.Colour( *[int(color[i:i + 2], 16) for i in range(1, 7, 2)] )
-    if len(color)==9: return wx.Colour( *[int(color[i:i + 2], 16) for i in range(1, 9, 2)] )
+def string_to_colour(colour):
+    "Hex string to wxColour instance; e.g. string_to_colour('#ffffff') -> wx.Colour(255, 255, 255)"
+    if len(colour)==7: return wx.Colour( *[int(colour[i:i + 2], 16) for i in range(1, 7, 2)] )
+    if len(colour)==9: return wx.Colour( *[int(colour[i:i + 2], 16) for i in range(1, 9, 2)] )
     raise ValueError
 
 
@@ -555,7 +555,7 @@ accel_table = {
     ("C", ord('S')):     ((common,"main","save_app"),             ()),
     ("C", ord('G')):     ((common,"root","generate_code"), ()),
 
-    ("C", ord('N')):     ((common,"main","new_app"),              ()), 
+    ("C", ord('N')):     ((common,"main","new_app"),              ()),
     ("C", ord('O')):     ((common,"main","open_app"),             ()),
     ("C", ord('Q')):     ((common,"main","Close"),                ()),
 }
@@ -634,7 +634,7 @@ else:
     @contextlib.contextmanager
     def disable_stay_on_top(widget):
         yield
-    
+
 
 ########################################################################################################################
 # key handlers

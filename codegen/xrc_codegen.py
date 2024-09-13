@@ -190,13 +190,13 @@ class DefaultXrcObject(XrcObject):
             if name=='foreground':
                 value = prop.get_string_value()
                 if not value.startswith('#'):
-                    # XRC does not support colors from system settings
+                    # XRC does not support colours from system settings
                     continue
                 name = 'fg'
             elif name=='background':
                 value = prop.get_string_value()
                 if not value.startswith('#'):
-                    # XRC does not support colors from system settings
+                    # XRC does not support colours from system settings
                     continue
                 name = "bg"
             elif name=='font':

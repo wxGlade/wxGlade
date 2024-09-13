@@ -455,7 +455,7 @@ class WidgetTree(wx.TreeCtrl):#, Tree):
         elif len(children) < len(item_editors):
             # remove items, right after match_beginning
             for n in range( len(item_editors) - len(children) ):
-                index = match_beginning 
+                index = match_beginning
                 child_item = items[index]
                 self.Delete(child_item)
                 del items[match_beginning]
@@ -464,7 +464,7 @@ class WidgetTree(wx.TreeCtrl):#, Tree):
             for index in range(match_beginning, len(children)-match_end):
                 child = children[index]
                 item = self.add2(child, parent=editor, index=index, item=items[index])
-        
+
         if not recursive:
             # update labels and images, called e.g. when notebook pages change
             for child in children:
@@ -535,7 +535,7 @@ class WidgetTree(wx.TreeCtrl):#, Tree):
         misc.set_focused_widget(self.cur_widget)
 
     def _set_cur_widget(self, editor):
-        # set self.cur_widget; adjust label colors and bold if required (on Windows)
+        # set self.cur_widget; adjust label colours and bold if required (on Windows)
         if self.cur_widget and wx.Platform == "__WXMSW__" and self.cur_widget.item:
             item = self.cur_widget.item
             self.SetItemTextColour(item, wx.NullColour)

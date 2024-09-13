@@ -986,7 +986,7 @@ class _CheckListProperty(Property):
                 if excludes2 is not None and self.value_set.intersection( excludes2 ):
                     excludes2 = [name]
             if not config.preferences.no_checkbox_label_colours:
-                default_color = wx.NullColour if not "rename_to" in self.style_defs[name] else wx.Colour(130,130,130)
+                default_colour = wx.NullColour if not "rename_to" in self.style_defs[name] else wx.Colour(130,130,130)
                 if checked[i] and not name in self.value_set:
                     checkbox.SetForegroundColour(wx.Colour(120,120,100))  # grey
                 elif self.value_set.intersection( excludes ):
@@ -996,7 +996,7 @@ class _CheckListProperty(Property):
                     if supported_by:
                         checkbox.SetForegroundColour(wx.BLUE)
                     else:
-                        checkbox.SetForegroundColour(default_color)
+                        checkbox.SetForegroundColour(default_colour)
             if self._one_required and name in self._one_required and checked[i]:
                 wx.CallAfter( checkbox.Disable )
             elif excludes2 and name in excludes2:
@@ -1488,19 +1488,19 @@ class TextProperty(Property):
         self._set_colours()
 
     def _set_colours(self, warning_error=None):
-        # set color to indicate errors and warnings
+        # set colour to indicate errors and warnings
         if not self.text: return
         if warning_error:
             warning, error = warning_error
         else:
             warning, error = self._warning, self._error
         if error:
-            bgcolor = wx.RED
+            bgcolour = wx.RED
         elif warning:
-            bgcolor = wx.Colour(255, 255, 0, 255)  # yellow
+            bgcolour = wx.Colour(255, 255, 0, 255)  # yellow
         else:
-            bgcolor = compat.wx_SystemSettings_GetColour(wx.SYS_COLOUR_WINDOW)
-        self.text.SetBackgroundColour( bgcolor )
+            bgcolour = compat.wx_SystemSettings_GetColour(wx.SYS_COLOUR_WINDOW)
+        self.text.SetBackgroundColour( bgcolour )
         self.text.Refresh()
 
     def _convert_to_text(self, value):
@@ -1541,7 +1541,7 @@ class TextProperty(Property):
             return
         self.previous_value = self.value
         ret = Property._check_for_user_modification(self, new_value, force, activate)
-        self.check(self.value)  # a value can be valid, but e.g. a non-unique name to be visualized in color
+        self.check(self.value)  # a value can be valid, but e.g. a non-unique name to be visualized in colour
         return ret
 
     def _convert_from_text(self, text=None):
@@ -1938,7 +1938,7 @@ class ListBoxPropertyD(ListBoxProperty):
 
 
 class DialogProperty(TextProperty):
-    # for now, this is only a base class for FileName, Color and FontProperty
+    # for now, this is only a base class for FileName, Colour and FontProperty
     CONTROLNAMES = ["enabler", "text"]#, "button"]
     def __init__(self, value="", multiline=False, strip=True, default_value=_DefaultArgument, name=None):
         TextProperty.__init__(self, value, multiline, strip, default_value, name)
@@ -2003,7 +2003,7 @@ class DialogProperty(TextProperty):
         #self.text.ProcessEvent( wx.FocusEvent(wx.wxEVT_KILL_FOCUS, self.text.GetId()) )
 
     def _update_button(self):
-        # update e.g. color or font
+        # update e.g. colour or font
         pass
 
     def update_display(self, start_editing=False):
@@ -2139,9 +2139,9 @@ class BitmapPropertyD(BitmapProperty):
         FileNameProperty.__init__(self, value, style, '', name)
 
 
-class ColorProperty(DialogProperty):
+class ColourProperty(DialogProperty):
     STRIP = True
-    str_to_colors = {
+    str_to_colours = {
         'wxSYS_COLOUR_SCROLLBAR': wx.SYS_COLOUR_SCROLLBAR,
         'wxSYS_COLOUR_BACKGROUND': wx.SYS_COLOUR_BACKGROUND,
         'wxSYS_COLOUR_ACTIVECAPTION': wx.SYS_COLOUR_ACTIVECAPTION,
@@ -2184,35 +2184,35 @@ class ColorProperty(DialogProperty):
         # wx.SYS_COLOUR_LISTBOXHIGHLIGHTTEXT
         # wx.SYS_COLOUR_FRAMEBK
         }
-    colors_to_str = misc._reverse_dict(str_to_colors)
+    colours_to_str = misc._reverse_dict(str_to_colours)
     def __init__(self, value="", multiline=False, strip=True, default_value=wx.NullColour, name=None):
         DialogProperty.__init__(self, value, multiline, strip, default_value, name)
 
     def _create_dialog(self):
         if self.dialog is None:
-            from color_dialog import wxGladeColorDialog
-            self.dialog = wxGladeColorDialog(self.str_to_colors)
+            from color_dialog import wxGladeColourDialog
+            self.dialog = wxGladeColourDialog(self.str_to_colours)
         self.dialog.set_value(self.value or "")
         return self.dialog
 
     def _set_converter(self, value):
         if not isinstance(value, compat.basestring):
-            value = misc.color_to_string(value)
+            value = misc.colour_to_string(value)
         return value
 
-    def get_color(self, color=None):
+    def get_colour(self, colour=None):
         # return a wx.Colour instance
-        if color is None:
+        if colour is None:
             if not self.is_active(): return self.default_value
-            color = self.get()
-        if color is None: return self.default_value
-        if color=="wxNullColour": return wx.NullColour
-        if color in self.str_to_colors:
+            colour = self.get()
+        if colour is None: return self.default_value
+        if colour=="wxNullColour": return wx.NullColour
+        if colour in self.str_to_colours:
             # e.g. 'wxSYS_COLOUR_SCROLLBAR'
-            return compat.wx_SystemSettings_GetColour(self.str_to_colors[color])
-        elif color.startswith("#"):
-            return misc.string_to_color(color)
-        ret = compat.wx_NamedColour(color)
+            return compat.wx_SystemSettings_GetColour(self.str_to_colours[colour])
+        elif colour.startswith("#"):
+            return misc.string_to_colour(colour)
+        ret = compat.wx_NamedColour(colour)
         if ret.IsOk():
             return ret
         return None
@@ -2220,19 +2220,19 @@ class ColorProperty(DialogProperty):
     def _update_button(self):
         if not self.button: return
         if self.is_active():
-            color = self.get_color()
+            colour = self.get_colour()
         else:
-            color = None
-        if color is None:
+            colour = None
+        if colour is None:
             self.set_active(False)  # invalid colour
             self.button.SetBackgroundColour(None) # wx.NullColor)
         else:
-            self.button.SetBackgroundColour(color)
+            self.button.SetBackgroundColour(colour)
 
     def _convert_from_text(self, value):
         # returns a string if valid, None otherwise
         try:
-            if not self.get_color(value): return None
+            if not self.get_colour(value): return None
             return value
         except:
             return None
@@ -2245,15 +2245,15 @@ class ColorProperty(DialogProperty):
     def check_value(self, value):
         "return (warning, error)"
         try:
-            checked = self.get_color(value)
+            checked = self.get_colour(value)
         except:
             checked = None
-        if not checked:  # get_color returned None or raised an exception
+        if not checked:  # get_colour returned None or raised an exception
             return (None, "invalid")
         return (None,None)
 
 
-class ColorPropertyD(ColorProperty):
+class ColourPropertyD(ColourProperty):
     deactivated = True
 
 class FontProperty(DialogProperty):
@@ -3384,7 +3384,7 @@ class ExtraPropertiesProperty(GridProperty):
 class ActionButtonProperty(Property):
     # just a button to start an action
     CONTROLNAMES = ["button"]
-    background_color = None
+    background_colour = None
     HAS_DATA = False # to be ignored by owner.get_properties()
     def __init__(self, callback):
         self.callback = callback
@@ -3402,15 +3402,15 @@ class ActionButtonProperty(Property):
         if tooltip: compat.SetToolTip(self.button, tooltip)
         self.button.Bind(wx.EVT_BUTTON, self.on_button)
         self.editing = True
-        if self.background_color is not None:
-            self.button.SetBackgroundColour(self.background_color)
+        if self.background_colour is not None:
+            self.button.SetBackgroundColour(self.background_colour)
 
     def set_label(self, label):
         self.label = label
         if self.editing:
             self.button.SetLabel(label)
-            if self.background_color is not None:
-                self.button.SetBackgroundColour(self.background_color)
+            if self.background_colour is not None:
+                self.button.SetBackgroundColour(self.background_colour)
 
     def on_button(self, event):
         self.on_focus()

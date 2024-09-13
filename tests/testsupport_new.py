@@ -102,13 +102,13 @@ class WXGladeBaseTest(unittest.TestCase):
                 del ret[i]
                 break
         return ret
-    
+
     def _compare_files(self, expected_filename, generated_filename, check_mtime=False):
         self.assertTrue( os.path.isfile(generated_filename), "File %s was not generated"%generated_filename )
         if check_mtime:
             self.assertGreater( os.stat(generated_filename).st_mtime, os.stat(expected_filename).st_mtime,
                                 "File was not overwritten" )
-        
+
         # open files, split into lines and convert to str/unicode
         expected  = self._read_file_lines(expected_filename)
         generated = self._read_file_lines(generated_filename)
