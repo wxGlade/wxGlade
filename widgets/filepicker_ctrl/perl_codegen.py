@@ -8,7 +8,7 @@ import wcodegen
 
 class PerlFilePickerCtrlGenerator(wcodegen.PerlWidgetCodeWriter):
     tmpl = '%(name)s = %(klass)s->new(%(parent)s, %(id)s, ' \
-           '%(path)s, %(message)s, %(wildcard)s"' \
+           '%(path)s, %(message)s, %(wildcard)s' \
            '%(style)s);\n'
     set_default_style = True
 
