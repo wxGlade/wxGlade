@@ -38,10 +38,11 @@ class EditDirPickerCtrl(ManagedBase, EditStylesMixin):
                                     style=self.style)
 
     def _properties_changed(self, modified, actions):
-        if "path" in modified and self.widget:
-            self.widget.SetPath(self.path)
-        if "message" in modified and self.widget:
-            self.widget.SetMessage(self.message)
+        if self.widget:
+            if "path" in modified or "message" in modified:
+                # Cannot change properties, recreate.
+                self.recreate_widget2()
+
         EditStylesMixin._properties_changed(self, modified, actions)
         ManagedBase._properties_changed(self, modified, actions)
 

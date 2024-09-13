@@ -36,17 +36,16 @@ class EditFilePickerCtrl(ManagedBase, EditStylesMixin):
 
     def create_widget(self):
         self.widget = FilePickerCtrl(self.parent_window.widget, wx.ID_ANY,
-                                     self.path, self.wildcard, self.message,
+                                     self.path, self.message, self.wildcard,
                                      style=self.style)
 
     def _properties_changed(self, modified, actions):
         if self.widget:
             if "path" in modified:
                 self.widget.SetPath(self.path)
-            if "wildcard" in modified and self.widget:
-                self.widget.SetWildcard(self.wildcard)
-            if "message" in modified:
-                self.widget.SetMessage(self.message)
+            if "wildcard" in modified or "message" in modified:
+                # Cannot change properties, recreate.
+                self.recreate_widget2()
 
         EditStylesMixin._properties_changed(self, modified, actions)
         ManagedBase._properties_changed(self, modified, actions)
