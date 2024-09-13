@@ -33,7 +33,7 @@ config = {
     'default_style': 'wxFLP_DEFAULT_STYLE',
     'style_list': ['wxFLP_USE_TEXTCTRL', 'wxFLP_OPEN', 'wxFLP_SAVE', 'wxFLP_FILE_MUST_EXIST', 'wxFLP_CHANGE_DIR', 'wxFLP_SMALL'],
     'events': {
-        'EVT_FLPICKER_CHANGED': {'type': 'wxFileFilePickerEvent',},
+        'EVT_FILEPICKER_CHANGED': {'type': 'wxFileFilePickerEvent',},
     },
 }
 
