@@ -39,7 +39,15 @@ class PythonCustomWidgetGenerator(wcodegen.PythonWidgetCodeWriter):
             return self.get_code_preview(widget)
         self.codegen.have_extracode = True
         id_name, id = self.codegen.generate_code_id(widget)
-        parent_access = self.format_widget_access(widget.parent_window)
+
+        parent = widget.get_parent_window2(self.codegen)
+        if parent.IS_SIZER:
+            parent_access = '%s.GetStaticBox()' % self.format_widget_access(parent)
+        elif not parent.IS_CLASS:
+            parent_access = 'self.%s' % parent.name
+        else:
+            parent_access = 'self'
+
         init = []
         if id_name: init.append(id_name)
         arguments = format_ctor_arguments( widget.arguments, parent_access, id, widget.size)
@@ -50,10 +58,17 @@ class PythonCustomWidgetGenerator(wcodegen.PythonWidgetCodeWriter):
         return init, []
 
     def get_code_preview(self, widget):
-        parent = self.format_widget_access(widget.parent_window)
+        parent = widget.get_parent_window2(self.codegen)
+        if parent.IS_SIZER:
+            parent_access = '%s.GetStaticBox()' % self.format_widget_access(parent)
+        elif not parent.IS_CLASS:
+            parent_access = 'self.%s' % parent.name
+        else:
+            parent_access = 'self'
+
         init = []
         append = init.append
-        append('self.%s = wx.Window(%s, -1, style=wx.FULL_REPAINT_ON_RESIZE)\n' % (widget.name, parent))
+        append('self.%s = wx.Window(%s, -1, style=wx.FULL_REPAINT_ON_RESIZE)\n' % (widget.name, parent_access))
         if widget.check_prop('size'):
             append( self.codegen.generate_code_size(widget) )
         else:
@@ -93,9 +108,15 @@ class CppCustomWidgetGenerator(wcodegen.CppWidgetCodeWriter):
         else:
             ids = []
 
-        parent = self.format_widget_access(widget.parent_window)
+        parent = widget.get_parent_window2(self.codegen)
+        if parent.IS_SIZER:
+            parent_access = '%s->GetStaticBox()' % self.format_widget_access(parent)
+        elif not parent.IS_CLASS:
+            parent_access = '%s' % parent.name
+        else:
+            parent_access = 'this'
 
-        arguments = format_ctor_arguments( widget.arguments, parent, id, widget.size )
+        arguments = format_ctor_arguments( widget.arguments, parent_access, id, widget.size )
         ctor = widget.custom_ctor.strip() or ('new ' + widget.instance_class)
         init = [ '%s = %s(%s);\n' % (widget.name, ctor, ", ".join(arguments)) ]
         init += self.codegen.generate_code_common_properties(widget)
