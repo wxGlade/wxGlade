@@ -1468,11 +1468,11 @@ sub new {
     
     $self->{button_1} = Wx::Button->new($self->{notebook_1_GridBagSizer_Spacers}, wxID_ANY, _T("button_1"));
     $self->{grid_sizer_1}->Add($self->{button_1}, Wx::GBPosition->new(0, 0), Wx::GBSpan->new(1, 1), 0, 0);
-
+    
     $self->{grid_sizer_1}->Add(20, 20, Wx::GBPosition->new(2, 0), Wx::GBSpan->new(1, 1), wxEXPAND, 0);
-
+    
     $self->{grid_sizer_1}->Add(20, 20, Wx::GBPosition->new(2, 1), Wx::GBSpan->new(1, 1), wxEXPAND, 0);
-
+    
     $self->{grid_sizer_1}->AddGrowableRow(0);
     $self->{grid_sizer_1}->AddGrowableRow(2);
     $self->{grid_sizer_1}->AddGrowableCol(0);
