@@ -208,7 +208,7 @@ class Application(EditRoot):
 
     all_supported_versions = ['2.8', '3.0']  # Supported wx versions
     _VERSION_TOOLTIPS = ("Generate source files for wxWidgets version 2.8",
-                         "Generate source files for wxWidgets version 3.0\nOld style import are not supported anymore.")
+                         "Generate source files for wxWidgets version >=3.0\nOld style imports are not supported anymore.")
 
     PROPERTIES = ["Application", "name", "class", "encoding", "use_gettext", "top_window", "multiple_files",
                                  "language", "for_version", "overwrite", "mark_blocks",
@@ -294,7 +294,8 @@ class Application(EditRoot):
         version = "%d.%d"%compat.version
         if not version in self.all_supported_versions:
             version = "2.8"  if version[0]=="2" else  "3.0"
-        self.for_version = np.RadioProperty( version, self.all_supported_versions, tooltips=self._VERSION_TOOLTIPS)
+        self.for_version = np.RadioProperty( version, self.all_supported_versions, ["2.8", ">=3.0"],
+                                             tooltips=self._VERSION_TOOLTIPS)
 
         # encoding
         encodings = ["UTF-8", "ISO-8859-1", "ISO-8859-15", "CP1252"]  # just some common values
