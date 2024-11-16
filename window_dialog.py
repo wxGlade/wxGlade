@@ -77,11 +77,11 @@ class WindowDialog(wx.Dialog):
 
         # buttons
         btnbox = wx.StdDialogButtonSizer()
-        self.btnOK = btnOK = wx.Button(self, wx.ID_OK)#, _('OK'))
+        self.btnOK = btnOK = wx.Button(self, wx.ID_OK)
         btnOK.SetDefault()
-        btnCANCEL = wx.Button(self, wx.ID_CANCEL)#, _('Cancel'))
-        btnbox.AddButton(btnOK)#, 0, wx.ALL, 3)
-        btnbox.AddButton(btnCANCEL)#, 0, wx.ALL, 3)
+        btnCANCEL = wx.Button(self, wx.ID_CANCEL)
+        btnbox.AddButton(btnOK)
+        btnbox.AddButton(btnCANCEL)
         btnbox.Realize()
         szr.Add(btnbox, 0, wx.ALL|wx.ALIGN_CENTER, 5)
         self.SetAutoLayout(True)

@@ -77,13 +77,15 @@ class _Dialog(wx.Dialog):
             gsizer.Add(wx.StaticText(self, -1, _(label)), 0, wx.ALL | wx.ALIGN_CENTER_VERTICAL, 5)
             gsizer.Add(control, 0, wx.ALL | wx.EXPAND | wx.ALIGN_CENTER_VERTICAL, 3)
         sizer.Add(gsizer)
-        # horizontal sizer for action buttons
-        hsizer = wx.BoxSizer(wx.HORIZONTAL)
-        hsizer.Add( wx.Button(self, wx.ID_CANCEL, _('Cancel')), 1, wx.ALL, 5)
-        btn = wx.Button(self, wx.ID_OK, _('OK') )
+
+        # buttons
+        btnbox = wx.StdDialogButtonSizer()
+        btn = wx.Button(self, wx.ID_OK)
         btn.SetDefault()
-        hsizer.Add(btn, 1, wx.ALL, 5)
-        sizer.Add(hsizer, 0, wx.EXPAND)
+        btnbox.AddButton(btn)
+        btnbox.AddButton( wx.Button(self, wx.ID_CANCEL) )
+        btnbox.Realize()
+        sizer.Add(btnbox, 0, wx.EXPAND)
 
         self.SetAutoLayout(True)
         self.SetSizer(sizer)
