@@ -576,7 +576,9 @@ class Application(EditRoot):
             # create a temporary file at either the output path or the project path
             error = None
             if not self.filename:
-                error = "Save project first; a temporary file will be created in the same directory."
+                import tempfile
+                dirname = tempfile.gettempdir()
+                basename = "wxgladepreview"
             else:
                 dirname, basename = os.path.split(self.filename)
                 basename, extension = os.path.splitext(basename)
@@ -617,6 +619,9 @@ class Application(EditRoot):
             writer = self.generate_code(True, preview_filename, widget)
             # import generated preview module dynamically
             preview_path = os.path.dirname(preview_filename)
+            # remember whether the __pycache__ directory exists already
+            preview_path_cachedir = os.path.join(preview_path, "__pycache__")
+            preview_path_cachedir_exists = os.path.exists(preview_path_cachedir)
             preview_module_name = os.path.basename(preview_filename)
             preview_module_name = os.path.splitext(preview_module_name)[0]
             if preview_path not in sys.path: sys.path.append(preview_path)
@@ -694,10 +699,20 @@ class Application(EditRoot):
             # keep a reference to the Close method in case it's overwritten by some widget
             frame._close_method = preview_class.Close
 
-            # remove the temporary file
-            if not config.debugging:
+            # remove the temporary file, the compiled version and maybe also __pycache__
+            if not config.debugging or True:
                 name = os.path.join(preview_path, preview_module_name+".py")
                 if os.path.isfile(name): os.unlink(name)
+                if compat.PYTHON2:
+                    if os.path.isfile(name+"c"):
+                        os.unlink(name)
+                else:
+                    name = preview_module.__cached__
+                    if os.path.isfile(name):
+                        os.unlink(name)
+                        if (not preview_path_cachedir_exists and os.path.exists(preview_path_cachedir) and
+                            not os.listdir(preview_path_cachedir)):
+                            os.rmdir(preview_path_cachedir)
         except Exception as inst:
             if config.debugging or config.testing: raise
             widget.preview_widget = None
