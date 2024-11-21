@@ -52,8 +52,9 @@ class wxGladeColourDialog(wx.Dialog):
         self.sys_colour_panel.SetBackgroundColour(wx.RED)
         self.use_chooser = wx.RadioButton(self.panel_1, -1, _("Custom Colour"))
         self.colour_chooser = PyColourChooser(self, -1)
-        self.ok = wx.Button(self, wx.ID_OK, _("OK"))
-        self.cancel = wx.Button(self, wx.ID_CANCEL, _("Cancel"))
+        self.ok = wx.Button(self, wx.ID_OK)
+        self.ok.SetDefault()
+        self.cancel = wx.Button(self, wx.ID_CANCEL)
 
         self.__set_properties()
         self.__do_layout()
@@ -141,7 +142,7 @@ class wxGladeColourDialog(wx.Dialog):
 
     def __do_layout(self):
         sizer_1 = wx.BoxSizer(wx.VERTICAL)
-        sizer_3 = wx.BoxSizer(wx.HORIZONTAL)
+        sizer_3 = wx.StdDialogButtonSizer()
         sizer_2 = wx.BoxSizer(wx.VERTICAL)
         sizer_2.Add(self.use_null_colour, 0, wx.LEFT|wx.RIGHT|wx.TOP|wx.EXPAND, 5)
         sizer_2.Add(wx.StaticLine(self.panel_1, -1), 0, wx.ALL|wx.EXPAND, 5)
@@ -157,8 +158,9 @@ class wxGladeColourDialog(wx.Dialog):
         sizer_1.Add(self.panel_1, 0, wx.EXPAND, 0)
         sizer_1.Add(self.colour_chooser, 0, wx.ALL, 5)
         sizer_2.Add(wx.StaticLine(self.panel_1, -1), 0, wx.ALL|wx.EXPAND, 5)
-        sizer_3.Add(self.ok, 0, wx.RIGHT, 13)
-        sizer_3.Add(self.cancel, 0, 0, 5)
+        sizer_3.AddButton(self.ok)
+        sizer_3.AddButton(self.cancel)
+        sizer_3.Realize()
         sizer_1.Add(sizer_3, 0, wx.ALL|wx.ALIGN_RIGHT, 10)
         self.SetAutoLayout(1)
         self.SetSizer(sizer_1)
