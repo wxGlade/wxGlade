@@ -63,27 +63,26 @@ class MyFrame(matplotlib_GUI.MyFrame):
     def init_toolmanager(self):
         self.toolmanager = matplotlib.backend_managers.ToolManager(self.canvas.figure)
 
-        self.toolmanager.add_tool('viewpos', 'ToolViewsPositions')  # required for pan/zoom/home/back/forward
-        self.toolmanager.add_tool('pan', 'ToolPan')  # pan w. mouse and zoom w. wheel with 'p' key
-        self.toolmanager.add_tool('zoom', 'ToolZoom') # zoom to rect with 'o' key
-        self.toolmanager.add_tool('home', 'ToolHome') # 'h', 'r', 'home'
-        if hasattr(matplotlib.backend_managers, "ToolHelp"):
-            self.toolmanager.add_tool('help', 'ToolHelp') # 'F1'
-        self.toolmanager.add_tool('back', 'ToolBack') # 'left', 'c', 'backspace'
-        self.toolmanager.add_tool('forward', 'ToolForward') # 'right', 'v'
-        self.toolmanager.add_tool('save', 'ToolSaveFigure') # 's', 'ctrl+s'
-        self.toolmanager.add_tool('grid', 'ToolGrid')              # toggle throug major h/v grids with 'g' key
-        self.toolmanager.add_tool('grid_minor', 'ToolMinorGrid')   # toggle throug major/minor grids with 'G' key
+        import matplotlib.backend_tools as bt
+        from matplotlib.backends.backend_wx import RubberbandWx, SaveFigureWx, ToolCopyToClipboardWx, HelpWx
+        self.toolmanager.add_tool('viewpos', bt.ToolViewsPositions)  # required for pan/zoom/home/back/forward
+        self.toolmanager.add_tool('pan', bt.ToolPan)  # pan w. mouse and zoom w. wheel with 'p' key
+        self.toolmanager.add_tool('zoom', bt.ToolZoom) # zoom to rect with 'o' key
+        self.toolmanager.add_tool('home', bt.ToolHome) # 'h', 'r', 'home'
+        self.toolmanager.add_tool('help', HelpWx) # 'F1'
+        self.toolmanager.add_tool('back', bt.ToolBack) # 'left', 'c', 'backspace'
+        self.toolmanager.add_tool('forward', bt.ToolForward) # 'right', 'v'
+        self.toolmanager.add_tool('save', SaveFigureWx) # 's', 'ctrl+s'
+        self.toolmanager.add_tool('grid', bt.ToolGrid)              # toggle throug major h/v grids with 'g' key
+        self.toolmanager.add_tool('grid_minor', bt.ToolMinorGrid)   # toggle throug major/minor grids with 'G' key
         
-        self.toolmanager.add_tool('yscale', 'ToolYScale')          # toggle lin/log scaling with 'l' key
-        self.toolmanager.add_tool('xscale', 'ToolXScale')          # toggle lin/log scaling with 'k','L' keys
+        self.toolmanager.add_tool('yscale', bt.ToolYScale)          # toggle lin/log scaling with 'l' key
+        self.toolmanager.add_tool('xscale', bt.ToolXScale)          # toggle lin/log scaling with 'k','L' keys
 
-        # some tools will only be available with matplotlib 3.0:
-        if hasattr(matplotlib.backend_managers, "ToolCopyToClipboard"):
-            self.toolmanager.add_tool('copy', 'ToolCopyToClipboard')
+        self.toolmanager.add_tool('copy', ToolCopyToClipboardWx)
 
-        self.toolmanager.add_tool('rubberband', 'ToolRubberband')
-        self.toolmanager.add_tool('setcursor', 'ToolSetCursor')
+        self.toolmanager.add_tool('rubberband', RubberbandWx)
+        self.toolmanager.add_tool('setcursor', bt.ToolSetCursor)
 
         self.toolmanager.toolmanager_connect("tool_trigger_home", self.set_history_buttons)
         self.toolmanager.toolmanager_connect("tool_trigger_back", self.set_history_buttons)
