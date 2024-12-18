@@ -64,6 +64,11 @@ class CppBoxSizerBuilder(BaseCPPSizerBuilder):
     tmpl = '%(assignment)s = new %(klass)s(%(orient)s);\n'
 
 
+class CppStdDialogButtonSizerBuilder(BaseCPPSizerBuilder):
+    klass = 'wxBoxSizer'
+    tmpl = '%(assignment)s = new %(klass)s;\n'
+
+
 class CppWrapSizerBuilder(CppBoxSizerBuilder):
     import_modules = ['<wx/wrapsizer.h>']
     klass = 'wxWrapSizer'
@@ -110,6 +115,7 @@ def initialize():
     if cppgen:
         awh = cppgen.register_widget_code_generator
         awh('wxBoxSizer', CppBoxSizerBuilder())
+        awh('wxStdDialogButtonSizer', CppStdDialogButtonSizerBuilder())
         awh('wxWrapSizer', CppWrapSizerBuilder())
         awh('wxStaticBoxSizer', CppStaticBoxSizerBuilder())
         awh('wxGridSizer', CppGridSizerBuilder())

@@ -184,9 +184,10 @@ class BaseSizerBuilder(object):
 
     def get_code_wxStdDialogButtonSizer(self, obj):
         "Set sizer specific properties and generate the code"
-        init, layout = self._get_code(obj)
-        layout.append(self.tmpl_Realize % self.tmpl_dict)
-        return init, layout
+        ret = self._get_code(obj)
+        # append Realize to layout code
+        ret[-1].append(self.tmpl_Realize % self.tmpl_dict)
+        return ret
 
     def get_code_wxGridSizer(self, obj):
         "Set sizer specific properties and generate the code"
