@@ -705,7 +705,7 @@ class Application(EditRoot):
                 if os.path.isfile(name): os.unlink(name)
                 if compat.PYTHON2:
                     if os.path.isfile(name+"c"):
-                        os.unlink(name)
+                        os.unlink(name+"c")
                 else:
                     name = preview_module.__cached__
                     if os.path.isfile(name):
