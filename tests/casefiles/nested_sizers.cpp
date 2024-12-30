@@ -22,8 +22,8 @@ MyDialog::MyDialog(wxWindow* parent, wxWindowID id, const wxString& title, const
     // begin wxGlade: MyDialog::MyDialog
     SetSize(wxSize(600, 320));
     SetTitle(wxT("dialog"));
-    wxStaticBoxSizer* colour_settings_sizer = new wxStaticBoxSizer(new wxStaticBox(this, wxID_ANY, wxT("Colour Settings")), wxHORIZONTAL);
-    wxStaticBoxSizer* inner_sizer = new wxStaticBoxSizer(new wxStaticBox(this, wxID_ANY, wxT("Inner")), wxVERTICAL);
+    colour_settings_sizer = new wxStaticBoxSizer(new wxStaticBox(this, wxID_ANY, wxT("Colour Settings")), wxHORIZONTAL);
+    wxStaticBoxSizer* inner_sizer = new wxStaticBoxSizer(new wxStaticBox(colour_settings_sizer->->GetStaticBox(), wxID_ANY, wxT("Inner")), wxVERTICAL);
     colour_settings_sizer->Add(inner_sizer, 0, wxALL, 36);
     bitmap_button_1 = new wxBitmapButton(inner_sizer->GetStaticBox(), wxID_ANY, wxBitmap(wxT("preferences-color-icon.png"), wxBITMAP_TYPE_ANY), wxDefaultPosition, wxDefaultSize, wxBORDER_NONE);
     bitmap_button_1->SetSize(bitmap_button_1->GetBestSize());

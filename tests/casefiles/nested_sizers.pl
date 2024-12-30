@@ -39,7 +39,7 @@ sub new {
     
     $self->{colour_settings_sizer} = Wx::StaticBoxSizer->new(Wx::StaticBox->new($self, wxID_ANY, "Colour Settings"), wxHORIZONTAL);
     
-    $self->{inner_sizer} = Wx::StaticBoxSizer->new(Wx::StaticBox->new($self, wxID_ANY, "Inner"), wxVERTICAL);
+    $self->{inner_sizer} = Wx::StaticBoxSizer->new(Wx::StaticBox->new($self->{colour_settings_sizer}->GetStaticBox(), wxID_ANY, "Inner"), wxVERTICAL);
     $self->{colour_settings_sizer}->Add($self->{inner_sizer}, 0, wxALL, 36);
     
     $self->{bitmap_button_1} = Wx::BitmapButton->new($self->{inner_sizer}->GetStaticBox(), wxID_ANY, Wx::Bitmap->new("preferences-color-icon.png", wxBITMAP_TYPE_ANY), wxDefaultPosition, wxDefaultSize, wxBORDER_NONE);

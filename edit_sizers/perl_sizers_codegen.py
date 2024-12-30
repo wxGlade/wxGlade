@@ -21,12 +21,13 @@ class BasePerlSizerBuilder(BaseSizerBuilder):
     tmpl_SetSizeHints = '%(sizer_name)s->SetSizeHints(%(parent_widget)s);\n'
 
     def _get_wparent(self, obj):
-        window = obj.parent_window
-        if not window.IS_CLASS:
-            parent = '$self->{%s}' % window.name
-        else:
-            parent = '$self'
-        return parent
+        parent = obj.get_parent_window2(self.codegen)
+        if parent.IS_SIZER:
+            sizer_access = self.codegen.format_generic_access(parent)
+            return '%s->GetStaticBox()' % sizer_access
+        if parent.IS_CLASS:
+            return '$self'
+        return '$self->{%s}' % parent.name
 
 
 class PerlBoxSizerBuilder(BasePerlSizerBuilder):

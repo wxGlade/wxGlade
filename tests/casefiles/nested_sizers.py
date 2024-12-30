@@ -21,10 +21,10 @@ class MyDialog(wx.Dialog):
         self.SetSize((600, 320))
         self.SetTitle("dialog")
 
-        colour_settings_sizer = wx.StaticBoxSizer(wx.StaticBox(self, wx.ID_ANY, "Colour Settings"), wx.HORIZONTAL)
+        self.colour_settings_sizer = wx.StaticBoxSizer(wx.StaticBox(self, wx.ID_ANY, "Colour Settings"), wx.HORIZONTAL)
 
-        inner_sizer = wx.StaticBoxSizer(wx.StaticBox(self, wx.ID_ANY, "Inner"), wx.VERTICAL)
-        colour_settings_sizer.Add(inner_sizer, 0, wx.ALL, 36)
+        inner_sizer = wx.StaticBoxSizer(wx.StaticBox(self.colour_settings_sizer.GetStaticBox(), wx.ID_ANY, "Inner"), wx.VERTICAL)
+        self.colour_settings_sizer.Add(inner_sizer, 0, wx.ALL, 36)
 
         self.bitmap_button_1 = wx.BitmapButton(inner_sizer.GetStaticBox(), wx.ID_ANY, wx.Bitmap("preferences-color-icon.png", wx.BITMAP_TYPE_ANY), style=wx.BORDER_NONE)
         self.bitmap_button_1.SetSize(self.bitmap_button_1.GetBestSize())
@@ -37,7 +37,7 @@ class MyDialog(wx.Dialog):
         self.inner_red_spin_ctrl.SetMinSize((110, 27))
         inner_grid_sizer.Add(self.inner_red_spin_ctrl, 0, 0, 0)
 
-        self.SetSizer(colour_settings_sizer)
+        self.SetSizer(self.colour_settings_sizer)
 
         self.Layout()
         # end wxGlade

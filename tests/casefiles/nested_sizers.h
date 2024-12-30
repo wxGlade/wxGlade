@@ -34,6 +34,7 @@ private:
 
 protected:
     // begin wxGlade: MyDialog::attributes
+    wxStaticBoxSizer* colour_settings_sizer;
     wxBitmapButton* bitmap_button_1;
     wxSpinCtrl* inner_red_spin_ctrl;
     // end wxGlade
