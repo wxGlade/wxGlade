@@ -9,8 +9,8 @@
 import os, sys
 sys.path.insert(1, os.path.dirname(sys.path[0]))
 
-import errno, fnmatch, glob, shutil, re
-import unittest, difflib, logging, imp
+import shutil
+import unittest, difflib, logging
 
 import gettext
 t = gettext.translation(domain="wxglade", localedir="locale", fallback=True)
