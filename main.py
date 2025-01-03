@@ -241,7 +241,7 @@ class wxGladePropertyPanel(wx.Panel):
         hs -= self._notebook_decoration_size[1]
         w_scrollbar = wx.SystemSettings.GetMetric(wx.SYS_VSCROLL_X)  # width a of a scrollbar
 
-        panel = [w for w in scrolled.GetChildren() if isinstance(w, wx.Panel)][0]
+        panel = [w for w in list(scrolled.GetChildren()) if isinstance(w, wx.Panel)][0]
         szr = panel.GetSizer()
         if not szr: return
         wm, hm = szr.GetMinSize()
