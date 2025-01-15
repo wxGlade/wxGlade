@@ -3,7 +3,7 @@
 # To get wxPerl visit http://www.wxperl.it
 #
 
-use Wx qw[:allclasses];
+use Wx;
 use strict;
 
 

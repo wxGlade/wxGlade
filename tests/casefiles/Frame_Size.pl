@@ -5,7 +5,7 @@
 # To get wxPerl visit http://www.wxperl.it
 #
 
-use Wx qw[:allclasses];
+use Wx;
 use strict;
 
 
@@ -116,7 +116,5 @@ sub OnInit {
 
 package main;
 
-unless(caller){
-    my $app = MyApp->new();
-    $app->MainLoop();
-}
+my $app = MyApp->new();
+$app->MainLoop();

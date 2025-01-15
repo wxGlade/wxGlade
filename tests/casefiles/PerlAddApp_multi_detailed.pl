@@ -8,7 +8,7 @@
 # This is an automatically generated file.
 # Manual changes will be overwritten without warning!
 
-use Wx qw[:allclasses];
+use Wx;
 use strict;
 package MyStartApp;
 
@@ -33,7 +33,5 @@ sub OnInit {
 
 package main;
 
-unless(caller){
-    my $myapp = MyStartApp->new();
-    $myapp->MainLoop();
-}
+my $myapp = MyStartApp->new();
+$myapp->MainLoop();

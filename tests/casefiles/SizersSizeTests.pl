@@ -5,7 +5,7 @@
 # To get wxPerl visit http://www.wxperl.it
 #
 
-use Wx qw[:allclasses];
+use Wx;
 use strict;
 
 # begin wxGlade: dependencies
@@ -1534,10 +1534,8 @@ sub OnInit {
 
 package main;
 
-unless(caller){
-    my $local = Wx::Locale->new("English", "en", "en"); # replace with ??
-    $local->AddCatalog("App"); # replace with the appropriate catalog name
+my $local = Wx::Locale->new("English", "en", "en"); # replace with ??
+$local->AddCatalog("App"); # replace with the appropriate catalog name
 
-    my $App = App->new();
-    $App->MainLoop();
-}
+my $App = App->new();
+$App->MainLoop();

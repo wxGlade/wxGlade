@@ -5,7 +5,7 @@
 # To get wxPerl visit http://www.wxperl.it
 #
 
-use Wx qw[:allclasses];
+use Wx;
 use strict;
 
 # begin wxGlade: dependencies
@@ -301,17 +301,15 @@ sub new {
 
 package main;
 
-unless(caller){
-    my $local = Wx::Locale->new("English", "en", "en"); # replace with ??
-    $local->AddCatalog("ComplexExampleApp"); # replace with the appropriate catalog name
+my $local = Wx::Locale->new("English", "en", "en"); # replace with ??
+$local->AddCatalog("ComplexExampleApp"); # replace with the appropriate catalog name
 
-    local *Wx::App::OnInit = sub{1};
-    my $ComplexExampleApp = Wx::App->new();
-    Wx::InitAllImageHandlers();
+local *Wx::App::OnInit = sub{1};
+my $ComplexExampleApp = Wx::App->new();
+Wx::InitAllImageHandlers();
 
-    my $FrameGrid = MyFrameGrid->new();
+my $FrameGrid = MyFrameGrid->new();
 
-    $ComplexExampleApp->SetTopWindow($FrameGrid);
-    $FrameGrid->Show(1);
-    $ComplexExampleApp->MainLoop();
-}
+$ComplexExampleApp->SetTopWindow($FrameGrid);
+$FrameGrid->Show(1);
+$ComplexExampleApp->MainLoop();

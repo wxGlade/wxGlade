@@ -5,7 +5,7 @@
 # To get wxPerl visit http://www.wxperl.it
 #
 
-use Wx qw[:allclasses];
+use Wx;
 use strict;
 
 # begin wxGlade: dependencies
@@ -703,17 +703,15 @@ sub onStartConverting {
 
 package main;
 
-unless(caller){
-    my $local = Wx::Locale->new("English", "en", "en"); # replace with ??
-    $local->AddCatalog("AllWidgets30App"); # replace with the appropriate catalog name
+my $local = Wx::Locale->new("English", "en", "en"); # replace with ??
+$local->AddCatalog("AllWidgets30App"); # replace with the appropriate catalog name
 
-    local *Wx::App::OnInit = sub{1};
-    my $AllWidgets30App = Wx::App->new();
-    Wx::InitAllImageHandlers();
+local *Wx::App::OnInit = sub{1};
+my $AllWidgets30App = Wx::App->new();
+Wx::InitAllImageHandlers();
 
-    my $All_Widgets = All_Widgets_Frame->new();
+my $All_Widgets = All_Widgets_Frame->new();
 
-    $AllWidgets30App->SetTopWindow($All_Widgets);
-    $All_Widgets->Show(1);
-    $AllWidgets30App->MainLoop();
-}
+$AllWidgets30App->SetTopWindow($All_Widgets);
+$All_Widgets->Show(1);
+$AllWidgets30App->MainLoop();
