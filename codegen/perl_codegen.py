@@ -225,8 +225,8 @@ sub %(handler)s {
         klass = app.klass
         
         if self._use_gettext:
-            gettext1 = ['%(tab)smy $local = Wx::Locale->new("English", "en", "en"); # replace with ??',
-                        '%(tab)s$local->AddCatalog("%(textdomain)s"); # replace with the appropriate catalog name\n']
+            gettext1 = ['my $local = Wx::Locale->new("English", "en", "en"); # replace with ??',
+                        '$local->AddCatalog("%(textdomain)s"); # replace with the appropriate catalog name\n']
         else:
             gettext1 = []
 
@@ -252,27 +252,25 @@ sub %(handler)s {
                 ret.append('# end of class %(klass)s')
             ret += ['',
                     'package main;',
-                    '',
-                    'unless(caller){'] + gettext1 + [
-                    '%(tab)smy $%(name)s = %(klass)s->new();',
-                    '%(tab)s$%(name)s->MainLoop();',
-                    '}', '']
+                    ''] + gettext1 + [
+                    'my $%(name)s = %(klass)s->new();',
+                    '$%(name)s->MainLoop();',
+                    '']
         else:
             ret = ['1;',
                     '',
                     'package main;',
-                    '%(pl_import)s',
-                    'unless(caller){'] + gettext1 + [
-                    '%(tab)slocal *Wx::App::OnInit = sub{1};',
-                    '%(tab)smy $%(name)s = Wx::App->new();',
-                    '%(tab)sWx::InitAllImageHandlers();',
+                    '%(pl_import)s'] + gettext1 + [
+                    'local *Wx::App::OnInit = sub{1};',
+                    'my $%(name)s = Wx::App->new();',
+                    'Wx::InitAllImageHandlers();',
                     '',
-                    '%(tab)smy $%(top_win)s = %(top_win_class)s->new();',
+                    'my $%(top_win)s = %(top_win_class)s->new();',
                     '',
-                    '%(tab)s$%(name)s->SetTopWindow($%(top_win)s);',
-                    '%(tab)s$%(top_win)s->Show(1);',
-                    '%(tab)s$%(name)s->MainLoop();',
-                    '}', '']
+                    '$%(name)s->SetTopWindow($%(top_win)s);',
+                    '$%(top_win)s->Show(1);',
+                    '$%(name)s->MainLoop();',
+                    '']
         return '\n'.join(ret)
 
     def init_lang(self, app_attrs):
@@ -289,7 +287,7 @@ sub %(handler)s {
             }
 
         self.header_lines = [
-            'use Wx qw[:allclasses];\n',
+            'use Wx;\n',
             'use strict;\n'
         ]
 
