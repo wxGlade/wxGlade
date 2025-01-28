@@ -572,7 +572,7 @@ def fix_statusbar(document):
         else:
             fields_count = 1
 
-        if widths:
+        if widths and widths[0].firstChild:
             widths_data = widths[0].firstChild.data
             widths_data = widths_data.split(',')
         else:
