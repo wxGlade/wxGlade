@@ -268,10 +268,10 @@ class CPPCodeWriter(BaseLangCodeWriter, wcodegen.CppMixin):
 
     language_note = \
         '// Example for compiling a single file project under Linux using g++:\n' \
-        '//  g++ MyApp.cpp $(wx-config --libs) $(wx-config --cxxflags) -o MyApp\n' \
+        '//  g++ MyApp.cpp `wx-config --cxxflags --libs` -o MyApp\n' \
         '//\n' \
         '// Example for compiling a multi file project under Linux using g++:\n' \
-        '//  g++ main.cpp $(wx-config --libs) $(wx-config --cxxflags) -o MyApp Dialog1.cpp Frame1.cpp\n' \
+        '//  g++ main.cpp `wx-config --cxxflags --libs` -o MyApp Dialog1.cpp Frame1.cpp\n' \
         '//\n'
 
     output_name   = None  # If not None, name (without extension) of the file to write into
