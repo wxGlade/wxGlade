@@ -644,7 +644,8 @@ class ManagedBase(WindowBase):
         self.sel_marker = misc.SelectionMarker(self.widget, sel_marker_parent)
         WindowBase.finish_widget_creation(self, level)
         self.widget.Bind(wx.EVT_LEFT_DOWN, self.on_set_focus)
-        self.widget.Bind(wx.EVT_MOUSE_EVENTS, self.on_mouse_events)
+        if not compat.IS_GTK:
+            self.widget.Bind(wx.EVT_MOUSE_EVENTS, self.on_mouse_events)
         self.widget.Bind(wx.EVT_MOVE, self.on_move)
 
     def update_view(self, selected):

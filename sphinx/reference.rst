@@ -87,7 +87,7 @@ On *Classic* versions of wxPython, the keyboard shortcuts will not work in the *
 +===============================================+======================================================+
 | :kbd:`Ctrl` when adding a sizer/control       | stay in edit mode, to place multiple controls        |
 +-----------------------------------------------+------------------------------------------------------+
-| Drag & Drop between Tree and Design Window    | supported                                            |
+| Drag & Drop between Tree and Design Window    | support depending on platform (not on gtk)           |
 +-----------------------------------------------+------------------------------------------------------+
 | :kbd:`Del`                                    | Remove Control from slot |br| Remove empty slot      |
 +-----------------------------------------------+------------------------------------------------------+

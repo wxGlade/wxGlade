@@ -375,7 +375,8 @@ class SizerBase(edit_base.EditBase):
         self._btn = SizerHandleButton(self.window, wx.ID_ANY, self ) # XXX handle the popupmenu creation in SizerHandleButton
         # ScreenToClient used by WidgetTree for the popup menu
         self._btn.Bind(wx.EVT_BUTTON, self.on_selection, id=self._btn.GetId())
-        self._btn.Bind(wx.EVT_MOUSE_EVENTS, self.on_mouse_events, id=self._btn.GetId())
+        if not compat.IS_GTK:
+            self._btn.Bind(wx.EVT_MOUSE_EVENTS, self.on_mouse_events, id=self._btn.GetId())
 
     def finish_widget_creation(self, level):
         self.widget.GetBestSize = self.widget.GetMinSize
