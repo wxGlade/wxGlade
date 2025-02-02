@@ -63,6 +63,8 @@ spacer
 [Misc]:M
 property_grid_manager
 search_ctrl
+dirpicker_ctrl
+filepicker_ctrl
 custom_widget
 
 [Menu & Bars]:R
