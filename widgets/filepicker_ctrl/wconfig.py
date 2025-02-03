@@ -11,7 +11,7 @@ config = {
             'desc': _('The default style: includes wxFLP_OPEN | wxFLP_FILE_MUST_EXIST and, under wxMSW and wxOSX, wxFLP_USE_TEXTCTRL.'),
         },
         'wxFLP_USE_TEXTCTRL': {
-            'desc': _('Creates a text control to the left of the picker button which is completely managed by the wx.FilePickerCtrl and which can be used by the user to specify a path (see SetPath). The text control is automatically synchronized with button’s value. Use functions defined in wx.PickerBase to modify the text control.'),
+            'desc': _("Creates a text control to the left of the picker button which is completely managed by the wx.FilePickerCtrl and which can be used by the user to specify a path (see SetPath). The text control is automatically synchronized with button's value. Use functions defined in wx.PickerBase to modify the text control."),
         },
         'wxFLP_OPEN': {
             'desc': _('Creates a picker which allows the user to select a file to open.'),
@@ -29,7 +29,7 @@ config = {
             'desc': _('Change current working directory on each user directory selection change.'),
         },
         'wxFLP_SMALL': {
-            'desc': _('Use smaller version of the control with a small “…” button instead of the normal “Browse” one.'),
+            'desc': _("Use smaller version of the control with a small '...' button instead of the normal 'Browse' one."),
         },
     },
     'default_style': 'wxFLP_DEFAULT_STYLE',
