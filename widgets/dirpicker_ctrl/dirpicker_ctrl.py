@@ -4,8 +4,7 @@ wxDirPickerCtrl objects
 
 import wx
 from edit_windows import ManagedBase, EditStylesMixin
-import common, compat, config
-import decorators
+import common, compat
 import new_properties as np
 
 from wx import DirPickerCtrl
@@ -36,6 +35,13 @@ class EditDirPickerCtrl(ManagedBase, EditStylesMixin):
         self.widget = DirPickerCtrl(self.parent_window.widget, wx.ID_ANY,
                                     path = self.path, message = self.message,
                                     style=self.style)
+
+    def finish_widget_creation(self, level, sel_marker_parent=None, re_add=True):
+        ManagedBase.finish_widget_creation(self, level, sel_marker_parent, re_add)
+        for c in self.widget.GetChildren():
+            c.Bind(wx.EVT_LEFT_DOWN, self.on_set_focus)
+            if not compat.IS_GTK:
+                c.Bind(wx.EVT_MOUSE_EVENTS, self.on_mouse_events)
 
     def _properties_changed(self, modified, actions):
         if self.widget:
