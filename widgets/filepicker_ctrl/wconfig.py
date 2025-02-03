@@ -1,5 +1,7 @@
 """\
 wxFilePickerCtrl widget configuration
+
+@license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
 import compat

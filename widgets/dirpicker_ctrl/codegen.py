@@ -12,8 +12,6 @@ class PythonDirPickerCtrlGenerator(wcodegen.PythonWidgetCodeWriter):
         ', %(path)s, %(message)s' \
         '%(style)s)\n'
 
-    import_modules = ['import wx\n']
-
     def _prepare_tmpl_content(self, obj):
         wcodegen.PythonWidgetCodeWriter._prepare_tmpl_content(self, obj)
         self.has_setdefault = int(obj.properties.get('default', 0))
