@@ -32,6 +32,7 @@ version = (int(version[0]), int(version[2]) ) # major,minor
 
 
 IS_GTK = wx.Platform=='__WXGTK__'
+IS_WINDOWS = wx.Platform=='__WXMSW__'
 
 # this is for text ctrl sizes:
 USE_ISSUE_536_WORKAROUND = IS_GTK and wx.VERSION_STRING=='4.2.1'
