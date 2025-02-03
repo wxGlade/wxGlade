@@ -29,7 +29,7 @@ config = {
     },
 }
 
-if not compat.IS_GTK:
+if compat.IS_WINDOWS:
     config['style_defs']['wxDIRP_DEFAULT_STYLE']['combination'] = 'wxDIRP_DIR_MUST_EXIST|wxDIRP_USE_TEXTCTRL'
 else:
     config['style_defs']['wxDIRP_DEFAULT_STYLE']['combination'] = 'wxDIRP_DIR_MUST_EXIST'
