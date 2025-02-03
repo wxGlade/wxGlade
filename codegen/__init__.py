@@ -1044,7 +1044,7 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
         s = s.replace('@', r'\@')
         return '"%s"' % s
 
-    def save_file(self, filename, content, mainfile=False, content_only=False):
+    def save_file(self, filename, content, mainfile=False, content_only=False, language_note=True):
         """Store the content in a file.
 
         A shebang is added in top of all mainfiles. The permissions of mainfiles will be set to 0755 too.
@@ -1073,7 +1073,7 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
                                                       'generated_by': self.create_generated_by() } )
 
             # add language specific note
-            if self.language_note:
+            if language_note and self.language_note:
                 tmp.append( "%s" % self.language_note )
 
             # add a empty line

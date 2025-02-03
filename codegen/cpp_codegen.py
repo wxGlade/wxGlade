@@ -469,7 +469,8 @@ class CPPCodeWriter(BaseLangCodeWriter, wcodegen.CppMixin):
 
             # write the new file contents to disk
             header_content = "".join( self.previous_source.header_content )
-            self.save_file( self.previous_source.name + "." + self.header_extension, header_content, content_only=True )
+            self.save_file( self.previous_source.name + "." + self.header_extension, header_content, content_only=True,
+                            language_note=False)
             if extra_source:
                 extra_source = '\n\n' + extra_source
             source_content = "".join( self.previous_source.content )
@@ -494,7 +495,8 @@ class CPPCodeWriter(BaseLangCodeWriter, wcodegen.CppMixin):
             code = self._tagcontent('::extracode', self._current_extra_code_cpp)
             self.output_file_replace( tag, code )
 
-            self.save_file( self.output_name + "." + self.header_extension, self.output_header, self._app_added )
+            self.save_file( self.output_name + "." + self.header_extension, self.output_header, self._app_added,
+                            language_note=False)
             self.save_file( self.output_name + "." + self.source_extension, self.output_file, self._app_added )
             self.output_file = self.output_header = None
 
@@ -895,7 +897,7 @@ class CPPCodeWriter(BaseLangCodeWriter, wcodegen.CppMixin):
             sout.extend(source_buffer)
 
             # store source to disk
-            self.save_file(header_file, hout)
+            self.save_file(header_file, hout, language_note=False)
             self.save_file(source_file, sout)
 
         else:  # not self.multiple_files
