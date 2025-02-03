@@ -5,6 +5,8 @@ wxDatePickerCtrl widget configuration
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
+import compat
+
 config = {
     'wxklass': 'wxDatePickerCtrl',
     'style_defs': {
@@ -29,13 +31,13 @@ config = {
         },
     },
     'default_style': 'wxDP_DEFAULT|wxDP_SHOWCENTURY',
-    'style_list': ['wxDP_SPIN', 'wxDP_DROPDOWN', 'wxDP_DEFAULT', 'wxDP_ALLOWNONE', 'wxDP_SHOWCENTURY'],
+    'style_list': ['wxDP_DEFAULT', 'wxDP_SPIN', 'wxDP_DROPDOWN', 'wxDP_ALLOWNONE', 'wxDP_SHOWCENTURY'],
     'events': {
         'EVT_DATE_CHANGED': {'type': 'wxDateEvent',},
     },
 }
 
-
-
-
-
+if compat.IS_WINDOWS:
+    config['style_defs']['wxDP_DEFAULT']['combination'] = 'wxDP_SPIN'
+else:
+    config['style_defs']['wxDP_DEFAULT']['combination'] = 'wxDP_DROPDOWN'

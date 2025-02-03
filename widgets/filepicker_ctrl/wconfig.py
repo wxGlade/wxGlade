@@ -2,6 +2,8 @@
 wxFilePickerCtrl widget configuration
 """
 
+import compat
+
 config = {
     'wxklass': 'wxFilePickerCtrl',
     'style_defs': {
@@ -31,13 +33,13 @@ config = {
         },
     },
     'default_style': 'wxFLP_DEFAULT_STYLE',
-    'style_list': ['wxFLP_USE_TEXTCTRL', 'wxFLP_OPEN', 'wxFLP_SAVE', 'wxFLP_FILE_MUST_EXIST', 'wxFLP_CHANGE_DIR', 'wxFLP_SMALL'],
+    'style_list': ['wxFLP_DEFAULT_STYLE', 'wxFLP_USE_TEXTCTRL', 'wxFLP_OPEN', 'wxFLP_SAVE', 'wxFLP_FILE_MUST_EXIST', 'wxFLP_CHANGE_DIR', 'wxFLP_SMALL'],
     'events': {
         'EVT_FILEPICKER_CHANGED': {'type': 'wxFileFilePickerEvent',},
     },
 }
 
-
-
-
-
+if not compat.IS_GTK:
+    config['style_defs']['wxFLP_DEFAULT_STYLE']['combination'] = 'wxFLP_OPEN|wxFLP_FILE_MUST_EXIST|wxFLP_USE_TEXTCTRL'
+else:
+    config['style_defs']['wxFLP_DEFAULT_STYLE']['combination'] = 'wxFLP_OPEN|wxFLP_FILE_MUST_EXIST'

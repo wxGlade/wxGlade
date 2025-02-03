@@ -1,6 +1,7 @@
 """\
 wxDirPickerCtrl widget configuration
 """
+import compat
 
 config = {
     'wxklass': 'wxDirPickerCtrl',
@@ -22,13 +23,13 @@ config = {
         },
     },
     'default_style': 'wxDIRP_DEFAULT_STYLE',
-    'style_list': ['wxDIRP_USE_TEXTCTRL', 'wxDIRP_DIR_MUST_EXIST', 'wxDIRP_CHANGE_DIR', 'wxDIRP_SMALL'],
+    'style_list': ['wxDIRP_DEFAULT_STYLE', 'wxDIRP_USE_TEXTCTRL', 'wxDIRP_DIR_MUST_EXIST', 'wxDIRP_CHANGE_DIR', 'wxDIRP_SMALL'],
     'events': {
         'EVT_DIRPICKER_CHANGED': {'type': 'wxFileDirPickerEvent',},
     },
 }
 
-
-
-
-
+if not compat.IS_GTK:
+    config['style_defs']['wxDIRP_DEFAULT_STYLE']['combination'] = 'wxDIRP_DIR_MUST_EXIST|wxDIRP_USE_TEXTCTRL'
+else:
+    config['style_defs']['wxDIRP_DEFAULT_STYLE']['combination'] = 'wxDIRP_DIR_MUST_EXIST'

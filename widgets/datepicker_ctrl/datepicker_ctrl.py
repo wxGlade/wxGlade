@@ -9,7 +9,7 @@ wxDatePickerCtrl objects
 
 import wx
 from edit_windows import ManagedBase, EditStylesMixin
-import common, compat, config
+import common, compat
 import decorators
 
 
