@@ -1,8 +1,0 @@
-[eol]
-only-consistent = False
-
-[patterns]
-Makefile = LF
-** = native
-**.bat = CRLF
-**.html = LF
