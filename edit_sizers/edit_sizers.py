@@ -1874,6 +1874,7 @@ class EditFlexGridSizer(GridSizerBase):
         "context menu callback; set add row or col to growable_rows or growable_cols"
         p_name = "growable_%ss"%direction
         p = self.properties[p_name]
+        common.history.property_changing(p)
         if row_or_col in p.value:
             p.value.remove(row_or_col)
         else:
@@ -1881,6 +1882,7 @@ class EditFlexGridSizer(GridSizerBase):
             p.value.sort()
         p.set_active(bool(p.value))
         self.properties_changed([p_name])
+        common.history.property_changed(p)
         p.update_display()
 
     def ask_growable(self, row, col):
