@@ -90,18 +90,30 @@ class HistoryPropertyItem(HistoryItem):
     def undo(self):
         owner = common.root.find_widget_from_path(self.path2)
         changed = [self.name]
+        # dependent properties:
+        dependent_owners = []
+        dependent_changed = []
         for path, name, old, new in self.dependent:
             changed.append(name)
             if path==self.path:
                 old.set( owner.properties[name] )
             else:
-                owner_ = common.root.find_widget_from_path(path)
-                old.set( owner_.properties[name] )
+                dependent_owner = common.root.find_widget_from_path(path)
+                if not dependent_owner in dependent_owners:
+                    idx = len(dependent_owners)
+                    dependent_owners.append(dependent_owner)
+                    dependent_changed.append([])
+                else:
+                    idx = dependent_owners.index(dependent_owner)
+                old.set( dependent_owner.properties[name] )
+                dependent_changed[idx].append(name)
 
         p = owner.properties[self.name]
         self.old.set(p)
 
         owner.properties_changed(changed)
+        for owner, changed in zip(dependent_owners, dependent_changed):
+            owner.properties_changed(changed)
         return owner
 
     def redo(self):
@@ -109,15 +121,28 @@ class HistoryPropertyItem(HistoryItem):
         owner = common.root.find_widget_from_path(self.path)
         p = owner.properties[self.name]
         self.new.set(p)
+        # dependent properties:
+        dependent_owners = []
+        dependent_changed = []
         changed = [self.name]
         for path, name, old, new in self.dependent:
             if path==self.path:
                 changed.append(name)
                 new.set( owner.properties[name] )
             else:
-                owner_ = common.root.find_widget_from_path(path)
-                new.set( owner_.properties[name] )
+                dependent_owner = common.root.find_widget_from_path(path)
+                if not dependent_owner in dependent_owners:
+                    idx = len(dependent_owners)
+                    dependent_owners.append(dependent_owner)
+                    dependent_changed.append([])
+                else:
+                    idx = dependent_owners.index(dependent_owner)
+                new.set( dependent_owner.properties[name] )
+                dependent_changed[idx].append(name)
+
         owner.properties_changed(changed)
+        for owner, changed in zip(dependent_owners, dependent_changed):
+            owner.properties_changed(changed)
         return owner
 
     def __repr__(self):

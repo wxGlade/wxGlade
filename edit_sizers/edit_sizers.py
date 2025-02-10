@@ -1892,18 +1892,21 @@ class EditFlexGridSizer(GridSizerBase):
         usr = dlg.ShowModal()
         if usr != wx.ID_OK: return
         changed = []
+        if dlg.cb_row_growable.GetValue(): changed.append("growable_rows")
+        if dlg.cb_col_growable.GetValue(): changed.append("growable_cols")
+        if not changed: return
         # we can be sure that row and col are not in the property values
-        if dlg.cb_row_growable.GetValue():
-            p = self.properties["growable_rows"]
-            p.set(sorted(p.value+[row]), activate=True)
-            changed.append("growable_rows")
-        if dlg.cb_col_growable.GetValue():
-            p = self.properties["growable_cols"]
-            p.set(sorted(p.value+[col]), activate=True)
-            changed.append("growable_cols")
+        rows_p = self.properties["growable_rows"]
+        cols_p = self.properties["growable_cols"]
+        if "growable_rows" in changed:
+            common.history.monitor_property(rows_p)
+            rows_p.set(sorted(rows_p.value+[row]), activate=True)
+        if "growable_cols" in changed:
+            common.history.monitor_property(cols_p)
+            cols_p.set(sorted(cols_p.value+[col]), activate=True)
 
         dont_show_again = dlg.cb_dont_show_again.GetValue()
-        if changed: self.properties_changed(changed)
+        self.properties_changed(changed)
 
 
 class EditGridBagSizer(EditFlexGridSizer):
