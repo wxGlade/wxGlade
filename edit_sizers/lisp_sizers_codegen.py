@@ -85,6 +85,8 @@ class LispGridSizerBuilder(BaseLispSizerBuilder):
 class LispFlexGridSizerBuilder(LispGridSizerBuilder):
     tmpl_AddGrowableRow = '(wxFlexGridSizer_AddGrowableRow (%(sizer_name)s obj) %(row)s)\n'
     tmpl_AddGrowableCol = '(wxFlexGridSizer_AddGrowableCol (%(sizer_name)s obj) %(col)s)\n'
+    tmpl_AddGrowableRow_proportion = '(wxFlexGridSizer_AddGrowableRow (%(sizer_name)s obj) %(row)s %(proportion)s)\n'
+    tmpl_AddGrowableCol_proportion = '(wxFlexGridSizer_AddGrowableCol (%(sizer_name)s obj) %(col)s %(proportion)s)\n'
 
 
 class LispGridBagSizerBuilder(LispGridSizerBuilder):

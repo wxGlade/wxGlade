@@ -53,6 +53,8 @@ class PerlGridSizerBuilder(BasePerlSizerBuilder):
 class PerlFlexGridSizerBuilder(PerlGridSizerBuilder):
     tmpl_AddGrowableRow = '%(sizer_name)s->AddGrowableRow(%(row)s);\n'
     tmpl_AddGrowableCol = '%(sizer_name)s->AddGrowableCol(%(col)s);\n'
+    tmpl_AddGrowableRow_proportion = '%(sizer_name)s->AddGrowableRow(%(row)s, %(proportion)s);\n'
+    tmpl_AddGrowableCol_proportion = '%(sizer_name)s->AddGrowableCol(%(col)s, %(proportion)s);\n'
 
 
 class PerlGridBagSizerBuilder(PerlFlexGridSizerBuilder):

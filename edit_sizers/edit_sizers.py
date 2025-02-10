@@ -120,6 +120,8 @@ class BaseSizerBuilder(object):
     tmpl_SetSizeHints = ''    # Template to set the size hints
     tmpl_AddGrowableRow = ''  # Template for wxFlexGridSizer to set growable rows
     tmpl_AddGrowableCol = ''  # Template for wxFlexGridSizer to set growable columns
+    tmpl_AddGrowableRow_proportion = ''  # Template for wxFlexGridSizer to set growable rows with proportion
+    tmpl_AddGrowableCol_proportion = ''  # Template for wxFlexGridSizer to set growable columns with proportion
 
     def __init__(self):
         "Initialise sizer builder"
@@ -209,15 +211,26 @@ class BaseSizerBuilder(object):
 
         growable = []
         if 'growable_rows' in obj.properties:
+            proportions = list(obj.properties['proportions_rows'].value)
             for row in obj.growable_rows:
                 if max_row is None or row<=max_row:
                     self.tmpl_dict['row'] = row
-                    growable.append(self.tmpl_AddGrowableRow % self.tmpl_dict)
+                    if proportions:
+                        self.tmpl_dict['proportion'] = proportions.pop(0)
+                        growable.append(self.tmpl_AddGrowableRow_proportion % self.tmpl_dict)
+                    else:
+                        growable.append(self.tmpl_AddGrowableRow % self.tmpl_dict)
+
         if 'growable_cols' in obj.properties:
+            proportions = list(obj.properties['proportions_cols'].value)
             for col in obj.growable_cols:
                 if max_col is None or col<=max_col:
                     self.tmpl_dict['col'] = col
-                    growable.append(self.tmpl_AddGrowableCol % self.tmpl_dict)
+                    if proportions:
+                        self.tmpl_dict['proportion'] = proportions.pop(0)
+                        growable.append(self.tmpl_AddGrowableCol_proportion % self.tmpl_dict)
+                    else:
+                        growable.append(self.tmpl_AddGrowableCol % self.tmpl_dict)
         ret[-1] = growable + ret[-1]
         return ret
 
@@ -1065,9 +1078,10 @@ class CustomGridSizer(wx.BoxSizer):
         self._create(rows, cols, vgap, hgap)
         wx.BoxSizer.Add(self, self.parent._btn, 0, wx.EXPAND)
         wx.BoxSizer.Add(self, self._grid, 1, wx.EXPAND)
-        if wx.VERSION[:2] < (3,0):
-            self._growable_rows = set()
-            self._growable_cols = set()
+
+        # track growable rows/cols
+        self._growable_rows_proportions = {}
+        self._growable_cols_proportions = {}
 
     def _create(self, rows, cols, vgap, hgap):
         self._grid = wx.GridSizer(rows, cols, vgap, hgap)
@@ -1126,24 +1140,26 @@ class CustomGridSizer(wx.BoxSizer):
         self._grid.Layout()
         wx.BoxSizer.Layout(self)
 
+    # keep track of growable proportions; on wxPython 2.8 also track the growable row/col numbers
+    def AddGrowableRow(self, row, proportion=1):  # we don't use the usual default value 0
+        self._grid.AddGrowableRow(row, proportion)
+        self._growable_rows_proportions[row] = proportion
+    def RemoveGrowableRow(self, row):
+        self._grid.RemoveGrowableRow(row)
+        del self._growable_rows_proportions[row]
+    def AddGrowableCol(self, col, proportion=1):
+        self._grid.AddGrowableCol(col, proportion)
+        self._growable_cols_proportions[col] = proportion
+    def RemoveGrowableCol(self, col):
+        self._grid.RemoveGrowableCol(col)
+        del self._growable_cols_proportions[col]
+
     if wx.VERSION[:2] < (3,0):
-        # compatibility for wxPython 2.8, as IsRowGrowable was only introduced with wx 2.9.1
+        # compatibility for wxPython 2.8, as IsRow/ColGrowable was only introduced with wx 2.9.1
         def IsRowGrowable(self, row):
-            return row in self._growable_rows
+            return row in self._growable_rows_proportions
         def IsColGrowable(self, col):
-            return col in self._growable_cols
-        def AddGrowableRow(self, row):
-            self._grid.AddGrowableRow(row)
-            self._growable_rows.add(row)
-        def RemoveGrowableRow(self, row):
-            self._grid.RemoveGrowableRow(row)
-            self._growable_rows.remove(row)
-        def AddGrowableCol(self, col):
-            self._grid.AddGrowableCol(col)
-            self._growable_cols.add(col)
-        def RemoveGrowableCol(self, col):
-            self._grid.RemoveGrowableCol(col)
-            self._growable_cols.remove(col)
+            return col in self._growable_cols_proportions
 
 
 class CustomFlexGridSizer(CustomGridSizer):
@@ -1245,7 +1261,7 @@ class GridSizerBase(SizerBase):
         if rows_new==rows_p.value or (loading and rows_new<rows_p.value): return
         rows_p.set(rows_new)
 
-    # context menu actions #############################################################################################
+    # context menu and undo/redo actions ###############################################################################
     def _rebuild_tree(self):
         # refresh labels of existing slots; add tree items for new
         for c in self.children:
@@ -1254,7 +1270,7 @@ class GridSizerBase(SizerBase):
         misc.rebuild_tree(self)
 
     @_frozen
-    def insert_row(self, row, user=True):
+    def insert_row(self, row, user=True, growable=None):
         "inserts slots for a new row"
         rows, cols = self._get_actual_rows_cols()
 
@@ -1275,7 +1291,8 @@ class GridSizerBase(SizerBase):
             self._insert_slot( n + row*cols )
 
         if "growable_rows" in self.PROPERTIES:
-            self.properties["growable_rows"].shift_items(row)
+            p = self.properties["growable_rows"]
+            p.shift_items(row, growable)  # this will also handle proportions_rows
 
         if self.widget:
             if "growable_rows" in self.PROPERTIES: self._set_growable()
@@ -1285,7 +1302,7 @@ class GridSizerBase(SizerBase):
         if user: common.history.gridsizer_row_col_changed(self, "row", row, 1, inserted_slots)
 
     @_frozen
-    def insert_col(self, col, user=True):
+    def insert_col(self, col, user=True, growable=None):
         "inserts slots for a new column"
         rows, cols = self._get_actual_rows_cols()
 
@@ -1314,7 +1331,8 @@ class GridSizerBase(SizerBase):
             self._insert_slot( self._get_pos(r,col) )
 
         if "growable_cols" in self.PROPERTIES:
-            self.properties["growable_cols"].shift_items(col)
+            p = self.properties["growable_cols"]
+            p.shift_items(col, growable)  # this will also handle proportions_cols
 
         if self.widget:
             if "growable_rows" in self.PROPERTIES: self._set_growable()
@@ -1339,7 +1357,12 @@ class GridSizerBase(SizerBase):
             # remove_slots are indices that are valid after having removed the row
             for i in sorted(remove_slots, reverse=True): self.children[i].remove(user=False)
 
+        kwargs = {}
         if "growable_rows" in self.PROPERTIES:
+            if row in self.growable_rows:
+                proportions = self.proportions_rows
+                kwargs["growable"] = proportions and proportions[self.growable_rows.index(row)] or 1
+            self.properties["proportions_rows"].remove_item(row)
             self.properties["growable_rows"].remove_item(row)
 
         if self.widget:
@@ -1348,7 +1371,7 @@ class GridSizerBase(SizerBase):
             self.layout()
 
         self._rebuild_tree()
-        if user: common.history.gridsizer_row_col_changed(self, "row", row, -1)
+        if user: common.history.gridsizer_row_col_changed(self, "row", row, -1, **kwargs)
 
     @_frozen
     def remove_col(self, col, user=True, remove_slots=None):
@@ -1368,7 +1391,12 @@ class GridSizerBase(SizerBase):
 
         if self.widget: self.widget.SetCols( cols-1 )  # also if self.cols is 0 to ensure correct behaviour
 
+        kwargs = {}
         if "growable_cols" in self.PROPERTIES:
+            if col in self.growable_cols:
+                proportions = self.proportions_cols
+                kwargs["growable"] = proportions and proportions[self.growable_cols.index(col)] or 1
+            self.properties["proportions_cols"].remove_item(col)
             self.properties["growable_cols"].remove_item(col)
 
         if self.widget:
@@ -1377,7 +1405,7 @@ class GridSizerBase(SizerBase):
             self.layout()
 
         self._rebuild_tree()
-        if user: common.history.gridsizer_row_col_changed(self, "col", col, -1)
+        if user: common.history.gridsizer_row_col_changed(self, "col", col, -1, **kwargs)
 
     ####################################################################################################################
     def _check_flags(self, flags, added=None):
@@ -1470,55 +1498,167 @@ class EditGridSizer(GridSizerBase):
 
 
 class _GrowableDialog(wx.Dialog):
-    def __init__(self, parent, title):
-        wx.Dialog.__init__(self, parent, -1, title)
-        self.sizer = sizer = wx.BoxSizer(wx.VERTICAL)
-        self.message = wx.StaticText(self, -1, "")
-        sizer.Add(self.message, 0, wx.TOP | wx.LEFT | wx.RIGHT | wx.EXPAND, 10)
-        self.choices = wx.CheckListBox(self, -1, choices=[])
-        sizer.Add(self.choices, 1, wx.EXPAND | wx.LEFT | wx.RIGHT, 10)
-        sizer.Add(wx.StaticLine(self, -1), 0, wx.EXPAND | wx.ALL, 10)
-        sz2 = wx.BoxSizer(wx.HORIZONTAL)
-        sz2.Add(wx.Button(self, wx.ID_OK, ""), 0, wx.ALL, 10)
-        sz2.Add(wx.Button(self, wx.ID_CANCEL, ""), 0, wx.ALL, 10)
-        sizer.Add(sz2, 0, wx.ALIGN_CENTER)
-        self.SetAutoLayout(True)
-        self.SetSizer(sizer)
-        sizer.Fit(self)
-        self.CenterOnScreen()
+    # for _GrowablePropertyD, also allows editing of the associated proportion property
+    def __init__(self, parent, title, direction):
+        style = wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER
+        wx.Dialog.__init__(self, parent, style=style, size=(350, 500))
+        self.SetTitle(_(title))
+
+        self.vbox = vbox = wx.BoxSizer(wx.VERTICAL)
+        s = wx.StaticText(self, wx.ID_ANY, ("Select the %s that should be growable\nand enter the proportions:")%direction)
+        vbox.Add(s, 0, wx.EXPAND | wx.ALL, 10)
+
+        self.grid = wx.grid.Grid(self)
+        vbox.Add(self.grid, 1, wx.EXPAND | wx.ALL, 10)
+
+        btn_sizer = wx.StdDialogButtonSizer()
+        vbox.Add(btn_sizer, 0, wx.ALIGN_RIGHT | wx.ALL, 4)
+
+        self.button_OK = wx.Button(self, wx.ID_OK, "")
+        self.button_OK.SetDefault()
+        btn_sizer.AddButton(self.button_OK)
+
+        self.button_CANCEL = wx.Button(self, wx.ID_CANCEL, "")
+        btn_sizer.AddButton(self.button_CANCEL)
+        btn_sizer.Realize()
+
+        self.SetSizer(vbox)
+
+        self.SetAffirmativeId(self.button_OK.GetId())
+        self.SetEscapeId(self.button_CANCEL.GetId())
+
+        self.Layout()
+
+        self.grid.Bind(wx.grid.EVT_GRID_CELL_CHANGED, self.on_cell_changed)
+        self.grid.Bind(wx.EVT_KEY_UP, self.on_grid_key_up)
+
+    def on_grid_key_up(self, event):
+        # keyboard navigation: when Tab key is pressed in the last column, set focus to the OK button
+        key = event.GetKeyCode()
+        if key==wx.WXK_TAB:
+            if self.grid.GetGridCursorCol()==1:
+                #self.button_OK.SetFocus()
+                self.button_OK.SetFocusFromKbd()
+                return
+        event.Skip()
+
+    def on_cell_changed(self, event):
+        # GetString() would return old value
+        row, col = event.GetRow(), event.GetCol()
+        if col==0:
+            if self.grid.GetCellValue(row, col):
+                self.grid.SetCellValue(row, 1, str(self.old_values.get(row, 1)) )
+            else:
+                self.old_values[row] = int(self.grid.GetCellValue(row, 1))
+                self.grid.SetCellValue(row, 1, "0")
+        else:
+            proportion = int(self.grid.GetCellValue(row, col))
+        event.Skip()
+
+    def set_value(self, count, growable, proportions):
+        if not self.grid.NumberCols:
+            self.grid.CreateGrid(count, 2)
+        elif self.grid.NumberRows<count:
+            self.grid.AppendRows(count-self.grid.NumberRows)
+        elif self.grid.NumberRows>count:
+            self.grid.DeleteRows(count, self.grid.NumberRows-count)
+
+        self.grid.SetColLabelValue(0, "Growable")
+        self.grid.SetColLabelValue(1, "Proportion")
+        self.grid.SetColFormatBool(0)  # for values "" and "1"
+        self.grid.SetColFormatNumber(1)
+        #self.grid.SetDefaultCellAlignment(wx.ALIGN_CENTER, wx.ALIGN_CENTER)  # does not work
+
+        proportions = proportions[:]
+        for row in range(count):
+            self.grid.SetCellAlignment(row, 0, wx.ALIGN_CENTER, wx.ALIGN_CENTER)
+            self.grid.SetCellAlignment(row, 1, wx.ALIGN_CENTER, wx.ALIGN_CENTER)
+            self.grid.SetCellValue(row, 0, (row in growable) and "1" or "")  # bool format
+            if row in growable:
+                self.grid.SetCellValue(row, 1, str(proportions.pop(0)))
+            else:
+                self.grid.SetCellValue(row, 1, "0")
+
+        height = self.grid.GetBestHeight(0)
+        si = self.vbox.GetItem(1)
+        si.SetMinSize( (self.grid.GetSize()[0],height))
+        self.vbox.Fit(self)
+        self.old_values = {}
 
     def get_value(self):
-        ret = []
-        for c,choice in enumerate(self._choices):
-            if self.choices.IsChecked(c):
-                ret.append(str(int(choice)-1))
-        return ",".join(ret)
-
-    def set_choices(self, choices, values):
-        self.choices.Set(choices)
-        self._choices = choices
-        for i,value in enumerate(choices):
-            if value in values: self.choices.Check(i)
-
-    def set_descriptions(self, title, message):
-        self.SetTitle(title)
-        self.message.SetLabel(message)
+        growable = []
+        proportions = []
+        for r in range(self.grid.NumberRows):
+            if self.grid.GetCellValue(r, 0):
+                growable.append(r)
+                proportions.append(int(self.grid.GetCellValue(r,1)))
+        if set(proportions)=={1}: proportions = []
+        return growable, proportions
 
 
 class _GrowablePropertyD(np.DialogPropertyD):
+    # for growable rows/cols of FlexGridSizer and derived classes
+
     def _create_dialog(self):
         if self.dialog is None:
             parent = self.text.GetTopLevelParent()
-            self.dialog = _GrowableDialog(parent, self.title)
+            self.dialog = _GrowableDialog(parent, self.title, self.name.split("_")[-1])
 
         rows, cols = self.owner._get_actual_rows_cols()
         row_or_col_count = rows  if "rows" in self.name else  cols
 
-        choices = [ str(n)   for n in range(1, row_or_col_count+1) ]  # dialog is 1 based
-        selected = [str(n+1) for n in self.value]
-        self.dialog.set_choices(choices, selected)
-        self.dialog.sizer.Fit(self.dialog)
+        growable = self.get_value()
+        # find the associated propotions property
+        proportions = self.secondary_property.get_value()
+        if growable and not proportions: proportions = [1]*len(growable)
+        self.dialog.set_value(row_or_col_count, growable, proportions)
         return self.dialog
+
+    # modified copy from DialogProperty for the combination of two properties; not very elegant
+    def display_dialog(self, event):
+        self.on_focus()
+        dialog = self._create_dialog()
+        if dialog is None: return
+        self._position_dialog(dialog, self.button)
+        if dialog.ShowModal()!=wx.ID_OK: return
+        # the dialog needs to return a valid value, so we may set the value of the TextCtrl without further checks
+        value, proportions = dialog.get_value()
+        proportions_p = self.secondary_property
+        changed = []
+        if value!=self.value:
+            changed.append(self)
+            self.text.SetValue(self._convert_to_text(value))
+        if set(proportions)=={1} and not proportions_p.value:
+            proportions = []
+        if proportions!=proportions_p.value:
+            changed.append(proportions_p)
+            proportions_p.text.SetValue(proportions_p._convert_to_text(proportions))
+        if not changed: return
+
+        # two cases are possible:
+        # growable and proportions changed
+        # only growable changed  -> not possible, proportions must have changed as well
+        # proportions changed
+
+        common.history.property_changing(self)
+        common.history.monitor_property(proportions_p)
+
+        # replacement for methods set(value) and _notify() of both properties
+        if self in changed: self.value = value
+        if proportions_p in changed: proportions_p.value = proportions
+        common.root.saved = False
+        self.owner.properties_changed([c.name for c in changed])
+        common.history.property_changed(self)
+
+        # activate/deactivate?
+        if self.deactivated and value:
+            self.deactivated = False
+        elif not self.deactivated and not value:
+            self.deactivated = True
+        else:
+            return  # no change
+        self.activate_controls()
+        proportions_p.activate_controls()
 
     def _set_converter(self, value):
         # used by set()
@@ -1544,8 +1684,8 @@ class _GrowablePropertyD(np.DialogPropertyD):
         return value
 
     def _convert_to_text(self, value):
-        # from internal 0-based string value to text control 1-based: "0,1" -> "1,2"
-        ret = [str(n+1) for n in self.value]
+        # from internal 0-based integer list to text control 1-based: [0,1] -> "1,2"
+        ret = [str(n+1) for n in value]
         return ",".join(ret)
 
     def get_string_value(self):
@@ -1565,18 +1705,87 @@ class _GrowablePropertyD(np.DialogPropertyD):
         deactivate = not new
         self.set( new, deactivate=deactivate )
 
-    def shift_items(self, item):
+    def shift_items(self, item, growable=None):
         # when a row/col is added, the values above need to be shifted by 1
-        if not self.value: return
+        if not self.value and growable is None: return
         new = []
         for n in self.value:
             if n<item:
                 new.append(n)
             else:
                 new.append(n+1)
+        if growable is not None: # XXX handle proportion here as well?
+            if not self.secondary_property.value and growable!=1:
+                self.secondary_property.value = [1]*len(new)
+            new.append(item)
+            new.sort()
+            if self.secondary_property.value:
+                self.secondary_property.value.insert(new.index(item), growable)
         self.set( new )
 
     def keep_items(self, indices):
+        if not self.value: return
+        new = [indices.index(n) for n in self.value if n in indices]
+        self.set( new )
+
+
+class _ProportionsProperty(np.TextProperty):
+    # for growable rows/cols of FlexGridSizer and derived classes, proportion
+
+    def create_additional_controls(self, panel, sizer, hsizer):
+        hsizer.Add(40+3+3, -1)
+        return []
+
+    def _set_converter(self, value):
+        # used by set()
+        if isinstance(value, compat.basestring):
+            if not value: return []
+            try:
+                value = [int(n) for n in value.split(",") ]
+            except:
+                return []
+        return value
+
+    def check_value(self, value):
+        # value is a string here
+        warning = None
+        error = None
+        if value.strip() and self._convert_from_text(value) is None:
+            error = "input is invalid or does not match the number of growable columns/rows"
+        return warning, error
+
+    def _convert_from_text(self, text=None):
+        # converts user input and also checks for length match
+        if text is None: text = self.text.GetValue()
+        if not text.strip(): return []
+        growable_row_or_col_count = len( getattr(self.owner, self.name.replace("proportions","growable")) )
+        try:
+            value = [int(n) for n in text.split(",")]
+            if set(value)=={1}: return []
+            if len(value)!=growable_row_or_col_count:  return None
+            if min(value)<1: return None
+        except:
+            return None
+        return value
+
+    def _convert_to_text(self, value):
+        if set(value)=={1}: return ""
+        return ",".join( [str(n) for n in value] )
+
+    def get_string_value(self):
+        # for XML file writing
+        return ",".join( [str(n) for n in self.value] )
+
+    def remove_item(self, item):
+        # called when a row/column is deleted; called before growable_... is modified
+        if not self.value: return
+        growable_items = self.main_property.value
+        if not item in growable_items: return
+        idx = growable_items.index(item)
+        new = [v for i,v in enumerate(self.value) if i!=idx]
+        self.set(new)
+
+    def keep_items(self, indices): # XXX
         if not self.value: return
         new = [indices.index(n) for n in self.value if n in indices]
         self.set( new )
@@ -1586,42 +1795,83 @@ class EditFlexGridSizer(GridSizerBase):
     "Class to handle wxFlexGridSizer objects"
     WX_CLASS = "wxFlexGridSizer"
 
-    EXTRA_PROPERTIES = GridSizerBase.EXTRA_PROPERTIES + ["growable_rows", "growable_cols"]
+    EXTRA_PROPERTIES = GridSizerBase.EXTRA_PROPERTIES + ["growable_rows", "proportions_rows",
+                                                         "growable_cols", "proportions_cols"]
     _PROPERTY_HELP = {"growable_rows":'Select growable rows',
-                      "growable_cols":'Select growable columns'}
+                      "growable_cols":'Select growable columns',
+                      "proportions_rows":"Enter growable rows' growth proportions",
+                      "proportions_cols":"Select growable cols' growth proportions",}
+    _PROPERTY_LABELS = {"proportions_rows":"    Proportions", "proportions_cols":"    Proportions"}
 
     def __init__(self, name, parent, index, rows=3, cols=3, vgap=0, hgap=0):
         GridSizerBase.__init__(self, name, parent, index, rows, cols, vgap, hgap)
         self.growable_rows = _GrowablePropertyD([], default_value=[])
+        self.proportions_rows = _ProportionsProperty([], default_value=[])
         self.growable_cols = _GrowablePropertyD([], default_value=[])
+        self.proportions_cols = _ProportionsProperty([], default_value=[])
         self.properties["growable_rows"].title = 'Select growable rows'
+        self.properties["proportions_rows"].title = 'Enter grow proportions'
         self.properties["growable_cols"].title = 'Select growable cols'
+        self.properties["proportions_cols"].title = 'Enter grow proportions'
+        # link the growable indices and proportion properties for easier access and for GUI label indentation
+        self.properties["proportions_rows"].main_property = self.properties["growable_rows"]
+        self.properties["proportions_cols"].main_property = self.properties["growable_cols"]
+        self.properties["growable_rows"].secondary_property = self.properties["proportions_rows"]
+        self.properties["growable_cols"].secondary_property = self.properties["proportions_cols"]
 
     def create_widget(self):
         GridSizerBase.create_widget(self)
         self.widget = CustomFlexGridSizer(self, self.rows, self.cols, self.vgap, self.hgap)
         self._set_growable()
 
+    def check_property_modification(self, name, value, new_value):
+        if name=="proportions_rows" and len(new_value)!=0 and len(new_value)!=len(self.growable_rows): return False
+        if name=="proportions_cols" and len(new_value)!=0 and len(new_value)!=len(self.growable_cols): return False
+        return GridSizerBase.check_property_modification(self, name, value, new_value)
+
+    def _properties_changed(self, modified, actions):
+        GridSizerBase._properties_changed(self, modified, actions)
+        # enable/disable proportions depending on growable rows/cols
+        if not modified or "growable_rows" in modified:
+            p = self.properties["proportions_rows"]
+            p.set_blocked(block=not self.growable_rows)
+        if not modified or "growable_rows" in modified:
+            p = self.properties["proportions_cols"]
+            p.set_blocked(block=not self.growable_cols)
+
     def _set_growable(self):
         rows = self.growable_rows
         cols = self.growable_cols
+        proportions_rows = list(self.proportions_rows)  # items will be removed with pop(0) for each growable row
+        proportions_cols = list(self.proportions_cols)
         rowcount,colcount = self._get_actual_rows_cols()
+
+        # we don't use the default value 0 like AddGrowableRow(row, proportion=0) as all 0 is like all 1
         for r in range(rowcount):
-            growable = self.widget.IsRowGrowable(r)
-            if growable and not r in rows:
+            growable = r in rows
+            proportion = proportions_rows.pop(0) if growable and proportions_rows else 1
+            is_growable = self.widget.IsRowGrowable(r)
+            is_proportion = self.widget._growable_rows_proportions.get(r, 1)
+            if is_growable and (not r in rows or proportion!=is_proportion):
                 self.widget.RemoveGrowableRow(r)
-            elif not growable and r in rows:
-                self.widget.AddGrowableRow(r)
+                is_growable = False
+            if not is_growable and r in rows:
+                self.widget.AddGrowableRow(r, proportion)
+
         for c in range(colcount):
-            growable = self.widget.IsColGrowable(c)
-            if growable and not c in cols:
+            growable = c in cols
+            proportion = proportions_cols.pop(0) if growable and proportions_cols else 1
+            is_growable = self.widget.IsColGrowable(c)
+            is_proportion = self.widget._growable_cols_proportions.get(c, None)
+            if is_growable and (not c in cols or proportion!=is_proportion):
                 self.widget.RemoveGrowableCol(c)
-            elif not growable and c in cols:
-                self.widget.AddGrowableCol(c)
+                is_growable = False
+            if not is_growable and c in cols:
+                self.widget.AddGrowableCol(c, proportion)
 
     @_frozen
     def make_growable(self, direction, row_or_col):
-        "set growable_rows or growable_cols"
+        "context menu callback; set add row or col to growable_rows or growable_cols"
         p_name = "growable_%ss"%direction
         p = self.properties[p_name]
         if row_or_col in p.value:

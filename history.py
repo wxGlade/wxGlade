@@ -278,8 +278,8 @@ class HistorySizerSlots(HistoryItem):
 
 
 class HistoryGridSizerRowCol(HistoryItem):
-    # for added / removed rows / cols
-    def __init__(self, sizer, type, index, count=1, inserted_slots=None):
+    # for added / removed rows / cols: count can only be +1 or -1
+    def __init__(self, sizer, type, index, count=1, inserted_slots=None, growable=None):
         # count: negative if removed
         self.path = sizer.get_path()
         self.type = type  # "row" or "col"
@@ -287,25 +287,28 @@ class HistoryGridSizerRowCol(HistoryItem):
         self.count = count
         self.inserted_slots = inserted_slots
 
+        # for removed row/col from FlexGridSizer and derived: keep track of growable and proportion
+        self.growable = growable
+
     def undo(self):
         sizer = common.root.find_widget_from_path(self.path)
         if self.type=="row" and self.count==1:
             sizer.remove_row(self.index, user=False, remove_slots=self.inserted_slots)
         elif self.type=="row" and self.count==-1:
-            sizer.insert_row(self.index, user=False)
+            sizer.insert_row(self.index, user=False, growable=self.growable)
         elif self.type=="col" and self.count==1:
             sizer.remove_col(self.index, user=False, remove_slots=self.inserted_slots)
         elif self.type=="col" and self.count==-1:
-            sizer.insert_col(self.index, user=False)
+            sizer.insert_col(self.index, user=False, growable=self.growable)
 
     def redo(self):
         sizer = common.root.find_widget_from_path(self.path)
         if self.type=="row" and self.count==1:
-            sizer.insert_row(self.index, user=False)
+            sizer.insert_row(self.index, user=False, growable=self.growable)
         elif self.type=="row" and self.count==-1:
             sizer.remove_row(self.index, user=False)
         elif self.type=="col" and self.count==1:
-            sizer.insert_col(self.index, user=False)
+            sizer.insert_col(self.index, user=False, growable=self.growable)
         elif self.type=="col" and self.count==-1:
             sizer.remove_col(self.index, user=False)
 
@@ -503,5 +506,5 @@ class History(object):
         # called from SizerBase.insert_slot and add_slot
         self.add_item( HistorySizerSlots(sizer, index, count), can_repeat=False )
 
-    def gridsizer_row_col_changed(self, sizer, type, index, count, inserted_slots=None):
-        self.add_item( HistoryGridSizerRowCol(sizer, type, index, count, inserted_slots), can_repeat=False )
+    def gridsizer_row_col_changed(self, sizer, type, index, count, inserted_slots=None, growable=None):
+        self.add_item( HistoryGridSizerRowCol(sizer, type, index, count, inserted_slots, growable), can_repeat=False )
