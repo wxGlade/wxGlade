@@ -128,7 +128,7 @@
         (wxSizer_AddWindow (slot--gszr-pane1 obj) (slot-text-ctrl-1 obj) 1 (logior wxALIGN_CENTER_VERTICAL wxALL wxEXPAND) 5 nil)
         
         (setf (slot-button-3 obj) (wxButton_Create (slot-notebook-1-pane-1 obj) wxID_OPEN "" -1 -1 -1 -1 0))
-        (wxSizer_AddWindow (slot--gszr-pane1 obj) (slot-button-3 obj) 0 wxALL 5 nil)
+        (wxSizer_AddWindow (slot--gszr-pane1 obj) (slot-button-3 obj) 0 (logior wxALL wxEXPAND) 5 nil)
         
         (setf (slot-notebook-1-pane-2 obj) (wxPanel_Create (slot-notebook-1 obj) wxID_ANY -1 -1 -1 -1 wxTAB_TRAVERSAL))
         (wxNotebook_AddPage (slot-notebook-1 obj) (slot-notebook-1-pane-2 obj) (_"Converting Options") 1 -1)
@@ -211,7 +211,8 @@
         
         (wxWindow_SetSizer (slot-notebook-1-pane-2 obj) (slot-sizer-4 obj))
         
-        (wxFlexGridSizer_AddGrowableCol (slot--gszr-pane1 obj) 1)
+        (wxFlexGridSizer_AddGrowableCol (slot--gszr-pane1 obj) 1 2)
+        (wxFlexGridSizer_AddGrowableCol (slot--gszr-pane1 obj) 2 1)
         (wxWindow_SetSizer (slot-notebook-1-pane-1 obj) (slot--gszr-pane1 obj))
         
         (wxFlexGridSizer_AddGrowableRow (slot-sizer-1 obj) 0)
