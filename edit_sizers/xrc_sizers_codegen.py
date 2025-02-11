@@ -2,7 +2,7 @@
 XRC generator functions for the various wxSizers
 
 @copyright: 2014-2016 Carsten Grohmann
-@copyright: 2017 Dietmar Schwertberger
+@copyright: 2017-2025 Dietmar Schwertberger
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
@@ -37,6 +37,8 @@ def xrc_wxFlexGridSizer_builder(obj):
                 else:
                     name2 = 'growablecols'
                 output.append( '    ' * tabs + '<%s>%s</%s>\n' % (name2, val, name2) )
+            elif name in ('proportions_rows', 'proportions_cols'):
+                pass
             else:
                 xrcgen.DefaultXrcObject.write_property(self, name, val, output, tabs)
     # end of class FlexGridSizerXrcObject

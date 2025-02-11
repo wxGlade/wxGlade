@@ -3,7 +3,7 @@ Python generator functions for the various wxSizers
 
 @copyright: 2002-2007 Alberto Griggio
 @copyright: 2013-2016 Carsten Grohmann
-@copyright: 2019 Dietmar Schwertberger
+@copyright: 2019-2025 Dietmar Schwertberger
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 

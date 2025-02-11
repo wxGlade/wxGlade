@@ -3,7 +3,7 @@ Hierarchy of Sizers supported by wxGlade
 
 @copyright: 2002-2007 Alberto Griggio
 @copyright: 2014-2016 Carsten Grohmann
-@copyright: 2016-2024 Dietmar Schwertberger
+@copyright: 2016-2025 Dietmar Schwertberger
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
@@ -1153,6 +1153,18 @@ class CustomGridSizer(wx.BoxSizer):
     def RemoveGrowableCol(self, col):
         self._grid.RemoveGrowableCol(col)
         del self._growable_cols_proportions[col]
+    def SetRows(self, rows):
+        self._grid.SetRows(rows)
+        remove = [r for r in self._growable_rows_proportions.keys() if r>=rows]
+        for r in remove:
+            self._grid.RemoveGrowableRow(r)
+            del self._growable_rows_proportions[r]
+    def SetCols(self, cols):
+        self._grid.SetCols(cols)
+        remove = [c for c in self._growable_cols_proportions.keys() if c>=cols]
+        for c in remove:
+            self._grid.RemoveGrowableCol(r)
+            del self._growable_cols_proportions[c]
 
     if wx.VERSION[:2] < (3,0):
         # compatibility for wxPython 2.8, as IsRow/ColGrowable was only introduced with wx 2.9.1
@@ -1478,7 +1490,8 @@ class GridSizerBase(SizerBase):
                     actions.add("layout")
 
         if "growable_rows" in self.properties and self.widget:
-            if not modified or "growable_rows" in modified or "growable_cols" in modified:
+            if not modified or ("growable_rows"    in modified or "growable_cols"    in modified or
+                                "proportions_rows" in modified or "proportions_cols" in modified):
                 self._set_growable()
                 actions.add("layout")
 
