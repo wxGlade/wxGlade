@@ -2241,11 +2241,29 @@ def change_sizer(old, new):
 
         szr.children.extend(old.children)
 
+
+        # (Flex)GridSizer properties "rows", "cols", "growable_rows/cols", "proportions_rows/cols", "hgap", "vgap"
+        # will be either re-used from the old sizer or its _restore_properties if the number of children matches
+        # unused properties will be stored in the new sizer's _restore_properties
+        if hasattr(old, "_restore_properties") and len(old.children)==old._restore_properties["children"]:
+            _restore_properties = old._restore_properties
+        else:
+            _restore_properties = {"children":len(old.children)}
+        for name in ("rows", "cols", "hgap", "vgap",
+                     "growable_rows", "growable_cols", "proportions_rows", "proportions_cols"):
+            if old.check_prop(name):
+                value = old.properties[name].get()
+                _restore_properties[name] = value
+
         # copy/set properties
         if isinstance(szr, GridSizerBase):
             # take rows, cols, hgap, vgap from old sizer, if applicable
-            rows = getattr(old, "rows", 1)
-            cols = getattr(old, "cols", len(szr.children))
+            if "rows" in _restore_properties and "cols" in _restore_properties:
+                rows = _restore_properties.pop("rows")
+                cols = _restore_properties.pop("cols")
+            else:
+                rows = 1
+                cols = len(szr.children)
             if isinstance(szr, EditGridBagSizer):
                 # for GridSizer and FlexGridSizer cols may be 0, i.e. auto calculated
                 if rows==0: rows = (len(szr.children)-1)//cols +1
@@ -2253,21 +2271,27 @@ def change_sizer(old, new):
 
             szr.properties["rows"].set( rows )
             szr.properties["cols"].set( cols )
-            szr.properties["hgap"].set( getattr(old, "hgap", 0) )
-            szr.properties["vgap"].set( getattr(old, "vgap", 0) )
+            szr.properties["hgap"].set( _restore_properties.pop("hgap", 0) )
+            szr.properties["vgap"].set( _restore_properties.pop("vgap", 0) )
             szr.properties_changed( ["rows","cols","hgap","vgap"] )
-        if isinstance(szr, EditFlexGridSizer) and isinstance(old, EditFlexGridSizer):
-            # take growable rows and cols from old sizer
-            grow_r_p = old.properties["growable_rows"]
-            grow_c_p = old.properties["growable_cols"]
-            if grow_r_p.is_active():
-                szr.properties['growable_rows'].value = grow_r_p.value
+
+        if isinstance(szr, EditFlexGridSizer):
+            # take growable rows and cols from old sizer or from old._restore_properties
+            growable_rows = _restore_properties.pop("growable_rows", None)
+            growable_cols = _restore_properties.pop("growable_cols", None)
+            if growable_rows is not None:
+                szr.properties['growable_rows'].value = growable_rows
+                szr.properties['proportions_rows'].value = _restore_properties.pop('proportions_rows', [])
                 szr.properties['growable_rows'].deactivated = False
-            if grow_c_p.is_active():
-                szr.properties['growable_cols'].value = grow_c_p.value
+            if growable_cols is not None:
+                szr.properties['growable_cols'].value = growable_cols
+                szr.properties['proportions_cols'].value = _restore_properties.pop('proportions_cols', [])
                 szr.properties['growable_cols'].deactivated = False
-        # XXX keep rows, cols, growable_rows, growable_cols in attributes of new sizer if it's not a (Flex)GridSizer
-        #     and re-use them if user switches back
+
+        if len(_restore_properties)>1:
+            # store unused property values for next change (either by the user or undo/redo)
+            szr._restore_properties = _restore_properties
+
 
         if szr._IS_GRIDBAG:
             szr._check_slots(remove_only=True)  # for the children, .parent is still the old sizer here
