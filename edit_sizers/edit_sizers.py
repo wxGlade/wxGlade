@@ -1544,6 +1544,27 @@ class _GrowableDialog(wx.Dialog):
 
         self.grid.Bind(wx.grid.EVT_GRID_CELL_CHANGED, self.on_cell_changed)
         self.grid.Bind(wx.EVT_KEY_UP, self.on_grid_key_up)
+        self.grid.Bind(wx.grid.EVT_GRID_CELL_LEFT_CLICK, self.on_grid_cell_left_click)
+
+    def _on_cell_value_changed(self, row, col, value):
+        # common for on_cell_changed and on_grid_cell_left_click
+        if col==0:
+            if value:
+                self.grid.SetCellValue(row, 1, str(self.old_values.get(row, 1)) )
+            else:
+                self.old_values[row] = int(self.grid.GetCellValue(row, 1))
+                self.grid.SetCellValue(row, 1, "0")
+        else:
+            proportion = int(self.grid.GetCellValue(row, col))
+            if proportion and not self.grid.GetCellValue(row, 0):
+                self.grid.SetCellValue(row, 0, "1")
+
+    def on_cell_changed(self, event):
+        # GetString() would return old value
+        row, col = event.GetRow(), event.GetCol()
+        value = self.grid.GetCellValue(row, col)
+        self._on_cell_value_changed(row, col, value)
+        event.Skip()
 
     def on_grid_key_up(self, event):
         # keyboard navigation: when Tab key is pressed in the last column, set focus to the OK button
@@ -1555,18 +1576,17 @@ class _GrowableDialog(wx.Dialog):
                 return
         event.Skip()
 
-    def on_cell_changed(self, event):
-        # GetString() would return old value
+    def on_grid_cell_left_click(self, event):
+        print("on_grid_cell_left_click")
+        
         row, col = event.GetRow(), event.GetCol()
         if col==0:
-            if self.grid.GetCellValue(row, col):
-                self.grid.SetCellValue(row, 1, str(self.old_values.get(row, 1)) )
-            else:
-                self.old_values[row] = int(self.grid.GetCellValue(row, 1))
-                self.grid.SetCellValue(row, 1, "0")
-        else:
-            proportion = int(self.grid.GetCellValue(row, col))
-        event.Skip()
+            value = self.grid.GetCellValue(row, col)  # old value
+            value = "1" if not value else ""          # new 'bool' value False "" or True "1"
+            self.grid.SetCellValue(row, col, value)
+            self._on_cell_value_changed(row, col, value)
+            if row==self.grid.GetGridCursorRow() and col==self.grid.GetGridCursorCol(): return  # cell was focused already
+        event.Skip()  # set focus
 
     def set_value(self, count, growable, proportions):
         if not self.grid.NumberCols:
@@ -1645,7 +1665,6 @@ class _GrowablePropertyD(np.DialogPropertyD):
             proportions = []
         if proportions!=proportions_p.value:
             changed.append(proportions_p)
-            proportions_p.text.SetValue(proportions_p._convert_to_text(proportions))
         if not changed: return
 
         # two cases are possible:
@@ -1658,7 +1677,9 @@ class _GrowablePropertyD(np.DialogPropertyD):
 
         # replacement for methods set(value) and _notify() of both properties
         if self in changed: self.value = value
-        if proportions_p in changed: proportions_p.value = proportions
+        if proportions_p in changed:
+            proportions_p.text.SetValue(proportions_p._convert_to_text(proportions))
+            proportions_p.value = proportions
         common.root.saved = False
         self.owner.properties_changed([c.name for c in changed])
         common.history.property_changed(self)
@@ -1848,7 +1869,7 @@ class EditFlexGridSizer(GridSizerBase):
         if not modified or "growable_rows" in modified:
             p = self.properties["proportions_rows"]
             p.set_blocked(block=not self.growable_rows)
-        if not modified or "growable_rows" in modified:
+        if not modified or "growable_cols" in modified:
             p = self.properties["proportions_cols"]
             p.set_blocked(block=not self.growable_cols)
 
