@@ -77,7 +77,7 @@ class HistoryPropertyItem(HistoryItem):
         self.new = None
         self.dependent = []
 
-    def finalize(self, monitor):
+    def finalize(self, monitor, undo_data):
         self.new = PropertyValue(self._prop)
         self.path2 = self._prop.owner.get_path()
         self._prop = None
@@ -86,6 +86,7 @@ class HistoryPropertyItem(HistoryItem):
             new = PropertyValue(prop)
             if new!=old:
                 self.dependent.append( [prop.owner.get_path(), prop.name, old, new] )
+        self.undo_data = undo_data
 
     def undo(self):
         owner = common.root.find_widget_from_path(self.path2)
@@ -348,6 +349,7 @@ class History(object):
         self._repeat_info = []  # name of properties
         self._repeating = False
         self.can_undo = self.can_redo = self.can_repeat = False
+        self.state = None  # used: "undo", "redo", None
 
     def reset(self):
         del self.actions[:]
@@ -372,21 +374,29 @@ class History(object):
         self.can_undo = bool(self.actions)
 
     def undo(self, focused_widget):
+        # while an undo is ongoing self.state will be set to "undo" and self.undo_data might contain restore info
         if not self.actions:
             return wx.Bell()
         action = self.actions.pop(0)
+        self.state = "undo"
+        self.undo_data = getattr(action, "_undo_data", None)
         widget = action.undo()
+        self.state = None
+        self.state = self.undo_data = None
         self.actions_redo.append(action)
         misc.set_focused_widget(widget)
 
     def redo(self, focused_widget):
+        # while a redo is ongoing self.state will be set to "undo"
         if not self.actions_redo:
             # XXX check whether it's the same
             repeated = self.repeat(focused_widget, multiple=False)
             if not repeated: wx.Bell()
             return
         action = self.actions_redo.pop(-1)
+        self.state = "redo"
         widget = action.redo()
+        self.state = None
         self.actions.insert(0, action)
         misc.set_focused_widget(widget)
 
@@ -465,13 +475,18 @@ class History(object):
         "to be called when property value is still the old one"
         if config.debugging: print("property_changing", prop)
         self._buffer = HistoryPropertyItem(prop)
-        self._monitor = []  # list of (property, PropertyValue)
+        self._monitor = []    # list of (property, PropertyValue)
+        self._undo_data = {}  # e.g. used by edit_sizers.change_sizer
 
     def set_property_changing(self, prop):
         # same as before, but this will track the clicked flag
         if config.debugging: print("set_property_changing", prop)
         self._buffer = HistorySetPropertyItem(prop)
-        self._monitor = []  # list of (property, PropertyValue)
+        self._monitor = []    # list of (property, PropertyValue)
+        self._undo_data = {}  # e.g. used by edit_sizers.change_sizer
+
+    def store_undo_data(self, data):
+        self._undo_data.update(data)
 
     def monitor_property(self, prop):
         # monitor dependent properties; these will be un-/re-done together with the main property
@@ -482,8 +497,8 @@ class History(object):
         # helper
         item = self._buffer
         self._buffer = None  if not stop else  False
-        item.finalize(self._monitor)
-        del self._monitor
+        item.finalize(self._monitor, self._undo_data)
+        del self._monitor, self._undo_data
         return item
 
     def property_changed(self, prop, user=True):

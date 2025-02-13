@@ -417,6 +417,20 @@ class SizerBase(edit_base.EditBase):
         # as string
         return self.WX_CLASS
 
+    def _get_undo_data(self):
+        # a dict with some property values which might be needed for a correct undo
+        ret = {}
+        for name in ("rows", "cols", "hgap", "vgap",
+                     "growable_rows", "growable_cols", "proportions_rows", "proportions_cols"):
+            if self.check_prop(name):
+                value = self.properties[name].get()
+                # for mutable values, make a copy
+                if isinstance(value, list): value = value[:]  
+                ret[name] = value
+        if ret:
+            ret["children"] = len(self.children)
+        return ret
+
     def _properties_changed(self, modified, actions):
         # "class" and "orient" will only display; "class_orient"
         if modified and "flag" in modified and self.parent.IS_SIZER:
@@ -431,7 +445,14 @@ class SizerBase(edit_base.EditBase):
             # user has selected -> change
             value = self.class_orient
             if misc.focused_widget is self: misc.set_focused_widget(None)
-            wx.CallAfter(change_sizer, self, value)
+            undo_data = None
+            if common.history.state is None:
+                # user action
+                common.history.store_undo_data(self._get_undo_data())
+            elif common.history.state=="undo":
+                # undo
+                undo_data = common.history.undo_data
+            wx.CallAfter(change_sizer, self, value, undo_data)
 
         if (not modified or "flag" in modified or "option" in modified or "border" in modified or "span" in modified):
             if not self.toplevel and self.sizer is not None:
@@ -2229,7 +2250,7 @@ class EditGridBagSizer(EditFlexGridSizer):
         EditFlexGridSizer.on_load(self, child)
 
 
-def change_sizer(old, new):
+def change_sizer(old, new, undo_data=None):
     "Replaces sizer instance 'old' with a new one; 'new' is the name of the new one."
     index = old.index
     parent = old.parent
@@ -2266,15 +2287,19 @@ def change_sizer(old, new):
         # (Flex)GridSizer properties "rows", "cols", "growable_rows/cols", "proportions_rows/cols", "hgap", "vgap"
         # will be either re-used from the old sizer or its _restore_properties if the number of children matches
         # unused properties will be stored in the new sizer's _restore_properties
-        if hasattr(old, "_restore_properties") and len(old.children)==old._restore_properties["children"]:
-            _restore_properties = old._restore_properties
+        if undo_data is not None:
+            _restore_properties = dict(undo_data)
         else:
-            _restore_properties = {"children":len(old.children)}
-        for name in ("rows", "cols", "hgap", "vgap",
-                     "growable_rows", "growable_cols", "proportions_rows", "proportions_cols"):
-            if old.check_prop(name):
-                value = old.properties[name].get()
-                _restore_properties[name] = value
+            # try to remember some settings when the user is switching between different sizer types
+            if hasattr(old, "_restore_properties") and len(old.children)==old._restore_properties["children"]:
+                _restore_properties = old._restore_properties
+            else:
+                _restore_properties = {"children":len(old.children)}
+            for name in ("rows", "cols", "hgap", "vgap",
+                         "growable_rows", "growable_cols", "proportions_rows", "proportions_cols"):
+                if old.check_prop(name):
+                    value = old.properties[name].get()
+                    _restore_properties[name] = value
 
         # copy/set properties
         if isinstance(szr, GridSizerBase):
@@ -2310,9 +2335,8 @@ def change_sizer(old, new):
                 szr.properties['growable_cols'].deactivated = False
 
         if len(_restore_properties)>1:
-            # store unused property values for next change (either by the user or undo/redo)
+            # store unused property values for next change by the user
             szr._restore_properties = _restore_properties
-
 
         if szr._IS_GRIDBAG:
             szr._check_slots(remove_only=True)  # for the children, .parent is still the old sizer here
