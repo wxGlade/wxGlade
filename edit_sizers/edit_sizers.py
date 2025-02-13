@@ -1564,7 +1564,7 @@ class _GrowableDialog(wx.Dialog):
         self.Layout()
 
         self.grid.Bind(wx.grid.EVT_GRID_CELL_CHANGED, self.on_cell_changed)
-        self.grid.Bind(wx.EVT_KEY_UP, self.on_grid_key_up)
+        self.grid.Bind(wx.EVT_KEY_DOWN, self.on_grid_key_down)
         self.grid.Bind(wx.grid.EVT_GRID_CELL_LEFT_CLICK, self.on_grid_cell_left_click)
 
     def _on_cell_value_changed(self, row, col, value):
@@ -1587,19 +1587,36 @@ class _GrowableDialog(wx.Dialog):
         self._on_cell_value_changed(row, col, value)
         event.Skip()
 
-    def on_grid_key_up(self, event):
-        # keyboard navigation: when Tab key is pressed in the last column, set focus to the OK button
+    def on_grid_key_down(self, event):
+        # keyboard navigation:
+        # when Tab key is pressed in the last column, set focus to the next row or the OK button
+        # when Enter key is pressed in the bottom right cell, accept the dialog
+        row, col = self.grid.GetGridCursorCoords()
+        is_last_row = row==self.grid.GetNumberRows()-1
         key = event.GetKeyCode()
-        if key==wx.WXK_TAB:
-            if self.grid.GetGridCursorCol()==1:
-                #self.button_OK.SetFocus()
-                self.button_OK.SetFocusFromKbd()
+        if col==1:
+            # in last column
+            if key==wx.WXK_TAB and not event.ShiftDown():
+                # move to next row or from last row to OK button
+                if is_last_row:
+                    self.button_OK.SetFocusFromKbd()
+                else:
+                    self.grid.SetGridCursor(row+1, 0)
                 return
+        else:
+            # in first column
+            if key==wx.WXK_TAB and event.ShiftDown():
+                # move to previous row, if possible
+                if row>0:
+                    self.grid.SetGridCursor(row-1, 1)
+                return
+        if key==wx.WXK_RETURN and is_last_row:
+            # close dialog when in last cell
+            self.EndModal(wx.ID_OK)
+            return
         event.Skip()
 
     def on_grid_cell_left_click(self, event):
-        print("on_grid_cell_left_click")
-        
         row, col = event.GetRow(), event.GetCol()
         if col==0:
             value = self.grid.GetCellValue(row, col)  # old value
@@ -1638,6 +1655,7 @@ class _GrowableDialog(wx.Dialog):
         si.SetMinSize( (self.grid.GetSize()[0],height))
         self.vbox.Fit(self)
         self.old_values = {}
+        self.grid.SetGridCursor(0,0)
 
     def get_value(self):
         growable = []
