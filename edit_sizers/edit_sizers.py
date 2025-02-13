@@ -1878,13 +1878,15 @@ class EditFlexGridSizer(GridSizerBase):
 
     def __init__(self, name, parent, index, rows=3, cols=3, vgap=0, hgap=0):
         GridSizerBase.__init__(self, name, parent, index, rows, cols, vgap, hgap)
+        # properties for growable rows and cols; also the proportions of growth
         self.growable_rows = _GrowablePropertyD([], default_value=[])
         self.proportions_rows = _ProportionsProperty([], default_value=[])
         self.growable_cols = _GrowablePropertyD([], default_value=[])
         self.proportions_cols = _ProportionsProperty([], default_value=[])
+        # set the titles for the dialogs
         self.properties["growable_rows"].title = 'Select growable rows'
-        self.properties["proportions_rows"].title = 'Enter grow proportions'
         self.properties["growable_cols"].title = 'Select growable cols'
+        self.properties["proportions_rows"].title = 'Enter grow proportions'
         self.properties["proportions_cols"].title = 'Enter grow proportions'
         # link the growable indices and proportion properties for easier access and for GUI label indentation
         self.properties["proportions_rows"].main_property = self.properties["growable_rows"]
