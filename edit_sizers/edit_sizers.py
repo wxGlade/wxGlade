@@ -1591,7 +1591,8 @@ class _GrowableDialog(wx.Dialog):
         # keyboard navigation:
         # when Tab key is pressed in the last column, set focus to the next row or the OK button
         # when Enter key is pressed in the bottom right cell, accept the dialog
-        row, col = self.grid.GetGridCursorCoords()
+        row = self.grid.GetGridCursorRow()
+        col = self.grid.GetGridCursorCol()
         is_last_row = row==self.grid.GetNumberRows()-1
         key = event.GetKeyCode()
         if col==1:
