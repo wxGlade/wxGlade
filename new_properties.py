@@ -1375,7 +1375,7 @@ class TextProperty(Property):
         elif self.main_property and self.main_property.enabler:
             # add a spacer to align with the main property (which has an enabler check box)
             size = self.main_property.enabler.GetSize()
-            hsizer.Add(size[0]+3, -1)
+            hsizer.AddSpacer(size[0]+3)
         #else:
             #hsizer.AddSpacer(20)
         # the text control

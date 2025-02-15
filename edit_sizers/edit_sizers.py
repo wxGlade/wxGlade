@@ -1563,7 +1563,7 @@ class _GrowableDialog(wx.Dialog):
 
         self.Layout()
 
-        self.grid.Bind(wx.grid.EVT_GRID_CELL_CHANGED, self.on_cell_changed)
+        self.grid.Bind(compat.EVT_GRID_CELL_CHANGE, self.on_cell_changed)
         self.grid.Bind(wx.EVT_KEY_DOWN, self.on_grid_key_down)
         self.grid.Bind(wx.grid.EVT_GRID_CELL_LEFT_CLICK, self.on_grid_cell_left_click)
 
@@ -1651,9 +1651,10 @@ class _GrowableDialog(wx.Dialog):
             else:
                 self.grid.SetCellValue(row, 1, "0")
 
-        height = self.grid.GetBestHeight(0)
-        si = self.vbox.GetItem(1)
-        si.SetMinSize( (self.grid.GetSize()[0],height))
+        if compat.IS_PHOENIX:
+            height = self.grid.GetBestHeight(0)
+            si = self.vbox.GetItem(1)
+            si.SetMinSize( (self.grid.GetSize()[0],height))
         self.vbox.Fit(self)
         self.old_values = {}
         self.grid.SetGridCursor(0,0)
@@ -1807,7 +1808,7 @@ class _ProportionsProperty(np.TextProperty):
     # for growable rows/cols of FlexGridSizer and derived classes, proportion
 
     def create_additional_controls(self, panel, sizer, hsizer):
-        hsizer.Add(40+3+3, -1)
+        hsizer.AddSpacer(40+3+3)
         return []
 
     def _set_converter(self, value):
