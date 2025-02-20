@@ -1291,6 +1291,7 @@ class TextProperty(Property):
         self.strip = strip
         self.fixed_height = fixed_height  # don't grow the edit field in vertical
         Property.__init__(self, value, default_value, name)
+        self.main_property = None
 
     def toggle_active(self, active=None, refresh=True):
         Property.toggle_active(self, active, refresh)
@@ -1371,6 +1372,10 @@ class TextProperty(Property):
             self.enabler.Bind( wx.EVT_CHECKBOX, lambda event: self.toggle_active(event.IsChecked()) )
             #hsizer.Add(self.enabler, 0, wx.ALIGN_CENTER_VERTICAL)
             hsizer.Add(self.enabler, 0, wx.ALIGN_CENTER_VERTICAL|wx.LEFT, 3)
+        elif self.main_property and self.main_property.enabler:
+            # add a spacer to align with the main property (which has an enabler check box)
+            size = self.main_property.enabler.GetSize()
+            hsizer.AddSpacer(size[0]+3)
         #else:
             #hsizer.AddSpacer(20)
         # the text control

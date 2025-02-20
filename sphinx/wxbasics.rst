@@ -169,7 +169,7 @@ Sizer Examples
        * The FlexGridSizer allows a little more flexibility over cell sizes by allowing individual
          rows and columns to grow and/or expand.
        * In this example, the first column has been allowed to grow horizontally and
-         the second one allowed to grow vertically. |br|
+         the second row to grow vertically. |br|
          Note that this becomes obvious when the window is resized by the user.
 
      - |flex_grid|
@@ -188,7 +188,7 @@ Sizer Examples
      - |wrap1|   |wrap2|
 
 
-In wxGlade you can easily change the sizer type:
+In wxGlade you can easily change the sizer type on *Properties -> Common*:
 
 +--------------------------------------+
 |  .. image:: images/SizerTypes.png    |

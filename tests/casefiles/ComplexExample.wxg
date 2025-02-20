@@ -83,7 +83,8 @@
                             <cols>3</cols>
                             <vgap>0</vgap>
                             <hgap>0</hgap>
-                            <growable_cols>1</growable_cols>
+                            <growable_cols>1,2</growable_cols>
+                            <proportions_cols>2,1</proportions_cols>
                             <object class="sizeritem">
                                 <option>0</option>
                                 <border>5</border>
@@ -103,7 +104,7 @@
                             <object class="sizeritem">
                                 <option>0</option>
                                 <border>5</border>
-                                <flag>wxALL</flag>
+                                <flag>wxALL|wxEXPAND</flag>
                                 <object class="wxButton" name="button_3" base="EditButton">
                                     <label>&amp;Open</label>
                                     <stockitem>OPEN</stockitem>

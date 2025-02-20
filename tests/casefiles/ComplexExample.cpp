@@ -64,7 +64,7 @@ PyOgg2_MyFrame::PyOgg2_MyFrame(wxWindow* parent, wxWindowID id, const wxString& 
     text_ctrl_1->SetBackgroundColour(wxNullColour);
     _gszr_pane1->Add(text_ctrl_1, 1, wxALIGN_CENTER_VERTICAL|wxALL|wxEXPAND, 5);
     button_3 = new wxButton(notebook_1_pane_1, wxID_OPEN, wxEmptyString);
-    _gszr_pane1->Add(button_3, 0, wxALL, 5);
+    _gszr_pane1->Add(button_3, 0, wxALL|wxEXPAND, 5);
     notebook_1_pane_2 = new wxPanel(notebook_1, wxID_ANY);
     notebook_1->AddPage(notebook_1_pane_2, _("Converting Options"));
     wxBoxSizer* sizer_4 = new wxBoxSizer(wxHORIZONTAL);
@@ -123,7 +123,8 @@ PyOgg2_MyFrame::PyOgg2_MyFrame(wxWindow* parent, wxWindowID id, const wxString& 
     notebook_1_pane_4->SetSizer(_gszr_pane4);
     notebook_1_pane_3->SetSizer(_szr_pane3);
     notebook_1_pane_2->SetSizer(sizer_4);
-    _gszr_pane1->AddGrowableCol(1);
+    _gszr_pane1->AddGrowableCol(1, 2);
+    _gszr_pane1->AddGrowableCol(2, 1);
     notebook_1_pane_1->SetSizer(_gszr_pane1);
     sizer_1->AddGrowableRow(0);
     sizer_1->AddGrowableCol(0);

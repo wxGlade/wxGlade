@@ -700,7 +700,7 @@ class Application(EditRoot):
             frame._close_method = preview_class.Close
 
             # remove the temporary file, the compiled version and maybe also __pycache__
-            if not config.debugging or True:
+            if not config.debugging:
                 name = os.path.join(preview_path, preview_module_name+".py")
                 if os.path.isfile(name): os.unlink(name)
                 if compat.PYTHON2:

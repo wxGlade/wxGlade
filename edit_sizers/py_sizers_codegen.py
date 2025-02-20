@@ -3,7 +3,7 @@ Python generator functions for the various wxSizers
 
 @copyright: 2002-2007 Alberto Griggio
 @copyright: 2013-2016 Carsten Grohmann
-@copyright: 2019 Dietmar Schwertberger
+@copyright: 2019-2025 Dietmar Schwertberger
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
@@ -55,6 +55,8 @@ class PythonGridSizerBuilder(BasePythonSizerBuilder):
 class PythonFlexGridSizerBuilder(PythonGridSizerBuilder):
     tmpl_AddGrowableRow = '%(sizer_name)s.AddGrowableRow(%(row)s)\n'
     tmpl_AddGrowableCol = '%(sizer_name)s.AddGrowableCol(%(col)s)\n'
+    tmpl_AddGrowableRow_proportion = '%(sizer_name)s.AddGrowableRow(%(row)s, %(proportion)s)\n'
+    tmpl_AddGrowableCol_proportion = '%(sizer_name)s.AddGrowableCol(%(col)s, %(proportion)s)\n'
 
 
 class PythonGridBagSizerBuilder(PythonFlexGridSizerBuilder):

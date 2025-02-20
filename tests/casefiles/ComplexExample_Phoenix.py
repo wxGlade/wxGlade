@@ -71,7 +71,7 @@ class PyOgg2_MyFrame(wx.Frame):
         _gszr_pane1.Add(self.text_ctrl_1, 1, wx.ALIGN_CENTER_VERTICAL | wx.ALL | wx.EXPAND, 5)
 
         self.button_3 = wx.Button(self.notebook_1_pane_1, wx.ID_OPEN, "")
-        _gszr_pane1.Add(self.button_3, 0, wx.ALL, 5)
+        _gszr_pane1.Add(self.button_3, 0, wx.ALL | wx.EXPAND, 5)
 
         self.notebook_1_pane_2 = wx.Panel(self.notebook_1, wx.ID_ANY)
         self.notebook_1.AddPage(self.notebook_1_pane_2, _("Converting Options"))
@@ -154,7 +154,8 @@ class PyOgg2_MyFrame(wx.Frame):
 
         self.notebook_1_pane_2.SetSizer(sizer_4)
 
-        _gszr_pane1.AddGrowableCol(1)
+        _gszr_pane1.AddGrowableCol(1, 2)
+        _gszr_pane1.AddGrowableCol(2, 1)
         self.notebook_1_pane_1.SetSizer(_gszr_pane1)
 
         sizer_1.AddGrowableRow(0)

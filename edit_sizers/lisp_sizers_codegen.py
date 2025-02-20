@@ -3,7 +3,7 @@ Lisp generator functions for the various wxSizerS
 
 @copyright: 2002-2004 D.H. aka crazyinsomniac on sourceforge.net
 @copyright: 2013-2016 Carsten Grohmann
-@copyright: 2017-2021 Dietmar Schwertberger
+@copyright: 2017-2025 Dietmar Schwertberger
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
@@ -85,6 +85,8 @@ class LispGridSizerBuilder(BaseLispSizerBuilder):
 class LispFlexGridSizerBuilder(LispGridSizerBuilder):
     tmpl_AddGrowableRow = '(wxFlexGridSizer_AddGrowableRow (%(sizer_name)s obj) %(row)s)\n'
     tmpl_AddGrowableCol = '(wxFlexGridSizer_AddGrowableCol (%(sizer_name)s obj) %(col)s)\n'
+    tmpl_AddGrowableRow_proportion = '(wxFlexGridSizer_AddGrowableRow (%(sizer_name)s obj) %(row)s %(proportion)s)\n'
+    tmpl_AddGrowableCol_proportion = '(wxFlexGridSizer_AddGrowableCol (%(sizer_name)s obj) %(col)s %(proportion)s)\n'
 
 
 class LispGridBagSizerBuilder(LispGridSizerBuilder):

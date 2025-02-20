@@ -96,7 +96,7 @@ sub new {
     $self->{_gszr_pane1}->Add($self->{text_ctrl_1}, 1, wxALIGN_CENTER_VERTICAL|wxALL|wxEXPAND, 5);
     
     $self->{button_3} = Wx::Button->new($self->{notebook_1_pane_1}, wxID_OPEN, "");
-    $self->{_gszr_pane1}->Add($self->{button_3}, 0, wxALL, 5);
+    $self->{_gszr_pane1}->Add($self->{button_3}, 0, wxALL|wxEXPAND, 5);
     
     $self->{notebook_1_pane_2} = Wx::Panel->new($self->{notebook_1}, wxID_ANY);
     $self->{notebook_1}->AddPage($self->{notebook_1_pane_2}, _T("Converting Options"));
@@ -179,7 +179,8 @@ sub new {
     
     $self->{notebook_1_pane_2}->SetSizer($self->{sizer_4});
     
-    $self->{_gszr_pane1}->AddGrowableCol(1);
+    $self->{_gszr_pane1}->AddGrowableCol(1, 2);
+    $self->{_gszr_pane1}->AddGrowableCol(2, 1);
     $self->{notebook_1_pane_1}->SetSizer($self->{_gszr_pane1});
     
     $self->{sizer_1}->AddGrowableRow(0);

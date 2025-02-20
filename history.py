@@ -77,7 +77,7 @@ class HistoryPropertyItem(HistoryItem):
         self.new = None
         self.dependent = []
 
-    def finalize(self, monitor):
+    def finalize(self, monitor, undo_data):
         self.new = PropertyValue(self._prop)
         self.path2 = self._prop.owner.get_path()
         self._prop = None
@@ -86,22 +86,35 @@ class HistoryPropertyItem(HistoryItem):
             new = PropertyValue(prop)
             if new!=old:
                 self.dependent.append( [prop.owner.get_path(), prop.name, old, new] )
+        self.undo_data = undo_data
 
     def undo(self):
         owner = common.root.find_widget_from_path(self.path2)
         changed = [self.name]
+        # dependent properties:
+        dependent_owners = []
+        dependent_changed = []
         for path, name, old, new in self.dependent:
             changed.append(name)
             if path==self.path:
                 old.set( owner.properties[name] )
             else:
-                owner_ = common.root.find_widget_from_path(path)
-                old.set( owner_.properties[name] )
+                dependent_owner = common.root.find_widget_from_path(path)
+                if not dependent_owner in dependent_owners:
+                    idx = len(dependent_owners)
+                    dependent_owners.append(dependent_owner)
+                    dependent_changed.append([])
+                else:
+                    idx = dependent_owners.index(dependent_owner)
+                old.set( dependent_owner.properties[name] )
+                dependent_changed[idx].append(name)
 
         p = owner.properties[self.name]
         self.old.set(p)
 
         owner.properties_changed(changed)
+        for owner, changed in zip(dependent_owners, dependent_changed):
+            owner.properties_changed(changed)
         return owner
 
     def redo(self):
@@ -109,15 +122,28 @@ class HistoryPropertyItem(HistoryItem):
         owner = common.root.find_widget_from_path(self.path)
         p = owner.properties[self.name]
         self.new.set(p)
+        # dependent properties:
+        dependent_owners = []
+        dependent_changed = []
         changed = [self.name]
         for path, name, old, new in self.dependent:
             if path==self.path:
                 changed.append(name)
                 new.set( owner.properties[name] )
             else:
-                owner_ = common.root.find_widget_from_path(path)
-                new.set( owner_.properties[name] )
+                dependent_owner = common.root.find_widget_from_path(path)
+                if not dependent_owner in dependent_owners:
+                    idx = len(dependent_owners)
+                    dependent_owners.append(dependent_owner)
+                    dependent_changed.append([])
+                else:
+                    idx = dependent_owners.index(dependent_owner)
+                new.set( dependent_owner.properties[name] )
+                dependent_changed[idx].append(name)
+
         owner.properties_changed(changed)
+        for owner, changed in zip(dependent_owners, dependent_changed):
+            owner.properties_changed(changed)
         return owner
 
     def __repr__(self):
@@ -278,8 +304,8 @@ class HistorySizerSlots(HistoryItem):
 
 
 class HistoryGridSizerRowCol(HistoryItem):
-    # for added / removed rows / cols
-    def __init__(self, sizer, type, index, count=1, inserted_slots=None):
+    # for added / removed rows / cols: count can only be +1 or -1
+    def __init__(self, sizer, type, index, count=1, inserted_slots=None, growable=None):
         # count: negative if removed
         self.path = sizer.get_path()
         self.type = type  # "row" or "col"
@@ -287,25 +313,28 @@ class HistoryGridSizerRowCol(HistoryItem):
         self.count = count
         self.inserted_slots = inserted_slots
 
+        # for removed row/col from FlexGridSizer and derived: keep track of growable and proportion
+        self.growable = growable
+
     def undo(self):
         sizer = common.root.find_widget_from_path(self.path)
         if self.type=="row" and self.count==1:
             sizer.remove_row(self.index, user=False, remove_slots=self.inserted_slots)
         elif self.type=="row" and self.count==-1:
-            sizer.insert_row(self.index, user=False)
+            sizer.insert_row(self.index, user=False, growable=self.growable)
         elif self.type=="col" and self.count==1:
             sizer.remove_col(self.index, user=False, remove_slots=self.inserted_slots)
         elif self.type=="col" and self.count==-1:
-            sizer.insert_col(self.index, user=False)
+            sizer.insert_col(self.index, user=False, growable=self.growable)
 
     def redo(self):
         sizer = common.root.find_widget_from_path(self.path)
         if self.type=="row" and self.count==1:
-            sizer.insert_row(self.index, user=False)
+            sizer.insert_row(self.index, user=False, growable=self.growable)
         elif self.type=="row" and self.count==-1:
             sizer.remove_row(self.index, user=False)
         elif self.type=="col" and self.count==1:
-            sizer.insert_col(self.index, user=False)
+            sizer.insert_col(self.index, user=False, growable=self.growable)
         elif self.type=="col" and self.count==-1:
             sizer.remove_col(self.index, user=False)
 
@@ -320,6 +349,7 @@ class History(object):
         self._repeat_info = []  # name of properties
         self._repeating = False
         self.can_undo = self.can_redo = self.can_repeat = False
+        self.state = None  # used: "undo", "redo", None
 
     def reset(self):
         del self.actions[:]
@@ -344,21 +374,29 @@ class History(object):
         self.can_undo = bool(self.actions)
 
     def undo(self, focused_widget):
+        # while an undo is ongoing self.state will be set to "undo" and self.undo_data might contain restore info
         if not self.actions:
             return wx.Bell()
         action = self.actions.pop(0)
+        self.state = "undo"
+        self.undo_data = getattr(action, "_undo_data", None)
         widget = action.undo()
+        self.state = None
+        self.state = self.undo_data = None
         self.actions_redo.append(action)
         misc.set_focused_widget(widget)
 
     def redo(self, focused_widget):
+        # while a redo is ongoing self.state will be set to "undo"
         if not self.actions_redo:
             # XXX check whether it's the same
             repeated = self.repeat(focused_widget, multiple=False)
             if not repeated: wx.Bell()
             return
         action = self.actions_redo.pop(-1)
+        self.state = "redo"
         widget = action.redo()
+        self.state = None
         self.actions.insert(0, action)
         misc.set_focused_widget(widget)
 
@@ -437,13 +475,18 @@ class History(object):
         "to be called when property value is still the old one"
         if config.debugging: print("property_changing", prop)
         self._buffer = HistoryPropertyItem(prop)
-        self._monitor = []  # list of (property, PropertyValue)
+        self._monitor = []    # list of (property, PropertyValue)
+        self._undo_data = {}  # e.g. used by edit_sizers.change_sizer
 
     def set_property_changing(self, prop):
         # same as before, but this will track the clicked flag
         if config.debugging: print("set_property_changing", prop)
         self._buffer = HistorySetPropertyItem(prop)
-        self._monitor = []  # list of (property, PropertyValue)
+        self._monitor = []    # list of (property, PropertyValue)
+        self._undo_data = {}  # e.g. used by edit_sizers.change_sizer
+
+    def store_undo_data(self, data):
+        self._undo_data.update(data)
 
     def monitor_property(self, prop):
         # monitor dependent properties; these will be un-/re-done together with the main property
@@ -454,8 +497,8 @@ class History(object):
         # helper
         item = self._buffer
         self._buffer = None  if not stop else  False
-        item.finalize(self._monitor)
-        del self._monitor
+        item.finalize(self._monitor, self._undo_data)
+        del self._monitor, self._undo_data
         return item
 
     def property_changed(self, prop, user=True):
@@ -503,5 +546,5 @@ class History(object):
         # called from SizerBase.insert_slot and add_slot
         self.add_item( HistorySizerSlots(sizer, index, count), can_repeat=False )
 
-    def gridsizer_row_col_changed(self, sizer, type, index, count, inserted_slots=None):
-        self.add_item( HistoryGridSizerRowCol(sizer, type, index, count, inserted_slots), can_repeat=False )
+    def gridsizer_row_col_changed(self, sizer, type, index, count, inserted_slots=None, growable=None):
+        self.add_item( HistoryGridSizerRowCol(sizer, type, index, count, inserted_slots, growable), can_repeat=False )
