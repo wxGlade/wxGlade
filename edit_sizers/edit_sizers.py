@@ -1699,7 +1699,7 @@ class _GrowablePropertyD(np.DialogPropertyD):
         value, proportions = dialog.get_value()
         proportions_p = self.secondary_property
         changed = []
-        if value!=self.value:
+        if value!=self.get_value():
             changed.append(self)
             self.text.SetValue(self._convert_to_text(value))
         if set(proportions)=={1} and not proportions_p.value:
@@ -1721,17 +1721,19 @@ class _GrowablePropertyD(np.DialogPropertyD):
         if proportions_p in changed:
             proportions_p.text.SetValue(proportions_p._convert_to_text(proportions))
             proportions_p.value = proportions
-        common.root.saved = False
-        self.owner.properties_changed([c.name for c in changed])
-        common.history.property_changed(self)
 
-        # activate/deactivate?
+        deactivated_old = self.deactivated
         if self.deactivated and value:
             self.deactivated = False
         elif not self.deactivated and not value:
             self.deactivated = True
-        else:
-            return  # no change
+
+        common.root.saved = False
+        self.owner.properties_changed([c.name for c in changed])
+        common.history.property_changed(self)
+
+        # activated/deactivated?
+        if self.deactivated==deactivated_old: return
         self.activate_controls()
         proportions_p.activate_controls()
 
@@ -1885,6 +1887,9 @@ class EditFlexGridSizer(GridSizerBase):
         self.proportions_rows = _ProportionsProperty([], default_value=[])
         self.growable_cols = _GrowablePropertyD([], default_value=[])
         self.proportions_cols = _ProportionsProperty([], default_value=[])
+        # block the dependent properties
+        self.properties["proportions_rows"].set_blocked()
+        self.properties["proportions_cols"].set_blocked()
         # set the titles for the dialogs
         self.properties["growable_rows"].title = 'Select growable rows'
         self.properties["growable_cols"].title = 'Select growable cols'
