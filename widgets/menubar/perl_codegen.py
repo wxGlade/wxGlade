@@ -100,7 +100,7 @@ class PerlMenubarGenerator(wcodegen.PerlWidgetCodeWriter):
         ret = []
 
         def do_get(item):
-            if item.handler:
+            if item.handler and item.handler!="---":
                 ret.append((item, 'EVT_MENU', item.handler, 'wxCommandEvent'))
             for c in item.children:
                 do_get(c)
