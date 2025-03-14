@@ -56,9 +56,9 @@ config = {
                    'wxTAB_TRAVERSAL', 'wxCLIP_CHILDREN'],
     'events': {
         'EVT_CLOSE': {'type':'wxCloseEvent'},
-        'EVT_MENU_OPEN': {'type':'MenuEvent'},
-        'EVT_MENU_CLOSE': {'type':'MenuEvent'},
-        'EVT_MENU_HIGHLIGHT': {'type':'MenuEvent'},
-        'EVT_MENU_HIGHLIGHT_ALL': {'type':'MenuEvent'},
+        'EVT_MENU_OPEN': {'type':'wxMenuEvent'},
+        'EVT_MENU_CLOSE': {'type':'wxMenuEvent'},
+        'EVT_MENU_HIGHLIGHT': {'type':'wxMenuEvent'},
+        'EVT_MENU_HIGHLIGHT_ALL': {'type':'wxMenuEvent'},
     },
 }
