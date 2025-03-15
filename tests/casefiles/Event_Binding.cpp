@@ -39,13 +39,13 @@ MyFrame::MyFrame(wxWindow* parent, wxWindowID id, const wxString& title, const w
 
 BEGIN_EVENT_TABLE(MyFrame, wxFrame)
     // begin wxGlade: MyFrame::event_table
-    EVT_LEFT_DOWN(wxID_ANY, MyFrame::on_left_down_panel)
+    EVT_LEFT_DOWN(MyFrame::on_left_down_panel)
     EVT_BUTTON(wxID_ANY, MyFrame::on_button)
-    EVT_LEFT_DOWN(wxID_ANY, MyFrame::on_left_down)
-    EVT_MOUSE_EVENTS(wxID_ANY, MyFrame::on_mouse_events)
+    EVT_LEFT_DOWN(MyFrame::on_left_down)
+    EVT_MOUSE_EVENTS(MyFrame::on_mouse_events)
     EVT_GRID_CMD_CELL_CHANGED(wxID_ANY, MyFrame::on_grid_cmd_cell_changed)
     EVT_TEXT_ENTER(wxID_ANY, MyFrame::on_grid_text_enter)
-    EVT_LEFT_DOWN(wxID_ANY, MyFrame::on_left_down_frame)
+    EVT_LEFT_DOWN(MyFrame::on_left_down_frame)
     // end wxGlade
 END_EVENT_TABLE();
 

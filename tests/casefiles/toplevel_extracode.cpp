@@ -35,8 +35,8 @@ MyFrame::MyFrame(wxWindow* parent, wxWindowID id, const wxString& title, const w
 
 BEGIN_EVENT_TABLE(MyFrame, wxFrame)
     // begin wxGlade: MyFrame::event_table
-    EVT_CLOSE(wxID_ANY, MyFrame::on_close_frame)
-    EVT_MENU_CLOSE(wxID_ANY, MyFrame::on_menu_close_frame)
+    EVT_CLOSE(MyFrame::on_close_frame)
+    EVT_MENU_CLOSE(MyFrame::on_menu_close_frame)
     // end wxGlade
 END_EVENT_TABLE();
 
@@ -48,7 +48,7 @@ void MyFrame::on_close_frame(wxCloseEvent &event)  // wxGlade: MyFrame.<event_ha
     wxLogDebug(wxT("Event handler (MyFrame::on_close_frame) not implemented yet"));
 }
 
-void MyFrame::on_menu_close_frame(MenuEvent &event)  // wxGlade: MyFrame.<event_handler>
+void MyFrame::on_menu_close_frame(wxMenuEvent &event)  // wxGlade: MyFrame.<event_handler>
 {
     event.Skip();
     // notify the user that he hasn't implemented the event handler yet
@@ -78,7 +78,7 @@ MyDialog::MyDialog(wxWindow* parent, wxWindowID id, const wxString& title, const
 
 BEGIN_EVENT_TABLE(MyDialog, wxDialog)
     // begin wxGlade: MyDialog::event_table
-    EVT_CLOSE(wxID_ANY, MyDialog::on_close_dialog)
+    EVT_CLOSE(MyDialog::on_close_dialog)
     // end wxGlade
 END_EVENT_TABLE();
 
