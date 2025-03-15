@@ -116,6 +116,7 @@ if 'sdist' in sys.argv:
                                'wxGlade.desktop',
                                'wxglade.pyw',
                                'widgets/widgets.txt',
+                               'codegen/EVT_info.txt',
                                '__init__.py',
                                'test.py'
                                ])
@@ -130,6 +131,7 @@ if 'sdist' in sys.argv:
 else:
     package_data = {
         'wxglade.widgets': ['widgets.txt'],
+        'wxglade.codegen': ['EVT_info.txt'],
         'wxglade': ['res/*.*'],
     }
 

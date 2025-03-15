@@ -74,7 +74,8 @@ FILES2INCLUDE = [
     'NEWS.txt',
     'README.txt',
     'TODO.txt',
-    'widgets\widgets.txt',
+    'widgets\\widgets.txt',
+    'codegen\\EVT_info.txt',
     ]
 """\
 (DATA) files to add the collection process without processing
