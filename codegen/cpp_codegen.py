@@ -1009,6 +1009,25 @@ void %(klass)s::%(handler)s(%(evt_type)s &event)  // wxGlade: %(klass)s.<event_h
 
         return code_lines
 
+    def _get_EVT_no_ID(self):
+        # in EVT_info there is a list of EVT_... macros that don't have the window ID as argument
+        if hasattr(self, "EVT_no_ID"): return self.EVT_no_ID
+        self.EVT_no_ID = set()
+        import wx
+        all_wx_EVTs = set( s for s in dir(wx) if s.startswith("EVT_") )
+        EVT_info_path = os.path.join(config.wxglade_path, 'codegen/EVT_info.txt')
+        for line in open(EVT_info_path):
+            line = line.strip()
+            if not line or line.startswith("#"): continue
+            if line.endswith("*"):
+                # a wildcard -> match all
+                # this does only work with events in wx., which is OK, as these are all in wx\window.h
+                line = line[:-1]
+                self.EVT_no_ID.update( s for s in all_wx_EVTs if s.startswith(line) )
+            else:
+                self.EVT_no_ID.add(line)
+        return self.EVT_no_ID
+
     def generate_code_event_table(self, code_obj, is_new, tab, prev_src, event_handlers):
         """Generate code for event table declaration.
         
@@ -1032,13 +1051,16 @@ void %(klass)s::%(handler)s(%(evt_type)s &event)  // wxGlade: %(klass)s.<event_h
             write('\nBEGIN_EVENT_TABLE(%s, %s)\n' % (code_obj.klass, code_obj.WX_CLASS))
         write(tab + '// begin wxGlade: %s::event_table\n' % code_obj.klass)
 
+        # in EVT_info there is a list of EVT_... macros that don't have the window ID as argument
+        EVT_no_ID = self._get_EVT_no_ID()
+
         for obj, event, handler, evt_type in event_handlers:
             if obj is None: continue
             if isinstance(obj, str):
                 win_id = obj
             else:
                 win_id = self.generate_code_id(obj)[1]
-            if 'EVT_NAVIGATION_KEY' in event:
+            if event in EVT_no_ID:
                 tmpl = '%(tab)s%(event)s(%(klass)s::%(handler)s)\n'
             else:
                 tmpl = '%(tab)s%(event)s(%(win_id)s, %(klass)s::%(handler)s)\n'
