@@ -264,13 +264,16 @@ from %(top_win_module)s import %(top_win_class)s\n\n"""
     def init_lang(self, app):
         if self.preview and compat.PYTHON2:
             self.header_lines.append('from __future__ import print_function\n')
-        self.header_lines.append('from typing import Any, TYPE_CHECKING\n')
-        self.header_lines.append('''\
+        if self._use_gettext:
+            self.header_lines.append('from typing import Any, TYPE_CHECKING\n')
+            self.header_lines.append('''
 if TYPE_CHECKING:
     # Make sure type checkers understand the gettext function
     def _(s: str) -> str: ...
 
 ''')
+        else:
+            self.header_lines.append('from typing import Any\n')
         self.header_lines.append('import wx\n')
 
     def add_app(self, app, top_win):
