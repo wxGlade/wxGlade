@@ -264,6 +264,13 @@ from %(top_win_module)s import %(top_win_class)s\n\n"""
     def init_lang(self, app):
         if self.preview and compat.PYTHON2:
             self.header_lines.append('from __future__ import print_function\n')
+        self.header_lines.append('from typing import Any, TYPE_CHECKING\n')
+        self.header_lines.append('''\
+if TYPE_CHECKING:
+    # Make sure type checkers understand the gettext function
+    def _(s: str) -> str: ...
+
+''')
         self.header_lines.append('import wx\n')
 
     def add_app(self, app, top_win):
@@ -299,7 +306,7 @@ from %(top_win_module)s import %(top_win_class)s\n\n"""
             base = mycn(code_obj.WX_CLASS)
             if custom_base: base = ", ".join([b.strip() for b in custom_base.split(',')])
             write('\nclass %s(%s):\n' % (self.get_class(fmt_klass), base))
-            write(self.tabs(1) + 'def __init__(self, *args, **kwds):\n')
+            write(self.tabs(1) + 'def __init__(self, *args: Any, **kwds: Any) -> None:\n')
         elif custom_base:
             # custom base classes set, but "overwrite existing sources" not set. Issue a warning about this
             self.warning( '%s has custom base classes, but you are not overwriting '
@@ -408,7 +415,9 @@ from %(top_win_module)s import %(top_win_class)s\n\n"""
         # Python has two indentation levels
         #  1st) for function declaration
         #  2nd) for function body
-        stub = [self.tabs(1), "def %(handler)s(self, event):"]
+        # The type hint for the event could be more descriptive if
+        # command events could be detected.
+        stub = [self.tabs(1), "def %(handler)s(self, event: wx.Event) -> None:"]
         if self._mark_blocks: stub.append("  # wxGlade: %(klass)s.<event_handler>")
         stub.append( """\n%(tab)sprint("Event handler '%(handler)s' not implemented!")\n""" )
         stub.append( '%(tab)sevent.Skip()\n' )
