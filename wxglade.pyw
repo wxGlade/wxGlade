@@ -10,12 +10,8 @@ Entry point of wxGlade on windows
 """
 
 import sys, traceback
-import gettext
-t = gettext.translation(domain="wxglade", localedir="locale", fallback=True)
-t.install("wxglade")
-
-import config
 import wxglade
+import config
 
 msg   = u''  # Message to show in the message box (see {show_error_details())
 title = u''  # Title of the message box
