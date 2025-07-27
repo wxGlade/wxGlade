@@ -56,27 +56,31 @@ class SourceFileContent(BaseSourceFileContent):
         for line in tmp_in:
             if line.endswith("\r\n"):  # normalize line ending for files on Windows
                 line = "%s\n"%line[:-2]
-            quote_index = -1
             if not inside_triple_quote:
-                triple_dquote_index = line.find('"""')
-                triple_squote_index = line.find("'''")
-                if triple_squote_index == -1:
-                    quote_index = triple_dquote_index
-                    tmp_quote_str = '"""'
-                elif triple_dquote_index == -1:
-                    quote_index = triple_squote_index
-                    tmp_quote_str = "'''"
-                else:
-                    quote_index, tmp_quote_str = min( (triple_squote_index, "'''"),
-                                                      (triple_dquote_index, '"""') )
-
-            if not inside_triple_quote and quote_index != -1:
-                inside_triple_quote = True
-                triple_quote_str = tmp_quote_str
-            if inside_triple_quote:
-                end_index = line.rfind(triple_quote_str)
-                if quote_index < end_index and end_index != -1:
+                if '"""' in line or "'''" in line:
+                    # Find which comes first
+                    d_idx = line.find('"""') if '"""' in line else -1
+                    s_idx = line.find("'''") if "'''" in line else -1
+                    if d_idx != -1 and (s_idx == -1 or d_idx < s_idx):
+                        triple_quote_str = '"""'
+                        quote_index = d_idx
+                    else:
+                        triple_quote_str = "'''"
+                        quote_index = s_idx
+                    # Check if both start and end are on the same line
+                    if line.count(triple_quote_str) == 2:
+                        out_lines.append(line)
+                        continue  # preserve single-line triple-quoted string
+                    inside_triple_quote = True
+                    out_lines.append(line)
+                    continue
+            else:
+                # Look for end of triple-quoted string
+                out_lines.append(line)
+                if triple_quote_str and triple_quote_str in line:
                     inside_triple_quote = False
+                    triple_quote_str = None
+                continue
 
             result = self.rec_class_decl.match(line)
             if not inside_triple_quote and not inside_block and result:
