@@ -78,7 +78,10 @@ class PythonMenubarGenerator(wcodegen.PythonWidgetCodeWriter):
                         out.append( '%s%s.Append(%s, %s, %s)\n' % ( assignment, menu, id, label, help_str) )
 
                     if item.handler and (not self.codegen.preview or not item.handler.startswith("lambda ")):
-                        handler = item.handler if "." in item.handler else "self.%s"%item.handler
+                        if "." in item.handler or "lambda" in item.handler:
+                            handler = item.handler
+                        else:
+                            handler = "self.%s"%item.handler
                         out.append( "self.Bind(wx.EVT_MENU, %s, %s)\n"%(handler, id_access) )
 
         for m in obj.menus:
