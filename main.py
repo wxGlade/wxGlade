@@ -4,7 +4,7 @@ widgets and initializes all the stuff (tree, frame_property, etc.)
 
 @copyright: 2002-2007 Alberto Griggio
 @copyright: 2011-2016 Carsten Grohmann
-@copyright: 2016-2021 Dietmar Schwertberger
+@copyright: 2016-2025 Dietmar Schwertberger
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
