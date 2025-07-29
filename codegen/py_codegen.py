@@ -384,10 +384,7 @@ from %(top_win_module)s import %(top_win_class)s\n\n"""
             if not handler.startswith("lambda "):
                 handler = 'self.%s'%handler
 
-            if 'EVT_NAVIGATION_KEY' in event:
-                tmpl = '%(tab)sself.Bind(%(event)s, %(handler)s)\n'
-            else:
-                tmpl = '%(tab)s%(obj_name_id)s.Bind(%(event)s, %(handler)s)\n'
+            tmpl = '%(tab)s%(obj_name_id)s.Bind(%(event)s, %(handler)s)\n'
 
             lines = [tmpl % {'tab':tab, 'event':self.cn(event), 'handler':handler, 'obj_name_id':obj_name_id}]
 
