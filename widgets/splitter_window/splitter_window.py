@@ -74,6 +74,11 @@ class EditSplitterWindow(ManagedBase, EditStylesMixin):
     def _get_slot_label(self, index):
         return "SLOT %s"%self._get_label(index)
 
+    def _get_tree_image(self):
+        if self.orientation=="wxSPLIT_VERTICAL":
+            return 'EditSplitterWindow'
+        return 'EditSplitterWindow-h'
+
     def create_widget(self):
         size = self._get_default_or_client_size()
         self.widget = wx.SplitterWindow(self.parent_window.widget, wx.ID_ANY, size=size, style=self.style)
