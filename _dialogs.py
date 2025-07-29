@@ -28,10 +28,10 @@ class MakeRowColGrowableDlg(wx.Dialog):
         sizer_2 = wx.StaticBoxSizer(wx.StaticBox(self, wx.ID_ANY, "Make growable"), wx.VERTICAL)
         sizer_1.Add(sizer_2, 1, wx.ALL | wx.EXPAND, 6)
 
-        self.cb_row_growable = wx.CheckBox(self, wx.ID_ANY, "Row")
+        self.cb_row_growable = wx.CheckBox(sizer_2.GetStaticBox(), wx.ID_ANY, "Row")
         sizer_2.Add(self.cb_row_growable, 0, wx.ALL, 4)
 
-        self.cb_col_growable = wx.CheckBox(self, wx.ID_ANY, "Column")
+        self.cb_col_growable = wx.CheckBox(sizer_2.GetStaticBox(), wx.ID_ANY, "Column")
         sizer_2.Add(self.cb_col_growable, 0, wx.ALL, 4)
 
         sizer_3 = wx.BoxSizer(wx.HORIZONTAL)
