@@ -22,6 +22,8 @@ PyOgg2_MyFrame::PyOgg2_MyFrame(wxWindow* parent, wxWindowID id, const wxString& 
     // begin wxGlade: PyOgg2_MyFrame::PyOgg2_MyFrame
     SetSize(wxSize(600, 500));
     SetTitle(_("mp3 2 ogg"));
+    
+    // Menu Bar
     Mp3_To_Ogg_menubar = new wxMenuBar();
     wxMenu *wxglade_tmp_menu;
     wxglade_tmp_menu = new wxMenu();
@@ -35,6 +37,7 @@ PyOgg2_MyFrame::PyOgg2_MyFrame(wxWindow* parent, wxWindowID id, const wxString& 
     Bind(wxEVT_MENU, &PyOgg2_MyFrame::OnAboutDialog, this, wxID_ABOUT);
     Mp3_To_Ogg_menubar->Append(wxglade_tmp_menu, _("&Help"));
     SetMenuBar(Mp3_To_Ogg_menubar);
+    // Menu Bar end
     Mp3_To_Ogg_statusbar = CreateStatusBar(2);
     int Mp3_To_Ogg_statusbar_widths[] = { -2, -1 };
     Mp3_To_Ogg_statusbar->SetStatusWidths(2, Mp3_To_Ogg_statusbar_widths);
@@ -47,11 +50,15 @@ PyOgg2_MyFrame::PyOgg2_MyFrame(wxWindow* parent, wxWindowID id, const wxString& 
     for(int i = 0; i < Mp3_To_Ogg_statusbar->GetFieldsCount(); ++i) {
         Mp3_To_Ogg_statusbar->SetStatusText(Mp3_To_Ogg_statusbar_fields[i], i);
     }
+    
+    // Tool Bar
     Mp3_To_Ogg_toolbar = new wxToolBar(this, -1, wxDefaultPosition, wxDefaultSize, wxTB_HORIZONTAL|wxTB_TEXT);
     SetToolBar(Mp3_To_Ogg_toolbar);
     Mp3_To_Ogg_toolbar->AddTool(wxID_OPEN, _("&Open"), wxNullBitmap, wxNullBitmap, wxITEM_NORMAL, _("Open a file"), _("Open a MP3 file to convert into OGG format"));
     Bind(wxEVT_MENU, &PyOgg2_MyFrame::OnOpen, this, wxID_OPEN);
     Mp3_To_Ogg_toolbar->Realize();
+    // Tool Bar end
+    
     wxFlexGridSizer* sizer_1 = new wxFlexGridSizer(3, 1, 0, 0);
     notebook_1 = new wxNotebook(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxNB_BOTTOM);
     sizer_1->Add(notebook_1, 1, wxEXPAND, 0);
@@ -64,6 +71,7 @@ PyOgg2_MyFrame::PyOgg2_MyFrame(wxWindow* parent, wxWindowID id, const wxString& 
     _gszr_pane1->Add(text_ctrl_1, 1, wxALIGN_CENTER_VERTICAL|wxALL|wxEXPAND, 5);
     button_3 = new wxButton(notebook_1_pane_1, wxID_OPEN, wxEmptyString);
     _gszr_pane1->Add(button_3, 0, wxALL, 5);
+    
     notebook_1_pane_2 = new wxPanel(notebook_1, wxID_ANY);
     notebook_1->AddPage(notebook_1_pane_2, _("Converting Options"));
     wxBoxSizer* sizer_4 = new wxBoxSizer(wxHORIZONTAL);
@@ -80,11 +88,13 @@ PyOgg2_MyFrame::PyOgg2_MyFrame(wxWindow* parent, wxWindowID id, const wxString& 
     cbx_love->SetToolTip(_("Yes!\nWe ♥ it!"));
     cbx_love->SetValue(1);
     sizer_3->Add(cbx_love, 0, wxALL|wxSHAPED, 5);
+    
     notebook_1_pane_3 = new wxPanel(notebook_1, wxID_ANY);
     notebook_1->AddPage(notebook_1_pane_3, _("Converting Progress"));
     wxBoxSizer* _szr_pane3 = new wxBoxSizer(wxHORIZONTAL);
     text_ctrl_2 = new wxTextCtrl(notebook_1_pane_3, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE);
     _szr_pane3->Add(text_ctrl_2, 1, wxALL|wxEXPAND, 5);
+    
     notebook_1_pane_4 = new wxPanel(notebook_1, wxID_ANY);
     notebook_1->AddPage(notebook_1_pane_4, _("Output File"));
     wxFlexGridSizer* _gszr_pane4 = new wxFlexGridSizer(2, 3, 0, 0);
@@ -101,6 +111,7 @@ PyOgg2_MyFrame::PyOgg2_MyFrame(wxWindow* parent, wxWindowID id, const wxString& 
     checkbox_1->SetValue(1);
     _gszr_pane4->Add(checkbox_1, 0, wxALL|wxEXPAND, 5);
     _gszr_pane4->Add(20, 20, 0, 0, 0);
+    
     notebook_1_pane_5 = new wxPanel(notebook_1, wxID_ANY);
     notebook_1->AddPage(notebook_1_pane_5, _("Some Text"));
     wxBoxSizer* sizer_5 = new wxBoxSizer(wxHORIZONTAL);

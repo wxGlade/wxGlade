@@ -204,13 +204,16 @@ class CppCodeGenerator(wcodegen.CppWidgetCodeWriter):
 
         klass = obj.get_instantiation_class(self.cn, self.cn_class)
 
-        init = ['%s = new %s(this, -1%s);\n' % (obj.name, klass, style), 'SetToolBar(%s);\n' % obj.name
+        init = ['\n', '// Tool Bar\n', '%s = new %s(this, -1%s);\n' % (obj.name, klass, style), 'SetToolBar(%s);\n' % obj.name
                 ] + self.get_properties_code(obj) + self.get_layout_code(obj)
         ids = self.get_ids_code(obj)
         return init, ids, []
 
     def get_layout_code(self, obj):
-        return ['%sRealize();\n' % self.codegen.format_generic_access(obj)]
+        ret = ['%sRealize();\n' % self.codegen.format_generic_access(obj)]
+        if not obj.IS_TOPLEVEL:
+            ret.extend( ['// Tool Bar end\n', '\n'] )
+        return ret
 
     def get_properties_code(self, obj):
         out = []

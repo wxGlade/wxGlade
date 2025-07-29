@@ -22,10 +22,14 @@ MyFrame::MyFrame(wxWindow* parent, wxWindowID id, const wxString& title, const w
     // begin wxGlade: MyFrame::MyFrame
     SetSize(wxSize(200, 200));
     SetTitle(wxT("frame_1"));
+    
+    // Tool Bar
     frame_1_toolbar = new wxToolBar(this, -1);
     SetToolBar(frame_1_toolbar);
     frame_1_toolbar->AddTool(wxID_UP, wxT("UpDown"), wxArtProvider::GetBitmap(wxART_GO_UP, wxART_OTHER, wxSize(32, 32)), wxArtProvider::GetBitmap(wxART_GO_DOWN, wxART_OTHER, wxSize(32, 32)), wxITEM_CHECK, wxT("Up or Down"), wxT("Up or Down"));
     frame_1_toolbar->Realize();
+    // Tool Bar end
+    
     wxBoxSizer* sizer_1 = new wxBoxSizer(wxVERTICAL);
     label_1 = new wxStaticText(this, wxID_ANY, wxT("placeholder - every design\nneeds a toplevel window"), wxDefaultPosition, wxDefaultSize, wxALIGN_CENTER_HORIZONTAL);
     sizer_1->Add(label_1, 1, wxALL|wxEXPAND, 0);

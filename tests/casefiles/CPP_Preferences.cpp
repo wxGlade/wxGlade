@@ -70,6 +70,7 @@ wxGladePreferencesUI::wxGladePreferencesUI(wxWindow* parent, wxWindowID id, cons
     buttons_per_row = new wxSpinCtrl(notebook_1_pane_1, wxID_ANY, wxT("5"), wxDefaultPosition, wxDefaultSize, 0, 1, 100);
     buttons_per_row->SetMinSize(wxSize(196, -1));
     sizer_4->Add(buttons_per_row, 1, wxALIGN_CENTER_VERTICAL|wxALL, 5);
+    
     notebook_1_pane_2 = new wxPanel(notebook_1, wxID_ANY);
     notebook_1->AddPage(notebook_1_pane_2, _("Other"));
     wxBoxSizer* sizer_5 = new wxBoxSizer(wxVERTICAL);

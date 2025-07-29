@@ -22,6 +22,8 @@ MyFrame::MyFrame(wxWindow* parent, wxWindowID id, const wxString& title, const w
     // begin wxGlade: MyFrame::MyFrame
     SetSize(wxSize(400, 300));
     SetTitle(wxT("frame"));
+    
+    // Menu Bar
     frame_menubar = new wxMenuBar();
     wxMenu *wxglade_tmp_menu;
     wxMenuItem *wxglade_tmp_item;
@@ -32,12 +34,17 @@ MyFrame::MyFrame(wxWindow* parent, wxWindowID id, const wxString& title, const w
     Bind(wxEVT_MENU, &MyFrame::on_menu_item2, this, wxglade_tmp_item->GetId());
     frame_menubar->Append(wxglade_tmp_menu, wxT("Menu 1"));
     SetMenuBar(frame_menubar);
+    // Menu Bar end
+    
+    // Tool Bar
     frame_toolbar = new wxToolBar(this, -1);
     SetToolBar(frame_toolbar);
     wxToolBarToolBase *wxglade_tmp_tool;
     wxglade_tmp_tool = frame_toolbar->AddTool(wxID_ANY, wxT("My Tool"), wxBitmap(wxT("..\\..\\icons\\button.png"), wxBITMAP_TYPE_ANY), wxNullBitmap, wxITEM_NORMAL, wxEmptyString, wxEmptyString);
     Bind(wxEVT_MENU, &MyFrame::on_my_tool, this, wxglade_tmp_tool->GetId());
     frame_toolbar->Realize();
+    // Tool Bar end
+    
     wxBoxSizer* sizer_1 = new wxBoxSizer(wxVERTICAL);
     sizer_1->Add(0, 0, 0, 0, 0);
     

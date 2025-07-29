@@ -200,6 +200,7 @@ MyFrame::MyFrame(wxWindow* parent, wxWindowID id, const wxString& title, const w
     _1_X_F_copy_5 = new wxTextCtrl(notebook_1_pane_1, wxID_ANY, wxEmptyString);
     _1_X_F_copy_5->SetMinSize(wxDLG_UNIT(_1_X_F_copy_5, wxSize(100, -1)));
     sizer_6_dlgm1->Add(_1_X_F_copy_5, 1, wxEXPAND|wxFIXED_MINSIZE, 0);
+    
     notebook_1_WrapSizer = new wxPanel(notebook_1, wxID_ANY);
     notebook_1->AddPage(notebook_1_WrapSizer, _("WrapSizer"));
     wxBoxSizer* sizer_8 = new wxBoxSizer(wxHORIZONTAL);
@@ -375,6 +376,7 @@ MyFrame::MyFrame(wxWindow* parent, wxWindowID id, const wxString& title, const w
     _1_X_F_copy_30_copy_5 = new wxTextCtrl(notebook_1_WrapSizer, wxID_ANY, wxEmptyString);
     _1_X_F_copy_30_copy_5->SetMinSize(wxDLG_UNIT(_1_X_F_copy_30_copy_5, wxSize(100, -1)));
     sizer_6_dlgm1_copy_1->Add(_1_X_F_copy_30_copy_5, 1, wxEXPAND|wxFIXED_MINSIZE, 0);
+    
     notebook_1_StaticBoxSizer = new wxPanel(notebook_1, wxID_ANY);
     notebook_1->AddPage(notebook_1_StaticBoxSizer, _("StaticBoxSizer"));
     wxBoxSizer* sizer_3 = new wxBoxSizer(wxHORIZONTAL);
@@ -550,6 +552,7 @@ MyFrame::MyFrame(wxWindow* parent, wxWindowID id, const wxString& title, const w
     _1_X_F_copy_11 = new wxTextCtrl(sizer_6_dlgm1_copy->GetStaticBox(), wxID_ANY, wxEmptyString);
     _1_X_F_copy_11->SetMinSize(wxDLG_UNIT(_1_X_F_copy_11, wxSize(100, -1)));
     sizer_6_dlgm1_copy->Add(_1_X_F_copy_11, 1, wxEXPAND|wxFIXED_MINSIZE, 0);
+    
     notebook_1_GridSizer = new wxPanel(notebook_1, wxID_ANY);
     notebook_1->AddPage(notebook_1_GridSizer, _("GridSizer"));
     wxGridSizer* sizer_4 = new wxGridSizer(7, 8, 0, 0);
@@ -711,6 +714,7 @@ MyFrame::MyFrame(wxWindow* parent, wxWindowID id, const wxString& title, const w
     _1_X_F_copy_17 = new wxTextCtrl(notebook_1_GridSizer, wxID_ANY, wxEmptyString);
     _1_X_F_copy_17->SetMinSize(wxDLG_UNIT(_1_X_F_copy_17, wxSize(100, -1)));
     sizer_4->Add(_1_X_F_copy_17, 1, wxEXPAND|wxFIXED_MINSIZE, 0);
+    
     notebook_1_FlexGridSizer = new wxPanel(notebook_1, wxID_ANY);
     notebook_1->AddPage(notebook_1_FlexGridSizer, _("FlexGridSizer"));
     wxFlexGridSizer* sizer_5 = new wxFlexGridSizer(7, 8, 1, 1);
@@ -872,6 +876,7 @@ MyFrame::MyFrame(wxWindow* parent, wxWindowID id, const wxString& title, const w
     _1_X_F_copy_23 = new wxTextCtrl(notebook_1_FlexGridSizer, wxID_ANY, wxEmptyString);
     _1_X_F_copy_23->SetMinSize(wxDLG_UNIT(_1_X_F_copy_23, wxSize(100, -1)));
     sizer_5->Add(_1_X_F_copy_23, 1, wxEXPAND|wxFIXED_MINSIZE, 0);
+    
     notebook_1_GridBagSizer = new wxPanel(notebook_1, wxID_ANY);
     notebook_1->AddPage(notebook_1_GridBagSizer, _("GridBagSizer"));
     wxGridBagSizer* sizer_6 = new wxGridBagSizer(1, 1);
@@ -1033,6 +1038,7 @@ MyFrame::MyFrame(wxWindow* parent, wxWindowID id, const wxString& title, const w
     _1_X_F_copy_29 = new wxTextCtrl(notebook_1_GridBagSizer, wxID_ANY, wxEmptyString);
     _1_X_F_copy_29->SetMinSize(wxDLG_UNIT(_1_X_F_copy_29, wxSize(100, -1)));
     sizer_6->Add(_1_X_F_copy_29, wxGBPosition(6, 7), wxGBSpan(1, 1), wxEXPAND|wxFIXED_MINSIZE, 0);
+    
     notebook_1_BorderTest = new wxPanel(notebook_1, wxID_ANY);
     notebook_1->AddPage(notebook_1_BorderTest, _("BorderTest"));
     wxBoxSizer* sizer_7 = new wxBoxSizer(wxHORIZONTAL);
@@ -1061,6 +1067,7 @@ MyFrame::MyFrame(wxWindow* parent, wxWindowID id, const wxString& title, const w
     _0_N_N_copy_32 = new wxTextCtrl(notebook_1_BorderTest, wxID_ANY, wxEmptyString);
     _0_N_N_copy_32->SetMinSize(wxSize(-1, 21));
     sizer_border_15_BOTTOM->Add(_0_N_N_copy_32, 0, 0, 0);
+    
     notebook_1_GridBagSizer_Spacers = new wxPanel(notebook_1, wxID_ANY);
     notebook_1->AddPage(notebook_1_GridBagSizer_Spacers, _("GridBagSizer_Spacers"));
     wxGridBagSizer* grid_sizer_1 = new wxGridBagSizer(0, 0);

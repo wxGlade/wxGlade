@@ -25,6 +25,8 @@ MenuTestFrame::MenuTestFrame(wxWindow* parent, wxWindowID id, const wxString& ti
     wxIcon _icon;
     _icon.CopyFromBitmap(wxArtProvider::GetBitmap(wxART_TIP, wxART_OTHER, wxSize(32, 32)));
     SetIcon(_icon);
+    
+    // Menu Bar
     test_menubar = new wxMenuBar();
     wxMenu *wxglade_tmp_menu;
     wxMenuItem *wxglade_tmp_item;
@@ -121,6 +123,7 @@ MenuTestFrame::MenuTestFrame(wxWindow* parent, wxWindowID id, const wxString& ti
     wxglade_tmp_menu->Append(wxID_ANY, wxT("Radio"), wxglade_tmp_menu_sub, wxEmptyString);
     test_menubar->Append(wxglade_tmp_menu, wxT("&Minus1 ID"));
     SetMenuBar(test_menubar);
+    // Menu Bar end
     Layout();
     Centre();
     // end wxGlade

@@ -35,6 +35,7 @@ CPPOgg1_MyDialog::CPPOgg1_MyDialog(wxWindow* parent, wxWindowID id, const wxStri
     grid_sizer_1->Add(text_ctrl_1, 1, wxALIGN_CENTER_VERTICAL|wxALL|wxEXPAND, 5);
     button_3 = new wxButton(notebook_1_pane_1, wxID_OPEN, wxEmptyString);
     grid_sizer_1->Add(button_3, 0, wxALL, 5);
+    
     notebook_1_pane_2 = new wxPanel(notebook_1, wxID_ANY);
     notebook_1->AddPage(notebook_1_pane_2, _("Converting Options"));
     wxBoxSizer* sizer_4 = new wxBoxSizer(wxHORIZONTAL);
@@ -45,11 +46,13 @@ CPPOgg1_MyDialog::CPPOgg1_MyDialog(wxWindow* parent, wxWindowID id, const wxStri
     radio_box_1 = new wxRadioBox(notebook_1_pane_2, wxID_ANY, _("Sampling Rate"), wxDefaultPosition, wxDefaultSize, 2, radio_box_1_choices, 0, wxRA_SPECIFY_ROWS);
     radio_box_1->SetSelection(0);
     sizer_4->Add(radio_box_1, 0, wxALL|wxEXPAND|wxSHAPED, 5);
+    
     notebook_1_pane_3 = new wxPanel(notebook_1, wxID_ANY);
     notebook_1->AddPage(notebook_1_pane_3, _("Converting Progress"));
     wxBoxSizer* sizer_3 = new wxBoxSizer(wxHORIZONTAL);
     text_ctrl_2 = new wxTextCtrl(notebook_1_pane_3, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE);
     sizer_3->Add(text_ctrl_2, 1, wxALL|wxEXPAND, 5);
+    
     notebook_1_pane_4 = new wxPanel(notebook_1, wxID_ANY);
     notebook_1->AddPage(notebook_1_pane_4, _("Output File"));
     wxFlexGridSizer* grid_sizer_2 = new wxFlexGridSizer(2, 3, 0, 0);

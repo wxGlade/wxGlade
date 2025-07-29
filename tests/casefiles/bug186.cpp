@@ -22,15 +22,22 @@ Frame186::Frame186(wxWindow* parent, wxWindowID id, const wxString& title, const
     // begin wxGlade: Frame186::Frame186
     SetSize(wxSize(300, 300));
     SetTitle(_("frame_1"));
+    
+    // Menu Bar
     Bug186_Frame_menubar = new wxMenuBar();
     File = new wxMenu();
     File->Append(myMagicMenu, _("Magic"), wxEmptyString);
     Bug186_Frame_menubar->Append(File, _("File"));
     SetMenuBar(Bug186_Frame_menubar);
+    // Menu Bar end
+    
+    // Tool Bar
     Bug186_Frame_toolbar = new wxToolBar(this, -1);
     SetToolBar(Bug186_Frame_toolbar);
     Bug186_Frame_toolbar->AddTool(myMagicTool, _("Magic"), wxBitmap(32, 32), wxNullBitmap, wxITEM_NORMAL, _("Do a MAGIC action"), _("It's really MAGIC"));
     Bug186_Frame_toolbar->Realize();
+    // Tool Bar end
+    
     wxBoxSizer* sizer_1 = new wxBoxSizer(wxVERTICAL);
     wxBoxSizer* sizer_2 = new wxBoxSizer(wxVERTICAL);
     sizer_1->Add(sizer_2, 1, wxEXPAND, 0);

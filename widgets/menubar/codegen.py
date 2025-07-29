@@ -182,9 +182,10 @@ class CppMenubarGenerator(wcodegen.CppWidgetCodeWriter):
 
     def get_code(self, obj):
         klass = obj.get_instantiation_class(self.cn, self.cn_class)
-        init = [ '%s = new %s();\n' % (obj.name, klass) ]
+        init = [ '\n', '// Menu Bar\n', '%s = new %s();\n' % (obj.name, klass) ]
         init.extend(self.get_properties_code(obj))
         init.append('SetMenuBar(%s);\n' % obj.name)
+        init.append('// Menu Bar end\n')
         ids = self.get_ids_code(obj)
         return init, ids, []
 
