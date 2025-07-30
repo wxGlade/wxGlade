@@ -35,7 +35,7 @@ protected:
 
 public:
     virtual void on_close_frame(wxCloseEvent &event); // wxGlade: <event_handler>
-    virtual void on_menu_close_frame(MenuEvent &event); // wxGlade: <event_handler>
+    virtual void on_menu_close_frame(wxMenuEvent &event); // wxGlade: <event_handler>
 }; // wxGlade: end class
 
 
