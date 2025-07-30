@@ -9,8 +9,7 @@ Entry point of wxGlade
 """
 
 import atexit
-import codecs
-import logging, os, sys, gettext, optparse
+import logging, os, sys, gettext, optparse, ctypes, locale
 
 # Use a NullWriter with Unicode support (encoding attribute) to catch and
 # drop all output in PyInstaller environment (standalone Edition)
@@ -32,7 +31,39 @@ if hasattr(sys, 'frozen') and not hasattr(sys.stderr, 'encoding'):
     sys.stderr = NullWriter()
 
 
-t = gettext.translation(domain="wxglade", localedir="locale", fallback=True)
+def get_msw_locale_id():
+    """Get UI language code string as locale.getlocale()
+
+    @return locale ID like "ja_JP".
+    On Windows, locale.getlocale() returns just "C" or None.
+    This causes gettext.translation() returns
+    gettext.NullTranslations object.
+
+    Use this function to get locale ID.
+    """
+    try:
+        locale_id = ctypes.windll.kernel32.GetUserDefaultUILanguage()
+        return locale.windows_locale[locale_id]
+    except:
+        return None
+
+
+t = gettext.translation(domain="wxglade", localedir='locale', fallback=True)
+if t.__class__ == gettext.NullTranslations:
+    if sys.platform == "win32":
+        lang = get_msw_locale_id()
+        t = gettext.translation(
+            domain="wxglade", localedir='locale', languages=[lang,], fallback=True)
+    if t.__class__ == gettext.NullTranslations:
+        current_locale = locale.getlocale()
+        if current_locale:
+            t = gettext.translation(
+                domain="wxglade", localedir='locale',
+                languages=[current_locale[0],], fallback=True)
+    if t.__class__ == gettext.NullTranslations:
+        print("Are you trying to boot from IDLE?"
+              " If so, after installing the necessary Python libraries,"
+              " try 'python3 -m idlelib.idle.'")
 t.install("wxglade")
 
 
