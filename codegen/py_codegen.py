@@ -433,7 +433,7 @@ def _copy_type(_f: _T) -> Callable[[Any], _T]:
         #  2nd) for function body
         # The type hint for the event could be more descriptive if
         # the concrete event class was detected.
-        stub = [self.tabs(1), "def %(handler)s(self, event: wx.CommandEvent) -> None:"]
+        stub = [self.tabs(1), "def %(handler)s(self, event: wx.Event) -> None:"]
         if self._mark_blocks: stub.append("  # wxGlade: %(klass)s.<event_handler>")
         stub.append( """\n%(tab)sprint("Event handler '%(handler)s' not implemented!")\n""" )
         stub.append( '%(tab)sevent.Skip()\n' )
