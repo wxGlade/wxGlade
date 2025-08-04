@@ -56,10 +56,8 @@ if t.__class__ == gettext.NullTranslations:
             domain="wxglade", localedir='locale', languages=[lang,], fallback=True)
     if t.__class__ == gettext.NullTranslations:
         current_locale = locale.getlocale()
-        if current_locale:
-            t = gettext.translation(
-                domain="wxglade", localedir='locale',
-                languages=[current_locale[0],], fallback=True)
+        if current_locale[0]:
+            t = gettext.translation(domain="wxglade", localedir='locale', languages=[current_locale[0],], fallback=True)
     if t.__class__ == gettext.NullTranslations:
         print("Are you trying to boot from IDLE?"
               " If so, after installing the necessary Python libraries,"
