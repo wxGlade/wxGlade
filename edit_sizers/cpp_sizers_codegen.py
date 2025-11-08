@@ -24,7 +24,7 @@ class BaseCPPSizerBuilder(BaseSizerBuilder):
         parent = obj.get_parent_window2(self.codegen)
         if parent.IS_SIZER:
             sizer_access = self.codegen.format_generic_access(parent)
-            return '%s->GetStaticBox()' % sizer_access
+            return '%sGetStaticBox()' % sizer_access
         if parent.IS_CLASS:
             return 'this'
         return '%s' % parent.name
