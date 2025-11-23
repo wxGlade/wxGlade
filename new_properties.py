@@ -167,8 +167,8 @@ class Property(object):
             self.deactivated = not active
         self.previous_value = self.value  # this does not work always, e.g. for GridProperty which may edit in place
         self.set(value)
-        self._notify()
         common.history.property_changed(self)
+        self._notify()
         self.previous_value = None
 
     def _check_for_user_modification(self, new_value, force=False, activate=False):
