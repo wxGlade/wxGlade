@@ -33,8 +33,8 @@ msgid ""
 "You can get a copy at \n"
 "http://www.opensource.org/licenses/mit-license.php"
 msgstr ""
-"No puedo encontrar la licecnia\n"
-"Puedes conseguir una copia \n"
+"No puedo encontrar la licecia\n"
+"Puedes obtener una copia en \n"
 "http://www.opensource.org/licenses/mit-license.php"
 
 #: about.py:67
@@ -43,7 +43,7 @@ msgstr "Error"
 
 #: about.py:80
 msgid "Can't find the credits file!\n"
-msgstr "No encuentro el fichero de los creditos!\n"
+msgstr "¡No se encuentra el archivo de créditos!\n"
 
 #: about.py:80
 msgid "Oops!"
@@ -51,15 +51,15 @@ msgstr "Oops!"
 
 #: clipboard.py:40
 msgid "Invalid data in the clipboard"
-msgstr "Datos incorrectos en el portapaples"
+msgstr "Datos incorrectos en el portapapeles"
 
 #: clipboard.py:65
 msgid "Data can't be copied to clipboard."
-msgstr "No se puede copiar los datos al portapapeles"
+msgstr "Los datos no se pueden copiar al portapapeles."
 
 #: clipboard.py:71 clipboard.py:105
 msgid "Clipboard can't be opened."
-msgstr "El portapaples no se puede abrir"
+msgstr "El portapapeles no se puede abrir"
 
 #: clipboard.py:98
 msgid "Data can't be copied from clipboard."
@@ -67,7 +67,7 @@ msgstr "No se puede copiar datos del portapapeles"
 
 #: clipboard.py:129
 msgid "Please only drop one file at a time"
-msgstr "Ficheros de uno en uno, gracias"
+msgstr "Por favor, suba solo un archivo a la vez."
 
 #: color_dialog.py:18
 msgid "System colour"
@@ -75,7 +75,7 @@ msgstr "Sistema de Color"
 
 #: color_dialog.py:22
 msgid "Custom colour"
-msgstr "Color a medida"
+msgstr "Color personalizado"
 
 #: color_dialog.py:25 configUI.py:38
 msgid "OK"
@@ -87,36 +87,36 @@ msgstr "Cancelar"
 
 #: color_dialog.py:70
 msgid "Select widget colour"
-msgstr "Selector de color"
+msgstr "Seleccionar color del widget"
 
 #: common.py:92
 #, python-format
 msgid "\"%s\" is not a valid code generator module"
-msgstr "\"%s\" no es un generador de modulo de código"
+msgstr "\"%s\" no es un módulo generador de código válido"
 
 #: common.py:96
 #, python-format
 msgid "loaded code generator for %s"
-msgstr "Leer el código generado para %s"
+msgstr "generador de código cargado para %s"
 
 #: common.py:127
 #, python-format
 msgid "Found widgets listing -> %s"
-msgstr "Buscar en el listado de  manejadores -> %s"
+msgstr "Listado de widgets encontrados -> %s"
 
 #: common.py:128
 msgid "loading widget modules:"
-msgstr "Leyendo los modulos de los widge:"
+msgstr "Cargando módulos de widgets:"
 
 #: common.py:137
 #, python-format
 msgid "ERROR loading \"%s\""
-msgstr "ERROR de lectura \"%s\""
+msgstr "ERROR al cargar \"%s\""
 
 #: common.py:203
 #, python-format
 msgid "Add a %s"
-msgstr "Sumando a %s"
+msgstr "Añadir un %s"
 
 #: config.py:60
 #, python-format
@@ -124,40 +124,40 @@ msgid ""
 "Error reading config file:\n"
 "%s"
 msgstr ""
-"Error de fichero de configuración:\n"
+"Error al leer el archivo de configuración:\n"
 "%s"
 
 #: config.py:103
 msgid "Choose a directory:"
-msgstr "Eligie un directorio."
+msgstr "Elige un directorio:"
 
 #: config.py:246
 msgid "Changes will take effect after wxGlade is restarted"
-msgstr "Los cambios se aplican cuando reseteas wxGlade"
+msgstr "Los cambios surtirán efecto después de reiniciar wxGlade."
 
 #: config.py:247
 msgid "Preferences saved"
-msgstr "Guardadas las prefecencias"
+msgstr "Preferencias guardadas"
 
 #: configUI.py:15
 msgid "Local widget path"
-msgstr "Directorio local de manejadores"
+msgstr "Ruta del widget local"
 
 #: configUI.py:17
 msgid "Use icons in menu items"
-msgstr "Usa iconos en los items de menu"
+msgstr "Utilice iconos en los elementos del menú."
 
 #: configUI.py:18
 msgid "Show properties and tree windows as small frames (Win32 only)"
-msgstr "Mostrar el arbon de ventanas y propiedades  (Win32 solo)"
+msgstr "Mostrar propiedades y ventanas de árbol como marcos pequeños (solo Win32)"
 
 #: configUI.py:19
 msgid "Show progress dialog when loading wxg files"
-msgstr "Mostar dialogo de progreso cuando leemos ficheros"
+msgstr "Mostrar cuadro de diálogo de progreso al cargar archivos wxg"
 
 #: configUI.py:20
 msgid "Remember position and size of wxGlade windows"
-msgstr "wxGlade recuera la posicion y tamaño de las ventanas"
+msgstr "Recuerda la posición y el tamaño de las ventanas de wxGlade."
 
 #: configUI.py:21
 msgid "Show \"handles\" of sizers"
@@ -165,43 +165,43 @@ msgstr "Muestra los \"Manejadores\" de tamaño"
 
 #: configUI.py:22
 msgid "Use native file dialogs on KDE"
-msgstr "Usar los Ficheros navitos de dialogs en  KDE"
+msgstr "Utilice los diálogos de archivos nativos de KDE"
 
 #: configUI.py:27
 msgid "Use dialog units by default for size properties"
-msgstr "Usar dialogo de unidades por defecto para los tamaño de propiedades"
+msgstr "Utilice unidades de diálogo de forma predeterminada para las propiedades de tamaño"
 
 #: configUI.py:28
 msgid "Create backup wxg files"
-msgstr "Creando un fichero backup de wxg"
+msgstr "Crear archivos wxg de respaldo"
 
 #: configUI.py:29
 msgid "Create backup files for generated source"
-msgstr "Creando un fichoro backup para gerenar la fuente"
+msgstr "Cree archivos de copia de seguridad para la fuente generada"
 
 #: configUI.py:30
 msgid "Allow duplicate widget names"
-msgstr "Permitir duplicar nombre de manejadores"
+msgstr "Permitir nombres de widgets duplicados"
 
 #: configUI.py:31
 msgid "Default border width for widgets"
-msgstr "Borde por defecto para los manejadores"
+msgstr "Ancho de borde predeterminado para widgets"
 
 #: configUI.py:33
 msgid "Auto save wxg files every "
-msgstr "Autor guardar los fiecheros wxg"
+msgstr "Guardado automático de archivos wxg cada"
 
 #: configUI.py:35
 msgid "Backup options"
-msgstr "Opciones de backups"
+msgstr "Opciones de respaldo"
 
 #: configUI.py:35
 msgid "append ~ to filename"
-msgstr "añadir ~ al nombre fichero"
+msgstr "Añadir ~ al nombre del archivo"
 
 #: configUI.py:35
 msgid "append .bak to filename"
-msgstr "añadir .bak al nombre fichero"
+msgstr "agregar .bak al nombre del archivo"
 
 #: configUI.py:47
 msgid "wxGlade: preferences"
@@ -213,7 +213,7 @@ msgid ""
 "file opening/saving dialogs:"
 msgstr ""
 "Ruta inicial para \n"
-"Diálogos de ficheros de abrir/guardar :"
+"Diálogos para abrir/guardar archivos:"
 
 #: configUI.py:86
 msgid ""
@@ -221,19 +221,19 @@ msgid ""
 "code generation file dialogs:"
 msgstr ""
 "Ruta inicial para \n"
-"generación de ficheros de codigo:"
+"Diálogos de generación de archivos de código:"
 
 #: configUI.py:90
 msgid "Number of items in file history"
-msgstr "Numero de items en el fichero historico"
+msgstr "Número de elementos en el historial del archivo"
 
 #: configUI.py:93
 msgid ""
 "Number of buttons per row\n"
 "in the main palette"
 msgstr ""
-"Numbero de botoner por columna\n"
-"enla paleta principal"
+"Número de botones por fila\n"
+"en la paleta principal"
 
 #: configUI.py:122
 msgid "Interface"
@@ -246,7 +246,7 @@ msgstr "Otros"
 #: wxglade.py:76
 #, python-format
 msgid "Error: no writer for language \"%s\" available"
-msgstr "Error: No hay escritura permitada para  \"%s\" leguaje"
+msgstr "Error: Error: no hay escritora para el idioma  \"%s\" permitida"
 
 #: wxglade.py:80
 #, python-format
@@ -266,14 +266,14 @@ msgid ""
 "    "
 msgstr ""
 "Usando wxGlade:\n"
-"- Para abrir GUI: python wxglade.py [WXG_FILE]\n"
-"- Para generar el codigo desde la linea de comandos: python wxglade.py OPTIONS... FILE\n"
-"  OPTIONES son las siguientes:\n"
-"  -g, --generate-code=LANGUAGE  (required) give the output language\n"
-"  -o, --output=PATH             (optional) name of the output file (in\n"
-"                                single-file mode) or directory (in\n"
-"                                multi-file mode)"
+"- Para iniciar la interfaz gráfica de usuario: python wxglade.py [WXG_FILE]\n"
+"- Para generar código desde la línea de comandos: python wxglade.py OPTIONS... FILE\n"
+"  OPTIONES son los siguientes:\n"
+"  -g, --generate-code=LANGUAGE  (Obligatorio) Indique el idioma de salida\n"
+"  -o, --output=PATH             (opcional) nombre del archivo de salida (en\n"
+"                                modo de archivo único) o directorio (en\n"
+"                                modo de múltiples archivos)"
 
 #: wxglade.py:101
 msgid "Valid LANGUAGE values:"
-msgstr "Valores validad de LENGUAJE:"
+msgstr "Valores de IDIOMA válidos:"
