@@ -486,7 +486,12 @@ class History(object):
         self._undo_data = {}  # e.g. used by edit_sizers.change_sizer
 
     def store_undo_data(self, data):
-        self._undo_data.update(data)
+        if self._buffer:
+            self._undo_data.update(data)
+        else:
+            # a user action might trigger this in set() / notify() when the item has been stored already
+            assert self.state is None
+            self.actions[-1].undo_data.update(data)
 
     def monitor_property(self, prop):
         # monitor dependent properties; these will be un-/re-done together with the main property
