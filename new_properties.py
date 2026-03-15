@@ -2488,6 +2488,7 @@ class GridProperty(Property):
 
         # the grid #####################################################################################################
         self.grid = wx.grid.Grid(parent, -1)
+        if hasattr(self.grid, "DisableOverlaySelection"): self.grid.DisableOverlaySelection()
         self.grid.Name = self.name
         rowcount = len(self.value)
         if self.can_add and self.immediate: rowcount += 1
