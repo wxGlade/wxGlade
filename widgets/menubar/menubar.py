@@ -570,18 +570,16 @@ class MenuHandler(BaseXmlBuilderTagHandler):
                 raise XmlParsingError(_("menu item outside a menu"))
             cm[0].children.append(self.curr_item)
             self.curr_item.parent = cm[0]
+            self.curr_item = None
         elif name == 'menu':
             self.menu_depth -= 1
             self.curr_menu.pop()
         elif name == 'menus':
             self.owner.properties["menus"].load(self.menus)
             return True
-
-    def char_data(self, data):
-        super(MenuHandler, self).char_data(data)
-        char_data = self.get_char_data()
-        setattr(self.curr_item, self.itemattrs[self.curr_index], char_data)
-
+        elif name in self.itemattrs:
+            char_data = self.get_char_data()
+            setattr(self.curr_item, name, char_data)
 
 
 class EditMenuBar(EditBase):#, PreviewMixin):
