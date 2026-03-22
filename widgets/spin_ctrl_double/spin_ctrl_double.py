@@ -32,7 +32,7 @@ class EditSpinCtrlDouble(ManagedBase, EditStylesMixin):
         # initialise instance properties
         self.range = np.FloatRangePropertyA( "0.0, 100.0" )
         self.value = np.SpinDoublePropertyA(0, val_range=(0.0,100.0), immediate=True, default_value="")
-        self.increment = np.SpinDoublePropertyD(1.0, val_range=(0.0,100.0), immediate=True, default_value=1.0)
+        self.increment = np.SpinDoublePropertyD(1.0, val_range=(0.001,100.0), immediate=True, default_value=1.0)
         self.digits = np.SpinPropertyA(2, val_range=(0,20), immediate=True)
 
     def create_widget(self):
@@ -40,8 +40,8 @@ class EditSpinCtrlDouble(ManagedBase, EditStylesMixin):
         kwargs = {}
         if self.properties["value"].is_active():
             kwargs["initial"] = self.value
-        if self.properties["increment"].is_active():
-            kwargs["inc"] = self.value
+        if self.properties["increment"].is_active() and self.increment:
+            kwargs["inc"] = self.increment
         self.widget = wx.SpinCtrlDouble(self.parent_window.widget, wx.ID_ANY, min=mi, max=ma, **kwargs)
         if self.properties["digits"].is_active():
             self.widget.SetDigits(self.digits)
