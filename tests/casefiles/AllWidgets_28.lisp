@@ -469,6 +469,8 @@
         (wxSizer_AddWindow (slot-sizer-16 obj) (slot-tc-spin-button obj) 1 wxALL 5 nil)
         
         (setf (slot-spin-button obj) (wxSpinButton_Create (slot-notebook-1-wxSpinButton obj) wxID_ANY -1 -1 -1 -1 wxSP_VERTICAL))
+        (wxSpinButton_SetRange (slot-spin-button obj) 0 100)
+        (wxSpinButton_SetValue (slot-spin-button obj) 20)
         (wxSizer_AddWindow (slot-sizer-16 obj) (slot-spin-button obj) 1 wxALL 5 nil)
         
         (setf (slot-notebook-1-wxSpinCtrl obj) (wxPanel_Create (slot-notebook-1 obj) wxID_ANY -1 -1 -1 -1 wxTAB_TRAVERSAL))

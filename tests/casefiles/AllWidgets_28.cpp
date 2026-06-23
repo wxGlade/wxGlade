@@ -272,6 +272,8 @@ All_Widgets_Frame::All_Widgets_Frame(wxWindow* parent, wxWindowID id, const wxSt
     tc_spin_button = new wxTextCtrl(notebook_1_wxSpinButton, wxID_ANY, _("1"), wxDefaultPosition, wxDefaultSize, wxTE_RIGHT);
     sizer_16->Add(tc_spin_button, 1, wxALL, 5);
     spin_button = new wxSpinButton(notebook_1_wxSpinButton, wxID_ANY);
+    spin_button->SetRange(0, 100)
+    spin_button->SetValue(20)
     sizer_16->Add(spin_button, 1, wxALL, 5);
     
     notebook_1_wxSpinCtrl = new wxPanel(notebook_1, wxID_ANY);
