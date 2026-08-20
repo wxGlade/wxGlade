@@ -66,10 +66,7 @@ class CppPanelGenerator(wcodegen.CppWidgetCodeWriter):
         prop = panel.properties
         scrollable = panel.scrollable
         id_name, id = self.codegen.generate_code_id(panel)
-        if id_name:
-            ids = [id_name]
-        else:
-            ids = []
+        ids = [id_name]  if id_name else  []
         parent = self.format_widget_access(panel.parent_window)
         klass = panel.get_instantiation_class(self.cn, self.cn_class)
         if panel.IS_CLASS:

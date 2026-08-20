@@ -15,7 +15,8 @@ class LispCodeGenerator(wcodegen.LispWidgetCodeWriter):
 
     def get_code(self, obj):
         id_name, id = self.codegen.generate_code_id(obj)
-        parent = self.format_widget_access(obj.parent_window)
+        parent = self.format_parent_access(obj)
+
         init = []
         if id_name:
             init.append(id_name)

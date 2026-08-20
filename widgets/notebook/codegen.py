@@ -96,10 +96,7 @@ class CppNotebookGenerator(wcodegen.CppWidgetCodeWriter):
         wcodegen.CppWidgetCodeWriter._prepare_tmpl_content(self, window)
 
         id_name, id = self.codegen.generate_code_id(window)
-        if id_name:
-            ids = [id_name]
-        else:
-            ids = []
+        ids = [id_name]  if id_name else  []
 
         parent = self.format_widget_access(window.parent_window)
         klass = window.get_instantiation_class()

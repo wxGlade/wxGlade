@@ -20,7 +20,7 @@ class PythonSplitterWindowGenerator(wcodegen.PythonWidgetCodeWriter):
         post = []
 
         id_name, id = self.codegen.generate_code_id(obj)
-        parent = self.format_widget_access(obj.parent_window)
+        parent = self.tmpl_dict["parent"]
 
         klass = obj.get_instantiation_class(self.cn, None, self.codegen.preview)
 
@@ -105,16 +105,8 @@ class CppSplitterWindowGenerator(wcodegen.CppWidgetCodeWriter):
         layout_buf = []
 
         id_name, id = self.codegen.generate_code_id(obj)
-
-        if id_name:
-            ids = [id_name]
-        else:
-            ids = []
-        if not obj.parent_window.IS_CLASS:
-            parent = '%s' % obj.parent_window.name
-        else:
-            parent = 'this'
-
+        ids = [id_name]  if id_name else  []
+        parent = self.format_parent_access(obj)
         klass = obj.get_instantiation_class()
 
         if obj.check_prop_truth("class"):

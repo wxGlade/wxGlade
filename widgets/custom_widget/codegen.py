@@ -38,19 +38,13 @@ class PythonCustomWidgetGenerator(wcodegen.PythonWidgetCodeWriter):
             # file, use that for the preview
             return self.get_code_preview(widget)
         self.codegen.have_extracode = True
-        id_name, id = self.codegen.generate_code_id(widget)
 
-        parent = widget.get_parent_window2(self.codegen)
-        if parent.IS_SIZER:
-            parent_access = '%s.GetStaticBox()' % self.format_widget_access(parent)
-        elif not parent.IS_CLASS:
-            parent_access = 'self.%s' % parent.name
-        else:
-            parent_access = 'self'
+        id_name, id = self.codegen.generate_code_id(widget)
+        parent = self.format_parent_access(widget)
 
         init = []
         if id_name: init.append(id_name)
-        arguments = format_ctor_arguments( widget.arguments, parent_access, id, widget.size)
+        arguments = format_ctor_arguments( widget.arguments, parent, id, widget.size)
         ctor = widget.custom_ctor.strip() or widget.instance_class
         widget_access = self.format_widget_access(widget)
         init.append( '%s = %s(%s)\n' % (widget_access, ctor, ", ".join(arguments)) )
@@ -58,17 +52,11 @@ class PythonCustomWidgetGenerator(wcodegen.PythonWidgetCodeWriter):
         return init, []
 
     def get_code_preview(self, widget):
-        parent = widget.get_parent_window2(self.codegen)
-        if parent.IS_SIZER:
-            parent_access = '%s.GetStaticBox()' % self.format_widget_access(parent)
-        elif not parent.IS_CLASS:
-            parent_access = 'self.%s' % parent.name
-        else:
-            parent_access = 'self'
+        parent = self.format_parent_access(widget)
 
         init = []
         append = init.append
-        append('self.%s = wx.Window(%s, -1, style=wx.FULL_REPAINT_ON_RESIZE)\n' % (widget.name, parent_access))
+        append('self.%s = wx.Window(%s, -1, style=wx.FULL_REPAINT_ON_RESIZE)\n' % (widget.name, parent))
         if widget.check_prop('size'):
             append( self.codegen.generate_code_size(widget) )
         else:
@@ -103,20 +91,11 @@ def self_%s_on_paint(event):
 class CppCustomWidgetGenerator(wcodegen.CppWidgetCodeWriter):
     def get_code(self, widget):
         id_name, id = self.codegen.generate_code_id(widget)
-        if id_name:
-            ids = [id_name]
-        else:
-            ids = []
+        ids = [id_name]  if id_name else  []
 
-        parent = widget.get_parent_window2(self.codegen)
-        if parent.IS_SIZER:
-            parent_access = '%s->GetStaticBox()' % self.format_widget_access(parent)
-        elif not parent.IS_CLASS:
-            parent_access = '%s' % parent.name
-        else:
-            parent_access = 'this'
+        parent = self.format_parent_access(widget)
 
-        arguments = format_ctor_arguments( widget.arguments, parent_access, id, widget.size )
+        arguments = format_ctor_arguments( widget.arguments, parent, id, widget.size )
         ctor = widget.custom_ctor.strip() or ('new ' + widget.instance_class)
         init = [ '%s = %s(%s);\n' % (widget.name, ctor, ", ".join(arguments)) ]
         init += self.codegen.generate_code_common_properties(widget)

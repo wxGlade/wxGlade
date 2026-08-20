@@ -22,7 +22,7 @@ class PerlSplitterWindowGenerator(wcodegen.PerlWidgetCodeWriter):
         layout_buf = []
 
         id_name, id = self.codegen.generate_code_id(obj)
-        parent = self.format_widget_access(obj.parent_window)
+        parent = self.format_parent_access(obj)
         klass = obj.get_instantiation_class(self.cn, self.cn_class)
 
         if obj.IS_CLASS:

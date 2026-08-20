@@ -22,7 +22,7 @@ class LispSplitterWindowGenerator(wcodegen.LispWidgetCodeWriter):
 
         id_name, id = self.codegen.generate_code_id(obj)
         window_name = self.codegen._format_name(obj.name)
-        parent = self.format_widget_access(obj.parent_window)
+        parent = self.format_parent_access(obj)
 
         if obj.IS_CLASS:
             l = []
