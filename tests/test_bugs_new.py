@@ -117,6 +117,10 @@ class TestBugs(WXGladeGUITest):
         self.load_and_generate('Issue385_step_2', test_GUI=False, preview=False)  # w grid and 'keep user code'
         self.load_and_generate('Issue385_step_2', test_GUI=False, preview=False)  # same, ensure nothing is doubled
 
+    def test_issue590(self):
+        """Test issue #590 - children of static box sizer"""
+        self.load_and_generate('Issue590_ChildrenOfStaticBoxSizer', test_GUI=False)
+
 
 if __name__ == '__main__':
     unittest.main(exit=False)
