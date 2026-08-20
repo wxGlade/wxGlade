@@ -16,7 +16,7 @@ class PythonPanelGenerator(wcodegen.PythonWidgetCodeWriter):
         # this is not called for toplevel panels
         scrollable = panel.scrollable
         id_name, id = self.codegen.generate_code_id(panel)
-        parent = self.format_widget_access(panel.parent_window)
+        parent = self.format_parent_access(panel)
 
         klass = panel.get_instantiation_class(self.cn, self.cn_class, self.codegen.preview)
 
@@ -67,7 +67,7 @@ class CppPanelGenerator(wcodegen.CppWidgetCodeWriter):
         scrollable = panel.scrollable
         id_name, id = self.codegen.generate_code_id(panel)
         ids = [id_name]  if id_name else  []
-        parent = self.format_widget_access(panel.parent_window)
+        parent = self.format_parent_access(panel)
         klass = panel.get_instantiation_class(self.cn, self.cn_class)
         if panel.IS_CLASS:
             l = [ '%s = new %s(%s, %s);\n' % (panel.name, panel.klass, parent, id) ]

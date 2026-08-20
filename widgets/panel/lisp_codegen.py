@@ -18,7 +18,7 @@ class LispPanelGenerator(wcodegen.LispWidgetCodeWriter):
         scrollable = panel.scrollable
 
         id_name, id = self.codegen.generate_code_id(panel)
-        parent = self.format_widget_access(panel.parent_window)
+        parent = self.format_parent_access(panel)
         panel_name = self.codegen._format_name(panel.name)
 
         if panel.IS_CLASS:
