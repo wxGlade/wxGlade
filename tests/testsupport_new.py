@@ -103,7 +103,7 @@ class WXGladeBaseTest(unittest.TestCase):
                 break
         return ret
 
-    def _compare_files(self, expected_filename, generated_filename, check_mtime=False):
+    def _compare_files(self, expected_filename, generated_filename, check_mtime=False, replace=[]):
         self.assertTrue( os.path.isfile(generated_filename), "File %s was not generated"%generated_filename )
         if check_mtime:
             self.assertGreater( os.stat(generated_filename).st_mtime, os.stat(expected_filename).st_mtime,
@@ -123,7 +123,10 @@ class WXGladeBaseTest(unittest.TestCase):
                 expected_  = [l for l in expected  if not l.strip().startswith("<size>") and not "SetSize" in l]
                 generated_ = [l for l in generated if not l.strip().startswith("<size>") and not "SetSize" in l]
                 if expected_ == generated_: return False
-
+        if replace:
+            for old, new in replace:
+                if old in generated:
+                    generated[generated.index(old)] = new
         diff = difflib.unified_diff(expected, generated, fromfile=expected_filename, tofile=generated_filename, lineterm='')
         diff = list(diff)
         print( '\n'.join(diff[:40]) )
