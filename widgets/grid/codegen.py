@@ -2,7 +2,7 @@
 Code generator functions for wxGrid objects
 
 @copyright: 2002-2007 Alberto Griggio
-@copyright: 2016-2022 Dietmar Schwertberger
+@copyright: 2016-2026 Dietmar Schwertberger
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
