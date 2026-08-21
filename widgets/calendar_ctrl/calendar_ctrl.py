@@ -38,7 +38,7 @@ class EditCalendarCtrl(ManagedBase, EditStylesMixin):
 
     def create_widget(self):
         # TODO add all the other parameters for the CalendarCtrl especially style=self.style and the initial date
-        self.widget = CalendarCtrl(self.parent_window.widget, wx.ID_ANY, style=self.style)
+        self.widget = CalendarCtrl(self.parent_window2, wx.ID_ANY, style=self.style)
 
     # handle compatibility:
     @decorators.memoize

@@ -102,7 +102,7 @@ class CustomWidget(ManagedBase):
             original_widget_access = builder.format_widget_access(self)
             widget_access = "self.widget"
             original_parent_access = builder.format_widget_access(self.parent_window)
-            parent_access = "self.parent_window.widget"
+            parent_access = "self.parent_window2"
             code_gen.cache(self, "attribute_access", widget_access)
             code_gen.cache(self.parent_window, "attribute_access", parent_access)
 
@@ -134,7 +134,7 @@ class CustomWidget(ManagedBase):
                 self._error_message = "%s: %s"%(exc_type, exc_value)
                 if self.widget: self.widget.Destroy()
         # default / fallback in case of exception
-        self.widget = wx.Window(self.parent_window.widget, wx.ID_ANY, style=wx.BORDER_SUNKEN | wx.FULL_REPAINT_ON_RESIZE)
+        self.widget = wx.Window(self.parent_window2, wx.ID_ANY, style=wx.BORDER_SUNKEN | wx.FULL_REPAINT_ON_RESIZE)
         self.widget.Bind(wx.EVT_PAINT, self.on_paint)
         self.widget.Bind(wx.EVT_ERASE_BACKGROUND, self.on_erase_background)
         if self._error_message: compat.SetToolTip( self.widget, self._error_message )

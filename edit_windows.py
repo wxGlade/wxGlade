@@ -640,7 +640,7 @@ class ManagedBase(WindowBase):
             flag_p.add("wxALL", notify=False)
 
     def finish_widget_creation(self, level, sel_marker_parent=None, re_add=True):
-        if sel_marker_parent is None: sel_marker_parent = self.parent_window.widget
+        if sel_marker_parent is None: sel_marker_parent = self.parent_window2
         self.sel_marker = misc.SelectionMarker(self.widget, sel_marker_parent)
         WindowBase.finish_widget_creation(self, level)
         self.widget.Bind(wx.EVT_LEFT_DOWN, self.on_set_focus)

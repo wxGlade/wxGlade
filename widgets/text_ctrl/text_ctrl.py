@@ -38,7 +38,7 @@ class EditTextCtrl(ManagedBase, EditStylesMixin):
         #if self.style & wx.TE_MULTILINE:
         #    value = value.replace('\\n', '\n') # XXX is this correct? is self.value already with newlines?
         if compat.IS_GTK: wx.Yield()  # avoid problems where the widget is consuming all events
-        self.widget = wx.TextCtrl(self.parent_window.widget, wx.ID_ANY, value=value, style=self.style)
+        self.widget = wx.TextCtrl(self.parent_window2, wx.ID_ANY, value=value, style=self.style)
 
     def _properties_changed(self, modified, actions):
         if "value" in modified and self.widget:

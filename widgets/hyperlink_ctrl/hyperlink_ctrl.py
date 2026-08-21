@@ -46,7 +46,7 @@ class EditHyperlinkCtrl(ManagedBase, EditStylesMixin):
         style = self.style
         if not style & HL_ALIGN_LEFT and not style & HL_ALIGN_CENTRE and not style & HL_ALIGN_RIGHT:
             style |= HL_ALIGN_CENTRE
-        self.widget = HyperlinkCtrl(self.parent_window.widget, wx.ID_ANY, self.label, self.url, style=style)
+        self.widget = HyperlinkCtrl(self.parent_window2, wx.ID_ANY, self.label, self.url, style=style)
 
     def _properties_changed(self, modified, actions):
         if not modified or "label" in modified:

@@ -42,7 +42,7 @@ class EditSpinCtrlDouble(ManagedBase, EditStylesMixin):
             kwargs["initial"] = self.value
         if self.properties["increment"].is_active() and self.increment:
             kwargs["inc"] = self.increment
-        self.widget = wx.SpinCtrlDouble(self.parent_window.widget, wx.ID_ANY, min=mi, max=ma, **kwargs)
+        self.widget = wx.SpinCtrlDouble(self.parent_window2, wx.ID_ANY, min=mi, max=ma, **kwargs)
         if self.properties["digits"].is_active():
             self.widget.SetDigits(self.digits)
 

@@ -35,7 +35,7 @@ class EditTimePickerCtrl(ManagedBase, EditStylesMixin):
 
     def create_widget(self):
         # TODO add all the other parameters for the TimePickerCtrl initial time
-        self.widget = TimePickerCtrl(self.parent_window.widget, wx.ID_ANY, style=self.style)
+        self.widget = TimePickerCtrl(self.parent_window2, wx.ID_ANY, style=self.style)
 
     # handle compatibility:
     @decorators.memoize

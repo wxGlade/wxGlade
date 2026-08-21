@@ -99,7 +99,7 @@ class SizerSlot(edit_base.Slot):
 class SizerHandleButton(GenButton):
     'Provides a "handle" to activate a Sizer and to access its popup menu'
     def __init__(self, parent, id, sizer):
-        GenButton.__init__(self, parent.widget, id, '', size=(5, 5))
+        GenButton.__init__(self, parent, id, '', size=(5, 5))
         self.sizer = sizer
         self.SetUseFocusIndicator(False)
         self.Bind(wx.EVT_RIGHT_DOWN, self.sizer.popup_menu )
@@ -385,7 +385,11 @@ class SizerBase(edit_base.EditBase):
         return self.window.frozen()
 
     def create_widget(self):
-        self._btn = SizerHandleButton(self.window, wx.ID_ANY, self ) # XXX handle the popupmenu creation in SizerHandleButton
+        if self.WX_CLASS=="wxStaticBoxSizer":
+            parent = self.widget.GetStaticBox()
+        else:
+            parent = self.parent_window2
+        self._btn = SizerHandleButton(parent, wx.ID_ANY, self ) # XXX handle the popupmenu creation in SizerHandleButton
         # ScreenToClient used by WidgetTree for the popup menu
         self._btn.Bind(wx.EVT_BUTTON, self.on_selection, id=self._btn.GetId())
         if not compat.IS_GTK:
@@ -1075,8 +1079,8 @@ class EditStaticBoxSizer(BoxSizerBase):
         self.label = np.TextProperty(label)
 
     def create_widget(self):
-        BoxSizerBase.create_widget(self)
         self.widget = wxGladeStaticBoxSizer( wx.StaticBox(self.window.widget, -1, self.label), self.orient )
+        BoxSizerBase.create_widget(self)
         self.widget.Add(self._btn, 0, wx.EXPAND)
 
     def _properties_changed(self, modified, actions):

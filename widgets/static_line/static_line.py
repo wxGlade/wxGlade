@@ -30,12 +30,12 @@ class EditStaticLine(ManagedBase, EditStylesMixin):
         self.attribute = np.CheckBoxProperty(False, default_value=False)
 
     def create_widget(self):
-        self.widget = wx.StaticLine(self.parent_window.widget, wx.ID_ANY, style=self.style)
+        self.widget = wx.StaticLine(self.parent_window2, wx.ID_ANY, style=self.style)
         self.widget.Bind(wx.EVT_LEFT_DOWN, self.on_set_focus)
 
     def finish_widget_creation(self, level):
         ManagedBase.finish_widget_creation(self, level)
-        self.sel_marker.Reparent(self.parent_window.widget)
+        self.sel_marker.Reparent(self.parent_window2)
 
     def __getitem__(self, key):
         if key != 'font':

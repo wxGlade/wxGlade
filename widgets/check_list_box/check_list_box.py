@@ -33,7 +33,7 @@ class EditCheckListBox(ManagedBase, EditStylesMixin):
 
     def create_widget(self):
         choices = [c[0] for c in self.choices]
-        self.widget = wx.CheckListBox(self.parent_window.widget, wx.ID_ANY, choices=choices, style=self.style)
+        self.widget = wx.CheckListBox(self.parent_window2, wx.ID_ANY, choices=choices, style=self.style)
         self.widget.SetSelection(self.selection)
         self.widget.Bind(wx.EVT_LEFT_DOWN, self.on_set_focus)
 

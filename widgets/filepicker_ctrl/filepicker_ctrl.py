@@ -35,7 +35,7 @@ class EditFilePickerCtrl(ManagedBase, EditStylesMixin):
         self.message = np.TextProperty("Select file")
 
     def create_widget(self):
-        self.widget = FilePickerCtrl(self.parent_window.widget, wx.ID_ANY,
+        self.widget = FilePickerCtrl(self.parent_window2, wx.ID_ANY,
                                      self.path, self.message, self.wildcard,
                                      style=self.style)
 

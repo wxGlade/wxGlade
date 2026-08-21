@@ -117,6 +117,17 @@ class EditBase(np.PropertyOwner):
             item = item.parent
             if item is None: return None
 
+    @property
+    def parent_window2(self):
+        # return parent widget for creation of a child; either a window or a StaticBox of a static box sizer
+        item = self.parent
+        while True:
+            if item.IS_WINDOW: return item.widget
+            if compat.IS_PHOENIX and item.IS_SIZER and item.WX_CLASS=="wxStaticBoxSizer":
+                return item.widget.GetStaticBox()
+            item = item.parent
+            if item is None: return None
+
     def get_parent_window2(self, codegen):
         # go up to parent until it is no sizer or a StaticBoxSizer
         # this is for window creation, where the parent needs to be sizer's StaticBox
@@ -343,7 +354,7 @@ class EditBase(np.PropertyOwner):
             wx.SafeYield()
             compat.wxWindow_SendSizeEventToParent(self.widget)
         # following is required when e.g. adding a slot or widget to a sizer on a panel in a sizer
-        compat.wxWindow_SendSizeEventToParent(self.parent_window.widget)
+        compat.wxWindow_SendSizeEventToParent(self.parent_window2)
 
     # actual widget creation
     def create_widget(self):
@@ -626,7 +637,7 @@ class Slot(EditBase):
             size = self.parent.widget.GetClientSize()
         else:
             size = (20, 20)
-        self.widget = wx.Window(self.parent_window.widget, -1, size=size, style=style)
+        self.widget = wx.Window(self.parent_window2, -1, size=size, style=style)
         self.widget.SetBackgroundStyle(wx.BG_STYLE_CUSTOM)
         #self.widget.SetAutoLayout(True)
         self.widget.Bind(wx.EVT_PAINT, self.on_paint)

@@ -36,7 +36,7 @@ class EditComboBox(ManagedBase, EditStylesMixin):
         choices = [c[0] for c in self.choices]
         selection = self.selection
         if compat.IS_GTK: wx.Yield()  # avoid problems where the widget is consuming all events
-        self.widget = wx.ComboBox(self.parent_window.widget, wx.ID_ANY, choices=choices, style=self.style)
+        self.widget = wx.ComboBox(self.parent_window2, wx.ID_ANY, choices=choices, style=self.style)
         self.widget.Bind(wx.EVT_SET_FOCUS, self.on_set_focus)
         self.widget.SetSelection(selection)
 

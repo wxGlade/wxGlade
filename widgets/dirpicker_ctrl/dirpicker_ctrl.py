@@ -32,7 +32,7 @@ class EditDirPickerCtrl(ManagedBase, EditStylesMixin):
 
     def create_widget(self):
         if compat.IS_GTK: wx.Yield()  # avoid problems where the widget is consuming all events
-        self.widget = DirPickerCtrl(self.parent_window.widget, wx.ID_ANY,
+        self.widget = DirPickerCtrl(self.parent_window2, wx.ID_ANY,
                                     path = self.path, message = self.message,
                                     style=self.style)
 
