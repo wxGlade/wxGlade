@@ -57,7 +57,7 @@ class TestEditing(WXGladeGUITest):
         for child in editor.get_all_children():
             if child.IS_SLOT and child.overlapped: continue
             if editor.IS_SIZER and not child.IS_SIZER:
-                rect = child.widget.GetRect()
+                rect = child.widget.GetScreenRect()
                 for r in rectangles:
                     self.assertFalse( rect.Intersects(r) )
                 rectangles.append(rect)
