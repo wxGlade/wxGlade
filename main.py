@@ -1100,7 +1100,7 @@ class wxGladeFrame(wx.Frame):
 
                 wx.MessageBox(error_msg, _('Error'), wx.OK | wx.CENTRE | wx.ICON_ERROR)
 
-                return False
+        if error_msg: return False
 
         misc.rebuild_tree(common.root, freeze=True)
 

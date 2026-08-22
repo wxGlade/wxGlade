@@ -258,7 +258,7 @@ def _guiless_open_app(filename):
 
             logging.error(error_msg)
 
-            return False
+    if error_msg: return False
 
     if common.root.is_template:
         logging.info(_("Template loaded"))
