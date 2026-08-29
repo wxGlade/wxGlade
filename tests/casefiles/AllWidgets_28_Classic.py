@@ -295,7 +295,7 @@ class All_Widgets_Frame(wx.Frame):
         self.tc_spin_button = wx.TextCtrl(self.notebook_1_wxSpinButton, wx.ID_ANY, _("1"), style=wx.TE_RIGHT)
         sizer_16.Add(self.tc_spin_button, 1, wx.ALL, 5)
 
-        self.spin_button = wx.SpinButton(self.notebook_1_wxSpinButton, wx.ID_ANY )
+        self.spin_button = wx.SpinButton(self.notebook_1_wxSpinButton, wx.ID_ANY)
         sizer_16.Add(self.spin_button, 1, wx.ALL, 5)
 
         self.notebook_1_wxSpinCtrl = wx.Panel(self.notebook_1, wx.ID_ANY)

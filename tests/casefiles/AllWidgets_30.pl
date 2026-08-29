@@ -345,7 +345,7 @@ sub new {
     $self->{tc_spin_button} = Wx::TextCtrl->new($self->{notebook_1_wxSpinButton}, wxID_ANY, _T("1"), wxDefaultPosition, wxDefaultSize, wxTE_RIGHT);
     $self->{sizer_16}->Add($self->{tc_spin_button}, 1, wxALL, 5);
     
-    $self->{spin_button} = Wx::SpinButton->new($self->{notebook_1_wxSpinButton}, wxID_ANY,);
+    $self->{spin_button} = Wx::SpinButton->new($self->{notebook_1_wxSpinButton}, wxID_ANY);
     $self->{spin_button}->SetRange(0, 100)
     $self->{spin_button}->SetValue(20)
     $self->{sizer_16}->Add($self->{spin_button}, 1, wxALL, 5);
