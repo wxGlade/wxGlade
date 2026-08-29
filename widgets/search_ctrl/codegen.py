@@ -1,7 +1,7 @@
 """\
 Code generator functions for wxSearchCtrl objects
 
-@copyright: 2018-2021 Dietmar Schwertberger
+@copyright: 2018-2026 Dietmar Schwertberger
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
@@ -10,7 +10,7 @@ import wcodegen
 
 
 class PythonSearchCtrlGenerator(wcodegen.PythonWidgetCodeWriter):
-    tmpl = '%(name)s = %(klass)s(%(parent)s, %(id)s, %(value)s%(style)s)\n'
+    tmpl = '%(name)s = %(klass)s(%(parent)s, %(id)s, %(value)s%(style)s%(name_arg)s)\n'
     def get_more_properties_code(self, obj):
         ret = []
         name = self.tmpl_dict['name']
@@ -28,7 +28,7 @@ class PythonSearchCtrlGenerator(wcodegen.PythonWidgetCodeWriter):
 
 class CppSearchCtrlGenerator(wcodegen.CppWidgetCodeWriter):
     import_modules = ['<wx/srchctrl.h>']
-    tmpl = '%(name)s = new %(klass)s(%(parent)s, %(id)s, %(value)s%(style)s);\n'
+    tmpl = '%(name)s = new %(klass)s(%(parent)s, %(id)s, %(value)s%(style)s%(name_arg)s);\n'
     def get_more_properties_code(self, obj):
         ret = []
         name = self.tmpl_dict['name']

@@ -3455,7 +3455,6 @@ class DisplayProperty(TextProperty):
         compat.SetToolTip(self.text, self.value)
         #self._set_tooltip(label, self.text, self.enabler, *self.additional_controls)
 
-
     def write(self, output, tabs=0):
         return
 

@@ -1,14 +1,15 @@
 """\
 Code generator functions for wxFilePickerCtrl objects
+
+@copyright: 2026 Dietmar Schwertberger
+@license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
 import common, compat
 import wcodegen
 
 class PythonFilePickerCtrlGenerator(wcodegen.PythonWidgetCodeWriter):
-    tmpl = '%(name)s = %(klass)s(%(parent)s, %(id)s' \
-        ', %(path)s, %(message)s, %(wildcard)s' \
-        '%(style)s)\n'
+    tmpl = '%(name)s = %(klass)s(%(parent)s, %(id)s, %(path)s, %(message)s, %(wildcard)s%(style)s%(name_arg)s)\n'
 
     def _prepare_tmpl_content(self, obj):
         wcodegen.PythonWidgetCodeWriter._prepare_tmpl_content(self, obj)
@@ -22,9 +23,7 @@ class PythonFilePickerCtrlGenerator(wcodegen.PythonWidgetCodeWriter):
 
 class CppFilePickerCtrlGenerator(wcodegen.CppWidgetCodeWriter):
     import_modules = ['<wx/dirctrl.h>']
-    tmpl = '%(name)s = new %(klass)s(%(parent)s, %(id)s' \
-           ', %(path)s, %(message)s, %(wildcard)s' \
-           '%(style)s);\n'
+    tmpl = '%(name)s = new %(klass)s(%(parent)s, %(id)s, %(path)s, %(message)s, %(wildcard)s%(style)s%(name_arg)s);\n'
 
     prefix_style = False
     set_default_style = True

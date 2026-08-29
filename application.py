@@ -112,6 +112,8 @@ class EditRoot(np.PropertyOwner):
 
         attrs = ["name","class","language","top_window","encoding","use_gettext", "overwrite", "mark_blocks",
                  "for_version","is_template","indent_amount"]
+        for att in ["widget_names",]:
+            if self.properties[att].value: attrs.append(att)
         props = [self.properties[attr] for attr in attrs]
         attrs = dict( (attr,prop.get_string_value()) for attr,prop in zip(attrs,props) if not prop.deactivated )
         top_window_p = self.properties["top_window"]
@@ -213,7 +215,7 @@ class Application(EditRoot):
     PROPERTIES = ["Application", "name", "class", "encoding", "use_gettext", "top_window", "multiple_files",
                                  "language", "for_version", "overwrite", "mark_blocks",
                                  "output_path", "generate_code",
-                  "Settings",    "indent_mode", "indent_amount", "source_extension", "header_extension"]
+                  "Settings",    "indent_mode", "indent_amount", "widget_names", "source_extension", "header_extension"]
     _PROPERTY_LABELS = {"source_extension":     'C++ source file ext',
                         "header_extension":     'C++ header file ext',
                         "use_gettext":          "Enable gettext support",
@@ -221,7 +223,8 @@ class Application(EditRoot):
                         "multiple_files":       "Code Generation",
                         "overwrite":            "Keep user code",
                         "mark_blocks":          "Mark code blocks",
-                        "generate_code":        "Generate Source"}
+                        "generate_code":        "Generate Source",
+                        "widget_names":         "Add 'name' arg"}
     _PROPERTY_HELP = {"name":            'Name of the instance created from "Class";\n'
                                          ' also used as (main) file name in case of "Separate file for each class"',
                       "class":           "Name of the automatically generated class derived from wxApp",
@@ -237,7 +240,8 @@ class Application(EditRoot):
                       "output_path": "Output file or directory: absolute or relative path",
                       "mark_blocks":"Mark auto-generated code blocks with BEGIN/END wxGlade comments.\n"
                                     "This allows to identify user code in source files.\n"
-                                    "Therefore it can not be disabled if 'Keep user code' is selected."
+                                    "Therefore it can not be disabled if 'Keep user code' is selected.",
+                      "widget_names":"Create windows and widgets with 'name' argument (Python and C++ only)."
                       }
     if sys.platform=="win32":
         _PROPERTY_HELP["output_path"] = "Output file or directory; double click label to show in Explorer"
@@ -271,6 +275,8 @@ class Application(EditRoot):
         # code indentation: mode and count
         self.indent_mode   = np.RadioProperty( 1, [0,1], ["Tabs","Spaces"], aliases=["tab","space"], columns=2 )
         self.indent_amount = np.SpinProperty( config.default_indent_amount, val_range=(1, 100) )
+        # code generation: include 'name' argument
+        self.widget_names  = np.CheckBoxProperty(False)
         # C++ file extension
         self.source_extension = np.TextProperty('cpp')
         self.header_extension = np.TextProperty('h')

@@ -3,7 +3,7 @@ Code generator functions for wxListBox objects
 
 @copyright: 2002-2007 Alberto Griggio
 @copyright: 2014-2016 Carsten Grohmann
-@copyright: 2017 Dietmar Schwertberger
+@copyright: 2017-2026 Dietmar Schwertberger
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
@@ -13,12 +13,12 @@ from ChoicesCodeHandler import *
 
 
 class PythonListBoxGenerator(wcodegen.PythonWidgetCodeWriter):
-    tmpl = '%(name)s = %(klass)s(%(parent)s, %(id)s, choices=[%(choices)s]%(style)s)\n'
+    tmpl = '%(name)s = %(klass)s(%(parent)s, %(id)s, choices=[%(choices)s]%(style)s%(name_arg)s)\n'
 
 
 class CppListBoxGenerator(wcodegen.CppWidgetCodeWriter):
     tmpl = '%(name)s = new %(klass)s(%(parent)s, %(id)s, ' \
-           'wxDefaultPosition, wxDefaultSize, %(choices_len)s, %(name)s_choices, %(style)s);\n'
+           'wxDefaultPosition, wxDefaultSize, %(choices_len)s, %(name)s_choices, %(style)s%(name_arg)s);\n'
     prefix_style = False
     set_default_style = True
 

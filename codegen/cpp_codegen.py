@@ -1118,8 +1118,8 @@ void %(klass)s::%(handler)s(%(evt_type)s &event)  // wxGlade: %(klass)s.<event_h
     def quote_path(self, s):
         return 'wxT(%s)' % super(CPPCodeWriter, self).quote_path(s)
 
-    def _quote_str(self, s):
-        if self._use_gettext:
+    def _quote_str(self, s, translate=True):
+        if self._use_gettext and translate:
             return '_("%s")' % s
         return 'wxT("%s")' % s
 

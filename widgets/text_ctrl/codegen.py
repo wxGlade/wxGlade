@@ -3,6 +3,7 @@ Code generator functions for wxTextCtrl objects
 
 @copyright: 2002-2007 Alberto Griggio
 @copyright: 2014-2016 Carsten Grohmann
+@copyright: 2026 Dietmar Schwertberger
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
@@ -11,11 +12,11 @@ import wcodegen
 
 
 class PythonTextCtrlGenerator(wcodegen.PythonWidgetCodeWriter):
-    tmpl = '%(name)s = %(klass)s(%(parent)s, %(id)s, %(value)s%(style)s)\n'
+    tmpl = '%(name)s = %(klass)s(%(parent)s, %(id)s, %(value)s%(style)s%(name_arg)s)\n'
 
 
 class CppTextCtrlGenerator(wcodegen.CppWidgetCodeWriter):
-    tmpl = '%(name)s = new %(klass)s(%(parent)s, %(id)s, %(value)s%(style)s);\n'
+    tmpl = '%(name)s = new %(klass)s(%(parent)s, %(id)s, %(value)s%(style)s%(name_arg)s);\n'
 
 
 def initialize():

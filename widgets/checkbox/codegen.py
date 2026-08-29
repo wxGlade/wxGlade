@@ -3,7 +3,7 @@ Code generator functions for wxCheckBox objects
 
 @copyright: 2002-2007 Alberto Griggio
 @copyright: 2014-2016 Carsten Grohmann
-@copyright: 2016-2025 Dietmar Schwertberger
+@copyright: 2016-2026 Dietmar Schwertberger
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
@@ -13,7 +13,7 @@ import wcodegen
 
 
 class PythonCheckBoxGenerator(wcodegen.PythonWidgetCodeWriter, checkbox_base.CheckBoxMixin):
-    tmpl = '%(name)s = %(klass)s(%(parent)s, %(id)s, %(label)s%(style)s)\n'
+    tmpl = '%(name)s = %(klass)s(%(parent)s, %(id)s, %(label)s%(style)s%(name_arg)s)\n'
     tmpl_set3statevalue = '%(name)s.Set3StateValue(%(value_3state)s)\n'
 
     def _prepare_tmpl_content(self, obj):
@@ -28,7 +28,7 @@ class PythonCheckBoxGenerator(wcodegen.PythonWidgetCodeWriter, checkbox_base.Che
 
 
 class CppCheckBoxGenerator(wcodegen.CppWidgetCodeWriter, checkbox_base.CheckBoxMixin):
-    tmpl = '%(name)s = new %(klass)s(%(parent)s, %(id)s, %(label)s%(style)s);\n'
+    tmpl = '%(name)s = new %(klass)s(%(parent)s, %(id)s, %(label)s%(style)s%(name_arg)s);\n'
     tmpl_set3statevalue = '%(name)s->Set3StateValue(%(value_3state)s);\n'
 
     def _prepare_tmpl_content(self, obj):

@@ -438,7 +438,7 @@ class XRCCodeWriter(BaseLangCodeWriter, wcodegen.XRCMixin):
     def _format_comment(self, msg):
         return '<!-- %s -->' % escape(msg.rstrip())
 
-    def _quote_str(self, s):
+    def _quote_str(self, s, translate=True):
         return s
 
 

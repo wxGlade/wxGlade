@@ -3,6 +3,7 @@ Code generator functions for wxToggleButton objects
 
 @copyright: 2002-2007 Alberto Griggio
 @copyright: 2014-2016 Carsten Grohmann
+@copyright: 2026 Dietmar Schwertberger
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
@@ -11,13 +12,13 @@ import wcodegen
 
 
 class PythonToggleButtonGenerator(wcodegen.PythonWidgetCodeWriter):
-    tmpl = '%(name)s = %(klass)s(%(parent)s, %(id)s, %(label)s%(style)s)\n'
+    tmpl = '%(name)s = %(klass)s(%(parent)s, %(id)s, %(label)s%(style)s%(name_arg)s)\n'
     has_setvalue = True
 
 
 class CppToggleButtonGenerator(wcodegen.CppWidgetCodeWriter):
     import_modules = ['<wx/tglbtn.h>']
-    tmpl = '%(name)s = new %(klass)s(%(parent)s, %(id)s, %(label)s%(style)s);\n'
+    tmpl = '%(name)s = new %(klass)s(%(parent)s, %(id)s, %(label)s%(style)s%(name_arg)s);\n'
     has_setvalue = True
 
 

@@ -3,7 +3,7 @@ Code generator functions for wxCalendarCtrl objects
 
 @copyright: 2002-2007 Alberto Griggio
 @copyright: 2014-2016 Carsten Grohmann
-@copyright: 2016-2025 Dietmar Schwertberger
+@copyright: 2016-2026 Dietmar Schwertberger
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
@@ -13,7 +13,7 @@ import wcodegen
 
 class PythonCalendarCtrlGenerator(wcodegen.PythonWidgetCodeWriter):
 
-    tmpl = '%(name)s = %(klass)s(%(parent)s, %(id)s%(style)s)\n'
+    tmpl = '%(name)s = %(klass)s(%(parent)s, %(id)s%(style)s%(name_arg)s)\n'
 
     # XXX the following needs to depend on the code generator when Phoenix is about to be supported fully:
     if compat.IS_CLASSIC:
@@ -42,7 +42,7 @@ class PythonCalendarCtrlGenerator(wcodegen.PythonWidgetCodeWriter):
 
 class CppCalendarCtrlGenerator(wcodegen.CppWidgetCodeWriter):
     import_modules = ['<wx/calctrl.h>']
-    tmpl = '%(name)s = new %(klass)s(%(parent)s, %(id)s, wxDefaultDateTime%(style)s);\n'
+    tmpl = '%(name)s = new %(klass)s(%(parent)s, %(id)s, wxDefaultDateTime%(style)s%(name_arg)s);\n'
 
     def _prepare_tmpl_content(self, obj):
         wcodegen.CppWidgetCodeWriter._prepare_tmpl_content(self, obj)

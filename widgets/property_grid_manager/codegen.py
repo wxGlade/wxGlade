@@ -3,6 +3,7 @@ Code generator functions for wxPropertyGridManager objects
 
 @copyright: 2002-2007 Alberto Griggio
 @copyright: 2015 Franco Bugnano
+@copyright: 2026 Dietmar Schwertberger
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
@@ -12,7 +13,7 @@ import wcodegen
 
 class PythonCodeGenerator(wcodegen.PythonWidgetCodeWriter):
     import_modules = ['import wx.propgrid\n']
-    tmpl = '%(name)s = %(klass)s(%(parent)s, %(id)s%(style)s)\n'
+    tmpl = '%(name)s = %(klass)s(%(parent)s, %(id)s%(style)s%(name_arg)s)\n'
 
     def cn(self, c):
         #self._logger.debug('PythonStaticTextGenerator.cn with arg:', c)
@@ -31,7 +32,7 @@ class PythonCodeGenerator(wcodegen.PythonWidgetCodeWriter):
 
 class CppCodeGenerator(wcodegen.CppWidgetCodeWriter):
     import_modules = ['<wx/propgrid/manager.h>']
-    tmpl = '%(name)s = new %(klass)s(%(parent)s, %(id)s%(style)s);\n'
+    tmpl = '%(name)s = new %(klass)s(%(parent)s, %(id)s%(style)s%(name_arg)s);\n'
 
     def _prepare_tmpl_content(self, obj):
         wcodegen.CppWidgetCodeWriter._prepare_tmpl_content(self, obj)

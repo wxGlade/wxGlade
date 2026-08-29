@@ -4,6 +4,7 @@ Code generator functions for wxTimePickerCtrl objects
 @copyright: 2002-2007 Alberto Griggio
 @copyright: 2014-2016 Carsten Grohmann
 @copyright: 2016-2023 Dietmar Schwertberger
+@copyright: 2026 Dietmar Schwertberger
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
@@ -12,7 +13,7 @@ import wcodegen
 
 
 class PythonTimePickerCtrlGenerator(wcodegen.PythonWidgetCodeWriter):
-    tmpl = '%(name)s = %(klass)s(%(parent)s, %(id)s%(style)s)\n'
+    tmpl = '%(name)s = %(klass)s(%(parent)s, %(id)s%(style)s%(name_arg)s)\n'
 
     # XXX the following needs to depend on the code generator when Phoenix is about to be supported fully:
     if compat.IS_PHOENIX:
@@ -38,7 +39,7 @@ class PythonTimePickerCtrlGenerator(wcodegen.PythonWidgetCodeWriter):
 
 class CppTimePickerCtrlGenerator(wcodegen.CppWidgetCodeWriter):
     import_modules = ['<wx/datectrl.h>']
-    tmpl = '%(name)s = new %(klass)s(%(parent)s, %(id)s, wxDefaultDateTime, wxDefaultPosition, wxDefaultSize, %(style)s);\n'
+    tmpl = '%(name)s = new %(klass)s(%(parent)s, %(id)s, wxDefaultDateTime, wxDefaultPosition, wxDefaultSize, %(style)s%(name_arg)s);\n'
 
     prefix_style = False
     set_default_style = True
