@@ -21,7 +21,7 @@ MyFrame::MyFrame(wxWindow* parent, wxWindowID id, const wxString& title, const w
 {
     // begin wxGlade: MyFrame::MyFrame
     SetSize(wxSize(400, 300));
-    SetTitle(wxT("frame"));
+    SetTitle("frame");
     
     // Menu Bar
     frame_menubar = new wxMenuBar();
@@ -33,7 +33,7 @@ MyFrame::MyFrame(wxWindow* parent, wxWindowID id, const wxString& title, const w
     
     // statusbar fields
     const wxString frame_statusbar_fields[] = {
-        wxT("frame_statusbar"),
+        "frame_statusbar",
     };
     for(int i = 0; i < frame_statusbar->GetFieldsCount(); ++i) {
         frame_statusbar->SetStatusText(frame_statusbar_fields[i], i);
@@ -52,7 +52,7 @@ MyFrame::MyFrame(wxWindow* parent, wxWindowID id, const wxString& title, const w
     notebook_1 = new wxNotebook(panel_x, wxID_ANY);
     sizer_2->Add(notebook_1, 1, wxEXPAND, 0);
     notebook_1_pane_1 = new wxPanel(notebook_1, wxID_ANY);
-    notebook_1->AddPage(notebook_1_pane_1, wxT("notebook_1_pane_1"));
+    notebook_1->AddPage(notebook_1_pane_1, "notebook_1_pane_1");
     sizer_2->Add(20, 20, 0, wxALIGN_CENTER_HORIZONTAL, 0);
     window_1 = new wxSplitterWindow(panel_x, wxID_ANY);
     window_1->SetMinimumPaneSize(20);
@@ -87,7 +87,7 @@ TestNotebookWithBasesInFrame::TestNotebookWithBasesInFrame(wxWindow* parent, wxW
 {
     // begin wxGlade: TestNotebookWithBasesInFrame::TestNotebookWithBasesInFrame
     notebook_1_pane_1 = new NotebookPageWithBases(this, wxID_ANY);
-    AddPage(notebook_1_pane_1, wxT("notebook_1_pane_1"));
+    AddPage(notebook_1_pane_1, "notebook_1_pane_1");
     // end wxGlade
 }
 
@@ -128,7 +128,7 @@ MyFrameWithBases::MyFrameWithBases(wxWindow* parent, wxWindowID id, const wxStri
 {
     // begin wxGlade: MyFrameWithBases::MyFrameWithBases
     SetSize(wxSize(400, 300));
-    SetTitle(wxT("frame"));
+    SetTitle("frame");
     
     // Menu Bar
     frame_copy_menubar = new wxMenuBar();
@@ -140,7 +140,7 @@ MyFrameWithBases::MyFrameWithBases(wxWindow* parent, wxWindowID id, const wxStri
     
     // statusbar fields
     const wxString frame_copy_statusbar_fields[] = {
-        wxT("frame_copy_statusbar"),
+        "frame_copy_statusbar",
     };
     for(int i = 0; i < frame_copy_statusbar->GetFieldsCount(); ++i) {
         frame_copy_statusbar->SetStatusText(frame_copy_statusbar_fields[i], i);
@@ -167,7 +167,7 @@ MyDialog::MyDialog(wxWindow* parent, wxWindowID id, const wxString& title, const
 {
     // begin wxGlade: MyDialog::MyDialog
     SetSize(wxSize(400, 300));
-    SetTitle(wxT("dialog"));
+    SetTitle("dialog");
     wxBoxSizer* sizer_1 = new wxBoxSizer(wxVERTICAL);
     sizer_1->Add(0, 0, 0, 0, 0);
     
@@ -195,7 +195,7 @@ MyMDIChildFrame::MyMDIChildFrame(wxMDIParentFrame* parent, wxWindowID id, const 
 {
     // begin wxGlade: MyMDIChildFrame::MyMDIChildFrame
     SetSize(wxSize(400, 300));
-    SetTitle(wxT("frame_1"));
+    SetTitle("frame_1");
     wxBoxSizer* sizer_1 = new wxBoxSizer(wxVERTICAL);
     sizer_1->Add(0, 0, 0, 0, 0);
     
@@ -227,7 +227,7 @@ MyDialogWithBases::MyDialogWithBases(wxWindow* parent, wxWindowID id, const wxSt
 {
     // begin wxGlade: MyDialogWithBases::MyDialogWithBases
     SetSize(wxSize(400, 300));
-    SetTitle(wxT("dialog"));
+    SetTitle("dialog");
     wxBoxSizer* sizer_1 = new wxBoxSizer(wxVERTICAL);
     sizer_1->Add(0, 0, 0, 0, 0);
     

@@ -20,8 +20,8 @@ DebugPanel::DebugPanel(wxWindow* parent, wxWindowID id, const wxPoint& pos, cons
     wxPanel(parent, id, pos, size, wxTAB_TRAVERSAL)
 {
     // begin wxGlade: DebugPanel::DebugPanel
-    SetFont(wxFont(12, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_BOLD, 0, wxT("")));
-    wxStaticBoxSizer* sizer_2 = new wxStaticBoxSizer(new wxStaticBox(this, wxID_ANY, wxT("sizer_2")), wxVERTICAL);
+    SetFont(wxFont(12, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_BOLD, 0, ""));
+    wxStaticBoxSizer* sizer_2 = new wxStaticBoxSizer(new wxStaticBox(this, wxID_ANY, "sizer_2"), wxVERTICAL);
     sizer_2->Add(0, 0, 0, 0, 0);
     
     SetSizer(sizer_2);
@@ -34,7 +34,7 @@ Frame::Frame(wxWindow* parent, wxWindowID id, const wxString& title, const wxPoi
 {
     // begin wxGlade: Frame::Frame
     SetSize(wxSize(1688, 1058));
-    SetTitle(wxT("Frame"));
+    SetTitle("Frame");
     notebook_1_Debug = new DebugPanel(this, wxID_ANY);
     Layout();
     // end wxGlade

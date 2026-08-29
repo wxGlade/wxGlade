@@ -21,7 +21,7 @@ MyFrame::MyFrame(wxWindow* parent, wxWindowID id, const wxString& title, const w
 {
     // begin wxGlade: MyFrame::MyFrame
     SetSize(wxSize(400, 682));
-    SetTitle(wxT("frame"));
+    SetTitle("frame");
     grid_1 = new wxGrid(this, wxID_ANY);
     grid_1->CreateGrid(10, 0);
     Layout();

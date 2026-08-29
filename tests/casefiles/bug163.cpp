@@ -23,7 +23,7 @@ MyFrame::MyFrame(wxWindow* parent, wxWindowID id, const wxString& title, const w
     SetTitle(_("MyFrame"));
     wxBoxSizer* sizer_1 = new wxBoxSizer(wxVERTICAL);
     label_1 = new wxStaticText(this, wxID_ANY, _("Extraproperty example"));
-    label_1->SetFont(wxFont(40, wxDEFAULT, wxNORMAL, wxNORMAL, 0, wxT("")));
+    label_1->SetFont(wxFont(40, wxDEFAULT, wxNORMAL, wxNORMAL, 0, ""));
     label_1->SetFoobar(1);
     sizer_1->Add(label_1, 1, wxALL, 5);
     

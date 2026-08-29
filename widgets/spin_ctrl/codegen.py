@@ -29,7 +29,7 @@ class PythonSpinCtrlGenerator(wcodegen.PythonWidgetCodeWriter):
 
 class CppSpinCtrlGenerator(wcodegen.CppWidgetCodeWriter):
     import_modules = ['<wx/spinctrl.h>']
-    tmpl = '%(name)s = new %(klass)s(%(parent)s, %(id)s, wxT("%(value)s"), ' \
+    tmpl = '%(name)s = new %(klass)s(%(parent)s, %(id)s, "%(value)s", ' \
            'wxDefaultPosition, wxDefaultSize, %(style)s, %(minValue)s, %(maxValue)s%(name_arg)s);\n'
     prefix_style = False
     set_default_style = True

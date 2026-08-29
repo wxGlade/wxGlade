@@ -19,7 +19,7 @@ class PythonComboBoxGenerator(wcodegen.PythonWidgetCodeWriter):
 
 
 class CppComboBoxGenerator(wcodegen.CppWidgetCodeWriter):
-    tmpl = '%(name)s = new %(klass)s(%(parent)s, %(id)s, wxT(""), ' \
+    tmpl = '%(name)s = new %(klass)s(%(parent)s, %(id)s, "", ' \
            'wxDefaultPosition, wxDefaultSize, %(choices_len)s, %(name)s_choices, %(style)s%(name_arg)s);\n'
     prefix_style = False
     set_default_style = True

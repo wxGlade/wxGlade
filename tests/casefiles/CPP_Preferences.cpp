@@ -62,12 +62,12 @@ wxGladePreferencesUI::wxGladePreferencesUI(wxWindow* parent, wxWindowID id, cons
     sizer_4->Add(codegen_path, 1, wxALIGN_CENTER_VERTICAL|wxALL, 5);
     wxStaticText* label_2 = new wxStaticText(notebook_1_pane_1, wxID_ANY, _("Number of items in file history"));
     sizer_4->Add(label_2, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5);
-    number_history = new wxSpinCtrl(notebook_1_pane_1, wxID_ANY, wxT("4"), wxDefaultPosition, wxDefaultSize, 0, 0, 100);
+    number_history = new wxSpinCtrl(notebook_1_pane_1, wxID_ANY, "4", wxDefaultPosition, wxDefaultSize, 0, 0, 100);
     number_history->SetMinSize(wxSize(196, -1));
     sizer_4->Add(number_history, 1, wxALIGN_CENTER_VERTICAL|wxALL, 5);
     wxStaticText* label_2_copy_1 = new wxStaticText(notebook_1_pane_1, wxID_ANY, _("Number of buttons per row\nin the main palette"));
     sizer_4->Add(label_2_copy_1, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5);
-    buttons_per_row = new wxSpinCtrl(notebook_1_pane_1, wxID_ANY, wxT("5"), wxDefaultPosition, wxDefaultSize, 0, 1, 100);
+    buttons_per_row = new wxSpinCtrl(notebook_1_pane_1, wxID_ANY, "5", wxDefaultPosition, wxDefaultSize, 0, 1, 100);
     buttons_per_row->SetMinSize(wxSize(196, -1));
     sizer_4->Add(buttons_per_row, 1, wxALIGN_CENTER_VERTICAL|wxALL, 5);
     
@@ -89,14 +89,14 @@ wxGladePreferencesUI::wxGladePreferencesUI(wxWindow* parent, wxWindowID id, cons
     sizer_5->Add(sizer_7, 0, wxEXPAND, 0);
     default_border = new wxCheckBox(notebook_1_pane_2, wxID_ANY, _("Default border width for widgets"));
     sizer_7->Add(default_border, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5);
-    default_border_size = new wxSpinCtrl(notebook_1_pane_2, wxID_ANY, wxT(""), wxDefaultPosition, wxDefaultSize, 0, 0, 20);
+    default_border_size = new wxSpinCtrl(notebook_1_pane_2, wxID_ANY, "", wxDefaultPosition, wxDefaultSize, 0, 0, 20);
     default_border_size->SetMinSize(wxSize(45, 22));
     sizer_7->Add(default_border_size, 0, wxALL, 5);
     wxBoxSizer* sizer_7_copy = new wxBoxSizer(wxHORIZONTAL);
     sizer_5->Add(sizer_7_copy, 0, wxEXPAND, 0);
     autosave = new wxCheckBox(notebook_1_pane_2, wxID_ANY, _("Auto save wxg files every "));
     sizer_7_copy->Add(autosave, 0, wxALIGN_CENTER_VERTICAL|wxBOTTOM|wxLEFT|wxTOP, 5);
-    autosave_delay = new wxSpinCtrl(notebook_1_pane_2, wxID_ANY, wxT("120"), wxDefaultPosition, wxDefaultSize, 0, 30, 300);
+    autosave_delay = new wxSpinCtrl(notebook_1_pane_2, wxID_ANY, "120", wxDefaultPosition, wxDefaultSize, 0, 30, 300);
     autosave_delay->SetMinSize(wxSize(45, 22));
     sizer_7_copy->Add(autosave_delay, 0, wxBOTTOM|wxTOP, 5);
     wxStaticText* label_3 = new wxStaticText(notebook_1_pane_2, wxID_ANY, _(" seconds"));

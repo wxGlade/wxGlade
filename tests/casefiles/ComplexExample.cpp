@@ -158,28 +158,28 @@ void PyOgg2_MyFrame::OnOpen(wxCommandEvent &event)  // wxGlade: PyOgg2_MyFrame.<
 {
     event.Skip();
     // notify the user that he hasn't implemented the event handler yet
-    wxLogDebug(wxT("Event handler (PyOgg2_MyFrame::OnOpen) not implemented yet"));
+    wxLogDebug("Event handler (PyOgg2_MyFrame::OnOpen) not implemented yet");
 }
 
 void PyOgg2_MyFrame::OnClose(wxCommandEvent &event)  // wxGlade: PyOgg2_MyFrame.<event_handler>
 {
     event.Skip();
     // notify the user that he hasn't implemented the event handler yet
-    wxLogDebug(wxT("Event handler (PyOgg2_MyFrame::OnClose) not implemented yet"));
+    wxLogDebug("Event handler (PyOgg2_MyFrame::OnClose) not implemented yet");
 }
 
 void PyOgg2_MyFrame::OnAboutDialog(wxCommandEvent &event)  // wxGlade: PyOgg2_MyFrame.<event_handler>
 {
     event.Skip();
     // notify the user that he hasn't implemented the event handler yet
-    wxLogDebug(wxT("Event handler (PyOgg2_MyFrame::OnAboutDialog) not implemented yet"));
+    wxLogDebug("Event handler (PyOgg2_MyFrame::OnAboutDialog) not implemented yet");
 }
 
 void PyOgg2_MyFrame::startConverting(wxCommandEvent &event)  // wxGlade: PyOgg2_MyFrame.<event_handler>
 {
     event.Skip();
     // notify the user that he hasn't implemented the event handler yet
-    wxLogDebug(wxT("Event handler (PyOgg2_MyFrame::startConverting) not implemented yet"));
+    wxLogDebug("Event handler (PyOgg2_MyFrame::startConverting) not implemented yet");
 }
 
 
@@ -227,9 +227,9 @@ bool MyApp::OnInit()
 {
     m_locale.Init();
 #ifdef APP_LOCALE_DIR
-    m_locale.AddCatalogLookupPathPrefix(wxT(APP_LOCALE_DIR));
+    m_locale.AddCatalogLookupPathPrefix(APP_LOCALE_DIR);
 #endif
-    m_locale.AddCatalog(wxT(APP_CATALOG));
+    m_locale.AddCatalog(APP_CATALOG);
 
     wxInitAllImageHandlers();
     MyFrameGrid* FrameGrid = new MyFrameGrid(NULL, wxID_ANY, wxEmptyString);

@@ -20,13 +20,13 @@ MyFrame::MyFrame(wxWindow* parent, wxWindowID id, const wxString& title, const w
     wxFrame(parent, id, title, pos, size, wxDEFAULT_FRAME_STYLE)
 {
     // begin wxGlade: MyFrame::MyFrame
-    SetTitle(wxT("frame"));
+    SetTitle("frame");
     wxBoxSizer* sizer_1 = new wxBoxSizer(wxVERTICAL);
     list_ctrl_1 = new wxListCtrl(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxLC_HRULES|wxLC_REPORT|wxLC_VRULES);
-    list_ctrl_1->AppendColumn(wxT("A"), wxLIST_FORMAT_LEFT, -1);
-    list_ctrl_1->AppendColumn(wxT("B"), wxLIST_FORMAT_LEFT, -1);
-    list_ctrl_1->AppendColumn(wxT("C"), wxLIST_FORMAT_LEFT, -1);
-    list_ctrl_1->AppendColumn(wxT("D"), wxLIST_FORMAT_LEFT, -1);
+    list_ctrl_1->AppendColumn("A", wxLIST_FORMAT_LEFT, -1);
+    list_ctrl_1->AppendColumn("B", wxLIST_FORMAT_LEFT, -1);
+    list_ctrl_1->AppendColumn("C", wxLIST_FORMAT_LEFT, -1);
+    list_ctrl_1->AppendColumn("D", wxLIST_FORMAT_LEFT, -1);
     sizer_1->Add(list_ctrl_1, 1, wxEXPAND, 0);
     
     SetSizer(sizer_1);

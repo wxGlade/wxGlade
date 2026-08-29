@@ -36,9 +36,9 @@ bool MyApp::OnInit()
 {
     m_locale.Init();
 #ifdef APP_LOCALE_DIR
-    m_locale.AddCatalogLookupPathPrefix(wxT(APP_LOCALE_DIR));
+    m_locale.AddCatalogLookupPathPrefix(APP_LOCALE_DIR);
 #endif
-    m_locale.AddCatalog(wxT(APP_CATALOG));
+    m_locale.AddCatalog(APP_CATALOG);
 
     wxInitAllImageHandlers();
     Bug179_Frame* Frame179 = new Bug179_Frame(NULL, wxID_ANY, wxEmptyString);

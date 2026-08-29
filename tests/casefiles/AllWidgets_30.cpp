@@ -78,7 +78,7 @@ All_Widgets_Frame::All_Widgets_Frame(wxWindow* parent, wxWindowID id, const wxSt
     notebook_1_wxBitmapButton = new wxPanel(notebook_1, wxID_ANY);
     notebook_1->AddPage(notebook_1_wxBitmapButton, _("wxBitmapButton"));
     wxFlexGridSizer* sizer_13 = new wxFlexGridSizer(2, 2, 0, 0);
-    bitmap_button_icon1 = new wxBitmapButton(notebook_1_wxBitmapButton, wxID_ANY, wxBitmap(wxT("icon.png"), wxBITMAP_TYPE_ANY));
+    bitmap_button_icon1 = new wxBitmapButton(notebook_1_wxBitmapButton, wxID_ANY, wxBitmap("icon.png", wxBITMAP_TYPE_ANY));
     bitmap_button_icon1->SetSize(bitmap_button_icon1->GetBestSize());
     bitmap_button_icon1->SetDefault();
     sizer_13->Add(bitmap_button_icon1, 1, wxALL|wxEXPAND, 5);
@@ -86,7 +86,7 @@ All_Widgets_Frame::All_Widgets_Frame(wxWindow* parent, wxWindowID id, const wxSt
     bitmap_button_empty1->SetSize(bitmap_button_empty1->GetBestSize());
     bitmap_button_empty1->SetDefault();
     sizer_13->Add(bitmap_button_empty1, 1, wxALL|wxEXPAND, 5);
-    bitmap_button_icon2 = new wxBitmapButton(notebook_1_wxBitmapButton, wxID_ANY, wxBitmap(wxT("icon.png"), wxBITMAP_TYPE_ANY), wxDefaultPosition, wxDefaultSize, wxBORDER_NONE|wxBU_BOTTOM);
+    bitmap_button_icon2 = new wxBitmapButton(notebook_1_wxBitmapButton, wxID_ANY, wxBitmap("icon.png", wxBITMAP_TYPE_ANY), wxDefaultPosition, wxDefaultSize, wxBORDER_NONE|wxBU_BOTTOM);
     bitmap_button_icon2->SetBitmapDisabled(wxBitmap(32, 32));
     bitmap_button_icon2->SetSize(bitmap_button_icon2->GetBestSize());
     bitmap_button_icon2->SetDefault();
@@ -167,13 +167,13 @@ All_Widgets_Frame::All_Widgets_Frame(wxWindow* parent, wxWindowID id, const wxSt
     wxBoxSizer* sizer_7 = new wxBoxSizer(wxHORIZONTAL);
     sizer_6->Add(sizer_7, 1, wxEXPAND, 0);
     const wxString *combo_box_empty_choices = NULL;
-    combo_box_empty = new wxComboBox(notebook_1_wxComboBox, wxID_ANY, wxT(""), wxDefaultPosition, wxDefaultSize, 0, combo_box_empty_choices, 0);
+    combo_box_empty = new wxComboBox(notebook_1_wxComboBox, wxID_ANY, "", wxDefaultPosition, wxDefaultSize, 0, combo_box_empty_choices, 0);
     sizer_7->Add(combo_box_empty, 1, wxALL, 5);
     const wxString combo_box_filled_choices[] = {
         _("Item 1 (pre-selected)"),
         _("Item 2"),
     };
-    combo_box_filled = new wxComboBox(notebook_1_wxComboBox, wxID_ANY, wxT(""), wxDefaultPosition, wxDefaultSize, 2, combo_box_filled_choices, 0);
+    combo_box_filled = new wxComboBox(notebook_1_wxComboBox, wxID_ANY, "", wxDefaultPosition, wxDefaultSize, 2, combo_box_filled_choices, 0);
     combo_box_filled->SetSelection(0);
     sizer_7->Add(combo_box_filled, 1, wxALL, 5);
     
@@ -294,9 +294,9 @@ All_Widgets_Frame::All_Widgets_Frame(wxWindow* parent, wxWindowID id, const wxSt
     notebook_1_wxSpinCtrl = new wxPanel(notebook_1, wxID_ANY);
     notebook_1->AddPage(notebook_1_wxSpinCtrl, _("wxSpinCtrl"));
     wxBoxSizer* sizer_14 = new wxBoxSizer(wxVERTICAL);
-    spin_ctrl_1 = new wxSpinCtrl(notebook_1_wxSpinCtrl, wxID_ANY, wxT("4"), wxDefaultPosition, wxDefaultSize, wxALIGN_RIGHT|wxSP_ARROW_KEYS, 0, 100);
+    spin_ctrl_1 = new wxSpinCtrl(notebook_1_wxSpinCtrl, wxID_ANY, "4", wxDefaultPosition, wxDefaultSize, wxALIGN_RIGHT|wxSP_ARROW_KEYS, 0, 100);
     sizer_14->Add(spin_ctrl_1, 0, wxALL|wxEXPAND, 5);
-    spin_ctrl_double_1 = new wxSpinCtrlDouble(notebook_1_wxSpinCtrl, wxID_ANY, wxT("0.0"), wxDefaultPosition, wxDefaultSize, wxSP_ARROW_KEYS, 0.0, 100.0);
+    spin_ctrl_double_1 = new wxSpinCtrlDouble(notebook_1_wxSpinCtrl, wxID_ANY, "0.0", wxDefaultPosition, wxDefaultSize, wxSP_ARROW_KEYS, 0.0, 100.0);
     spin_ctrl_double_1->SetDigits(2);
     sizer_14->Add(spin_ctrl_double_1, 0, 0, 0);
     
@@ -340,9 +340,9 @@ All_Widgets_Frame::All_Widgets_Frame(wxWindow* parent, wxWindowID id, const wxSt
     wxBoxSizer* sizer_11 = new wxBoxSizer(wxVERTICAL);
     bitmap_empty = new wxStaticBitmap(notebook_1_wxStaticBitmap, wxID_ANY, wxBitmap(32, 32));
     sizer_11->Add(bitmap_empty, 1, wxALL|wxEXPAND, 5);
-    bitmap_file = new wxStaticBitmap(notebook_1_wxStaticBitmap, wxID_ANY, wxBitmap(wxT("icon.png"), wxBITMAP_TYPE_ANY));
+    bitmap_file = new wxStaticBitmap(notebook_1_wxStaticBitmap, wxID_ANY, wxBitmap("icon.png", wxBITMAP_TYPE_ANY));
     sizer_11->Add(bitmap_file, 1, wxALL|wxEXPAND, 5);
-    bitmap_nofile = new wxStaticBitmap(notebook_1_wxStaticBitmap, wxID_ANY, wxBitmap(wxT("non-existing.bmp"), wxBITMAP_TYPE_ANY));
+    bitmap_nofile = new wxStaticBitmap(notebook_1_wxStaticBitmap, wxID_ANY, wxBitmap("non-existing.bmp", wxBITMAP_TYPE_ANY));
     sizer_11->Add(bitmap_nofile, 1, wxALL|wxEXPAND, 5);
     bitmap_art = new wxStaticBitmap(notebook_1_wxStaticBitmap, wxID_ANY, wxArtProvider::GetBitmap(wxART_PRINT, wxART_OTHER, wxSize(32, 32)));
     sizer_11->Add(bitmap_art, 1, wxALL|wxEXPAND, 5);
@@ -484,56 +484,56 @@ void All_Widgets_Frame::onSelectUnix(wxCommandEvent &event)  // wxGlade: All_Wid
 {
     event.Skip();
     // notify the user that he hasn't implemented the event handler yet
-    wxLogDebug(wxT("Event handler (All_Widgets_Frame::onSelectUnix) not implemented yet"));
+    wxLogDebug("Event handler (All_Widgets_Frame::onSelectUnix) not implemented yet");
 }
 
 void All_Widgets_Frame::onSelectWindows(wxCommandEvent &event)  // wxGlade: All_Widgets_Frame.<event_handler>
 {
     event.Skip();
     // notify the user that he hasn't implemented the event handler yet
-    wxLogDebug(wxT("Event handler (All_Widgets_Frame::onSelectWindows) not implemented yet"));
+    wxLogDebug("Event handler (All_Widgets_Frame::onSelectWindows) not implemented yet");
 }
 
 void All_Widgets_Frame::onRemoveTabs(wxCommandEvent &event)  // wxGlade: All_Widgets_Frame.<event_handler>
 {
     event.Skip();
     // notify the user that he hasn't implemented the event handler yet
-    wxLogDebug(wxT("Event handler (All_Widgets_Frame::onRemoveTabs) not implemented yet"));
+    wxLogDebug("Event handler (All_Widgets_Frame::onRemoveTabs) not implemented yet");
 }
 
 void All_Widgets_Frame::onShowManual(wxCommandEvent &event)  // wxGlade: All_Widgets_Frame.<event_handler>
 {
     event.Skip();
     // notify the user that he hasn't implemented the event handler yet
-    wxLogDebug(wxT("Event handler (All_Widgets_Frame::onShowManual) not implemented yet"));
+    wxLogDebug("Event handler (All_Widgets_Frame::onShowManual) not implemented yet");
 }
 
 void All_Widgets_Frame::OnNotebookPageChanged(wxBookCtrlEvent &event)  // wxGlade: All_Widgets_Frame.<event_handler>
 {
     event.Skip();
     // notify the user that he hasn't implemented the event handler yet
-    wxLogDebug(wxT("Event handler (All_Widgets_Frame::OnNotebookPageChanged) not implemented yet"));
+    wxLogDebug("Event handler (All_Widgets_Frame::OnNotebookPageChanged) not implemented yet");
 }
 
 void All_Widgets_Frame::OnNotebookPageChanging(wxBookCtrlEvent &event)  // wxGlade: All_Widgets_Frame.<event_handler>
 {
     event.Skip();
     // notify the user that he hasn't implemented the event handler yet
-    wxLogDebug(wxT("Event handler (All_Widgets_Frame::OnNotebookPageChanging) not implemented yet"));
+    wxLogDebug("Event handler (All_Widgets_Frame::OnNotebookPageChanging) not implemented yet");
 }
 
 void All_Widgets_Frame::OnBitmapButtonPanelNavigationKey(wxNavigationKeyEvent &event)  // wxGlade: All_Widgets_Frame.<event_handler>
 {
     event.Skip();
     // notify the user that he hasn't implemented the event handler yet
-    wxLogDebug(wxT("Event handler (All_Widgets_Frame::OnBitmapButtonPanelNavigationKey) not implemented yet"));
+    wxLogDebug("Event handler (All_Widgets_Frame::OnBitmapButtonPanelNavigationKey) not implemented yet");
 }
 
 void All_Widgets_Frame::onStartConverting(wxCommandEvent &event)  // wxGlade: All_Widgets_Frame.<event_handler>
 {
     event.Skip();
     // notify the user that he hasn't implemented the event handler yet
-    wxLogDebug(wxT("Event handler (All_Widgets_Frame::onStartConverting) not implemented yet"));
+    wxLogDebug("Event handler (All_Widgets_Frame::onStartConverting) not implemented yet");
 }
 
 
@@ -553,9 +553,9 @@ bool MyApp::OnInit()
 {
     m_locale.Init();
 #ifdef APP_LOCALE_DIR
-    m_locale.AddCatalogLookupPathPrefix(wxT(APP_LOCALE_DIR));
+    m_locale.AddCatalogLookupPathPrefix(APP_LOCALE_DIR);
 #endif
-    m_locale.AddCatalog(wxT(APP_CATALOG));
+    m_locale.AddCatalog(APP_CATALOG);
 
     wxInitAllImageHandlers();
     All_Widgets_Frame* All_Widgets = new All_Widgets_Frame(NULL, wxID_ANY, wxEmptyString);

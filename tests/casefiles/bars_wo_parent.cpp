@@ -22,7 +22,7 @@ MyMenuBar::MyMenuBar():
     // begin wxGlade: MyMenuBar::MyMenuBar
     wxMenu *wxglade_tmp_menu;
     wxglade_tmp_menu = new wxMenu();
-    Append(wxglade_tmp_menu, wxT("File"));
+    Append(wxglade_tmp_menu, "File");
     // end wxGlade
 }
 
@@ -41,9 +41,9 @@ MyFrame::MyFrame(wxWindow* parent, wxWindowID id, const wxString& title, const w
 {
     // begin wxGlade: MyFrame::MyFrame
     SetSize(wxSize(200, 200));
-    SetTitle(wxT("frame_1"));
+    SetTitle("frame_1");
     wxBoxSizer* sizer_1 = new wxBoxSizer(wxVERTICAL);
-    label_1 = new wxStaticText(this, wxID_ANY, wxT("placeholder - every design\nneeds a toplevel window"), wxDefaultPosition, wxDefaultSize, wxALIGN_CENTER_HORIZONTAL);
+    label_1 = new wxStaticText(this, wxID_ANY, "placeholder - every design\nneeds a toplevel window", wxDefaultPosition, wxDefaultSize, wxALIGN_CENTER_HORIZONTAL);
     sizer_1->Add(label_1, 1, wxALL|wxEXPAND, 0);
     
     SetSizer(sizer_1);
