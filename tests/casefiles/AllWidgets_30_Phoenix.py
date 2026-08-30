@@ -224,7 +224,7 @@ class All_Widgets_Frame(wx.Frame):
 
         sizer_20 = wx.BoxSizer(wx.HORIZONTAL)
 
-        self.hyperlink_1 = wx.adv.HyperlinkCtrl(self.notebook_1_wxHyperlinkCtrl, wx.ID_ANY, _("Homepage wxGlade"), _("http://wxglade.sf.net"))
+        self.hyperlink_1 = wx.adv.HyperlinkCtrl(self.notebook_1_wxHyperlinkCtrl, wx.ID_ANY, "Homepage wxGlade", "http://wxglade.sf.net", name="hyperlink_1")
         sizer_20.Add(self.hyperlink_1, 0, wx.ALL, 5)
 
         self.notebook_1_wxListBox = wx.Panel(self.notebook_1, wx.ID_ANY)

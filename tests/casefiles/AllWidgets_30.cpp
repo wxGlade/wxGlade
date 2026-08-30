@@ -203,7 +203,7 @@ All_Widgets_Frame::All_Widgets_Frame(wxWindow* parent, wxWindowID id, const wxSt
     notebook_1_wxHyperlinkCtrl = new wxPanel(notebook_1, wxID_ANY);
     notebook_1->AddPage(notebook_1_wxHyperlinkCtrl, _("wxHyperlinkCtrl"));
     wxBoxSizer* sizer_20 = new wxBoxSizer(wxHORIZONTAL);
-    hyperlink_1 = new wxHyperlinkCtrl(notebook_1_wxHyperlinkCtrl, wxID_ANY, _("Homepage wxGlade"), _("http://wxglade.sf.net"));
+    hyperlink_1 = new wxHyperlinkCtrl(notebook_1_wxHyperlinkCtrl, wxID_ANY, "Homepage wxGlade", "http://wxglade.sf.net", name="hyperlink_1");
     sizer_20->Add(hyperlink_1, 0, wxALL, 5);
     
     notebook_1_wxListBox = new wxPanel(notebook_1, wxID_ANY);

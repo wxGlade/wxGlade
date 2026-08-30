@@ -253,7 +253,7 @@ sub new {
     
     $self->{sizer_20} = Wx::BoxSizer->new(wxHORIZONTAL);
     
-    $self->{hyperlink_1} = Wx::HyperlinkCtrl->new($self->{notebook_1_wxHyperlinkCtrl}, wxID_ANY, _T("Homepage wxGlade"), _T("http://wxglade.sf.net"));
+    $self->{hyperlink_1} = Wx::HyperlinkCtrl->new($self->{notebook_1_wxHyperlinkCtrl}, wxID_ANY, "Homepage wxGlade", "http://wxglade.sf.net");
     $self->{sizer_20}->Add($self->{hyperlink_1}, 0, wxALL, 5);
     
     $self->{notebook_1_wxListBox} = Wx::Panel->new($self->{notebook_1}, wxID_ANY);
