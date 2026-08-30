@@ -630,6 +630,8 @@ class ManagedBase(WindowBase):
         self.proportion = np.LayoutProportionProperty(0)       # item growth in sizer main direction
         self.border     = np.SpinProperty(0, immediate=True)   # border width
         self.flag       = np.ManagedFlags(0)                   # alignment, border; expansion in other dir.
+        if "no_gettext" in self.PROPERTIES:
+            self.no_gettext = np.CheckBoxProperty(False)
 
     def check_defaults(self):
         # apply default border if set in preferences; called explicitely from the interactive builder functions

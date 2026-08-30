@@ -22,7 +22,7 @@ class EditToggleButton(BitmapMixin, ManagedBase, EditStylesMixin):
     _PROPERTIES = ["Widget", "label", "value",
                    "bitmap", "disabled_bitmap", "pressed_bitmap", "current_bitmap", "focus_bitmap",
                    "style"]
-    PROPERTIES = ManagedBase.PROPERTIES + _PROPERTIES + ManagedBase.EXTRA_PROPERTIES
+    PROPERTIES = ManagedBase.PROPERTIES + _PROPERTIES + ManagedBase.EXTRA_PROPERTIES + ["no_gettext"]
     _PROPERTY_LABELS = {"value":"Clicked"}
 
     def __init__(self, name, parent, index, label):

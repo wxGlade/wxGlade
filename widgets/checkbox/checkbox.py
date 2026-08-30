@@ -18,7 +18,7 @@ class EditCheckBox(ManagedBase, EditStylesMixin):
 
     WX_CLASS = "wxCheckBox"
     _PROPERTIES = ["Widget", "label", "checked", "style"]
-    PROPERTIES = ManagedBase.PROPERTIES + _PROPERTIES + ManagedBase.EXTRA_PROPERTIES
+    PROPERTIES = ManagedBase.PROPERTIES + _PROPERTIES + ManagedBase.EXTRA_PROPERTIES + ["no_gettext"]
     _PROPERTY_LABELS = {"checked":"wxCheckBox state"}
 
     # Convert the position of "checked" RadioProperty to wxCheckBoxState

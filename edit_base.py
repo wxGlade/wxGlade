@@ -465,6 +465,7 @@ class EditBase(np.PropertyOwner):
         # XXX be 100% compatible to 0.7.2, where option is written into the object; remove later
         properties = self.get_properties(without=set(MANAGED_PROPERTIES))
         for prop in properties:
+            if prop.name=="no_gettext" and not prop.value: continue
             prop.write(output, tabs+1)
 
         if self.IS_SIZER:

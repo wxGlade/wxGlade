@@ -27,7 +27,8 @@ class PythonHyperlinkCtrlGenerator(wcodegen.PythonWidgetCodeWriter):
 
     def _prepare_tmpl_content(self, obj):
         wcodegen.PythonWidgetCodeWriter._prepare_tmpl_content(self, obj)
-        self.tmpl_dict['url'] = self.codegen.quote_str(obj.url)
+        translate = self.codegen._use_gettext and not obj.check_prop_truth("no_gettext")
+        self.tmpl_dict['url'] = self.codegen.quote_str(obj.url, translate)
         #self.has_setvalue1 = bool(obj.checked)
         return
 
@@ -39,7 +40,8 @@ class CppHyperlinkCtrlGenerator(wcodegen.CppWidgetCodeWriter):
 
     def _prepare_tmpl_content(self, obj):
         wcodegen.CppWidgetCodeWriter._prepare_tmpl_content(self, obj)
-        self.tmpl_dict['url'] = self.codegen.quote_str(obj.url)
+        translate = self.codegen._use_gettext and not obj.check_prop_truth("no_gettext")
+        self.tmpl_dict['url'] = self.codegen.quote_str(obj.url, translate)
         #self.has_setvalue1 = bool(obj.checked)
         return
 

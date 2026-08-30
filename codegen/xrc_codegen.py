@@ -185,6 +185,7 @@ class DefaultXrcObject(XrcObject):
             if not prop.is_active(): continue
             if prop.value==prop.default_value: continue
             name = prop.name
+            if name in ("no_gettext","name_arg"): continue
             if name in properties: continue  # set already
             value = None
             if name=='foreground':
