@@ -251,7 +251,7 @@ class CPPCodeWriter(BaseLangCodeWriter, wcodegen.CppMixin):
     ClassLines = ClassLines
     _code_statements = {
         'backgroundcolour': "%(objname)sSetBackgroundColour(%(value)s);\n",
-        'disabled':         "%(objname)sEnable(0);\n",
+        'disabled':         "%(objname)sEnable(false);\n",
         'extraproperties':  "%(objname)sSet%(propname_cap)s(%(value)s);\n",
         'focused':          "%(objname)sSetFocus();\n",
         'foregroundcolour': "%(objname)sSetForegroundColour(%(value)s);\n",
