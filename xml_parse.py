@@ -104,6 +104,12 @@ class XmlParser(ContentHandler):
 
         res['indent_symbol'] = attrs.get('indent_symbol', {" ":"space","\t":":tab"}[config.default_indent_symbol])
 
+        try:
+            widget_names = bool(int(attrs['widget_names']))
+        except (KeyError, ValueError):
+            widget_names = False
+        res['widget_names'] = widget_names
+
         if 'language' in attrs:
             res['language'] = attrs['language']
         elif hasattr(self, 'code_writer'):
@@ -203,11 +209,12 @@ class XmlWidgetBuilder(XmlParser):
             p["mark_blocks"].set( attrs['mark_blocks'] )
             p["indent_mode"].set( attrs['indent_symbol'] )
             p["indent_amount"].set( attrs['indent_amount'] )
+            p["widget_names"].set( attrs['widget_names'] )
             p["for_version"].set( attrs['for_version'] )
 
             modified = ["encoding", "output_path", "class", "name", "multiple_files", "language", "top_window",
                         "use_gettext", "is_template", "overwrite", "mark_blocks",
-                        "indent_mode", "indent_amount", "for_version"]
+                        "indent_mode", "indent_amount", "widget_names", "for_version"]
 
             source_extension = attrs['source_extension']
             if source_extension and source_extension[0] == '.':

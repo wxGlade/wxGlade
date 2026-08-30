@@ -23,7 +23,7 @@ class EditButton(BitmapMixin, ManagedBase, EditStylesMixin):
     _PROPERTIES = ["Widget", "label", "stockitem",
                    "bitmap", "disabled_bitmap", "pressed_bitmap", "current_bitmap", "focus_bitmap",
                    "default", "style", "bitmap_dir"]
-    PROPERTIES = ManagedBase.PROPERTIES + _PROPERTIES + ManagedBase.EXTRA_PROPERTIES
+    PROPERTIES = ManagedBase.PROPERTIES + _PROPERTIES + ManagedBase.EXTRA_PROPERTIES + ["no_gettext"]
 
     _PROPERTY_HELP = {"default":"This sets the button to be the default item for the toplevel window.\n"
                                 "(On Windows this is only supported for Dialogs.)",

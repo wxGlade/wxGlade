@@ -20,7 +20,7 @@ from ChoicesProperty import *
 class EditRadioBox(ManagedBase):
     WX_CLASS = 'wxRadioBox'
     _PROPERTIES = ["Widget", "label", "style", "dimension", "selection", "choices"]
-    PROPERTIES = ManagedBase.PROPERTIES + _PROPERTIES + ManagedBase.EXTRA_PROPERTIES
+    PROPERTIES = ManagedBase.PROPERTIES + _PROPERTIES + ManagedBase.EXTRA_PROPERTIES + ["no_gettext"]
 
     def __init__(self, name, parent, index, style, label, choices, major_dim):
         "Class to handle wxRadioBox objects"

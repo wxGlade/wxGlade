@@ -461,7 +461,7 @@ from %(top_win_module)s import %(top_win_class)s\n\n"""
         else:
             return '%s.%s((%s))\n' % (objname, method, size)
 
-    def _quote_str(self, s):
+    def _quote_str(self, s, translate=True):
         """Escape all unicode characters to there unicode code points in form of \\uxxxx.
         The returned string is a pure ascii string.
 
@@ -480,7 +480,7 @@ from %(top_win_module)s import %(top_win_class)s\n\n"""
         # check if it's pure ascii
         try:
             dummy = s.encode('ascii')
-            if self._use_gettext:
+            if self._use_gettext and translate:
                 return '_("%s")' % s
             else:
                 return '"%s"' % s
@@ -497,7 +497,7 @@ from %(top_win_module)s import %(top_win_class)s\n\n"""
 
         # convert unicode strings to pure ascii
         # use "raw-unicode-escape" just escaped unicode characters and not default escape sequences
-        if self._use_gettext:
+        if self._use_gettext and translate:
             return '_(u"%s")' % s # XXX omit u for Python 3
         else:
             return 'u"%s"' % s # XXX omit u for Python 3

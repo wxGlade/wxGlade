@@ -20,7 +20,7 @@ MyDialog::MyDialog(wxWindow* parent, wxWindowID id, const wxString& title, const
     wxDialog(parent, id, title, pos, size, wxDEFAULT_DIALOG_STYLE)
 {
     // begin wxGlade: MyDialog::MyDialog
-    SetTitle(wxT("dialog"));
+    SetTitle("dialog");
     wxBoxSizer* main_sizer = new wxBoxSizer(wxVERTICAL);
     panel_1 = new my_panel.MyPanel(this, wxID_ANY);
     main_sizer->Add(panel_1, 1, wxEXPAND, 0);

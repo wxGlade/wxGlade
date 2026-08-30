@@ -21,30 +21,30 @@ MyFrame::MyFrame(wxWindow* parent, wxWindowID id, const wxString& title, const w
 {
     // begin wxGlade: MyFrame::MyFrame
     SetSize(wxSize(400, 300));
-    SetTitle(wxT("frame"));
+    SetTitle("frame");
     wxBoxSizer* sizer_1 = new wxBoxSizer(wxVERTICAL);
-    text_ctrl_1 = new wxTextCtrl(this, wxID_ANY, wxT("Some Input"), wxDefaultPosition, wxDefaultSize, wxTE_READONLY);
+    text_ctrl_1 = new wxTextCtrl(this, wxID_ANY, "Some Input", wxDefaultPosition, wxDefaultSize, wxTE_READONLY);
     text_ctrl_1->SetBackgroundColour(wxColour(0, 255, 127));
     text_ctrl_1->SetForegroundColour(wxColour(255, 0, 0));
-    text_ctrl_1->SetFont(wxFont(16, wxDEFAULT, wxNORMAL, wxBOLD, 0, wxT("")));
+    text_ctrl_1->SetFont(wxFont(16, wxDEFAULT, wxNORMAL, wxBOLD, 0, ""));
     text_ctrl_1->SetFocus();
     sizer_1->Add(text_ctrl_1, 1, wxALL|wxEXPAND, 5);
-    wxStaticText* label_1 = new wxStaticText(this, wxID_ANY, wxT("label_1"));
+    wxStaticText* label_1 = new wxStaticText(this, wxID_ANY, "label_1");
     sizer_1->Add(label_1, 0, 0, 0);
-    wxStaticText* label_2 = new wxStaticText(this, wxID_ANY, wxT("label_2"));
-    label_2->SetFont(wxFont(8, wxDECORATIVE, wxSLANT, wxLIGHT, 0, wxT("")));
+    wxStaticText* label_2 = new wxStaticText(this, wxID_ANY, "label_2");
+    label_2->SetFont(wxFont(8, wxDECORATIVE, wxSLANT, wxLIGHT, 0, ""));
     sizer_1->Add(label_2, 0, 0, 0);
-    wxStaticText* label_3 = new wxStaticText(this, wxID_ANY, wxT("label_3"));
-    label_3->SetFont(wxFont(8, wxROMAN, wxITALIC, wxBOLD, 0, wxT("")));
+    wxStaticText* label_3 = new wxStaticText(this, wxID_ANY, "label_3");
+    label_3->SetFont(wxFont(8, wxROMAN, wxITALIC, wxBOLD, 0, ""));
     sizer_1->Add(label_3, 0, 0, 0);
-    wxStaticText* label_4 = new wxStaticText(this, wxID_ANY, wxT("label_4"));
-    label_4->SetFont(wxFont(8, wxSCRIPT, wxNORMAL, wxNORMAL, 0, wxT("")));
+    wxStaticText* label_4 = new wxStaticText(this, wxID_ANY, "label_4");
+    label_4->SetFont(wxFont(8, wxSCRIPT, wxNORMAL, wxNORMAL, 0, ""));
     sizer_1->Add(label_4, 0, 0, 0);
-    wxStaticText* label_5 = new wxStaticText(this, wxID_ANY, wxT("label_5"));
-    label_5->SetFont(wxFont(10, wxSWISS, wxNORMAL, wxNORMAL, 0, wxT("")));
+    wxStaticText* label_5 = new wxStaticText(this, wxID_ANY, "label_5");
+    label_5->SetFont(wxFont(10, wxSWISS, wxNORMAL, wxNORMAL, 0, ""));
     sizer_1->Add(label_5, 0, 0, 0);
-    wxStaticText* label_6 = new wxStaticText(this, wxID_ANY, wxT("label_6"));
-    label_6->SetFont(wxFont(12, wxMODERN, wxNORMAL, wxNORMAL, 1, wxT("")));
+    wxStaticText* label_6 = new wxStaticText(this, wxID_ANY, "label_6");
+    label_6->SetFont(wxFont(12, wxMODERN, wxNORMAL, wxNORMAL, 1, ""));
     sizer_1->Add(label_6, 0, 0, 0);
     
     SetSizer(sizer_1);

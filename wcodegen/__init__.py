@@ -400,16 +400,25 @@ class BaseWidgetWriter(StylesMixin, BaseCodeWriter):
         self.tmpl_dict['id_name'], self.tmpl_dict['id_number'] = self.codegen.generate_code_id(obj)
         self.tmpl_dict['id'] = self.tmpl_dict['id_number']
         self.tmpl_dict['obj_name'] = self.codegen._format_name(obj.name)
+
+        if obj.check_prop_nodefault("name_arg"):
+            name_arg = obj.name_arg
+        else:
+            name_arg = self.codegen.widget_names
+        if name_arg:
+            self.tmpl_dict['name_arg'] = ", name=%s"%self.codegen.quote_str( obj.name, translate=False )
+        else:
+            self.tmpl_dict['name_arg'] = ""
+
         self.tmpl_dict['klass'] = obj.get_instantiation_class(self.cn, self.cn_class, self.codegen.preview)
         self.tmpl_dict['store_as_attr'] = self.codegen.store_as_attr(obj)
 
         if obj.check_prop('style'): self.tmpl_dict['style'] = self._prepare_style(obj.properties["style"])
         if obj.check_prop('label'):
-            self.tmpl_dict['label'] = self.codegen.quote_str( obj.label )
+            translate = self.codegen._use_gettext and not obj.check_prop_truth("no_gettext")
+            self.tmpl_dict['label'] = self.codegen.quote_str( obj.label, translate )
         if obj.check_prop('value'): self.tmpl_dict['value'] = self.codegen.quote_str( compat.unicode(obj.value) )
         if obj.check_prop('value_unquoted'): self.tmpl_dict['value_unquoted'] = obj.value
-
-        return
 
     def _get_default_style(self):
         "Default widget style in wxWidget notation; see set_default_style, prefix_style"
@@ -941,8 +950,6 @@ class PerlWidgetCodeWriter(PerlMixin, BaseWidgetWriter):
         else:
             name = 'my $%s' % obj.name
         self.tmpl_dict['name'] = name
-
-        return
 
 
 

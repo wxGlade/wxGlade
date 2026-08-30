@@ -21,18 +21,18 @@ MyFrame::MyFrame(wxWindow* parent, wxWindowID id, const wxString& title, const w
 {
     // begin wxGlade: MyFrame::MyFrame
     SetSize(wxSize(400, 300));
-    SetTitle(wxT("frame"));
+    SetTitle("frame");
     
     // Menu Bar
     frame_menubar = new wxMenuBar();
     wxMenu *wxglade_tmp_menu;
     wxMenuItem *wxglade_tmp_item;
     wxglade_tmp_menu = new wxMenu();
-    item1 = wxglade_tmp_menu->Append(wxID_ANY, wxT("My Menu Item 1"), wxEmptyString);
+    item1 = wxglade_tmp_menu->Append(wxID_ANY, "My Menu Item 1", wxEmptyString);
     Bind(wxEVT_MENU, &MyFrame::on_menu_item1, this, item1->GetId());
-    wxglade_tmp_item = wxglade_tmp_menu->Append(wxID_ANY, wxT("My Menu Item 1"), wxT("without attribute name"));
+    wxglade_tmp_item = wxglade_tmp_menu->Append(wxID_ANY, "My Menu Item 1", "without attribute name");
     Bind(wxEVT_MENU, &MyFrame::on_menu_item2, this, wxglade_tmp_item->GetId());
-    frame_menubar->Append(wxglade_tmp_menu, wxT("Menu 1"));
+    frame_menubar->Append(wxglade_tmp_menu, "Menu 1");
     SetMenuBar(frame_menubar);
     // Menu Bar end
     
@@ -40,7 +40,7 @@ MyFrame::MyFrame(wxWindow* parent, wxWindowID id, const wxString& title, const w
     frame_toolbar = new wxToolBar(this, -1);
     SetToolBar(frame_toolbar);
     wxToolBarToolBase *wxglade_tmp_tool;
-    wxglade_tmp_tool = frame_toolbar->AddTool(wxID_ANY, wxT("My Tool"), wxBitmap(wxT("..\\..\\icons\\button.png"), wxBITMAP_TYPE_ANY), wxNullBitmap, wxITEM_NORMAL, wxEmptyString, wxEmptyString);
+    wxglade_tmp_tool = frame_toolbar->AddTool(wxID_ANY, "My Tool", wxBitmap("..\\..\\icons\\button.png", wxBITMAP_TYPE_ANY), wxNullBitmap, wxITEM_NORMAL, wxEmptyString, wxEmptyString);
     Bind(wxEVT_MENU, &MyFrame::on_my_tool, this, wxglade_tmp_tool->GetId());
     frame_toolbar->Realize();
     // Tool Bar end
@@ -64,21 +64,21 @@ void MyFrame::on_menu_item1(wxCommandEvent &event)  // wxGlade: MyFrame.<event_h
 {
     event.Skip();
     // notify the user that he hasn't implemented the event handler yet
-    wxLogDebug(wxT("Event handler (MyFrame::on_menu_item1) not implemented yet"));
+    wxLogDebug("Event handler (MyFrame::on_menu_item1) not implemented yet");
 }
 
 void MyFrame::on_menu_item2(wxCommandEvent &event)  // wxGlade: MyFrame.<event_handler>
 {
     event.Skip();
     // notify the user that he hasn't implemented the event handler yet
-    wxLogDebug(wxT("Event handler (MyFrame::on_menu_item2) not implemented yet"));
+    wxLogDebug("Event handler (MyFrame::on_menu_item2) not implemented yet");
 }
 
 void MyFrame::on_my_tool(wxCommandEvent &event)  // wxGlade: MyFrame.<event_handler>
 {
     event.Skip();
     // notify the user that he hasn't implemented the event handler yet
-    wxLogDebug(wxT("Event handler (MyFrame::on_my_tool) not implemented yet"));
+    wxLogDebug("Event handler (MyFrame::on_my_tool) not implemented yet");
 }
 
 

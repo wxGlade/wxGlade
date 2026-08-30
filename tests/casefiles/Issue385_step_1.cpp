@@ -21,7 +21,7 @@ MyFrame::MyFrame(wxWindow* parent, wxWindowID id, const wxString& title, const w
 {
     // begin wxGlade: MyFrame::MyFrame
     SetSize(wxSize(400, 682));
-    SetTitle(wxT("frame"));
+    SetTitle("frame");
     Layout();
     // end wxGlade
 }

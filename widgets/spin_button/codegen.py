@@ -12,7 +12,7 @@ import wcodegen
 
 
 class PythonSpinButtonGenerator(wcodegen.PythonWidgetCodeWriter):
-    tmpl = '%(name)s = %(klass)s(%(parent)s, %(id)s %(style)s)\n'
+    tmpl = '%(name)s = %(klass)s(%(parent)s, %(id)s%(style)s%(name_arg)s)\n'
 
     def get_more_properties_code(self, obj):
         ret = []
@@ -27,7 +27,7 @@ class PythonSpinButtonGenerator(wcodegen.PythonWidgetCodeWriter):
 
 class CppSpinButtonGenerator(wcodegen.CppWidgetCodeWriter):
     import_modules = ['<wx/spinbutt.h>']
-    tmpl = '%(name)s = new %(klass)s(%(parent)s, %(id)s%(style)s);\n'
+    tmpl = '%(name)s = new %(klass)s(%(parent)s, %(id)s%(style)s%(name_arg)s);\n'
 
     def get_more_properties_code(self, obj):
         ret = []

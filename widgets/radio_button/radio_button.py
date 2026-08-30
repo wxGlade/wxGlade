@@ -20,7 +20,7 @@ class EditRadioButton(ManagedBase, EditStylesMixin):
 
     WX_CLASS = 'wxRadioButton'
     _PROPERTIES = ["Widget", "label", "clicked", "style"]
-    PROPERTIES = ManagedBase.PROPERTIES + _PROPERTIES + ManagedBase.EXTRA_PROPERTIES
+    PROPERTIES = ManagedBase.PROPERTIES + _PROPERTIES + ManagedBase.EXTRA_PROPERTIES + ["no_gettext"]
 
     def __init__(self, name, parent, index, label=""):
         ManagedBase.__init__(self, name, parent, index)

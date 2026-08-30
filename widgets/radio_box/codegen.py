@@ -3,7 +3,7 @@ Code generator functions for wxRadioBox objects
 
 @copyright: 2002-2007 Alberto Griggio
 @copyright: 2014-2016 Carsten Grohmann
-@copyright: 2017 Dietmar Schwertberger
+@copyright: 2017-2026 Dietmar Schwertberger
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
@@ -15,7 +15,7 @@ from ChoicesCodeHandler import *
 
 class PythonRadioBoxGenerator(radio_box_base.RadioBoxMixin, wcodegen.PythonWidgetCodeWriter):
     tmpl = '%(name)s = %(klass)s(%(parent)s, %(id)s, %(label)s, ' \
-           'choices=[%(choices)s], majorDimension=%(majorDimension)s%(style)s)\n'
+           'choices=[%(choices)s], majorDimension=%(majorDimension)s%(style)s%(name_arg)s)\n'
 
     def _prepare_choice(self, obj):
         # avoid empty choices, which causes a crash in classic wxPython; the box will still be empty with just [""]
@@ -27,8 +27,8 @@ class PythonRadioBoxGenerator(radio_box_base.RadioBoxMixin, wcodegen.PythonWidge
 
 
 class CppRadioBoxGenerator(radio_box_base.RadioBoxMixin, wcodegen.CppWidgetCodeWriter):
-    tmpl = '%(name)s = new %(klass)s(%(parent)s, %(id)s, %(label)s, ' \
-           'wxDefaultPosition, wxDefaultSize, %(choices_len)s, %(name)s_choices, %(majorDimension)s, %(style)s);\n'
+    tmpl = '%(name)s = new %(klass)s(%(parent)s, %(id)s, %(label)s, wxDefaultPosition, wxDefaultSize, ' \
+           '%(choices_len)s, %(name)s_choices, %(majorDimension)s, %(style)s%(name_arg)s);\n'
     prefix_style = False
 
 

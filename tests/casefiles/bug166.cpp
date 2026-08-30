@@ -20,18 +20,18 @@ MyFrame::MyFrame(wxWindow* parent, wxWindowID id, const wxString& title, const w
     wxFrame(parent, id, title, pos, size, style)
 {
     // begin wxGlade: MyFrame::MyFrame
-    SetTitle(wxT("frame_1"));
+    SetTitle("frame_1");
     wxBoxSizer* sizer_1 = new wxBoxSizer(wxVERTICAL);
     wxBoxSizer* sizer_2 = new wxBoxSizer(wxVERTICAL);
     sizer_1->Add(sizer_2, 1, 0, 0);
     const wxString choice_1_choices[] = {
-        wxT("Pure ASCII"),
-        wxT("German Umlauts äöüÄÖÜß"),
+        "Pure ASCII",
+        "German Umlauts äöüÄÖÜß",
     };
     choice_1 = new wxChoice(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, 2, choice_1_choices);
     choice_1->SetSelection(1);
     sizer_2->Add(choice_1, 1, wxALL|wxEXPAND, 5);
-    label_1 = new wxStaticText(this, wxID_ANY, wxT("German Umlauts äöüÄÖÜß"), wxDefaultPosition, wxDefaultSize, wxALIGN_CENTER_HORIZONTAL);
+    label_1 = new wxStaticText(this, wxID_ANY, "German Umlauts äöüÄÖÜß", wxDefaultPosition, wxDefaultSize, wxALIGN_CENTER_HORIZONTAL);
     sizer_2->Add(label_1, 1, wxALL|wxEXPAND, 5);
     
     SetSizer(sizer_1);

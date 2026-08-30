@@ -4,7 +4,7 @@ Code generator functions for wxCheckListBox objects
 @copyright: 2002-2007 Alberto Griggio
 @copyright: 2014 Carsten Grohmann
 @copyright: 2015 Franco Bugnano
-@copyright: 2017 Dietmar Schwertberger
+@copyright: 2017-2026 Dietmar Schwertberger
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
@@ -13,12 +13,12 @@ import wcodegen
 from ChoicesCodeHandler import *
 
 class PythonCheckListBoxGenerator(wcodegen.PythonWidgetCodeWriter):
-    tmpl = '%(name)s = %(klass)s(%(parent)s, %(id)s, choices=[%(choices)s]%(style)s)\n'
+    tmpl = '%(name)s = %(klass)s(%(parent)s, %(id)s, choices=[%(choices)s]%(style)s%(name_arg)s)\n'
 
 
 class CppCheckListBoxGenerator(wcodegen.CppWidgetCodeWriter):
     tmpl = '%(name)s = new %(klass)s(%(parent)s, %(id)s, ' \
-           'wxDefaultPosition, wxDefaultSize, %(choices_len)s, %(name)s_choices%(style)s);\n'
+           'wxDefaultPosition, wxDefaultSize, %(choices_len)s, %(name)s_choices%(style)s%(name_arg)s);\n'
     prefix_style = False
     tmpl_flags = ', %s'
 

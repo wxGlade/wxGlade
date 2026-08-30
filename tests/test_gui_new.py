@@ -45,6 +45,33 @@ class TestGui(WXGladeGUITest):
         'Test GUI code generation using "AllWidgets_30"'
         self.load_and_generate('AllWidgets_30', ['lisp'])
 
+        # test Python and C++ with "widget_names"
+        app = common.root
+        app.properties["widget_names"].set(True)
+        app.properties["use_gettext"].set(False)
+
+        # Python
+        app.properties["language"].set("python")
+        self._process_wx_events()
+        leafname = "AllWidgets_30_names.py"
+        expected_filename  = self._get_casefile_path(leafname)
+        generated_filename = self._get_outputfile_path(leafname)
+        app.properties["output_path"].set(generated_filename)
+        app.generate_code()
+        self.assertFalse( self._compare_files(expected_filename, generated_filename) )
+
+        # C++
+        leafname = "AllWidgets_30_names"
+        expected_filename    = self._get_casefile_path(leafname+".cpp")
+        expected_filename_h  = self._get_casefile_path(leafname+".h")
+        generated_filename   = self._get_outputfile_path(leafname)  # no extension
+
+        app.properties["output_path"].set(generated_filename)
+        app.properties["language"].set("C++")
+        app.generate_code()
+        self.assertFalse( self._compare_files(expected_filename,   generated_filename+".cpp") )
+        self.assertFalse( self._compare_files(expected_filename_h, generated_filename+".h") )
+
     def test_CodeGeneration_ComplexExample(self):
         'Test GUI code generation using "ComplexExample"'
         self.load_and_generate('ComplexExample')#, excluded=["wxg"])

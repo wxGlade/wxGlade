@@ -3,6 +3,7 @@ Code generator functions for wxButton objects
 
 @copyright: 2002-2007 Alberto Griggio
 @copyright: 2013-2016 Carsten Grohmann
+@copyright: 2026 Dietmar Schwertberger
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
@@ -12,7 +13,7 @@ import wcodegen
 
 class PythonButtonGenerator(wcodegen.PythonWidgetCodeWriter):
 
-    tmpl = '%(name)s = %(klass)s(%(parent)s, %(id)s, %(label)s%(style)s)\n'
+    tmpl = '%(name)s = %(klass)s(%(parent)s, %(id)s, %(label)s%(style)s%(name_arg)s)\n'
 
     def _prepare_tmpl_content(self, obj):
         wcodegen.PythonWidgetCodeWriter._prepare_tmpl_content(self, obj)
@@ -29,7 +30,7 @@ class PythonButtonGenerator(wcodegen.PythonWidgetCodeWriter):
 
 
 class CppButtonGenerator(wcodegen.CppWidgetCodeWriter):
-    tmpl = '%(name)s = new %(klass)s(%(parent)s, %(id)s, %(label)s%(style)s);\n'
+    tmpl = '%(name)s = new %(klass)s(%(parent)s, %(id)s, %(label)s%(style)s%(name_arg)s);\n'
 
     def _prepare_tmpl_content(self, obj):
         wcodegen.CppWidgetCodeWriter._prepare_tmpl_content(self, obj)

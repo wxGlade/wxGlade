@@ -469,8 +469,8 @@ class LispCodeWriter(BaseLangCodeWriter, wcodegen.LispMixin):
             return '(%s %s(%s(%s (%s))))\n' % ( method, objname, self.cn('wxDLG_SZE'), objname, size[:-1] )
         return '%s.%s((%s))\n' % (objname, method, size)
 
-    def _quote_str(self, s):
-        if self._use_gettext:
+    def _quote_str(self, s, translate=True):
+        if self._use_gettext and translate:
             return '(_"%s")' % s
         else:
             return '"%s"' % s

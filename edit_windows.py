@@ -82,7 +82,8 @@ class EditBase(EventsMixin, edit_base.EditBase):
     PROPERTIES = _PROPERTIES
 
     # the following will be placed on the last tab
-    _EXTRA_PROPERTIES = ["Events", "events", "Code", "extracode", "extracode_pre", "extracode_post", "extraproperties"]
+    _EXTRA_PROPERTIES = ["Events", "events", "Code", "extracode", "extracode_pre", "extracode_post", "extraproperties",
+                         "Settings", "name_arg"]
     EXTRA_PROPERTIES = _EXTRA_PROPERTIES
 
     _PROPERTY_HELP={ "class": ("The name of the class to be generated.\n\n"
@@ -111,7 +112,11 @@ class EditBase(EventsMixin, edit_base.EditBase):
                      "extracode_pre":"This code will be inserted right before the widget is created.\n"
                                      "Use this e.g. to create argument values for the widget.",
                      "extracode_post":"This code will be inserted right after the widget is created.\n"
-                                      "Use this to set properties that are not added by wxGlade itself."}
+                                      "Use this to set properties that are not added by wxGlade itself.",
+                     "name_arg":_("Provide the widget name as argument to the constructor.\n"
+                                  "This allows to override the setting in Application->settings.\n"
+                                  "(A value of '-' means to follow the application setting.)"),
+}
     _PROPERTY_LABELS = {"custom_base":'Base class(es)',
                         "extracode":"Extra (import) code for this widget",
                         "extracode_pre":"Code to be inserted before",
@@ -143,6 +148,9 @@ class EditBase(EventsMixin, edit_base.EditBase):
         self.extracode_pre   = np.CodeProperty()
         self.extracode_post  = np.CodeProperty()
         self.extraproperties = np.ExtraPropertiesProperty()
+
+        if  "name_arg" in self.PROPERTIES:
+            self.name_arg = np.CheckBox3Property(np._DefaultArgument)
 
         EventsMixin.__init__(self)
 
@@ -630,6 +638,8 @@ class ManagedBase(WindowBase):
         self.proportion = np.LayoutProportionProperty(0)       # item growth in sizer main direction
         self.border     = np.SpinProperty(0, immediate=True)   # border width
         self.flag       = np.ManagedFlags(0)                   # alignment, border; expansion in other dir.
+        if "no_gettext" in self.PROPERTIES:
+            self.no_gettext = np.CheckBoxProperty(False)
 
     def check_defaults(self):
         # apply default border if set in preferences; called explicitely from the interactive builder functions

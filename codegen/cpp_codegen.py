@@ -251,13 +251,13 @@ class CPPCodeWriter(BaseLangCodeWriter, wcodegen.CppMixin):
     ClassLines = ClassLines
     _code_statements = {
         'backgroundcolour': "%(objname)sSetBackgroundColour(%(value)s);\n",
-        'disabled':         "%(objname)sEnable(0);\n",
+        'disabled':         "%(objname)sEnable(false);\n",
         'extraproperties':  "%(objname)sSet%(propname_cap)s(%(value)s);\n",
         'focused':          "%(objname)sSetFocus();\n",
         'foregroundcolour': "%(objname)sSetForegroundColour(%(value)s);\n",
         'hidden':           "%(objname)sHide();\n",
         'setfont':          "%(objname)sSetFont(wxFont(%(size)s, %(family)s, "
-                            "%(style)s, %(weight)s, %(underlined)s, wxT(%(face)s)));\n",
+                            "%(style)s, %(weight)s, %(underlined)s, %(face)s));\n",
         'tooltip':          "%(objname)sSetToolTip(%(tooltip)s);\n",
         'wxcolour':         "wxColour(%(value)s)",
         'wxnullcolour':     "wxNullColour",
@@ -314,9 +314,9 @@ class CPPCodeWriter(BaseLangCodeWriter, wcodegen.CppMixin):
             gettext1 = ["protected:", "%(tab)swxLocale m_locale;  // locale we'll be using"]
             gettext2 = ['%(tab)sm_locale.Init();',
                         '#ifdef APP_LOCALE_DIR',
-                        '%(tab)sm_locale.AddCatalogLookupPathPrefix(wxT(APP_LOCALE_DIR));',
+                        '%(tab)sm_locale.AddCatalogLookupPathPrefix(APP_LOCALE_DIR);',
                         '#endif',
-                        '%(tab)sm_locale.AddCatalog(wxT(APP_CATALOG));\n']
+                        '%(tab)sm_locale.AddCatalog(APP_CATALOG);\n']
         else:
             gettext1 = gettext2 = []
         
@@ -988,7 +988,7 @@ void %(klass)s::%(handler)s(%(evt_type)s &event)  // wxGlade: %(klass)s.<event_h
 {
 %(tab)sevent.Skip();
 %(tab)s// notify the user that he hasn't implemented the event handler yet
-%(tab)swxLogDebug(wxT("Event handler (%(klass)s::%(handler)s) not implemented yet"));
+%(tab)swxLogDebug("Event handler (%(klass)s::%(handler)s) not implemented yet");
 }
 """
 
@@ -1115,13 +1115,10 @@ void %(klass)s::%(handler)s(%(evt_type)s &event)  // wxGlade: %(klass)s.<event_h
             return '%s%s(wxDLG_UNIT(%s, wxSize(%s)));\n' % (objname, method, name2, size[:-1])
         return '%s%s(wxSize(%s));\n' % (objname, method, size)
 
-    def quote_path(self, s):
-        return 'wxT(%s)' % super(CPPCodeWriter, self).quote_path(s)
-
-    def _quote_str(self, s):
-        if self._use_gettext:
+    def _quote_str(self, s, translate=True):
+        if self._use_gettext and translate:
             return '_("%s")' % s
-        return 'wxT("%s")' % s
+        return '"%s"' % s
 
     def format_generic_access(self, obj):
         if obj.IS_CLASS:

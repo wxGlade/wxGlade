@@ -3,6 +3,7 @@ Code generator functions for wxTreeCtrl objects
 
 @copyright: 2002-2007 Alberto Griggio
 @copyright: 2014-2016 Carsten Grohmann
+@copyright: 2026 Dietmar Schwertberger
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
@@ -11,12 +12,12 @@ import wcodegen
 
 
 class PythonTreeCtrlGenerator(wcodegen.PythonWidgetCodeWriter):
-    tmpl = '%(name)s = %(klass)s(%(parent)s, %(id)s%(style)s)\n'
+    tmpl = '%(name)s = %(klass)s(%(parent)s, %(id)s%(style)s%(name_arg)s)\n'
 
 
 class CppTreeCtrlGenerator(wcodegen.CppWidgetCodeWriter):
     import_modules = ['<wx/treectrl.h>']
-    tmpl = '%(name)s = new %(klass)s(%(parent)s, %(id)s%(style)s);\n'
+    tmpl = '%(name)s = new %(klass)s(%(parent)s, %(id)s%(style)s%(name_arg)s);\n'
 
 
 def initialize():

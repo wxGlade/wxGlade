@@ -295,6 +295,7 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
         self.header_lines = []
         self.indent_symbol = config.default_indent_symbol
         self.indent_amount = config.default_indent_amount
+        self.widget_names = False
         self.is_template = 0
         self.lang_mapping = {}
         self.multiple_files = False
@@ -370,8 +371,10 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
 
         if not preview:
             self.for_version = tuple([int(t) for t in app.for_version.split('.')[:2]])
+            self.widget_names = app.widget_names
         else:
             self.for_version = compat.version
+            self.widget_names = False
         self.is_template = app.is_template
 
         if self.multiple_files:
@@ -1011,7 +1014,7 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
         out = [l for l in out if l is not None]
         return out
 
-    def quote_str(self, s):
+    def quote_str(self, s, translate=True):
         """Returns a quoted / escaped version of 's', suitable to insert in a source file as a string object.
         Takes care also of gettext support.
 
@@ -1029,9 +1032,9 @@ class BaseLangCodeWriter(wcodegen.BaseCodeWriter):
         #s = np.TextProperty._unescape(s)
         # then escape as required
         s = s.replace("\\", "\\\\").replace("\n", "\\n").replace("\t", "\\t").replace('"', '\\"')
-        return self._quote_str(s)
+        return self._quote_str(s, translate)
 
-    def _quote_str(self, s):
+    def _quote_str(self, s, translate=True):
         "Language specific implementation for escaping or quoting."
         raise NotImplementedError
 

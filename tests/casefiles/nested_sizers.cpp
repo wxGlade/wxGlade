@@ -21,16 +21,16 @@ MyDialog::MyDialog(wxWindow* parent, wxWindowID id, const wxString& title, const
 {
     // begin wxGlade: MyDialog::MyDialog
     SetSize(wxSize(600, 320));
-    SetTitle(wxT("dialog"));
-    colour_settings_sizer = new wxStaticBoxSizer(new wxStaticBox(this, wxID_ANY, wxT("Colour Settings")), wxHORIZONTAL);
-    wxStaticBoxSizer* inner_sizer = new wxStaticBoxSizer(new wxStaticBox(colour_settings_sizer->GetStaticBox(), wxID_ANY, wxT("Inner")), wxVERTICAL);
+    SetTitle("dialog");
+    colour_settings_sizer = new wxStaticBoxSizer(new wxStaticBox(this, wxID_ANY, "Colour Settings"), wxHORIZONTAL);
+    wxStaticBoxSizer* inner_sizer = new wxStaticBoxSizer(new wxStaticBox(colour_settings_sizer->GetStaticBox(), wxID_ANY, "Inner"), wxVERTICAL);
     colour_settings_sizer->Add(inner_sizer, 0, wxALL, 36);
-    bitmap_button_1 = new wxBitmapButton(inner_sizer->GetStaticBox(), wxID_ANY, wxBitmap(wxT("preferences-color-icon.png"), wxBITMAP_TYPE_ANY), wxDefaultPosition, wxDefaultSize, wxBORDER_NONE);
+    bitmap_button_1 = new wxBitmapButton(inner_sizer->GetStaticBox(), wxID_ANY, wxBitmap("preferences-color-icon.png", wxBITMAP_TYPE_ANY), wxDefaultPosition, wxDefaultSize, wxBORDER_NONE);
     bitmap_button_1->SetSize(bitmap_button_1->GetBestSize());
     inner_sizer->Add(bitmap_button_1, 0, wxALIGN_CENTER_HORIZONTAL, 0);
     wxFlexGridSizer* inner_grid_sizer = new wxFlexGridSizer(1, 2, 2, 2);
     inner_sizer->Add(inner_grid_sizer, 1, 0, 0);
-    inner_red_spin_ctrl = new wxSpinCtrl(inner_sizer->GetStaticBox(), wxID_ANY, wxT(""), wxDefaultPosition, wxDefaultSize, 0, 0, 255);
+    inner_red_spin_ctrl = new wxSpinCtrl(inner_sizer->GetStaticBox(), wxID_ANY, "", wxDefaultPosition, wxDefaultSize, 0, 0, 255);
     inner_red_spin_ctrl->SetMinSize(wxSize(110, 27));
     inner_grid_sizer->Add(inner_red_spin_ctrl, 0, 0, 0);
     

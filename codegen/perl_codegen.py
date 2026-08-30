@@ -462,7 +462,7 @@ sub %(handler)s {
             return '%s->%s(%s->ConvertDialogSizeToPixels(Wx::Size->new(%s)));\n' % (objname, method, objname, size[:-1])
         return '%s->%s(Wx::Size->new(%s));\n' % (objname, method, size)
 
-    def _quote_str(self, s):
+    def _quote_str(self, s, translate=True):
         """Escape all unicode characters to there unicode code points in form of \\uxxxx.
         The returned string is a pure ascii string.
         Normal ascii characters like \\n or \\t won't be escaped.
@@ -484,7 +484,7 @@ sub %(handler)s {
         # check if it's pure ascii
         try:
             dummy = s.encode('ascii')
-            if self._use_gettext:
+            if self._use_gettext and translate:
                 return '_T("%s")' % s
             else:
                 return '"%s"' % s
@@ -501,7 +501,7 @@ sub %(handler)s {
         # convert Python style to Perl style
         s = re.sub(r'\\u([0-9a-f]{4})', r'\\N{U+\1}', s)
 
-        if self._use_gettext:
+        if self._use_gettext and translate:
             return '_T("%s")' % s
         else:
             return '"%s"' % s

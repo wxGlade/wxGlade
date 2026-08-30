@@ -21,10 +21,10 @@ MyFrame::MyFrame(wxWindow* parent, wxWindowID id, const wxString& title, const w
 {
     // begin wxGlade: MyFrame::MyFrame
     SetSize(wxSize(400, 300));
-    SetTitle(wxT("frame"));
+    SetTitle("frame");
     panel_1 = new wxPanel(this, wxID_ANY);
     wxBoxSizer* sizer_1 = new wxBoxSizer(wxVERTICAL);
-    button_1 = new wxButton(panel_1, wxID_ANY, wxT("button_1"));
+    button_1 = new wxButton(panel_1, wxID_ANY, "button_1");
     sizer_1->Add(button_1, 0, 0, 0);
     grid_1 = new wxGrid(panel_1, wxID_ANY);
     grid_1->CreateGrid(10, 4);
@@ -54,49 +54,49 @@ void MyFrame::on_left_down_panel(wxCommandEvent &event)  // wxGlade: MyFrame.<ev
 {
     event.Skip();
     // notify the user that he hasn't implemented the event handler yet
-    wxLogDebug(wxT("Event handler (MyFrame::on_left_down_panel) not implemented yet"));
+    wxLogDebug("Event handler (MyFrame::on_left_down_panel) not implemented yet");
 }
 
 void MyFrame::on_button(wxCommandEvent &event)  // wxGlade: MyFrame.<event_handler>
 {
     event.Skip();
     // notify the user that he hasn't implemented the event handler yet
-    wxLogDebug(wxT("Event handler (MyFrame::on_button) not implemented yet"));
+    wxLogDebug("Event handler (MyFrame::on_button) not implemented yet");
 }
 
 void MyFrame::on_left_down(wxCommandEvent &event)  // wxGlade: MyFrame.<event_handler>
 {
     event.Skip();
     // notify the user that he hasn't implemented the event handler yet
-    wxLogDebug(wxT("Event handler (MyFrame::on_left_down) not implemented yet"));
+    wxLogDebug("Event handler (MyFrame::on_left_down) not implemented yet");
 }
 
 void MyFrame::on_mouse_events(wxCommandEvent &event)  // wxGlade: MyFrame.<event_handler>
 {
     event.Skip();
     // notify the user that he hasn't implemented the event handler yet
-    wxLogDebug(wxT("Event handler (MyFrame::on_mouse_events) not implemented yet"));
+    wxLogDebug("Event handler (MyFrame::on_mouse_events) not implemented yet");
 }
 
 void MyFrame::on_grid_cmd_cell_changed(wxGridEvent &event)  // wxGlade: MyFrame.<event_handler>
 {
     event.Skip();
     // notify the user that he hasn't implemented the event handler yet
-    wxLogDebug(wxT("Event handler (MyFrame::on_grid_cmd_cell_changed) not implemented yet"));
+    wxLogDebug("Event handler (MyFrame::on_grid_cmd_cell_changed) not implemented yet");
 }
 
 void MyFrame::on_grid_text_enter(wxGridEvent &event)  // wxGlade: MyFrame.<event_handler>
 {
     event.Skip();
     // notify the user that he hasn't implemented the event handler yet
-    wxLogDebug(wxT("Event handler (MyFrame::on_grid_text_enter) not implemented yet"));
+    wxLogDebug("Event handler (MyFrame::on_grid_text_enter) not implemented yet");
 }
 
 void MyFrame::on_left_down_frame(wxCommandEvent &event)  // wxGlade: MyFrame.<event_handler>
 {
     event.Skip();
     // notify the user that he hasn't implemented the event handler yet
-    wxLogDebug(wxT("Event handler (MyFrame::on_left_down_frame) not implemented yet"));
+    wxLogDebug("Event handler (MyFrame::on_left_down_frame) not implemented yet");
 }
 
 

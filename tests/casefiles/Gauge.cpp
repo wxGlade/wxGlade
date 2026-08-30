@@ -20,7 +20,7 @@ MyFrame::MyFrame(wxWindow* parent, wxWindowID id, const wxString& title, const w
     wxFrame(parent, id, title, pos, size, wxDEFAULT_FRAME_STYLE)
 {
     // begin wxGlade: MyFrame::MyFrame
-    SetTitle(wxT("frame_1"));
+    SetTitle("frame_1");
     wxBoxSizer* sizer_1 = new wxBoxSizer(wxVERTICAL);
     gauge_1 = new wxGauge(this, wxID_ANY, 10);
     sizer_1->Add(gauge_1, 0, 0, 0);

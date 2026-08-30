@@ -24,7 +24,7 @@ MyFrame::MyFrame(wxWindow* parent, wxWindowID id, const wxString& title, const w
 {
     // begin wxGlade: MyFrame::MyFrame
     SetSize(wxSize(400, 300));
-    SetTitle(wxT("matplotlib canvas example"));
+    SetTitle("matplotlib canvas example");
     wxBoxSizer* sizer_1 = new wxBoxSizer(wxVERTICAL);
     panel_1 = new wxPanel(this, wxID_ANY);
     sizer_1->Add(panel_1, 1, wxEXPAND, 0);
@@ -36,32 +36,32 @@ MyFrame::MyFrame(wxWindow* parent, wxWindowID id, const wxString& title, const w
     sizer_2->Add(matplotlib_canvas, 1, wxALL|wxEXPAND, 3);
     wxBoxSizer* sizer_4 = new wxBoxSizer(wxHORIZONTAL);
     sizer_2->Add(sizer_4, 0, wxALL|wxEXPAND, 5);
-    wxStaticText* label_4 = new wxStaticText(panel_1, wxID_ANY, wxT("f(x) = "));
+    wxStaticText* label_4 = new wxStaticText(panel_1, wxID_ANY, "f(x) = ");
     sizer_4->Add(label_4, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5);
-    text_function = new wxTextCtrl(panel_1, wxID_ANY, wxT("sin(x)"));
+    text_function = new wxTextCtrl(panel_1, wxID_ANY, "sin(x)");
     sizer_4->Add(text_function, 1, 0, 0);
     wxBoxSizer* sizer_3 = new wxBoxSizer(wxHORIZONTAL);
     sizer_2->Add(sizer_3, 0, wxALL|wxEXPAND, 5);
-    wxStaticText* label_1 = new wxStaticText(panel_1, wxID_ANY, wxT("xmin"));
+    wxStaticText* label_1 = new wxStaticText(panel_1, wxID_ANY, "xmin");
     sizer_3->Add(label_1, 0, wxALIGN_CENTER_VERTICAL, 0);
-    text_xmin = new wxTextCtrl(panel_1, wxID_ANY, wxT("0"));
+    text_xmin = new wxTextCtrl(panel_1, wxID_ANY, "0");
     text_xmin->SetMinSize(wxSize(40, -1));
     sizer_3->Add(text_xmin, 0, 0, 0);
-    wxStaticText* label_2 = new wxStaticText(panel_1, wxID_ANY, wxT("xmax"));
+    wxStaticText* label_2 = new wxStaticText(panel_1, wxID_ANY, "xmax");
     sizer_3->Add(label_2, 0, wxALIGN_CENTER_VERTICAL, 0);
-    text_max = new wxTextCtrl(panel_1, wxID_ANY, wxT("10"));
+    text_max = new wxTextCtrl(panel_1, wxID_ANY, "10");
     text_max->SetMinSize(wxSize(40, -1));
     sizer_3->Add(text_max, 0, 0, 0);
-    wxStaticText* label_3 = new wxStaticText(panel_1, wxID_ANY, wxT("step"));
+    wxStaticText* label_3 = new wxStaticText(panel_1, wxID_ANY, "step");
     sizer_3->Add(label_3, 0, wxALIGN_CENTER_VERTICAL, 0);
-    text_xstep = new wxTextCtrl(panel_1, wxID_ANY, wxT("0.1"));
+    text_xstep = new wxTextCtrl(panel_1, wxID_ANY, "0.1");
     text_xstep->SetMinSize(wxSize(40, -1));
     sizer_3->Add(text_xstep, 0, 0, 0);
     sizer_3->Add(20, 20, 1, 0, 0);
-    button_plot = new wxButton(panel_1, wxID_ANY, wxT("Plot"));
+    button_plot = new wxButton(panel_1, wxID_ANY, "Plot");
     button_plot->SetDefault();
     sizer_3->Add(button_plot, 0, 0, 0);
-    button_clear = new wxButton(panel_1, wxID_ANY, wxT("Clear"));
+    button_clear = new wxButton(panel_1, wxID_ANY, "Clear");
     sizer_3->Add(button_clear, 0, wxLEFT, 8);
     
     panel_1->SetSizer(sizer_2);

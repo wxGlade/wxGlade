@@ -3,7 +3,7 @@ Code generator functions for wxChoice objects
 
 @copyright: 2002-2007 Alberto Griggio
 @copyright: 2014-2016 Carsten Grohmann
-@copyright: 2017 Dietmar Schwertberger
+@copyright: 2017-2026 Dietmar Schwertberger
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
@@ -14,12 +14,12 @@ from ChoicesCodeHandler import *
 
 class PythonChoiceGenerator(wcodegen.PythonWidgetCodeWriter):
     #tmpl = '%(name)s = %(klass)s(%(parent)s, %(id)s, choices=[%(choices)s]%(style)s)\n'
-    tmpl = '%(name)s = %(klass)s(%(parent)s, %(id)s, choices=[%(choices)s])\n'
+    tmpl = '%(name)s = %(klass)s(%(parent)s, %(id)s, choices=[%(choices)s]%(name_arg)s)\n'
 
 
 class CppChoiceGenerator(wcodegen.CppWidgetCodeWriter):
     #tmpl = '%(name)s = new %(klass)s(%(parent)s, %(id)s, wxDefaultPosition, wxDefaultSize, %(choices_len)s, %(name)s_choices%(style)s);\n'
-    tmpl = '%(name)s = new %(klass)s(%(parent)s, %(id)s, wxDefaultPosition, wxDefaultSize, %(choices_len)s, %(name)s_choices);\n'
+    tmpl = '%(name)s = new %(klass)s(%(parent)s, %(id)s, wxDefaultPosition, wxDefaultSize, %(choices_len)s, %(name)s_choices%(name_arg)s);\n'
     prefix_style = False
 
 

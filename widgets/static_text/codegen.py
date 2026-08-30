@@ -3,6 +3,7 @@ Code generator functions for wxStaticText objects
 
 @copyright: 2002-2007 Alberto Griggio
 @copyright: 2014-2016 Carsten Grohmann
+@copyright: 2026 Dietmar Schwertberger
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
@@ -11,7 +12,7 @@ import wcodegen
 
 
 class PythonStaticTextGenerator(wcodegen.PythonWidgetCodeWriter):
-    tmpl = '%(name)s = %(klass)s(%(parent)s, %(id)s, %(label)s%(style)s)\n'
+    tmpl = '%(name)s = %(klass)s(%(parent)s, %(id)s, %(label)s%(style)s%(name_arg)s)\n'
     def get_more_properties_code(self, obj):
         ret = []
         if obj.wrap>0:
@@ -21,7 +22,7 @@ class PythonStaticTextGenerator(wcodegen.PythonWidgetCodeWriter):
 
 
 class CppStaticTextGenerator(wcodegen.CppWidgetCodeWriter):
-    tmpl = '%(name)s = new %(klass)s(%(parent)s, %(id)s, %(label)s%(style)s);\n'
+    tmpl = '%(name)s = new %(klass)s(%(parent)s, %(id)s, %(label)s%(style)s%(name_arg)s);\n'
     def get_more_properties_code(self, obj):
         ret = []
         if obj.wrap>0:

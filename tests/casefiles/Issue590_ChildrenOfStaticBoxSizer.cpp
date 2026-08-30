@@ -20,14 +20,14 @@ MyDialog::MyDialog(wxWindow* parent, wxWindowID id, const wxPoint& pos, const wx
     wxPanel(parent, id, pos, size, wxTAB_TRAVERSAL)
 {
     // begin wxGlade: MyDialog::MyDialog
-    wxStaticBoxSizer* sizer_1 = new wxStaticBoxSizer(new wxStaticBox(this, wxID_ANY, wxT("sizer_1")), wxVERTICAL);
-    wxStaticBoxSizer* sizer_2 = new wxStaticBoxSizer(new wxStaticBox(sizer_1->GetStaticBox(), wxID_ANY, wxT("sizer_2")), wxVERTICAL);
+    wxStaticBoxSizer* sizer_1 = new wxStaticBoxSizer(new wxStaticBox(this, wxID_ANY, "sizer_1"), wxVERTICAL);
+    wxStaticBoxSizer* sizer_2 = new wxStaticBoxSizer(new wxStaticBox(sizer_1->GetStaticBox(), wxID_ANY, "sizer_2"), wxVERTICAL);
     sizer_1->Add(sizer_2, 1, wxEXPAND, 0);
-    wxStaticText* label_1 = new wxStaticText(sizer_2->GetStaticBox(), wxID_ANY, wxT("a"));
+    wxStaticText* label_1 = new wxStaticText(sizer_2->GetStaticBox(), wxID_ANY, "a");
     sizer_2->Add(label_1, 0, 0, 0);
-    button_1 = new wxButton(sizer_2->GetStaticBox(), wxID_ANY, wxT("button_1"));
+    button_1 = new wxButton(sizer_2->GetStaticBox(), wxID_ANY, "button_1");
     sizer_2->Add(button_1, 0, 0, 0);
-    checkbox_1 = new wxCheckBox(sizer_2->GetStaticBox(), wxID_ANY, wxT("checkbox"));
+    checkbox_1 = new wxCheckBox(sizer_2->GetStaticBox(), wxID_ANY, "checkbox");
     sizer_2->Add(checkbox_1, 0, 0, 0);
     grid_1 = new wxGrid(sizer_2->GetStaticBox(), wxID_ANY);
     grid_1->CreateGrid(10, 0);

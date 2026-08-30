@@ -22,7 +22,7 @@ MyFrame::MyFrame(wxWindow* parent, wxWindowID id, const wxString& title, const w
     // begin wxGlade: MyFrame::MyFrame
     # frame extra code before
     SetSize(wxSize(400, 300));
-    SetTitle(wxT("frame"));
+    SetTitle("frame");
     wxBoxSizer* sizer_1 = new wxBoxSizer(wxVERTICAL);
     sizer_1->Add(0, 0, 0, 0, 0);
     
@@ -45,14 +45,14 @@ void MyFrame::on_close_frame(wxCloseEvent &event)  // wxGlade: MyFrame.<event_ha
 {
     event.Skip();
     // notify the user that he hasn't implemented the event handler yet
-    wxLogDebug(wxT("Event handler (MyFrame::on_close_frame) not implemented yet"));
+    wxLogDebug("Event handler (MyFrame::on_close_frame) not implemented yet");
 }
 
 void MyFrame::on_menu_close_frame(wxMenuEvent &event)  // wxGlade: MyFrame.<event_handler>
 {
     event.Skip();
     // notify the user that he hasn't implemented the event handler yet
-    wxLogDebug(wxT("Event handler (MyFrame::on_menu_close_frame) not implemented yet"));
+    wxLogDebug("Event handler (MyFrame::on_menu_close_frame) not implemented yet");
 }
 
 
@@ -64,7 +64,7 @@ MyDialog::MyDialog(wxWindow* parent, wxWindowID id, const wxString& title, const
 {
     // begin wxGlade: MyDialog::MyDialog
     # dialog extra code before
-    SetTitle(wxT("dialog"));
+    SetTitle("dialog");
     wxBoxSizer* sizer_1 = new wxBoxSizer(wxVERTICAL);
     sizer_1->Add(0, 0, 0, 0, 0);
     
@@ -87,7 +87,7 @@ void MyDialog::on_close_dialog(wxCloseEvent &event)  // wxGlade: MyDialog.<event
 {
     event.Skip();
     // notify the user that he hasn't implemented the event handler yet
-    wxLogDebug(wxT("Event handler (MyDialog::on_close_dialog) not implemented yet"));
+    wxLogDebug("Event handler (MyDialog::on_close_dialog) not implemented yet");
 }
 
 

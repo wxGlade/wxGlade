@@ -18,12 +18,12 @@ MyFrame::MyFrame(wxWindow* parent, wxWindowID id, const wxString& title, const w
     wxFrame(parent, id, title, pos, size, wxDEFAULT_FRAME_STYLE)
 {
     SetSize(wxSize(400, 300));
-    SetTitle(wxT("frame"));
+    SetTitle("frame");
     panel_1 = new wxPanel(this, wxID_ANY);
     wxBoxSizer* sizer_1 = new wxBoxSizer(wxVERTICAL);
     text_ctrl_1 = new wxTextCtrl(panel_1, wxID_ANY, wxEmptyString);
     sizer_1->Add(text_ctrl_1, 0, 0, 0);
-    button_1 = new wxButton(panel_1, wxID_ANY, wxT("button_1"));
+    button_1 = new wxButton(panel_1, wxID_ANY, "button_1");
     sizer_1->Add(button_1, 0, 0, 0);
     
     panel_1->SetSizer(sizer_1);
@@ -34,12 +34,12 @@ MyFrame::MyFrame(wxWindow* parent, wxWindowID id, const wxString& title, const w
 MyFrame::MyFrame(wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint& pos, const wxSize& size, long style):
     wxFrame(parent, id, title, pos, size, wxDEFAULT_FRAME_STYLE)
 {
-    SetTitle(wxT("frame"));
+    SetTitle("frame");
     panel_1 = new wxPanel(this, wxID_ANY);
     wxBoxSizer* sizer_1 = new wxBoxSizer(wxVERTICAL);
     text_ctrl_1 = new wxTextCtrl(panel_1, wxID_ANY, wxEmptyString);
     sizer_1->Add(text_ctrl_1, 0, 0, 0);
-    button_1 = new wxButton(panel_1, wxID_ANY, wxT("button_1"));
+    button_1 = new wxButton(panel_1, wxID_ANY, "button_1");
     sizer_1->Add(button_1, 0, 0, 0);
     
     panel_1->SetSizer(sizer_1);

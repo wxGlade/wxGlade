@@ -3,6 +3,7 @@ Code generator functions for wxSpinCtrl objects
 
 @copyright: 2002-2007 Alberto Griggio
 @copyright: 2014-2016 Carsten Grohmann
+@copyright: 2026 Dietmar Schwertberger
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
@@ -11,7 +12,7 @@ import wcodegen
 
 
 class PythonSpinCtrlGenerator(wcodegen.PythonWidgetCodeWriter):
-    tmpl = '%(name)s = %(klass)s(%(parent)s, %(id)s, "%(value)s", min=%(minValue)s, max=%(maxValue)s%(style)s)\n'
+    tmpl = '%(name)s = %(klass)s(%(parent)s, %(id)s, "%(value)s", min=%(minValue)s, max=%(maxValue)s%(style)s%(name_arg)s)\n'
 
     def _prepare_tmpl_content(self, obj):
         wcodegen.PythonWidgetCodeWriter._prepare_tmpl_content(self, obj)
@@ -28,8 +29,8 @@ class PythonSpinCtrlGenerator(wcodegen.PythonWidgetCodeWriter):
 
 class CppSpinCtrlGenerator(wcodegen.CppWidgetCodeWriter):
     import_modules = ['<wx/spinctrl.h>']
-    tmpl = '%(name)s = new %(klass)s(%(parent)s, %(id)s, wxT("%(value)s"), ' \
-           'wxDefaultPosition, wxDefaultSize, %(style)s, %(minValue)s, %(maxValue)s);\n'
+    tmpl = '%(name)s = new %(klass)s(%(parent)s, %(id)s, "%(value)s", ' \
+           'wxDefaultPosition, wxDefaultSize, %(style)s, %(minValue)s, %(maxValue)s%(name_arg)s);\n'
     prefix_style = False
     set_default_style = True
 

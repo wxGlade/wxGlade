@@ -2,6 +2,7 @@
 Code generator functions for wxHyperlinkCtrl objects
 
 @copyright: 2012-2016 Carsten Grohmann
+@copyright: 2026 Dietmar Schwertberger
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
@@ -10,7 +11,7 @@ import wcodegen
 
 
 class PythonHyperlinkCtrlGenerator(wcodegen.PythonWidgetCodeWriter):
-    tmpl = '%(name)s = %(klass)s(%(parent)s, %(id)s, %(label)s, %(url)s%(style)s)\n'
+    tmpl = '%(name)s = %(klass)s(%(parent)s, %(id)s, %(label)s, %(url)s%(style)s%(name_arg)s)\n'
 
     if compat.IS_PHOENIX:
         import_modules = ['import wx.adv\n']
@@ -26,7 +27,8 @@ class PythonHyperlinkCtrlGenerator(wcodegen.PythonWidgetCodeWriter):
 
     def _prepare_tmpl_content(self, obj):
         wcodegen.PythonWidgetCodeWriter._prepare_tmpl_content(self, obj)
-        self.tmpl_dict['url'] = self.codegen.quote_str(obj.url)
+        translate = self.codegen._use_gettext and not obj.check_prop_truth("no_gettext")
+        self.tmpl_dict['url'] = self.codegen.quote_str(obj.url, translate)
         #self.has_setvalue1 = bool(obj.checked)
         return
 
@@ -34,11 +36,12 @@ class PythonHyperlinkCtrlGenerator(wcodegen.PythonWidgetCodeWriter):
 
 class CppHyperlinkCtrlGenerator(wcodegen.CppWidgetCodeWriter):
     import_modules = ['<wx/hyperlink.h>']
-    tmpl = '%(name)s = new %(klass)s(%(parent)s, %(id)s, %(label)s, %(url)s%(style)s);\n'
+    tmpl = '%(name)s = new %(klass)s(%(parent)s, %(id)s, %(label)s, %(url)s%(style)s%(name_arg)s);\n'
 
     def _prepare_tmpl_content(self, obj):
         wcodegen.CppWidgetCodeWriter._prepare_tmpl_content(self, obj)
-        self.tmpl_dict['url'] = self.codegen.quote_str(obj.url)
+        translate = self.codegen._use_gettext and not obj.check_prop_truth("no_gettext")
+        self.tmpl_dict['url'] = self.codegen.quote_str(obj.url, translate)
         #self.has_setvalue1 = bool(obj.checked)
         return
 

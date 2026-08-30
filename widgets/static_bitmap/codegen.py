@@ -3,7 +3,7 @@ Code generator functions for wxStaticBitmap objects
 
 @copyright: 2002-2007 Alberto Griggio
 @copyright: 2014-2016 Carsten Grohmann
-@copyright: 2016-2025 Dietmar Schwertberger
+@copyright: 2016-2026 Dietmar Schwertberger
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
@@ -12,7 +12,7 @@ import wcodegen
 
 
 class PythonStaticBitmapGenerator(wcodegen.PythonWidgetCodeWriter):
-    tmpl = '%(name)s = %(klass)s(%(parent)s, %(id)s, %(bitmap)s%(style)s)\n'
+    tmpl = '%(name)s = %(klass)s(%(parent)s, %(id)s, %(bitmap)s%(style)s%(name_arg)s)\n'
     tmpl_SetBestSize = ''
 
     def _prepare_bitmaps(self, obj):
@@ -25,7 +25,7 @@ class PythonStaticBitmapGenerator(wcodegen.PythonWidgetCodeWriter):
 
 
 class CppStaticBitmapGenerator(wcodegen.CppWidgetCodeWriter):
-    tmpl = '%(name)s = new %(klass)s(%(parent)s, %(id)s, %(bitmap)s%(style)s);\n'
+    tmpl = '%(name)s = new %(klass)s(%(parent)s, %(id)s, %(bitmap)s%(style)s%(name_arg)s);\n'
     tmpl_SetBestSize = ''
 
 

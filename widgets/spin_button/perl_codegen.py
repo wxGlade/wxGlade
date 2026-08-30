@@ -12,7 +12,7 @@ import wcodegen
 
 
 class PerlSpinButtonGenerator(wcodegen.PerlWidgetCodeWriter):
-    tmpl = '%(name)s = %(klass)s->new(%(parent)s, %(id)s,%(style)s);\n'
+    tmpl = '%(name)s = %(klass)s->new(%(parent)s, %(id)s%(style)s);\n'
 
     def get_more_properties_code(self, obj):
         ret = []

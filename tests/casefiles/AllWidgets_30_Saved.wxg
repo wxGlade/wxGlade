@@ -469,6 +469,8 @@
                                 <border>5</border>
                                 <flag>wxALL</flag>
                                 <object class="wxHyperlinkCtrl" name="hyperlink_1" base="EditHyperlinkCtrl">
+                                    <name_arg>1</name_arg>
+                                    <no_gettext>1</no_gettext>
                                     <label>Homepage wxGlade</label>
                                     <url>http://wxglade.sf.net</url>
                                     <attribute>1</attribute>

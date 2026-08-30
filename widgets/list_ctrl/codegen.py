@@ -3,7 +3,7 @@ Code generator functions for wxListCtrl objects
 
 @copyright: 2002-2007 Alberto Griggio
 @copyright: 2014-2016 Carsten Grohmann
-@copyright: 2017 Dietmar Schwertberger
+@copyright: 2017-2026 Dietmar Schwertberger
 @license: MIT (see LICENSE.txt) - THIS PROGRAM COMES WITH NO WARRANTY
 """
 
@@ -39,7 +39,7 @@ class ListCtrlPropertyGeneratorMixin(object):
 
 
 class PythonListCtrlGenerator(ListCtrlPropertyGeneratorMixin, wcodegen.PythonWidgetCodeWriter):
-    tmpl = '%(name)s = %(klass)s(%(parent)s, %(id)s%(style)s)\n'
+    tmpl = '%(name)s = %(klass)s(%(parent)s, %(id)s%(style)s%(name_arg)s)\n'
 
     def _get_row_col_templates(self):
         # templates for adding columns and rows (rows are for preview only)
@@ -54,7 +54,7 @@ class PythonListCtrlGenerator(ListCtrlPropertyGeneratorMixin, wcodegen.PythonWid
 
 class CppListCtrlGenerator(ListCtrlPropertyGeneratorMixin, wcodegen.CppWidgetCodeWriter):
     import_modules = ['<wx/listctrl.h>']
-    tmpl = '%(name)s = new %(klass)s(%(parent)s, %(id)s%(style)s);\n'
+    tmpl = '%(name)s = new %(klass)s(%(parent)s, %(id)s%(style)s%(name_arg)s);\n'
     def _get_row_col_templates(self):
         tmpl_append_column = '%(name)s->AppendColumn(%(heading)s, wxLIST_FORMAT_LEFT, %(width)d);\n'
         return (tmpl_append_column, None)
