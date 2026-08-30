@@ -685,10 +685,7 @@ class CheckBoxProperty(Property):
             self.checkbox.SetMaxSize(size)
 
         hsizer = wx.BoxSizer(wx.HORIZONTAL)
-        #hsizer.Add(label, 2, wx.ALIGN_CENTER_VERTICAL | wx.ALL, 3)
         hsizer.Add(label, 0, wx.ALIGN_CENTER_VERTICAL | wx.ALL, 3)
-        #hsizer.SetItemMinSize(0, config.label_initial_width, -1)
-        #hsizer.AddSpacer(20)
         hsizer.Add(self.checkbox, 0, wx.ALIGN_LEFT | wx.ALL, 3)
         hsizer.AddStretchSpacer(5)
         sizer.Add(hsizer, 0, wx.EXPAND)
@@ -703,6 +700,43 @@ class CheckBoxProperty(Property):
 
     def on_change_val(self, event):
         new_value = event.IsChecked()
+        self.on_focus()
+        self._check_for_user_modification(new_value)
+
+
+class CheckBox3Property(CheckBoxProperty):
+    # False, _DefaultArgument, True
+
+    def _display_value(self):
+        if self.value==_DefaultArgument:
+            self.checkbox.Set3StateValue( wx.CHK_UNDETERMINED )
+        else:
+            self.checkbox.SetValue( bool(self.value) )
+
+    def create_editor(self, panel, sizer):
+        label_text = self._find_label()
+        self.checkbox = wx.CheckBox(panel, -1, '', style=wx.CHK_3STATE|wx.CHK_ALLOW_3RD_STATE_FOR_USER, name=label_text)
+        self._display_value()
+        if self.blocked: self.checkbox.Disable()
+        self.label_ctrl = label = self._get_label(label_text, panel, name=label_text)
+
+        if config.preferences.use_checkboxes_workaround:
+            size = self.checkbox.GetSize()
+            self.checkbox.SetLabel(label_text)
+            self.checkbox.SetMaxSize(size)
+
+        hsizer = wx.BoxSizer(wx.HORIZONTAL)
+        hsizer.Add(label, 0, wx.ALIGN_CENTER_VERTICAL | wx.ALL, 3)
+        hsizer.Add(self.checkbox, 0, wx.ALIGN_LEFT | wx.ALL, 3)
+        hsizer.AddStretchSpacer(5)
+        sizer.Add(hsizer, 0, wx.EXPAND)
+        self._set_tooltip(label, self.checkbox)
+        self.checkbox.Bind(wx.EVT_CHECKBOX, self.on_change_val)
+        self.editing = True
+
+    def on_change_val(self, event):
+        new_value = self.checkbox.Get3StateValue()
+        new_value = {wx.CHK_UNDETERMINED:_DefaultArgument, wx.CHK_CHECKED:True, wx.CHK_UNCHECKED: False}[new_value]
         self.on_focus()
         self._check_for_user_modification(new_value)
 

@@ -400,10 +400,16 @@ class BaseWidgetWriter(StylesMixin, BaseCodeWriter):
         self.tmpl_dict['id_name'], self.tmpl_dict['id_number'] = self.codegen.generate_code_id(obj)
         self.tmpl_dict['id'] = self.tmpl_dict['id_number']
         self.tmpl_dict['obj_name'] = self.codegen._format_name(obj.name)
-        if self.codegen.widget_names:
+
+        if obj.check_prop_nodefault("name_arg"):
+            name_arg = obj.name_arg
+        else:
+            name_arg = self.codegen.widget_names
+        if name_arg:
             self.tmpl_dict['name_arg'] = ", name=%s"%self.codegen.quote_str( obj.name, translate=False )
         else:
             self.tmpl_dict['name_arg'] = ""
+
         self.tmpl_dict['klass'] = obj.get_instantiation_class(self.cn, self.cn_class, self.codegen.preview)
         self.tmpl_dict['store_as_attr'] = self.codegen.store_as_attr(obj)
 
